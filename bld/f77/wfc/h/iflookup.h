@@ -33,6 +33,7 @@
 #include "symtypes.h"
 #include "ifdefs.h"
 
+
 extern int          IFIndex( const char *name );
 extern IFF          IFLookUp( void );
 extern bool         IFIsGeneric( IFF func );

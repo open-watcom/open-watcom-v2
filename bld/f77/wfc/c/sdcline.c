@@ -49,9 +49,9 @@
 #endif
 
 
-bool    MainCmdLine( char **fn, char **rest, char **opts, char *ptr ) {
-//=====================================================================
-
+bool MainCmdLine( char **fn, char **rest, char **opts, char *ptr )
+//================================================================
+{
     uint        opt_num;
     bool        scanning_file_name;
     bool        quoted;
@@ -86,13 +86,15 @@ bool    MainCmdLine( char **fn, char **rest, char **opts, char *ptr ) {
             if( quoted ) {
                 if( *ptr == '\"' ) {
                     quoted = false;
-                    if(scanning_file_name)
+                    if( scanning_file_name ) {
                         *ptr = NULLCHAR;
+                    }
                 }
             } else if( *ptr == '\"' ) {
                 quoted = true;
-                if(scanning_file_name)
+                if( scanning_file_name ) {
                     *fn = ptr+1;
+                }
             } else if( ( *ptr == ' ' ) || ( *ptr == '\t' ) ) {
                 *ptr = NULLCHAR;
                 ++ptr;

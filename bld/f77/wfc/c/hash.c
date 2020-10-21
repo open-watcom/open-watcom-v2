@@ -35,7 +35,7 @@
 
 
 unsigned int CalcHash( const char *p, unsigned len )
-//=================================================
+//==================================================
 {
     unsigned long       h;
     unsigned long       g;

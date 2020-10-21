@@ -79,7 +79,7 @@ uint    AllocName( uint length ) {
 
 
 sym_id STAdd( const char *name, int length )
-//=======================================
+//==========================================
 // Add a symbol table entry to the symbol table. Return a pointer to the
 // new symbol table entry.
 {

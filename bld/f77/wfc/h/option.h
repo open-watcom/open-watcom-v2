@@ -34,6 +34,6 @@ extern char    *SkipBlanks( const char *ptr );
 extern void    FIncludePathInit( void );
 extern void    FIncludePathFini( void );
 extern void    FiniProcCmd( void );
-extern void    CmdOption( char *buff );
+extern void    CmdOption( const char *buff );
 extern void    SrcOption( void );
 extern void    PrtOptions( void );

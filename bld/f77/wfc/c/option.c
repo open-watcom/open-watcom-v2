@@ -184,8 +184,8 @@ static  void    XLOption( opt_entry *optn, bool negated )
 }
 
 
-static  void    DefOption( opt_entry *optn, const char *ptr )
-//===========================================================
+static void DefOption( opt_entry *optn, const char *ptr )
+//=======================================================
 // Define a macro.
 {
     /* unused parameters */ (void)optn;
@@ -194,8 +194,8 @@ static  void    DefOption( opt_entry *optn, const char *ptr )
 }
 
 
-static  void    PathOption( opt_entry *optn, const char *ptr )
-//============================================================
+static void PathOption( opt_entry *optn, const char *ptr )
+//========================================================
 // Process "INCPATH=" option.
 {
     char        *p;
@@ -271,8 +271,8 @@ void    FiniProcCmd( void )
 }
 
 
-static  unsigned_32     OptV( opt_entry *optn, const char *ptr )
-//==============================================================
+static unsigned_32 OptV( opt_entry *optn, const char *ptr )
+//=========================================================
 // Process an option that requires a value.
 {
     unsigned_32 number;
@@ -298,11 +298,10 @@ static  unsigned_32     OptV( opt_entry *optn, const char *ptr )
                             }
 
 
-static  void    CGOption( opt_entry *optn, bool negated ) {
-//=========================================================
-
+static void CGOption( opt_entry *optn, bool negated )
+//===================================================
 // Process a code generator option.
-
+{
     unsigned_32 opt_bit;
 
     opt_bit = optn->value;
@@ -334,11 +333,10 @@ static  void    CGOption( opt_entry *optn, bool negated ) {
                                    OZOpts &= ~( excl_bits );        \
                               }
 
-static  void    OZOption( opt_entry *optn, bool negated ) {
-//=========================================================
-
+static void OZOption( opt_entry *optn, bool negated )
+//===================================================
 // Process a optimization option.
-
+{
     unsigned_32 opt_bit;
 
     opt_bit = optn->value;
@@ -358,11 +356,10 @@ static  void    OZOption( opt_entry *optn, bool negated ) {
                                }
 
 #if _CPU == 8086 || _CPU == 386
-static  void    CPUOption( opt_entry *optn, bool negated ) {
-//==========================================================
-
+static  void    CPUOption( opt_entry *optn, bool negated )
+//========================================================
 // Process a code generator option.
-
+{
     unsigned_32 opt_bit;
 
     opt_bit = optn->value;
@@ -385,17 +382,16 @@ static  void    CPUOption( opt_entry *optn, bool negated ) {
 #endif
 
 
-static  void    DTOption( opt_entry *optn, const char *ptr )
-//==========================================================
+static void DTOption( opt_entry *optn, const char *ptr )
+//======================================================
 // Process "DT=" option.
 {
-
     DataThreshold = OptV( optn, ptr );
 }
 
 
-static  void    FOOption( opt_entry *optn, const char *ptr )
-//==========================================================
+static void FOOption( opt_entry *optn, const char *ptr )
+//======================================================
 // Process "FO=" option.
 {
     /* unused parameters */ (void)optn;
@@ -404,11 +400,10 @@ static  void    FOOption( opt_entry *optn, const char *ptr )
 }
 
 
-static  void    NegOption( opt_entry *optn, bool negated ) {
-//==========================================================
-
+static  void    NegOption( opt_entry *optn, bool negated )
+//========================================================
 // Turn off bit option.
-
+{
     /* unused parameters */ (void)optn; (void)negated;
 
     NewOptions &= ~optn->value;
@@ -418,9 +413,9 @@ static  void    NegOption( opt_entry *optn, bool negated ) {
 }
 
 
-static  void    ChiOption( opt_entry *optn, bool negated ) {
-//==========================================================
-
+static  void    ChiOption( opt_entry *optn, bool negated )
+//========================================================
+{
     /* unused parameters */ (void)optn; (void)negated;
 
     __UseChineseCharSet();
@@ -429,9 +424,9 @@ static  void    ChiOption( opt_entry *optn, bool negated ) {
 }
 
 
-static  void    JapOption( opt_entry *optn, bool negated ) {
-//==========================================================
-
+static  void    JapOption( opt_entry *optn, bool negated )
+//========================================================
+{
     /* unused parameters */ (void)optn; (void)negated;
 
     __UseJapaneseCharSet();
@@ -440,9 +435,9 @@ static  void    JapOption( opt_entry *optn, bool negated ) {
 }
 
 
-static  void    KorOption( opt_entry *optn, bool negated ) {
+static  void    KorOption( opt_entry *optn, bool negated )
 //==========================================================
-
+{
     /* unused parameters */ (void)optn; (void)negated;
 
     __UseKoreanCharSet();
@@ -563,8 +558,8 @@ static void OptWarning( int warn, const char *opt )
 }
 
 
-static  void    ScanOpts( const char *buff )
-//==========================================
+static void ScanOpts( const char *buff )
+//======================================
 {
     opt_entry   *optn;
     bool        negated;
@@ -644,8 +639,8 @@ static char *GetOptName( char *buffer, const char *opt_name )
 }
 
 
-void    CmdOption( char *buff )
-//=============================
+void CmdOption( const char *buff )
+//================================
 // Process an option that can appear on the command line.
 {
     opt_entry   *optn;
@@ -740,11 +735,10 @@ void    SrcOption( void )
 }
 
 
-void    PrtOptions( void ) {
-//====================
-
+void    PrtOptions( void )
+//========================
 // Display current options in listing file.
-
+{
     opt_entry   *optn;
     char        buffer[30];
     char        *buff;

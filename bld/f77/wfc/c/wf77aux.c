@@ -218,9 +218,9 @@ aux_info                FortranInfo;
 aux_info                ProgramInfo;
 dep_info                *DependencyInfo;
 
-void            InitAuxInfo( void ) {
-//=============================
-
+void InitAuxInfo( void )
+//======================
+{
 #if _INTEL_CPU
     int         cpu;
     int         fpu;
@@ -375,16 +375,16 @@ void            InitAuxInfo( void ) {
 }
 
 
-static  void    FreeArgList( aux_info *aux ) {
-//============================================
-
+static void FreeArgList( aux_info *aux )
+//======================================
+{
     FreeChain( &aux->arg_info );
 }
 
 
-static  void    FreeAuxElements( aux_info *aux ) {
-//================================================
-
+static void FreeAuxElements( aux_info *aux )
+//==========================================
+{
     FreeArgList( aux );
     if( aux->parms != DefaultInfo.parms ) {
         FMemFree( aux->parms );
@@ -401,17 +401,17 @@ static  void    FreeAuxElements( aux_info *aux ) {
 }
 
 
-static  void    FreeAuxEntry( aux_info *aux ) {
-//=============================================
-
+static void FreeAuxEntry( aux_info *aux )
+//=======================================
+{
     FreeAuxElements( aux );
     FMemFree( aux );
 }
 
 
-void            FiniAuxInfo( void ) {
-//=============================
-
+void FiniAuxInfo( void )
+//======================
+{
     void        *next;
 
     while( AuxInfo != NULL ) {
@@ -431,9 +431,9 @@ void            FiniAuxInfo( void ) {
 }
 
 
-void    SubAuxInit( void ) {
-//====================
-
+void SubAuxInit( void )
+//=====================
+{
 #if _INTEL_CPU
 // Initialize aux information for a subprogram.
 
@@ -442,9 +442,9 @@ void    SubAuxInit( void ) {
 }
 
 
-void    SubAuxFini( void ) {
-//====================
-
+void SubAuxFini( void )
+//=====================
+{
 #if _INTEL_CPU
 // Finalize aux information for a subprogram.
 
@@ -478,11 +478,10 @@ static bool cmp_ucased( const char *p1, const char *p2, uint len )
     return( true );
 }
 
-static  void    AddArrayInfo( const char *arr_name, uint arr_len ) {
-//==================================================================
-
+static void AddArrayInfo( const char *arr_name, uint arr_len )
+//============================================================
 // Process aux information for an array.
-
+{
     arr_info    **arr;
     arr_info    *new_arr;
     uint        i;
@@ -505,11 +504,10 @@ static  void    AddArrayInfo( const char *arr_name, uint arr_len ) {
 }
 #endif
 
-void    AddDependencyInfo( source_t *fi ) {
-//=======================================
-
+void AddDependencyInfo( source_t *fi )
+//====================================
 // Add dependency information for an included file.
-
+{
     char        *p;
     dep_info    **dep;
     dep_info    *new_dep;
@@ -534,9 +532,9 @@ void    AddDependencyInfo( source_t *fi ) {
 }
 
 
-static  void    AddDefaultLib( const char *lib_ptr, int lib_len, char priority ) {
+static void AddDefaultLib( const char *lib_ptr, int lib_len, char priority )
 //==========================================================================
-
+{
     default_lib         **lib;
     default_lib         *new_lib;
 
@@ -562,9 +560,9 @@ static  void    AddDefaultLib( const char *lib_ptr, int lib_len, char priority )
 }
 
 
-void    DefaultLibInfo( void ) {
-//========================
-
+void DefaultLibInfo( void )
+//=========================
+{
 #if _CPU == 386
     if( CGOpts & CGOPT_STK_ARGS ) {
         if( CPUOpts & CPUOPT_FPC ) {
@@ -664,9 +662,9 @@ aux_info *NewAuxEntry( const char *name, uint name_len )
 }
 
 
-static  bool    CurrToken( const char *tok ) {
+static bool CurrToken( const char *tok )
 //======================================
-
+{
     const char    *ptr;
 
     ptr = TokStart;
@@ -684,12 +682,12 @@ static  bool    CurrToken( const char *tok ) {
 }
 
 
-static  void    ScanToken( void ) {
+static void ScanToken( void )
 //===========================
-
-    const char    *ptr;
-    bool    found_token;
-    bool    first;
+{
+    const char  *ptr;
+    bool        found_token;
+    bool        first;
 
     ptr = TokEnd;
     ptr = SkipBlanks( ptr );
@@ -756,9 +754,9 @@ static  void    ScanToken( void ) {
     TokEnd = ptr;
 }
 
-static  bool    RecToken( const char *tok ) {
+static bool RecToken( const char *tok )
 //=====================================
-
+{
     if( CurrToken( tok ) ) {
         ScanToken();
         return( true );
@@ -766,9 +764,9 @@ static  bool    RecToken( const char *tok ) {
     return( false );
 }
 
-static  void    ReqToken( char *tok ) {
+static void ReqToken( const char *tok )
 //=====================================
-
+{
     size_t      len;
     char        buffer[ERR_BUFF_SIZE + 1];
 
@@ -782,9 +780,9 @@ static  void    ReqToken( char *tok ) {
 }
 
 
-static  void    ScanFnToken( void ) {
-//===========================
-
+static void ScanFnToken( void )
+//=============================
+{
     const char  *ptr;
     bool        found_token;
     bool        first;
@@ -823,9 +821,9 @@ static  void    ScanFnToken( void ) {
 }
 
 
-static  bool    RecFnToken( const char *tok ) {
+static bool RecFnToken( const char *tok )
 //=======================================
-
+{
     if( CurrToken( tok ) ) {
         ScanFnToken();
         return( true );
@@ -835,10 +833,10 @@ static  bool    RecFnToken( const char *tok ) {
 
 
 
-static  void            SymbolId( void ) {
-//==================================
-
-    const char        *ptr;
+static void SymbolId( void )
+//==========================
+{
+    const char  *ptr;
 
     ptr = TokStart;
     if( ( isalpha( *ptr ) == 0 ) && ( *ptr != '$' ) && ( *ptr != '_' ) ) {
@@ -857,9 +855,9 @@ static  void            SymbolId( void ) {
 }
 
 
-static  void            AliasName( void ) {
-//===================================
-
+static void AliasName( void )
+//===========================
+{
     aux_info    *alias;
 
     SymbolId();
@@ -871,9 +869,9 @@ static  void            AliasName( void ) {
 }
 
 
-static  void            SymbolName( void ) {
-//====================================
-
+static void SymbolName( void )
+//============================
+{
     if( RecToken( "DEFAULT" ) ) {
         SymLen = 0;
     } else {
@@ -888,9 +886,9 @@ static  void            SymbolName( void ) {
 }
 
 
-static  void            ObjectName( void ) {
-//====================================
-
+static void ObjectName( void )
+//============================
+{
     int         obj_len;
     char        *name;
 
@@ -912,9 +910,9 @@ static  void            ObjectName( void ) {
 }
 
 
-static  void    DupParmInfo( aux_info *dst, aux_info *src ) {
-//===========================================================
-
+static void DupParmInfo( aux_info *dst, aux_info *src )
+//=====================================================
+{
     hw_reg_set  *new_reg_set;
     hw_reg_set  *reg_set;
     int         size;
@@ -931,9 +929,9 @@ static  void    DupParmInfo( aux_info *dst, aux_info *src ) {
 }
 
 
-static  void    DupCallBytes( aux_info *dst, aux_info *src ) {
-//============================================================
-
+static void DupCallBytes( aux_info *dst, aux_info *src )
+//======================================================
+{
     byte_seq        *new_seq;
     byte_seq_len    seq_len;
 
@@ -971,9 +969,9 @@ static  void    DupCallBytes( aux_info *dst, aux_info *src ) {
 }
 
 
-static  void    DupObjectName( aux_info *dst, aux_info *src ) {
-//=============================================================
-
+static void DupObjectName( aux_info *dst, aux_info *src )
+//=======================================================
+{
     char        *new_name;
 
     new_name = FMemAlloc( strlen( src->objname ) + 1 );
@@ -982,9 +980,9 @@ static  void    DupObjectName( aux_info *dst, aux_info *src ) {
 }
 
 
-static  void    DupArgInfo( aux_info *dst, aux_info *src ) {
-//==========================================================
-
+static void DupArgInfo( aux_info *dst, aux_info *src )
+//====================================================
+{
     pass_by     *new_arg;
     pass_by     *args;
     pass_by     **curr_arg;
@@ -1002,9 +1000,9 @@ static  void    DupArgInfo( aux_info *dst, aux_info *src ) {
 }
 
 
-void            CopyAuxInfo( aux_info *dst, aux_info *src ) {
-//===========================================================
-
+void CopyAuxInfo( aux_info *dst, aux_info *src )
+//==============================================
+{
     if( dst != src ) {
         dst->cclass = src->cclass;
         dst->save = src->save;
@@ -1024,9 +1022,9 @@ void            CopyAuxInfo( aux_info *dst, aux_info *src ) {
 }
 
 
-static  void            ProcessAlias( void ) {
-//======================================
-
+static void ProcessAlias( void )
+//==============================
+{
     if( SymLen == 0 ) { // "DEFAULT"
         CurrAux = AliasInfo;
     } else {
@@ -1043,16 +1041,16 @@ static  void            ProcessAlias( void ) {
 }
 
 
-void    *AsmQuerySymbol( const char *name )
-//===========================================
+void *AsmQuerySymbol( const char *name )
+//======================================
 {
     return( (void *)name );
 }
 
 
-enum    sym_state       AsmQueryState( void *handle ) {
-//=====================================================
-
+enum sym_state AsmQueryState( void *handle )
+//==========================================
+{
     /* unused parameters */ (void)handle;
 
     return( SYM_UNDEFINED );
@@ -1060,17 +1058,18 @@ enum    sym_state       AsmQueryState( void *handle ) {
 
 
 #if _INTEL_CPU
-enum    sym_type        AsmQueryType( void *handle ) {
-//====================================================
-
+enum sym_type AsmQueryType( void *handle )
+//========================================
+{
     /* unused parameters */ (void)handle;
 
     return( SYM_INT1 );
 }
 
 
-static  void    InsertFixups( unsigned char *buff, byte_seq_len i ) {
-//===================================================================
+static void InsertFixups( unsigned char *buff, byte_seq_len i )
+//=============================================================
+{
                         // additional slop in buffer to simplify the code
     unsigned char       temp[MAXIMUM_BYTESEQ + 2];
     struct asmfixup     *fix;
@@ -1189,17 +1188,17 @@ static  void    InsertFixups( unsigned char *buff, byte_seq_len i ) {
 
 #elif _CPU == _AXP || _CPU == _PPC
 
-uint_32 AsmQuerySPOffsetOf( void *handle ) {
-//==========================================
-
+uint_32 AsmQuerySPOffsetOf( void *handle )
+//========================================
+{
     handle = handle;
     return( 0 );
 }
 
 
-static  void    InsertFixups( unsigned char *buff, byte_seq_len len ) {
-//=====================================================================
-
+static void InsertFixups( unsigned char *buff, byte_seq_len len )
+//===============================================================
+{
     byte_seq            *seq;
     asmreloc            *reloc;
     byte_seq_reloc      *head;
@@ -1231,8 +1230,8 @@ static  void    InsertFixups( unsigned char *buff, byte_seq_len len ) {
 
 #if _CPU == 8086
 
-static  void    AddAFix( unsigned i, char *name, unsigned type, unsigned off )
-//============================================================================
+static void AddAFix( unsigned i, char *name, unsigned type, unsigned off )
+//========================================================================
 {
     struct asmfixup     *fix;
 
@@ -1249,9 +1248,9 @@ static  void    AddAFix( unsigned i, char *name, unsigned type, unsigned off )
 #endif
 
 
-static  void    GetByteSeq( void ) {
-//==================================
-
+static void GetByteSeq( void )
+//============================
+{
     byte_seq_len    seq_len;
     byte_seq_len    len;
     const char      *ptr;
@@ -1334,9 +1333,9 @@ static  void    GetByteSeq( void ) {
 
 #define REGNAME_MAX_LEN     4
 
-static  hw_reg_set      RegSet( void ) {
-//================================
-
+static hw_reg_set RegSet( void )
+//==============================
+{
     hw_reg_set  reg_set;
     int         reg;
     char        regname_buf[REGNAME_MAX_LEN];
@@ -1360,9 +1359,9 @@ static  hw_reg_set      RegSet( void ) {
 }
 
 
-static  hw_reg_set      *RegSets( void ) {
-//==================================
-
+static hw_reg_set *RegSets( void )
+//================================
+{
     hw_reg_set  reg_sets[MAX_REG_SETS];
     hw_reg_set  *regs;
     int         num_sets;
@@ -1383,9 +1382,9 @@ static  hw_reg_set      *RegSets( void ) {
 #endif
 
 
-static  void    GetArgList( void ) {
+static void GetArgList( void )
 //============================
-
+{
     pass_by     *arg;
     pass_by     **curr_arg;
     pass_info   arg_pass_info;
@@ -1475,9 +1474,9 @@ static  void    GetArgList( void ) {
 
 
 #if _INTEL_CPU
-static  void    GetSTRetInfo( void ) {
+static void GetSTRetInfo( void )
 //==============================
-
+{
     struct {
         boolbit f_float        : 1;
         boolbit f_struct       : 1;
@@ -1513,9 +1512,9 @@ static  void    GetSTRetInfo( void ) {
 }
 
 
-static  void            GetRetInfo( void ) {
-//====================================
-
+static void GetRetInfo( void )
+//============================
+{
     struct {
         boolbit f_no8087        : 1;
         boolbit f_list          : 1;
@@ -1547,9 +1546,9 @@ static  void            GetRetInfo( void ) {
 }
 
 
-static  void            GetSaveInfo( void ) {
-//=====================================
-
+static void GetSaveInfo( void )
+//=============================
+{
     hw_reg_set  modlist;
     hw_reg_set  default_flt_n_seg;
     hw_reg_set  flt_n_seg;
@@ -1593,11 +1592,10 @@ static  void            GetSaveInfo( void ) {
 #endif
 
 
-static  void            GetParmInfo( void ) {
-//=====================================
-
+static void GetParmInfo( void )
+//=============================
 // Collect argument information.
-
+{
     struct {
 #if _INTEL_CPU
         boolbit f_pop           : 1;
@@ -1652,11 +1650,10 @@ static  void            GetParmInfo( void ) {
 }
 
 
-static void     Pragma( void ) {
-//========================
-
+static void     Pragma( void )
+//============================
 // Process a pragma.
-
+{
 #if _INTEL_CPU
     const char  *arr;
     uint        arr_len;
@@ -1772,9 +1769,9 @@ static void     Pragma( void ) {
 }
 
 
-void    DoPragma( const char *ptr ) {
-//=============================
-
+void DoPragma( const char *ptr )
+//==============================
+{
     int         status;
 
     TokStart = ptr;
@@ -1796,9 +1793,9 @@ void    DoPragma( const char *ptr ) {
 }
 
 
-void    ProcPragma( const char *ptr ) {
-//===============================
-
+void ProcPragma( const char *ptr )
+//================================
+{
     // don't process auxiliary pragma's until pass 2
     if( ProgSw & PS_DONT_GENERATE )
         return;
