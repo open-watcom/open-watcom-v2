@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -89,7 +89,7 @@
 // NOT_IN_MAP        - used to flag those specification statements which cannot
 //                     appear in a map definition
 
-const unsigned_16 __FAR CFTable[] = {
+const unsigned_16   CFTable[] = {
     #define pick(id,text,proc,flags) flags,
     #include "stmtdefn.h"
     #undef pick

@@ -79,7 +79,7 @@ enum {
     #undef COMP_DIR
 };
 
-static const char __FAR * const __FAR CompDrctvs[] = {
+static const char * const CompDrctvs[] = {
     #define COMP_DIR(c) #c ,
     COMP_DIRS_DEFS
     #undef COMP_DIR
@@ -445,7 +445,7 @@ static  void    KorOption( opt_entry *optn, bool negated )
     NewOptions |= OPT_KOREAN;
 }
 
-static bool OptMatch( const char *buff, const char __FAR *list, bool value )
+static bool OptMatch( const char *buff, const char *list, bool value )
 //==========================================================================
 // Determine if option matches.
 {
@@ -608,7 +608,7 @@ static int GetDirective( const char *buff )
 // Parse a compiler directive.
 {
     int         offset;
-    const char  __FAR * const __FAR *drctv;
+    const char  * const *drctv;
 
     drctv = CompDrctvs;
     offset = 0;

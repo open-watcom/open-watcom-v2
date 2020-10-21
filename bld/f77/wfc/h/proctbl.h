@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +33,7 @@
 // Note: If you wish to add a new statement processor, there are four files
 //       that need changing: PRDEFN.H, KWLIST.C, PROCTBL.C, CFTABLE.C
 
-extern  void    (* const __FAR ProcTable[])( void );
+extern  void    (* const ProcTable[])( void );
 
 extern  void            CpBadStmt( void );
 extern  void            CpBackSp( void );

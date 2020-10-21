@@ -55,7 +55,7 @@ extern  char            *LogTab[];
 #define LOG_OPS         11
 #define XLOG_OPS        11
 
-static  const OPR __FAR        LogOpr[] = { // must correspond to table in SCAN
+static  const OPR       LogOpr[] = { // must correspond to table in SCAN
         OPR_EQ,  OPR_NE,  OPR_LT,  OPR_GT,  OPR_LE,   OPR_GE,
         OPR_OR,  OPR_AND, OPR_NOT, OPR_EQV, OPR_NEQV, OPR_NEQV,
         OPR_PHI, OPR_PHI, OPR_PHI

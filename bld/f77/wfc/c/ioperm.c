@@ -54,7 +54,7 @@
 
 #define TABLE_ENTRY     9
 
-static  const byte __FAR        PermTable[] = {
+static  const byte          PermTable[] = {
 
 //     READ WRT  OPEN CLS  BKSP ENDF REWD INQ  extension
 

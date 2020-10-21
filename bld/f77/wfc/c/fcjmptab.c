@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,13 +39,13 @@
 #include "emitobj.h"
 #include "fcjmptab.h"
 
-void    (* __FAR FCJmpTab[])(void) = {
+void    (*FCJmpTab[])(void) = {
     #define pick(id,code_proc,data_proc) code_proc,
     #include "fcdefn.h"
     #undef pick
 };
 
-void    (* __FAR DataJmpTab[])(void) = {
+void    (*DataJmpTab[])(void) = {
     #define pick(id,code_proc,data_proc) data_proc,
     #include "fcdefn.h"
     #undef pick

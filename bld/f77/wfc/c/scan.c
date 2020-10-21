@@ -46,7 +46,7 @@
 
 #define COLUMNS 17
 
-static  const token_state __FAR StateTable[][COLUMNS] = {
+static  const token_state   StateTable[][COLUMNS] = {
 
 // AL  EX  SG  DP  DI  HL  AP  OP  SP  TC  BC  EL  CM  OL  HX  CS  DB
   SAN,SAN,SSG,SLL,SNM,SAN,SFQ,SOP,SSP,STC,SBC,SNR,SCM,SAN,SAN,SAN,SDB, // NS

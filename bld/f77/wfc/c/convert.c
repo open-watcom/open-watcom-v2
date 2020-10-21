@@ -392,7 +392,7 @@ static  void    NullRtn( itnode *dummy, uint dumy ) {
 // 9. Converting DCMPLX  to DOUBLE   <===> EXTENDED to DOUBLE
 // 10 Converting XCMPLX  to EXTENDED <===> EXTENDED to EXTENDED <===> NOP
 
-static  void    (* const __FAR CnvToTab[])( itnode *, uint ) = {                  //from/
+static  void    (* const CnvToTab[])( itnode *, uint ) = {                        //from/
                                                                                   //   /
 // int  int_2   int_1   real     double    extended  complex   dcomplex  xcomplex // / to
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -334,46 +334,46 @@ static  char    __RTIStrBlastNeS[] =  { "aux __RTIStrBlastNe            \
 #endif
 
 typedef struct inline_rtn {
-    char        __FAR *name;
-    char        __FAR *pragma;
+    char        *name;
+    char        *pragma;
     cg_type     typ;
     sym_id      sym_ptr;
     aux_info    *aux;
 } inline_rtn;
 
-static inline_rtn  __FAR NormalInlineTab[] = {
+static inline_rtn  NormalInlineTab[] = {
         "__RTIStrBlastEq", __RTIStrBlastEq, TY_INTEGER, NULL, NULL,
         "__RTIStrBlastNe", __RTIStrBlastNe, TY_INTEGER, NULL, NULL
 };
 
-static inline_rtn  __FAR OptSpaceInlineTab[] = {
+static inline_rtn  OptSpaceInlineTab[] = {
         "__RTIStrBlastEq", __RTIStrBlastEqOS, TY_INTEGER, NULL, NULL,
         "__RTIStrBlastNe", __RTIStrBlastNeOS, TY_INTEGER, NULL, NULL
 };
 
 #if _CPU == 8086
-static inline_rtn  __FAR WinNormalInlineTab[] = {
+static inline_rtn  WinNormalInlineTab[] = {
         "__RTIStrBlastEq", __RTIStrBlastEqWin, TY_INTEGER, NULL, NULL,
         "__RTIStrBlastNe", __RTIStrBlastNeWin, TY_INTEGER, NULL, NULL
 };
 
-static inline_rtn  __FAR WinOptSpaceInlineTab[] = {
+static inline_rtn  WinOptSpaceInlineTab[] = {
         "__RTIStrBlastEq", __RTIStrBlastEqWinOS, TY_INTEGER, NULL, NULL,
         "__RTIStrBlastNe", __RTIStrBlastNeWinOS, TY_INTEGER, NULL, NULL
 };
 
-static inline_rtn  __FAR SmallModelInlineTab[] = {
+static inline_rtn  SmallModelInlineTab[] = {
         "__RTIStrBlastEq", __RTIStrBlastEqS, TY_INTEGER, NULL, NULL,
         "__RTIStrBlastNe", __RTIStrBlastNeS, TY_INTEGER, NULL, NULL
 };
 
-static inline_rtn  __FAR OptSpaceSmallModelInlineTab[] = {
+static inline_rtn  OptSpaceSmallModelInlineTab[] = {
         "__RTIStrBlastEq", __RTIStrBlastEqSOS, TY_INTEGER, NULL, NULL,
         "__RTIStrBlastNe", __RTIStrBlastNeSOS, TY_INTEGER, NULL, NULL
 };
 #endif
 
-static inline_rtn  __FAR *InlineTab = NormalInlineTab;
+static inline_rtn  *InlineTab = NormalInlineTab;
 
 #define MAX_IN_INDEX    (sizeof( NormalInlineTab ) / sizeof( inline_rtn ))
 
@@ -429,7 +429,7 @@ call_handle     InitInlineCall( int rtn_id ) {
 
 #if _CPU == 386 || _CPU == 8086
     sym_id              sym;
-    inline_rtn __FAR    *in_entry;
+    inline_rtn          *in_entry;
     uint                name_len;
 
     if( !CreatedPragmas ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,13 +57,13 @@
 
 
 typedef struct rt_rtn {
-    char        __FAR *name;
+    char        *name;
     sym_id      sym_ptr;
     aux_info    *aux;
     byte        typ;
 } rt_rtn;
 
-static rt_rtn  __FAR RtnTab[] = {
+static rt_rtn   RtnTab[] = {
     #define pick(id,name,sym,aux,typ) {name,sym,aux,typ},
     #include "rtdefn.h"
     #undef pick
@@ -78,10 +78,10 @@ call_handle     InitCall( RTCODE rtn_id ) {
 // Initialize a call to a runtime routine.
 
     sym_id      sym;
-    rt_rtn      __FAR *rt_entry;
+    rt_rtn      *rt_entry;
     byte        typ;
     uint        name_len;
-    char        __FAR *ptr;
+    char        *ptr;
 
     rt_entry = &RtnTab[ rtn_id ];
     sym = rt_entry->sym_ptr;
@@ -155,7 +155,7 @@ aux_info    *RTAuxInfo( sym_id rtn ) {
 
 // Return aux information for run-time routine.
 
-    rt_rtn      __FAR *rt_entry;
+    rt_rtn      *rt_entry;
 
     rt_entry = RtnTab;
     while( rt_entry->sym_ptr != rtn ) {

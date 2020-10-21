@@ -65,8 +65,8 @@
 #include "proclist.h"
 
 
-extern  void            (* const __FAR GenOprTable[])(TYPE, TYPE, OPTR);
-extern  void            (* const __FAR ConstTable[])(TYPE, TYPE, OPTR);
+extern  void            (* const GenOprTable[])(TYPE, TYPE, OPTR);
+extern  void            (* const ConstTable[])(TYPE, TYPE, OPTR);
 
 /* Forward declarations */
 static  void    InlineCnvt( void );
@@ -78,7 +78,7 @@ static  void    LowColon( void );
 static  void    AddSS( int number );
 
 
-static const OPTR __FAR OprNum[] = {
+static const OPTR   OprNum[] = {
     #define pick(id,opr_index,proc_index) proc_index,
     #include "oprdefn.h"
     #undef pick
@@ -120,7 +120,7 @@ typedef enum {
     #undef pick
 } move;
 
-static  const move    __FAR OprSeqMat[] = {
+static  const move    OprSeqMat[] = {
 //                                                                       |o   /
 //                                                                       |p  /
 //                                                                       |r /
@@ -189,7 +189,7 @@ static  const move    __FAR OprSeqMat[] = {
 #define LEGALOPR_TAB_COLS       13
 #define LEGALOPR_TAB_SIZE       169
 
-static  const unsigned_16     __FAR LegalOprsB[] = { /*                                |
+static  const unsigned_16     LegalOprsB[] = { /*                                |
                                                                                        |
  opnd1  (binary)                                                                       | opnd2
                                                                                        |
@@ -212,7 +212,7 @@ NONE, NONE, NONE,  NONE,  NONE,  NONE,  NONE,  NONE,  NONE,  NONE,  NONE,  NONE,
 };
 
 
-static  const unsigned_16     __FAR LegalOprsU[] = { /*
+static  const unsigned_16     LegalOprsU[] = { /*
 
  opnd2 (unary)
 
@@ -223,7 +223,7 @@ NOT, NOT, IPLMIN,IPLMIN,IPLMIN, PLMIN, PLMIN, PLMIN, PLMIN, PLMIN, PLMIN,  NONE,
 };
 
 
-static const byte __FAR OprIndex[] = {
+static const byte   OprIndex[] = {
     #define pick(id,opr_index,proc_index) opr_index,
     #include "oprdefn.h"
     #undef pick
@@ -1298,7 +1298,7 @@ static  void    InlineCnvt( void ) {
 }
 
 
-static  void (* const __FAR RtnTable[])(void) = {
+static  void (* const RtnTable[])(void) = {
     #define pick(id,proc) proc,
     #include "rtntable.h"
     #undef pick

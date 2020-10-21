@@ -64,14 +64,14 @@ typedef struct iff_data {
 #define IF_GENERIC      0x20
 #define IF_NOT_GEN      0x00
 
-static const char __FAR *IFNames[] = {
+static const char   *IFNames[] = {
     #define pick(id,text,next,res,arg,flags) text,
     #include "ifdefn.h"
     #undef pick
     NULL
 };
 
-static iff_data __FAR IFFlags[] = {
+static iff_data     IFFlags[] = {
     #define pick( id, text, next, res, arg, flags) {next, res, arg, flags},
     #include "ifdefn.h"
     #undef pick

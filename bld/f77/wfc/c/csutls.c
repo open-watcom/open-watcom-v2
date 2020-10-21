@@ -48,7 +48,7 @@
 #include "kwlist.h"
 
 
-static  const STMT __FAR    CSWords[] = {
+static  const STMT  CSWords[] = {
         0,
         PR_IF,
         PR_ELSEIF,

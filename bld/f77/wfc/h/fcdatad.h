@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +49,7 @@ gbl_defn label_id               EpilogLabel;    // epilogue label
 gbl_defn sym_id                 CommonEntry;    // common entry point
 gbl_defn sym_id                 EPValue;        // entry point identifier
 gbl_defn sym_id                 ReturnValue;    // function return value
-gbl_defn void         (* __FAR *FCTablePtr)(void);  // pointer to F-Code jump table
+gbl_defn void            (**FCTablePtr)(void);  // pointer to F-Code jump table
 gbl_defn obj_ptr                DtConstList;    // DATA statement constants
 gbl_defn PTYPE                  DtConstType;    // type of DATA constant
 gbl_defn intstar4               DtRepCount;     // repitition count
