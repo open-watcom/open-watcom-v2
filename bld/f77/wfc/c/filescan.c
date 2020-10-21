@@ -77,8 +77,8 @@ char *SDSplitExtn( char *fn, char *default_extn )
     char        *src_extn;
     char        chr;
 
-    src_extn = NULL;
     fn = SDFName( fn );
+    src_extn = NULL;
     for(;;) {
         chr = *fn;
         if( chr == NULLCHAR )

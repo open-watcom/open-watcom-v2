@@ -138,8 +138,8 @@ static bool GetValue( opt_entry *optn, const char *ptr, const char **val )
 }
 
 
-static  void    BitOption( opt_entry *optn, bool negated )
-//========================================================
+static void   BitOption( opt_entry *optn, bool negated )
+//======================================================
 // Process an option that has a bit value.
 {
     ftnoption   opt_bit;

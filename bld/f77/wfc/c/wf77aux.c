@@ -665,7 +665,7 @@ aux_info *NewAuxEntry( const char *name, uint name_len )
 static bool CurrToken( const char *tok )
 //======================================
 {
-    const char    *ptr;
+    const char  *ptr;
 
     ptr = TokStart;
     for(;;) {

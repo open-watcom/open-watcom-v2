@@ -80,9 +80,7 @@ bool MainCmdLine( char **fn, char **rest, char **opts, char *ptr )
             *rest = ptr;
             break;
         }
-        for(;;) {
-            if( *ptr == NULLCHAR )
-                break;
+        for( ; *ptr != NULLCHAR; ptr++ ) {
             if( quoted ) {
                 if( *ptr == '\"' ) {
                     quoted = false;
@@ -93,7 +91,7 @@ bool MainCmdLine( char **fn, char **rest, char **opts, char *ptr )
             } else if( *ptr == '\"' ) {
                 quoted = true;
                 if( scanning_file_name ) {
-                    *fn = ptr+1;
+                    *fn = ptr + 1;
                 }
             } else if( ( *ptr == ' ' ) || ( *ptr == '\t' ) ) {
                 *ptr = NULLCHAR;
@@ -105,7 +103,6 @@ bool MainCmdLine( char **fn, char **rest, char **opts, char *ptr )
                     break;
                 }
             }
-            ++ptr;
         }
     }
     *opts = NULL;

@@ -66,33 +66,9 @@ static  macro_flags     MacroFlags;
 #define DEBUG_MACRO_LEN 9
 static  char            DebugMacro[] = { "__debug__" };
 
-/* Forward declarations */
-static  void    FreeMacros( bool free_perm );
-static  void    MacroCondition( bool cond );
-static  void    IFCondition( bool cond );
-
-
-void    InitMacroProcessor( void ) {
-//============================
-
-// Initialize macro processor in case macros defined on command line.
-
-    MacroFlags = MACFLAG_PERMANENT;
-}
-
-
-void    FiniMacroProcessor( void ) {
-//============================
-
-// Finalize macro processor.
-
-    FreeMacros( true );
-}
-
-
-void    InitPredefinedMacros( void ) {
-//==============================
-
+void    InitPredefinedMacros( void )
+//==================================
+{
 #if _CPU == 386
     MacroDEFINE( "__386__", 7 );
 #elif _CPU == 8086
@@ -119,34 +95,10 @@ void    InitPredefinedMacros( void ) {
 }
 
 
-void    InitMacros( void ) {
-//====================
-
-// Initialize macro processor for a compilation.
-
-    NestingLevel = 0;
-    NestingFlags = 0;
-    NestingStack = 0;
-}
-
-
-void    FiniMacros( void ) {
-//====================
-
-// Finalize macro processor for a compilation.
-
-    if( NestingLevel != 0 ) {
-        InfoError( CO_MACRO_STRUCTURE_MISMATCH );
-    }
-    FreeMacros( false );
-}
-
-
-static  void    FreeMacros( bool free_perm ) {
-//============================================
-
+static  void    FreeMacros( bool free_perm )
+//==========================================
 // Free macros.
-
+{
     macro_entry *link;
 
     while( MacroList != NULL ) {
@@ -176,11 +128,10 @@ static macro_entry *FindMacroEntry( const char *macro, size_t macro_len )
 }
 
 
-bool    CompileDebugStmts( void ) {
-//===========================
-
+bool    CompileDebugStmts( void )
+//===============================
 // Determine if debug statements should be compiled.
-
+{
     return( FindMacroEntry( DebugMacro, DEBUG_MACRO_LEN ) != NULL );
 }
 
@@ -223,11 +174,10 @@ void MacroUNDEFINE( const char *macro, size_t macro_len )
 }
 
 
-static  void    SetSkipStatus( void ) {
+static void SetSkipStatus( void )
 //===============================
-
 // Determine whether source is to be skipped.
-
+{
     int         i;
 
     for( i = 0; i <= NestingLevel; ++i ) {
@@ -237,6 +187,33 @@ static  void    SetSkipStatus( void ) {
         }
     }
     ProgSw &= ~PS_SKIP_SOURCE;
+}
+
+
+static  void    MacroCondition( bool cond )
+//=========================================
+// Process a macro condition.
+{
+    NestingStack |= 1 << NestingLevel;
+    if( cond ) {
+        NestingFlags &= ~( 1 << NestingLevel );
+    } else {
+        NestingFlags |= 1 << NestingLevel;
+    }
+    SetSkipStatus();
+}
+
+
+static  void    IFCondition( bool cond )
+//======================================
+// Process a IF condition.
+{
+    if( NestingLevel == MAX_NESTING ) {
+        InfoError( CO_MACRO_NESTING_EXCEEDED );
+    } else {
+        MacroCondition( cond );
+        ++NestingLevel;
+    }
 }
 
 
@@ -253,35 +230,6 @@ void MacroIFNDEF( const char *macro, size_t macro_len )
 // Process IFNDEF directive.
 {
     IFCondition( FindMacroEntry( macro, macro_len ) == NULL );
-}
-
-
-static  void    IFCondition( bool cond ) {
-//========================================
-
-// Process a IF condition.
-
-    if( NestingLevel == MAX_NESTING ) {
-        InfoError( CO_MACRO_NESTING_EXCEEDED );
-    } else {
-        MacroCondition( cond );
-        ++NestingLevel;
-    }
-}
-
-
-static  void    MacroCondition( bool cond ) {
-//===========================================
-
-// Process a macro condition.
-
-    NestingStack |= 1 << NestingLevel;
-    if( cond ) {
-        NestingFlags &= ~( 1 << NestingLevel );
-    } else {
-        NestingFlags |= 1 << NestingLevel;
-    }
-    SetSkipStatus();
 }
 
 
@@ -324,11 +272,10 @@ void MacroELIFNDEF( const char *macro, size_t macro_len )
 }
 
 
-void    MacroELSE( void ) {
-//===================
-
+void MacroELSE( void )
+//====================
 // Process ELSE directive.
-
+{
     --NestingLevel;
     if( (NestingStack & ( 1 << NestingLevel )) == 0 ) {
         InfoError( CO_MACRO_STRUCTURE_MISMATCH );
@@ -345,11 +292,10 @@ void    MacroELSE( void ) {
 }
 
 
-void    MacroENDIF( void ) {
-//====================
-
+void MacroENDIF( void )
+//=====================
 // Process ENDIF directive.
-
+{
     if( NestingLevel == 0 ) {
         InfoError( CO_MACRO_STRUCTURE_MISMATCH );
     } else {
@@ -357,4 +303,41 @@ void    MacroENDIF( void ) {
         NestingFlags &= ~( 1 << NestingLevel );
         SetSkipStatus();
     }
+}
+
+
+void    InitMacroProcessor( void )
+//================================
+// Initialize macro processor in case macros defined on command line.
+{
+    MacroFlags = MACFLAG_PERMANENT;
+}
+
+
+void    FiniMacroProcessor( void )
+//================================
+// Finalize macro processor.
+{
+    FreeMacros( true );
+}
+
+
+void    InitMacros( void )
+//========================
+// Initialize macro processor for a compilation.
+{
+    NestingLevel = 0;
+    NestingFlags = 0;
+    NestingStack = 0;
+}
+
+
+void    FiniMacros( void )
+//========================
+// Finalize macro processor for a compilation.
+{
+    if( NestingLevel != 0 ) {
+        InfoError( CO_MACRO_STRUCTURE_MISMATCH );
+    }
+    FreeMacros( false );
 }

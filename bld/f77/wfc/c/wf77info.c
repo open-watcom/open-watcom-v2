@@ -2051,8 +2051,7 @@ pointer FEAuxInfo( pointer req_handle, int request )
                 ptr += fn - ObjName;
             }
             fe = SDSplitExtn( fn, ObjExtn );
-            if(( *fn == NULLCHAR )
-              || (( *fn == '*' ) && ( fn[1] == NULLCHAR ))) {
+            if(( *fn == NULLCHAR ) || (( *fn == '*' ) && ( fn[1] == NULLCHAR ))) {
                 fn = SDFName( SrcName );
             }
             MakeName( fn, fe, ptr );
