@@ -159,8 +159,8 @@ static  void    FreeMacros( bool free_perm ) {
 }
 
 
-static macro_entry *FindMacroEntry( const char *macro, uint macro_len )
-//=====================================================================
+static macro_entry *FindMacroEntry( const char *macro, size_t macro_len )
+//=======================================================================
 // Find a macro.
 {
     macro_entry *me;
@@ -185,8 +185,8 @@ bool    CompileDebugStmts( void ) {
 }
 
 
-void MacroDEFINE( const char *macro, uint macro_len )
-//===================================================
+void MacroDEFINE( const char *macro, size_t macro_len )
+//=====================================================
 // Define a macro.
 {
     macro_entry         *me;
@@ -203,8 +203,8 @@ void MacroDEFINE( const char *macro, uint macro_len )
 }
 
 
-void MacroUNDEFINE( const char *macro, uint macro_len )
-//=====================================================
+void MacroUNDEFINE( const char *macro, size_t macro_len )
+//=======================================================
 // Define a macro.
 {
     macro_entry         **me;
@@ -240,16 +240,16 @@ static  void    SetSkipStatus( void ) {
 }
 
 
-void MacroIFDEF( const char *macro, uint macro_len )
-//==================================================
+void MacroIFDEF( const char *macro, size_t macro_len )
+//====================================================
 // Process IFDEF directive.
 {
     IFCondition( FindMacroEntry( macro, macro_len ) != NULL );
 }
 
 
-void MacroIFNDEF( const char *macro, uint macro_len )
-//===================================================
+void MacroIFNDEF( const char *macro, size_t macro_len )
+//=====================================================
 // Process IFNDEF directive.
 {
     IFCondition( FindMacroEntry( macro, macro_len ) == NULL );
@@ -285,8 +285,8 @@ static  void    MacroCondition( bool cond ) {
 }
 
 
-void MacroELIFDEF( const char *macro, uint macro_len )
-//====================================================
+void MacroELIFDEF( const char *macro, size_t macro_len )
+//======================================================
 // Process ELIFDEF directive.
 {
     --NestingLevel;
@@ -305,8 +305,8 @@ void MacroELIFDEF( const char *macro, uint macro_len )
 }
 
 
-void MacroELIFNDEF( const char *macro, uint macro_len )
-//=====================================================
+void MacroELIFNDEF( const char *macro, size_t macro_len )
+//=======================================================
 // Process ELIFNDEF directive.
 {
     --NestingLevel;
