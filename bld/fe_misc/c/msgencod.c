@@ -1516,15 +1516,15 @@ static void writeAttrH( void )
                 grp = m->grp;
             }
             while( grp_index < m->grpIndex ) {
-                fprintf( o_attrh, "MSGATTR_DEF( MSGATTR_NULL ) \\\n" );
                 grp_index++;
-            }
-            if( m->attr == NULL ) {
-                fprintf( o_attrh, "MSGATTR_DEF( MSGATTR_NULL ) \\\n" );
-            } else {
-                fprintf( o_attrh, "MSGATTR_DEF( %s ) \\\n", m->attr );
+                fprintf( o_attrh, "MSGATTR_DEF( MSGATTR_NULL ) /* %s%2.2d */ \\\n", grp->prefix, grp_index );
             }
             grp_index++;
+            if( m->attr == NULL ) {
+                fprintf( o_attrh, "MSGATTR_DEF( MSGATTR_NULL ) /* %s%2.2d */ \\\n", grp->prefix, grp_index );
+            } else {
+                fprintf( o_attrh, "MSGATTR_DEF( %s ) /* %s%2.2d */ \\\n", m->attr, grp->prefix, grp_index );
+            }
         }
         fputs( "\n\n", o_attrh );
     }
