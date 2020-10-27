@@ -855,6 +855,11 @@ static  int  ParseArgs( int argc, char **argv )
                 wcc_option = 0;
                 break;
             }
+            if( strncmp( "stack-size=", Word, 11) == 0 ) {
+                MemFree( StackSize );
+                StackSize = MemStrDup( Word + 11 );
+                wcc_option = 0;
+            }
             wcc_option = 0;     /* dont' pass on unknown options */
             break;
         case 'z':
