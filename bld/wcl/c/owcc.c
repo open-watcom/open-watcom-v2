@@ -685,11 +685,11 @@ static  int  ParseArgs( int argc, char **argv )
     while( (i = GetOpt( &argc, argv,
 #if 0
                         "b:Cc::D:Ef:g::"
-                        "HI:i::k:L:l:M::m:"
+                        "HI:i::L:l:M::m:"
                         "O::o:P::QSs::U:vW::wx:yz::",
 #else
                         "b:CcD:Ef:g::"
-                        "HI:i::k:L:l:M::m:"
+                        "HI:i::L:l:M::m:"
                         "O::o:P::QSs::U:vW::wx::yz::",
 #endif
                         EnglishHelp )) != -1 ) {
@@ -759,13 +759,6 @@ static  int  ParseArgs( int argc, char **argv )
                 break;
             }
             /* avoid passing on unknown options */
-            wcc_option = 0;
-            break;
-        case 'k':           /* stack size option */
-            if( Word[0] != '\0' ) {
-                MemFree( StackSize );
-                StackSize = MemStrDup( Word );
-            }
             wcc_option = 0;
             break;
 
