@@ -9,8 +9,11 @@ on:
     paths:
       - '.github/workflows/wikidocs.yml'
       - 'docs/**'
+      - 'bld/cc/gml/**'
       - 'bld/cg/doc/**'
       - 'bld/dwarf/dw/doc/**'
+      - 'bld/f77/wfc/gml/**'
+      - 'bld/plusplus/gml/**'
       - 'bld/wv/doc/**'
 jobs:
   info:
