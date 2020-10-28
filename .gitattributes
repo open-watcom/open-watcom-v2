@@ -62,13 +62,7 @@
 .gitattributes text
 .gitignore text
 binmake text
-configure text
-gnumake text
 makefile text
-makeinit text
-nmake text
-posmake text
-wmake text
 
 # Declare files that will always have LF line endings on checkout.
 
@@ -111,35 +105,29 @@ unicode*.* binary
 /docs/doc/fl/items.dat binary
 /bld/ctest/regress/positive/source/pp15.c binary
 /bld/plustest/regress/positive/source/pp15.c binary
+
+/bld/wmake/nmake text
+/bld/wmake/posmake text
+/bld/wmake/wmake text
 /bld/wmake/regress/errtest/error.bat binary
 /bld/wmake/regress/errtest/error.cmd binary
 
 # text files in exact encoding
 /bld/wipfc/helper/enti*.txt binary
 /bld/wipfc/helper/*.nls binary
+/bld/wipfc/configure text
 
-# ow nt executables
-ci/nt386/*.exe binary
-ci/nt386/*.dll binary
-ci/nt386/*.bat text
-ci/nt386/*.txt text
-ci/ntx64/*.exe binary
-ci/ntx64/*.dll binary
-ci/ntx64/*.bat text
-ci/ntx64/*.txt text
-ci/ow/binnt/*.exe binary
-ci/ow/binnt/*.dll binary
-ci/ow/binnt/*.lnk text
+/build/makeinit text
 
 # ow linux executables
-ci/ow/binl/wcc386 binary
-ci/ow/binl/wcl386 binary
-ci/ow/binl/wlib binary
-ci/ow/binl/wlink binary
-ci/ow/binl/wmake binary
-ci/ow/binl/wpp386 binary
-ci/ow/binl/wrc binary
-ci/ow/binl/*.lnk text
+/ci/ow/binl/wcc386 binary
+/ci/ow/binl/wcl386 binary
+/ci/ow/binl/wlib binary
+/ci/ow/binl/wlink binary
+/ci/ow/binl/wmake binary
+/ci/ow/binl/wpp386 binary
+/ci/ow/binl/wrc binary
 
-# ow nt + linux libraries
-ci/ow/lib386/**.lib binary
+/contrib/libzip/configure text
+
+/contrib/zlib/configure text
