@@ -52,6 +52,31 @@ void SysInit( int argc, char *argv[] )
     setenv( "BLD_HOST", "OS2", 1 );
 }
 
+int SysChdir( const char *dir )
+{
+    size_t      len;
+    int         drive;
+
+    if( dir[0] == '\0' )
+        return( 0 );
+    drive = ( dir[1] == ':' ) ? toupper( (unsigned char)dir[0] ) - 'A' + 1 : 0;
+    if( dir[1] != '\0' ) {
+        len = strlen( dir );
+        if( dir[len - 1] == '\\' || dir[len - 1] == '/' ) {
+            if( len > 3 || drive == 0 ) {
+                len--;
+                memcpy( tmp_buf, dir, len );
+                tmp_buf[len] = '\0';
+                dir = tmp_buf;
+            }
+        }
+    }
+    if( drive ) {
+        _chdrive( drive );
+    }
+    return( chdir( dir ) );
+}
+
 static int SysRunCommandPipe( const char *cmd, HFILE *readpipe )
 {
     HFILE       pipe_output;
@@ -86,31 +111,6 @@ static int SysRunCommandPipe( const char *cmd, HFILE *readpipe )
     return( rc );
 }
 
-int SysChdir( const char *dir )
-{
-    size_t      len;
-    int         drive;
-
-    if( dir[0] == '\0' )
-        return( 0 );
-    drive = ( dir[1] == ':' ) ? toupper( (unsigned char)dir[0] ) - 'A' + 1 : 0;
-    if( dir[1] != '\0' ) {
-        len = strlen( dir );
-        if( dir[len - 1] == '\\' || dir[len - 1] == '/' ) {
-            if( len > 3 || drive == 0 ) {
-                len--;
-                memcpy( tmp_buf, dir, len );
-                tmp_buf[len] = '\0';
-                dir = tmp_buf;
-            }
-        }
-    }
-    if( drive ) {
-        _chdrive( drive );
-    }
-    return( chdir( dir ) );
-}
-
 int SysRunCommand( const char *cmd )
 {
     int         my_std_output;
@@ -118,8 +118,7 @@ int SysRunCommand( const char *cmd )
     ULONG       bytes_read;
     int         rc;
     HFILE       readpipe;
-    char        buff[256 + 1];
-    APIRET      rc2;
+    char        buff[BUFSIZE + 1];
 
     readpipe = 0;
     my_std_output = dup( STDOUT_FILENO );
@@ -135,11 +134,11 @@ int SysRunCommand( const char *cmd )
         return( rc );
     }
     if( readpipe != 0 ) {
-        rc2 = DosRead( readpipe, buff, sizeof( buff ) - 1, &bytes_read );
-        while( rc2 == 0 && bytes_read != 0 ) {
+        for( ;; ) {
+            if( DosRead( readpipe, buff, sizeof( buff ) - 1, &bytes_read ) || bytes_read == 0 )
+                break;
             buff[bytes_read] = '\0';
             Log( Quiet, "%s", buff );
-            rc2 = DosRead( readpipe, buff, sizeof( buff ) - 1, &bytes_read );
         }
         DosClose( readpipe );
     }

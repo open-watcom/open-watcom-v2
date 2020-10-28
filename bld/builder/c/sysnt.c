@@ -44,6 +44,7 @@
 
 
 #define TITLESIZE 256
+#define BUFSIZE   256
 
 char    Title[TITLESIZE];
 
@@ -173,7 +174,7 @@ int SysRunCommand( const char *cmd )
 {
     DWORD               rc;
     DWORD               bytes_read;
-    char                buff[256 + 1];
+    char                buff[BUFSIZE + 1];
     HANDLE              pipe_input;
     PROCESS_INFORMATION pinfo;
 

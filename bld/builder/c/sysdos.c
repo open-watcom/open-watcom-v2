@@ -41,6 +41,8 @@
 #include "memutils.h"
 
 
+#define BUFSIZE 256
+
 void SysInit( int argc, char *argv[] )
 {
     argc = argc;
@@ -80,8 +82,8 @@ int SysRunCommand( const char *cmd )
     char        *cmdline;
     tiny_ret_t  tinyrc;
     int         ofh;
-    char        temp_name[256 + 1 + 13];
-    char        buff[256 + 1];
+    char        temp_name[BUFSIZE + 1 + 13];
+    char        buff[BUFSIZE + 1];
     unsigned    bytes_read;
     char        *p;
 
@@ -96,7 +98,7 @@ int SysRunCommand( const char *cmd )
         }
     }
     rc = -1;
-    getcwd( temp_name, 256 );
+    getcwd( temp_name, BUFSIZE );
     p = temp_name + strlen( temp_name );
     if( p[-1] != '\\' )
         *p++ = '\\';
@@ -118,12 +120,15 @@ int SysRunCommand( const char *cmd )
         tinyrc = TinyOpen( temp_name, TIO_READ );
         if( TINY_OK( tinyrc ) ) {
             ofh = TINY_INFO( tinyrc );
-            tinyrc = TinyRead( ofh, buff, 256 );
-            while( TINY_OK( tinyrc ) && (bytes_read = TINY_INFO( tinyrc )) != 0 ) {
+            for( ;; ) {
                 unsigned    i;
                 char        *dst;
 
+                tinyrc = TinyRead( ofh, buff, sizeof( buff ) - 1 );
+                if( TINY_ERROR( tinyrc ) || TINY_INFO( tinyrc ) == 0 )
+                    break;
                 dst = buff;
+                bytes_read = TINY_INFO( tinyrc );
                 for( i = 0; i < bytes_read; ++i ) {
                     if( buff[i] != '\r' ) {
                         *dst++ = buff[i];
@@ -131,7 +136,6 @@ int SysRunCommand( const char *cmd )
                 }
                 *dst = '\0';
                 Log( Quiet, "%s", buff );
-                tinyrc = TinyRead( ofh, buff, 256 );
             }
             TinyClose( ofh );
         }
