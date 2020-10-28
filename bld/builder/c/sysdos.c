@@ -73,6 +73,20 @@ int SysChdir( const char *dir )
     return( chdir( dir ) );
 }
 
+static void convert_buffer( char *src, size_t len )
+{
+    char    *dst;
+    char    c;
+
+    dst = src;
+    while( len-- > 0 ) {
+        if( (c = *src++) != '\r' ) {
+            *dst++ = c;
+        }
+    }
+    *dst = '\0';
+}
+
 int SysRunCommand( const char *cmd )
 {
     int         my_std_output;
@@ -84,7 +98,6 @@ int SysRunCommand( const char *cmd )
     int         ofh;
     char        temp_name[BUFSIZE + 1 + 13];
     char        buff[BUFSIZE + 1];
-    unsigned    bytes_read;
     char        *p;
 
     pgmname = MStrdup( cmd );
@@ -121,20 +134,10 @@ int SysRunCommand( const char *cmd )
         if( TINY_OK( tinyrc ) ) {
             ofh = TINY_INFO( tinyrc );
             for( ;; ) {
-                unsigned    i;
-                char        *dst;
-
                 tinyrc = TinyRead( ofh, buff, sizeof( buff ) - 1 );
                 if( TINY_ERROR( tinyrc ) || TINY_INFO( tinyrc ) == 0 )
                     break;
-                dst = buff;
-                bytes_read = TINY_INFO( tinyrc );
-                for( i = 0; i < bytes_read; ++i ) {
-                    if( buff[i] != '\r' ) {
-                        *dst++ = buff[i];
-                    }
-                }
-                *dst = '\0';
+                convert_buffer( buff, TINY_INFO( tinyrc ) );
                 Log( Quiet, "%s", buff );
             }
             TinyClose( ofh );

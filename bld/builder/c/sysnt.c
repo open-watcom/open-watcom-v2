@@ -170,6 +170,20 @@ int SysChdir( const char *dir )
     return( rc );
 }
 
+static void convert_buffer( char *src, size_t len )
+{
+    char    *dst;
+    char    c;
+
+    dst = src;
+    while( len-- > 0 ) {
+        if( (c = *src++) != '\r' ) {
+            *dst++ = c;
+        }
+    }
+    *dst = '\0';
+}
+
 int SysRunCommand( const char *cmd )
 {
     DWORD               rc;
@@ -189,19 +203,9 @@ int SysRunCommand( const char *cmd )
     }
     if( pipe_input != INVALID_HANDLE_VALUE ) {
         for( ;; ) {
-            char    *dst;
-            DWORD   i;
-
-            ReadFile( pipe_input, buff, sizeof( buff ) - 1, &bytes_read, NULL );
-            if( bytes_read == 0 )
+            if( ReadFile( pipe_input, buff, sizeof( buff ) - 1, &bytes_read, NULL ) == 0 || bytes_read == 0 )
                 break;
-            dst = buff;
-            for( i = 0; i < bytes_read; ++i ) {
-                if( buff[i] != '\r' ) {
-                    *dst++ = buff[i];
-                }
-            }
-            *dst = '\0';
+            convert_buffer( buff, bytes_read );
             Log( Quiet, "%s", buff );
         }
         CloseHandle( pipe_input );

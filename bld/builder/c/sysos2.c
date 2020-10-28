@@ -77,6 +77,20 @@ int SysChdir( const char *dir )
     return( chdir( dir ) );
 }
 
+static void convert_buffer( char *src, size_t len )
+{
+    char    *dst;
+    char    c;
+
+    dst = src;
+    while( len-- > 0 ) {
+        if( (c = *src++) != '\r' ) {
+            *dst++ = c;
+        }
+    }
+    *dst = '\0';
+}
+
 static int SysRunCommandPipe( const char *cmd, HFILE *readpipe )
 {
     HFILE       pipe_output;
@@ -137,7 +151,7 @@ int SysRunCommand( const char *cmd )
         for( ;; ) {
             if( DosRead( readpipe, buff, sizeof( buff ) - 1, &bytes_read ) || bytes_read == 0 )
                 break;
-            buff[bytes_read] = '\0';
+            convert_buffer( buff, bytes_read );
             Log( Quiet, "%s", buff );
         }
         DosClose( readpipe );
