@@ -39,6 +39,8 @@
 #include "watcom.h"
 #include "helpio.h"
 
+#include "clibext.h"
+
 
 static int seekTypeConvTable[] = { SEEK_SET, SEEK_CUR, SEEK_END };
 
