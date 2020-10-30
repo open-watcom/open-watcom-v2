@@ -103,5 +103,5 @@ $(docs_host_dir) : .SYMBOLIC
     $(noecho)cd $@
 
 $(docs_host_dir)/ide.h: $(docs_host_dir) .ALWAYS
-    $(noecho)wmake -h -f ../mif/onebook.mif hbook=ide header=1 dotarget=$(host_os)
+    $(nested_wmake) -h -f ../mif/onebook.mif hbook=ide header=1 dotarget=$(host_os)
     $(noecho)cd $(curr_dir)

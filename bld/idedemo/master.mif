@@ -15,10 +15,10 @@ $(src_objs) : .SYMBOLIC
     @SET WATCOM=
     $(ide2make) -l -r $(targ_file).tgt -i $(ide_cfg_dir_$(host_os))
     sed -f "../../convtool.sed" -f "../../conv$(host_os).sed" $(targ_file).mk1 >temp.mk1
-    wmake -i -h -f temp.mk1 $@
+    $(nested_wmake) -i -h -f temp.mk1 $@
 !else
 $(host_os)_3d.dll: $(host_os)_3d.mk1
-    wmake -i -h -f project.mk
+    $(nested_wmake) -i -h -f project.mk
 
 $(host_os)_3d.mk1: $(host_os)_3d.tgt
     @SET WATCOM=

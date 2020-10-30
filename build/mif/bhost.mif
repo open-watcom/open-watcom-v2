@@ -66,6 +66,7 @@ wsplice         = $(noecho)*wsplice
 wstrip          = $(noecho)bwstrip
 yacc            = $(noecho)yacc
 tr              = $(noecho)tr
+nested_wmake	= $(noecho)wmake
 
 echo_as : .PROCEDURE .EXPLICIT
 !ifeq verbose 0
