@@ -16,10 +16,11 @@ libtarg_name = $(proj_name)
 !endif
 $(libtarg_name).lib : $+$(libtarg_prebuild_objs) $(libtarg_objs) $(libtarg_libs)$- &
         $(__MAKEFILES__)
-    @%make echo_lib
 !ifndef __WATCOM_TOOLS__
+    @%make echo_lib
     $(blib) $(bld_libflags) $+$(libtarg_objs) $(libtarg_libs)$-
 !else if $(__WATCOM_TOOLS__) >= 1300
+    @%make echo_lib
     $(librarian) $(libflags) $+$(libtarg_opts) $(libtarg_objs) $(libtarg_libs)$-
 !else
     $(noecho)%create $(libtarg_name).lbc
