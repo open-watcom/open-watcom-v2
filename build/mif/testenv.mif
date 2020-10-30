@@ -79,6 +79,7 @@ buildtest = 1
 buildtest_prefix = b
 old_path=$+$(%PATH)$-
 !ifdef __OS2__
+old_os2_dll_path=$+$(%BEGLIBPATH)$-
 path_rtdll = $(src_dir)\clib\rtdll\os2.386\mf_r;$(src_dir)\clib\rtdll\os2.386\mf_s;&
 $(src_dir)\cpplib\rtdll\os2.386\mf_r;$(src_dir)\cpplib\rtdll\os2.386\mf_s;&
 $(src_dir)\mathlib\rtdll\os2.386\mf_r;$(src_dir)\mathlib\rtdll\os2.386\mf_s;&
@@ -88,6 +89,7 @@ path_wpp = $(src_dir)\plusplus\386\os2386.dll;$(src_dir)\plusplus\i86\os2386.dll
 #path_wfc = $(src_dir)\f77\wfc\386\os2386.dll;$(src_dir)\f77\wfc\i86\os2386.dll
 path_wlib = $(src_dir)\nwlib\os2386.dll
 path_wlink = $(src_dir)\wl\os2386.dll
+os2_dll_path=$(path_wcc);$(path_wpp);$(path_wlib);$(path_wlink);
 !else ifdef __NTAXP__
 path_rtdll = $(src_dir)\clib\rtdll\winnt.axp\mf_r;$(src_dir)\clib\rtdll\winnt.axp\mf_s;&
 $(src_dir)\cpplib\rtdll\winnt.axp\mf_r;$(src_dir)\cpplib\rtdll\winnt.axp\mf_s;&
@@ -1236,11 +1238,17 @@ set_path_wcc : .PROCEDURE .EXPLICIT
 #    @echo Set PATH for wcc DLL
     @set PATH=$(path_wcc);$(old_path)
 !endif
+!ifdef os2_dll_path
+    @set BEGLIBPATH=$(os2_dll_path)
+!endif
 
 set_path_wpp : .PROCEDURE .EXPLICIT
 !ifdef path_wpp
 #    @echo Set PATH for wpp DLL
     @set PATH=$(path_wpp);$(old_path)
+!endif
+!ifdef os2_dll_path
+    @set BEGLIBPATH=$(os2_dll_path)
 !endif
 
 set_path_wfc : .PROCEDURE .EXPLICIT
@@ -1248,11 +1256,17 @@ set_path_wfc : .PROCEDURE .EXPLICIT
 #    @echo Set PATH for wfc DLL
     @set PATH=$(path_wfc);$(old_path)
 !endif
+!ifdef os2_dll_path
+    @set BEGLIBPATH=$(os2_dll_path)
+!endif
 
 set_path_wlib : .PROCEDURE .EXPLICIT
 !ifdef path_wlib
 #    @echo Set PATH for wlib DLL
     @set PATH=$(path_wlib);$(old_path)
+!endif
+!ifdef os2_dll_path
+    @set BEGLIBPATH=$(os2_dll_path)
 !endif
 
 set_path_wlink : .PROCEDURE .EXPLICIT
@@ -1262,6 +1276,9 @@ set_path_wlink : .PROCEDURE .EXPLICIT
 !ifdef path_wlink
 #    @echo Set PATH for wlink DLL
     @set PATH=$(path_wlink);$(path_wlib);$(old_path)
+!endif
+!ifdef os2_dll_path
+    @set BEGLIBPATH=$(os2_dll_path)
 !endif
 
 set_path_rtdll : .PROCEDURE .EXPLICIT
@@ -1274,6 +1291,9 @@ set_old_path : .PROCEDURE .EXPLICIT
 !ifdef old_path
 #    @echo Restore old PATH
     @set PATH=$(old_path)
+!endif
+!ifdef old_os2_dll_path
+    @set BEGLIBPATH=$(old_os2_dll_path)
 !endif
 
 echo_as : .PROCEDURE .EXPLICIT
