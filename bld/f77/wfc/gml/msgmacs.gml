@@ -84,7 +84,7 @@
 :cmt. :MSGTXT. internal compiler error
 .dm msgtxt begin
 .if &$$msghide eq 0 and &$$grphide eq 0 .do begin
-.   .cw #
+.   .cw |
 .   .se *ttl="&'strip(&*)"
 .   .if !&*ttl.! ne !filler! .do begin
 .   .   .if &e'&dohelp eq 0 .do begin
