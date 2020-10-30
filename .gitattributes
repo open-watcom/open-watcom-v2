@@ -100,9 +100,13 @@ makefile text
 *.wbr binary
 *.wri binary
 *.zip binary
-unicode*.* binary
 
-/docs/doc/fl/items.dat binary
+unicode.437 binary
+unicode.850 binary
+unicode.852 binary
+unicode1.250 binary
+unicode1.252 binary
+
 /bld/ctest/regress/positive/source/pp15.c binary
 /bld/plustest/regress/positive/source/pp15.c binary
 
@@ -131,3 +135,5 @@ unicode*.* binary
 /contrib/libzip/configure text
 
 /contrib/zlib/configure text
+
+/docs/doc/fl/items.dat binary
