@@ -73,7 +73,7 @@ wmake_opts += release=$(release)
 !endif
 
 $(commands) : .symbolic $(__MAKEFILES__)
-    !$(nested_wmake) -h $(wmake_opts) -f $(posix_dir)/src/$@/makefile
+    $(noecho)!$(nested_wmake) -h $(wmake_opts) -f $(posix_dir)/src/$@/makefile
 
 curr_dir=$+$(%__CWD__)$-
 

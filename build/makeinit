@@ -133,6 +133,8 @@ bld_cpu = arm
 bld_os = osx
 !endif
 
+nested_wmake = wmake
+
 watcom_common_cflags   =-wce=310
 watcom_common_cxxflags =-wce=579
 
