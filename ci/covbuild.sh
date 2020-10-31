@@ -5,7 +5,7 @@
 #
 # Expects POSIX tools.
 
-mkdir $OWBINDIR
+mkdir $OWBINDIR/$OWOBJDIR
 
 mkdir $OWSRCDIR/wmake/$OWOBJDIR
 cd $OWSRCDIR/wmake/$OWOBJDIR
@@ -34,7 +34,7 @@ if [ $RC -ne 0 ]; then
 else
     mkdir $OWSRCDIR/builder/$OWOBJDIR
     cd $OWSRCDIR/builder/$OWOBJDIR
-    $OWBINDIR/wmake -f ../binmake bootstrap=1 builder.exe
+    $OWBINDIR/$OWOBJDIR/wmake -f ../binmake bootstrap=1 builder.exe
     cd $OWSRCDIR
     builder boot
     RC=$?

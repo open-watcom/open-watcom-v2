@@ -13,7 +13,7 @@ bootutil_proc()
     #
     # build new verison of wmake for host system
     #
-    mkdir $OWBINDIR
+    mkdir $OWBINDIR/$OWOBJDIR
     #
     RC=-1
     if [ "$OWTOOLS" = "WATCOM" ]; then
@@ -43,7 +43,7 @@ bootutil_proc()
         #
         mkdir $OWSRCDIR/builder/$OWOBJDIR
         cd $OWSRCDIR/builder/$OWOBJDIR
-        $OWBINDIR/wmake -f ../binmake bootstrap=1 builder.exe
+        $OWBINDIR/$OWOBJDIR/wmake -f ../binmake bootstrap=1 builder.exe
         RC=$?
     fi
 }

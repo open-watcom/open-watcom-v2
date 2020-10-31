@@ -38,7 +38,7 @@ SETLOCAL EnableDelayedExpansion
 set RC=0
 cd %OWSRCDIR%
 if "%OWBUILD_STAGE%" == "boot" (
-    mkdir %OWBINDIR%
+    mkdir %OWBINDIR%\%OWOBJDIR%
     mkdir %OWSRCDIR%\wmake\%OWOBJDIR%
     cd %OWSRCDIR%\wmake\%OWOBJDIR%
     if "%OWTOOLS%" == "WATCOM" (
@@ -50,7 +50,7 @@ if "%OWBUILD_STAGE%" == "boot" (
     if not %RC% == 1 (
     	mkdir %OWSRCDIR%\builder\%OWOBJDIR%
     	cd %OWSRCDIR%\builder\%OWOBJDIR%
-        %OWBINDIR%\wmake -f ..\binmake bootstrap=1 builder.exe
+        %OWBINDIR%\%OWOBJDIR%\wmake -f ..\binmake bootstrap=1 builder.exe
         set RC=!ERRORLEVEL!
         if not %RC% == 1 (
             cd %OWSRCDIR%

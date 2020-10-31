@@ -9,9 +9,9 @@ if [ -z "$OWROOT" ]; then
     . ./setvars.sh
 fi
 
-if [ ! -d $OWBINDIR ]; then mkdir $OWBINDIR; fi
+if [ ! -d $OWBINDIR/$OWOBJDIR ]; then mkdir $OWBINDIR/$OWOBJDIR; fi
 
-OWBUILDER_BOOTX_OUTPUT=$OWBINDIR/bootx.log
+OWBUILDER_BOOTX_OUTPUT=$OWBINDIR/$OWOBJDIR/bootx.log
 
 output_redirect()
 {
@@ -22,7 +22,7 @@ rm -f $OWBUILDER_BOOTX_OUTPUT
 cd $OWSRCDIR/wmake
 if [ ! -d $OWOBJDIR ]; then mkdir $OWOBJDIR; fi
 cd $OWOBJDIR
-rm -f $OWBINDIR/wmake
+rm -f $OWBINDIR/$OWOBJDIR/wmake
 if [ "$OWTOOLS" = "WATCOM" ]; then
     output_redirect wmake -f ../wmake clean
     output_redirect wmake -f ../wmake
@@ -54,9 +54,9 @@ else
     cd $OWSRCDIR/builder
     if [ ! -d $OWOBJDIR ]; then mkdir $OWOBJDIR; fi
     cd $OWOBJDIR
-    rm -f $OWBINDIR/builder
-    output_redirect $OWBINDIR/wmake -f ../binmake clean
-    output_redirect $OWBINDIR/wmake -f ../binmake bootstrap=1 builder.exe
+    rm -f $OWBINDIR/$OWOBJDIR/builder
+    output_redirect $OWBINDIR/$OWOBJDIR/wmake -f ../binmake clean
+    output_redirect $OWBINDIR/$OWOBJDIR/wmake -f ../binmake bootstrap=1 builder.exe
     if [ "$1" != "preboot" ]; then
         cd $OWSRCDIR
         builder boot

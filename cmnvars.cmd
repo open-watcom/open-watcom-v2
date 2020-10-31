@@ -22,7 +22,7 @@ REM Subdirectory to be used for building OW build tools
 if "%OWOBJDIR%" == "" set OWOBJDIR=binbuild
 
 REM Subdirectory to be used for build binaries
-set OWBINDIR=%OWROOT%\build\%OWOBJDIR%
+set OWBINDIR=%OWROOT%\build
 
 REM Subdirectory containing OW sources
 set OWSRCDIR=%OWROOT%\bld
@@ -34,7 +34,7 @@ REM Subdirectory containing distribution sources
 set OWDISTRDIR=%OWROOT%\distrib
 
 REM Set environment variables
-set PATH=%OWBINDIR%;%OWROOT%\build;%OWDEFPATH%;%OWGHOSTSCRIPTPATH%
+set PATH=%OWBINDIR%\%OWOBJDIR%;%OWBINDIR%;%OWDEFPATH%;%OWGHOSTSCRIPTPATH%
 set INCLUDE=%OWDEFINCLUDE%
 set WATCOM=%OWDEFWATCOM%
 set BEGINLIBPATH=%OWDEFBEGINLIBPATH%

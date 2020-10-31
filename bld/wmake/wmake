@@ -17,10 +17,10 @@ objs = &
 .c : ../c;$(builder_dir)/c;$(watcom_dir)/c
 
 !ifdef __UNIX__
-$(%OWBINDIR)/wmake : wmk.exe
+$(%OWBINDIR)/$(%OWOBJDIR)/wmake : wmk.exe
     cp wmk.exe $@
 !else
-$(%OWBINDIR)\wmake.exe : wmk.exe
+$(%OWBINDIR)\$(%OWOBJDIR)\wmake.exe : wmk.exe
     copy wmk.exe $@
 !endif
 

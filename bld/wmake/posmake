@@ -6,7 +6,7 @@ INCS = -I. -I../h -I../../watcom/h -I../../lib_misc/h $(DEFS)
 DEFS = $(TARGETDEF) -D__UNIX__ -DBOOTSTRAP -D_BLDVER=$(OWBLDVERTOOL) -D_CYEAR=$(OWCYEAR)
 CFLAGS = -g -O2 $(INCS)
 
-all: $(OWBINDIR)/wmake
+all: $(OWBINDIR)/$(OWOBJDIR)/wmake
 
 # Unfortunately there appears to be no portable way of specifying source
 # directories. So we use brute force - it's just this one makefile, once we
@@ -86,7 +86,7 @@ cretype.exe : ../c/cretype.c
 isarray.gh : cretype.exe
 	./cretype.exe $@
 
-$(OWBINDIR)/wmake: wmake.exe
+$(OWBINDIR)/$(OWOBJDIR)/wmake: wmake.exe
 	cp wmake.exe $@
 
 wmake.exe: usage.gh isarray.gh $(OBJS)

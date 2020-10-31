@@ -14,7 +14,7 @@ export OWBLDVERTOOL=1300
 if [ -z "$OWOBJDIR" ]; then export OWOBJDIR=binbuild; fi
 
 # Subdirectory to be used for build binaries
-export OWBINDIR=$OWROOT/build/$OWOBJDIR
+export OWBINDIR=$OWROOT/build
 
 # Subdirectory containing OW sources
 export OWSRCDIR=$OWROOT/bld
@@ -32,7 +32,7 @@ if [ -z "$OWDEFPATH" ]; then
     if [ -n "$INCLUDE" ]; then export OWDEFINCLUDE=$INCLUDE; fi
     if [ -n "$WATCOM" ]; then export OWDEFWATCOM=$WATCOM; fi
 fi
-export PATH="$OWBINDIR:$OWROOT/build:$OWDEFPATH"
+export PATH="$OWBINDIR/$OWOBJDIR:$OWBINDIR:$OWDEFPATH"
 if [ -n "$OWDEFINCLUDE" ]; then export INCLUDE=$OWDEFINCLUDE; fi
 if [ -n "$OWDEFWATCOM" ]; then export WATCOM=$OWDEFWATCOM; fi
 

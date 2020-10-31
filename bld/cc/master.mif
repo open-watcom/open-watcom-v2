@@ -207,7 +207,7 @@ optencod_targ_dbg   = dbg
 
 opt_targets = $(target_cpu) $(host_os) $(optencod_targ_dbg)
 
-usage.gh usage01.int $(exetarg_qnx_res): ../../gml/options.gml
+usage.gh usage01.int $(exetarg_$(host_os)_res): ../../gml/options.gml
 !ifeq verbose 0
     @echo optencod $@
 !endif

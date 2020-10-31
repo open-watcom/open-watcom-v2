@@ -1,7 +1,7 @@
 @echo off
 REM Script to build the Open Watcom tools
-if not exist %OWBINDIR%\%NUL% mkdir %OWBINDIR%
-set OWBUILDER_BOOTX_OUTPUT=%OWBINDIR%\bootx.log
+if not exist %OWBINDIR%\%OWOBJDIR%\%NUL% mkdir %OWBINDIR%\%OWOBJDIR%
+set OWBUILDER_BOOTX_OUTPUT=%OWBINDIR%\%OWOBJDIR%\bootx.log
 set NUL=NUL
 if not '%OS%' == 'Windows_NT' goto skip_errout
 set OWBUILDER_REDIR_ERROUT=2^>^&1
@@ -11,7 +11,7 @@ if exist %OWBUILDER_BOOTX_OUTPUT% del %OWBUILDER_BOOTX_OUTPUT%
 cd %OWSRCDIR%\wmake
 if not exist %OWOBJDIR%\%NUL% mkdir %OWOBJDIR%
 cd %OWOBJDIR%
-if exist %OWBINDIR%\wmake.exe del %OWBINDIR%\wmake.exe
+if exist %OWBINDIR%\%OWOBJDIR%\wmake.exe del %OWBINDIR%\%OWOBJDIR%\wmake.exe
 if '%OWTOOLS%' == 'VISUALC' goto visualc_tools
 if '%OWTOOLS%' == 'INTEL' goto intel_tools
 wmake -f ..\wmake clean >>%OWBUILDER_BOOTX_OUTPUT% %OWBUILDER_REDIR_ERROUT%
@@ -27,9 +27,9 @@ if errorlevel == 1 goto error_exit
 cd %OWSRCDIR%\builder
 if not exist %OWOBJDIR%\%NUL% mkdir %OWOBJDIR%
 cd %OWOBJDIR%
-if exist %OWBINDIR%\builder.exe del %OWBINDIR%\builder.exe
-%OWBINDIR%\wmake -f ..\binmake clean >>%OWBUILDER_BOOTX_OUTPUT% %OWBUILDER_REDIR_ERROUT%
-%OWBINDIR%\wmake -f ..\binmake bootstrap=1 builder.exe >>%OWBUILDER_BOOTX_OUTPUT% %OWBUILDER_REDIR_ERROUT%
+if exist %OWBINDIR%\%OWOBJDIR%\builder.exe del %OWBINDIR%\%OWOBJDIR%\builder.exe
+%OWBINDIR%\%OWOBJDIR%\wmake -f ..\binmake clean >>%OWBUILDER_BOOTX_OUTPUT% %OWBUILDER_REDIR_ERROUT%
+%OWBINDIR%\%OWOBJDIR%\wmake -f ..\binmake bootstrap=1 builder.exe >>%OWBUILDER_BOOTX_OUTPUT% %OWBUILDER_REDIR_ERROUT%
 if errorlevel == 1 goto error_exit
 if "%1" == "preboot" goto error_exit
 cd %OWSRCDIR%

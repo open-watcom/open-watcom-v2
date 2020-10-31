@@ -72,9 +72,9 @@ exetarg_name = builder
 !if "$(host_os)" == "$(bld_os)"     # Don't copy unless host_os=build_os
 !ifndef %LOGFNAME                   # Don't copy unless build outside builder
 !ifdef __UNIX__
-    cp   $^. $(%OWBINDIR)/$^&       # Remove .exe from working name
+    cp   $^. $(%OWBINDIR)/$(%OWOBJDIR)/$^&       # Remove .exe from working name
 !else
-    copy $^. $(%OWBINDIR) > nul     # MS-influenced command noisy
+    copy $^. $(%OWBINDIR)\$(%OWOBJDIR) > nul     # MS-influenced command noisy
 !endif
 !endif
 !endif

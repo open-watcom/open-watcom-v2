@@ -14,48 +14,48 @@ set PROJDIR=<CWD>
 [ BLOCK <BINTOOL> build ]
 #========================
     cdsay <PROJDIR>
-    <CPCMD> <OWOBJDIR>/cat.exe   <OWBINDIR>/cat<CMDEXT>
-    <CPCMD> <OWOBJDIR>/cp.exe    <OWBINDIR>/cp<CMDEXT>
-    <CPCMD> <OWOBJDIR>/egrep.exe <OWBINDIR>/egrep<CMDEXT>
-    <CPCMD> <OWOBJDIR>/head.exe  <OWBINDIR>/head<CMDEXT>
-    <CPCMD> <OWOBJDIR>/chmod.exe <OWBINDIR>/chmod<CMDEXT>
-    <CPCMD> <OWOBJDIR>/sed.exe   <OWBINDIR>/sed<CMDEXT>
-    <CPCMD> <OWOBJDIR>/sleep.exe <OWBINDIR>/sleep<CMDEXT>
-    <CPCMD> <OWOBJDIR>/sort.exe  <OWBINDIR>/sort<CMDEXT>
-    <CPCMD> <OWOBJDIR>/tee.exe   <OWBINDIR>/tee<CMDEXT>
-    <CPCMD> <OWOBJDIR>/tr.exe    <OWBINDIR>/tr<CMDEXT>
-    <CPCMD> <OWOBJDIR>/uniq.exe  <OWBINDIR>/uniq<CMDEXT>
-    <CPCMD> <OWOBJDIR>/wc.exe    <OWBINDIR>/wc<CMDEXT>
-    <CPCMD> <OWOBJDIR>/which.exe <OWBINDIR>/which<CMDEXT>
+    <CPCMD> <OWOBJDIR>/cat.exe   <OWBINDIR>/<OWOBJDIR>/cat<CMDEXT>
+    <CPCMD> <OWOBJDIR>/cp.exe    <OWBINDIR>/<OWOBJDIR>/cp<CMDEXT>
+    <CPCMD> <OWOBJDIR>/egrep.exe <OWBINDIR>/<OWOBJDIR>/egrep<CMDEXT>
+    <CPCMD> <OWOBJDIR>/head.exe  <OWBINDIR>/<OWOBJDIR>/head<CMDEXT>
+    <CPCMD> <OWOBJDIR>/chmod.exe <OWBINDIR>/<OWOBJDIR>/chmod<CMDEXT>
+    <CPCMD> <OWOBJDIR>/sed.exe   <OWBINDIR>/<OWOBJDIR>/sed<CMDEXT>
+    <CPCMD> <OWOBJDIR>/sleep.exe <OWBINDIR>/<OWOBJDIR>/sleep<CMDEXT>
+    <CPCMD> <OWOBJDIR>/sort.exe  <OWBINDIR>/<OWOBJDIR>/sort<CMDEXT>
+    <CPCMD> <OWOBJDIR>/tee.exe   <OWBINDIR>/<OWOBJDIR>/tee<CMDEXT>
+    <CPCMD> <OWOBJDIR>/tr.exe    <OWBINDIR>/<OWOBJDIR>/tr<CMDEXT>
+    <CPCMD> <OWOBJDIR>/uniq.exe  <OWBINDIR>/<OWOBJDIR>/uniq<CMDEXT>
+    <CPCMD> <OWOBJDIR>/wc.exe    <OWBINDIR>/<OWOBJDIR>/wc<CMDEXT>
+    <CPCMD> <OWOBJDIR>/which.exe <OWBINDIR>/<OWOBJDIR>/which<CMDEXT>
 
 [ BLOCK <BINTOOL> clean ]
 #========================
-    echo rm -f <OWBINDIR>/cat<CMDEXT>
-    rm -f <OWBINDIR>/cat<CMDEXT>
-    echo rm -f <OWBINDIR>/cp<CMDEXT>
-    rm -f <OWBINDIR>/cp<CMDEXT>
-    echo rm -f <OWBINDIR>/egrep<CMDEXT>
-    rm -f <OWBINDIR>/egrep<CMDEXT>
-    echo rm -f <OWBINDIR>/head<CMDEXT>
-    rm -f <OWBINDIR>/head<CMDEXT>
-    echo rm -f <OWBINDIR>/chmod<CMDEXT>
-    rm -f <OWBINDIR>/chmod<CMDEXT>
-    echo rm -f <OWBINDIR>/sed<CMDEXT>
-    rm -f <OWBINDIR>/sed<CMDEXT>
-    echo rm -f <OWBINDIR>/sleep<CMDEXT>
-    rm -f <OWBINDIR>/sleep<CMDEXT>
-    echo rm -f <OWBINDIR>/sort<CMDEXT>
-    rm -f <OWBINDIR>/sort<CMDEXT>
-    echo rm -f <OWBINDIR>/tee<CMDEXT>
-    rm -f <OWBINDIR>/tee<CMDEXT>
-    echo rm -f <OWBINDIR>/tr<CMDEXT>
-    rm -f <OWBINDIR>/tr<CMDEXT>
-    echo rm -f <OWBINDIR>/uniq<CMDEXT>
-    rm -f <OWBINDIR>/uniq<CMDEXT>
-    echo rm -f <OWBINDIR>/wc<CMDEXT>
-    rm -f <OWBINDIR>/wc<CMDEXT>
-    echo rm -f <OWBINDIR>/which<CMDEXT>
-    rm -f <OWBINDIR>/which<CMDEXT>
+    echo rm -f <OWBINDIR>/<OWOBJDIR>/cat<CMDEXT>
+    rm -f <OWBINDIR>/<OWOBJDIR>/cat<CMDEXT>
+    echo rm -f <OWBINDIR>/<OWOBJDIR>/cp<CMDEXT>
+    rm -f <OWBINDIR>/<OWOBJDIR>/cp<CMDEXT>
+    echo rm -f <OWBINDIR>/<OWOBJDIR>/egrep<CMDEXT>
+    rm -f <OWBINDIR>/<OWOBJDIR>/egrep<CMDEXT>
+    echo rm -f <OWBINDIR>/<OWOBJDIR>/head<CMDEXT>
+    rm -f <OWBINDIR>/<OWOBJDIR>/head<CMDEXT>
+    echo rm -f <OWBINDIR>/<OWOBJDIR>/chmod<CMDEXT>
+    rm -f <OWBINDIR>/<OWOBJDIR>/chmod<CMDEXT>
+    echo rm -f <OWBINDIR>/<OWOBJDIR>/sed<CMDEXT>
+    rm -f <OWBINDIR>/<OWOBJDIR>/sed<CMDEXT>
+    echo rm -f <OWBINDIR>/<OWOBJDIR>/sleep<CMDEXT>
+    rm -f <OWBINDIR>/<OWOBJDIR>/sleep<CMDEXT>
+    echo rm -f <OWBINDIR>/<OWOBJDIR>/sort<CMDEXT>
+    rm -f <OWBINDIR>/<OWOBJDIR>/sort<CMDEXT>
+    echo rm -f <OWBINDIR>/<OWOBJDIR>/tee<CMDEXT>
+    rm -f <OWBINDIR>/<OWOBJDIR>/tee<CMDEXT>
+    echo rm -f <OWBINDIR>/<OWOBJDIR>/tr<CMDEXT>
+    rm -f <OWBINDIR>/<OWOBJDIR>/tr<CMDEXT>
+    echo rm -f <OWBINDIR>/<OWOBJDIR>/uniq<CMDEXT>
+    rm -f <OWBINDIR>/<OWOBJDIR>/uniq<CMDEXT>
+    echo rm -f <OWBINDIR>/<OWOBJDIR>/wc<CMDEXT>
+    rm -f <OWBINDIR>/<OWOBJDIR>/wc<CMDEXT>
+    echo rm -f <OWBINDIR>/<OWOBJDIR>/which<CMDEXT>
+    rm -f <OWBINDIR>/<OWOBJDIR>/which<CMDEXT>
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================

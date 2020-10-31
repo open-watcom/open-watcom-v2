@@ -18,12 +18,12 @@ set PROJDIR=<CWD>
 [ BLOCK <BINTOOL> build ]
 #========================
     cdsay <PROJDIR>
-    <CPCMD> <OWOBJDIR>/dmpobj.exe <OWBINDIR>/bdmpobj<CMDEXT>
+    <CPCMD> <OWOBJDIR>/dmpobj.exe <OWBINDIR>/<OWOBJDIR>/bdmpobj<CMDEXT>
 
 [ BLOCK <BINTOOL> clean ]
 #========================
-    echo rm -f <OWBINDIR>/bdmpobj<CMDEXT>
-    rm -f <OWBINDIR>/bdmpobj<CMDEXT>
+    echo rm -f <OWBINDIR>/<OWOBJDIR>/bdmpobj<CMDEXT>
+    rm -f <OWBINDIR>/<OWOBJDIR>/bdmpobj<CMDEXT>
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================
