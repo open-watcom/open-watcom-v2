@@ -9,7 +9,7 @@ prefix_x = runx
 
 !ifeq processor axp
 objs_asm =
-!else
+!else ifeq processor 386
 objs_asm = fshand.obj
 !endif
 
@@ -23,17 +23,14 @@ dbg_objs_c = rtdbgst.obj rtdbgcom.obj
 
 !ifdef fs_registration
 require_registration = y
+!else ifdef pd_registration
 !else
-!   ifdef pd_registration
-!   else
+require_registration = y
 sysind_registration = y
-!   endif
 !endif
 
 !ifdef sysind_registration
-require_registration = y
-objs_reg = ljmpdtor.obj &
-           ljmpinit.obj
+objs_reg = ljmpdtor.obj ljmpinit.obj
 !else
 objs_reg =
 !endif
