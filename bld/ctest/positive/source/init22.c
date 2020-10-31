@@ -65,14 +65,15 @@ int fnp( void *a )
 
 int main( void )
 {
-    char    *b;
+    int i;
 
-    // note - ISO standard doesn't guarantee that sizeof( _Bool ) is 1
-    b = (char *)ab;
-    for( int i = 0; i < sizeof( ab ) / sizeof( ab[0] ); ++i ) {
-        if( b[i] != 1 ) fail( __LINE__ );
-    }
+    for (i = 0; i < sizeof(ab) / sizeof *ab; i++)
+        if (!ab[i]) _fail;
 
-    if( fni( 42 ) + fnd( 6.28 ) + fnp( &main ) != 3 ) fail( __LINE__ );
+    for (i = 0; i < sizeof(cd) / sizeof *cd; i++)
+        if (cd[i]) _fail;
+
+    if (fni( 42 ) + fnd( 6.28 ) + fnp( &main ) != 3)
+        _fail;
     _PASS;
 }
