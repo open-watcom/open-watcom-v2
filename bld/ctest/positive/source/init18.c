@@ -100,6 +100,11 @@ struct fred f2 [] = { { { "qbc" }, 1 } };
 struct fred f3 [] = { { { "abc" }, 1 }, [0] = { .s[0] = 'q' } };
 struct fred f4 [] = { { { "q" }, 0 } };
 
+union uu {
+	char c;
+	int i;
+} uux = { .i = 0xcaca, .c = 0xfe };
+
 int main() {
     if(memcmp(&s1, &s2, sizeof(s1))) fail(__LINE__);
     if(memcmp(&w1, &w2, sizeof(w1))) fail(__LINE__);
@@ -112,5 +117,6 @@ int main() {
     if(memcmp(&v1, &v2, sizeof(v1))) fail(__LINE__);
     if(memcmp(&f1, &f2, sizeof(f1))) fail(__LINE__);
     if(memcmp(&f3, &f4, sizeof(f3))) fail(__LINE__);
+    if (uux.i != 0xfe) _fail;
     _PASS;
 }
