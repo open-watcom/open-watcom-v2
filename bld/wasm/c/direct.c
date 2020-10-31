@@ -3315,7 +3315,10 @@ static bool proc_exam( dir_node *proc, token_idx i )
 
     minimum = TOK_PROC_FAR;
 //    finish = false;
-    proc->sym.langtype = ModuleInfo.langtype;
+    if( proc->sym.langtype == WASM_LANG_NONE ) {
+        proc->sym.langtype = ModuleInfo.langtype;
+        SetMangler( &proc->sym, NULL, WASM_LANG_NONE );
+    }
 
     // fixme ... we need error checking here --- for nested procs
 
@@ -3327,7 +3330,6 @@ static bool proc_exam( dir_node *proc, token_idx i )
     info->export = false;
     info->is_vararg = false;
     info->pe_type = ( ( Code->info.cpu & P_CPU_MASK ) == P_286 ) || ( ( Code->info.cpu & P_CPU_MASK ) == P_386 );
-    SetMangler( &proc->sym, NULL, WASM_LANG_NONE );
 
     /* Parse the definition line, except the parameters */
     for( i++; i < Token_Count && AsmBuffer[i].class != TC_COMMA; i++ ) {
