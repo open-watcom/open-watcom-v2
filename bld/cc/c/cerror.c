@@ -408,61 +408,7 @@ void CSuicide( void )
     MyExit(1);
 }
 
-
-#if 0
-//doesn't work in general as phases are used in both errror and warnings
-static void CMsgSetClass( cmsg_info *info, msg_codes msgnum )
-{
-    msg_type    kind;
-    cmsg_class  class;
-
-    kind = CGetMsgType( msgnum );
-    switch( kind ) {
-    case MSG_TYPE_ERROR:
-    case MSG_TYPE_ANSIERR:
-        class = CMSG_ERRO;
-        break;
-    case MSG_TYPE_WARNING:
-    case MSG_TYPE_ANSIWARN:
-        class = CMSG_WARN;
-        break;
-    case MSG_TYPE_INFO:
-    case MSG_TYPE_ANSI:
-    case MSG_TYPE_STYLE:
-        class = CMSG_INFO;
-        break;
-    }
-    info->class = class;
-}
-
-// fill info
-static void DoMsgInfo( msg_codes msgnum )
-{
-    cmsg_info   sinfo;
-    cmsg_info   *info;
-    char        pre[MAX_MSG_LEN]; //actual message text
-    unsigned    line;
-
-    info = &sinfo;
-    info->msgnum = msgnum;
-    CMsgSetClass( info, msgnum );
-    info->col = 0;
-    line = 0;
-    CGetMsg( info->msgtxt, msgnum );
-    info->line = line;
-    info->fname = NULL;
-    FmtCMsg( pre, info );
-    printf( "%s%s\n", pre,info->msgtxt );
-}
-
-void DumpAllMsg( void ) {
-#define MSG_DEF( name, group, kind, level, group_index ) DoMsgInfo( name );
-    MSG_DEFS
-#undef MSG_DEF
-}
-#endif
-
-/*
+/**
  * post-processing messages (informational notes)
  */
 
