@@ -14,14 +14,24 @@ typedef struct {
     A       a[];
 } B;
 
-static B b1 = { 1, { {2}, {3}, {4}, {5}, {6}, {7} } };
+static B b1 = { 6, { {0}, {1}, {2}, {3}, {4}, {5} } };
+static B b2 = { 2, { {0}, {1} } };
 
-static B b2 = { 1, { {2}, {3} } };
+int main(void) {
+    long i;
 
-int main( void ) {
-    if( sizeof( B ) != sizeof( long ) ) fail( __LINE__ );
-    if( sizeof( b1 ) != sizeof( long ) + 6 * sizeof( int ) ) fail( __LINE__ );
-    if( sizeof( b2 ) != sizeof( long ) + 2 * sizeof( int ) ) fail( __LINE__ );
-    if( offsetof( B, a ) != sizeof( long ) ) fail( __LINE__ );
+    if (sizeof(B) != sizeof(long))     _fail;
+    if (offsetof(B,a) != sizeof(long)) _fail;
+
+    for (i = 0; i < b1.l; i++) {
+        if (b1.a[i].i != i)
+            _fail;
+    }
+
+    for (i = 0; i < b2.l; i++) {
+        if (b2.a[i].i != i)
+            _fail;
+    }
+
     _PASS;
 }
