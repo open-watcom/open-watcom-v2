@@ -258,7 +258,7 @@ dos_redirect = $(dos_redirect_$(targ_env_$(arch)))
     $(noecho)$(linker) @test.lnk $(opt_link) $(opt_link_$^*) NAME $@ FILE {$<}
     @%append $(%ERROR_FILE) PASS compiling $^&
     @set ERROR_MSG=FAIL executing $^&
-    @%make set_path_rtdll
+    @%make set_run_path
 !ifdef dos_redirect
 ! ifdef ftest_name
     -$(run) $(exec_prefix)$@ $(extra_run_$^*) >$*.out
@@ -273,7 +273,7 @@ dos_redirect = $(dos_redirect_$(targ_env_$(arch)))
 ! endif
 !endif
     @if not errorlevel 1 @set ERROR_MSG=PASS executing $^&
-    @%make set_old_path
+    @%make set_old_run_path
     @%append $(%ERROR_FILE) $(%ERROR_MSG)
 !ifdef ftest_name
     @%make echo_diff

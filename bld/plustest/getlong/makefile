@@ -27,7 +27,7 @@ test : .symbolic start clean start_test ./opt.$(exe) common_set_result
     @%make echo_link
     $(noecho)$(linker) @$]@ NAME $@ file {$(objs)}
     @set ERROR_MSG=failure to run $^*
-    @%make set_path_rtdll
+    @%make set_run_path
     $(run) $@ >>$(%ERROR_FILE)
     $(run) $@ -h >>$(%ERROR_FILE)
     -$(run) $@ -hopeless >>$(%ERROR_FILE)
@@ -35,7 +35,7 @@ test : .symbolic start clean start_test ./opt.$(exe) common_set_result
     $(run) $@ -v >>$(%ERROR_FILE)
     -$(run) $@ -o >>$(%ERROR_FILE)
     -$(run) $@ -v=1 >>$(%ERROR_FILE)
-    @%make set_old_path
+    @%make set_old_run_path
 
 start_test : .symbolic
     @%make common_start_test

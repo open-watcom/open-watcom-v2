@@ -75,10 +75,10 @@ dmc.$(exe) : dmc.obj
     @%make set_old_path
     @%append $(%ERROR_FILE) --------$^*--------
     $(noecho)crlf -u dmc.cpp dmctest.out
-    @%make set_path_rtdll
+    @%make set_run_path
     $(run) $(exec_prefix)$@ c dmctest.out dmc.out >>$(%ERROR_FILE)
     $(run) $(exec_prefix)$@ d dmc.out cpp.out >>$(%ERROR_FILE)
-    @%make set_old_path
+    @%make set_old_run_path
     diff -b cpp.out dmctest.out >>$(%ERROR_FILE)
 
 clean : .procedure

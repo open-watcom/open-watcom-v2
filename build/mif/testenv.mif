@@ -1281,10 +1281,22 @@ set_path_wlink : .PROCEDURE .EXPLICIT
     @set BEGINLIBPATH=$(os2_dll_path)
 !endif
 
-set_path_rtdll : .PROCEDURE .EXPLICIT
+set_run_path : .PROCEDURE .EXPLICIT
 !ifdef path_rtdll
 #    @echo Set PATH for RTDLL
     @set PATH=$(path_rtdll);$(old_path)
+!ifdef __OS2__
+    @set BEGINLIBPATH=$(path_rtdll)
+!endif
+!endif
+
+set_old_run_path : .PROCEDURE .EXPLICIT
+!ifdef old_path
+#    @echo Restore old PATH
+    @set PATH=$(old_path)
+!endif
+!ifdef old_os2_dll_path
+    @set BEGINLIBPATH=$(old_os2_dll_path)
 !endif
 
 set_old_path : .PROCEDURE .EXPLICIT

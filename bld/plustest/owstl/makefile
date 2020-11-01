@@ -118,9 +118,9 @@ $(names) : test.lnk .symbolic
     @%make set_path_wlink
     @%make echo_link
     $(noecho)$(linker) @test.lnk NAME $^*.exe FILE $^*.obj
-    @%make set_path_rtdll
+    @%make set_run_path
     $(run) $(exec_prefix)$^*.exe
-    @%make set_old_path
+    @%make set_old_run_path
     @echo PASS
 
 !ifdef __OS2__
