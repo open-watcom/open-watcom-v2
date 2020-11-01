@@ -1236,76 +1236,76 @@ bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$@ $(bld_incl) -I"$(watcom_dir)/h"
 set_path_wcc : .PROCEDURE .EXPLICIT
 !ifdef path_wcc
 #    @echo Set PATH for wcc DLL
-    @set PATH=$(path_wcc);$(old_path)
+    $(noecho)set PATH=$(path_wcc);$(old_path)
 !endif
 !ifdef os2_dll_path
-    @set BEGINLIBPATH=$(os2_dll_path)
+    $(noecho)set BEGINLIBPATH=$(os2_dll_path)
 !endif
 
 set_path_wpp : .PROCEDURE .EXPLICIT
 !ifdef path_wpp
 #    @echo Set PATH for wpp DLL
-    @set PATH=$(path_wpp);$(old_path)
+    $(noecho)set PATH=$(path_wpp);$(old_path)
 !endif
 !ifdef os2_dll_path
-    @set BEGINLIBPATH=$(os2_dll_path)
+    $(noecho)set BEGINLIBPATH=$(os2_dll_path)
 !endif
 
 set_path_wfc : .PROCEDURE .EXPLICIT
 !ifdef path_wfc
 #    @echo Set PATH for wfc DLL
-    @set PATH=$(path_wfc);$(old_path)
+    $(noecho)set PATH=$(path_wfc);$(old_path)
 !endif
 !ifdef os2_dll_path
-    @set BEGINLIBPATH=$(os2_dll_path)
+    $(noecho)set BEGINLIBPATH=$(os2_dll_path)
 !endif
 
 set_path_wlib : .PROCEDURE .EXPLICIT
 !ifdef path_wlib
 #    @echo Set PATH for wlib DLL
-    @set PATH=$(path_wlib);$(old_path)
+    $(noecho)set PATH=$(path_wlib);$(old_path)
 !endif
 !ifdef os2_dll_path
-    @set BEGINLIBPATH=$(os2_dll_path)
+    $(noecho)set BEGINLIBPATH=$(os2_dll_path)
 !endif
 
 set_path_wlink : .PROCEDURE .EXPLICIT
 !ifdef buildtest
-    @set WLINK_LNK=bwlink.lnk
+    $(noecho)set WLINK_LNK=bwlink.lnk
 !endif
 !ifdef path_wlink
 #    @echo Set PATH for wlink DLL
-    @set PATH=$(path_wlink);$(path_wlib);$(old_path)
+    $(noecho)set PATH=$(path_wlink);$(path_wlib);$(old_path)
 !endif
 !ifdef os2_dll_path
-    @set BEGINLIBPATH=$(os2_dll_path)
+    $(noecho)set BEGINLIBPATH=$(os2_dll_path)
 !endif
 
 set_run_path : .PROCEDURE .EXPLICIT
 !ifdef path_rtdll
 #    @echo Set PATH for RTDLL
-    @set PATH=$(path_rtdll);$(old_path)
+    $(noecho)set PATH=$(path_rtdll);$(old_path)
 !ifdef __OS2__
-    @set BEGINLIBPATH=$(path_rtdll)
+    $(noecho)set BEGINLIBPATH=$(path_rtdll)
 !endif
 !endif
 
 set_old_run_path : .PROCEDURE .EXPLICIT
 !ifdef old_path
 #    @echo Restore old PATH
-    @set PATH=$(old_path)
+    $(noecho)set PATH=$(old_path)
 !endif
 !ifdef old_os2_dll_path
-    @set BEGINLIBPATH=$(old_os2_dll_path)
+    $(noecho)set BEGINLIBPATH=$(old_os2_dll_path)
 !endif
 
 set_old_path : .PROCEDURE .EXPLICIT
 !ifdef old_path
 #    @echo Restore old PATH
-    @set PATH=$(old_path)
+    $(noecho)set PATH=$(old_path)
 !endif
 !ifdef old_os2_dll_path
-    @set BEGINLIBPATH=$(old_os2_dll_path)
+    $(noecho)set BEGINLIBPATH=$(old_os2_dll_path)
 !endif
 
 echo_as : .PROCEDURE .EXPLICIT
