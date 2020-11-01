@@ -77,7 +77,8 @@
     extern char _WCFAR           *_wincmdptr;
     #define OS_GET_CMD_LINE()    _wincmdptr
 
-#elif defined(__OS2_286__)
+#elif defined(__OS2__)
+  #if defined( _M_I86 )
 
     #include <dos.h>
     static char _WCFAR *OS_GET_CMD_LINE( void )
@@ -104,7 +105,7 @@
         return( cmd );
     }
 
-#elif defined(__WARP__)
+  #else
 
     static char *OS_GET_CMD_LINE( void )
     {
@@ -121,6 +122,7 @@
         return( cmd );
     }
 
+  #endif
 #else
 
     #error *** This Module Does Not Support That Platform ***

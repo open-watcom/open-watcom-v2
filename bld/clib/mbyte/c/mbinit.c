@@ -169,20 +169,20 @@ int __mbinit( int codepage )
     /*** Initialize the __MBCSIsTable values ***/
     countryInfo.country = 0;                /* default country */
     countryInfo.codepage = codepage;        /* specified code page */
-  #if defined(__WARP__)
-    rc = DosQueryDBCSEnv( sizeof( leadBytes ), &countryInfo, (PCHAR)leadBytes );
-  #else
+  #if defined(_M_I86)
     rc = DosGetDBCSEv( sizeof( leadBytes ), &countryInfo, (PCHAR)leadBytes );
+  #else
+    rc = DosQueryDBCSEnv( sizeof( leadBytes ), &countryInfo, (PCHAR)leadBytes );
   #endif
     if( rc != 0 )
         return( 1 );
     set_dbcs_table( leadBytes );
     /*** Update __MBCodePage ***/
     if( codepage == 0 ) {
-  #if defined(__386__) || defined(__PPC__)
-        rc = DosQueryCp( sizeof( buf ), &buf, &bytes );
-  #else
+  #if defined(_M_I86)
         rc = DosGetCp( sizeof( buf ), &buf, &bytes );
+  #else
+        rc = DosQueryCp( sizeof( buf ), &buf, &bytes );
   #endif
         if( rc != 0 ) {
             __MBCodePage = 0;

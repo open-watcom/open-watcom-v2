@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,25 +36,18 @@
 #include <wos2.h>
 
 
-#if defined(__WARP__)
-
 _WCRTLINK pid_t getpid( void )              /* get process id */
 {
+#if defined( _M_I86 )
+    PIDINFO pinfo;
+
+    DosGetPID( &pinfo );
+    return( pinfo.pid );
+#else
     PTIB        ptib;
     PPIB        ppib;
 
     DosGetInfoBlocks( &ptib, &ppib );
     return( ppib->pib_ulpid );
-}
-
-#else
-
-_WCRTLINK pid_t getpid( void )              /* get process id */
-{
-    PIDINFO pinfo;
-
-    DosGetPID( &pinfo );
-    return( pinfo.pid );
-}
-
 #endif
+}

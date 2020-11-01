@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,6 +51,7 @@
 #include "seterrno.h"
 #include "_process.h"
 
+
 #define FS_SESSION      0
 #define PMC_SESSION     2
 #define PM_SESSION      3
@@ -84,6 +86,7 @@ static void makeqname( char *qname, ULONG pid, ULONG tid )
     }
     *px = 0;
 }
+
 int _dospawn( int mode, char *pgm, char *cmdline, char *envp, const char * const argv[] )
 {
     APIRET      rc;
@@ -105,93 +108,7 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, const char * const
     } else {
         exec_flag = EXEC_SYNC;
     }
-#if defined( __WARP__ )
-    {
-        ULONG           app_type;
-        TIB             *ptib;
-        PIB             *ppib;
-        ULONG           session;
-        PID             pid;
-        REQUESTDATA     request_data;
-        ULONG           data_len;
-
-        use_exec_pgm = 0;
-        rc = DosQueryAppType( pgm, &app_type );
-        if( rc != 0 ) {
-            return( __set_errno_dos( rc ) );
-        }
-        if( (app_type & FAPPTYP_EXETYPE) == FAPPTYP_NOTSPEC && (app_type & FAPPTYP_DOS) == 0 ) {
-            /* type of program not specified in executable file */
-            use_exec_pgm = 1;
-        } else {
-            rc = DosGetInfoBlocks( &ptib, &ppib );
-            if( rc != 0 ) {
-                return( __set_errno_dos( rc ) );
-            }
-            if( (app_type & FAPPTYP_DOS) == 0 ) {
-                app_type &= FAPPTYP_EXETYPE;
-                if( (ppib->pib_ultype == FS_SESSION)
-                 || (ppib->pib_ultype == DETACH_SESSION) ) {
-                    if( (app_type == FS_SESSION) || (app_type == PMC_SESSION) ){
-                        use_exec_pgm = 1;
-                    }
-                } else if( ppib->pib_ultype == app_type ) {
-                    use_exec_pgm = 1;
-                }
-            }
-        }
-        if( use_exec_pgm ) {
-            rc = DosExecPgm( NULL, 0, exec_flag,
-                             cmdline, envp, &returncodes, pgm );
-        } else {
-            termq = NULLHANDLE;
-            related = SSF_RELATED_INDEPENDENT;
-            makeqname( queuename, ppib->pib_ulpid, ptib->tib_ordinal );
-            if( mode == P_WAIT ) {
-                rc = DosCreateQueue( &termq, QUE_FIFO, queuename );
-                if( rc != 0 ) {
-                    return( __set_errno_dos( rc ) );
-                }
-                related = SSF_RELATED_CHILD;
-            }
-            sd.Length = 32;
-            sd.Related = related;
-            sd.FgBg = SSF_FGBG_FORE;
-            sd.TraceOpt = SSF_TRACEOPT_NONE;
-            sd.PgmTitle = NULL;
-            while( *cmdline != '\0' ) ++cmdline;    // don't need argv[0]
-            ++cmdline;
-            sd.PgmName = pgm;
-            sd.PgmInputs = (PBYTE)cmdline;
-            if( app_type & FAPPTYP_DOS ) {  // A DOS program
-                sd.SessionType = ( ppib->pib_ultype == FS_SESSION )
-                                 ? SSF_TYPE_VDM: SSF_TYPE_WINDOWEDVDM;
-                sd.Environment = NULL;
-            } else {
-                sd.SessionType = SSF_TYPE_DEFAULT;
-                sd.Environment = (PBYTE)envp;
-            }
-            sd.TermQ = (PBYTE)queuename;
-            sd.InheritOpt = SSF_INHERTOPT_PARENT;
-            sd.IconFile = NULL;
-            sd.PgmHandle = 0;
-            rc = DosStartSession( &sd, &session, &pid );
-            if( ( rc == 0 ) || ( rc == ERROR_SMG_START_IN_BACKGROUND ) ) {
-                rc = 0;
-                if( mode == P_WAIT ) {
-                    DosReadQueue( termq, &request_data, &data_len,
-                                  (PPVOID)&data_address, 0, DCWW_WAIT,
-                                  &element_priority, 0 );
-                    returncodes.codeResult = data_address[1];
-                    DosFreeMem( data_address );
-                    DosCloseQueue( termq );
-                } else {
-                    returncodes.codeTerminate = pid;
-                }
-            }
-        }
-    }
-#elif defined( _M_I86 )
+#if defined( _M_I86 )
     {
         USHORT          app_type;
         SEL             sglobal;
@@ -305,7 +222,91 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, const char * const
         }
     }
 #else
-    #error platform not supported
+    {
+        ULONG           app_type;
+        TIB             *ptib;
+        PIB             *ppib;
+        ULONG           session;
+        PID             pid;
+        REQUESTDATA     request_data;
+        ULONG           data_len;
+
+        use_exec_pgm = 0;
+        rc = DosQueryAppType( pgm, &app_type );
+        if( rc != 0 ) {
+            return( __set_errno_dos( rc ) );
+        }
+        if( (app_type & FAPPTYP_EXETYPE) == FAPPTYP_NOTSPEC && (app_type & FAPPTYP_DOS) == 0 ) {
+            /* type of program not specified in executable file */
+            use_exec_pgm = 1;
+        } else {
+            rc = DosGetInfoBlocks( &ptib, &ppib );
+            if( rc != 0 ) {
+                return( __set_errno_dos( rc ) );
+            }
+            if( (app_type & FAPPTYP_DOS) == 0 ) {
+                app_type &= FAPPTYP_EXETYPE;
+                if( (ppib->pib_ultype == FS_SESSION)
+                 || (ppib->pib_ultype == DETACH_SESSION) ) {
+                    if( (app_type == FS_SESSION) || (app_type == PMC_SESSION) ){
+                        use_exec_pgm = 1;
+                    }
+                } else if( ppib->pib_ultype == app_type ) {
+                    use_exec_pgm = 1;
+                }
+            }
+        }
+        if( use_exec_pgm ) {
+            rc = DosExecPgm( NULL, 0, exec_flag,
+                             cmdline, envp, &returncodes, pgm );
+        } else {
+            termq = NULLHANDLE;
+            related = SSF_RELATED_INDEPENDENT;
+            makeqname( queuename, ppib->pib_ulpid, ptib->tib_ordinal );
+            if( mode == P_WAIT ) {
+                rc = DosCreateQueue( &termq, QUE_FIFO, queuename );
+                if( rc != 0 ) {
+                    return( __set_errno_dos( rc ) );
+                }
+                related = SSF_RELATED_CHILD;
+            }
+            sd.Length = 32;
+            sd.Related = related;
+            sd.FgBg = SSF_FGBG_FORE;
+            sd.TraceOpt = SSF_TRACEOPT_NONE;
+            sd.PgmTitle = NULL;
+            while( *cmdline != '\0' ) ++cmdline;    // don't need argv[0]
+            ++cmdline;
+            sd.PgmName = pgm;
+            sd.PgmInputs = (PBYTE)cmdline;
+            if( app_type & FAPPTYP_DOS ) {  // A DOS program
+                sd.SessionType = ( ppib->pib_ultype == FS_SESSION )
+                                 ? SSF_TYPE_VDM: SSF_TYPE_WINDOWEDVDM;
+                sd.Environment = NULL;
+            } else {
+                sd.SessionType = SSF_TYPE_DEFAULT;
+                sd.Environment = (PBYTE)envp;
+            }
+            sd.TermQ = (PBYTE)queuename;
+            sd.InheritOpt = SSF_INHERTOPT_PARENT;
+            sd.IconFile = NULL;
+            sd.PgmHandle = 0;
+            rc = DosStartSession( &sd, &session, &pid );
+            if( ( rc == 0 ) || ( rc == ERROR_SMG_START_IN_BACKGROUND ) ) {
+                rc = 0;
+                if( mode == P_WAIT ) {
+                    DosReadQueue( termq, &request_data, &data_len,
+                                  (PPVOID)&data_address, 0, DCWW_WAIT,
+                                  &element_priority, 0 );
+                    returncodes.codeResult = data_address[1];
+                    DosFreeMem( data_address );
+                    DosCloseQueue( termq );
+                } else {
+                    returncodes.codeTerminate = pid;
+                }
+            }
+        }
+    }
 #endif
     if( rc != 0 ) {
         return( __set_errno_dos( rc ) );

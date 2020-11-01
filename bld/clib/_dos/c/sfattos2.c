@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +40,9 @@ _WCRTLINK unsigned _dos_setfileattr( const char *path, unsigned attribute )
 {
     APIRET  rc;
 
-#if defined(__WARP__)
+#if defined( _M_I86 )
+    rc = DosSetFileMode( (PSZ)path, attribute, 0ul );
+#else
     FILESTATUS3     fs;
 
     rc = DosQueryPathInfo( (PSZ)path, FIL_STANDARD, &fs, sizeof( fs ) );
@@ -47,8 +50,6 @@ _WCRTLINK unsigned _dos_setfileattr( const char *path, unsigned attribute )
         fs.attrFile = attribute;
         rc = DosSetPathInfo( (PSZ)path, FIL_STANDARD, &fs, sizeof( fs ), 0 );
     }
-#else
-    rc = DosSetFileMode( (PSZ)path, attribute, 0ul );
 #endif
     if( rc ) {
         return( __set_errno_dos_reterr( rc ) );

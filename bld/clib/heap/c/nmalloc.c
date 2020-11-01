@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +50,7 @@ heapblk_nptr    _WCNEAR __nheapbeg = NULL;
 heapblk_nptr    __MiniHeapRover = NULL;
 unsigned int    __LargestSizeB4MiniHeapRover = 0;
 
-#if defined(__WARP__)
+#if defined(__OS2__) && !defined(_M_I86)
 
 /* OS/2 high memory heap support
  * malloc allocates from current heap
@@ -105,7 +106,7 @@ _WCRTLINK void *_os2hmalloc( size_t amount )
     return( cstg );
 }
 
-#endif /* __WARP__ */
+#endif /* defined(__OS2__) && !defined(_M_I86) */
 
 #if defined(__SMALL_DATA__)
 
@@ -141,7 +142,7 @@ _WCRTLINK void_nptr _nmalloc( size_t amt )
     void_bptr       cstg;
     unsigned char   expanded;
     heapblk_nptr    heap;
-#if defined(__WARP__)
+#if defined(__OS2__) && !defined(_M_I86)
     unsigned char   use_obj_any;
 #endif
 
@@ -160,7 +161,7 @@ _WCRTLINK void_nptr _nmalloc( size_t amt )
     cstg = NULL;
     expanded = 0;
     for( ;; ) {
-#if defined(__WARP__)
+#if defined(__OS2__) && !defined(_M_I86)
         // Need to update each pass in case 1st DosAllocMem determines OBJ_ANY not supported
         use_obj_any = ( _os2_obj_any_supported && _os2_use_obj_any );
 #endif
@@ -179,7 +180,7 @@ _WCRTLINK void_nptr _nmalloc( size_t amt )
         for( ; heap != NULL; heap = heap->next.nptr ) {
             __MiniHeapRover = heap;
             largest = heap->largest_blk;
-#if defined(__WARP__)
+#if defined(__OS2__) && !defined(_M_I86)
             if( use_obj_any == ( heap->used_obj_any != 0 ) ) {
 #endif
                 if( largest >= amt ) {
@@ -192,7 +193,7 @@ _WCRTLINK void_nptr _nmalloc( size_t amt )
                         goto lbl_release_heap;
                     }
                 }
-#if defined(__WARP__)
+#if defined(__OS2__) && !defined(_M_I86)
             }
 #endif
             if( __LargestSizeB4MiniHeapRover < largest ) {

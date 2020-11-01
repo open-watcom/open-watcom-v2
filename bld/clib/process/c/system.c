@@ -87,10 +87,16 @@ _WCRTLINK int __F_NAME(system,_wsystem)( const CHAR_TYPE *cmd )
     }
   #if defined( __NT__ )
     use_cmd = 1;
-  #elif defined( __WARP__ )
-    use_cmd = 1;
-  #elif defined( __OS2_286__ )
+  #elif defined(__OS2__)
+    #if defined(_M_I86)
+
     use_cmd = _osmode_PROTMODE();
+
+    #else
+
+    use_cmd = 1;
+
+    #endif
   #else
     use_cmd = 0;
   #endif

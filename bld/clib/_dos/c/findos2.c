@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,14 +43,14 @@
 #include "seterrno.h"
 #include "_dtaxxx.h"
 
-#if defined(__WARP__)
-  #define FF_LEVEL      1
-  #define FF_BUFFER     FILEFINDBUF3
-#else
+
+#if defined( _M_I86 )
   #define FF_LEVEL      0
   #define FF_BUFFER     FILEFINDBUF
+#else
+  #define FF_LEVEL      1
+  #define FF_BUFFER     FILEFINDBUF3
 #endif
-
 
 /* we'll use this to copy from a FILEFINDBUF to a DIR in copydir() */
 struct name {
@@ -74,7 +74,7 @@ _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned attr,
                                   struct find_t *buf ) {
 /******************************************************/
 
-#if defined(__OS2_286__)
+#if defined( _M_I86 )
     if( _osmode_PROTMODE() ) {
 #endif
         APIRET      rc;
@@ -94,7 +94,7 @@ _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned attr,
         DTAXXX_HANDLE_OF( buf->reserved ) = handle;
         copydir( buf, &dir_buff );          /* copy in other fields */
 
-#if defined(__OS2_286__)
+#if defined( _M_I86 )
     } else {                                /* real mode */
         tiny_ret_t      rc;
         void __far *    old_dta;
@@ -114,7 +114,7 @@ _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned attr,
 _WCRTLINK unsigned _dos_findnext( struct find_t *buf ) {
 /*****************************************************/
 
-#if defined(__OS2_286__)
+#if defined( _M_I86 )
     if( _osmode_PROTMODE() ) {          /* protected mode */
 #endif
         APIRET  rc;
@@ -130,7 +130,7 @@ _WCRTLINK unsigned _dos_findnext( struct find_t *buf ) {
 
         copydir( buf, &dir_buff );
 
-#if defined(__OS2_286__)
+#if defined( _M_I86 )
     } else {            /* real mode */
         tiny_ret_t      rc;
         void __far *    old_dta;
@@ -152,7 +152,7 @@ _WCRTLINK unsigned _dos_findclose( struct find_t *buf ) {
 
     APIRET      rc;
 
-#if defined(__OS2_286__)
+#if defined( _M_I86 )
     if( _osmode_PROTMODE() ) {          /* protected mode */
 #endif
         if( DTAXXX_HANDLE_OF( buf->reserved ) != DTAXXX_INVALID_HANDLE ) {
@@ -162,7 +162,7 @@ _WCRTLINK unsigned _dos_findclose( struct find_t *buf ) {
                 return( __set_errno_dos_reterr( rc ) );
             }
         }
-#if defined(__OS2_286__)
+#if defined( _M_I86 )
     } else {
         buf = buf;
     }

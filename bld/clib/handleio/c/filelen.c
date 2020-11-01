@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +51,7 @@
 
 _WCRTLINK __int64 _filelengthi64( int handle )
 {
-#if defined(__NT__) || defined( __WARP__ ) || defined( __LINUX__ )
+#if defined(__NT__) || defined(__OS2__) && !defined(_M_I86) || defined( __LINUX__ )
     __int64         file_len;
     __int64         current_posn;
 

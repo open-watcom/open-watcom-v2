@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,12 +41,12 @@ _WCRTLINK void _dos_setdrive( unsigned drivenum, unsigned *drives )
     ULONG       logical_drives;
     unsigned    count;
 
-#if defined(__WARP__)
-    DosQueryCurrentDisk( &drive_number, &logical_drives );
-    DosSetDefaultDisk( drivenum );
-#else
+#if defined( _M_I86 )
     DosQCurDisk( &drive_number, &logical_drives );
     DosSelectDisk( drivenum );
+#else
+    DosQueryCurrentDisk( &drive_number, &logical_drives );
+    DosSetDefaultDisk( drivenum );
 #endif
     for( count = 0; logical_drives != 0; ) {
         if( logical_drives & 1 )

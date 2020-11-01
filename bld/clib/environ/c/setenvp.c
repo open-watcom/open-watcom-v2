@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -131,15 +131,21 @@ void __setenvp( void )
 
     /* if we are already initialized, then return */
     if( _RWD_environ != NULL ) return;           /* 10-jun-90 */
-  #if defined(__WARP__)
-    startp = _Envptr;
-  #elif defined(__OS2_286__)
+  #if defined(__OS2__)
+    #if defined(_M_I86)
+
     {
         unsigned short  seg;
 
         DosGetEnv( (PUSHORT)&seg, (PUSHORT)&count );
         startp = _MK_FP( seg, 0 );
     }
+
+    #else
+
+    startp = _Envptr;
+
+    #endif
   #elif defined(__WINDOWS__)
     {
         unsigned long tmp;

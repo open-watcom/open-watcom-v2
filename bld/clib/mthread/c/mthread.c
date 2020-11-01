@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -493,7 +493,11 @@ thread_data *__MultipleThread( void )
     }
     SetLastError( old );
     return( tdata );
-#elif defined( __WARP__ )
+#elif defined( __OS2__ )
+  #if defined( _M_I86 )
+    // 16 bit OS/2
+    return( __ThreadData[GetCurrentThreadId()] );
+  #else
     // 32 bit OS/2
     _TID        tid;
     thread_data *tdata = NULL;
@@ -508,9 +512,7 @@ thread_data *__MultipleThread( void )
         tdata = __ReallocThreadData();
     }
     return( tdata );
-#elif defined( __OS2_286__ )
-    // 16 bit OS/2
-    return( __ThreadData[GetCurrentThreadId()] );
+  #endif
 #elif defined( __QNX__ )
     void    *tdata;
 

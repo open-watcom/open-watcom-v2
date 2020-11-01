@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,12 +75,12 @@ _WCRTLINK int _nheapmin( void )
     return( _nheapshrink() );
 }
 
-#if defined(__WARP__) || defined(__WINDOWS__) || defined(__NT__) || \
+#if defined(__OS2__) && !defined(_M_I86) || defined(__WINDOWS__) || defined(__NT__) || \
     defined(__CALL21__) || defined(__RDOS__) || defined(__DOS_EXT__)
 
 static int __ReturnMemToSystem( heapblk_nptr heap )
 {
-  #if defined(__WARP__)
+  #if defined(__OS2__) && !defined(_M_I86)
     if( DosFreeMem( (PBYTE)heap ) )
         return( -1 );
   #elif defined(__NT__)
@@ -138,7 +139,7 @@ int __nheapshrink( void )
 _WCRTLINK int _nheapshrink( void )
 {
     int         rc;
-#if defined(__WARP__) || defined(__WINDOWS__) || defined(__NT__) || \
+#if defined(__OS2__) && !defined(_M_I86) || defined(__WINDOWS__) || defined(__NT__) || \
     defined(__CALL21__) || defined(__RDOS__)
 #else
     heapblk_nptr    heap;
@@ -150,7 +151,7 @@ _WCRTLINK int _nheapshrink( void )
     // Shrink by adjusting _curbrk
 
     _AccessNHeap();
-#if defined(__WARP__) || defined(__WINDOWS__) || defined(__NT__) || \
+#if defined(__OS2__) && !defined(_M_I86) || defined(__WINDOWS__) || defined(__NT__) || \
     defined(__CALL21__) || defined(__RDOS__)
     rc = __nheapshrink();
 #else

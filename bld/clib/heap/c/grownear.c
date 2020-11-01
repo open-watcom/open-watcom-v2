@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +57,7 @@
   #include "tinyio.h"
 #endif
 #include "rtdata.h"
-#if defined( __WARP__ )
+#if defined(__OS2__) && !defined(_M_I86)
   #include "rtinit.h"
 #endif
 #include "heapacc.h"
@@ -176,7 +177,7 @@ void_nptr __ReAllocDPMIBlock( freelist_nptr frl_old, unsigned req_size )
 }
 #endif
 
-#if !( defined( __WINDOWS__ ) || defined( __WARP__ ) || defined( __NT__ ) )
+#if !( defined( __WINDOWS__ ) || defined(__OS2__) && !defined(_M_I86) || defined( __NT__ ) )
 size_t __LastFree( void )    /* used by nheapgrow to know about adjustment */
 {
     freelist_nptr   frl_last;
@@ -248,7 +249,7 @@ static int __AdjustAmount( unsigned *amount )
 {
     unsigned old_amount;
     unsigned amt;
-#if !( defined( __WINDOWS__ ) || defined( __WARP__ ) || defined( __NT__ ) )
+#if !( defined( __WINDOWS__ ) || defined(__OS2__) && !defined(_M_I86) || defined( __NT__ ) )
     unsigned last_free_amt;
 #endif
 
@@ -257,7 +258,7 @@ static int __AdjustAmount( unsigned *amount )
     if( amt < old_amount ) {
         return( 0 );
     }
-#if !( defined( __WINDOWS__ ) || defined( __WARP__ ) || defined( __NT__ ) )
+#if !( defined( __WINDOWS__ ) || defined(__OS2__) && !defined(_M_I86) || defined( __NT__ ) )
   #if defined( __DOS_EXT__ )
     if( _IsRationalZeroBase() || _IsCodeBuilder() ) {
         // Allocating extra to identify the dpmi block
@@ -299,7 +300,7 @@ static int __AdjustAmount( unsigned *amount )
         */
         amt = __ROUND_DOWN_SIZE( _RWD_amblksiz, 2 );
     }
-#if defined( __WARP__ )
+#if defined(__OS2__) && !defined(_M_I86)
     /* make sure amount is a multiple of 64k */
     old_amount = amt;
     amt = __ROUND_UP_SIZE_64K( amt );
@@ -317,7 +318,7 @@ static int __AdjustAmount( unsigned *amount )
     return( amt != 0 );
 }
 
-#if defined( __WINDOWS__ ) || defined( __WARP__ ) || defined( __NT__ ) \
+#if defined( __WINDOWS__ ) || defined(__OS2__) && !defined(_M_I86) || defined( __NT__ ) \
   || defined( __CALL21__ ) || defined( __DOS_EXT__ ) || defined( __RDOS__ )
 
 static heapblk_nptr __GetMemFromSystem( unsigned *amount )
@@ -328,7 +329,7 @@ static heapblk_nptr __GetMemFromSystem( unsigned *amount )
     brk_value = (unsigned)LocalAlloc( LMEM_FIXED, *amount );
   #elif defined( __WINDOWS_386__ )
     brk_value = (unsigned)DPMIAlloc( *amount );
-  #elif defined( __WARP__ )
+  #elif defined(__OS2__) && !defined(_M_I86)
     {
         PBYTE           p;
         ULONG           os2_alloc_flags;
@@ -385,7 +386,7 @@ static int __CreateNewNHeap( unsigned amount )
     }
     /* we've got a new heap block */
     heap->len = amount - TAG_SIZE;
-  #if defined( __WARP__ )
+  #if defined(__OS2__) && !defined(_M_I86)
     // Remeber if block was allocated with OBJ_ANY - may be in high memory
     heap->used_obj_any = ( _os2_obj_any_supported && _os2_use_obj_any );
   #endif
@@ -402,7 +403,7 @@ static int __CreateNewNHeap( unsigned amount )
 
 int __ExpandDGROUP( unsigned amount )
 {
-#if defined( __WINDOWS__ ) || defined( __WARP__ ) || defined( __NT__ ) \
+#if defined( __WINDOWS__ ) || defined(__OS2__) && !defined(_M_I86) || defined( __NT__ ) \
   || defined( __CALL21__ ) || defined( __RDOS__ )
 #else
     heapblk_nptr    heap;
@@ -417,7 +418,7 @@ int __ExpandDGROUP( unsigned amount )
         return( 0 );
     if( __AdjustAmount( &amount ) == 0 )
         return( 0 );
-#if defined( __WINDOWS__ ) || defined( __WARP__ ) || defined( __NT__ ) \
+#if defined( __WINDOWS__ ) || defined(__OS2__) && !defined(_M_I86) || defined( __NT__ ) \
   || defined( __CALL21__ ) || defined( __RDOS__ )
     return( __CreateNewNHeap( amount ) );
 #else
@@ -487,7 +488,7 @@ int __ExpandDGROUP( unsigned amount )
 #endif
 }
 
-#if defined( __WARP__ )
+#if defined(__OS2__) && !defined(_M_I86)
 unsigned char _os2_obj_any_supported = FALSE;
 
 static void _check_os2_obj_any_support( void )

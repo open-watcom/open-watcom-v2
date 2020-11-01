@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,16 +53,9 @@ _WCRTLINK int lock( int handle, unsigned long offset, unsigned long nbytes )
 {
 #ifdef __OS2__
     APIRET          rc;
-  #if defined(__WARP__)
-    FILELOCK        lock_block;
+  #if defined(_M_I86)
+    #if defined( INCL_16 )
 
-    __handle_check( handle, -1 );
-    lock_block.lOffset = offset;
-    lock_block.lRange = nbytes;
-    /* last 2 arguments are not documented */
-    rc = DosSetFileLocks( handle, NULL, &lock_block, 0, 0 );
-  /* __OS2_286__ */
-  #elif defined( INCL_16 )
     /* The DDK prototype is different from the OS/2 1.x Toolkit! Argh! */
     FILELOCK        flock;
 
@@ -70,13 +63,25 @@ _WCRTLINK int lock( int handle, unsigned long offset, unsigned long nbytes )
     flock.lOffset = offset;
     flock.lRange  = nbytes;
     rc = DosFileLocks( handle, NULL, &flock );
-  #else
+
+    #else
+
     LONG lock_block[2];
 
     __handle_check( handle, -1 );
     lock_block[0] = offset;
     lock_block[1] = nbytes;
     rc = DosFileLocks( handle, NULL, &lock_block );
+
+    #endif
+  #else
+    FILELOCK        lock_block;
+
+    __handle_check( handle, -1 );
+    lock_block.lOffset = offset;
+    lock_block.lRange = nbytes;
+    /* last 2 arguments are not documented */
+    rc = DosSetFileLocks( handle, NULL, &lock_block, 0, 0 );
   #endif
     if( rc != 0 ) {
         return( __set_errno_dos( rc ) );

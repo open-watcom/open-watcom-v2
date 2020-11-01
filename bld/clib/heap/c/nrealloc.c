@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -130,7 +131,7 @@ _WCRTLINK void_nptr _nrealloc( void_nptr cstg_old, size_t req_size )
             }
         }
 #endif
-#if defined(__WARP__)
+#if defined(__OS2__) && !defined(_M_I86)
         // If block in upper memory (i.e. above 512MB), try to keep it there
         if( (unsigned int)cstg_old >= 0x20000000 ) {
             int prior;
@@ -143,7 +144,7 @@ _WCRTLINK void_nptr _nrealloc( void_nptr cstg_old, size_t req_size )
         } else {
             cstg_new = _nmalloc( req_size );    /* - allocate a new block */
         }
-#else // !__WARP__
+#else /* !(defined(__OS2__) && !defined(_M_I86)) */
         cstg_new = _nmalloc( req_size );        /* - allocate a new block */
 #endif
         if( cstg_new != NULL ) {                /* - if we got one */

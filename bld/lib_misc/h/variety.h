@@ -103,11 +103,9 @@
     #elif defined( _M_IX86 )
         #define __PROTECT_MODE__
         #define __OS2_386__
-        #define __WARP__
     #elif defined(__PPC__)
         #define __PROTECT_MODE__
         #define __OS2_PPC__
-        #define __WARP__
     #else
         #error unrecognized processor for OS2
     #endif
@@ -192,7 +190,7 @@
 #endif
 
 // handle building dll's with appropriate linkage
-#if !defined(__SW_BR) && (defined(__WARP__) || defined(__NT__))
+#if !defined(__SW_BR) && (defined(__OS2__) && !defined(_M_I86) || defined(__NT__))
     #if defined(__MAKE_DLL_WRTLIB)
         #define _RTDLL
         #undef _WCRTLINK
@@ -214,7 +212,7 @@
             #define _WPRTLINK  __declspec(dllexport) _WRTLFCONV
             #define _WPIRTLINK __declspec(dllexport) _WRTLFCONV
             #define _WPRTDATA  __declspec(dllexport) _WRTLDCONV
-        #elif defined(__WARP__)
+        #elif defined(__OS2__)
             #define _WCRTLINK  __declspec(dllexport) _WRTLFCONV
             #define _WCIRTLINK __declspec(dllexport) _WRTLFCONV
             #define _WCRTDATA  __declspec(dllexport) _WRTLDCONV
@@ -245,7 +243,7 @@
             #define _WPRTLINK  __declspec(dllimport) _WRTLFCONV
             #define _WPIRTLINK __declspec(dllimport) _WRTLFCONV
             #define _WPRTDATA  __declspec(dllimport) _WRTLDCONV
-        #elif defined(__WARP__)
+        #elif defined(__OS2__)
             #define _WCRTLINK  __declspec(dllexport) _WRTLFCONV
             #define _WCIRTLINK __declspec(dllexport) _WRTLFCONV
             #define _WCRTDATA  __declspec(dllexport) _WRTLDCONV
@@ -277,7 +275,7 @@
             #define _WPRTLINK  __declspec(dllimport) _WRTLFCONV
             #define _WPIRTLINK __declspec(dllimport) _WRTLFCONV
             #define _WPRTDATA  __declspec(dllimport) _WRTLDCONV
-        #elif defined(__WARP__)
+        #elif defined(__OS2__)
             #define _WCRTLINK  _WRTLFCONV
             #define _WCIRTLINK _WRTLFCONV
             #define _WCRTDATA  _WRTLDCONV
@@ -309,7 +307,7 @@
             #define _WPRTLINK  __declspec(dllexport) _WRTLFCONV
             #define _WPIRTLINK __declspec(dllexport) _WRTLFCONV
             #define _WPRTDATA  __declspec(dllexport) _WRTLDCONV
-        #elif defined(__WARP__)
+        #elif defined(__OS2__)
             #define _WCRTLINK  _WRTLFCONV
             #define _WCIRTLINK _WRTLFCONV
             #define _WCRTDATA  _WRTLDCONV

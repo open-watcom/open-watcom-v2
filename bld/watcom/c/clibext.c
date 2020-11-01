@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -785,7 +785,7 @@ char *_sys_fullpath( char *buff, const char *path, size_t size )
     }
 
     return( buff );
-#elif defined(__WARP__)
+#elif defined(__OS2__) && !defined(_M_I86)
     APIRET      rc;
     char        root[4];    /* SBCS: room for drive, ':', '\\', and null */
 
