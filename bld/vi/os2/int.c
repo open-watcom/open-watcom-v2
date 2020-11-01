@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +51,7 @@ static void BrkHandler( int sig_num )
 
 static volatile int     exitThread;
 
-#ifndef __OS2V2__
+#if defined(_M_I86)
 #define TSTACK_SIZE     2048
 static unsigned char    __far thread_stack[TSTACK_SIZE];
 #else
@@ -104,22 +105,22 @@ void SetInterrupts( void )
     signal( SIGINT, BrkHandler );
     signal( SIGBREAK, BrkHandler );
     exitThread = false;
-#ifdef __OS2V2__
-    DosCreateThread( &timerTID, (PFNTHREAD)TimerThread, 0, FALSE, TSTACK_SIZE );
-#else
+#if defined(_M_I86)
     DosCreateThread( TimerThread, &timerTID, &thread_stack[TSTACK_SIZE - 2] );
+#else
+    DosCreateThread( &timerTID, (PFNTHREAD)TimerThread, 0, FALSE, TSTACK_SIZE );
 #endif
 }
 
 void RestoreInterrupts( void )
 {
     exitThread = true;
-#ifdef __OS2V2__
-    DosWaitThread( &timerTID, DCWW_WAIT );
-#else
+#if defined(_M_I86)
     while( exitThread ) {
         DosSleep( 1 );
     }
+#else
+    DosWaitThread( &timerTID, DCWW_WAIT );
 #endif
 
     signal( SIGINT, SIG_DFL );

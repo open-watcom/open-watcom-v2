@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,7 +65,8 @@
         #undef          WANT_RUN_THREAD
         #define         WANT_RFX
     #endif
-#elif defined(__OS2__) && defined(_M_I86)
+#elif defined(__OS2__)
+  #if defined(_M_I86)
     #undef          WANT_FILE_INFO
     #undef          WANT_ENV
     #undef          WANT_ASYNC
@@ -73,7 +75,7 @@
     #define         WANT_THREAD
     #undef          WANT_RUN_THREAD
     #define         WANT_RFX
-#elif defined(__OS2V2__) || defined(__OS2__) && !defined(_M_I86)
+  #else
     #if defined(ELFCORE)
         #undef      WANT_FILE_INFO
         #undef      WANT_ENV
@@ -93,6 +95,7 @@
         #undef      WANT_RUN_THREAD
         #define     WANT_RFX
     #endif
+  #endif
 #elif defined(__NT__)
     #if defined(JVMXHELP) || defined(MSJXHELP)
         #undef  WANT_FILE_INFO

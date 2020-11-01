@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,10 +32,6 @@
 
 #ifndef __CONTROL_INCLUDED__
 #define __CONTROL_INCLUDED__
-
-#if defined( __OS2__ ) && defined( __386__ )
-  #define __OS2V2__
-#endif
 
 #if defined( _M_I86 )
     #define _FAR    __far
