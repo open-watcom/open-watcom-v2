@@ -773,12 +773,14 @@ typedef struct _QMSG {
     ULONG  reserved;
 } QMSG, *PQMSG;
 
+#pragma pack(1)
 typedef struct _COMMANDMSG {
     USHORT cmd;
     USHORT unused;
     USHORT source;
     USHORT fMouse;
 } CMDMSG, *PCMDMSG;
+#pragma pack()
 
 typedef struct _MQINFO {
     ULONG cb;
@@ -887,11 +889,13 @@ BOOL    APIENTRY WinSetMsgInterest(HWND,ULONG,LONG);
 #define AF_SYSCOMMAND 0x0100
 #define AF_HELP       0x0200
 
+#pragma pack(2)
 typedef struct _ACCELTABLE {
     USHORT cAccel;
     USHORT codepage;
     ACCEL  aaccel[1];
 } ACCELTABLE, *PACCELTABLE;
+#pragma pack()
 
 HACCEL APIENTRY WinLoadAccelTable(HAB,HMODULE,ULONG);
 HACCEL APIENTRY WinCreateAccelTable(HAB,PACCELTABLE);
@@ -978,6 +982,8 @@ MRESULT APIENTRY WinDdeRespond(HWND,HWND,PCSZ,PCSZ,PCONVCONTEXT);
 #if defined(INCL_WINDIALOGS) || !defined(INCL_NOCOMMON)
 
 #define MAX_MBDTEXT     70
+
+#pragma pack(4)
 typedef struct _MB2D {
     CHAR   achText[MAX_MBDTEXT + 1];
     CHAR   packbyte;
@@ -993,6 +999,7 @@ typedef struct _MB2INFO {
     HWND     hwndNotify;
     MB2D     mb2d[1];
 } MB2INFO, *PMB2INFO;
+#pragma pack()
 
 #define MB_OK               0x0000
 #define MB_OKCANCEL         0x0001
@@ -1647,6 +1654,7 @@ BOOL  APIENTRY WinSetVisibleRegionNotify(HWND,BOOL);
 #define CHARMSG(pmsg) ((PCHRMSG)((PBYTE)pmsg + sizeof(MPARAM)))
 #define MOUSEMSG(pmsg) ((PMSEMSG)((PBYTE)pmsg + sizeof(MPARAM)))
 
+#pragma pack(1)
 typedef struct _CHARMSG {
     USHORT fs;
     UCHAR  cRepeat;
@@ -1661,6 +1669,7 @@ typedef struct _MOUSEMSG {
     USHORT codeHitTest;
     USHORT fsInp;
 } MSEMSG, *PMSEMSG;
+#pragma pack()
 
 BOOL   APIENTRY WinCheckInput(HAB);
 BOOL   APIENTRY WinEnablePhysInput(HWND,BOOL);
