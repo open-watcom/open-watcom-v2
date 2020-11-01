@@ -1609,14 +1609,18 @@ AUX_INFO *GetTargetHandlerPragma    // GET PRAGMA FOR FS HANDLER
     AUX_INFO *prag;
 
     prag = NULL;
-    switch( TargetSystem ) {
-    case TS_NT:
-        prag = &CdeclInfo;
-        break;
-    case TS_OS2:
-        prag = &SyscallInfo;
-        break;
+#if _CPU == 386
+    if( CompFlags.fs_registration ) {
+        switch( TargetSystem ) {
+        case TS_NT:
+            prag = &CdeclInfo;
+            break;
+        case TS_OS2:
+            prag = &SyscallInfo;
+            break;
+        }
     }
+#endif
     return( prag );
 }
 
