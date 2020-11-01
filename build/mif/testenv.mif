@@ -79,7 +79,7 @@ buildtest = 1
 buildtest_prefix = b
 old_path=$+$(%PATH)$-
 !ifdef __OS2__
-old_os2_dll_path=$+$(%BEGLIBPATH)$-
+old_os2_dll_path=$+$(%BEGINLIBPATH)$-
 path_rtdll = $(src_dir)\clib\rtdll\os2.386\mf_r;$(src_dir)\clib\rtdll\os2.386\mf_s;&
 $(src_dir)\cpplib\rtdll\os2.386\mf_r;$(src_dir)\cpplib\rtdll\os2.386\mf_s;&
 $(src_dir)\mathlib\rtdll\os2.386\mf_r;$(src_dir)\mathlib\rtdll\os2.386\mf_s;&
@@ -1239,7 +1239,7 @@ set_path_wcc : .PROCEDURE .EXPLICIT
     @set PATH=$(path_wcc);$(old_path)
 !endif
 !ifdef os2_dll_path
-    @set BEGLIBPATH=$(os2_dll_path)
+    @set BEGINLIBPATH=$(os2_dll_path)
 !endif
 
 set_path_wpp : .PROCEDURE .EXPLICIT
@@ -1248,7 +1248,7 @@ set_path_wpp : .PROCEDURE .EXPLICIT
     @set PATH=$(path_wpp);$(old_path)
 !endif
 !ifdef os2_dll_path
-    @set BEGLIBPATH=$(os2_dll_path)
+    @set BEGINLIBPATH=$(os2_dll_path)
 !endif
 
 set_path_wfc : .PROCEDURE .EXPLICIT
@@ -1257,7 +1257,7 @@ set_path_wfc : .PROCEDURE .EXPLICIT
     @set PATH=$(path_wfc);$(old_path)
 !endif
 !ifdef os2_dll_path
-    @set BEGLIBPATH=$(os2_dll_path)
+    @set BEGINLIBPATH=$(os2_dll_path)
 !endif
 
 set_path_wlib : .PROCEDURE .EXPLICIT
@@ -1266,7 +1266,7 @@ set_path_wlib : .PROCEDURE .EXPLICIT
     @set PATH=$(path_wlib);$(old_path)
 !endif
 !ifdef os2_dll_path
-    @set BEGLIBPATH=$(os2_dll_path)
+    @set BEGINLIBPATH=$(os2_dll_path)
 !endif
 
 set_path_wlink : .PROCEDURE .EXPLICIT
@@ -1278,7 +1278,7 @@ set_path_wlink : .PROCEDURE .EXPLICIT
     @set PATH=$(path_wlink);$(path_wlib);$(old_path)
 !endif
 !ifdef os2_dll_path
-    @set BEGLIBPATH=$(os2_dll_path)
+    @set BEGINLIBPATH=$(os2_dll_path)
 !endif
 
 set_path_rtdll : .PROCEDURE .EXPLICIT
@@ -1293,7 +1293,7 @@ set_old_path : .PROCEDURE .EXPLICIT
     @set PATH=$(old_path)
 !endif
 !ifdef old_os2_dll_path
-    @set BEGLIBPATH=$(old_os2_dll_path)
+    @set BEGINLIBPATH=$(old_os2_dll_path)
 !endif
 
 echo_as : .PROCEDURE .EXPLICIT
