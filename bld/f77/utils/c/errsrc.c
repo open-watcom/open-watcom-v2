@@ -94,11 +94,7 @@ static  int             RecNum;
 //      1. language of the message
 //              english                         'e' or ' '
 //              japanese                        'j'
-//      2. message used by WATFOR-77            'w'
-//         message used by WFC                  'o'
-//         message used by WFL                  'l'
-//         message used by WFL, WFC             'c'
-//         message used by WATFOR-77, WFL, WFC  '.'
+//      2. message used by WFC                  'o'
 //         message used by WATFOR-77, WFC       ' '
 //      3. message is 80386-specific            '3'
 //         message is 8086-specific             'i'
@@ -268,28 +264,12 @@ static  char    UseMessage( char cmp, char target, char used_at ) {
 //=================================================================
 
     if( sw_compiler == 'o' ) {
-        if( (cmp != 'o') && (cmp != ' ') && (cmp != '.') && (cmp != 'c') ) {
-            return( 0 );
-        }
-    } else if( sw_compiler == 'w' ) {
-        if( (cmp != 'w') && (cmp != ' ') && (cmp != '.') ) {
-            return( 0 );
-        }
-    } else if( sw_compiler == 'l' ) {
-        if( (cmp != 'l') && (cmp != 'c') && (cmp != '.') ) {
+        if( (cmp != 'o') && (cmp != ' ') ) {
             return( 0 );
         }
     }
     if( IsTarget( target ) ) {
-        if( sw_compiler == 'w' ) {
-            if( sw_used_at == ' ' ) {
-                // load'n go compiler doesn't care whether message is
-                // used at compile-time or run-time
-                return( 1 );
-            } else if( (sw_used_at == used_at) || (used_at == ' ') ) {
-                return( 1 );
-            }
-        } else if( (sw_used_at == used_at) || (used_at == ' ') ) {
+        if( (sw_used_at == used_at) || (used_at == ' ') ) {
             return( 1 );
         }
     }
@@ -521,11 +501,7 @@ static  void    DumpMsg( void )
     char        delim;
     size_t      msg_len;
 
-    if( sw_compiler == 'w' ) {
-        fprintf( ErrCaret, "#if !defined( __RT__ )\n\n" );
-    }
-    if( (sw_compiler == 'w') ||
-        ( (sw_compiler == 'o') && (sw_used_at == 'c') ) ) {
+    if( (sw_compiler == 'o') && (sw_used_at == 'c') ) {
         fprintf( ErrCaret, "const caret_type __FAR CaretTable[] = {\n" );
     }
     msg = HeadMsg;
@@ -556,8 +532,7 @@ static  void    DumpMsg( void )
             }
             fputc( '\n', ErrFile );
             fprintf( ErrMsg, "%c", delim );
-            if( (sw_compiler == 'w') ||
-                ( (sw_compiler == 'o') && (sw_used_at == 'c') ) ) {
+            if( (sw_compiler == 'o') && (sw_used_at == 'c') ) {
                 fprintf( ErrCaret, "%d,\n", msg->caret );
             }
             fprintf( ErrMsg, "%d", word_index );
@@ -575,15 +550,10 @@ static  void    DumpMsg( void )
         fprintf( ErrMsg, "};\n" );
     }
     fprintf( ErrMsg, "\n\n" );
-    if( (sw_compiler == 'w') ||
-        ( (sw_compiler == 'o') && (sw_used_at == 'c') ) ) {
+    if( (sw_compiler == 'o') && (sw_used_at == 'c') ) {
         fprintf( ErrCaret, "};\n" );
     }
-    if( sw_compiler == 'w' ) {
-        fprintf( ErrCaret, "\n#endif\n" );
-    }
-    if( (sw_compiler == 'w') ||
-        ( (sw_compiler == 'o') && (sw_used_at == 'c') ) ) {
+    if( (sw_compiler == 'o') && (sw_used_at == 'c') ) {
         fprintf( ErrCaret, "\n" );
     }
 }

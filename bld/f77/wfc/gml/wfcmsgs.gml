@@ -3038,52 +3038,6 @@
  statement.
 :eMSGGRP. TY
 :cmt -------------------------------------------------------------------
-:MSGGRP. UV
-:MSGGRPSTR. UV-
-:MSGGRPTXT. Undefined Variables
-:cmt -------------------------------------------------------------------
-:MSGSYM. UV_CH_ASGN_UNDEFINED
-:MSGTXT. substring (%u1:%u2) of expression on right side of equal sign is undefined
-:MSGJTXT. =の右側の式の部分列(%u1:%u2)に値が入っていません。
-:MSGATTR. 0
- The substring (%d1:%d2) has been used on the right hand side of an
- expression and its value is undefined.
- A value must be assigned to the variable name or array element name
- before it can be used in an expression.
-:MSGSYM. UV_CH_FN_UNDEFINED
-:MSGTXT. substring (%u1:%u2) of return value of character function %s3 is undefined
-:MSGJTXT. 戻った結果の部分列(%u1:%u2)[文字関数%s3から]の中に値が入っていなければなりません。
-:MSGATTR. 0
- The character function %s3 has been referenced and the function name
- has not been assigned a value in the function.
- The substring (%d1:%d2) does not have a value.
-:MSGSYM. UV_CH_REL_UNDEFINED
-:MSGTXT. substring (%u1:%u2) of an operand in a relational expression is undefined
-:MSGJTXT. 関係式の部分列(%u1:%u2)に値が入っていません。
-:MSGATTR. 0
- The substring (%d1:%d2) has been used in a relational expression and
- has not previously been assigned a value.
-:MSGSYM. UV_IF_CHAR_ARG_UNDEFINED
-:MSGTXT. substring (%u1:%u2) of an argument to an intrinsic function is undefined
-:MSGJTXT. 組込み関数の引数である部分列(%u1:%u2)に値が入っていません。
-:MSGATTR. 0
- The substring (%d1:%d2), which is an actual argument to an intrinsic
- function, does not have a value assigned to it.
-:MSGSYM. UV_UNDEFD
-:MSGTXT. the value of %s1 is undefined
-:MSGJTXT. %s1に値が入っていません。
-:MSGATTR. 0
- The variable name %s1 has been used in a statement and a value has not
- yet been assigned to it.
- All variables must first be initialized through the use of statements
- or data initialization in specification statements.
-:MSGSYM. UV_ARG_UNDEFINED
-:MSGTXT. argument number %d1 passed to intrinsic function is undefined
-:MSGJTXT. 組込み関数の第%d1番目の引数に値が入っていません。
-:MSGATTR. 0
- The actual argument number %d1 does not have a value assigned to it.
-:eMSGGRP. UV
-:cmt -------------------------------------------------------------------
 :MSGGRP. VA
 :MSGGRPSTR. VA-
 :MSGGRPTXT. Variable Names

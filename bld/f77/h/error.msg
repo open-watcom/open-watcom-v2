@@ -9,56 +9,6 @@ AR_DUPLICATE_PARM [   c0] dummy argument %s1 appears more than once
 AR_DUPLICATE_PARM [j  c0] 同じ仮引数%s1が2度以上使われてはいけません。
  The same dummy argument %s1 is named more than once in the dummy
  argument list.
-AR_ARG_CHAR_MISMATCH [ w r0] argument number %d1 (%s2) in call to %s3 must be CHARACTER*%u4 or bigger but size passed was %d5
-AR_ARG_CHAR_MISMATCH [jw r0] %s3をCALLする%d1番目の引数(%s2)はCHARACTER*%u4かそれ以上必要です。しかし%d5となっています。
- Argument number %d1 in the call to subprogram %s3 was declared in the calling
- subprogram to be CHARACTER*%d4.
- In subprogram %s3, the argument was declared to be CHARACTER*%d3.
- The size of the argument, in the calling program, must be greater
- than or equal to the size in the subroutine/function.
-AR_COD_MISMATCH [ w r0] argument number %d1 (%s2) in call to %s3 - actual argument was %s4 but dummy argument was %s5
-AR_COD_MISMATCH [jw r0] %s3をCALLする%d1番目の引数(%s2)は実引数が%s4でした。しかし仮引数は%s5でした。
- Argument number %d1 in the call to subprogram %s3 was a %s4 in the calling
- subprogram but a %s5 in the called subprogram.
- This message is issued when, for example, an function name is passed to
- an array name.
-AR_CODI_MISMATCH [ w r0] argument number %d1 - %s2 was passed to an intrinsic function
-AR_CODI_MISMATCH [jw r0] %d1番目の引数 - %s2が組込み関数に渡されました。
- Argument number %d1 to an intrinsic function was declared as a %s2 and cannot
- be specified as an argument to an intrinsic function.
- For example, it is illegal to pass an array to the SIN intrinsic function.
- Constants, simple variables, array elements, and substrung array
- elements may be used as arguments.
-AR_FUN_EXPECT [ w r0] argument number %d1 (%s2) in call to %s3 - a subroutine was passed but a function was expected
-AR_FUN_EXPECT [jw r0] %s3へのCALLの%d1番目の引数(%s2) - ｻﾌﾞﾙｰﾁﾝが渡されましたが,関数でなければなりません。
- Argument number %d1 in the call to subprogram %s3 is a subroutine but
- was used as a function in subprogram %s3.
-AR_PARM_COUNT [ w r0] number of arguments expected in call to %s1 was %d2, but found %d3
-AR_PARM_COUNT [jw r0] %s1を呼び出す時の引数は%d2個でなければなりません。%d3個ありました。
- The number of arguments in the call to subprogram %s1 was %d3 and does not
- match the definition of subprogram %s1 which was defined with %d2 arguments.
-AR_SUB_EXPECT [ w r0] argument number %d1 (%s2) in call to %s3 - a function was passed but a subroutine was expected
-AR_SUB_EXPECT [jw r0] %s3をCALLする%d1番目の引数(%s2) - 関数が渡されましたが,ｻﾌﾞﾙｰﾁﾝでなければなりません。
- Argument number %d1 in the call to subprogram %s3 is a function but
- was used as a subroutine in subprogram %s3.
-AR_TYP_MISMATCH [ w r0] argument number %d1 (%s2) in call to %s3 - %s4 argument was passed but %s5 argument was expected
-AR_TYP_MISMATCH [jw r0] %3をCALLする%d1番目の引数(%s2) - %s4引数が渡されましたが,%s5引数でなければなりません。
- The type of argument number %d1 in the call to subprogram %s3 was %s4.
- The type of argument number %d1 was declared as %s5 in subprogram %s3.
- The number and types of actual and dummy arguments must match.
-AR_STRUCT_MISMATCH [ w r0] argument number %d1 (%s2) in call to %s3 - type of structure passed does not match type of structure expected
-AR_STRUCT_MISMATCH [jw r0] %s3をCALLする%d1番目の引数(%s2) - 渡された構造体の型は、期待される構造体の型と合っていません。
- The structure type of argument number %d1 in the call to subprogram
- %s3 does not match the expected structure type.
- Two structures are equivalent if the type of the corresponding field names
- are the same.
- Unions are considered equivalent if their sizes are the same.
- Field names, and the structure name itself, do not have to be the same.
-AR_PASS_BY_MISMATCH [ w r0] argument number %d1 (%s2) in call to %s3 - argument passed by value but expected by reference
-AR_PASS_BY_MISMATCH [jw r0] %s3をCALLする%d1番目の引数(%s2) - 値渡しの引数ですが,ｱﾄﾞﾚｽ渡しでなければなりません。
- Argument number %d1 in the call to subprogram %s3 was passed by value.
- The called subprogram expected the address of the argument instead of its
- value.
 AR_ENTRY_TOO_LATE [   c2] dummy argument %s1 must not appear before definition of ENTRY %s2
 AR_ENTRY_TOO_LATE [j  c2] 仮引数%s1は,ENTRY %s2の定義の前になければなりません。
  The dummy argument %s1 has appeared in an executable statement before
@@ -219,19 +169,6 @@ CO_MACRO_STRUCTURE_MISMATCH [j  c0] ｺﾝﾊﾟｲﾗｰ疑似命令が対応�
  no matching C$IFDEF or C$IFNDEF precedes it.
  Incorrect nesting of C$IFDEF, C$IFNDEF, C$ELSE and C$ENDIF directives will
  also cause this message to be issued.
-CO_DATA_IN_BAD_FILE [ w c0] DATA option not allowed
-CO_DATA_IN_BAD_FILE [jw c0] 読み込むﾌﾟﾛｸﾞﾗﾑの中にDATAｺﾝﾊﾟｲﾗｰｵﾌﾟｼｮﾝを含めてはいけません。
- A source file has been included into the current program through the
- use of the INCLUDE compiler option.
- This included source file cannot contain the DATA compiler option.
-CO_LIMIT_TOO_BIG [ w c0] maximum limit exceeded in the '%s1' option - option ignored
-CO_LIMIT_TOO_BIG [jw c0] '%s1'の最大限界値をｵｰﾊﾞ-しました。ｵﾌﾟｼｮﾝは無視されました。
- The user has specified a value on an option which exceeds the maximum allowed
- value.
-CO_DATA_WITH_OBJ [ w c0] DATA option not allowed with OBJECT option
-CO_DATA_WITH_OBJ [jw c0] DATAｵﾌﾟｼｮﾝとOBJECTｵﾌﾟｼｮﾝは同時に指定できません。
- The DATA compiler option can not appear a file that is compiled with the
- OBJECT option.
 CP Compiler Errors
 CP_TERMINATE [   r0] program abnormally terminated
 CP_TERMINATE [j  r0] ﾌﾟﾛｸﾞﾗﾑが異常終了しました。
@@ -325,11 +262,6 @@ CV_CHARSTAR_ILLEGAL [j  c0] 長さに(*)を指定した文字変数%s1は副ﾌ�
  used to declare dummy arguments in the subprogram.
  The length of a dummy argument assumes the length of the
  corresponding actual argument.
-CV_OVERLAPING_ASSGT [ w r0] left and right hand sides overlap in a character assignment statement
-CV_OVERLAPING_ASSGT [jw r0] 文字の代入文において左右の文字部分列が重なり合って、互いに内容をこわしてしまいます。
- The expression on the right hand side defines a substring of a
- character variable and tries to assign it to an overlapping part of
- the same character variable.
 DA Data Initialization
 DA_BAD_DO_VAR [   c2] implied DO variable %s1 must be an integer variable
 DA_BAD_DO_VAR [j  c2] DO形並びの変数%s1はINTEGER変数でなければなりません。
@@ -369,40 +301,20 @@ DA_NOT_ENOUGH [ o c0] not enough constants for list of variables
 DA_NOT_ENOUGH [jo c0] DATAの中の変数に対応する定数の数が足りません。
  There are not enough constants specified to initialize all of the
  names listed in the DATA statement.
-DA_NOT_ENOUGH [ w r0] not enough constants for list of variables
-DA_NOT_ENOUGH [jw r0] DATAの中の変数に対応する定数の数が足りません。
- There are not enough constants specified to initialize all of the
- names listed in the DATA statement.
 DA_TOO_MUCH [ o c0] too many constants for list of variables
 DA_TOO_MUCH [jo c0] 変数に対して定数の数が多過ぎます。
- There are too many constants specified to initialize the names listed
- in the DATA statement.
-DA_TOO_MUCH [ w r0] too many constants for list of variables
-DA_TOO_MUCH [jw r0] 変数に対して定数の数が多過ぎます。
  There are too many constants specified to initialize the names listed
  in the DATA statement.
 DA_TYPE_MISMATCH [ o c0] cannot initialize %s1 variable %s2 with %s3 constant
 DA_TYPE_MISMATCH [jo c0] %s1変数に%s2定数を初期値として入れられません。
  The constant of type %s3 cannot be used to initialize the variable %s2 of
  type %s1.
-DA_TYPE_MISMATCH [ w r0] cannot initialize %s1 variable with %s2 constant
-DA_TYPE_MISMATCH [jw r0] %s1変数に%s2定数を初期値として入れられません。
- The constant of type %s2 cannot be used to initialize a variable of
- type %s1.
-DA_DATA_TWICE [ w r0] entity can only be initialized once during data initialization
-DA_DATA_TWICE [jw r0] DATAの中で1個の変数に1度以上、初期値を与えてはいけません。
- An attempt has been made to initialize an entity more than once in
- DATA statements.
 DM Dimensioned Variables
 DM_SYM_PARM [   c2] using %s1 incorrectly in dimension expression
 DM_SYM_PARM [j  c2] 次元の定義式には%s1型は使えません。整数式のみです。
  The name used as a dimension declarator has been previously declared
  as type %s1 and cannot be used as a dimension declarator. A dimension
  declarator must be an integer expression.
-DM_RANGE_ERR_ON_DIMN [ w r0] array or array element (possibly substrung) associated with %s1 too small
-DM_RANGE_ERR_ON_DIMN [jw r0] 配列または配列要素(文字列の一部など)と思われる%s1のｻｲｽﾞが小さすぎます。
- The dummy argument, array %s1, is defined to be larger than the size
- of the actual argument.
 DO DO-loops
 DO_BACKWARDS_DO [   c2] statement number %i1 already defined in line %d2 - DO loop is backwards
 DO_BACKWARDS_DO [j  c2] DOの終りを示す文番号%i1は既に%d2行目で定義されています。終わり文番号は、DO文より後ろです。
@@ -453,12 +365,6 @@ DO_PARM_REDEFINED [   c2] DO variable cannot be redefined while DO loop is activ
 DO_PARM_REDEFINED [j  c2] DOﾙｰﾌﾟの中でDO変数の値を実行中に変えてはいけません。
  The DO variable named in the DO statement cannot have its value
  altered by a statement in the DO loop structure.
-DO_0INC [ w r0] incrementation parameter for DO-loop cannot be zero
-DO_0INC [jw r0] DOﾙｰﾌﾟの増分にｾﾞﾛを指定してはいけません。
- The third expression in the DO statement cannot be zero.
- This expression indicates the increment to the DO variable each
- iteration of the DO loop.
- If the increment expression is not specified a value of 1 is assumed.
 EC Equivalence and/or Common
 EC_PAST_BEG [   c0] equivalencing %s1 has caused extension of COMMON block %s2 to the left
 EC_PAST_BEG [j  c0] EQUIVALENCEされた%s1はCOMMONﾌﾞﾛｯｸ%s2を左側へ拡張しました。FORTRAN 77標準では、禁止されている方法です。
@@ -1069,24 +975,6 @@ KO_IOVERFLOW [    1] integer overflow
 KO_IOVERFLOW [j   1] 整数が桁あふれしました。
  The integer expression result has exceeded the maximum integer
  number.
-KO_PAGES_OUT [ w r0] maximum pages of output exceeded
-KO_PAGES_OUT [jw r0] 印刷ﾍﾟｰｼﾞ数がｺﾝﾊﾟｲﾗ･ｵﾌﾟｼｮﾝPAGESで指定した最高値をこえました。
- The specified maximum number of output pages has been exceeded.
- The maximum number of output pages can be increased
- by using the "pages=n" option in the command line
- or specifying C$PAGES=n in the source file.
-KO_STMT_CNT [ w r0] statement count has been exceeded
-KO_STMT_CNT [jw r0] ﾌﾟﾛｸﾞﾗﾑの行数がｺﾝﾊﾟｲﾗ･ｵﾌﾟｼｮﾝSTATEMENTSで指定した最高値を超えました。
- The maximum number of source statements has been executed.
- The maximum number of source statements that can be executed can be
- increased by using the "statements=n" option in the command line or
- specifying C$STATEMENTS=n in the source file.
-KO_TIME_OUT [ w r0] time limit exceeded
-KO_TIME_OUT [jw r0] 時間切れです(実行を中止します)。
- The maximum amount of time for program execution has been exceeded.
- The maximum amount of time can be increased
- by using the "time=t" option in the command line or specifying C$TIME=t
- in the source file.
 LI Library Routines
 LI_ARG_GT_ZERO [   r0] argument must be greater than zero
 LI_ARG_GT_ZERO [j  r0] 引数は1個以上でなければなりません。
@@ -1236,12 +1124,6 @@ MO_STORAGE_ALLOCATED [   r0] attempt to allocate an already allocated array or c
 MO_STORAGE_ALLOCATED [j  r0] 既にﾒﾓﾘを割り付けた配列あるいはcharacter*(*)型の変数にはﾒﾓﾘを割り付けられません。
  An attempt has been made to allocate an array or character*(*) variable that
  has been previously allocated in an ALLOCATE statement.
-MO_OBJECT_OUT [ w c0] object memory exhausted
-MO_OBJECT_OUT [jw c0] ﾌﾟﾛｸﾞﾗﾑのｵﾌﾞｼﾞｪｸﾄ･ｺｰﾄﾞが大きすぎて入りません。
- The amount of object code generated for the program has exceeded the amount
- of memory allocated to store the object code.
- The "/codesize" option can be used to increase the amount of memory
- allocated for object code.
 PC Parentheses
 PC_NO_CLOSEPAREN [   c1] missing or misplaced closing parenthesis
 PC_NO_CLOSEPAREN [j  c1] 右かっこ')'がありません。
@@ -1373,14 +1255,6 @@ SM_IO_WRITE_ERR [   c0] system file error writing %s1 - %s2
 SM_IO_WRITE_ERR [j  c0] ｼｽﾃﾑ･ﾌｧｲﾙ書出しｴﾗｰ: %s1 - %s2
  An I/O error, described by %s2, has occurred while writing to the
  file %s1.
-SM_SPAWN_ERR [ w c0] error spawning %s1 - %s2
-SM_SPAWN_ERR [jw c0] spawnｴﾗｰ : %s1 - %s2
- An error, described by %s2, occurred while trying to spawn the external
- program named %s1.
-SM_LINK_ERR [ w c0] error while linking
-SM_LINK_ERR [jw c0] ﾘﾝｸ時ｴﾗｰ
- An error occurred while trying to create the executable file.  See the
- WLINK documentation for a description of the error.
 SM_OUT_OF_VM_FILES [ o c0] error opening %s1 - too many temporary files exist
 SM_OUT_OF_VM_FILES [jo c0] ﾌｧｲﾙｵｰﾌﾟﾝｴﾗｰ %s1 - ﾃﾝﾎﾟﾗﾘﾌｧｲﾙが多すぎます。
  The compiler was not able to open a temporary file for intermediate storage
@@ -1642,52 +1516,6 @@ SR_FUNC_AS_SUB [   c2] function referenced as a subroutine
 SR_FUNC_AS_SUB [j  c2] 関数はｻﾌﾞﾙｰﾁﾝとして使えません。
  An attempt has been made to invoke a function using the CALL
  statement.
-SR_ALREADY_ACTIVE [ w r0] attempt to invoke active function/subroutine
-SR_ALREADY_ACTIVE [jw r0] 関数/ｻﾌﾞﾙｰﾁﾝは自分の中から自分を、または呼び出した親を呼び出すことはできません。
- An attempt has been made to invoke the current function/subroutine or
- a function/subroutine that was used to invoke current
- function/subroutine.
- The traceback produced when the error occurred lists all currently
- active functions/subroutines.
-SR_ARG_USED_NOT_PASSED [ w r0] dummy argument %s1 is not in dummy argument list of entered subprogram
-SR_ARG_USED_NOT_PASSED [jw r0] 仮引数%s1はENTRYと副ﾌﾟﾛｸﾞﾗﾑの両方に引数として定義してください。
- The named dummy argument found in the ENTRY statement does not appear
- in the subroutine's dummy argument list in the subprogram statement.
-SR_BAD_TYPE [ w r0] function referenced as %s1 but defined to be %s2
-SR_BAD_TYPE [jw r0] 呼び出された関数は%s1型ですがFUNCTION/ENTRYで%s2となっていて一致しません。
- An attempt has been made to invoke a function of the type %s1 but the
- function was defined as %s2 in the FUNCTION or ENTRY statement.
- The function name's type must be correctly declared in the main
- program.
-SR_CHAR_SIZE_MISMATCH [ w r0] function referenced as CHARACTER*%u1 but defined to be CHARACTER*%u2
-SR_CHAR_SIZE_MISMATCH [jw r0] CHARACTER*%u1として呼出された関数名はCHARACTER*%u2として定義されていて長さが合いません。
- The character length of the function in the calling subprogram is %d1 but
- the length used to define the function is %d2.
- These two lengths must match.
-SR_NO_PROG [ w c0] missing main program
-SR_NO_PROG [jw c0] PROGRAM(省略可能)で始まりENDで終わるﾒｲﾝ･ﾌﾟﾛｸﾞﾗﾑが必要です。
- The program file is either empty or contains only subroutines and
- functions.
- Each program require a main program.
- A main program starts with an optional PROGRAM statement and ends
- with an END statement.
-SR_SUB_AS_FUNC [ w r0] subroutine referenced as a function
-SR_SUB_AS_FUNC [jw r0] ｻﾌﾞﾙｰﾁﾝは関数として使えません。
- An attempt has been made to invoke a name as a function and has been
- defined as a subroutine in a SUBROUTINE or ENTRY statement.
-SR_BLKDAT_CALLED [ w r0] attempt to invoke a block data subprogram
-SR_BLKDAT_CALLED [jw r0] BLOCK DATA副ﾌﾟﾛｸﾞﾗﾑは変数の初期値化のためのもので呼び出すことはできません。
- An attempt has been made to invoke a block data subprogram.
- Block data subprograms are used to initialize variables before
- program execution commences.
-SR_STRUCT_MISMATCH [ w r0] structure type of function %s1 does not match expected structure type
-SR_STRUCT_MISMATCH [jw r0] 関数%s1の構造体の型が一致しません。
- The function returns a structure that is not equivalent to the structure
- expected.
- Two structures are equivalent if the types and orders of each field
- are the same.
- Unions are considered equivalent if their sizes are the same.
- Field names, and the structure name itself, do not have to be the same.
 SS Subscripts and Substrings
 SS_FUNCTION_VALUE [   c2] substringing of function or statement function return value is not FORTRAN 77 standard
 SS_FUNCTION_VALUE [j  c2] 文字型関数や文関数で取り出した文字列の部分列化は,FORTRAN 77の標準ではありません。
@@ -1838,23 +1666,6 @@ ST_DATA_TOO_EARLY [j  c0] DATA 文の位置はFORTRAN 77の標準ではありま
  to appear before specification statements.
  Note that in the latter case, the type of the symbol must be established
  before data initialization occurs.
-ST_FORMAT_LABEL [ w r0] no FORMAT statement with given label
-ST_FORMAT_LABEL [jw r0] 指定したﾗﾍﾞﾙの位置にFORMAT文がありません。
- The current statement refers to the label of a FORMAT statement but
- the label appears on some other statement that is not a FORMAT
- statement.
-ST_NUMBER [ w r0] statement number not in list or not the label of an executable statement
-ST_NUMBER [jw r0] 文番号がかっこの中にない時や実行可能な文に付いていない時はｴﾗｰです。
- The specified statement number in the indicated statement is not in
- the list of statement numbers or it is not the statement label number
- of an executable statement.
-ST_BRANCH_INTO [ w r0] attempt to branch into a control structure
-ST_BRANCH_INTO [jw r0] この制御構造の中に飛び込むことはできません。
- An attempt has been made to pass execution control into a control
- structure.
- A statement uses a computed statement label number to transfer
- control.
- This value references a statement inside a control structure.
 SV Subscripted Variables
 SV_ARR_DECL [   c0] variable %s1 in array declarator must be in COMMON or a dummy argument
 SV_ARR_DECL [j  c0] 配列の宣言子である変数%s1はCOMMONの中か仮引数として指定しなければなりません。
@@ -2068,35 +1879,6 @@ TY_ILL_USE [j  c2] %s2型である%s1は%s3文中で間違って使われてい�
  The symbol %s1 with type %s2 cannot be used in statement %s3.
  For example, a symbol of type STRUCTURE cannot be used in a PARAMETER
  statement.
-UV Undefined Variables
-UV_CH_ASGN_UNDEFINED [ w r0] substring (%u1:%u2) of expression on right side of equal sign is undefined
-UV_CH_ASGN_UNDEFINED [jw r0] =の右側の式の部分列(%u1:%u2)に値が入っていません。
- The substring (%d1:%d2) has been used on the right hand side of an
- expression and its value is undefined.
- A value must be assigned to the variable name or array element name
- before it can be used in an expression.
-UV_CH_FN_UNDEFINED [ w r0] substring (%u1:%u2) of return value of character function %s3 is undefined
-UV_CH_FN_UNDEFINED [jw r0] 戻った結果の部分列(%u1:%u2)[文字関数%s3から]の中に値が入っていなければなりません。
- The character function %s3 has been referenced and the function name
- has not been assigned a value in the function.
- The substring (%d1:%d2) does not have a value.
-UV_CH_REL_UNDEFINED [ w r0] substring (%u1:%u2) of an operand in a relational expression is undefined
-UV_CH_REL_UNDEFINED [jw r0] 関係式の部分列(%u1:%u2)に値が入っていません。
- The substring (%d1:%d2) has been used in a relational expression and
- has not previously been assigned a value.
-UV_IF_CHAR_ARG_UNDEFINED [ w r0] substring (%u1:%u2) of an argument to an intrinsic function is undefined
-UV_IF_CHAR_ARG_UNDEFINED [jw r0] 組込み関数の引数である部分列(%u1:%u2)に値が入っていません。
- The substring (%d1:%d2), which is an actual argument to an intrinsic
- function, does not have a value assigned to it.
-UV_UNDEFD [ w r0] the value of %s1 is undefined
-UV_UNDEFD [jw r0] %s1に値が入っていません。
- The variable name %s1 has been used in a statement and a value has not
- yet been assigned to it.
- All variables must first be initialized through the use of statements
- or data initialization in specification statements.
-UV_ARG_UNDEFINED [ w r0] argument number %d1 passed to intrinsic function is undefined
-UV_ARG_UNDEFINED [jw r0] 組込み関数の第%d1番目の引数に値が入っていません。
- The actual argument number %d1 does not have a value assigned to it.
 VA Variable Names
 VA_ILL_USE [   c2] illegal use of %s1 name %s2 in %s3 statement
 VA_ILL_USE [j  c2] %s1と定義された名前%s2は%s3文では使えません。

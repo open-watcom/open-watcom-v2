@@ -96,36 +96,6 @@ __err : errsrc.exe .symbolic
         cp errgrp.c $(f77_dir)\wfc\h\errgrpr.c
         del errgrp.c
         del errmsg.msg
-        errsrc elic
-        cp errcod.h $(f77_dir)\wfl\h\errcodi.h
-        del errcod.h
-        cp errmsg.c $(f77_dir)\wfl\h\errmsgi.c
-        del errmsg.c
-        cp errmsg.rc $(f77_dir)\wfl\h\errmsgi.rc
-        del errmsg.rc
-        cp errgrp.c $(f77_dir)\wfl\h\errgrpi.c
-        del errgrp.c
-        del errmsg.msg
-        errsrc el3c
-        cp errcod.h $(f77_dir)\wfl\h\errcod3.h
-        del errcod.h
-        cp errmsg.c $(f77_dir)\wfl\h\errmsg3.c
-        del errmsg.c
-        cp errmsg.rc $(f77_dir)\wfl\h\errmsg3.rc
-        del errmsg.rc
-        cp errgrp.c $(f77_dir)\wfl\h\errgrp3.c
-        del errgrp.c
-        del errmsg.msg
-        errsrc elrc
-        cp errcod.h $(f77_dir)\wfl\h\errcodr.h
-        del errcod.h
-        cp errmsg.c $(f77_dir)\wfl\h\errmsgr.c
-        del errmsg.c
-        cp errmsg.rc $(f77_dir)\wfl\h\errmsgr.rc
-        del errmsg.rc
-        cp errgrp.c $(f77_dir)\wfl\h\errgrpr.c
-        del errgrp.c
-        del errmsg.msg
 #       errsrc jo r
 #       cp errmsg.rc $(f77_dir)\f77lib\c\jerrmsg.rc
 #       del errmsg.rc
@@ -149,27 +119,6 @@ __err : errsrc.exe .symbolic
         del errmsg.msg
         errsrc jorc
         cp errmsg.rc $(f77_dir)\wfc\h\jerrmsgr.rc
-        del errmsg.rc
-        del errcod.h
-        del errmsg.c
-        del errgrp.c
-        del errmsg.msg
-        errsrc jlic
-        cp errmsg.rc $(f77_dir)\wfl\h\jerrmsgi.rc
-        del errmsg.rc
-        del errcod.h
-        del errmsg.c
-        del errgrp.c
-        del errmsg.msg
-        errsrc jl3c
-        cp errmsg.rc $(f77_dir)\wfl\h\jerrmsg3.rc
-        del errmsg.rc
-        del errcod.h
-        del errmsg.c
-        del errgrp.c
-        del errmsg.msg
-        errsrc jlrc
-        cp errmsg.rc $(f77_dir)\wfl\h\jerrmsgr.rc
         del errmsg.rc
         del errcod.h
         del errmsg.c
