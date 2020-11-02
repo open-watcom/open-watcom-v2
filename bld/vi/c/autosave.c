@@ -57,7 +57,7 @@
 #define AS_FILE_EXT         ".fil"
 #ifdef __UNIX__
     #define EXTRA_EXT       "0000_"
-    #define LOCK_NAME_LEN   22
+    #define LOCK_NAME_LEN   23
     #define EXTRA_EXT_OFF   6
     #define CHAR_OFF        16
 #else
