@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,7 +55,8 @@ static  PFN             F1ProcInst;
 // What the hell does this do??!!
 static bool scroll_catch_check( WPI_QMSG *qmsg )
 {
-    qmsg=qmsg;
+    (void)qmsg;
+
     return( false );
 }
 

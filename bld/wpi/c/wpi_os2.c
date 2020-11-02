@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -2332,29 +2332,29 @@ void _wpi_setqmsgvalues( WPI_QMSG *qmsg, HWND hwnd, WPI_MSG message,
     qmsg->ptl.y = wpi_pt.y;
 } /* _wpi_setqmsgvalues */
 
-void _wpi_getqmsgvalues( WPI_QMSG qmsg, HWND *hwnd, WPI_MSG *message,
+void _wpi_getqmsgvalues( WPI_QMSG *qmsg, HWND *hwnd, WPI_MSG *message,
                         WPI_PARAM1 *parm1, WPI_PARAM2 *parm2, ULONG *wpi_time,
                         WPI_POINT *wpi_pt )
 /*************************************************************************/
 {
     if( hwnd ) {
-        *hwnd = qmsg.hwnd;
+        *hwnd = qmsg->hwnd;
     }
     if( message ) {
-        *message = qmsg.msg;
+        *message = qmsg->msg;
     }
     if( parm1 ) {
-        *parm1 = qmsg.mp1;
+        *parm1 = qmsg->mp1;
     }
     if( parm2 ) {
-        *parm2 = qmsg.mp2;
+        *parm2 = qmsg->mp2;
     }
     if( wpi_time ) {
-        *wpi_time = qmsg.time;
+        *wpi_time = qmsg->time;
     }
     if( wpi_pt ) {
-        wpi_pt->x = qmsg.ptl.x;
-        wpi_pt->y = qmsg.ptl.y;
+        wpi_pt->x = qmsg->ptl.x;
+        wpi_pt->y = qmsg->ptl.y;
     }
 } /* _wpi_getqmsgvalues */
 
@@ -2464,10 +2464,11 @@ BOOL _wpi_equalrect( WPI_PRECT prect1, WPI_PRECT prect2 )
             ( prect1->yBottom == prect2->yBottom ) );
 } /* _wpi_equalrect */
 
-void _wpi_suspendthread( UINT thread_id, WPI_QMSG *msg )
-/******************************************************/
+void _wpi_suspendthread( UINT thread_id, WPI_QMSG *qmsg )
+/*******************************************************/
 {
-    *msg = *msg;
+    (void)qmsg;
+
     DosSuspendThread( thread_id );
 } /* _wpi_suspendthread */
 

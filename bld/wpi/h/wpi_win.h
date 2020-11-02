@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -456,7 +456,7 @@ extern void _wpi_getintwrectvalues( WPI_RECT rect, int *left, int *top,
     #define _wpi_isdialogmessage( wpi_hwnd, wpi_msg ) \
                                         IsDialogMessage( wpi_hwnd, wpi_msg )
 
-    #define _wpi_ismessage( msg, id ) ( (msg).message == (id) )
+    #define _wpi_ismessage( qmsg, id ) ( (qmsg)->message == (id) )
 
     #define _wpi_isntdblclk( parm1, parm2 ) \
                  (GET_WM_COMMAND_CMD( parm1, parm2 ) != LBN_DBLCLK)
@@ -504,21 +504,21 @@ extern void _wpi_getintwrectvalues( WPI_RECT rect, int *left, int *top,
 extern void _wpi_setqmsgvalues( WPI_QMSG *qmsg, HWND hwnd, WPI_MSG wpi_msg,
                         WPI_PARAM1 wparam, WPI_PARAM2 lparam, ULONG wpi_time,
                         WPI_POINT pt );
-extern void _wpi_getqmsgvalues( WPI_QMSG qmsg, HWND *hwnd, WPI_MSG *wpi_msg,
+extern void _wpi_getqmsgvalues( WPI_QMSG *qmsg, HWND *hwnd, WPI_MSG *wpi_msg,
                         WPI_PARAM1 *wparam, WPI_PARAM2 *lparam, ULONG *wpi_time,
                         WPI_POINT *pt );
 
-    #define _wpi_qmsgmessage( pwpi_qmsg ) ((pwpi_qmsg)->message)
+    #define _wpi_qmsgmessage( qmsg ) ((qmsg)->message)
 
-    #define _wpi_qmsgparam1( pwpi_qmsg ) ((pwpi_qmsg)->wParam)
+    #define _wpi_qmsgparam1( qmsg ) ((qmsg)->wParam)
 
-    #define _wpi_qmsgparam2( pwpi_qmsg ) ((pwpi_qmsg)->lParam)
+    #define _wpi_qmsgparam2( qmsg ) ((qmsg)->lParam)
 
     #define _wpi_drawhwnd( drw ) ((drw)->hwndItem)
 
     #define _wpi_drawpres( drw ) ((drw)->hDC)
 
-extern void _wpi_suspendthread( UINT thread_id, WPI_QMSG *msg );
+extern void _wpi_suspendthread( UINT thread_id, WPI_QMSG *qmsg );
 
     #define _wpi_resumethread( thread_id ) \
                             PostAppMessage( thread_id, WM_QUIT, NULL, NULL )

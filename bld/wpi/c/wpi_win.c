@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -216,29 +216,29 @@ void _wpi_setqmsgvalues( WPI_QMSG *qmsg, HWND hwnd, WPI_MSG wpi_msg,
     qmsg->pt.y = pt.y;
 } /* _wpi_setqmsgvalues */
 
-void _wpi_getqmsgvalues( WPI_QMSG qmsg, HWND *hwnd, WPI_MSG *wpi_msg,
+void _wpi_getqmsgvalues( WPI_QMSG *qmsg, HWND *hwnd, WPI_MSG *wpi_msg,
                         WPI_PARAM1 *wparam, WPI_PARAM2 *lparam, ULONG *wpi_time,
                         WPI_POINT *pt )
 /***************************************************************************/
 {
     if( hwnd ) {
-        *hwnd = qmsg.hwnd;
+        *hwnd = qmsg->hwnd;
     }
     if( wpi_msg ) {
-        *wpi_msg = qmsg.message;
+        *wpi_msg = qmsg->message;
     }
     if( wparam ) {
-        *wparam = qmsg.wParam;
+        *wparam = qmsg->wParam;
     }
     if( lparam ) {
-        *lparam = qmsg.lParam;
+        *lparam = qmsg->lParam;
     }
     if( wpi_time ) {
-        *wpi_time = qmsg.time;
+        *wpi_time = qmsg->time;
     }
     if( pt ) {
-        pt->x = qmsg.pt.x;
-        pt->y = qmsg.pt.y;
+        pt->x = qmsg->pt.x;
+        pt->y = qmsg->pt.y;
     }
 } /* _wpi_getqmsgvalues */
 
@@ -332,15 +332,15 @@ void _wpi_getcurrpos( WPI_PRES pres, WPI_POINT *pt )
     pt->y = new_pt.y;
 } /* _wpi_getcurrpos */
 
-void _wpi_suspendthread( UINT thread_id, WPI_QMSG *msg )
-/******************************************************/
+void _wpi_suspendthread( UINT thread_id, WPI_QMSG *qmsg )
+/*******************************************************/
 {
     thread_id = thread_id;              // not used in windows
 
     for( ;; ) {
-        _wpi_getmessage( NULL, msg, NULLHANDLE, 0, 0 );
+        _wpi_getmessage( NULL, qmsg, NULLHANDLE, 0, 0 );
 
-        if( _wpi_ismessage( (*msg), WM_QUIT ) ) {
+        if( _wpi_ismessage( qmsg, WM_QUIT ) ) {
             break;
         }
     }

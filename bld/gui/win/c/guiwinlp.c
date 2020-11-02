@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,6 +46,6 @@ int GUIWinMessageLoop( void )
         _wpi_translatemessage( &msg );
         _wpi_dispatchmessage( GUIMainHInst, &msg );
     }
-    _wpi_getqmsgvalues( msg, NULL, NULL, &param1, NULL, NULL, NULL );
+    _wpi_getqmsgvalues( &msg, NULL, NULL, &param1, NULL, NULL, NULL );
     return( (int)param1 );
 }

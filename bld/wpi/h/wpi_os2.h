@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -253,21 +253,21 @@ extern void _wpi_releasepres( HWND hwnd, WPI_PRES pres );
 extern void _wpi_setqmsgvalues( WPI_QMSG *qmsg, HWND hwnd, WPI_MSG message,
                         WPI_PARAM1 parm1, WPI_PARAM2 parm2, ULONG wpi_time,
                         WPI_POINT wpi_pt );
-extern void _wpi_getqmsgvalues( WPI_QMSG qmsg, HWND *hwnd, WPI_MSG *message,
+extern void _wpi_getqmsgvalues( WPI_QMSG *qmsg, HWND *hwnd, WPI_MSG *message,
                         WPI_PARAM1 *parm1, WPI_PARAM2 *parm2, ULONG *wpi_time,
                         WPI_POINT *wpi_pt );
 
-    #define _wpi_qmsgmessage( pwpi_qmsg ) (pwpi_qmsg)->msg
+    #define _wpi_qmsgmessage( qmsg ) ((qmsg)->msg)
 
-    #define _wpi_qmsgparam1( pwpi_qmsg ) (pwpi_qmsg)->mp1
+    #define _wpi_qmsgparam1( qmsg ) ((qmsg)->mp1)
 
-    #define _wpi_qmsgparam2( pwpi_qmsg ) (pwpi_qmsg)->mp2
+    #define _wpi_qmsgparam2( qmsg ) ((qmsg)->mp2)
 
     #define _wpi_drawhwnd( drw ) (drw)->hwnd
 
     #define _wpi_drawpres( drw ) (drw)->hps
 
-extern void _wpi_suspendthread( UINT thread_id, WPI_QMSG *msg );
+extern void _wpi_suspendthread( UINT thread_id, WPI_QMSG *qmsg );
 
     #define _wpi_resumethread( thread_id ) DosResumeThread( thread_id )
 
@@ -626,7 +626,7 @@ extern int _wpi_selectcliprgn( WPI_PRES pres, HRGN rgn );
     #define _wpi_ismsgkeyup( msg, parm1 ) \
          ( msg == WM_CHAR && (SHORT1FROMMP( parm1 ) == KC_KEYUP ) )
 
-    #define _wpi_isdown( parm1, parm2 ) ( !( (int) parm2 & KC_KEYUP ) )
+    #define _wpi_isdown( parm1, parm2 ) ( (parm2 & KC_KEYUP) == 0 )
 
 extern HFILE _wpi_fileopen( LPSTR filename, int format );
 extern HFILE _wpi_filecreate( LPSTR filename, int format );
@@ -637,7 +637,7 @@ extern PM1632_FILESIZETYPE _wpi_fileread( HFILE hfile, void *buf,
                                                     PM1632_FILESIZETYPE size );
 
     #define _wpi_isdialogmessage( win_hld, wpi_msg ) ( (wpi_msg)->hwnd == win_hld )
-    #define _wpi_ismessage( wpi_msg, id ) ( (wpi_msg).msg == id )
+    #define _wpi_ismessage( qmsg, id ) ( (qmsg)->msg == (id) )
 
     #define _wpi_isntdblclk( parm1, parm2 ) SHORT2FROMMP( parm1 ) != LN_ENTER
 
