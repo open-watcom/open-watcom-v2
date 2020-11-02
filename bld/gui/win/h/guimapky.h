@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,9 +34,9 @@
 #include "guikey.h"
 
 #ifdef __OS2_PM__
-#define IS_VKEY_F10( wp )   (((USHORT)((PQMSG)wp)->mp1 & KC_VIRTUALKEY) && (USHORT)((ULONG)((PQMSG)wp)->mp2 >> 16) == VK_F10)
-#define IS_KEY_UP( wp )     ((USHORT)((PQMSG)wp)->mp1 & KC_KEYUP)
+#define IS_VKEY_F10(wp,lp)  ((SHORT1FROMMP( wp ) & KC_VIRTUALKEY) && (SHORT2FROMMP( lp ) == VK_F10))
+#define IS_KEY_UP(wp)       (SHORT1FROMMP( wp ) & KC_KEYUP)
 #endif
 
-extern bool GUIWindowsMapKey( WPI_PARAM1 vk, WPI_PARAM2 data, gui_key *scan );
-extern WPI_MRESULT GUIProcesskey( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+extern bool         GUIWindowsMapKey( WPI_PARAM1 vk, WPI_PARAM2 data, gui_key *scan );
+extern WPI_MRESULT  GUIProcesskey( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );

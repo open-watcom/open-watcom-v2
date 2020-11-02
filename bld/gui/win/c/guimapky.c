@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -621,7 +622,7 @@ WPI_MRESULT GUIProcesskey( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2
         // Don't let OS/2 process F10 as an accelerator
         // Note: similar code exists in guixwind.c but we need to
         // take different default action
-        if( !IS_VKEY_F10( wparam ) )
+        if( !IS_VKEY_F10( wparam, lparam ) )
             return( _wpi_defwindowproc( hwnd, msg, wparam, lparam ) );
         break;
     case WM_CHAR:

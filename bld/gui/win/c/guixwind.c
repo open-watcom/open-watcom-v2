@@ -1379,7 +1379,7 @@ WPI_MRESULT CALLBACK GUIFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WP
             // Don't let OS/2 process F10 as an accelerator
             // Note: similar code exists in guimapky.c but we need to
             // take different default action
-            if( IS_VKEY_F10( wparam ) )
+            if( IS_VKEY_F10( wparam, lparam ) )
                 return( 0L );
             break;
         case WM_CHAR:
