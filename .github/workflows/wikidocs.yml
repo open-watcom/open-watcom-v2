@@ -38,7 +38,7 @@ jobs:
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" amd64
           set OWROOT=%GITHUB_WORKSPACE%
           call %OWROOT%\cmnvars.bat
-          mkdir %OWBINDIR%
+          mkdir %OWBINDIR%\%OWOBJDIR%
           REM build OW wmake
           mkdir %OWSRCDIR%\wmake\%OWOBJDIR%
           cd %OWSRCDIR%\wmake\%OWOBJDIR%
@@ -46,7 +46,7 @@ jobs:
           REM build OW builder
           mkdir %OWSRCDIR%\builder\%OWOBJDIR%
           cd %OWSRCDIR%\builder\%OWOBJDIR%
-          %OWBINDIR%\wmake -f ..\binmake bootstrap=1 builder.exe
+          %OWBINDIR%\%OWOBJDIR%\wmake -f ..\binmake bootstrap=1 builder.exe
           REM build OW tools
           cd %OWSRCDIR%\watcom
           builder boot
