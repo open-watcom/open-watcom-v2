@@ -275,12 +275,12 @@ _WCRTLINK int _grow_handles( int num )
             }
         }
 #elif defined( __OS2__ )
-    #if defined( _M_I86 )
         {
-            int     rc;
+            APIRET  rc;
 
+    #if defined( _M_I86 )
             rc = DosSetMaxFH( num );
-            if( rc != 0 ) {
+            if( rc ) {
                 if( rc == ERROR_NOT_ENOUGH_MEMORY ) {
                     __set_errno_dos( rc );
                     num = __NHandles;
@@ -301,18 +301,15 @@ _WCRTLINK int _grow_handles( int num )
                     }
                 }
             }
-        }
     #else
-        {
             LONG    req_count;
             ULONG   curr_max_fh;
-            APIRET  rc;
 
             req_count = num - __NHandles;
             rc = DosSetRelMaxFH( &req_count, &curr_max_fh );
             num = curr_max_fh;
-        }
     #endif
+        }
 #elif defined(__WINDOWS__)
         {
             num = SetHandleCount( num );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -86,7 +86,7 @@ _WCRTLINK int _fstati64( int handle, struct _stati64 *buf )
 _WCRTLINK int fstat( int handle, struct stat *buf )
 #endif
 {
-    APIRET          error;
+    APIRET          rc;
     OS_UINT         hand_type;
     OS_UINT         device_attr;
     FF_BUFFER       info;
@@ -103,15 +103,15 @@ _WCRTLINK int fstat( int handle, struct stat *buf )
         buf->st_mode |= S_IWUSR | S_IWGRP | S_IWOTH;
     }
 
-    error = DosQHandType( handle, &hand_type, &device_attr );
-    if( error ) {
-        return( __set_errno_dos( error ) );
+    rc = DosQHandType( handle, &hand_type, &device_attr );
+    if( rc ) {
+        return( __set_errno_dos( rc ) );
     }
     if( ( hand_type & ~HANDTYPE_NETWORK ) == HANDTYPE_FILE ) {
         /* handle file */
-        error = DosQFileInfo( handle, FF_LEVEL, (PBYTE)&info, sizeof( info ) );
-        if( error ) {
-            return( __set_errno_dos( error ) );
+        rc = DosQFileInfo( handle, FF_LEVEL, (PBYTE)&info, sizeof( info ) );
+        if( rc ) {
+            return( __set_errno_dos( rc ) );
         }
         buf->st_dev = buf->st_rdev = 0;
         /* handle timestamps */

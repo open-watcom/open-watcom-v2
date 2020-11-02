@@ -178,15 +178,9 @@ static int connect_pipe( FILE *fp, const CHAR_TYPE *command, int *handles,
     HANDLE              osHandle;
     HANDLE              oldHandle;
 #elif defined( __OS2__ )
-  #if defined(_M_I86)
-    USHORT              rc;
-    HFILE               osHandle;
-    HFILE               oldHandle;
-  #else
     APIRET              rc;
     HFILE               osHandle;
     HFILE               oldHandle;
-  #endif
 #endif
 
     /* unused parameters */ (void)textOrBinary;
@@ -281,13 +275,8 @@ _WCRTLINK FILE *__F_NAME(_popen,_wpopen)( const CHAR_TYPE *command, const CHAR_T
     BOOL                rc;
     int                 handleMode;
 #elif defined( __OS2__ )
-  #if defined( _M_I86 )
-    USHORT              rc;
-    USHORT              handleState;
-  #else
     APIRET              rc;
-    ULONG               handleState;
-  #endif
+    OS_UINT             handleState;
 #endif
     FILE *              fp;
     int                 handles[2];

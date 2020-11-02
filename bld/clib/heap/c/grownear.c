@@ -494,13 +494,13 @@ unsigned char _os2_obj_any_supported = FALSE;
 static void _check_os2_obj_any_support( void )
 {
     PBYTE           p;
-    APIRET          apiret;
+    APIRET          rc;
 
     _os2_obj_any_supported = TRUE;
-    apiret = DosAllocMem( (PPVOID)&p, 1, PAG_COMMIT | PAG_READ | OBJ_ANY );
-    if( apiret == ERROR_INVALID_PARAMETER ) {
+    rc = DosAllocMem( (PPVOID)&p, 1, PAG_COMMIT | PAG_READ | OBJ_ANY );
+    if( rc == ERROR_INVALID_PARAMETER ) {
         _os2_obj_any_supported = FALSE;
-    } else if( apiret == 0 ) {
+    } else if( rc == 0 ) {
         DosFreeMem( p );
     }
 }

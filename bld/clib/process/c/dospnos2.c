@@ -99,6 +99,9 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, const char * const
     USHORT      related;
     char        use_exec_pgm;
     char        queuename[QUEUENAME_SIZE];
+    OS_UINT     app_type;
+    OS_UINT     session;
+    OS_UINT     data_len;
 
     __ccmdline( pgm, argv, cmdline, 0 );
     if( mode == P_NOWAIT ) {
@@ -110,14 +113,11 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, const char * const
     }
 #if defined( _M_I86 )
     {
-        USHORT          app_type;
         SEL             sglobal;
         SEL             slocal;
         LINFOSEG        _WCFAR *local;
-        USHORT          session;
         USHORT          pid;
         ULONG           request_data;
-        USHORT          data_len;
 
         use_exec_pgm = 0;
 
@@ -223,13 +223,10 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, const char * const
     }
 #else
     {
-        ULONG           app_type;
         TIB             *ptib;
         PIB             *ppib;
-        ULONG           session;
         PID             pid;
         REQUESTDATA     request_data;
-        ULONG           data_len;
 
         use_exec_pgm = 0;
         rc = DosQueryAppType( pgm, &app_type );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +52,7 @@
 #pragma on(stack_check);
 _WCRTLINK CHAR_TYPE *__F_NAME(getcwd,_wgetcwd)( CHAR_TYPE *buf, size_t size )
 {
-    APIRET          error;
+    APIRET          rc;
     ULONG           drive_map;
 #ifndef __WIDECHAR__
     char            path[_MAX_PATH];            /* single-byte chars */
@@ -63,9 +63,9 @@ _WCRTLINK CHAR_TYPE *__F_NAME(getcwd,_wgetcwd)( CHAR_TYPE *buf, size_t size )
 #endif
     OS_UINT         drive;
 
-    error = DosQCurDir( 0, (PBYTE)&path[3], &pathlen );
-    if( error ) {
-        __set_errno_dos( error );
+    rc = DosQCurDir( 0, (PBYTE)&path[3], &pathlen );
+    if( rc ) {
+        __set_errno_dos( rc );
         return( NULL );
     }
     DosQCurDisk( &drive, &drive_map );
@@ -73,7 +73,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(getcwd,_wgetcwd)( CHAR_TYPE *buf, size_t size )
     path[1] = DRV_SEP;
     path[2] = DIR_SEP;
     if( buf == NULL ) {
-        if( (buf = malloc( max(size,pathlen+4)*CHARSIZE )) == NULL ) {
+        if( (buf = malloc( max( size, pathlen + 4 ) * CHARSIZE )) == NULL ) {
             _RWD_errno = ENOMEM;
             return( NULL );
         }
