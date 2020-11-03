@@ -323,42 +323,6 @@ static size_t GetTextRec( b_file *io, char *b, size_t len )
 }
 
 
-static size_t GetVariableRec( b_file *io, char *b, size_t len )
-//=============================================================
-// Get a record from a file with "variable" records.
-{
-    size_t      tag_len;
-    unsigned_32 tag;
-    unsigned_32 save_tag;
-
-    if( SysRead( io, (char *)(&tag), sizeof( tag ) ) == READ_ERROR ) {
-        return( 0 );
-    }
-    save_tag = tag;
-    tag_len = tag & 0x7fffffff;
-    if( tag_len > len ) {
-        FSetTrunc( io );
-        if( SysRead( io, b, len ) == READ_ERROR )
-            return( 0 );
-        if( SysSeek( io, (long)tag_len - (long)len, SEEK_CUR ) < 0 ) {
-            FSetSysErr( io );
-            return( 0 );
-        }
-    } else {
-        if( SysRead( io, b, tag_len ) == READ_ERROR )
-            return( 0 );
-        len = tag_len;
-    }
-    if( SysRead( io, (char *)(&tag), sizeof( tag ) ) == READ_ERROR )
-        return( 0 );
-    if( tag != save_tag ) {
-        FSetErr( POSIO_BAD_RECORD, io );
-        return( 0 );
-    }
-    return( len );
-}
-
-
 static size_t GetFixedRec( b_file *io, char *b, size_t len )
 //==========================================================
 // Get a record from a file with "fixed" records.
@@ -377,8 +341,6 @@ size_t FGetRec( b_file *io, char *b, size_t len )
     FSetIOOk( io );
     if( io->attrs & REC_TEXT )
         return( GetTextRec( io, b, len ) );
-    if( io->attrs & REC_VARIABLE )
-        return( GetVariableRec( io, b, len ) );
     return( GetFixedRec( io, b, len ) );
 }
 

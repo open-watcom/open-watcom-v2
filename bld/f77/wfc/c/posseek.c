@@ -50,8 +50,6 @@ void    FSeekRec( b_file *io, unsigned_32 rec, uint recsize )
 #else
             recsize += 2 * sizeof( char ); // compensate for CR/LF
 #endif
-        } else if( io->attrs & REC_VARIABLE ) {
-            recsize += 2 * sizeof( unsigned_32 ); // compensate for length tags
         }
         SysSeek( io, rec * recsize, SEEK_SET );
     } else {

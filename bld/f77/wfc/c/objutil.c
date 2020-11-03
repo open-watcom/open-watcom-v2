@@ -64,7 +64,6 @@
 #define _PageOffset( v_ptr ) (ObjCode + ((v_ptr) - ((v_ptr) / WFC_PAGE_SIZE) * WFC_PAGE_SIZE))
 #define _MakeVirtual( page, o_ptr ) ((page) * WFC_PAGE_SIZE + ( (o_ptr) - ObjCode ))
 
-static  f_attrs         PageFileAttrs = { REC_FIXED | SEEK };
 static  char            *PageFileName = { "__wfc__.vm" };
 static  char            PageFileBuff[_MAX_PATH];
 static  unsigned_32     CurrPage;
@@ -117,14 +116,13 @@ void    InitObj( void ) {
                 }
             }
         }
-        SDSetAttr( PageFileAttrs );
         strcpy( fn, PageFileName );
         fn += strlen( fn );
         fn[1] = NULLCHAR;
         for( idx = 0; idx < 26; idx++ ) {
             fn[0] = 'a' + idx;
             if( access( PageFileBuff, 0 ) == -1 ) {
-                PageFile = SDOpen( PageFileBuff, UPDATE_FILE );
+                PageFile = SDOpen( PageFileBuff, UPDATE_FILE, REC_FIXED | SEEK );
                 if( IOOk( PageFile ) ) {
                     break;
                 }

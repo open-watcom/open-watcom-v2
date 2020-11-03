@@ -52,28 +52,11 @@ static  f_attrs         Modes[] = { RDONLY,
                                     APPEND,
                                     RDWR };
 
-static  f_attrs         CurrAttrs = { REC_TEXT };
-
-
 void    SDInitIO(void) {
 //==================
 
     InitStd();
     SetIOBufferSize( 0 ); // minimum buffer size
-}
-
-
-void    SDInitAttr(void) {
-//====================
-
-    CurrAttrs = REC_TEXT;
-}
-
-
-void    SDSetAttr( f_attrs attr ) {
-//===================================
-
-    CurrAttrs = attr;
 }
 
 
@@ -84,10 +67,10 @@ void    SDScratch( const char *name )
 }
 
 
-file_handle SDOpen( const char *name, int mode )
-//==============================================
+file_handle SDOpen( const char *name, int mode, f_attrs attr )
+//============================================================
 {
-    return( Openf( name, Modes[ mode ] | CurrAttrs ) );
+    return( Openf( name, Modes[ mode ] | attr ) );
 }
 
 

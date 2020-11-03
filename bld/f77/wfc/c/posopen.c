@@ -48,9 +48,6 @@
 #include "clibext.h"
 
 
-#define FMEM_ALLOC      FMemAlloc
-#define FMEM_FREE       FMemFree
-
 static  int     IOBufferSize = { IO_BUFFER };
 
 void    InitStd( void )
@@ -86,7 +83,7 @@ b_file  *_AllocFile( int h, f_attrs attrs, long int fpos )
     }
     attrs &= ~CREATION_MASK;
     if( S_ISCHR( info.st_mode ) ) {
-        io = FMEM_ALLOC( offsetof( b_file, read_len ) );
+        io = FMemAlloc( offsetof( b_file, read_len ) );
         // Turn off truncate just in case we turned it on by accident due to
         // a buggy NT dos box.  We NEVER want to truncate a device.
         attrs &= ~TRUNC_ON_WRITE;
@@ -94,11 +91,11 @@ b_file  *_AllocFile( int h, f_attrs attrs, long int fpos )
     } else {
         attrs |= BUFFERED;
         buff_size = IOBufferSize;
-        io = FMEM_ALLOC( sizeof( b_file ) + IOBufferSize - MIN_BUFFER );
+        io = FMemAlloc( sizeof( b_file ) + IOBufferSize - MIN_BUFFER );
         if( ( io == NULL ) && ( IOBufferSize > MIN_BUFFER ) ) {
             // buffer is too big (low on memory) so use small buffer
             buff_size = MIN_BUFFER;
-            io = FMEM_ALLOC( sizeof( b_file ) );
+            io = FMemAlloc( sizeof( b_file ) );
         }
     }
     if( io == NULL ) {
@@ -187,6 +184,6 @@ void    Closef( b_file *io )
         FSetSysErr( io );
         return;
     }
-    FMEM_FREE( io );
+    FMemFree( io );
     FSetIOOk( NULL );
 }

@@ -73,11 +73,6 @@
     #error Unknown System
 #endif
 
-static f_attrs          DskAttr = { REC_TEXT | CARRIAGE_CONTROL };
-static f_attrs          PrtAttr = { REC_TEXT | CARRIAGE_CONTROL };
-static f_attrs          TrmAttr = { REC_TEXT | CARRIAGE_CONTROL };
-static f_attrs          ErrAttr = { REC_TEXT };
-
 static char             ErrExtn[] = { "err" };
 static char             LstExtn[] = { "lst" };
 
@@ -156,9 +151,8 @@ void    OpenSrc( void ) {
     bool        erase_err;
 
     erase_err = ErrFile == NULL;
-    SDInitAttr();
     MakeName( SrcName, SrcExtn, bld_name );
-    fp = SDOpen( bld_name, READ_FILE );
+    fp = SDOpen( bld_name, READ_FILE, REC_TEXT );
     if( fp != NULL ) {
         SrcInclude( bld_name );
         CurrFile->fileptr = fp;
@@ -255,7 +249,6 @@ void    Include( const char *inc_name )
     char        bld_name[_MAX_PATH];
     char        err_msg[ERR_BUFF_SIZE+1];
 
-    SDInitAttr();
     CopyMaxStr( inc_name, bld_name, _MAX_PATH - 1 );
     MakeName( bld_name, SDSplitSrcExtn( bld_name ), bld_name );
     if( AlreadyOpen( inc_name ) )
@@ -263,7 +256,7 @@ void    Include( const char *inc_name )
     if( AlreadyOpen( bld_name ) )
         return;
     // try file called <include_name>.FOR.
-    fp = SDOpen( bld_name, READ_FILE );
+    fp = SDOpen( bld_name, READ_FILE, REC_TEXT );
     if( fp != NULL ) {
         SrcInclude( bld_name );
         CurrFile->fileptr = fp;
@@ -362,32 +355,20 @@ void    Conclude( void ) {
 //========================================================================
 
 
-static file_handle Open( const char *fn, const char *extn, int mode )
-//===================================================================
-{
-    file_handle fp;
-    char        buffer[_MAX_PATH];
-    char        errmsg[81];
-
-    MakeName( fn, extn, buffer );
-    fp = SDOpen( buffer, mode );
-    if( SDError( fp, errmsg, sizeof( errmsg ) ) ) {
-        InfoError( SM_OPENING_FILE, &buffer, &errmsg );
-    }
-    return( fp );
-}
-
-
 void    OpenErr( void ) {
 //=======================
 
-    if( ( Options & OPT_ERRFILE ) &&
-        ( ( ProgSw & PS_ERR_OPEN_TRIED ) == 0 ) ) {
+    char        buffer[_MAX_PATH];
+    char        errmsg[81];
+
+    if( ( Options & OPT_ERRFILE ) && ( ( ProgSw & PS_ERR_OPEN_TRIED ) == 0 ) ) {
         ProgSw |= PS_ERR_OPEN_TRIED;
-        SDSetAttr( ErrAttr );
-        ErrFile = Open( SDFName( SrcName ), ErrExtn, WRITE_FILE );
+        MakeName( SDFName( SrcName ), ErrExtn, buffer );
+        ErrFile = SDOpen( buffer, WRITE_FILE, REC_TEXT );
+        if( SDError( ErrFile, errmsg, sizeof( errmsg ) ) ) {
+            InfoError( SM_OPENING_FILE, &buffer, &errmsg );
+        }
         if( ErrFile != NULL ) {
-            SDInitAttr();
             ErrCursor = 0;
             if( ErrBuff == NULL ) {
                 ErrBuff = FMemAlloc( ERR_BUFF_SIZE );
@@ -573,16 +554,7 @@ static  void    OpenListingFile( bool reopen ) {
         // ignore other listing file options
     } else {
         GetLstName( name );
-        if( Options & OPT_TYPE ) {
-            SDSetAttr( TrmAttr );
-        // On the VAX, /PRINT means to generate a disk file "xxx.LIS"
-        // and set the spooling bit
-        } else if( Options & OPT_PRINT ) {
-            SDSetAttr( PrtAttr );
-        } else { // DISK file
-            SDSetAttr( DskAttr );
-        }
-        ListFile = SDOpen( name, WRITE_FILE );
+        ListFile = SDOpen( name, WRITE_FILE, REC_TEXT | CARRIAGE_CONTROL );
         if( SDError( ListFile, errmsg, sizeof( errmsg ) ) ) {
             InfoError( SM_OPENING_FILE, name, errmsg );
         } else {
@@ -592,7 +564,6 @@ static  void    OpenListingFile( bool reopen ) {
                 InfoError( MO_DYNAMIC_OUT );
             }
         }
-        SDInitAttr();
     }
 }
 

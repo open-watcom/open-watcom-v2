@@ -47,7 +47,6 @@
 
 /* forward declarations */
 static  void    PutTextRec( b_file *io, const char *b, size_t len );
-static  void    PutVariableRec( b_file *io, const char *b, size_t len );
 static  void    PutFixedRec( b_file *io, const char *b, size_t len );
 
 #if defined( _MSC_VER ) && defined( _WIN64 )
@@ -86,8 +85,6 @@ void    FPutRec( b_file *io, const char *b, size_t len )
     FSetIOOk( io );
     if( io->attrs & REC_TEXT ) {
         PutTextRec( io, b, len );
-    } else if( io->attrs & REC_VARIABLE ) {
-        PutVariableRec( io, b, len );
     } else {
         PutFixedRec( io, b, len );
     }
@@ -139,26 +136,6 @@ static  void    PutTextRec( b_file *io, const char *b, size_t len )
         if( SysWrite( io, tag, len ) == -1 ) {
             return;
         }
-    }
-}
-
-
-static  void    PutVariableRec( b_file *io, const char *b, size_t len )
-//=====================================================================
-// Put a record to a file with "variable" records.
-{
-    unsigned_32 tag;
-
-    tag = len;
-    if( io->attrs & LOGICAL_RECORD ) {
-        tag |= 0x80000000;
-    }
-    if( SysWrite( io, (char *)(&tag), sizeof( tag ) ) == -1 )
-        return;
-    if( SysWrite( io, b, len ) == -1 )
-        return;
-    if( SysWrite( io, (char *)(&tag), sizeof( tag ) ) == -1 ) {
-        return;
     }
 }
 

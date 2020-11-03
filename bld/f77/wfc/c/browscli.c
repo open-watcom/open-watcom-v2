@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -510,8 +510,7 @@ void CLIDump( const char *filename )
 {
     file_handle     fp;
 
-    SDSetAttr( REC_FIXED | SEEK );
-    fp = SDOpen( filename, WRITE_FILE );
+    fp = SDOpen( filename, WRITE_FILE, REC_FIXED | SEEK );
     chkIOErr( fp, SM_OPENING_FILE, filename );
     CLILock();
     CLIRewind();
