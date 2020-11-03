@@ -2238,6 +2238,15 @@ void foo( int a )
 :MSGJTXT. ISO C89/C99 では無名構造体や共用体を受け付けません
 .np
 ISO C89/C99 doesn't support the use of anonymous structures or unions.
+:MSGSYM. ERR_ELSE_WITHOUT_IF
+:MSGTXT. 'else' without 'if'
+:MSGJTXT. 「else」に「if」がありません
+.np
+The
+.kw else
+must follow
+.kw if
+.
 :eMSGGRP. Errs
 :cmt -------------------------------------------------------------------
 :MSGGRP. Info
