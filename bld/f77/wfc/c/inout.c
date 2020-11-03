@@ -192,22 +192,12 @@ static  uint    SrcRead( void ) {
     char        msg[81];
 
     fp = CurrFile->fileptr;
-    if( CurrFile->flags & INC_LIB_MEMBER ) {
-        len = LibRead( fp );
-        if( LibEof( fp ) ) {
-            ProgSw |= PS_INC_EOF;
-        } else if( LibError( fp, msg, sizeof( msg ) ) ) {
-            InfoError( SM_IO_READ_ERR, CurrFile->name, msg );
-            ProgSw |= PS_INC_EOF;
-        }
-    } else {
-        len = SDRead( fp, SrcBuff, SRCLEN );
-        if( SDEof( fp ) ) {
-            ProgSw |= PS_INC_EOF;
-        } else if( SDError( fp, msg, sizeof( msg ) ) ) {
-            InfoError( SM_IO_READ_ERR, CurrFile->name, msg );
-            ProgSw |= PS_INC_EOF;
-        }
+    len = SDRead( fp, SrcBuff, SRCLEN );
+    if( SDEof( fp ) ) {
+        ProgSw |= PS_INC_EOF;
+    } else if( SDError( fp, msg, sizeof( msg ) ) ) {
+        InfoError( SM_IO_READ_ERR, CurrFile->name, msg );
+        ProgSw |= PS_INC_EOF;
     }
     return( len );
 }
@@ -357,11 +347,7 @@ void    Conclude( void ) {
             SetLst( false );
         }
     }
-    if( old->flags & INC_LIB_MEMBER ) {
-        IncMemClose( old->fileptr );
-    } else {
-        SDClose( old->fileptr );
-    }
+    SDClose( old->fileptr );
     FMemFree( old->name );
     FMemFree( old );
     ProgSw &= ~PS_INC_EOF;

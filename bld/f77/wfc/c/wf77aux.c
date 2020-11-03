@@ -53,7 +53,6 @@
 #include "symtab.h"
 #include "auxlook.h"
 #include "option.h"
-#include "posutil.h"
 #include "cioconst.h"
 
 #include "clibext.h"
@@ -521,7 +520,7 @@ void AddDependencyInfo( source_t *fi )
                 return;
             }
         }
-        if( fstat( FGetFileHandle( fi->fileptr ), &stat_info ) != -1 ) {
+        if( stat( p, &stat_info ) != -1 ) {
             new_dep = FMemAlloc( sizeof( dep_info ) + strlen( p ) );
             new_dep->link = NULL;
             strcpy( new_dep->fn, p );

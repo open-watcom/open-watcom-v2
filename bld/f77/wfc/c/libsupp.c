@@ -111,38 +111,3 @@ file_handle IncSearch( const char *name )
     }
     return( fp );
 }
-
-
-int     LibRead( file_handle fp ) {
-//================================
-
-// Read a record from a library member (source only).
-
-    return( SDRead( fp, SrcBuff, SRCLEN ) );
-}
-
-
-bool    LibEof( file_handle fp )
-//===============================
-// Check for EOF on library read (source only).
-{
-    return( SDEof( fp ) );
-}
-
-
-bool    LibError( file_handle fp, char *buff, size_t max_len ) {
-//=============================================
-
-// Check for error on library read (source only).
-
-    return( SDError( fp, buff, max_len ) );
-}
-
-
-void    IncMemClose( file_handle fp ) {
-//====================================
-
-// Close a library member that was included (source only).
-
-    SDClose( fp );
-}

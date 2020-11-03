@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +31,3 @@
 
 
 extern file_handle  IncSearch( const char *name );
-extern int          LibRead( file_handle fp );
-extern bool         LibEof( file_handle fp );
-extern bool         LibError( file_handle fp, char *buff, size_t max_len );
-extern void         IncMemClose( file_handle fp );
