@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,5 +30,58 @@
 ****************************************************************************/
 
 
-extern void    __LineFeedWithFormFeed( void );
-extern int     FSetCC( file_handle fp, char asa, const char **cc );
+#include "ftnstd.h"
+#include "posio.h"
+#include "poscc.h"
+
+
+static  char            FFSeq[] = { CHAR_LF, CHAR_FF };     // for form feeds
+static  char            SpcSeq[] = { CHAR_LF,               // for single spacing
+                                     CHAR_CR, CHAR_LF,      // for double spacing
+                                     CHAR_CR, CHAR_LF };    // for triple spacing
+
+#define FF_SEQ_LEN      sizeof( FFSeq );
+#define SPC_SEQ_LEN     sizeof( SpcSeq );
+
+
+static  bool    __lf_with_ff = false;
+
+
+void    __LineFeedWithFormFeed( void ) {
+//================================
+
+    __lf_with_ff = true;
+}
+
+
+int     FSetCC( b_file *io, char asa, const char **cc )
+//=====================================================
+// Output ASA carriage control character to a file.
+{
+    uint        cc_len;
+
+    cc_len = 0;
+    if( asa == '1' ) {
+        *cc = FFSeq;
+        cc_len = FF_SEQ_LEN;
+        if( !__lf_with_ff ) {
+            (*cc)++;
+            --cc_len;
+        }
+    } else if( asa != '+' ) {
+        *cc = SpcSeq;
+        cc_len = SPC_SEQ_LEN;
+        if( io->attrs & CC_NOLF ) {
+            (*cc)++;
+            cc_len--;
+        }
+        if( asa != '-' ) {
+            cc_len -= 2;
+            if( asa != '0' ) {
+                cc_len -= 2;
+            }
+        }
+    }
+    io->attrs |= CC_NOLF;
+    return( cc_len );
+}

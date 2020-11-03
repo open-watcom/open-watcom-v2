@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,11 +30,48 @@
 ****************************************************************************/
 
 
-#define SYSIOERROR  ((size_t)-1)
+#include "ftnstd.h"
+#include "posio.h"
+#include "posput.h"
+#include "posflush.h"
 
-extern void     FPutRec( file_handle fp, const char *b, size_t len );
-#if defined( __RT__ )
-extern void     ChopFile( file_handle fp );
-#endif
-extern size_t   writebytes( file_handle fp, const char *buff, size_t len );
-extern int      SysWrite( file_handle fp, const char *b, size_t len );
+
+int     FlushBuffer( b_file *io )
+// Flush i/o buffer.
+{
+    uint        amt;
+    int         bytes_written;
+    int         rc;
+
+    if( ( io->attrs & BUFFERED ) == 0 ) return( 0 );
+    rc = 0;
+    if( io->attrs & DIRTY_BUFFER ) {
+        if( io->attrs & READ_AHEAD ) {
+            if( lseek( io->handle, -(long)io->read_len, SEEK_CUR ) < 0 ) {
+                return( -1 );
+            }
+            amt = io->high_water;
+            if( amt < io->read_len ) {
+                amt = io->read_len;
+            }
+            bytes_written = write( io->handle, io->buffer, amt );
+            if( bytes_written < 0 ) {
+                return( -1 );
+            }
+            io->phys_offset += bytes_written - io->read_len;
+            if( bytes_written < amt ) {
+                rc = -1;
+            }
+        } else {
+            writebytes( io, io->buffer, io->high_water );
+            if( io->stat != POSIO_OK ) {
+                rc = -1;
+            }
+        }
+    }
+    io->b_curs = 0;
+    io->read_len = 0;
+    io->high_water = 0;
+    io->attrs &= ~(READ_AHEAD | DIRTY_BUFFER);
+    return( rc );
+}

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,9 +25,16 @@
 *
 *  ========================================================================
 *
-* Description:  FIle I/O routines
+* Description:  POSIX level I/O support routines
 *
 ****************************************************************************/
 
 
-extern void    Scratchf( const char *fn );
+#include "fio.h"
+
+
+extern int      FGetFileHandle( file_handle fp );
+extern f_attrs  FGetFileAttrs( file_handle fp );
+extern void     FSetFileAttrs( file_handle fp, f_attrs attrs );
+extern void     FAddFileAttrs( file_handle fp, f_attrs attrs );
+extern void     FDelFileAttrs( file_handle fp, f_attrs attrs );

@@ -91,37 +91,8 @@ void    FPutRec( b_file *io, const char *b, size_t len )
     } else {
         PutFixedRec( io, b, len );
     }
-#if defined( __RT__ )
-    if( io->attrs & TRUNC_ON_WRITE ) {
-        ChopFile( io );
-    }
-#endif
 }
 
-
-#if defined( __RT__ )
-
-void    ChopFile( b_file *io )
-{
-    long int    offset;
-
-    offset = CurrFileOffset( io );
-    if( io->attrs & BUFFERED ) {
-        if( FlushBuffer( io ) < 0 ) {
-            return;
-        }
-    }
-    // We have to call lseek here, not SysSeek to ensure that the real
-    // file offset is actually where we want it.
-    if( lseek( io->handle, offset, SEEK_SET ) < 0 )
-        return;
-    io->phys_offset = offset;
-    if( chsize( io->handle, offset ) < 0 ) {
-        FSetSysErr( io );
-    }
-}
-
-#endif
 
 #if 0
 void    PutRec( const char *b, size_t len )

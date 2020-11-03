@@ -416,8 +416,6 @@ char    GetStdChar( void )
 }
 
 
-#if defined( __RT__ )
-
 int     FCheckLogical( b_file *io )
 //=================================
 {
@@ -525,5 +523,3 @@ signed_32       FGetVarRecLen( b_file *io )
         return( -1 );
     return( size );
 }
-
-#endif

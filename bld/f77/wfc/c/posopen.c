@@ -43,29 +43,13 @@
 #include "posflush.h"
 #include "iomode.h"
 #include "posdat.h"
-
-#if defined( __RT__ )
-#include "runmain.h"
-#include "rmemmgr.h"
-
-#define FMEM_ALLOC      RMemAlloc
-#define FMEM_FREE       RMemFree
-
-#else
 #include "fmemmgr.h"
-
-#define FMEM_ALLOC      FMemAlloc
-#define FMEM_FREE       FMemFree
-
-#endif
 
 #include "clibext.h"
 
 
-/* Forward declarations */
-#if defined( __RT__ )
-static  void    ChkRedirection( b_file *fp );
-#endif
+#define FMEM_ALLOC      FMemAlloc
+#define FMEM_FREE       FMemFree
 
 static  int     IOBufferSize = { IO_BUFFER };
 
@@ -79,30 +63,7 @@ void    InitStd( void )
     __set_binary( STDOUT_FILENO );
     __set_binary( STDERR_FILENO );
 #endif
-#if defined( __RT__ )
-    ChkRedirection( FStdIn );
-    ChkRedirection( FStdOut );
-    ChkRedirection( FStdErr );
-    if( __DevicesCC() ) {
-        FStdOut->attrs |= CC_NOLF;
-    }
-#endif
 }
-
-#if defined( __RT__ )
-
-static  void    ChkRedirection( b_file *fp )
-// Check for redirection of standard i/o devices.
-{
-    struct stat         info;
-
-    if( fstat( fp->handle, &info ) == -1 ) return;
-    if( !S_ISCHR( info.st_mode ) ) {
-        fp->attrs |= BUFFERED;
-    }
-}
-
-#endif
 
 void    SetIOBufferSize( uint buff_size )
 {

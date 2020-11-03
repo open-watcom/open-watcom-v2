@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,9 +25,21 @@
 *
 *  ========================================================================
 *
-* Description:  POSIX level i/o support
+* Description:  File I/O routines
 *
 ****************************************************************************/
 
 
-extern int     FlushBuffer( file_handle fp );
+#include "ftnstd.h"
+#include "posio.h"
+#include "posseek.h"
+#include "posrew.h"
+#include "poserr.h"
+
+
+void    FRewind( b_file *io ) {
+// Rewind a file.
+
+    FSetIOOk( io );
+    SysSeek( io, 0, SEEK_SET );
+}

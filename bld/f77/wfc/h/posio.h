@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,9 +25,33 @@
 *
 *  ========================================================================
 *
-* Description:  File I/O routines
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-extern void     FRewind( file_handle fp );
+#include "wio.h"
+#include "fio.h"
+
+
+typedef enum {
+    #define pick(id,text)  POSIO_ ## id,
+    #include "_posio.h"
+    #undef pick
+} io_status;
+
+typedef struct b_file {                 // file common
+    f_attrs         attrs;                  // file attributes
+    int             handle;                 // DOS handle
+    io_status       stat;                   // error status
+    long            phys_offset;            // physical offset in file
+                                        // file with buffered i/o
+    size_t          read_len;               // amount read from buffer
+    size_t          b_curs;                 // position in buffer
+    size_t          high_water;             // highest byte written to in buffer
+    size_t          buff_size;              // size of buffer
+    char            buffer[MIN_BUFFER];     // read buffer (must be last field since
+} b_file;                               // bigger buffer may be allocated)
+
+extern void    FSetErr( io_status error, file_handle fp );
