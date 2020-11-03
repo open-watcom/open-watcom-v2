@@ -103,7 +103,7 @@ static int parse_words( const CHAR_TYPE *command, CHAR_TYPE **words )
 
     /*** If an error occurred, free any memory we've allocated ***/
     if( error ) {
-        for( numWords--; numWords>=0; numWords-- ) {
+        for( numWords--; numWords >= 0; numWords-- ) {
             lib_free( words[numWords] );
         }
         return( -1 );
@@ -202,7 +202,8 @@ static int connect_pipe( FILE *fp, const CHAR_TYPE *command, int *handles,
 #elif defined( __OS2__ )
         oldHandle = (HFILE)-1;                /* duplicate standard input */
         rc = DosDupHandle( STDIN_FILENO, &oldHandle );
-        if( rc != NO_ERROR )  return( 0 );
+        if( rc != NO_ERROR )
+            return( 0 );
         osHandle = STDIN_FILENO;            /* use new standard input */
         rc = DosDupHandle( (HFILE)_os_handle(handles[0]), &osHandle );
         if( rc != NO_ERROR ) {

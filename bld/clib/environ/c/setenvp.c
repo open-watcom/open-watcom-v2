@@ -45,6 +45,8 @@
     #include <wos2.h>
 #elif defined( __NT__ )
     #include <windows.h>
+#elif defined( __WINDOWS__ )
+    #include <windows.h>
 #elif defined( __RDOS__ )
     #include <rdos.h>
 #elif defined( __RDOSDEV__ )
@@ -56,10 +58,6 @@
 #include "rtdata.h"
 #include "_environ.h"
 
-
-#if defined(__WINDOWS__)
-    extern char _WCI86FAR * _WCI86FAR __pascal GetDOSEnvironment( void );
-#endif
 
 #if !defined(__NETWARE__) && !defined(__LINUX__)
 static char *_free_ep;
@@ -103,7 +101,7 @@ void __setenvp( void )
     if( _RWD_environ != NULL )
         return;
     argep = _Envptr;
-    while ( *argep != NULL )
+    while( *argep != NULL )
         argep++;
     count = argep - _Envptr;
     argep = lib_malloc( ( count + 1 ) * sizeof( char * ) + count * sizeof( char ) );
@@ -178,15 +176,16 @@ void __setenvp( void )
         size = 0;
         src = ptr;
         for( ;; ) {
-            while( *src ) {
+            while( *src != '\0' ) {
                 src++;
                 size++;
             }
             src++;
             size++;
 
-            if( *src == 0)
+            if( *src == '\0' ) {
                 break;
+            }
         }
         size++;
 
@@ -206,8 +205,9 @@ void __setenvp( void )
   #endif
     count = 0;
     p = startp;
-    while( *p ) {
-        while( *++p );
+    while( *p != '\0' ) {
+        while( *++p != '\0' )
+            ;
         ++count;
         ++p;
     }
@@ -223,10 +223,11 @@ void __setenvp( void )
             _RWD_environ = my_environ;
             p = startp;
             _free_ep = ep;
-            while( *p ) {
+            while( *p != '\0' ) {
                 *my_environ++ = ep;
-                while( *ep++ = *p++ )
+                while( (*ep++ = *p++) != '\0' ) {
                     ;
+                }
             }
             *my_environ++ = NULL;
             _RWD_env_mask = my_env_mask = (char *)my_environ;
