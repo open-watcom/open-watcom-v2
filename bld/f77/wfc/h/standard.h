@@ -34,9 +34,7 @@
 #include <stddef.h>
 #include "watcom.h"
 #include "bool.h"
-#if !defined( __RT__ )
-  #include "cgstd.h"
-#endif
+#include "cgstd.h"
 
 
 #define NULLCHAR        '\0'
