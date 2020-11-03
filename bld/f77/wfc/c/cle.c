@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,6 +71,19 @@ static  void StartCompile( void )
     PrtOptions();
 }
 
+static void InvokeCompile( void )
+{
+    InitMacros();
+    ComRead(); // pre-read must occur here in case of null program
+    if( ProgSw & PS_SOURCE_EOF ) {
+        Conclude();
+    } else {
+        DoCompile();
+    }
+    FiniMacros();
+}
+
+
 static void Compile( void )
 {
     InitGlobalSegs();
@@ -88,18 +102,6 @@ static void Compile( void )
     }
     FiniAuxInfo();
     FreeGlobalSegs();
-}
-
-void InvokeCompile( void )
-{
-    InitMacros();
-    ComRead(); // pre-read must occur here in case of null program
-    if( ProgSw & PS_SOURCE_EOF ) {
-        Conclude();
-    } else {
-        DoCompile();
-    }
-    FiniMacros();
 }
 
 
