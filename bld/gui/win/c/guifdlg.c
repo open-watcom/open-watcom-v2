@@ -97,18 +97,22 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
     char                *cwd;
 
     cwd = getcwd( pg2.buffer, sizeof( pg2.buffer ) );
-    pg1.dir[0] = '\0';
     if( cwd != NULL ) {
         _splitpath2( cwd, pg1.buffer, NULL, &pg1.dir, NULL, NULL );
+    } else {
+        pg1.buffer[0] = '\0';
+        pg1.dir = pg1.buffer;
     }
 
     new_drive = 0;
-    pg2.dir[0] = '\0';
     if( ofn->initial_dir != NULL && ofn->initial_dir[0] != '\0' ) {
         _splitpath2( ofn->initial_dir, pg2.buffer, &pg2.drive, &pg2.dir, NULL, NULL );
         if( pg2.drive[0] != '\0' && pg2.drive[1] == ':' ) {
             new_drive = tolower( (unsigned char)pg2.drive[0] ) - 'a' + 1;
         }
+    } else {
+        pg2.buffer[0] = '\0';
+        pg2.dir = pg2.buffer;
     }
 
     memset( &fdlg, 0 , sizeof( fdlg ) );
