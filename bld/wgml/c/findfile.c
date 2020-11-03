@@ -297,13 +297,13 @@ bool search_file_in_dirs( const char *filename, const char *defext, const char *
     alternate_file[0] = '\0';
     default_file[0] = '\0';
 
+    _splitpath2( filename, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+
     /* For ds_bin_lib, filename contains a defined name. */
 
     if( sequence != ds_bin_lib ) {
 
         /* Determine if filename contains path information. */
-
-        _splitpath2( filename, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
 
         if( pg.drive[0] != '\0' || pg.dir[0] != '\0' ) {
             xx_simple_err_c( err_file_name, filename );
