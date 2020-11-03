@@ -2195,6 +2195,15 @@ void foo( int a )
 }
 .eerrbad
 .
+:MSGSYM. ERR_ELSE_WITHOUT_IF
+:MSGTXT. 'else' without 'if'
+:MSGJTXT. 「else」に「if」がありません
+.np
+The
+.kw else
+must follow
+.kw if
+.
 :eMSGGRP. Errs
 :cmt -------------------------------------------------------------------
 :MSGGRP. Info
