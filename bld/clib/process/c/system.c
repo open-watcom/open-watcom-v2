@@ -104,7 +104,7 @@ _WCRTLINK int __F_NAME(system,_wsystem)( const CHAR_TYPE *cmd )
         name = use_cmd ? STRING( "CMD.EXE" ) : STRING( "COMMAND.COM" );
     }
 
-   #if defined( __NT__ )
+  #if defined( __NT__ )
     /* disable file handle inheritance for a system call */
     tmp_fileinfo = _fileinfo;
     _fileinfo = 0;

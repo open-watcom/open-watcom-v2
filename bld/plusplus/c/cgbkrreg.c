@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +49,7 @@ typedef struct {                // OPT_DEFN -- optimization definition
 } OPT_DEFN;
 
 
-OPT_DEFN optFuncReg = {   // OPT_DEFN for function registration
+OPT_DEFN optFuncReg = {         // OPT_DEFN for function registration
      NULL, "_wint_thread_data"
 };
 

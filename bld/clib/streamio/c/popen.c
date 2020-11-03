@@ -341,10 +341,8 @@ _WCRTLINK FILE *__F_NAME(_popen,_wpopen)( const CHAR_TYPE *command, const CHAR_T
             return( 0 );
         }
 #endif
-    }
-
-    /*** Make write handle non-inheritable if writing ***/
-    else {
+    } else {
+        /*** Make write handle non-inheritable if writing ***/
 #if defined (__NT__ )
         rc = DuplicateHandle( GetCurrentProcess(),
                               (HANDLE)_os_handle(handles[1]),

@@ -100,8 +100,7 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
     if( cwd != NULL ) {
         _splitpath2( cwd, pg1.buffer, NULL, &pg1.dir, NULL, NULL );
     } else {
-        pg1.buffer[0] = '\0';
-        pg1.dir = pg1.buffer;
+        pg1.dir = "";
     }
 
     new_drive = 0;
@@ -111,8 +110,7 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
             new_drive = tolower( (unsigned char)pg2.drive[0] ) - 'a' + 1;
         }
     } else {
-        pg2.buffer[0] = '\0';
-        pg2.dir = pg2.buffer;
+        pg2.dir = "";
     }
 
     memset( &fdlg, 0 , sizeof( fdlg ) );

@@ -130,7 +130,8 @@ void __setenvp( void )
     size_t  env_size;
 
     /* if we are already initialized, then return */
-    if( _RWD_environ != NULL ) return;           /* 10-jun-90 */
+    if( _RWD_environ != NULL )
+        return;
   #if defined(__OS2__)
     #if defined(_M_I86)
 
