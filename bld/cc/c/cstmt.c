@@ -626,6 +626,12 @@ static void ElseStmt( void )
 
     SrcLoc = TokenLoc;
     NextToken();
+
+    if (BlockStack->block_type != T_IF) {
+        CErr1(ERR_ELSE_WITHOUT_IF);
+        return;
+    }
+
     BlockStack->block_type = T_ELSE;
     if_label = BlockStack->break_label;
     if( DeadCode == 0 ) {
@@ -1253,6 +1259,9 @@ void Statement( void )
                 break;
             }
             declaration_allowed = false;
+            continue;
+        case T_ELSE:
+            ElseStmt();
             continue;
         case T_WHILE:
             NewLoop();
