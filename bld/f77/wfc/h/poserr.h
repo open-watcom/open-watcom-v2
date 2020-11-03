@@ -37,4 +37,3 @@ extern void    FSetTrunc( file_handle fp );
 extern void    FSetSysErr( file_handle fp );
 extern void    FSetEof( file_handle fp );
 extern void    FSetIOOk( file_handle fp );
-extern void    FSetBadOpr( file_handle fp );

@@ -35,6 +35,5 @@
 
 extern void         InitStd( void );
 extern void         SetIOBufferSize( uint buff_size );
-extern file_handle  _AllocFile( int h, f_attrs attrs, long int fpos );
 extern file_handle  Openf( const char *f, f_attrs attrs );
 extern void         Closef( file_handle fp );

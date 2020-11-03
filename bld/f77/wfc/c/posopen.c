@@ -70,7 +70,7 @@ void    SetIOBufferSize( uint buff_size )
     IOBufferSize = buff_size;
 }
 
-b_file  *_AllocFile( int h, f_attrs attrs, long int fpos )
+static b_file  *_AllocFile( int h, f_attrs attrs, long int fpos )
 // Allocate file structure.
 {
     b_file      *io;

@@ -140,13 +140,3 @@ void    FSetIOOk( b_file *io ) {
     }
     Stat = POSIO_OK;
 }
-
-
-void    FSetBadOpr( b_file *io ) {
-// Set bad operation condition.
-
-    if( io != NULL ) {
-        io->stat = POSIO_BAD_OPERATION;
-    }
-    Stat = POSIO_BAD_OPERATION;
-}

@@ -29,6 +29,4 @@
 ****************************************************************************/
 
 
-extern file_handle  FStdIn;
 extern file_handle  FStdOut;
-extern file_handle  FStdErr;

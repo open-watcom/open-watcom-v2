@@ -36,23 +36,11 @@
 
 
 #if defined( __WATCOMC__ ) || defined( __UNIX__ )
-#define STDIN   STDIN_FILENO
 #define STDOUT  STDOUT_FILENO
-#define STDERR  STDERR_FILENO
 #else
-#define STDIN   0
 #define STDOUT  1
-#define STDERR  2
 #endif
 
-static  b_file          _FStdIn = { RDONLY | REC_TEXT,
-                                    STDIN,
-                                    POSIO_OK,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    MIN_BUFFER };
 static  b_file          _FStdOut = { WRONLY | REC_TEXT,
                                      STDOUT,
                                      POSIO_OK,
@@ -61,15 +49,5 @@ static  b_file          _FStdOut = { WRONLY | REC_TEXT,
                                      0,
                                      0,
                                      MIN_BUFFER };
-static  b_file          _FStdErr = { WRONLY | REC_TEXT,
-                                     STDERR,
-                                     POSIO_OK,
-                                     0,
-                                     0,
-                                     0,
-                                     0,
-                                     MIN_BUFFER };
 
-file_handle     FStdIn = { &_FStdIn };
 file_handle     FStdOut = { &_FStdOut };
-file_handle     FStdErr = { &_FStdErr };

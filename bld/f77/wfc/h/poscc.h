@@ -30,5 +30,4 @@
 ****************************************************************************/
 
 
-extern void    __LineFeedWithFormFeed( void );
 extern int     FSetCC( file_handle fp, char asa, const char **cc );

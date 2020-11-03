@@ -126,8 +126,8 @@ static  int     FillBuffer( b_file *io )
 }
 
 
-size_t SysRead( b_file *io, char *b, size_t len )
-//===============================================
+static size_t SysRead( b_file *io, char *b, size_t len )
+//======================================================
 {
     size_t      bytes_read;
     size_t      amt;
@@ -342,37 +342,4 @@ size_t FGetRec( b_file *io, char *b, size_t len )
     if( io->attrs & REC_TEXT )
         return( GetTextRec( io, b, len ) );
     return( GetFixedRec( io, b, len ) );
-}
-
-#if 0
-size_t  GetRec( char *b, size_t len )
-//===================================
-// Get a record from standard input device.
-{
-    return( FGetRec( FStdIn, b, len ) );
-}
-#endif
-
-char    GetStdChar( void )
-//========================
-// Get a character from standard input.
-{
-    char        ch;
-
-#if defined( __WINDOWS__ )
-    ch = getche();
-    if( ch == CHAR_CR )
-        return( CHAR_LF );
-#else
-    if( posix_read( STDIN_FILENO, &ch, 1 ) < 0 )
-        return( NULLCHAR );
-  #if ! defined( __UNIX__ )
-    if( ch == CHAR_CR ) {
-        if( posix_read( STDIN_FILENO, &ch, 1 ) < 0 ) {
-            return( NULLCHAR );
-        }
-    }
-  #endif
-#endif
-    return( ch );
 }

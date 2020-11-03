@@ -44,16 +44,6 @@ static  char            SpcSeq[] = { CHAR_LF,               // for single spacin
 #define SPC_SEQ_LEN     sizeof( SpcSeq );
 
 
-static  bool    __lf_with_ff = false;
-
-
-void    __LineFeedWithFormFeed( void ) {
-//================================
-
-    __lf_with_ff = true;
-}
-
-
 int     FSetCC( b_file *io, char asa, const char **cc )
 //=====================================================
 // Output ASA carriage control character to a file.
@@ -64,10 +54,8 @@ int     FSetCC( b_file *io, char asa, const char **cc )
     if( asa == '1' ) {
         *cc = FFSeq;
         cc_len = FF_SEQ_LEN;
-        if( !__lf_with_ff ) {
-            (*cc)++;
-            --cc_len;
-        }
+        (*cc)++;
+        --cc_len;
     } else if( asa != '+' ) {
         *cc = SpcSeq;
         cc_len = SPC_SEQ_LEN;
