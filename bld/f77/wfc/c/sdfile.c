@@ -25,26 +25,22 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  System dependent file name processor.
 *
 ****************************************************************************/
 
 
-#include <stddef.h>
-#include "watcom.h"
-#include "bool.h"
+#include "ftnstd.h"
+#include "sdfile.h"
 
 
-#define NULLCHAR        '\0'
+char    FFCtrlSeq[] = { "1" };
+char    SkipCtrlSeq[] = { "0" };
+char    NormalCtrlSeq[] = { " " };
 
-typedef unsigned char   byte;
-typedef void            *pointer;
-typedef float           real;
-typedef double          reallong;
-
-#ifdef _M_I86
-#define __FAR __far
+#if defined( __UNIX__ )
+char    SDTermOut[] = { "/dev/tty" };
 #else
-#define __FAR
+char    SDTermOut[] = { "con" };
+char    SDPrtName[] = { "prn" };
 #endif

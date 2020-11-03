@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -32,7 +32,6 @@
 extern char    FFCtrlSeq[];
 extern char    SkipCtrlSeq[];
 extern char    NormalCtrlSeq[];
-extern char    SDTermIn[];
 extern char    SDTermOut[];
 #ifndef __UNIX__
 extern char    SDPrtName[];

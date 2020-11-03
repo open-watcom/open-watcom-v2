@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -30,19 +29,11 @@
 ****************************************************************************/
 
 
-#include "ftnstd.h"
-#include "sdfile.h"
-
-
-char    FFCtrlSeq[] = { "1" };
-char    SkipCtrlSeq[] = { "0" };
-char    NormalCtrlSeq[] = { " " };
-
-#if defined( __UNIX__ )
-char    SDTermIn[] = { "/dev/tty" };
-char    SDTermOut[] = { "/dev/tty" };
-#else
-char    SDTermIn[] = { "con" };
-char    SDTermOut[] = { "con" };
-char    SDPrtName[] = { "prn" };
+extern char    FFCtrlSeq[];
+extern char    SkipCtrlSeq[];
+extern char    NormalCtrlSeq[];
+extern char    SDTermIn[];
+extern char    SDTermOut[];
+#ifndef __UNIX__
+extern char    SDPrtName[];
 #endif
