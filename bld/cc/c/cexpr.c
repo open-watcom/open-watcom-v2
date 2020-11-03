@@ -1827,8 +1827,9 @@ static TREEPTR IndexOp( TREEPTR tree, TREEPTR index_expr )
 {
     TYPEPTR     typ;
 
-    if( tree->op.opr == OPR_ERROR )
-        return( tree );
+    if (tree->op.opr == OPR_ERROR)
+        goto ret;
+
     typ = tree->u.expr_type;
     SKIP_TYPEDEFS( typ );
     if( typ->decl_type == TYPE_ARRAY ) {
@@ -1848,6 +1849,8 @@ static TREEPTR IndexOp( TREEPTR tree, TREEPTR index_expr )
             tree = ErrorNode( tree );
         }
     }
+
+ret:
     MustRecog( T_RIGHT_BRACKET );
     return( tree );
 }
