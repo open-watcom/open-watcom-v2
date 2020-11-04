@@ -349,3 +349,6 @@ source\diag0110.c(20): Warning! W204: Initialized field overridden
 source\diag0110.c(26): Error! E1177: The flexible array member 'fam' can't be initialized
 source\diag0110.c(32): Error! E1192: Anonymous structs/unions aren't supported in ISO C89/C99
 source\diag0110.c(40): Error! E1192: Anonymous structs/unions aren't supported in ISO C89/C99
+source\diag0111.c(6): Error! E1011: Symbol 'undefined' has not been declared
+source\diag0111.c(6): Error! E1045: Subscript on non-array
+source\diag0111.c(14): Error! E1193: 'else' without 'if'
