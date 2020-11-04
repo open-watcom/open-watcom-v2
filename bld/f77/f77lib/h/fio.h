@@ -29,8 +29,8 @@
 *
 ****************************************************************************/
 
-#ifndef _F77_FIO_H
-#define _F77_FIO_H 1
+#ifndef _FIO_H_INCLUDED
+#define _FIO_H_INCLUDED
 
 #define CHAR_CR         0x0d            // carriage return
 #define CHAR_LF         0x0a            // line feed
@@ -80,5 +80,7 @@ typedef enum {
     CC_NOLF             = 0x4000,  // no LF
     BUFFERED            = 0x8000,  // buffered i/o
 } f_attrs;
+
+typedef struct b_file   *file_handle;   // file handle
 
 #endif

@@ -32,6 +32,8 @@
 #ifndef _F77_FTNIO_H
 #define _F77_FTNIO_H 1
 
+#include "fio.h"
+
 #ifdef _M_I86
     #define _BadUnit( x )       ( ( x <  0 ) || ( x > 32727 ) )
     #define _BadRecl( x )       ( ( x <= 0 ) || ( x > 65535 ) )

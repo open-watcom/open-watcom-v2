@@ -44,7 +44,6 @@
 #include "posget.h"
 #include "posput.h"
 #include "posseek.h"
-#include "posrew.h"
 #include "poserr.h"
 #include "chrutils.h"
 #include "rtsysutl.h"

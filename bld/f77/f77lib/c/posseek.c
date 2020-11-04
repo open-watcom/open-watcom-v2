@@ -184,3 +184,11 @@ long int        FGetFilePos( b_file *io )
 {
     return( CurrFileOffset( io ) );
 }
+
+
+void    FRewind( b_file *io )
+// Rewind a file.
+{
+    FSetIOOk( io );
+    SysSeek( io, 0, SEEK_SET );
+}

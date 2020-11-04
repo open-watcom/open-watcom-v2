@@ -38,5 +38,3 @@ typedef char            *targ_addr;
 
 typedef unsigned_32     obj_ptr;
 typedef unsigned_32     seg_offset;
-
-typedef struct b_file   *file_handle;   // file handle
