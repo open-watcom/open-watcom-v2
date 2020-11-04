@@ -39,7 +39,6 @@
 #include <string.h>
 #include <stdio.h>
 #include "global.h"
-#include "omodes.h"
 #include "inout.h"
 #include "iopath.h"
 #include "mkname.h"
@@ -58,7 +57,7 @@ static  file_handle FindSrcFile( char *fname ) {
     file_handle  fp;
 
     MakeName( fname, SDSplitSrcExtn( fname ), fname );
-    fp = SDOpen( fname, READ_FILE, REC_TEXT );
+    fp = SDOpenText( fname, RDONLY );
     if( fp != NULL ) {
         SrcInclude( fname );
     }

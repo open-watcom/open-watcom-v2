@@ -40,7 +40,6 @@
 #include "dwarf.h"
 #include "errcod.h"
 #include "cioconst.h"
-#include "omodes.h"
 #include "exeelf.h"
 #include "browscli.h"
 #include "fmemmgr.h"
@@ -510,7 +509,7 @@ void CLIDump( const char *filename )
 {
     file_handle     fp;
 
-    fp = SDOpen( filename, WRITE_FILE, REC_FIXED | SEEK );
+    fp = SDOpen( filename, WRONLY );
     chkIOErr( fp, SM_OPENING_FILE, filename );
     CLILock();
     CLIRewind();

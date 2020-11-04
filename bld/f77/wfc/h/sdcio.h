@@ -35,7 +35,9 @@
 
 extern void         SDInitIO( void );
 extern void         SDScratch( const char *name );
-extern file_handle  SDOpen( const char *name, int mode, f_attrs attr );
+extern file_handle  SDOpen( const char *name, f_attrs mode );
+extern file_handle  SDOpenText( const char *name, f_attrs mode );
+extern file_handle  SDOpenCC( const char *name, f_attrs mode );
 extern void         SDClose( file_handle fp );
 extern size_t       SDRead( file_handle fp, void *buff, size_t len );
 extern void         SDWrite( file_handle fp, const void *buff, size_t len );

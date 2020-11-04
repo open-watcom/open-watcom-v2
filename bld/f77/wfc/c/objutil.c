@@ -40,7 +40,6 @@
 #include "global.h"
 #include "fcgbls.h"
 #include "errcod.h"
-#include "omodes.h"
 #include "cioconst.h"
 #include "fcodes.h"
 #include "fmemmgr.h"
@@ -122,7 +121,7 @@ void    InitObj( void ) {
         for( idx = 0; idx < 26; idx++ ) {
             fn[0] = 'a' + idx;
             if( access( PageFileBuff, 0 ) == -1 ) {
-                PageFile = SDOpen( PageFileBuff, UPDATE_FILE, REC_FIXED | SEEK );
+                PageFile = SDOpen( PageFileBuff, RDWR );
                 if( !SDError( PageFile, NULL, 0 ) ) {
                     break;
                 }

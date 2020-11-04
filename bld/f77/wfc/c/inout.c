@@ -38,7 +38,6 @@
 #include "cpopt.h"
 #include "errcod.h"
 #include "global.h"
-#include "omodes.h"
 #include "cioconst.h"
 #include "csetinfo.h"
 #include "fmemmgr.h"
@@ -152,7 +151,7 @@ void    OpenSrc( void ) {
 
     erase_err = ErrFile == NULL;
     MakeName( SrcName, SrcExtn, bld_name );
-    fp = SDOpen( bld_name, READ_FILE, REC_TEXT );
+    fp = SDOpenText( bld_name, RDONLY );
     if( fp != NULL ) {
         SrcInclude( bld_name );
         CurrFile->fileptr = fp;
@@ -256,7 +255,7 @@ void    Include( const char *inc_name )
     if( AlreadyOpen( bld_name ) )
         return;
     // try file called <include_name>.FOR.
-    fp = SDOpen( bld_name, READ_FILE, REC_TEXT );
+    fp = SDOpenText( bld_name, RDONLY );
     if( fp != NULL ) {
         SrcInclude( bld_name );
         CurrFile->fileptr = fp;
@@ -364,7 +363,7 @@ void    OpenErr( void ) {
     if( ( Options & OPT_ERRFILE ) && ( ( ProgSw & PS_ERR_OPEN_TRIED ) == 0 ) ) {
         ProgSw |= PS_ERR_OPEN_TRIED;
         MakeName( SDFName( SrcName ), ErrExtn, buffer );
-        ErrFile = SDOpen( buffer, WRITE_FILE, REC_TEXT );
+        ErrFile = SDOpenText( buffer, WRONLY );
         if( SDError( ErrFile, errmsg, sizeof( errmsg ) ) ) {
             InfoError( SM_OPENING_FILE, &buffer, &errmsg );
         }
@@ -554,7 +553,7 @@ static  void    OpenListingFile( bool reopen ) {
         // ignore other listing file options
     } else {
         GetLstName( name );
-        ListFile = SDOpen( name, WRITE_FILE, REC_TEXT | CARRIAGE_CONTROL );
+        ListFile = SDOpenCC( name, WRONLY );
         if( SDError( ListFile, errmsg, sizeof( errmsg ) ) ) {
             InfoError( SM_OPENING_FILE, name, errmsg );
         } else {

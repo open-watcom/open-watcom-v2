@@ -32,7 +32,6 @@
 
 #include "ftnstd.h"
 #include <string.h>
-#include "omodes.h"
 #include "cpopt.h"
 #include "global.h"
 #include "blips.h"
@@ -45,11 +44,6 @@
 #include "posdel.h"
 #include "posdat.h"
 
-
-static  f_attrs         Modes[] = { RDONLY,
-                                    WRONLY,
-                                    APPEND,
-                                    RDWR };
 
 void    SDInitIO(void)
 //====================
@@ -66,10 +60,24 @@ void    SDScratch( const char *name )
 }
 
 
-file_handle SDOpen( const char *name, int mode, f_attrs attr )
-//============================================================
+file_handle SDOpen( const char *name, f_attrs mode )
+//==================================================
 {
-    return( Openf( name, Modes[ mode ] | attr ) );
+    return( Openf( name, mode | REC_FIXED | SEEK ) );
+}
+
+
+file_handle SDOpenText( const char *name, f_attrs mode )
+//======================================================
+{
+    return( Openf( name, mode | REC_TEXT ) );
+}
+
+
+file_handle SDOpenCC( const char *name, f_attrs mode )
+//====================================================
+{
+    return( Openf( name, mode | REC_TEXT | CARRIAGE_CONTROL ) );
 }
 
 

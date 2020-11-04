@@ -200,9 +200,7 @@ static  void    PutRecFixed( b_file *io, const char *b, size_t len )
 //==================================================================
 // Put a record to a file with "fixed" records.
 {
-    if( SysWrite( io, b, len ) == -1 ) {
-        return;
-    }
+    SysWrite( io, b, len );
 }
 
 
