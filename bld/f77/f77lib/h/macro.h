@@ -41,9 +41,16 @@
 #include "sdmacro.h"
 #include "switch.h"
 
+
+#ifdef _M_I86
+#define __FAR __far
+#else
+#define __FAR
+#endif
+
 // Define multi-language constants:
 // ================================
 
-#define MSG_LANG_SPACING	13000
+#define MSG_LANG_SPACING        13000
 
 #include "wreslang.rh"
