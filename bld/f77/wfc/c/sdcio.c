@@ -40,7 +40,6 @@
 #include "posget.h"
 #include "posput.h"
 #include "posseek.h"
-#include "posrew.h"
 #include "poserr.h"
 #include "sdcio.h"
 #include "posdel.h"
@@ -52,9 +51,9 @@ static  f_attrs         Modes[] = { RDONLY,
                                     APPEND,
                                     RDWR };
 
-void    SDInitIO(void) {
-//==================
-
+void    SDInitIO(void)
+//====================
+{
     InitStd();
     SetIOBufferSize( 0 ); // minimum buffer size
 }
@@ -99,7 +98,7 @@ void    SDWrite( file_handle fp, const void *buff, size_t len )
 
 
 void    SDSeek( file_handle fp, unsigned_32 rec_num, size_t rec_size )
-//===================================================================
+//====================================================================
 {
     FSeekRec( fp, rec_num, rec_size );
 }
@@ -123,7 +122,8 @@ bool    SDError( file_handle fp, char *buff, size_t max_len )
 //===========================================================
 {
     if( !IOOk( fp ) ) {
-        ErrorMsg( fp, buff, max_len );
+        if( buff != NULL && max_len > 0 )
+            ErrorMsg( fp, buff, max_len );
         return( true );
     }
     return( false );

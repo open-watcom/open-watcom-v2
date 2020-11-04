@@ -123,7 +123,7 @@ void    InitObj( void ) {
             fn[0] = 'a' + idx;
             if( access( PageFileBuff, 0 ) == -1 ) {
                 PageFile = SDOpen( PageFileBuff, UPDATE_FILE, REC_FIXED | SEEK );
-                if( IOOk( PageFile ) ) {
+                if( !SDError( PageFile, NULL, 0 ) ) {
                     break;
                 }
             }
