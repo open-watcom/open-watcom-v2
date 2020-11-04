@@ -216,7 +216,6 @@ dep_both += &
     posget.obj &
     posopen.obj &
     posput.obj &
-    posrew.obj &
     posseek.obj &
     postrunc.obj &
     posutil.obj &
