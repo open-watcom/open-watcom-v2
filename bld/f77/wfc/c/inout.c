@@ -90,16 +90,6 @@ static char             *TermBuff;      // terminal file buffer
 static file_handle      TermFile;       // file pointer for terminal
 static size_t           TermCursor;     // offset into "TermBuff"
 
-/* Forward declarations */
-static  void    SendRec( void );
-static  void    SetCtrlSeq( void );
-static  void    PutLst( const char *string );
-static  void    ChkErrErr( void );
-static  void    ErrOut( const char *string );
-static  void    ErrNL( void );
-static  void    ChkLstErr( void );
-static  void    Erase( char *extn );
-
 
 //========================================================================
 //
@@ -139,6 +129,16 @@ void    FiniComIO( void ) {
 //  Source file routines
 //
 //========================================================================
+
+
+static  void    Erase( char *extn ) {
+//===================================
+
+    char        buffer[_MAX_PATH];
+
+    MakeName( SDFName( SrcName ), extn, buffer );
+    SDScratch( buffer );
+}
 
 
 void    OpenSrc( void ) {
@@ -403,38 +403,6 @@ static  bool    ErrToTerm( void ) {
 }
 
 
-void    PrtErrNL( void ) {
-//========================
-
-    if( ErrToTerm() ) {
-        TOutNL( "" );
-    }
-    ErrNL();
-    PrtLstNL( "" );
-}
-
-
-void    JustErr( const char *string )
-//===================================
-{
-    if( ErrToTerm() ) {
-        TOut( string );
-    }
-    ErrOut( string );
-}
-
-
-static  void    ErrNL( void ) {
-//=============================
-
-    if( ErrFile != NULL ) {
-        SDWrite( ErrFile, ErrBuff, ErrCursor );
-        ChkErrErr();
-    }
-    ErrCursor = 0;
-}
-
-
 static  void    ChkErrErr( void ) {
 //=================================
 
@@ -450,14 +418,26 @@ static  void    ChkErrErr( void ) {
     }
 }
 
-void    ChkErrFile( void ) {
-//==========================
 
-// Make sure error file is opened.
+static  void    ErrNL( void ) {
+//=============================
 
-    if( ErrFile == NULL ) {
-        OpenErr();
+    if( ErrFile != NULL ) {
+        SDWrite( ErrFile, ErrBuff, ErrCursor );
+        ChkErrErr();
     }
+    ErrCursor = 0;
+}
+
+
+void    PrtErrNL( void ) {
+//========================
+
+    if( ErrToTerm() ) {
+        TOutNL( "" );
+    }
+    ErrNL();
+    PrtLstNL( "" );
 }
 
 
@@ -487,6 +467,27 @@ static  void    ErrOut( const char *string )
 {
     if( ErrFile != NULL ) {
         SendBuff( string, ErrBuff, ERR_BUFF_SIZE, &ErrCursor, ErrFile, &ChkErrErr );
+    }
+}
+
+
+void    JustErr( const char *string )
+//===================================
+{
+    if( ErrToTerm() ) {
+        TOut( string );
+    }
+    ErrOut( string );
+}
+
+
+void    ChkErrFile( void ) {
+//==========================
+
+// Make sure error file is opened.
+
+    if( ErrFile == NULL ) {
+        OpenErr();
     }
 }
 
@@ -670,6 +671,85 @@ void    PrtLstNL( const char *string )
 }
 
 
+static  void    ChkLstErr( void ) {
+//=================================
+
+    char        msg[81];
+    char        fnbuff[_MAX_PATH];
+
+    if( SDError( ListFile, msg, sizeof( msg ) ) ) {
+        CloseLst();
+        Options |= OPT_TERM;
+        TermCursor = 0;
+        GetLstName( fnbuff );
+        InfoError( SM_IO_WRITE_ERR, fnbuff, msg );
+    }
+}
+
+
+static  void    SendRec( void ) {
+//===============================
+
+    if( ListFile != NULL ) {
+        SDWrite( ListFile, ListBuff, ListCursor );
+        ChkLstErr();
+    }
+    ListFlag &= LF_OFF;
+    ListCursor = 0;
+}
+
+
+static  void    SetCtrlSeq( void ) {
+//==================================
+
+    char        *ctrlseq;
+
+    ++ListCount;
+    if( ListCount >= LinesPerPage - LF_PAGE_BOUNDARY ) {
+        ListFlag |= LF_PAGE_FLAG;
+    }
+    if(  ListFlag & LF_PAGE_FLAG ) {
+        ListCount = 0;
+        if( Options & OPT_TYPE ) {
+            ctrlseq = SkipCtrlSeq;
+        } else {
+            ctrlseq = FFCtrlSeq;
+        }
+    } else if( ListFlag & LF_SKIP_FLAG ) {
+        ctrlseq = SkipCtrlSeq;
+    } else {
+        ctrlseq = NormalCtrlSeq;
+    }
+    ListCursor = CopyMaxStr( ctrlseq, ListBuff, LIST_BUFF_SIZE );
+}
+
+
+static  void    PutLst( const char *string )
+//==========================================
+{
+    size_t      len;
+    bool        newline;
+
+    newline = ( ListFlag & LF_NEW_LINE );
+    for( ; ListFile != NULL; ) {
+        if( ListCursor == 0 ) {
+            SetCtrlSeq();
+        }
+        len = LIST_BUFF_SIZE - ListCursor - 1; // -1 for NULLCHAR
+        len = CharSetInfo.extract_text( string, len );
+        len = CopyMaxStr( string, &ListBuff[ ListCursor ], len );
+        ListCursor += len;
+        string += len;
+        if( *string == NULLCHAR )
+            break;
+        SendRec();
+    }
+    if( newline ) {
+        SendRec();
+    }
+}
+
+
 void    PrtLst( const char *string )
 //==================================
 {
@@ -722,93 +802,3 @@ void    LFSkip( void ) {
         ++ListCount;
     }
 }
-
-
-static  void    PutLst( const char *string )
-//==========================================
-{
-    size_t      len;
-    bool        newline;
-
-    newline = ( ListFlag & LF_NEW_LINE );
-    for( ; ListFile != NULL; ) {
-        if( ListCursor == 0 ) {
-            SetCtrlSeq();
-        }
-        len = LIST_BUFF_SIZE - ListCursor - 1; // -1 for NULLCHAR
-        len = CharSetInfo.extract_text( string, len );
-        len = CopyMaxStr( string, &ListBuff[ ListCursor ], len );
-        ListCursor += len;
-        string += len;
-        if( *string == NULLCHAR )
-            break;
-        SendRec();
-    }
-    if( newline ) {
-        SendRec();
-    }
-}
-
-
-static  void    SetCtrlSeq( void ) {
-//==================================
-
-    char        *ctrlseq;
-
-    ++ListCount;
-    if( ListCount >= LinesPerPage - LF_PAGE_BOUNDARY ) {
-        ListFlag |= LF_PAGE_FLAG;
-    }
-    if(  ListFlag & LF_PAGE_FLAG ) {
-        ListCount = 0;
-        if( Options & OPT_TYPE ) {
-            ctrlseq = SkipCtrlSeq;
-        } else {
-            ctrlseq = FFCtrlSeq;
-        }
-    } else if( ListFlag & LF_SKIP_FLAG ) {
-        ctrlseq = SkipCtrlSeq;
-    } else {
-        ctrlseq = NormalCtrlSeq;
-    }
-    ListCursor = CopyMaxStr( ctrlseq, ListBuff, LIST_BUFF_SIZE );
-}
-
-
-static  void    SendRec( void ) {
-//===============================
-
-    if( ListFile != NULL ) {
-        SDWrite( ListFile, ListBuff, ListCursor );
-        ChkLstErr();
-    }
-    ListFlag &= LF_OFF;
-    ListCursor = 0;
-}
-
-
-static  void    ChkLstErr( void ) {
-//=================================
-
-    char        msg[81];
-    char        fnbuff[_MAX_PATH];
-
-    if( SDError( ListFile, msg, sizeof( msg ) ) ) {
-        CloseLst();
-        Options |= OPT_TERM;
-        TermCursor = 0;
-        GetLstName( fnbuff );
-        InfoError( SM_IO_WRITE_ERR, fnbuff, msg );
-    }
-}
-
-
-static  void    Erase( char *extn ) {
-//===================================
-
-    char        buffer[_MAX_PATH];
-
-    MakeName( SDFName( SrcName ), extn, buffer );
-    SDScratch( buffer );
-}
-
