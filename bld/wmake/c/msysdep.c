@@ -47,7 +47,10 @@
     #include "tinyio.h"
 #else
   #if defined( __OS2__ )
+    #define INCL_DOSMODULEMGR
+    #define INCL_DOSERRORS
     #define INCL_DOSMISC
+    #define INCL_ORDINALS
     #include <os2.h>
   #endif
 #endif
@@ -402,31 +405,67 @@ void InitSignals( void )
 }
 
 #if defined( __OS2__ ) && !defined( _M_I86 )
+
+/* Older versions of OS/2 did not support BEGIN/ENDLIBPATH.
+ * Dynamically query the API entrypoints to prevent load failures.
+ */
+
 #define BEGPATHNAME "BEGINLIBPATH"
 #define ENDPATHNAME "ENDLIBPATH"
 
 static char os2BegLibPath[1024] = "";
 static char os2EndLibPath[1024] = "";
+
+static APIRET   (APIENTRY *fnDosQueryExtLIBPATH)( PSZ, ULONG ) = NULL;
+static APIRET   (APIENTRY *fnDosSetExtLIBPATH)( PSZ, ULONG ) = NULL;
+
+#define NODLLENTRY      ((PFN)-1)
+
+static bool ensure_loaded( ULONG ord, PFN *fn )
+{
+    char    old_lpath[1024];
+    HMODULE hmod;
+
+    if( *fn != NULL )
+        return( *fn != NODLLENTRY );
+    if( DosLoadModule( old_lpath, sizeof( old_lpath ), "DOSCALLS", &hmod ) == NO_ERROR ) {
+        if( DosQueryProcAddr( hmod, ord, NULL, fn ) == NO_ERROR ) {
+            return( true );
+        }
+    }
+    *fn = NODLLENTRY;
+    return( false );
+}
+
 #endif
 
 char *GetEnvExt( const char *str )
 {
 #if defined( __OS2__ ) && !defined( _M_I86 )
+    char    *rc;
+
+    rc = NULL;
     if( strcmp( str, BEGPATHNAME ) == 0 ) {
-        if( os2BegLibPath[0] == '\0' ) {
-            if( DosQueryExtLIBPATH( os2BegLibPath, BEGIN_LIBPATH ) ) {
-                return( NULL );
+        if( ensure_loaded( ORD_DOS32QUERYEXTLIBPATH, (PFN *)&fnDosQueryExtLIBPATH ) ) {
+            rc = os2BegLibPath;
+            if( os2BegLibPath[0] == '\0' ) {
+                if( fnDosQueryExtLIBPATH( os2BegLibPath, BEGIN_LIBPATH ) ) {
+                    rc = NULL;
+                }
             }
         }
-        return( os2BegLibPath );
+        return( rc );
     }
     if( strcmp( str, ENDPATHNAME ) == 0 ) {
-        if( os2EndLibPath[0] == '\0' ) {
-            if( DosQueryExtLIBPATH( os2EndLibPath, END_LIBPATH ) ) {
-                return( NULL );
+        if( ensure_loaded( ORD_DOS32QUERYEXTLIBPATH, (PFN *)&fnDosQueryExtLIBPATH ) ) {
+        	rc = os2EndLibPath;
+            if( os2EndLibPath[0] == '\0' ) {
+                if( fnDosQueryExtLIBPATH( os2EndLibPath, END_LIBPATH ) ) {
+                    rc = NULL;
+                }
             }
         }
-        return( os2EndLibPath );
+        return( rc );
     }
 #endif
     return( getenv( str ) );
@@ -435,13 +474,22 @@ char *GetEnvExt( const char *str )
 int PutEnvExt( char *str )
 {
 #if defined( __OS2__ ) && !defined( _M_I86 )
+    int rc;
+
+    rc = -1;
     if( strncmp( str, BEGPATHNAME "=", sizeof( BEGPATHNAME "=" ) - 1 ) == 0 ) {
-        strcpy( os2BegLibPath, str + sizeof( BEGPATHNAME "=" ) - 1 );
-        return( DosSetExtLIBPATH( os2BegLibPath, BEGIN_LIBPATH ) );
+        if( ensure_loaded( ORD_DOS32SETEXTLIBPATH, (PFN *)&fnDosSetExtLIBPATH ) ) {
+            strcpy( os2BegLibPath, str + sizeof( BEGPATHNAME "=" ) - 1 );
+            rc = fnDosSetExtLIBPATH( os2BegLibPath, BEGIN_LIBPATH );
+        }
+        return( rc );
     }
     if( strncmp( str, ENDPATHNAME "=", sizeof( ENDPATHNAME "=" ) - 1 ) == 0 ) {
-        strcpy( os2EndLibPath, str + sizeof( ENDPATHNAME "=" ) - 1 );
-        return( DosSetExtLIBPATH( os2EndLibPath, END_LIBPATH ) );
+        if( ensure_loaded( ORD_DOS32SETEXTLIBPATH, (PFN *)&fnDosSetExtLIBPATH ) ) {
+            strcpy( os2EndLibPath, str + sizeof( ENDPATHNAME "=" ) - 1 );
+            rc = fnDosSetExtLIBPATH( os2EndLibPath, END_LIBPATH );
+        }
+        return( rc );
     }
 #endif
     return( putenv( str ) );
