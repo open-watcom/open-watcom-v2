@@ -174,31 +174,25 @@ static  void    PutRecText( b_file *io, const char *b, size_t len )
         cc_len = FSetCC( io, *b, &cc );
         b++;    // skip carriage control character
         len--;  // ...
-    }
-    if( io->attrs & CARRIAGE_CONTROL ) {
         if( SysWrite( io, cc, cc_len ) == -1 ) {
             return;
         }
     }
     if( SysWrite( io, b, len ) == -1 )
         return;
-    if( ( io->attrs & CC_NOCR ) == 0 ) {
 #if defined( __UNIX__ )
-        tag[0] = CHAR_LF;
-        len = 1;
+    tag[0] = CHAR_LF;
+    len = 1;
 #else
-        tag[0] = CHAR_CR;
-        len = 1;
-        if( ( io->attrs & CC_NOLF ) == 0 ) {
-            tag[1] = CHAR_LF;
-            ++len;
-        }
-#endif
-        io->attrs &= ~CC_NOLF;
-        if( SysWrite( io, tag, len ) == -1 ) {
-            return;
-        }
+    tag[0] = CHAR_CR;
+    len = 1;
+    if( ( io->attrs & CC_NOLF ) == 0 ) {
+        tag[1] = CHAR_LF;
+        ++len;
     }
+#endif
+    io->attrs &= ~CC_NOLF;
+    SysWrite( io, tag, len );
 }
 
 
@@ -218,9 +212,9 @@ void    FPutRec( b_file *io, const char *b, size_t len )
 {
     FSetIOOk( io );
     if( io->attrs & REC_TEXT ) {
-        PutTextRec( io, b, len );
+        PutRecText( io, b, len );
     } else {
-        PutFixedRec( io, b, len );
+        PutRecFixed( io, b, len );
     }
 }
 
