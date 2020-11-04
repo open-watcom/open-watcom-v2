@@ -192,7 +192,7 @@ static size_t SysRead( b_file *io, char *b, size_t len )
 }
 
 
-static size_t GetTextRec( b_file *io, char *b, size_t len )
+static size_t GetRecText( b_file *io, char *b, size_t len )
 //=========================================================
 // Get a record from a TEXT file.
 {
@@ -323,7 +323,7 @@ static size_t GetTextRec( b_file *io, char *b, size_t len )
 }
 
 
-static size_t GetFixedRec( b_file *io, char *b, size_t len )
+static size_t GetRecFixed( b_file *io, char *b, size_t len )
 //==========================================================
 // Get a record from a file with "fixed" records.
 {
@@ -340,6 +340,6 @@ size_t FGetRec( b_file *io, char *b, size_t len )
 {
     FSetIOOk( io );
     if( io->attrs & REC_TEXT )
-        return( GetTextRec( io, b, len ) );
-    return( GetFixedRec( io, b, len ) );
+        return( GetRecText( io, b, len ) );
+    return( GetRecFixed( io, b, len ) );
 }

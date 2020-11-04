@@ -45,10 +45,6 @@
 #include "clibext.h"
 
 
-/* forward declarations */
-static  void    PutTextRec( b_file *io, const char *b, size_t len );
-static  void    PutFixedRec( b_file *io, const char *b, size_t len );
-
 #if defined( _MSC_VER ) && defined( _WIN64 )
 static ssize_t  posix_write( int fildes, void const *buffer, size_t nbyte )
 {
@@ -77,77 +73,6 @@ static ssize_t  posix_write( int fildes, void const *buffer, size_t nbyte )
 #else
 #define posix_write     write
 #endif
-
-void    FPutRec( b_file *io, const char *b, size_t len )
-//======================================================
-// Put a record to a file.
-{
-    FSetIOOk( io );
-    if( io->attrs & REC_TEXT ) {
-        PutTextRec( io, b, len );
-    } else {
-        PutFixedRec( io, b, len );
-    }
-}
-
-
-#if 0
-void    PutRec( const char *b, size_t len )
-// Put a record to standard output device.
-{
-    FPutRec( FStdOut, b, len );
-}
-#endif
-
-static  void    PutTextRec( b_file *io, const char *b, size_t len )
-//=================================================================
-// Put a record to a file with "text" records.
-{
-    int         cc_len;
-    const char  *cc;
-    char        tag[2];
-
-    cc_len = 0;
-    if( io->attrs & CARRIAGE_CONTROL ) {
-        cc_len = FSetCC( io, *b, &cc );
-        b++;    // skip carriage control character
-        len--;  // ...
-    }
-    if( io->attrs & CARRIAGE_CONTROL ) {
-        if( SysWrite( io, cc, cc_len ) == -1 ) {
-            return;
-        }
-    }
-    if( SysWrite( io, b, len ) == -1 )
-        return;
-    if( ( io->attrs & CC_NOCR ) == 0 ) {
-#if defined( __UNIX__ )
-        tag[0] = CHAR_LF;
-        len = 1;
-#else
-        tag[0] = CHAR_CR;
-        len = 1;
-        if( ( io->attrs & CC_NOLF ) == 0 ) {
-            tag[1] = CHAR_LF;
-            ++len;
-        }
-#endif
-        io->attrs &= ~CC_NOLF;
-        if( SysWrite( io, tag, len ) == -1 ) {
-            return;
-        }
-    }
-}
-
-
-static  void    PutFixedRec( b_file *io, const char *b, size_t len )
-//==================================================================
-// Put a record to a file with "fixed" records.
-{
-    if( SysWrite( io, b, len ) == -1 ) {
-        return;
-    }
-}
 
 
 size_t  writebytes( b_file *io, const char *buff, size_t len )
@@ -234,3 +159,68 @@ int SysWrite( b_file *io, const char *b, size_t len )
     }
     return( 0 );
 }
+
+
+static  void    PutRecText( b_file *io, const char *b, size_t len )
+//=================================================================
+// Put a record to a file with "text" records.
+{
+    int         cc_len;
+    const char  *cc;
+    char        tag[2];
+
+    cc_len = 0;
+    if( io->attrs & CARRIAGE_CONTROL ) {
+        cc_len = FSetCC( io, *b, &cc );
+        b++;    // skip carriage control character
+        len--;  // ...
+    }
+    if( io->attrs & CARRIAGE_CONTROL ) {
+        if( SysWrite( io, cc, cc_len ) == -1 ) {
+            return;
+        }
+    }
+    if( SysWrite( io, b, len ) == -1 )
+        return;
+    if( ( io->attrs & CC_NOCR ) == 0 ) {
+#if defined( __UNIX__ )
+        tag[0] = CHAR_LF;
+        len = 1;
+#else
+        tag[0] = CHAR_CR;
+        len = 1;
+        if( ( io->attrs & CC_NOLF ) == 0 ) {
+            tag[1] = CHAR_LF;
+            ++len;
+        }
+#endif
+        io->attrs &= ~CC_NOLF;
+        if( SysWrite( io, tag, len ) == -1 ) {
+            return;
+        }
+    }
+}
+
+
+static  void    PutRecFixed( b_file *io, const char *b, size_t len )
+//==================================================================
+// Put a record to a file with "fixed" records.
+{
+    if( SysWrite( io, b, len ) == -1 ) {
+        return;
+    }
+}
+
+
+void    FPutRec( b_file *io, const char *b, size_t len )
+//======================================================
+// Put a record to a file.
+{
+    FSetIOOk( io );
+    if( io->attrs & REC_TEXT ) {
+        PutTextRec( io, b, len );
+    } else {
+        PutFixedRec( io, b, len );
+    }
+}
+
