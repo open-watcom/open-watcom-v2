@@ -6,11 +6,12 @@
 #ifdef __OS2__
 
 #define INCL_DOS
+#define INCL_DOSPROCESS
 #include <os2.h>
 
 #if defined(QA_MAKE_DLL)
 
-void dll_threadfunc( void *private_data )
+void FAR dll_threadfunc( void FAR *private_data )
 {
     static int counter = 0;
 
@@ -25,7 +26,7 @@ void do_start_threads( const char *const szMsg )
 
     printf( "In DLL do_start_threads called from %s\n", szMsg );
     for( i = 0; i < 10; i++ ) {
-        _beginthread( &dll_threadfunc, NULL, 8192, (void*)szMsg );
+        _beginthread( dll_threadfunc, NULL, 8192, (void*)szMsg );
     }
 }
 
@@ -37,6 +38,8 @@ static const char *const rgMsgs[2] =
 
 unsigned APIENTRY LibMain( unsigned hmod, unsigned termination )
 {
+    (void)hmod;
+
     if( termination )
         printf( rgMsgs[1] );
     else
@@ -57,9 +60,11 @@ void __export QA_func1( void )
 extern void QA_func1( void );
 
 // check that threading works at all in the exe
-void exe_threadfunc( void *private_data )
+void FAR exe_threadfunc( void FAR *private_data )
 {
     static int counter = 0;
+
+    (void)private_data;
 
     ++counter;
     printf( ".exe threadfunc entered %2d times.\n", counter );
@@ -71,7 +76,7 @@ void do_start_threads( void )
 
     printf( "in .exe: do_start_threads\n" );
     for( i = 0; i < 10; ++i ) {
-        _beginthread( &exe_threadfunc, NULL, 8192, 0 );
+        _beginthread( exe_threadfunc, NULL, 8192, 0 );
     }
 }
 
@@ -85,15 +90,19 @@ void do_start_threads( void )
 
 static int counter = 0;
 
-static void exe_threadfunc1( void *private_data )
+static void FAR exe_threadfunc1( void FAR *private_data )
 {
-    DosSetPriority( PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, 0 );
+    (void)private_data;
+
+    DosSetPrty( PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, 0 );
     ++counter;
 }
 
-static void exe_threadfunc2( void *private_data )
+static void FAR exe_threadfunc2( void FAR *private_data )
 {
-    DosSetPriority( PRTYS_THREAD, PRTYC_IDLETIME, 0, 0 );
+    (void)private_data;
+
+    DosSetPrty( PRTYS_THREAD, PRTYC_IDLETIME, 0, 0 );
     ++counter;
 }
 
@@ -103,7 +112,7 @@ static void do_start_threads1( void )
 
     printf( "calling do_start_threads1\n" );
     for( i = 0; i < 100; ++i ) {
-        _beginthread( &exe_threadfunc1, NULL, 8192, 0 );
+        _beginthread( exe_threadfunc1, NULL, 8192, 0 );
     }
 }
 
@@ -113,7 +122,7 @@ static void do_start_threads2( void )
 
     printf( "calling do_start_threads2\n" );
     for( i = 0; i < 100; ++i ) {
-        _beginthread( &exe_threadfunc2, NULL, 8192, 0 );
+        _beginthread( exe_threadfunc2, NULL, 8192, 0 );
     }
 }
 
@@ -129,7 +138,7 @@ int main( void )
     do_start_threads1();
     sleep( 1 ); // sleep 1 second, Let'em die
     printf( "threadfunc entered %2d times.\n", counter );
-    DosSetPriority( PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, 0 );
+    DosSetPrty( PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, 0 );
     // Next try threads that won't finish before all have been created
     do_start_threads2();
     printf( "threadfunc entered %2d times.\n", counter );

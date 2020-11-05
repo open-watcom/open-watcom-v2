@@ -435,7 +435,7 @@ os3pm_3r.exe : $(srcfile)
     @%make set_old_path
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM os2v2_pm NAME $@ $(link_opts) $(link_x86) FILE $^*.obj
+    $(noecho)$(linker) SYSTEM os2v2 pm NAME $@ $(link_opts) $(link_x86) FILE $^*.obj
     @%make set_old_path
 
 os3pm_3s.exe : $(srcfile)
@@ -445,7 +445,7 @@ os3pm_3s.exe : $(srcfile)
     @%make set_old_path
     @%make set_path_wlink
     @%make echo_link
-    $(noecho)$(linker) SYSTEM os2v2_pm NAME $@ $(link_opts) $(link_x86) FILE $^*.obj
+    $(noecho)$(linker) SYSTEM os2v2 pm NAME $@ $(link_opts) $(link_x86) FILE $^*.obj
     @%make set_old_path
 
 win_s.exe : $(srcfile)
