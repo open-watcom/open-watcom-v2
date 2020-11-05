@@ -42,8 +42,6 @@
 #include "poserr.h"
 #include "posflush.h"
 
-#include "clibext.h"
-
 
 #if defined( _MSC_VER ) && defined( _WIN64 )
 static ssize_t  posix_read( int fildes, void *buffer, size_t nbyte )

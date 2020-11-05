@@ -46,16 +46,19 @@
 #include "runmain.h"
 #include "rmemmgr.h"
 
-#include "clibext.h"
-
-
-#define FMEM_ALLOC      RMemAlloc
-#define FMEM_FREE       RMemFree
-
-/* Forward declarations */
-static  void    ChkRedirection( b_file *fp );
 
 static  int     IOBufferSize = { IO_BUFFER };
+
+static  void    ChkRedirection( b_file *fp )
+// Check for redirection of standard i/o devices.
+{
+    struct stat         info;
+
+    if( fstat( fp->handle, &info ) == -1 ) return;
+    if( !S_ISCHR( info.st_mode ) ) {
+        fp->attrs |= BUFFERED;
+    }
+}
 
 void    InitStd( void )
 {
@@ -72,17 +75,6 @@ void    InitStd( void )
     ChkRedirection( FStdErr );
     if( __DevicesCC() ) {
         FStdOut->attrs |= CC_NOLF;
-    }
-}
-
-static  void    ChkRedirection( b_file *fp )
-// Check for redirection of standard i/o devices.
-{
-    struct stat         info;
-
-    if( fstat( fp->handle, &info ) == -1 ) return;
-    if( !S_ISCHR( info.st_mode ) ) {
-        fp->attrs |= BUFFERED;
     }
 }
 
@@ -107,7 +99,7 @@ b_file  *_AllocFile( int h, f_attrs attrs, long int fpos )
     }
     attrs &= ~CREATION_MASK;
     if( S_ISCHR( info.st_mode ) ) {
-        io = FMEM_ALLOC( offsetof( b_file, read_len ) );
+        io = RMemAlloc( offsetof( b_file, read_len ) );
         // Turn off truncate just in case we turned it on by accident due to
         // a buggy NT dos box.  We NEVER want to truncate a device.
         attrs &= ~TRUNC_ON_WRITE;
@@ -115,11 +107,11 @@ b_file  *_AllocFile( int h, f_attrs attrs, long int fpos )
     } else {
         attrs |= BUFFERED;
         buff_size = IOBufferSize;
-        io = FMEM_ALLOC( sizeof( b_file ) + IOBufferSize - MIN_BUFFER );
+        io = RMemAlloc( sizeof( b_file ) + IOBufferSize - MIN_BUFFER );
         if( ( io == NULL ) && ( IOBufferSize > MIN_BUFFER ) ) {
             // buffer is too big (low on memory) so use small buffer
             buff_size = MIN_BUFFER;
-            io = FMEM_ALLOC( sizeof( b_file ) );
+            io = RMemAlloc( sizeof( b_file ) );
         }
     }
     if( io == NULL ) {
@@ -208,6 +200,6 @@ void    Closef( b_file *io )
         FSetSysErr( io );
         return;
     }
-    FMEM_FREE( io );
+    RMemFree( io );
     FSetIOOk( NULL );
 }

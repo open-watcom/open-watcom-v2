@@ -42,8 +42,6 @@
 #include "posflush.h"
 #include "posdat.h"
 
-#include "clibext.h"
-
 
 /* forward declarations */
 static  void    PutTextRec( b_file *io, const char *b, size_t len );
