@@ -240,7 +240,6 @@ comroot += &
     posdel.obj &
     posdat.obj &
     poserr.obj &
-    posflush.obj &
     posget.obj &
     posopen.obj &
     posput.obj &
