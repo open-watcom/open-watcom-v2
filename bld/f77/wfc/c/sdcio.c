@@ -91,7 +91,14 @@ void    SDClose( file_handle fp )
 size_t    SDRead( file_handle fp, void *buff, size_t len )
 //========================================================
 {
-    return( FGetRec( fp, buff, len ) );
+    return( FGetRecFixed( fp, buff, len ) );
+}
+
+
+size_t    SDReadText( file_handle fp, void *buff, size_t len )
+//============================================================
+{
+    return( FGetRecText( fp, buff, len ) );
 }
 
 
@@ -101,7 +108,28 @@ void    SDWrite( file_handle fp, const void *buff, size_t len )
     if( fp == FStdOut ) {
         CheckBlips();
     }
-    FPutRec( fp, buff, len );
+    FPutRecFixed( fp, buff, len );
+}
+
+
+void    SDWriteText( file_handle fp, const char *buff, size_t len, bool nolf )
+//============================================================================
+{
+    if( fp == FStdOut ) {
+        CheckBlips();
+    }
+    FPutRecText( fp, buff, len, nolf );
+}
+
+
+void    SDWriteCCChar( file_handle fp, char asa, bool nolf )
+//========================================================
+{
+    const char  *cc;
+    uint        cc_len;
+
+    cc_len = FSetCC( fp, asa, &cc, nolf );
+    FPutRecFixed( fp, cc, cc_len );
 }
 
 

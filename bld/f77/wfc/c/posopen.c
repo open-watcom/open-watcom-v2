@@ -169,15 +169,6 @@ b_file  *Openf( const char *f, f_attrs attrs )
 void    Closef( b_file *io )
 // Close a file.
 {
-    uint        cc_len;
-    const char  *cc;
-
-    if( io->attrs & CARRIAGE_CONTROL ) {
-        cc_len = FSetCC( io, ' ', &cc );
-        if( SysWrite( io, cc, cc_len ) == -1 ) {
-            return;
-        }
-    }
     if( FlushBuffer( io ) < 0 )
         return;
     if( close( io->handle ) < 0 ) {

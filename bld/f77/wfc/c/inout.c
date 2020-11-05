@@ -185,7 +185,7 @@ static  uint    SrcRead( void ) {
     char        msg[81];
 
     fp = CurrFile->fileptr;
-    len = SDRead( fp, SrcBuff, SRCLEN );
+    len = SDReadText( fp, SrcBuff, SRCLEN );
     if( SDEof( fp ) ) {
         ProgSw |= PS_INC_EOF;
     } else if( SDError( fp, msg, sizeof( msg ) ) ) {
@@ -423,7 +423,7 @@ static  void    ErrNL( void ) {
 //=============================
 
     if( ErrFile != NULL ) {
-        SDWrite( ErrFile, ErrBuff, ErrCursor );
+        SDWriteText( ErrFile, ErrBuff, ErrCursor, false );
         ChkErrErr();
     }
     ErrCursor = 0;
@@ -455,7 +455,7 @@ static  void    SendBuff( const char *str, char *buff, size_t buff_size, size_t 
         str += len;
         if( *str == NULLCHAR )
             break;
-        SDWrite( fp, buff, *cursor );
+        SDWriteText( fp, buff, *cursor, false );
         err_rtn();
         *cursor = 0;
     }
@@ -522,7 +522,7 @@ void    TOutNL( const char *string )
 //==================================
 {
     TOut( string );
-    SDWrite( TermFile, TermBuff, TermCursor );
+    SDWriteText( TermFile, TermBuff, TermCursor, false );
     TermCursor = 0;
 }
 
@@ -558,6 +558,7 @@ static  void    OpenListingFile( bool reopen ) {
         if( SDError( ListFile, errmsg, sizeof( errmsg ) ) ) {
             InfoError( SM_OPENING_FILE, name, errmsg );
         } else {
+            ListFlag |= LF_CC_NOLF;
             ListBuff = FMemAlloc( LIST_BUFF_SIZE + 1 );
             if( ListBuff == NULL ) {
                 CloseLst();
@@ -691,8 +692,10 @@ static  void    SendRec( void ) {
 //===============================
 
     if( ListFile != NULL ) {
-        SDWrite( ListFile, ListBuff, ListCursor );
+        SDWriteCCChar( ListFile, *ListBuff, ListCursor, (ListFlag & LF_CC_NOLF) );
+        SDWriteText( ListFile, ListBuff + 1, ListCursor - 1, true );
         ChkLstErr();
+        ListFlag &= ~LF_CC_NOLF;
     }
     ListFlag &= LF_OFF;
     ListCursor = 0;
@@ -766,6 +769,7 @@ void    CloseLst( void ) {
 
     if( ListFile == NULL )
         return;
+    SDWriteCCChar( ListFile, ' ', ( ListFlag & LF_CC_NOLF ) );
     SDClose( ListFile );
     ListFile = NULL;
     if( ListBuff == NULL )

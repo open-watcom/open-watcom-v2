@@ -161,23 +161,12 @@ int SysWrite( b_file *io, const char *b, size_t len )
 }
 
 
-static  void    PutRecText( b_file *io, const char *b, size_t len )
-//=================================================================
+void    FPutRecText( b_file *io, const char *b, size_t len, bool nolf )
+//=====================================================================
 // Put a record to a file with "text" records.
 {
-    int         cc_len;
-    const char  *cc;
     char        tag[2];
 
-    cc_len = 0;
-    if( io->attrs & CARRIAGE_CONTROL ) {
-        cc_len = FSetCC( io, *b, &cc );
-        b++;    // skip carriage control character
-        len--;  // ...
-        if( SysWrite( io, cc, cc_len ) == -1 ) {
-            return;
-        }
-    }
     if( SysWrite( io, b, len ) == -1 )
         return;
 #if defined( __UNIX__ )
@@ -186,33 +175,18 @@ static  void    PutRecText( b_file *io, const char *b, size_t len )
 #else
     tag[0] = CHAR_CR;
     len = 1;
-    if( ( io->attrs & CC_NOLF ) == 0 ) {
+    if( !nolf ) {
         tag[1] = CHAR_LF;
         ++len;
     }
 #endif
-    io->attrs &= ~CC_NOLF;
     SysWrite( io, tag, len );
 }
 
 
-static  void    PutRecFixed( b_file *io, const char *b, size_t len )
-//==================================================================
+void    FPutRecFixed( b_file *io, const char *b, size_t len )
+//===========================================================
 // Put a record to a file with "fixed" records.
 {
     SysWrite( io, b, len );
 }
-
-
-void    FPutRec( b_file *io, const char *b, size_t len )
-//======================================================
-// Put a record to a file.
-{
-    FSetIOOk( io );
-    if( io->attrs & REC_TEXT ) {
-        PutRecText( io, b, len );
-    } else {
-        PutRecFixed( io, b, len );
-    }
-}
-

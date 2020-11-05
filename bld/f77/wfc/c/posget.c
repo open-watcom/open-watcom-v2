@@ -192,14 +192,15 @@ static size_t SysRead( b_file *io, char *b, size_t len )
 }
 
 
-static size_t GetRecText( b_file *io, char *b, size_t len )
-//=========================================================
+size_t FGetRecText( b_file *io, char *b, size_t len )
+//===================================================
 // Get a record from a TEXT file.
 {
     char        ch;
     size_t      read;
     char        rs[2];
 
+    FSetIOOk( io );
     if( io->attrs & SEEK ) { // direct access
         if( SysRead( io, b, len ) == READ_ERROR )
             return( 0 );
@@ -323,23 +324,13 @@ static size_t GetRecText( b_file *io, char *b, size_t len )
 }
 
 
-static size_t GetRecFixed( b_file *io, char *b, size_t len )
+size_t FGetRecFixed( b_file *io, char *b, size_t len )
 //==========================================================
 // Get a record from a file with "fixed" records.
 {
+    FSetIOOk( io );
     len = SysRead( io, b, len );
     if( len == READ_ERROR )
         return( 0 );
     return( len );
-}
-
-
-size_t FGetRec( b_file *io, char *b, size_t len )
-//===============================================
-// Get a record from a file.
-{
-    FSetIOOk( io );
-    if( io->attrs & REC_TEXT )
-        return( GetRecText( io, b, len ) );
-    return( GetRecFixed( io, b, len ) );
 }

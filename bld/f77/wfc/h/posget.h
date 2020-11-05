@@ -31,4 +31,5 @@
 
 
 extern size_t       readbytes( file_handle fp, char *buff, size_t len );
-extern size_t       FGetRec( file_handle fp, char *b, size_t len );
+extern size_t       FGetRecFixed( file_handle fp, char *b, size_t len );
+extern size_t       FGetRecText( file_handle fp, char *b, size_t len );
