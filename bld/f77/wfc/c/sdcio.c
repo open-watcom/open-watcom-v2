@@ -127,8 +127,8 @@ void    SDWriteCCChar( file_handle fp, char asa, bool nolf )
 }
 
 
-void    SDSeek( file_handle fp, unsigned_32 rec_num, size_t rec_size )
-//====================================================================
+void    SDSeekRec( file_handle fp, unsigned_32 rec_num, size_t rec_size )
+//=======================================================================
 {
     FSeekRec( fp, rec_num, rec_size );
 }

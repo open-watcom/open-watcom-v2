@@ -31,7 +31,5 @@
 
 
 extern void         FSeekRec( file_handle fp, unsigned_32 rec, uint recsize );
-extern long int     CurrFileOffset( file_handle fp );
 extern int          SysSeek( file_handle fp, long int new_offset, int seek_mode );
-extern long int     FGetFilePos( file_handle fp );
 extern void         FRewind( file_handle fp );

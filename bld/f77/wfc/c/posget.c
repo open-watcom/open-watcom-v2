@@ -198,29 +198,9 @@ size_t FGetRecText( b_file *io, char *b, size_t len )
 {
     char        ch;
     size_t      read;
-    char        rs[2];
 
     FSetIOOk( io );
-    if( io->attrs & SEEK ) { // direct access
-        if( SysRead( io, b, len ) == READ_ERROR )
-            return( 0 );
-        if( SysRead( io, rs, sizeof( char ) ) == READ_ERROR )
-            return( 0 );
-        if( rs[0] == CHAR_LF )
-            return( len );
-#if ! defined( __UNIX__ )
-        if( rs[0] == CHAR_CR ) {
-            if( SysRead( io, &rs[1], sizeof( char ) ) == READ_ERROR ) {
-                return( 0 );
-            }
-            if( rs[1] == CHAR_LF ) {
-                return( len );
-            }
-        }
-#endif
-        FSetErr( POSIO_BAD_RECORD, io );
-        return( 0 );
-    } else if( io->attrs & BUFFERED ) {
+    if( io->attrs & BUFFERED ) {
         char            *ptr;
         char            *stop;
         bool            seen_cr;

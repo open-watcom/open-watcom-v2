@@ -38,26 +38,7 @@
 #include "posflush.h"
 
 
-void    FSeekRec( b_file *io, unsigned_32 rec, uint recsize )
-//==========================================================
-// Seek to specified record in file.
-{
-    FSetIOOk( io );
-    if( io->attrs & SEEK ) {
-        if( io->attrs & REC_TEXT ) {
-#if defined( __UNIX__ )
-            recsize += sizeof( char );     // compensate for LF
-#else
-            recsize += 2 * sizeof( char ); // compensate for CR/LF
-#endif
-        }
-        SysSeek( io, rec * recsize, SEEK_SET );
-    } else {
-        FSetErr( POSIO_BAD_OPERATION, io );
-    }
-}
-
-long int        CurrFileOffset( b_file *io )
+static long int CurrFileOffset( b_file *io )
 {
     long int    offs;
 
@@ -172,13 +153,20 @@ int     SysSeek( b_file *io, long int new_offset, int seek_mode )
 }
 
 
-long int        FGetFilePos( b_file *io )
+void    FSeekRec( b_file *io, unsigned_32 rec, uint recsize )
+//==========================================================
+// Seek to specified record in file.
 {
-    return( CurrFileOffset( io ) );
+    FSetIOOk( io );
+    if( io->attrs & SEEK ) {
+        SysSeek( io, rec * recsize, SEEK_SET );
+    } else {
+        FSetErr( POSIO_BAD_OPERATION, io );
+    }
 }
 
-
 void    FRewind( b_file *io )
+//===========================
 // Rewind a file.
 {
     FSetIOOk( io );

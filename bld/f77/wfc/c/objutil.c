@@ -163,7 +163,7 @@ static  void    DumpCurrPage( void ) {
         if( CurrPage > MaxPage ) {
             MaxPage = CurrPage;
         }
-        SDSeek( PageFile, CurrPage, WFC_PAGE_SIZE );
+        SDSeekRec( PageFile, CurrPage, WFC_PAGE_SIZE );
         chkIOErr( PageFile, SM_IO_WRITE_ERR );
         SDWrite( PageFile, ObjCode, WFC_PAGE_SIZE );
         chkIOErr( PageFile, SM_IO_WRITE_ERR );
@@ -177,7 +177,7 @@ static  void    LoadPage( unsigned_32 page )
 {
     if( page != CurrPage ) {
         DumpCurrPage();
-        SDSeek( PageFile, page, WFC_PAGE_SIZE );
+        SDSeekRec( PageFile, page, WFC_PAGE_SIZE );
         chkIOErr( PageFile, SM_IO_READ_ERR );
         SDRead( PageFile, ObjCode, WFC_PAGE_SIZE );
         // If we seek to the end of the last page in the disk
