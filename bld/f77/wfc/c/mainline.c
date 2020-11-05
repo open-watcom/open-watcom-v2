@@ -112,16 +112,16 @@ static void FInit( void )
 {
     char        imageName[_MAX_PATH];
 
+    FMemInit();
     _cmdname( imageName );
     ErrorInit( imageName );
-    FMemInit();
 }
 
 static void FFini( void )
 {
+    ErrorFini();
     FMemErrors();
     FMemFini();
-    ErrorFini();
 }
 
 int     main( int argc, char *argv[] ) {
