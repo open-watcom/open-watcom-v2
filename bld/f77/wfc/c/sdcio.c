@@ -75,13 +75,6 @@ file_handle SDOpenText( const char *name, f_attrs mode )
 }
 
 
-file_handle SDOpenCC( const char *name, f_attrs mode )
-//====================================================
-{
-    return( Openf( name, mode | REC_TEXT | CARRIAGE_CONTROL ) );
-}
-
-
 void    SDClose( file_handle fp )
 //===============================
 {
@@ -89,14 +82,14 @@ void    SDClose( file_handle fp )
 }
 
 
-size_t    SDRead( file_handle fp, void *buff, size_t len )
-//========================================================
+size_t  SDRead( file_handle fp, void *buff, size_t len )
+//======================================================
 {
     return( FGetRecFixed( fp, buff, len ) );
 }
 
 
-size_t    SDReadText( file_handle fp, char *buff, size_t len )
+size_t  SDReadText( file_handle fp, char *buff, size_t len )
 //============================================================
 {
     return( FGetRecText( fp, buff, len ) );

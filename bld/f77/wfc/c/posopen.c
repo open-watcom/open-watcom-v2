@@ -36,7 +36,6 @@
 #endif
 #include "posio.h"
 #include "sopen.h"
-#include "setcc.h"
 #include "posopen.h"
 #include "posput.h"
 #include "poserr.h"
@@ -56,9 +55,7 @@ void    InitStd( void )
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ ) && defined( __WATCOMC__ )
     // don't call setmode() since we don't want to affect higher level
     // i/o so that if C function gets called, printf() works ok
-    __set_binary( STDIN_FILENO );
     __set_binary( STDOUT_FILENO );
-    __set_binary( STDERR_FILENO );
 #endif
 }
 
@@ -70,7 +67,7 @@ void    SetIOBufferSize( uint buff_size )
     IOBufferSize = buff_size;
 }
 
-static b_file  *_AllocFile( int h, f_attrs attrs, long int fpos )
+static b_file  *_AllocFile( int h, f_attrs attrs )
 // Allocate file structure.
 {
     b_file      *io;
@@ -86,8 +83,8 @@ static b_file  *_AllocFile( int h, f_attrs attrs, long int fpos )
         io = FMemAlloc( offsetof( b_file, read_len ) );
         // Turn off truncate just in case we turned it on by accident due to
         // a buggy NT dos box.  We NEVER want to truncate a device.
-        attrs &= ~TRUNC_ON_WRITE;
-        attrs |= CHAR_DEVICE;
+//        attrs &= ~TRUNC_ON_WRITE;
+//        attrs |= CHAR_DEVICE;
     } else {
         attrs |= BUFFERED;
         buff_size = IOBufferSize;
@@ -102,18 +99,15 @@ static b_file  *_AllocFile( int h, f_attrs attrs, long int fpos )
         close( h );
         FSetErr( POSIO_NO_MEM, NULL );
     } else {
-        if( attrs & CARRIAGE_CONTROL ) {
-            attrs |= CC_NOLF;
-        }
         io->attrs = attrs;
         io->handle = h;
+        io->phys_offset = 0;
         if( attrs & BUFFERED ) {
             io->b_curs = 0;
             io->read_len = 0;
             io->buff_size = buff_size;
             io->high_water = 0;
         }
-        io->phys_offset = fpos;
         FSetIOOk( io );
     }
     return( io );
@@ -122,8 +116,7 @@ static b_file  *_AllocFile( int h, f_attrs attrs, long int fpos )
 b_file  *Openf( const char *f, f_attrs attrs )
 // Open a file.
 {
-    int         retc;
-    long int    fpos;
+    int         h;
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     int         share;
 
@@ -140,30 +133,17 @@ b_file  *Openf( const char *f, f_attrs attrs )
 #endif
     if( attrs & WRONLY ) {
         attrs |= WRITE_ONLY;
-        if( attrs & APPEND ) {
-            retc = sopen4( f, O_WRONLY | O_BINARY | O_CREAT, share, PMODE_RW );
-        } else {
-            retc = sopen4( f, O_WRONLY | O_BINARY | O_CREAT | O_TRUNC, share, PMODE_RW );
-        }
+        h = sopen4( f, O_WRONLY | O_BINARY | O_CREAT | O_TRUNC, share, PMODE_RW );
     } else if( attrs & RDONLY ) {
-        retc = sopen3( f, O_RDONLY | O_BINARY, share );
+        h = sopen3( f, O_RDONLY | O_BINARY, share );
     } else { // if( attrs & RDWR ) {
-        retc = sopen4( f, O_RDWR | O_BINARY | O_CREAT, share, PMODE_RW );
+        h = sopen4( f, O_RDWR | O_BINARY | O_CREAT, share, PMODE_RW );
     }
-    if( retc < 0 ) {
+    if( h < 0 ) {
         FSetSysErr( NULL );
         return( NULL );
     }
-    fpos = 0;
-    if( attrs & APPEND ) {
-        fpos = lseek( retc, 0, SEEK_END );
-        if( fpos < 0 ) {
-            FSetSysErr( NULL );
-            close( retc );
-            return( NULL );
-        }
-    }
-    return( _AllocFile( retc, attrs, fpos ) );
+    return( _AllocFile( h, attrs ) );
 }
 
 void    Closef( b_file *io )

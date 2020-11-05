@@ -30,4 +30,4 @@
 ****************************************************************************/
 
 
-extern uint    FSetCC( char asa, const char **cc, bool nolf );
+extern uint     FSetCC( char asa, const char **cc, bool nolf );

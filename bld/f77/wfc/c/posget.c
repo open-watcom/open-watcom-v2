@@ -213,9 +213,7 @@ size_t FGetRecText( b_file *io, char *b, size_t len )
             if( SysRead( io, &rs[1], sizeof( char ) ) == READ_ERROR ) {
                 return( 0 );
             }
-            if( rs[1] == CHAR_LF )
-                return( len );
-            if( ( io->attrs & CARRIAGE_CONTROL ) && ( rs[1] == CHAR_FF ) ) {
+            if( rs[1] == CHAR_LF ) {
                 return( len );
             }
         }
@@ -274,8 +272,6 @@ size_t FGetRecText( b_file *io, char *b, size_t len )
                     trunc = true;
                 }
             } else {
-                if( ch == CHAR_FF && (io->attrs & CARRIAGE_CONTROL) )
-                    break;
                 --ptr;  // give back the char
                 seen_cr = false;
                 if( read < len ) {
@@ -325,7 +321,7 @@ size_t FGetRecText( b_file *io, char *b, size_t len )
 
 
 size_t FGetRecFixed( b_file *io, char *b, size_t len )
-//==========================================================
+//====================================================
 // Get a record from a file with "fixed" records.
 {
     FSetIOOk( io );

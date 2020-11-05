@@ -554,7 +554,7 @@ static  void    OpenListingFile( bool reopen ) {
         // ignore other listing file options
     } else {
         GetLstName( name );
-        ListFile = SDOpenCC( name, WRONLY );
+        ListFile = SDOpenText( name, WRONLY );
         if( SDError( ListFile, errmsg, sizeof( errmsg ) ) ) {
             InfoError( SM_OPENING_FILE, name, errmsg );
         } else {

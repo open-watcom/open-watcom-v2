@@ -35,7 +35,6 @@
 #include <limits.h>
 #include "posio.h"
 #include "sysbuff.h"
-#include "setcc.h"
 #include "posput.h"
 #include "posseek.h"
 #include "poserr.h"
@@ -167,6 +166,7 @@ void    FPutRecText( b_file *io, const char *b, size_t len, bool nolf )
 {
     char        tag[2];
 
+    FSetIOOk( io );
     if( SysWrite( io, b, len ) == -1 )
         return;
 #if defined( __UNIX__ )
@@ -185,10 +185,10 @@ void    FPutRecText( b_file *io, const char *b, size_t len, bool nolf )
     SysWrite( io, tag, len );
 }
 
-
 void    FPutRecFixed( b_file *io, const char *b, size_t len )
 //===========================================================
 // Put a record to a file with "fixed" records.
 {
+    FSetIOOk( io );
     SysWrite( io, b, len );
 }
