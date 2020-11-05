@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,6 +41,7 @@
 #define LF_SKIP_FLAG    0x04    //            - double space this line
 #define LF_QUIET        0x08    //            - c$nolist has been seen
 #define LF_STMT_LISTED  0x10    //            - the statment was listed
+#define LF_CC_NOLF      0x20    //            - no LF for CC
 #define LF_OFF  ~( LF_NEW_LINE | LF_PAGE_FLAG | LF_SKIP_FLAG )
 
 #define LIST_BUFF_SIZE  132     // listing file buffer size
