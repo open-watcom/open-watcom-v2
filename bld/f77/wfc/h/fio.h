@@ -32,12 +32,6 @@
 #ifndef _FIO_H_INCLUDED
 #define _FIO_H_INCLUDED
 
-#define CHAR_CR         0x0d            // carriage return
-#define CHAR_LF         0x0a            // line feed
-#define CHAR_FF         0x0c            // form feed
-
-#define CHAR_CTRL_Z     0x1a            // Ctrl/Z character (EOF marker)
-
 #define READ_ERROR      ((size_t)-1)    // read error indicator
 
 #define MIN_BUFFER      128

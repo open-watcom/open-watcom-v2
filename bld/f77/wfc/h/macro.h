@@ -35,3 +35,10 @@
 #include "switch.h"
 
 #define __FAR
+
+#define CHAR_CR         0x0d            // carriage return
+#define CHAR_LF         0x0a            // line feed
+#define CHAR_FF         0x0c            // form feed
+
+#define CHAR_CTRL_Z     0x1a            // Ctrl/Z character (EOF marker)
+
