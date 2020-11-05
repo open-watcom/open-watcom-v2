@@ -692,7 +692,7 @@ static  void    SendRec( void ) {
 //===============================
 
     if( ListFile != NULL ) {
-        SDWriteCCChar( ListFile, *ListBuff, ListCursor, (ListFlag & LF_CC_NOLF) );
+        SDWriteCCChar( ListFile, *ListBuff, (ListFlag & LF_CC_NOLF) );
         SDWriteText( ListFile, ListBuff + 1, ListCursor - 1, true );
         ChkLstErr();
         ListFlag &= ~LF_CC_NOLF;

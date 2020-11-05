@@ -170,6 +170,8 @@ void    FPutRecText( b_file *io, const char *b, size_t len, bool nolf )
     if( SysWrite( io, b, len ) == -1 )
         return;
 #if defined( __UNIX__ )
+    (void)nolf;
+
     tag[0] = CHAR_LF;
     len = 1;
 #else

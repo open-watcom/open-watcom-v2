@@ -43,6 +43,7 @@
 #include "sdcio.h"
 #include "posdel.h"
 #include "posdat.h"
+#include "setcc.h"
 
 
 void    SDInitIO(void)
@@ -95,7 +96,7 @@ size_t    SDRead( file_handle fp, void *buff, size_t len )
 }
 
 
-size_t    SDReadText( file_handle fp, void *buff, size_t len )
+size_t    SDReadText( file_handle fp, char *buff, size_t len )
 //============================================================
 {
     return( FGetRecText( fp, buff, len ) );
@@ -128,7 +129,7 @@ void    SDWriteCCChar( file_handle fp, char asa, bool nolf )
     const char  *cc;
     uint        cc_len;
 
-    cc_len = FSetCC( fp, asa, &cc, nolf );
+    cc_len = FSetCC( asa, &cc, nolf );
     FPutRecFixed( fp, cc, cc_len );
 }
 

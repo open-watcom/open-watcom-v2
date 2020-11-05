@@ -31,7 +31,6 @@
 
 
 #include "ftnstd.h"
-#include "posio.h"
 #include "setcc.h"
 
 
@@ -44,8 +43,8 @@ static  char            SpcSeq[] = { CHAR_LF,               // for single spacin
 #define SPC_SEQ_LEN     sizeof( SpcSeq );
 
 
-int     FSetCC( b_file *io, char asa, const char **cc )
-//=====================================================
+uint    FSetCC( char asa, const char **cc, bool nolf )
+//====================================================
 // Output ASA carriage control character to a file.
 {
     uint        cc_len;
@@ -59,7 +58,7 @@ int     FSetCC( b_file *io, char asa, const char **cc )
     } else if( asa != '+' ) {
         *cc = SpcSeq;
         cc_len = SPC_SEQ_LEN;
-        if( io->attrs & CC_NOLF ) {
+        if( nolf ) {
             (*cc)++;
             cc_len--;
         }
@@ -70,6 +69,5 @@ int     FSetCC( b_file *io, char asa, const char **cc )
             }
         }
     }
-    io->attrs |= CC_NOLF;
     return( cc_len );
 }

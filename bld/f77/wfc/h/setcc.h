@@ -30,4 +30,4 @@
 ****************************************************************************/
 
 
-extern int     FSetCC( file_handle fp, char asa, const char **cc );
+extern uint    FSetCC( char asa, const char **cc, bool nolf );
