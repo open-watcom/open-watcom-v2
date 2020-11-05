@@ -35,7 +35,7 @@
 #include <limits.h>
 #include "posio.h"
 #include "sysbuff.h"
-#include "poscc.h"
+#include "setcc.h"
 #include "posput.h"
 #include "posseek.h"
 #include "poserr.h"

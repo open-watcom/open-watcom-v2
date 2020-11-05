@@ -36,7 +36,7 @@
 #endif
 #include "posio.h"
 #include "sopen.h"
-#include "poscc.h"
+#include "setcc.h"
 #include "posopen.h"
 #include "posput.h"
 #include "poserr.h"

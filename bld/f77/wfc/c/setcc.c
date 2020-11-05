@@ -32,7 +32,7 @@
 
 #include "ftnstd.h"
 #include "posio.h"
-#include "poscc.h"
+#include "setcc.h"
 
 
 static  char            FFSeq[] = { CHAR_LF, CHAR_FF };     // for form feeds

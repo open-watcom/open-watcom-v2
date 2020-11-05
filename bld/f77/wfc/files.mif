@@ -236,7 +236,7 @@ comovl2 += &
 # system dependent compile-time and run-time files
 
 comroot += &
-    poscc.obj &
+    setcc.obj &
     posdel.obj &
     posdat.obj &
     poserr.obj &
