@@ -37,7 +37,7 @@
 
 typedef enum {
     #define pick(id,text)  POSIO_ ## id,
-    #include "_posio.h"
+    #include "_fileio.h"
     #undef pick
 } io_status;
 

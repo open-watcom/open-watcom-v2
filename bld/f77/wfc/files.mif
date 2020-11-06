@@ -239,7 +239,7 @@ comroot += &
     setcc.obj &
     posdel.obj &
     posdat.obj &
-    poserr.obj &
+    fileerr.obj &
     posflush.obj &
     posget.obj &
     posopen.obj &

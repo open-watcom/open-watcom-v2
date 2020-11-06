@@ -33,11 +33,11 @@
 #include "ftnstd.h"
 #include <string.h>
 #include <limits.h>
-#include "posio.h"
+#include "fileio.h"
 #include "sysbuff.h"
 #include "posput.h"
 #include "posseek.h"
-#include "poserr.h"
+#include "fileerr.h"
 #include "posflush.h"
 #include "posdat.h"
 

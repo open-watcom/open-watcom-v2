@@ -31,10 +31,10 @@
 
 
 #include "ftnstd.h"
-#include "posio.h"
+#include "fileio.h"
 #include "posget.h"
 #include "posseek.h"
-#include "poserr.h"
+#include "fileerr.h"
 #include "posflush.h"
 
 

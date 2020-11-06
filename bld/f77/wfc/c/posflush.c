@@ -31,7 +31,7 @@
 
 
 #include "ftnstd.h"
-#include "posio.h"
+#include "fileio.h"
 #include "posput.h"
 #include "posflush.h"
 

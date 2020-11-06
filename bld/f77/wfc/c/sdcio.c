@@ -39,7 +39,7 @@
 #include "posget.h"
 #include "posput.h"
 #include "posseek.h"
-#include "poserr.h"
+#include "fileerr.h"
 #include "sdcio.h"
 #include "posdel.h"
 #include "posdat.h"

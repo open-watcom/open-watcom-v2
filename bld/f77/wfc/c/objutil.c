@@ -47,7 +47,7 @@
 #include "ferror.h"
 #include "iopath.h"
 #include "pathlist.h"
-#include "poserr.h"
+#include "fileerr.h"
 #include "posseek.h"
 #include "sdcio.h"
 

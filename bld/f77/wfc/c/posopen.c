@@ -34,11 +34,11 @@
 #if defined( __NT__ )
     #include <windows.h>
 #endif
-#include "posio.h"
+#include "fileio.h"
 #include "sopen.h"
 #include "posopen.h"
 #include "posput.h"
-#include "poserr.h"
+#include "fileerr.h"
 #include "posflush.h"
 #include "iomode.h"
 #include "posdat.h"

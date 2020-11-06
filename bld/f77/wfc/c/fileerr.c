@@ -33,15 +33,15 @@
 #include "ftnstd.h"
 #include <string.h>
 #include <errno.h>
-#include "posio.h"
-#include "poserr.h"
+#include "fileio.h"
+#include "fileerr.h"
 
 
 static io_status    Stat = { POSIO_OK };
 
 static  char    * const __FAR ErrMsgs[] = {
     #define pick(id,text)  text,
-    #include "_posio.h"
+    #include "_fileio.h"
     #undef pick
 };
 

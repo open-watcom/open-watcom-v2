@@ -31,8 +31,8 @@
 
 
 #include "ftnstd.h"
-#include "posio.h"
-#include "poserr.h"
+#include "fileio.h"
+#include "fileerr.h"
 #include "posdel.h"
 
 
