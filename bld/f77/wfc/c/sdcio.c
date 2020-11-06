@@ -32,6 +32,7 @@
 
 #include "ftnstd.h"
 #include <string.h>
+#include "wio.h"
 #include "cpopt.h"
 #include "global.h"
 #include "blips.h"
@@ -41,7 +42,6 @@
 #include "posseek.h"
 #include "fileerr.h"
 #include "sdcio.h"
-#include "posdel.h"
 #include "setcc.h"
 
 
@@ -56,7 +56,9 @@ void    SDInitIO(void)
 void    SDScratch( const char *name )
 //===================================
 {
-    Scratchf( name );
+    if( unlink( name ) != 0 ) {
+        FSetSysErr( NULL );
+    }
 }
 
 

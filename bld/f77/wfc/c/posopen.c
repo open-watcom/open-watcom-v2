@@ -34,6 +34,7 @@
 #if defined( __NT__ )
     #include <windows.h>
 #endif
+#include "wio.h"
 #include "fileio.h"
 #include "sopen.h"
 #include "posopen.h"
@@ -46,11 +47,20 @@
 #include "clibext.h"
 
 
+file_handle     FStdOut = NULL;
+
+static b_file   _FStdOut = {0};
+
 static  int     IOBufferSize = { IO_BUFFER };
 
 void    InitStd( void )
-{
 // Initialize standard i/o.
+{
+    _FStdOut.attrs     = WRONLY | REC_TEXT;
+    _FStdOut.handle    = STDOUT_FILENO;
+    _FStdOut.stat      = POSIO_OK;
+    _FStdOut.buff_size = MIN_BUFFER;
+    FStdOut = &_FStdOut;
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ ) && defined( __WATCOMC__ )
     // don't call setmode() since we don't want to affect higher level
     // i/o so that if C function gets called, printf() works ok
