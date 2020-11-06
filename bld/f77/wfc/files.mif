@@ -238,7 +238,6 @@ comovl2 += &
 comroot += &
     setcc.obj &
     fileerr.obj &
-    posflush.obj &
     posget.obj &
     posopen.obj &
     posput.obj &

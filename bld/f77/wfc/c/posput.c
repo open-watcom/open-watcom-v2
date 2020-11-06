@@ -37,7 +37,6 @@
 #include "posput.h"
 #include "posseek.h"
 #include "fileerr.h"
-#include "posflush.h"
 
 
 size_t  writebytes( b_file *io, const char *buff, size_t len )
@@ -51,7 +50,6 @@ size_t  writebytes( b_file *io, const char *buff, size_t len )
         FSetSysErr( io );
         return( 0 );
     }
-    io->attrs &= ~READ_AHEAD;
     io->phys_offset += written;
     if( written < len ) {
         FSetErr( FILEIO_DISK_FULL, io );
@@ -61,53 +59,9 @@ size_t  writebytes( b_file *io, const char *buff, size_t len )
 }
 
 
-int SysWrite( b_file *io, const char *b, size_t len )
+static int SysWrite( b_file *io, const char *b, size_t len )
 {
-    size_t      amt;
-
-    if( len == 0 )
-        return( 0 );
-    if( io->attrs & BUFFERED ) {
-        // copy any amt that can fit into remaining portion of current buffer
-        amt = io->buff_size - io->b_curs;
-        if( amt > len ) {
-            amt = len;
-        }
-        memcpy( &io->buffer[io->b_curs], b, amt );
-        io->attrs |= DIRTY_BUFFER;
-        io->b_curs += amt;
-        if( io->b_curs > io->high_water ) {
-            io->high_water = io->b_curs;
-            if( ( io->attrs & READ_AHEAD ) == 0 ) {
-                io->read_len = io->high_water;
-            }
-        }
-        // now check if there was any left over
-        len -= amt;
-        if( len ) {
-            // flush the buffer
-            if( FlushBuffer( io ) < 0 )
-                return( -1 );
-            b += amt;
-            if( len > io->buff_size ) {
-                // write out a multiple of io->buff_size bytes
-                amt = len - len % io->buff_size;
-                writebytes( io, b, amt );
-                if( !IOOk( io ) )
-                    return( -1 );
-                b += amt;
-                len -= amt;
-            }
-            // now whatever is left will fit in the buffer
-            if( len ) {
-                memcpy( io->buffer, b, len );
-                io->attrs |= DIRTY_BUFFER;
-                io->high_water = len;
-                io->read_len = len;
-                io->b_curs = len;
-            }
-        }
-    } else {
+    if( len > 0 ) {
         writebytes( io, b, len );
         if( !IOOk( io ) ) {
             return( -1 );

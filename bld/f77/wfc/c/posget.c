@@ -39,7 +39,6 @@
 #include "posget.h"
 #include "posseek.h"
 #include "fileerr.h"
-#include "posflush.h"
 
 
 size_t readbytes( b_file *io, char *buff, size_t len )
@@ -53,7 +52,8 @@ size_t readbytes( b_file *io, char *buff, size_t len )
     if( bytes_read != len && ferror( io->fp ) ) {
         FSetSysErr( io );
         return( READ_ERROR );
-    } else if( bytes_read == 0 ) {
+    }
+    if( bytes_read == 0 ) {
         FSetEof( io );
         return( READ_ERROR );
     }
@@ -67,11 +67,11 @@ static  int     FillBuffer( b_file *io )
 {
     size_t      bytes_read;
 
-    if( FlushBuffer( io ) < 0 )
-        return( -1 );
     bytes_read = readbytes( io, io->buffer, io->buff_size );
     if( bytes_read == READ_ERROR )
         return( -1 );
+    // setup the buffer
+    io->b_curs = 0;
     io->attrs |= READ_AHEAD;
     io->high_water = 0;
     io->read_len = bytes_read;
@@ -109,8 +109,10 @@ static size_t SysRead( b_file *io, char *b, size_t len )
         len -= amt;
         if( len ) {
             // flush the buffer
-            if( FlushBuffer( io ) < 0 )
-                return( READ_ERROR );
+            io->b_curs = 0;
+            io->read_len = 0;
+            io->high_water = 0;
+            io->attrs &= ~READ_AHEAD;
             if( len > io->buff_size ) {
                 // read a multiple of io->buff_size bytes
                 amt = len - len % io->buff_size;

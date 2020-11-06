@@ -40,7 +40,6 @@
 #include "posopen.h"
 #include "posput.h"
 #include "fileerr.h"
-#include "posflush.h"
 #include "iomode.h"
 #include "fmemmgr.h"
 
@@ -61,11 +60,6 @@ void    InitStd( void )
     _FStdOut.buff_size = MIN_BUFFER;
     FSetIOOk( &_FStdOut );
     FStdOut = &_FStdOut;
-#if !defined( __UNIX__ ) && !defined( __NETWARE__ ) && defined( __WATCOMC__ )
-    // don't call setmode() since we don't want to affect higher level
-    // i/o so that if C function gets called, printf() works ok
-    __set_binary( STDOUT_FILENO );
-#endif
 }
 
 void    SetIOBufferSize( uint buff_size )
@@ -132,8 +126,6 @@ b_file  *Openf( const char *f, const char *mode, f_attrs attrs )
 void    Closef( b_file *io )
 // Close a file.
 {
-    if( FlushBuffer( io ) < 0 )
-        return;
     if( fclose( io->fp ) ) {
         FSetSysErr( io );
         return;
