@@ -32,7 +32,6 @@
 
 #include "ftnstd.h"
 #include "fileio.h"
-#include "posdat.h"
 
 
 #if defined( __WATCOMC__ ) || defined( __UNIX__ )

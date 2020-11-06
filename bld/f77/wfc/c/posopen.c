@@ -41,7 +41,6 @@
 #include "fileerr.h"
 #include "posflush.h"
 #include "iomode.h"
-#include "posdat.h"
 #include "fmemmgr.h"
 
 #include "clibext.h"

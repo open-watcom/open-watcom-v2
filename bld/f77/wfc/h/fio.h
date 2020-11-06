@@ -77,4 +77,6 @@ typedef enum {
 
 typedef struct b_file   *file_handle;   // file handle
 
+extern file_handle  	FStdOut;
+
 #endif

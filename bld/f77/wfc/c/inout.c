@@ -55,7 +55,6 @@
 #include "errutil.h"
 #include "sdfile.h"
 #include "brseinfo.h"
-#include "posdat.h"
 
 #include "clibext.h"
 

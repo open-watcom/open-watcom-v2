@@ -42,7 +42,6 @@
 #include "fileerr.h"
 #include "sdcio.h"
 #include "posdel.h"
-#include "posdat.h"
 #include "setcc.h"
 
 

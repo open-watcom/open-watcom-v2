@@ -39,7 +39,6 @@
 #include "posseek.h"
 #include "fileerr.h"
 #include "posflush.h"
-#include "posdat.h"
 
 #include "clibext.h"
 
