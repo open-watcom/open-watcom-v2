@@ -224,7 +224,7 @@ size_t FGetRecText( b_file *io, char *b, size_t len )
                     // we have to do this so that io->b_curs is set properly
                     // on end of file
                     ptr = io->buffer + io->b_curs;
-                    if( read > 0 && io->stat == POSIO_EOF ) {
+                    if( read > 0 && io->stat == FILEIO_EOF ) {
                         FSetIOOk( io );
                     }
                     break;

@@ -37,7 +37,7 @@
 #include "fileerr.h"
 
 
-static io_status    Stat = { POSIO_OK };
+static io_status    Stat = { FILEIO_OK };
 
 static  char    * const __FAR ErrMsgs[] = {
     #define pick(id,text)  text,
@@ -55,10 +55,10 @@ bool    IOOk( b_file *io ) {
     } else {
         err = io->stat;
     }
-    if( err == POSIO_EOR ) {
-        err = POSIO_OK;
+    if( err == FILEIO_EOR ) {
+        err = FILEIO_OK;
     }
-    return( err == POSIO_OK );
+    return( err == FILEIO_OK );
 }
 
 
@@ -66,9 +66,9 @@ bool    EOFile( b_file *io ) {
 // Check if end-of-file.
 
     if( io == NULL ) {
-        return( Stat == POSIO_EOF );
+        return( Stat == FILEIO_EOF );
     } else {
-        return( io->stat == POSIO_EOF );
+        return( io->stat == FILEIO_EOF );
     }
 }
 
@@ -85,7 +85,7 @@ void ErrorMsg( b_file *io, char *buf, size_t max_len )
     } else {
         err = io->stat;
     }
-    if( err == POSIO_SYS_ERROR ) {
+    if( err == FILEIO_SYS_ERROR ) {
         msg = strerror( errno );
     } else {
         msg = ErrMsgs[err];
@@ -98,8 +98,8 @@ void ErrorMsg( b_file *io, char *buf, size_t max_len )
 void    FSetTrunc( b_file *io ) {
 // Set "truncated" condition.
 
-    Stat = POSIO_EOR;
-    io->stat = POSIO_EOR;
+    Stat = FILEIO_EOR;
+    io->stat = FILEIO_EOR;
 }
 
 
@@ -107,9 +107,9 @@ void    FSetSysErr( b_file *io ) {
 // Set system i/o error condition.
 
     if( io != NULL ) {
-        io->stat = POSIO_SYS_ERROR;
+        io->stat = FILEIO_SYS_ERROR;
     }
-    Stat = POSIO_SYS_ERROR;
+    Stat = FILEIO_SYS_ERROR;
 }
 
 
@@ -126,9 +126,9 @@ void    FSetEof( b_file *io ) {
 // Set end-of-file condition.
 
     if( io != NULL ) {
-        io->stat = POSIO_EOF;
+        io->stat = FILEIO_EOF;
     }
-    Stat = POSIO_EOF;
+    Stat = FILEIO_EOF;
 }
 
 
@@ -136,7 +136,7 @@ void    FSetIOOk( b_file *io ) {
 // Clear i/o error conditions.
 
     if( io != NULL ) {
-        io->stat = POSIO_OK;
+        io->stat = FILEIO_OK;
     }
-    Stat = POSIO_OK;
+    Stat = FILEIO_OK;
 }

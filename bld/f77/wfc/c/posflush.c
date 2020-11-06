@@ -32,6 +32,7 @@
 
 #include "ftnstd.h"
 #include "fileio.h"
+#include "fileerr.h"
 #include "posput.h"
 #include "posflush.h"
 
@@ -43,7 +44,8 @@ int     FlushBuffer( b_file *io )
     int         bytes_written;
     int         rc;
 
-    if( ( io->attrs & BUFFERED ) == 0 ) return( 0 );
+    if( ( io->attrs & BUFFERED ) == 0 )
+        return( 0 );
     rc = 0;
     if( io->attrs & DIRTY_BUFFER ) {
         if( io->attrs & READ_AHEAD ) {
@@ -64,7 +66,7 @@ int     FlushBuffer( b_file *io )
             }
         } else {
             writebytes( io, io->buffer, io->high_water );
-            if( io->stat != POSIO_OK ) {
+            if( !IOOk( io ) ) {
                 rc = -1;
             }
         }

@@ -104,7 +104,7 @@ int     SysSeek( b_file *io, long int new_offset, int seek_mode )
         io->phys_offset += io->high_water;
         bytes_read = readbytes( io, io->buffer + io->high_water, io->buff_size - io->high_water );
         if( bytes_read == READ_ERROR ) {
-            if( io->stat != POSIO_EOF )
+            if( io->stat != FILEIO_EOF )
                 return( -1 );
             FSetIOOk( io );
             io->phys_offset -= io->high_water;  // restore offset
@@ -135,7 +135,7 @@ int     SysSeek( b_file *io, long int new_offset, int seek_mode )
         io->b_curs = new_offset - new_page;
         bytes_read = readbytes( io, io->buffer, io->buff_size );
         if( bytes_read == READ_ERROR ) {
-            if( io->stat != POSIO_EOF )
+            if( io->stat != FILEIO_EOF )
                 return( -1 );
             FSetIOOk( io );
             io->attrs |= PAST_EOF;
@@ -161,7 +161,7 @@ void    FSeekRec( b_file *io, unsigned_32 rec, uint recsize )
     if( io->attrs & SEEK ) {
         SysSeek( io, rec * recsize, SEEK_SET );
     } else {
-        FSetErr( POSIO_BAD_OPERATION, io );
+        FSetErr( FILEIO_BAD_OPERATION, io );
     }
 }
 

@@ -58,8 +58,8 @@ void    InitStd( void )
 {
     _FStdOut.attrs     = WRONLY | REC_TEXT;
     _FStdOut.handle    = STDOUT_FILENO;
-    _FStdOut.stat      = POSIO_OK;
     _FStdOut.buff_size = MIN_BUFFER;
+    FSetIOOk( &_FStdOut );
     FStdOut = &_FStdOut;
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ ) && defined( __WATCOMC__ )
     // don't call setmode() since we don't want to affect higher level
@@ -106,7 +106,7 @@ static b_file  *_AllocFile( int h, f_attrs attrs )
     }
     if( io == NULL ) {
         close( h );
-        FSetErr( POSIO_NO_MEM, NULL );
+        FSetErr( FILEIO_NO_MEM, NULL );
     } else {
         io->attrs = attrs;
         io->handle = h;
