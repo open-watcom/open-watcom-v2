@@ -40,8 +40,8 @@
 int     FlushBuffer( b_file *io )
 // Flush i/o buffer.
 {
-    uint        amt;
-    int         bytes_written;
+    size_t      amt;
+    size_t      bytes_written;
     int         rc;
 
     if( ( io->attrs & BUFFERED ) == 0 )
@@ -49,15 +49,15 @@ int     FlushBuffer( b_file *io )
     rc = 0;
     if( io->attrs & DIRTY_BUFFER ) {
         if( io->attrs & READ_AHEAD ) {
-            if( lseek( io->handle, -(long)io->read_len, SEEK_CUR ) < 0 ) {
+            if( fseek( io->fp, -(long)io->read_len, SEEK_CUR ) ) {
                 return( -1 );
             }
             amt = io->high_water;
             if( amt < io->read_len ) {
                 amt = io->read_len;
             }
-            bytes_written = write( io->handle, io->buffer, amt );
-            if( bytes_written < 0 ) {
+            bytes_written = fwrite( io->buffer, 1, amt, io->fp );
+            if( bytes_written != amt && ferror( io->fp ) ) {
                 return( -1 );
             }
             io->phys_offset += bytes_written - io->read_len;

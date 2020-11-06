@@ -57,7 +57,7 @@ static  file_handle FindSrcFile( char *fname ) {
     file_handle  fp;
 
     MakeName( fname, SDSplitSrcExtn( fname ), fname );
-    fp = SDOpenText( fname, RDONLY );
+    fp = SDOpenText( fname, "rt" );
     if( fp != NULL ) {
         SrcInclude( fname );
     }

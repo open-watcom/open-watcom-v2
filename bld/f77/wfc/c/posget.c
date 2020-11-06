@@ -36,76 +36,29 @@
     #include <conio.h>
 #endif
 #include "fileio.h"
-#include "sysbuff.h"
 #include "posget.h"
 #include "posseek.h"
 #include "fileerr.h"
 #include "posflush.h"
-
-#include "clibext.h"
-
-
-#if defined( _MSC_VER ) && defined( _WIN64 )
-static ssize_t  posix_read( int fildes, void *buffer, size_t nbyte )
-{
-    unsigned    read_len;
-    unsigned    amount;
-    size_t      size;
-
-    amount = INT_MAX;
-    size = 0;
-    while( nbyte > 0 ) {
-        if( amount > nbyte )
-            amount = (unsigned)nbyte;
-        read_len = _read( fildes, buffer, amount );
-        if( read_len == (unsigned)-1 ) {
-            return( (ssize_t)-1 );
-        }
-        size += read_len;
-        if( read_len != amount ) {
-            break;
-        }
-        buffer = (char *)buffer + amount;
-        nbyte -= amount;
-    }
-    return( size );
-}
-#else
-#define posix_read  read
-#endif
 
 
 size_t readbytes( b_file *io, char *buff, size_t len )
 //====================================================
 {
     size_t      bytes_read;
-    size_t      total;
-    size_t      amt;
 
-    total = 0;
-    amt = MAX_SYSIO_SIZE;
-    while( len > 0 ) {
-        if( amt > len )
-            amt = len;
-        bytes_read = posix_read( io->handle, buff, amt );
-        if( bytes_read == READ_ERROR ) {
-            FSetSysErr( io );
-            return( READ_ERROR );
-        } else if( bytes_read == 0 ) {
-            if( total != 0 )
-                break;
-            FSetEof( io );
-            return( READ_ERROR );
-        }
-        io->phys_offset += (unsigned long)bytes_read;
-        total += bytes_read;
-        buff += bytes_read;
-        len -= bytes_read;
-        if( bytes_read < amt ) {
-            break;
-        }
+    if( len == 0 )
+        return( 0 );
+    bytes_read = fread( buff, 1, len, io->fp );
+    if( bytes_read != len && ferror( io->fp ) ) {
+        FSetSysErr( io );
+        return( READ_ERROR );
+    } else if( bytes_read == 0 ) {
+        FSetEof( io );
+        return( READ_ERROR );
     }
-    return( total );
+    io->phys_offset += (unsigned long)bytes_read;
+    return( bytes_read );
 }
 
 

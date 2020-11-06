@@ -56,8 +56,8 @@ static  int     IOBufferSize = { IO_BUFFER };
 void    InitStd( void )
 // Initialize standard i/o.
 {
-    _FStdOut.attrs     = WRONLY | REC_TEXT;
-    _FStdOut.handle    = STDOUT_FILENO;
+    _FStdOut.attrs     = REC_TEXT | WRITE_ONLY;
+    _FStdOut.fp        = stdout;
     _FStdOut.buff_size = MIN_BUFFER;
     FSetIOOk( &_FStdOut );
     FStdOut = &_FStdOut;
@@ -76,18 +76,23 @@ void    SetIOBufferSize( uint buff_size )
     IOBufferSize = buff_size;
 }
 
-static b_file  *_AllocFile( int h, f_attrs attrs )
-// Allocate file structure.
+b_file  *Openf( const char *f, const char *mode, f_attrs attrs )
+// Open a file.
 {
+    FILE        *fp;
     b_file      *io;
     struct stat info;
     int         buff_size;
 
-    if( fstat( h, &info ) == -1 ) {
+    fp = fopen( f, mode );
+    if( fp == NULL ) {
         FSetSysErr( NULL );
         return( NULL );
     }
-    attrs &= ~CREATION_MASK;
+    if( stat( f, &info ) == -1 ) {
+        FSetSysErr( NULL );
+        return( NULL );
+    }
     if( S_ISCHR( info.st_mode ) ) {
         io = FMemAlloc( offsetof( b_file, read_len ) );
         // Turn off truncate just in case we turned it on by accident due to
@@ -105,11 +110,13 @@ static b_file  *_AllocFile( int h, f_attrs attrs )
         }
     }
     if( io == NULL ) {
-        close( h );
+        fclose( fp );
         FSetErr( FILEIO_NO_MEM, NULL );
     } else {
+        if( mode[0] == 'w' )
+            attrs |= WRITE_ONLY;
         io->attrs = attrs;
-        io->handle = h;
+        io->fp = fp;
         io->phys_offset = 0;
         if( attrs & BUFFERED ) {
             io->b_curs = 0;
@@ -122,45 +129,12 @@ static b_file  *_AllocFile( int h, f_attrs attrs )
     return( io );
 }
 
-b_file  *Openf( const char *f, f_attrs attrs )
-// Open a file.
-{
-    int         h;
-#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
-    int         share;
-
-    share = SH_COMPAT;
-    if( attrs & S_DENYRW ) {
-        share = SH_DENYRW;
-    } else if( attrs & S_DENYWR ) {
-        share = SH_DENYWR;
-    } else if( attrs & S_DENYRD ) {
-        share = SH_DENYRD;
-    } else if( attrs & S_DENYNO ) {
-        share = SH_DENYNO;
-    }
-#endif
-    if( attrs & WRONLY ) {
-        attrs |= WRITE_ONLY;
-        h = sopen4( f, O_WRONLY | O_BINARY | O_CREAT | O_TRUNC, share, PMODE_RW );
-    } else if( attrs & RDONLY ) {
-        h = sopen3( f, O_RDONLY | O_BINARY, share );
-    } else { // if( attrs & RDWR ) {
-        h = sopen4( f, O_RDWR | O_BINARY | O_CREAT, share, PMODE_RW );
-    }
-    if( h < 0 ) {
-        FSetSysErr( NULL );
-        return( NULL );
-    }
-    return( _AllocFile( h, attrs ) );
-}
-
 void    Closef( b_file *io )
 // Close a file.
 {
     if( FlushBuffer( io ) < 0 )
         return;
-    if( close( io->handle ) < 0 ) {
+    if( fclose( io->fp ) ) {
         FSetSysErr( io );
         return;
     }

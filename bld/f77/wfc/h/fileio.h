@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#include "wio.h"
+#include <stdio.h>
 #include "fio.h"
 
 
@@ -43,7 +43,7 @@ typedef enum {
 
 typedef struct b_file {                 // file common
     f_attrs         attrs;                  // file attributes
-    int             handle;                 // DOS handle
+    FILE            *fp;                    // stream file structure pointer
     io_status       stat;                   // error status
     long            phys_offset;            // physical offset in file
                                         // file with buffered i/o

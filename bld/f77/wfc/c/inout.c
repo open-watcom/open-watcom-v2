@@ -150,7 +150,7 @@ void    OpenSrc( void ) {
 
     erase_err = ErrFile == NULL;
     MakeName( SrcName, SrcExtn, bld_name );
-    fp = SDOpenText( bld_name, RDONLY );
+    fp = SDOpenText( bld_name, "rt" );
     if( fp != NULL ) {
         SrcInclude( bld_name );
         CurrFile->fileptr = fp;
@@ -254,7 +254,7 @@ void    Include( const char *inc_name )
     if( AlreadyOpen( bld_name ) )
         return;
     // try file called <include_name>.FOR.
-    fp = SDOpenText( bld_name, RDONLY );
+    fp = SDOpenText( bld_name, "rt" );
     if( fp != NULL ) {
         SrcInclude( bld_name );
         CurrFile->fileptr = fp;
@@ -362,7 +362,7 @@ void    OpenErr( void ) {
     if( ( Options & OPT_ERRFILE ) && ( ( ProgSw & PS_ERR_OPEN_TRIED ) == 0 ) ) {
         ProgSw |= PS_ERR_OPEN_TRIED;
         MakeName( SDFName( SrcName ), ErrExtn, buffer );
-        ErrFile = SDOpenText( buffer, WRONLY );
+        ErrFile = SDOpenText( buffer, "wt" );
         if( SDError( ErrFile, errmsg, sizeof( errmsg ) ) ) {
             InfoError( SM_OPENING_FILE, &buffer, &errmsg );
         }
@@ -553,7 +553,7 @@ static  void    OpenListingFile( bool reopen ) {
         // ignore other listing file options
     } else {
         GetLstName( name );
-        ListFile = SDOpenText( name, WRONLY );
+        ListFile = SDOpenText( name, "wb" );
         if( SDError( ListFile, errmsg, sizeof( errmsg ) ) ) {
             InfoError( SM_OPENING_FILE, name, errmsg );
         } else {

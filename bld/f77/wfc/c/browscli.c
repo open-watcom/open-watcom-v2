@@ -509,7 +509,7 @@ void CLIDump( const char *filename )
 {
     file_handle     fp;
 
-    fp = SDOpen( filename, WRONLY );
+    fp = SDOpen( filename, "wb" );
     chkIOErr( fp, SM_OPENING_FILE, filename );
     CLILock();
     CLIRewind();

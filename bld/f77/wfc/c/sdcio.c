@@ -62,17 +62,17 @@ void    SDScratch( const char *name )
 }
 
 
-file_handle SDOpen( const char *name, f_attrs mode )
-//==================================================
+file_handle SDOpen( const char *name, const char *mode )
+//======================================================
 {
-    return( Openf( name, mode | REC_FIXED | SEEK ) );
+    return( Openf( name, mode, REC_FIXED | SEEK ) );
 }
 
 
-file_handle SDOpenText( const char *name, f_attrs mode )
-//======================================================
+file_handle SDOpenText( const char *name, const char *mode )
+//==========================================================
 {
-    return( Openf( name, mode | REC_TEXT ) );
+    return( Openf( name, mode, REC_TEXT ) );
 }
 
 
