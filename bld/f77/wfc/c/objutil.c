@@ -31,6 +31,7 @@
 
 
 #include "ftnstd.h"
+#include <stdio.h>
 #include <string.h>
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
@@ -68,7 +69,7 @@ static  char            PageFileBuff[_MAX_PATH];
 static  unsigned_32     CurrPage;
 static  unsigned_32     MaxPage;
 static  unsigned_8      PageFlags;
-static  file_handle     PageFile;
+static  FILE            *PageFile;
 static  char            *ObjPtr;
 static  char            *ObjCode;
 static  char            *ObjEnd;
@@ -76,16 +77,11 @@ static  char            *ObjEnd;
 #define PF_INIT         0x00    // initial page flags
 #define PF_DIRTY        0x01    // page has been updated
 
-static  void    chkIOErr( file_handle fp, int error ) {
-//=====================================================
-
-// Check for i/o errors to page file.
-
-    char        err_msg[ERR_BUFF_SIZE+1];
-
-    if( SDError( fp, err_msg, sizeof( err_msg ) ) ) {
-        Error( error, PageFileName, err_msg );
-    }
+static void PageFileIOErr( int error )
+//====================================
+// Output i/o errors for page file.
+{
+    Error( error, PageFileName, strerror( errno ) ); 
 }
 
 void    InitObj( void ) {
@@ -121,16 +117,15 @@ void    InitObj( void ) {
         for( idx = 0; idx < 26; idx++ ) {
             fn[0] = 'a' + idx;
             if( access( PageFileBuff, 0 ) == -1 ) {
-                PageFile = SDOpen( PageFileBuff, RDWR );
-                if( !SDError( PageFile, NULL, 0 ) ) {
+                PageFile = fopen( PageFileBuff, "w+b" );
+                if( PageFile != NULL ) {
                     break;
                 }
+                InfoError( SM_OPENING_FILE, PageFileName, strerror( errno ) ); 
             }
         }
         if( idx == 26 ) {
             Error( SM_OUT_OF_VM_FILES, PageFileName );
-        } else {
-            chkIOErr( PageFile, SM_OPENING_FILE );
         }
     }
     PageFlags = PF_INIT;
@@ -148,7 +143,7 @@ void    FiniObj( void ) {
         ObjCode = NULL;
     }
     if( PageFile != NULL ) {
-        SDClose( PageFile );
+        fclose( PageFile );
         PageFile = NULL;
         SDScratch( PageFileBuff );
     }
@@ -163,10 +158,10 @@ static  void    DumpCurrPage( void ) {
         if( CurrPage > MaxPage ) {
             MaxPage = CurrPage;
         }
-        SDSeekRec( PageFile, CurrPage, WFC_PAGE_SIZE );
-        chkIOErr( PageFile, SM_IO_WRITE_ERR );
-        SDWrite( PageFile, ObjCode, WFC_PAGE_SIZE );
-        chkIOErr( PageFile, SM_IO_WRITE_ERR );
+        if( fseek( PageFile, CurrPage * WFC_PAGE_SIZE, SEEK_SET ) )
+            PageFileIOErr( SM_IO_WRITE_ERR );
+        if( fwrite( ObjCode, WFC_PAGE_SIZE, 1, PageFile ) != 1 )
+            PageFileIOErr( SM_IO_WRITE_ERR );
         PageFlags &= ~PF_DIRTY;
     }
 }
@@ -177,14 +172,15 @@ static  void    LoadPage( unsigned_32 page )
 {
     if( page != CurrPage ) {
         DumpCurrPage();
-        SDSeekRec( PageFile, page, WFC_PAGE_SIZE );
-        chkIOErr( PageFile, SM_IO_READ_ERR );
-        SDRead( PageFile, ObjCode, WFC_PAGE_SIZE );
-        // If we seek to the end of the last page in the disk
-        // file (which is the start of a non-existent page file),
-        // we will get end-of-file when we do the read.
-        if( !SDEof( PageFile ) ) {
-            chkIOErr( PageFile, SM_IO_READ_ERR );
+        if( fseek( PageFile, page * WFC_PAGE_SIZE, SEEK_SET ) )
+            PageFileIOErr( SM_IO_READ_ERR );
+        if( fread( ObjCode, 1, WFC_PAGE_SIZE, PageFile ) != WFC_PAGE_SIZE ) {
+            // If we seek to the end of the last page in the disk
+            // file (which is the start of a non-existent page file),
+            // we will get end-of-file when we do the read.
+            if( ferror( PageFile ) ) {
+                PageFileIOErr( SM_IO_READ_ERR );
+            }
         }
         CurrPage = page;
         PageFlags = PF_INIT;
