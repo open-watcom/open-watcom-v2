@@ -25,12 +25,10 @@
 *
 *  ========================================================================
 *
-* Description:  POSIX level i/o support
+* Description:  ISO C I/O support for writing to files
 *
 ****************************************************************************/
 
-
-#define SYSIOERROR  ((size_t)-1)
 
 extern void     FPutRecFixed( file_handle fp, const char *b, size_t len );
 extern void     FPutRecText( file_handle fp, const char *b, size_t len, bool nolf );
