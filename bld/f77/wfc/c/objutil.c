@@ -49,7 +49,7 @@
 #include "iopath.h"
 #include "pathlist.h"
 #include "fileerr.h"
-#include "posseek.h"
+#include "fileseek.h"
 #include "sdcio.h"
 
 #include "clibext.h"

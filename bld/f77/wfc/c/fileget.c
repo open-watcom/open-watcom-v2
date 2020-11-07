@@ -36,8 +36,8 @@
     #include <conio.h>
 #endif
 #include "fileio.h"
-#include "posget.h"
-#include "posseek.h"
+#include "fileget.h"
+#include "fileseek.h"
 #include "fileerr.h"
 
 

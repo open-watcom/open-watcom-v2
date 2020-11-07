@@ -238,10 +238,10 @@ comovl2 += &
 comroot += &
     setcc.obj &
     fileerr.obj &
-    posget.obj &
-    posopen.obj &
-    posput.obj &
-    posseek.obj
+    fileget.obj &
+    fileopen.obj &
+    fileput.obj &
+    fileseek.obj
 
 comovl1 += &
     intarith.obj &

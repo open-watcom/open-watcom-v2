@@ -31,75 +31,46 @@
 
 
 #include "ftnstd.h"
-#include <string.h>
-#include <limits.h>
 #include "fileio.h"
-#include "posput.h"
-#include "posseek.h"
+#include "fileget.h"
+#include "fileseek.h"
 #include "fileerr.h"
 
 
-size_t  writebytes( b_file *io, const char *buff, size_t len )
+void    FSeekRec( b_file *io, unsigned_32 rec, uint recsize )
+//==========================================================
+// Seek to specified record in file.
+//
+// only files with WRITE_ONLY attribute
+// has SEEK attribute
 {
-    size_t      written;
+    long    new_offset;
 
-    if( len == 0 )
-        return( 0 );
-    written = fwrite( buff, 1, len, io->fp );
-    if( written != len && ferror( io->fp ) ) {
-        FSetSysErr( io );
-        return( 0 );
-    }
-    io->phys_offset += written;
-    if( written < len ) {
-        FSetErr( FILEIO_DISK_FULL, io );
-        return( 0 );
-    }
-    return( written );
-}
-
-
-static int SysWrite( b_file *io, const char *b, size_t len )
-{
-    if( len > 0 ) {
-        writebytes( io, b, len );
-        if( !IOOk( io ) ) {
-            return( -1 );
+    FSetIOOk( io );
+    if( io->attrs & SEEK ) {
+        new_offset = rec * recsize;
+        if( fseek( io->fp, new_offset, SEEK_SET ) ) {
+            FSetSysErr( io );
         }
+        io->phys_offset = new_offset;
+    } else {
+        FSetErr( FILEIO_BAD_OPERATION, io );
     }
-    return( 0 );
 }
 
-
-void    FPutRecText( b_file *io, const char *b, size_t len, bool nolf )
-//=====================================================================
-// Put a record to a file with "text" records.
+void    FRewind( b_file *io )
+//===========================
+// Rewind a file.
 {
-    char        tag[2];
-
-    FSetIOOk( io );
-    if( SysWrite( io, b, len ) == -1 )
-        return;
-#if defined( __UNIX__ )
-    (void)nolf;
-
-    tag[0] = CHAR_LF;
-    len = 1;
-#else
-    tag[0] = CHAR_CR;
-    len = 1;
-    if( !nolf ) {
-        tag[1] = CHAR_LF;
-        ++len;
+    if( io->attrs & BUFFERED ) {
+        io->b_curs = 0;
+        io->read_len = 0;
+        io->high_water = 0;
+        io->attrs &= ~READ_AHEAD;
     }
-#endif
-    SysWrite( io, tag, len );
-}
-
-void    FPutRecFixed( b_file *io, const char *b, size_t len )
-//===========================================================
-// Put a record to a file with "fixed" records.
-{
+    io->phys_offset = 0;
     FSetIOOk( io );
-    SysWrite( io, b, len );
+    if( fseek( io->fp, 0, SEEK_SET ) ) {
+        FSetSysErr( io );
+    }
 }
