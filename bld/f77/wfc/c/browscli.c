@@ -175,7 +175,7 @@ static Elf32_Shdr section_header_template = {
 static void mywrite( file_handle fp, const void *data, size_t len, const char *filename )
 /***************************************************************************************/
 {
-    char            err_msg[ERR_BUFF_SIZE+1];
+    char    err_msg[ERR_BUFF_SIZE + 1];
 
     SDWrite( fp, data, len );
     if( SDError( fp, err_msg, sizeof( err_msg ) ) ) {
@@ -187,7 +187,7 @@ static void mywrite( file_handle fp, const void *data, size_t len, const char *f
 static void chkIOErr( file_handle fp, int error, const char *filename )
 /*********************************************************************/
 {
-    char            err_msg[ERR_BUFF_SIZE+1];
+    char    err_msg[ERR_BUFF_SIZE + 1];
 
     if( SDError( fp, err_msg, sizeof( err_msg ) ) ) {
         Error( error, filename, err_msg );
@@ -310,21 +310,10 @@ static void CLIWrite( dw_sectnum sect, const void *block, size_t size )
         memcpy( ( dw_sections[sect].u2.data + dw_sections[sect].offset ), block, size );
         break;
     case( FILE_SECTION ):
-        {
-            size_t          length;
-            unsigned        amount;
-
-            amount = INT_MAX;
-            length = size;
-            while( length > 0 ) {
-                if( amount > length )
-                    amount = (unsigned)length;
-                if( fwrite( block, amount, 1, dw_sections[sect].u1.fp ) != 1 ) {
-                    Error( SM_IO_WRITE_ERR, dw_sections[sect].u2.filename, strerror( errno ) );
-                    CSuicide();
-                }
-                block = (char *)block + amount;
-                length -= amount;
+        if( size > 0 ) {
+            if( fwrite( block, size, 1, dw_sections[sect].u1.fp ) != 1 ) {
+                Error( SM_IO_WRITE_ERR, dw_sections[sect].u2.filename, strerror( errno ) );
+                CSuicide();
             }
         }
         break;
@@ -523,7 +512,7 @@ void CLIFini( void )
     dw_sectnum      sect;
 
     for( sect = 0; sect < DW_DEBUG_MAX; sect++ ) {
-        if( ( dw_sections[sect].sec_type == FILE_SECTION ) && dw_sections[sect].u1.fp != NULL ) {
+        if( ( dw_sections[sect].sec_type == FILE_SECTION ) && ( dw_sections[sect].u1.fp != NULL ) ) {
             fclose( dw_sections[sect].u1.fp );
         } else if( ( dw_sections[sect].sec_type == MEM_SECTION ) && dw_sections[sect].u2.data != NULL ) {
             FMemFree( dw_sections[sect].u2.data );

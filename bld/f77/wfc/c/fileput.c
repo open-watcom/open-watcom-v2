@@ -35,11 +35,10 @@
 #include <limits.h>
 #include "fileio.h"
 #include "fileput.h"
-#include "fileseek.h"
 #include "fileerr.h"
 
 
-size_t  writebytes( b_file *io, const char *buff, size_t len )
+static size_t writebytes( b_file *io, const char *buff, size_t len )
 {
     size_t      written;
 

@@ -83,13 +83,6 @@ void    SDClose( file_handle fp )
 }
 
 
-size_t  SDRead( file_handle fp, void *buff, size_t len )
-//======================================================
-{
-    return( FGetRecFixed( fp, buff, len ) );
-}
-
-
 size_t  SDReadText( file_handle fp, char *buff, size_t len )
 //============================================================
 {
@@ -125,13 +118,6 @@ void    SDWriteCCChar( file_handle fp, char asa, bool nolf )
 
     cc_len = FSetCC( asa, &cc, nolf );
     FPutRecFixed( fp, cc, cc_len );
-}
-
-
-void    SDSeekRec( file_handle fp, unsigned_32 rec_num, size_t rec_size )
-//=======================================================================
-{
-    FSeekRec( fp, rec_num, rec_size );
 }
 
 

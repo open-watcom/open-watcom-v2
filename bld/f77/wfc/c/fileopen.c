@@ -36,11 +36,8 @@
 #endif
 #include "wio.h"
 #include "fileio.h"
-#include "sopen.h"
 #include "fileopen.h"
-#include "fileput.h"
 #include "fileerr.h"
-#include "iomode.h"
 #include "fmemmgr.h"
 
 #include "clibext.h"
