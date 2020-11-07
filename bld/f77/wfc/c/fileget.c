@@ -41,6 +41,8 @@
 #include "fileerr.h"
 
 
+#define READ_ERROR      ((size_t)-1)    // read error indicator
+
 size_t readbytes( b_file *io, char *buff, size_t len )
 //====================================================
 {

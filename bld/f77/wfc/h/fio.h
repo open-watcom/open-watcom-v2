@@ -32,8 +32,6 @@
 #ifndef _FIO_H_INCLUDED
 #define _FIO_H_INCLUDED
 
-#define READ_ERROR      ((size_t)-1)    // read error indicator
-
 #define MIN_BUFFER      128
 #if _CPU == 8086
 #define IO_BUFFER       4*1024
@@ -44,39 +42,14 @@
 typedef enum {
     REC_TEXT            = 0x0001,  // text records (terminated with CR/LF)
     REC_FIXED           = 0x0002,  // fixed records
-    REC_VARIABLE        = 0x0004,  // variable records (length tags)
-    CARRIAGE_CONTROL    = 0x0008,  // carriage control file
-    TRUNC_ON_WRITE      = 0x0010,  // truncate file on write
-    SEEK                = 0x0020,  // seek allowed
-    WRITE_ONLY          = 0x0040,  // no reading allowed
-    CHAR_DEVICE         = 0x0080,  // Character device and not a file
-
-// The following bits are only used during Openf()
-
-    CREATION_MASK       = 0xff00,  // these bits used during Openf() only
-    RDONLY              = 0x0100,  // - read only
-    WRONLY              = 0x0200,  // - write only
-    RDWR                = 0x0400,  // - read/write
-    APPEND              = 0x0800,  // - append
-    S_DENYRW            = 0x1000,  // - deny read or write access
-    S_DENYWR            = 0x2000,  // - deny write access
-    S_DENYRD            = 0x4000,  // - deny read access
-    S_DENYNO            = 0x8000,  // - allow read and write access
-    S_COMPAT            = 0x0000,  // - default is compatibility mode
-
-// Re-use CREATION_MASK bits
-
-    LOGICAL_RECORD      = 0x0200,  // start of logical record
-    PAST_EOF            = 0x0400,  // have seeked past EOF
-    READ_AHEAD          = 0x0800,  // buffer read
-    DIRTY_BUFFER        = 0x1000,  // buffer has been modified
-    CC_NOCR             = 0x2000,  // no CR/LF
-    CC_NOLF             = 0x4000,  // no LF
-    BUFFERED            = 0x8000,  // buffered i/o
+    SEEK                = 0x0004,  // seek allowed
+    WRITE_ONLY          = 0x0008,  // no reading allowed
+    READ_AHEAD          = 0x0010,  // buffer read
+    BUFFERED            = 0x0020,  // buffered i/o
 } f_attrs;
 
 typedef struct b_file   *file_handle;   // file handle
 
-extern file_handle  	FStdOut;
+extern file_handle      FStdOut;
 
 #endif
