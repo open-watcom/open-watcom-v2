@@ -595,7 +595,7 @@
  as type %s1 and cannot be used as a dimension declarator. A dimension
  declarator must be an integer expression.
 :MSGSYM. DM_RANGE_ERR_ON_DIMN
-:MSGTXT. array or array element (possibly substrung) associated with %s1 too small
+:MSGTXT. array or array element (possibly substring) associated with %s1 too small
 :MSGJTXT. 配列または配列要素(文字列の一部など)と思われる%s1のｻｲｽﾞが小さすぎます。
 :MSGATTR. 0
  The dummy argument, array %s1, is defined to be larger than the size
@@ -1519,7 +1519,7 @@
 :MSGTXT. substring error during NAMELIST-directed i/o
 :MSGJTXT. NAMELIST指向の入出力で,部分文字列にｴﾗｰがあります。
 :MSGATTR. 0
- An character array element or variable was incorrectly substrung during
+ An character array element or variable was incorrectly substring during
  NAMELIST-directed input.
 :MSGSYM. IO_IBLOCKSIZE
 :MSGTXT. BLOCKSIZE specifier is invalid
@@ -1681,7 +1681,7 @@
 :MSGJTXT. 組込み関数の引数として%s1を指定してはいけません。
 :MSGATTR. 2
  The item %s1 cannot be used as an argument to an intrinsic function.
- Only constants, simple variables, array elements, and substrung array
+ Only constants, simple variables, array elements, and substring array
  elements may be used as arguments.
 :MSGSYM. LI_NO_PARM
 :MSGTXT. intrinsic function requires argument(s)
@@ -2508,9 +2508,9 @@
 :MSGJTXT. 文字型関数や文関数で取り出した文字列の部分列化は,FORTRAN 77の標準ではありません。
 :MSGATTR. 2
  The character value returned from a CHARACTER function or statement
- function cannot be substrung.
+ function cannot be substring.
  Only character variable names and array element names may be
- substrung.
+ substring.
 :MSGSYM. SS_ONLY_IF_CHAR
 :MSGTXT. substringing valid only for character variables and array elements
 :MSGJTXT. 文字型変数や配列要素以外は部分列にできません。
@@ -2778,7 +2778,7 @@
 :MSGJTXT. 配列名%s1は添字がないと部分列にできません。
 :MSGATTR. 1
  An attempt has been made to substring the array %s1.
- Only an array element may be substrung.
+ Only an array element may be substring.
 :MSGSYM. SV_PVD
 :MSGTXT. %s1 treated as an assumed size array
 :MSGJTXT. %s1は擬寸法仮配列とみなします(最後の次元が1の時などです)。
