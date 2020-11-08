@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +57,7 @@ typedef enum {
     USOPN_ARR,         // - array name, without subscript list
     USOPN_STN,         // - statement number
     USOPN_CON,         // - constant
-    USOPN_ASS,         // - array name subscripted and substrung
+    USOPN_ASS,         // - array name subscripted and substring
     USOPN_SSR,         // - high bound in a(n:)
 
     USOPN_FLD  = 0x08, // field name of structure

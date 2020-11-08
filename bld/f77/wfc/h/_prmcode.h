@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +38,7 @@
 pick( PC_CONST,         "expression"                    )   // Non-modifiable argument. Passed by value.
 pick( PC_VARIABLE,      "simple variable"               )   // Simple variable name.
 pick( PC_ARRAY_ELT,     "array element"                 )   // Array element.
-pick( PC_SS_ARRAY,      "substrung array element"       )   // Substrung array element.
+pick( PC_SS_ARRAY,      "substring array element"       )   // Substring array element.
 pick( PC_ARRAY_NAME,    "array name"                    )   // Array name.
 pick( PC_PROCEDURE,     "subprogram name"               )   // Subprogram name. function/subroutine established
 pick( PC_FN_OR_SUB,     "subprogram name"               )   // Subprogram name. could be function or subroutine

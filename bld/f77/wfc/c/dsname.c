@@ -66,10 +66,10 @@ static  void    ScanningFunction( void );
 static  void    SubProg( void );
 static  void    CkIntrinsic( void );
 
-bool    SubStrung( void ) {
+bool    SubString( void ) {
 //===================
 
-// Determine whether name is substrung or not.
+// Determine whether name is substring or not.
 
     itnode      *save_citnode;
     OPR         opr;
@@ -111,8 +111,8 @@ void    DSName( void ) {
                     CkFieldNoList();
                 }
             } else if( (CITNode->opn.us & USOPN_WHAT) == USOPN_NWL ) {
-                // field better be character and substrung
-                if( ( CITNode->sym_ptr->u.fd.typ != FT_CHAR ) || !SubStrung() ) {
+                // field better be character and substring
+                if( ( CITNode->sym_ptr->u.fd.typ != FT_CHAR ) || !SubString() ) {
                     AdvError( PC_SURP_PAREN );
                 }
             }
@@ -191,7 +191,7 @@ void    DSName( void ) {
         } else if( RecNWL() ) {     // if name with list, not dimensioned
             if( ASType & AST_DIM ) {
                 IllName( sym_ptr );
-            } else if( (CITNode->typ == FT_CHAR) && SubStrung() ) {
+            } else if( (CITNode->typ == FT_CHAR) && SubString() ) {
                 SetTypeUsage( SY_TYPE | SY_USAGE );
             } else {
                 ScanningFunction();
@@ -326,7 +326,7 @@ static  void    SubProg( void ) {
             Extension( SR_TRIED_RECURSION );
         }
     } else if( sp_type == SY_FUNCTION ) {
-        if( RecNWL() && SubStrung() && (CITNode->typ == FT_CHAR) &&
+        if( RecNWL() && SubString() && (CITNode->typ == FT_CHAR) &&
             (CITNode->flags & SY_PS_ENTRY) ) {
             GetFunctionShadow();
         } else if( !RecNWL() && (ASType & AST_CNA) == 0 ) {
