@@ -1522,6 +1522,12 @@ static TREEPTR ExprOpnd( void )
                 }
                 ++ExprLevel;
                 Class[ExprLevel] = TC_LEFT_PAREN;
+            } else {
+                typ = TypeName();
+                if( typ != NULL ) {
+                    tree = SizeofOp( typ );
+                    break;
+                }
             }
             ++SizeOfCount;
             continue;
