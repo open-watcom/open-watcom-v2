@@ -25,24 +25,9 @@
 *
 *  ========================================================================
 *
-* Description:  substring at compile-time
+* Description:  compile-time subscripting
 *
 ****************************************************************************/
 
 
-#include "ftnstd.h"
-#include "substr.h"
-
-
-bool    DoSubstring( intstar4 first, intstar4 last, intstar4 len )
-// Do substring operation for EQUIVALENCE or DATA statement and
-// NAMELIST-directed i/o at run-time.
-{
-    if( first <= 0 )
-        return( false );
-    if( last > len )
-        return( false );
-    if( first > last )
-        return( false );
-    return( true );
-}
+extern bool     DoSubscript( act_dim_list *dims, intstar4 *subscrs, intstar4 *res );

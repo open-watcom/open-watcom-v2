@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,9 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  substring at compile-time
+* Description:  integer arithmetic
 *
 ****************************************************************************/
 
 
-extern bool     DoSubstring( intstar4 first, intstar4 last, int len );
+extern bool     AddIOFlo( intstar4 *arg1, intstar4 *arg2 );
+extern bool     SubIOFlo( intstar4 *arg1, intstar4 *arg2 );
+extern bool     MulIOFlo( intstar4 *arg1, intstar4 *arg2 );

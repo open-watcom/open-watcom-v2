@@ -25,24 +25,50 @@
 *
 *  ========================================================================
 *
-* Description:  substring at compile-time
+* Description:  compile-time subscripting
 *
 ****************************************************************************/
 
 
 #include "ftnstd.h"
-#include "substr.h"
+#include "symdefs.h"
+#include "subscr.h"
 
 
-bool    DoSubstring( intstar4 first, intstar4 last, intstar4 len )
-// Do substring operation for EQUIVALENCE or DATA statement and
+bool    DoSubscript( act_dim_list *dims, intstar4 *subscrs, intstar4 *res )
+// Do subscript operation for EQUIVALENCE or DATA statements and
 // NAMELIST-directed i/o at run-time.
 {
-    if( first <= 0 )
-        return( false );
-    if( last > len )
-        return( false );
-    if( first > last )
-        return( false );
+    int         dim_cnt;
+    intstar4    offset;
+    intstar4    multiplier;
+    intstar4    ss;
+    intstar4    lo;
+    intstar4    hi;
+    intstar4    *bounds;
+
+    *res = 0;
+    dim_cnt = _DimCount( dims->dim_flags );
+    bounds = &dims->subs_1_lo;
+    multiplier = 1;
+    offset = 0;
+    for( ;; ) {
+        ss = *subscrs++;
+        lo = *bounds++;
+        hi = *bounds++;
+        if( ss < lo )
+            return( false );
+        if( ss > hi )
+            return( false );
+        offset += ( ss - lo ) * multiplier;
+        if( offset < 0 )
+            return( false );
+        if( offset > dims->num_elts )
+            return( false );
+        if( --dim_cnt == 0 )
+            break;
+        multiplier *= ( hi - lo + 1 );
+    }
+    *res = offset;
     return( true );
 }
