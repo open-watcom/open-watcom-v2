@@ -4969,7 +4969,7 @@ will be predefined if "zu" is selected.
 .*
 .np
 When specified on the command line, optimization options may be
-specified individually (oa, oi) or the letters may be strung together
+specified individually (oa, oi) or the letters may be string together
 (oailt).
 .*
 :OPTLIST.
