@@ -385,7 +385,7 @@ the size of the dummy array is
 .us r.
 .note
 If the corresponding actual argument is a character array name,
-character array element or a substrung character array element which
+character array element or a substring character array element which
 begins at character
 .us t
 of an array with
