@@ -31,5 +31,4 @@
 
 
 extern char    Hex( char data );
-extern uint    HSToB( const char *src, uint src_len, char *dst );
 extern char    *BToHS( char *mem, int length, char *fmt_buf );
