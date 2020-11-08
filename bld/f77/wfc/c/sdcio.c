@@ -48,8 +48,7 @@
 void    SDInitIO(void)
 //====================
 {
-    InitStd();
-    SetIOBufferSize( 0 ); // minimum buffer size
+    InitFileIO( 0 );    // minimum buffer size
 }
 
 
@@ -84,7 +83,7 @@ void    SDClose( file_handle fp )
 
 
 size_t  SDReadText( file_handle fp, char *buff, size_t len )
-//============================================================
+//==========================================================
 {
     return( FGetRecText( fp, buff, len ) );
 }
@@ -112,7 +111,7 @@ void    SDWriteTextNL( file_handle fp, const char *buff, size_t len )
 
 
 void    SDWriteCCChar( file_handle fp, char asa, bool nolf )
-//========================================================
+//==========================================================
 {
     const char  *cc;
     uint        cc_len;

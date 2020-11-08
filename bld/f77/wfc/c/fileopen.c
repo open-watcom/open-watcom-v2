@@ -49,18 +49,15 @@ static b_file   _FStdOut = {0};
 
 static  int     IOBufferSize = { IO_BUFFER };
 
-void    InitStd( void )
-// Initialize standard i/o.
+void    InitFileIO( uint buff_size )
 {
+    // Initialize stdout i/o.
     _FStdOut.attrs     = REC_TEXT | WRITE_ONLY;
     _FStdOut.fp        = stdout;
     _FStdOut.buff_size = MIN_BUFFER;
     FSetIOOk( &_FStdOut );
     FStdOut = &_FStdOut;
-}
-
-void    SetIOBufferSize( uint buff_size )
-{
+    // Initialize i/o buffer size.
     if( buff_size < MIN_BUFFER ) {
         buff_size = MIN_BUFFER;
     }

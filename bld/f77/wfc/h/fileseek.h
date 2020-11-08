@@ -30,4 +30,4 @@
 ****************************************************************************/
 
 
-extern void         FRewind( file_handle fp );
+extern void     FRewind( file_handle fp );

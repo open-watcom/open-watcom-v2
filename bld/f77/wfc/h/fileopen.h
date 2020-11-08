@@ -33,7 +33,6 @@
 #include "fio.h"
 
 
-extern void         InitStd( void );
-extern void         SetIOBufferSize( uint buff_size );
+extern void         InitFileIO( uint buff_size );
 extern file_handle  Openf( const char *f, const char *mode, f_attrs attrs );
 extern void         Closef( file_handle fp );
