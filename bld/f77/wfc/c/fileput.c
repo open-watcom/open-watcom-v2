@@ -38,67 +38,18 @@
 #include "fileerr.h"
 
 
-static size_t writebytes( b_file *io, const char *buff, size_t len )
-{
-    size_t      written;
-
-    if( len == 0 )
-        return( 0 );
-    written = fwrite( buff, 1, len, io->fp );
-    if( written != len && ferror( io->fp ) ) {
-        FSetSysErr( io );
-        return( 0 );
-    }
-    io->phys_offset += written;
-    if( written < len ) {
-        FSetErr( FILEIO_DISK_FULL, io );
-        return( 0 );
-    }
-    return( written );
-}
-
-
-static int SysWrite( b_file *io, const char *b, size_t len )
-{
-    if( len > 0 ) {
-        writebytes( io, b, len );
-        if( !IOOk( io ) ) {
-            return( -1 );
-        }
-    }
-    return( 0 );
-}
-
-
-void    FPutRecText( b_file *io, const char *b, size_t len, bool nolf )
-//=====================================================================
-// Put a record to a file with "text" records.
-{
-    char        tag[2];
-
-    FSetIOOk( io );
-    if( SysWrite( io, b, len ) == -1 )
-        return;
-#if defined( __UNIX__ )
-    (void)nolf;
-
-    tag[0] = CHAR_LF;
-    len = 1;
-#else
-    tag[0] = CHAR_CR;
-    len = 1;
-    if( !nolf ) {
-        tag[1] = CHAR_LF;
-        ++len;
-    }
-#endif
-    SysWrite( io, tag, len );
-}
-
 void    FPutRecFixed( b_file *io, const char *b, size_t len )
 //===========================================================
 // Put a record to a file with "fixed" records.
 {
     FSetIOOk( io );
-    SysWrite( io, b, len );
+    if( len > 0 ) {
+        if( fwrite( b, 1, len, io->fp ) != len ) {
+            if( ferror( io->fp ) ) {
+                FSetSysErr( io );
+            } else {
+                FSetErr( FILEIO_DISK_FULL, io );
+            }
+        }
+    }
 }

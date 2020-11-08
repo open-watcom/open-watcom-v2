@@ -31,4 +31,4 @@
 
 
 extern void     FPutRecFixed( file_handle fp, const char *b, size_t len );
-extern void     FPutRecText( file_handle fp, const char *b, size_t len, bool nolf );
+

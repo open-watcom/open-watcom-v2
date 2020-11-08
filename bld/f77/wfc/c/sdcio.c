@@ -100,13 +100,14 @@ void    SDWrite( file_handle fp, const void *buff, size_t len )
 }
 
 
-void    SDWriteText( file_handle fp, const char *buff, size_t len, bool nolf )
-//============================================================================
+void    SDWriteTextNL( file_handle fp, const char *buff, size_t len )
+//===================================================================
 {
     if( fp == FStdOut ) {
         CheckBlips();
     }
-    FPutRecText( fp, buff, len, nolf );
+    FPutRecFixed( fp, buff, len );
+    FPutRecFixed( fp, "\n", 1 );
 }
 
 

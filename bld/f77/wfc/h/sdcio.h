@@ -40,7 +40,7 @@ extern file_handle  SDOpenText( const char *name, const char *mode );
 extern void         SDClose( file_handle fp );
 extern size_t       SDReadText( file_handle fp, char *buff, size_t len );
 extern void         SDWrite( file_handle fp, const void *buff, size_t len );
-extern void         SDWriteText( file_handle fp, const char *buff, size_t len, bool nolf );
+extern void         SDWriteTextNL( file_handle fp, const char *buff, size_t len );
 extern void         SDWriteCCChar( file_handle fp, char asa, bool nolf );
 extern void         SDRewind( file_handle fp );
 extern bool         SDEof( file_handle fp );
