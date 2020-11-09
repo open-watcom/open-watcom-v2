@@ -97,13 +97,15 @@ void __ZBuf2LD( buf_stk_ptr buf, ld_stk_ptr ld )
     n = __F_NAME(strlen,wcslen)( ptr );
     high = 0;
     for( i = 0; i <= 8; i++ ) {         // collect high 9 significant digits
-        if( n <= 9 ) break;
+        if( n <= 9 )
+            break;
         --n;
         high = high * 10 + (*ptr++ - '0');
     }
     low = 0;
     for( i = 0; i <= 8; i++ ) {         // collect low 9 significant digits
-        if( n == 0 ) break;
+        if( n == 0 )
+            break;
         --n;
         low = low * 10 + (*ptr++ - '0');
     }
@@ -115,27 +117,32 @@ void __ZBuf2LD( buf_stk_ptr buf, ld_stk_ptr ld )
 }
 #endif
 
-static void __ZXBuf2LD( char *buf, ld_stk_ptr ld, int *exponent )
+static void __ZXBuf2LD( buf_stk_ptr buf, ld_stk_ptr ld, int *exponent )
 {
     int         i;
     int         n;
     uint32_t    xdigit;
-    int32_t     exp = *exponent;
-    char        *s = buf;
-    uint32_t    high = 0;
-    uint32_t    low = 0;
+    int32_t     exp;
+    uint32_t    high;
+    uint32_t    low;
+    CHAR_TYPE   *s;
 
-    n = strlen( s );
+    s = (CHAR_TYPE *)buf;
+    n = __F_NAME(strlen,wcslen)( s );
+    exp = *exponent;
+    high = 0;
     for( i = 0; i < 8; i++ ) {     /* collect high 8 significant hex digits */
-        if( n == 0 ) break;
+        if( n == 0 )
+            break;
         --n;
         xdigit = isdigit( *s ) ? xdigit = *s++ - '0' : tolower( *s++ ) - 'a' + 10;
         high |= xdigit << (28 - i * 4);
         exp += 4;
     }
-
+    low = 0;
     for( i = 0; i < 8; i++ ) {     /* collect low 8 significant hex digits */
-        if( n == 0 ) break;
+        if( n == 0 )
+            break;
         --n;
         xdigit = isdigit( *s ) ? xdigit = *s++ - '0' : tolower( *s++ ) - 'a' + 10;
         low |= xdigit << (28 - i * 4);
@@ -195,18 +202,19 @@ static flt_flags subject_seq( const CHAR_TYPE *s, const CHAR_TYPE **endptr )
     if( *s == 'n' || *s == 'N' ) {
         /* Could be a NaN */
         if( (*++s == 'a' || *s == 'A')
-         && (*++s == 'n' || *s == 'N') ) {
+          && (*++s == 'n' || *s == 'N') ) {
             /* Yup, it is. Skip the optional digit/nondigit sequence */
             flags |= NAN_FOUND;
             if( *++s == '(' ) {
-                const CHAR_TYPE     *p = s;
+                const CHAR_TYPE *p;
 
                 p = ++s;
                 while( isalnum( *p ) || *p == '_' )
                     ++p;
 
-                if( *p == ')' )
+                if( *p == ')' ) {
                     s = ++p;    /* only update s if valid sequence found */
+                }
             }
         } else {
             flags = INVALID_SEQ;
@@ -214,16 +222,17 @@ static flt_flags subject_seq( const CHAR_TYPE *s, const CHAR_TYPE **endptr )
     } else if ( *s == 'i' || *s == 'I' ) {
         /* Could be infinity */
         if( (*++s == 'n' || *s == 'N')
-         && (*++s == 'f' || *s == 'F') ) {
-            const CHAR_TYPE     *p = s;
+          && (*++s == 'f' || *s == 'F') ) {
+            const CHAR_TYPE     *p;
 
             /* Yup, it is. See if it's the long form */
             flags |= INFINITY_FOUND;
+            p = s;
             if( (*++p == 'i' || *p == 'I')
-             && (*++p == 'n' || *p == 'N')
-             && (*++p == 'i' || *p == 'I')
-             && (*++p == 't' || *p == 'T')
-             && (*++p == 'y' || *p == 'Y') ) {
+              && (*++p == 'n' || *p == 'N')
+              && (*++p == 'i' || *p == 'I')
+              && (*++p == 't' || *p == 'T')
+              && (*++p == 'y' || *p == 'Y') ) {
 
                 s = p;
             }
@@ -246,7 +255,7 @@ static flt_flags subject_seq( const CHAR_TYPE *s, const CHAR_TYPE **endptr )
  */
 static flt_flags parse_decimal( const CHAR_TYPE *input, CHAR_TYPE *buffer,
                                 const CHAR_TYPE **endptr, int *exp,
-                                int *sig, int maxdigits )
+                                int *sig, int max_digits )
 {
     CHAR_TYPE           chr;
     flt_flags           flags     = 0;
@@ -260,17 +269,19 @@ static flt_flags parse_decimal( const CHAR_TYPE *input, CHAR_TYPE *buffer,
     for( ;; ) {
         chr = *s++;
         if( chr == '.' ) {  // <- needs changing for locale support
-            if( flags & DOT_FOUND ) break;
+            if( flags & DOT_FOUND )
+                break;
             flags |= DOT_FOUND;
         } else {
-            if( !isdigit( chr ) ) break;
+            if( !isdigit( chr ) )
+                break;
             if( flags & DOT_FOUND ) {
                 ++fdigits;
             }
             digitflag |= chr;
             if( digitflag != '0' ) {        /* if a significant digit */
                 if( sigdigits < MAX_SIG_DIG ) {
-                    buffer[ sigdigits ] = chr;
+                    buffer[sigdigits] = chr;
                 }
                 ++sigdigits;
             }
@@ -280,6 +291,9 @@ static flt_flags parse_decimal( const CHAR_TYPE *input, CHAR_TYPE *buffer,
 
     /* Parse the optional exponent */
     if( flags & DIGITS_PRESENT ) {
+        int     digit_size;
+        int     max_exponent;
+
         if( chr == 'e' || chr == 'E' ) {
             const CHAR_TYPE     *p = s - 1;
 
@@ -291,10 +305,12 @@ static flt_flags parse_decimal( const CHAR_TYPE *input, CHAR_TYPE *buffer,
                 ++s;
             }
             flags &= ~DIGITS_PRESENT;
+            max_exponent = 2000;
             for( ;; ) {
                 chr = *s;                   /* don't increment s yet */
-                if( !isdigit( chr ) ) break;
-                if( exponent < 2000 ) {
+                if( !isdigit( chr ) )
+                    break;
+                if( exponent < max_exponent ) {
                     exponent = exponent * 10 + chr - '0';
                 }
                 flags |= DIGITS_PRESENT;
@@ -310,16 +326,19 @@ static flt_flags parse_decimal( const CHAR_TYPE *input, CHAR_TYPE *buffer,
             --s;
         }
 
-        exponent -= fdigits;
+        digit_size = 1;
 
-        if( sigdigits > maxdigits ) {
-            exponent += sigdigits - maxdigits;
-            sigdigits = maxdigits;
+        exponent -= fdigits * digit_size;
+
+        if( sigdigits > max_digits ) {
+            exponent += sigdigits - max_digits * digit_size;
+            sigdigits = max_digits;
         }
 
         while( sigdigits > 0 ) {
-            if( buffer[ sigdigits - 1 ] != '0' ) break;
-            ++exponent;
+            if( buffer[sigdigits - 1] != '0' )
+                break;
+            exponent += digit_size;
             --sigdigits;
         }
     } else {
@@ -338,7 +357,7 @@ static flt_flags parse_decimal( const CHAR_TYPE *input, CHAR_TYPE *buffer,
  */
 static flt_flags parse_hex( const CHAR_TYPE *input, CHAR_TYPE *buffer,
                             const CHAR_TYPE **endptr, int *exp,
-                            int *sig, int maxxdigits )
+                            int *sig, int max_digits )
 {
     CHAR_TYPE           chr;
     flt_flags           flags     = 0;
@@ -352,17 +371,19 @@ static flt_flags parse_hex( const CHAR_TYPE *input, CHAR_TYPE *buffer,
     for( ;; ) {
         chr = *s++;
         if( chr == '.' ) {  // <- needs changing for locale support
-            if( flags & DOT_FOUND ) break;
+            if( flags & DOT_FOUND )
+                break;
             flags |= DOT_FOUND;
         } else {
-            if( !isxdigit( chr ) ) break;
+            if( !isxdigit( chr ) )
+                break;
             if( flags & DOT_FOUND ) {
                 ++fdigits;
             }
             digitflag |= chr;
             if( digitflag != '0' ) {        /* if a significant digit */
                 if( sigdigits < MAX_SIG_DIG ) {
-                    buffer[ sigdigits ] = chr;
+                    buffer[sigdigits] = chr;
                 }
                 ++sigdigits;
             }
@@ -372,6 +393,9 @@ static flt_flags parse_hex( const CHAR_TYPE *input, CHAR_TYPE *buffer,
 
     /* Parse the optional exponent */
     if( flags & DIGITS_PRESENT ) {
+        int     digit_size;
+        int     max_exponent;
+
         if( chr == 'p' || chr == 'P' ) {
             const CHAR_TYPE     *p = s - 1;
 
@@ -383,10 +407,12 @@ static flt_flags parse_hex( const CHAR_TYPE *input, CHAR_TYPE *buffer,
                 ++s;
             }
             flags &= ~DIGITS_PRESENT;
+            max_exponent = 10000;
             for( ;; ) {
                 chr = *s;                   /* don't increment s yet */
-                if( !isdigit( chr ) ) break;
-                if( exponent < 10000 ) {
+                if( !isdigit( chr ) )
+                    break;
+                if( exponent < max_exponent ) {
                     exponent = exponent * 10 + chr - '0';
                 }
                 flags |= DIGITS_PRESENT;
@@ -402,17 +428,20 @@ static flt_flags parse_hex( const CHAR_TYPE *input, CHAR_TYPE *buffer,
             --s;
         }
 
-        /* each hex digit accounts for 4 bits */
-        exponent -= fdigits * 4;
+        digit_size = 4;
 
-        if( sigdigits > maxxdigits ) {
-            exponent += sigdigits - maxxdigits * 4;
-            sigdigits = maxxdigits;
+        /* each hex digit accounts for digit_size bits */
+        exponent -= fdigits * digit_size;
+
+        if( sigdigits > max_digits ) {
+            exponent += sigdigits - max_digits * digit_size;
+            sigdigits = max_digits;
         }
 
         while( sigdigits > 0 ) {
-            if( buffer[ sigdigits - 1 ] != '0' ) break;
-            exponent += 4;
+            if( buffer[sigdigits - 1] != '0' )
+                break;
+            exponent += digit_size;
             --sigdigits;
         }
     } else {
@@ -438,7 +467,7 @@ _WMRTLINK int __F_NAME(__Strtold,__wStrtold)( const CHAR_TYPE *bufptr,
     const CHAR_TYPE     *cur_ptr;
     long_double         ld;
     flt_flags           flags;
-    CHAR_TYPE           buffer[ MAX_SIG_DIG + 1 ];
+    CHAR_TYPE           buffer[MAX_SIG_DIG + 1];
     buf_stk_ptr         tmpbuf;
     int                 rc, neg = 0;
 
@@ -481,11 +510,11 @@ _WMRTLINK int __F_NAME(__Strtold,__wStrtold)( const CHAR_TYPE *bufptr,
         return( rc | neg );
     }
 
-    if( flags & HEX_FOUND )
+    if( flags & HEX_FOUND ) {
         flags |= parse_hex( bufptr, buffer, &cur_ptr, &exponent, &sigdigits, MAX_HEX_DIGITS );
-    else
+    } else {
         flags |= parse_decimal( bufptr, buffer, &cur_ptr, &exponent, &sigdigits, MAX_DIGITS );
-
+    }
     if( endptr != NULL ) {
         *endptr = (CHAR_TYPE *)cur_ptr;
     }
@@ -502,9 +531,9 @@ _WMRTLINK int __F_NAME(__Strtold,__wStrtold)( const CHAR_TYPE *bufptr,
         return( _ZERO | neg );      /* indicate zero */
     } else {
 #ifdef __WIDECHAR__
-        char    tmp[ MAX_SIG_DIG + 1 ];
+        char    tmp[MAX_SIG_DIG + 1];
 #endif
-        buffer[ sigdigits ] = '\0';
+        buffer[sigdigits] = '\0';
 #ifdef __WIDECHAR__
         // convert wide string of digits to skinny string of digits
         wcstombs( tmp, buffer, sizeof( tmp ) );
@@ -532,17 +561,17 @@ _WMRTLINK int __F_NAME(__Strtold,__wStrtold)( const CHAR_TYPE *bufptr,
     pld->exponent  = ld.exponent;
     pld->high_word = ld.high_word;
     pld->low_word  = ld.low_word;
-    if(( exponent + sigdigits - 1 ) > 4932 ) {          /* overflow */
+    if( ( exponent + sigdigits - 1 ) > 4932 ) {         /* overflow */
         return( _OVERFLOW | neg );
-    } else if(( exponent + sigdigits - 1 ) < -4932 ) {  /* underflow */
+    } else if( ( exponent + sigdigits - 1 ) < -4932 ) { /* underflow */
         return( _UNDERFLOW | neg );
     }
 #else
     pld->u.word[0] = ld.u.word[0];
     pld->u.word[1] = ld.u.word[1];
-    if(( exponent + sigdigits - 1 ) > 308 ) {          /* overflow */
+    if( ( exponent + sigdigits - 1 ) > 308 ) {          /* overflow */
         return( _OVERFLOW | neg );
-    } else if(( exponent + sigdigits - 1 ) < -308 ) {  /* underflow */
+    } else if( ( exponent + sigdigits - 1 ) < -308 ) {  /* underflow */
         return( _UNDERFLOW | neg );
     }
 #endif
@@ -560,14 +589,16 @@ _WMRTLINK double __F_NAME(strtod,wcstod)( const CHAR_TYPE *bufptr, CHAR_TYPE **e
     rc = __F_NAME(__Strtold,__wStrtold)( bufptr, &ld, endptr );
     type = rc & ~_NEGATIVE;
     if( type == _ZERO || type == _ISNAN || type == _ISINF ) {
-        if( type == _ZERO )
+        if( type == _ZERO ) {
             x = 0.0;
-        else if( type == _ISNAN )
+        } else if( type == _ISNAN ) {
             x = _NAN;
-        else
+        } else {
             x = _INF;
-        if( rc & _NEGATIVE )
+        }
+        if( rc & _NEGATIVE ) {
             x = -x;
+        }
     } else {
 #ifdef _LONG_DOUBLE_
         int     exponent;
