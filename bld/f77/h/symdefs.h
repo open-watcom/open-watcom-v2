@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,7 +68,7 @@ typedef enum {
 } dim_flags_type;
 
 #define DIM_COUNT_SHIFT 13     // shift count to get number of dimensions
-#define DIM_COUNT_MASK	0x07
+#define DIM_COUNT_MASK  0x07
 
 #define _LoConstBound( dim_flags, subs_no )     \
         ( dim_flags & ( (dim_flags_type)1 << ( subs_no - 1 ) ) )
@@ -98,30 +99,30 @@ typedef struct act_dim_list {
         warp_label      init_label;     // initialization label for arrays
         unsigned short  cg_typ;         // cg-type for local arrays on stack
     } l;
-    dim_flags_type  dim_flags;      //  dimension flags
-    pointer         adv;            //  address of ADV
-    unsigned_32     num_elts;       //  number of elements
-    intstar4        subs_1_lo;      //  low bound of 1st dimension
-    intstar4        subs_1_hi;      //  high bound of 1st dimension
-    intstar4        subs_2_lo;      //  low bound of 2nd dimension
-    intstar4        subs_2_hi;      //  high bound of 2nd dimension
-    intstar4        subs_3_lo;      //  low bound of 3rd dimension
-    intstar4        subs_3_hi;      //  high bound of 3rd dimension
-    intstar4        subs_4_lo;      //  low bound of 4th dimension
-    intstar4        subs_4_hi;      //  high bound of 4th dimension
-    intstar4        subs_5_lo;      //  low bound of 5th dimension
-    intstar4        subs_5_hi;      //  high bound of 5th dimension
-    intstar4        subs_6_lo;      //  low bound of 6th dimension
-    intstar4        subs_6_hi;      //  high bound of 6th dimension
-    intstar4        subs_7_lo;      //  low bound of 7th dimension
-    intstar4        subs_7_hi;      //  high bound of 7th dimension
+    dim_flags_type      dim_flags;      //  dimension flags
+    pointer             adv;            //  address of ADV
+    unsigned_32         num_elts;       //  number of elements
+    intstar4            subs_1_lo;      //  low bound of 1st dimension
+    intstar4            subs_1_hi;      //  high bound of 1st dimension
+    intstar4            subs_2_lo;      //  low bound of 2nd dimension
+    intstar4            subs_2_hi;      //  high bound of 2nd dimension
+    intstar4            subs_3_lo;      //  low bound of 3rd dimension
+    intstar4            subs_3_hi;      //  high bound of 3rd dimension
+    intstar4            subs_4_lo;      //  low bound of 4th dimension
+    intstar4            subs_4_hi;      //  high bound of 4th dimension
+    intstar4            subs_5_lo;      //  low bound of 5th dimension
+    intstar4            subs_5_hi;      //  high bound of 5th dimension
+    intstar4            subs_6_lo;      //  low bound of 6th dimension
+    intstar4            subs_6_hi;      //  high bound of 6th dimension
+    intstar4            subs_7_lo;      //  low bound of 7th dimension
+    intstar4            subs_7_hi;      //  high bound of 7th dimension
 } act_dim_list;
 
 typedef struct act_eq_entry {             //  encoding of EQUIVALENCE statement
     struct act_eq_entry *next_eq_entry;   //  pointer to next entry
     struct act_eq_entry *next_eq_set;     //  pointer to next equivalence set
     sym_id              name_equived;     //  name equivalenced
-    byte                substr;           //  indicates whether substrung or not
+    byte                substr;           //  indicates whether substring or not
     byte                subs_no;          //  number of subscripts
     intstar4            subscrs[MAX_DIM]; //  subscripts
     intstar4            substr1;          //  1st substring
@@ -132,7 +133,7 @@ typedef struct eq_entry {               //  encoding of EQUIVALENCE statement
     struct eq_entry     *next_eq_entry; //  pointer to next entry
     struct eq_entry     *next_eq_set;   //  pointer to next equivalence set
     sym_id              name_equived;   //  name equivalenced
-    byte                substr;         //  indicates whether substrung or not
+    byte                substr;         //  indicates whether substring or not
     byte                subs_no;        //  number of subscripts
 } eq_entry;
 

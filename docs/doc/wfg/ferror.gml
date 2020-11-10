@@ -34,7 +34,7 @@ an array name.
 Argument number %d1 to an intrinsic function was declared as a %s2 and cannot
 be specified as an argument to an intrinsic function.
 For example, it is illegal to pass an array to the SIN intrinsic function.
-Constants, simple variables, array elements, and substrung array
+Constants, simple variables, array elements, and substring array
 elements may be used as arguments.
 .note AR-06
 .bi argument number %d1 in call to %s2 - a subroutine was passed but a function was expected
@@ -424,7 +424,7 @@ declarator must be an integer expression.
 .pc
 Allocatable arrays are extensions to the FORTRAN 77 standard.
 .note DM-03
-.bi array or array element (possibly substrung) associated with %s1 too small
+.bi array or array element (possibly substring) associated with %s1 too small
 .pc
 The dummy argument, array %s1, is defined to be larger than the size
 of the actual argument.
@@ -1195,7 +1195,7 @@ An array was incorrectly subscripted during NAMELIST-directed input.
 .note IO-34
 .bi substring error during NAMELIST-directed i/o
 .pc
-An character array element or variable was incorrectly substrung during
+An character array element or variable was incorrectly substring during
 NAMELIST-directed input.
 .note IO-35
 .bi BLOCKSIZE specifier is invalid
@@ -1320,7 +1320,7 @@ ICHAR converts a character to its integer representation.
 .bi cannot pass %s1 as argument to intrinsic function
 .pc
 The item %s1 cannot be used as an argument to an intrinsic function.
-Only constants, simple variables, array elements, and substrung array
+Only constants, simple variables, array elements, and substring array
 elements may be used as arguments.
 .note LI-11
 .bi intrinsic function requires argument(s)
@@ -1977,9 +1977,9 @@ Field names, and the structure name itself, do not have to be the same.
 .bi substringing of function or statement function return value is not FORTRAN 77 standard
 .pc
 The character value returned from a CHARACTER function or statement
-function cannot be substrung.
+function cannot be substring.
 Only character variable names and array element names may be
-substrung.
+substring.
 .note SS-02
 .bi substringing valid only for character variables and array elements
 .pc
@@ -2210,7 +2210,7 @@ enclosed in parentheses and separated by commas.
 .bi cannot substring array name %s1
 .pc
 An attempt has been made to substring the array %s1.
-Only an array element may be substrung.
+Only an array element may be substring.
 .note SV-07
 .bi %s1 treated as an assumed size array
 .pc

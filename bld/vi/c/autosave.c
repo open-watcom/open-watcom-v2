@@ -57,13 +57,11 @@
 #define AS_FILE_EXT         ".fil"
 #ifdef __UNIX__
     #define EXTRA_EXT       "0000_"
-    #define LOCK_NAME_LEN   22
     #define EXTRA_EXT_OFF   6
     #define CHAR_OFF        16
 #else
     #define CHAR_OFF        6
     #define EXTRA_EXT       ""
-    #define LOCK_NAME_LEN   14
 #endif
 #define TMP_FNAME_LEN       (TMP_NAME_LEN - 6)
 
@@ -75,9 +73,9 @@
 
 static bool     noEraseFileList;
 static char     currTmpName[TMP_NAME_LEN];
-static char     checkFileName[LOCK_NAME_LEN] = AS_FILE EXTRA_EXT "a" AS_FILE_EXT;
-static char     checkFileTmpName[LOCK_NAME_LEN] = AS_FILE EXTRA_EXT "at" EXTRA_EXT AS_FILE_EXT;
-static char     lockFileName[LOCK_NAME_LEN] = AS_LOCK EXTRA_EXT "a" EXTRA_EXT AS_FILE_EXT;
+static char     checkFileName[] = AS_FILE EXTRA_EXT "a" AS_FILE_EXT;
+static char     checkFileTmpName[] = AS_FILE EXTRA_EXT "at" EXTRA_EXT AS_FILE_EXT;
+static char     lockFileName[] = AS_LOCK EXTRA_EXT "a" EXTRA_EXT AS_FILE_EXT;
 static int      lockFileHandle = -1;
 
 /*

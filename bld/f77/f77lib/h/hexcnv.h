@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,9 +25,10 @@
 *
 *  ========================================================================
 *
-* Description:  run/compile-time subscripting
+* Description:  Convert hex string to binary
 *
 ****************************************************************************/
 
 
-extern bool     DoSubscript( act_dim_list *dims, intstar4 *subscrs, intstar4 *res );
+extern char    Hex( char data );
+extern char    *BToHS( char *mem, int length, char *fmt_buf );

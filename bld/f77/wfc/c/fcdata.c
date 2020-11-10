@@ -1477,7 +1477,7 @@ void    DtFieldOp( void ) {
     InitVar = GetPtr();
     fd = GetPtr();
     if( fd->u.fd.typ == FT_CHAR ) {
-        // DtItemSize will be set if a field has been substrung
+        // DtItemSize will be set if a field has been substring
         if( DtItemSize == 0 ) {
             DtItemSize = fd->u.fd.xt.size;
         }

@@ -259,7 +259,7 @@ if( x < foo ) {
     // do something else;
 }
 
-If you wish to use multiple if-else statements strung together, do so
+If you wish to use multiple if-else statements string together, do so
 like this:
 
 if( x < foo ) {

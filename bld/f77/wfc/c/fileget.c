@@ -37,14 +37,13 @@
 #endif
 #include "fileio.h"
 #include "fileget.h"
-#include "fileseek.h"
 #include "fileerr.h"
 
 
 #define READ_ERROR      ((size_t)-1)    // read error indicator
 
-size_t readbytes( b_file *io, char *buff, size_t len )
-//====================================================
+static size_t readbytes( b_file *io, char *buff, size_t len )
+//===========================================================
 {
     size_t      bytes_read;
 
@@ -78,74 +77,6 @@ static  int     FillBuffer( b_file *io )
     io->high_water = 0;
     io->read_len = bytes_read;
     return( 0 );
-}
-
-
-static size_t SysRead( b_file *io, char *b, size_t len )
-//======================================================
-{
-    size_t      bytes_read;
-    size_t      amt;
-    size_t      offs_in_b;
-    size_t      max_valid;
-
-    if( io->attrs & BUFFERED ) {
-        // determine the maximum valid position in the buffer
-        max_valid = io->read_len;
-        if( max_valid < io->high_water ) {
-            max_valid = io->high_water;
-        }
-        // if we're beyond that position then we must fill the buffer
-        if( io->b_curs >= max_valid ) {
-            if( FillBuffer( io ) < 0 )
-                return( READ_ERROR );
-            max_valid = io->read_len;
-        }
-        amt = max_valid - io->b_curs;
-        if( amt > len ) {
-            amt = len;
-        }
-        memcpy( b, &io->buffer[io->b_curs], amt );
-        offs_in_b = amt;
-        io->b_curs += amt;
-        len -= amt;
-        if( len ) {
-            // flush the buffer
-            io->b_curs = 0;
-            io->read_len = 0;
-            io->high_water = 0;
-            io->attrs &= ~READ_AHEAD;
-            if( len > io->buff_size ) {
-                // read a multiple of io->buff_size bytes
-                amt = len - len % io->buff_size;
-                bytes_read = readbytes( io, b + offs_in_b, amt );
-                if( bytes_read == READ_ERROR )
-                    return( READ_ERROR );
-                offs_in_b += bytes_read;
-                if( bytes_read < amt )
-                    return( offs_in_b );
-                len -= amt;
-            }
-            if( len ) {
-                // first fill the buffer
-                bytes_read = readbytes( io, io->buffer, io->buff_size );
-                if( bytes_read == READ_ERROR )
-                    return( READ_ERROR );
-                io->attrs |= READ_AHEAD;
-                io->read_len = bytes_read;
-                // then grab our bytes from it
-                if( len > bytes_read ) {
-                    len = bytes_read;
-                }
-                memcpy( b + offs_in_b, io->buffer, len );
-                io->b_curs = len;
-                offs_in_b += len;
-            }
-        }
-        return( offs_in_b );
-    } else {
-        return( readbytes( io, b, len ) );
-    }
 }
 
 
@@ -254,16 +185,4 @@ size_t FGetRecText( b_file *io, char *b, size_t len )
         FSetTrunc( io );
         return( read );
     }
-}
-
-
-size_t FGetRecFixed( b_file *io, char *b, size_t len )
-//====================================================
-// Get a record from a file with "fixed" records.
-{
-    FSetIOOk( io );
-    len = SysRead( io, b, len );
-    if( len == READ_ERROR )
-        return( 0 );
-    return( len );
 }

@@ -25,9 +25,9 @@
 *
 *  ========================================================================
 *
-* Description:  ISO C I/O support for reading from files
+* Description:  compile-time subscripting
 *
 ****************************************************************************/
 
 
-extern size_t       FGetRecText( file_handle fp, char *b, size_t len );
+extern bool     DoSubscript( act_dim_list *dims, intstar4 *subscrs, intstar4 *res );

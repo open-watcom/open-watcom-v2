@@ -48,8 +48,7 @@
 void    SDInitIO(void)
 //====================
 {
-    InitStd();
-    SetIOBufferSize( 0 ); // minimum buffer size
+    InitFileIO( 0 );    // minimum buffer size
 }
 
 
@@ -83,15 +82,8 @@ void    SDClose( file_handle fp )
 }
 
 
-size_t  SDRead( file_handle fp, void *buff, size_t len )
-//======================================================
-{
-    return( FGetRecFixed( fp, buff, len ) );
-}
-
-
 size_t  SDReadText( file_handle fp, char *buff, size_t len )
-//============================================================
+//==========================================================
 {
     return( FGetRecText( fp, buff, len ) );
 }
@@ -107,31 +99,25 @@ void    SDWrite( file_handle fp, const void *buff, size_t len )
 }
 
 
-void    SDWriteText( file_handle fp, const char *buff, size_t len, bool nolf )
-//============================================================================
+void    SDWriteTextNL( file_handle fp, const char *buff, size_t len )
+//===================================================================
 {
     if( fp == FStdOut ) {
         CheckBlips();
     }
-    FPutRecText( fp, buff, len, nolf );
+    FPutRecFixed( fp, buff, len );
+    FPutRecFixed( fp, "\n", 1 );
 }
 
 
 void    SDWriteCCChar( file_handle fp, char asa, bool nolf )
-//========================================================
+//==========================================================
 {
     const char  *cc;
     uint        cc_len;
 
     cc_len = FSetCC( asa, &cc, nolf );
     FPutRecFixed( fp, cc, cc_len );
-}
-
-
-void    SDSeekRec( file_handle fp, unsigned_32 rec_num, size_t rec_size )
-//=======================================================================
-{
-    FSeekRec( fp, rec_num, rec_size );
 }
 
 

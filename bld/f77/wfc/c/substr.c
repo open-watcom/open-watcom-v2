@@ -34,7 +34,7 @@
 #include "substr.h"
 
 
-bool    DoSubstring( intstar4 first, intstar4 last, int len )
+bool    DoSubstring( intstar4 first, intstar4 last, intstar4 len )
 // Do substring operation for EQUIVALENCE or DATA statement and
 // NAMELIST-directed i/o at run-time.
 {

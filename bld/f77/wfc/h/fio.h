@@ -32,13 +32,6 @@
 #ifndef _FIO_H_INCLUDED
 #define _FIO_H_INCLUDED
 
-#define MIN_BUFFER      128
-#if _CPU == 8086
-#define IO_BUFFER       4*1024
-#else
-#define IO_BUFFER       16*1024
-#endif
-
 typedef enum {
     REC_TEXT            = 0x0001,  // text records (terminated with CR/LF)
     REC_FIXED           = 0x0002,  // fixed records

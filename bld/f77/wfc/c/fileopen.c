@@ -36,11 +36,8 @@
 #endif
 #include "wio.h"
 #include "fileio.h"
-#include "sopen.h"
 #include "fileopen.h"
-#include "fileput.h"
 #include "fileerr.h"
-#include "iomode.h"
 #include "fmemmgr.h"
 
 #include "clibext.h"
@@ -52,18 +49,15 @@ static b_file   _FStdOut = {0};
 
 static  int     IOBufferSize = { IO_BUFFER };
 
-void    InitStd( void )
-// Initialize standard i/o.
+void    InitFileIO( uint buff_size )
 {
+    // Initialize stdout i/o.
     _FStdOut.attrs     = REC_TEXT | WRITE_ONLY;
     _FStdOut.fp        = stdout;
     _FStdOut.buff_size = MIN_BUFFER;
     FSetIOOk( &_FStdOut );
     FStdOut = &_FStdOut;
-}
-
-void    SetIOBufferSize( uint buff_size )
-{
+    // Initialize i/o buffer size.
     if( buff_size < MIN_BUFFER ) {
         buff_size = MIN_BUFFER;
     }

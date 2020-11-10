@@ -25,9 +25,9 @@
 *
 *  ========================================================================
 *
-* Description:  ISO C I/O support for reading from files
+* Description:  substring at compile-time
 *
 ****************************************************************************/
 
 
-extern size_t       FGetRecText( file_handle fp, char *b, size_t len );
+extern bool     DoSubstring( intstar4 first, intstar4 last, intstar4 len );

@@ -930,7 +930,7 @@ IO_NML_BAD_SUBSCRIPT [j  r0] NAMELIST指向の入出力で,添字にｴﾗｰが
  An array was incorrectly subscripted during NAMELIST-directed input.
 IO_NML_BAD_SUBSTRING [   r0] substring error during NAMELIST-directed i/o
 IO_NML_BAD_SUBSTRING [j  r0] NAMELIST指向の入出力で,部分文字列にｴﾗｰがあります。
- An character array element or variable was incorrectly substrung during
+ An character array element or variable was incorrectly substring during
  NAMELIST-directed input.
 IO_IBLOCKSIZE [   r0] BLOCKSIZE specifier is invalid
 IO_IBLOCKSIZE [j  r0] BLOCKSIZE が正しくありません。
@@ -1018,7 +1018,7 @@ LI_ICHAR_ONE [j  r0] ICHAR引数は文字型で長さは1でなければなり�
 LI_ILL_PARM_CODE [   c2] cannot pass %s1 as argument to intrinsic function
 LI_ILL_PARM_CODE [j  c2] 組込み関数の引数として%s1を指定してはいけません。
  The item %s1 cannot be used as an argument to an intrinsic function.
- Only constants, simple variables, array elements, and substrung array
+ Only constants, simple variables, array elements, and substring array
  elements may be used as arguments.
 LI_NO_PARM [   c2] intrinsic function requires argument(s)
 LI_NO_PARM [j  c2] 組込み関数には引数が必要です。
@@ -1520,9 +1520,9 @@ SS Subscripts and Substrings
 SS_FUNCTION_VALUE [   c2] substringing of function or statement function return value is not FORTRAN 77 standard
 SS_FUNCTION_VALUE [j  c2] 文字型関数や文関数で取り出した文字列の部分列化は,FORTRAN 77の標準ではありません。
  The character value returned from a CHARACTER function or statement
- function cannot be substrung.
+ function cannot be substring.
  Only character variable names and array element names may be
- substrung.
+ substring.
 SS_ONLY_IF_CHAR [   c2] substringing valid only for character variables and array elements
 SS_ONLY_IF_CHAR [j  c2] 文字型変数や配列要素以外は部分列にできません。
  An attempt has been made to substring a name that is not defined to
@@ -1697,7 +1697,7 @@ SV_NO_LIST [j  c2] %s1は添字なしに使えません。
 SV_TRIED_SSTR [   c1] cannot substring array name %s1
 SV_TRIED_SSTR [j  c1] 配列名%s1は添字がないと部分列にできません。
  An attempt has been made to substring the array %s1.
- Only an array element may be substrung.
+ Only an array element may be substring.
 SV_PVD [   c0] %s1 treated as an assumed size array
 SV_PVD [j  c0] %s1は擬寸法仮配列とみなします(最後の次元が1の時などです)。
  A dummy array argument has been declared with 1 in the last

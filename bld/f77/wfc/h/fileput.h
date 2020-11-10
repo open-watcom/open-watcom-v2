@@ -31,5 +31,3 @@
 
 
 extern void     FPutRecFixed( file_handle fp, const char *b, size_t len );
-extern void     FPutRecText( file_handle fp, const char *b, size_t len, bool nolf );
-extern size_t   writebytes( file_handle fp, const char *buff, size_t len );

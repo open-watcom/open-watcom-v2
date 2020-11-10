@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,16 +25,9 @@
 *
 *  ========================================================================
 *
-* Description:  common exception handling
+* Description:  run/compile-time subscripting
 *
 ****************************************************************************/
 
-#include "ftnstd.h"
-#include "xfflags.h"
 
-#ifndef __SW_BM
-volatile unsigned short __XcptFlags;
-#endif
-byte                    IntOverFlow = { 0x04 };
-byte                    BreakVector = { 0x1b };
-byte                    IntDivBy0 = { 0x00 };
+extern bool     DoSubscript( act_dim_list *dims, intstar4 *subscrs, intstar4 *res );

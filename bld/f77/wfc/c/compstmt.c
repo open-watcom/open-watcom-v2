@@ -258,16 +258,16 @@ void Recurse( void )
 }
 
 
-static bool CharSubStrung( void )
+static bool CharSubString( void )
 {
-    bool        substrung;
+    bool        substring;
     itnode      *cit;
 
     cit = CITNode;
     AdvanceITPtr();                     // step up to the OPR_LBR
-    substrung = SubStrung();
+    substring = SubString();
     CITNode = cit;
-    return( substrung );
+    return( substring );
 }
 
 static void GetStmtType( void )
@@ -305,7 +305,7 @@ static void GetStmtType( void )
                     } else {
                         LkSym();
                         if( !BitOn( SY_USAGE | SY_SUB_PARM ) &&
-                            !CharSubStrung() ) {
+                            !CharSubString() ) {
                             StmtProc = PR_STMTFUNC;
                         }
                     }

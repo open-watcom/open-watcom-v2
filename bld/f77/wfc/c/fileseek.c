@@ -32,31 +32,9 @@
 
 #include "ftnstd.h"
 #include "fileio.h"
-#include "fileget.h"
 #include "fileseek.h"
 #include "fileerr.h"
 
-
-void    FSeekRec( b_file *io, unsigned_32 rec, uint recsize )
-//==========================================================
-// Seek to specified record in file.
-//
-// only files with WRITE_ONLY attribute
-// has SEEK attribute
-{
-    long    new_offset;
-
-    FSetIOOk( io );
-    if( io->attrs & SEEK ) {
-        new_offset = rec * recsize;
-        if( fseek( io->fp, new_offset, SEEK_SET ) ) {
-            FSetSysErr( io );
-        }
-        io->phys_offset = new_offset;
-    } else {
-        FSetErr( FILEIO_BAD_OPERATION, io );
-    }
-}
 
 void    FRewind( b_file *io )
 //===========================

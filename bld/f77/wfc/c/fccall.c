@@ -884,7 +884,7 @@ void    FCDArgInit( void ) {
 void    FCPassFieldCharArray( void ) {
 //==============================
 
-// Pass character array, array element, or substrung array element to
+// Pass character array, array element, or substring array element to
 // subprogram.  Character array is a field within a structure.
 
     sym_id      fd;
@@ -899,7 +899,7 @@ void    FCPassFieldCharArray( void ) {
 void    FCPassCharArray( void ) {
 //=========================
 
-// Pass character array, array element, or substrung array element to
+// Pass character array, array element, or substring array element to
 // subprogram.
 
     sym_id      arr;

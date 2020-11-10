@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,4 +30,4 @@
 ****************************************************************************/
 
 
-extern bool     DoSubstring( intstar4 first, intstar4 last, int len );
+extern bool     DoSubstring( intstar4 first, intstar4 last, intstar4 len );

@@ -124,7 +124,6 @@ comovl1 += &
     fmtboth.obj &
     fmtcnvt.obj &
     fmtscan.obj &
-    hexcnv.obj &
     japanese.obj &
     korean.obj &
     lexstcmp.obj &

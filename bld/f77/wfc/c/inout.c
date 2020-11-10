@@ -422,7 +422,7 @@ static  void    ErrNL( void ) {
 //=============================
 
     if( ErrFile != NULL ) {
-        SDWriteText( ErrFile, ErrBuff, ErrCursor, false );
+        SDWriteTextNL( ErrFile, ErrBuff, ErrCursor );
         ChkErrErr();
     }
     ErrCursor = 0;
@@ -454,7 +454,7 @@ static  void    SendBuff( const char *str, char *buff, size_t buff_size, size_t 
         str += len;
         if( *str == NULLCHAR )
             break;
-        SDWriteText( fp, buff, *cursor, false );
+        SDWriteTextNL( fp, buff, *cursor );
         err_rtn();
         *cursor = 0;
     }
@@ -521,7 +521,7 @@ void    TOutNL( const char *string )
 //==================================
 {
     TOut( string );
-    SDWriteText( TermFile, TermBuff, TermCursor, false );
+    SDWriteTextNL( TermFile, TermBuff, TermCursor );
     TermCursor = 0;
 }
 
@@ -692,7 +692,8 @@ static  void    SendRec( void ) {
 
     if( ListFile != NULL ) {
         SDWriteCCChar( ListFile, *ListBuff, (ListFlag & LF_CC_NOLF) );
-        SDWriteText( ListFile, ListBuff + 1, ListCursor - 1, true );
+        SDWrite( ListFile, ListBuff + 1, ListCursor - 1 );
+        SDWrite( ListFile, "\r", 1 );
         ChkLstErr();
         ListFlag &= ~LF_CC_NOLF;
     }

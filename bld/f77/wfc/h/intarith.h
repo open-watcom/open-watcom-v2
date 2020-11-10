@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,50 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  run/compile-time subscripting
+* Description:  integer arithmetic
 *
 ****************************************************************************/
 
 
-#include "ftnstd.h"
-#include "symdefs.h"
-#include "subscr.h"
-
-
-bool    DoSubscript( act_dim_list *dims, intstar4 *subscrs, intstar4 *res )
-// Do subscript operation for EQUIVALENCE or DATA statements and
-// NAMELIST-directed i/o at run-time.
-{
-    int         dim_cnt;
-    intstar4    offset;
-    intstar4    multiplier;
-    intstar4    ss;
-    intstar4    lo;
-    intstar4    hi;
-    intstar4    *bounds;
-
-    *res = 0;
-    dim_cnt = _DimCount( dims->dim_flags );
-    bounds = &dims->subs_1_lo;
-    multiplier = 1;
-    offset = 0;
-    for( ;; ) {
-        ss = *subscrs++;
-        lo = *bounds++;
-        hi = *bounds++;
-        if( ss < lo )
-            return( false );
-        if( ss > hi )
-            return( false );
-        offset += ( ss - lo ) * multiplier;
-        if( offset < 0 )
-            return( false );
-        if( offset > dims->num_elts )
-            return( false );
-        if( --dim_cnt == 0 )
-            break;
-        multiplier *= ( hi - lo + 1 );
-    }
-    *res = offset;
-    return( true );
-}
+extern bool     AddIOFlo( intstar4 *arg1, intstar4 *arg2 );
+extern bool     SubIOFlo( intstar4 *arg1, intstar4 *arg2 );
+extern bool     MulIOFlo( intstar4 *arg1, intstar4 *arg2 );
