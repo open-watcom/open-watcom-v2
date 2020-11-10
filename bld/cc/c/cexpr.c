@@ -354,40 +354,42 @@ TREEPTR VarLeaf( SYMPTR sym, SYM_HANDLE sym_handle )
     return( leaf );
 }
 
-static TREEPTR CheckSym(id_hash_idx h, const char *id,
-                        SYM_ENTRY *sym_out, SYM_HANDLE *symh)
+static TREEPTR CheckSym( id_hash_idx h, const char *id,
+                        SYM_ENTRY *sym_out, SYM_HANDLE *symhandle )
 {
-    SYM_HANDLE sym_handle, sym_handle0;
-    ENUMPTR    ep;
-    SYM_ENTRY  sym;
+    SYM_HANDLE  sym_handle;
+    SYM_HANDLE  sym_handle0;
+    ENUMPTR     ep;
+    SYM_ENTRY   sym;
 
-    ep = EnumLookup(h, id);
-    sym_handle = SymLook(h, id);
-    if (sym_handle == SYM_NULL) {
-        if (ep) return EnumLeaf(ep);
-        SymCreate(&sym, id);
+    ep = EnumLookup( h, id );
+    sym_handle = SymLook( h, id );
+    if( sym_handle == SYM_NULL ) {
+        if( ep != NULL )
+            return( EnumLeaf( ep ) );
+        SymCreate( &sym, id );
     } else {
-        SymGet(&sym, sym_handle);
-        if (ep && ep->parent->level > sym.level)
-            return EnumLeaf(ep);
+        SymGet( &sym, sym_handle );
+        if( ep != NULL && ep->parent->level > sym.level )
+            return( EnumLeaf( ep ) );
 
-        if (sym.attribs.stg_class == SC_EXTERN && sym.level > 0) {
-            sym_handle0 = Sym0Look(h, id);
-            if (sym_handle0 != SYM_NULL) {
-                SymGet(&sym, sym_handle0);
+        if( sym.attribs.stg_class == SC_EXTERN && sym.level > 0 ) {
+            sym_handle0 = Sym0Look( h, id );
+            if( sym_handle0 != SYM_NULL ) {
+                SymGet( &sym, sym_handle0 );
                 sym_handle = sym_handle0;
             }
         }
 
-        if (sym.attribs.stg_class == SC_TYPEDEF) {
-            CErr2p(ERR_CANT_USE_TYPEDEF_AS_VAR, id);
-            return IntLeaf(0);
+        if( sym.attribs.stg_class == SC_TYPEDEF ) {
+            CErr2p( ERR_CANT_USE_TYPEDEF_AS_VAR, id );
+            return( IntLeaf( 0 ) );
         }
     }
 
-    *symh = sym_handle;
-    memcpy(sym_out, &sym, sizeof sym);
-    return NULL;
+    *symhandle = sym_handle;
+    memcpy( sym_out, &sym, sizeof( sym ) );
+    return( NULL );
 }
 
 static TREEPTR SymLeaf( void )
@@ -397,41 +399,40 @@ static TREEPTR SymLeaf( void )
     TREEPTR     tree;
     SYM_ENTRY   sym;
 
-    if (CurToken == T_SAVED_ID) {
+    if( CurToken == T_SAVED_ID ) {
         h = SavedHash;
         CurToken = LAToken;
-        tree = CheckSym(h, SavedId, &sym, &sym_handle);
+        tree = CheckSym( h, SavedId, &sym, &sym_handle );
     } else {
         h = HashValue;
-        tree = CheckSym(h, Buffer, &sym, &sym_handle);
+        tree = CheckSym( h, Buffer, &sym, &sym_handle );
         NextToken();
     }
 
-    if (tree)
-        return tree;
-
-    /* if( SizeOfCount == 0 ) */ /* causes defined but not referenced */
-    /* always turning it on can cause referenced but not assigned */
-    /* for the case:  int i;  j = sizeof(i);  */
-    sym.flags |= SYM_REFERENCED;
-    if( sym_handle == SYM_NULL ) {
-        if( CurToken == T_LEFT_PAREN ) {
-            sym.attribs.stg_class = SC_FORWARD;     /* indicate forward decl */
-            /* Warn about unprototyped function */
-            CWarn2p( WARN_ASSUMED_IMPORT, ERR_ASSUMED_IMPORT, sym.name );
-            sym_handle = SymAddL0( h, &sym ); /* add symbol to level 0 */
-            sym.flags |= SYM_FUNCTION;
-            sym.sym_type = FuncNode( GetType( TYPE_INT ), FLAG_NONE, NULL );
-        } else {
-            sym.attribs.stg_class = SC_EXTERN;      /* indicate extern decl */
-            CErr2p( ERR_UNDECLARED_SYM, sym.name );
-            sym_handle = SymAdd( h, &sym ); /* add sym to current level*/
-            sym.sym_type = GetType( TYPE_INT );
+    if( tree == NULL ) {
+        /* if( SizeOfCount == 0 ) */ /* causes defined but not referenced */
+        /* always turning it on can cause referenced but not assigned */
+        /* for the case:  int i;  j = sizeof(i);  */
+        sym.flags |= SYM_REFERENCED;
+        if( sym_handle == SYM_NULL ) {
+            if( CurToken == T_LEFT_PAREN ) {
+                sym.attribs.stg_class = SC_FORWARD;     /* indicate forward decl */
+                /* Warn about unprototyped function */
+                CWarn2p( WARN_ASSUMED_IMPORT, ERR_ASSUMED_IMPORT, sym.name );
+                sym_handle = SymAddL0( h, &sym ); /* add symbol to level 0 */
+                sym.flags |= SYM_FUNCTION;
+                sym.sym_type = FuncNode( GetType( TYPE_INT ), FLAG_NONE, NULL );
+            } else {
+                sym.attribs.stg_class = SC_EXTERN;      /* indicate extern decl */
+                CErr2p( ERR_UNDECLARED_SYM, sym.name );
+                sym_handle = SymAdd( h, &sym ); /* add sym to current level*/
+                sym.sym_type = GetType( TYPE_INT );
+            }
         }
+        IncSymWeight( &sym );
+        tree = VarLeaf( &sym, sym_handle );
+        SymReplace( &sym, sym_handle );
     }
-    IncSymWeight( &sym );
-    tree = VarLeaf( &sym, sym_handle );
-    SymReplace( &sym, sym_handle );
     return( tree );
 }
 
