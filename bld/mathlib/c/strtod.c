@@ -267,7 +267,7 @@ static flt_flags subject_seq( const CHAR_TYPE *s, const CHAR_TYPE **endptr )
  * power of ten for decimal form
  * power of two for hexadecimal form
  */
-static flt_flags parse_float( bool hex, const CHAR_TYPE *input, CHAR_TYPE *buffer,
+static flt_flags parse_float( char hex, const CHAR_TYPE *input, CHAR_TYPE *buffer,
                                 const CHAR_TYPE **endptr, int *exp, int *sig )
 {
     CHAR_TYPE           chr;
@@ -393,7 +393,7 @@ _WMRTLINK int __F_NAME(__Strtold,__wStrtold)( const CHAR_TYPE *bufptr,
     buf_stk_ptr         tmpbuf;
     int                 rc;
     int                 neg;
-    bool                hex;
+    char                hex;
 
     cur_ptr = bufptr;
     flags   = subject_seq( bufptr, &cur_ptr );
