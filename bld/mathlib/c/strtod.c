@@ -67,6 +67,9 @@ enum {
     _NEGATIVE   = 0x80
 };
 
+/* Maximum hex digits */
+#define MAX_HEX_DIGITS  16
+
 #ifdef _LONG_DOUBLE_
  #define MAX_DIGITS     19
 #else
@@ -82,34 +85,33 @@ enum {
     #error MAX_SIG_DIG is too small
 #endif
 
-/* Maximum hex digits */
-#define MAX_HEX_DIGITS  16
-
 #if !(defined(_LONG_DOUBLE_) || defined(__WIDECHAR__))
 void __ZBuf2LD( buf_stk_ptr buf, ld_stk_ptr ld )
 {
-    int         i;
-    int         n;
-    long        high;
-    long        low;
-    CHAR_TYPE   *ptr;
+    int             i;
+    int             n;
+    long            high;
+    long            low;
+    const CHAR_TYPE *s;
 
-    ptr = (CHAR_TYPE *)buf;
-    n = __F_NAME(strlen,wcslen)( ptr );
+    s = (CHAR_TYPE *)buf;
+    n = __F_NAME(strlen,wcslen)( s );
     high = 0;
-    for( i = 0; i <= 8; i++ ) {         // collect high 9 significant digits
-        if( n <= 9 )
+    #define DWORD_MAX_DIGITS    9
+    for( i = 0; i < DWORD_MAX_DIGITS; i++ ) {   // collect high 9 significant digits
+        if( n <= DWORD_MAX_DIGITS )
             break;
         --n;
-        high = high * 10 + (*ptr++ - '0');
+        high = high * 10 + (*s++ - '0');
     }
     low = 0;
-    for( i = 0; i <= 8; i++ ) {         // collect low 9 significant digits
+    for( i = 0; i < DWORD_MAX_DIGITS; i++ ) {   // collect low 9 significant digits
         if( n == 0 )
             break;
         --n;
-        low = low * 10 + (*ptr++ - '0');
+        low = low * 10 + (*s++ - '0');
     }
+    #undef DWORD_MAX_DIGITS
     if( high == 0 && low == 0 ) {
         ld->u.value = 0.0;
     } else {
@@ -134,18 +136,19 @@ static unsigned char xdigit2bin( CHAR_TYPE chr )
 
 static void __ZXBuf2LD( buf_stk_ptr buf, ld_stk_ptr ld, int *exponent )
 {
-    int         i;
-    int         n;
-    int32_t     exp;
-    uint32_t    high;
-    uint32_t    low;
-    CHAR_TYPE   *s;
+    int             i;
+    int             n;
+    int32_t         exp;
+    uint32_t        high;
+    uint32_t        low;
+    const CHAR_TYPE *s;
 
-    s = (CHAR_TYPE *)buf;
+    s = (const CHAR_TYPE *)buf;
     n = __F_NAME(strlen,wcslen)( s );
     exp = *exponent;
     high = 0;
-    for( i = 0; i < 8; i++ ) {     /* collect high 8 significant hex digits */
+    #define DWORD_MAX_DIGITS    8
+    for( i = 0; i < DWORD_MAX_DIGITS; i++ ) {   /* collect high 8 significant hex digits */
         if( n == 0 )
             break;
         --n;
@@ -153,13 +156,14 @@ static void __ZXBuf2LD( buf_stk_ptr buf, ld_stk_ptr ld, int *exponent )
         exp += 4;
     }
     low = 0;
-    for( i = 0; i < 8; i++ ) {     /* collect low 8 significant hex digits */
+    for( i = 0; i < DWORD_MAX_DIGITS; i++ ) {   /* collect low 8 significant hex digits */
         if( n == 0 )
             break;
         --n;
         low |= xdigit2bin( *s++ ) << (28 - i * 4);
         exp += 4;
     }
+    #undef DWORD_MAX_DIGITS
 
     /* Flush significand to the left */
     while( !(high & 0x80000000) ) {
@@ -315,9 +319,11 @@ static flt_flags parse_float( char hex, const CHAR_TYPE *input, CHAR_TYPE *buffe
         int     max_exponent;
         int     max_digits;
 
-        if( chr == 'e' || chr == 'E' ) {
-            const CHAR_TYPE     *p = s - 1;
+        if( !hex && ( chr == 'e' || chr == 'E' )
+          || hex && ( chr == 'p' || chr == 'P' ) ) {
+            const CHAR_TYPE *p;
 
+            p = s - 1;
             chr = *s;
             if( chr == '+' ) {
                 ++s;
@@ -439,7 +445,7 @@ _WMRTLINK int __F_NAME(__Strtold,__wStrtold)( const CHAR_TYPE *bufptr,
         *endptr = (CHAR_TYPE *)cur_ptr;
     }
 
-    if( sigdigits == 0 ) {          /* number is 0.0   07-mar-91 */
+    if( sigdigits == 0 ) {          /* number is 0.0 */
 #ifdef _LONG_DOUBLE_
         pld->exponent  = 0;
         pld->high_word = 0;
@@ -461,7 +467,7 @@ _WMRTLINK int __F_NAME(__Strtold,__wStrtold)( const CHAR_TYPE *bufptr,
 #else
         tmpbuf = &buffer;
 #endif
-        if( flags & HEX_FOUND ) {
+        if( hex ) {
             __ZXBuf2LD( tmpbuf, &ld, &exponent );
         } else {
             __ZBuf2LD( tmpbuf, &ld );
