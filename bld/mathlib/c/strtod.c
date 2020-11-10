@@ -181,7 +181,6 @@ static void __ZXBuf2LD( buf_stk_ptr buf, ld_stk_ptr ld, int *exponent )
     ld->high_word = high;
     ld->exponent  = 0x3FFF + exp;                   /* bias is 16383 (0x3FFF) */
 #else
-
     /* The msb is implied and not stored. Shift the significand left once more */
     high <<= 1;
     if( low & 0x80000000 )
@@ -349,7 +348,7 @@ static flt_flags parse_float( char hex, const CHAR_TYPE *input, CHAR_TYPE *buffe
             if( !(flags & DIGITS_PRESENT) ) {
                 s = p;
             }
-        } else {    /* digits found, but no e or E */
+        } else {    /* digits found, but no e/E (decimal) or p/P (hex) */
             --s;
         }
 
