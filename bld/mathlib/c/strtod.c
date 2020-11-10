@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -117,11 +118,24 @@ void __ZBuf2LD( buf_stk_ptr buf, ld_stk_ptr ld )
 }
 #endif
 
+static unsigned char xdigit2bin( CHAR_TYPE chr )
+{
+    unsigned char   value;
+
+    value = chr - '0';
+    if( value > 9 ) {
+        value = chr - 'A' + 10;
+        if( value > 15 ) {
+            value = chr - 'a' + 10;
+        }
+    }
+    return( value );
+}
+
 static void __ZXBuf2LD( buf_stk_ptr buf, ld_stk_ptr ld, int *exponent )
 {
     int         i;
     int         n;
-    uint32_t    xdigit;
     int32_t     exp;
     uint32_t    high;
     uint32_t    low;
@@ -135,8 +149,7 @@ static void __ZXBuf2LD( buf_stk_ptr buf, ld_stk_ptr ld, int *exponent )
         if( n == 0 )
             break;
         --n;
-        xdigit = isdigit( *s ) ? xdigit = *s++ - '0' : tolower( *s++ ) - 'a' + 10;
-        high |= xdigit << (28 - i * 4);
+        high |= xdigit2bin( *s++ ) << (28 - i * 4);
         exp += 4;
     }
     low = 0;
@@ -144,8 +157,7 @@ static void __ZXBuf2LD( buf_stk_ptr buf, ld_stk_ptr ld, int *exponent )
         if( n == 0 )
             break;
         --n;
-        xdigit = isdigit( *s ) ? xdigit = *s++ - '0' : tolower( *s++ ) - 'a' + 10;
-        low |= xdigit << (28 - i * 4);
+        low |= xdigit2bin( *s++ ) << (28 - i * 4);
         exp += 4;
     }
 
@@ -250,12 +262,13 @@ static flt_flags subject_seq( const CHAR_TYPE *s, const CHAR_TYPE **endptr )
     return( flags );
 }
 
-/* Parse a decimal floating-point number: collect siginficant digits
- * into buffer and determine exponent (power of ten).
+/* Parse a decimal and a hexadecimal floating-point number
+ * collect siginficant digits into buffer and determine exponent
+ * power of ten for decimal form
+ * power of two for hexadecimal form
  */
-static flt_flags parse_decimal( const CHAR_TYPE *input, CHAR_TYPE *buffer,
-                                const CHAR_TYPE **endptr, int *exp,
-                                int *sig, int max_digits )
+static flt_flags parse_float( bool hex, const CHAR_TYPE *input, CHAR_TYPE *buffer,
+                                const CHAR_TYPE **endptr, int *exp, int *sig )
 {
     CHAR_TYPE           chr;
     flt_flags           flags     = 0;
@@ -273,8 +286,15 @@ static flt_flags parse_decimal( const CHAR_TYPE *input, CHAR_TYPE *buffer,
                 break;
             flags |= DOT_FOUND;
         } else {
-            if( !isdigit( chr ) )
-                break;
+            if( hex ) {
+                if( !isxdigit( chr ) ) {
+                    break;
+                }
+            } else {
+                if( !isdigit( chr ) ) {
+                    break;
+                }
+            }
             if( flags & DOT_FOUND ) {
                 ++fdigits;
             }
@@ -291,8 +311,9 @@ static flt_flags parse_decimal( const CHAR_TYPE *input, CHAR_TYPE *buffer,
 
     /* Parse the optional exponent */
     if( flags & DIGITS_PRESENT ) {
-        int     digit_size;
+        int     digit_exp_size;
         int     max_exponent;
+        int     max_digits;
 
         if( chr == 'e' || chr == 'E' ) {
             const CHAR_TYPE     *p = s - 1;
@@ -305,7 +326,7 @@ static flt_flags parse_decimal( const CHAR_TYPE *input, CHAR_TYPE *buffer,
                 ++s;
             }
             flags &= ~DIGITS_PRESENT;
-            max_exponent = 2000;
+            max_exponent = ( hex ) ? 10000 : 2000;
             for( ;; ) {
                 chr = *s;                   /* don't increment s yet */
                 if( !isdigit( chr ) )
@@ -326,19 +347,20 @@ static flt_flags parse_decimal( const CHAR_TYPE *input, CHAR_TYPE *buffer,
             --s;
         }
 
-        digit_size = 1;
+        max_digits = ( hex ) ? MAX_HEX_DIGITS : MAX_DIGITS;
+        digit_exp_size = ( hex ) ? 4 : 1;
 
-        exponent -= fdigits * digit_size;
+        exponent -= fdigits * digit_exp_size;
 
         if( sigdigits > max_digits ) {
-            exponent += sigdigits - max_digits * digit_size;
+            exponent += sigdigits - max_digits * digit_exp_size;
             sigdigits = max_digits;
         }
 
         while( sigdigits > 0 ) {
             if( buffer[sigdigits - 1] != '0' )
                 break;
-            exponent += digit_size;
+            exponent += digit_exp_size;
             --sigdigits;
         }
     } else {
@@ -352,110 +374,10 @@ static flt_flags parse_decimal( const CHAR_TYPE *input, CHAR_TYPE *buffer,
 }
 
 
-/* Parse a hexadecimal floating-point number: collect siginficant
- * digits into buffer and determine exponent (power of two).
+/*
+ * Note: The only external user of __Strtold() is currently
+ *       the C front end
  */
-static flt_flags parse_hex( const CHAR_TYPE *input, CHAR_TYPE *buffer,
-                            const CHAR_TYPE **endptr, int *exp,
-                            int *sig, int max_digits )
-{
-    CHAR_TYPE           chr;
-    flt_flags           flags     = 0;
-    int                 sigdigits = 0;
-    int                 fdigits   = 0;
-    int                 exponent  = 0;
-    CHAR_TYPE           digitflag = '0';
-    const CHAR_TYPE     *s = input;
-
-    /* Parse the mantissa */
-    for( ;; ) {
-        chr = *s++;
-        if( chr == '.' ) {  // <- needs changing for locale support
-            if( flags & DOT_FOUND )
-                break;
-            flags |= DOT_FOUND;
-        } else {
-            if( !isxdigit( chr ) )
-                break;
-            if( flags & DOT_FOUND ) {
-                ++fdigits;
-            }
-            digitflag |= chr;
-            if( digitflag != '0' ) {        /* if a significant digit */
-                if( sigdigits < MAX_SIG_DIG ) {
-                    buffer[sigdigits] = chr;
-                }
-                ++sigdigits;
-            }
-            flags |= DIGITS_PRESENT;
-        }
-    }
-
-    /* Parse the optional exponent */
-    if( flags & DIGITS_PRESENT ) {
-        int     digit_size;
-        int     max_exponent;
-
-        if( chr == 'p' || chr == 'P' ) {
-            const CHAR_TYPE     *p = s - 1;
-
-            chr = *s;
-            if( chr == '+' ) {
-                ++s;
-            } else if( chr == '-' ) {
-                flags |= NEGATIVE_EXPONENT;
-                ++s;
-            }
-            flags &= ~DIGITS_PRESENT;
-            max_exponent = 10000;
-            for( ;; ) {
-                chr = *s;                   /* don't increment s yet */
-                if( !isdigit( chr ) )
-                    break;
-                if( exponent < max_exponent ) {
-                    exponent = exponent * 10 + chr - '0';
-                }
-                flags |= DIGITS_PRESENT;
-                ++s;
-            }
-            if( flags & NEGATIVE_EXPONENT ) {
-                exponent = -exponent;
-            }
-            if( !(flags & DIGITS_PRESENT) ) {
-                s = p;
-            }
-        } else {    /* digits found, but no e or E */
-            --s;
-        }
-
-        digit_size = 4;
-
-        /* each hex digit accounts for digit_size bits */
-        exponent -= fdigits * digit_size;
-
-        if( sigdigits > max_digits ) {
-            exponent += sigdigits - max_digits * digit_size;
-            sigdigits = max_digits;
-        }
-
-        while( sigdigits > 0 ) {
-            if( buffer[sigdigits - 1] != '0' )
-                break;
-            exponent += digit_size;
-            --sigdigits;
-        }
-    } else {
-        s = input;  /* not a number (could be just dot) */
-    }
-
-    *exp = exponent;
-    *sig = sigdigits;
-    *endptr = s;
-    return( flags );
-}
-
-
-/* Note: The only external user of __Strtold() is currently the CFE */
 
 _WMRTLINK int __F_NAME(__Strtold,__wStrtold)( const CHAR_TYPE *bufptr,
                                               long_double *pld,
@@ -469,15 +391,17 @@ _WMRTLINK int __F_NAME(__Strtold,__wStrtold)( const CHAR_TYPE *bufptr,
     flt_flags           flags;
     CHAR_TYPE           buffer[MAX_SIG_DIG + 1];
     buf_stk_ptr         tmpbuf;
-    int                 rc, neg = 0;
+    int                 rc;
+    int                 neg;
+    bool                hex;
 
     cur_ptr = bufptr;
     flags   = subject_seq( bufptr, &cur_ptr );
     bufptr  = cur_ptr;
 
-    if( flags & NEGATIVE_NUMBER ) {
-        neg = _NEGATIVE;
-    }
+    hex = ( flags & HEX_FOUND );
+    neg = ( flags & NEGATIVE_NUMBER ) ? _NEGATIVE : 0;
+
     if( flags & (INFINITY_FOUND | NAN_FOUND) ) {
 #ifdef _LONG_DOUBLE_
         pld->exponent  = 0x7FFF;
@@ -510,11 +434,7 @@ _WMRTLINK int __F_NAME(__Strtold,__wStrtold)( const CHAR_TYPE *bufptr,
         return( rc | neg );
     }
 
-    if( flags & HEX_FOUND ) {
-        flags |= parse_hex( bufptr, buffer, &cur_ptr, &exponent, &sigdigits, MAX_HEX_DIGITS );
-    } else {
-        flags |= parse_decimal( bufptr, buffer, &cur_ptr, &exponent, &sigdigits, MAX_DIGITS );
-    }
+    flags |= parse_float( hex, bufptr, buffer, &cur_ptr, &exponent, &sigdigits );
     if( endptr != NULL ) {
         *endptr = (CHAR_TYPE *)cur_ptr;
     }
