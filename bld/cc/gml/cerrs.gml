@@ -1,4 +1,4 @@
-:cmt *****************************************************************************
+﻿:cmt *****************************************************************************
 :cmt *
 :cmt *                            Open Watcom Project
 :cmt *
@@ -2194,6 +2194,14 @@ void foo( int a )
     int j = 3;
 }
 .eerrbad
+:MSGSYM. ERR_ELSE_WITHOUT_IF
+:MSGTXT. 'else' without 'if'
+:MSGJTXT. 「else」に「if」がありません
+.np
+The
+.kw else
+must follow
+.kw if
 .
 :eMSGGRP. Errs
 :cmt -------------------------------------------------------------------

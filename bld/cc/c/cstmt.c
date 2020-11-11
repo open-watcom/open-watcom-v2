@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1254,6 +1255,11 @@ void Statement( void )
             }
             declaration_allowed = false;
             continue;
+        case T_ELSE:
+            /* misplaced else, no previous if */
+            CErr1( ERR_ELSE_WITHOUT_IF );
+            NextToken();
+            continue;
         case T_WHILE:
             NewLoop();
             NextToken();
@@ -1372,10 +1378,11 @@ void Statement( void )
         case T_DOUBLE:
         case T_SIGNED:
         case T_UNSIGNED:
-            if( CompFlags.c99_extensions )
+            if( CompFlags.c99_extensions ) {
                 CErr1( ERR_UNEXPECTED_DECLARATION );
-            else
+            } else {
                 CErr1( ERR_MISSING_RIGHT_BRACE );
+            }
             break;
         case T_EOF:
             CErr1( ERR_MISSING_RIGHT_BRACE );
