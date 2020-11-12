@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1104,16 +1104,22 @@ static target_size GetFields( TYPEPTR decl )
             }
         }
         unqualified_type = UnQualifiedType( typ );
-        if( bits_available == bits_total || decl->decl_type == TYPE_UNION ) {
-            bits_available = TypeSize( typ ) * 8;
-            bits_total = bits_available;
+        if( decl->decl_type == TYPE_UNION ) {
+            bits_total = TypeSize( typ ) * 8;
+        } else if( bits_available == bits_total ) {
+            bits_total = TypeSize( typ ) * 8;
+            bits_available = bits_total;
         } else if( unqualified_type != prev_unqualified_type ) {
             next_offset += bits_total >> 3;
-            bits_available = TypeSize( typ ) * 8;
-            bits_total = bits_available;
+            bits_total = TypeSize( typ ) * 8;
+            bits_available = bits_total;
         }
         prev_unqualified_type = unqualified_type;
         for( ;; ) {
+            if( decl->decl_type == TYPE_UNION ) {
+                next_offset = start;
+                bits_available = bits_total;
+            }
             field = NULL;
             if( CurToken != T_COLON ) {
                 field = FieldDecl( typ, info.mod, state );
@@ -1147,8 +1153,8 @@ static target_size GetFields( TYPEPTR decl )
                         /* no bits have been used; align to base type */
                         next_offset = _RoundUp( next_offset, scalar_size );
                     }
-                    bits_available = scalar_size * 8;
-                    bits_total = bits_available;
+                    bits_total = scalar_size * 8;
+                    bits_available = bits_total;
                 }
                 if( field != NULL ) {
                     field->offset = next_offset;
@@ -1161,20 +1167,14 @@ static target_size GetFields( TYPEPTR decl )
                 if( bits_available != bits_total ) { //changed from bit field to non
                     next_offset += bits_total >> 3;
                     field->offset = next_offset;
-                    bits_available = TypeSize( typ ) * 8;
-                    bits_total = bits_available;
+                    bits_total = TypeSize( typ ) * 8;
+                    bits_available = bits_total;
                 }
                 next_offset = FieldAlign( next_offset, field, &worst_alignment );
                 next_offset += SizeOfArg( field->field_type );
             }
             if( next_offset > struct_size )
                 struct_size = next_offset;
-            if( decl->decl_type == TYPE_UNION ) {
-                next_offset = start;
-                bits_available = bits_total;
-                if (field && struct_size < SizeOfArg(field->field_type))
-                    struct_size = SizeOfArg(field->field_type);
-            }
             if( CurToken != T_COMMA )
                 break;
             NextToken();

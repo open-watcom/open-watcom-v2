@@ -25,6 +25,12 @@ struct s4 {
     TYPENAME : 0;
 };
 
+typedef union u1 {
+    int     x:1;
+} u1;
+
+static int  a;
+
 int main() {
     union {
         struct s1 f1;
@@ -33,7 +39,9 @@ int main() {
         struct s4 f4;
     } u;
 
+    a = sizeof( u1 );
     memset( &u, 0, sizeof(u) );
+    if( a == 0 ) _fail;
     if( u.f1.TYPENAME != 0 ) _fail;
     if( u.f2.TYPENAME != 0 ) _fail;
     if( u.f3.bf != 0 ) _fail;
