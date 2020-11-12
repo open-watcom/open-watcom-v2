@@ -1309,13 +1309,12 @@ static TREEPTR GetExpr( void )
                 break;
             case TC_SIZEOF:
                 typ = tree->u.expr_type;
-                if (typ && typ->decl_type == TYPE_FUNCTION) {
-                    tree = AddrOp(tree);
+                if ( typ != NULL && typ->decl_type == TYPE_FUNCTION ) {
+                    tree = AddrOp( tree );
                     typ = tree->u.expr_type;
                 }
-
-                FreeExprTree(tree);
-                if (typ) {
+                FreeExprTree( tree );
+                if( typ != NULL ) {
                     tree = SizeofOp( typ );
                 } else {
                     tree = UIntLeaf( 1 ); //error use this as default
