@@ -44,10 +44,10 @@
 #define WLEVEL_NOTE     -1
 
 enum {
-    #define MSG_DEF( name, group, kind, level, group_index ) DUMMY_##name,
+    MESSAGE_COUNT = 0
+    #define MSG_DEF( name, group, kind, level, group_index ) +1
         MSG_DEFS
     #undef MSG_DEF
-    MESSAGE_COUNT
 };
 
 enum warning_codes {
