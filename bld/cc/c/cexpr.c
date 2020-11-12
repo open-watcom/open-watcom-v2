@@ -1332,6 +1332,7 @@ static TREEPTR GetExpr( void )
                 break;
             case TC_INDEX:
                 tree = IndexOp( op1, tree );
+                MustRecog( T_RIGHT_BRACKET );
                 curclass = TokenClass[CurToken];
                 CompFlags.meaningless_stmt = true;
                 break;
@@ -1356,6 +1357,7 @@ static TREEPTR GetExpr( void )
                         SetDiagSymbol( sym, functree->op.u2.sym_handle );
                     tree = GenNextParm( tree, &plist );
                     tree = GenFuncCall( tree );
+                    MustRecog( T_RIGHT_PAREN );
                     if( plist != NULL ) {   // function has prototype
                         if( *plist != NULL && (*plist)->decl_type != TYPE_DOT_DOT_DOT ) {
                             CErr1( ERR_PARM_COUNT_MISMATCH );
@@ -1801,28 +1803,27 @@ static TREEPTR IndexOp( TREEPTR tree, TREEPTR index_expr )
 {
     TYPEPTR     typ;
 
-    if( tree->op.opr == OPR_ERROR )
-        return( tree );
-    typ = tree->u.expr_type;
-    SKIP_TYPEDEFS( typ );
-    if( typ->decl_type == TYPE_ARRAY ) {
-        tree = ArrayIndex( tree, index_expr );
-    } else if( typ->decl_type == TYPE_POINTER ) {
-        tree = GenIndex( RValue( tree ), index_expr );
-    } else {                    /* try index[array] */
-        typ = index_expr->u.expr_type;
+    if( tree->op.opr != OPR_ERROR ) {
+        typ = tree->u.expr_type;
         SKIP_TYPEDEFS( typ );
         if( typ->decl_type == TYPE_ARRAY ) {
-            tree = ArrayIndex( index_expr, tree );
+            tree = ArrayIndex( tree, index_expr );
         } else if( typ->decl_type == TYPE_POINTER ) {
-            tree = GenIndex( RValue( index_expr ), tree );
-        } else {
-            CErr1( ERR_EXPR_MUST_BE_ARRAY );
-            FreeExprTree( index_expr );
-            tree = ErrorNode( tree );
+            tree = GenIndex( RValue( tree ), index_expr );
+        } else {                    /* try index[array] */
+            typ = index_expr->u.expr_type;
+            SKIP_TYPEDEFS( typ );
+            if( typ->decl_type == TYPE_ARRAY ) {
+                tree = ArrayIndex( index_expr, tree );
+            } else if( typ->decl_type == TYPE_POINTER ) {
+                tree = GenIndex( RValue( index_expr ), tree );
+            } else {
+                CErr1( ERR_EXPR_MUST_BE_ARRAY );
+                FreeExprTree( index_expr );
+                tree = ErrorNode( tree );
+            }
         }
     }
-    MustRecog( T_RIGHT_BRACKET );
     return( tree );
 }
 
@@ -2175,24 +2176,21 @@ static TREEPTR GenFuncCall( TREEPTR last_parm )
                             }
                             tree->u.expr_type = GetType( TYPE_DOUBLE );
                             tree->op.u1.mathfunc = MathFuncs[i].mathop;
-                            goto done_call;
+                            return( tree );
                         }
                     }
                 }
 #if (_CPU == _AXP) || (_CPU == _PPC) || (_CPU == _MIPS)
                 if( CMPLIT( sym_name, "__builtin_va_start" ) == 0 ) {
-                    tree = GenVaStartNode( last_parm );
-                    goto done_call;
+                    return( GenVaStartNode( last_parm ) );
                 }
                 if( CMPLIT( sym_name, "__builtin_alloca" ) == 0 ) {
-                    tree = GenAllocaNode( last_parm );
-                    goto done_call;
+                    return( GenAllocaNode( last_parm ) );
                 }
 #endif
 #if  _CPU == _PPC
                 if( CMPLIT( sym_name, "__builtin_varg" ) == 0 ) {
-                    tree = GenVaArgNode( last_parm );
-                    goto done_call;
+                    return( GenVaArgNode( last_parm ) );
                 }
 #endif
             }
@@ -2214,8 +2212,6 @@ static TREEPTR GenFuncCall( TREEPTR last_parm )
             CompFlags.pending_dead_code |= FunctionAborts( &sym, functree->op.u2.sym_handle );
         }
     }
-done_call:
-    MustRecog( T_RIGHT_PAREN );
     return( tree );
 }
 
