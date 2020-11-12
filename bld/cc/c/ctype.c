@@ -1172,6 +1172,8 @@ static target_size GetFields( TYPEPTR decl )
             if( decl->decl_type == TYPE_UNION ) {
                 next_offset = start;
                 bits_available = bits_total;
+                if (field && struct_size < SizeOfArg(field->field_type))
+                    struct_size = SizeOfArg(field->field_type);
             }
             if( CurToken != T_COMMA )
                 break;
