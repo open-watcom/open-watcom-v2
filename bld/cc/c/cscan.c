@@ -348,23 +348,29 @@ static TOKEN ScanDotSomething( int c )
     return( T_DOT );
 }
 
-static TOKEN doScanFloat( int hex )
+static TOKEN doScanFloat( bool hex )
 {
     int         c;
 
     BadTokenInfo = 0;
     c = CurrChar;
     if( c == '.' ) {
-        do {
-            c = SaveNextChar();
-        } while( c >= '0' && c <= '9' );
+        if( hex && CompFlags.c99_extensions ) {
+            do {
+                c = SaveNextChar();
+            } while( CharSet[c] & (C_HX | C_DI) );
+        } else {
+            do {
+                c = SaveNextChar();
+            } while( c >= '0' && c <= '9' );
+        }
         if( TokenLen == 2 ) {   /* .? */
             return( ScanDotSomething( c ) );
         }
     }
     CurToken = T_CONSTANT;
     if( c == 'e' || c == 'E' ||
-       (hex && CompFlags.c99_extensions && (c == 'p' || c == 'P')) ) {
+       ( hex && CompFlags.c99_extensions && ( c == 'p' || c == 'P' ) ) ) {
         c = SaveNextChar();
         if( c == '+' || c == '-' ) {
             c = SaveNextChar();
@@ -438,7 +444,7 @@ static TOKEN ScanDot( void )
 
     Buffer[0] = '.';
     TokenLen = 1;
-    return( doScanFloat(0) );
+    return( doScanFloat( false ) );
 }
 
 static TOKEN ScanPPNumber( void )
@@ -451,7 +457,7 @@ static TOKEN ScanPPNumber( void )
      *          digit           (checked by caller)
      *          . digit         (checked by caller)
      *          pp-number digit
-     *          pp-number nondigit
+     *          pp-number identifier-nondigit
      *          pp-number e sign
      *          pp-number E sign
      *          pp-number p sign
@@ -467,8 +473,8 @@ static TOKEN ScanPPNumber( void )
         if( c == '.' )
             continue;
         if( c == '+' || c == '-' ) {
-            if( prevc == 'e' || prevc == 'E'  ||
-              (CompFlags.c99_extensions && (prevc == 'p' || prevc == 'P'))) {
+            if( prevc == 'e' || prevc == 'E' ||
+              ( CompFlags.c99_extensions && ( prevc == 'p' || prevc == 'P' ) ) ) {
                 if( CompFlags.extensions_enabled ) {
                     /* concession to existing practice...
                         #define A2 0x02
@@ -712,7 +718,7 @@ static TOKEN ScanNum( void )
 
             if (CompFlags.c99_extensions) {
                 if ( c == '.' || c == 'p' || c == 'P' ) {
-                    return doScanFloat(1);
+                    return( doScanFloat( true ) );
                 }
             }
 
@@ -738,7 +744,7 @@ static TOKEN ScanNum( void )
                 c = SaveNextChar();
             }
             if( c == '.' || c == 'e' || c == 'E' ) {
-                return( doScanFloat(0) );
+                return( doScanFloat( false ) );
             }
             if( !CompFlags.cpp_mode ) {
                 if( digit_mask & 0x08 ) {   /* if digit 8 or 9 somewhere */
@@ -757,7 +763,7 @@ static TOKEN ScanNum( void )
             c = SaveNextChar();
         } while( c >= '0' && c <= '9' );
         if( c == '.' || c == 'e' || c == 'E' ) {
-            return( doScanFloat(0) );
+            return( doScanFloat( false ) );
         }
     }
     if( !CompFlags.cpp_mode ) {
