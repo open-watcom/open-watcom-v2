@@ -93,5 +93,6 @@ message that are replaced with some other string.
 .makenote 77 User Break Encountered
 .makenote 78 Error in Memory Tracking Encountered
 .makenote 79 Makefile may be Microsoft; try /ms switch
+.makenote 80 Expecting double quote character to end open string
 .*
 .endnote

@@ -4782,6 +4782,9 @@ It handles directory names consistently with other &maksname commands.
 .ix '&makcmdup internal commands' '%quit'
 .id %quit
 .point
+.ix '&makcmdup internal commands' '%ren'
+.id %ren
+.point
 .ix '&makcmdup internal commands' '%stop'
 .id %stop
 .point
@@ -4845,6 +4848,20 @@ where
 is a file specification and
 .id <text>
 is arbitrary text.
+.np
+The
+.id %ren
+internal command will rename a file.
+The command has the form:
+.millust begin
+%ren <from file> <to file>
+.millust end
+.pc
+where
+.id <from file>
+and
+.id <to file>
+are a file specification.
 .np
 The
 .id %create
