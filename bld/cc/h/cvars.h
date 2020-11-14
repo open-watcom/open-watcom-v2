@@ -228,7 +228,7 @@ global jmp_buf      *Environment;       /* var for Suicide() */
 
 /* The ValueStack array is also used by CGEN for saving _try block info */
 global TREEPTR      ValueStack[MAX_LEVEL];
-global char         Token[MAX_LEVEL];
+global TOKEN        Token[MAX_LEVEL];
 global token_class  Class[MAX_LEVEL];
 global expr_level_type ExprLevel;
 

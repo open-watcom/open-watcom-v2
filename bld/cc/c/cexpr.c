@@ -1240,7 +1240,7 @@ static TREEPTR GetExpr( void )
                 CompFlags.pending_dead_code = false;
                 break;
             case TC_OR_OR:
-                if( Token[ExprLevel] == 0 ) {
+                if( Token[ExprLevel] == T_NULL ) {
                     BoolExpr( tree );   /* checks type of op2 */
                     --SizeOfCount;
                     tree = op1;
@@ -1251,7 +1251,7 @@ static TREEPTR GetExpr( void )
                 CompFlags.pending_dead_code = false;
                 break;
             case TC_AND_AND:
-                if( Token[ExprLevel] == 0 ) {
+                if( Token[ExprLevel] == T_NULL ) {
                     BoolExpr( tree );   /* checks type of op2 */
                     --SizeOfCount;
                     tree = op1;

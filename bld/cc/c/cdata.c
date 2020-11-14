@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -92,7 +92,7 @@ void InitGlobalVars( void )
     SavedHash               = 0;        /* hash value for saved id */
     SavedTokenLoc.line      = 0;        /* value of TokenLine when id saved */
     SavedTokenLoc.fno       = 0;        /* value of TokenFno when id saved */
-    LAToken                 = 0;        /* look ahead token */
+    LAToken                 = T_NULL;   /* look ahead token */
     LabelHead               = NULL;     /* list of all labels defined in function */
     TagHead                 = NULL;     /* list of all struct, union, enum tags */
     DeadTags                = NULL;     /* list of all tags that are out of scope */
