@@ -12,6 +12,7 @@ message that are replaced with some other string.
 .dm makenote end
 .*
 .begnote
+.cw $
 .*
 .makenote 1 Out of memory
 .makenote 2 Make execution terminated
@@ -95,4 +96,5 @@ message that are replaced with some other string.
 .makenote 79 Makefile may be Microsoft; try /ms switch
 .makenote 80 Expecting double quote character to end open string
 .*
+.cw ;
 .endnote
