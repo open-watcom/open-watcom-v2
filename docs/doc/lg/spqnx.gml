@@ -91,7 +91,6 @@ is any of the following:
 .note # comment
 .note @ directive_file
 .endnote
-.cw ;
 :CMT. .synote
 :CMT. .im objfile
 :CMT. .im libfile

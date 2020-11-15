@@ -362,7 +362,8 @@ except case when vararg parameter is used.
 .dm errnote begin
 .   .se *ctxn=&'substr(&*,1,&'pos(' ',&*)-1)
 .   .se *ttl$=&'substr(&*,&'pos(' ',&*)+1)
-.   .note &*ctxn &*ttl$
+.   .note &*ctxn
+.   &*ttl$
 .*  .us &*ttl$
 .dm errnote end
 .*

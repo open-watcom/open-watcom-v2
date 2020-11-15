@@ -7,7 +7,8 @@ message that are replaced with some other string.
 .dm makenote begin
 .   .se *ctxn=&'substr(&*,1,&'pos(' ',&*)-1)
 .   .se *ttl$=&'substr(&*,&'pos(' ',&*)+1)
-.   .note &*ctxn &*ttl$
+.   .note &*ctxn
+.   &*ttl$
 .*  .us &*ttl$
 .dm makenote end
 .*
