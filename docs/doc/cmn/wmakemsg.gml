@@ -12,7 +12,7 @@ message that are replaced with some other string.
 .dm makenote end
 .*
 .begnote
-.cw $
+.cw `
 .*
 .makenote 1 Out of memory
 .makenote 2 Make execution terminated
