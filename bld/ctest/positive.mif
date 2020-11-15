@@ -253,6 +253,7 @@ positive_tests = &
     src01.$(exe) &
     str01.$(exe) &
     str02.$(exe) &
+    struct01.$(exe) &
     switch01.$(exe) &
     thread01.$(exe) &
     thread02.$(exe) &

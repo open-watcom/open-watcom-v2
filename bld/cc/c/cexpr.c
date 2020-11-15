@@ -1217,7 +1217,11 @@ static TREEPTR GetExpr( void )
                 }
                 op1 = VoidRValue( op1 );
                 typ = TypeOf( tree );
-                if( !IsStruct( typ ) ) {
+                if( IsStruct( typ ) ) {
+                    if( tree->op.opr == OPR_PUSHADDR ) {
+                        tree->op.opr = OPR_PUSHSYM;
+                    }
+                } else {
                     tree = VoidRValue( tree );
                 }
                 tree = ExprNode( op1, OPR_COMMA, tree );
