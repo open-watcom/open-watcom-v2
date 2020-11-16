@@ -592,7 +592,7 @@ static bool cmpChainPattern( const char *pattern1, const char *pattern2, size_t 
     char    c1;
     char    c2;
 
-    for( i = 0; i < pattern_len; ++i ) {
+    for( i = 0; i < pattern_len; i++ ) {
         c1 = *pattern1++;
         c2 = *pattern2++;
         if( c1 == '\\' ) {
@@ -601,6 +601,7 @@ static bool cmpChainPattern( const char *pattern1, const char *pattern2, size_t 
             }
             c1 = *pattern1++;
             c2 = *pattern2++;
+            i++;
         } else {
             c1 = mytolower( c1 );
             c2 = mytolower( c2 );
