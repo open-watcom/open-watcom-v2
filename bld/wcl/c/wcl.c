@@ -158,7 +158,7 @@ const char *WclMsgs[] = {
 };
 
 static const char *EnglishHelp[] = {
-    #include "wclhelp.h"
+    #include "usage.gh"
     NULL
 };
 

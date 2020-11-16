@@ -33,7 +33,9 @@ owcc_specs = b$(owcc_specs)
 # EXE
 #
 !ifndef target_cpu
-exetarg_prebuild_objs = owcchelp.gh $(owcc_specs)
+exetarg_prebuild_objs = owcchelp.gh $(owcc_specs) #usage.gh
+!else
+exetarg_prebuild_objs = usage.gh
 !endif
 !ifdef target_cpu
 exetarg_objs          = clcommon.obj $(trmem_objs) wcl.obj
@@ -61,4 +63,24 @@ $(owcc_specs): $(wlink_dir)/lnk/specs.sp $(__MAKEFILES__)
     $(wsplice) -k Pspecs $[@ - | sed -f ../../convtool.sed >$@
 !else
     $(wsplice) -k Pspecs $[@ $@
+!endif
+
+# optencod options and targets for various hosts
+!ifdef exetarg_qnx_res
+optencod_opt_qnx    = -u $(exetarg_qnx_res)
+!endif
+#optencod_enc_linux  = -utf8
+!ifeq release 0
+optencod_targ_dbg   = dbg
+!endif
+
+opt_targets = $(target_cpu) $(host_os) $(optencod_targ_dbg) $(optencod_targ_$(target_cpu))
+
+usage.gh $(exetarg_$(host_os)_res) : ../../h/wclopts.gml $(__MAKEFILES__)
+    @%make echo_optencod
+    $(noecho)optencod -c -q $(optencod_opt_$(host_os)) $[@ . . $@ $(opt_targets)
+
+echo_optencod : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo optencod $@
 !endif
