@@ -349,6 +349,7 @@ static const char *usageMsg[] = {
     "optencod [options] <gml-file> <parser-h> <parser-c> <usage-h> <target>*",
     "",
     "Options: (must appear in following order)",
+    "  -c comma separated list",
     "  -i create international file with non-english data",
     "  -l <lang-n> is the language(number) used for output data",
     "  -n zero terminated items",
@@ -373,6 +374,7 @@ static struct {
     boolbit     zero_term       : 1;
     boolbit     rc              : 1;
     boolbit     out_utf8        : 1;
+    boolbit     comma_list      : 1;
     char        *rc_macro;
     language_id lang;
 } optFlag;
@@ -774,6 +776,10 @@ static bool procCmdLine( int argc1, char **argv1 )
 
     if( argc1 < NUM_FILES ) {
         return( true );
+    }
+    if( strcmp( *argv1, "-c" ) == 0 ) {
+        optFlag.comma_list = true;
+        NEXT_ARG_CHECK();
     }
     if( strcmp( *argv1, "-i" ) == 0 ) {
         optFlag.international = true;
@@ -2331,7 +2337,7 @@ static bool usageValid( OPTION *o, GROUP *gr )
     return( true );
 }
 
-static void emitQuotedString( FILE *fp, const char *str, bool zero_term )
+static void emitQuotedString( FILE *fp, const char *str, bool zero_term, bool comma_list )
 {
     size_t      len;
     const char  *q;
@@ -2345,7 +2351,7 @@ static void emitQuotedString( FILE *fp, const char *str, bool zero_term )
         tmpbuff[len] = '\0';
         fprintf( fp, "%s\\\"", tmpbuff );
     }
-    fprintf( fp, "%s%s\"", s, ( zero_term ) ? "\\0" : "" );
+    fprintf( fp, "%s%s\"%s", s, ( zero_term ) ? "\\0" : "", ( comma_list ) ? "," : "" );
 }
 
 static void emitUsageH( void )
@@ -2357,9 +2363,9 @@ static void emitUsageH( void )
     if( optFlag.rc ) {
         if( ufp != NULL ) {
             fprintf( ufp, "pick((%s+%d), ", optFlag.rc_macro, line_offs++ );
-            emitQuotedString( ufp, getLangData( outputdata, LANG_English ), false );
+            emitQuotedString( ufp, getLangData( outputdata, LANG_English ), false, false );
             fprintf( ufp, ", " );
-            emitQuotedString( ufp, getLangData( outputdata, LANG_Japanese ), false );
+            emitQuotedString( ufp, getLangData( outputdata, LANG_Japanese ), false, false );
             fprintf( ufp, ")\n" );
         }
     } else {
@@ -2370,7 +2376,7 @@ static void emitUsageH( void )
             strcpy( maxusgbuff, str );
         }
         if( ufp != NULL ) {
-            emitQuotedString( ufp, str, ( optFlag.zero_term ) ? true : false );
+            emitQuotedString( ufp, str, ( optFlag.zero_term ) ? true : false, ( optFlag.comma_list ) ? true : false );
             fprintf( ufp, "\n" );
         }
     }
