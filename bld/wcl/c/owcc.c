@@ -153,7 +153,7 @@ const char *WclMsgs[] = {
 };
 
 static const char *EnglishHelp[] = {
-    #include "owcchelp.gh"
+    #include "usage.gh"
     NULL
 };
 
