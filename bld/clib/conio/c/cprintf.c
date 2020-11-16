@@ -51,9 +51,9 @@ static void __SLIB_CALLBACK con_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 }
 
 
-_WCRTLINK int vcprintf( const char *format, va_list arg )
+_WCRTLINK int vcprintf( const char *format, va_list args )
 {
-    return( __prtf( NULL, format, arg, con_putc ) );
+    return( __prtf( NULL, format, args, con_putc ) );
 }
 
 

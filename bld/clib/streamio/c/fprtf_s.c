@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,7 +58,7 @@ static void __SLIB_CALLBACK file_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 
 
 int __F_NAME(__fprtf_s,__fwprtf_s)( FILE * __restrict stream,
-                         const CHAR_TYPE * __restrict format, va_list arg )
+                         const CHAR_TYPE * __restrict format, va_list args )
 {
     int             not_buffered;
     int             amount_written;
@@ -89,7 +89,7 @@ int __F_NAME(__fprtf_s,__fwprtf_s)( FILE * __restrict stream,
             stream->_flag &= ~_IONBF;
             stream->_flag |= _IOFBF;
         }
-        amount_written = __F_NAME(__prtf_s,__wprtf_s)( stream, format, arg, &msg, file_putc );
+        amount_written = __F_NAME(__prtf_s,__wprtf_s)( stream, format, args, &msg, file_putc );
         if( not_buffered ) {
             stream->_flag &= ~_IOFBF;
             stream->_flag |= _IONBF;

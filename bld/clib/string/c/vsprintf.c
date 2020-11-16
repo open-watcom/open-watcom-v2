@@ -75,7 +75,7 @@ static void __SLIB_CALLBACK mem_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 
 
 #ifdef __WIDECHAR__
-_WCRTLINK int vswprintf( CHAR_TYPE *dest, size_t n, const CHAR_TYPE *format, va_list arg )
+_WCRTLINK int vswprintf( CHAR_TYPE *dest, size_t n, const CHAR_TYPE *format, va_list args )
 {
     struct vswprtf_buf info;
 
@@ -83,14 +83,14 @@ _WCRTLINK int vswprintf( CHAR_TYPE *dest, size_t n, const CHAR_TYPE *format, va_
         info.bufptr = dest;
         info.chars_output = 0;
         info.max_chars = n - 1;
-        __wprtf( &info, format, arg, mem_putc );
+        __wprtf( &info, format, args, mem_putc );
         dest[info.chars_output] = NULLCHAR;
     }
     return( info.chars_output );
 }
 #endif
 
-_WCRTLINK int __F_NAME(vsprintf,_vswprintf) ( CHAR_TYPE *dest, const CHAR_TYPE *format, va_list arg )
+_WCRTLINK int __F_NAME(vsprintf,_vswprintf) ( CHAR_TYPE *dest, const CHAR_TYPE *format, va_list args )
 {
 #ifndef __WIDECHAR__
     register int            len;
@@ -102,11 +102,11 @@ _WCRTLINK int __F_NAME(vsprintf,_vswprintf) ( CHAR_TYPE *dest, const CHAR_TYPE *
     info.bufptr = dest;
     info.chars_output = 0;
     info.max_chars = INT_MAX;
-    __wprtf( &info, format, arg, mem_putc );
+    __wprtf( &info, format, args, mem_putc );
     dest[info.chars_output] = NULLCHAR;
     return( info.chars_output );
 #else
-    len = __prtf( dest, format, arg, mem_putc );
+    len = __prtf( dest, format, args, mem_putc );
     dest[len] = NULLCHAR;
     return( len );
 #endif

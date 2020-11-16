@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -568,7 +568,7 @@ static void __SLIB_CALLBACK mem_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
     callback->outproc( callback->param, op_char );
 };
 
-_WCRTLINK int RdosPrintf( TRdosCallback *outproc, void *param, const char *format, va_list arg )
+_WCRTLINK int RdosPrintf( TRdosCallback *outproc, void *param, const char *format, va_list args )
 {
     struct TRdosPrintfCallback callback;
 
@@ -576,5 +576,5 @@ _WCRTLINK int RdosPrintf( TRdosCallback *outproc, void *param, const char *forma
     callback.param = param;
 
 
-    return( __prtf( (void *)&callback, format, arg, mem_putc ) );
+    return( __prtf( (void *)&callback, format, args, mem_putc ) );
 }
