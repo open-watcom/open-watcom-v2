@@ -199,13 +199,13 @@ typedef struct option {
     struct option   *next;
     struct option   *synonym;
     lang_data       lang_usage;
-    char            *check;
-    char            *special;
-    char            *special_arg_usage;
+    char            *check_func;
+    char            *special_func;
+    char            *immediate_func;
+    char            *usage_argid;
     char            *field_name;
     char            *value_field_name;
     NAME            *enumerate;
-    char            *immediate;
     char            *code;
     unsigned        number_default;
     unsigned        target;
@@ -643,43 +643,30 @@ static unsigned findTarget( char const *t )
     return( 0 );
 }
 
-static NAME *findName( NAME **h, const char *n )
-{
-    NAME *p;
-
-    for( p = *h; p != NULL; p = p->next ) {
-        if( strcmp( n, p->name ) == 0 ) {
-            return( p );
-        }
-    }
-    return( NULL );
-}
-
-static NAME *addName( NAME **h, const char *n )
+static NAME *addEnumName( NAME **h, const char *n )
 {
     size_t len;
-    NAME *p;
+    NAME *e;
 
+    for( e = *h; e != NULL; e = e->next ) {
+        if( strcmp( n, e->name ) == 0 ) {
+            return( e );
+        }
+    }
     len = strlen( n );
-    p = malloc( sizeof(*p) + len );
-    strcpy( p->name, n );
-    p->next = *h;
-    *h = p;
-    return( p );
+    e = malloc( sizeof( *e ) + len );
+    strcpy( e->name, n );
+    e->next = *h;
+    *h = e;
+    return( e );
 }
 
 static NAME *addEnumerator( const char *enumerate, const char *field_name )
 {
-    NAME *n;
-
     strcpy( tmpbuff, enumerate );
     strcat( tmpbuff, "_" );
     strcat( tmpbuff, field_name );
-    n = findName( &enumeratorList, tmpbuff );
-    if( n == NULL ) {
-        n = addName( &enumeratorList, tmpbuff );
-    }
-    return( n );
+    return( addEnumName( &enumeratorList, tmpbuff ) );
 }
 
 static GROUP *findGroup( const char *pattern )
@@ -1048,7 +1035,7 @@ static void doNTARGET( const char *p )
     }
 }
 
-// :number. [<fn>] [<default>]
+// :number. [<fn>] [<default>] [<usage argid>]
 static void doNUMBER( const char *p )
 {
     OPTION *o;
@@ -1059,17 +1046,34 @@ static void doNUMBER( const char *p )
     }
     p += skipSpace( p );
     if( *p != '\0' ) {
-        p += copyNonSpaceUntil( p, tokbuff, '\0' );
-        for( o = optionList; o != NULL; o = o->synonym ) {
-            o->check = strdup( tokbuff );
+        if( p[0] == '.' && p[1] == '\0') {
+            /* . means skip */
+            p += copyNonSpaceUntil( p, tokbuff, '\0' );
+        } else {
+            p += copyNonSpaceUntil( p, tokbuff, '\0' );
+            for( o = optionList; o != NULL; o = o->synonym ) {
+                o->check_func = strdup( tokbuff );
+            }
         }
-        p += skipSpace( p );
-        if( *p != '\0' ) {
+    }
+    p += skipSpace( p );
+    if( *p != '\0' ) {
+        if( p[0] == '.' && p[1] == '\0') {
+            /* . means skip */
+            p += copyNonSpaceUntil( p, tokbuff, '\0' );
+        } else {
             p += copyNonSpaceUntil( p, tokbuff, '\0' );
             for( o = optionList; o != NULL; o = o->synonym ) {
                 o->number_default = atoi( tokbuff );
                 o->default_specified = true;
             }
+        }
+    }
+    p += skipSpace( p );
+    if( *p != '\0' ) {
+        p += copyNonSpaceUntil( p, tokbuff, '\0' );
+        for( o = optionList; o != NULL; o = o->synonym ) {
+            o->usage_argid = strdup( tokbuff );
         }
     }
 }
@@ -1098,7 +1102,7 @@ static void doNOCHAIN( const char *p )
     }
 }
 
-// :id. [<fn>]
+// :id. [<fn>] [<usage argid>]
 static void doID( const char *p )
 {
     OPTION *o;
@@ -1108,15 +1112,27 @@ static void doID( const char *p )
         o->is_simple = false;
     }
     p += skipSpace( p );
+    if( p[0] != '\0' ) {
+        if( p[0] == '.' && p[1] == '\0') {
+            /* . means skip */
+            p += copyNonSpaceUntil( p, tokbuff, '\0' );
+        } else {
+            p += copyNonSpaceUntil( p, tokbuff, '\0' );
+            for( o = optionList; o != NULL; o = o->synonym ) {
+                o->check_func = strdup( tokbuff );
+            }
+        }
+    }
+    p += skipSpace( p );
     if( *p != '\0' ) {
         p += copyNonSpaceUntil( p, tokbuff, '\0' );
         for( o = optionList; o != NULL; o = o->synonym ) {
-            o->check = strdup( tokbuff );
+            o->usage_argid = strdup( tokbuff );
         }
     }
 }
 
-// :char. [<fn>]
+// :char. [<fn>] [<usage argid>]
 static void doCHAR( const char *p )
 {
     OPTION *o;
@@ -1127,14 +1143,26 @@ static void doCHAR( const char *p )
     }
     p += skipSpace( p );
     if( *p != '\0' ) {
+        if( p[0] == '.' && p[1] == '\0') {
+            /* . means skip */
+            p += copyNonSpaceUntil( p, tokbuff, '\0' );
+        } else {
+            p += copyNonSpaceUntil( p, tokbuff, '\0' );
+            for( o = optionList; o != NULL; o = o->synonym ) {
+                o->check_func = strdup( tokbuff );
+            }
+        }
+    }
+    p += skipSpace( p );
+    if( *p != '\0' ) {
         p += copyNonSpaceUntil( p, tokbuff, '\0' );
         for( o = optionList; o != NULL; o = o->synonym ) {
-            o->check = strdup( tokbuff );
+            o->usage_argid = strdup( tokbuff );
         }
     }
 }
 
-// :immediate. <fn>
+// :immediate. <fn> [<usage argid>]
 static void doIMMEDIATE( const char *p )
 {
     OPTION *o;
@@ -1147,10 +1175,17 @@ static void doIMMEDIATE( const char *p )
     if( *p != '\0' ) {
         p += copyNonSpaceUntil( p, tokbuff, '\0' );
         for( o = optionList; o != NULL; o = o->synonym ) {
-            o->immediate = strdup( tokbuff );
+            o->immediate_func = strdup( tokbuff );
         }
     } else {
         fail( ":immediate. must have <fn> specified\n" );
+    }
+    p += skipSpace( p );
+    if( *p != '\0' ) {
+        p += copyNonSpaceUntil( p, tokbuff, '\0' );
+        for( o = optionList; o != NULL; o = o->synonym ) {
+            o->usage_argid = strdup( tokbuff );
+        }
     }
 }
 
@@ -1169,11 +1204,11 @@ static void doCODE( const char *p )
             o->code = strdup( p );
         }
     } else {
-        fail( ":immediate. must have <fn> specified\n" );
+        fail( ":code. must have <source-code> specified\n" );
     }
 }
 
-// :file.
+// :file. [<usage argid>]
 static void doFILE( const char *p )
 {
     OPTION *o;
@@ -1183,6 +1218,13 @@ static void doFILE( const char *p )
     for( o = optionList; o != NULL; o = o->synonym ) {
         o->is_file = true;
         o->is_simple = false;
+    }
+    p += skipSpace( p );
+    if( *p != '\0' ) {
+        p += copyNonSpaceUntil( p, tokbuff, '\0' );
+        for( o = optionList; o != NULL; o = o->synonym ) {
+            o->usage_argid = strdup( tokbuff );
+        }
     }
 }
 
@@ -1228,7 +1270,7 @@ static void doPAGE( const char *p )
     getsUsage = TAG_PAGE;
 }
 
-// :path.
+// :path. [<usage argid>]
 static void doPATH( const char *p )
 {
     OPTION *o;
@@ -1238,6 +1280,13 @@ static void doPATH( const char *p )
     for( o = optionList; o != NULL; o = o->synonym ) {
         o->is_path = true;
         o->is_simple = false;
+    }
+    p += skipSpace( p );
+    if( *p != '\0' ) {
+        p += copyNonSpaceUntil( p, tokbuff, '\0' );
+        for( o = optionList; o != NULL; o = o->synonym ) {
+            o->usage_argid = strdup( tokbuff );
+        }
     }
 }
 
@@ -1261,10 +1310,10 @@ static void doCHAIN( const char *p )
     getsUsage = TAG_CHAIN;
 }
 
-// :enumerate. <name> <option>
+// :enumerate. <name> [<option>]
 static void doENUMERATE( const char *p )
 {
-    NAME *n;
+    NAME *en;
     OPTION *o;
 
     p += skipSpace( p );
@@ -1272,29 +1321,25 @@ static void doENUMERATE( const char *p )
         fail( "missing <name> in :enumerate. tag\n" );
     }
     p += copyNonSpaceUntil( p, tokbuff, '\0' );
-    n = findName( &enumList, tokbuff );
-    if( n == NULL ) {
-        n = addName( &enumList, tokbuff );
-    }
-    tokbuff[0] = '\0';
+    en = addEnumName( &enumList, tokbuff );
     p += skipSpace( p );
-    if( *p != '\0' ) {
-        p += copyNonSpaceUntil( p, tokbuff, '\0' );
-        addEnumerator( n->name, tokbuff );
+    p += copyNonSpaceUntil( p, tokbuff, '\0' );
+    if( *tokbuff != '\0' ) {
+        addEnumerator( en->name, tokbuff );
     }
-    addEnumerator( n->name, "default" );
+    addEnumerator( en->name, "default" );
     for( o = optionList; o != NULL; o = o->synonym ) {
-        o->enumerate = n;
+        o->enumerate = en;
         if( o->is_timestamp ) {
             o->enumerate->is_timestamp = true;
         }
-        if( tokbuff[0] != '\0' ) {
+        if( *tokbuff != '\0' ) {
             o->field_name = strdup( tokbuff );
         }
     }
 }
 
-// :special. <fn>
+// :special. <fn> [<usage argid>]
 static void doSPECIAL( const char *p )
 {
     OPTION *o;
@@ -1309,13 +1354,13 @@ static void doSPECIAL( const char *p )
     }
     p += copyNonSpaceUntil( p, tokbuff, '\0' );
     for( o = optionList; o != NULL; o = o->synonym ) {
-        o->special = strdup( tokbuff );
+        o->special_func = strdup( tokbuff );
     }
     p += skipSpace( p );
     if( *p != '\0' ) {
         p += copyNonSpaceUntil( p, tokbuff, '\0' );
         for( o = optionList; o != NULL; o = o->synonym ) {
-            o->special_arg_usage = strdup( tokbuff );
+            o->usage_argid = strdup( tokbuff );
         }
     }
 }
@@ -1429,7 +1474,7 @@ static void doJTITLEU( const char *p )
     t->is_titleu = true;
 }
 
-// :group. <usagegrp>
+// :group. <num>
 static void doGROUP( const char *p )
 {
     OPTION *o;
@@ -1484,9 +1529,9 @@ static void doUSAGEOGRP( const char *p )
     getsUsage = TAG_CHAIN;
 }
 
-// :usagegrp. <number> <usage>
+// :usagegrp. <num> <usage text>
 //
-// define group <number> with usage text for block of options
+// define group <num> with usage text for block of options
 //
 static void doUSAGEGRP( const char *p )
 {
@@ -1494,7 +1539,7 @@ static void doUSAGEGRP( const char *p )
 
     p += skipSpace( p );
     if( *p == '\0' ) {
-        fail( "missing <number> in :usagegrp. tag\n" );
+        fail( "missing <num> in :usagegrp. tag\n" );
     }
     p += copyNonSpaceUntil( p, tokbuff, '\0' );
     gr = addGroup( tokbuff );
@@ -1654,7 +1699,7 @@ static void makeFieldName( const char *pattern, char *f )
 {
     char c;
     bool sensitive;
-    bool special;
+    bool is_special;
 
     c = *pattern++;
     if( c == '\\' ) {
@@ -1663,14 +1708,14 @@ static void makeFieldName( const char *pattern, char *f )
         c = mytolower( c );
     }
     if( c != '\0' ) {
-        special = false;
+        is_special = false;
         if( isalnum( c ) ) {
             if( isdigit( c ) )
                 *f++ = '_';
             *f++ = c;
         } else {
             f = special_char( f, c );
-            special = true;
+            is_special = true;
         }
         sensitive = false;
         for( ; (c = *pattern++) != '\0'; ) {
@@ -1679,15 +1724,15 @@ static void makeFieldName( const char *pattern, char *f )
                 continue;
             }
             if( isalnum( c ) ) {
-                if( special && *( f - 1 ) != '_' )
+                if( is_special && *( f - 1 ) != '_' )
                     *f++ = '_';
                 if( !sensitive )
                     c = mytolower( c );
                 *f++ = c;
-                special = false;
+                is_special = false;
             } else {
                 f = special_char( f, c );
-                special = true;
+                is_special = true;
             }
             sensitive = false;
         }
@@ -1717,7 +1762,7 @@ static void initOptionFields( void )
 static void startParserH( void )
 {
     OPTION *o;
-    NAME *e;
+    NAME *en;
 
     if( ofp != NULL ) {
         fprintf( ofp, "typedef struct opt_string OPT_STRING;\n" );
@@ -1753,10 +1798,10 @@ static void startParserH( void )
                 }
             }
         }
-        for( e = enumList; e != NULL; e = e->next ) {
-            fprintf( ofp, "    unsigned     %s;\n", e->name );
-            if( e->is_timestamp ) {
-                fprintf( ofp, "    unsigned     %s_timestamp;\n", e->name );
+        for( en = enumList; en != NULL; en = en->next ) {
+            fprintf( ofp, "    unsigned     %s;\n", en->name );
+            if( en->is_timestamp ) {
+                fprintf( ofp, "    unsigned     %s_timestamp;\n", en->name );
             }
         }
         for( o = optionList; o != NULL; o = o->next ) {
@@ -1772,14 +1817,14 @@ static void startParserH( void )
 
 static void finishParserH( void )
 {
-    NAME *e;
+    NAME *en;
     unsigned value;
 
     if( ofp != NULL ) {
         value = 0;
-        for( e = enumeratorList; e != NULL; e = e->next ) {
+        for( en = enumeratorList; en != NULL; en = en->next ) {
             ++value;
-            fprintf( ofp, "#define OPT_ENUM_%s %u\n", e->name, value );
+            fprintf( ofp, "#define OPT_ENUM_%s %u\n", en->name, value );
         }
     }
 }
@@ -1942,7 +1987,7 @@ static void emitSuccessCode( unsigned depth, flow_control control )
 
 static void emitAcceptCode( CODESEQ *c, unsigned depth, flow_control control )
 {
-    NAME *e;
+    NAME *ei;
     OPTION *o;
     struct {
         boolbit     close_value_if : 1;
@@ -2000,21 +2045,21 @@ static void emitAcceptCode( CODESEQ *c, unsigned depth, flow_control control )
         ++depth;
         flag.close_value_if = true;
     } else if( o->is_special ) {
-        emitPrintf( depth, "if( %s( &(data->%s) ) ) {\n", o->special, o->value_field_name );
+        emitPrintf( depth, "if( %s( &(data->%s) ) ) {\n", o->special_func, o->value_field_name );
         ++depth;
         flag.close_value_if = true;
     }
-    if( o->check != NULL ) {
-        emitPrintf( depth, "%s( &(data->%s) );\n", o->check, o->value_field_name );
+    if( o->check_func != NULL ) {
+        emitPrintf( depth, "%s( &(data->%s) );\n", o->check_func, o->value_field_name );
     }
     if( o->enumerate != NULL ) {
-        e = addEnumerator( o->enumerate->name, o->field_name );
+        ei = addEnumerator( o->enumerate->name, o->field_name );
         if( o->is_timestamp ) {
             emitPrintf( depth, "data->%s_timestamp = ++(data->timestamp);\n", o->enumerate->name );
         }
-        emitPrintf( depth, "data->%s = OPT_ENUM_%s;\n", o->enumerate->name, e->name );
+        emitPrintf( depth, "data->%s = OPT_ENUM_%s;\n", o->enumerate->name, ei->name );
         if( o->is_immediate ) {
-            emitPrintf( depth, "%s( data, true );\n", o->immediate );
+            emitPrintf( depth, "%s( data, true );\n", o->immediate_func );
         }
     } else {
         if( o->is_timestamp ) {
@@ -2024,18 +2069,18 @@ static void emitAcceptCode( CODESEQ *c, unsigned depth, flow_control control )
             emitPrintf( depth, "if( %s( '-' ) ) {\n", FN_RECOG );
             emitPrintf( depth+1, "data->%s = false;\n", o->field_name );
             if( o->is_immediate ) {
-                emitPrintf( depth+1, "%s( data, false );\n", o->immediate );
+                emitPrintf( depth+1, "%s( data, false );\n", o->immediate_func );
             }
-            emitPrintf( depth, "}else{\n" );
+            emitPrintf( depth, "} else {\n" );
             emitPrintf( depth+1, "data->%s = true;\n", o->field_name );
             if( o->is_immediate ) {
-                emitPrintf( depth+1, "%s( data, true );\n", o->immediate );
+                emitPrintf( depth+1, "%s( data, true );\n", o->immediate_func );
             }
             emitPrintf( depth, "}\n" );
         } else {
             emitPrintf( depth, "data->%s = true;\n", o->field_name );
             if( o->is_immediate ) {
-                emitPrintf( depth, "%s( data, true );\n", o->immediate );
+                emitPrintf( depth, "%s( data, true );\n", o->immediate_func );
             }
         }
     }
@@ -2161,8 +2206,8 @@ static void outputFN_PROCESS( void )
 static void outputFN_INIT( void )
 {
     OPTION *o;
-    NAME *e;
     NAME *en;
+    NAME *ei;
     unsigned depth = 0;
 
     emitPrintf( depth, "void " FN_INIT "( OPT_STORAGE *data )\n" );
@@ -2174,9 +2219,9 @@ static void outputFN_INIT( void )
             emitPrintf( depth, "data->%s = %u;\n", o->value_field_name, o->number_default );
         }
     }
-    for( e = enumList; e != NULL; e = e->next ) {
-        en = addEnumerator( e->name, "default" );
-        emitPrintf( depth, "data->%s = OPT_ENUM_%s;\n", e->name, en->name );
+    for( en = enumList; en != NULL; en = en->next ) {
+        ei = addEnumerator( en->name, "default" );
+        emitPrintf( depth, "data->%s = OPT_ENUM_%s;\n", en->name, ei->name );
     }
     --depth;
     emitPrintf( depth, "}\n" );
@@ -2285,8 +2330,17 @@ static char *genOptionUsageStart( OPTION *o, char *buf, bool no_prefix )
         *buf++ = '-';
         buf = cvtOptionSpec( buf, o->pattern, CVT_USAGE );
     }
-    if( o->is_number ) {
-        if( o->default_specified ) {
+    if( o->usage_argid != NULL ) {
+        if( o->is_optional ) {
+            buf = catArg( "[=", buf );
+            buf = catArg( o->usage_argid, buf );
+            buf = catArg( "]", buf );
+        } else {
+            buf = catArg( "=", buf );
+            buf = catArg( o->usage_argid, buf );
+        }
+    } else if( o->is_number ) {
+        if( o->default_specified || o->is_optional ) {
             buf = catArg( "[=<num>]", buf );
         } else {
             buf = catArg( "=<num>", buf );
@@ -2318,11 +2372,6 @@ static char *genOptionUsageStart( OPTION *o, char *buf, bool no_prefix )
     } else if( o->is_negate ) {
         buf = catArg( "[-]", buf );
     } else if( o->is_special ) {
-        if( o->special_arg_usage != NULL ) {
-            // we don't want special processing done
-            strcpy( buf, o->special_arg_usage );
-            buf += strlen( buf );
-        }
     }
     return( buf );
 }
