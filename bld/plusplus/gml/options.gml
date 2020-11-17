@@ -263,11 +263,11 @@
 
 :option. bt
 :target. any
-:id.
+:id. . <os>
 :optional.
 :nochain.
-:usage.  build target is operating system <id>
-:jusage. 構築ターゲットはオペレーティング･システム <id>
+:usage.  build target is operating system <os>
+:jusage. 構築ターゲットはオペレーティング･システム <os>
 
 :usageogrp. b Application type
 
@@ -696,7 +696,7 @@
 
 :option. g
 :target. i86 386
-:id.
+:id. . <name>
 :usage.  set code group name
 :jusage. コード･グループ名を設定します
 
@@ -808,13 +808,13 @@
 
 :option. nc
 :target. i86 386
-:id.
+:id. . <name>
 :usage.  set code class name
 :jusage. コード･クラス名を設定します
 
 :option. nd
 :target. i86 386
-:id.
+:id. . <name>
 :usage.  set data segment name
 :jusage. データ･セグメント名を設定します
 
@@ -826,7 +826,7 @@
 
 :option. nt
 :target. i86 386
-:id.
+:id. . <name>
 :usage.  set name of text segment
 :jusage. テキスト･セグメント名を設定します
 
@@ -1055,9 +1055,9 @@
 
 :option. tp
 :target. dbg
-:id.
-:usage.  set #pragma on( <id> )
-:jusage. #pragma on( <id> )を設定します
+:id. . <name>
+:usage.  set #pragma on( <name> )
+:jusage. #pragma on( <name> )を設定します
 
 :option. u
 :target. any

@@ -245,13 +245,13 @@
 :usagegrp. 3 [Compiler options]
 
 :option. bcl
-:usage. compile and link for OS <id>
-:id.
+:usage. compile and link for <os>
+:id. . <os>
 :target. any
 :group. 3
 :option. bt
-:usage. compile for target OS <id>
-:id.
+:usage. compile for target <os>
+:id. . <os>
 :target. any
 :group. 3
 :option. db
@@ -382,7 +382,7 @@
 :group. 3
 :option. g
 :usage. set code group name
-:id.
+:id. . <name>
 :target. i86 386
 :group. 3
 :option. hc
@@ -411,22 +411,22 @@
 :group. 3
 :option. nc
 :usage. set CODE class name
-:id.
+:id. . <name>
 :target. i86 386
 :group. 3
 :option. nd
 :usage. set data segment name
-:id.
+:id. . <name>
 :target. i86 386
 :group. 3
 :option. nm
 :usage. set module name
-:id.
+:id. . <name>
 :target. i86 386
 :group. 3
 :option. nt
 :usage. set text segment name
-:id.
+:id. . <name>
 :target. i86 386
 :group. 3
 :option. q
@@ -791,9 +791,9 @@
 :target. any
 :group. 7
 :option. tp
-:usage. (C) set #pragma on( <id> )
-:jusage. (C) #pragma on( <id> )を設定します
-:id.
+:usage. (C) set #pragma on( <name> )
+:jusage. (C) #pragma on( <name> )を設定します
+:id. . <name>
 :target. any
 :group. 7
 :option. u<name>
@@ -838,8 +838,8 @@
 :target. any
 :group. 8
 :option. bcl
-:usage. compile and link for OS <id>
-:id.
+:usage. compile and link for <os>
+:id. . <os>
 :target. any
 :group. 8
 :option. fd
@@ -872,8 +872,8 @@
 :target. i86
 :group. 8
 :option. l
-:usage. link for the specified OS <id>
-:id.
+:usage. link for the specified <target>
+:id. . <target>
 :target. any
 :group. 8
 :option. @

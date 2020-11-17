@@ -143,9 +143,9 @@
 
 :option. bt
 :target. any
-:id.
+:id. . <os>
 :enumerate. x windows nt os2
-:usage.  set the build target to <windows|nt|os2>
+:usage.  set the build target to <os> [windows|nt|os2]
 :jusage.
 
 :option. c

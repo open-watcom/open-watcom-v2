@@ -117,8 +117,8 @@
 :cmt.*************************************************************************
 
 :option. b
-:usage. compile and link for target
-:id. <target>
+:usage. compile and link for <target>
+:id. . <target>
 :target. any
 
 :option. c
@@ -127,7 +127,7 @@
 
 :option. o
 :usage. set output file name
-:file. <name>
+:file.
 :target. any
 
 :option. v
@@ -143,9 +143,10 @@
 :cmt 
 :usagegrp. 1 [Processor options]
 
-:option. march={i86,i186,i286,i386,axp,mips,ppc}
+:option. march
 :usage. generate code for this architecture
 :group. 1
+:id. . {i86,i186,i286,i386,axp,mips,ppc}
 :target. any
 
 :option. mregparm
@@ -154,9 +155,10 @@
 :group. 1
 :target. any
 
-:option. mtune={i386,i486,i586,i686}
+:option. mtune
 :usage. optimize for this family
 :group. 1
+:id. . {i386,i486,i586,i686}
 :target. any
 
 :cmt 
@@ -164,14 +166,16 @@
 :cmt 
 :usagegrp. 2 [x86 Floating-point processor options]
 
-:option. fpmath={87,287,387}
+:option. fpmath
 :usage. hardware floating-point code
 :group. 2
+:id. . {87,287,387}
 :target. any
 
-:option. fptune={586,686}
+:option. fptune
 :usage. optimize f-p for CPU type
 :group. 2
+:id. . {586,686}
 :target. any
 
 :option. mhard-emu-float
@@ -262,9 +266,10 @@
 :file.
 :target. any
 
-:option. fpack-struct={1,2,4,8,16}
+:option. fpack-struct
 :usage. default struct member alignment
 :group. 3
+:id. . {1,2,4,8,16}
 :target. any
 
 :option. fr
@@ -394,9 +399,10 @@
 :group. 3
 :target. any
 
-:option. std={c89,c99,wc}
+:option. std
 :usage. disable/enable extensions
 :group. 3
+:id. . {c89,c99,wc}
 :target. any
 
 :option. Wall
@@ -407,7 +413,7 @@
 :option. Wc,
 :usage. pass any option to WCC
 :group. 3
-:special. Wc <option>
+:special. . <option>
 :target. any
 
 :option. Werror
@@ -653,7 +659,7 @@
 :option. D
 :usage. define a macro
 :group. 6
-:special. Define <name>[=text]
+:special. . <name>[=text]
 :target. any
 
 :option. D+
@@ -714,7 +720,7 @@
 :option. MT
 :usage. autodepend target name
 :group. 6
-:special. dummy <target>
+:special. . <target>
 :target. any
 
 :option. P
@@ -730,13 +736,13 @@
 :option. tp
 :usage. (C) set #pragma on <name>
 :group. 6
-:special. dummy <name>
+:special. . <name>
 :target. any
 
 :option. U
 :usage. undefine macro name
 :group. 6
-:special. UnDefine <name>
+:special. . <name>
 :target. any
 
 :cmt 
@@ -782,5 +788,5 @@
 :option. Wl,
 :usage. pass any directive to WLINK
 :group. 7
-:special. Wl <option>
+:special. . <option>
 :target. any

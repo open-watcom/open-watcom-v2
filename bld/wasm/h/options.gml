@@ -202,10 +202,10 @@
 
 :option. bt
 :target. any
-:id.
+:id. . <os>
 :optional.
-:usage. set the build target to <id>
-:jusage. set the build target to <id>
+:usage. set the build target to <os>
+:jusage. set the build target to <os>
 
 :option. c 
 :target. any
@@ -345,26 +345,26 @@
 
 :option. nc
 :target. any
-:id.
+:id. . <name>
 :internal.
 :usage. set code class name
 :jusage. set code class name
 
 :option. nd
 :target. any
-:id.
+:id. . <name>
 :usage. set data segment name
 :jusage. set data segment name
 
 :option. nm
 :target. any
-:id.
+:id. . <name>
 :usage. set module name
 :jusage. set module name
 
 :option. nt
 :target. any
-:id.
+:id. . <name>
 :usage. set name of text segment
 :jusage. set name of text segment
 
