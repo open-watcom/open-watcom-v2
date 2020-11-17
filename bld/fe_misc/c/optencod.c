@@ -86,6 +86,8 @@ TAG( USAGEOGRP )
 #define NEXT_ARG_CHECK() \
         --argc1; ++argv1; if( argc1 < NUM_FILES ) { return( true ); }
 
+#define NOSKIP( s )     (s[0] != '.' || s[1] != '\0')
+
 // functions that are supplied by the host environment
 #define FN_UNGET            "OPT_UNGET"                 // void ( void )
 #define FN_GET_LOWER        "OPT_GET_LOWER"             // int ( void )
@@ -1046,11 +1048,8 @@ static void doNUMBER( const char *p )
     }
     p += skipSpace( p );
     if( *p != '\0' ) {
-        if( p[0] == '.' && p[1] == '\0') {
-            /* . means skip */
-            p += copyNonSpaceUntil( p, tokbuff, '\0' );
-        } else {
-            p += copyNonSpaceUntil( p, tokbuff, '\0' );
+        p += copyNonSpaceUntil( p, tokbuff, '\0' );
+        if( NOSKIP( tokbuff ) ) {
             for( o = optionList; o != NULL; o = o->synonym ) {
                 o->check_func = strdup( tokbuff );
             }
@@ -1058,11 +1057,8 @@ static void doNUMBER( const char *p )
     }
     p += skipSpace( p );
     if( *p != '\0' ) {
-        if( p[0] == '.' && p[1] == '\0') {
-            /* . means skip */
-            p += copyNonSpaceUntil( p, tokbuff, '\0' );
-        } else {
-            p += copyNonSpaceUntil( p, tokbuff, '\0' );
+        p += copyNonSpaceUntil( p, tokbuff, '\0' );
+        if( NOSKIP( tokbuff ) ) {
             for( o = optionList; o != NULL; o = o->synonym ) {
                 o->number_default = atoi( tokbuff );
                 o->default_specified = true;
@@ -1113,11 +1109,8 @@ static void doID( const char *p )
     }
     p += skipSpace( p );
     if( p[0] != '\0' ) {
-        if( p[0] == '.' && p[1] == '\0') {
-            /* . means skip */
-            p += copyNonSpaceUntil( p, tokbuff, '\0' );
-        } else {
-            p += copyNonSpaceUntil( p, tokbuff, '\0' );
+        p += copyNonSpaceUntil( p, tokbuff, '\0' );
+        if( NOSKIP( tokbuff ) ) {
             for( o = optionList; o != NULL; o = o->synonym ) {
                 o->check_func = strdup( tokbuff );
             }
@@ -1143,11 +1136,8 @@ static void doCHAR( const char *p )
     }
     p += skipSpace( p );
     if( *p != '\0' ) {
-        if( p[0] == '.' && p[1] == '\0') {
-            /* . means skip */
-            p += copyNonSpaceUntil( p, tokbuff, '\0' );
-        } else {
-            p += copyNonSpaceUntil( p, tokbuff, '\0' );
+        p += copyNonSpaceUntil( p, tokbuff, '\0' );
+        if( NOSKIP( tokbuff ) ) {
             for( o = optionList; o != NULL; o = o->synonym ) {
                 o->check_func = strdup( tokbuff );
             }
