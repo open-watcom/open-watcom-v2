@@ -260,16 +260,14 @@ dos_redirect = $(dos_redirect_$(targ_env_$(arch)))
     @set ERROR_MSG=FAIL executing $^&
     @%make set_run_path
 !ifdef dos_redirect
-! ifdef ftest_name
     -$(run) $(exec_prefix)$@ $(extra_run_$^*) >$*.out
-! else
-    -$(run) $(exec_prefix)$@ $(extra_run_$^*) >>exec.out
+! ifndef ftest_name
+    -@cat $*.out >>exec.out
 ! endif
 !else
-! ifdef ftest_name
     -$(run) $(exec_prefix)$@ $(extra_run_$^*) >$*.out 2>&1
-! else
-    -$(run) $(exec_prefix)$@ $(extra_run_$^*) >>exec.out 2>&1
+! ifndef ftest_name
+    -@cat $*.out >>exec.out
 ! endif
 !endif
     @if not errorlevel 1 @set ERROR_MSG=PASS executing $^&
@@ -277,7 +275,7 @@ dos_redirect = $(dos_redirect_$(targ_env_$(arch)))
     @%append $(%ERROR_FILE) $(%ERROR_MSG)
 !ifdef ftest_name
     @%make echo_diff
-    $(noecho)diff $*.out expected/$*.chk >> exec.out
+    $(noecho)diff $*.out expected/$*.chk >>exec.out
 !endif
 
 ./chk_exec.exe : $(watcom_dir)/c/chk_exec.c .EXPLICIT
