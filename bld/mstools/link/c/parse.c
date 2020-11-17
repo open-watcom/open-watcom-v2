@@ -748,7 +748,7 @@ static void handle_debug( OPT_STORAGE *cmdOpts, int x )
 {
     /* unused parammeters */ (void)x;
 
-    cmdOpts->opt_level = OPT_opt_level_opt_noref;
+    cmdOpts->opt_level = OPT_ENUM_opt_level_opt_noref;
 
     if( cmdOpts->debug_value != NULL ) {
         // suppress this diagnostic,

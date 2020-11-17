@@ -44,6 +44,7 @@
 
 #include "clibext.h"
 
+
 #define OPT_TAGS \
 TAG( ARGEQUAL ) \
 TAG( CMT ) \
@@ -671,8 +672,7 @@ static NAME *addEnumerator( const char *enumerate, const char *field_name )
 {
     NAME *n;
 
-    strcpy( tmpbuff, "OPT_" );
-    strcat( tmpbuff, enumerate );
+    strcpy( tmpbuff, enumerate );
     strcat( tmpbuff, "_" );
     strcat( tmpbuff, field_name );
     n = findName( &enumeratorList, tmpbuff );
@@ -1779,7 +1779,7 @@ static void finishParserH( void )
         value = 0;
         for( e = enumeratorList; e != NULL; e = e->next ) {
             ++value;
-            fprintf( ofp, "#define %s %u\n", e->name, value );
+            fprintf( ofp, "#define OPT_ENUM_%s %u\n", e->name, value );
         }
     }
 }
@@ -2012,7 +2012,7 @@ static void emitAcceptCode( CODESEQ *c, unsigned depth, flow_control control )
         if( o->is_timestamp ) {
             emitPrintf( depth, "data->%s_timestamp = ++(data->timestamp);\n", o->enumerate->name );
         }
-        emitPrintf( depth, "data->%s = %s;\n", o->enumerate->name, e->name );
+        emitPrintf( depth, "data->%s = OPT_ENUM_%s;\n", o->enumerate->name, e->name );
         if( o->is_immediate ) {
             emitPrintf( depth, "%s( data, true );\n", o->immediate );
         }
@@ -2176,7 +2176,7 @@ static void outputFN_INIT( void )
     }
     for( e = enumList; e != NULL; e = e->next ) {
         en = addEnumerator( e->name, "default" );
-        emitPrintf( depth, "data->%s = %s;\n", e->name, en->name );
+        emitPrintf( depth, "data->%s = OPT_ENUM_%s;\n", e->name, en->name );
     }
     --depth;
     emitPrintf( depth, "}\n" );

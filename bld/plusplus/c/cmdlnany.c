@@ -639,55 +639,55 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         CompFlags.quiet_mode = true;
     }
     switch( data->char_set ) {
-    case OPT_char_set_zku:
+    case OPT_ENUM_char_set_zku:
         CompFlags.use_unicode = true;
         loadUnicodeTable( data->zku_value );
         break;
-    case OPT_char_set_zk0u:
+    case OPT_ENUM_char_set_zk0u:
         CompFlags.jis_to_unicode = true;
         /* fall through */
-    case OPT_char_set_zk0:
+    case OPT_ENUM_char_set_zk0:
         SetDBChar( 0 );
         break;
-    case OPT_char_set_zk1:
+    case OPT_ENUM_char_set_zk1:
         SetDBChar( 1 );
         break;
-    case OPT_char_set_zk2:
+    case OPT_ENUM_char_set_zk2:
         SetDBChar( 2 );
         break;
-    case OPT_char_set_zkl:
+    case OPT_ENUM_char_set_zkl:
         SetDBChar( -1 );
         break;
     }
     switch( data->exc_level ) {
-    case OPT_exc_level_xs:
+    case OPT_ENUM_exc_level_xs:
         CompFlags.excs_enabled = true;
         CompInfo.dt_method_speced = DTM_TABLE;
         break;
-    case OPT_exc_level_xst:
+    case OPT_ENUM_exc_level_xst:
         CompFlags.excs_enabled = true;
         CompInfo.dt_method_speced = DTM_DIRECT_TABLE;
         break;
-    case OPT_exc_level_xss:
+    case OPT_ENUM_exc_level_xss:
         CompFlags.excs_enabled = true;
         CompInfo.dt_method_speced = DTM_TABLE_SMALL;
         break;
-    case OPT_exc_level_xds:
+    case OPT_ENUM_exc_level_xds:
         CompFlags.excs_enabled = false;
         CompInfo.dt_method_speced = DTM_DIRECT_SMALL;
         break;
-    case OPT_exc_level_xd:
-    case OPT_exc_level_xdt:
+    case OPT_ENUM_exc_level_xd:
+    case OPT_ENUM_exc_level_xdt:
     default:
         CompFlags.excs_enabled = false;
         CompInfo.dt_method_speced = DTM_DIRECT;
         break;
     }
     switch( data->warn_level ) {
-    case OPT_warn_level_w:
+    case OPT_ENUM_warn_level_w:
         WngLevel = data->w_value;
         break;
-    case OPT_warn_level_wx:
+    case OPT_ENUM_warn_level_wx:
         WngLevel = WLEVEL_WX;
         break;
     default:
@@ -695,16 +695,16 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         break;
     }
     switch( data->file_83 ) {
-    case OPT_file_83_fx:
+    case OPT_ENUM_file_83_fx:
         CompFlags.check_truncated_fnames = false;
         break;
-    case OPT_file_83_ft:
+    case OPT_ENUM_file_83_ft:
     default:
         CompFlags.check_truncated_fnames = true;
         break;
     }
     switch( data->opt_level ) {
-    case OPT_opt_level_ox:  /* -ox => -obmiler -s */
+    case OPT_ENUM_opt_level_ox:  /* -ox => -obmiler -s */
         GenSwitches &= ~ NO_OPTIMIZATION;
         GenSwitches |= BRANCH_PREDICTION;       // -ob
         GenSwitches |= LOOP_OPTIMIZATION;       // -ol
@@ -720,16 +720,16 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
 #endif
         PragToggle.check_stack = false;         // -s
         break;
-    case OPT_opt_level_od:
+    case OPT_ENUM_opt_level_od:
         GenSwitches |= NO_OPTIMIZATION;
         break;
     }
     switch( data->opt_size_time ) {
-    case OPT_opt_size_time_ot:
+    case OPT_ENUM_opt_size_time_ot:
         OptSize = 0;
         GenSwitches &= ~ NO_OPTIMIZATION;
         break;
-    case OPT_opt_size_time_os:
+    case OPT_ENUM_opt_size_time_os:
         OptSize = 100;
         GenSwitches &= ~ NO_OPTIMIZATION;
         break;
@@ -738,12 +738,12 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         break;
     }
     switch( data->iso ) {
-    case OPT_iso_za:
+    case OPT_ENUM_iso_za:
         CompFlags.extensions_enabled = false;
         CompFlags.non_iso_compliant_names_enabled = false;
         CompFlags.unique_functions = true;
         break;
-    case OPT_iso_ze:
+    case OPT_ENUM_iso_ze:
     default:
         CompFlags.extensions_enabled = true;
         CompFlags.non_iso_compliant_names_enabled = true;
@@ -754,13 +754,13 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     }
     // following must precede processing of data->oe
     switch( data->debug_info ) {
-    case OPT_debug_info_d3s:
+    case OPT_ENUM_debug_info_d3s:
         CompFlags.static_inline_fns = true;
         /* fall through */
-    case OPT_debug_info_d3i:
+    case OPT_ENUM_debug_info_d3i:
         CompFlags.inline_functions = false;
         /* fall through */
-    case OPT_debug_info_d3:
+    case OPT_ENUM_debug_info_d3:
         // this flag may be turned on when PCHs are written if we will be
         // optimizing the writing of the debugging info by referring back
         // to the info in another module
@@ -771,20 +771,20 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         }
         data->oe = 0;
         break;
-    case OPT_debug_info_d2s:
+    case OPT_ENUM_debug_info_d2s:
         CompFlags.static_inline_fns = true;
         /* fall through */
-    case OPT_debug_info_d2i:
+    case OPT_ENUM_debug_info_d2i:
         CompFlags.inline_functions = false;
         /* fall through */
-    case OPT_debug_info_d2:
+    case OPT_ENUM_debug_info_d2:
         GenSwitches |= DBG_NUMBERS | DBG_TYPES | DBG_LOCALS;
         if( debugOptionAfterOptOption( data ) ) {
             GenSwitches |= NO_OPTIMIZATION;
         }
         data->oe = 0;
         break;
-    case OPT_debug_info_d2t:
+    case OPT_ENUM_debug_info_d2t:
         CompFlags.no_debug_type_names = true;
         GenSwitches |= DBG_NUMBERS | DBG_TYPES | DBG_LOCALS;
         if( debugOptionAfterOptOption( data ) ) {
@@ -792,18 +792,18 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         }
         data->oe = 0;
         break;
-    case OPT_debug_info_d1:
+    case OPT_ENUM_debug_info_d1:
         GenSwitches |= DBG_NUMBERS;
         break;
-    case OPT_debug_info_d0:
+    case OPT_ENUM_debug_info_d0:
         break;
     }
     switch( data->enum_size ) {
-    case OPT_enum_size_ei:
+    case OPT_ENUM_enum_size_ei:
         CompFlags.make_enums_an_int = true;
         CompFlags.original_enum_setting = true;
         break;
-    case OPT_enum_size_em:
+    case OPT_ENUM_enum_size_em:
         CompFlags.make_enums_an_int = false;
         CompFlags.original_enum_setting = false;
         break;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -303,40 +303,40 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
     char model = '\0';
     unsigned bit;
 
-    if( data->mem_model == OPT_mem_model_default ) {
+    if( data->mem_model == OPT_ENUM_mem_model_default ) {
 #if _CPU == 8086
-        data->mem_model = OPT_mem_model_ms;
+        data->mem_model = OPT_ENUM_mem_model_ms;
 #else
-        data->mem_model = OPT_mem_model_mf;
+        data->mem_model = OPT_ENUM_mem_model_mf;
 #endif
     }
 #if _CPU == 386
     if( control & MMC_NETWARE ) {
-        data->mem_model = OPT_mem_model_ms;
+        data->mem_model = OPT_ENUM_mem_model_ms;
     }
 #endif
     bit = 0;
     if( CompFlags.non_iso_compliant_names_enabled ) {
         switch( data->mem_model ) {
-        case OPT_mem_model_ms:
+        case OPT_ENUM_mem_model_ms:
             PreDefineStringMacro( "M_" MM_ARCH "SM" );
             break;
-        case OPT_mem_model_mm:
+        case OPT_ENUM_mem_model_mm:
             PreDefineStringMacro( "M_" MM_ARCH "MM" );
             break;
-        case OPT_mem_model_ml:
+        case OPT_ENUM_mem_model_ml:
             PreDefineStringMacro( "M_" MM_ARCH "LM" );
             break;
-        case OPT_mem_model_mc:
+        case OPT_ENUM_mem_model_mc:
             PreDefineStringMacro( "M_" MM_ARCH "CM" );
             break;
 #if _CPU == 8086
-        case OPT_mem_model_mh:
+        case OPT_ENUM_mem_model_mh:
             PreDefineStringMacro( "M_" MM_ARCH "HM" );
             break;
 #else
-        case OPT_mem_model_mfi:
-        case OPT_mem_model_mf:
+        case OPT_ENUM_mem_model_mfi:
+        case OPT_ENUM_mem_model_mf:
             PreDefineStringMacro( "M_" MM_ARCH "FM" );
             break;
 #endif
@@ -347,7 +347,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
     DataPtrSize = TARGET_POINTER;
     CodePtrSize = TARGET_POINTER;
     switch( data->mem_model ) {
-    case OPT_mem_model_ms:
+    case OPT_ENUM_mem_model_ms:
         model = 's';
         PreDefineStringMacro( "_M_" MM_ARCH "SM" );
         PreDefineStringMacro( "__SMALL__" );
@@ -355,7 +355,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         TargetSwitches &= ~CONST_IN_CODE;
         bit |= CHEAP_POINTER;
         break;
-    case OPT_mem_model_mm:
+    case OPT_ENUM_mem_model_mm:
         model = 'm';
         WatcallInfo.cclass |= FAR_CALL;
         CodePtrSize = TARGET_FAR_POINTER;
@@ -365,14 +365,14 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         TargetSwitches &= ~CONST_IN_CODE;
         bit |= BIG_CODE | CHEAP_POINTER;
         break;
-    case OPT_mem_model_mc:
+    case OPT_ENUM_mem_model_mc:
         model = 'c';
         PreDefineStringMacro( "_M_" MM_ARCH "CM" );
         PreDefineStringMacro( "__COMPACT__" );
         DataPtrSize = TARGET_FAR_POINTER;
         bit |= BIG_DATA | CHEAP_POINTER;
         break;
-    case OPT_mem_model_ml:
+    case OPT_ENUM_mem_model_ml:
         model = 'l';
         PreDefineStringMacro( "_M_" MM_ARCH "LM" );
         PreDefineStringMacro( "__LARGE__" );
@@ -382,7 +382,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         bit |= BIG_CODE | BIG_DATA | CHEAP_POINTER;
         break;
 #if _CPU == 8086
-    case OPT_mem_model_mh:
+    case OPT_ENUM_mem_model_mh:
         model = 'h';
         PreDefineStringMacro( "_M_" MM_ARCH "HM" );
         PreDefineStringMacro( "__HUGE__" );
@@ -392,10 +392,10 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         bit |= BIG_CODE | BIG_DATA;
         break;
 #else
-    case OPT_mem_model_mfi:
+    case OPT_ENUM_mem_model_mfi:
         CompFlags.mfi_switch_used = true;
         /* fall through */
-    case OPT_mem_model_mf:
+    case OPT_ENUM_mem_model_mf:
         model = 's';
         PreDefineStringMacro( "_M_" MM_ARCH "FM" );
         PreDefineStringMacro( "__FLAT__" );
@@ -603,59 +603,59 @@ static void setIntelArchitecture( OPT_STORAGE *data, mem_model_control control )
     /* unused parameters */ (void)control;
 
     switch( data->arch_i86 ) {
-    case OPT_arch_i86__0:
+    case OPT_ENUM_arch_i86__0:
         SET_CPU( CpuSwitches, CPU_86 );
         break;
-    case OPT_arch_i86__1:
+    case OPT_ENUM_arch_i86__1:
         SET_CPU( CpuSwitches, CPU_186 );
         break;
-    case OPT_arch_i86__2:
+    case OPT_ENUM_arch_i86__2:
         SET_CPU( CpuSwitches, CPU_286 );
         break;
-    case OPT_arch_i86__3:
+    case OPT_ENUM_arch_i86__3:
         SET_CPU( CpuSwitches, CPU_386 );
         break;
-    case OPT_arch_i86__4:
+    case OPT_ENUM_arch_i86__4:
         SET_CPU( CpuSwitches, CPU_486 );
         break;
-    case OPT_arch_i86__5:
+    case OPT_ENUM_arch_i86__5:
         SET_CPU( CpuSwitches, CPU_586 );
         break;
-    case OPT_arch_i86__6:
+    case OPT_ENUM_arch_i86__6:
         SET_CPU( CpuSwitches, CPU_686 );
         break;
     }
 #else
     switch( data->arch_386 ) {
-    case OPT_arch_386__3s:
+    case OPT_ENUM_arch_386__3s:
         CompFlags.register_conventions = false;
         SET_CPU( CpuSwitches, CPU_386 );
         break;
-    case OPT_arch_386__3r:
+    case OPT_ENUM_arch_386__3r:
         CompFlags.register_conventions = true;
         SET_CPU( CpuSwitches, CPU_386 );
         break;
-    case OPT_arch_386__4s:
+    case OPT_ENUM_arch_386__4s:
         CompFlags.register_conventions = false;
         SET_CPU( CpuSwitches, CPU_486 );
         break;
-    case OPT_arch_386__4r:
+    case OPT_ENUM_arch_386__4r:
         CompFlags.register_conventions = true;
         SET_CPU( CpuSwitches, CPU_486 );
         break;
-    case OPT_arch_386__5s:
+    case OPT_ENUM_arch_386__5s:
         CompFlags.register_conventions = false;
         SET_CPU( CpuSwitches, CPU_586 );
         break;
-    case OPT_arch_386__5r:
+    case OPT_ENUM_arch_386__5r:
         CompFlags.register_conventions = true;
         SET_CPU( CpuSwitches, CPU_586 );
         break;
-    case OPT_arch_386__6s:
+    case OPT_ENUM_arch_386__6s:
         CompFlags.register_conventions = false;
         SET_CPU( CpuSwitches, CPU_686 );
         break;
-    case OPT_arch_386__6r:
+    case OPT_ENUM_arch_386__6r:
         CompFlags.register_conventions = true;
         SET_CPU( CpuSwitches, CPU_686 );
         break;
@@ -969,18 +969,18 @@ void CmdSysAnalyse( OPT_STORAGE *data )
 
     GenSwitches &= ~( DBG_CV | DBG_DF | DBG_PREDEF );
     switch( data->dbg_output ) {
-    case OPT_dbg_output_hc:
+    case OPT_ENUM_dbg_output_hc:
         GenSwitches |= DBG_CV;
         break;
-    case OPT_dbg_output_hda:
+    case OPT_ENUM_dbg_output_hda:
         if( data->fhd ) {
             CompFlags.pch_debug_info_opt = true;
         }
         GenSwitches |= DBG_DF | DBG_PREDEF;
         break;
-    case OPT_dbg_output_hw:
+    case OPT_ENUM_dbg_output_hw:
         break;
-    case OPT_dbg_output_hd:
+    case OPT_ENUM_dbg_output_hd:
     default:
         if( data->fhd ) {
             CompFlags.pch_debug_info_opt = true;
@@ -989,11 +989,11 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         break;
     }
     switch( data->ds_peg ) {
-    case OPT_ds_peg_zdp:
+    case OPT_ENUM_ds_peg_zdp:
         TargetSwitches &= ~ FLOATING_DS;
         mmc |= MMC_DS;
         break;
-    case OPT_ds_peg_zdf:
+    case OPT_ENUM_ds_peg_zdf:
         TargetSwitches |= FLOATING_DS;
         mmc |= MMC_DS;
         break;
@@ -1025,21 +1025,21 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     }
 #endif
     switch( data->fs_peg ) {
-    case OPT_fs_peg_zfp:
+    case OPT_ENUM_fs_peg_zfp:
         TargetSwitches &= ~ FLOATING_FS;
         mmc |= MMC_FS;
         break;
-    case OPT_fs_peg_zff:
+    case OPT_ENUM_fs_peg_zff:
         TargetSwitches |= FLOATING_FS;
         mmc |= MMC_FS;
         break;
     }
     switch( data->gs_peg ) {
-    case OPT_gs_peg_zgp:
+    case OPT_ENUM_gs_peg_zgp:
         TargetSwitches &= ~ FLOATING_GS;
         mmc |= MMC_GS;
         break;
-    case OPT_gs_peg_zgf:
+    case OPT_ENUM_gs_peg_zgf:
         TargetSwitches |= FLOATING_GS;
         mmc |= MMC_GS;
         break;
@@ -1062,20 +1062,20 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     }
 #if _CPU == 8086
     switch( data->win ) {
-    case OPT_win_zw:
+    case OPT_ENUM_win_zw:
         SetTargetLiteral( &target_name, "windows" );
         mmc |= MMC_WIN;
         break;
-    case OPT_win_zW:
+    case OPT_ENUM_win_zW:
         SetTargetLiteral( &target_name, "cheap_windows" );
         mmc |= MMC_WIN;
         break;
-    case OPT_win_zws:
+    case OPT_ENUM_win_zws:
         SetTargetLiteral( &target_name, "windows" );
         TargetSwitches |= SMART_WINDOWS;
         mmc |= MMC_WIN;
         break;
-    case OPT_win_zWs:
+    case OPT_ENUM_win_zWs:
         SetTargetLiteral( &target_name, "cheap_windows" );
         TargetSwitches |= SMART_WINDOWS;
         mmc |= MMC_WIN;
@@ -1083,7 +1083,7 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     }
 #else
     switch( data->win ) {
-    case OPT_win_zw:
+    case OPT_ENUM_win_zw:
         SetTargetLiteral( &target_name, "windows" );
         mmc |= MMC_WIN;
         break;
@@ -1093,20 +1093,20 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     setIntelArchitecture( data, mmc );
 
     switch( data->intel_fpu_model ) {
-    case OPT_intel_fpu_model_fpi:
+    case OPT_ENUM_intel_fpu_model_fpi:
         SET_FPU_EMU( CpuSwitches );
         break;
-#ifdef OPT_intel_fpu_model__7
-    case OPT_intel_fpu__7:
+#ifdef OPT_ENUM_intel_fpu_model__7
+    case OPT_ENUM_intel_fpu__7:
         /* fall through */
 #endif
-    case OPT_intel_fpu_model_fpi87:
+    case OPT_ENUM_intel_fpu_model_fpi87:
         SET_FPU_INLINE( CpuSwitches );
         break;
-    case OPT_intel_fpu_model_fpc:
+    case OPT_ENUM_intel_fpu_model_fpc:
         SET_FPU( CpuSwitches, FPU_NONE );
         break;
-    case OPT_intel_fpu_model__87d:
+    case OPT_ENUM_intel_fpu_model__87d:
         if( data->_87d_value ) {
             Stack87 = data->_87d_value;
         }
@@ -1114,16 +1114,16 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     }
 
     switch( data->intel_fpu_level ) {
-    case OPT_intel_fpu_level_fp6:
+    case OPT_ENUM_intel_fpu_level_fp6:
         SET_FPU_LEVEL( CpuSwitches, FPU_686 );
         break;
-    case OPT_intel_fpu_level_fp5:
+    case OPT_ENUM_intel_fpu_level_fp5:
         SET_FPU_LEVEL( CpuSwitches, FPU_586 );
         break;
-    case OPT_intel_fpu_level_fp3:
+    case OPT_ENUM_intel_fpu_level_fp3:
         SET_FPU_LEVEL( CpuSwitches, FPU_387 );
         break;
-    case OPT_intel_fpu_level_fp2:
+    case OPT_ENUM_intel_fpu_level_fp2:
         SET_FPU_LEVEL( CpuSwitches, FPU_87 );
         break;
     }
@@ -1246,33 +1246,33 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         CompFlags.use_stdcall_at_number = false;
     }
 #endif
-    if( data->iso == OPT_iso_za ) {
+    if( data->iso == OPT_ENUM_iso_za ) {
         TargetSwitches &= ~I_MATH_INLINE;
     }
     switch( data->intel_call_conv ) {
-    case OPT_intel_call_conv_ecc:
+    case OPT_ENUM_intel_call_conv_ecc:
         DftCallConv = &CdeclInfo;
         break;
-    case OPT_intel_call_conv_ecd:
+    case OPT_ENUM_intel_call_conv_ecd:
         DftCallConv = &StdcallInfo;
         break;
-    case OPT_intel_call_conv_ecf:
+    case OPT_ENUM_intel_call_conv_ecf:
         DftCallConv = &FastcallInfo;
         break;
-    case OPT_intel_call_conv_eco:
+    case OPT_ENUM_intel_call_conv_eco:
         DftCallConv = &OptlinkInfo;
         break;
-    case OPT_intel_call_conv_ecp:
+    case OPT_ENUM_intel_call_conv_ecp:
         DftCallConv = &PascalInfo;
         break;
-    case OPT_intel_call_conv_ecr:
+    case OPT_ENUM_intel_call_conv_ecr:
         DftCallConv = &SyscallInfo;
         break;
-    case OPT_intel_call_conv_ecs:
+    case OPT_ENUM_intel_call_conv_ecs:
         DftCallConv = &FortranInfo;
         break;
-    case OPT_intel_call_conv_ecw:
-    case OPT_intel_call_conv_default:
+    case OPT_ENUM_intel_call_conv_ecw:
+    case OPT_ENUM_intel_call_conv_default:
     default:
         DftCallConv = &WatcallInfo;
         break;
