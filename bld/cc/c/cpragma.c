@@ -900,34 +900,20 @@ static void pragAllocText( void )
     PPCTL_DISABLE_MACROS();
 }
 
-static bool warnLevelValidate( unsigned level )
-/*********************************************/
-/* VALIDATE WARNING LEVEL, returns true ==> good level */
-{
-    bool ok;
-
-    ok = true;
-    if( level > WLEVEL_MAX ) {
-        CWarn1( WARN_PRAG_WARNING_BAD_LEVEL, ERR_PRAG_WARNING_BAD_LEVEL );
-        ok = false;
-    }
-    return( ok );
-}
-
 static void changeLevel( unsigned level, int msg_index )
 /******************************************************/
 {
     if( msg_level[msg_index].level != level ) {
         msg_level[msg_index].level = level;
-        if( level < WLEVEL_MAX ) {
-            if( !msg_level[msg_index].enabled ) {
-                /* enable message */
-                msg_level[msg_index].enabled = true;
+        if( level > WLEVEL_MAX ) {
+            /* disable message */
+            if( msg_level[msg_index].enabled ) {
+                msg_level[msg_index].enabled = false;
             }
         } else {
-            if( msg_level[msg_index].enabled ) {
-                /* disable message */
-                msg_level[msg_index].enabled = false;
+            /* enable message */
+            if( !msg_level[msg_index].enabled ) {
+                msg_level[msg_index].enabled = true;
             }
         }
     }
@@ -1041,12 +1027,10 @@ static bool pragWarning( void )
         if( CurToken == T_CONSTANT ) {
             level = Constant;
             NextToken();
-            if( warnLevelValidate( level ) ) {
-                if( change_all ) {
-                    warnChangeLevels( level );
-                } else {
-                    warnChangeLevel( level, msgnum );
-                }
+            if( change_all ) {
+                warnChangeLevels( level );
+            } else {
+                warnChangeLevel( level, msgnum );
             }
         } else {
             CWarn1( WARN_PRAG_WARNING_BAD_LEVEL, ERR_PRAG_WARNING_BAD_LEVEL );

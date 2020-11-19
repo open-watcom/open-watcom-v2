@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -617,6 +617,8 @@ static bool okToPrintMsg        // SEE IF OK TO PRINT MESSAGE
         break;
     }
     *plevel = level;
+    if( level > WLEVEL_MAX )
+        return( false );
     return( ok );
 }
 
@@ -625,7 +627,7 @@ bool MsgWillPrint(              // TEST WHETHER A MESSAGE WILL BE SEEN
 {
     int level;                  // - warning level of message
 
-    if( ! okToPrintMsg( msgnum, &level ) ) {
+    if( !okToPrintMsg( msgnum, &level ) ) {
         return( false );
     }
     return( level <= WngLevel );
@@ -838,15 +840,15 @@ static void changeLevel(        // EFFECT A LEVEL CHANGE
     if( msg_level[msgnum].level != level ) {
         save_msg_levels();
         msg_level[msgnum].level = level;
-        if( level < WLEVEL_MAX ) {
-            if( !msg_level[msgnum].enabled ) {
-                /* enable message */
-                msg_level[msgnum].enabled = true;
+        if( level > WLEVEL_MAX ) {
+            /* disable message */
+            if( msg_level[msgnum].enabled ) {
+                msg_level[msgnum].enabled = false;
             }
         } else {
-            if( msg_level[msgnum].enabled ) {
-                /* disable message */
-                msg_level[msgnum].enabled = false;
+            /* enable message */
+            if( !msg_level[msgnum].enabled ) {
+                msg_level[msgnum].enabled = true;
             }
         }
     }

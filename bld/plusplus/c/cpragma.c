@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -431,21 +431,6 @@ static void pragDataSeg(        // SET NEW DATA SEGMENT
 }
 
 
-static bool warnLevelValidate(  // VALIDATE WARNING LEVEL
-    unsigned level )            // - level to be validated
-{
-    bool ok;                    // - return: true ==> good level
-
-    if( level > WLEVEL_MAX ) {
-        CErr1( ERR_PRAG_WARNING_BAD_LEVEL );
-        ok = false;
-    } else {
-        ok = true;
-    }
-    return( ok );
-}
-
-
 // forms: #pragma warning # level   (change message # to have level "level)
 //      : #pragma warning * level   (change all messages to have level "level)
 //
@@ -478,12 +463,10 @@ static bool pragWarning(        // PROCESS #PRAGMA WARNING
         if( CurToken == T_CONSTANT ) {
             level = U32Fetch( Constant64 );
             NextToken();
-            if( warnLevelValidate( level ) ) {
-                if( change_all ) {
-                    WarnChangeLevels( level );
-                } else {
-                    WarnChangeLevel( level, msgnum );
-                }
+            if( change_all ) {
+                WarnChangeLevels( level );
+            } else {
+                WarnChangeLevel( level, msgnum );
             }
         } else {
             CErr1( ERR_PRAG_WARNING_BAD_LEVEL );
