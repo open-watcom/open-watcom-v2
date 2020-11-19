@@ -219,10 +219,10 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
 .c.err:
 !ifdef plustest_name
     @%make set_path_wpp
-    -$(wpp_$(arch)) $[@ $(diagnose_opts) -fip $(opt_$^&) -fo=.obj
+    -$(wpp_$(arch)) $[@ $(diagnose_opts) -fip $(opt_$^&) $(archdep_opts) -fo=.obj
 !else
     @%make set_path_wcc
-    -$(wcc_$(arch)) $< $(diagnose_opts) $(opt_$^&) -fo=.obj
+    -$(wcc_$(arch)) $< $(diagnose_opts) $(opt_$^&) $(archdep_opts) -fo=.obj
 !endif
     @%make set_old_path
     @if not exist $@ %write $@ I did not generate errors for $^&
@@ -230,10 +230,10 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
 .c.ser:
 !ifdef plustest_name
     @%make set_path_wpp
-    -$(wpp_$(arch)) $[@ $(diagnose_opts) -fip $(opt_$^&) $(archdep_opts) -fo=.obj
+    -$(wpp_$(arch)) $[@ $(diagnose_opts) -fip $(opt_$^&) $(archdep_opts) -fr=.ser -fo=.obj
 !else
     @%make set_path_wcc
-    -$(wcc_$(arch)) $< $(diagnose_opts) $(opt_$^&) $(archdep_opts) -fo=.obj
+    -$(wcc_$(arch)) $< $(diagnose_opts) $(opt_$^&) $(archdep_opts) -fr=.ser -fo=.obj
 !endif
     @%make set_old_path
     @if not exist $@ %write $@ I did not generate errors for $^&
@@ -261,22 +261,18 @@ dos_redirect = $(dos_redirect_$(targ_env_$(arch)))
     @%make set_run_path
 !ifdef dos_redirect
     -$(run) $(exec_prefix)$@ $(extra_run_$^*) >$*.out
-! ifndef ftest_name
-    -@cat $*.out >>exec.out
-! endif
 !else
     -$(run) $(exec_prefix)$@ $(extra_run_$^*) >$*.out 2>&1
-! ifndef ftest_name
-    -@cat $*.out >>exec.out
-! endif
 !endif
     @if not errorlevel 1 @set ERROR_MSG=PASS executing $^&
     @%make set_old_run_path
-    @%append $(%ERROR_FILE) $(%ERROR_MSG)
 !ifdef ftest_name
     @%make echo_diff
     $(noecho)diff $*.out expected/$*.chk >>exec.out
+!else
+    -@cat $*.out >>exec.out
 !endif
+    @%append $(%ERROR_FILE) $(%ERROR_MSG)
 
 ./chk_exec.exe : $(watcom_dir)/c/chk_exec.c .EXPLICIT
     $(noecho)$(bld_cl) $(bld_cl_opts) $(bld_extra_defines) $<

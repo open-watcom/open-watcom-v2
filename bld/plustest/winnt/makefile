@@ -45,7 +45,7 @@ test : .symbolic start clean start_test tomdll.dll test.lnk tomexe.$(exe) test_s
     @%make clean
 
 test_set_result : .symbolic
-    cat tomexe.out >>$(%ERROR_FILE)
+    cat tom.out >>$(%ERROR_FILE)
     $(noecho)%make common_set_result_display
 
 start_test : .symbolic
