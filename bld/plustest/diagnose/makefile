@@ -6,7 +6,7 @@ alt_error=00
 !include source/diagnose.mif
 
 diagnose_opts += -ew -we -wx -e1000 -eq
-archdep_opts = -dARCH=$(arch) -fr=.ser
+archdep_opts = -dARCH=$(arch)
 fix_source_path=sed -f fixpath.sed
 
 # The check files for x86 are a bit different.

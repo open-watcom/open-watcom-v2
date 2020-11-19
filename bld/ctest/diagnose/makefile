@@ -6,7 +6,7 @@ alt_error=00
 !include ../diagnose.mif
 
 diagnose_opts += -we -wx -e1000 -eq
-archdep_opts = -dARCH=$(arch) -fr=.ser
+archdep_opts = -dARCH=$(arch)
 
 .c: source
 
