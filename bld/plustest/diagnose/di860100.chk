@@ -59,8 +59,6 @@ File: source\diag0103.c
 File: source\diag0104.c
 (3,5): Error! E456: 'main' cannot be a function template
 (3,5): Warning! W914: 'main' must return 'int'
-File: source\diag0105.c
-(2,6): Error! E080: system dependent test for 386
 File: source\diag0106.c
 (3,17): Error! E168: static data members are not allowed in an union
 (7,17): Error! E168: static data members are not allowed in an union
@@ -598,9 +596,6 @@ File: source\diag0152.c
   cannot convert argument 4 defined at: (12,22)
   source conversion type is 'X4 * (lvalue)'
   target conversion type is 'int'
-File: source\diag0153.c
-(1,27): Warning! W890: undefined macro 'ARCH' evaluates to 0
-(2,6): Error! E080: system dependent test for 386
 File: source\diag0154.c
 (155,1): Warning! W849: base class virtual function has not been overridden
   virtual function is 'A::f6'
@@ -1157,8 +1152,6 @@ File: source\diag0165.c
 (45,13): Error! E340: cannot construct object from argument(s)
   source conversion type is 'T'
   target conversion type is 'S'
-File: source\diag0166.c
-(2,6): Error! E080: system dependent test for 386
 File: source\diag0167.c
 (15,1): Warning! W914: 'main' must return 'int'
 (26,12): Error! E324: conversion of return value is impossible
@@ -1177,8 +1170,6 @@ File: source\diag0167.c
   definition: 'int c' in 'void swap( int &, int & )'
   template function instantiation for 'swap' was at: (53,1)
   definition: 'void swap( int &, int & )'
-File: source\diag0168.c
-(2,6): Error! E080: system dependent test for 386
 File: source\diag0169.c
 (22,12): Error! E913: 'S3' does not have a return type specified
 (27,12): Error! E913: 'S3' does not have a return type specified
@@ -1229,8 +1220,6 @@ File: source\diag0172.c
   definition: 'int x' in 'T86::Q::~Q( void )'
 (99,21): Warning! W014: no reference to symbol 'x'
   definition: 'int x' in 'T86::~T86( void )'
-File: source\diag0173.c
-(2,6): Error! E080: system dependent test for 386
 File: source\diag0174.c
 (14,9): Error! E427: 'a' has not been declared as a member
 (15,9): Error! E427: 'b' has not been declared as a member

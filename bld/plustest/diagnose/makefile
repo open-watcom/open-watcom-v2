@@ -26,7 +26,6 @@ diagchk0 = daxp0000.chk
 diagchk1 = daxp0100.chk
 diagchk2 = daxp0200.chk
 diagchk3 = daxp0300.chk
-dosystest = testsys
 !endif
 
 .c: source
@@ -89,12 +88,8 @@ diag0300.out : ./catfile.exe $(diags_0399)
     $[@ -a *.err | $(fix_source_path) >diag0300.out
     @%make diag_clean
 
-diag386.out : ./catfile.exe $(diags_sys)
+diag386.out : ./catfile.exe $(diags_sys_386)
     $[@ -a *.ser | $(fix_source_path) >diag386.out
-    @%make diag_clean
-
-diagaxp.out : ./catfile.exe $(diags_sys)
-    $[@ -a *.ser | $(fix_source_path) >diagaxp.out
     @%make diag_clean
 
 diag_clean : .procedure

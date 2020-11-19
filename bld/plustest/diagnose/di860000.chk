@@ -1530,8 +1530,6 @@ File: source\diag0076.c
 (10,22): Warning! W146: unexpected storage class specifier found
 (22,20): Error! E374: object (or object pointer) required to access non-static data member
 (31,12): Error! E374: object (or object pointer) required to access non-static data member
-File: source\diag0077.c
-(2,6): Error! E080: system dependent test for 386
 File: source\diag0078.c
 (2,27): Warning! W248: using default arguments would be overload ambiguous with 'a'
   definition: 'void a( int )'
@@ -1689,8 +1687,6 @@ File: source\diag0079.c
 End of file
 Warning! W018: no reference to anonymous union member 'b'
   definition: 'int b'
-File: source\diag0080.c
-(2,6): Error! E080: system dependent test for 386
 File: source\diag0081.c
 (25,12): Warning! W005: pointer or reference truncated
   'Y' defined at: (10,8)

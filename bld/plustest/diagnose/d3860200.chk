@@ -3073,9 +3073,6 @@ File: source\diag0260.c
   definition: 'void B9::foo( char * )'
   cannot be called with a 'D9 *'
 (73,2): Error! E080: last line
-File: source\diag0261.c
-(2,6): Error! E080: system dependent test for 386
-(32,2): Error! E080: at least one error
 File: source\diag0262.c
 (59,2): Error! E080: This should be the only error
 File: source\diag0263.c
@@ -3193,8 +3190,6 @@ Warning! W014: no reference to symbol 'k'
 File: source\diag0273.c
 (4,9): Warning! W894: unexpected character (64) in source file
 (4,9): Error! E121: syntax error
-File: source\diag0274.c
-(2,6): Error! E080: system dependent test for 386
 File: source\diag0275.c
 (2,13): Warning! W914: 'main' must return 'int'
 (4,13): Warning! W008: returning address of function argument or of auto or register variable
