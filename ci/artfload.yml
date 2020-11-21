@@ -25,5 +25,6 @@ steps:
           archiveFilePatterns: $(Pipeline.Workspace)/$(owartifactfile)
           destinationFolder: $(owroot)/${{ parameters.path }}
           cleanDestinationFolder: false
+          overwriteExistingFiles: true
       - script: rm -f $(Pipeline.Workspace)/$(owartifactfile)
         displayName: Remove Artifact Archive
