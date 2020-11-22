@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1015,7 +1016,7 @@ static bool dtorOptimizable(    // CAN DTOR BE OPTIMIZED UNDER ANY CONDITIONS?
 static SYMBOL dtorLocate(       // FIND DTOR FOR TYPE
     TYPE cltype )               // - class type
 {
-    cltype = StructType( cltype );
+    cltype = ClassType( cltype );
     return( ( NULL == cltype ) ? NULL : RoDtorFindType( cltype ) );
 }
 
@@ -1025,7 +1026,7 @@ static SYMBOL dtorFind(         // FIND DTOR FOR CLASS ELEMENT
 {
     TYPE cltype;                // - type for class
 
-    cltype = StructType( elem->cltype );
+    cltype = ClassType( elem->cltype );
     return( ( NULL == cltype ) ? NULL : RoDtorFindType( cltype ) );
 }
 
@@ -1172,7 +1173,7 @@ static SYMBOL getDefedCtor(     // FIND DEFINED DEFAULT CTOR
     arg_list arglist;           // - dummy arguments list
 
     InitArgList( &arglist );
-    cltype = StructType( cltype );
+    cltype = ClassType( cltype );
     if( cltype == NULL ) {
         return( NULL );
     }
@@ -1214,7 +1215,7 @@ static SYMBOL defCtorFind(      // FIND DEF.CTOR FOR TYPE
     SYMBOL ctor;                // - default CTOR
     TYPE cltype;                // - class type for CTOR
 
-    cltype = StructType( elem->cltype );
+    cltype = ClassType( elem->cltype );
     ctor = defCtorLocate( cltype );
     if( NULL == ctor && NULL != cltype ) {
         elem->cannot_define = true;
@@ -1347,7 +1348,7 @@ static SYMBOL defAssFind(       // GET DEFAULT OP= (OR NULL IF SCALAR )
     TYPE type;                  // - type
     SYMBOL opeq;                // - default operator= or NULL
 
-    type = StructType( elem->cltype );
+    type = ClassType( elem->cltype );
     if( type == NULL ) {
         opeq = NULL;
     } else {
@@ -1398,7 +1399,7 @@ static SYMBOL defAssArrayAcc(   // GET ARRAY-ACCESS SYMBOL
 {
     SYMBOL opeq;                // - symbol to be used
 
-    if( NULL == StructType( type ) ) {
+    if( NULL == ClassType( type ) ) {
         opeq = NULL;
     } else {
         opeq = ClassDefaultOpEq( type, type );
@@ -1627,7 +1628,7 @@ static CD_DESCR* cdoptBuildOrig(// BUILD FOR ORIGINATING FUNCTION
     CL_ELEM* elem;              // - current element
     const MEMB_VFUNS* mfuns;    // - member functions
 
-    cltype = StructType( cltype );
+    cltype = ClassType( cltype );
     info = cacheFind( cltype, defn );
     if( info == NULL ) {
         info = cdoptExpandClass( cltype, defn );
@@ -1645,7 +1646,7 @@ static CD_DESCR* cdoptBuildOrig(// BUILD FOR ORIGINATING FUNCTION
                 VstkPop( &stackSTKIN );
             } else {
                 TYPE elem_type;
-                elem_type = StructType( elem->cltype );
+                elem_type = ClassType( elem->cltype );
                 descr = elem->descr;
                 if( descr == NULL ) {
 #ifdef XTRA_RPT
@@ -1822,7 +1823,7 @@ static bool typeDtorable(       // TEST IF TYPE REALLY NEEDS DTOR'ING
         if( base_type != NULL ) {
             type = ArrayBaseType( base_type );
         }
-        type = StructType( type );
+        type = ClassType( type );
         if( type == NULL ) {
             ok = false;
         } else if( TypeRequiresDtoring( type ) ) {

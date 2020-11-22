@@ -535,7 +535,7 @@ static void emitOpeqCall(       // EMIT AN ASSIGNMENT FOR DEFAULT OP=
     case TITER_CLASS_VBASE :
     case TITER_CLASS_DBASE :
     case TITER_NAKED_DTOR  :
-        if( NULL == StructType( cltype ) ) {
+        if( NULL == ClassType( cltype ) ) {
             expr = bitFieldNodeAssign( tgt, src, NodeRvalue );
         } else {
             expr = NodeAssign( tgt, src );
@@ -544,7 +544,7 @@ static void emitOpeqCall(       // EMIT AN ASSIGNMENT FOR DEFAULT OP=
         break;
     case TITER_ARRAY_EXACT :
     case TITER_ARRAY_VBASE :
-        if( NULL == StructType( cltype ) ) {
+        if( NULL == ClassType( cltype ) ) {
             src = NodeConvertFlags( artype, src, PTF_MEMORY_EXACT | PTF_LVALUE );
             tgt = NodeConvertFlags( artype, tgt, PTF_MEMORY_EXACT | PTF_LVALUE );
             expr = bitFieldNodeAssign( tgt, src, NodeFetch );
@@ -743,7 +743,7 @@ SYMBOL ClassDefaultOpEq(        // GET DEFAULT OP= FOR A CLASS
     SYMBOL opeq;                // - op= to be accessed
     SEARCH_RESULT *result;      // - search result for op=
 
-    result = classAssignResult( cltype, &opeq, StructType( derived )->u.c.scope );
+    result = classAssignResult( cltype, &opeq, ClassType( derived )->u.c.scope );
     if( result != NULL ) {
         ScopeFreeResult( result );
     }
@@ -1015,7 +1015,7 @@ static PTREE defaultCopyDiag(   // COPY TO CLASS OBJECT, WITH DIAGNOSIS
     type_modified = TypeReference( type_left );
     DbgVerify( NULL != type_modified, "defaultCopyDiag -- not lvalue" );
     type = TypedefModifierRemove( type_modified );
-    DbgVerify( NULL != StructType( type ), "defaultCopyDiag -- not class" );
+    DbgVerify( NULL != ClassType( type ), "defaultCopyDiag -- not class" );
     ClassAddDefaultCopy( type->u.c.scope );
     src_list[0] = src;
     rank = UdcLocate( FNOV_UDC_COPY
@@ -1088,7 +1088,7 @@ static PTREE defaultCopyDiag(   // COPY TO CLASS OBJECT, WITH DIAGNOSIS
         if( type == ClassTypeForType( right->type ) ) {
             TYPE src_type;
             if( ctor_udc == NULL ) {
-                src_type = MakeConstReferenceTo( StructType( type ) );
+                src_type = MakeConstReferenceTo( ClassType( type ) );
             } else {
                 src_type = SymFuncArgList( ctor_udc )->type_list[0];
             }
@@ -1232,7 +1232,7 @@ static SYMBOL findDefCtorToGen( // FIND DEFAULT CTOR TO GENERATE
     SYMBOL ctor;                // - symbol for CTOR
     CNV_RETN retn;              // - conversion return: CNV_...
 
-    cl_type = StructType( cl_type );
+    cl_type = ClassType( cl_type );
     retn = ClassDefaultCtorFind( cl_type, &ctor, NULL );
     ConversionInfDisable();
     if( CNV_OK == ConversionDiagnose( retn, NULL, &diagDefaultCtor ) ) {
@@ -1602,7 +1602,7 @@ static CNV_DIAG diagProInit =   // diagnosis for CTOR determination failure
 static void ctorScopeCall(      // EMIT IC_SCOPE_CALL FOR CTORING
     TYPE cltype )               // - class type
 {
-    cltype = StructType( cltype );
+    cltype = ClassType( cltype );
     if( NULL != cltype ) {
         SYMBOL dtor = RoDtorFindType( cltype );
         CgFrontScopeCall( NULL, dtor, DTORING_COMPONENT );
@@ -1628,7 +1628,7 @@ static PTREE ctorPrologueInit(  // GENERATE INITIALIZATION FOR CTOR PROLOGUE
     init_type_mod = init_type;
     init_type = TypedefModifierRemoveOnly( init_type );
     if( init_expr == NULL ) {
-        if( StructType( init_type ) == NULL || ! TypeNeedsCtor( init_type ) ) {
+        if( ClassType( init_type ) == NULL || ! TypeNeedsCtor( init_type ) ) {
             PTreeFreeSubtrees( init_item );
             ctorScopeCall( init_type );
             return( NULL );
@@ -1724,7 +1724,7 @@ static PTREE ctorPrologueArray( // GENERATE INITIALIZATION FOR CTOR OF ARRAY
         PTreeFree( arg );
     }
     if( data->gen_copy ) {
-        if( NULL == StructType( cltype )
+        if( NULL == ClassType( cltype )
          || NULL == CopyCtorFind( cltype, NULL ) ) {
             return( bitFieldNodeAssign( init_item, init_expr, NodeFetch ) );
         }
@@ -1788,7 +1788,7 @@ static PTREE extractBaseInit( ctor_prologue *data, TYPE base_type )
         next = curr->u.subtree[0];
         init = curr->u.subtree[1];
         item = init->u.subtree[0];
-        if( StructType( item->type ) == base_type ) {
+        if( ClassType( item->type ) == base_type ) {
             /* remove 'curr' from list */
             *last = next;
             PTreeFree( curr );

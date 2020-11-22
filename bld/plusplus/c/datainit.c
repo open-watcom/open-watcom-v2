@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -521,7 +522,7 @@ static target_size_t dataInitFieldSize( INITIALIZE_INFO *entry )
     curr = entry->u.c.curr;
     curr_off = curr->u.member_offset;
     next = curr;
-    flags = StructType( entry->type )->flag;
+    flags = ClassType( entry->type )->flag;
     if( flags & TF1_UNION ) {
         for(;;) {
             DbgAssert( next != NULL );
@@ -615,11 +616,11 @@ static TYPE_SIG *dataInitTypeSigFind( TYPE base_type, TYPE_SIG_ACCESS access )
     return( sig );
 }
 
-static TYPE arrayBaseStructType( // GET STRUCT TYPE OF ARRAY BASE TYPE
+static TYPE arrayBaseClassType( // GET CLASS TYPE OF ARRAY BASE TYPE
     TYPE type )                 // - array type
 {
     type = ArrayBaseType( type );
-    type = StructType( type );
+    type = ClassType( type );
     return( type );
 }
 
@@ -736,13 +737,13 @@ static PTREE dtorableObjectCtored(// EMIT INDEX OF DTORABLE OBJECT, IF REQ'D
                 unsigned index;
                 TYPE artype;
                 TYPE eltype;
-                eltype = arrayBaseStructType( info->type );
+                eltype = arrayBaseClassType( info->type );
                 index = info->u.a.index;
                 for( prev = info->previous; prev != NULL; prev = prev->previous ) {
                     if( prev->target != DT_ARRAY )
                         break;
                     artype = ArrayType( prev->type );
-                    if( eltype != arrayBaseStructType( artype ) )
+                    if( eltype != arrayBaseClassType( artype ) )
                         break;
                     index += prev->u.a.index * artype->u.a.array_size;
                 }
@@ -1563,7 +1564,7 @@ static TYPE dataInitAdvanceField( INITIALIZE_INFO *entry )
     entry->u.c.curr = curr;
     if( curr != NULL ) {
         type = curr->sym_type;
-        flags = StructType( entry->type )->flag;
+        flags = ClassType( entry->type )->flag;
         if(( flags & TF1_UNION ) == 0 ) {
             return( type );
         }

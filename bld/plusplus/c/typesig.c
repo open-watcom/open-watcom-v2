@@ -166,7 +166,7 @@ static void typeSigAccess(      // HANDLE ACCESS FOR TYPE-SIGNATURE
 
     if( (TSA_GEN & acc) == 0 ) {
         info.acc = acc;
-        info.type = StructType( sig->type );
+        info.type = ClassType( sig->type );
         if( info.type != NULL ) {
             info.err_occurred = error_occurred;
             info.err_locn = err_locn;

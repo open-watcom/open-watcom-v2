@@ -1300,7 +1300,7 @@ static PTREE useScopeIfPossible( PTREE scoped_thing, PTREE id )
     if( old_scope_tree != NULL ) {
         scope = old_scope_tree->u.id.scope;
         if( scope != NULL ) {
-            class_type = StructType( old_scope_tree->type );
+            class_type = ClassType( old_scope_tree->type );
             new_scope_tree = PTreeType( class_type );
             new_scope_tree->u.type.scope = scope;
             new_scope_tree = PTreeCopySrcLocation( new_scope_tree, old_scope_tree );
@@ -1352,7 +1352,7 @@ PTREE MakeScopedDestructorId( PTREE scoped_tilde, PTREE id )
     } else {
         tree = useScopeIfPossible( scoped_tilde, NULL );
         if( tree != NULL ) {
-            class_type = StructType( tree->u.subtree[0]->type );
+            class_type = ClassType( tree->u.subtree[0]->type );
             unbound_type = NULL;
             if( class_type->flag & TF1_UNBOUND ) {
                 unbound_type = class_type;

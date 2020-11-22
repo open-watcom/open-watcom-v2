@@ -452,7 +452,7 @@ static lk_result lexCategory( SCOPE scope, PTREE id, lk_control control,
             }
             type = sym->sym_type;
             if( control & LK_LT_AHEAD ) {
-                class_type = StructType( type );
+                class_type = ClassType( type );
                 if( class_type != NULL ) {
                     if( class_type->flag & TF1_INSTANTIATION ) {
                         /* make sure typedefs of instantiations are OK */
@@ -635,7 +635,7 @@ static SCOPE checkColonColon( PTREE id, SCOPE scope, SCOPE not_nested,
         ScopeFreeResult( result );
     }
     id_type = scope_type;
-    class_type = BindTemplateClass( StructType( scope_type ), NULL, false );
+    class_type = BindTemplateClass( ClassType( scope_type ), NULL, false );
     if( class_type != NULL ) {
         // member pointers do not need the class to be defined
         if( StructOpened( class_type ) == NULL && CurToken != T_TIMES ) {
@@ -793,7 +793,7 @@ static YYTOKENTYPE templateScopedChain( PARSE_STACK *state, bool special_typenam
 
     template_type = BindTemplateClass( state->class_colon, NULL, false );
     name = SimpleTypeName( template_type );
-    template_class_type = StructType( template_type );
+    template_class_type = ClassType( template_type );
     scope_tree = PTreeId( name );
     scope_tree->type = template_class_type;
     if( template_class_type != NULL ) {
@@ -1214,6 +1214,7 @@ void ParseFlush( void )
 }
 
 static PTREE getMultiToken( void )
+/********************************/
 {
     PTREE tree;
 
@@ -1229,6 +1230,7 @@ static PTREE getMultiToken( void )
 }
 
 static DECL_SPEC *sendType( PTREE tree )
+/**************************************/
 {
     TYPE type;
     DECL_SPEC *dspec;
@@ -1267,11 +1269,12 @@ static DECL_SPEC *sendType( PTREE tree )
 }
 
 static DECL_SPEC *sendClass( PTREE tree )
+/***************************************/
 {
     DECL_SPEC *dspec;
 
     dspec = sendType( tree );
-    if( StructType( dspec->partial ) == NULL ) {
+    if( ClassType( dspec->partial ) == NULL ) {
         CErr2p( ERR_EXPECTED_CLASS_TYPE, dspec->partial );
         PTypeRelease( dspec );
         dspec = NULL;
@@ -1734,7 +1737,7 @@ static void pushOperatorQualification( PTREE tree )
     TYPE class_type;
 
     scope_tree = tree->u.subtree[0]->u.subtree[1];
-    class_type = StructType( scope_tree->type );
+    class_type = ClassType( scope_tree->type );
     if( class_type != NULL ) {
         ScopeQualifyPush( class_type->u.c.scope, GetCurrScope() );
     }

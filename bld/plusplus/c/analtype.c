@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -436,9 +437,9 @@ CTD TypeCommonDerivation(       // GET COMMON TYPE DERIVATION FOR TWO TYPES
     SCOPE scope2;               // - scope for type[2]
 
     retn = CTD_NO;
-    scope1 = TypeScope( StructType( type1 ) );
+    scope1 = TypeScope( ClassType( type1 ) );
     if( NULL != scope1 ) {
-        scope2 = TypeScope( StructType( type2 ) );
+        scope2 = TypeScope( ClassType( type2 ) );
         if( scope1 == scope2 ) {
             retn = CTD_LEFT;
         } else if( NULL != scope2 ) {
@@ -575,7 +576,7 @@ static CLASSINFO* getClassInfo( // GET CLASS INFO FOR GOOD ELEMENTAL TYPE
         if( artype != NULL ) {
             type = ArrayBaseType( artype );
         }
-        type = StructType( type );
+        type = ClassType( type );
         if( type == NULL ) {
             info = NULL;
         } else {

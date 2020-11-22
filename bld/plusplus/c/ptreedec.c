@@ -303,7 +303,7 @@ static SYMBOL dtorForType       // LOCATE DTOR FOR TYPE
 {
     SYMBOL dtor;                // - NULL or DTOR for type
 
-    type = StructType( type );
+    type = ClassType( type );
     if( NULL == type ) {
         dtor = NULL;
     } else if( TypeReallyDtorable( type ) ) {

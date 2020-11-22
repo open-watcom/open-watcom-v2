@@ -351,7 +351,7 @@ static PTREE applyReturnThunk(  // GENERATE A RETURN THUNK
             }
         }
     }
-    DbgAssert( StructType( ret_type ) == NULL );
+    DbgAssert( ClassType( ret_type ) == NULL );
     if( thunk->output_virtual ) {
         vb_offset = thunk->out.vb_offset;
         vb_index = thunk->out.vb_index;

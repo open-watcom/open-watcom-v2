@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -2830,7 +2831,7 @@ qualified-class-type
     | nested-name-specifier
     {
         $$ = PTypeClassInstantiation( state->class_colon, $1 );
-        if( StructType( $$->partial ) == NULL ) {
+        if( ClassType( $$->partial ) == NULL ) {
             CErr2p( ERR_EXPECTED_CLASS_TYPE, $$->partial );
             PTypeRelease( $$ );
             $$ = NULL;

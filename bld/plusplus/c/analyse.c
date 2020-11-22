@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1857,7 +1858,7 @@ static PTREE convertCtor(       // CONVERT CTOR EXPRESSION
             *a_left = MakeNodeSymbol( ctor );
             PTreeExtractLocn( expr , &(*a_left)->locn );
         }
-        if( NULL == StructType( type ) ) {
+        if( NULL == ClassType( type ) ) {
             PTREE old = expr;
             expr = old->u.subtree[1];
             if( expr == NULL ) {
@@ -2500,7 +2501,7 @@ static bool diagThisMemberFun(  // DIAGNOSE NON-STATIC MEMBER FUNCTION
 
 static bool allowClassCastAsLValue( PTREE *p_expr )
 {
-    TYPE class_type = StructType( NodeType( *p_expr ) );
+    TYPE class_type = ClassType( NodeType( *p_expr ) );
     bool ok;
 
     if( class_type == NULL ) {
@@ -3095,7 +3096,7 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
         case REQD_CLASS_PTR_LEFT :
             if( ( type->id == TYP_POINTER )
               &&( 0 == ( type->flag & TF1_REFERENCE ) )
-              &&( NULL != StructType( type->of ) ) )
+              &&( NULL != ClassType( type->of ) ) )
                 continue;
             exprError( left, ERR_NOT_CLASS_PTR );
             PTreeErrorNode( expr );
@@ -3105,7 +3106,7 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
             if( left->flags & PTF_LVALUE ) {
                 cltype = ClassTypeForType( type );
             } else {
-                cltype = StructType( type );
+                cltype = ClassType( type );
             }
             if( NULL == cltype ) {
                 exprError( expr, ERR_NOT_CLASS );
@@ -3321,7 +3322,7 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
         case RESULT_RETURN :
           { TYPE type_l;        // - left type
             type = BindTemplateClass( type, &expr->locn, false );
-            if( NULL != StructType( type ) ) {
+            if( NULL != ClassType( type ) ) {
                 expr = AnalyseReturnClassVal( expr );
                 if( expr->op == PT_ERROR ) {
                     break;
@@ -3466,7 +3467,7 @@ PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
                 PTreeErrorExpr( left, ERR_MEMB_PTR_FUNC_NOT_CALLED );
                 break;
             }
-            class_type = StructType( ArrayBaseType( type ) );
+            class_type = ClassType( ArrayBaseType( type ) );
             class_type = BindTemplateClass( class_type, &expr->locn, false );
             if( class_type != NULL && ! TypeDefined( class_type ) ) {
                 PTreeSetErrLoc( expr );

@@ -1129,7 +1129,7 @@ static TYPE getCatchTypeAttrs(  // GET CATCH TYPE ATTRIBUTES
 
     sptype = TypeCanonicalThr( spectype );
     type = TypeReferenced( sptype );
-    tester = StructType( type );
+    tester = ClassType( type );
     if( tester == NULL ) {
         tester = TypePointedAt( type, &flags );
         if( tester == NULL ) {
@@ -1137,7 +1137,7 @@ static TYPE getCatchTypeAttrs(  // GET CATCH TYPE ATTRIBUTES
             attrs = 0;
         } else {
             type = tester;
-            tester = StructType( tester );
+            tester = ClassType( tester );
             if( tester == NULL ) {
                 tester = type;
                 attrs = CATT_PTR;

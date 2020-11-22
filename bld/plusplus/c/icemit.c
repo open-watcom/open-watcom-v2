@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -693,7 +694,7 @@ static PTREE emitNode(          // EMIT A PTREE NODE
             /* fall through */
         case CO_CONVERT :
           { TYPE type1 = NodeType( expr );
-            if( NULL == StructType( type1 )
+            if( NULL == ClassType( type1 )
              && NULL == MemberPtrType( type1 ) ) {
                 generate_expr_instr( expr, CO_CONVERT, IC_OPR_UNARY );
             }

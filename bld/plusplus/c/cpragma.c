@@ -893,7 +893,7 @@ static void pragDumpObjectModel( // DUMP OBJECT MODEL
                 TYPE type = sname->name_type->sym_type;
                 if( TypeDefined( type ) ) {
                     TYPE dump_type;
-                    dump_type = StructType( type );
+                    dump_type = ClassType( type );
                     if( dump_type != NULL ) {
                         DumpObjectModelClass( dump_type );
                     } else {

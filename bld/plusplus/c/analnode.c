@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -458,7 +459,7 @@ PTREE NodeCompareToZero(        // MAKE A COMPARE-TO-ZERO NODE, IF REQ'D
     if( type->id == TYP_VOID ) {
         PTreeErrorExpr( expr, ERR_EXPR_IS_VOID );
     } else {
-        if( ( NULL == StructType( type ) )
+        if( ( NULL == ClassType( type ) )
           &&( NULL == MemberPtrType( type ) ) ) {
             expr = NodeRvalue( expr );
             if( ! ArithType( type ) ) {
@@ -595,7 +596,7 @@ PTREE MakeNodeSymbol(           // MAKE PT_SYMBOL NODE FROM SYMBOL
     SYMBOL sym )                // - symbol
 {
     sym = SymMarkRefed( sym );
-    if( NULL != StructType( sym->sym_type ) ) {
+    if( NULL != ClassType( sym->sym_type ) ) {
 //        sym->flag |= PTF_MEMORY_EXACT;
         sym->flag |= SYMF_ADDR_TAKEN;
     }
@@ -1453,7 +1454,7 @@ PTREE NodeThis(                 // MAKE A "THIS" NODE
         node->u.symcg.result = NULL;
         node = NodeRvalue( node );
         node->flags |= PTF_PTR_NONZERO | PTF_LV_CHECKED;
-        cl_type = StructType( TypePointedAtModified( type ) );
+        cl_type = ClassType( TypePointedAtModified( type ) );
         if( ! TypeHasVirtualBases( cl_type )
          && SymIsCtorOrDtor( ScopeFunctionInProgress() ) ) {
             node->flags |= PTF_MEMORY_EXACT;
@@ -1825,7 +1826,7 @@ PTREE NodeDtorExpr(             // MARK FOR DTOR'ING AFTER EXPRESSION
 PTREE NodeSetMemoryExact(       // SET PTF_MEMORY_EXACT, IF REQ'D
     PTREE expr )                // - expression
 {
-    if( StructType( expr->type ) != NULL ) {
+    if( ClassType( expr->type ) != NULL ) {
         expr->flags |= PTF_MEMORY_EXACT;
     }
     return( expr );
@@ -1960,7 +1961,7 @@ static PTREE* nodePossibleTemp( // LOCATE POSSIBLE TEMPORARY LOCATION
     PTREE* dtor )               // - addr[ addr[ CO_DTOR operand ] ]
 {
     src = getTempSrc( src, dtor );
-    if( NULL != StructType( NodeType( *src ) )
+    if( NULL != ClassType( NodeType( *src ) )
      && NodeIsUnaryOp( *src, CO_FETCH ) ) {
         src = getTempSrc( &(*src)->u.subtree[0], dtor );
     }
@@ -2352,7 +2353,7 @@ PTREE NodeLvExtract             // EXTRACT LVALUE, IF POSSIBLE
 
     expr_type = NodeType( expr );
     if( NULL == TypeReference( expr_type ) ) {
-        TYPE cltype = StructType( expr_type );
+        TYPE cltype = ClassType( expr_type );
         if( NULL != cltype && OMR_CLASS_REF == ObjModelArgument( cltype ) ) {
             expr = NodeConvert( MakeReferenceTo( expr_type ), expr );
         } else {

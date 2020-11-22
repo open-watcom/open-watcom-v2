@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -259,7 +260,7 @@ static SCOPE scopeLookup( TYPE type )
 {
     SCOPE scope;
 
-    type = StructType( type );
+    type = ClassType( type );
     if( type == NULL ) {
         scope = GetFileScope();
     } else {
@@ -422,7 +423,7 @@ PTREE AnalyseNew(               // ANALYSE A "NEW" OPERATOR (WITH OVERLOADING)
     elem_size = NodeOffset( CgTypeSize( type ) );
     offset_type = elem_size->type;
     base_type = ArrayBaseType( type );
-    class_type = StructType( type );
+    class_type = ClassType( type );
     //
     // verify CTORING is ok
     //
@@ -719,7 +720,7 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
     del_op = flag.array_delete ? CO_DELETE_ARRAY : CO_DELETE;
     flag.num_in_alloc = false;
     pted = ArrayBaseType( pted );
-    cltype = StructType( pted );
+    cltype = ClassType( pted );
     if( cltype == NULL ) {
         /* simple type */
         if( FunctionDeclarationType( pted ) != NULL ) {

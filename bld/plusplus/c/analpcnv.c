@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -715,13 +716,13 @@ bool PtrCnvInfo(                // FILL IN PTR-CONVERSION INFORMATION
                 info->pted_tgt = ptr_tgt;
                 info->flags_src = flags_src;
                 info->flags_tgt = flags_tgt;
-                cl_src = StructType( ptr_src );
+                cl_src = ClassType( ptr_src );
                 if( ptr_tgt->id == TYP_VOID ) {
                     info->to_void = true;
 //                  ok = (ptr_src == TYP_VOID);
 //                  break;
                 } else if( NULL != cl_src ) {
-                    cl_tgt = StructType( ptr_tgt );
+                    cl_tgt = ClassType( ptr_tgt );
                     if( NULL != cl_tgt
                      && cl_tgt != cl_src ) {
                         if( TypeDerived( ptr_src, ptr_tgt ) ) {

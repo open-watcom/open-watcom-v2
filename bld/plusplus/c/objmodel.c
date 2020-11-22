@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +50,7 @@ OMR ObjModelFunctionReturn(     // DETERMINE TYPE OF RETURN FOR OBJECT MODEL
         retn = OMR_VOID;
         break;
     case TYP_CLASS :
-        if( (fun_type->flag & TF1_PLUSPLUS) && ClassParmIsRef( StructType( fun_type->of ) ) ) {
+        if( (fun_type->flag & TF1_PLUSPLUS) && ClassParmIsRef( ClassType( fun_type->of ) ) ) {
             retn = OMR_CLASS_REF;
         } else {
             retn = OMR_CLASS_VAL;
@@ -68,7 +69,7 @@ OMR ObjModelArgument(           // DETERMINE HOW TYPE PASSED IN OBJECT MODEL
 {
     OMR retn;                   // - kind of return (OMR_...)
 
-    atype = StructType( atype );
+    atype = ClassType( atype );
     if( atype == NULL ) {
         retn = OMR_SCALAR;
     } else if( ClassParmIsRef( atype ) ) {

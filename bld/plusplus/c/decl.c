@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -94,7 +95,7 @@ bool ConstNeedsExplicitInitializer( TYPE type )
     CLASSINFO *info;
     SYMBOL dummy;
 
-    type = StructType( type );
+    type = ClassType( type );
     if( type == NULL ) {
         /* const non-class types need explicit initializers */
         return( true );

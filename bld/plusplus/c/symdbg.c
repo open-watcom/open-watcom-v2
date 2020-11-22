@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -327,7 +328,7 @@ static dbg_type symWVDebugClassType( TYPE type )
             dl = DBLocInit();
             dl = DBLocConst( dl, base->delta );
             SymbolicDebugType( base->type, SD_DEFAULT );
-            base_info = StructType( base->type )->u.c.info;
+            base_info = ClassType( base->type )->u.c.info;
             DBAddInheritance( ds, base_info->dbg_no_vbases,
                    FIELD_ATTR_PUBLIC, INHERIT_DBASE,  dl );
             DBLocFini( dl );
@@ -363,7 +364,7 @@ static dbg_type symWVDebugClassType( TYPE type )
                     dl = DBLocOp( dl, DB_OP_ADD, 0 );
                 }
                 SymbolicDebugType( base->type, SD_DEFAULT );
-                base_info = StructType( base->type )->u.c.info;
+                base_info = ClassType( base->type )->u.c.info;
                 DBAddInheritance( ds, base_info->dbg_no_vbases,
                             FIELD_ATTR_PUBLIC, INHERIT_IVBASE,  dl );
                 DBLocFini( dl );
@@ -456,7 +457,7 @@ static dbg_type symCVDebugClassType( TYPE type )
             dl = DBLocInit();
             dl = DBLocConst( dl, base->delta );
             SymbolicDebugType( base->type, SD_DEFAULT );
-            base_info = StructType( base->type )->u.c.info;
+            base_info = ClassType( base->type )->u.c.info;
             DBAddInheritance( ds, base_info->dbg_no_vbases,
                    FIELD_ATTR_PUBLIC, INHERIT_DBASE,  dl );
             DBLocFini( dl );
@@ -474,7 +475,7 @@ static dbg_type symCVDebugClassType( TYPE type )
                 dl = DBLocInit();
                 dl = DBLocConst( dl, base->vb_index );
                 SymbolicDebugType( base->type, SD_DEFAULT );
-                base_info = StructType( base->type )->u.c.info;
+                base_info = ClassType( base->type )->u.c.info;
                 DBAddInheritance( ds, base_info->dbg_no_vbases,
                             FIELD_ATTR_PUBLIC, INHERIT_VBASE,  dl );
                 DBLocFini( dl );
@@ -486,7 +487,7 @@ static dbg_type symCVDebugClassType( TYPE type )
                 dl = DBLocInit();
                 dl = DBLocConst( dl, base->vb_index );
                 SymbolicDebugType( base->type, SD_DEFAULT );
-                base_info = StructType( base->type )->u.c.info;
+                base_info = ClassType( base->type )->u.c.info;
                 DBAddInheritance( ds, base_info->dbg_no_vbases,
                             FIELD_ATTR_PUBLIC, INHERIT_IVBASE,  dl );
                 DBLocFini( dl );

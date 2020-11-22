@@ -761,7 +761,7 @@ TYPE MakeMemberPointerTo( TYPE class_type, TYPE base_type )
     type_flag flags;
     void *base;
 
-    class_type = StructType( class_type );
+    class_type = ClassType( class_type );
     mptr_type = makeMemberPointerType( class_type, STY_NULL );
     base_type = TypeReferenced( base_type );
     unmod_type = TypeModExtract( base_type, &flags, &base, TC1_NOT_ENUM_CHAR );
@@ -2388,7 +2388,7 @@ static DECL_SPEC *checkForClassFriends( DECL_SPEC *dspec, bool decl_done )
     original_type = dspec->partial;
     type = original_type;
     if( type != NULL ) {
-        type = StructType( type );
+        type = ClassType( type );
     }
     name = dspec->name;
     if( dspec->type_defined ) {
@@ -2420,7 +2420,7 @@ static DECL_SPEC *checkForClassFriends( DECL_SPEC *dspec, bool decl_done )
             ScopeAddFriendSym( GetCurrScope(), sym );
         } else {
             if( sym != NULL ) {
-                type = StructType( sym->sym_type );
+                type = ClassType( sym->sym_type );
             }
 
             if( type != NULL ) {
@@ -3443,7 +3443,7 @@ static void adjustMemberFn( TYPE fn_type, TYPE member_ptr )
     DbgAssert( member_ptr->id == TYP_MEMBER_POINTER );
     // a member pointer can only point to "C++" fns
     fn_type->flag |= TF1_PLUSPLUS | TF1_PLUSPLUS_SET;
-    class_type = StructType( member_ptr->u.mp.host );
+    class_type = ClassType( member_ptr->u.mp.host );
     if( class_type == NULL ) {
         return;
     }
@@ -3653,7 +3653,7 @@ static void checkForUnnamedStruct( DECL_SPEC *dspec, NAME id )
     if( ! dspec->type_defined ) {
         return;
     }
-    base_type = StructType( dspec->partial );
+    base_type = ClassType( dspec->partial );
     if( base_type == NULL ) {
         return;
     }
@@ -4724,9 +4724,8 @@ TYPE ElaboratableType( TYPE type )
     return( type );
 }
 
-// 'ClassType' is used by code generator!
-TYPE StructType( TYPE type )
-/**************************/
+TYPE ClassType( TYPE type )
+/*************************/
 {
     if( type != NULL ) {
         TypeStripTdMod( type );
@@ -4740,7 +4739,7 @@ TYPE StructType( TYPE type )
 TYPE PolymorphicType( TYPE type )
 /*******************************/
 {
-    type = StructType( type );
+    type = ClassType( type );
     if( type != NULL && type->u.c.info->has_vfn ) {
         return( type );
     }
@@ -4750,7 +4749,7 @@ TYPE PolymorphicType( TYPE type )
 TYPE StructOpened( TYPE type )
 /****************************/
 {
-    type = StructType( type );
+    type = ClassType( type );
     if( type != NULL && type->u.c.info->opened ) {
         return( type );
     }
@@ -4760,7 +4759,7 @@ TYPE StructOpened( TYPE type )
 TYPE AbstractClassType( TYPE type )
 /*********************************/
 {
-    type = StructType( type );
+    type = ClassType( type );
     if( type != NULL ) {
         if( verifyAbstractStatus( type ) ) {
             return( type );
@@ -6005,7 +6004,7 @@ static bool isClassPtr( TYPE type )
     type = TypedefRemove( type );
     if( type->id == TYP_POINTER ) {
         if( (type->flag & TF1_REFERENCE) == 0 ) {
-            if( StructType( type->of ) != NULL ) {
+            if( ClassType( type->of ) != NULL ) {
                 return( true );
             }
         }
@@ -6017,12 +6016,12 @@ static TYPE classOrClassRef( TYPE type )
 {
     TYPE class_type;
 
-    class_type = StructType( type );
+    class_type = ClassType( type );
     if( class_type == NULL ) {
         TypeStripTdMod( type );
         if( type->id == TYP_POINTER ) {
             if( (type->flag & TF1_REFERENCE) != 0 ) {
-                class_type = StructType( type->of );
+                class_type = ClassType( type->of );
             }
         }
     }
@@ -7195,7 +7194,7 @@ bool TypeHasVirtualBases( TYPE type )
 {
     bool ok;
 
-    type = StructType( type );
+    type = ClassType( type );
     if( type == NULL ) {
         ok = false;
     } else {
@@ -7280,7 +7279,7 @@ bool TypeVAStartWontWork( TYPE fn_type, MSG_NUM *msg )
             *msg = WARN_REF_ARG_BEFORE_ELLIPSE;
             return( true );
         }
-        arg_type = StructType( arg_type );
+        arg_type = ClassType( arg_type );
         if( arg_type != NULL
          && OMR_CLASS_REF == ObjModelArgument( arg_type ) ) {
             /* arg before ... arg is a class arg (WATCOM passes these as refs) */
@@ -7307,7 +7306,7 @@ TYPE MemberPtrClass( TYPE type )
 /******************************/
 {
     if( type != NULL ) {
-        type = StructType( type->u.mp.host );
+        type = ClassType( type->u.mp.host );
     }
     return( type );
 }
@@ -7337,7 +7336,7 @@ bool TypeHasSpecialFields( TYPE type )
 {
     CLASSINFO *info;
 
-    type = StructType( type );
+    type = ClassType( type );
     if( type != NULL ) {
         info = type->u.c.info;
         if( info->has_comp_info ) {

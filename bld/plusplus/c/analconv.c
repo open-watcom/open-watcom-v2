@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -345,8 +346,8 @@ bool ConvertCommonType(         // CONVERT TO COMMON TYPE (:, ==, !=)
         BindTemplateClass( expr->u.subtree[0]->type, &expr->locn, true );
     expr->u.subtree[1]->type =
         BindTemplateClass( expr->u.subtree[1]->type, &expr->locn, true );
-    if( NULL != StructType( expr->u.subtree[0]->type )
-     || NULL != StructType( expr->u.subtree[1]->type ) ) {
+    if( NULL != ClassType( expr->u.subtree[0]->type )
+     || NULL != ClassType( expr->u.subtree[1]->type ) ) {
         ok = convertCommonClass( a_expr, diag_class );
     } else
     if( nodeMemberPtr( expr->u.subtree[0] )

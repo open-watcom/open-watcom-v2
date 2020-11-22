@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -81,7 +82,7 @@ static PTREE processInitNode(   // PROCESS A NODE IN INITIALIZATION TREE
         if( inited_temp == NULL ) {
             sym = node->u.symcg.symbol;
             if( sym != NULL ) {
-                if( StructType( sym->sym_type ) != NULL ) {
+                if( ClassType( sym->sym_type ) != NULL ) {
                     if( SymIsTemporary( sym ) ) {
                         inited_temp = sym;
                     }
@@ -113,7 +114,7 @@ static bool returnsStruct(      // TEST IF STRUCT RETURNED BY CALL
 
     func_type = TypeFunctionCalled( NodeFuncForCall( call )->type );
 #if 0
-    return( NULL != StructType( func_type->of ) );
+    return( NULL != ClassType( func_type->of ) );
 #else
     return( OMR_CLASS_REF == ObjModelFunctionReturn( func_type ) );
 #endif

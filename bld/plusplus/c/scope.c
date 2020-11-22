@@ -2025,7 +2025,7 @@ bool ScopeDirectBase( SCOPE scope, TYPE type )
 
     RingIterBeg( ScopeInherits( scope ), base ) {
         if( _IsDirectBase( base ) ) {
-            base_type = StructType( base->type );
+            base_type = ClassType( base->type );
             if( base_type == type ) {
                 return( true );
             }
@@ -2042,7 +2042,7 @@ bool ScopeIndirectVBase( SCOPE scope, TYPE type )
 
     RingIterBeg( ScopeInherits( scope ), base ) {
         if( _IsIndirectVirtualBase( base ) ) {
-            base_type = StructType( base->type );
+            base_type = ClassType( base->type );
             if( base_type == type ) {
                 return( true );
             }
@@ -2222,7 +2222,7 @@ void ScopeAddFriendSym( SCOPE scope, SYMBOL sym )
     FRIEND *a_friend;
     bool OK_for_friend;
 
-    class_type = StructType( sym->sym_type );
+    class_type = ClassType( sym->sym_type );
     if( ScopeLocalClass( scope ) ) {
         /* local classes have restrictions on friends */
         if( SymIsFunction( sym ) ) {
@@ -2278,7 +2278,7 @@ void ScopeAddFriendType( SCOPE scope, TYPE type, SYMBOL sym )
     FRIEND *a_friend;
     bool OK_for_friend;
 
-    class_type = StructType( type );
+    class_type = ClassType( type );
     if( ScopeLocalClass( scope ) ) {
         /* local classes have restrictions on friends */
         OK_for_friend = true;
@@ -3403,7 +3403,7 @@ static TYPE symReturnsClassRefPtr( SYMBOL sym, bool *is_reference )
         *is_reference = true;
     }
     /* needs to return TYP_MODIFIER flags so we can verify they are identical */
-    return( StructType( ptr_type->of ) );
+    return( ClassType( ptr_type->of ) );
 }
 
 static bool badVirtualReturn( SYMBOL old, SYMBOL new, bool *return_thunk )
@@ -5089,7 +5089,7 @@ static void pushDisambig( vftable_walk *data, SYMBOL override_sym )
     ret_type = TypePointedAtModified( fn_type->of );
     scope = NULL;
     if( ret_type != NULL ) {
-        class_type = StructType( ret_type );
+        class_type = ClassType( ret_type );
         if( class_type != NULL ) {
             scope = class_type->u.c.scope;
         }
@@ -5651,7 +5651,7 @@ void ScopeNotePureFunctions( TYPE type )
         // things are not setup yet
         return;
     }
-    class_type = StructType( type );
+    class_type = ClassType( type );
     info = class_type->u.c.info;
     scope = class_type->u.c.scope;
     // NYI: could set doCollectVFTable to not worry about thunk contents

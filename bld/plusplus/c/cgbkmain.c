@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -709,7 +709,7 @@ static SE* buildObjectSe        // BUILD SUBOBJ STATE ENTRY
     type = CDoptIterType( iter );
     array_type = ArrayType( type );
     if( NULL == array_type ) {
-        se->subobj.type = StructType( type );
+        se->subobj.type = ClassType( type );
         se->subobj.dtor = CDoptIterFunction( iter );
     } else {
         se->subobj.type = array_type;
@@ -729,7 +729,7 @@ static STAB_OBJ* buildObjectStateTable( // BUILD STATE TABLE FOR OBJECT
     TITER comp_type;            // - type of component
     SE* se;                     // - current state entry
 
-    type = StructType( type );
+    type = ClassType( type );
     if( ! TypeRequiresDtoring( type ) ) {
         obj = NULL;
     } else {

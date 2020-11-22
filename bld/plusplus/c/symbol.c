@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -199,7 +200,7 @@ bool SymIsClassDefinition(      // TEST IF SYMBOL IS TYPEDEF FOR A CLASS
     if( !SymIsTypedef( sym ) ) {
         return( false );
     }
-    type = StructType( sym->sym_type );
+    type = ClassType( sym->sym_type );
     if( type == NULL ) {
         return( false );
     }
@@ -224,7 +225,7 @@ bool SymIsInjectedTypedef(      // TEST IF SYMBOL IS INJECTED TYPEDEF
     if( !SymIsTypedef( sym ) ) {
         return( false );
     }
-    type = StructType( sym->sym_type );
+    type = ClassType( sym->sym_type );
     if( type == NULL ) {
         return( false );
     }
@@ -506,7 +507,7 @@ bool SymIsClassArray(           // DETERMINE IF SYMBOL IS ARRAY OF CLASS ITEMS
         ok = false;
     } else {
         base_type = ArrayBaseType( array_type );
-        if( NULL == StructType( base_type ) ) {
+        if( NULL == ClassType( base_type ) ) {
             ok = false;
         } else {
             ok = true;
@@ -999,7 +1000,7 @@ static bool symIsAnonymousStructUnion( SYMBOL sym )
 {
     TYPE type;
 
-    type = StructType( sym->sym_type );
+    type = ClassType( sym->sym_type );
     if( type == NULL ) {
         return( false );
     }
@@ -1267,7 +1268,7 @@ SYMBOL SymForClass              // GET SYMBOL FOR CLASS IF IT EXISTS
 {
     SYMBOL retn = NULL;         // - NULL or TYPEDEF for class
 
-    cltype = StructType( cltype );
+    cltype = ClassType( cltype );
     if( NULL != cltype ) {
         NAME name = cltype->u.c.info->name;
         if( NULL != name ) {

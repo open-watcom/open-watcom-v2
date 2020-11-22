@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -764,7 +765,7 @@ static dw_handle dwarfTypedef( TYPE type, DC_CONTROL control )
         uint      flags;
         type_update( type, TF2_DWARF_DEF, dh );
         sym = type->u.t.sym;
-        of_type = StructType( type->of );
+        of_type = ClassType( type->of );
         if( (of_type == type->of)
          && (of_type->u.c.info->unnamed)
          && (sym->name->containing == of_type->u.c.scope->enclosing) ) {
@@ -1648,7 +1649,7 @@ static dw_handle dwarfSymbol( SYMBOL sym, DC_CONTROL control )
         dwarfLocation( sym );
     }
     if( SymIsClassDefinition( sym ) ) {
-        dh = dwarfClass( StructType( sym->sym_type ), control );
+        dh = dwarfClass( ClassType( sym->sym_type ), control );
     } else if( SymIsEnumDefinition( sym ) ) {
         dh = dwarfEnum( EnumType( sym->sym_type ), control );
     } else if( SymIsInjectedTypedef( sym ) ) {
@@ -1806,7 +1807,7 @@ extern dbg_type DwarfDebugSym( SYMBOL sym )
 
     if( SymIsTypedef( sym ) ) {
         if( SymIsClassDefinition( sym ) ) {
-            dh = dwarfClass( StructType( sym->sym_type ), DC_DEFINE );
+            dh = dwarfClass( ClassType( sym->sym_type ), DC_DEFINE );
         } else if( SymIsEnumDefinition( sym ) ) {
             dh = dwarfEnum( EnumType( sym->sym_type ), DC_DEFINE );
         } else if( SymIsInjectedTypedef( sym ) ) {

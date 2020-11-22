@@ -632,7 +632,7 @@ void ClassChangingScope( SYMBOL typedef_sym, SCOPE new_scope )
     TYPE class_type;
     SCOPE class_scope;
 
-    class_type = StructType( typedef_sym->sym_type );
+    class_type = ClassType( typedef_sym->sym_type );
     class_scope = class_type->u.c.scope;
     ScopeAdjustUsing( GetCurrScope(), NULL );
     ScopeEstablishEnclosing( class_scope, new_scope );
@@ -818,7 +818,7 @@ TYPE ClassTagDefinition( TYPE type, NAME name )
     TYPE class_type;
     CLASSINFO *info;
 
-    class_type = StructType( type );
+    class_type = ClassType( type );
     if( class_type == NULL ) {
         return( NULL );
     }
@@ -1533,7 +1533,7 @@ static void setAbstractStatus( CLASS_DATA *data, CLASSINFO *info )
 
     info->abstract_OK = true;
     RingIterBeg( data->bases, base ) {
-        base_type = StructType( base->type );
+        base_type = ClassType( base->type );
         base_info = base_type->u.c.info;
         if( base_info->abstract_OK ) {
             if( base_info->abstract ) {
@@ -2639,7 +2639,7 @@ BASE_CLASS *ClassBaseSpecifier( inherit_flag flags, DECL_SPEC *dspec )
     base_type = BindTemplateClass( dspec->partial, NULL, false );
     PTypeRelease( dspec );
     error_detected = false;
-    base_type = StructType( base_type );
+    base_type = ClassType( base_type );
     if( classDataStack->is_union ) {
         CErr1( ERR_UNION_CANNOT_HAVE_BASE );
         error_detected = true;
@@ -3208,7 +3208,7 @@ bool ClassAnonymousUnion( DECL_SPEC *dspec )
     stg_class_t stg_class;
     bool emit_init;
 
-    class_type = StructType( dspec->partial );
+    class_type = ClassType( dspec->partial );
     if( class_type == NULL ) {
         return( false );
     }
@@ -3291,7 +3291,7 @@ static bool verifyBaseClassInit( PTREE base, SCOPE scope )
     TYPE class_type;
     SCOPE class_scope;
 
-    class_type = StructType( base->type );
+    class_type = ClassType( base->type );
     class_scope = ScopeNearestNonTemplate( scope );
     if( class_type != NULL ) {
         if( ScopeDirectBase( class_scope, class_type ) ) {
@@ -3720,7 +3720,7 @@ bool ClassDefineRefdDefaults( void )
 bool ClassCorrupted(            // TEST IF CLASS (FOR TYPE) IS CORRUPTED
     TYPE type )                 // - should be a class type
 {
-    type = StructType( type );
+    type = ClassType( type );
     if( type == NULL || type->u.c.info->corrupted ) {
         return( true );
     }

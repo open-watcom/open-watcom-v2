@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -708,7 +709,7 @@ static TYPE analyseClPtrLeft(   // ANALYSE A CLASS POINTER ON LEFT
         type = diagMember( left, expr, ERR_MUST_BE_PTR_TO_STRUCT_OR_UNION );
     } else {
         type = type->of;
-        if( NULL == StructType( type ) ) {
+        if( NULL == ClassType( type ) ) {
             if( ! simpleTypeDtor( type, expr ) ) {
                 type = diagMember( left, expr, ERR_MUST_BE_PTR_TO_STRUCT_OR_UNION );
             }
@@ -947,7 +948,7 @@ PTREE AnalyseLvDot(             // ANALYSE LVALUE "."
         if( expr->type == NULL ) {
             PTREE left = expr->u.subtree[0];
             if( (left->flags & PTF_LVALUE) == 0 ) {
-                TYPE cl_type = StructType( left->type );
+                TYPE cl_type = ClassType( left->type );
                 if( cl_type != NULL ) {
 #if 0
                     if( OMR_CLASS_REF == ObjModelArgument( cl_type ) ) {
@@ -1064,7 +1065,7 @@ PTREE AnalyseOffsetOf(          // ANALYSE OFFSETOF
     offset = 0;
     for( curr = reverseTree( &(field) ); curr != NULL; curr = curr->u.subtree[0] ) {
         DbgAssert( NodeIsBinaryOp( curr, CO_DOT ) );
-        type = StructType( type );
+        type = ClassType( type );
         if( type == NULL ) {
             PTreeErrorExpr( curr, ERR_OFFSETOF_CLASS );
             PTreeErrorNode( expr );

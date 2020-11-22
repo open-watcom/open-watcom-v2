@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,7 +59,7 @@ static void infMsgType(         // DISPLAY INFORMATION FOR A CONVERSION TYPE
         TYPE ptr_type = PointerTypeEquivalent( type );
         if( NULL != ptr_type ) {
             type_flag not_used;
-            cl_type = StructType( TypePointedAt( type, &not_used ) );
+            cl_type = ClassType( TypePointedAt( type, &not_used ) );
             if( NULL != cl_type && !TypeDefined( cl_type ) ) {
                 InfMsgPtr( INF_CLASS_NOT_DEFINED, cl_type );
             }

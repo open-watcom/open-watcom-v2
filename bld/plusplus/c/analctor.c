@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -312,7 +313,7 @@ static CNV_RETN analyseCtorClassDiag( // ANALYSE A CLASS CTOR
         break;
     case CNV_IMPOSSIBLE :
         if( count == 1
-          && StructType( initial->type ) == type
+          && ClassType( initial->type ) == type
           && OMR_CLASS_VAL == ObjModelArgument( type ) ) {
             retn = CNV_OK;
             break;
@@ -450,7 +451,7 @@ CNV_RETN AnalyseCtorDiag(       // ANALYSE CONSTRUCTOR
     TYPE class_type;
     PTREE expr;
 
-    class_type = StructType( type );
+    class_type = ClassType( type );
     fnov_diag = FnovInitDiag( fnov_diag );
     if( class_type != NULL ) {
         *ctor = NULL;
