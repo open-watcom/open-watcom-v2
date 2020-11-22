@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -150,7 +150,7 @@ type_class_def CallState( aux_handle aux, type_def *tipe, call_state *state )
     HW_CAsgn( state->parm.used, HW_EMPTY );
     state->parm.curr_entry = state->parm.table;
     state->parm.offset  = 0;
-    type_class = ReturnClass( tipe, state->attr );
+    type_class = ReturnTypeClass( tipe, state->attr );
     UpdateReturn( state, tipe, type_class, aux );
     return( type_class );
 }

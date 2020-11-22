@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -620,7 +620,7 @@ void    InitNames( void )
     }
     InitFrl( &ConstDefnFrl );
     for( type_class = U1; type_class <= XX; ++type_class ) {
-        TypeClassSize[type_class] = ClassType( type_class )->length;
+        TypeClassSize[type_class] = TypeOfTypeClass( type_class )->length;
     }
     ReInitNames();
 }

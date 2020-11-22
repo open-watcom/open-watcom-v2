@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -301,7 +301,7 @@ static  type_def    *ResultType( tn left, tn rite, type_def *tipe,
         rtipe = TypeInteger;
     }
     if( tipe->refno == TY_DEFAULT ) {
-        return( ClassType( mat_type_class[TypeClass( ltipe ) * XX + TypeClass( rtipe )] ) );
+        return( TypeOfTypeClass( mat_type_class[TypeClass( ltipe ) * XX + TypeClass( rtipe )] ) );
     }
 #if _TARGET & 0
     return( tipe );

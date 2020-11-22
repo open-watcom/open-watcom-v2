@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1209,7 +1209,7 @@ static  bool    LinkableMove( instruction *ins )
         return( false );
     if( ins->operands[0]->n.class == N_CONSTANT ) {
         if( ins->operands[0]->c.const_type == CONS_ABSOLUTE ) {
-            ins->operands[0] = AllocConst( CnvCFToType( ins->operands[0]->c.value, ClassType( ins->type_class ) ) );
+            ins->operands[0] = AllocConst( CnvCFToType( ins->operands[0]->c.value, TypeOfTypeClass( ins->type_class ) ) );
         }
     }
     return( true );

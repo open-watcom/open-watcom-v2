@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,15 +48,15 @@ static cg_type  Types[] = {
 };
 
 
-type_def        *ClassType( type_class_def type_class )
-/*****************************************************/
+type_def    *TypeOfTypeClass( type_class_def type_class )
+/*******************************************************/
 {
     return( TypeAddress( Types[type_class] ) );
 }
 
 
-type_class_def  ReturnClass( type_def *tipe, call_attributes attr )
-/*****************************************************************/
+type_class_def  ReturnTypeClass( type_def *tipe, call_attributes attr )
+/*********************************************************************/
 {
     switch( tipe->refno ) {
     case TY_INT_1:
@@ -105,6 +105,6 @@ type_class_def  TypeClass( type_def *tipe )
     case TY_UINT_8:
         return( U8 );
     default:
-        return( ReturnClass( tipe, EMPTY ) );
+        return( ReturnTypeClass( tipe, EMPTY ) );
     }
 }

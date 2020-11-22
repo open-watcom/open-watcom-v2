@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -644,7 +644,7 @@ void    BGReturn( an retval, type_def *tipe ) {
     last_ins = NULL;
     if( retval != NULL ) {
         tipe_type_class = TypeClass( tipe );
-        type_class = ReturnClass( tipe, CurrProc->state.attr );
+        type_class = ReturnTypeClass( tipe, CurrProc->state.attr );
         UpdateReturn( &CurrProc->state, tipe, type_class, FEAuxInfo( AskForLblSym(CurrProc->label), AUX_LOOKUP ) );
         if( _IsModel( DBG_LOCALS ) ){  // d1+ or d2
             DbgRetLoc();
@@ -719,7 +719,7 @@ static pn   BustUpStruct( pn parm, type_class_def from, type_class_def using_typ
         ins = MakeMove( STempOffset( temp, offset, using_type_class, size ), NULL, using_type_class );
         AddIns( ins );
         curr->next = last;
-        curr->name = InsName( ins, ClassType( using_type_class ) );
+        curr->name = InsName( ins, TypeOfTypeClass( using_type_class ) );
         curr->name->flags = parm->name->flags;
         curr->alignment = 4;
         last = curr;

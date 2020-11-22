@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -211,8 +211,8 @@ static  instruction    *FoldAbsolute( instruction *ins ) {
     name            *new_const;
     float_handle    cf_value;
 
-    tipe = ClassType( ins->type_class );
-    left_tipe = ClassType( _OpClass( ins ) );
+    tipe = TypeOfTypeClass( ins->type_class );
+    left_tipe = TypeOfTypeClass( _OpClass( ins ) );
     num_operands = OpcodeNumOperands( ins );
     left = NULL;
     rite = NULL;
@@ -222,7 +222,7 @@ static  instruction    *FoldAbsolute( instruction *ins ) {
             if( ins->operands[1]->n.type_class == XX ) {
                 rite_tipe = tipe;
             } else {
-                rite_tipe = ClassType( ins->operands[1]->n.type_class );
+                rite_tipe = TypeOfTypeClass( ins->operands[1]->n.type_class );
             }
             rite = TName( ins->operands[1], rite_tipe );
         }
