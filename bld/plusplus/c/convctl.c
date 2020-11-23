@@ -890,7 +890,7 @@ static void checkClassValue(    // CHECK THAT FUNC. ARG.S, RETURN ARE NOT CLASS
         alist = ftype->u.f.args;
         i = alist->num_args;
         while( i-- > 0 ) {
-            if( ClassType( alist->type_list[i] ) ) {
+            if( NULL != ClassType( alist->type_list[i] ) ) {
                 PTreeWarnExpr( expr, msg );
                 break;
             }

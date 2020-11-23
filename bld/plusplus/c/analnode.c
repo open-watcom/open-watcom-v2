@@ -595,12 +595,7 @@ PTREE NodeSymbolCallee(         // MAKE SYMBOL FOR A CALLEE
 PTREE MakeNodeSymbol(           // MAKE PT_SYMBOL NODE FROM SYMBOL
     SYMBOL sym )                // - symbol
 {
-    sym = SymMarkRefed( sym );
-    if( NULL != ClassType( sym->sym_type ) ) {
-//        sym->flag |= PTF_MEMORY_EXACT;
-        sym->flag |= SYMF_ADDR_TAKEN;
-    }
-    return( NodeSymbolNoRef( NULL, sym, NULL ) );
+    return( NodeSetMemoryExact( NodeSymbolNoRef( NULL, SymMarkRefed( sym ), NULL ) ) );
 }
 
 
@@ -1826,7 +1821,7 @@ PTREE NodeDtorExpr(             // MARK FOR DTOR'ING AFTER EXPRESSION
 PTREE NodeSetMemoryExact(       // SET PTF_MEMORY_EXACT, IF REQ'D
     PTREE expr )                // - expression
 {
-    if( ClassType( expr->type ) != NULL ) {
+    if( NULL != ClassType( expr->type ) ) {
         expr->flags |= PTF_MEMORY_EXACT;
     }
     return( expr );

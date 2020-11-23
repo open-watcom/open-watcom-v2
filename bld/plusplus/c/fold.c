@@ -138,8 +138,8 @@ signed_64 BFCnvF64( float_handle flt )
 //--------------------------------------------------------------
 
 
-target_long FoldSignedRShiftMax( target_long v )
-/**********************************************/
+static target_long FoldSignedRShiftMax( target_long v )
+/*****************************************************/
 {
     if( v < 0 ) {
         return( -1 );
