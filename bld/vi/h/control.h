@@ -45,7 +45,7 @@
 #endif
 
 #ifndef __WIN__
-  #if defined( __CURSES__ ) || defined( __OS2__ ) || defined( __UNIX__ ) || defined( __NT__ )
+  #if defined( __OS2__ ) || defined( __UNIX__ ) || defined( __NT__ )
     #define __VIO__
   #endif
 #endif

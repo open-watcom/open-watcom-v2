@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -95,9 +96,6 @@ static vi_mouse_event mapButtonEvents( vi_mouse_event me, int button )
  */
 vi_mouse_event GetMouseEvent( void )
 {
-#ifdef __CURSES__
-    return( VI_MOUSE_NONE );
-#else
     int             status;
     windim          row, col;
     bool            moved;
@@ -170,7 +168,6 @@ vi_mouse_event GetMouseEvent( void )
     MouseCol = col;
 
     return( mapButtonEvents( me, button ) );
-#endif
 
 } /* GetMouseEvent */
 

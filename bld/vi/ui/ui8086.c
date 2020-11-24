@@ -34,9 +34,6 @@
 #ifdef __WATCOMC__
     #include <conio.h>
 #endif
-#ifdef __CURSES__
-    #include <curses.h>
-#endif
 #include "win.h"
 #include "dosx.h"
 #include "vibios.h"
@@ -122,9 +119,6 @@ vi_rc SetFont( const char *data )
  */
 void ClearScreen( void )
 {
-#ifdef __CURSES__
-    clear();
-#else
     int                 i;
     char_info           what = {0, 0};
     char_info           _FAR *foo;
@@ -141,7 +135,6 @@ void ClearScreen( void )
     }
 #ifdef __VIO__
     MyVioShowBuf( 0, EditVars.WindMaxWidth * EditVars.WindMaxHeight );
-#endif
 #endif
     setCursor( 0, 0 );
 
