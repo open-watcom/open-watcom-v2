@@ -39,7 +39,7 @@
 char            *OptArg;
 int             OptInd = 1;
 char            OptChar;
-#ifndef __ISVI__
+#ifndef INSIDE_VI
 char            AltOptChar = '/';
 #else
 char            AltOptChar = '+';
@@ -47,7 +47,7 @@ char            AltOptChar = '+';
 
 static int      optOff = 0;
 static int      testedOptEnvVar;
-#ifndef __ISVI__
+#ifndef INSIDE_VI
 static int      testedPosixrx;
 #endif
 static char     *envVar = NULL;
@@ -77,7 +77,7 @@ int GetOpt( int *argc, char *argv[], const char *optstr, const char *usage[] )
     char        *currarg;
 
     OptArg = NULL;
-#ifndef __ISVI__
+#ifndef INSIDE_VI
     if( !testedPosixrx ) {
         testedPosixrx = 1;
         if( getenv( "POSIXRX" ) != NULL ) {
@@ -148,7 +148,7 @@ int GetOpt( int *argc, char *argv[], const char *optstr, const char *usage[] )
         Quit( usage, "Invalid option '%c'\n", ch );
     }
     if( *( ptr + 1 ) == ':' ) {
-#ifndef __ISVI__
+#ifndef INSIDE_VI
         if( *( ptr + 2 ) == ':' ) {
             if( currarg[optOff + 1] != 0 ) {
                 OptArg = &currarg[optOff + 1];

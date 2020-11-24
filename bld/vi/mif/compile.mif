@@ -37,8 +37,8 @@ extra_cpp_flags_dos_386 = -D__PHAR__ -D__CURSES__
 extra_cpp_flags_dos_386 = -D__4G__
 !endif
 
-extra_cpp_flags_getopt   = -D__ISVI__
-extra_cpp_flags_ideactiv = -D__ISVI__
+extra_cpp_flags_getopt   = -DINSIDE_VI
+extra_cpp_flags_ideactiv = -DINSIDE_VI
 extra_cpp_flags_mem      = $(trmem_cpp_flags)
 
 extra_c_flags = -fh
