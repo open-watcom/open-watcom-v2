@@ -19,7 +19,23 @@ dllname     = $(boot_prefix)wccd$(suffix)
 # international data file name
 intname     = wcc$(target_cpu)
 
+!ifdef bootstrap
+exetarg_name = $(exename)
+dlltarg_name = $(dllname)
+bin_intname  = $(intname)
+!else
+exetarg_name = $(bin_subdir)/$(exename)
+dlltarg_name = $(bin_subdir)/$(dllname)
+bin_intname  = $(bin_subdir)/$(intname)
+!endif
+
 additional_clean = *.int
+!ifndef bootstrap
+additional_clean_subdirs = $(bin_subdir)
+!endif
+
+$(bin_subdir) : .EXPLICIT
+    mkdir $@
 
 !include cproj.mif
 !include defrule.mif
@@ -103,14 +119,18 @@ prebuild_objs = &
     code$(target_cpu).gh &
     $(intname)01.int
 
+!ifndef bootstrap
+all: $(bin_subdir) $(exetarg_name).exe .symbolic
+!endif
+
 #
 # EXE
 #
 !ifdef cc_dll
-exetarg_prebuild_objs = $(dllname).dll
+exetarg_prebuild_objs = $(dlltarg_name).dll
 exetarg_objs          = $(comp_objs_drv)
 exetarg_libs_dos      = cwdll.lib
-exetarg_libs          = $(dllname).lib $(exetarg_libs_$(host_os))
+exetarg_libs          = $(dlltarg_name).lib $(exetarg_libs_$(host_os))
 !else
 exetarg_prebuild_objs = $(prebuild_objs)
 exetarg_objs          = $(comp_objs_exe)
@@ -119,7 +139,7 @@ exetarg_libs          = $(asminline_lib) $(cg_libs)
 exetarg_res_version_nt_386 = exever.res
 exetarg_res_version_nt_x64 = exever.res
 exetarg_qnx_res       = usage.u
-exetarg_name          = $(exename)
+exetarg_name          = $(exetarg_name)
 !include exetarg.mif
 
 #
@@ -130,7 +150,7 @@ dlltarg_objs          = $(comp_objs_dll)
 dlltarg_libs          = $(asminline_lib) $(cg_libs)
 dlltarg_res_version_nt_386 = version.res
 dlltarg_res_version_nt_x64 = version.res
-dlltarg_name          = $(dllname)
+dlltarg_name          = $(dlltarg_name)
 !include dlltarg.mif
 
 #

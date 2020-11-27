@@ -84,7 +84,7 @@ path_rtdll = $(src_dir)\clib\rtdll\os2.386\mf_r;$(src_dir)\clib\rtdll\os2.386\mf
 $(src_dir)\cpplib\rtdll\os2.386\mf_r;$(src_dir)\cpplib\rtdll\os2.386\mf_s;&
 $(src_dir)\mathlib\rtdll\os2.386\mf_r;$(src_dir)\mathlib\rtdll\os2.386\mf_s;&
 $(src_dir)\mathlib\rtdll\os2.387\mf_r;$(src_dir)\mathlib\rtdll\os2.387\mf_s
-path_wcc = $(src_dir)\cc\386\os2386.dll;$(src_dir)\cc\i86\os2386.dll
+path_wcc = $(src_dir)\cc\386\os2386.dll\$(%OWOBJDIR);$(src_dir)\cc\i86\os2386.dll\$(%OWOBJDIR)
 path_wpp = $(src_dir)\plusplus\386\os2386.dll;$(src_dir)\plusplus\i86\os2386.dll
 #path_wfc = $(src_dir)\f77\wfc\386\os2386.dll;$(src_dir)\f77\wfc\i86\os2386.dll
 path_wlib = $(src_dir)\nwlib\os2386.dll
@@ -94,7 +94,7 @@ os2_dll_path=$(path_wcc);$(path_wpp);$(path_wlib);$(path_wlink);
 path_rtdll = $(src_dir)\clib\rtdll\winnt.axp\mf_r;$(src_dir)\clib\rtdll\winnt.axp\mf_s;&
 $(src_dir)\cpplib\rtdll\winnt.axp\mf_r;$(src_dir)\cpplib\rtdll\winnt.axp\mf_s;&
 $(src_dir)\mathlib\rtdll\winnt.axp\mf_r;$(src_dir)\mathlib\rtdll\winnt.axp\mf_s
-path_wcc = $(src_dir)\cc\axp\ntaxp.dll
+path_wcc = $(src_dir)\cc\axp\ntaxp.dll\$(%OWOBJDIR)
 path_wpp = $(src_dir)\plusplus\axp\ntaxp.dll
 #path_wfc = $(src_dir)\f77\wfc\axp\ntaxp.dll
 path_wlib = $(src_dir)\nwlib\ntaxp.dll
@@ -104,7 +104,7 @@ path_rtdll = $(src_dir)\clib\rtdll\winnt.386\mf_r;$(src_dir)\clib\rtdll\winnt.38
 $(src_dir)\cpplib\rtdll\winnt.386\mf_r;$(src_dir)\cpplib\rtdll\winnt.386\mf_s;&
 $(src_dir)\mathlib\rtdll\winnt.386\mf_r;$(src_dir)\mathlib\rtdll\winnt.386\mf_s;&
 $(src_dir)\mathlib\rtdll\winnt.387\mf_r;$(src_dir)\mathlib\rtdll\winnt.387\mf_s
-path_wcc = $(src_dir)\cc\386\nt386.dll;$(src_dir)\cc\i86\nt386.dll
+path_wcc = $(src_dir)\cc\386\nt386.dll\$(%OWOBJDIR);$(src_dir)\cc\i86\nt386.dll\$(%OWOBJDIR)
 path_wpp = $(src_dir)\plusplus\386\nt386.dll;$(src_dir)\plusplus\i86\nt386.dll
 #path_wfc = $(src_dir)\f77\wfc\386\nt386.dll;$(src_dir)\f77\wfc\i86\nt386.dll
 path_wlib = $(src_dir)\nwlib\nt386.dll
@@ -114,7 +114,7 @@ path_rtdll = $(src_dir)\clib\rtdll\winnt.386\mf_r;$(src_dir)\clib\rtdll\winnt.38
 $(src_dir)\cpplib\rtdll\winnt.386\mf_r;$(src_dir)\cpplib\rtdll\winnt.386\mf_s;&
 $(src_dir)\mathlib\rtdll\winnt.386\mf_r;$(src_dir)\mathlib\rtdll\winnt.386\mf_s;&
 $(src_dir)\mathlib\rtdll\winnt.387\mf_r;$(src_dir)\mathlib\rtdll\winnt.387\mf_s
-path_wcc = $(src_dir)\cc\386\ntx64.dll
+path_wcc = $(src_dir)\cc\386\ntx64.dll\$(%OWOBJDIR)
 path_wpp = $(src_dir)\plusplus\386\ntx64.dll
 #path_wfc = $(src_dir)\f77\wfc\386\ntx64.dll
 path_wlib = $(src_dir)\nwlib\ntx64.dll
@@ -461,17 +461,17 @@ bld_extra_defines = -DINLINETEST
 !  ifdef buildtest
 #    build version of C compiler for 386
 !    ifdef __MSDOS__
-!      define comp_wcc_386 $(src_dir)\cc\386\dos386\wcc386
+!      define comp_wcc_386 $(src_dir)\cc\386\dos386\$(%OWOBJDIR)\wcc386
 !    else ifdef __OS2__
-!      define comp_wcc_386 $(src_dir)\cc\386\os2386.dll\wcc386
+!      define comp_wcc_386 $(src_dir)\cc\386\os2386.dll\$(%OWOBJDIR)\wcc386
 !    else ifdef __LINUX386__
-!      define comp_wcc_386 $(src_dir)/cc/386/linux386/wcc386.exe
+!      define comp_wcc_386 $(src_dir)/cc/386/linux386/$(%OWOBJDIR)/wcc386.exe
 !    else ifdef __LINUXX64__
-!      define comp_wcc_386 $(src_dir)/cc/386/linuxx64/wcc386.exe
+!      define comp_wcc_386 $(src_dir)/cc/386/linuxx64/$(%OWOBJDIR)/wcc386.exe
 !    else ifdef __NT386__
-!      define comp_wcc_386 $(src_dir)\cc\386\nt386.dll\wcc386
+!      define comp_wcc_386 $(src_dir)\cc\386\nt386.dll\$(%OWOBJDIR)\wcc386
 !    else ifdef __NTX64__
-!      define comp_wcc_386 $(src_dir)\cc\386\ntx64.dll\wcc386
+!      define comp_wcc_386 $(src_dir)\cc\386\ntx64.dll\$(%OWOBJDIR)\wcc386
 !    endif
 !  else ifdef %CTEST_WCC_386
 !    define comp_wcc_386 $+$(%CTEST_WCC_386)$-
@@ -484,11 +484,11 @@ bld_extra_defines = -DINLINETEST
 !  ifdef buildtest
 #    build version of C compiler for i86
 !    ifdef __MSDOS__
-!      define comp_wcc_i86 $(src_dir)\cc\i86\dos386\wcc
+!      define comp_wcc_i86 $(src_dir)\cc\i86\dos386\$(%OWOBJDIR)\wcc
 !    else ifdef __OS2__
-!      define comp_wcc_i86 $(src_dir)\cc\i86\os2386.dll\wcc
+!      define comp_wcc_i86 $(src_dir)\cc\i86\os2386.dll\$(%OWOBJDIR)\wcc
 !    else ifdef __NT386__
-!      define comp_wcc_i86 $(src_dir)\cc\i86\nt386.dll\wcc
+!      define comp_wcc_i86 $(src_dir)\cc\i86\nt386.dll\$(%OWOBJDIR)\wcc
 !    endif
 !  else ifdef %CTEST_WCC_I86
 !    define comp_wcc_i86 $+$(%CTEST_WCC_I86)$-
@@ -501,9 +501,9 @@ bld_extra_defines = -DINLINETEST
 !  ifdef buildtest
 #    build version of C compiler for axp
 !    ifdef __OS2__
-!      define comp_wcc_axp $(src_dir)\cc\axp\os2axp\wccaxp
+!      define comp_wcc_axp $(src_dir)\cc\axp\os2axp\$(%OWOBJDIR)\wccaxp
 !    else ifdef __NTAXP__
-!      define comp_wcc_axp $(src_dir)\cc\axp\ntaxp.dll\wccaxp
+!      define comp_wcc_axp $(src_dir)\cc\axp\ntaxp.dll\$(%OWOBJDIR)\wccaxp
 !    endif
 !  else ifdef %CTEST_WCC_AXP
 !    define comp_wcc_axp $+$(%CTEST_WCC_AXP)$-
@@ -516,7 +516,7 @@ bld_extra_defines = -DINLINETEST
 !  ifdef buildtest
 #    build version of C compiler for ppc
 !    ifdef __LINUXPPC__
-!      define comp_wcc_ppc $(src_dir)/cc/ppc/linuxppc/wccppc.exe
+!      define comp_wcc_ppc $(src_dir)/cc/ppc/linuxppc/$(%OWOBJDIR)/wccppc.exe
 !    endif
 !  else ifdef %CTEST_WCC_PPC
 !    define comp_wcc_ppc $+$(%CTEST_WCC_PPC)$-
@@ -529,7 +529,7 @@ bld_extra_defines = -DINLINETEST
 !  ifdef buildtest
 #    build version of C compiler for mps
 !    ifdef __LINUXMPS__
-!      define comp_wcc_mps $(src_dir)/cc/mps/linuxmps/wccmps.exe
+!      define comp_wcc_mps $(src_dir)/cc/mps/linuxmps/$(%OWOBJDIR)/wccmps.exe
 !    endif
 !  else ifdef %CTEST_WCC_MPS
 !    define comp_wcc_mps $+$(%CTEST_WCC_MPS)$-
@@ -541,11 +541,11 @@ bld_extra_defines = -DINLINETEST
 !ifndef dll_wcc_386
 !  ifdef buildtest
 !    ifdef __OS2__
-!      define dll_wcc_386 $(src_dir)\cc\386\os2386.dll\wccd386.dll
+!      define dll_wcc_386 $(src_dir)\cc\386\os2386.dll\$(%OWOBJDIR)\wccd386.dll
 !    else ifdef __NT386__
-!      define dll_wcc_386 $(src_dir)\cc\386\nt386.dll\wccd386.dll
+!      define dll_wcc_386 $(src_dir)\cc\386\nt386.dll\$(%OWOBJDIR)\wccd386.dll
 !    else ifdef __NTX64__
-!      define dll_wcc_386 $(src_dir)\cc\386\ntx64.dll\wccd386.dll
+!      define dll_wcc_386 $(src_dir)\cc\386\ntx64.dll\$(%OWOBJDIR)\wccd386.dll
 !    endif
 !  else ifdef %CTEST_DLL_386
 !    define dll_wcc_386 $+$(%CTEST_DLL_386)$-
@@ -557,9 +557,9 @@ bld_extra_defines = -DINLINETEST
 !ifndef dll_wcc_i86
 !  ifdef buildtest
 !    ifdef __OS2__
-!      define dll_wcc_i86 $(src_dir)\cc\i86\os2386.dll\wccd.dll
+!      define dll_wcc_i86 $(src_dir)\cc\i86\os2386.dll\$(%OWOBJDIR)\wccd.dll
 !    else ifdef __NT386__
-!      define dll_wcc_i86 $(src_dir)\cc\i86\nt386.dll\wccd.dll
+!      define dll_wcc_i86 $(src_dir)\cc\i86\nt386.dll\$(%OWOBJDIR)\wccd.dll
 !    endif
 !  else ifdef %CTEST_DLL_I86
 !    define dll_wcc_i86 $+$(%CTEST_DLL_I86)$-
@@ -571,9 +571,9 @@ bld_extra_defines = -DINLINETEST
 !ifndef dll_wcc_axp
 !  ifdef buildtest
 !    ifdef __OS2__
-!      define dll_wcc_axp $(src_dir)\cc\axp\os2axp.dll\wccdaxp.dll
+!      define dll_wcc_axp $(src_dir)\cc\axp\os2axp.dll\$(%OWOBJDIR)\wccdaxp.dll
 !    else ifdef __NTAXP__
-!      define dll_wcc_axp $(src_dir)\cc\axp\ntaxp.dll\wccdaxp.dll
+!      define dll_wcc_axp $(src_dir)\cc\axp\ntaxp.dll\$(%OWOBJDIR)\wccdaxp.dll
 !    endif
 !  else ifdef %CTEST_DLL_AXP
 !    define dll_wcc_axp $+$(%CTEST_DLL_AXP)$-
