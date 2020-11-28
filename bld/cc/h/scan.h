@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,10 +44,6 @@ typedef enum charset_flags {
     C_WS = 0x40,    /* white space                    */
     C_DB = 0x80     /* first byte of double-byte char */
 } charset_flags;
-
-#define EQ      0x80    /* delimiter can have = following */
-#define DUP     0x40    /* delimiter can be duplicated    */
-#define C_MASK  0x3F
 
 /*
     After we know a character is a C_HX, we can extract the value

@@ -40,7 +40,7 @@
 #include "cmacsupp.h"
 
 
-extern  unsigned char   TokValue[];
+extern const unsigned char  TokValue[];
 
 enum scan_class {
     #define pick(e,p) e,
@@ -976,6 +976,96 @@ static TOKEN ScanQuestionMark( void )
     return( T_QUESTION );
 }
 
+static bool checkTokEqual( TOKEN *token )
+{
+    switch( *token ) {
+    case T_EQUAL:
+        *token = T_EQ;
+        break;
+    case T_EXCLAMATION:
+        *token = T_NE;
+        break;
+    case T_LT:
+        *token = T_LE;
+        break;
+    case T_GT:
+        *token = T_GE;
+        break;
+    case T_PERCENT:
+        *token = T_PERCENT_EQUAL;
+        break;
+    case T_AND:
+        *token = T_AND_EQUAL;
+        break;
+    case T_TIMES:
+        *token = T_TIMES_EQUAL;
+        break;
+    case T_PLUS:
+        *token = T_PLUS_EQUAL;
+        break;
+    case T_MINUS:
+        *token = T_MINUS_EQUAL;
+        break;
+    case T_DIV:
+        *token = T_DIV_EQUAL;
+        break;
+    case T_XOR:
+        *token = T_XOR_EQUAL;
+        break;
+    case T_OR:
+        *token = T_OR_EQUAL;
+        break;
+    default:
+        return( false );
+    }
+    return( true );
+}
+
+static bool checkTokTok( TOKEN *token )
+{
+    switch( *token ) {
+    case T_SHARP:
+        *token = T_SHARP_SHARP;
+        break;
+    case T_AND:
+        *token = T_AND_AND;
+        break;
+    case T_PLUS:
+        *token = T_PLUS_PLUS;
+        break;
+    case T_MINUS:
+        *token = T_MINUS_MINUS;
+        break;
+    case T_OR:
+        *token = T_OR_OR;
+        break;
+    case T_LT:
+        *token = T_LSHIFT;
+        break;
+    case T_GT:
+        *token = T_RSHIFT;
+        break;
+    default:
+        return( false );
+    }
+    return( true );
+}
+
+static bool checkTokTokEqual( TOKEN *token )
+{
+    switch( *token ) {
+    case T_LSHIFT:
+        *token = T_LSHIFT_EQUAL;
+        break;
+    case T_RSHIFT:
+        *token = T_RSHIFT_EQUAL;
+        break;
+    default:
+        return( false );
+    }
+    return( true );
+}
+
 static TOKEN ScanSlash( void )
 {
     int         c;
@@ -1117,46 +1207,38 @@ static TOKEN ScanColon( void )
 static TOKEN ScanDelim2( void )
 {
     int             c;
-    int             chr2;
-    TOKEN           tok;
-    unsigned char   chrclass;
+    TOKEN           token;
+    size_t          len;
 
     c = CurrChar;
+    token = TokValue[c];
     Buffer[0] = c;
-    Buffer[1] = '\0';
-    chrclass = TokValue[c];
-    tok = chrclass & C_MASK;
-    chr2 = NextChar();          // can't inline this copy of NextChar
-    if( chr2 == '=' ) {         /* if second char is an = */
-        if( chrclass & EQ ) {   /* and = is valid second char */
-            ++tok;
+    len = 1;
+    NextChar();                         /* can't inline this copy of NextChar */
+    if( CurrChar == '=' ) {             /* if second char is an = */
+        if( checkTokEqual( &token ) ) { /* and = is valid second char */
+            Buffer[len++] = '=';
             NextChar();
-            Buffer[1] = '=';
-            Buffer[2] = '\0';
         }
-    } else if( chr2 == c ) {    /* if second char is same as first */
-        if( chrclass & DUP ) {  /* and duplicate is valid */
-            tok += 2;
-            Buffer[1] = c;
-            Buffer[2] = '\0';
+    } else if( CurrChar == c ) {        /* if second char is same as first */
+        if( checkTokTok( &token ) ) {   /* and duplicate is valid */
+            Buffer[len++] = c;
             if( NextChar() == '=' ) {
-                if( tok == T_LSHIFT || tok == T_RSHIFT ) {
-                    ++tok;
+                if( checkTokTokEqual( &token ) ) {
+                    Buffer[len++] = '=';
                     NextChar();
-                    Buffer[2] = '=';
-                    Buffer[3] = '\0';
                 }
             }
         }
 #if _CPU == 370
-    } else if( c == '(' && chr2 == ':' ) {
-        tok = T_LEFT_BRACKET;
+    } else if( c == '(' && CurrChar == ':' ) {
+        token == T_LEFT_BRACKET;
+        Buffer[len++] = ':';
         NextChar();
-        Buffer[1] = ':';
-        Buffer[2] = '\0';
 #endif
     }
-    return( tok );
+    Buffer[len] = '\0';
+    return( token );
 }
 
 static void ScanComment( void )
