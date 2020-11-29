@@ -53,6 +53,7 @@ static void    CElse( void );
 static void    CEndif( void );
 static void    CUndef( void );
 static void    CLine( void );
+static void    CWarning( void );
 static void    CError( void );
 static void    CIdent( void );
 
@@ -70,23 +71,25 @@ static unsigned char PreProcWeights[] = {
   2, 0, 0,11, 1, 4, 0, 0, 5, 0, 0,12, 0, 0, 0,13, 0,14, 0, 9,15, 0, 0, 0, 0,0
 };
 
-static struct preproc PreProcTable[] = {
-    { "",       NULL,           NULL },     // 0
-    { "line",   CLine,          CSkip },    // 4 +12 + 1 = 17 mod 16 = 1
-    { "define", CDefine,        CSkip },    // 6 +11 + 1 = 18 mod 16 = 2
-    { "ident",  CIdent,         CSkip },    // 5 + 5 + 9 = 19 mod 16 = 3
-    { "error",  CError,         CSkip },    // 5 + 1 +14 = 20 mod 16 = 4
-    { "pragma", CPragma,        CSkip },    // 6 +13 + 2 = 21 mod 16 = 5
-    { "else",   CElse,          CElse },    // 4 + 1 + 1 = 6
-    { "",       NULL,           NULL },     // 7
-    { "undef",  CUndef,         CSkip },    // 5 +15 + 4 = 24 mod 16 = 8
-    { "elif",   CElif,          CElif },    // 4 + 1 + 4 = 9
-    { "endif",  CEndif,         CEndif },   // 5 + 1 + 4 = 10
-    { "if",     CIf,            CSkipIf },  // 2 + 5 + 4 = 11
-    { "",       NULL,           NULL },     // 12
-    { "include",CInclude,       CSkip },    // 7 + 5 + 1 = 13
-    { "ifdef",  CIfDef,         CSkipIf },  // 5 + 5 + 4 = 14
-    { "ifndef", CIfNDef,        CSkipIf },  // 6 + 5 + 4 = 15
+/* N_PREPROC should be a power of 2 */
+#define N_PREPROC 16
+static struct preproc PreProcTable[N_PREPROC] = {
+    { "",        NULL,     NULL },     // 0
+    { "line",    CLine,    CSkip },    // 4 +12 + 1 = 17 mod 16 = 1
+    { "define",  CDefine,  CSkip },    // 6 +11 + 1 = 18 mod 16 = 2
+    { "ident",   CIdent,   CSkip },    // 5 + 5 + 9 = 19 mod 16 = 3
+    { "error",   CError,   CSkip },    // 5 + 1 +14 = 20 mod 16 = 4
+    { "pragma",  CPragma,  CSkip },    // 6 +13 + 2 = 21 mod 16 = 5
+    { "else",    CElse,    CElse },    // 4 + 1 + 1 = 6
+    { "warning", CWarning, CSkip },    // 7
+    { "undef",   CUndef,   CSkip },    // 5 +15 + 4 = 24 mod 16 = 8
+    { "elif",    CElif,    CElif },    // 4 + 1 + 4 = 9
+    { "endif",   CEndif,   CEndif },   // 5 + 1 + 4 = 10
+    { "if",      CIf,      CSkipIf },  // 2 + 5 + 4 = 11
+    { "",        NULL,     NULL },     // 12
+    { "include", CInclude, CSkip },    // 7 + 5 + 1 = 13
+    { "ifdef",   CIfDef,   CSkipIf },  // 5 + 5 + 4 = 14
+    { "ifndef",  CIfNDef,  CSkipIf },  // 6 + 5 + 4 = 15
 };
 
 enum    pp_types {
@@ -166,14 +169,14 @@ static void CUnknown( void )
 static void PreProcStmt( void )
 {
     struct preproc      *pp;
-    unsigned            hash;
+    unsigned int         hash;
 
     NextChar();                 /* skip over '#' */
     PPNextToken();
     if( CurToken == T_ID ) {
         hash = (TokenLen + PreProcWeights[Buffer[0] - 'a']
-                 + PreProcWeights[Buffer[TokenLen - 1] - 'a']) & 15;
-        pp = &PreProcTable[hash];
+                 + PreProcWeights[Buffer[TokenLen - 1] - 'a']) & (N_PREPROC - 1);
+        pp = PreProcTable + hash;
         if( memcmp( pp->directive, Buffer, TokenLen + 1 ) == 0 ) {
             if( NestLevel == SkipLevel ) {
                 pp->samelevel();
@@ -803,12 +806,10 @@ static void CLine( void )
     PPCTL_DISABLE_MACROS();
 }
 
-
-static void CError( void )
+static void user_msg(int e)
 {
-    size_t      len;
+    size_t len = 0;
 
-    len = 0;
     while( CurrChar != '\n' && CurrChar != '\r' && CurrChar != EOF_CHAR ) {
         if( len != 0 || CurrChar != ' ' ) {
             Buffer[len++] = CurrChar;
@@ -816,10 +817,19 @@ static void CError( void )
         NextChar();
     }
     Buffer[len] = '\0';
-    /* Force #error output to be reported, even with preprocessor */
-    CErr2p( ERR_USER_ERROR_MSG, Buffer );
+    if (e) CErr2p( ERR_USER_ERROR_MSG, Buffer );
+    else CWarn2p( WARN_LEVEL_1, WARN_USER_MSG, Buffer );
 }
 
+static void CWarning( void )
+{
+	user_msg(0);
+}
+
+static void CError( void )
+{
+	user_msg(1);
+}
 
 void CppStackInit( void )
 {

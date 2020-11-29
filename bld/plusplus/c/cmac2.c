@@ -77,6 +77,7 @@ static void CEndif( void );
 static void CUnDef( void );
 static void CLine( void );
 static void CError( void );
+static void CWarning( void );
 extern void CPragma( void );
 static void CIdent( void );
 static void CUnknown( void );
@@ -91,23 +92,26 @@ static const unsigned char preprocWeights[] = {
 //a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y,z
   2, 0, 0,11, 1, 4, 0, 0, 5, 0, 0,12, 0, 0, 0,13, 0,14, 0, 9,15, 0, 0, 0, 0,0
 };
-static const PPCTRL controlTable[] = {
-    { "",       NULL,           NULL },  // 0
-    { "line",   CLine,          CSkip }, // 4 +12 + 1 = 17 mod 16 = 1
-    { "define", CDefine,        CSkip }, // 6 +11 + 1 = 18 mod 16 = 2
-    { "ident",  CIdent,         CSkip }, // 5 + 5 + 9 = 19 mod 16 = 3
-    { "error",  CError,         CSkip }, // 5 + 1 +14 = 20 mod 16 = 4
-    { "pragma", CPragma,        CSkip }, // 6 +13 + 2 = 21 mod 16 = 5
-    { "else",   CElse,          CElse }, // 4 + 1 + 1 = 6
-    { "",       NULL,           NULL },  // 7
-    { "undef",  CUnDef,         CSkip }, // 5 +15 + 4 = 24 mod 16 = 8
-    { "elif",   CElif,          CElif }, // 4 + 1 + 4 = 9
-    { "endif",  CEndif,         CEndif },// 5 + 1 + 4 = 10
-    { "if",     CIf,            CSkipIf },//2 + 5 + 4 = 11
-    { "",       NULL,           NULL },  // 12
-    { "include",CInclude,       CSkip }, // 7 + 5 + 1 = 13
-    { "ifdef",  CIfDef,         CSkipIf },//5 + 5 + 4 = 14
-    { "ifndef", CIfNDef,        CSkipIf },//6 + 5 + 4 = 15
+
+/* N_CONTROL should be a power of 2 */
+#define N_CONTROL 16
+static const PPCTRL controlTable[N_CONTROL] = {
+    { "",        NULL,     NULL    }, // 0
+    { "line",    CLine,    CSkip   }, // 4 +12 + 1 = 17 mod 16 = 1
+    { "define",  CDefine,  CSkip   }, // 6 +11 + 1 = 18 mod 16 = 2
+    { "ident",   CIdent,   CSkip   }, // 5 + 5 + 9 = 19 mod 16 = 3
+    { "error",   CError,   CSkip   }, // 5 + 1 +14 = 20 mod 16 = 4
+    { "pragma",  CPragma,  CSkip   }, // 6 +13 + 2 = 21 mod 16 = 5
+    { "else",    CElse,    CElse   }, // 4 + 1 + 1 = 6
+    { "warning", CWarning, CSkip   }, // 7
+    { "undef",   CUnDef,   CSkip   }, // 5 +15 + 4 = 24 mod 16 = 8
+    { "elif",    CElif,    CElif   }, // 4 + 1 + 4 = 9
+    { "endif",   CEndif,   CEndif  }, // 5 + 1 + 4 = 10
+    { "if",      CIf,      CSkipIf }, //2 + 5 + 4 = 11
+    { "",        NULL,     NULL    }, // 12
+    { "include", CInclude, CSkip   }, // 7 + 5 + 1 = 13
+    { "ifdef",   CIfDef,   CSkipIf }, //5 + 5 + 4 = 14
+    { "ifndef",  CIfNDef,  CSkipIf }, //6 + 5 + 4 = 15
 };
 
 enum pp_stack_states {
@@ -672,25 +676,33 @@ static void CLine( void )
     PPCTL_DISABLE_MACROS();
 }
 
-static void CError( void )
+static void user_msg(MSG_NUM id)
 {
-    int i;
     bool save;
+    size_t len = 0;
 
-    i = 0;
     while( CurrChar != '\n' && CurrChar != '\r' && CurrChar != LCHR_EOF ) {
-        if( i != 0 || CurrChar != ' ' ) {
-            Buffer[i] = CurrChar;
-            ++i;
+        if( len != 0 || CurrChar != ' ' ) {
+            Buffer[len++] = CurrChar;
         }
         NextChar();
     }
-    Buffer[i] = '\0';
-    /* Force #error output to be reported, even with preprocessor */
+    Buffer[len] = '\0';
+
     save = CompFlags.cpp_output;
     CompFlags.cpp_output = false;
-    CErr2p( ERR_USER_ERROR_MSG, Buffer );
+    CErr2p( id, Buffer );
     CompFlags.cpp_output = save;
+}
+
+static void CWarning( void )
+{
+	user_msg(WARN_USER_MSG);
+}
+
+static void CError( void )
+{
+	user_msg(ERR_USER_ERROR_MSG);
 }
 
 static void CIdent( void )
@@ -709,8 +721,8 @@ static void preProcStmt( void )
     NextToken();
     if( CurToken == T_ID ) {
         hash = (TokenLen + preprocWeights[Buffer[0] - 'a']
-                 + preprocWeights[Buffer[TokenLen - 1] - 'a']) & 15;
-        pp = &controlTable[hash];
+                 + preprocWeights[Buffer[TokenLen - 1] - 'a']) & (N_CONTROL - 1);
+        pp = controlTable + hash;
         if( strcmp( pp->directive, Buffer ) == 0 ) {
             if( NestLevel == SkipLevel ) {
                 pp->samelevel();
