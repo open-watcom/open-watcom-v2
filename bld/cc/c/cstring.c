@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -193,10 +194,10 @@ STR_HANDLE GetLiteral( void )
             q->next_string = p;
         }
         q = p;
-        p->length = TokenLen + 1;
         p->next_string = NULL;
-        p->literal = Buffer;
-        Buffer = CMemAlloc( BufSize );
+        p->length = TokenLen + 1;
+        p->literal = CMemAlloc( TokenLen + 1 );
+        memcpy( p->literal, Buffer, TokenLen + 1 );
     } while( NextToken() == T_STRING );
     CompFlags.wide_char_string = is_wide;
     /* then remove escapes (C99: translation phase 5), and only then
