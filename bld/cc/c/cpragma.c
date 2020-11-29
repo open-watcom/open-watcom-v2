@@ -1595,7 +1595,7 @@ void CPragma( void )
         pragIncludeAlias();
     } else if( CompFlags.cpp_mode ) {
         if( CompFlags.cpp_output ) {
-            CppPrtf( "#pragma " );
+            CppPuts( "#pragma " );
         }
         if( CurToken != T_NULL ) {
             CppPrtToken();

@@ -432,20 +432,20 @@ void CppComment( int ch )
     }
 }
 
-void CppPrtf( char *fmt, ... )
+void CppPuts( const char *s )
 {
-    va_list     arg;
-    char        *p;
-    char        *buff;
-
-    buff = CMemAlloc( BufSize );
-    va_start( arg, fmt );
-    vsnprintf( buff, BufSize, fmt, arg );
-    for( p = buff; *p != '\0'; ++p ) {
-        CppPutc( *p );
+    while( *s != '\0' ) {
+        CppPutc( *s++ );
     }
-    va_end( arg );
-    CMemFree( buff );
+}
+
+void CppPutsQuoted( const char *s )
+{
+    CppPutc( '"' );
+    while( *s != '\0' ) {
+        CppPutc( *s++ );
+    }
+    CppPutc( '"' );
 }
 
 static void OpenCppFile( void )
@@ -1256,13 +1256,12 @@ bool OpenSrcFile( const char *filename, src_file_type typ )
 
 void CppEmitPoundLine( unsigned line_num, const char *filename, bool newline )
 {
+    char    buf[30];
+
     if( CompFlags.cpp_line_wanted && CppPrinting() && CompFlags.cpp_output ) {
-        CppPrtf( "#line %u \"", line_num );
-        while( *filename != '\0' ) {
-            CppPutc( *filename );
-            ++filename;
-        }
-        CppPutc( '\"' );
+        sprintf( buf, "#line %u ", line_num );
+        CppPuts( buf );
+        CppPutsQuoted( filename );
         if( newline ) {
             CppPutc( '\n' );
         }
@@ -1282,25 +1281,25 @@ void CppPrtToken( void )
         case T_BAD_TOKEN:
         case T_ID:
         case T_CONSTANT:
-            CppPrtf( "%s", Buffer );
+            CppPuts( Buffer );
             break;
         case T_STRING:
             if( CompFlags.wide_char_string )
                 CppPutc( 'L' );
-            CppPrtf( "\"%s\"", Buffer );
+            CppPutsQuoted( Buffer );
             break;
         case T_EOF:
         case T_NULL:
             break;
         case T_WHITE_SPACE:
             if( PrintWhiteSpace || CompFlags.in_pragma ) {
-                CppPrtf( "%s", Tokens[CurToken] );
+                CppPuts( Tokens[CurToken] );
             } else {
                 PrintWhiteSpace = true; //Toggle
             }
             break;
         default:
-            CppPrtf( "%s", Tokens[CurToken] );
+            CppPuts( Tokens[CurToken] );
         }
     }
 }
