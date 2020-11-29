@@ -1308,9 +1308,8 @@ void CppPrtToken( void )
 
 void GetNextToken( void )
 {
-    CurToken = T_NULL;
     if( MacroPtr != NULL ) {
-        GetMacroToken();
+        CurToken = GetMacroToken();
     } else {
         while( CurrChar != EOF_CHAR ) {
             if( (CharSet[CurrChar] & C_WS) == 0 )

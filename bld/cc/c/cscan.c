@@ -290,8 +290,7 @@ static TOKEN doScanName( void )
             }
         }
         DoMacroExpansion( mentry );             /* start macro expansion */
-        GetMacroToken();
-        token = CurToken;
+        token = GetMacroToken();
 #if 0
         if( MacroPtr != NULL ) {
             SavedCurrChar = CurrChar;
@@ -1693,7 +1692,7 @@ static TOKEN ScanInvalid( void )
 
 static TOKEN ScanMacroToken( void )
 {
-    GetMacroToken();
+    CurToken = GetMacroToken();
     if( CurToken == T_NULL ) {
         if( CompFlags.cpp_mode ) {
             CppPrtChar( ' ' );
@@ -1726,12 +1725,13 @@ TOKEN ScanToken( void )
 TOKEN NextToken( void )
 {
     do {
-        CurToken = T_NULL;
-        if( MacroPtr != NULL ) {
-            GetMacroToken();
-        }
-        if( CurToken == T_NULL ) {
+        if( MacroPtr == NULL ) {
             CurToken = ScanToken();
+        } else {
+            CurToken = GetMacroToken();
+            if( CurToken == T_NULL ) {
+                CurToken = ScanToken();
+            }
         }
     } while( CurToken == T_WHITE_SPACE );
 #ifdef FDEBUG
@@ -1743,28 +1743,29 @@ TOKEN NextToken( void )
 TOKEN PPNextToken( void )                     // called from macro pre-processor
 {
     do {
-        if( MacroPtr != NULL ) {
-            GetMacroToken();
+        if( MacroPtr == NULL ) {
+            CurToken = ScanToken();
+        } else {
+            CurToken = GetMacroToken();
             if( CurToken == T_NULL ) {
                 if( CompFlags.cpp_mode ) {
                     CppPrtChar( ' ' );
                 }
                 CurToken = ScanToken();
             }
-        } else {
-            CurToken = ScanToken();
         }
     } while( CurToken == T_WHITE_SPACE );
     return( CurToken );
 }
 
-bool ReScanToken( void )
+TOKEN ReScanToken( void )
 {
     FCB             *oldSrcFile;
     int             saved_currchar;
     int             (*saved_nextchar)( void );
     void            (*saved_ungetchar)( int );
     int             (*saved_getcharcheck)( int );
+    TOKEN           token;
 
     /* save current status */
     saved_currchar = CurrChar;
@@ -1781,10 +1782,10 @@ bool ReScanToken( void )
 
     CurrChar = NextChar();
     CompFlags.doing_macro_expansion = true;     // return macros as ID's
-    CurToken = ScanToken();
+    token = ScanToken();
     CompFlags.doing_macro_expansion = false;
-    if( CurToken == T_STRING && CompFlags.wide_char_string ) {
-        CurToken = T_LSTRING;
+    if( token == T_STRING && CompFlags.wide_char_string ) {
+        token = T_LSTRING;
     }
     SrcFile->src_ptr--;
 
@@ -1794,7 +1795,7 @@ bool ReScanToken( void )
     UnGetChar = saved_ungetchar;
     GetCharCheck = saved_getcharcheck;
 
-    return( !CompFlags.rescan_buffer_done );
+    return( token );
 }
 
 void ScanInit( void )

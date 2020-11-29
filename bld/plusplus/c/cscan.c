@@ -146,13 +146,14 @@ static int rescanBuffer( void )
     return( CurrChar );
 }
 
-bool ReScanToken( void )
-/**********************/
+TOKEN ReScanToken( void )
+/***********************/
 {
     int saved_currchar;
     int (*saved_nextchar)(void);
     LINE_NO saved_line;
     COLUMN_NO saved_column;
+    TOKEN token;
 
     saved_line = TokenLine;
     saved_column = TokenColumn;
@@ -161,13 +162,13 @@ bool ReScanToken( void )
     CompFlags.rescan_buffer_done = false;
     NextChar = rescanBuffer;
     NextChar();
-    CurToken = ScanToken( true );
+    token = ScanToken( true );
     --ReScanPtr;
     CurrChar = saved_currchar;
     NextChar = saved_nextchar;
     TokenLine = saved_line;
     TokenColumn = saved_column;
-    return( CompFlags.rescan_buffer_done );
+    return( token );
 }
 
 token_source_fn *SetTokenSource( token_source_fn *source )
@@ -780,6 +781,7 @@ static TOKEN doScanString( type_id string_type, bool expanding )
 static TOKEN doScanName( int c, bool expanding )
 {
     MEPTR   mentry;
+    TOKEN   token;
 
     SrcFileScanName( c );
     if( expanding || (PPControl & PPCTL_NO_EXPAND) ) {
@@ -789,9 +791,9 @@ static TOKEN doScanName( int c, bool expanding )
     mentry = MacroLookup( Buffer, TokenLen );
     if( mentry == NULL ) {
         if( IS_PPOPERATOR_PRAGMA( Buffer, TokenLen ) ) {
-            CurToken = Process_Pragma( false );
+            token = Process_Pragma( false );
         } else {
-            CurToken = KwLookup( TokenLen );
+            token = KwLookup( TokenLen );
         }
     } else {
         prt_char( ' ' );
@@ -807,25 +809,25 @@ static TOKEN doScanName( int c, bool expanding )
                 if( CompFlags.cpp_output ) {
                     Buffer[TokenLen++] = ' ';
                     Buffer[TokenLen] = '\0';
-                    CurToken = T_ID;
+                    token = T_ID;
                 } else {
                     if( IS_PPOPERATOR_PRAGMA( Buffer, TokenLen ) ) {
-                        CurToken = Process_Pragma( false );
+                        token = Process_Pragma( false );
                     } else {
-                        CurToken = KwLookup( TokenLen );
+                        token = KwLookup( TokenLen );
                     }
                 }
-                return( CurToken );
+                return( token );
             }
         }
         DoMacroExpansion( mentry );
         DbgAssert( _BufferOverrun == BUFFER_OVERRUN_CHECK );
-        GetMacroToken( false );
-        if( CurToken == T_NULL ) {
-            CurToken = T_WHITE_SPACE;
+        token = GetMacroToken( false );
+        if( token == T_NULL ) {
+            token = T_WHITE_SPACE;
         }
     }
-    return( CurToken );
+    return( token );
 }
 
 static TOKEN scanName( bool expanding )
@@ -1695,9 +1697,8 @@ TOKEN ScanToken( bool expanding )
 static void nextMacroToken( void )
 {
     do {
-        CurToken = T_NULL;
         if( CompFlags.use_macro_tokens ) {
-            GetMacroToken( false );
+            CurToken = GetMacroToken( false );
             if( CurToken == T_NULL ) {
                 CurToken = dispatchFunc( false );
             }
@@ -1791,8 +1792,7 @@ void GetNextToken( void )       // used ONLY if generating pre-processed output
 /***********************/
 {
     if( CompFlags.use_macro_tokens ) {
-        CurToken = T_NULL;
-        GetMacroToken( false );
+        CurToken = GetMacroToken( false );
         if( CurToken == T_NULL ) {
             // prevents macro expansion from merging with trailing text
             // to form new tokens in pre-processed output

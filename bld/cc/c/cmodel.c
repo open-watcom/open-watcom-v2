@@ -89,6 +89,8 @@ static char *Def_Macro_Tokens( const char *str, bool multiple_tokens, macro_flag
 {
     size_t      mlen;
     MEPTR       mentry;
+    bool        ppscan_mode;
+    TOKEN       token;
 
     mlen = get_namelen( str );
     if( mlen == 0 ) {
@@ -104,20 +106,18 @@ static char *Def_Macro_Tokens( const char *str, bool multiple_tokens, macro_flag
         MacroSegmentAddChar( &mlen, '1' );
         MacroSegmentAddChar( &mlen, '\0' );
     } else {
-        bool ppscan_mode;
-
         ppscan_mode = InitPPScan();
         ReScanInit( ++str );
         for( ; *str != '\0'; ) {
-            ReScanToken();
+            token = ReScanToken();
             if( ReScanPos() == str )
                 break;
-            if( CurToken == T_WHITE_SPACE )
+            if( token == T_WHITE_SPACE )
                 break;
-            if( CurToken == T_BAD_CHAR && !multiple_tokens )
+            if( token == T_BAD_CHAR && !multiple_tokens )
                 break;
-            MacroSegmentAddToken( &mlen, CurToken );
-            switch( CurToken ) {
+            MacroSegmentAddToken( &mlen, token );
+            switch( token ) {
             case T_BAD_CHAR:
                 MacroSegmentAddChar( &mlen, Buffer[0] );
                 break;

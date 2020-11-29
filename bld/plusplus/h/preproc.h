@@ -245,7 +245,7 @@ const char *TokenString(        // RETURN A PRINTABLE STRING FOR CURRENT TOK
 bool ExpectingToken(            // ISSUE EXPECTING ERROR FOR A TOKEN
     TOKEN token )               // - required token
 ;
-void GetMacroToken(             // GET NEXT TOKEN
+TOKEN GetMacroToken(            // GET NEXT TOKEN
     bool doing_macro_expansion )// - true ==> doing an expansion
 ;
 int GetNextChar(                // GET NEXT CHARACTER FROM A SOURCE FILE
@@ -318,7 +318,7 @@ void PrtToken(                  // PRINT PREPROC TOKEN IF REQ'D
 void ReScanInit(                // RE-SCAN TOKEN INITIALIZATION
     const char *buf )
 ;
-bool ReScanToken(               // RE-SCAN TOKEN FROM BUFFER
+TOKEN ReScanToken(              // RE-SCAN TOKEN FROM BUFFER
     void )
 ;
 bool ScanOptionalComment(       // SCAN AN OPTIONAL COMMENT

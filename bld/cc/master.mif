@@ -117,7 +117,7 @@ prebuild_objs = &
     keywords.gh &
     $(asminline_deps) &
     code$(target_cpu).gh &
-    $(intname)01.int
+    $(bin_intname)01.int
 
 !ifndef bootstrap
 all: $(bin_subdir) $(exetarg_name).exe .symbolic
@@ -207,7 +207,7 @@ msgtxt.gh msgdefs.gh msgattr.gh errors01.int : ../../gml/cerrs.gml
     @%make echo_bldcl
     $(bld_cl) $[@ -I"$(fe_misc_dir)/h" $(bld_clflags) $(bld_ldflags)
 
-$(intname)01.int : ./intlbin.exe errors01.int usage01.int
+$(bin_intname)01.int : ./intlbin.exe errors01.int usage01.int
     $[@ $@
 
 key_objs = ../../h/c.key ../../h/pc.key ../../h/seh.key
