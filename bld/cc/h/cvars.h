@@ -420,7 +420,7 @@ extern void         CppPuts(const char *);
 extern void         CppPutsQuoted(const char *);
 extern void         SetCppWidth(unsigned);
 extern void         CppPrtChar(int);
-extern void         CppPrtToken(void);
+extern void         CppPrtToken(TOKEN);
 extern bool         OpenSrcFile(const char *, src_file_type);
 extern void         CloseSrcFile(FCB *);
 extern void         OpenDefFile(void);
@@ -447,7 +447,7 @@ extern bool         SrcFileInRDir( FNAMEPTR flist );
 extern void         SrcFileIncludeAlias( const char *alias_name, const char *real_name, bool is_lib );
 extern int          SrcFileTime(char const *,time_t *);
 extern void         SetSrcFNameOnce( void );
-extern void         GetNextToken(void);
+extern TOKEN        GetNextToken(void);
 extern void         CppEmitPoundLine(unsigned,const char *,bool);
 
 extern void         AddIncFile( INCFILE * );

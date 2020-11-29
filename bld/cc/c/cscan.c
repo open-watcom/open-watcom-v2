@@ -350,6 +350,7 @@ static TOKEN ScanDotSomething( int c )
 static TOKEN doScanFloat( bool hex )
 {
     int         c;
+    TOKEN       token;
 
     BadTokenInfo = 0;
     c = CurrChar;
@@ -367,7 +368,7 @@ static TOKEN doScanFloat( bool hex )
             return( ScanDotSomething( c ) );
         }
     }
-    CurToken = T_CONSTANT;
+    token = T_CONSTANT;
     if( c == 'e' || c == 'E' ||
        ( hex && CompFlags.c99_extensions && ( c == 'p' || c == 'P' ) ) ) {
         c = SaveNextChar();
@@ -375,7 +376,7 @@ static TOKEN doScanFloat( bool hex )
             c = SaveNextChar();
         }
         if( c < '0' || c > '9' ) {
-            CurToken = T_BAD_TOKEN;
+            token = T_BAD_TOKEN;
             BadTokenInfo = ERR_INVALID_FLOATING_POINT_CONSTANT;
         }
         while( c >= '0' && c <= '9' ) {
@@ -397,7 +398,7 @@ static TOKEN doScanFloat( bool hex )
         ConstType = TYPE_DOUBLE;
     }
     Buffer[TokenLen] = '\0';
-    return( CurToken );
+    return( token );
 }
 
 static void doScanAsmToken( void )
@@ -432,8 +433,7 @@ static TOKEN doScanAsm( void )
         Buffer[TokenLen++] = CurrChar;
         doScanAsmToken();
     } while( CurrChar == '.' );
-    CurToken = T_ID;
-    return( CurToken );
+    return( T_ID );
 }
 
 static TOKEN ScanDot( void )
@@ -1692,15 +1692,17 @@ static TOKEN ScanInvalid( void )
 
 static TOKEN ScanMacroToken( void )
 {
-    CurToken = GetMacroToken();
-    if( CurToken == T_NULL ) {
+    TOKEN   token;
+
+    token = GetMacroToken();
+    if( token == T_NULL ) {
         if( CompFlags.cpp_mode ) {
             CppPrtChar( ' ' );
         }
         CurrChar = SavedCurrChar;
-        CurToken = ScanToken();
+        token = ScanToken();
     }
-    return( CurToken );
+    return( token );
 }
 
 static TOKEN ScanEof( void )

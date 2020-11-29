@@ -1598,10 +1598,10 @@ void CPragma( void )
             CppPuts( "#pragma " );
         }
         if( CurToken != T_NULL ) {
-            CppPrtToken();
+            CppPrtToken( CurToken );
             PPCTL_ENABLE_MACROS();
-            for( GetNextToken(); CurToken != T_NULL && CurToken != T_PRAGMA_END; GetNextToken() ) {
-                CppPrtToken();
+            for( CurToken = GetNextToken(); CurToken != T_NULL && CurToken != T_PRAGMA_END; CurToken = GetNextToken() ) {
+                CppPrtToken( CurToken );
             }
             PPCTL_DISABLE_MACROS();
         }

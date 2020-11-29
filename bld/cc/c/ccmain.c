@@ -974,8 +974,8 @@ static void CPP_Parse( void )
     }
     CurToken = T_NULL;
     while( CurToken != T_EOF ) {
-        GetNextToken();
-        CppPrtToken();
+        CurToken = GetNextToken();
+        CppPrtToken( CurToken );
     }
     MacroFini();
 }
@@ -1018,7 +1018,7 @@ static void DoCCompile( char **cmdline )
                 if( openForcePreInclude() ) {
                     CurToken = T_NULL;
                     while( CurToken != T_EOF ) {
-                        GetNextToken();
+                        CurToken = GetNextToken();
                     }
                 }
                 CompFlags.cpp_output = true;
@@ -1273,10 +1273,10 @@ bool CppPrinting( void )
     return( NestLevel == SkipLevel );
 }
 
-void CppPrtToken( void )
+void CppPrtToken( TOKEN token )
 {
     if( CppPrinting() && CompFlags.cpp_output ) {
-        switch( CurToken ) {
+        switch( token ) {
         case T_BAD_CHAR:
         case T_BAD_TOKEN:
         case T_ID:
@@ -1293,22 +1293,24 @@ void CppPrtToken( void )
             break;
         case T_WHITE_SPACE:
             if( PrintWhiteSpace || CompFlags.in_pragma ) {
-                CppPuts( Tokens[CurToken] );
+                CppPuts( Tokens[token] );
             } else {
                 PrintWhiteSpace = true; //Toggle
             }
             break;
         default:
-            CppPuts( Tokens[CurToken] );
+            CppPuts( Tokens[token] );
         }
     }
 }
 
 
-void GetNextToken( void )
+TOKEN GetNextToken( void )
 {
+    TOKEN   token;
+
     if( MacroPtr != NULL ) {
-        CurToken = GetMacroToken();
+        token = GetMacroToken();
     } else {
         while( CurrChar != EOF_CHAR ) {
             if( (CharSet[CurrChar] & C_WS) == 0 )
@@ -1317,8 +1319,9 @@ void GetNextToken( void )
                 CppPrtChar( CurrChar );
             NextChar();
         }
-        CurToken = ScanToken();
+        token = ScanToken();
     }
+    return( token );
 }
 
 void CloseFiles( void )
