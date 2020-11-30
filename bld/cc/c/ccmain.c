@@ -106,9 +106,8 @@ static void ClearGlobals( void )
     DepFile = NULL;
     IncPathList = CMemAlloc( 1 );
     SegmentNum = FIRST_PRIVATE_SEGMENT;
-    BufSize = BUF_SIZE;
-    Buffer = CMemAlloc( BufSize );
-    TokenBuf = CMemAlloc( BufSize );
+    InitBuffer( BUF_SIZE );
+    InitTokenBuf( BUF_SIZE );
     FNameBuf = CMemAlloc( _MAX_PATH );
     InitIncFile();
     InitErrLoc();

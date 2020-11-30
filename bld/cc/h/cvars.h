@@ -191,7 +191,6 @@ global TYPEPTR      BaseTypes[TYPE_LAST_ENTRY];
 global unsigned     CTypeCounts[TYPE_LAST_ENTRY];
 
 #define BUF_SIZE    512
-global size_t       BufSize;
 global char         *Buffer;
 global char         *TokenBuf;
 
@@ -622,7 +621,7 @@ extern void         ConBlip( void );
 extern void         MyExit( int ret );
 
 /* cmac1.c */
-extern void         EnlargeBuffer(size_t);
+extern void         InitTokenBuf( size_t );
 extern void         MacroInit(void);
 extern void         MacroAddComp(void);
 extern void         MacroFini(void);
@@ -748,6 +747,7 @@ extern void         InitPurge(void);
 extern void         PurgeMemory(void);
 
 /* cscan */
+extern void         InitBuffer( size_t );
 extern void         ScanInit( void );
 extern bool         InitPPScan( void );
 extern void         FiniPPScan( bool );

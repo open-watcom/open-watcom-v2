@@ -77,6 +77,7 @@ extern void         DumpMTokens( MACRO_TOKEN *mtok );
 static NESTED_MACRO *NestedMacros;
 static MACRO_TOKEN  *TokenList;
 static size_t       MTokenLen;              /* macro token length */
+static size_t       TokenBufSize;
 
 static MACRO_TOKEN  *ExpandNestedMacros( MACRO_TOKEN *head, bool rescanning );
 
@@ -85,6 +86,23 @@ static struct special_macro_names  SpcMacros[] = {
     #include "specmac.h"
     #undef pick
 };
+
+void InitTokenBuf( size_t size )
+{
+    TokenBuf = CMemAlloc( size );
+    TokenBufSize = size;
+}
+
+static void EnlargeTokenBuf( size_t size )
+{
+    char       *newBuffer;
+
+    newBuffer = CMemAlloc( size );
+    memcpy( newBuffer, TokenBuf, TokenBufSize );
+    CMemFree( (void *)TokenBuf );
+    TokenBuf = newBuffer;
+    TokenBufSize = size;
+}
 
 static void SpecialMacroAdd( special_macro_names *mac )
 {
@@ -393,21 +411,6 @@ static TOKEN NextMToken( void )
     return( token );
 }
 
-void EnlargeBuffer( size_t size )
-{
-    char       *newBuffer;
-
-    newBuffer = CMemAlloc( size );
-    memcpy( newBuffer, Buffer, BufSize );
-    CMemFree( (void *)Buffer );
-    Buffer = newBuffer;
-    newBuffer = CMemAlloc( size );
-    memcpy( newBuffer, TokenBuf, BufSize );
-    CMemFree( TokenBuf );
-    TokenBuf = newBuffer;
-    BufSize = size;
-}
-
 static void SaveParm( MEPTR mentry, size_t size, mac_parm_count parmno,
                      MACRO_ARG *macro_parms, tokens *token_list )
 {
@@ -515,8 +518,8 @@ static MACRO_ARG *CollectParms( MEPTR mentry )
             default:
                 break;
             }
-            if( MTokenLen + len >= BufSize ) { /* if not enough space */
-                EnlargeBuffer( ( MTokenLen + len ) * 2 );
+            if( MTokenLen + len >= TokenBufSize ) { /* if not enough space */
+                EnlargeTokenBuf( ( MTokenLen + len ) * 2 );
             }
             MTOK( TokenBuf + MTokenLen ) = token;
             MTOKINC( MTokenLen );

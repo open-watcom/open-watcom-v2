@@ -48,9 +48,10 @@ enum scan_class {
     #undef pick
 };
 
-static  FCB             rescan_tmp_file;
-static  int             SavedCurrChar;          // used when get tokens from macro
-static  unsigned char   ClassTable[260];
+static FCB              rescan_tmp_file;
+static int              SavedCurrChar;          // used when get tokens from macro
+static unsigned char    ClassTable[260];
+static size_t           BufferSize;
 
 static unsigned char InitClassTable[] = {
     '\r',       SCAN_CR,
@@ -92,6 +93,23 @@ static unsigned char InitClassTable[] = {
 };
 
 
+void InitBuffer( size_t size )
+{
+    Buffer = CMemAlloc( size );
+    BufferSize = size;
+}
+
+static void EnlargeBuffer( size_t size )
+{
+    char       *newBuffer;
+
+    newBuffer = CMemAlloc( size );
+    memcpy( newBuffer, Buffer, BufferSize );
+    CMemFree( (void *)Buffer );
+    Buffer = newBuffer;
+    BufferSize = size;
+}
+
 void ReScanInit( const char *ptr )
 {
     rescan_tmp_file.src_ptr = (const unsigned char *)ptr;
@@ -132,7 +150,7 @@ static int SaveNextChar( void )
     int         c;
 
     c = NextChar();
-    if( TokenLen >= BufSize - 2 )
+    if( TokenLen >= BufferSize - 2 )
         EnlargeBuffer( TokenLen * 2 );
     Buffer[TokenLen++] = c;
     return( c );
@@ -235,8 +253,8 @@ static TOKEN doScanName( void )
         for( ; (CharSet[c] & (C_AL | C_DI)); ) {
             Buffer[TokenLen++] = c;
             c = *SrcFile->src_ptr++;
-            if( TokenLen >= BufSize - 16 ) {
-                EnlargeBuffer( BufSize * 2 );
+            if( TokenLen >= BufferSize - 16 ) {
+                EnlargeBuffer( BufferSize * 2 );
             }
         }
         if( (CharSet[c] & C_EX) == 0 )
@@ -244,8 +262,8 @@ static TOKEN doScanName( void )
         c = GetCharCheck( c );
     } while( (CharSet[c] & (C_AL | C_DI)) );
     CurrChar = c;
-    if( TokenLen >= BufSize - 18 ) {
-        EnlargeBuffer( BufSize * 2 );
+    if( TokenLen >= BufferSize - 18 ) {
+        EnlargeBuffer( BufferSize * 2 );
     }
     Buffer[TokenLen] = '\0';
     CalcHash( Buffer, TokenLen );
@@ -386,8 +404,8 @@ static void doScanAsmToken( void )
         for( ; (CharSet[c] & (C_AL | C_DI)); ) {
             Buffer[TokenLen++] = c;
             c = *SrcFile->src_ptr++;
-            if( TokenLen >= BufSize - 16 ) {
-                EnlargeBuffer( BufSize * 2 );
+            if( TokenLen >= BufferSize - 16 ) {
+                EnlargeBuffer( BufferSize * 2 );
             }
         }
         if( (CharSet[c] & C_EX) == 0 )
@@ -395,8 +413,8 @@ static void doScanAsmToken( void )
         c = GetCharCheck( c );
     } while( (CharSet[c] & (C_AL | C_DI)) );
     CurrChar = c;
-    if( TokenLen >= BufSize - 18 ) {
-        EnlargeBuffer( BufSize * 2 );
+    if( TokenLen >= BufferSize - 18 ) {
+        EnlargeBuffer( BufferSize * 2 );
     }
     Buffer[TokenLen] = '\0';
 }
@@ -1457,7 +1475,7 @@ static TOKEN ScanString( void )
         }
 
         if( c == '\\' ) {
-            if( TokenLen > BufSize - 32 ) {
+            if( TokenLen > BufferSize - 32 ) {
                 EnlargeBuffer( TokenLen * 2 );
             }
             c = NextChar();
@@ -1472,7 +1490,7 @@ static TOKEN ScanString( void )
             if( CharSet[c] & C_DB ) {
                 SaveNextChar();
             }
-            if( TokenLen > BufSize - 32 ) {
+            if( TokenLen > BufferSize - 32 ) {
                 EnlargeBuffer( TokenLen * 2 );
             }
             c = NextChar();
