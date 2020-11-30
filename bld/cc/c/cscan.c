@@ -91,10 +91,6 @@ static unsigned char InitClassTable[] = {
     '\0',       0
 };
 
-static  TOKEN   ScanString( void );
-static  TOKEN   CharConst( DATA_TYPE char_type );
-static  void    ScanComment( void );
-
 
 void ReScanInit( const char *ptr )
 {
@@ -309,26 +305,6 @@ static TOKEN ScanName( void )
     Buffer[0] = CurrChar;
     TokenLen = 1;
     return( doScanName() );
-}
-
-static TOKEN ScanWide( void )        // scan something that starts with L
-{
-    int         c;
-    TOKEN       token;
-
-    Buffer[0] = 'L';
-    c = NextChar();
-    Buffer[1] = c;
-    TokenLen = 2;
-    if( c == '"' ) {                    // L"abc"
-        token = ScanString();
-        CompFlags.wide_char_string = true;
-    } else if( c == '\'' ) {            // L'a'
-        token = CharConst( TYPE_WCHAR );
-    } else {                            // regular identifier
-        token = doScanName();
-    }
-    return( token );
 }
 
 static TOKEN ScanDotSomething( int c )
@@ -1065,56 +1041,6 @@ static bool checkTokTokEqual( TOKEN *token )
     return( true );
 }
 
-static TOKEN ScanSlash( void )
-{
-    int         c;
-
-    c = NextChar();         // can't inline this copy of NextChar
-    if( c == '=' ) {        /* if second char is an = */
-        NextChar();
-        Buffer[0] = '/';
-        Buffer[1] = '=';
-        Buffer[2] = '\0';
-        return( T_DIV_EQUAL );
-    } else if( c == '/' && !CompFlags.strict_ANSI ) {   /* if C++ // style comment */
-        if( CompFlags.cpp_mode ) {
-            CppComment( '/' );
-        }
-        CompFlags.scanning_cpp_comment = true;
-        for( ;; ) {
-            c = CurrChar;
-            NextChar();
-            if( CurrChar == EOF_CHAR )
-                break;
-            if( CurrChar == '\0' )
-                break;
-            /* swallow up the next line if this one ends with \ */
-            /* some editors don't put linefeeds on end of lines */
-            if( CurrChar == '\n' || c == '\r' )
-                break;
-            if( CompFlags.cpp_mode && CompFlags.cpp_keep_comments && CurrChar != '\r' ) {
-                CppPrtChar( CurrChar );
-            }
-        }
-        if( CompFlags.cpp_mode ) {
-            CppComment( '\0' );
-        }
-        CompFlags.scanning_cpp_comment = false;
-        Buffer[0] = ' ';
-        Buffer[1] = '\0';
-        return( T_WHITE_SPACE );
-    } else if( c == '*' ) {
-        ScanComment();
-        Buffer[0] = ' ';
-        Buffer[1] = '\0';
-        return( T_WHITE_SPACE );
-    } else {
-        Buffer[0] = '/';
-        Buffer[1] = '\0';
-        return( T_DIV );
-    }
-}
-
 static TOKEN ScanDelim1( void )
 {
     TOKEN       token;
@@ -1317,6 +1243,56 @@ static void ScanComment( void )
     NextChar();
 }
 
+static TOKEN ScanSlash( void )
+{
+    int         c;
+
+    c = NextChar();         // can't inline this copy of NextChar
+    if( c == '=' ) {        /* if second char is an = */
+        NextChar();
+        Buffer[0] = '/';
+        Buffer[1] = '=';
+        Buffer[2] = '\0';
+        return( T_DIV_EQUAL );
+    } else if( c == '/' && !CompFlags.strict_ANSI ) {   /* if C++ // style comment */
+        if( CompFlags.cpp_mode ) {
+            CppComment( '/' );
+        }
+        CompFlags.scanning_cpp_comment = true;
+        for( ;; ) {
+            c = CurrChar;
+            NextChar();
+            if( CurrChar == EOF_CHAR )
+                break;
+            if( CurrChar == '\0' )
+                break;
+            /* swallow up the next line if this one ends with \ */
+            /* some editors don't put linefeeds on end of lines */
+            if( CurrChar == '\n' || c == '\r' )
+                break;
+            if( CompFlags.cpp_mode && CompFlags.cpp_keep_comments && CurrChar != '\r' ) {
+                CppPrtChar( CurrChar );
+            }
+        }
+        if( CompFlags.cpp_mode ) {
+            CppComment( '\0' );
+        }
+        CompFlags.scanning_cpp_comment = false;
+        Buffer[0] = ' ';
+        Buffer[1] = '\0';
+        return( T_WHITE_SPACE );
+    } else if( c == '*' ) {
+        ScanComment();
+        Buffer[0] = ' ';
+        Buffer[1] = '\0';
+        return( T_WHITE_SPACE );
+    } else {
+        Buffer[0] = '/';
+        Buffer[1] = '\0';
+        return( T_DIV );
+    }
+}
+
 static TOKEN CharConst( DATA_TYPE char_type )
 {
     int         c;
@@ -1511,6 +1487,26 @@ static TOKEN ScanString( void )
         return( T_STRING );
     BadTokenInfo = ERR_MISSING_QUOTE;
     return( T_BAD_TOKEN );
+}
+
+static TOKEN ScanWide( void )        // scan something that starts with L
+{
+    int         c;
+    TOKEN       token;
+
+    Buffer[0] = 'L';
+    c = NextChar();
+    Buffer[1] = c;
+    TokenLen = 2;
+    if( c == '"' ) {                    // L"abc"
+        token = ScanString();
+        CompFlags.wide_char_string = true;
+    } else if( c == '\'' ) {            // L'a'
+        token = CharConst( TYPE_WCHAR );
+    } else {                            // regular identifier
+        token = doScanName();
+    }
+    return( token );
 }
 
 int ESCChar( int c, const unsigned char **pbuf, bool *error )
