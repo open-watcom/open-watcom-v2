@@ -88,12 +88,14 @@ static struct special_macro_names  SpcMacros[] = {
 };
 
 void InitTokenBuf( size_t size )
+/******************************/
 {
     TokenBuf = CMemAlloc( size );
     TokenBufSize = size;
 }
 
 static void EnlargeTokenBuf( size_t size )
+/****************************************/
 {
     char       *newBuffer;
 
@@ -105,6 +107,7 @@ static void EnlargeTokenBuf( size_t size )
 }
 
 static void SpecialMacroAdd( special_macro_names *mac )
+/*****************************************************/
 {
     MEPTR           mentry;
 
@@ -114,6 +117,7 @@ static void SpecialMacroAdd( special_macro_names *mac )
 }
 
 void MacroInit( void )
+/********************/
 {
     mac_hash_idx    h;
     int             i;
@@ -138,6 +142,7 @@ void MacroInit( void )
 }
 
 void MacroAddComp( void )
+/***********************/
 {
     int             i;
 
@@ -147,6 +152,7 @@ void MacroAddComp( void )
 }
 
 void MacroFini( void )
+/********************/
 {
     CppStackFini();
     MacroPurge();
@@ -154,6 +160,7 @@ void MacroFini( void )
 
 
 void MacroPurge( void )
+/*********************/
 {
 #if 0
     mac_hash_idx    h;
@@ -169,6 +176,7 @@ void MacroPurge( void )
 }
 
 static void DeleteNestedMacro( void )
+/***********************************/
 {
     MEPTR           mentry;
     NESTED_MACRO    *nested;
@@ -191,6 +199,7 @@ static void DeleteNestedMacro( void )
 }
 
 TOKEN GetMacroToken( void )
+/*************************/
 {
     MACRO_TOKEN     *mtok;
     bool            keep_token;
@@ -278,6 +287,7 @@ TOKEN GetMacroToken( void )
 
 /* returns Dynamically allocated buffer with expanded macro */
 static char *ExpandMacroToken( void )
+/***********************************/
 {
     size_t      i;
     size_t      len;
@@ -333,6 +343,7 @@ static char *ExpandMacroToken( void )
 
 
 TOKEN SpecialMacro( MEPTR mentry )
+/********************************/
 {
     char            *p;
     char            *bufp;
@@ -399,6 +410,7 @@ TOKEN SpecialMacro( MEPTR mentry )
 
 
 static TOKEN NextMToken( void )
+/*****************************/
 {
     TOKEN   token;
 
@@ -413,6 +425,7 @@ static TOKEN NextMToken( void )
 
 static void SaveParm( MEPTR mentry, size_t size, mac_parm_count parmno,
                      MACRO_ARG *macro_parms, tokens *token_list )
+/*********************************************************************/
 {
     tokens          *token;
     char            *p;
@@ -438,6 +451,7 @@ static void SaveParm( MEPTR mentry, size_t size, mac_parm_count parmno,
 }
 
 static MACRO_ARG *CollectParms( MEPTR mentry )
+/********************************************/
 {
     size_t          len;
     int             bracket;
@@ -580,6 +594,7 @@ static MACRO_ARG *CollectParms( MEPTR mentry )
 #ifndef NDEBUG
 
 void DumpMDefn( const char *p )
+/*****************************/
 {
     unsigned char   c;
     TOKEN           token;
@@ -630,6 +645,7 @@ void DumpMDefn( const char *p )
 
 
 void DumpMTokens( MACRO_TOKEN *mtok )
+/***********************************/
 {
     for( ; mtok != NULL; mtok = mtok->next ) {
         printf( "%s\n", mtok->data );
@@ -639,6 +655,7 @@ void DumpMTokens( MACRO_TOKEN *mtok )
 
 
 void DumpNestedMacros( void )
+/***************************/
 {
     NESTED_MACRO *nested;
 
@@ -651,6 +668,7 @@ void DumpNestedMacros( void )
 
 
 static MACRO_TOKEN *BuildAToken( TOKEN token, const char *data )
+/**************************************************************/
 {
     size_t      len;
     MACRO_TOKEN *mtok;
@@ -665,6 +683,7 @@ static MACRO_TOKEN *BuildAToken( TOKEN token, const char *data )
 
 
 static MACRO_TOKEN **BuildATokenOnEnd( MACRO_TOKEN **ptail, TOKEN token, const char *data )
+/*****************************************************************************************/
 {
     *ptail = BuildAToken( token, data );
     return( &(*ptail)->next );
@@ -672,6 +691,7 @@ static MACRO_TOKEN **BuildATokenOnEnd( MACRO_TOKEN **ptail, TOKEN token, const c
 
 
 static MACRO_TOKEN *AppendToken( MACRO_TOKEN *head, TOKEN token, const char *data )
+/*********************************************************************************/
 {
     MACRO_TOKEN *tail;
     MACRO_TOKEN *new;
@@ -690,6 +710,7 @@ static MACRO_TOKEN *AppendToken( MACRO_TOKEN *head, TOKEN token, const char *dat
 }
 
 static bool MacroBeingExpanded( MEPTR mentry )
+/********************************************/
 {
     NESTED_MACRO    *nested;
 
@@ -704,6 +725,7 @@ static bool MacroBeingExpanded( MEPTR mentry )
 }
 
 static int Expandable( MACRO_TOKEN *mtok, bool macro_parm, MEPTR mentry )
+/***********************************************************************/
 {
     int         lparen;
 
@@ -750,6 +772,7 @@ static int Expandable( MACRO_TOKEN *mtok, bool macro_parm, MEPTR mentry )
 }
 
 static char *GlueTokenToBuffer( MACRO_TOKEN *first, char *gluebuf )
+/*****************************************************************/
 {
     size_t      gluelen;
     size_t      tokenlen;
@@ -775,7 +798,9 @@ static char *GlueTokenToBuffer( MACRO_TOKEN *first, char *gluebuf )
 }
 
 static MACRO_TOKEN *ReTokenBuffer( const char *buffer )
-// retokenize starting at buffer
+/******************************************************
+ * retokenize starting at buffer
+ */
 {
     MACRO_TOKEN *head;
     MACRO_TOKEN **ptail;
@@ -794,6 +819,7 @@ static MACRO_TOKEN *ReTokenBuffer( const char *buffer )
 
 
 static MACRO_TOKEN *GlueTokens( MACRO_TOKEN *head )
+/*************************************************/
 {
     MACRO_TOKEN *mtok;
     MACRO_TOKEN **ptail;
@@ -894,6 +920,7 @@ static MACRO_TOKEN *GlueTokens( MACRO_TOKEN *head )
 }
 
 static MACRO_TOKEN *BuildString( const char *p )
+/**********************************************/
 {
     MACRO_TOKEN     *head;
     MACRO_TOKEN     **ptail;
@@ -987,6 +1014,7 @@ static MACRO_TOKEN *BuildString( const char *p )
 
 
 static MACRO_TOKEN *BuildMTokenList( const char *p, MACRO_ARG *macro_parms )
+/**************************************************************************/
 {
     MACRO_TOKEN     *mtok;
     MACRO_TOKEN     *head;
@@ -1113,6 +1141,7 @@ static MACRO_TOKEN *BuildMTokenList( const char *p, MACRO_ARG *macro_parms )
 }
 
 static void markUnexpandableIds( MACRO_TOKEN *head )
+/**************************************************/
 {
     NESTED_MACRO    *nested;
     MACRO_TOKEN     *mtok;
@@ -1136,6 +1165,7 @@ static void markUnexpandableIds( MACRO_TOKEN *head )
 }
 
 static MACRO_TOKEN *MacroExpansion( bool rescanning, MEPTR mentry )
+/*****************************************************************/
 {
     MACRO_ARG       *macro_parms;
     MACRO_TOKEN     *head;
@@ -1163,6 +1193,7 @@ static MACRO_TOKEN *MacroExpansion( bool rescanning, MEPTR mentry )
 }
 
 static MACRO_TOKEN *ExpandNestedMacros( MACRO_TOKEN *head, bool rescanning )
+/**************************************************************************/
 {
     MACRO_TOKEN *mtok;
     MACRO_TOKEN *toklist;
@@ -1304,6 +1335,7 @@ static MACRO_TOKEN *ExpandNestedMacros( MACRO_TOKEN *head, bool rescanning )
 }
 
 void DoMacroExpansion( MEPTR mentry )               // called from cscan
+/***********************************/
 {
     MacroDepth = 0;
     TokenList = ExpandNestedMacros( MacroExpansion( false, mentry ), true );
@@ -1318,6 +1350,7 @@ void DoMacroExpansion( MEPTR mentry )               // called from cscan
 
 
 void InsertReScanPragmaTokens( const char *pragma )
+/*************************************************/
 {
     MACRO_TOKEN *toklist;
 
@@ -1338,6 +1371,7 @@ void InsertReScanPragmaTokens( const char *pragma )
 }
 
 void InsertToken( TOKEN token, const char *str )
+/**********************************************/
 {
     MACRO_TOKEN *toklist;
 

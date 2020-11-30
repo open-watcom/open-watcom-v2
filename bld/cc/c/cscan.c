@@ -94,12 +94,14 @@ static unsigned char InitClassTable[] = {
 
 
 void InitBuffer( size_t size )
+/****************************/
 {
     Buffer = CMemAlloc( size );
     BufferSize = size;
 }
 
 static void EnlargeBuffer( size_t size )
+/**************************************/
 {
     char       *newBuffer;
 
@@ -111,16 +113,19 @@ static void EnlargeBuffer( size_t size )
 }
 
 void ReScanInit( const char *ptr )
+/********************************/
 {
     rescan_tmp_file.src_ptr = (const unsigned char *)ptr;
 }
 
 const char *ReScanPos( void )
+/***************************/
 {
     return( (const char *)rescan_tmp_file.src_ptr );
 }
 
 static int reScanGetNextChar( void )
+/**********************************/
 {
     CurrChar = *SrcFile->src_ptr++;
     if( CurrChar == '\0' ) {
@@ -130,6 +135,7 @@ static int reScanGetNextChar( void )
 }
 
 static int reScanGetCharCheck( int c )
+/************************************/
 {
     if( c == '\0' ) {
         CompFlags.rescan_buffer_done = true;
@@ -138,6 +144,7 @@ static int reScanGetCharCheck( int c )
 }
 
 static void reScanGetNextCharUndo( int c )
+/****************************************/
 {
     /* unused parameters */ (void)c;
 
@@ -146,6 +153,7 @@ static void reScanGetNextCharUndo( int c )
 }
 
 static int SaveNextChar( void )
+/*****************************/
 {
     int         c;
 
@@ -157,6 +165,7 @@ static int SaveNextChar( void )
 }
 
 unsigned hashpjw( const char *s )
+/*******************************/
 {
     unsigned        h;
     unsigned char   c;
@@ -185,6 +194,7 @@ unsigned hashpjw( const char *s )
 }
 
 id_hash_idx CalcHash( const char *id, size_t len )
+/************************************************/
 {
     unsigned    hash;
 
@@ -205,6 +215,7 @@ id_hash_idx CalcHash( const char *id, size_t len )
 }
 
 TOKEN KwLookup( const char *buf, size_t len )
+/*******************************************/
 {
     const char  *keyword;
     TOKEN       token;
@@ -239,6 +250,7 @@ TOKEN KwLookup( const char *buf, size_t len )
 }
 
 static TOKEN doScanName( void )
+/*****************************/
 {
     TOKEN       token;
     int         c;
@@ -319,6 +331,7 @@ static TOKEN doScanName( void )
 }
 
 static TOKEN ScanName( void )
+/***************************/
 {
     Buffer[0] = CurrChar;
     TokenLen = 1;
@@ -326,6 +339,7 @@ static TOKEN ScanName( void )
 }
 
 static TOKEN ScanDotSomething( int c )
+/************************************/
 {
     if( c == '.' ) {
         c = SaveNextChar();
@@ -342,6 +356,7 @@ static TOKEN ScanDotSomething( int c )
 }
 
 static TOKEN doScanFloat( bool hex )
+/**********************************/
 {
     int         c;
     TOKEN       token;
@@ -396,6 +411,7 @@ static TOKEN doScanFloat( bool hex )
 }
 
 static void doScanAsmToken( void )
+/********************************/
 {
     int         c;
 
@@ -420,6 +436,7 @@ static void doScanAsmToken( void )
 }
 
 static TOKEN doScanAsm( void )
+/****************************/
 {
     BadTokenInfo = 0;
     TokenLen = 0;
@@ -431,6 +448,7 @@ static TOKEN doScanAsm( void )
 }
 
 static TOKEN ScanDot( void )
+/**************************/
 {
     if( Pre_processing & PPCTL_ASM )
         return( doScanAsm() );
@@ -441,6 +459,7 @@ static TOKEN ScanDot( void )
 }
 
 static TOKEN ScanPPNumber( void )
+/*******************************/
 {
     int         c;
     int         prevc;
@@ -492,6 +511,7 @@ static TOKEN ScanPPNumber( void )
 }
 
 static TOKEN ScanPPDigit( void )
+/******************************/
 {
     Buffer[0] = CurrChar;
     TokenLen = 1;
@@ -499,6 +519,7 @@ static TOKEN ScanPPDigit( void )
 }
 
 static TOKEN ScanPPDot( void )
+/****************************/
 {
     int         c;
 
@@ -513,6 +534,7 @@ static TOKEN ScanPPDot( void )
 }
 
 static bool ScanHex( int max, const unsigned char **pbuf )
+/********************************************************/
 {
     int             c;
     int             count;
@@ -558,6 +580,7 @@ static bool ScanHex( int max, const unsigned char **pbuf )
 typedef enum { CNV_32, CNV_64, CNV_OVR } cnv_cc;
 
 static cnv_cc Cnv8( void )
+/************************/
 {
     char        *curr;
     char        c;
@@ -593,6 +616,7 @@ is64:
 }
 
 static cnv_cc Cnv16( void )
+/*************************/
 {
     const char      *curr;
     unsigned char   c;
@@ -634,6 +658,7 @@ is64:
 }
 
 static cnv_cc Cnv10( void )
+/*************************/
 {
     const char      *curr;
     unsigned char   c;
@@ -676,6 +701,7 @@ is64:
 }
 
 static TOKEN ScanNum( void )
+/**************************/
 {
     int         c;
     int         bad_token_type;
@@ -962,6 +988,7 @@ static TOKEN ScanNum( void )
 }
 
 static TOKEN ScanQuestionMark( void )
+/***********************************/
 {
     NextChar();
     Buffer[0] = '?';
@@ -970,6 +997,7 @@ static TOKEN ScanQuestionMark( void )
 }
 
 static bool checkTokEqual( TOKEN *token )
+/***************************************/
 {
     switch( *token ) {
     case T_EQUAL:
@@ -1015,6 +1043,7 @@ static bool checkTokEqual( TOKEN *token )
 }
 
 static bool checkTokTok( TOKEN *token )
+/*************************************/
 {
     switch( *token ) {
     case T_SHARP:
@@ -1045,6 +1074,7 @@ static bool checkTokTok( TOKEN *token )
 }
 
 static bool checkTokTokEqual( TOKEN *token )
+/******************************************/
 {
     switch( *token ) {
     case T_LSHIFT:
@@ -1060,6 +1090,7 @@ static bool checkTokTokEqual( TOKEN *token )
 }
 
 static TOKEN ScanDelim1( void )
+/*****************************/
 {
     TOKEN       token;
 
@@ -1071,6 +1102,7 @@ static TOKEN ScanDelim1( void )
 }
 
 static TOKEN ScanMinus( void )
+/****************************/
 {
     int         chr2;
 
@@ -1096,6 +1128,7 @@ static TOKEN ScanMinus( void )
 }
 
 static TOKEN ScanEqual( void )
+/****************************/
 {
     Buffer[0] = '=';
     if( NextChar() == '=' ) {
@@ -1110,6 +1143,7 @@ static TOKEN ScanEqual( void )
 }
 
 static TOKEN ScanStar( void )
+/***************************/
 {
     Buffer[0] = '*';
     if( NextChar() == '=' ) {
@@ -1124,6 +1158,7 @@ static TOKEN ScanStar( void )
 }
 
 static TOKEN ScanColon( void )
+/****************************/
 {
     int         chr2;
 
@@ -1148,6 +1183,7 @@ static TOKEN ScanColon( void )
 }
 
 static TOKEN ScanDelim2( void )
+/*****************************/
 {
     int             c;
     TOKEN           token;
@@ -1185,6 +1221,7 @@ static TOKEN ScanDelim2( void )
 }
 
 static void ScanComment( void )
+/*****************************/
 {
     int         c;
     int         prev_char;
@@ -1262,6 +1299,7 @@ static void ScanComment( void )
 }
 
 static TOKEN ScanSlash( void )
+/****************************/
 {
     int         c;
 
@@ -1312,6 +1350,7 @@ static TOKEN ScanSlash( void )
 }
 
 static TOKEN CharConst( DATA_TYPE char_type )
+/*******************************************/
 {
     int         c;
     int         i;
@@ -1435,6 +1474,7 @@ static TOKEN CharConst( DATA_TYPE char_type )
 }
 
 static TOKEN ScanCharConst( void )
+/********************************/
 {
     Buffer[0] = '\'';
     TokenLen = 1;
@@ -1442,6 +1482,7 @@ static TOKEN ScanCharConst( void )
 }
 
 static TOKEN ScanString( void )
+/*****************************/
 {
     int         c;
     bool        ok;
@@ -1508,6 +1549,7 @@ static TOKEN ScanString( void )
 }
 
 static TOKEN ScanWide( void )        // scan something that starts with L
+/***************************/
 {
     int         c;
     TOKEN       token;
@@ -1528,6 +1570,7 @@ static TOKEN ScanWide( void )        // scan something that starts with L
 }
 
 int ESCChar( int c, const unsigned char **pbuf, bool *error )
+/***********************************************************/
 {
     int         n;
     int         i;
@@ -1600,6 +1643,7 @@ int ESCChar( int c, const unsigned char **pbuf, bool *error )
 }
 
 static TOKEN ScanWhiteSpace( void )
+/*********************************/
 {
     int         c;
 
@@ -1622,6 +1666,7 @@ static TOKEN ScanWhiteSpace( void )
 }
 
 static void SkipWhiteSpace( int c )
+/*********************************/
 {
     if( !CompFlags.cpp_mode ) {
         ScanWhiteSpace();
@@ -1637,6 +1682,7 @@ static void SkipWhiteSpace( int c )
 
 
 void SkipAhead( void )
+/********************/
 {
     for( ;; ) {
         for( ;; ) {
@@ -1666,6 +1712,7 @@ void SkipAhead( void )
 }
 
 static TOKEN ScanNewline( void )
+/******************************/
 {
     SrcFileLoc = SrcFile->src_loc;
     if( Pre_processing & PPCTL_EOL )
@@ -1674,6 +1721,7 @@ static TOKEN ScanNewline( void )
 }
 
 static TOKEN ScanCarriageReturn( void )
+/*************************************/
 {
     if( NextChar() == '\n' ) {
         return( ScanNewline() );
@@ -1691,6 +1739,7 @@ static TOKEN ScanCarriageReturn( void )
 #endif
 
 static TOKEN ScanInvalid( void )
+/******************************/
 {
     Buffer[0] = CurrChar;
     Buffer[1] = '\0';
@@ -1705,6 +1754,7 @@ static TOKEN ScanInvalid( void )
 }
 
 static TOKEN ScanMacroToken( void )
+/*********************************/
 {
     TOKEN   token;
 
@@ -1720,6 +1770,7 @@ static TOKEN ScanMacroToken( void )
 }
 
 static TOKEN ScanEof( void )
+/**************************/
 {
     return( T_EOF );
 }
@@ -1731,6 +1782,7 @@ static TOKEN (*ScanFunc[])( void ) = {
 };
 
 TOKEN ScanToken( void )
+/*********************/
 {
     TokenLoc = SrcFileLoc;         /* remember line token starts on */
 //    TokenLen = 1;
@@ -1739,6 +1791,7 @@ TOKEN ScanToken( void )
 }
 
 TOKEN NextToken( void )
+/*********************/
 {
     do {
         if( MacroPtr == NULL ) {
@@ -1757,6 +1810,7 @@ TOKEN NextToken( void )
 }
 
 TOKEN PPNextToken( void )                     // called from macro pre-processor
+/***********************/
 {
     do {
         if( MacroPtr == NULL ) {
@@ -1775,6 +1829,7 @@ TOKEN PPNextToken( void )                     // called from macro pre-processor
 }
 
 TOKEN ReScanToken( void )
+/***********************/
 {
     FCB             *oldSrcFile;
     int             saved_currchar;
@@ -1815,6 +1870,7 @@ TOKEN ReScanToken( void )
 }
 
 void ScanInit( void )
+/*******************/
 {
     int         i;
     int         c;
@@ -1845,6 +1901,7 @@ void ScanInit( void )
 //      CollectParms();
 //      FiniPPScan( ppscan_mode );
 bool InitPPScan( void )
+/*********************/
 {
     if( ScanFunc[SCAN_NUM] == ScanNum ) {
         ScanFunc[SCAN_NUM] = ScanPPDigit;
@@ -1854,8 +1911,11 @@ bool InitPPScan( void )
     return( false );            // indicate already in PP mode
 }
 
-// called when CollectParms() and CDefine() are finished gathering tokens
 void FiniPPScan( bool ppscan_mode )
+/**********************************
+ * called when CollectParms() and
+ * CDefine() are finished gathering tokens
+ */
 {
     if( ppscan_mode ) {     // if InitPPScan() changed into PP mode
         ScanFunc[SCAN_NUM] = ScanNum; // reset back to normal mode
