@@ -270,7 +270,6 @@ static TOKEN doScanName( void )
 //      we know that NextChar will be pointing to GetNextChar()
 //      so it is safe to inline the function here.
 //      NextChar could also be pointing to ReScanGetNextChar().
-    --TokenLen;
     do {
         for( ; (CharSet[c] & (C_AL | C_DI)); ) {
             TokenLen = WriteBufferChar( TokenLen, c );
@@ -339,6 +338,7 @@ static TOKEN ScanName( void )
 {
     Buffer[0] = CurrChar;
     TokenLen = 1;
+    NextChar();
     return( doScanName() );
 }
 
@@ -414,8 +414,8 @@ static TOKEN doScanFloat( bool hex )
     return( token );
 }
 
-static void doScanAsmToken( void )
-/********************************/
+static int doScanAsmToken( void )
+/*******************************/
 {
     int         c;
 
@@ -430,30 +430,31 @@ static void doScanAsmToken( void )
         c = GetCharCheck( c );
     } while( (CharSet[c] & (C_AL | C_DI)) );
     CurrChar = c;
-    WriteBufferChar( TokenLen, '\0' );
+    return( c );
 }
 
 static TOKEN doScanAsm( void )
 /****************************/
 {
     BadTokenInfo = 0;
-    TokenLen = 0;
-    do {
-        Buffer[TokenLen++] = CurrChar;
-        doScanAsmToken();
-    } while( CurrChar == '.' );
+    while( doScanAsmToken() == '.' ) {
+        TokenLen = WriteBufferChar( TokenLen, '.' );
+    }
+    WriteBufferChar( TokenLen, '\0' );
     return( T_ID );
 }
 
 static TOKEN ScanDot( void )
 /**************************/
 {
-    if( Pre_processing & PPCTL_ASM )
-        return( doScanAsm() );
-
     Buffer[0] = '.';
     TokenLen = 1;
-    return( doScanFloat( false ) );
+
+    if( Pre_processing & PPCTL_ASM ) {
+        return( doScanAsm() );
+    } else {
+        return( doScanFloat( false ) );
+    }
 }
 
 static TOKEN doScanPPNumber( void )
@@ -712,16 +713,16 @@ static TOKEN ScanNum( void )
                SUFF_LL,SUFF_ULL } suffix;
     } con;
 
+    Buffer[0] = CurrChar;
+    TokenLen = 1;
+
     if( Pre_processing & PPCTL_ASM )
         return( doScanAsm() );
 
     BadTokenInfo = 0;
     ov = CNV_32;
     Constant = 0;
-    TokenLen = 1;
-    c = CurrChar;
-    Buffer[0] = c;
-    if( c == '0' ) {
+    if( CurrChar == '0' ) {
         c = SaveNextChar();
         if( c == 'x' || c == 'X' ) {
             bad_token_type = ERR_INVALID_HEX_CONSTANT;
@@ -1479,8 +1480,8 @@ static TOKEN ScanCharConst( void )
     return( doScanCharConst( TYPE_CHAR ) );
 }
 
-static TOKEN doScanString( void )
-/*******************************/
+static TOKEN doScanString( bool wide )
+/************************************/
 {
     int         c;
     bool        ok;
@@ -1540,6 +1541,8 @@ static TOKEN doScanString( void )
     if( CompFlags.trigraph_alert ) {
         CWarn1( WARN_LEVEL_1, ERR_EXPANDED_TRIGRAPH );
     }
+    if( wide )
+        CompFlags.wide_char_string = wide;
     if( ok )
         return( T_STRING );
     BadTokenInfo = ERR_MISSING_QUOTE;
@@ -1549,26 +1552,27 @@ static TOKEN doScanString( void )
 static TOKEN ScanString( void )
 /*****************************/
 {
-    return( doScanString() );
+    return( doScanString( false ) );
 }
 
-static TOKEN ScanWide( void )        // scan something that starts with L
+static TOKEN ScanWide( void )           // scan something that starts with L
 /***************************/
 {
     int         c;
     TOKEN       token;
 
-    Buffer[0] = 'L';
     c = NextChar();
-    Buffer[1] = c;
-    TokenLen = 2;
     if( c == '"' ) {                    // L"abc"
-        token = doScanString();
-        CompFlags.wide_char_string = true;
-    } else if( c == '\'' ) {            // L'a'
-        token = doScanCharConst( TYPE_WCHAR );
+        token = doScanString( true );
     } else {                            // regular identifier
-        token = doScanName();
+        Buffer[0] = 'L';
+        TokenLen = 1;
+        if( c == '\'' ) {               // L'a'
+            Buffer[TokenLen++] = '\'';
+            token = doScanCharConst( TYPE_WCHAR );
+        } else {                        // regular identifier
+            token = doScanName();
+        }
     }
     return( token );
 }
