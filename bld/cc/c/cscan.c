@@ -338,8 +338,8 @@ static TOKEN ScanName( void )
     return( doScanName() );
 }
 
-static TOKEN ScanDotSomething( int c )
-/************************************/
+static TOKEN doScanDotSomething( int c )
+/**************************************/
 {
     if( c == '.' ) {
         c = SaveNextChar();
@@ -374,7 +374,7 @@ static TOKEN doScanFloat( bool hex )
             } while( c >= '0' && c <= '9' );
         }
         if( TokenLen == 2 ) {   /* .? */
-            return( ScanDotSomething( c ) );
+            return( doScanDotSomething( c ) );
         }
     }
     token = T_CONSTANT;
@@ -458,8 +458,8 @@ static TOKEN ScanDot( void )
     return( doScanFloat( false ) );
 }
 
-static TOKEN ScanPPNumber( void )
-/*******************************/
+static TOKEN doScanPPNumber( void )
+/*********************************/
 {
     int         c;
     int         prevc;
@@ -515,7 +515,7 @@ static TOKEN ScanPPDigit( void )
 {
     Buffer[0] = CurrChar;
     TokenLen = 1;
-    return( ScanPPNumber() );
+    return( doScanPPNumber() );
 }
 
 static TOKEN ScanPPDot( void )
@@ -527,14 +527,14 @@ static TOKEN ScanPPDot( void )
     TokenLen = 1;
     c = SaveNextChar();
     if( c >= '0' && c <= '9' ) {
-        return( ScanPPNumber() );
+        return( doScanPPNumber() );
     } else {
-        return( ScanDotSomething( c ) );
+        return( doScanDotSomething( c ) );
     }
 }
 
-static bool ScanHex( int max, const unsigned char **pbuf )
-/********************************************************/
+static bool doScanHex( int max, const unsigned char **pbuf )
+/**********************************************************/
 {
     int             c;
     int             count;
@@ -1220,8 +1220,8 @@ static TOKEN ScanDelim2( void )
     return( token );
 }
 
-static void ScanComment( void )
-/*****************************/
+static void doScanComment( void )
+/*******************************/
 {
     int         c;
     int         prev_char;
@@ -1338,7 +1338,7 @@ static TOKEN ScanSlash( void )
         Buffer[1] = '\0';
         return( T_WHITE_SPACE );
     } else if( c == '*' ) {
-        ScanComment();
+        doScanComment();
         Buffer[0] = ' ';
         Buffer[1] = '\0';
         return( T_WHITE_SPACE );
@@ -1349,8 +1349,8 @@ static TOKEN ScanSlash( void )
     }
 }
 
-static TOKEN CharConst( DATA_TYPE char_type )
-/*******************************************/
+static TOKEN doScanCharConst( DATA_TYPE char_type )
+/*************************************************/
 {
     int         c;
     int         i;
@@ -1478,11 +1478,11 @@ static TOKEN ScanCharConst( void )
 {
     Buffer[0] = '\'';
     TokenLen = 1;
-    return( CharConst( TYPE_CHAR ) );
+    return( doScanCharConst( TYPE_CHAR ) );
 }
 
-static TOKEN ScanString( void )
-/*****************************/
+static TOKEN doScanString( void )
+/*******************************/
 {
     int         c;
     bool        ok;
@@ -1548,6 +1548,12 @@ static TOKEN ScanString( void )
     return( T_BAD_TOKEN );
 }
 
+static TOKEN ScanString( void )
+/*****************************/
+{
+    return( doScanString() );
+}
+
 static TOKEN ScanWide( void )        // scan something that starts with L
 /***************************/
 {
@@ -1559,10 +1565,10 @@ static TOKEN ScanWide( void )        // scan something that starts with L
     Buffer[1] = c;
     TokenLen = 2;
     if( c == '"' ) {                    // L"abc"
-        token = ScanString();
+        token = doScanString();
         CompFlags.wide_char_string = true;
     } else if( c == '\'' ) {            // L'a'
-        token = CharConst( TYPE_WCHAR );
+        token = doScanCharConst( TYPE_WCHAR );
     } else {                            // regular identifier
         token = doScanName();
     }
@@ -1591,7 +1597,7 @@ int ESCChar( int c, const unsigned char **pbuf, bool *error )
             }
         }
     } else if( c == 'x' ) {         /* get hex escape sequence */
-        if( ScanHex( 127, pbuf ) ) {
+        if( doScanHex( 127, pbuf ) ) {
             n = Constant;
         } else {                        /* '\xz' where z is not a hex char */
             *error = true;
@@ -1702,7 +1708,7 @@ void SkipAhead( void )
         NextChar();
         if( CurrChar == '*' ) {
             TokenLoc = SrcFileLoc;
-            ScanComment();
+            doScanComment();
         } else {
             UnGetChar( CurrChar );
             CurrChar = '/';
