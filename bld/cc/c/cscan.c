@@ -103,13 +103,25 @@ void InitBuffer( size_t size )
 static void EnlargeBuffer( size_t size )
 /**************************************/
 {
-    char       *newBuffer;
+    char    *newBuffer;
 
-    newBuffer = CMemAlloc( size );
-    memcpy( newBuffer, Buffer, BufferSize );
-    CMemFree( (void *)Buffer );
-    Buffer = newBuffer;
-    BufferSize = size;
+//    size += 32;     /* Buffer size margin */
+    if( size > BufferSize ) {
+        size = _RoundUp( size, BUF_SIZE );
+        newBuffer = CMemAlloc( size );
+        memcpy( newBuffer, Buffer, BufferSize );
+        CMemFree( (void *)Buffer );
+        Buffer = newBuffer;
+        BufferSize = size;
+    }
+}
+
+static size_t WriteBufferChar( size_t i, char c )
+/***********************************************/
+{
+    EnlargeBuffer( i + 1 );
+    Buffer[i++] = c;
+    return( i );
 }
 
 void ReScanInit( const char *ptr )
@@ -158,9 +170,7 @@ static int SaveNextChar( void )
     int         c;
 
     c = NextChar();
-    if( TokenLen >= BufferSize - 2 )
-        EnlargeBuffer( TokenLen * 2 );
-    Buffer[TokenLen++] = c;
+    TokenLen = WriteBufferChar( TokenLen, c );
     return( c );
 }
 
@@ -263,21 +273,15 @@ static TOKEN doScanName( void )
     --TokenLen;
     do {
         for( ; (CharSet[c] & (C_AL | C_DI)); ) {
-            Buffer[TokenLen++] = c;
+            TokenLen = WriteBufferChar( TokenLen, c );
             c = *SrcFile->src_ptr++;
-            if( TokenLen >= BufferSize - 16 ) {
-                EnlargeBuffer( BufferSize * 2 );
-            }
         }
         if( (CharSet[c] & C_EX) == 0 )
             break;
         c = GetCharCheck( c );
     } while( (CharSet[c] & (C_AL | C_DI)) );
     CurrChar = c;
-    if( TokenLen >= BufferSize - 18 ) {
-        EnlargeBuffer( BufferSize * 2 );
-    }
-    Buffer[TokenLen] = '\0';
+    WriteBufferChar( TokenLen, '\0' );
     CalcHash( Buffer, TokenLen );
     if( CompFlags.doing_macro_expansion )
         return( T_ID );
@@ -302,8 +306,8 @@ static TOKEN doScanName( void )
             SkipAhead();
             if( CurrChar != '(' ) {
                 if( CompFlags.cpp_mode ) {
-                    Buffer[TokenLen++] = ' ';
-                    Buffer[TokenLen] = '\0';
+                    TokenLen = WriteBufferChar( TokenLen, ' ' );
+                    WriteBufferChar( TokenLen, '\0' );
                     token = T_ID;
                 } else {
                     if( IS_PPOPERATOR_PRAGMA( Buffer, TokenLen ) ) {
@@ -418,21 +422,15 @@ static void doScanAsmToken( void )
     c = NextChar();
     do {
         for( ; (CharSet[c] & (C_AL | C_DI)); ) {
-            Buffer[TokenLen++] = c;
+            TokenLen = WriteBufferChar( TokenLen, c );
             c = *SrcFile->src_ptr++;
-            if( TokenLen >= BufferSize - 16 ) {
-                EnlargeBuffer( BufferSize * 2 );
-            }
         }
         if( (CharSet[c] & C_EX) == 0 )
             break;
         c = GetCharCheck( c );
     } while( (CharSet[c] & (C_AL | C_DI)) );
     CurrChar = c;
-    if( TokenLen >= BufferSize - 18 ) {
-        EnlargeBuffer( BufferSize * 2 );
-    }
-    Buffer[TokenLen] = '\0';
+    WriteBufferChar( TokenLen, '\0' );
 }
 
 static TOKEN doScanAsm( void )
