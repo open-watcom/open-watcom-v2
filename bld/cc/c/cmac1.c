@@ -382,6 +382,7 @@ TOKEN SpecialMacro( MEPTR mentry )
 {
     char            *p;
     char            *bufp;
+    TOKEN           token;
 
     CompFlags.wide_char_string = false;
     switch( (special_macros)mentry->parm_count ) {
@@ -389,7 +390,8 @@ TOKEN SpecialMacro( MEPTR mentry )
         sprintf( Buffer, "%u", TokenLoc.line );
         Constant = TokenLoc.line;
         ConstType = TYPE_INT;
-        return( T_CONSTANT );
+        token = T_CONSTANT;
+        break;
     case MACRO_FILE:
         bufp = Buffer;
         for( p = FileIndexToFName( TokenLoc.fno )->name; (*bufp++ = *p) != '\0'; ++p ) {
@@ -397,25 +399,24 @@ TOKEN SpecialMacro( MEPTR mentry )
                 *bufp++ = '\\';
             }
         }
+        token = T_STRING;
         break;
     case MACRO_DATE:
         strcpy( Buffer, __Date );
+        token = T_STRING;
         break;
     case MACRO_TIME:
         strcpy( Buffer, __Time );
+        token = T_STRING;
         break;
     case MACRO_STDC:
-        Buffer[0] = '1';
-        Buffer[1] = '\0';
-        Constant = 1;
-        ConstType = TYPE_INT;
-        return( T_CONSTANT );
     case MACRO_STDC_HOSTED:
         Buffer[0] = '1';
         Buffer[1] = '\0';
         Constant = 1;
         ConstType = TYPE_INT;
-        return( T_CONSTANT );
+        token = T_CONSTANT;
+        break;
     case MACRO_STDC_VERSION:
         if( CompFlags.c99_extensions ) {
             CPYLIT( Buffer, "199901L" );
@@ -425,7 +426,8 @@ TOKEN SpecialMacro( MEPTR mentry )
             Constant = 199409;
         }
         ConstType = TYPE_LONG;
-        return( T_CONSTANT );
+        token = T_CONSTANT;
+        break;
     case MACRO_FUNCTION:
     case MACRO_FUNC:
         Buffer[0] = '\0';
@@ -434,13 +436,15 @@ TOKEN SpecialMacro( MEPTR mentry )
                 strcpy( Buffer, CurFunc->name );
             }
         }
+        token = T_STRING;
         break;
     default:
         Buffer[0] = '\0';
-        return( T_NULL );   // shut up the compiler
+        token = T_NULL;     // shut up the compiler
+        break;
     }
     TokenLen = strlen( Buffer );
-    return( T_STRING );
+    return( token );
 }
 
 
@@ -530,6 +534,10 @@ static MACRO_ARG *CollectParms( MEPTR mentry )
                 if( bracket == 0 )
                     break;
                 --bracket;
+            } else if( token == T_STRING ) {
+                if( CompFlags.wide_char_string ) {
+                    token = T_LSTRING;
+                }
             } else if( token == T_COMMA && bracket == 0
               && ( !MacroHasVarArgs( mentry ) || parmno != parm_count_reqd - 1 ) ) {
                 if( prev_token == T_WHITE_SPACE ) {
@@ -542,11 +550,6 @@ static MACRO_ARG *CollectParms( MEPTR mentry )
                 token_head = NULL;
                 len = 0;
                 continue;
-            }
-            if( token == T_STRING ) {
-                if( CompFlags.wide_char_string ) {
-                    token = T_LSTRING;
-                }
             }
             len = WriteTokenBufToken( len, token );
             switch( token ) {
