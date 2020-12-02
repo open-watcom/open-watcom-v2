@@ -362,28 +362,23 @@ static TOKEN doScanDotSomething( int c )
 static TOKEN doScanFloat( bool hex )
 /**********************************/
 {
-    int         c;
-    TOKEN       token;
+    int             c;
+    TOKEN           token;
+    charset_flags   flags;
 
     BadTokenInfo = 0;
     c = CurrChar;
     if( c == '.' ) {
-        if( hex && CompFlags.c99_extensions ) {
-            do {
-                c = SaveNextChar();
-            } while( CharSet[c] & (C_HX | C_DI) );
-        } else {
-            do {
-                c = SaveNextChar();
-            } while( c >= '0' && c <= '9' );
-        }
+        flags = ( hex ) ? C_HX | C_DI : C_DI;
+        do {
+            c = SaveNextChar();
+        } while( CharSet[c] & flags );
         if( TokenLen == 2 ) {   /* .? */
             return( doScanDotSomething( c ) );
         }
     }
     token = T_CONSTANT;
-    if( c == 'e' || c == 'E' ||
-       ( hex && CompFlags.c99_extensions && ( c == 'p' || c == 'P' ) ) ) {
+    if( c == 'e' || c == 'E' || ( hex && ( c == 'p' || c == 'P' ) ) ) {
         c = SaveNextChar();
         if( c == '+' || c == '-' ) {
             c = SaveNextChar();
