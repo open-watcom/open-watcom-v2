@@ -145,7 +145,7 @@ const char *ReScanPos( void )
 static int reScanGetNextChar( void )
 /**********************************/
 {
-    CurrChar = *SrcFile->src_ptr++;
+    CurrChar = *rescan_tmp_file.src_ptr++;
     if( CurrChar == '\0' ) {
         CompFlags.rescan_buffer_done = true;
     }
@@ -166,7 +166,7 @@ static void reScanGetNextCharUndo( int c )
 {
     /* unused parameters */ (void)c;
 
-    SrcFile->src_ptr--;
+    rescan_tmp_file.src_ptr--;
     CompFlags.rescan_buffer_done = false;
 }
 
@@ -265,14 +265,8 @@ TOKEN KwLookup( const char *buf, size_t len )
     return( T_ID );
 }
 
-static TOKEN doScanName( void )
-/*****************************/
+static int getIDName( int c )
 {
-    TOKEN       token;
-    int         c;
-    MEPTR       mentry;
-
-    c = CurrChar;
 //      we know that NextChar will be pointing to GetNextChar()
 //      so it is safe to inline the function here.
 //      NextChar could also be pointing to ReScanGetNextChar().
@@ -286,6 +280,16 @@ static TOKEN doScanName( void )
         c = GetCharCheck( c );
     } while( (CharSet[c] & (C_AL | C_DI)) );
     CurrChar = c;
+    return( c );
+}
+
+static TOKEN doScanName( void )
+/*****************************/
+{
+    TOKEN       token;
+    MEPTR       mentry;
+
+    getIDName( CurrChar );
     WriteBufferNullChar();
     CalcHash( Buffer, TokenLen );
     if( CompFlags.doing_macro_expansion )
@@ -415,31 +419,14 @@ static TOKEN doScanFloat( bool hex )
     return( token );
 }
 
-static int doScanAsmToken( void )
-/*******************************/
-{
-    int         c;
-
-    c = NextChar();
-    do {
-        for( ; (CharSet[c] & (C_AL | C_DI)); ) {
-            WriteBufferChar( c );
-            c = *SrcFile->src_ptr++;
-        }
-        if( (CharSet[c] & C_EX) == 0 )
-            break;
-        c = GetCharCheck( c );
-    } while( (CharSet[c] & (C_AL | C_DI)) );
-    CurrChar = c;
-    return( c );
-}
-
 static TOKEN doScanAsm( void )
 /****************************/
 {
     BadTokenInfo = 0;
-    while( doScanAsmToken() == '.' ) {
+    NextChar();
+    for( ; getIDName( CurrChar ) == '.'; ) {
         WriteBufferChar( '.' );
+        NextChar();
     }
     WriteBufferNullChar();
     return( T_ID );
@@ -707,7 +694,7 @@ static TOKEN ScanNum( void )
     int         c;
     int         bad_token_type;
     cnv_cc      ov;
-    TOKEN       tok;
+    TOKEN       token;
 
     struct {
         enum { CON_DEC, CON_HEX, CON_OCT, CON_ERR } form;
@@ -966,15 +953,15 @@ static TOKEN ScanNum( void )
             }
         }
     }
-    tok = T_CONSTANT;
+    token = T_CONSTANT;
     if( Pre_processing != PPCTL_NORMAL && (CharSet[c] & (C_AL | C_DI)) ) {
-        tok = T_BAD_TOKEN;
+        token = T_BAD_TOKEN;
         do {
             c = SaveNextChar();
         } while( CharSet[c] & (C_AL | C_DI) );
     }
     if( !CompFlags.cpp_mode ) {
-        if( tok == T_BAD_TOKEN ) {
+        if( token == T_BAD_TOKEN ) {
             BadTokenInfo = bad_token_type;
         } else if( ov == CNV_OVR ) {
             BadTokenInfo = ERR_CONSTANT_TOO_BIG;
@@ -985,7 +972,7 @@ static TOKEN ScanNum( void )
     }
     --TokenLen;
     WriteBufferNullChar();
-    return( tok );
+    return( token );
 }
 
 static bool checkDelim2( TOKEN *token, TOKEN last )
@@ -1214,7 +1201,7 @@ static void doScanComment( void )
             }
             do {
                 do {
-                prev_char = c;
+                    prev_char = c;
                     c = *SrcFile->src_ptr++;
                 } while( (CharSet[c] & C_EX) == 0 );
                 c = GetCharCheck( c );
