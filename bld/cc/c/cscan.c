@@ -116,12 +116,18 @@ static void EnlargeBuffer( size_t size )
     }
 }
 
-static size_t WriteBufferChar( size_t i, char c )
-/***********************************************/
+static void WriteBufferChar( char c )
+/***********************************/
 {
-    EnlargeBuffer( i + 1 );
-    Buffer[i++] = c;
-    return( i );
+    EnlargeBuffer( TokenLen + 1 );
+    Buffer[TokenLen++] = c;
+}
+
+static void WriteBufferNullChar( void )
+/*************************************/
+{
+    EnlargeBuffer( TokenLen + 1 );
+    Buffer[TokenLen] = '\0';
 }
 
 void ReScanInit( const char *ptr )
@@ -170,7 +176,7 @@ static int SaveNextChar( void )
     int         c;
 
     c = NextChar();
-    TokenLen = WriteBufferChar( TokenLen, c );
+    WriteBufferChar( c );
     return( c );
 }
 
@@ -272,7 +278,7 @@ static TOKEN doScanName( void )
 //      NextChar could also be pointing to ReScanGetNextChar().
     do {
         for( ; (CharSet[c] & (C_AL | C_DI)); ) {
-            TokenLen = WriteBufferChar( TokenLen, c );
+            WriteBufferChar( c );
             c = *SrcFile->src_ptr++;
         }
         if( (CharSet[c] & C_EX) == 0 )
@@ -280,7 +286,7 @@ static TOKEN doScanName( void )
         c = GetCharCheck( c );
     } while( (CharSet[c] & (C_AL | C_DI)) );
     CurrChar = c;
-    WriteBufferChar( TokenLen, '\0' );
+    WriteBufferNullChar();
     CalcHash( Buffer, TokenLen );
     if( CompFlags.doing_macro_expansion )
         return( T_ID );
@@ -305,8 +311,8 @@ static TOKEN doScanName( void )
             SkipAhead();
             if( CurrChar != '(' ) {
                 if( CompFlags.cpp_mode ) {
-                    TokenLen = WriteBufferChar( TokenLen, ' ' );
-                    WriteBufferChar( TokenLen, '\0' );
+                    WriteBufferChar( ' ' );
+                    WriteBufferNullChar();
                     token = T_ID;
                 } else {
                     if( IS_PPOPERATOR_PRAGMA( Buffer, TokenLen ) ) {
@@ -405,7 +411,7 @@ static TOKEN doScanFloat( bool hex )
         --TokenLen;
         ConstType = TYPE_DOUBLE;
     }
-    Buffer[TokenLen] = '\0';
+    WriteBufferNullChar();
     return( token );
 }
 
@@ -417,7 +423,7 @@ static int doScanAsmToken( void )
     c = NextChar();
     do {
         for( ; (CharSet[c] & (C_AL | C_DI)); ) {
-            TokenLen = WriteBufferChar( TokenLen, c );
+            WriteBufferChar( c );
             c = *SrcFile->src_ptr++;
         }
         if( (CharSet[c] & C_EX) == 0 )
@@ -433,9 +439,9 @@ static TOKEN doScanAsm( void )
 {
     BadTokenInfo = 0;
     while( doScanAsmToken() == '.' ) {
-        TokenLen = WriteBufferChar( TokenLen, '.' );
+        WriteBufferChar( '.' );
     }
-    WriteBufferChar( TokenLen, '\0' );
+    WriteBufferNullChar();
     return( T_ID );
 }
 
@@ -501,7 +507,7 @@ static TOKEN doScanPPNumber( void )
         break;
     }
     --TokenLen;
-    Buffer[TokenLen] = '\0';
+    WriteBufferNullChar();
     return( T_PPNUMBER );
 }
 
@@ -978,7 +984,7 @@ static TOKEN ScanNum( void )
         }
     }
     --TokenLen;
-    Buffer[TokenLen] = '\0';
+    WriteBufferNullChar();
     return( tok );
 }
 
@@ -1475,7 +1481,8 @@ static TOKEN doScanString( bool wide )
             c = SaveNextChar();
         }
     }
-    Buffer[--TokenLen] = '\0';
+    --TokenLen;
+    WriteBufferNullChar();
     if( CompFlags.trigraph_alert ) {
         CWarn1( WARN_LEVEL_1, ERR_EXPANDED_TRIGRAPH );
     }
