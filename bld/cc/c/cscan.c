@@ -461,7 +461,7 @@ static TOKEN ScanDot( void )
 static TOKEN doScanPPNumber( void )
 /**********************************
  *
- * 3.1.8 pp-number (C99 ง6.4.8 adds 'p'/'P')
+ * 3.1.8 pp-number (C99 ยง6.4.8 adds 'p'/'P')
  * pp-number:
  *          digit           (checked by caller)
  *          . digit         (checked by caller)
@@ -1268,15 +1268,13 @@ static TOKEN ScanSlash( void )
         CompFlags.scanning_cpp_comment = true;
         for( ;; ) {
             if( CurrChar == '\r' ) {
-                NextChar();
-                /* swallow up the next line if this one ends with \ */
                 /* some editors don't put linefeeds on end of lines */
-                if( CurrChar == '\n' ) {
-                    break;
-                }
-            } else {
                 NextChar();
+                break;
             }
+            NextChar();
+            if( CurrChar == '\n' )
+                break;
             if( CurrChar == EOF_CHAR )
                 break;
             if( CurrChar == '\0' )
