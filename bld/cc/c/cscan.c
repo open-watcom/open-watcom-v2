@@ -130,6 +130,25 @@ static void WriteBufferNullChar( void )
     Buffer[TokenLen] = '\0';
 }
 
+static int SaveNextChar( void )
+/*****************************/
+{
+    int         c;
+
+    c = NextChar();
+    EnlargeBuffer( TokenLen + 1 );
+    Buffer[TokenLen++] = c;
+    return( c );
+}
+
+static int SaveCharNextChar( int c )
+/**********************************/
+{
+    EnlargeBuffer( TokenLen + 1 );
+    Buffer[TokenLen++] = c;
+    return( NextChar() );
+}
+
 void ReScanInit( const char *ptr )
 /********************************/
 {
@@ -168,16 +187,6 @@ static void reScanGetNextCharUndo( int c )
 
     rescan_tmp_file.src_ptr--;
     CompFlags.rescan_buffer_done = false;
-}
-
-static int SaveNextChar( void )
-/*****************************/
-{
-    int         c;
-
-    c = NextChar();
-    WriteBufferChar( c );
-    return( c );
 }
 
 unsigned hashpjw( const char *s )
@@ -274,6 +283,7 @@ static int getIDName( int c )
         for( ; (CharSet[c] & (C_AL | C_DI)); ) {
             WriteBufferChar( c );
             c = *SrcFile->src_ptr++;
+//            c = NextChar();
         }
         if( (CharSet[c] & C_EX) == 0 )
             break;
@@ -580,7 +590,7 @@ static cnv_cc Cnv8( void )
     curr = Buffer;
     len = TokenLen;
     value = 0;
-    while( --len > 0 ) {
+    while( len-- > 0 ) {
         c = *curr;
         if( value & 0xE0000000 )
             goto is64; /* 64 bit */
@@ -598,7 +608,7 @@ is64:
             ret = CNV_OVR;
         }
         ++curr;
-    } while( --len > 0 );
+    } while( len-- > 0 );
     Const64 = value64;
     return( ret );
 }
@@ -616,7 +626,7 @@ static cnv_cc Cnv16( void )
     curr = Buffer + 2;      // skip 0x thing
     len = TokenLen - 2;
     value = 0;
-    while( --len > 0 ) {
+    while( len-- > 0 ) {
         c = *curr;
         if( value & 0xF0000000 )
             goto is64; /* 64 bit */
@@ -640,7 +650,7 @@ is64:
             ret = CNV_OVR;
         }
         ++curr;
-    } while( --len > 0 );
+    } while( len-- > 0 );
     Const64 = value64;
     return( ret );
 }
@@ -658,7 +668,7 @@ static cnv_cc Cnv10( void )
     curr = Buffer;      // skip 0x thing
     len = TokenLen;
     value = 0;
-    while( --len > 0 ) {
+    while( len-- > 0 ) {
         c = *curr;
         if( value >= 429496729 ) {
             if( value == 429496729 ) {
@@ -683,7 +693,7 @@ is64:
             ret = CNV_OVR;
         }
         ++curr;
-    } while( --len > 0 );
+    } while( len-- > 0 );
     Const64 = value64;
     return( ret );
 }
@@ -706,15 +716,13 @@ static TOKEN doScanNum( void )
     ov = CNV_32;
     Constant = 0;
     if( CurrChar == '0' ) {
-        c = SaveNextChar();
+        c = NextChar();
         if( c == 'x' || c == 'X' ) {
             bad_token_type = ERR_INVALID_HEX_CONSTANT;
             con.form = CON_HEX;
-            for( ;; ) {
-                c = SaveNextChar();
-                if( ( CharSet[c] & (C_HX|C_DI) ) == 0 ) {
-                    break;
-                }
+            c = SaveCharNextChar( c );
+            for( ; CharSet[c] & (C_HX | C_DI); ) {
+                c = SaveCharNextChar( c );
             }
 
             if (CompFlags.c99_extensions) {
@@ -724,7 +732,7 @@ static TOKEN doScanNum( void )
             }
 
             if( !CompFlags.cpp_mode ) {
-                if( TokenLen == 3 ) {   /* just collected a 0x */
+                if( TokenLen == 2 ) {   /* just collected a 0x */
                     BadTokenInfo = ERR_INVALID_HEX_CONSTANT;
                     if( NestLevel == SkipLevel ) {
                         CErr1( ERR_INVALID_HEX_CONSTANT );
@@ -742,7 +750,7 @@ static TOKEN doScanNum( void )
             // since the argument may be used in with # or ##.
             while( c >= '0' && c <= '9' ) {
                 digit_mask |= c;
-                c = SaveNextChar();
+                c = SaveCharNextChar( c );
             }
             if( c == '.' || c == 'e' || c == 'E' ) {
                 return( doScanFloat( false ) );
@@ -760,9 +768,10 @@ static TOKEN doScanNum( void )
     } else {    /* scan decimal number */
         bad_token_type = ERR_INVALID_CONSTANT;
         con.form = CON_DEC;
-        do {
-            c = SaveNextChar();
-        } while( c >= '0' && c <= '9' );
+        c = NextChar();
+        for( ; c >= '0' && c <= '9'; ) {
+            c = SaveCharNextChar( c );
+        }
         if( c == '.' || c == 'e' || c == 'E' ) {
             return( doScanFloat( false ) );
         }
@@ -784,14 +793,14 @@ static TOKEN doScanNum( void )
     }
     con.suffix = SUFF_NONE;
     if( c == 'l' || c == 'L' ) {   // collect suffix
-        c = SaveNextChar();
+        c = SaveCharNextChar( c );
         if( c == 'u' || c == 'U' ) {
-            c = SaveNextChar();
+            c = SaveCharNextChar( c );
             con.suffix = SUFF_UL;
         } else if( c == 'l' || c == 'L' ) {
-            c = SaveNextChar();
+            c = SaveCharNextChar( c );
             if( c == 'u' || c == 'U' ) {
-                c = SaveNextChar();
+                c = SaveCharNextChar( c );
                 con.suffix = SUFF_ULL;
             } else {
                 con.suffix = SUFF_LL;
@@ -800,29 +809,29 @@ static TOKEN doScanNum( void )
             con.suffix = SUFF_L;
         }
     } else if( c == 'u' || c == 'U' ) {
-        c = SaveNextChar();
+        c = SaveCharNextChar( c );
         if( c == 'l' || c == 'L' ) {
-            c = SaveNextChar();
+            c = SaveCharNextChar( c );
             if( c == 'l' || c == 'L' ) {
-                c = SaveNextChar();
+                c = SaveCharNextChar( c );
                 con.suffix = SUFF_ULL;
             } else {
                 con.suffix = SUFF_UL;
             }
         } else if( c == 'i' || c == 'I' ) {
-            c = SaveNextChar();
+            c = SaveCharNextChar( c );
             con.suffix = SUFF_UI;
         } else {
             con.suffix = SUFF_U;
         }
     } else if( c == 'i' || c == 'I' ) {
-        c = SaveNextChar();
+        c = SaveCharNextChar( c );
         con.suffix = SUFF_I;
     }
     if( CompFlags.cpp_mode ) {
         if( con.suffix == SUFF_UI || con.suffix == SUFF_I ) {
             while( c >= '0' && c <= '9' ) {
-                c = SaveNextChar();
+                c = SaveCharNextChar( c );
             }
         }
     } else {
@@ -832,7 +841,7 @@ static TOKEN doScanNum( void )
             value = 0;
             while( c >= '0' && c <= '9' ) {
                 value = value * 10 + c - '0';
-                c = SaveNextChar();
+                c = SaveCharNextChar( c );
             }
             if( value == 64 ) {
                 if( con.suffix == SUFF_I ) {
@@ -948,11 +957,13 @@ static TOKEN doScanNum( void )
         }
     }
     token = T_CONSTANT;
-    if( Pre_processing != PPCTL_NORMAL && (CharSet[c] & (C_AL | C_DI)) ) {
-        token = T_BAD_TOKEN;
-        do {
-            c = SaveNextChar();
-        } while( CharSet[c] & (C_AL | C_DI) );
+    if( Pre_processing != PPCTL_NORMAL ) {
+        if( CharSet[c] & (C_AL | C_DI) ) {
+            token = T_BAD_TOKEN;
+            for( ; CharSet[c] & (C_AL | C_DI); ) {
+                c = SaveCharNextChar( c );
+            }
+        }
     }
     if( !CompFlags.cpp_mode ) {
         if( token == T_BAD_TOKEN ) {
@@ -964,7 +975,6 @@ static TOKEN doScanNum( void )
             }
         }
     }
-    --TokenLen;
     WriteBufferNullChar();
     return( token );
 }
