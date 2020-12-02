@@ -688,8 +688,8 @@ is64:
     return( ret );
 }
 
-static TOKEN ScanNum( void )
-/**************************/
+static TOKEN doScanNum( void )
+/****************************/
 {
     int         c;
     int         bad_token_type;
@@ -701,12 +701,6 @@ static TOKEN ScanNum( void )
         enum { SUFF_NONE,SUFF_U, SUFF_L,SUFF_UL,  SUFF_I, SUFF_UI,
                SUFF_LL,SUFF_ULL } suffix;
     } con;
-
-    Buffer[0] = CurrChar;
-    TokenLen = 1;
-
-    if( Pre_processing & PPCTL_ASM )
-        return( doScanAsm() );
 
     BadTokenInfo = 0;
     ov = CNV_32;
@@ -973,6 +967,19 @@ static TOKEN ScanNum( void )
     --TokenLen;
     WriteBufferNullChar();
     return( token );
+}
+
+static TOKEN ScanNum( void )
+/**************************/
+{
+    Buffer[0] = CurrChar;
+    TokenLen = 1;
+
+    if( Pre_processing & PPCTL_ASM ) {
+        return( doScanAsm() );
+    } else {
+        return( doScanNum() );
+    }
 }
 
 static bool checkDelim2( TOKEN *token, TOKEN last )
