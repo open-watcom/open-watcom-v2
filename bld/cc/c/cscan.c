@@ -66,12 +66,12 @@ static unsigned char InitClassTable[] = {
     ')',        SCAN_DELIM1,
     ',',        SCAN_DELIM1,
     ';',        SCAN_DELIM1,
-    '?',        SCAN_QUESTION,
+    '?',        SCAN_DELIM1,
     '/',        SCAN_SLASH,
-    '-',        SCAN_MINUS,
-    '=',        SCAN_EQUAL,
-    ':',        SCAN_COLON,
-    '*',        SCAN_STAR,
+    '-',        SCAN_DELIM2,
+    '=',        SCAN_DELIM2,
+    ':',        SCAN_DELIM2,
+    '*',        SCAN_DELIM2,
     '[',        SCAN_DELIM1,
     ']',        SCAN_DELIM1,
     '{',        SCAN_DELIM1,
@@ -453,23 +453,24 @@ static TOKEN ScanDot( void )
 }
 
 static TOKEN doScanPPNumber( void )
-/*********************************/
+/**********************************
+ *
+ * 3.1.8 pp-number (C99 ง6.4.8 adds 'p'/'P')
+ * pp-number:
+ *          digit           (checked by caller)
+ *          . digit         (checked by caller)
+ *          pp-number digit
+ *          pp-number identifier-nondigit
+ *          pp-number e sign
+ *          pp-number E sign
+ *          pp-number p sign
+ *          pp-number P sign
+ *          pp-number .
+ */
 {
     int         c;
     int         prevc;
-    /**
-     * 3.1.8 pp-number (C99 ยง6.4.8 adds 'p'/'P')
-     * pp-number:
-     *          digit           (checked by caller)
-     *          . digit         (checked by caller)
-     *          pp-number digit
-     *          pp-number identifier-nondigit
-     *          pp-number e sign
-     *          pp-number E sign
-     *          pp-number p sign
-     *          pp-number P sign
-     *          pp-number .
-     */
+
     c = 0;
     for( ;; ) {
         prevc = c;
@@ -981,102 +982,132 @@ static TOKEN ScanNum( void )
     return( tok );
 }
 
-static TOKEN ScanQuestionMark( void )
-/***********************************/
-{
-    NextChar();
-    Buffer[0] = '?';
-    Buffer[1] = '\0';
-    return( T_QUESTION );
-}
-
-static bool checkTokEqual( TOKEN *token )
-/***************************************/
+static bool checkDelim2( TOKEN *token, TOKEN last )
+/*************************************************/
 {
     switch( *token ) {
-    case T_EQUAL:
-        *token = T_EQ;
-        break;
-    case T_EXCLAMATION:
-        *token = T_NE;
-        break;
-    case T_LT:
-        *token = T_LE;
-        break;
-    case T_GT:
-        *token = T_GE;
-        break;
-    case T_PERCENT:
-        *token = T_PERCENT_EQUAL;
-        break;
     case T_AND:
-        *token = T_AND_EQUAL;
-        break;
-    case T_TIMES:
-        *token = T_TIMES_EQUAL;
-        break;
-    case T_PLUS:
-        *token = T_PLUS_EQUAL;
-        break;
-    case T_MINUS:
-        *token = T_MINUS_EQUAL;
-        break;
-    case T_DIV:
-        *token = T_DIV_EQUAL;
-        break;
-    case T_XOR:
-        *token = T_XOR_EQUAL;
-        break;
-    case T_OR:
-        *token = T_OR_EQUAL;
-        break;
-    default:
+        if( last == T_AND ) {
+            *token = T_AND_AND;
+            break;
+        } else if( last == T_EQUAL ) {
+            *token = T_AND_EQUAL;
+            break;
+        }
         return( false );
-    }
-    return( true );
-}
-
-static bool checkTokTok( TOKEN *token )
-/*************************************/
-{
-    switch( *token ) {
-    case T_SHARP:
-        *token = T_SHARP_SHARP;
-        break;
-    case T_AND:
-        *token = T_AND_AND;
-        break;
     case T_PLUS:
-        *token = T_PLUS_PLUS;
-        break;
+        if( last == T_PLUS ) {
+            *token = T_PLUS_PLUS;
+            break;
+        } else if( last == T_EQUAL ) {
+            *token = T_PLUS_EQUAL;
+            break;
+        }
+        return( false );
     case T_MINUS:
-        *token = T_MINUS_MINUS;
-        break;
+        if( last == T_MINUS ) {
+            *token = T_MINUS_MINUS;
+            break;
+        } else if( last == T_EQUAL ) {
+            *token = T_MINUS_EQUAL;
+            break;
+        } else if( last == T_GT ) {
+            *token = T_ARROW;
+            break;
+        }
+        return( false );
     case T_OR:
-        *token = T_OR_OR;
-        break;
+        if( last == T_OR ) {
+            *token = T_OR_OR;
+            break;
+        } else if( last == T_EQUAL ) {
+            *token = T_OR_EQUAL;
+            break;
+        }
+        return( false );
     case T_LT:
-        *token = T_LSHIFT;
-        break;
-    case T_GT:
-        *token = T_RSHIFT;
-        break;
-    default:
+        if( last == T_LT ) {
+            *token = T_LSHIFT;
+            break;
+        } else if( last == T_EQUAL ) {
+            *token = T_LE;
+            break;
+        }
         return( false );
-    }
-    return( true );
-}
-
-static bool checkTokTokEqual( TOKEN *token )
-/******************************************/
-{
-    switch( *token ) {
-    case T_LSHIFT:
-        *token = T_LSHIFT_EQUAL;
-        break;
-    case T_RSHIFT:
-        *token = T_RSHIFT_EQUAL;
-        break;
+    case T_GT:
+        if( last == T_GT ) {
+            *token = T_RSHIFT;
+            break;
+        } else if( last == T_EQUAL ) {
+            *token = T_GE;
+            break;
+        }
+        return( false );
+    case T_SHARP:   /* ## */
+        if( last == T_SHARP ) {
+            *token = T_SHARP_SHARP;
+            break;
+        }
+        return( false );
+    case T_EQUAL:   /* == */
+        if( last == T_EQUAL ) {
+            *token = T_EQ;
+            break;
+        }
+        return( false );
+    case T_EXCLAMATION: /* != */
+        if( last == T_EQUAL ) {
+            *token = T_NE;
+            break;
+        }
+        return( false );
+    case T_PERCENT: /* %= */
+        if( last == T_EQUAL ) {
+            *token = T_PERCENT_EQUAL;
+            break;
+        }
+        return( false );
+    case T_TIMES:   /* *= */
+        if( last == T_EQUAL ) {
+            *token = T_TIMES_EQUAL;
+            break;
+        }
+        return( false );
+    case T_DIV:     /* /= */
+        if( last == T_EQUAL ) {
+            *token = T_DIV_EQUAL;
+            break;
+        }
+        return( false );
+    case T_XOR:     /* ^= */
+        if( last == T_EQUAL ) {
+            *token = T_XOR_EQUAL;
+            break;
+        }
+        return( false );
+    case T_LSHIFT:  /* <<= */
+        if( last == T_EQUAL ) {
+            *token = T_LSHIFT_EQUAL;
+            break;
+        }
+        return( false );
+    case T_RSHIFT:  /* >>= */
+        if( last == T_EQUAL ) {
+            *token = T_RSHIFT_EQUAL;
+            break;
+        }
+        return( false );
+    case T_COLON:   /* :> */
+        if( last == T_GT ) {
+            *token = T_SEG_OP;
+            break;
+#if _CPU == 370
+        } else if( last == T_RIGHT_PAREN ) {
+            *token = T_RIGHT_BRACKET;   /* :) -> ] */
+            break;
+#endif
+        }
+        return( false );
     default:
         return( false );
     }
@@ -1088,129 +1119,40 @@ static TOKEN ScanDelim1( void )
 {
     TOKEN       token;
 
-    Buffer[0] = CurrChar;
-    Buffer[1] = '\0';
     token = TokValue[CurrChar];
+    Buffer[0] = CurrChar;
+    TokenLen = 1;
     NextChar();
-    return( token );
-}
-
-static TOKEN ScanMinus( void )
-/****************************/
-{
-    int         chr2;
-
-    Buffer[0] = '-';
-    chr2 = NextChar();          // can't inline this copy of NextChar
-    Buffer[1] = chr2;
-    if( chr2 == '>' ) {
-        Buffer[2] = '\0';
-        NextChar();
-        return( T_ARROW );
-    } else if( chr2 == '=' ) {
-        Buffer[2] = '\0';
-        NextChar();
-        return( T_MINUS_EQUAL );
-    } else if( chr2 == '-' ) {
-        Buffer[2] = '\0';
-        NextChar();
-        return( T_MINUS_MINUS );
-    } else {
-        Buffer[1] = '\0';
-        return( T_MINUS );
-    }
-}
-
-static TOKEN ScanEqual( void )
-/****************************/
-{
-    Buffer[0] = '=';
-    if( NextChar() == '=' ) {
-        NextChar();
-        Buffer[1] = '=';
-        Buffer[2] = '\0';
-        return( T_EQ );
-    } else {
-        Buffer[1] = '\0';
-        return( T_EQUAL );
-    }
-}
-
-static TOKEN ScanStar( void )
-/***************************/
-{
-    Buffer[0] = '*';
-    if( NextChar() == '=' ) {
-        NextChar();
-        Buffer[1] = '=';
-        Buffer[2] = '\0';
-        return( T_TIMES_EQUAL );
-    } else {
-        Buffer[1] = '\0';
-        return( T_TIMES );
-    }
-}
-
-static TOKEN ScanColon( void )
-/****************************/
-{
-    int         chr2;
-
-    Buffer[0] = ':';
-    chr2 = NextChar();
-    if( chr2 == '>' ) {
-        NextChar();
-        Buffer[1] = '>';
-        Buffer[2] = '\0';
-        return( T_SEG_OP );
 #if _CPU == 370
-    } else if( chr2 == ')' ) {
+    if( token == T_LEFT_PAREN && CurrChar == ':' ) {
+        Buffer[TokenLen++] = ':';
         NextChar();
-        Buffer[1] = ')';
-        Buffer[2] = '\0';
-        return( T_RIGHT_BRACKET );
-#endif
-    } else {
-        Buffer[1] = '\0';
-        return( T_COLON );
+        token == T_LEFT_BRACKET;    /* (: -> [ */
     }
+#endif
+    Buffer[TokenLen] = '\0';
+    return( token );
 }
 
 static TOKEN ScanDelim2( void )
 /*****************************/
 {
-    int             c;
     TOKEN           token;
-    size_t          len;
 
-    c = CurrChar;
-    token = TokValue[c];
-    Buffer[0] = c;
-    len = 1;
-    NextChar();                         /* can't inline this copy of NextChar */
-    if( CurrChar == '=' ) {             /* if second char is an = */
-        if( checkTokEqual( &token ) ) { /* and = is valid second char */
-            Buffer[len++] = '=';
-            NextChar();
-        }
-    } else if( CurrChar == c ) {        /* if second char is same as first */
-        if( checkTokTok( &token ) ) {   /* and duplicate is valid */
-            Buffer[len++] = c;
-            if( NextChar() == '=' ) {
-                if( checkTokTokEqual( &token ) ) {
-                    Buffer[len++] = '=';
-                    NextChar();
-                }
+    token = TokValue[CurrChar];
+    Buffer[0] = CurrChar;
+    TokenLen = 1;
+    NextChar();     /* can't inline this copy of NextChar */
+    if( checkDelim2( &token, TokValue[CurrChar] ) ) {
+        Buffer[TokenLen++] = CurrChar;
+        if( NextChar() == '=' ) {
+            if( checkDelim2( &token, T_EQUAL ) ) {
+                Buffer[TokenLen++] = CurrChar;
+                NextChar();
             }
         }
-#if _CPU == 370
-    } else if( c == '(' && CurrChar == ':' ) {
-        token == T_LEFT_BRACKET;
-        Buffer[len++] = ':';
-        NextChar();
-#endif
     }
-    Buffer[len] = '\0';
+    Buffer[TokenLen] = '\0';
     return( token );
 }
 
@@ -1295,30 +1237,35 @@ static void doScanComment( void )
 static TOKEN ScanSlash( void )
 /****************************/
 {
-    int         c;
+    TOKEN   token;
 
-    c = NextChar();         // can't inline this copy of NextChar
-    if( c == '=' ) {        /* if second char is an = */
+    token = T_DIV;
+    Buffer[0] = '/';
+    TokenLen = 1;
+    NextChar();             // can't inline this copy of NextChar
+    if( CurrChar == '=' ) {        /* if second char is an = */
+        Buffer[TokenLen++] = '=';
         NextChar();
-        Buffer[0] = '/';
-        Buffer[1] = '=';
-        Buffer[2] = '\0';
-        return( T_DIV_EQUAL );
-    } else if( c == '/' && !CompFlags.strict_ANSI ) {   /* if C++ // style comment */
+        token = T_DIV_EQUAL;
+    } else if( CurrChar == '/' && !CompFlags.strict_ANSI ) {   /* if C++ // style comment */
         if( CompFlags.cpp_mode ) {
             CppComment( '/' );
         }
         CompFlags.scanning_cpp_comment = true;
         for( ;; ) {
-            c = CurrChar;
-            NextChar();
+            if( CurrChar == '\r' ) {
+                NextChar();
+                /* swallow up the next line if this one ends with \ */
+                /* some editors don't put linefeeds on end of lines */
+                if( CurrChar == '\n' ) {
+                    break;
+                }
+            } else {
+                NextChar();
+            }
             if( CurrChar == EOF_CHAR )
                 break;
             if( CurrChar == '\0' )
-                break;
-            /* swallow up the next line if this one ends with \ */
-            /* some editors don't put linefeeds on end of lines */
-            if( CurrChar == '\n' || c == '\r' )
                 break;
             if( CompFlags.cpp_mode && CompFlags.cpp_keep_comments && CurrChar != '\r' ) {
                 CppPrtChar( CurrChar );
@@ -1329,18 +1276,14 @@ static TOKEN ScanSlash( void )
         }
         CompFlags.scanning_cpp_comment = false;
         Buffer[0] = ' ';
-        Buffer[1] = '\0';
-        return( T_WHITE_SPACE );
-    } else if( c == '*' ) {
+        token = T_WHITE_SPACE;
+    } else if( CurrChar == '*' ) {
         doScanComment();
         Buffer[0] = ' ';
-        Buffer[1] = '\0';
-        return( T_WHITE_SPACE );
-    } else {
-        Buffer[0] = '/';
-        Buffer[1] = '\0';
-        return( T_DIV );
+        token = T_WHITE_SPACE;
     }
+    Buffer[TokenLen] = '\0';
+    return( token );
 }
 
 static TOKEN doScanCharConst( DATA_TYPE char_type )
@@ -1510,11 +1453,7 @@ static TOKEN doScanString( bool wide )
         }
 
         if( c == '\\' ) {
-            if( TokenLen > BufferSize - 32 ) {
-                EnlargeBuffer( TokenLen * 2 );
-            }
-            c = NextChar();
-            Buffer[TokenLen++] = c;
+            c = SaveNextChar();
             if( (CharSet[c] & C_WS) == 0 ) {
                 ESCChar( c, NULL, &error );
             }
@@ -1525,11 +1464,7 @@ static TOKEN doScanString( bool wide )
             if( CharSet[c] & C_DB ) {
                 SaveNextChar();
             }
-            if( TokenLen > BufferSize - 32 ) {
-                EnlargeBuffer( TokenLen * 2 );
-            }
-            c = NextChar();
-            Buffer[TokenLen++] = c;
+            c = SaveNextChar();
         }
     }
     Buffer[--TokenLen] = '\0';
