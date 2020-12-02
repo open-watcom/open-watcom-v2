@@ -990,7 +990,8 @@ static bool checkDelim2( TOKEN *token, TOKEN last )
         if( last == T_AND ) {
             *token = T_AND_AND;
             break;
-        } else if( last == T_EQUAL ) {
+        }
+        if( last == T_EQUAL ) {
             *token = T_AND_EQUAL;
             break;
         }
@@ -999,7 +1000,8 @@ static bool checkDelim2( TOKEN *token, TOKEN last )
         if( last == T_PLUS ) {
             *token = T_PLUS_PLUS;
             break;
-        } else if( last == T_EQUAL ) {
+        }
+        if( last == T_EQUAL ) {
             *token = T_PLUS_EQUAL;
             break;
         }
@@ -1008,10 +1010,12 @@ static bool checkDelim2( TOKEN *token, TOKEN last )
         if( last == T_MINUS ) {
             *token = T_MINUS_MINUS;
             break;
-        } else if( last == T_EQUAL ) {
+        }
+        if( last == T_EQUAL ) {
             *token = T_MINUS_EQUAL;
             break;
-        } else if( last == T_GT ) {
+        }
+        if( last == T_GT ) {
             *token = T_ARROW;
             break;
         }
@@ -1020,7 +1024,8 @@ static bool checkDelim2( TOKEN *token, TOKEN last )
         if( last == T_OR ) {
             *token = T_OR_OR;
             break;
-        } else if( last == T_EQUAL ) {
+        }
+        if( last == T_EQUAL ) {
             *token = T_OR_EQUAL;
             break;
         }
@@ -1029,7 +1034,8 @@ static bool checkDelim2( TOKEN *token, TOKEN last )
         if( last == T_LT ) {
             *token = T_LSHIFT;
             break;
-        } else if( last == T_EQUAL ) {
+        }
+        if( last == T_EQUAL ) {
             *token = T_LE;
             break;
         }
@@ -1038,7 +1044,8 @@ static bool checkDelim2( TOKEN *token, TOKEN last )
         if( last == T_GT ) {
             *token = T_RSHIFT;
             break;
-        } else if( last == T_EQUAL ) {
+        }
+        if( last == T_EQUAL ) {
             *token = T_GE;
             break;
         }
@@ -1101,12 +1108,13 @@ static bool checkDelim2( TOKEN *token, TOKEN last )
         if( last == T_GT ) {
             *token = T_SEG_OP;
             break;
+        }
 #if _CPU == 370
-        } else if( last == T_RIGHT_PAREN ) {
+        if( last == T_RIGHT_PAREN ) {
             *token = T_RIGHT_BRACKET;   /* :) -> ] */
             break;
-#endif
         }
+#endif
         return( false );
     default:
         return( false );
