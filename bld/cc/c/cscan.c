@@ -533,50 +533,6 @@ static TOKEN ScanPPDot( void )
     }
 }
 
-static bool doScanHex( int max, const unsigned char **pbuf )
-/**********************************************************/
-{
-    int             c;
-    int             count;
-    char            too_big;
-    unsigned        value;
-
-    too_big = 0;
-    count = max;
-    value = 0;
-    for( ;; ) {
-        if( pbuf == NULL ) {
-            c = SaveNextChar();
-        } else {
-            c = *++*pbuf;
-        }
-        if( max == 0 )
-            break;
-        if( ( CharSet[c] & (C_HX|C_DI) ) == 0 )
-            break;
-        if( CharSet[c] & C_HX )
-            c = (( c | HEX_MASK ) - HEX_BASE ) + 10 + '0';
-        if( value & 0xF0000000 )
-            too_big = 1;
-        value = value * 16 + c - '0';
-        --max;
-    }
-    Constant = value;
-    if( count == max ) {                /* no characters matched */
-        return( false );            /* indicate no characters matched */
-/*          CErr1( ERR_INVALID_HEX_CONSTANT );  */
-    }
-    if( !CompFlags.cpp_mode ) {
-        if( too_big ) {
-            BadTokenInfo = ERR_CONSTANT_TOO_BIG;
-            if( NestLevel == SkipLevel ) {
-                CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
-            }
-        }
-    }
-    return( true );                        /* indicate characters were matched */
-}
-
 typedef enum { CNV_32, CNV_64, CNV_OVR } cnv_cc;
 
 static cnv_cc Cnv8( void )
@@ -1524,6 +1480,50 @@ static TOKEN ScanWide( void )           // scan something that starts with L
         }
     }
     return( token );
+}
+
+static bool doScanHex( int max, const unsigned char **pbuf )
+/**********************************************************/
+{
+    int             c;
+    int             count;
+    char            too_big;
+    unsigned        value;
+
+    too_big = 0;
+    count = max;
+    value = 0;
+    for( ;; ) {
+        if( pbuf == NULL ) {
+            c = SaveNextChar();
+        } else {
+            c = *++*pbuf;
+        }
+        if( max == 0 )
+            break;
+        if( ( CharSet[c] & (C_HX|C_DI) ) == 0 )
+            break;
+        if( CharSet[c] & C_HX )
+            c = (( c | HEX_MASK ) - HEX_BASE ) + 10 + '0';
+        if( value & 0xF0000000 )
+            too_big = 1;
+        value = value * 16 + c - '0';
+        --max;
+    }
+    Constant = value;
+    if( count == max ) {                /* no characters matched */
+        return( false );            /* indicate no characters matched */
+/*          CErr1( ERR_INVALID_HEX_CONSTANT );  */
+    }
+    if( !CompFlags.cpp_mode ) {
+        if( too_big ) {
+            BadTokenInfo = ERR_CONSTANT_TOO_BIG;
+            if( NestLevel == SkipLevel ) {
+                CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
+            }
+        }
+    }
+    return( true );                        /* indicate characters were matched */
 }
 
 int ESCChar( int c, const unsigned char **pbuf, bool *error )
