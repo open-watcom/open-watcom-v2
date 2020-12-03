@@ -390,39 +390,39 @@ static TOKEN doScanFloat( bool hex )
     c = CurrChar;
     if( c == '.' ) {
         flags = ( hex ) ? C_HX | C_DI : C_DI;
-        do {
-            c = SaveNextChar();
-        } while( CharSet[c] & flags );
-        if( TokenLen == 2 ) {   /* .? */
+        c = SaveCharNextChar( c );
+        for( ; CharSet[c] & flags; ) {
+            c = SaveCharNextChar( c );
+        }
+        if( TokenLen == 1 ) {   /* .? */
             return( doScanDotSomething( c ) );
         }
     }
     token = T_CONSTANT;
     if( c == 'e' || c == 'E' || ( hex && ( c == 'p' || c == 'P' ) ) ) {
-        c = SaveNextChar();
+        c = SaveCharNextChar( c );
         if( c == '+' || c == '-' ) {
-            c = SaveNextChar();
+            c = SaveCharNextChar( c );
         }
         if( c < '0' || c > '9' ) {
             token = T_BAD_TOKEN;
             BadTokenInfo = ERR_INVALID_FLOATING_POINT_CONSTANT;
         }
         while( c >= '0' && c <= '9' ) {
-            c = SaveNextChar();
+            c = SaveCharNextChar( c );
         }
     }
     if( c == 'f' || c == 'F' ) {
-        NextChar();
+        SaveCharNextChar( c );
         ConstType = TYPE_FLOAT;
     } else if( c == 'l' || c == 'L' ) {
-        NextChar();
+        SaveCharNextChar( c );
         if( CompFlags.use_long_double ) {
             ConstType = TYPE_LONG_DOUBLE;
         } else {
             ConstType = TYPE_DOUBLE;
         }
     } else {
-        --TokenLen;
         ConstType = TYPE_DOUBLE;
     }
     WriteBufferNullChar();
@@ -435,8 +435,7 @@ static TOKEN doScanAsm( void )
     BadTokenInfo = 0;
     NextChar();
     for( ; getIDName( CurrChar ) == '.'; ) {
-        WriteBufferChar( '.' );
-        NextChar();
+        SaveCharNextChar( '.' );
     }
     WriteBufferNullChar();
     return( T_ID );
@@ -445,12 +444,12 @@ static TOKEN doScanAsm( void )
 static TOKEN ScanDot( void )
 /**************************/
 {
-    Buffer[0] = '.';
-    TokenLen = 1;
-
     if( Pre_processing & PPCTL_ASM ) {
+        Buffer[0] = '.';
+        TokenLen = 1;
         return( doScanAsm() );
     } else {
+        TokenLen = 0;
         return( doScanFloat( false ) );
     }
 }
