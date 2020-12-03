@@ -42,6 +42,12 @@
 #define MACRO_END_CHAR          'Z'
 #define MACRO_END_STRING        "Z-<end of macro>"
 
+typedef enum exp_state {
+    EXPANDABLE_NO       = 0,    // macro is currently not expandable
+    EXPANDABLE_YES      = 1,    // macro is expandable
+    EXPANDABLE_WSSKIP   = 2     // we skipped over some white space
+} exp_state;
+
 typedef struct tokens {
     struct  tokens  *next;
     size_t          length;
@@ -737,21 +743,21 @@ static bool MacroBeingExpanded( MEPTR mentry )
     return( false );
 }
 
-static int Expandable( MACRO_TOKEN *mtok, bool macro_parm, MEPTR mentry )
-/***********************************************************************/
+static exp_state Expandable( MACRO_TOKEN *mtok, bool macro_parm, MEPTR mentry )
+/*****************************************************************************/
 {
     int         lparen;
 
     if( MacroIsSpecial( mentry ) ) {            /* if special macro */
-        return( 1 );
+        return( EXPANDABLE_YES );
     }
     if( !MacroWithParenthesis( mentry ) ) {     /* if () not expected */
         if( macro_parm ) {
             if( MacroBeingExpanded( mentry ) ) {
-                return( 0 );
+                return( EXPANDABLE_NO );
             }
         }
-        return( 1 );
+        return( EXPANDABLE_YES );
     }
     for( ; mtok != NULL; mtok = mtok->next ) {
         if( mtok->token != T_WHITE_SPACE && mtok->token != T_NULL ) {
@@ -761,14 +767,14 @@ static int Expandable( MACRO_TOKEN *mtok, bool macro_parm, MEPTR mentry )
     if( mtok != NULL ) {
         if( mtok->token == T_LEFT_PAREN ) {
             if( MacroDepth == 1 && !macro_parm )
-                return( 1 );
+                return( EXPANDABLE_YES );
             lparen = 0;
             for( ; (mtok = mtok->next) != NULL; ) {
                 if( mtok->token == T_LEFT_PAREN ) {
                     ++lparen;
                 } else if( mtok->token == T_RIGHT_PAREN ) {
                     if( lparen == 0 )
-                        return( 1 );
+                        return( EXPANDABLE_YES );
                     --lparen;
                 }
             }
@@ -776,12 +782,12 @@ static int Expandable( MACRO_TOKEN *mtok, bool macro_parm, MEPTR mentry )
     } else if( !macro_parm ) {
         SkipAhead();
         if( CurrChar == '(' ) {
-            return( 1 );
+            return( EXPANDABLE_YES );
         } else if( CompFlags.cpp_mode ) {
-            return( 2 );
+            return( EXPANDABLE_WSSKIP );
         }
     }
-    return( 0 );
+    return( EXPANDABLE_NO );
 }
 
 static char *GlueTokenToBuffer( MACRO_TOKEN *first, char *gluebuf )
@@ -1212,7 +1218,7 @@ static MACRO_TOKEN *ExpandNestedMacros( MACRO_TOKEN *head, bool rescanning )
     MACRO_TOKEN *toklist;
     MACRO_TOKEN *prev_tok;
     MACRO_TOKEN *old_tokenlist;
-    int         i;
+    exp_state   i;
     size_t      len;
     char        *buf;
     MEPTR       mentry;
@@ -1244,12 +1250,12 @@ static MACRO_TOKEN *ExpandNestedMacros( MACRO_TOKEN *head, bool rescanning )
                         toklist->next = TokenList;
                         i = Expandable( mtok->next, false, mentry );
                         switch( i ) {
-                        case 0:                 // macro is currently not expandable
+                        case EXPANDABLE_NO:     // macro is currently not expandable
                             mtok->token = T_MACRO;
                             toklist->next = NULL;
                             toklist = NULL;
                             break;
-                        case 1:                 // macro is expandable
+                        case EXPANDABLE_YES:    // macro is expandable
                             TokenList = mtok->next;
                             if( head == mtok ) {
                                 head = NULL;
@@ -1260,7 +1266,7 @@ static MACRO_TOKEN *ExpandNestedMacros( MACRO_TOKEN *head, bool rescanning )
                             mtok = TokenList;
                             TokenList = NULL;
                             break;
-                        case 2:                 // we skipped over some white space
+                        case EXPANDABLE_WSSKIP: // we skipped over some white space
                             mtok->token = T_UNEXPANDABLE_ID;
                             toklist->next = NULL;
                             toklist = BuildAToken( T_WHITE_SPACE, " " );
@@ -1271,7 +1277,14 @@ static MACRO_TOKEN *ExpandNestedMacros( MACRO_TOKEN *head, bool rescanning )
                         }
                     }
                 } else {                        // expanding a macro parm
-                    if( Expandable( mtok->next, true, mentry ) ) {
+                    i = Expandable( mtok->next, true, mentry );
+                    switch( i ) {
+                    case EXPANDABLE_NO:
+                        prev_tok = mtok;
+                        mtok = mtok->next;      // advance onto next token
+                        break;
+                    case EXPANDABLE_YES:
+                    case EXPANDABLE_WSSKIP:
                         old_tokenlist = TokenList;
                         TokenList = mtok->next;
                         if( head == mtok ) {
@@ -1282,9 +1295,7 @@ static MACRO_TOKEN *ExpandNestedMacros( MACRO_TOKEN *head, bool rescanning )
                         toklist = ExpandNestedMacros( MacroExpansion( false, mentry ), rescanning );
                         mtok = TokenList;
                         TokenList = old_tokenlist;
-                    } else {
-                        prev_tok = mtok;
-                        mtok = mtok->next;      // advance onto next token
+                        break;
                     }
                 }
             } else {
