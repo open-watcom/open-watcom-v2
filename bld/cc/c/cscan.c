@@ -365,18 +365,23 @@ static TOKEN ScanName( void )
 static TOKEN doScanDotSomething( int c )
 /**************************************/
 {
+    TOKEN   token;
+
+    token = T_DOT;
     if( c == '.' ) {
-        c = SaveNextChar();
+        c = NextChar();
         if( c == '.' ) {
+            WriteBufferChar( c );
+            WriteBufferChar( c );
             NextChar();
-            return( T_DOT_DOT_DOT );
+            token = T_DOT_DOT_DOT;
+        } else {
+            CurrChar = '.';
+            UnGetChar( c );
         }
-        CurrChar = '.';
-        UnGetChar( c );
     }
-    Buffer[1] = '\0';
-    TokenLen = 1;
-    return( T_DOT );
+    Buffer[TokenLen] = '\0';
+    return( token );
 }
 
 static TOKEN doScanFloat( bool hex )
@@ -474,17 +479,16 @@ static TOKEN doScanPPNumber( void )
     int         prevc;
 
     c = 0;
-    for( ;; ) {
+    for( ;; WriteBufferChar( c ) ) {
         prevc = c;
-        c = SaveNextChar();
-        if( CharSet[c] & (C_AL | C_DI) )
-            continue;
-        if( c == '.' )
+        c = NextChar();
+        if( (CharSet[c] & (C_AL | C_DI)) || c == '.' )
             continue;
         if( c == '+' || c == '-' ) {
             if( prevc == 'e' || prevc == 'E' ||
               ( CompFlags.c99_extensions && ( prevc == 'p' || prevc == 'P' ) ) ) {
                 if( CompFlags.extensions_enabled ) {
+                    WriteBufferChar( c );
                     /* concession to existing practice...
                         #define A2 0x02
                         #define A3 0xaa0e+A2
@@ -492,7 +496,7 @@ static TOKEN doScanPPNumber( void )
                         // not: 0xaa0e + A2 (but, this is what ISO C requires!)
                     */
                     prevc = c;  //advance to next
-                    c = SaveNextChar();
+                    c = NextChar();
                     if( (CharSet[c] & C_DI) == 0 ) {
                         break;  //allow e+<digit>
                     }
@@ -502,7 +506,6 @@ static TOKEN doScanPPNumber( void )
         }
         break;
     }
-    --TokenLen;
     WriteBufferNullChar();
     return( T_PPNUMBER );
 }
@@ -522,8 +525,9 @@ static TOKEN ScanPPDot( void )
 
     Buffer[0] = '.';
     TokenLen = 1;
-    c = SaveNextChar();
+    c = NextChar();
     if( c >= '0' && c <= '9' ) {
+        WriteBufferChar( c );
         return( doScanPPNumber() );
     } else {
         return( doScanDotSomething( c ) );
