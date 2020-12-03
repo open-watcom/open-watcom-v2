@@ -953,7 +953,7 @@ static MACRO_TOKEN *BuildString( const char *p )
         bufsize = BUF_SIZE;
         buf = CMemAlloc( bufsize );
         while( MTOK( p ) == T_WHITE_SPACE ) {
-            MTOKINC( p );   //eat leading wspace
+            MTOKINC( p );   //eat leading white space
         }
         while( (tok = MTOK( p )) != T_NULL ) {
             MTOKINC( p );

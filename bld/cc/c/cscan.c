@@ -280,15 +280,14 @@ static int getIDName( int c )
 //      so it is safe to inline the function here.
 //      NextChar could also be pointing to ReScanGetNextChar().
     do {
-        for( ; (CharSet[c] & (C_AL | C_DI)); ) {
+        while( CharSet[c] & (C_AL | C_DI) ) {
             WriteBufferChar( c );
             c = *SrcFile->src_ptr++;
-//            c = NextChar();
         }
         if( (CharSet[c] & C_EX) == 0 )
             break;
         c = GetCharCheck( c );
-    } while( (CharSet[c] & (C_AL | C_DI)) );
+    } while( CharSet[c] & (C_AL | C_DI) );
     CurrChar = c;
     return( c );
 }
@@ -396,7 +395,7 @@ static TOKEN doScanFloat( bool hex )
     if( c == '.' ) {
         flags = ( hex ) ? C_HX | C_DI : C_DI;
         c = SaveCharNextChar( c );
-        for( ; CharSet[c] & flags; ) {
+        while( CharSet[c] & flags ) {
             c = SaveCharNextChar( c );
         }
         if( TokenLen == 1 ) {   /* .? */
@@ -439,7 +438,7 @@ static TOKEN doScanAsm( void )
 {
     BadTokenInfo = 0;
     NextChar();
-    for( ; getIDName( CurrChar ) == '.'; ) {
+    while( getIDName( CurrChar ) == '.' ) {
         SaveCharNextChar( '.' );
     }
     WriteBufferNullChar();
@@ -724,7 +723,7 @@ static TOKEN doScanNum( void )
             bad_token_type = ERR_INVALID_HEX_CONSTANT;
             con.form = CON_HEX;
             c = SaveCharNextChar( c );
-            for( ; CharSet[c] & (C_HX | C_DI); ) {
+            while( CharSet[c] & (C_HX | C_DI) ) {
                 c = SaveCharNextChar( c );
             }
 
@@ -772,7 +771,7 @@ static TOKEN doScanNum( void )
         bad_token_type = ERR_INVALID_CONSTANT;
         con.form = CON_DEC;
         c = NextChar();
-        for( ; c >= '0' && c <= '9'; ) {
+        while( c >= '0' && c <= '9' ) {
             c = SaveCharNextChar( c );
         }
         if( c == '.' || c == 'e' || c == 'E' ) {
@@ -963,7 +962,7 @@ static TOKEN doScanNum( void )
     if( Pre_processing != PPCTL_NORMAL ) {
         if( CharSet[c] & (C_AL | C_DI) ) {
             token = T_BAD_TOKEN;
-            for( ; CharSet[c] & (C_AL | C_DI); ) {
+            while( CharSet[c] & (C_AL | C_DI) ) {
                 c = SaveCharNextChar( c );
             }
         }
@@ -1536,17 +1535,14 @@ int ESCChar( int c, const unsigned char **pbuf, bool *error )
     if( c >= '0' && c <= '7' ) {          /* get octal escape sequence */
         n = 0;
         i = 3;
-        while( c >= '0' && c <= '7' ) {
+        while( i > 0 && c >= '0' && c <= '7' ) {
             n = n * 8 + c - '0';
             if( pbuf == NULL ) {
                 c = SaveNextChar();
             } else {
                 c = *++*pbuf;
             }
-            --i;
-            if( i == 0 ) {
-                break;
-            }
+            i--;
         }
     } else if( c == 'x' ) {         /* get hex escape sequence */
         if( doScanHex( 127, pbuf ) ) {
@@ -1629,7 +1625,7 @@ static void SkipWhiteSpace( int c )
     if( !CompFlags.cpp_mode ) {
         ScanWhiteSpace();
     } else {
-        for( ; (CharSet[c] & C_WS); ) {
+        while( CharSet[c] & C_WS ) {
             if( c != '\r' && Pre_processing == PPCTL_NORMAL ) {
                 CppPrtChar( c );
             }
@@ -1699,16 +1695,20 @@ static TOKEN ScanCarriageReturn( void )
 static TOKEN ScanInvalid( void )
 /******************************/
 {
+    TOKEN   token;
+
+    token = T_BAD_CHAR;
     Buffer[0] = CurrChar;
     Buffer[1] = '\0';
+    TokenLen = 1;
 #ifdef SYS_EOF_CHAR
     if( Buffer[0] == SYS_EOF_CHAR ) {
         CloseSrcFile( SrcFile );
-        return( T_WHITE_SPACE );
+        token = T_WHITE_SPACE;
     }
 #endif
     NextChar();
-    return( T_BAD_CHAR );
+    return( token );
 }
 
 static TOKEN ScanMacroToken( void )
