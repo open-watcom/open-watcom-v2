@@ -753,7 +753,6 @@ extern bool         InitPPScan( void );
 extern void         FiniPPScan( bool );
 extern id_hash_idx  CalcHash( const char *, size_t );
 extern unsigned     hashpjw( const char * );
-extern int          ESCChar( int, const unsigned char **, bool * );
 extern void         SkipAhead( void );
 extern TOKEN        ScanToken( void );
 extern void         ReScanInit( const char * );

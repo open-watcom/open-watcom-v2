@@ -37,6 +37,7 @@
 #include "scan.h"
 #include "asciiout.h"
 #include "unicode.h"
+#include "escchars.h"
 
 #include "clibext.h"
 
@@ -113,6 +114,13 @@ void FreeLiteral( STR_HANDLE str_lit )
     CMemFree( str_lit );
 }
 
+static const unsigned char  *pbuf = NULL;
+
+static int read_inp( void )
+{
+    return( *pbuf++ );
+}
+
 #define WRITE_BYTE(x) if( buf != NULL ) buf[olen] = x; ++olen
 
 static target_size RemoveEscapes( char *buf, const char *inbuf, target_size ilen )
@@ -120,16 +128,17 @@ static target_size RemoveEscapes( char *buf, const char *inbuf, target_size ilen
     int                 c;
     target_size         olen;
     bool                error;
-    const unsigned char *end;
-    const unsigned char *p = (const unsigned char *)inbuf;
+    const unsigned char *pend;
 
     olen = 0;
     error = false;
-    end = p + ilen;
-    while( p < end ) {
-        c = *p++;
+    pbuf = (const unsigned char *)inbuf;
+    pend = pbuf + ilen;
+    while( pbuf < pend ) {
+        c = read_inp();
         if( c == '\\' ) {
-            c = ESCChar( *p, &p, &error );
+            c = ESCChar( read_inp(), read_inp, &error, NULL );
+            pbuf--;
             if( CompFlags.wide_char_string ) {
                 WRITE_BYTE( c );
                 c = c >> 8;
@@ -137,15 +146,14 @@ static target_size RemoveEscapes( char *buf, const char *inbuf, target_size ilen
         } else {
             if( CharSet[c] & C_DB ) {       /* if double-byte character */
                 if( CompFlags.jis_to_unicode && CompFlags.wide_char_string ) {
-                    c = (c << 8) + *p;
+                    c = (c << 8) + read_inp();
                     c = JIS2Unicode( c );
                     WRITE_BYTE( c );
                     c = c >> 8;
                 } else {
                     WRITE_BYTE( c );
-                    c = *p;
+                    c = read_inp();
                 }
-                ++p;
             } else if( CompFlags.wide_char_string ) {
                 if( CompFlags.use_unicode ) {
                     c = UniCode[c];

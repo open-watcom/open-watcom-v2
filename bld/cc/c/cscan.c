@@ -116,8 +116,8 @@ static void EnlargeBuffer( size_t size )
     }
 }
 
-static void WriteBufferChar( char c )
-/***********************************/
+static void WriteBufferChar( int c )
+/**********************************/
 {
     EnlargeBuffer( TokenLen + 1 );
     Buffer[TokenLen++] = c;
@@ -1260,8 +1260,10 @@ static TOKEN ScanSlash( void )
     return( token );
 }
 
-static bool doScanHex( int max, const unsigned char **pbuf )
-/**********************************************************/
+#define OUTC(x) if(ofn != NULL) ofn(x)
+
+static bool doScanHex( int max, escinp_fn ifn, escout_fn ofn )
+/************************************************************/
 {
     int             c;
     int             count;
@@ -1272,11 +1274,8 @@ static bool doScanHex( int max, const unsigned char **pbuf )
     count = max;
     value = 0;
     for( ;; ) {
-        if( pbuf == NULL ) {
-            c = SaveNextChar();
-        } else {
-            c = *++*pbuf;
-        }
+        c = ifn();
+        OUTC( c );
         if( max == 0 )
             break;
         if( ( CharSet[c] & (C_HX|C_DI) ) == 0 )
@@ -1304,8 +1303,8 @@ static bool doScanHex( int max, const unsigned char **pbuf )
     return( true );                        /* indicate characters were matched */
 }
 
-int ESCChar( int c, const unsigned char **pbuf, bool *error )
-/***********************************************************/
+int ESCChar( int c, escinp_fn ifn, bool *error, escout_fn ofn )
+/*************************************************************/
 {
     int         n;
     int         i;
@@ -1313,17 +1312,13 @@ int ESCChar( int c, const unsigned char **pbuf, bool *error )
     if( c >= '0' && c <= '7' ) {          /* get octal escape sequence */
         n = 0;
         i = 3;
-        while( i > 0 && c >= '0' && c <= '7' ) {
+        while( i-- > 0 && c >= '0' && c <= '7' ) {
             n = n * 8 + c - '0';
-            if( pbuf == NULL ) {
-                c = SaveNextChar();
-            } else {
-                c = *++*pbuf;
-            }
-            i--;
+            c = ifn();
+            OUTC( c );
         }
     } else if( c == 'x' ) {         /* get hex escape sequence */
-        if( doScanHex( 127, pbuf ) ) {
+        if( doScanHex( 127, ifn, ofn ) ) {
             n = Constant;
         } else {                        /* '\xz' where z is not a hex char */
             *error = true;
@@ -1365,11 +1360,8 @@ int ESCChar( int c, const unsigned char **pbuf, bool *error )
         _ASCIIOUT( c );
 #endif
         n = c;
-        if( pbuf == NULL ) {
-            SaveNextChar();
-        } else {
-            ++*pbuf;
-        }
+        c = ifn();
+        OUTC( c );
     }
     return( n );
 }
@@ -1425,7 +1417,7 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
                 }
                 c = n;
             } else {
-                c = ESCChar( c, NULL, &error );
+                c = ESCChar( c, NextChar, &error, WriteBufferChar );
             }
             if( char_type == TYPE_WCHAR ) {
                 ++i;
@@ -1543,7 +1535,7 @@ static TOKEN doScanString( bool wide )
         if( c == '\\' ) {
             c = SaveNextChar();
             if( (CharSet[c] & C_WS) == 0 ) {
-                ESCChar( c, NULL, &error );
+                ESCChar( c, NextChar, &error, WriteBufferChar );
             }
             c = CurrChar;
         } else {

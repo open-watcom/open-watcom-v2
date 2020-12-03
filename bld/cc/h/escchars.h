@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,3 +40,8 @@
 #define ESCAPE_r        0x0D
 #define ESCAPE_t        0x09
 #define ESCAPE_v        0x0B
+
+typedef int     (*escinp_fn)( void );
+typedef void    (*escout_fn)( int );
+
+extern int      ESCChar( int, escinp_fn, bool *, escout_fn );
