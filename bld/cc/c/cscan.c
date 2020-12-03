@@ -548,7 +548,7 @@ static bool doScanHex( int max, const unsigned char **pbuf )
         if( pbuf == NULL ) {
             c = SaveNextChar();
         } else {
-            c = *++*pbuf;
+            c = CurrChar = *++*pbuf;
         }
         if( max == 0 )
             break;
@@ -1540,7 +1540,7 @@ int ESCChar( int c, const unsigned char **pbuf, bool *error )
             if( pbuf == NULL ) {
                 c = SaveNextChar();
             } else {
-                c = *++*pbuf;
+                c = CurrChar = *++*pbuf;
             }
             i--;
         }
@@ -1590,7 +1590,7 @@ int ESCChar( int c, const unsigned char **pbuf, bool *error )
         if( pbuf == NULL ) {
             SaveNextChar();
         } else {
-            ++*pbuf;
+            CurrChar = *++*pbuf;
         }
     }
     return( n );
