@@ -1260,6 +1260,120 @@ static TOKEN ScanSlash( void )
     return( token );
 }
 
+static bool doScanHex( int max, const unsigned char **pbuf )
+/**********************************************************/
+{
+    int             c;
+    int             count;
+    char            too_big;
+    unsigned        value;
+
+    too_big = 0;
+    count = max;
+    value = 0;
+    for( ;; ) {
+        if( pbuf == NULL ) {
+            c = SaveNextChar();
+        } else {
+            c = *++*pbuf;
+        }
+        if( max == 0 )
+            break;
+        if( ( CharSet[c] & (C_HX|C_DI) ) == 0 )
+            break;
+        if( CharSet[c] & C_HX )
+            c = (( c | HEX_MASK ) - HEX_BASE ) + 10 + '0';
+        if( value & 0xF0000000 )
+            too_big = 1;
+        value = value * 16 + c - '0';
+        --max;
+    }
+    Constant = value;
+    if( count == max ) {                /* no characters matched */
+        return( false );            /* indicate no characters matched */
+/*          CErr1( ERR_INVALID_HEX_CONSTANT );  */
+    }
+    if( !CompFlags.cpp_mode ) {
+        if( too_big ) {
+            BadTokenInfo = ERR_CONSTANT_TOO_BIG;
+            if( NestLevel == SkipLevel ) {
+                CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
+            }
+        }
+    }
+    return( true );                        /* indicate characters were matched */
+}
+
+int ESCChar( int c, const unsigned char **pbuf, bool *error )
+/***********************************************************/
+{
+    int         n;
+    int         i;
+
+    if( c >= '0' && c <= '7' ) {          /* get octal escape sequence */
+        n = 0;
+        i = 3;
+        while( i > 0 && c >= '0' && c <= '7' ) {
+            n = n * 8 + c - '0';
+            if( pbuf == NULL ) {
+                c = SaveNextChar();
+            } else {
+                c = *++*pbuf;
+            }
+            i--;
+        }
+    } else if( c == 'x' ) {         /* get hex escape sequence */
+        if( doScanHex( 127, pbuf ) ) {
+            n = Constant;
+        } else {                        /* '\xz' where z is not a hex char */
+            *error = true;
+            n = 'x';
+        }
+    } else {
+        switch( c ) {
+        case 'a':
+            c = ESCAPE_a;
+            break;
+        case 'b':
+            c = ESCAPE_b;
+            break;
+        case 'f':
+            c = ESCAPE_f;
+            break;
+        case 'n':
+            c = ESCAPE_n;
+            break;
+        case 'r':
+            c = ESCAPE_r;
+            break;
+        case 't':
+            c = ESCAPE_t;
+            break;
+        case 'v':
+            c = ESCAPE_v;
+            break;
+#ifdef __QNX__
+        case 'l':
+            /* for lazy QNX programmers */
+            if( CompFlags.extensions_enabled ) {
+                c = ESCAPE_n;
+            }
+            break;
+#endif
+        }
+#if _CPU == 370
+        _ASCIIOUT( c );
+#endif
+        n = c;
+        if( pbuf == NULL ) {
+            SaveNextChar();
+        } else {
+            ++*pbuf;
+        }
+    }
+    return( n );
+}
+
 static TOKEN doScanCharConst( DATA_TYPE char_type )
 /*************************************************/
 {
@@ -1480,120 +1594,6 @@ static TOKEN ScanWide( void )           // scan something that starts with L
         }
     }
     return( token );
-}
-
-static bool doScanHex( int max, const unsigned char **pbuf )
-/**********************************************************/
-{
-    int             c;
-    int             count;
-    char            too_big;
-    unsigned        value;
-
-    too_big = 0;
-    count = max;
-    value = 0;
-    for( ;; ) {
-        if( pbuf == NULL ) {
-            c = SaveNextChar();
-        } else {
-            c = *++*pbuf;
-        }
-        if( max == 0 )
-            break;
-        if( ( CharSet[c] & (C_HX|C_DI) ) == 0 )
-            break;
-        if( CharSet[c] & C_HX )
-            c = (( c | HEX_MASK ) - HEX_BASE ) + 10 + '0';
-        if( value & 0xF0000000 )
-            too_big = 1;
-        value = value * 16 + c - '0';
-        --max;
-    }
-    Constant = value;
-    if( count == max ) {                /* no characters matched */
-        return( false );            /* indicate no characters matched */
-/*          CErr1( ERR_INVALID_HEX_CONSTANT );  */
-    }
-    if( !CompFlags.cpp_mode ) {
-        if( too_big ) {
-            BadTokenInfo = ERR_CONSTANT_TOO_BIG;
-            if( NestLevel == SkipLevel ) {
-                CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
-            }
-        }
-    }
-    return( true );                        /* indicate characters were matched */
-}
-
-int ESCChar( int c, const unsigned char **pbuf, bool *error )
-/***********************************************************/
-{
-    int         n;
-    int         i;
-
-    if( c >= '0' && c <= '7' ) {          /* get octal escape sequence */
-        n = 0;
-        i = 3;
-        while( i > 0 && c >= '0' && c <= '7' ) {
-            n = n * 8 + c - '0';
-            if( pbuf == NULL ) {
-                c = SaveNextChar();
-            } else {
-                c = *++*pbuf;
-            }
-            i--;
-        }
-    } else if( c == 'x' ) {         /* get hex escape sequence */
-        if( doScanHex( 127, pbuf ) ) {
-            n = Constant;
-        } else {                        /* '\xz' where z is not a hex char */
-            *error = true;
-            n = 'x';
-        }
-    } else {
-        switch( c ) {
-        case 'a':
-            c = ESCAPE_a;
-            break;
-        case 'b':
-            c = ESCAPE_b;
-            break;
-        case 'f':
-            c = ESCAPE_f;
-            break;
-        case 'n':
-            c = ESCAPE_n;
-            break;
-        case 'r':
-            c = ESCAPE_r;
-            break;
-        case 't':
-            c = ESCAPE_t;
-            break;
-        case 'v':
-            c = ESCAPE_v;
-            break;
-#ifdef __QNX__
-        case 'l':
-            /* for lazy QNX programmers */
-            if( CompFlags.extensions_enabled ) {
-                c = ESCAPE_n;
-            }
-            break;
-#endif
-        }
-#if _CPU == 370
-        _ASCIIOUT( c );
-#endif
-        n = c;
-        if( pbuf == NULL ) {
-            SaveNextChar();
-        } else {
-            ++*pbuf;
-        }
-    }
-    return( n );
 }
 
 static TOKEN ScanWhiteSpace( void )
