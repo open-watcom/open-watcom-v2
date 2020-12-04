@@ -120,7 +120,7 @@ static void WriteBufferChar( int c )
 /**********************************/
 {
     EnlargeBuffer( TokenLen + 1 );
-    Buffer[TokenLen++] = c;
+    Buffer[TokenLen++] = (char)c;
 }
 
 static void WriteBufferNullChar( void )
@@ -134,7 +134,7 @@ static int SaveCharNextChar( int c )
 /**********************************/
 {
     EnlargeBuffer( TokenLen + 1 );
-    Buffer[TokenLen++] = c;
+    Buffer[TokenLen++] = (char)c;
     return( NextChar() );
 }
 
@@ -1260,7 +1260,7 @@ static TOKEN ScanSlash( void )
     return( token );
 }
 
-#define OUTC(x) if(ofn != NULL) ofn(x)
+#define OUTC(x)     if(ofn != NULL) ofn(x)
 
 static bool doScanHex( int max, escinp_fn ifn, escout_fn ofn )
 /*************************************************************
@@ -1281,7 +1281,7 @@ static bool doScanHex( int max, escinp_fn ifn, escout_fn ofn )
         c = ifn();
         if( max == 0 )
             break;
-        if( ( CharSet[c] & (C_HX|C_DI) ) == 0 )
+        if( ( CharSet[c] & (C_HX | C_DI) ) == 0 )
             break;
         OUTC( c );
         if( CharSet[c] & C_HX )
@@ -1292,7 +1292,7 @@ static bool doScanHex( int max, escinp_fn ifn, escout_fn ofn )
         --max;
     }
     Constant = value;
-    if( count == max ) {                /* no characters matched */
+    if( count == max ) {            /* no characters matched */
         return( false );            /* indicate no characters matched */
 /*          CErr1( ERR_INVALID_HEX_CONSTANT );  */
     }
@@ -1304,7 +1304,7 @@ static bool doScanHex( int max, escinp_fn ifn, escout_fn ofn )
             }
         }
     }
-    return( true );                        /* indicate characters were matched */
+    return( true );                 /* indicate characters were matched */
 }
 
 int ESCChar( int c, escinp_fn ifn, bool *error, escout_fn ofn )
@@ -1317,7 +1317,7 @@ int ESCChar( int c, escinp_fn ifn, bool *error, escout_fn ofn )
     int         n;
     int         i;
 
-    if( c >= '0' && c <= '7' ) {          /* get octal escape sequence */
+    if( c >= '0' && c <= '7' ) {    /* get octal escape sequence */
         n = 0;
         i = 3;
         while( i-- > 0 && c >= '0' && c <= '7' ) {
@@ -1329,7 +1329,7 @@ int ESCChar( int c, escinp_fn ifn, bool *error, escout_fn ofn )
         OUTC( c );
         if( doScanHex( 127, ifn, ofn ) ) {
             n = Constant;
-        } else {                        /* '\xz' where z is not a hex char */
+        } else {                    /* '\xz' where z is not a hex char */
             *error = true;
             n = 'x';
         }
