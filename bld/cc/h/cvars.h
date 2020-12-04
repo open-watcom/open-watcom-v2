@@ -40,28 +40,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include "target.h"
-
-#ifndef _CPU
-    #error _CPU macro not defined
-#endif
-
-#if _CPU != 8086
-    /* enable Structured Exception Handling for all 32-bit targets */
-    #define __SEH__
-#endif
-
-#ifdef __UNIX__
-    #define FNAMECMPSTR     strcmp      /* for case sensitive file systems */
-#else
-    #define FNAMECMPSTR     stricmp     /* for case insensitive file systems */
-#endif
-
-#define CMPLIT(s,c) memcmp( s, c, sizeof( c ) )
-#define CPYLIT(s,c) memcpy( s, c, sizeof( c ) )
-
-typedef char        *MACADDR_T; /* contains actual pointer to block of memory */
-typedef char        *SEGADDR_T; /* contains actual pointer to block of memory */
-
+#include "cconst.h"
 #include "dw.h"
 #include "ctypes.h"
 #include "macro.h"
@@ -72,8 +51,6 @@ typedef char        *SEGADDR_T; /* contains actual pointer to block of memory */
 #include "toggle.h"
 #include "cmsg.h"
 #include "pragdefn.h"
-
-#define CArraySize(x)   (sizeof( x ) / sizeof( *x ))
 
 global char         *PCH_Start;         // start of precompiled memory block
 global char         *PCH_End;           // end of precompiled memory block
@@ -190,7 +167,6 @@ global SYM_HASHPTR  *HashTab;
 global TYPEPTR      BaseTypes[TYPE_LAST_ENTRY];
 global unsigned     CTypeCounts[TYPE_LAST_ENTRY];
 
-#define BUF_SIZE    512
 global char         *Buffer;
 global char         *TokenBuf;
 
@@ -255,13 +231,6 @@ global int          OptSize;            /* 100 => make pgm small as possible */
 global char         __Time[9];          /* "HH:MM:SS" for __TIME__ macro */
 global char         __Date[12];         /* "MMM DD YYYY" for __DATE__ macro */
 
-global struct macro_seg_list {
-    struct macro_seg_list *next;
-    MACADDR_T             macro_seg;
-} *MacSegList;                          /* pointer to list of macro segments */
-
-global MACADDR_T    MacroOffset;        /* first free byte in MacroSegment */
-
 global int          SwitchChar;         /* DOS switch character */
 global int          LoopDepth;          /* current nesting of loop constructs */
 global char         CLIB_Name[10];      /* "1CLIBMT3x" */
@@ -298,7 +267,6 @@ global unsigned     SymBufNum;          /* current buffer in memory */
 global unsigned     SymBufSegNum;       /* segment # containing buffer */
 global unsigned     LastSymBuf;         /* # of last symbol table buffer */
 global unsigned     SymBufDirty;        /* 1 => buffer has been changed */
-global SEGADDR_T    SymBufSegment;      /* segment # for symbol table buffers */
 
 global TYPEPTR      StringType;         /* "unsigned char *" for use by literals */
 global TYPEPTR      ConstCharType;      /* "const char" type */
@@ -310,23 +278,6 @@ typedef struct nested_parm_lists {
 } nested_parm_lists;
 
 global nested_parm_lists    *NestedParms;
-
-#ifndef LARGEST_QUAD_INDEX
-    #define LARGEST_QUAD_INDEX      0xFFFF
-    #define LARGEST_DATA_QUAD_INDEX 0xFFFFF
-#else
-    #define LARGEST_DATA_QUAD_INDEX LARGEST_QUAD_INDEX
-#endif
-#define LARGEST_SYM_INDEX           0xFFFF
-
-#define SYM_BUF_SIZE            1024
-#define SYMS_PER_BUF            (SYM_BUF_SIZE/sizeof(SYM_ENTRY))
-#define SYMBUFS_PER_SEG         16
-#define SYM_SEG_SIZE            (SYM_BUF_SIZE*SYMBUFS_PER_SEG)
-
-#define MAX_SYM_SEGS    (LARGEST_SYM_INDEX/(SYMS_PER_BUF*SYMBUFS_PER_SEG)+1)
-
-global seg_info     SymBufSegs[MAX_SYM_SEGS]; /* segments for symbols */
 
 global STR_HANDLE   StringHash[STRING_HASH_SIZE]; /* string literals */
 global char         *TextSegName;       /* name of the text segment */
@@ -492,11 +443,6 @@ extern void         DumpFuncDefn(void);
 extern void         SymDump(void);
 extern char         *DiagGetTypeName(TYPEPTR typ);
 
-/* cems */
-extern void         CSegFree( SEGADDR_T segment );
-extern SEGADDR_T    AccessSegment(seg_info *);
-extern SEGADDR_T    AllocSegment(seg_info *);
-
 /* cenum */
 extern TYPEPTR      EnumDecl(type_modifiers);
 extern ENUMPTR      EnumLookup(id_hash_idx,const char *);
@@ -639,17 +585,6 @@ extern void         CppStackInit( void );
 extern void         CppStackFini(void);
 extern MEPTR        MacroScan( void );
 extern TOKEN        Process_Pragma( void );
-
-/* cmacadd.c */
-extern void         *PermMemAlloc( size_t amount );
-extern void         FreeMacroSegments(void);
-extern void         *MacroAllocateInSeg( size_t size );
-extern MEPTR        CreateMEntry(const char *, size_t len);
-extern MEPTR        MacroDefine( size_t len, macro_flags mflags );
-extern int          MacroCompare(MEPTR,MEPTR);
-extern void         MacroCopy(const void *,MACADDR_T,size_t);
-extern MEPTR        MacroLookup(const char *);
-extern void         MacroReallocOverflow(size_t,size_t);
 
 /* cmath.c */
 extern TREEPTR      AddOp(TREEPTR,TOKEN,TREEPTR);

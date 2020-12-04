@@ -506,11 +506,6 @@ struct debug_fwd_types {
     unsigned            scope;
 };
 
-typedef struct seg_info {
-    SEGADDR_T           index;          /* segment #, EMS page #, disk seek # */
-    boolbit             allocated : 1;  /* 1 => has been allocated */
-} seg_info;
-
 typedef enum {
     PPCTL_NORMAL        = 0x00,         // expand macros, treat <eol> as white space
     PPCTL_EOL           = 0x01,         // return <end-of-line> as a token

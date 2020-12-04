@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -176,9 +176,15 @@ static void mywrite( FILE *fp, const void *data, size_t len )
  * .debug_line
  * .debug_macinfo
  */
-static const dw_sectnum inSect[] = { DW_DEBUG_ABBREV, DW_DEBUG_INFO, DW_DEBUG_REF, DW_DEBUG_LINE, DW_DEBUG_MACINFO };
+static const dw_sectnum inSect[] = {
+    DW_DEBUG_ABBREV,
+    DW_DEBUG_INFO,
+    DW_DEBUG_REF,
+    DW_DEBUG_LINE,
+    DW_DEBUG_MACINFO
+};
 
-#define SECTION_COUNT   CArraySize( inSect )
+#define SECTION_COUNT   ARRAY_SIZE( inSect )
 
 static int createBrowseFile( FILE *browseFile )
 {

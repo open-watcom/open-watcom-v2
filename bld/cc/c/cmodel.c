@@ -35,7 +35,7 @@
 #include "scan.h"
 #include "pdefn2.h"
 #include <ctype.h>
-#include "cmacsupp.h"
+#include "cmacadd.h"
 
 
 extern  char    CompilerID[];

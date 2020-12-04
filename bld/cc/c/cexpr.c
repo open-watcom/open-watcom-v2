@@ -32,7 +32,7 @@
 
 #include <ctype.h>
 #include "cvars.h"
-#include "cmacsupp.h"
+#include "cmacadd.h"
 #include "cg.h"
 #include "cgdefs.h"
 #include "cgswitch.h"

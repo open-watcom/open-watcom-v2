@@ -34,7 +34,7 @@
 #include "scan.h"
 #include <stddef.h>
 #include "cgmisc.h"
-#include "cmacsupp.h"
+#include "cmacadd.h"
 
 
 #define HasVarArgs(m)      (((m) & MFLAG_HAS_VAR_ARGS) != 0)

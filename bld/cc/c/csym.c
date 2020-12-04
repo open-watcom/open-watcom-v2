@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,22 +33,54 @@
 #include "cvars.h"
 #include "cgswitch.h"
 #include "caux.h"
+#include "cmacadd.h"
 
 
 #define CURR_SYM_HANDLE() ((SYM_HANDLE)(pointer_uint)NextSymHandle)
 
-unsigned    SymTypedef;
+typedef struct sym_stats {
+    unsigned    get;
+    unsigned    getptr;
+    unsigned    replace;
+    unsigned    read;
+    unsigned    write;
+} sym_stats;
 
-static  void    NewSym( void );
+typedef char        *SEGADDR_T; /* contains actual pointer to block of memory */
 
-static unsigned Cached_sym_num;
-static void     *Cached_sym_addr;
-static struct sym_stats {
-    unsigned    get, getptr, replace, read, write;
-} SymStats;
-static unsigned FirstSymInBuf;
-static char     *SymBufPtr;
-static unsigned NextSymHandle;
+typedef struct seg_info {
+    SEGADDR_T           index;          /* segment #, EMS page #, disk seek # */
+    boolbit             allocated : 1;  /* 1 => has been allocated */
+} seg_info;
+
+unsigned            SymTypedef;
+
+static unsigned     Cached_sym_num;
+static void         *Cached_sym_addr;
+static sym_stats    SymStats;
+static unsigned     FirstSymInBuf;
+static char         *SymBufPtr;
+static unsigned     NextSymHandle;
+static SEGADDR_T    SymBufSegment;              /* segment # for symbol table buffers */
+static seg_info     SymBufSegs[MAX_SYM_SEGS];   /* segments for symbols */
+
+static SEGADDR_T AllocSegment( seg_info *si )
+{
+    /* FEmalloc never returns NULL - it either allocates the memory
+     * or kills the compiler.
+     */
+    si->index = (SEGADDR_T)FEmalloc( 0x04000 );
+    si->allocated = true;
+    return( si->index );
+}
+
+static SEGADDR_T AccessSegment( seg_info *si )
+{
+    if( !si->allocated ) {
+        AllocSegment( si );
+    }
+    return( si->index );
+}
 
 static void NewSym( void )
 {
@@ -102,7 +134,7 @@ void SymFini( void )
     for( seg_num = 0; seg_num < MAX_SYM_SEGS; ++seg_num ) {
         si = &SymBufSegs[seg_num];
         if( si->allocated ) {
-            CSegFree( si->index );
+            FEfree( si->index );
         }
     }
     if( CompFlags.extra_stats_wanted ) {

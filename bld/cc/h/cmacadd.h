@@ -30,16 +30,16 @@
 ****************************************************************************/
 
 
-#ifndef _CMACSUPP_H
-#define _CMACSUPP_H
+#ifndef _CMACADD_H
+#define _CMACADD_H
 
-#define PPOPERATOR_DEFINED          "defined"
-#define PPOPERATOR_PRAGMA           "_Pragma"
-
-#define IS_PPOPERATOR_DEFINED(s)    (CMPLIT(s, PPOPERATOR_DEFINED) == 0)
-#define IS_PPOPERATOR_PRAGMA(s,l)   ((CompFlags.extensions_enabled || CompFlags.c99_extensions) \
-                                    && l == (sizeof(PPOPERATOR_PRAGMA) - 1) \
-                                    && memcmp(s, PPOPERATOR_PRAGMA, sizeof(PPOPERATOR_PRAGMA) - 1) == 0)
+extern void         *PermMemAlloc( size_t amount );
+extern void         InitMacroSegments(void);
+extern void         FreeMacroSegments(void);
+extern MEPTR        CreateMEntry(const char *, size_t len);
+extern MEPTR        MacroDefine( size_t len, macro_flags mflags );
+extern int          MacroCompare(MEPTR,MEPTR);
+extern MEPTR        MacroLookup(const char *);
 
 void MacroSegmentAddChar(       // MacroSegment: ADD A CHARACTER
     size_t *mlen,               // - data length
@@ -50,11 +50,6 @@ void MacroSegmentAddToken(      // MacroSegment: ADD A TOKEN
     TOKEN token )               // - token to be added
 ;
 void MacroSegmentAddMem(        // MacroSegment: ADD A SEQUENCE OF BYTES
-    size_t *mlen,               // - data length
-    const char *buff,           // - bytes to be added
-    size_t len )                // - number of bytes
-;
-void MacroSegmentAddMemNoCopy(  // As above, but no copy from old macro
     size_t *mlen,               // - data length
     const char *buff,           // - bytes to be added
     size_t len )                // - number of bytes

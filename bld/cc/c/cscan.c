@@ -37,7 +37,7 @@
 #include "i64.h"
 #include "kwhash.h"
 #include "unicode.h"
-#include "cmacsupp.h"
+#include "cmacadd.h"
 
 
 extern const unsigned char  TokValue[];

@@ -33,6 +33,7 @@
 
 #define global
 #include "cvars.h"
+#include "cmacadd.h"
 
 
 void InitGlobalVars( void )
@@ -183,7 +184,6 @@ void InitGlobalVars( void )
     B_Bool                  = 0;
 
     OptSize                 = 0;        /* 100 => make pgm small as possible */
-    MacSegList              = NULL;     /* pointer to list of macro segments */
     LoopDepth               = 0;        /* current nesting of loop constructs */
     HeadLibs                = NULL;     /* list of library search records */
     AliasHead               = NULL;     /* list of symbol alias records */
@@ -225,6 +225,8 @@ void InitGlobalVars( void )
     Check_global_prototype  = 0;
 
     memset( &CompFlags, 0, sizeof( CompFlags ) );
+
+    InitMacroSegments();                /* initialize pointer to list of macro segments */
     InitStmt();
     InitErrLoc();
 }

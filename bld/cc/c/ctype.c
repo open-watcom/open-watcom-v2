@@ -1697,7 +1697,7 @@ TYPEPTR GetIntTypeBySize( target_size size, bool sign, bool exact )
 
     if( size ) {
         type_list = ( sign ) ? s_types : u_types;
-        for( i = 0; i < sizeof( s_types ) / sizeof( s_types[0] ); ++i ) {
+        for( i = 0; i < ARRAY_SIZE( s_types ); ++i ) {
             type_id = type_list[i];
             if( size == CTypeSizes[type_id] || !exact && ( size < CTypeSizes[type_id] ) ) {
                 typ = GetType( type_id );

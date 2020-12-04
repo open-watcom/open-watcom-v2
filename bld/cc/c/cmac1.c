@@ -34,7 +34,7 @@
 #include "scan.h"
 #include "cfeinfo.h"
 #include "dumpapi.h"
-#include "cmacsupp.h"
+#include "cmacadd.h"
 
 #include "clibext.h"
 

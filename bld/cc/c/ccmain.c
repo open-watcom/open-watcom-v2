@@ -41,6 +41,7 @@
 #include "swchar.h"
 #include "cfeinfo.h"
 #include "pathlist.h"
+#include "cmacadd.h"
 #include "pathgrp2.h"
 
 #include "clibext.h"
