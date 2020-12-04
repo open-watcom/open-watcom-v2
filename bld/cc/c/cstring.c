@@ -138,7 +138,7 @@ static target_size RemoveEscapes( char *buf, const char *inbuf, target_size ilen
         c = read_inp();
         if( c == '\\' ) {
             c = ESCChar( read_inp(), read_inp, &error, NULL );
-            pbuf--;
+            pbuf--; // move pointer to first character after Escape sequence
             if( CompFlags.wide_char_string ) {
                 WRITE_BYTE( c );
                 c = c >> 8;
