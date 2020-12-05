@@ -1312,7 +1312,7 @@ TOKEN GetNextToken( void )
     if( MacroPtr != NULL ) {
         token = GetMacroToken();
     } else {
-        while( CurrChar != EOF_CHAR ) {
+        while( CurrChar != LCHR_EOF ) {
             if( (CharSet[CurrChar] & C_WS) == 0 )
                 break;
             if( CurrChar != '\r' )

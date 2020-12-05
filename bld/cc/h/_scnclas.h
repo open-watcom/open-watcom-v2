@@ -35,7 +35,7 @@ pick( SCAN_WIDE,       ScanWide           )  // L"abc" or L'a' or Lname
 pick( SCAN_NUM,        ScanNum            )  // number that starts with a digit
 pick( SCAN_SLASH,      ScanSlash          )  // '/'
 pick( SCAN_DELIM1,     ScanDelim1         )  // single character delimiter only
-pick( SCAN_DELIM2,     ScanDelim2         )  // one to three characters delimiter
+pick( SCAN_DELIM2,     ScanDelim2         )  // 1-3 characters delimiter
 pick( SCAN_DOT,        ScanDot            )  // .
 pick( SCAN_STRING,     ScanString         )  // "string"
 pick( SCAN_CHARCONST,  ScanCharConst      )  // 'a'
@@ -43,5 +43,7 @@ pick( SCAN_CR,         ScanCarriageReturn )  // '\r'
 pick( SCAN_NEWLINE,    ScanNewline        )  // '\n'
 pick( SCAN_WHITESPACE, ScanWhiteSpace     )  // all whitespace
 pick( SCAN_INVALID,    ScanInvalid        )  // all other characters
+#ifdef CHAR_MACRO
 pick( SCAN_MACRO,      ScanMacroToken     )  // get next token from macro
+#endif
 pick( SCAN_EOF,        ScanEof            )  // end-of-file

@@ -34,11 +34,14 @@
 #include "ctokens.h"
 
 #define C_XW    (C_WS | C_EX)
-// C++ has TAB and CR set to C_XW
+#define C_XD    (C_DE | C_EX)
+#define C_AX    (C_AL | C_HX)       /* hexa digit letters */
+
+/* C++ has TAB and CR set to C_XW */
 
 /* The following table is ASCII dependent. */
 
-charset_flags CharSet[] = {                                 /* ASCII */
+charset_flags CharSet[LCHR_MAX] = {                         /* ASCII */
 
 /* 00 NUL 01 SOH 02 STX 03 ETX 04 EOT 05 ENQ 06 ACK 07 BEL  */
     C_EX,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  /* NUL to BEL */
@@ -53,35 +56,19 @@ charset_flags CharSet[] = {                                 /* ASCII */
     C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  /* CAN to US */
 
 /* 20 SP  21 !   22 "   23 #   24 $   25 %   26 &   27 '    */
-    C_WS,  C_D2,  C_D1,  C_D2,  C_BC,  C_D2,  C_D2,  C_D1,  /* 20 to 27 */
+    C_WS,  C_DE,  C_DE,  C_DE,  C_BC,  C_DE,  C_DE,  C_DE,  /* 20 to 27 */
 
 /* 28 (   29 )   2A *   2B +   2C ,   2D -   2E .   2F /    */
-#if _CPU == 370
-    C_D2,  C_D1,  C_D2,  C_D2,  C_D1,  C_D2,  C_D1,  C_D2,  /* 28 to 2F */
-#else
-    C_D1,  C_D1,  C_D2,  C_D2,  C_D1,  C_D2,  C_D1,  C_D2,  /* 28 to 2F */
-#endif
+    C_DE,  C_DE,  C_DE,  C_DE,  C_DE,  C_DE,  C_DE,  C_DE,  /* 28 to 2F */
 
 /* 30 0   31 1   32 2   33 3   34 4   35 5   36 6   37 7    */
     C_DI,  C_DI,  C_DI,  C_DI,  C_DI,  C_DI,  C_DI,  C_DI,  /* 30 to 37 */
 
-    C_DI,                                                   /* 38 8  */
-    C_DI,                                                   /* 39 9  */
-    C_D2,                                                   /* 3A :  */
-    C_D1,                                                   /* 3B ;  */
-    C_D2,                                                   /* 3C <  */
-    C_D2,                                                   /* 3D =  */
-    C_D2,                                                   /* 3E >  */
-    C_D1 | C_EX,                                            /* 3F ?  */
+/*  38 8   39 9   3A :   3B ;   3C <   3D =   3E >   3F ?   */
+    C_DI,  C_DI,  C_DE,  C_DE,  C_DE,  C_DE,  C_DE,  C_XD,  /* 38 to 3F */
 
-    C_BC,                                                   /* 40 @  */
-    C_HX | C_AL,                                            /* 41 A  */
-    C_HX | C_AL,                                            /* 42 B  */
-    C_HX | C_AL,                                            /* 43 C  */
-    C_HX | C_AL,                                            /* 44 D  */
-    C_HX | C_AL,                                            /* 45 E  */
-    C_HX | C_AL,                                            /* 46 F  */
-    C_AL,                                                   /* 47 G  */
+/*  40 @   41 A   42 B   43 C   44 D   45 E   46 F   47 G   */
+    C_BC,  C_AX,  C_AX,  C_AX,  C_AX,  C_AX,  C_AX,  C_AL,  /* @, A to G */
 
 /* 48 H   49 I   4A J   4B K   4C L   4D M   4E N   4F O    */
     C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  /* H to O */
@@ -90,16 +77,10 @@ charset_flags CharSet[] = {                                 /* ASCII */
     C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  /* P to W */
 
 /*  58 X   59 Y   5A Z   5B [   5C \   5D ]   5E ^   5F _   */
-    C_AL,  C_AL,  C_AL,  C_D1,  C_EX,  C_D1,  C_D2,  C_AL,  /* X to _ */
+    C_AL,  C_AL,  C_AL,  C_DE,  C_EX,  C_DE,  C_DE,  C_AL,  /* X to _ */
 
-    C_BC,                                                   /* 60 `  */
-    C_HX | C_AL,                                            /* 61 a  */
-    C_HX | C_AL,                                            /* 62 b  */
-    C_HX | C_AL,                                            /* 63 c  */
-    C_HX | C_AL,                                            /* 64 d  */
-    C_HX | C_AL,                                            /* 65 e  */
-    C_HX | C_AL,                                            /* 66 f  */
-    C_AL,                                                   /* 67 g  */
+/*  60 `   61 a   62 b   63 c   64 d   65 e   66 f   67 g   */
+    C_BC,  C_AX,  C_AX,  C_AX,  C_AX,  C_AX,  C_AX,  C_AL,  /* `, a to g */
 
 /* 68 h   69 i   6A j   6B k   6C l   6D m   6E n   6F o    */
     C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  /* h to o */
@@ -108,7 +89,7 @@ charset_flags CharSet[] = {                                 /* ASCII */
     C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  /* p to w */
 
 /* 78 x   79 y   7A z   7B {   7C |   7D }   7E ~   7F DEL  */
-    C_AL,  C_AL,  C_AL, C_D1,  C_D2,  C_D1,  C_D1,  C_BC,   /* x to DEL */
+    C_AL,  C_AL,  C_AL,  C_DE,  C_DE,  C_DE,  C_DE,  C_BC,  /* x to DEL */
 
 /*  80     81     82     83     84     85     86     87     */
     C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  /* $80 to $87 */
@@ -158,7 +139,10 @@ charset_flags CharSet[] = {                                 /* ASCII */
 /*  F8     F9     FA     FB     FC     FD     FE     FF     */
     C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  /* $F8 to $FF */
 
-    0   /* EOF_CHAR */
+    C_BC,  /* LCHR_EOF */
+#ifdef CHAR_MACRO
+    C_BC,  /* LCHR_MACRO */
+#endif
 };
 
 const unsigned char TokValue[] = {      /* ASCII */

@@ -37,9 +37,15 @@
 #include "scan.h"
 #include "ctokens.h"
 
+#define C_XW    (C_WS | C_EX)
+#define C_XD    (C_DE | C_EX)
+#define C_AX    (C_AL | C_HX)       /* hexa digit letters */
+
+/* C++ has TAB and CR set to C_XW */
+
 /* The following table is EBCDIC dependent. */
 
-charset_flags   CharSet[] = {                               /* EBCDIC */
+charset_flags   CharSet[LCHR_MAX] = {                       /* EBCDIC */
 
 /* 00 NUL 01 SOH 02 STX 03 ETX 04 EOT 05 HT  06 ACK 07 BEL  */
     C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_WS,  C_BC,  C_BC,  /* NUL to BEL */
@@ -69,34 +75,28 @@ charset_flags   CharSet[] = {                               /* EBCDIC */
     C_WS,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  /* $40 to $47 */
 
 /* 48     49     4A     4B .   4C <   4D (   4E +   4F |    */
-    C_BC,  C_BC,  C_BC,  C_D1,  C_D2,  C_D2,  C_D2,  C_D2,  /* $48 to $4F */
+    C_BC,  C_BC,  C_BC,  C_DE,  C_DE,  C_DE,  C_DE,  C_DE,  /* $48 to $4F */
 
 /* 50 &   51     52     53     54     55     56     57      */
-    C_D2,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  /* $50 to $57 */
+    C_DE,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  /* $50 to $57 */
 
-/* 58     59     5A !   5B $   5C *   5D )   5E ;   5F ª    */
-    C_BC,  C_BC,  C_D2,  C_BC,  C_D2,  C_D1,  C_D1,  C_D2,  /* $58 to $5F */
+/* 58     59     5A !   5B $   5C *   5D )   5E ;   5F      */
+    C_BC,  C_BC,  C_DE,  C_BC,  C_DE,  C_DE,  C_DE,  C_DE,  /* $58 to $5F */
 
 /* 60 -   61 /   62     63     64     65     66     67      */
-    C_D2,  C_D2,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  /* $60 to $67 */
+    C_DE,  C_DE,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  /* $60 to $67 */
 
 /* 68     69     6A |   6B ,   6C %   6D _   6E >   6F ?    */
-    C_BC,  C_BC,  C_D2,  C_D1,  C_D2,  C_AL,  C_D2,  C_D1,  /* $88 to $8F */
+    C_BC,  C_BC,  C_DE,  C_DE,  C_DE,  C_AL,  C_DE,  C_DE,  /* $88 to $8F */
 
 /* 70     71     72     73     74     75     76     77      */
     C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  /* $70 to $77 */
 
-/* 78     79     7A :   7B     7C     7D     7E     7F      */
-    C_BC,  C_BC,  C_D2,  C_D2,  C_BC,  C_D1,  C_D2,  C_D1,  /* $78 to $7F */
+/* 78     79     7A :   7B #   7C @   7D '   7E =   7F "    */
+    C_BC,  C_BC,  C_DE,  C_DE,  C_BC,  C_DE,  C_DE,  C_DE,  /* $78 to $7F */
 
-    C_BC,                                                   /* 80 `  */
-    C_LH | C_AL,                                            /* 81 a  */
-    C_LH | C_AL,                                            /* 82 b  */
-    C_LH | C_AL,                                            /* 83 c  */
-    C_LH | C_AL,                                            /* 84 d  */
-    C_LH | C_AL,                                            /* 85 e  */
-    C_LH | C_AL,                                            /* 86 f  */
-    C_AL,                                                   /* 87 g  */
+/* 80 `   81 a   82 b   83 c   84 d   85 e   86 f   87 g    */
+    C_BC,  C_AX,  C_AX,  C_AX,  C_AX,  C_AX,  C_AX,  C_AL,  /* `, a to g */
 
 /* 88 h   89 i   8A     8B     8C     8D     8E     8F      */
     C_AL,  C_AL,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  /* $88 to $8F */
@@ -108,48 +108,45 @@ charset_flags   CharSet[] = {                               /* EBCDIC */
     C_AL,  C_AL,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  /* $98 to $9F */
 
 /* A0     A1 ~   A2 s   A3 t   A4 u   A5 v   A6 w   A7 x    */
-    C_BC,  C_D1,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  /* $A0 to $A7 */
+    C_BC,  C_DE,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  /* $A0 to $A7 */
 
 /* A8 y   A9 z   AA     AB     AC     AD [   AE     AF      */
-    C_AL,  C_AL,  C_BC,  C_BC,  C_BC,  C_D1,  C_BC,  C_BC,  /* $A8 to $AF */
+    C_AL,  C_AL,  C_BC,  C_BC,  C_BC,  C_DE,  C_BC,  C_BC,  /* $A8 to $AF */
 
 /* B0     B1     B2     B3     B4     B5     B6     B7      */
     C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  /* $B0 to $B7 */
 
 /* B8     B9     BA     BB     BC     BD ]   BE     BF      */
-    C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_D1,  C_BC,  C_BC,  /* $B8 to $BF */
+    C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_DE,  C_BC,  C_BC,  /* $B8 to $BF */
 
-    C_D1,                                                   /* $C0 {  */
-    C_UH | C_AL,                                            /* $C1 A  */
-    C_UH | C_AL,                                            /* $C2 B  */
-    C_UH | C_AL,                                            /* $C3 C  */
-    C_UH | C_AL,                                            /* $C4 D  */
-    C_UH | C_AL,                                            /* $C5 E  */
-    C_UH | C_AL,                                            /* $C6 F  */
-    C_AL,                                                   /* $C7 G  */
+/* C0 (   C1 A   C2 B   C3 C   C4 D   C5 E   C6 F   C7 G    */
+    C_DE,  C_AX,  C_AX,  C_AX,  C_AX,  C_AX,  C_AX,  C_AL,  /* @, A to G */
 
-/* C8 H   C9 I   CA     CB     8C     CD     CE     CF      */
+/* C8 H   C9 I   CA     CB     CC     CD     CE     CF      */
     C_AL,  C_AL,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  /* $C8 to $CF */
 
 /* D0 }   D1 J   D2 K   D3 L   94 M   D5 N   D6 O   D7 P    */
-    C_D1,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  /* $D0 to $D7 */
+    C_DE,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  /* $D0 to $D7 */
 
-/* D8 Q   D9 R   DA     DB     9C     DD     DE     DF      */
+/* D8 Q   D9 R   DA     DB     DC     DD     DE     DF      */
     C_AL,  C_AL,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  /* $D8 to $DF */
 
-/* E0 \   E1     E2 S   E3 T   a4 U   E5 V   E6 W   E7 X    */
-    C_BC,  C_BC,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  /* $E0 to $E7 */
+/* E0 \   E1     E2 S   E3 T   E4 U   E5 V   E6 W   E7 X    */
+    C_EX,  C_BC,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  /* $E0 to $E7 */
 
-/* E8 Y   E9 Z   EA     EB     AC     ED     EE     EF      */
+/* E8 Y   E9 Z   EA     EB     EC     ED     EE     EF      */
     C_AL,  C_AL,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  /* $E8 to $EF */
 
-/* F0     F1     F2     F3     F4     F5     F6     F7      */
+/* F0 0   F1 1   F2 2   F3 3   F4 4   F5 5   F6 6   F7 7    */
     C_DI,  C_DI,  C_DI,  C_DI,  C_DI,  C_DI,  C_DI,  C_DI,  /* $F0 to $F7 */
 
-/* F8     F9     FA |   FB     FC     FD     FE     FF      */
-    C_DI,  C_DI,  C_D2,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  /* $F8 to $FF */
+/* F8 8   F9 9   FA |   FB     FC     FD     FE     FF      */
+    C_DI,  C_DI,  C_DE,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  /* $F8 to $FF */
 
-    0   /* EOF_CHAR */
+    C_BC,   /* LCHR_EOF */
+#ifdef CHAR_MACRO
+    C_BC,   /* LCHR_MACRO */
+#endif
 };
 
 const unsigned char TokValue[] = {      /* EBCDIC */

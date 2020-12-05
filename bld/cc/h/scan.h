@@ -31,18 +31,27 @@
 ****************************************************************************/
 
 
+/* special "logical" characters that represent special states */
+
+enum {
+    LCHR_EOF            = 0x0100,       /* last char in program source */
+#ifdef CHAR_MACRO
+    LCHR_MACRO,
+#endif
+    LCHR_MAX
+};
+
 /*     character classes    */
 
 typedef enum charset_flags {
-    C_BC = 0,       /* illegal source input character */
-    C_AL = 0x01,    /* alphabetic characters and '_'  */
-    C_DI = 0x02,    /* digit 0-9                      */
-    C_HX = 0x04,    /* upper or lower case hex character (A-F,a-f) */
-    C_EX = 0x08,    /* must be examined by GetNextChar */
-    C_D1 = 0x10,    /* one byte delimiter             */
-    C_D2 = 0x20,    /* two byte delimiters            */
-    C_WS = 0x40,    /* white space                    */
-    C_DB = 0x80     /* first byte of double-byte char */
+    C_BC = 0,       /* illegal source input character               */
+    C_AL = 0x01,    /* alphabetic characters and '_'                */
+    C_DI = 0x02,    /* digit 0-9                                    */
+    C_HX = 0x04,    /* upper or lower case hex character (A-F,a-f)  */
+    C_EX = 0x08,    /* must be examined by GetNextChar              */
+    C_DE = 0x10,    /* any delimiter character                      */
+    C_WS = 0x40,    /* white space                                  */
+    C_DB = 0x80     /* first byte of double-byte char               */
 } charset_flags;
 
 /*
@@ -61,4 +70,4 @@ typedef enum charset_flags {
 #define HEX_BASE        'a'
 #endif
 
-extern charset_flags CharSet[];
+extern charset_flags CharSet[LCHR_MAX];

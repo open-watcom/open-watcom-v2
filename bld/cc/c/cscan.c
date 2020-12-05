@@ -49,8 +49,10 @@ enum scan_class {
 };
 
 static FCB              rescan_tmp_file;
+#ifdef CHAR_MACRO
 static int              SavedCurrChar;          // used when get tokens from macro
-static unsigned char    ClassTable[260];
+#endif
+static unsigned char    ClassTable[LCHR_MAX];
 static size_t           BufferSize;
 
 static unsigned char InitClassTable[] = {
@@ -329,7 +331,7 @@ static TOKEN doScanName( void )
 #if 0
         if( MacroPtr != NULL ) {
             SavedCurrChar = CurrChar;
-            CurrChar = MACRO_CHAR;
+            CurrChar = LCHR_MACRO;
         }
 #endif
         if( token == T_NULL ) {
@@ -1125,11 +1127,9 @@ static TOKEN ScanDelim2( void )
     token = TokValue[CurrChar];
     Buffer[0] = CurrChar;
     TokenLen = 1;
-    NextChar();
-    if( checkDelim2( &token, TokValue[CurrChar] ) ) {
+    if( (CharSet[NextChar()] & C_DE) && checkDelim2( &token, TokValue[CurrChar] ) ) {
         Buffer[TokenLen++] = CurrChar;
-        NextChar();
-        if( checkDelim3( &token, TokValue[CurrChar] ) ) {
+        if( (CharSet[NextChar()] & C_DE) && checkDelim3( &token, TokValue[CurrChar] ) ) {
             Buffer[TokenLen++] = CurrChar;
             NextChar();
         }
@@ -1159,7 +1159,7 @@ static void doScanComment( void )
                 }
                 continue; //could be **/
             }
-            if( c == EOF_CHAR ) {
+            if( c == LCHR_EOF ) {
                 CppComment( '\0' );
                 return;
             }
@@ -1186,7 +1186,7 @@ static void doScanComment( void )
                     c = *SrcFile->src_ptr++;
                 } while( (CharSet[c] & C_EX) == 0 );
                 c = GetCharCheck( c );
-                if( c == EOF_CHAR ) {
+                if( c == LCHR_EOF ) {
                     return;
                 }
             } while( (CharSet[c] & C_EX) == 0 );
@@ -1205,7 +1205,7 @@ static void doScanComment( void )
             // NextChar might not be pointing to GetNextChar at this point
             while( NextChar != GetNextChar ) {
                 c = NextChar();
-                if( c == EOF_CHAR ) {
+                if( c == LCHR_EOF ) {
                     return;
                 }
             }
@@ -1246,7 +1246,7 @@ static TOKEN ScanSlash( void )
             NextChar();
             if( CurrChar == '\n' )
                 break;
-            if( CurrChar == EOF_CHAR )
+            if( CurrChar == LCHR_EOF )
                 break;
             if( CurrChar == '\0' )
                 break;
@@ -1552,7 +1552,7 @@ static TOKEN doScanString( bool wide )
             }
             break;
         }
-        if( c == EOF_CHAR )
+        if( c == LCHR_EOF )
             break;
         if( c == '"' ) {
             NextChar();
@@ -1733,6 +1733,7 @@ static TOKEN ScanInvalid( void )
     return( token );
 }
 
+#ifdef CHAR_MACRO
 static TOKEN ScanMacroToken( void )
 /*********************************/
 {
@@ -1748,6 +1749,7 @@ static TOKEN ScanMacroToken( void )
     }
     return( token );
 }
+#endif
 
 static TOKEN ScanEof( void )
 /**************************/
@@ -1859,8 +1861,10 @@ void ScanInit( void )
     memset( &ClassTable['A'], SCAN_NAME,    26 );
     memset( &ClassTable['a'], SCAN_NAME,    26 );
     memset( &ClassTable['0'], SCAN_NUM,     10 );
-    ClassTable[EOF_CHAR] = SCAN_EOF;
-    ClassTable[MACRO_CHAR] = SCAN_MACRO;
+    ClassTable[LCHR_EOF] = SCAN_EOF;
+#ifdef CHAR_MACRO
+    ClassTable[LCHR_MACRO] = SCAN_MACRO;
+#endif
     for( i = 0; (c = InitClassTable[i]) != '\0'; i += 2 ) {
         ClassTable[c] = InitClassTable[i + 1];
     }

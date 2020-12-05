@@ -595,7 +595,7 @@ void CloseFCB( FCB *srcfcb )
         }
     } else {
         SrcLineCount = srcfcb->src_line_cnt;
-        CurrChar = EOF_CHAR;
+        CurrChar = LCHR_EOF;
     }
     FCB_Free( srcfcb );
 }

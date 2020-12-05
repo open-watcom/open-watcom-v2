@@ -205,7 +205,7 @@ TOKEN ChkControl( void )
         }
         lines_skipped = false;
         old_ppctl = Pre_processing;
-        for( ; CurrChar != EOF_CHAR; ) {
+        for( ; CurrChar != LCHR_EOF; ) {
             if( CompFlags.cpp_mode ) {
                 CppPrtChar( '\n' );
             }
@@ -213,7 +213,7 @@ TOKEN ChkControl( void )
             if( CurrChar != PreProcChar ) {
                 SkipAhead();
             }
-            if( CurrChar == EOF_CHAR )
+            if( CurrChar == LCHR_EOF )
                 break;
             if( CurrChar == PreProcChar ) { /* start of comp control line */
                 PPCTL_ENABLE_EOL();
@@ -809,7 +809,7 @@ static void CError( void )
     size_t      len;
 
     len = 0;
-    while( CurrChar != '\n' && CurrChar != '\r' && CurrChar != EOF_CHAR ) {
+    while( CurrChar != '\n' && CurrChar != '\r' && CurrChar != LCHR_EOF ) {
         if( len != 0 || CurrChar != ' ' ) {
             Buffer[len++] = CurrChar;
         }
