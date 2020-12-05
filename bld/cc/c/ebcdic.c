@@ -25,15 +25,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  character set - table of character types
 *
 ****************************************************************************/
 
 
-/*
-%% CHRSET    : character set - table of character types
-*/
 #include "scan.h"
 #include "ctokens.h"
 
@@ -87,7 +83,7 @@ charset_flags   CharSet[LCHR_MAX] = {                       /* EBCDIC */
     C_DE,  C_DE,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  /* $60 to $67 */
 
 /* 68     69     6A |   6B ,   6C %   6D _   6E >   6F ?    */
-    C_BC,  C_BC,  C_DE,  C_DE,  C_DE,  C_AL,  C_DE,  C_DE,  /* $88 to $8F */
+    C_BC,  C_BC,  C_DE,  C_DE,  C_DE,  C_AL,  C_DE,  C_XD,  /* $88 to $8F */
 
 /* 70     71     72     73     74     75     76     77      */
     C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  /* $70 to $77 */
@@ -125,7 +121,7 @@ charset_flags   CharSet[LCHR_MAX] = {                       /* EBCDIC */
 /* C8 H   C9 I   CA     CB     CC     CD     CE     CF      */
     C_AL,  C_AL,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  /* $C8 to $CF */
 
-/* D0 }   D1 J   D2 K   D3 L   94 M   D5 N   D6 O   D7 P    */
+/* D0 }   D1 J   D2 K   D3 L   D4 M   D5 N   D6 O   D7 P    */
     C_DE,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  C_AL,  /* $D0 to $D7 */
 
 /* D8 Q   D9 R   DA     DB     DC     DD     DE     DF      */
@@ -151,10 +147,10 @@ charset_flags   CharSet[LCHR_MAX] = {                       /* EBCDIC */
 
 const unsigned char TokValue[] = {      /* EBCDIC */
 
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,    /* 00 - 0f */
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,    /* 10 - 1f */
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,    /* 20 - 2f */
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,    /* 30 - 3f */
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,    /* 00 - 0F */
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,    /* 10 - 1F */
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,    /* 20 - 2F */
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,    /* 30 - 3F */
 
     0,                                  /* 40 SP */
     0,                                  /* 41 */
@@ -227,15 +223,15 @@ const unsigned char TokValue[] = {      /* EBCDIC */
 
 /* character weights used for hashing function */
 
-    W_A,                                /* a */
-    W_B,                                /* b */
-    W_C,                                /* c */
-    W_D,                                /* d */
-    W_E,                                /* e */
-    W_F,                                /* f */
-    W_G,                                /* g */
-    W_H,                                /* h */
-    W_I,                                /* i */
+    W_a,                                /* a */
+    W_b,                                /* b */
+    W_c,                                /* c */
+    W_d,                                /* d */
+    W_e,                                /* e */
+    W_f,                                /* f */
+    W_g,                                /* g */
+    W_h,                                /* h */
+    W_i,                                /* i */
     0,                                  /* 8A */
     0,                                  /* 8B */
     0,                                  /* 8C */
@@ -243,15 +239,15 @@ const unsigned char TokValue[] = {      /* EBCDIC */
     0,                                  /* 8E */
     0,                                  /* 8F */
     0,                                  /* 90 */
-    W_J,                                /* j */
-    W_K,                                /* k */
-    W_L,                                /* l */
-    W_M,                                /* m */
-    W_N,                                /* n */
-    W_O,                                /* o */
-    W_P,                                /* p */
-    W_Q,                                /* q */
-    W_R,                                /* r */
+    W_j,                                /* j */
+    W_k,                                /* k */
+    W_l,                                /* l */
+    W_m,                                /* m */
+    W_n,                                /* n */
+    W_o,                                /* o */
+    W_p,                                /* p */
+    W_q,                                /* q */
+    W_r,                                /* r */
     0,                                  /* 9A */
     0,                                  /* 9B */
     0,                                  /* 9C */
@@ -260,14 +256,14 @@ const unsigned char TokValue[] = {      /* EBCDIC */
     0,                                  /* 9F */
     0,                                  /* A0 */
     T_TILDE,                            /* A1 ~ */
-    W_S,                                /* s */
-    W_T,                                /* t */
-    W_U,                                /* u */
-    W_V,                                /* v */
-    W_W,                                /* w */
-    W_X,                                /* x */
-    W_Y,                                /* y */
-    W_Z,                                /* z */
+    W_s,                                /* s */
+    W_t,                                /* t */
+    W_u,                                /* u */
+    W_v,                                /* v */
+    W_w,                                /* w */
+    W_x,                                /* x */
+    W_y,                                /* y */
+    W_z,                                /* z */
     0,                                  /* AA */
     0,                                  /* AB */
     0,                                  /* AC */
@@ -342,16 +338,16 @@ const unsigned char TokValue[] = {      /* EBCDIC */
     0,                                  /* EE */
     0,                                  /* EF */
 
-    26,                                 /* F0 0 */
-    25,                                 /* F1 1 */
-    24,                                 /* F2 2 */
-    23,                                 /* F3 F */
-    22,                                 /* F4 4 */
-    21,                                 /* F5 5 */
-    20,                                 /* F6 6 */
-    19,                                 /* F7 7 */
-    18,                                 /* F8 8 */
-    17,                                 /* F9 9 */
+    W_0,                                /* F0 0 */
+    W_1,                                /* F1 1 */
+    W_2,                                /* F2 2 */
+    W_3,                                /* F3 3 */
+    W_4,                                /* F4 4 */
+    W_5,                                /* F5 5 */
+    W_6,                                /* F6 6 */
+    W_7,                                /* F7 7 */
+    W_8,                                /* F8 8 */
+    W_9,                                /* F9 9 */
     T_OR,                               /* FA | */
     0,                                  /* FB */
     0,                                  /* FC */
