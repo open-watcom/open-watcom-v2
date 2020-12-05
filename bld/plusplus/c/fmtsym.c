@@ -64,15 +64,16 @@ static const char *fmtSymCgop( CGOP number )
     const char *name;                 // - name
 
     static const char *opNames[] = {  // - opcode names (binary,unary)
-    #include "ppopssym.h"
+        #include "ppopssym.h"
     };
 
-    if( number >= ( sizeof( opNames ) / sizeof( opNames[0] ) ) ) {
-        name = "***INVALID CGOP***";
-    } else if( strlen( opNames[number] ) == 0 ) {
-        name = "***INVALID CGOP LENGTH***";
-    } else {
+    if( number < ARRAY_SIZE( opNames ) ) {
         name = opNames[number];
+        if( name[0] == '\0' ) {
+            name = "***INVALID CGOP LENGTH***";
+        }
+    } else {
+        name = "***INVALID CGOP***";
     }
     return( name );
 }

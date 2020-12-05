@@ -99,7 +99,7 @@ static const char *TokenNames[] = {
 void DbgDumpToken( TOKEN token );
 #endif
 
-#define LAST_TOKEN_PREC (sizeof( Prec ) / sizeof( Prec[0] ))
+#define LAST_TOKEN_PREC ARRAY_SIZE( Prec )
 
 #define IS_OPERAND( token ) ( IS_ID_OR_KEYWORD( token ) || token == T_CONSTANT )
 

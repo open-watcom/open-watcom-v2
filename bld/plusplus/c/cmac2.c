@@ -623,7 +623,7 @@ static void CEndif( void )
         pp_stack = VstkTop( &vstkPp );
         SrcFileGuardPpEndif();
     }
-    if( NestLevel < SkipLevel ) {
+    if( SkipLevel > NestLevel ) {
         SkipLevel = NestLevel;
     }
     NextToken();

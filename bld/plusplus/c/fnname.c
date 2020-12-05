@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1123,10 +1124,10 @@ static const char *cppNameCgop(     // PRODUCE PRINTABLE OPERATOR NAME
         #include "ppopslnm.h"
     };
 
-    if( oper >= ( sizeof( opNames ) / sizeof( opNames[0] ) ) ) {
-        name = "***INVALID CGOP***";
-    } else {
+    if( oper < ARRAY_SIZE( opNames ) ) {
         name = opNames[oper];
+    } else {
+        name = "***INVALID CGOP***";
     }
     return( name );
 }

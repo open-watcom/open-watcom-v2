@@ -34,8 +34,8 @@ pick( SCAN_NAME,       ScanName           )  // identifier
 pick( SCAN_WIDE,       ScanWide           )  // L"abc" or L'a' or Lname
 pick( SCAN_NUM,        ScanNum            )  // number that starts with a digit
 pick( SCAN_SLASH,      ScanSlash          )  // '/'
-pick( SCAN_DELIM1,     ScanDelim1         )  // single character delimiter
-pick( SCAN_DELIM2,     ScanDelim2         )  // one, two, or three byte delimiter
+pick( SCAN_DELIM1,     ScanDelim1         )  // single character delimiter only
+pick( SCAN_DELIM2,     ScanDelim2         )  // one to three characters delimiter
 pick( SCAN_DOT,        ScanDot            )  // .
 pick( SCAN_STRING,     ScanString         )  // "string"
 pick( SCAN_CHARCONST,  ScanCharConst      )  // 'a'

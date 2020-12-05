@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -491,16 +492,16 @@ static void dumpNames( void )
             ++length;
         }
         uniform_stat += length * ( length + 1 ) / 2;
-        if( length > max ) {
+        if( max < length ) {
             max = length;
         }
-        if( length < min ) {
+        if( min > length ) {
             min = length;
         }
         sum += length;
         putc( '\n', fp );
-        if( length >= (sizeof(freq)/sizeof(freq[0])) ) {
-            length = (sizeof(freq)/sizeof(freq[0]))-1;
+        if( length > ARRAY_SIZE( freq ) - 1 ) {
+            length = ARRAY_SIZE( freq ) - 1;
         }
         freq[length]++;
     }
@@ -512,7 +513,7 @@ static void dumpNames( void )
         for( ; name != NULL; name = name->next ) {
             ++length;
         }
-        if( length < min ) {
+        if( min > length ) {
             min = length;
         }
         fprintf( fp, "%4u: length %4u: ", i, length );
@@ -523,7 +524,7 @@ static void dumpNames( void )
         putc( '\n', fp );
     }
     fprintf( fp, "frequency chart of chain lengths:\n" );
-    for( i = 0; i < (sizeof(freq)/sizeof(freq[0])); ++i ) {
+    for( i = 0; i < ARRAY_SIZE( freq ); ++i ) {
         if( freq[i] ) {
             fprintf( fp, "%4u[%4u]: ", i, freq[i] );
             while( freq[i] ) {

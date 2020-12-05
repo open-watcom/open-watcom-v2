@@ -1584,7 +1584,7 @@ static void dataInitPadOutHuge( INITIALIZE_INFO *top )
     target_size_t     diff;
     target_size_t     increment;
 
-    if( top->padded_size < top->offset ) {
+    if( top->offset > top->padded_size ) {
         top->offset = top->padded_size;
     }
     diff = top->padded_size - top->offset;
@@ -1616,7 +1616,7 @@ static void dataInitPadOut( INITIALIZE_INFO *top )
     switch( top->target ) {
     case DT_ARRAY:
         if( top->padded_size != 0 ) {
-            if( top->padded_size < top->offset ) {
+            if( top->offset > top->padded_size ) {
                 top->offset = top->padded_size;
             }
             diff = top->padded_size - top->offset;
@@ -1649,7 +1649,7 @@ static void dataInitPadOut( INITIALIZE_INFO *top )
         break;
     case DT_SCALAR:
     case DT_CLASS:
-        if( top->padded_size < top->offset ) {
+        if( top->offset > top->padded_size ) {
             top->offset = top->padded_size;
         }
         diff = top->padded_size - top->offset;

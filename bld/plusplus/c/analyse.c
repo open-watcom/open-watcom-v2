@@ -1139,7 +1139,7 @@ typedef enum            // OPNCL -- operands classification
 } OPNCL;
 
 static OPR_RTN_CODE opr_rtn_table[][OPNCL_MAX] = {
-#include "ppopsan.h"
+    #include "ppopsan.h"
 };
 
 

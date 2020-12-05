@@ -221,21 +221,23 @@ pch_status PCHFiniMacros( bool writing )
 
 static void findMaxLength( MEPTR mentry, void *data )
 {
-    unsigned *pmax = data;
+    unsigned *pmax;
     unsigned wlen;
 
+    pmax = data;
     wlen = mentry->macro_len;
-    if( wlen > *pmax ) {
+    if( *pmax < wlen ) {
         *pmax = wlen;
     }
 }
 
 static void writeMacroCheck( MEPTR mentry, void *data )
 {
-    unsigned *phash = data;
+    unsigned *phash;
     unsigned wlen;
     MEPTR next_mentry;
 
+    phash = data;
     next_mentry = mentry->next_macro;
     mentry->next_macro = PCHSetUInt( *phash );
     wlen = mentry->macro_len;

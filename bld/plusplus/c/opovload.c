@@ -72,7 +72,7 @@ static SYMBOL ovfuns[] =
     #undef OPBASIC
 ;
 
-#define MAX_FUN_PROTOS ( sizeof(ovfuns) / sizeof(ovfuns[0]) )
+#define MAX_FUN_PROTOS ARRAY_SIZE( ovfuns )
 
 
 static OP_MASK opfun_mask[] =
@@ -93,7 +93,7 @@ static OP_MASK opr_masks[] =
     #undef OPCNV
 ;
 
-#define MAX_OPR_TYPES ( sizeof( fun_protos ) / sizeof( fun_protos[0] ) )
+#define MAX_OPR_TYPES ARRAY_SIZE( fun_protos )
 
 // If we get an ambiguity between an user-defined operator and a built-in
 // operator, for Microsoft compatibility we try again, but this time use
@@ -110,7 +110,7 @@ static SYMBOL ovfuns_extra[] =
     #undef OPBASIC_EXTRA
 ;
 
-#define MAX_FUN_PROTOS_EXTRA ( sizeof(ovfuns_extra) / sizeof(ovfuns_extra[0]) )
+#define MAX_FUN_PROTOS_EXTRA ARRAY_SIZE( ovfuns_extra )
 
 static OP_MASK opfun_mask_extra[] =
     #define OPBASIC_EXTRA( arg1, arg2, mask, ctl ) mask
@@ -638,8 +638,7 @@ static PTREE resolve_symbols(   // RESOLVE MULTIPLE OVERLOAD DEFINITIONS
         oper = PTreeIdSym( fun );
         oper = NodeSymbolNoRef( oper, fun, olinf->result_mem );
         oper->cgop = CO_NAME_DOT;
-        olinf->expr->u.subtree[0] = NodeDottedFunction( olinf->left.operand
-                                                      , oper );
+        olinf->expr->u.subtree[0] = NodeDottedFunction( olinf->left.operand, oper );
 
         ScopeFreeResult( olinf->result_nonmem );
         ScopeFreeResult( olinf->result_nonmem_namespace );

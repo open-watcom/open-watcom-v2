@@ -66,7 +66,7 @@ POOL_CON *ConPoolFloatAdd       // ADD AN ITEM TO THE CONSTANTS POOL
     ( PTREE node )              // - node for floating constant
 {
     POOL_CON *pool;
-    unsigned len;
+    size_t len;
     char *stg;
     char buff[128];
 
@@ -154,7 +154,7 @@ pch_status PCHWriteConstantPool( void )
 
 pch_status PCHReadConstantPool( void )
 {
-    unsigned len;
+    size_t len;
     POOL_CON *c;
     cvinit_t data;
 

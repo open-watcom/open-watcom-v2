@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +40,7 @@ struct pool_con {                       // POOL_CON -- pool entry
     void        *next;                  // - next in ring
     union {                             // - one of:
         struct {                        // - - floating-point constant
-            unsigned    len;            // - - - # bytes (includes '\0')
+            size_t      len;            // - - - # bytes (includes '\0')
             char        *fp_constant;   // - - - floating value in the pool
         } s;
         signed_64       int64_constant; // - - int-64 constant
