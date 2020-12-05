@@ -62,7 +62,7 @@ static unsigned char InitClassTable[] = {
     '\v',       SCAN_WHITESPACE,
     '\'',       SCAN_CHARCONST,
     '"',        SCAN_STRING,
-    '(',        SCAN_DELIM1,
+    '(',        SCAN_DELIM2,
     ')',        SCAN_DELIM1,
     ',',        SCAN_DELIM1,
     ';',        SCAN_DELIM1,
@@ -941,146 +941,6 @@ static TOKEN ScanNum( void )
     }
 }
 
-static bool checkDelim2( TOKEN *token, TOKEN last )
-/*************************************************/
-{
-    switch( *token ) {
-    case T_AND:
-        if( last == T_AND ) {
-            *token = T_AND_AND;
-            break;
-        }
-        if( last == T_EQUAL ) {
-            *token = T_AND_EQUAL;
-            break;
-        }
-        return( false );
-    case T_PLUS:
-        if( last == T_PLUS ) {
-            *token = T_PLUS_PLUS;
-            break;
-        }
-        if( last == T_EQUAL ) {
-            *token = T_PLUS_EQUAL;
-            break;
-        }
-        return( false );
-    case T_MINUS:
-        if( last == T_MINUS ) {
-            *token = T_MINUS_MINUS;
-            break;
-        }
-        if( last == T_EQUAL ) {
-            *token = T_MINUS_EQUAL;
-            break;
-        }
-        if( last == T_GT ) {
-            *token = T_ARROW;
-            break;
-        }
-        return( false );
-    case T_OR:
-        if( last == T_OR ) {
-            *token = T_OR_OR;
-            break;
-        }
-        if( last == T_EQUAL ) {
-            *token = T_OR_EQUAL;
-            break;
-        }
-        return( false );
-    case T_LT:
-        if( last == T_LT ) {
-            *token = T_LSHIFT;
-            break;
-        }
-        if( last == T_EQUAL ) {
-            *token = T_LE;
-            break;
-        }
-        return( false );
-    case T_GT:
-        if( last == T_GT ) {
-            *token = T_RSHIFT;
-            break;
-        }
-        if( last == T_EQUAL ) {
-            *token = T_GE;
-            break;
-        }
-        return( false );
-    case T_SHARP:   /* ## */
-        if( last == T_SHARP ) {
-            *token = T_SHARP_SHARP;
-            break;
-        }
-        return( false );
-    case T_EQUAL:   /* == */
-        if( last == T_EQUAL ) {
-            *token = T_EQ;
-            break;
-        }
-        return( false );
-    case T_EXCLAMATION: /* != */
-        if( last == T_EQUAL ) {
-            *token = T_NE;
-            break;
-        }
-        return( false );
-    case T_PERCENT: /* %= */
-        if( last == T_EQUAL ) {
-            *token = T_PERCENT_EQUAL;
-            break;
-        }
-        return( false );
-    case T_TIMES:   /* *= */
-        if( last == T_EQUAL ) {
-            *token = T_TIMES_EQUAL;
-            break;
-        }
-        return( false );
-    case T_DIV:     /* /= */
-        if( last == T_EQUAL ) {
-            *token = T_DIV_EQUAL;
-            break;
-        }
-        return( false );
-    case T_XOR:     /* ^= */
-        if( last == T_EQUAL ) {
-            *token = T_XOR_EQUAL;
-            break;
-        }
-        return( false );
-    case T_LSHIFT:  /* <<= */
-        if( last == T_EQUAL ) {
-            *token = T_LSHIFT_EQUAL;
-            break;
-        }
-        return( false );
-    case T_RSHIFT:  /* >>= */
-        if( last == T_EQUAL ) {
-            *token = T_RSHIFT_EQUAL;
-            break;
-        }
-        return( false );
-    case T_COLON:   /* :> */
-        if( last == T_GT ) {
-            *token = T_SEG_OP;
-            break;
-        }
-#if _CPU == 370
-        if( last == T_RIGHT_PAREN ) {
-            *token = T_RIGHT_BRACKET;   /* :) -> ] */
-            break;
-        }
-#endif
-        return( false );
-    default:
-        return( false );
-    }
-    return( true );
-}
-
 static TOKEN ScanDelim1( void )
 /******************************
  * TokenLen is alway lower then BUF_SIZE that
@@ -1091,17 +951,167 @@ static TOKEN ScanDelim1( void )
 
     token = TokValue[CurrChar];
     Buffer[0] = CurrChar;
+    Buffer[1] = '\0';
     TokenLen = 1;
     NextChar();
-#if _CPU == 370
-    if( token == T_LEFT_PAREN && CurrChar == ':' ) {
-        Buffer[TokenLen++] = ':';
-        NextChar();
-        token == T_LEFT_BRACKET;    /* (: -> [ */
-    }
-#endif
-    Buffer[TokenLen] = '\0';
     return( token );
+}
+
+static bool checkDelim2( TOKEN *token, TOKEN last )
+/*************************************************/
+{
+    switch( *token ) {
+    case T_AND:
+        if( last == T_AND ) {           /* && */
+            *token = T_AND_AND;
+            break;
+        }
+        if( last == T_EQUAL ) {         /* &= */
+            *token = T_AND_EQUAL;
+            break;
+        }
+        return( false );
+    case T_PLUS:
+        if( last == T_PLUS ) {          /* ++ */
+            *token = T_PLUS_PLUS;
+            break;
+        }
+        if( last == T_EQUAL ) {         /* += */
+            *token = T_PLUS_EQUAL;
+            break;
+        }
+        return( false );
+    case T_MINUS:
+        if( last == T_MINUS ) {         /* -- */
+            *token = T_MINUS_MINUS;
+            break;
+        }
+        if( last == T_EQUAL ) {         /* -= */
+            *token = T_MINUS_EQUAL;
+            break;
+        }
+        if( last == T_GT ) {            /* -> */
+            *token = T_ARROW;
+            break;
+        }
+        return( false );
+    case T_OR:
+        if( last == T_OR ) {            /* || */
+            *token = T_OR_OR;
+            break;
+        }
+        if( last == T_EQUAL ) {         /* |= */
+            *token = T_OR_EQUAL;
+            break;
+        }
+        return( false );
+    case T_LT:
+        if( last == T_LT ) {            /* << */
+            *token = T_LSHIFT;
+            break;
+        }
+        if( last == T_EQUAL ) {         /* <= */
+            *token = T_LE;
+            break;
+        }
+        return( false );
+    case T_GT:
+        if( last == T_GT ) {            /* >> */
+            *token = T_RSHIFT;
+            break;
+        }
+        if( last == T_EQUAL ) {         /* >= */
+            *token = T_GE;
+            break;
+        }
+        return( false );
+    case T_SHARP:
+        if( last == T_SHARP ) {         /* ## */
+            *token = T_SHARP_SHARP;
+            break;
+        }
+        return( false );
+    case T_EQUAL:
+        if( last == T_EQUAL ) {         /* == */
+            *token = T_EQ;
+            break;
+        }
+        return( false );
+    case T_EXCLAMATION:
+        if( last == T_EQUAL ) {         /* != */
+            *token = T_NE;
+            break;
+        }
+        return( false );
+    case T_PERCENT:
+        if( last == T_EQUAL ) {         /* %= */
+            *token = T_PERCENT_EQUAL;
+            break;
+        }
+        return( false );
+    case T_TIMES:
+        if( last == T_EQUAL ) {         /* *= */
+            *token = T_TIMES_EQUAL;
+            break;
+        }
+        return( false );
+    case T_DIV:
+        if( last == T_EQUAL ) {         /* /= */
+            *token = T_DIV_EQUAL;
+            break;
+        }
+        return( false );
+    case T_XOR:
+        if( last == T_EQUAL ) {         /* ^= */
+            *token = T_XOR_EQUAL;
+            break;
+        }
+        return( false );
+    case T_COLON:
+        if( last == T_GT ) {            /* :> */
+            *token = T_SEG_OP;
+            break;
+        }
+#if _CPU == 370
+        if( last == T_RIGHT_PAREN ) {   /* :) */
+            *token = T_RIGHT_BRACKET;
+            break;
+        }
+#endif
+    case T_LEFT_PAREN:
+#if _CPU == 370
+        if( last == T_COLON ) {         /* (: */
+            *token = T_LEFT_BRACKET;
+            break;
+        }
+#endif
+        return( false );
+    default:
+        return( false );
+    }
+    return( true );
+}
+
+static bool checkDelim3( TOKEN *token, TOKEN last )
+/*************************************************/
+{
+    switch( *token ) {
+    case T_LSHIFT:
+        if( last == T_EQUAL ) {         /* <<= */
+            *token = T_LSHIFT_EQUAL;
+            break;
+        }
+        return( false );
+    case T_RSHIFT:
+        if( last == T_EQUAL ) {         /* >>= */
+            *token = T_RSHIFT_EQUAL;
+            break;
+        }
+        return( false );
+    default:
+        return( false );
+    }
+    return( true );
 }
 
 static TOKEN ScanDelim2( void )
@@ -1115,14 +1125,13 @@ static TOKEN ScanDelim2( void )
     token = TokValue[CurrChar];
     Buffer[0] = CurrChar;
     TokenLen = 1;
-    NextChar();     /* can't inline this copy of NextChar */
+    NextChar();
     if( checkDelim2( &token, TokValue[CurrChar] ) ) {
         Buffer[TokenLen++] = CurrChar;
-        if( NextChar() == '=' ) {
-            if( checkDelim2( &token, T_EQUAL ) ) {
-                Buffer[TokenLen++] = CurrChar;
-                NextChar();
-            }
+        NextChar();
+        if( checkDelim3( &token, TokValue[CurrChar] ) ) {
+            Buffer[TokenLen++] = CurrChar;
+            NextChar();
         }
     }
     Buffer[TokenLen] = '\0';
