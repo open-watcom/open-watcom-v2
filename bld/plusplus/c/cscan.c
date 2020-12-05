@@ -85,7 +85,11 @@ static uint_8 InitClassTable[] = {
     '\v',       SCAN_WHITESPACE,
     '\'',       SCAN_CHARCONST,
     '"',        SCAN_STRING,
+#if _CPU == 370
+    '(',        SCAN_DELIM2,            // ( (:
+#else
     '(',        SCAN_DELIM1,
+#endif
     ')',        SCAN_DELIM1,
     ',',        SCAN_DELIM1,
     ';',        SCAN_DELIM1,
@@ -96,20 +100,20 @@ static uint_8 InitClassTable[] = {
     '}',        SCAN_DELIM1,
     '~',        SCAN_DELIM1,
     '.',        SCAN_FLOAT,
-    '#',        SCAN_DELIM12,           // #    ##
-    '=',        SCAN_DELIM1EQ,          // = ==
-    '^',        SCAN_DELIM1EQ,          // ^ ^=
-    '!',        SCAN_DELIM1EQ,          // ! !=
-    '%',        SCAN_PERCENT,           // % %= %> %: %:%:
-    '*',        SCAN_DELIM1EQ,          // * *=
-    '&',        SCAN_DELIM12EQ,         // & &= &&
-    '|',        SCAN_DELIM12EQ,         // | |= ||
-    '+',        SCAN_DELIM12EQ,         // + += ++
-    '<',        SCAN_LT,                // < <= << <<= <% <:
-    '>',        SCAN_DELIM12EQ2EQ,      // > >= >> >>=
-    '-',        SCAN_MINUS,             // - -= -- -> ->*
+    '#',        SCAN_DELIM2,            // #    ##
+    '=',        SCAN_DELIM2,            // = ==
+    '^',        SCAN_DELIM2,            // ^ ^=
+    '!',        SCAN_DELIM2,            // ! !=
+    '%',        SCAN_DELIM2,            // % %= %> %: %:%:
+    '*',        SCAN_DELIM2,            // * *=
+    '&',        SCAN_DELIM2,            // & &= &&
+    '|',        SCAN_DELIM2,            // | |= ||
+    '+',        SCAN_DELIM2,            // + += ++
+    '<',        SCAN_DELIM2,            // < <= << <<= <% <:
+    '>',        SCAN_DELIM2,            // > >= >> >>=
+    '-',        SCAN_DELIM2,            // - -= -- -> ->*
     '/',        SCAN_SLASH,             // / /=    // /**/
-    ':',        SCAN_COLON,             // :    :: :>
+    ':',        SCAN_DELIM2,            // :    :: :> :)
     '_',        SCAN_NAME,
     'L',        SCAN_WIDE,
     '\0',       0
@@ -1203,121 +1207,227 @@ static TOKEN scanDelim1( bool expanding )
     return( token );
 }
 
-static TOKEN scanDelim12( bool expanding )       // @ or @@ token
+static bool checkDelim2( TOKEN *token, TOKEN last )
+/*************************************************/
 {
-    int c;
-    int chr2;
-    TOKEN tok;
-    size_t token_len;
-
-    /* unused parameters */ (void)expanding;
-
-    SrcFileCurrentLocation();
-    c = CurrChar;
-    Buffer[0] = c;
-    tok = TokValue[c];
-    token_len = 1;
-    chr2 = NextChar();
-    Buffer[1] = chr2;
-    if( chr2 == c ) {
-        tok += 2;
-        ++token_len;
-        NextChar();
+    switch( *token ) {
+    case T_AND:
+        if( last == T_AND ) {           /* && */
+            *token = T_AND_AND;
+            break;
+        }
+        if( last == T_EQUAL ) {         /* &= */
+            *token = T_AND_EQUAL;
+            break;
+        }
+        return( false );
+    case T_PLUS:
+        if( last == T_PLUS ) {          /* ++ */
+            *token = T_PLUS_PLUS;
+            break;
+        }
+        if( last == T_EQUAL ) {         /* += */
+            *token = T_PLUS_EQUAL;
+            break;
+        }
+        return( false );
+    case T_MINUS:
+        if( last == T_MINUS ) {         /* -- */
+            *token = T_MINUS_MINUS;
+            break;
+        }
+        if( last == T_EQUAL ) {         /* -= */
+            *token = T_MINUS_EQUAL;
+            break;
+        }
+        if( last == T_GT ) {            /* -> */
+            *token = T_ARROW;
+            break;
+        }
+        return( false );
+    case T_OR:
+        if( last == T_OR ) {            /* || */
+            *token = T_OR_OR;
+            break;
+        }
+        if( last == T_EQUAL ) {         /* |= */
+            *token = T_OR_EQUAL;
+            break;
+        }
+        return( false );
+    case T_LT:
+        if( last == T_LT ) {            /* << */
+            *token = T_LSHIFT;
+            break;
+        }
+        if( last == T_EQUAL ) {         /* <= */
+            *token = T_LE;
+            break;
+        }
+        if( last == T_PERCENT ) {       /* <% */
+            *token = T_ALT_LEFT_BRACE;
+            break;
+        }
+        if( last == T_COLON ) {         /* <: */
+            *token = T_ALT_LEFT_BRACKET;
+            break;
+        }
+        return( false );
+    case T_GT:
+        if( last == T_GT ) {            /* >> */
+            *token = T_RSHIFT;
+            break;
+        }
+        if( last == T_EQUAL ) {         /* >= */
+            *token = T_GE;
+            break;
+        }
+        return( false );
+    case T_SHARP:
+        if( last == T_SHARP ) {         /* ## */
+            *token = T_SHARP_SHARP;
+            break;
+        }
+        return( false );
+    case T_EQUAL:
+        if( last == T_EQUAL ) {         /* == */
+            *token = T_EQ;
+            break;
+        }
+        return( false );
+    case T_EXCLAMATION:
+        if( last == T_EQUAL ) {         /* != */
+            *token = T_NE;
+            break;
+        }
+        return( false );
+    case T_PERCENT:
+        if( last == T_EQUAL ) {         /* %= */
+            *token = T_PERCENT_EQUAL;
+            break;
+        }
+        if( last == T_GT ) {            /* %> */
+            *token = T_ALT_RIGHT_BRACE;
+            break;
+        }
+        if( last == T_COLON ) {         /* %: */
+            *token = T_ALT_SHARP;
+            break;
+        }
+        return( false );
+    case T_TIMES:
+        if( last == T_EQUAL ) {         /* *= */
+            *token = T_TIMES_EQUAL;
+            break;
+        }
+        return( false );
+    case T_DIV:
+        if( last == T_EQUAL ) {         /* /= */
+            *token = T_DIV_EQUAL;
+            break;
+        }
+        return( false );
+    case T_XOR:
+        if( last == T_EQUAL ) {         /* ^= */
+            *token = T_XOR_EQUAL;
+            break;
+        }
+        return( false );
+    case T_COLON:
+        if( last == T_COLON ) {         /* :: */
+            *token = T_COLON_COLON;
+            break;
+        }
+        if( last == T_GT ) {            /* :> */
+            // TODO: according to the standard, ":>" should be an
+            // alternative token (digraph) for "]"
+            // *token = T_RIGHT_BRACKET;   /* -> ] */
+            *token = T_SEG_OP;
+            break;
+        }
+#if _CPU == 370
+        if( last == T_RIGHT_PAREN ) {   /* :) */
+            *token = T_RIGHT_BRACKET;   /* -> ] */
+            break;
+        }
+#endif
+        return( false );
+#if _CPU == 370
+    case T_LEFT_PAREN:
+        if( last == T_COLON ) {         /* (: */
+            *token = T_LEFT_BRACKET;    /* -> [ */
+            break;
+        }
+        return( false );
+#endif
+    case T_ARROW:
+        if( last == T_TIMES ) {         /* ->* */
+            *token = T_ARROW_STAR;
+            break;
+        }
+        return( false );
+    case T_LSHIFT:
+        if( last == T_EQUAL ) {         /* <<= */
+            *token = T_LSHIFT_EQUAL;
+            break;
+        }
+        return( false );
+    case T_RSHIFT:
+        if( last == T_EQUAL ) {         /* >>= */
+            *token = T_RSHIFT_EQUAL;
+            break;
+        }
+        return( false );
+    case T_ALT_SHARP:
+        if( last == T_PERCENT ) {       /* %:% */
+            break;
+        }
+        return( false );
+    default:
+        return( false );
     }
-    Buffer[token_len] = '\0';
-    TokenLen = token_len;
-    return( tok );
+    return( true );
 }
 
-static TOKEN scanDelim12EQ( bool expanding )     // @, @@, or @= token
+static TOKEN scanDelim2( bool expanding )
+/****************************************
+ * TokenLen is alway lower then BUF_SIZE that
+ * direct access to Buffer array is used
+ */
 {
-    int c;
-    int chr2;
-    TOKEN tok;
-    size_t token_len;
+    TOKEN           token;
+    int             chr3;
 
     /* unused parameters */ (void)expanding;
 
-    SrcFileCurrentLocation();
-    c = CurrChar;
-    Buffer[0] = c;
-    tok = TokValue[c];
-    token_len = 1;
-    chr2 = NextChar();
-    Buffer[1] = chr2;
-    if( chr2 == '=' ) {
-        ++tok;
-        ++token_len;
-        NextChar();
-    } else if( chr2 == c ) {
-        tok += 2;
-        ++token_len;
-        NextChar();
-    }
-    Buffer[token_len] = '\0';
-    TokenLen = token_len;
-    return( tok );
-}
-
-static TOKEN scanDelim12EQ2EQ( bool expanding )  // @, @@, @=, or @@= token
-{
-    int c;
-    int chr2;
-    TOKEN tok;
-    size_t token_len;
-
-    /* unused parameters */ (void)expanding;
-
-    SrcFileCurrentLocation();
-    c = CurrChar;
-    Buffer[0] = c;
-    tok = TokValue[c];
-    token_len = 1;
-    chr2 = NextChar();
-    Buffer[1] = chr2;
-    if( chr2 == '=' ) {
-        ++tok;
-        ++token_len;
-        NextChar();
-    } else if( chr2 == c ) {
-        tok += 2;
-        ++token_len;
-        if( NextChar() == '=' ) {
-            ++tok;
-            ++token_len;
-            Buffer[2] = '=';
-            NextChar();
+    token = TokValue[CurrChar];
+    Buffer[0] = CurrChar;
+    TokenLen = 1;
+    if( (CharSet[NextChar()] & C_DE) && checkDelim2( &token, TokValue[CurrChar] ) ) {
+        Buffer[TokenLen++] = CurrChar;
+        if( (CharSet[NextChar()] & C_DE) && checkDelim2( &token, TokValue[CurrChar] ) ) {
+            if( token == T_ALT_SHARP ) {
+                /* only '%:%:' is possible for 4 characters delimiter
+                 * if it matches only '%:%' (3 characters)
+                 * then push back character 3 and 4
+                 */
+                chr3 = CurrChar;
+                if( (CharSet[NextChar()] & C_DE) && TokValue[CurrChar] == T_COLON ) {
+                    Buffer[TokenLen++] = chr3;
+                    Buffer[TokenLen++] = CurrChar;
+                    NextChar();
+                } else {
+                    unGetChar( CurrChar );
+                    CurrChar = chr3;
+                }
+            } else {
+                Buffer[TokenLen++] = CurrChar;
+                NextChar();
+            }
         }
     }
-    Buffer[token_len] = '\0';
-    TokenLen = token_len;
-    return( tok );
-}
-
-static TOKEN scanDelim1EQ( bool expanding )      // @ or @= token
-{
-    int c;
-    int chr2;
-    TOKEN tok;
-    size_t token_len;
-
-    /* unused parameters */ (void)expanding;
-
-    SrcFileCurrentLocation();
-    c = CurrChar;
-    Buffer[0] = c;
-    tok = TokValue[c];
-    token_len = 1;
-    chr2 = NextChar();
-    Buffer[1] = chr2;
-    if( chr2 == '=' ) {
-        ++tok;
-        ++token_len;
-        NextChar();
-    }
-    Buffer[token_len] = '\0';
-    TokenLen = token_len;
-    return( tok );
+    Buffer[TokenLen] = '\0';
+    return( token );
 }
 
 static TOKEN scanSlash( bool expanding ) // /, /=, // comment, or /*comment*/
@@ -1347,161 +1457,6 @@ static TOKEN scanSlash( bool expanding ) // /, /=, // comment, or /*comment*/
             scanCComment();
             Buffer[0] = ' ';
             tok = T_WHITE_SPACE;
-        }
-    }
-    Buffer[token_len] = '\0';
-    TokenLen = token_len;
-    return( tok );
-}
-
-static TOKEN scanLT( bool expanding )    // <, <=, <<, <<=, <%, <:
-{
-    int nc;
-    TOKEN tok;
-    size_t token_len;
-
-    /* unused parameters */ (void)expanding;
-
-    SrcFileCurrentLocation();
-    Buffer[0] = '<';
-    tok = T_LT;
-    token_len = 1;
-    nc = NextChar();
-    Buffer[1] = nc;
-    if( nc == '=' ) {
-        ++tok;
-        ++token_len;
-        NextChar();
-    } else if( nc == '<' ) {
-        tok += 2;
-        ++token_len;
-        if( NextChar() == '=' ) {
-            ++tok;
-            ++token_len;
-            Buffer[2] = '=';
-            NextChar();
-        }
-    } else if( nc == '%' ) {
-        tok = T_ALT_LEFT_BRACE;
-        ++token_len;
-        NextChar();
-    } else if( nc == ':' ) {
-        tok = T_ALT_LEFT_BRACKET;
-        ++token_len;
-        NextChar();
-    }
-    Buffer[token_len] = '\0';
-    TokenLen = token_len;
-    return( tok );
-}
-
-static TOKEN scanPercent( bool expanding )   // %, %=, %>, %:, %:%:
-{
-    int nc;
-    TOKEN tok;
-    size_t token_len;
-
-    /* unused parameters */ (void)expanding;
-
-    SrcFileCurrentLocation();
-    Buffer[0] = '%';
-    tok = T_PERCENT;
-    token_len = 1;
-    nc = NextChar();
-    Buffer[1] = nc;
-    if( nc == '=' ) {
-        ++tok;
-        ++token_len;
-        NextChar();
-    } else if( nc == '>' ) {
-        tok = T_ALT_RIGHT_BRACE;
-        ++token_len;
-        NextChar();
-    } else if( nc == ':' ) {
-        ++token_len;
-        tok = T_ALT_SHARP;
-        if( NextChar() == '%' ) {
-            Buffer[2] = '%';
-            ++token_len;
-            if( NextChar() == ':' ) {
-                ++token_len;
-                tok = T_ALT_SHARP_SHARP;
-                Buffer[3] = ':';
-                NextChar();
-            } else {
-                unGetChar( CurrChar );
-                CurrChar = '%';
-            }
-        }
-    }
-    Buffer[token_len] = '\0';
-    TokenLen = token_len;
-    return( tok );
-}
-
-static TOKEN scanColon( bool expanding ) // :, ::, or :>
-{
-    int nc;
-    TOKEN tok;
-    size_t token_len;
-
-    /* unused parameters */ (void)expanding;
-
-    SrcFileCurrentLocation();
-    Buffer[0] = ':';
-    nc = NextChar();
-    Buffer[1] = nc;
-    tok = T_COLON;
-    token_len = 1;
-    if( nc == ':' ) {
-        tok += 2;
-        NextChar();
-        ++token_len;
-    } else if( nc == '>' ) {
-        // TODO: according to the standard, ":>" should be an
-        // alternative token (digraph) for "]" (T_RIGHT_BRACKET)...
-        tok = T_SEG_OP;
-        NextChar();
-        ++token_len;
-    }
-    Buffer[token_len] = '\0';
-    TokenLen = token_len;
-    return( tok );
-}
-
-static TOKEN scanMinus( bool expanding ) // -, -=, --, ->, or ->*
-{
-    int nc;
-    int nnc;
-    TOKEN tok;
-    size_t token_len;
-
-    /* unused parameters */ (void)expanding;
-
-    SrcFileCurrentLocation();
-    Buffer[0] = '-';
-    nc = NextChar();
-    Buffer[1] = nc;
-    tok = T_MINUS;
-    token_len = 1;
-    if( nc == '=' ) {
-        ++tok;
-        NextChar();
-        ++token_len;
-    } else if( nc == '-' ) {
-        tok += 2;
-        NextChar();
-        ++token_len;
-    } else if( nc == '>' ) {
-        ++token_len;
-        nnc = NextChar();
-        if( nnc == '*' ) {
-            Buffer[2] = nnc;
-            tok = T_ARROW_STAR;
-            NextChar();
-            ++token_len;
-        } else {
-            tok = T_ARROW;
         }
     }
     Buffer[token_len] = '\0';

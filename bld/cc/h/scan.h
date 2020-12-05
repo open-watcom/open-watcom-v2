@@ -54,6 +54,10 @@ typedef enum charset_flags {
     C_DB = 0x80     /* first byte of double-byte char               */
 } charset_flags;
 
+#define C_XW    (C_WS | C_EX)   /* white space character with check */
+#define C_XD    (C_DE | C_EX)   /* delimiter character with check */
+#define C_AX    (C_AL | C_HX)   /* hexa digit letter */
+
 /*
     After we know a character is a C_HX, we can extract the value
     as follows:

@@ -64,31 +64,35 @@ static unsigned char InitClassTable[] = {
     '\v',       SCAN_WHITESPACE,
     '\'',       SCAN_CHARCONST,
     '"',        SCAN_STRING,
-    '(',        SCAN_DELIM2,
+#if _CPU == 370
+    '(',        SCAN_DELIM2,        // (, (:
+#else
+    '(',        SCAN_DELIM1,
+#endif
     ')',        SCAN_DELIM1,
     ',',        SCAN_DELIM1,
     ';',        SCAN_DELIM1,
     '?',        SCAN_DELIM1,
     '/',        SCAN_SLASH,
-    '-',        SCAN_DELIM2,
-    '=',        SCAN_DELIM2,
-    ':',        SCAN_DELIM2,
-    '*',        SCAN_DELIM2,
+    '-',        SCAN_DELIM2,        // -, -=, --, ->
+    '=',        SCAN_DELIM2,        // =, ==
+    ':',        SCAN_DELIM2,        // :, :>, :)
+    '*',        SCAN_DELIM2,        // *, *=
     '[',        SCAN_DELIM1,
     ']',        SCAN_DELIM1,
     '{',        SCAN_DELIM1,
     '}',        SCAN_DELIM1,
     '~',        SCAN_DELIM1,
     '.',        SCAN_DOT,
-    '!',        SCAN_DELIM2,
-    '#',        SCAN_DELIM2,
-    '%',        SCAN_DELIM2,
-    '&',        SCAN_DELIM2,
-    '+',        SCAN_DELIM2,
-    '<',        SCAN_DELIM2,
-    '>',        SCAN_DELIM2,
-    '^',        SCAN_DELIM2,
-    '|',        SCAN_DELIM2,
+    '!',        SCAN_DELIM2,        // !, !=
+    '#',        SCAN_DELIM2,        // #, ##
+    '%',        SCAN_DELIM2,        // %, %=
+    '&',        SCAN_DELIM2,        // &, &=, &&
+    '+',        SCAN_DELIM2,        // +, +=, ++
+    '<',        SCAN_DELIM2,        // <, <=, <<, <<=, <:
+    '>',        SCAN_DELIM2,        // >, >=, >>, >>=
+    '^',        SCAN_DELIM2,        // ^, ^=
+    '|',        SCAN_DELIM2,        // |, |=, ||
     '_',        SCAN_NAME,
     'L',        SCAN_WIDE,
     '\0',       0
@@ -1080,24 +1084,14 @@ static bool checkDelim2( TOKEN *token, TOKEN last )
             break;
         }
 #endif
-    case T_LEFT_PAREN:
 #if _CPU == 370
+    case T_LEFT_PAREN:
         if( last == T_COLON ) {         /* (: */
             *token = T_LEFT_BRACKET;
             break;
         }
+        return( false );
 #endif
-        return( false );
-    default:
-        return( false );
-    }
-    return( true );
-}
-
-static bool checkDelim3( TOKEN *token, TOKEN last )
-/*************************************************/
-{
-    switch( *token ) {
     case T_LSHIFT:
         if( last == T_EQUAL ) {         /* <<= */
             *token = T_LSHIFT_EQUAL;
@@ -1129,7 +1123,7 @@ static TOKEN ScanDelim2( void )
     TokenLen = 1;
     if( (CharSet[NextChar()] & C_DE) && checkDelim2( &token, TokValue[CurrChar] ) ) {
         Buffer[TokenLen++] = CurrChar;
-        if( (CharSet[NextChar()] & C_DE) && checkDelim3( &token, TokValue[CurrChar] ) ) {
+        if( (CharSet[NextChar()] & C_DE) && checkDelim2( &token, TokValue[CurrChar] ) ) {
             Buffer[TokenLen++] = CurrChar;
             NextChar();
         }

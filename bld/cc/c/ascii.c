@@ -25,7 +25,8 @@
 *
 *  ========================================================================
 *
-* Description:  ASCII character set - table of character types.
+* Description:  ASCII encoding - table of character types.
+*               Latin-1 character set
 *
 ****************************************************************************/
 
@@ -33,9 +34,6 @@
 #include "scan.h"
 #include "ctokens.h"
 
-#define C_XW    (C_WS | C_EX)
-#define C_XD    (C_DE | C_EX)
-#define C_AX    (C_AL | C_HX)       /* hexa digit letters */
 
 /* C++ has TAB and CR set to C_XW */
 
