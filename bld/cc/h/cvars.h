@@ -69,7 +69,7 @@ global source_loc   CommentLoc;
 global int          CurrChar;
 global DATA_TYPE    ConstType;
 global unsigned     Constant;
-global uint64       Const64;
+global uint64       Constant64;
 global FCB          *MainSrcFile;       /* primary source file being compiled */
 global FCB          *SrcFile;
 global char         *SrcFName;          /* source file name without suffix */

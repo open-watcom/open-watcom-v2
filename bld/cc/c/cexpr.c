@@ -245,10 +245,10 @@ static TREEPTR ConstLeaf( void )
         leaf->op.u2.ulong_value = Constant;
         break;
     case TYPE_LONG64:
-        leaf->op.u2.long64_value = Const64;
+        leaf->op.u2.long64_value = Constant64;
         break;
     case TYPE_ULONG64:
-        leaf->op.u2.ulong64_value = Const64;
+        leaf->op.u2.ulong64_value = Constant64;
         break;
     case TYPE_FLOAT:
     case TYPE_DOUBLE:

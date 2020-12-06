@@ -565,7 +565,7 @@ is64:
         }
         ++curr;
     } while( len-- > 0 );
-    Const64 = value64;
+    Constant64 = value64;
     return( ret );
 }
 
@@ -607,7 +607,7 @@ is64:
         }
         ++curr;
     } while( len-- > 0 );
-    Const64 = value64;
+    Constant64 = value64;
     return( ret );
 }
 
@@ -650,7 +650,7 @@ is64:
         }
         ++curr;
     } while( len-- > 0 );
-    Const64 = value64;
+    Constant64 = value64;
     return( ret );
 }
 
@@ -806,7 +806,7 @@ static TOKEN doScanNum( void )
                     ConstType = TYPE_ULONG64;
                 }
                 if( ov == CNV_32 ) {
-                    U32ToU64( Constant, &Const64 );
+                    U32ToU64( Constant, &Constant64 );
                 }
             } else if( value == 32 ) {
                 if( con.suffix == SUFF_I ) {
@@ -836,7 +836,7 @@ static TOKEN doScanNum( void )
                 if( NestLevel == SkipLevel ) {
                     CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
                 }
-                Constant =  Const64.u._32[I64LO32];
+                Constant =  Constant64.u._32[I64LO32];
             }
         } else if( ov == CNV_32 && con.suffix != SUFF_LL && con.suffix != SUFF_ULL ) {
             switch( con.suffix ) {
@@ -884,16 +884,16 @@ static TOKEN doScanNum( void )
             switch( con.suffix ) {
             case SUFF_NONE:
                 ConstType = TYPE_LONG64;
-                if( Const64.u._32[I64HI32] & 0x80000000 ) {
+                if( Constant64.u._32[I64HI32] & 0x80000000 ) {
                     ConstType = TYPE_ULONG64;
                 }
                 break;
             case SUFF_L:
             case SUFF_LL:
                 if( ov == CNV_32 ) {
-                    U32ToU64( Constant, &Const64 );
+                    U32ToU64( Constant, &Constant64 );
                 }
-                if( Const64.u._32[I64HI32] & 0x80000000 ) {
+                if( Constant64.u._32[I64HI32] & 0x80000000 ) {
                     ConstType = TYPE_ULONG64;
                 } else {
                     ConstType = TYPE_LONG64;
@@ -903,7 +903,7 @@ static TOKEN doScanNum( void )
             case SUFF_UL:
             case SUFF_ULL:
                 if( ov == CNV_32 ) {
-                    U32ToU64( Constant, &Const64 );
+                    U32ToU64( Constant, &Constant64 );
                 }
                 ConstType = TYPE_ULONG64;
                 break;
