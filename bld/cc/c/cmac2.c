@@ -596,34 +596,13 @@ static void CIfNDef( void )
 }
 
 
-static bool GetConstExpr( void )
-{
-    bool        value;
-    bool        useful_side_effect;
-    bool        meaningless_stmt;
-
-/* This solves the following weird condition.   */
-/*      while( f() == 1 )                       */
-/* The expression for the #if destroys the flags saved for the while expr */
-/*   #if 1                                      */
-/*              ;                               */
-/*   #endif                                     */
-
-    useful_side_effect = CompFlags.useful_side_effect;
-    meaningless_stmt = CompFlags.meaningless_stmt;
-    value = PpConstExpr();
-    CompFlags.useful_side_effect = useful_side_effect;
-    CompFlags.meaningless_stmt = meaningless_stmt;
-    return( value );
-}
-
 static void CIf( void )
 {
     bool    value;
 
     PPCTL_ENABLE_MACROS();
     PPNextToken();
-    value = GetConstExpr();
+    value = PpConstExpr();
     IncLevel( value );
     ChkEOL();
     PPCTL_DISABLE_MACROS();
@@ -646,7 +625,7 @@ static void CElif( void )
         } else if( NestLevel == SkipLevel + 1 ) {
             /* only evaluate the expression when required */
             if( CppStack->cpp_type == PRE_IF ) {
-                value = GetConstExpr();
+                value = PpConstExpr();
                 ChkEOL();
                 if( value ) {
                     SkipLevel = NestLevel; /* start including else part */

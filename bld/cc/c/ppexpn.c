@@ -205,6 +205,7 @@ static void *StackPop( void *hdr )
 }
 
 static void PushOperator( TOKEN token, loc_info *loc, int prec )
+/**************************************************************/
 {
     operator_stack *stack_entry;
 
@@ -216,6 +217,7 @@ static void PushOperator( TOKEN token, loc_info *loc, int prec )
 }
 
 static void PushCurToken( int prec )
+/**********************************/
 {
     loc_info loc;
 
@@ -226,6 +228,7 @@ static void PushCurToken( int prec )
 
 
 static bool PopOperator( TOKEN *token, loc_info *loc )
+/****************************************************/
 {
     operator_stack *stack_entry;
 
@@ -244,6 +247,7 @@ static bool PopOperator( TOKEN *token, loc_info *loc )
 }
 
 static bool TopOperator( TOKEN *token, int *prec )
+/************************************************/
 {
     operator_stack *stack_entry;
 
@@ -262,6 +266,7 @@ static bool TopOperator( TOKEN *token, int *prec )
 }
 
 static void PushOperand( ppvalue p, loc_info *loc )
+/*************************************************/
 {
     operand_stack *stack_entry;
 
@@ -272,6 +277,7 @@ static void PushOperand( ppvalue p, loc_info *loc )
 }
 
 static void PushOperandCurLocation( ppvalue p )
+/*********************************************/
 {
     loc_info loc;
 
@@ -281,6 +287,7 @@ static void PushOperandCurLocation( ppvalue p )
 }
 
 static bool PopOperand( ppvalue *p, loc_info *loc )
+/*************************************************/
 {
     operand_stack *stack_entry;
 
@@ -299,6 +306,7 @@ static bool PopOperand( ppvalue *p, loc_info *loc )
 }
 
 static bool CheckToken( TOKEN prev_token )
+/****************************************/
 {
     if( IS_OPERAND( prev_token ) && IS_OPERAND( CurToken ) ) {
         CErr1( ERR_CONSECUTIVE_OPERANDS ); //  can't have 2 operands in a row
@@ -317,7 +325,10 @@ static bool CheckToken( TOKEN prev_token )
     return( false );
 }
 
-static bool PpNextToken( void ) // scan the next token and check for errors
+static bool PpNextToken( void )
+/******************************
+ * scan the next token and check for errors
+ */
 {
     static TOKEN prev_token;
 
@@ -327,7 +338,10 @@ static bool PpNextToken( void ) // scan the next token and check for errors
     return( CheckToken( prev_token ) );
 }
 
-bool PpConstExpr( void )        // Entry into ppexpn module
+bool PpConstExpr( void )
+/***********************
+ * Entry into ppexpn module
+ */
 {
     ppvalue val;
 
@@ -336,11 +350,13 @@ bool PpConstExpr( void )        // Entry into ppexpn module
 }
 
 static void unexpectedCurToken( void )
+/************************************/
 {
     CErr2p( ERR_UNEXPECTED_IN_CONSTANT_EXPRESSION, Tokens[CurToken] );
 }
 
 static double SafeAtof( char *p )
+/*******************************/
 {
     double r;
 
@@ -357,6 +373,7 @@ static double SafeAtof( char *p )
 }
 
 static bool COperand( void )
+/**************************/
 {
     ppvalue p;
     loc_info loc;
@@ -472,11 +489,13 @@ static bool COperand( void )
 }
 
 static void CErrCheckpoint( unsigned *save )
+/******************************************/
 {
     *save = ErrCount;
 }
 
 static bool CErrOccurred( unsigned *previous_state )
+/**************************************************/
 {
     if( *previous_state != ErrCount ) {
         return( true );
@@ -484,7 +503,10 @@ static bool CErrOccurred( unsigned *previous_state )
     return( false );
 }
 
-static void PrecedenceParse( ppvalue *p ) // main precedence parse algorithm
+static void PrecedenceParse( ppvalue *p )
+/****************************************
+ * main precedence parse algorithm
+ */
 {
     int prec_token;
     int prec_operator;
@@ -551,7 +573,9 @@ static void PrecedenceParse( ppvalue *p ) // main precedence parse algorithm
     while( PopOperator( NULL, NULL ) ); // free stack
 }
 
-static bool CRightParen( void ) // reduce extra )
+static bool CRightParen( void )
+/*****************************/
+// reduce extra )
 {
     TOKEN right_paren;
     loc_info right_info;
@@ -564,7 +588,9 @@ static bool CRightParen( void ) // reduce extra )
     return( false );
 }
 
-static bool CLeftParen( void )  // reduce (expr)
+static bool CLeftParen( void )
+/****************************/
+// reduce (expr)
 {
     TOKEN left_paren;
     loc_info left_info;
@@ -588,7 +614,9 @@ static bool CLeftParen( void )  // reduce (expr)
     return( true );
 }
 
-static bool CConditional( void )    // reduce an a?b:c expression
+static bool CConditional( void )
+/******************************/
+// reduce an a?b:c expression
 {
     loc_info e1_info;
     loc_info e2_info;
@@ -655,8 +683,9 @@ static bool CConditional( void )    // reduce an a?b:c expression
     return( true );
 }
 
-static bool Binary(     // pop binary operand and two operands, error check
-    TOKEN *token, ppvalue *e1, ppvalue *e2, loc_info *loc )
+static bool Binary( TOKEN *token, ppvalue *e1, ppvalue *e2, loc_info *loc )
+/*************************************************************************/
+// pop binary operand and two operands, error check
 {
     loc_info e1_info;
     loc_info e2_info;
@@ -677,7 +706,9 @@ static bool Binary(     // pop binary operand and two operands, error check
     return( false );
 }
 
-static bool CLogicalOr( void )  // reduce a || b
+static bool CLogicalOr( void )
+/****************************/
+// reduce a || b
 {
     ppvalue e1;
     ppvalue e2;
@@ -701,7 +732,9 @@ static bool CLogicalOr( void )  // reduce a || b
     return( true );
 }
 
-static bool CLogicalAnd( void ) // reduce a && b
+static bool CLogicalAnd( void )
+/*****************************/
+// reduce a && b
 {
     ppvalue e1;
     ppvalue e2;
@@ -724,7 +757,9 @@ static bool CLogicalAnd( void ) // reduce a && b
     return( true );
 }
 
-static bool COr( void )     // reduce a|b
+static bool COr( void )
+/*********************/
+// reduce a|b
 {
     ppvalue e1;
     ppvalue e2;
@@ -744,7 +779,9 @@ static bool COr( void )     // reduce a|b
     return( true );
 }
 
-static bool CXOr( void )    // reduce a^b
+static bool CXOr( void )
+/**********************/
+// reduce a^b
 {
     ppvalue e1;
     ppvalue e2;
@@ -764,7 +801,9 @@ static bool CXOr( void )    // reduce a^b
     return( true );
 }
 
-static bool CAnd( void )    // reduce a&b
+static bool CAnd( void )
+/**********************/
+// reduce a&b
 {
     ppvalue e1;
     ppvalue e2;
@@ -784,7 +823,9 @@ static bool CAnd( void )    // reduce a&b
     return( true );
 }
 
-static bool CEquality( void )   // reduce a == b or a != b
+static bool CEquality( void )
+/***************************/
+// reduce a == b or a != b
 {
     ppvalue e1;
     ppvalue e2;
@@ -806,7 +847,9 @@ static bool CEquality( void )   // reduce a == b or a != b
     return( true );
 }
 
-static bool CRelational( void ) // reduce a<b, a>b, a<=b, or a>=b
+static bool CRelational( void )
+/*****************************/
+// reduce a<b, a>b, a<=b, or a>=b
 {
     ppvalue e1;
     ppvalue e2;
@@ -889,7 +932,9 @@ static bool CRelational( void ) // reduce a<b, a>b, a<=b, or a>=b
     return( true );
 }
 
-static bool CShift( void )  // reduce a<<b or a>>b
+static bool CShift( void )
+/************************/
+// reduce a<<b or a>>b
 {
     ppvalue e1;
     ppvalue e2;
@@ -960,7 +1005,9 @@ static bool CShift( void )  // reduce a<<b or a>>b
     return( true );
 }
 
-static bool CAdditive( void )   // reduce a+b or a-b
+static bool CAdditive( void )
+/***************************/
+// reduce a+b or a-b
 {
     ppvalue e1;
     ppvalue e2;
@@ -994,7 +1041,9 @@ static bool CAdditive( void )   // reduce a+b or a-b
 }
 
 
-static bool CMultiplicative( void ) // reduce a/b or a*b
+static bool CMultiplicative( void )
+/*********************************/
+// reduce a/b or a*b
 {
     ppvalue e1;
     ppvalue e2;
@@ -1061,7 +1110,9 @@ static bool CMultiplicative( void ) // reduce a/b or a*b
     return( true );
 }
 
-static bool CUnary( void )      // reduce +a or -a or !a or ~a
+static bool CUnary( void )
+/************************/
+// reduce +a or -a or !a or ~a
 {
     ppvalue p;
     loc_info operator_info;
@@ -1110,6 +1161,7 @@ static bool CUnary( void )      // reduce +a or -a or !a or ~a
 }
 
 static bool CStart( void )
+/************************/
 {
     TOKEN top;
 
@@ -1122,6 +1174,7 @@ static bool CStart( void )
 
 #if 0
 static void stringize( char *s )
+/******************************/
 {
     char    *d;
 
@@ -1138,6 +1191,7 @@ static void stringize( char *s )
 }
 
 TOKEN Process_Pragma( bool internal )
+/***********************************/
 {
     PpNextToken();
     if( CurToken == T_LEFT_PAREN ) {
@@ -1177,13 +1231,21 @@ TOKEN Process_Pragma( bool internal )
 #endif
 
 void InitPPexpn( void )
+/*********************/
 {
     HeadOperand = NULL;
     HeadOperator = NULL;
 }
 
 void FiniPPexpn( void )
+/*********************/
 {
-    HeadOperand = NULL;
-    HeadOperator = NULL;
+    if( HeadOperand != NULL ) {
+        CMemFree( HeadOperand );
+        HeadOperand = NULL;
+    }
+    if( HeadOperator != NULL ) {
+        CMemFree( HeadOperator );
+        HeadOperator = NULL;
+    }
 }

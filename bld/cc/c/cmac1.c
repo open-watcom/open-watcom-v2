@@ -35,6 +35,7 @@
 #include "cfeinfo.h"
 #include "dumpapi.h"
 #include "cmacadd.h"
+#include "ppexpn.h"
 
 #include "clibext.h"
 
@@ -166,6 +167,7 @@ void MacroInit( void )
     MacroCount = 0;
     MacroPtr = NULL;
     CppStackInit();
+    InitPPexpn();
     NestedMacros = NULL;
     TokenList = NULL;
     UndefMacroList = NULL;
@@ -194,6 +196,7 @@ void MacroAddComp( void )
 void MacroFini( void )
 /********************/
 {
+    FiniPPexpn();
     CppStackFini();
     MacroPurge();
 }
