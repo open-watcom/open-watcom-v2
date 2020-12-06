@@ -214,7 +214,7 @@ key_objs = ../../h/c.key ../../h/pc.key ../../h/seh.key
 
 weights.gh keywords.gh : $(key_objs)
     @%make echo_findhash
-    $(noecho)findhash -q -e ",OPR_NOP" $(key_objs)
+    $(noecho)findhash -q -e ",OPR_NOP,-1" $(key_objs)
 
 # optencod options and targets for various hosts
 !ifdef exetarg_qnx_res

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1342,13 +1342,4 @@ void DoConstFold( TREEPTR tree )
 void FoldExprTree( TREEPTR tree )
 {
     WalkExprTree( tree, NoOp, NoOp, NoOp, DoConstFold );
-}
-
-
-bool BoolConstExpr( void )
-{
-    const_val   val;
-
-    ConstExprAndType( &val );
-    return( U64Test( &val.value ) != 0 );
 }

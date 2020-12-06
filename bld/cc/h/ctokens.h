@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -95,7 +95,7 @@ typedef enum token_class {
 } token_class;
 
 typedef enum TOKEN {
-    #define pick(token,string,class,oper) token,
+    #define pick(token,string,class,oper,prec) token,
     #include "_ctokens.h"
     #undef pick
     T_LAST_TOKEN

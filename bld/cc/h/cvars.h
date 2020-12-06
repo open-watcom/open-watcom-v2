@@ -507,7 +507,6 @@ extern void         CastConstValue(TREEPTR,DATA_TYPE);
 extern void         CastConstNode( TREEPTR leaf, TYPEPTR newtyp );
 extern void         DoConstFold(TREEPTR);
 extern void         FoldExprTree(TREEPTR);
-extern bool         BoolConstExpr( void );
 
 /* cgen.c */
 extern void         DoCompile(void);

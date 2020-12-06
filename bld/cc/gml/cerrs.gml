@@ -733,6 +733,28 @@ int foo( int arr[], char c )
 .eerrbad
 :eMSGGRP. Warn4
 :cmt -------------------------------------------------------------------
+:MSGGRP. Warn5
+:MSGGRPSTR. W
+:MSGGRPNUM. 500
+:MSGGRPTXT. Warning Level 5 Messages
+:cmt -------------------------------------------------------------------
+:MSGSYM. ERR_UNDEFD_MACRO_IS_ZERO
+:MSGTXT. undefined macro '%s' evaluates to 0
+:MSGJTXT. 未定義マクロ '%s' を0とみなします
+:WARNING. 5
+The ISO C/C++ standard requires that undefined
+macros evaluate to zero during preprocessor
+expression evaluation.
+This default behaviour can often mask incorrectly
+spelled macro references.
+The warning is useful when used in critical
+environments where all macros will be defined.
+:errbad.
+#if _PRODUCTI0N // should be _PRODUCTION
+#endif
+:eerrbad.
+:eMSGGRP. Warn5
+:cmt -------------------------------------------------------------------
 :MSGGRP. Errs
 :MSGGRPSTR. E
 :MSGGRPNUM. 1000
@@ -1099,7 +1121,8 @@ varieties of
 .kw char,
 .kw short
 and
-.kw int.
+.kw int
+.
 :MSGSYM. ERR_INCOMPLETE_TYPE
 :MSGTXT. Variable '%s' has incomplete type
 :MSGJTXT. 変数'%s'の型は不完全です
@@ -1211,7 +1234,8 @@ around the type, otherwise check for a spelling mistake.
 A variable with module scope cannot be defined with the storage class of
 .kw auto
 or
-.kw register.
+.kw register
+.
 :MSGSYM. ERR_INV_TYPE
 :MSGTXT. Invalid type
 :MSGJTXT. 不適切な型です
@@ -1228,7 +1252,8 @@ type declaration:
 .kw long,
 .kw float
 and
-.kw double.
+.kw double
+.
 :MSGSYM. ERR_EXPECTING_DECL_BUT_FOUND
 :MSGTXT. Expecting data or function declaration, but found '%s'
 :MSGJTXT. データまたは関数の宣言があるはずですが，'%s'があります
@@ -1280,7 +1305,8 @@ If you want to take the address of a local variable, change the storage
 class from
 .kw register
 to
-.kw auto.
+.kw auto
+.
 :MSGSYM. ERR_VAR_ALREADY_INITIALIZED
 :MSGTXT. Variable '%s' already initialized
 :MSGJTXT. 変数'%s'は既に初期化されました
@@ -1342,12 +1368,14 @@ The previous definition of the specified variable has a storage class of
 The current definition must have a storage class of
 .kw static
 or
-.kw extern.
+.kw extern
+.
 .np
 Alternatively, a variable was previously declared as
 .kw extern
 and later defined as
-.kw static.
+.kw static
+.
 :MSGSYM. ERR_INVALID_OPTION
 :MSGTXT. Invalid option '%s'
 :MSGJTXT. オプション'%s'は不適切です
@@ -1385,8 +1413,20 @@ The type of a switch expression must be integral.
 :MSGSYM. ERR_EXPR_MUST_BE_INTEGRAL
 :MSGTXT. Expression must be integral
 :MSGJTXT. 式は整数型でなければなりません
-.np
 An integral expression is required.
+:errbad.
+int foo( int a, float b, int *p )
+{
+  switch( a ) {
+    case 1.3:       // must be integral
+      return p[b];  // index not integer
+    case 2:
+      b <<= 2;      // can only shift integers
+    default:
+      return b;
+  }
+}
+:eerrbad.
 :MSGSYM. ERR_EXPR_MUST_BE_ARITHMETIC
 :MSGTXT. Expression must be arithmetic
 :MSGJTXT. 式は算術式でなければなりません
@@ -1474,7 +1514,8 @@ or
 cannot be converted to a pointer and a pointer cannot be converted to a
 .kw float
 or
-.kw double.
+.kw double
+.
 :MSGSYM. ERR_USER_ERROR_MSG
 :MSGTXT. %s
 :MSGJTXT. %s
@@ -1572,7 +1613,8 @@ directive.
 :MSGJTXT. 名前'defined'は#defineできません
 .np
 You cannot define a macro called
-.id defined.
+.id defined
+.
 :MSGSYM. ERR_MISPLACED_SHARP_SHARP
 :MSGTXT. ## must not be at start or end of replacement tokens
 :MSGJTXT. ##は置き換えトークンの先頭または最後にあってはなりません
@@ -1610,7 +1652,8 @@ or
 .kw union
 is packed (has no holes in it for alignment purposes)
 then you can compare two structs using
-.id memcmp.
+.id memcmp
+.
 :MSGSYM. ERR_EMPTY_ENUM_LIST
 :MSGTXT. Enumerator list cannot be empty
 :MSGJTXT. 列挙子リストは空であることができません
@@ -1641,7 +1684,8 @@ else in the program.
 :MSGJTXT. パラメータに対して不適切な記憶クラスです
 .np
 The only storage class allowed for a parameter is
-.kw register.
+.kw register
+.
 :MSGSYM. ERR_EMPTY_INITIALIZER_LIST
 :MSGTXT. Initializer list cannot be empty
 :MSGJTXT. 初期化リストは空であることができません
@@ -2141,7 +2185,8 @@ The only storage class allowed for the optional declaration part of a
 statement is
 .kw auto
 or
-.kw register.
+.kw register
+.
 :MSGSYM. ERR_NO_TYPE_IN_DECL
 :MSGTXT. No type specified in declaration
 :MSGJTXT. 宣言内で型が指定されていません
@@ -2203,6 +2248,80 @@ The
 must follow
 .kw if
 .
+:MSGSYM. ERR_CONSECUTIVE_OPERANDS
+:MSGTXT. expression contains consecutive operand(s)
+:MSGJTXT. 式に連続したオペランドがあります
+More than one operand found in a row.
+:MSGSYM. ERR_UNEXPECTED_IN_CONSTANT_EXPRESSION
+:MSGTXT. '%s' unexpected in constant expression
+:MSGJTXT. 条件式の中に'%s'があります
+'%s' not allowed in constant expression.
+:MSGSYM. ERR_FLOATING_CONSTANT_UNDERFLOW
+:MSGTXT. floating-point constant too small to represent
+:MSGJTXT. 浮動小数点定数が小さすぎます
+The Open Watcom C compiler cannot represent the floating-point
+constant because the magnitude of the negative exponent is too large.
+:errbad.
+float f = 1.2e-78965;
+:eerrbad.
+:MSGSYM. ERR_FLOATING_CONSTANT_OVERFLOW
+:MSGTXT. floating-point constant too large to represent
+:MSGJTXT. 浮動小数点定数が大きすぎます
+The Open Watcom C compiler cannot represent the floating-point
+constant because the magnitude of the positive exponent is too large.
+:errbad.
+float f = 1.2e78965;
+:eerrbad.
+:MSGSYM. ERR_UNMATCHED_LEFT_PAREN
+:MSGTXT. unmatched left parenthesis '('
+:MSGJTXT. 左括弧"("が一致しません
+The expression contains a left parenthesis "(" without a matching right
+parenthesis.
+:MSGSYM. ERR_EXTRA_OPERAND
+:MSGTXT. expression contains extra operand(s)
+:MSGJTXT. 式に余分なオペランドがあります
+The expression contains operand(s) without an operator.
+:MSGSYM. ERR_UNMATCHED_RIGHT_PAREN
+:MSGTXT. unmatched right parenthesis ')'
+:MSGJTXT. 右括弧")"が一致しません
+The expression contains a right parenthesis ")" without a matching left
+parenthesis.
+:MSGSYM. ERR_EMPTY_PAREN
+:MSGTXT. no expression between parentheses '( )'
+:MSGJTXT. 括弧"()"の中に式がありません
+There is a matching set of parenthesis "()" which do not contain an expression.
+:MSGSYM. ERR_CONDITIONAL_MISSING_COLON
+:MSGTXT. expecting ':' operator in conditional expression
+:MSGJTXT. 条件式の':'演算子がありません
+A conditional expression exists without the ':' operator.
+:MSGSYM. ERR_CONDITIONAL_MISSING_QUESTION
+:MSGTXT. expecting '?' operator in conditional expression
+:MSGJTXT. 条件式の'?'演算子がありません
+A conditional expression exists without the '?' operator.
+:MSGSYM. ERR_CONDITIONAL_MISSING_FIRST_OPERAND
+:MSGTXT. expecting first operand in conditional expression
+:MSGJTXT. 条件式の第1オペランドがありません
+A conditional expression exists without the first operand.
+:MSGSYM. ERR_CONDITIONAL_MISSING_SECOND_OPERAND
+:MSGTXT. expecting second operand in conditional expression
+:MSGJTXT. 条件式の第2オペランドがありません
+A conditional expression exists without the second operand.
+:MSGSYM. ERR_CONDITIONAL_MISSING_THIRD_OPERAND
+:MSGTXT. expecting third operand in conditional expression
+:MSGJTXT. 条件式の第3オペランドがありません
+A conditional expression exists without the third operand.
+:MSGSYM. ERR_BINARY_MISSING_RIGHT_OPERAND
+:MSGTXT. binary operator '%s' missing right operand
+:MSGJTXT. 2項演算子'%s'に右オペランドがありません
+There is no expression to the right of the indicated binary operator.
+:MSGSYM. ERR_BINARY_MISSING_LEFT_OPERAND
+:MSGTXT. binary operator '%s' missing left operand
+:MSGJTXT. 2項演算子'%s'に左オペランドがありません
+There is no expression to the left of the indicated binary operator.
+:MSGSYM. ERR_UNARY_OPERATOR_MISSING_OPERAND
+:MSGTXT. expecting operand after unary operator '%s'
+:MSGJTXT. 単項演算子'%s'の後のオペランドがありません
+A unary operator without being followed by an operand.
 :eMSGGRP. Errs
 :cmt -------------------------------------------------------------------
 :MSGGRP. Info

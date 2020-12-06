@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -409,7 +409,7 @@ static enum  conv_types const CnvTable[TYPE_LAST_ENTRY][TYPE_LAST_ENTRY] = {
 
 static opr_code Operator[] = {
     #define OPERATORS_ONLY
-    #define pick(token,string,class,oper) oper,
+    #define pick(token,string,class,oper,prec) oper,
     #include "_ctokens.h"
     #undef pick
     #undef OPERATORS_ONLY

@@ -35,6 +35,7 @@
 #include <stddef.h>
 #include "cgmisc.h"
 #include "cmacadd.h"
+#include "ppexpn.h"
 
 
 #define HasVarArgs(m)      (((m) & MFLAG_HAS_VAR_ARGS) != 0)
@@ -610,7 +611,7 @@ static bool GetConstExpr( void )
 
     useful_side_effect = CompFlags.useful_side_effect;
     meaningless_stmt = CompFlags.meaningless_stmt;
-    value = BoolConstExpr();
+    value = PpConstExpr();
     CompFlags.useful_side_effect = useful_side_effect;
     CompFlags.meaningless_stmt = meaningless_stmt;
     return( value );
