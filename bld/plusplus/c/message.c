@@ -617,7 +617,7 @@ static bool okToPrintMsg        // SEE IF OK TO PRINT MESSAGE
         break;
     }
     *plevel = level;
-    if( level > WLEVEL_MAX )
+    if( level == WLEVEL_DISABLED )
         return( false );
     return( ok );
 }
@@ -840,7 +840,7 @@ static void changeLevel(        // EFFECT A LEVEL CHANGE
     if( msg_level[msgnum].level != level ) {
         save_msg_levels();
         msg_level[msgnum].level = level;
-        if( level > WLEVEL_MAX ) {
+        if( level == WLEVEL_DISABLED ) {
             /* disable message */
             if( msg_level[msgnum].enabled ) {
                 msg_level[msgnum].enabled = false;

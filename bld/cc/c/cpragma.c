@@ -905,7 +905,7 @@ static void changeLevel( unsigned level, int msg_index )
 {
     if( msg_level[msg_index].level != level ) {
         msg_level[msg_index].level = level;
-        if( level > WLEVEL_MAX ) {
+        if( level == WLEVEL_DISABLED ) {
             /* disable message */
             if( msg_level[msg_index].enabled ) {
                 msg_level[msg_index].enabled = false;

@@ -121,7 +121,7 @@ static bool okToPrintMsg( msg_codes msgnum, int *plevel )
         break;
     }
     *plevel = level;
-    if( level > WLEVEL_MAX )
+    if( level == WLEVEL_DISABLED )
         return( false );
     return( ok );
 }
