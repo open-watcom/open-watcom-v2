@@ -41,7 +41,6 @@
 #include "name.h"
 #include "context.h"
 #include "unicode.h"
-#include "cmacsupp.h"
 
 
 #if defined(__DOS__) || defined(__OS2__) || defined(__NT__)

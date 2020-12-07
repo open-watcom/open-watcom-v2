@@ -88,7 +88,6 @@ common_objs = &
     $(_subdir_)class.obj &
     $(_subdir_)cmac1.obj &
     $(_subdir_)cmac2.obj &
-    $(_subdir_)cmacsupp.obj &
     $(_subdir_)cmacadd.obj &
     $(_subdir_)cmdln.obj &
     $(_subdir_)cmdlnany.obj &

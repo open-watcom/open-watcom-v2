@@ -34,12 +34,12 @@
 #include "plusplus.h"
 #include "memmgr.h"
 #include "preproc.h"
-#include "cmacsupp.h"
 #include "ring.h"
 #include "pcheader.h"
 #include "stats.h"
 #include "name.h"
 #include "brinfo.h"
+#include "cmacadd.h"
 
 
 #define MACRO_HASH_SIZE         NAME_HASH
@@ -722,4 +722,58 @@ bool MacroStateMatchesCurrent( MACRO_STATE *ms )
         return( false );
     }
     return( true );
+}
+
+void MacroSegmentAddChar(           // MacroSegment: ADD A CHARACTER
+    size_t *mlen,                   // - data length
+    char chr )                      // - character to insert
+{
+    size_t  clen;
+
+    clen = *mlen;
+    MacroReallocOverflow( clen + 1, clen );
+    MacroOffset[clen] = chr;
+    *mlen = clen + 1;
+}
+
+
+void MacroSegmentAddToken(          // MacroSegment: ADD A TOKEN
+    size_t *mlen,                   // - data length
+    TOKEN token )                   // - token to be added
+{
+    size_t  clen;
+
+    clen = *mlen;
+    MacroReallocOverflow( clen + sizeof( TOKEN ), clen );
+    *(TOKEN *)( MacroOffset + clen ) = token;
+    *mlen = clen + sizeof( TOKEN );
+}
+
+
+void MacroSegmentAddMemNoCopy(      // MacroSegment: ADD A SEQUENCE OF BYTES
+    size_t *mlen,                   // - data length
+    const char *buff,               // - bytes to be added
+    size_t len )                    // - number of bytes
+{
+    size_t  clen;
+
+    clen = *mlen;
+    MacroReallocOverflow( clen + len, 0 );
+    memset( MacroOffset, 0, clen );
+    memcpy( MacroOffset + clen, buff, len );
+    *mlen += len;
+}
+
+
+void MacroSegmentAddMem(            // MacroSegment: ADD A SEQUENCE OF BYTES
+    size_t *mlen,                   // - data length
+    const char *buff,               // - bytes to be added
+    size_t len )                    // - number of bytes
+{
+    size_t  clen;
+
+    clen = *mlen;
+    MacroReallocOverflow( clen + len, clen );
+    memcpy( MacroOffset + clen, buff, len );
+    *mlen += len;
 }

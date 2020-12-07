@@ -51,6 +51,14 @@
 
 #define IS_ID_OR_KEYWORD(t)     (t == T_ID || t >= FIRST_KEYWORD && t <= LAST_KEYWORD)
 
+#define PPOPERATOR_DEFINED          "defined"
+#define PPOPERATOR_PRAGMA           "_Pragma"
+
+#define IS_PPOPERATOR_DEFINED(s)    (strcmp(s, PPOPERATOR_DEFINED) == 0)
+#define IS_PPOPERATOR_PRAGMA(s,l)   ((CompFlags.extensions_enabled || CompFlags.enable_std0x) \
+                                    && l == (sizeof(PPOPERATOR_PRAGMA) - 1) \
+                                    && memcmp(s, PPOPERATOR_PRAGMA, sizeof(PPOPERATOR_PRAGMA) - 1) == 0)
+
 enum {
     EL_NEW_LINE = 0x01,
     EL_NULL     = 0
@@ -188,7 +196,7 @@ void PpSetWidth(                // SET WIDTH FOR PREPROCESSING
 void CppEmitPoundLine(          // EMIT #LINE DIRECTIVE, IF REQ'D
     LINE_NO line_num,           // - line number
     const char *filename,       // - file name
-    unsigned control )		// - emit control
+    unsigned control )          // - emit control
 ;
 void PpStartFile(               // INDICATE START OF A FILE
     void )

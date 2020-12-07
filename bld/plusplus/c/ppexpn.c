@@ -40,7 +40,6 @@
 #include "initdefs.h"
 #include "carve.h"
 #include "dumpapi.h"
-#include "cmacsupp.h"
 
 
 #define L       I64LO32
@@ -191,7 +190,7 @@ static bool CAdditive( void );
 static bool CMultiplicative( void );
 static bool CUnary( void );
 
-bool ( *CExpr[] )(void) = { // table of functions to reduce expressions
+static bool ( *CExpr[] )(void) = { // table of functions to reduce expressions
     CStart,             /* Level 0 */
     CRightParen,        /* Level 1 */
     CLeftParen,         /* Level 2 */

@@ -41,7 +41,7 @@
 #include "cmdline.h"
 #include "cgmisc.h"
 #include "name.h"
-#include "cmacsupp.h"
+#include "cmacadd.h"
 #include "brinfo.h"
 
 #include "clibext.h"

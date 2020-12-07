@@ -33,14 +33,6 @@
 #ifndef _CMACSUPP_H
 #define _CMACSUPP_H
 
-#define PPOPERATOR_DEFINED          "defined"
-#define PPOPERATOR_PRAGMA           "_Pragma"
-
-#define IS_PPOPERATOR_DEFINED(s)    (strcmp(s, PPOPERATOR_DEFINED) == 0)
-#define IS_PPOPERATOR_PRAGMA(s,l)   ((CompFlags.extensions_enabled || CompFlags.enable_std0x) \
-                                    && l == (sizeof(PPOPERATOR_PRAGMA) - 1) \
-                                    && memcmp(s, PPOPERATOR_PRAGMA, sizeof(PPOPERATOR_PRAGMA) - 1) == 0)
-
 void MacroSegmentAddChar(       // MacroSegment: ADD A CHARACTER
     size_t *mlen,               // - data length
     char chr )                  // - character to be added
