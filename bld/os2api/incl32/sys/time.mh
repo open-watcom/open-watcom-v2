@@ -74,10 +74,13 @@ struct timeval {
 };
 
 #pragma pack(4)
+#ifndef _TIMESPEC_DEFINED
+ #define _TIMESPEC_DEFINED
 struct timespec {
     time_t  ts_sec;
     long    ts_nsec;
 };
+#endif /* _TIMESPEC_DEFINED */
 
 struct  itimerval {
     struct timeval it_interval;
