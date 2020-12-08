@@ -1431,36 +1431,33 @@ static TOKEN scanDelim2( bool expanding )
 
 static TOKEN scanSlash( bool expanding ) // /, /=, // comment, or /*comment*/
 {
-    int nc;
-    int tok;
-    size_t token_len;
+    int c;
+    TOKEN token;
 
     SrcFileCurrentLocation();
+    token = T_DIV;
     Buffer[0] = '/';
-    nc = NextChar();
-    Buffer[1] = nc;
-    tok = T_DIV;
-    token_len = 1;
-    if( nc == '=' ) {
-        ++tok;
-        ++token_len;
+    TokenLen = 1;
+    c = NextChar();
+    if( c == '=' ) {
+        Buffer[TokenLen++] = '=';
         NextChar();
-    } else if( ! expanding ) {
-        if( nc == '/' ) {
+        token = T_DIV_EQUAL;
+    } else if( !expanding ) {
+        if( c == '/' ) {
             // C++ comment
             scanCppComment();
             Buffer[0] = ' ';
-            tok = T_WHITE_SPACE;
-        } else if( nc == '*' ) {
+            token = T_WHITE_SPACE;
+        } else if( c == '*' ) {
             // C comment
             scanCComment();
             Buffer[0] = ' ';
-            tok = T_WHITE_SPACE;
+            token = T_WHITE_SPACE;
         }
     }
-    Buffer[token_len] = '\0';
-    TokenLen = token_len;
-    return( tok );
+    Buffer[TokenLen] = '\0';
+    return( token );
 }
 
 static TOKEN scanFloat( bool expanding )
