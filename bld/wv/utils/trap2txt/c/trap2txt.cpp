@@ -414,7 +414,7 @@ int handle_REQ_CONNECT_REPLY( unsigned char * pkt, unsigned short len )
 {
     connect_ret * pr = ( connect_ret * ) pkt;
     char * err = ( char * ) &pr[1];
-    unsigned short errlen = ( len - ( unsigned short ) sizeof( connect_ret ) );
+    unsigned short errlen = (unsigned short)( len - sizeof( connect_ret ) );
 
     printf( "Trap Reply: REQ_CONNECT\n" );
     printf( "    Maximum message size:   %u\n", pr->max_msg_size );
@@ -495,7 +495,7 @@ int handle_REQ_PERFORM_SUPPLEMENTARY_SERVICE( unsigned char * pkt, unsigned shor
 {
     perform_supplementary_service_req * prq = ( perform_supplementary_service_req * ) pkt;
     unsigned char * ssd = ( unsigned char * ) &prq[1];
-    unsigned short ssd_len = ( len - ( unsigned short ) sizeof( perform_supplementary_service_req ) );
+    unsigned short ssd_len = (unsigned short)( len - sizeof( perform_supplementary_service_req ) );
 
     printf( "Debugger request: REQ_PERFORM_SUPPLEMENTARY_SERVICE\n" );
     printf( "    ID: 0x%.08x", prq->id );
@@ -649,7 +649,7 @@ int handle_REQ_READ_MEM_REPLY( unsigned char * pkt, unsigned short len )
 int handle_REQ_WRITE_MEM( unsigned char * pkt, unsigned short len )
 {
     write_mem_req * prq = ( write_mem_req * ) pkt;
-    unsigned short to_write = ( len - ( unsigned short ) sizeof( write_mem_req ) );
+    unsigned short to_write = (unsigned short)( len - sizeof( write_mem_req ) );
     unsigned char * data = ( unsigned char * ) &prq[1];
 
     printf( "Debugger request: REQ_WRITE_MEM\n" );
@@ -695,8 +695,8 @@ int handle_REQ_READ_IO_REPLY( unsigned char * pkt, unsigned short len )
 int handle_REQ_WRITE_IO( unsigned char * pkt, unsigned short len )
 {
     write_io_req * prq = ( write_io_req * ) pkt;
-    unsigned short to_write = ( len - ( unsigned short ) sizeof( write_io_req ) );
-    unsigned char * data = ( unsigned char * ) &prq[1];
+    unsigned short to_write = (unsigned short)( len - sizeof( write_io_req ) );
+    unsigned char * data = (unsigned char *)&prq[1];
 
     printf( "Debugger request: REQ_WRITE_IO\n" );
     printf( "    Address:    %.08x\n", prq->IO_offset );
@@ -1204,7 +1204,7 @@ int handle_REQ_MACHINE_DATA( unsigned char * pkt, unsigned short len )
 {
     machine_data_req *  prq = ( machine_data_req * ) pkt;
     unsigned char *     msd = ( unsigned char * ) &prq[1];
-    unsigned short      msd_len = ( len - ( unsigned short ) sizeof( machine_data_req ) );
+    unsigned short      msd_len = (unsigned short)( len - sizeof( machine_data_req ) );
 
     printf( "Debugger request: REQ_MACHINE_DATA\n" );
     printf( "    Type:       %u\n", prq->info_type );
@@ -1221,7 +1221,7 @@ int handle_REQ_MACHINE_DATA_REPLY( unsigned char * pkt, unsigned short len )
 {
     machine_data_ret * pr = (machine_data_ret * ) pkt;
     unsigned char * msd = ( unsigned char * ) &pr[1];
-    unsigned short  msd_len = ( len - ( unsigned short ) sizeof( machine_data_ret ) );
+    unsigned short  msd_len = (unsigned short)( len - sizeof( machine_data_ret ) );
 
     printf( "Trap reply: REQ_MACHINE_DATA\n" );
     printf( "    Start:  %.08x\n", pr->cache_start );
