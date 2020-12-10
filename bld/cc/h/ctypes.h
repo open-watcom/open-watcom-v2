@@ -506,19 +506,23 @@ struct debug_fwd_types {
     unsigned            scope;
 };
 
-typedef enum {
-    PPCTL_NORMAL        = 0x00,         // expand macros, treat <eol> as white space
-    PPCTL_EOL           = 0x01,         // return <end-of-line> as a token
-    PPCTL_NO_EXPAND     = 0x02,         // don't expand macros
-    PPCTL_ASM           = 0x04,         // pre-processor is in _asm statement
+typedef enum ppctl_t {
+    PPCTL_NO_EXPAND         = 0x01, // don't expand macros
+    PPCTL_EOL               = 0x02, // return <end-of-line> as a token
+    PPCTL_NO_LEX_ERRORS     = 0x04, // don't diagnose lexical problems
+    PPCTL_ASM               = 0x08, // pre-processor is in _asm statement
+    PPCTL_NORMAL            = 0x00, // expand macros, treat <eol> as white space
+    PPCTL_NULL              = 0x00
 } ppctl_t;
 
-#define PPCTL_ENABLE_ASM()      Pre_processing |= PPCTL_ASM
-#define PPCTL_DISABLE_ASM()     Pre_processing &= ~PPCTL_ASM
-#define PPCTL_ENABLE_EOL()      Pre_processing |= PPCTL_EOL
-#define PPCTL_DISABLE_EOL()     Pre_processing &= ~PPCTL_EOL
-#define PPCTL_ENABLE_MACROS()   Pre_processing &= ~PPCTL_NO_EXPAND
-#define PPCTL_DISABLE_MACROS()  Pre_processing |= PPCTL_NO_EXPAND
+#define PPCTL_ENABLE_ASM()          PPControl |= PPCTL_ASM
+#define PPCTL_DISABLE_ASM()         PPControl &= ~PPCTL_ASM
+#define PPCTL_ENABLE_EOL()          PPControl |= PPCTL_EOL
+#define PPCTL_DISABLE_EOL()         PPControl &= ~PPCTL_EOL
+#define PPCTL_ENABLE_MACROS()       PPControl &= ~PPCTL_NO_EXPAND
+#define PPCTL_DISABLE_MACROS()      PPControl |= PPCTL_NO_EXPAND
+#define PPCTL_ENABLE_LEX_ERRORS()   PPControl &= ~PPCTL_NO_LEX_ERRORS
+#define PPCTL_DISABLE_LEX_ERRORS()  PPControl |= PPCTL_NO_LEX_ERRORS
 
 typedef struct comp_flags {
     boolbit label_dropped                       : 1;

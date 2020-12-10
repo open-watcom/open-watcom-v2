@@ -296,7 +296,7 @@ static TOKEN doScanName( void )
     CalcHash( Buffer, TokenLen );
     if( CompFlags.doing_macro_expansion )
         return( T_ID );
-    if( Pre_processing & PPCTL_NO_EXPAND )
+    if( PPControl & PPCTL_NO_EXPAND )
         return( T_ID );
     mentry = MacroLookup( Buffer );
     if( mentry == NULL ) {
@@ -446,7 +446,7 @@ static TOKEN doScanAsm( void )
 static TOKEN ScanDot( void )
 /**************************/
 {
-    if( Pre_processing & PPCTL_ASM ) {
+    if( PPControl & PPCTL_ASM ) {
         Buffer[0] = '.';
         TokenLen = 1;
         return( doScanAsm() );
@@ -913,7 +913,7 @@ static TOKEN doScanNum( void )
         }
     }
     token = T_CONSTANT;
-    if( Pre_processing != PPCTL_NORMAL ) {
+    if( PPControl != PPCTL_NORMAL ) {
         if( CharSet[c] & (C_AL | C_DI) ) {
             token = T_BAD_TOKEN;
             while( CharSet[c] & (C_AL | C_DI) ) {
@@ -940,7 +940,7 @@ static TOKEN ScanNum( void )
 {
     Buffer[0] = CurrChar;
     TokenLen = 1;
-    if( Pre_processing & PPCTL_ASM ) {
+    if( PPControl & PPCTL_ASM ) {
         return( doScanAsm() );
     } else {
         return( doScanNum() );
@@ -1639,7 +1639,7 @@ static void SkipWhiteSpace( int c )
         ScanWhiteSpace();
     } else {
         while( CharSet[c] & C_WS ) {
-            if( c != '\r' && Pre_processing == PPCTL_NORMAL ) {
+            if( c != '\r' && PPControl == PPCTL_NORMAL ) {
                 CppPrtChar( c );
             }
             c = NextChar();
@@ -1658,7 +1658,7 @@ void SkipAhead( void )
             }
             if( CurrChar != '\n' )
                 break;
-            if( CompFlags.cpp_mode && Pre_processing == PPCTL_NORMAL ) {
+            if( CompFlags.cpp_mode && PPControl == PPCTL_NORMAL ) {
                 CppPrtChar( '\n' );
             }
             SrcFileLoc = SrcFile->src_loc;
@@ -1682,7 +1682,7 @@ static TOKEN ScanNewline( void )
 /******************************/
 {
     SrcFileLoc = SrcFile->src_loc;
-    if( Pre_processing & PPCTL_EOL )
+    if( PPControl & PPCTL_EOL )
         return( T_NULL );
     return( ChkControl() );
 }
@@ -1863,7 +1863,7 @@ void ScanInit( void )
         ClassTable[c] = InitClassTable[i + 1];
     }
     CurrChar = '\n';
-    Pre_processing = PPCTL_NORMAL;
+    PPControl = PPCTL_NORMAL;
     CompFlags.scanning_comment = false;
     SizeOfCount = 0;
     NextChar = GetNextChar;

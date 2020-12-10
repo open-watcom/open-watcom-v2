@@ -191,7 +191,7 @@ global int          TmpSymCount;
 global int          LitCount;
 global target_size  LitPoolSize;
 global size_t       MacroSize;
-global ppctl_t      Pre_processing;
+global ppctl_t      PPControl;
 global comp_flags   CompFlags;
 global global_comp_flags GlobalCompFlags;
 global segment_id   SegmentNum;         /* next PRIVATE segment number to use */

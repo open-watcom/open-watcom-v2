@@ -205,7 +205,7 @@ TOKEN ChkControl( void )
             CSuicide();
         }
         lines_skipped = false;
-        old_ppctl = Pre_processing;
+        old_ppctl = PPControl;
         for( ; CurrChar != LCHR_EOF; ) {
             if( CompFlags.cpp_mode ) {
                 CppPrtChar( '\n' );
@@ -221,13 +221,13 @@ TOKEN ChkControl( void )
                 PPCTL_DISABLE_MACROS();
                 PreProcStmt();
                 PPFlush2EOL();
-                Pre_processing = old_ppctl;
+                PPControl = old_ppctl;
             } else if( NestLevel != SkipLevel ) {
                 PPCTL_ENABLE_EOL();
                 PPCTL_DISABLE_MACROS();
                 PPNextToken();              /* get into token mode */
                 PPFlush2EOL();
-                Pre_processing = old_ppctl;
+                PPControl = old_ppctl;
             }
             if( NestLevel == SkipLevel )
                 break;
@@ -855,10 +855,10 @@ TOKEN Process_Pragma( void )
                 stringize( token_buf );
                 InsertReScanPragmaTokens( token_buf );
                 // call CPragma()
-                old_ppctl = Pre_processing;
+                old_ppctl = PPControl;
                 PPCTL_ENABLE_EOL();
                 CPragma();
-                Pre_processing = old_ppctl;
+                PPControl = old_ppctl;
             } else {
                 /* error, incorrect syntax of the operator _Pragma() */
             }

@@ -389,13 +389,13 @@ static bool COperand( void )
         if( IS_PPOPERATOR_DEFINED( Buffer ) ) {
             ppctl_t old_ppctl;
 
-            old_ppctl = Pre_processing;
+            old_ppctl = PPControl;
             PPCTL_DISABLE_MACROS();
             NextToken(); // Don't error check: can have T_ID T_ID here
             if( CurToken == T_LEFT_PAREN ) {
                 left_loc = SrcFileLoc;
                 NextToken(); // no need to error check or advance Pos
-                Pre_processing = old_ppctl;
+                PPControl = old_ppctl;
                 U32ToU64Set( p, MacroLookup( Buffer ) != NULL );
                 NextToken(); // no need to error check or advance Pos
                 if( CurToken != T_RIGHT_PAREN ) {
@@ -404,7 +404,7 @@ static bool COperand( void )
                     done = true;
                 }
             } else {
-                Pre_processing = old_ppctl;
+                PPControl = old_ppctl;
                 U32ToU64Set( p, MacroLookup( Buffer ) != NULL );
             }
         } else {
@@ -1208,10 +1208,10 @@ TOKEN Process_Pragma( bool internal )
                 stringize( token_buf );
                 InsertReScanPragmaTokens( token_buf, internal );
                 // call CPragma()
-                old_ppctl = Pre_processing;
+                old_ppctl = PPControl;
                 PPCTL_ENABLE_EOL();
                 CPragma();
-                Pre_processing = old_ppctl;
+                PPControl = old_ppctl;
             } else {
                 /* error, incorrect syntax of the operator _Pragma() */
             }

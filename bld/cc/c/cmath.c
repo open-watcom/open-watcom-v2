@@ -839,7 +839,7 @@ TREEPTR RelOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
 
     /* check for meaningless comparison: */
     //TODO this would be a better check maybe in foldtree
-    if( Pre_processing == PPCTL_NORMAL ) {
+    if( PPControl == PPCTL_NORMAL ) {
         cmp_cc = CMP_VOID;
         if( op2->op.opr == OPR_PUSHINT ) {
             cmp_cc = IsMeaninglessCompare( op2->op.u2.long64_value, typ1, typ2, opr );
@@ -1687,7 +1687,7 @@ TREEPTR CnvOp( TREEPTR opnd, TYPEPTR newtyp, bool cast_op )
         }
     }
     opnd_type = opnd->u.expr_type->decl_type;
-    if( Pre_processing == PPCTL_NORMAL ) {
+    if( PPControl == PPCTL_NORMAL ) {
         opnd = RValue( opnd );
     }
     typ = TypeOf( opnd );

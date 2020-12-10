@@ -508,7 +508,7 @@ static TREEPTR TakeRValue( TREEPTR tree, int void_ok )
 
     if( tree->op.opr == OPR_ERROR )
         return( tree );
-    if( Pre_processing != PPCTL_NORMAL ) {
+    if( PPControl != PPCTL_NORMAL ) {
         if( tree->op.opr == OPR_PUSHFLOAT ) {
             CErr1( ERR_EXPR_MUST_BE_INTEGRAL );
             return( ErrorNode( tree ) );
@@ -1506,7 +1506,7 @@ static TREEPTR ExprOpnd( void )
             NextToken();
             continue;
         case T_SIZEOF:
-            if( Pre_processing != PPCTL_NORMAL ) {
+            if( PPControl != PPCTL_NORMAL ) {
                 CErr1( ERR_NO_SIZEOF_DURING_PP );
             }
             Class[ExprLevel] = TC_SIZEOF;
@@ -1566,7 +1566,7 @@ static TREEPTR ExprOpnd( void )
             NextToken();
             typ = TypeName();
             if( typ != NULL ) {
-                if( Pre_processing != PPCTL_NORMAL ) {
+                if( PPControl != PPCTL_NORMAL ) {
                     CErr1( ERR_NO_CAST_DURING_PP );
                 }
                 MustRecog( T_RIGHT_PAREN );
@@ -1625,7 +1625,7 @@ static TREEPTR ExprOpnd( void )
             NextToken();
             break;
         default:
-            if( Pre_processing != PPCTL_NORMAL && IS_KEYWORD( CurToken ) ) {
+            if( PPControl != PPCTL_NORMAL && IS_KEYWORD( CurToken ) ) {
                 tree = ExprId();
             } else {
                 CErr1( ERR_MISSING_OPERAND );
@@ -1662,11 +1662,11 @@ static TREEPTR ExprId( void )
     int         value;
     int         count;
 
-    if( Pre_processing != PPCTL_NORMAL ) {
+    if( PPControl != PPCTL_NORMAL ) {
         if( IS_PPOPERATOR_DEFINED( Buffer ) ) {
             ppctl_t old_ppctl;
 
-            old_ppctl = Pre_processing;
+            old_ppctl = PPControl;
             PPCTL_DISABLE_MACROS();    /* don't want macro expanded */
             NextToken();
             if( CurToken == T_LEFT_PAREN ) {
@@ -1674,10 +1674,10 @@ static TREEPTR ExprId( void )
                 value = IsMacroDefined();
                 NextToken();
                 MustRecog( T_RIGHT_PAREN );
-                Pre_processing = old_ppctl;
+                PPControl = old_ppctl;
             } else {
                 value = IsMacroDefined();
-                Pre_processing = old_ppctl;
+                PPControl = old_ppctl;
                 NextToken();
             }
         } else {
