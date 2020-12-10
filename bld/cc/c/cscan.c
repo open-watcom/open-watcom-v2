@@ -388,7 +388,7 @@ static TOKEN doScanFloat( bool hex )
     TOKEN           token;
     charset_flags   flags;
 
-    BadTokenInfo = 0;
+    BadTokenInfo = ERR_NONE;
     c = CurrChar;
     if( c == '.' ) {
         flags = ( hex ) ? C_HX | C_DI : C_DI;
@@ -434,7 +434,7 @@ static TOKEN doScanFloat( bool hex )
 static TOKEN doScanAsm( void )
 /****************************/
 {
-    BadTokenInfo = 0;
+    BadTokenInfo = ERR_NONE;
     NextChar();
     while( getIDName( CurrChar ) == '.' ) {
         SaveCharNextChar( '.' );
@@ -658,7 +658,7 @@ static TOKEN doScanNum( void )
 /****************************/
 {
     int         c;
-    int         bad_token_type;
+    msg_codes   bad_token_type;
     cnv_cc      ov;
     TOKEN       token;
 
@@ -668,7 +668,7 @@ static TOKEN doScanNum( void )
                SUFF_LL,SUFF_ULL } suffix;
     } con;
 
-    BadTokenInfo = 0;
+    BadTokenInfo = ERR_NONE;
     ov = CNV_32;
     Constant = 0;
     if( CurrChar == '0' ) {
@@ -1398,7 +1398,7 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
         NextChar();
         token = T_BAD_TOKEN;
     } else {
-        BadTokenInfo = 0;
+        BadTokenInfo = ERR_NONE;
         token = T_CONSTANT;
         i = 0;
         error = false;

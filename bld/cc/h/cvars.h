@@ -61,7 +61,7 @@ global SYMPTR       *PCH_SymArray;      // array of symbol table pointers from P
 global unsigned     PCH_MaxSymHandle;   // number of symbols in PCH_SymArray
 global int          DebugFlag;
 global TOKEN        CurToken;
-global int          BadTokenInfo;
+global msg_codes    BadTokenInfo;
 global size_t       TokenLen;
 global source_loc   TokenLoc;
 global source_loc   SrcFileLoc;         /* duplicate of SrcFile->src_line */

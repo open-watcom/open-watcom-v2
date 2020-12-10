@@ -1602,7 +1602,7 @@ static TREEPTR ExprOpnd( void )
             break;
         case T_BAD_TOKEN:
             CErr1( BadTokenInfo );
-            BadTokenInfo = 0;
+            BadTokenInfo = ERR_NONE;
             NextToken();
             tree = ErrorNode( NULL );
             break;

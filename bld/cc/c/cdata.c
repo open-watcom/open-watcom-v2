@@ -47,7 +47,7 @@ void InitGlobalVars( void )
     PCH_MaxSymHandle        = 0;        /* number of symbols in PCH_SymArray */
     DebugFlag               = 0;
     CurToken                = T_NULL;
-    BadTokenInfo            = 0;
+    BadTokenInfo            = ERR_NONE;
     TokenLen                = 0;
     TokenLoc.line           = 0;
     TokenLoc.fno            = 0;

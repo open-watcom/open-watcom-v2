@@ -63,6 +63,7 @@ enum group_levels {
 };
 
 typedef enum msg_codes {
+    ERR_NONE = 0,
     #define MSG_DEF( name, group, kind, level, group_index ) name = group##_level+group_index,
         MSG_DEFS
     #undef MSG_DEF
