@@ -9,6 +9,16 @@ victl_autodepends = .autodepend
 !include deftarg.mif
 !include exerule.mif
 
-.c : ..
+.c : ..;../../c
+
+inc_dirs = -I.. -I"../../h"
 
 all : parsectl.exe parsedyn.exe .SYMBOLIC
+
+exetarg_name = parsectl
+exetarg_objs = parsectl.obj myio.obj
+!include exetarg.mif
+
+exetarg_name = parsedyn
+exetarg_objs = parsedyn.obj myio.obj
+!include exetarg.mif
