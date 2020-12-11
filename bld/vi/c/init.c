@@ -408,7 +408,7 @@ static void doInitializeEditor( int argc, char *argv[] )
             }
         }
 #endif
-        rc1 = LocateTag( cTag, file, buff );
+        rc1 = LocateTag( cTag, file, buff, sizeof( buff ) );
         cFN = file;
         if( rc1 != ERR_NO_ERR ) {
             if( rc1 == ERR_TAG_NOT_FOUND ) {

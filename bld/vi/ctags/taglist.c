@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,11 +36,10 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "ctags.h"
+#include "myio.h"
 
 #include "clibext.h"
 
-
-#define isWSorCtrlZ(x)  (isspace( x ) || (x == 0x1A))
 
 static char             **tagList = NULL;
 static unsigned         tagCount = 0;
@@ -162,14 +162,10 @@ void ReadExtraTags( const char *fname )
 {
     FILE        *fp;
     char        res[MAX_STR];
-    size_t      i;
 
     fp = fopen( fname, "r" );
     if( fp != NULL ) {
-        while( fgets( res, sizeof( res ), fp ) != NULL ) {
-            for( i = strlen( res ); i && isWSorCtrlZ( res[i - 1] ); --i ) {
-                res[i - 1] = '\0';
-            }
+        while( myfgets( res, sizeof( res ), fp ) != NULL ) {
             addToTagList( res );
         }
         fclose( fp );

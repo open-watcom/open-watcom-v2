@@ -599,13 +599,13 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
             value = new;
         }
 #endif /* VICOMP */
-        value = SkipLeadingSpaces( value );
+        SKIP_SPACES( value );
         if( *value == '"' ) {
             value = GetNextWord( value, fn, SingleQuote );
             if( *value == '"' ) {
                 ++value;
             }
-            value = SkipLeadingSpaces( value );
+            SKIP_SPACES( value );
             if( *value == ',' ) {
                 ++value;
             }

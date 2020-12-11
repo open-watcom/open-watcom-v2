@@ -124,7 +124,7 @@ vi_rc EditFile( const char *name, bool dammit )
      */
     strcpy( cdir, CurrentDirectory );
     reset_dir = false;
-    name = SkipLeadingSpaces( name );
+    SKIP_SPACES( name );
     if( name[0] == '$' ) {
         ++name;
         usedir = true;
@@ -478,7 +478,7 @@ vi_rc OpenWindowOnFile( const char *data )
     vi_rc       rc;
     window_id   wid;
 
-    data = SkipLeadingSpaces( data );
+    SKIP_SPACES( data );
     if( data[0] == '\0' ) {
         data = NULL;
     }

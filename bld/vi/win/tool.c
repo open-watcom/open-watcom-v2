@@ -296,7 +296,7 @@ vi_rc AddBitmapToToolBar( const char *data, bool tip )
     char                *p;
 
     help[0] = '\0';
-    data = SkipLeadingSpaces( data );
+    SKIP_SPACES( data );
     dont_save = false;
     if( strnicmp( data, "temp", 4 ) == 0 ) {
         /* get to the command */
@@ -312,7 +312,7 @@ vi_rc AddBitmapToToolBar( const char *data, bool tip )
         tooltip[0] = '\0';
     }
 
-    data = SkipLeadingSpaces( data );
+    SKIP_SPACES( data );
     cmd_len = strlen( data );
     name_len = strlen( file );
     help_len = strlen( help );

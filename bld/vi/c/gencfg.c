@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,7 +59,7 @@ static void writeTitle( FILE *fp, const char *str )
  */
 static void doMaps( FILE *fp, key_map *maps, const char *extra_str )
 {
-    char        *map;
+    const char  *map;
     vi_key      *keymap;
     int         i;
     int         j;

@@ -566,7 +566,7 @@ vi_rc   RunKeyMap( key_map *, long );
 vi_rc   AddKeyMap( key_map *, const char * );
 void    InitKeyMaps( void );
 vi_rc   ExecuteBuffer( void );
-char    *LookUpCharToken( vi_key key, bool want_single );
+const char  *LookUpCharToken( vi_key key, bool want_single );
 void    FiniKeyMaps( void );
 
 /* mark.c */
@@ -648,18 +648,17 @@ vi_rc   SetCurrentColumn( int );
 vi_rc   LocateCmd( const char * );
 
 /* parse.c */
-char    *SkipLeadingSpaces( const char * );
 void    TranslateTabs( char * );
 vi_rc   GetStringWithPossibleQuote( const char **, char * );
 vi_rc   GetStringWithPossibleQuote2( const char **, char *, bool );
-char    *GetNextWord( const char *, char *, const char *);
-char    *GetNextWord1( const char *, char * );
-char    *GetNextWord2( const char *, char *, char );
+const char  *GetNextWord( const char *, char *, const char *);
+const char  *GetNextWord1( const char *, char * );
+const char  *GetNextWord2( const char *, char *, char );
 int     Tokenize( const char *, const char *, bool );
 size_t  GetLongestTokenLength( const char * );
 int     GetNumberOfTokens( const char * );
 char    **BuildTokenList( int, char * );
-char    *GetTokenString( const char *, int );
+const char  *GetTokenString( const char *, int );
 char    *GetTokenStringCVT( const char *, int, char *, bool );
 char    *ExpandTokenSet( char *token_no, char *buff );
 int     AddColorToken( char *);
@@ -782,7 +781,7 @@ bool    CursorPositionOffRight( int vc );
 vi_rc   GetCurrentTag( void );
 vi_rc   TagHunt( const char * );
 vi_rc   FindTag( const char * );
-vi_rc   LocateTag( const char *, char *, char * );
+vi_rc   LocateTag( const char *, char *, char *, int );
 
 /* time.c */
 void    GetTimeString( char *st );

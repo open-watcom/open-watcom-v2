@@ -680,7 +680,8 @@ vi_rc EnterHexKey( void )
     /*
      * get value
      */
-    ptr = SkipLeadingSpaces( st );
+    ptr = st;
+    SKIP_SPACES( ptr );
     val = (char)strtol( ptr, NULL, 0 );
     if( val == '\0' ) {
         return( ERR_INVALID_VALUE );

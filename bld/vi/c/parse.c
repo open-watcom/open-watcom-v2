@@ -52,16 +52,6 @@ static bool isIgnorable( char c, const char *ign )
 } /* isIgnorable */
 
 /*
- * SkipLeadingSpaces - skip leading spaces in a string
- */
-char *SkipLeadingSpaces( const char *buff )
-{
-    SKIP_SPACES( buff );
-    return( (char *)buff );
-
-} /* SkipLeadingSpaces */
-
-/*
  * TranslateTabs
  */
 void TranslateTabs( char *buff )
@@ -118,7 +108,7 @@ vi_rc GetStringWithPossibleQuote( const char **pbuff, char *st )
 /*
  * GetNextWord1 - get next space delimited word in buff
  */
-char *GetNextWord1( const char *buff, char *res )
+const char *GetNextWord1( const char *buff, char *res )
 {
     char    c;
 
@@ -139,7 +129,7 @@ char *GetNextWord1( const char *buff, char *res )
 /*
  * GetNextWord2 - get next space or alternate character delimited word in buff
  */
-char *GetNextWord2( const char *buff, char *res, char alt_delim )
+const char *GetNextWord2( const char *buff, char *res, char alt_delim )
 {
     char    c;
 
@@ -168,7 +158,7 @@ char *GetNextWord2( const char *buff, char *res, char alt_delim )
 /*
  * GetNextWord - get next word in buff
  */
-char *GetNextWord( const char *buff, char *res, const char *ign )
+const char *GetNextWord( const char *buff, char *res, const char *ign )
 {
     size_t      ign_len;
     char        c;
@@ -385,7 +375,7 @@ char **BuildTokenList( int num, char *list )
 /*
  * GetTokenString - return token string
  */
-char *GetTokenString( const char *list, int num )
+const char *GetTokenString( const char *list, int num )
 {
     int         i = 0;
     const char  *t;

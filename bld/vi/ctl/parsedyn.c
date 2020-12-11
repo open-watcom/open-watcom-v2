@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,10 +33,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include "myio.h"
+
 
 #define MAX_LINE_LEN    200
-
-#define isWSorCtrlZ(x)  (isspace( x ) || (x == 0x1A))
 
 static char White_space[] = " \t";
 
@@ -46,12 +46,8 @@ static char *get_line( char *buf, int max_len, FILE *file )
 /*********************************************************/
 {
     char    *ret;
-    size_t  i;
 
-    while( (ret = fgets( buf, max_len, file )) != NULL ) {
-        for( i = strlen( buf ); i && isWSorCtrlZ( buf[i - 1] ); --i ) {
-            buf[i - 1] = '\0';
-        }
+    while( (ret = myfgets( buf, max_len, file )) != NULL ) {
         ++Line;
         ret += strspn( ret, White_space );
         if( ret[0] != '#' && ret[0] != '\0' ) {

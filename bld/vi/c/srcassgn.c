@@ -80,7 +80,7 @@ vi_rc SrcAssign( const char *data, vars_list *vl )
     if( stricmp( tmp, "=" ) != 0 ) {
         return( ERR_SRC_INVALID_ASSIGN );
     }
-    data = SkipLeadingSpaces( data );
+    SKIP_SPACES( data );
 
     if( data[0] == '/' || data[0] == '"' ) {
         check_end = false;

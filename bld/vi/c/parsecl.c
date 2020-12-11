@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,7 +60,7 @@ vi_rc ParseCommandLine( const char *cmdl, linenum *n1, bool *n1flag, linenum *n2
     /*
      * change null command to '.'
      */
-    cmdl = SkipLeadingSpaces( cmdl );
+    SKIP_SPACES( cmdl );
     if( *cmdl == '\0' ) {
         cmdl = ".";
     }
@@ -75,7 +76,8 @@ vi_rc ParseCommandLine( const char *cmdl, linenum *n1, bool *n1flag, linenum *n2
         if( rc != ERR_NO_ERR ) {
             return( rc );
         }
-        cmdl = SkipLeadingSpaces( cmdl + 1 );
+        cmdl++;
+        SKIP_SPACES( cmdl );
     /*
      * check for magic '#' - selected region
      */
@@ -98,7 +100,8 @@ vi_rc ParseCommandLine( const char *cmdl, linenum *n1, bool *n1flag, linenum *n2
             *n1 = SelRgn.start.line;
             *n2 = SelRgn.end.line;
         }
-        cmdl = SkipLeadingSpaces( cmdl + 1 );
+        cmdl++;
+        SKIP_SPACES( cmdl );
     /*
      * try to get line range
      */
@@ -110,9 +113,10 @@ vi_rc ParseCommandLine( const char *cmdl, linenum *n1, bool *n1flag, linenum *n2
         if( rc == ERR_NO_ERR ) {
             *n1flag = true;
             *n1 = l;
-            cmdl = SkipLeadingSpaces( cmdl );
+            SKIP_SPACES( cmdl );
             if( *cmdl == ',' ) {
-                cmdl = SkipLeadingSpaces( cmdl + 1 );
+                cmdl++;
+                SKIP_SPACES( cmdl );
                 rc = GetAddress( &cmdl, &l );
                 if( rc > ERR_NO_ERR ) {
                     return( rc );

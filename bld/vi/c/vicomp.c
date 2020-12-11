@@ -35,13 +35,12 @@
 #include "posix.h"
 #include "specio.h"
 #include "pathgrp2.h"
+#include "myio.h"
 
 #include "clibext.h"
 
 
 #define MAX_SRC_LINE    512
-
-#define isWSorCtrlZ( x )    (isspace( x ) || (x == 0x1A))
 
 const char _NEAR  SingleBlank[] = " ";
 const char _NEAR  SingleSlash[] = "/";
@@ -270,15 +269,10 @@ void SpecialFclose( GENERIC_FILE *gf )
  */
 bool SpecialFgets( char *buff, int max_len, GENERIC_FILE *gf )
 {
-    size_t      i;
-
-    if( fgets( buff, max_len, gf->data.fp ) == NULL ) {
+    if( myfgets( buff, max_len, gf->data.fp ) == NULL ) {
         return( true );
     }
     gf->gf.a.currline++;
-    for( i = strlen( buff ); i && isWSorCtrlZ( buff[i - 1] ); --i ) {
-        buff[i - 1] = '\0';
-    }
     return( false );
 
 } /* SpecialFgets */

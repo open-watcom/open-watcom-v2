@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -158,7 +158,7 @@ void GenTestCond( const char *data )
      * process syntax of test condition
      * IF expr
      */
-    data = SkipLeadingSpaces( data );
+    SKIP_SPACES( data );
     if( data[0] == '\0' ) {
         AbortGen( ERR_SRC_INVALID_IF );
     }
@@ -223,7 +223,7 @@ static void genExpr( const char *data )
             AbortGen( ERR_SRC_INVALID_EXPR );
         }
     }
-    data = SkipLeadingSpaces( data );
+    SKIP_SPACES( data );
     if( data[0] == '\0' ) {
         AbortGen( ERR_SRC_INVALID_EXPR );
     }
@@ -267,8 +267,8 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
     GENERIC_FILE        gf;
     int                 i, token;
     char                tmp1[MAX_SRC_LINE], tmp2[MAX_SRC_LINE];
-    char                *tmp3;
-    char                *tmp;
+    const char          *tmp3;
+    const char          *tmp;
     bool                ret;
 #ifdef VICOMP
     bool                AppendingFlag = false;
@@ -325,7 +325,8 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
 #ifndef VICOMP
         if( !EditFlags.ScriptIsCompiled ) {
 #endif
-            tmp = SkipLeadingSpaces( tmp1 );
+            tmp = tmp1;
+            SKIP_SPACES( tmp );
             if( tmp[0] == '\0' || tmp[0] == '#' ) {
                 continue;
             }
@@ -361,7 +362,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
          */
         if( token != TOK_INVALID ) {
 
-            tmp = SkipLeadingSpaces( tmp );
+            SKIP_SPACES( tmp );
             if( token > SRC_T_NULL ) {
                 genItem( token, tmp );
                 continue;
@@ -440,7 +441,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
         } else {
 #ifndef VICOMP
             if( EditFlags.ScriptIsCompiled ) {
-                tmp = SkipLeadingSpaces( tmp );
+                SKIP_SPACES( tmp );
                 genItem( token, tmp );
                 continue;
             }
@@ -507,7 +508,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
             case PCL_T_ACTIVEMENUWINDOW:
             case PCL_T_GREYEDMENUWINDOW:
             case PCL_T_ACTIVEGREYEDMENUWINDOW:
-                tmp = SkipLeadingSpaces( tmp );
+                SKIP_SPACES( tmp );
                 token += SRC_T_NULL + 1;
                 genItem( token, tmp );
                 break;

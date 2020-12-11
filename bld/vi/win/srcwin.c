@@ -239,7 +239,7 @@ bool RunWindowsCommand( const char *cmd, vi_rc *result, vars_list *vl )
         if( *str == '\0' ) {
             return( true );
         }
-        cmd = SkipLeadingSpaces( cmd );
+        SKIP_SPACES( cmd );
         ext = strstr( str, ".hlp" );
         if( ext != NULL ) {
             strcpy( ext, ".chm" );

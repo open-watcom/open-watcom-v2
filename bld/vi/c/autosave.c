@@ -44,6 +44,7 @@
 #ifdef __WIN__
   #include "winrtns.h"
 #endif
+#include "myio.h"
 
 #include "clibext.h"
 
@@ -67,8 +68,6 @@
 
 #define START_CHAR          'a'
 #define END_CHAR            'h'
-
-#define isWSorCtrlZ( x )    (isspace( x ) || (x == 0x1A))
 
 
 static bool     noEraseFileList;
@@ -294,8 +293,7 @@ void AutoSaveInit( void )
     int         handle;
     size_t      off;
 //    int         old_len;
-    size_t      i;
-    char        *p;
+    const char  *p;
 
     /*
      * initialize tmpname
@@ -345,12 +343,9 @@ void AutoSaveInit( void )
                 continue;
             fp = fdopen( handle, "r" );
             if( fp != NULL ) {
-                while( (p = fgets( path2, sizeof( path2 ), fp )) != NULL ) {
-                    for( i = strlen( p ); i && isWSorCtrlZ( p[i - 1] ); --i ) {
-                        p[i - 1] = '\0';
-                    }
+                while( (p = myfgets( path2, sizeof( path2 ), fp )) != NULL ) {
                     p = GetNextWord1( p, path );
-                    p = SkipLeadingSpaces( p );
+                    SKIP_SPACES( p );
                     NewFile( path, false );
                     ReplaceString( &(CurrentFile->name), p );
                     SetFileWindowTitle( current_window_id, CurrentInfo, true );
@@ -448,8 +443,7 @@ void RemoveFromAutoSaveList( void )
     char        path2[FILENAME_MAX];
     char        data[FILENAME_MAX];
 //    bool        found;
-    size_t      i;
-    char        *p;
+    const char  *p;
 
     if( EditVars.AutoSaveInterval == 0 ) {
         return;
@@ -476,21 +470,15 @@ void RemoveFromAutoSaveList( void )
         fclose( fpi );
         return;
     }
-    while( (p = fgets( path2, sizeof( path2 ), fpi )) != NULL ) {
-        for( i = strlen( p ); i && isWSorCtrlZ( p[i - 1] ); --i ) {
-            p[i - 1] = '\0';
-        }
+    while( (p = myfgets( path2, sizeof( path2 ), fpi )) != NULL ) {
         p = GetNextWord1( p, data );
-        p = SkipLeadingSpaces( p );
+        SKIP_SPACES( p );
         if( strcmp( path, p ) == 0 ) {
             p = MakeTmpPath( path2, CurrentFile->as_name );
             if( strcmp( data, p ) == 0 ) {
 //                found = true;
                 remove( p );
-                while( fgets( data, sizeof( data ), fpi ) != NULL ) {
-                    for( i = strlen( data ); i && isWSorCtrlZ( data[i - 1] ); --i ) {
-                        data[i - 1] = '\0';
-                    }
+                while( myfgets( data, sizeof( data ), fpi ) != NULL ) {
                     MyFprintf( fpo, "%s\n", data );
                 }
                 break;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,11 +35,10 @@
 #include "posix.h"
 #include "bnddata.h"
 #include "specio.h"
+#include "myio.h"
 
 #include "clibext.h"
 
-
-#define isWSorCtrlZ( x )    (isspace( x ) || (x == 0x1A))
 
 static bind_size    *dataOffsets = NULL;
 static bind_size    *entryCounts = NULL;
@@ -224,11 +223,8 @@ bool SpecialFgets( char *buff, int max_len, GENERIC_FILE *gf )
 
     switch( gf->type ) {
     case GF_FILE:
-        if( fgets( buff, max_len, gf->data.fp ) == NULL ) {
+        if( myfgets( buff, max_len, gf->data.fp ) == NULL ) {
             return( true );
-        }
-        for( len = strlen( buff ); len > 0 && isWSorCtrlZ( buff[len - 1] ); --len ) {
-            buff[len - 1] = '\0';
         }
         break;
     case GF_BOUND:

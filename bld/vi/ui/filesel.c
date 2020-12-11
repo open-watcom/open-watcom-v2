@@ -687,7 +687,8 @@ vi_rc SelectLineInFile( selflinedata *sfd )
                     char    *ptr;
 
                     GimmeLinePtr( cln, sfd->f, &cfcb, &cline );
-                    ptr = SkipLeadingSpaces( cline->data );
+                    ptr = cline->data;
+                    SKIP_SPACES( ptr );
                     strcpy( tmp, sfd->vals[cln - 1] );
                     rc = sfd->checkres( ptr, tmp, &winflag );
                     if( winflag == 2 ) {

@@ -31,44 +31,24 @@
 ****************************************************************************/
 
 
-#include "vi.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include "myio.h"
 
-/*
- * SrcNextWord - get next word in a variable, putting result into another
- *               variable
- */
-vi_rc SrcNextWord( const char *data, vars_list *vl )
+
+#define isWSorCtrlZ( x )    (isspace( x ) || (x == 0x1A))
+
+char *myfgets( char *buff, int max_len, FILE *fp )
 {
-    char        name1[MAX_SRC_LINE], name2[MAX_SRC_LINE], str[MAX_STR];
-    vars        *v;
-    char        *ptr;
+    char    *p;
+    size_t  i;
 
-    /*
-     * get syntax :
-     * NEXTWORD src res
-     */
-    if( !ReadVarName( &data, name1, vl ) ) {
-        return( ERR_SRC_INVALID_NEXTWORD );
-    }
-    if( !ReadVarName( &data, name2, vl ) ) {
-        return( ERR_SRC_INVALID_NEXTWORD );
-    }
-    v = VarFind( name1, vl );
-    data = v->value;
-    SKIP_SPACES( data );
-    if( *data == '"' ) {
-        data = GetNextWord( data, str, SingleQuote );
-        if( *data == '"' ) {
-            ++data;
+    if( (p = fgets( buff, max_len, fp )) != NULL )  {
+        for( i = strlen( buff ); i && isWSorCtrlZ( buff[i - 1] ); --i ) {
+            buff[i - 1] = '\0';
         }
-    } else {
-        data = GetNextWord1( data, str );
     }
-    // remove next word from src variable
-    for( ptr = v->value; (*ptr = *data) != '\0'; ++ptr ) {
-        ++data;
-    }
-    VarAddStr( name2, str, vl );
-    return( ERR_NO_ERR );
-
-} /* SrcNextWord */
+    return( p );
+}

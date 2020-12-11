@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -320,7 +320,7 @@ vi_rc RunCommandLine( const char *cmdl )
         rc = PopFileStack();
         break;
     case PCL_T_EXECUTE:
-        data = SkipLeadingSpaces( data );
+        SKIP_SPACES( data );
         if( *data != '\0' ) {
             key_map     scr;
 
@@ -367,7 +367,7 @@ vi_rc RunCommandLine( const char *cmdl )
         rc = ERR_NO_ERR;
         break;
     case PCL_T_KEYADD:
-        data = SkipLeadingSpaces( data );
+        SKIP_SPACES( data );
         KeyAddString( data );
         rc = ERR_NO_ERR;
         break;
@@ -677,7 +677,7 @@ vi_rc RunCommandLine( const char *cmdl )
         if( n1f && n2f ) {
             rc = DoGenericFilter( n1, n2, data );
         } else {
-            data = SkipLeadingSpaces( data );
+            SKIP_SPACES( data );
             if( *data == '\0' ) {
                 goto EVIL_SHELL;
             }
@@ -734,22 +734,22 @@ vi_rc RunCommandLine( const char *cmdl )
         {
             bool        ci;
 
-            data = SkipLeadingSpaces( data );
+            SKIP_SPACES( data );
             ci = EditFlags.CaseIgnore;
             if( data[0] == '-' ) {
                 if( data[1] == 'c' ) {
                     ci = false;
                     data += 2;
-                    data = SkipLeadingSpaces( data );
+                    SKIP_SPACES( data );
                     rc = GetStringWithPossibleQuote( &data, st );
                 } else if( data[1] == 'i' ) {
                     ci = true;
                     data += 2;
-                    data = SkipLeadingSpaces( data );
+                    SKIP_SPACES( data );
                     rc = GetStringWithPossibleQuote( &data, st );
                 } else if( data[1] == 'f' ) {
                     data += 2;
-                    data = SkipLeadingSpaces( data );
+                    SKIP_SPACES( data );
 #ifdef __WIN__
                     // call fancy grep window
                     {
@@ -832,7 +832,7 @@ vi_rc RunCommandLine( const char *cmdl )
             break;
         }
         x = atoi( st );
-        data = SkipLeadingSpaces( data );
+        SKIP_SPACES( data );
         /*
          * FIXME: This is not good - I will definately have to
          * fix this code up. But right now I have to get the

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,14 +58,14 @@ vi_rc Global( linenum n1, linenum n2, const char *data, int dmt )
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    data = SkipLeadingSpaces( data );
+    SKIP_SPACES( data );
     data = GetNextWord( data, sstr, SingleSlash );
     if( *sstr == '\0' ) {
         return( ERR_INVALID_GLOBAL_CMD );
     }
     if( *data == '/' )
         ++data;     // skip one slash character
-    data = SkipLeadingSpaces( data );
+    SKIP_SPACES( data );
 
     /*
      * verify last line

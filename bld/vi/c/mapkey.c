@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -109,7 +110,7 @@ vi_rc MapKey( int flag, const char *data )
     if( *keystr == '\0' ) {
         return( ERR_INVALID_MAP );
     }
-    data = SkipLeadingSpaces( data );
+    SKIP_SPACES( data );
 
     /*
      * get key we are using
@@ -497,7 +498,7 @@ vi_rc ExecuteBuffer( void )
 /*
  * LookUpCharToken - look up to token for a specified character
  */
-char *LookUpCharToken( vi_key key, bool want_single )
+const char *LookUpCharToken( vi_key key, bool want_single )
 {
     int         i;
     static int  num = 0;

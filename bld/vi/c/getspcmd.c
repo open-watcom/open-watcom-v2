@@ -128,7 +128,7 @@ static const char * const _NEAR ExeExtensions[MAX_EXE_EXTENSIONS] = {
 
 void GetSpawnCommandLine( char *path, const char *cmdl, cmd_struct *cmds )
 {
-    char        *cmd;
+    const char  *cmd;
     char        full[FILENAME_MAX];
     PGROUP2     pg;
 #if !defined( NO_INTERNAL_COMMANDS ) || !defined( NO_EXE_EXTENSIONS )
@@ -136,7 +136,7 @@ void GetSpawnCommandLine( char *path, const char *cmdl, cmd_struct *cmds )
     bool        is_internal = false;
 #endif
 
-    cmdl = SkipLeadingSpaces( cmdl );
+    SKIP_SPACES( cmdl );
     cmd = GetNextWord1( cmdl, full );
     strcpy( path, full );
     _splitpath2( full, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
@@ -183,7 +183,7 @@ void GetSpawnCommandLine( char *path, const char *cmdl, cmd_struct *cmds )
         strcat( cmds->cmd, cmdl );
     } else {
 #endif
-        cmd = SkipLeadingSpaces( cmd );
+        SKIP_SPACES( cmd );
         strcpy( cmds->cmd, cmd );
 #if !defined( NO_EXE_EXTENSIONS ) || !defined( NO_INTERNAL_COMMANDS )
     }

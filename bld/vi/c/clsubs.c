@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -229,7 +230,8 @@ vi_rc Substitute( linenum n1, linenum n2, const char *data )
     }
     if( *data == '/' )
         ++data;
-    for( data = SkipLeadingSpaces( data ); (c = *data) != '\0'; data++ ) {
+    SKIP_SPACES( data );
+    for( ; (c = *data) != '\0'; data++ ) {
         if( c == 'g' ) {
             gflag = true;
         } else if( c == 'i' || c == 'c' ) {

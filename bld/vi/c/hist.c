@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,9 +32,8 @@
 
 
 #include "vi.h"
+#include "myio.h"
 
-
-#define isWSorCtrlZ(x)  (isspace( x ) || (x == 0x1A))
 
 static bool historyLoaded;
 
@@ -58,7 +57,6 @@ void LoadHistory( const char *cmd )
     FILE            *fp;
     char            str[MAX_INPUT_LINE];
     int             cnt;
-    size_t          i;
     int             j;
     history_data    *h;
 
@@ -70,10 +68,7 @@ void LoadHistory( const char *cmd )
         }
         cnt = 0;
         h = EditVars.Hist - 1;
-        while( fgets( str, sizeof( str ), fp ) != NULL ) {
-            for( i = strlen( str ); i && isWSorCtrlZ( str[i - 1] ); --i ) {
-                str[i - 1] = '\0';
-            }
+        while( myfgets( str, sizeof( str ), fp ) != NULL ) {
             if( cnt == 0 ) {
                 h++;
                 if( h - EditVars.Hist >= MAX_HIST ) {

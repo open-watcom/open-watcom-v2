@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -667,7 +667,7 @@ void UpdateBoolSetting( HWND hwnd, int token, int id, bool oldval )
 void DoStrSet( char *value, int token )
 {
     char        result[MAX_STR];
-    char        *str;
+    const char  *str;
 
     str = GetTokenString( SetVarTokens, token );
     strcpy( result, str );
