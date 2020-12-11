@@ -10,7 +10,7 @@ incpath = ../hpp;../res;$(brinfo_dir)/h;$(lexlib_dir)/wclass/hpp;$(plusplus_dir)
     @set include=$(incpath)
     @set nt_include=
     
-cflags=-w8-bt=nt-zq-fhd -d_WIN32 -dWIN32 -d_DBCS
+cflags=-bt=nt-zq-fhd -d_WIN32 -dWIN32 -d_DBCS
 
 .cpp.obj: .AUTODEPEND
     wpp386 $[@ $(debug_cpp_opts) $(cflags) -fh=wpch.pch
