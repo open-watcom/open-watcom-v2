@@ -38,8 +38,8 @@ err_out = $+ $(files_err) $-
 ext=.exe
 comp_out = $+ $(files_comp) $-
 
-test : .symbolic start clean start_test $(comp_out) $(err_out) common_set_result
-    @%make clean
+test : .symbolic start clean start_test $(comp_out) $(err_out)
+    $(noecho)%make common_set_result
 
 start_test : .symbolic
     @%make common_start_test

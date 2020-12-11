@@ -52,7 +52,7 @@ opt_link_er03 = LIB er03.lib
 exes = er01.$(exe) er02.$(exe) er03.$(exe)
 
 test : .symbolic start clean start_test test.lnk er01.lib er03.lib $(exes) test_set_result
-    $(noecho)%make clean
+    $(noecho)%make common_set_result_check
 
 check_result : .procedure
     -diff -b error.out error.chk >$(nulldevice)
@@ -60,7 +60,6 @@ check_result : .procedure
 test_set_result : ./chk_exec.exe .symbolic
     -$(noecho)%write error.out OK
     -$]@ exec.out >>error.out
-    $(noecho)%make common_set_result_check
 
 er02.$(exe) : er02.obj er02b.obj
 

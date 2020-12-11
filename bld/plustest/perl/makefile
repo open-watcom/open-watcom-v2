@@ -28,11 +28,10 @@ exes = &
     tstio.$(exe)
 
 test : .symbolic start clean start_test test.lnk $(exes) test_set_result
-    @%make clean
+    $(noecho)%make common_set_result
 
 test_set_result : .symbolic
     cat t2.out >>$(%ERROR_FILE)
-    $(noecho)%make common_set_result
 
 perltest.$(exe) : perltest.obj perlclas.obj regex.obj
 perlasso.$(exe) : perlasso.obj perlclas.obj regex.obj

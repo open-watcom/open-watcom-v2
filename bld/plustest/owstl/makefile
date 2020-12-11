@@ -107,10 +107,11 @@ opt_mmwindef += -3
 !ifeq arch i86
 test : .symbolic start clean start_test
     $(noecho)%append $(log_file) PASS $(%__CWD__)
-!else
-test : .symbolic start clean start_test test.lnk $(exes) common_set_result_display
-!endif
     @%make clean
+!else
+test : .symbolic start clean start_test test.lnk $(exes)
+    $(noecho)%make common_set_result_display
+!endif
 
 # this is my laziness bit...
 $(names) : test.lnk .symbolic

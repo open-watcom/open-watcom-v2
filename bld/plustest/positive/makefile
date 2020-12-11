@@ -94,8 +94,8 @@ stack_i86 = op stack=12k
 
 .cpp: source
 
-test : .symbolic start clean start_test test.lnk $(positive_exes) test_set_result common_set_result_check
-    @%make clean
+test : .symbolic start clean start_test test.lnk $(positive_exes) test_set_result
+    $(noecho)%make common_set_result_check
 
 check_result : .procedure
     -diff -b error.out exec.chk >$(nulldevice)
@@ -103,7 +103,6 @@ check_result : .procedure
 test_set_result : ./chk_exec.exe .symbolic
     -$(noecho)%write error.out OK
     -$]@ exec.out >>error.out
-#    $(noecho)%make common_set_result_check
 
 link3.exe : link3.obj link3b.obj
 link4.exe : link4.obj link4b.obj

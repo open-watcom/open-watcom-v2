@@ -128,6 +128,8 @@ path_wlink = $(src_dir)\wl\ntx64.dll
 .CONTINUE
 !endif
 
+.IGNORE
+
 .ERASE
 
 .ERROR

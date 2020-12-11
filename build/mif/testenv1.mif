@@ -307,6 +307,7 @@ common_start_test : .procedure .EXPLICIT
 __set_pass : .procedure .EXPLICIT
     $(noecho)%make __clean_sav
     @set ERROR_MSG=PASS $(%__CWD__)
+    $(noecho)%make clean
 
 common_set_result : .procedure .EXPLICIT
     @set ERROR_FILE=$(log_file)

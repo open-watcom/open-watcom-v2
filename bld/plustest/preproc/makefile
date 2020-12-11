@@ -47,8 +47,8 @@ all_tests = &
     pp17.i1 &
 
 
-test : .symbolic start clean start_test $(all_tests) common_set_result
-    @%make clean
+test : .symbolic start clean start_test $(all_tests)
+    $(noecho)%make common_set_result
 
 start_test : .symbolic
     @%make common_start_test

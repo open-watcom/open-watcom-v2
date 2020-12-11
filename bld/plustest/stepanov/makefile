@@ -40,10 +40,11 @@ exes = $(oopacks) $(stepanovs)
 !ifeq arch i86
 test : .symbolic start clean start_test
     $(noecho)%append $(log_file) PASS $(%__CWD__)
-!else
-test : .symbolic start clean start_test test.lnk $(exes) common_set_result_display
-!endif
     @%make clean
+!else
+test : .symbolic start clean start_test test.lnk $(exes)
+    $(noecho)%make common_set_result_display
+!endif
 
 start_test : .symbolic
     @%make common_start_test

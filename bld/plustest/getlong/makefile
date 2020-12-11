@@ -18,8 +18,10 @@ objs = &
     getlongo.obj &
     readme.obj
 
-test : .symbolic start clean start_test ./opt.$(exe) common_set_result
-    @%make clean
+exes = ./opt.$(exe)
+
+test : .symbolic start clean start_test $(exes) 
+    $(noecho)%make common_set_result
 
 ./opt.$(exe) : $(objs) test.lnk
     @set ERROR_MSG=failure to link $^*

@@ -10,8 +10,8 @@ archdep_opts = -dARCH=$(arch)
 
 .c: source
 
-test : .symbolic start clean start_test diag0000.out common_set_result_check
-    %make clean
+test : .symbolic start clean start_test diag0000.out
+    $(noecho)%make common_set_result_check
 
 check_result : .procedure
     -diff -b diag0000.out diag0000.chk >diff0000.out

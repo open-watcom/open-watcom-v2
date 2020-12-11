@@ -56,8 +56,8 @@ extra_run_wordcnt = <test/wordcnt.cpp
 .c : test;base;io
 .cpp : test;base;io
 
-test : .symbolic start clean start_test base.lib io.lib test.lnk $(exes) common_set_result
-    @%make clean
+test : .symbolic start clean start_test base.lib io.lib test.lnk $(exes)
+    $(noecho)%make common_set_result
 
 dkbtrtst.$(exe) : dkbtrtst.obj
     @set ERROR_MSG=*** failure to link $^&

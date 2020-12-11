@@ -36,10 +36,11 @@ extra_run_demo = <demo.in
 !ifeq arch i86
 test : .symbolic start clean start_test
     $(noecho)%append $(log_file) PASS $(%__CWD__)
-!else
-test : .symbolic start clean start_test test.lnk demo.$(exe) common_set_result_display
-!endif
     @%make clean
+!else
+test : .symbolic start clean start_test test.lnk demo.$(exe)
+    $(noecho)%make common_set_result_display
+!endif
 
 demo.$(exe) : demo.obj tempbuf.obj
 

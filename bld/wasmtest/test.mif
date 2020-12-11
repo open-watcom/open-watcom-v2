@@ -3,12 +3,11 @@ alt_error = 00
 !include testenv1.mif
 
 test : .symbolic start clean start_test $(dis_objs) $(objs) test_set_result
-    @%make clean
+    $(noecho)%make common_set_result_check
 
 test_set_result : .symbolic ./chk_exec.exe
     -%write error.out OK
     -$< exec.out >>error.out
-    $(noecho)%make common_set_result_check
 
 check_result : .procedure
     -diff -b error.out ../error.chk

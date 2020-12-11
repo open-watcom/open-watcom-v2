@@ -31,22 +31,25 @@ stack_386 = op stack=128k
 !ifndef __NT__
 test : .symbolic start clean start_test
     $(noecho)%append $(log_file) PASS $(%__CWD__)
+    @%make clean
 !else ifeq arch i86
 test : .symbolic start clean start_test
     $(noecho)%append $(log_file) PASS $(%__CWD__)
+    @%make clean
 !else ifeq targ_env_386 wnt386
 test : .symbolic start clean start_test tomdll.dll test.lnk tomexe.$(exe) test_set_result
+    $(noecho)%make common_set_result_display
 !else ifdef __NT386__
 test : .symbolic start clean start_test
     $(noecho)%append $(log_file) PASS $(%__CWD__)
+    @%make clean
 !else
 test : .symbolic start clean start_test tomdll.dll test.lnk tomexe.$(exe) test_set_result
+    $(noecho)%make common_set_result_display
 !endif
-    @%make clean
 
 test_set_result : .symbolic
     cat tom.out >>$(%ERROR_FILE)
-    $(noecho)%make common_set_result_display
 
 start_test : .symbolic
     @%make common_start_test

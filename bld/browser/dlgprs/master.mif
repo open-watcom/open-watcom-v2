@@ -5,8 +5,6 @@ proj_type = cxx
 dlgprs_autodepends=.AUTODEPEND
 !endif
 
-.IGNORE
-
 bnd_yacc_prefix = bndy
 dlg_yacc_prefix = dlgy
 

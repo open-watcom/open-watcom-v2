@@ -22,8 +22,8 @@ stack_axp=opt stack=16k
 
 extra_run_re2c = -d plusplus.lex
 
-test : .symbolic start clean start_test test.lnk re2c.$(exe) rename_result_file common_set_result_check
-    @%make clean
+test : .symbolic start clean start_test test.lnk re2c.$(exe) rename_result_file
+    $(noecho)%make common_set_result_check
 
 rename_result_file : .procedure
     @if exist exec2.out @rm exec2.out
