@@ -3,7 +3,7 @@
 #
 # Watcom GML/Script Test Device Library Makefile
 #
-# This uses the existing (legacy) gendev, either 
+# This uses the existing (legacy) gendev, either
 # the DOS version or the OS/2 version
 #
 

@@ -34,12 +34,12 @@ diags_0099_defn = &
     diag0101$(err_sin) &
     diag0102$(err_sin) &
 
-    
+
 err_sin = .err
 err_sys = .ser
 
 diags_0099 = $+ $(diags_0099_defn) $-
-    
-    
+
+
 err_sin =
 err_sys =

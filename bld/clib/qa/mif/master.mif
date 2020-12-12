@@ -32,7 +32,7 @@
 #                               win_m
 #                               win_l
 # W386  Windows 3.x 32-bit      w386_3r
-#                               w386_3s 
+#                               w386_3s
 # WNT   Windows NT Console      wnt_3r
 #                               wnt_3rd
 #                               wnt_3s
@@ -497,7 +497,7 @@ runw386 :  $(w386exes) .symbolic
     @echo Executing w386_3s.exe
     @w386_3s.exe
     @type tmp.log
-   
+
 # Run OS/2 16-bit executables
 runos2 : $(os2exes) .symbolic
     @os2_s.exe

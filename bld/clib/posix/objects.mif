@@ -63,7 +63,7 @@
 !inject readdir.obj                                                             l32 lpc lmp
 !inject recv.obj                                                                l32 lpc lmp rdu
 !inject recvfrom.obj                                                            l32 lpc lmp rdu
-!inject recvmsg.obj                                                             l32 lpc lmp 
+!inject recvmsg.obj                                                             l32 lpc lmp
 !inject _resolve.obj                                                            l32 lpc lmp
 !inject rewindir.obj                                                            l32 lpc lmp
 !inject send.obj                                                                l32 lpc lmp rdu

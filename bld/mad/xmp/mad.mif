@@ -16,12 +16,12 @@ imp_objs = &
 # Set 'extr_incs' to the directories where any extra include files are
 # located.
 #
-# extra_incs = 
+# extra_incs =
 
 #
 # Set 'extra_srcs' to the directories where any extra source files are
 # located.
 #
-# extra_srcs = 
+# extra_srcs =
 
 !include ../../master.mif

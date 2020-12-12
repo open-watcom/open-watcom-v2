@@ -20,7 +20,7 @@ objs = &
 
 exes = ./opt.$(exe)
 
-test : .symbolic start $(exes) 
+test : .symbolic start $(exes)
     $(noecho)%make common_set_result
 
 ./opt.$(exe) : $(objs) test.lnk

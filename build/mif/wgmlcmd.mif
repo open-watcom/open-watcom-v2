@@ -4,13 +4,13 @@
 # Because source code for wgml and gendev tools are not available
 # it is necessary to run binary versions of these tools.
 # They exist only for the DOS and the OS/2 Operating systems.
-# For platforms which can not run them natively, the DOS version 
+# For platforms which can not run them natively, the DOS version
 # is used with suitable DOS Emulator
 # DOSBOX is available on many platforms
 # DOSEMU is available only on Linux, but is faster then DOSBOX
-# 
+#
 # Microsoft Windows Help Compiler run only on Windows platform.
-# On UNIX like platforms where Wine environment is available, 
+# On UNIX like platforms where Wine environment is available,
 # Wine is used to run this compiler
 
 #

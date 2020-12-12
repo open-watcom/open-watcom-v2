@@ -36,7 +36,7 @@ extra_run_test3 = 1000 1000
 
 exes = test1.$(exe) test2.$(exe) test3.$(exe)
 
-test : .symbolic start test.lnk $(exes) 
+test : .symbolic start test.lnk $(exes)
     $(noecho)%make common_set_result
 
 test1.$(exe) : test1.obj field.obj

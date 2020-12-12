@@ -36,5 +36,5 @@ libtarg_objs = &
     inftrees.obj &
     trees.obj    &
     uncompr.obj  &
-    zutil.obj 
+    zutil.obj
 !include libtarg.mif

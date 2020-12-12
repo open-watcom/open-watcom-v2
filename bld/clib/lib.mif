@@ -1,5 +1,5 @@
 # Library naming. The basic convention is libname_(model), with optional
-# suffixes and/or infixes. 
+# suffixes and/or infixes.
 # Ideally all libraries should be built with final names used for distribution.
 # That avoids having builder.ctl to control the renaming and allows us to
 # point the linker directly at the build directories.

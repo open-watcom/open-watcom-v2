@@ -9,16 +9,16 @@ test01.exe : test01.obj
 
 test01.obj : test01.asm
     wasm -zq -wx $<
-    
+
 test02.com : test02.exe
     exe2bin -q $< $@
-    
+
 test02.exe : test02.obj
     wlink op quiet format dos com file $< name $@
 
 test02.obj : test02.asm
     wasm -zq -wx $<
-    
+
 clean : .symbolic
     @rm -f *.obj
     @rm -f *.exe

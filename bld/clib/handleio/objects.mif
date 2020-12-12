@@ -43,7 +43,7 @@
 !inject hdlman.obj      d16 d32     nt  nta ntp                 o16 o32 q16 q32 w16 w32 l32 lpc lmp
 !inject hdopen.obj      d16 d32     nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp
 !inject iomode.obj      d16 d32     nt  nta ntp                 o16 o32 q16 q32 w16 w32 l32 lpc lmp
-!inject iomodtty.obj    d16 d32     nt  nta ntp                 o16 o32         w16 w32            
+!inject iomodtty.obj    d16 d32     nt  nta ntp                 o16 o32         w16 w32
 !inject lock.obj        d16 d32                                 o16 o32         w16 w32
 !inject locking.obj     d16 d32     nt  nta ntp                 o16 o32 q16 q32 w16 w32 l32 lpc lmp
 !inject lockqnx.obj                                                     q16 q32
@@ -68,7 +68,7 @@
 !inject setbinmo.obj    d16 d32     nt  nta ntp                 o16 o32         w16 w32             rdu rdk
 !inject setmd.obj       d16 d32     nt  nta ntp                 o16 o32         w16 w32
 !inject setmdunx.obj                                                q16 q32             l32 lpc lmp
-!inject stiomode.obj    d16 d32     nt  nta ntp                 o16 o32         w16 w32             
+!inject stiomode.obj    d16 d32     nt  nta ntp                 o16 o32         w16 w32
 !inject tell.obj        d16 d32     nt  nta ntp                 o16 o32 q16 q32 w16 w32 l32 lpc lmp
 !inject textmode.obj    d16 d32     nt  nta ntp nvc     nvl     o16 o32         w16 w32             rdu rdk
 !inject ucreat.obj      d16 d32     nt  nta ntp                 o16 o32         w16 w32
