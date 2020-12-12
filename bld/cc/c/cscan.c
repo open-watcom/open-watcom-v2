@@ -42,6 +42,8 @@
 
 extern const unsigned char  TokValue[];
 
+#define diagnose_lex_error()    ((SkipLevel == NestLevel) && (PPControl & PPCTL_NO_LEX_ERRORS) == 0)
+
 enum scan_class {
     #define pick(e,p) e,
     #include "_scnclas.h"
@@ -1265,8 +1267,8 @@ static TOKEN ScanSlash( void )
 
 #define OUTC(x)     if(ofn != NULL) ofn(x)
 
-static bool doScanHex( int max, escinp_fn ifn, escout_fn ofn )
-/*************************************************************
+static msg_codes doScanHex( int max, escinp_fn ifn, escout_fn ofn )
+/******************************************************************
  * Warning! this function is also used from cstring.c
  * cannot use Buffer array or NextChar function in any way
  * input and output is done using ifn or ofn functions
@@ -1295,23 +1297,17 @@ static bool doScanHex( int max, escinp_fn ifn, escout_fn ofn )
         --max;
     }
     Constant = value;
-    if( count == max ) {            /* no characters matched */
-        return( false );            /* indicate no characters matched */
-/*          CErr1( ERR_INVALID_HEX_CONSTANT );  */
+    if( count == max ) {                    /* no characters matched */
+        return( ERR_INVALID_HEX_CONSTANT ); /* indicate no characters matched */
     }
-    if( !CompFlags.cpp_mode ) {
-        if( too_big ) {
-            BadTokenInfo = ERR_CONSTANT_TOO_BIG;
-            if( NestLevel == SkipLevel ) {
-                CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
-            }
-        }
+    if( too_big ) {
+        return( ERR_CONSTANT_TOO_BIG );
     }
-    return( true );                 /* indicate characters were matched */
+    return( ERR_NONE );                     /* indicate characters were matched */
 }
 
-int ESCChar( int c, escinp_fn ifn, bool *error, escout_fn ofn )
-/**************************************************************
+int ESCChar( int c, escinp_fn ifn, msg_codes *err_msg, escout_fn ofn )
+/*********************************************************************
  * Warning! this function is also used from cstring.c
  * cannot use Buffer array or NextChar function in any way
  * input and output is done using ifn or ofn functions
@@ -1320,6 +1316,7 @@ int ESCChar( int c, escinp_fn ifn, bool *error, escout_fn ofn )
     int         n;
     int         i;
 
+    *err_msg = ERR_NONE;
     if( c >= '0' && c <= '7' ) {    /* get octal escape sequence */
         n = 0;
         i = 3;
@@ -1330,11 +1327,11 @@ int ESCChar( int c, escinp_fn ifn, bool *error, escout_fn ofn )
         }
     } else if( c == 'x' ) {         /* get hex escape sequence */
         OUTC( c );
-        if( doScanHex( 127, ifn, ofn ) ) {
-            n = Constant;
-        } else {                    /* '\xz' where z is not a hex char */
-            *error = true;
+        *err_msg = doScanHex( 127, ifn, ofn );
+        if( *err_msg == ERR_INVALID_HEX_CONSTANT ) { /* '\xz' where z is not a hex char */
             n = 'x';
+        } else {
+            n = Constant;
         }
     } else {
         OUTC( c );
@@ -1389,7 +1386,7 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
     int         n;
     TOKEN       token;
     int         value;
-    bool        error;
+    msg_codes   err_msg;
 
     value = 0;
     c = NextChar();
@@ -1401,7 +1398,7 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
         BadTokenInfo = ERR_NONE;
         token = T_CONSTANT;
         i = 0;
-        error = false;
+        err_msg = ERR_NONE;
         for( ;; ) {
             if( c == '\r' || c == '\n' ) {
                 token = T_BAD_TOKEN;
@@ -1435,7 +1432,15 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
                     }
                     c = n;
                 } else {
-                    c = ESCChar( c, NextChar, &error, WriteBufferChar );
+                    c = ESCChar( c, NextChar, &err_msg, WriteBufferChar );
+                    if( !CompFlags.cpp_mode ) {
+                        if( err_msg == ERR_CONSTANT_TOO_BIG ) {
+                            BadTokenInfo = ERR_CONSTANT_TOO_BIG;
+                            if( NestLevel == SkipLevel ) {
+                                CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
+                            }
+                        }
+                    }
                 }
                 if( char_type == TYPE_WCHAR ) {
                     ++i;
@@ -1497,7 +1502,7 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
     } else {
         Buffer[TokenLen++] = c;
         NextChar();
-        if( error ) {
+        if( err_msg == ERR_INVALID_HEX_CONSTANT ) {
             BadTokenInfo = ERR_INVALID_HEX_CONSTANT;
             token = T_BAD_TOKEN;
         }
@@ -1526,10 +1531,10 @@ static TOKEN doScanString( bool wide )
 {
     int         c;
     bool        ok;
-    bool        error;
+    msg_codes   err_msg;
 
     ok = false;
-    error = false;
+    err_msg = ERR_NONE;
     CompFlags.wide_char_string = false;
     CompFlags.trigraph_alert = false;
     TokenLen = 0;
@@ -1557,7 +1562,15 @@ static TOKEN doScanString( bool wide )
         if( c == '\\' ) {
             c = SaveCharNextChar( c );
             if( (CharSet[c] & C_WS) == 0 ) {
-                ESCChar( c, NextChar, &error, WriteBufferChar );
+                ESCChar( c, NextChar, &err_msg, WriteBufferChar );
+                if( !CompFlags.cpp_mode ) {
+                    if( err_msg == ERR_CONSTANT_TOO_BIG ) {
+                        BadTokenInfo = ERR_CONSTANT_TOO_BIG;
+                        if( NestLevel == SkipLevel ) {
+                            CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
+                        }
+                    }
+                }
                 c = CurrChar;
             }
         } else {

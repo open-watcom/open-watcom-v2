@@ -127,17 +127,25 @@ static target_size RemoveEscapes( char *buf, const char *inbuf, target_size ilen
 {
     int                 c;
     target_size         olen;
-    bool                error;
+    msg_codes           err_msg;
     const unsigned char *pend;
 
     olen = 0;
-    error = false;
+    err_msg = ERR_NONE;
     pbuf = (const unsigned char *)inbuf;
     pend = pbuf + ilen;
     while( pbuf < pend ) {
         c = read_inp();
         if( c == '\\' ) {
-            c = ESCChar( read_inp(), read_inp, &error, NULL );
+            c = ESCChar( read_inp(), read_inp, &err_msg, NULL );
+            if( !CompFlags.cpp_mode ) {
+                if( err_msg == ERR_CONSTANT_TOO_BIG ) {
+                    BadTokenInfo = ERR_CONSTANT_TOO_BIG;
+                    if( NestLevel == SkipLevel ) {
+                        CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
+                    }
+                }
+            }
             pbuf--; // move pointer to first character after Escape sequence
             if( CompFlags.wide_char_string ) {
                 WRITE_BYTE( c );
@@ -170,7 +178,7 @@ static target_size RemoveEscapes( char *buf, const char *inbuf, target_size ilen
         }
         WRITE_BYTE( c );
     }
-    if( error && buf != NULL ) {
+    if( err_msg == ERR_INVALID_HEX_CONSTANT && buf != NULL ) {
         if( NestLevel == SkipLevel ) {
             CErr1( ERR_INVALID_HEX_CONSTANT );
         }

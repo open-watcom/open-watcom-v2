@@ -44,4 +44,4 @@
 typedef int     (*escinp_fn)( void );
 typedef void    (*escout_fn)( int );
 
-extern int      ESCChar( int, escinp_fn, bool *, escout_fn );
+extern int      ESCChar( int, escinp_fn, msg_codes *, escout_fn );

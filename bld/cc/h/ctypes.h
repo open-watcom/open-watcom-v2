@@ -688,10 +688,6 @@ enum {
     TS_RDOS
 };
 
-/* values for ESCChar routine */
-#define RTN_SAVE_NEXT_CHAR      0
-#define RTN_NEXT_BUF_CHAR       1
-
 typedef struct call_list {
     struct call_list    *next;
     TREEPTR             callnode;
