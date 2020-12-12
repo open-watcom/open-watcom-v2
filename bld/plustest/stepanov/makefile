@@ -38,16 +38,13 @@ exes = $(oopacks) $(stepanovs)
 # "too fast" and finish at "zero" execution time.
 
 !ifeq arch i86
-test : .symbolic start clean start_test
+test : .symbolic start
     $(noecho)%append $(log_file) PASS $(%__CWD__)
     @%make clean
 !else
-test : .symbolic start clean start_test test.lnk $(exes)
+test : .symbolic start test.lnk $(exes)
     $(noecho)%make common_set_result_display
 !endif
-
-start_test : .symbolic
-    @%make common_start_test
 
 clean : .procedure
     @%make echo_clean

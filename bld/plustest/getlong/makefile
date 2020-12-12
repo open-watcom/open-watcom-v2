@@ -20,7 +20,7 @@ objs = &
 
 exes = ./opt.$(exe)
 
-test : .symbolic start clean start_test $(exes) 
+test : .symbolic start $(exes) 
     $(noecho)%make common_set_result
 
 ./opt.$(exe) : $(objs) test.lnk
@@ -38,9 +38,6 @@ test : .symbolic start clean start_test $(exes)
     -$(run) $@ -o >>$(%ERROR_FILE)
     -$(run) $@ -v=1 >>$(%ERROR_FILE)
     @%make set_old_run_path
-
-start_test : .symbolic
-    @%make common_start_test
 
 clean : .procedure
     @%make echo_clean

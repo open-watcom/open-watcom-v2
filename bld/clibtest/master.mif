@@ -130,11 +130,10 @@ wnt_dll =1
 os3_dll =1
 !endif
 
-test : start clean start_build $(buil_tests) start_test $(run_tests) .symbolic
+test : start start_build $(buil_tests) start_test $(run_tests) .symbolic
     $(noecho)%make common_set_result
 
 start_build : .symbolic
-    @%make common_start_test
     @set ERROR_MSG=failure to build $$^*
 
 start_test : .symbolic

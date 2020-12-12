@@ -18,7 +18,7 @@ alt_error = 00
 .src: $(wasmtest_dir)/inline
 .asm: $(wasmtest_dir)/inline
 
-test : .symbolic start clean start_test $($(arch)_inline_objs) test_set_result
+test : .symbolic start start_test $($(arch)_inline_objs) test_set_result
     $(noecho)%make common_set_result_check
 
 check_result : .procedure
@@ -29,7 +29,6 @@ test_set_result : .symbolic ./chk_exec.exe
     -$]@ exec.out >>error.out
 
 start_test : .symbolic
-    $(noecho)%make common_start_test
 !ifndef $(arch)_inline_objs
     @%append $(%ERROR_FILE) PASS decoding
 !endif

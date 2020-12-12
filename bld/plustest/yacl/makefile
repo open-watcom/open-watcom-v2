@@ -56,7 +56,7 @@ extra_run_wordcnt = <test/wordcnt.cpp
 .c : test;base;io
 .cpp : test;base;io
 
-test : .symbolic start clean start_test base.lib io.lib test.lnk $(exes)
+test : .symbolic start base.lib io.lib test.lnk $(exes)
     $(noecho)%make common_set_result
 
 dkbtrtst.$(exe) : dkbtrtst.obj
@@ -86,9 +86,6 @@ perstest.$(exe) : perstest.obj
     $(run) $(exec_prefix)$@ >>$(%ERROR_FILE)
     @%make set_old_run_path
     @%append $(%ERROR_FILE) PASS executing $^&
-
-start_test : .symbolic
-    @%make common_start_test
 
 clean : .procedure
     @%make echo_clean

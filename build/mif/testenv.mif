@@ -71,6 +71,8 @@
 
 watcom_root = $+$(%WATCOM)$-
 
+failures_log = failures.log
+
 !ifdef %BUILDTEST
 buildtest = 1
 !endif
@@ -137,7 +139,7 @@ path_wlink = $(src_dir)\wl\ntx64.dll
     @if not "$(%ERROR_FILE)" == "" $(noecho)%append $(%ERROR_FILE) $(%ERROR_MSG)
 #    @if "$(%ERROR_FILE)" == "$(log_file)" $(noecho)set ERROR_FILE=failure
     @if "$(%ERROR_FILE)" == "$(log_file)" $(noecho)set ERROR_MSG=unknown failure after test end
-    @if "$(%ERROR_FILE)" == "$(log_file)" $(noecho)set ERROR_FILE=failures
+    @if "$(%ERROR_FILE)" == "$(log_file)" $(noecho)set ERROR_FILE=$(failures_log)
 
 !ifdef wasmtest_name
 bld_extra_defines = -DWASM

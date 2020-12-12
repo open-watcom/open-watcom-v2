@@ -22,7 +22,7 @@ stack_axp=opt stack=16k
 
 extra_run_re2c = -d plusplus.lex
 
-test : .symbolic start clean start_test test.lnk re2c.$(exe) rename_result_file
+test : .symbolic start test.lnk re2c.$(exe) rename_result_file
     $(noecho)%make common_set_result_check
 
 rename_result_file : .procedure
@@ -35,9 +35,6 @@ check_result : .procedure
     -diff -b wc.out wc.chk
 
 re2c.$(exe) : re2c.obj code.obj dfa.obj parser.obj scanner.obj useful.obj asc2ebc.obj ebc2asc.obj getopt.obj
-
-start_test : .symbolic
-    @%make common_start_test
 
 clean : .procedure
     @%make echo_clean

@@ -42,15 +42,12 @@ exes = &
     justify.$(exe) &
     spltest.$(exe)
 
-test : .symbolic start clean start_test test.lnk $(exes)
+test : .symbolic start test.lnk $(exes)
     $(noecho)%make common_set_result
 
 spltest.$(exe) : spltest.obj splash.obj regex.obj
 splassoc.$(exe) : splassoc.obj splash.obj regex.obj
 justify.$(exe) : justify.obj splash.obj regex.obj
-
-start_test : .symbolic
-    @%make common_start_test
 
 regex.obj : regex.c
     @%make set_path_wcc

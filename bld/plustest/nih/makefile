@@ -59,12 +59,9 @@ objs =  &
     string.obj  &
     time.obj
 
-test : .symbolic start clean start_test $(objs)
+test : .symbolic start $(objs)
     $(noecho)%append $(log_file) PASS $(%__CWD__)
     @%make clean
-
-start_test : .symbolic
-    @%make common_start_test
 
 clean : .procedure
     @%make echo_clean

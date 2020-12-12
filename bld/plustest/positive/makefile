@@ -94,7 +94,7 @@ stack_i86 = op stack=12k
 
 .cpp: source
 
-test : .symbolic start clean start_test test.lnk $(positive_exes) test_set_result
+test : .symbolic start start_test test.lnk $(positive_exes) test_set_result
     $(noecho)%make common_set_result_check
 
 check_result : .procedure
@@ -120,7 +120,6 @@ cltemp21.exe : cltemp21.obj cltmp21b.obj
 friend4.exe : friend4.obj friend4b.obj
 
 start_test : .symbolic
-    @%make common_start_test
     @set ERROR_MSG=error
 
 clean : .procedure

@@ -17,7 +17,7 @@ tests = test00 test01
 
 .c: source
 
-test : .symbolic start clean start_test $(tests)
+test : .symbolic start $(tests)
     $(noecho)%make common_set_result
 
 test00 : .symbolic ./catfile.exe $(diags_0099) $(diags_0199) $(diags_0299) $(diags_0399) $(diags_sys_$(arch))
@@ -35,12 +35,6 @@ diag_clean : .procedure
     @if exist *.err $(noecho)rm -f *.err
     @if exist *.ser $(noecho)rm -f *.ser
     @if exist *.pch $(noecho)rm -f *.pch
-
-start_test : .symbolic
-    @%create exec.out
-
-set_pass : .procedure
-    @set ERROR_MSG=PASS $(%__CWD__)
 
 clean : .procedure
     @%make echo_clean

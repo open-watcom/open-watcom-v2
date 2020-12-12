@@ -20,7 +20,7 @@ stack_axp=opt stack=16k
 
 extra_run_re2c = -b scanner.re
 
-test : .symbolic start clean start_test test.lnk re2c.$(exe)
+test : .symbolic start test.lnk re2c.$(exe)
     $(noecho)%make common_set_result_check
 
 check_result : .procedure
@@ -28,9 +28,6 @@ check_result : .procedure
     -diff -b wc.out wc.chk
 
 re2c.$(exe) : re2c.obj code.obj dfa.obj memchk.obj parser.obj scanner.obj substr.obj translat.obj actions.obj
-
-start_test : .symbolic
-    @%make common_start_test
 
 clean : .procedure
     @%make echo_clean

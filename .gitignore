@@ -213,7 +213,7 @@
 
 stderr.txt
 stdout.txt
-failures
+failures.log
 
 !makefile
 !afile

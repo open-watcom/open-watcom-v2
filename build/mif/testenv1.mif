@@ -89,6 +89,10 @@ start : .SYMBOLIC .EXPLICIT
 ! endif
     $(noecho)%append $(log_file) TEST $(arch)/$(alt_error)
 !endif
+    $(noecho)%make clean
+    $(noecho)%make __clean_sav
+    @set ERROR_FILE=exec.out
+    $(noecho)%create $(%ERROR_FILE)
 
 test.lnk : $(__MAKEFILES__) .EXPLICIT
     $(noecho)%create $@
@@ -299,20 +303,13 @@ __clean_sav : .procedure .EXPLICIT
     @if exist $(sav_file_2) rm $(sav_file_2)
 !endif
 
-common_start_test : .procedure .EXPLICIT
-    $(noecho)%make __clean_sav
-    @set ERROR_FILE=exec.out
-    $(noecho)%create $(%ERROR_FILE)
-
 __set_pass : .procedure .EXPLICIT
     $(noecho)%make __clean_sav
     @set ERROR_MSG=PASS $(%__CWD__)
+    @if exist $(failures_log) rm $(failures_log)
     $(noecho)%make clean
 
-common_set_result : .procedure .EXPLICIT
-    @set ERROR_FILE=$(log_file)
-    @set ERROR_MSG=FAIL $(%__CWD__)
-    $(noecho)%make __save_sav
+__check_result : .procedure .EXPLICIT
 !if defined( dos_redirect ) && defined( dos_exec_chk_$(arch) )
     -diff -b $(sav_file) $(dos_exec_chk_$(arch)) >$(nulldevice)
 !else ifdef exec_chk_$(arch)
@@ -320,13 +317,8 @@ common_set_result : .procedure .EXPLICIT
 !else
     -diff -b $(sav_file) exec.chk >$(nulldevice)
 !endif
-    @if not errorlevel 1 $(noecho)%make __set_pass
-    %append $(log_file) $(%ERROR_MSG)
 
-common_set_result_display : .procedure .EXPLICIT
-    @set ERROR_FILE=$(log_file)
-    @set ERROR_MSG=FAIL $(%__CWD__)
-    $(noecho)%make __save_sav
+__check_result_display : .procedure .EXPLICIT
 !if defined( dos_redirect ) && defined( dos_exec_chk_$(arch) )
     -diff -b $(sav_file) $(dos_exec_chk_$(arch))
 !else ifdef exec_chk_$(arch)
@@ -334,6 +326,20 @@ common_set_result_display : .procedure .EXPLICIT
 !else
     -diff -b $(sav_file) exec.chk
 !endif
+
+common_set_result : .procedure .EXPLICIT
+    @set ERROR_FILE=$(log_file)
+    @set ERROR_MSG=FAIL $(%__CWD__)
+    $(noecho)%make __save_sav
+    $(noecho)%make __check_result
+    @if not errorlevel 1 $(noecho)%make __set_pass
+    %append $(log_file) $(%ERROR_MSG)
+
+common_set_result_display : .procedure .EXPLICIT
+    @set ERROR_FILE=$(log_file)
+    @set ERROR_MSG=FAIL $(%__CWD__)
+    $(noecho)%make __save_sav
+    $(noecho)%make __check_result_display
     @if not errorlevel 1 $(noecho)%make __set_pass
     %append $(log_file) $(%ERROR_MSG)
 
@@ -352,12 +358,4 @@ full_set_result : .procedure .EXPLICIT
     -$]@ $(log_file) >$(nulldevice)
     @if not errorlevel 1 @set ERROR_MSG=PASS $(%__CWD__)
     @%append $(log_file) TEST
-    %append $(log_file) $(%ERROR_MSG)
-
-set_result_check : .procedure .EXPLICIT
-    @set ERROR_FILE=$(log_file)
-    @set ERROR_MSG=FAIL $(%__CWD__)
-    $(noecho)%make save_sav
-    $(noecho)%make check_result
-    @if not errorlevel 1 $(noecho)%make set_pass
     %append $(log_file) $(%ERROR_MSG)

@@ -105,11 +105,11 @@ opt_mmwindef += -3
 # the main target to run the test suite
 
 !ifeq arch i86
-test : .symbolic start clean start_test
+test : .symbolic start
     $(noecho)%append $(log_file) PASS $(%__CWD__)
     @%make clean
 !else
-test : .symbolic start clean start_test test.lnk $(exes)
+test : .symbolic start test.lnk $(exes)
     $(noecho)%make common_set_result_display
 !endif
 
@@ -128,9 +128,6 @@ $(names) : test.lnk .symbolic
 mmwindef.$(exe): .symbolic
     @%append $(%ERROR_FILE) ----------$^*----------
 !endif
-
-start_test : .symbolic
-    @%make common_start_test
 
 # ensures mmwindef.cpp and mmwin16.cpp are always identical to
 # nominmax.cpp

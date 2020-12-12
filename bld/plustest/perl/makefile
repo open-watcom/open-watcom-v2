@@ -27,7 +27,7 @@ exes = &
     perlasso.$(exe) &
     tstio.$(exe)
 
-test : .symbolic start clean start_test test.lnk $(exes) test_set_result
+test : .symbolic start test.lnk $(exes) test_set_result
     $(noecho)%make common_set_result
 
 test_set_result : .symbolic
@@ -36,9 +36,6 @@ test_set_result : .symbolic
 perltest.$(exe) : perltest.obj perlclas.obj regex.obj
 perlasso.$(exe) : perlasso.obj perlclas.obj regex.obj
 tstio.$(exe) : tstio.obj perlclas.obj regex.obj
-
-start_test : .symbolic
-    @%make common_start_test
 
 clean : .procedure
     @%make echo_clean

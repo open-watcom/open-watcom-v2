@@ -77,11 +77,8 @@ stack_386=opt stack=32k
 stack_i86=opt stack=8k
 stack_axp=opt stack=32k
 
-test : .symbolic start clean start_test $(batch_sym) test.lnk $(exes) 
+test : .symbolic start $(batch_sym) test.lnk $(exes) 
     $(noecho)%make common_set_result
-
-start_test : .symbolic
-    @%make common_start_test
 
 !ifdef BATCH_TEST
 $(batch_lnk) : $(__MAKEFILES__)

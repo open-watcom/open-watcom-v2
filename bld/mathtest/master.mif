@@ -126,11 +126,10 @@ link_opts = OPTION quiet, map, symf
 link_opts = OPTION quiet, map
 !endif
 
-test : start clean start_build $(buil_tests) start_test $(run_tests) .symbolic
+test : .symbolic start start_build $(buil_tests) start_test $(run_tests)
     $(noecho)%make common_set_result
 
 start_build : .symbolic
-    @%make common_start_test
     @set ERROR_MSG=failure to build $$^*
 
 start_test : .symbolic

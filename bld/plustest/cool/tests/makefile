@@ -67,11 +67,8 @@ opt_link = LIBRARY ../cool.lib
 
 .cpp : .;../source
 
-test : .symbolic start clean start_test ../cool.lib test.lnk $(exes) 
+test : .symbolic start ../cool.lib test.lnk $(exes) 
     $(noecho)%make common_set_result
-
-start_test : .symbolic
-    @%make common_start_test
 
 clean : .procedure
     @%make echo_clean

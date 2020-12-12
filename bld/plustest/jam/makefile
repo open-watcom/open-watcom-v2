@@ -22,13 +22,10 @@ stack_axp=opt stack=8k
 
 exes = testftor.$(exe)
 
-test : .symbolic start clean start_test test.lnk $(exes) 
+test : .symbolic start test.lnk $(exes) 
     $(noecho)%make common_set_result
 
 testftor.$(exe) : testftor.obj assert.obj
-
-start_test : .symbolic
-    @%make common_start_test
 
 clean : .procedure
     @%make echo_clean

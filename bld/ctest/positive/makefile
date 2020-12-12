@@ -70,7 +70,7 @@ stack_i86 = opt stack=12k
 .c: source
 .p: source
 
-test : .symbolic start clean start_test test.lnk $(positive_exes) test_set_result
+test : .symbolic start test.lnk $(positive_exes) test_set_result
     $(noecho)%make common_set_result_check
 
 check_result : .procedure
@@ -79,9 +79,6 @@ check_result : .procedure
 test_set_result : .symbolic ./chk_exec.exe
     -@%write error.out OK
     -$]@ exec.out >> error.out
-
-start_test : .symbolic
-    @%make common_start_test
 
 clean : .procedure
     @%make echo_clean

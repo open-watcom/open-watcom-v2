@@ -2,7 +2,7 @@ alt_error = 00
 
 !include testenv1.mif
 
-test : .symbolic start clean start_test $(dis_objs) $(objs) test_set_result
+test : .symbolic start start_test $(dis_objs) $(objs) test_set_result
     $(noecho)%make common_set_result_check
 
 test_set_result : .symbolic ./chk_exec.exe
@@ -13,7 +13,6 @@ check_result : .procedure
     -diff -b error.out ../error.chk
 
 start_test : .symbolic
-    @%make common_start_test
     @set ERROR_MSG=unknown failure
 
 clean : .procedure

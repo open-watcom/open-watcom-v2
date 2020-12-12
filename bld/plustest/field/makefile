@@ -36,15 +36,12 @@ extra_run_test3 = 1000 1000
 
 exes = test1.$(exe) test2.$(exe) test3.$(exe)
 
-test : .symbolic start clean start_test test.lnk $(exes) 
+test : .symbolic start test.lnk $(exes) 
     $(noecho)%make common_set_result
 
 test1.$(exe) : test1.obj field.obj
 test2.$(exe) : test2.obj field.obj
 test3.$(exe) : test3.obj field.obj
-
-start_test : .symbolic
-    @%make common_start_test
 
 clean : .procedure
     @%make echo_clean
