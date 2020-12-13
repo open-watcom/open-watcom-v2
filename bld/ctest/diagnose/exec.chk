@@ -152,7 +152,6 @@ source\diag0009.c(34): Warning! W124: Comparison result always 1
 source\diag0009.c(36): Warning! W124: Comparison result always 1
 source\diag0010.c(6): Warning! E1069: String literal not terminated before end of line
 source\diag0010.c(9): Error! E1069: String literal not terminated before end of line
-source\diag0010.c(11): Error! E1054: Expression must be constant
 source\diag0010.c(11): Error! E1009: Expecting ';' but found 'int'
 source\diag0011.c(6): Error! E1069: String literal not terminated before end of line
 source\diag0012.c(44): Warning! W112: Pointer truncated
