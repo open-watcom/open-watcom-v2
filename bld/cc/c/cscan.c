@@ -40,8 +40,6 @@
 #include "cmacadd.h"
 
 
-extern const unsigned char  TokValue[];
-
 #define diagnose_lex_error()    ((SkipLevel == NestLevel) && (PPControl & PPCTL_NO_LEX_ERRORS) == 0)
 
 enum scan_class {
@@ -49,6 +47,8 @@ enum scan_class {
     #include "_scnclas.h"
     #undef pick
 };
+
+extern const unsigned char  TokValue[];
 
 static FCB              rescan_tmp_file;
 #ifdef CHAR_MACRO
@@ -689,13 +689,11 @@ static TOKEN doScanNum( void )
                 }
             }
 
-            if( !CompFlags.cpp_mode ) {
-                if( TokenLen == 2 ) {   /* just collected a 0x */
-                    BadTokenInfo = ERR_INVALID_HEX_CONSTANT;
-                    if( SkipLevel == NestLevel ) {
-                        CErr1( ERR_INVALID_HEX_CONSTANT );
-                        con.form = CON_ERR;
-                    }
+            if( TokenLen == 2 ) {   /* just collected a 0x */
+                BadTokenInfo = ERR_INVALID_HEX_CONSTANT;
+                con.form = CON_ERR;
+                if( diagnose_lex_error() ) {
+                    CErr1( ERR_INVALID_HEX_CONSTANT );
                 }
             }
         } else {    /* scan octal number */
@@ -713,13 +711,11 @@ static TOKEN doScanNum( void )
             if( c == '.' || c == 'e' || c == 'E' ) {
                 return( doScanFloat( false ) );
             }
-            if( !CompFlags.cpp_mode ) {
-                if( digit_mask & 0x08 ) {   /* if digit 8 or 9 somewhere */
-                    BadTokenInfo = ERR_INVALID_OCTAL_CONSTANT;
-                    con.form = CON_ERR;
-                    if( SkipLevel == NestLevel ) {
-                        CErr1( ERR_INVALID_OCTAL_CONSTANT );
-                    }
+            if( digit_mask & 0x08 ) {   /* if digit 8 or 9 somewhere */
+                BadTokenInfo = ERR_INVALID_OCTAL_CONSTANT;
+                con.form = CON_ERR;
+                if( diagnose_lex_error() ) {
+                    CErr1( ERR_INVALID_OCTAL_CONSTANT );
                 }
             }
         }
@@ -734,20 +730,18 @@ static TOKEN doScanNum( void )
             return( doScanFloat( false ) );
         }
     }
-    if( !CompFlags.cpp_mode ) {
-        switch( con.form ) {
-        case CON_OCT:
-            ov = Cnv8();
-            break;
-        case CON_HEX:
-            ov = Cnv16();
-            break;
-        case CON_DEC:
-            ov = Cnv10();
-            break;
-        case CON_ERR:
-            ov = CNV_32;
-        }
+    switch( con.form ) {
+    case CON_OCT:
+        ov = Cnv8();
+        break;
+    case CON_HEX:
+        ov = Cnv16();
+        break;
+    case CON_DEC:
+        ov = Cnv10();
+        break;
+    case CON_ERR:
+        ov = CNV_32;
     }
     con.suffix = SUFF_NONE;
     if( c == 'l' || c == 'L' ) {   // collect suffix
@@ -786,132 +780,124 @@ static TOKEN doScanNum( void )
         c = SaveCharNextChar( c );
         con.suffix = SUFF_I;
     }
-    if( CompFlags.cpp_mode ) {
-        if( con.suffix == SUFF_UI || con.suffix == SUFF_I ) {
-            while( c >= '0' && c <= '9' ) {
-                c = SaveCharNextChar( c );
-            }
-        }
-    } else {
-        if( con.suffix == SUFF_UI || con.suffix == SUFF_I ) {
-            unsigned_32 value;
+    if( con.suffix == SUFF_UI || con.suffix == SUFF_I ) {
+        unsigned_32 value;
 
-            value = 0;
-            while( c >= '0' && c <= '9' ) {
-                value = value * 10 + c - '0';
-                c = SaveCharNextChar( c );
-            }
-            if( value == 64 ) {
-                if( con.suffix == SUFF_I ) {
-                    ConstType = TYPE_LONG64;
-                } else {
-                    ConstType = TYPE_ULONG64;
-                }
-                if( ov == CNV_32 ) {
-                    U32ToU64( Constant, &Constant64 );
-                }
-            } else if( value == 32 ) {
-                if( con.suffix == SUFF_I ) {
-                    ConstType = TYPE_LONG;
-                } else {
-                    ConstType = TYPE_ULONG;
-                }
-            } else if( value == 16 ) {
-                if( con.suffix == SUFF_I ) {
-                    ConstType = TYPE_SHORT;
-                } else {
-                    ConstType = TYPE_USHORT;
-                }
-            } else if( value == 8 ) {
-                if( con.suffix == SUFF_I ) {
-                    ConstType = TYPE_CHAR;
-                } else {
-                    ConstType = TYPE_UCHAR;
-                }
+        value = 0;
+        while( c >= '0' && c <= '9' ) {
+            value = value * 10 + c - '0';
+            c = SaveCharNextChar( c );
+        }
+        if( value == 64 ) {
+            if( con.suffix == SUFF_I ) {
+                ConstType = TYPE_LONG64;
             } else {
-                if( SkipLevel == NestLevel ) {
-                    CErr1( ERR_INVALID_CONSTANT );
-                }
+                ConstType = TYPE_ULONG64;
             }
-            if( ov == CNV_64 && value < 64 ) {
-                BadTokenInfo = ERR_CONSTANT_TOO_BIG;
-                if( SkipLevel == NestLevel ) {
-                    CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
-                }
-                Constant =  Constant64.u._32[I64LO32];
+            if( ov == CNV_32 ) {
+                U32ToU64( Constant, &Constant64 );
             }
-        } else if( ov == CNV_32 && con.suffix != SUFF_LL && con.suffix != SUFF_ULL ) {
-            switch( con.suffix ) {
-            case SUFF_NONE:
-                if( Constant <= TARGET_INT_MAX ) {
-                    ConstType = TYPE_INT;
-#if TARGET_INT < TARGET_LONG
-                } else if( Constant <= TARGET_UINT_MAX && con.form != CON_DEC ) {
-                    ConstType = TYPE_UINT;
-                } else if( Constant <= 0x7fffffffU ) {
-                    ConstType = TYPE_LONG;
-                } else {
-                    ConstType = TYPE_ULONG;
-                }
-#else
-                } else if( con.form != CON_DEC ) {
-                    ConstType = TYPE_UINT;
-                } else {
-                    ConstType = TYPE_ULONG;
-                }
-#endif
-                break;
-            case SUFF_L:
-                if( Constant <= 0x7FFFFFFFU ) {
-                    ConstType = TYPE_LONG;
-                } else {
-                    ConstType = TYPE_ULONG;
-                }
-                break;
-            case SUFF_U:
-                ConstType = TYPE_UINT;
-#if TARGET_INT < TARGET_LONG
-                if( Constant > TARGET_UINT_MAX ) {
-                    ConstType = TYPE_ULONG;
-                }
-#endif
-                break;
-            case SUFF_UL:
+        } else if( value == 32 ) {
+            if( con.suffix == SUFF_I ) {
+                ConstType = TYPE_LONG;
+            } else {
                 ConstType = TYPE_ULONG;
-                break;
-            default:
-                break;
+            }
+        } else if( value == 16 ) {
+            if( con.suffix == SUFF_I ) {
+                ConstType = TYPE_SHORT;
+            } else {
+                ConstType = TYPE_USHORT;
+            }
+        } else if( value == 8 ) {
+            if( con.suffix == SUFF_I ) {
+                ConstType = TYPE_CHAR;
+            } else {
+                ConstType = TYPE_UCHAR;
             }
         } else {
-            switch( con.suffix ) {
-            case SUFF_NONE:
-                ConstType = TYPE_LONG64;
-                if( Constant64.u._32[I64HI32] & 0x80000000 ) {
-                    ConstType = TYPE_ULONG64;
-                }
-                break;
-            case SUFF_L:
-            case SUFF_LL:
-                if( ov == CNV_32 ) {
-                    U32ToU64( Constant, &Constant64 );
-                }
-                if( Constant64.u._32[I64HI32] & 0x80000000 ) {
-                    ConstType = TYPE_ULONG64;
-                } else {
-                    ConstType = TYPE_LONG64;
-                }
-                break;
-            case SUFF_U:
-            case SUFF_UL:
-            case SUFF_ULL:
-                if( ov == CNV_32 ) {
-                    U32ToU64( Constant, &Constant64 );
-                }
-                ConstType = TYPE_ULONG64;
-                break;
-            default:
-                break;
+            if( diagnose_lex_error() ) {
+                CErr1( ERR_INVALID_CONSTANT );
             }
+        }
+        if( ov == CNV_64 && value < 64 ) {
+            BadTokenInfo = ERR_CONSTANT_TOO_BIG;
+            Constant =  Constant64.u._32[I64LO32];
+            if( diagnose_lex_error() ) {
+                CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
+            }
+        }
+    } else if( ov == CNV_32 && con.suffix != SUFF_LL && con.suffix != SUFF_ULL ) {
+        switch( con.suffix ) {
+        case SUFF_NONE:
+            if( Constant <= TARGET_INT_MAX ) {
+                ConstType = TYPE_INT;
+#if TARGET_INT < TARGET_LONG
+            } else if( Constant <= TARGET_UINT_MAX && con.form != CON_DEC ) {
+                ConstType = TYPE_UINT;
+            } else if( Constant <= 0x7fffffffU ) {
+                ConstType = TYPE_LONG;
+            } else {
+                ConstType = TYPE_ULONG;
+            }
+#else
+            } else if( con.form != CON_DEC ) {
+                ConstType = TYPE_UINT;
+            } else {
+                ConstType = TYPE_ULONG;
+            }
+#endif
+            break;
+        case SUFF_L:
+            if( Constant <= 0x7FFFFFFFU ) {
+                ConstType = TYPE_LONG;
+            } else {
+                ConstType = TYPE_ULONG;
+            }
+            break;
+        case SUFF_U:
+            ConstType = TYPE_UINT;
+#if TARGET_INT < TARGET_LONG
+            if( Constant > TARGET_UINT_MAX ) {
+                ConstType = TYPE_ULONG;
+            }
+#endif
+            break;
+        case SUFF_UL:
+            ConstType = TYPE_ULONG;
+            break;
+        default:
+            break;
+        }
+    } else {
+        switch( con.suffix ) {
+        case SUFF_NONE:
+            ConstType = TYPE_LONG64;
+            if( Constant64.u._32[I64HI32] & 0x80000000 ) {
+                ConstType = TYPE_ULONG64;
+            }
+            break;
+        case SUFF_L:
+        case SUFF_LL:
+            if( ov == CNV_32 ) {
+                U32ToU64( Constant, &Constant64 );
+            }
+            if( Constant64.u._32[I64HI32] & 0x80000000 ) {
+                ConstType = TYPE_ULONG64;
+            } else {
+                ConstType = TYPE_LONG64;
+            }
+            break;
+        case SUFF_U:
+        case SUFF_UL:
+        case SUFF_ULL:
+            if( ov == CNV_32 ) {
+                U32ToU64( Constant, &Constant64 );
+            }
+            ConstType = TYPE_ULONG64;
+            break;
+        default:
+            break;
         }
     }
     token = T_CONSTANT;
@@ -923,17 +909,15 @@ static TOKEN doScanNum( void )
             }
         }
     }
-    if( !CompFlags.cpp_mode ) {
-        if( token == T_BAD_TOKEN ) {
-            BadTokenInfo = bad_token_type;
-        } else if( ov == CNV_OVR ) {
-            BadTokenInfo = ERR_CONSTANT_TOO_BIG;
-            if( SkipLevel == NestLevel ) {
-                CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
-            }
+    WriteBufferNullChar();
+    if( token == T_BAD_TOKEN ) {
+        BadTokenInfo = bad_token_type;
+    } else if( ov == CNV_OVR ) {
+        BadTokenInfo = ERR_CONSTANT_TOO_BIG;
+        if( diagnose_lex_error() ) {
+            CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
         }
     }
-    WriteBufferNullChar();
     return( token );
 }
 
@@ -1417,10 +1401,8 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
                             NextChar();
                             if( n > 0377 && char_type != TYPE_WCHAR ) {
                                 BadTokenInfo = ERR_CONSTANT_TOO_BIG;
-                                if( !CompFlags.cpp_mode ) {
-                                    if( SkipLevel == NestLevel ) {
-                                        CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
-                                    }
+                                if( diagnose_lex_error() ) {
+                                    CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
                                 }
                                 n &= 0377;          // mask off high bits
                             }
@@ -1429,11 +1411,9 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
                     c = n;
                 } else {
                     c = ESCChar( c, NextChar, &BadTokenInfo, WriteBufferChar );
-                    if( !CompFlags.cpp_mode ) {
-                        if( BadTokenInfo == ERR_CONSTANT_TOO_BIG ) {
-                            if( SkipLevel == NestLevel ) {
-                                CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
-                            }
+                    if( BadTokenInfo == ERR_CONSTANT_TOO_BIG ) {
+                        if( diagnose_lex_error() ) {
+                            CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
                         }
                     }
                 }
@@ -1476,19 +1456,15 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
             value = (value << 8) + c;
             /* handle case where user wants a \ but doesn't escape it */
             if( c == '\'' && CurrChar != '\'' ) {
-                if( !CompFlags.cpp_mode ) {
-                    token = T_BAD_TOKEN;
-                    break;
-                }
+                token = T_BAD_TOKEN;
+                break;
             }
             c = CurrChar;
             if( c == '\'' )
                 break;
             if( i >= 4 ) {
-                if( !CompFlags.cpp_mode ) {
-                    token = T_BAD_TOKEN;
-                    break;
-                }
+                token = T_BAD_TOKEN;
+                break;
             }
         }
     }
@@ -1538,8 +1514,6 @@ static TOKEN doScanString( bool wide )
                 if( CompFlags.extensions_enabled ) {
                     CWarn1( WARN_MISSING_QUOTE, ERR_MISSING_QUOTE );
                     ok = true;
-                } else {
-                    CErr1( ERR_MISSING_QUOTE );
                 }
             }
             break;
@@ -1556,11 +1530,11 @@ static TOKEN doScanString( bool wide )
             c = SaveCharNextChar( c );
             if( (CharSet[c] & C_WS) == 0 ) {
                 ESCChar( c, NextChar, &BadTokenInfo, WriteBufferChar );
-                if( !CompFlags.cpp_mode ) {
+                if( diagnose_lex_error() ) {
                     if( BadTokenInfo == ERR_CONSTANT_TOO_BIG ) {
-                        if( SkipLevel == NestLevel ) {
-                            CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
-                        }
+                        CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
+                    } else if( BadTokenInfo == ERR_CONSTANT_TOO_BIG ) {
+                        CErr1( ERR_INVALID_HEX_CONSTANT );
                     }
                 }
                 c = CurrChar;
@@ -1905,3 +1879,4 @@ void FiniPPScan( bool ppscan_mode )
         ScanFunc[SCAN_DOT] = ScanDot;
     }
 }
+

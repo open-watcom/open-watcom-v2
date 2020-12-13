@@ -154,6 +154,8 @@ source\diag0010.c(6): Warning! E1069: String literal not terminated before end o
 source\diag0010.c(9): Error! E1069: String literal not terminated before end of line
 source\diag0010.c(11): Error! E1009: Expecting ';' but found 'int'
 source\diag0011.c(6): Error! E1069: String literal not terminated before end of line
+source\diag0011.c(9): Error! E1069: String literal not terminated before end of line
+source\diag0011.c(11): Error! E1009: Expecting ';' but found 'int'
 source\diag0012.c(44): Warning! W112: Pointer truncated
 source\diag0012.c(44): Note! I2003: source conversion type is 'void __far *'
 source\diag0012.c(44): Note! I2004: target conversion type is 'struct HMENU__ __near const *'
