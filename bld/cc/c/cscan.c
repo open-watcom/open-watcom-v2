@@ -901,12 +901,10 @@ static TOKEN doScanNum( void )
         }
     }
     token = T_CONSTANT;
-    if( PPControl != PPCTL_NORMAL ) {
-        if( CharSet[c] & (C_AL | C_DI) ) {
-            token = T_BAD_TOKEN;
-            while( CharSet[c] & (C_AL | C_DI) ) {
-                c = SaveCharNextChar( c );
-            }
+    if( CharSet[c] & (C_AL | C_DI) ) {
+        token = T_BAD_TOKEN;
+        while( CharSet[c] & (C_AL | C_DI) ) {
+            c = SaveCharNextChar( c );
         }
     }
     WriteBufferNullChar();

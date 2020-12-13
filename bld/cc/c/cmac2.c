@@ -620,6 +620,7 @@ static void CElif( void )
 {
     bool    value;
 
+    PPCTL_ENABLE_LEX_ERRORS();
     PPCTL_ENABLE_MACROS();
     PPNextToken();
     if( ( NestLevel == 0 ) || ( CppStack->cpp_type == PRE_ELSE ) ) {
@@ -643,6 +644,7 @@ static void CElif( void )
         }
     }
     PPCTL_DISABLE_MACROS();
+    PPCTL_DISABLE_LEX_ERRORS();
 }
 
 
