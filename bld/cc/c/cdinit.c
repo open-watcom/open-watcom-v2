@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -566,7 +566,6 @@ static void StorePointer( TYPEPTR typ, target_size size )
         info.is_str = false;
         info.is_error = false;
         AddrFold( tree, &info );
-        FreeExprTree( tree );
         if( info.state == IS_VALUE ) { // must be foldable  into addr+offset
             info.is_error = true;
         }
@@ -576,7 +575,9 @@ static void StorePointer( TYPEPTR typ, target_size size )
             }
         }
         if( info.is_error ) {
-            CErr1( ERR_NOT_A_CONSTANT_EXPR );
+            if( tree->op.opr != OPR_ERROR ) {
+                CErr1( ERR_NOT_A_CONSTANT_EXPR );
+            }
         } else {
             if( info.is_str ) {
                 dq.type = QDT_STRING;
@@ -586,6 +587,7 @@ static void StorePointer( TYPEPTR typ, target_size size )
                 dq.u.var.offset = info.offset;
             }
         }
+        FreeExprTree( tree );
     }
     if( typ->decl_type == TYPE_POINTER ) {
         GenDataQuad( &dq, size );
