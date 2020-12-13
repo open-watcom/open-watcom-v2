@@ -125,7 +125,7 @@ static void WantEOL( void )
 {
     if( CompFlags.extensions_enabled ) {
         if( CurToken != T_NULL && CurToken != T_EOF ) {
-            if( NestLevel == SkipLevel ) {
+            if( SkipLevel == NestLevel ) {
                 CWarn1( WARN_JUNK_FOLLOWS_DIRECTIVE, ERR_JUNK_FOLLOWS_DIRECTIVE );
             }
         }
@@ -146,7 +146,7 @@ static void IncLevel( bool value )
     cpp->cpp_type = PRE_IF;
     cpp->processing = false;
     CppStack = cpp;
-    if( NestLevel == SkipLevel ) {
+    if( SkipLevel == NestLevel ) {
         if( value ) {
             ++SkipLevel;
             cpp->processing = true;
@@ -158,7 +158,7 @@ static void IncLevel( bool value )
 
 static void CUnknown( void )
 {
-    if( NestLevel == SkipLevel ) {
+    if( SkipLevel == NestLevel ) {
         CErr2p( ERR_UNKNOWN_DIRECTIVE, Buffer );
     }
 }
@@ -176,7 +176,7 @@ static void PreProcStmt( void )
                  + PreProcWeights[Buffer[TokenLen - 1] - 'a']) & 15;
         pp = &PreProcTable[hash];
         if( memcmp( pp->directive, Buffer, TokenLen + 1 ) == 0 ) {
-            if( NestLevel == SkipLevel ) {
+            if( SkipLevel == NestLevel ) {
                 pp->samelevel();
             } else {
                 pp->skipfunc();
@@ -222,14 +222,14 @@ TOKEN ChkControl( void )
                 PreProcStmt();
                 PPFlush2EOL();
                 PPControl = old_ppctl;
-            } else if( NestLevel != SkipLevel ) {
+            } else if( SkipLevel != NestLevel ) {
                 PPCTL_ENABLE_EOL();
                 PPCTL_DISABLE_MACROS();
                 PPNextToken();              /* get into token mode */
                 PPFlush2EOL();
                 PPControl = old_ppctl;
             }
-            if( NestLevel == SkipLevel )
+            if( SkipLevel == NestLevel )
                 break;
             if( CurrChar == '\n' ) {
                 lines_skipped = true;
@@ -618,11 +618,11 @@ static void CElif( void )
     if( ( NestLevel == 0 ) || ( CppStack->cpp_type == PRE_ELSE ) ) {
         CErr1( ERR_MISPLACED_ELIF );
     } else {
-        if( NestLevel == SkipLevel ) {
+        if( SkipLevel == NestLevel ) {
             --SkipLevel;                /* start skipping else part */
             CppStack->processing = false;
             CppStack->cpp_type = PRE_ELIF;
-        } else if( NestLevel == SkipLevel + 1 ) {
+        } else if( SkipLevel + 1 == NestLevel ) {
             /* only evaluate the expression when required */
             if( CppStack->cpp_type == PRE_IF ) {
                 value = PpConstExpr();
@@ -644,10 +644,10 @@ static void CElse( void )
     if( ( NestLevel == 0 ) || ( CppStack->cpp_type == PRE_ELSE ) ) {
         CErr1( ERR_MISPLACED_ELSE );
     } else {
-        if( NestLevel == SkipLevel ) {
+        if( SkipLevel == NestLevel ) {
             --SkipLevel;                /* start skipping else part */
             CppStack->processing = false;
-        } else if( NestLevel == SkipLevel + 1 ) {
+        } else if( SkipLevel + 1 == NestLevel ) {
             /* cpp_type will be PRE_ELIF if an elif was true */
             if( CppStack->cpp_type == PRE_IF ) {
                 SkipLevel = NestLevel;  /* start including else part */
@@ -676,7 +676,7 @@ static void CEndif( void )
         CppStack = cpp->prev_cpp;
         CMemFree( cpp );
     }
-    if( NestLevel < SkipLevel ) {
+    if( SkipLevel > NestLevel ) {
         SkipLevel = NestLevel;
     }
     PPNextToken();

@@ -141,7 +141,7 @@ static target_size RemoveEscapes( char *buf, const char *inbuf, target_size ilen
             if( !CompFlags.cpp_mode ) {
                 if( err_msg == ERR_CONSTANT_TOO_BIG ) {
                     BadTokenInfo = ERR_CONSTANT_TOO_BIG;
-                    if( NestLevel == SkipLevel ) {
+                    if( SkipLevel == NestLevel ) {
                         CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
                     }
                 }
@@ -179,7 +179,7 @@ static target_size RemoveEscapes( char *buf, const char *inbuf, target_size ilen
         WRITE_BYTE( c );
     }
     if( err_msg == ERR_INVALID_HEX_CONSTANT && buf != NULL ) {
-        if( NestLevel == SkipLevel ) {
+        if( SkipLevel == NestLevel ) {
             CErr1( ERR_INVALID_HEX_CONSTANT );
         }
     }

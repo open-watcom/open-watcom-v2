@@ -692,7 +692,7 @@ static TOKEN doScanNum( void )
             if( !CompFlags.cpp_mode ) {
                 if( TokenLen == 2 ) {   /* just collected a 0x */
                     BadTokenInfo = ERR_INVALID_HEX_CONSTANT;
-                    if( NestLevel == SkipLevel ) {
+                    if( SkipLevel == NestLevel ) {
                         CErr1( ERR_INVALID_HEX_CONSTANT );
                         con.form = CON_ERR;
                     }
@@ -717,7 +717,7 @@ static TOKEN doScanNum( void )
                 if( digit_mask & 0x08 ) {   /* if digit 8 or 9 somewhere */
                     BadTokenInfo = ERR_INVALID_OCTAL_CONSTANT;
                     con.form = CON_ERR;
-                    if( NestLevel == SkipLevel ) {
+                    if( SkipLevel == NestLevel ) {
                         CErr1( ERR_INVALID_OCTAL_CONSTANT );
                     }
                 }
@@ -829,13 +829,13 @@ static TOKEN doScanNum( void )
                     ConstType = TYPE_UCHAR;
                 }
             } else {
-                if( NestLevel == SkipLevel ) {
+                if( SkipLevel == NestLevel ) {
                     CErr1( ERR_INVALID_CONSTANT );
                 }
             }
             if( ov == CNV_64 && value < 64 ) {
                 BadTokenInfo = ERR_CONSTANT_TOO_BIG;
-                if( NestLevel == SkipLevel ) {
+                if( SkipLevel == NestLevel ) {
                     CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
                 }
                 Constant =  Constant64.u._32[I64LO32];
@@ -928,7 +928,7 @@ static TOKEN doScanNum( void )
             BadTokenInfo = bad_token_type;
         } else if( ov == CNV_OVR ) {
             BadTokenInfo = ERR_CONSTANT_TOO_BIG;
-            if( NestLevel == SkipLevel ) {
+            if( SkipLevel == NestLevel ) {
                 CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
             }
         }
@@ -1422,7 +1422,7 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
                             if( n > 0377 && char_type != TYPE_WCHAR ) {
                                 BadTokenInfo = ERR_CONSTANT_TOO_BIG;
                                 if( !CompFlags.cpp_mode ) {
-                                    if( NestLevel == SkipLevel ) {
+                                    if( SkipLevel == NestLevel ) {
                                         CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
                                     }
                                 }
@@ -1436,7 +1436,7 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
                     if( !CompFlags.cpp_mode ) {
                         if( err_msg == ERR_CONSTANT_TOO_BIG ) {
                             BadTokenInfo = ERR_CONSTANT_TOO_BIG;
-                            if( NestLevel == SkipLevel ) {
+                            if( SkipLevel == NestLevel ) {
                                 CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
                             }
                         }
@@ -1541,7 +1541,7 @@ static TOKEN doScanString( bool wide )
     c = NextChar();
     for( ;; ) {
         if( c == '\n' ) {
-            if( NestLevel != SkipLevel ) {
+            if( SkipLevel != NestLevel ) {
                 if( CompFlags.extensions_enabled ) {
                     CWarn1( WARN_MISSING_QUOTE, ERR_MISSING_QUOTE );
                     ok = true;
@@ -1566,7 +1566,7 @@ static TOKEN doScanString( bool wide )
                 if( !CompFlags.cpp_mode ) {
                     if( err_msg == ERR_CONSTANT_TOO_BIG ) {
                         BadTokenInfo = ERR_CONSTANT_TOO_BIG;
-                        if( NestLevel == SkipLevel ) {
+                        if( SkipLevel == NestLevel ) {
                             CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
                         }
                     }

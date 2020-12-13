@@ -139,7 +139,7 @@ static void IncLevel( bool value )
     SrcFileGetTokenLocn( &cpp->locn );
     cpp->cpp_type = PRE_IF;
     cpp->processing = 0;
-    if( NestLevel == SkipLevel ) {
+    if( SkipLevel == NestLevel ) {
         if( value ) {
             ++SkipLevel;
             cpp->processing = 1;
@@ -155,7 +155,7 @@ static void CSkipIf( void )
 
 static void CUnknown( void )
 {
-    if( NestLevel == SkipLevel ) {
+    if( SkipLevel == NestLevel ) {
         CErr2p( ERR_UNKNOWN_DIRECTIVE, Buffer );
     }
 }
@@ -555,11 +555,11 @@ static void CElif( void )
     if( NestLevel == 0 || pp_stack->cpp_type == PRE_ELSE ) {
         CErr1( ERR_MISPLACED_ELIF );
     } else {
-        if( NestLevel == SkipLevel ) {
+        if( SkipLevel == NestLevel ) {
             --SkipLevel;            /* start skipping else part */
             pp_stack->processing = 0;
             pp_stack->cpp_type = PRE_ELIF;
-        } else if( NestLevel == SkipLevel + 1 ) {
+        } else if( SkipLevel + 1 == NestLevel ) {
             /* only evaluate the expression when required */
             if( pp_stack->cpp_type == PRE_IF ) {
                 value = PpConstExpr();
@@ -578,7 +578,7 @@ static void CElif( void )
 static void wantEOL( void )
 {
     if( CurToken != T_NULL && CurToken != T_EOF ) {
-        if( NestLevel == SkipLevel ) {
+        if( SkipLevel == NestLevel ) {
             CErr1( ANSI_JUNK_FOLLOWS_DIRECTIVE );
         }
     }
@@ -590,10 +590,10 @@ static void CElse( void )
     if( NestLevel == 0  ||  pp_stack->cpp_type == PRE_ELSE ) {
         CErr1( ERR_MISPLACED_ELSE );
     } else {
-        if( NestLevel == SkipLevel ) {
+        if( SkipLevel == NestLevel ) {
             --SkipLevel;            /* start skipping else part */
             pp_stack->processing = 0;
-        } else if( NestLevel == SkipLevel + 1 ) {
+        } else if( SkipLevel + 1 == NestLevel ) {
             /* cpp_type will be PRE_ELIF if an elif was true */
             if( pp_stack->cpp_type == PRE_IF ) {    /* 19-sep-88 */
                 SkipLevel = NestLevel;  /* start including else part */
@@ -712,7 +712,7 @@ static void preProcStmt( void )
                  + preprocWeights[Buffer[TokenLen - 1] - 'a']) & 15;
         pp = &controlTable[hash];
         if( strcmp( pp->directive, Buffer ) == 0 ) {
-            if( NestLevel == SkipLevel ) {
+            if( SkipLevel == NestLevel ) {
                 pp->samelevel();
             } else {
                 pp->skiplevel();
@@ -774,7 +774,7 @@ TOKEN ChkControl(               // CHECK AND PROCESS DIRECTIVES
                 preProcStmt();
                 flush2EOL();
                 PPControl = old_ppctl;
-            } else if( NestLevel != SkipLevel ) {
+            } else if( SkipLevel != NestLevel ) {
                 PPCTL_ENABLE_EOL();
                 PPCTL_DISABLE_MACROS();
                 PPCTL_DISABLE_LEX_ERRORS();
@@ -782,7 +782,7 @@ TOKEN ChkControl(               // CHECK AND PROCESS DIRECTIVES
                 flush2EOL();
                 PPControl = old_ppctl;
             }
-            if( NestLevel == SkipLevel )
+            if( SkipLevel == NestLevel )
                 break;
             if( CurrChar == LCHR_EOF )
                 break;
@@ -830,7 +830,7 @@ void DirectiveFini(             // COMPLETE DIRECTIVE PROCESSING
 bool CppPrinting(               // TEST IF AT LEVEL FOR PREPROC PRINTING
     void )
 {
-    return( ( NestLevel == SkipLevel ) && ( CppFile != NULL ) );
+    return( ( SkipLevel == NestLevel ) && ( CppFile != NULL ) );
 }
 
 

@@ -220,7 +220,7 @@ static int saveNextChar( void )
     if( TokenLen < BUF_SIZE - 2 ) {
         Buffer[TokenLen++] = c;
     } else if( TokenLen == BUF_SIZE - 2 ) {
-        if( NestLevel == SkipLevel ) {
+        if( SkipLevel == NestLevel ) {
             CErr1( ERR_TOKEN_TRUNCATED );
         }
         ++TokenLen;

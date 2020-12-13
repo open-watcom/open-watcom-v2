@@ -869,7 +869,7 @@ static void outputTrigraphWarning( char c )
         // probably know about trigraphs if they are using -za
         return;
     }
-    if( NestLevel != SkipLevel ) {
+    if( SkipLevel != NestLevel ) {
         // we are in an excluded #if region
         return;
     }
@@ -949,7 +949,7 @@ static int tryBackSlashNewLine( OPEN_FILE *act )
             CErr1( WARN_WHITE_AFTER_SPLICE );
         }
         if( CompFlags.scanning_cpp_comment ) {
-            if( NestLevel == SkipLevel ) {
+            if( SkipLevel == NestLevel ) {
                 SrcFileCurrentLocation();
                 CErr1( WARN_SPLICE_IN_CPP_COMMENT );
             }
@@ -1286,7 +1286,7 @@ void SrcFileScanName( int e )   // CALLED FROM CSCAN TO SCAN AN IDENTIFIER
         }
     }
     if( len >= BUF_SIZE - 2 ) {
-        if( NestLevel == SkipLevel ) {
+        if( SkipLevel == NestLevel ) {
             CErr1( ERR_TOKEN_TRUNCATED );
         }
         len = BUF_SIZE - 2;
