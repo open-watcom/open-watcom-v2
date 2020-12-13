@@ -109,6 +109,9 @@ static void PPFlush2EOL( void )
 {
     while( CurToken != T_NULL && CurToken != T_EOF ) {
         PPNextToken();
+        if( CurToken == T_BAD_TOKEN && BadTokenInfo == ERR_MISSING_QUOTE ) {
+            CErr1( BadTokenInfo );
+        }
     }
 }
 
@@ -219,12 +222,14 @@ TOKEN ChkControl( void )
             if( CurrChar == PreProcChar ) { /* start of comp control line */
                 PPCTL_ENABLE_EOL();
                 PPCTL_DISABLE_MACROS();
+                PPCTL_DISABLE_LEX_ERRORS();
                 PreProcStmt();
                 PPFlush2EOL();
                 PPControl = old_ppctl;
             } else if( SkipLevel != NestLevel ) {
                 PPCTL_ENABLE_EOL();
                 PPCTL_DISABLE_MACROS();
+                PPCTL_DISABLE_LEX_ERRORS();
                 PPNextToken();              /* get into token mode */
                 PPFlush2EOL();
                 PPControl = old_ppctl;
@@ -600,12 +605,14 @@ static void CIf( void )
 {
     bool    value;
 
+    PPCTL_ENABLE_LEX_ERRORS();
     PPCTL_ENABLE_MACROS();
     PPNextToken();
     value = PpConstExpr();
     IncLevel( value );
     ChkEOL();
     PPCTL_DISABLE_MACROS();
+    PPCTL_DISABLE_LEX_ERRORS();
 }
 
 
