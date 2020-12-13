@@ -429,7 +429,7 @@ static int doESCChar( int c, bool expanding, type_id char_type )
     return( n );
 }
 
-static TOKEN charConst( type_id char_type, bool expanding )
+static TOKEN doScanCharConst( type_id char_type, bool expanding )
 {
     int c;
     int i;
@@ -625,7 +625,7 @@ void SkipAhead( void )
     }
 }
 
-static TOKEN scanDotSomething( int c )
+static TOKEN doScanDotSomething( int c )
 {
     if( c == '*' ) {
         NextChar();
@@ -659,7 +659,7 @@ static TOKEN doScanFloat( void )
             }
         }
         if( TokenLen == 2 ) {       /* .? */
-            return( scanDotSomething( c ) );
+            return( doScanDotSomething( c ) );
         }
     }
     CurToken = T_CONSTANT;
@@ -872,7 +872,7 @@ static TOKEN scanWide( bool expanding )  // scan something that starts with L
     if( c == '"' ) {                    // L"abc"
         token = doScanString( TYP_WCHAR, expanding );
     } else if( c == '\'' ) {            // L'a'
-        token = charConst( TYP_WCHAR, expanding );
+        token = doScanCharConst( TYP_WCHAR, expanding );
     } else {                            // regular identifier
         token = doScanName( c, expanding );
     }
@@ -1473,7 +1473,7 @@ static TOKEN scanFloat( bool expanding )
     return( doScanFloat() );
 }
 
-static TOKEN scanPPNumber( void )
+static TOKEN doScanPPNumber( void )
 {
     int c;
     int prevc;
@@ -1532,7 +1532,7 @@ static TOKEN scanPPDigit( bool expanding )
     SrcFileCurrentLocation();
     Buffer[0] = CurrChar;
     TokenLen = 1;
-    return( scanPPNumber() );
+    return( doScanPPNumber() );
 }
 
 static TOKEN scanPPDot( bool expanding )
@@ -1546,9 +1546,9 @@ static TOKEN scanPPDot( bool expanding )
     TokenLen = 1;
     c = saveNextChar();
     if( c >= '0' && c <= '9' ) {
-        return( scanPPNumber() );
+        return( doScanPPNumber() );
     } else {
-        return( scanDotSomething( c ) );
+        return( doScanDotSomething( c ) );
     }
 }
 
@@ -1575,7 +1575,7 @@ static TOKEN scanCharConst( bool expanding )
     SrcFileCurrentLocation();
     Buffer[0] = CurrChar;
     TokenLen = 1;
-    return( charConst( TYP_CHAR, expanding ) );
+    return( doScanCharConst( TYP_CHAR, expanding ) );
 }
 
 static TOKEN scanNewline( bool expanding )
