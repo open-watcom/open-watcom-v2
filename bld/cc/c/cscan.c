@@ -1306,8 +1306,8 @@ static msg_codes doScanHex( int max, escinp_fn ifn, escout_fn ofn )
     return( ERR_NONE );                     /* indicate characters were matched */
 }
 
-int ESCChar( int c, escinp_fn ifn, msg_codes *err_msg, escout_fn ofn )
-/*********************************************************************
+int ESCChar( int c, escinp_fn ifn, msg_codes *perr_msg, escout_fn ofn )
+/**********************************************************************
  * Warning! this function is also used from cstring.c
  * cannot use Buffer array or NextChar function in any way
  * input and output is done using ifn or ofn functions
@@ -1315,8 +1315,8 @@ int ESCChar( int c, escinp_fn ifn, msg_codes *err_msg, escout_fn ofn )
 {
     int         n;
     int         i;
+    msg_codes   err_msg;
 
-    *err_msg = ERR_NONE;
     if( c >= '0' && c <= '7' ) {    /* get octal escape sequence */
         n = 0;
         i = 3;
@@ -1327,12 +1327,10 @@ int ESCChar( int c, escinp_fn ifn, msg_codes *err_msg, escout_fn ofn )
         }
     } else if( c == 'x' ) {         /* get hex escape sequence */
         OUTC( c );
-        *err_msg = doScanHex( 127, ifn, ofn );
-        if( *err_msg == ERR_INVALID_HEX_CONSTANT ) { /* '\xz' where z is not a hex char */
-            n = 'x';
-        } else {
-            n = Constant;
-        }
+        err_msg = doScanHex( 127, ifn, ofn );
+        if( err_msg != ERR_NONE )
+            *perr_msg = err_msg;
+        n = Constant;
     } else {
         OUTC( c );
         switch( c ) {
@@ -1386,7 +1384,6 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
     int         n;
     TOKEN       token;
     int         value;
-    msg_codes   err_msg;
 
     value = 0;
     c = NextChar();
@@ -1398,7 +1395,6 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
         BadTokenInfo = ERR_NONE;
         token = T_CONSTANT;
         i = 0;
-        err_msg = ERR_NONE;
         for( ;; ) {
             if( c == '\r' || c == '\n' ) {
                 token = T_BAD_TOKEN;
@@ -1432,10 +1428,9 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
                     }
                     c = n;
                 } else {
-                    c = ESCChar( c, NextChar, &err_msg, WriteBufferChar );
+                    c = ESCChar( c, NextChar, &BadTokenInfo, WriteBufferChar );
                     if( !CompFlags.cpp_mode ) {
-                        if( err_msg == ERR_CONSTANT_TOO_BIG ) {
-                            BadTokenInfo = ERR_CONSTANT_TOO_BIG;
+                        if( BadTokenInfo == ERR_CONSTANT_TOO_BIG ) {
                             if( SkipLevel == NestLevel ) {
                                 CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
                             }
@@ -1502,8 +1497,7 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
     } else {
         Buffer[TokenLen++] = c;
         NextChar();
-        if( err_msg == ERR_INVALID_HEX_CONSTANT ) {
-            BadTokenInfo = ERR_INVALID_HEX_CONSTANT;
+        if( BadTokenInfo == ERR_INVALID_HEX_CONSTANT ) {
             token = T_BAD_TOKEN;
         }
     }
@@ -1531,10 +1525,9 @@ static TOKEN doScanString( bool wide )
 {
     int         c;
     bool        ok;
-    msg_codes   err_msg;
 
     ok = false;
-    err_msg = ERR_NONE;
+    BadTokenInfo = ERR_NONE;
     CompFlags.wide_char_string = false;
     CompFlags.trigraph_alert = false;
     TokenLen = 0;
@@ -1562,10 +1555,9 @@ static TOKEN doScanString( bool wide )
         if( c == '\\' ) {
             c = SaveCharNextChar( c );
             if( (CharSet[c] & C_WS) == 0 ) {
-                ESCChar( c, NextChar, &err_msg, WriteBufferChar );
+                ESCChar( c, NextChar, &BadTokenInfo, WriteBufferChar );
                 if( !CompFlags.cpp_mode ) {
-                    if( err_msg == ERR_CONSTANT_TOO_BIG ) {
-                        BadTokenInfo = ERR_CONSTANT_TOO_BIG;
+                    if( BadTokenInfo == ERR_CONSTANT_TOO_BIG ) {
                         if( SkipLevel == NestLevel ) {
                             CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
                         }

@@ -127,20 +127,18 @@ static target_size RemoveEscapes( char *buf, const char *inbuf, target_size ilen
 {
     int                 c;
     target_size         olen;
-    msg_codes           err_msg;
     const unsigned char *pend;
 
     olen = 0;
-    err_msg = ERR_NONE;
+    BadTokenInfo = ERR_NONE;
     pbuf = (const unsigned char *)inbuf;
     pend = pbuf + ilen;
     while( pbuf < pend ) {
         c = read_inp();
         if( c == '\\' ) {
-            c = ESCChar( read_inp(), read_inp, &err_msg, NULL );
+            c = ESCChar( read_inp(), read_inp, &BadTokenInfo, NULL );
             if( !CompFlags.cpp_mode ) {
-                if( err_msg == ERR_CONSTANT_TOO_BIG ) {
-                    BadTokenInfo = ERR_CONSTANT_TOO_BIG;
+                if( BadTokenInfo == ERR_CONSTANT_TOO_BIG ) {
                     if( SkipLevel == NestLevel ) {
                         CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
                     }
@@ -178,7 +176,7 @@ static target_size RemoveEscapes( char *buf, const char *inbuf, target_size ilen
         }
         WRITE_BYTE( c );
     }
-    if( err_msg == ERR_INVALID_HEX_CONSTANT && buf != NULL ) {
+    if( BadTokenInfo == ERR_INVALID_HEX_CONSTANT && buf != NULL ) {
         if( SkipLevel == NestLevel ) {
             CErr1( ERR_INVALID_HEX_CONSTANT );
         }
