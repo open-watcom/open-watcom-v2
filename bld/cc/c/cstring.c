@@ -124,6 +124,9 @@ static int read_inp( void )
 #define WRITE_BYTE(x) if( buf != NULL ) buf[olen] = x; ++olen
 
 static target_size RemoveEscapes( char *buf, const char *inbuf, target_size ilen )
+/*********************************************************************************
+ * check mode if buf == NULL, only check required output size
+ */
 {
     int                 c;
     target_size         olen;
@@ -137,10 +140,14 @@ static target_size RemoveEscapes( char *buf, const char *inbuf, target_size ilen
         c = read_inp();
         if( c == '\\' ) {
             c = ESCChar( read_inp(), read_inp, &BadTokenInfo, NULL );
-            if( !CompFlags.cpp_mode ) {
-                if( BadTokenInfo == ERR_CONSTANT_TOO_BIG ) {
+            if( buf != NULL ) {
+                if( !CompFlags.cpp_mode ) {
                     if( SkipLevel == NestLevel ) {
-                        CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
+                        if( BadTokenInfo == ERR_CONSTANT_TOO_BIG ) {
+                            CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
+                        } else if( BadTokenInfo == ERR_INVALID_HEX_CONSTANT ) {
+                            CErr1( ERR_INVALID_HEX_CONSTANT );
+                        }
                     }
                 }
             }
@@ -175,11 +182,6 @@ static target_size RemoveEscapes( char *buf, const char *inbuf, target_size ilen
             }
         }
         WRITE_BYTE( c );
-    }
-    if( BadTokenInfo == ERR_INVALID_HEX_CONSTANT && buf != NULL ) {
-        if( SkipLevel == NestLevel ) {
-            CErr1( ERR_INVALID_HEX_CONSTANT );
-        }
     }
     return( olen );
 }
