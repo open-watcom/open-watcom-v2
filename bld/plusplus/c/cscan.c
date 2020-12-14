@@ -98,7 +98,7 @@ static uint_8 InitClassTable[] = {
     '{',        SCAN_DELIM1,
     '}',        SCAN_DELIM1,
     '~',        SCAN_DELIM1,
-    '.',        SCAN_FLOAT,
+    '.',        SCAN_DOT,
     '#',        SCAN_DELIM2,            // #    ##
     '=',        SCAN_DELIM2,            // = ==
     '^',        SCAN_DELIM2,            // ^ ^=
@@ -915,16 +915,12 @@ static void msIntSuffix( uint_32 signed_max, type_id sid, type_id uid, unsigned_
     }
 }
 
-static TOKEN scanNum( bool expanding )
+static TOKEN doScanNum( bool expanding )
 {
     int c;
     unsigned_64 *max_value;
     char too_big;
     char max_digit;
-
-    SrcFileCurrentLocation();
-    if( PPControl & PPCTL_ASM )
-        return( doScanAsmToken() );
 
     U64Clear( Constant64 );
     too_big = 0;
@@ -1188,6 +1184,16 @@ static TOKEN scanNum( bool expanding )
     } else {
         Buffer[--TokenLen] = '\0';
         return( T_CONSTANT );
+    }
+}
+
+static TOKEN scanNum( bool expanding )
+{
+    SrcFileCurrentLocation();
+    if( PPControl & PPCTL_ASM ) {
+        return( doScanAsmToken() );
+    } else {
+        return( doScanNum( expanding ) );
     }
 }
 
@@ -1460,17 +1466,18 @@ static TOKEN scanSlash( bool expanding ) // /, /=, // comment, or /*comment*/
     return( token );
 }
 
-static TOKEN scanFloat( bool expanding )
+static TOKEN scanDot( bool expanding )
 {
     /* unused parameters */ (void)expanding;
 
     SrcFileCurrentLocation();
-    if( PPControl & PPCTL_ASM )
+    if( PPControl & PPCTL_ASM ) {
         return( doScanAsmToken() );
-
-    Buffer[0] = CurrChar;
-    TokenLen = 1;
-    return( doScanFloat() );
+    } else {
+        Buffer[0] = '.';
+        TokenLen = 1;
+        return( doScanFloat() );
+    }
 }
 
 static TOKEN doScanPPNumber( void )
@@ -1700,7 +1707,7 @@ bool InitPPScan( void )
 {
     if( scanFunc[SCAN_NUM] == scanNum ) {
         scanFunc[SCAN_NUM] = scanPPDigit;
-        scanFunc[SCAN_FLOAT] = scanPPDot;
+        scanFunc[SCAN_DOT] = scanPPDot;
         return( true );         // indicate changed to PP mode
     }
     return( false );            // indicate already in PP mode
@@ -1712,7 +1719,7 @@ void FiniPPScan( bool ppscan_mode )
 {
     if( ppscan_mode ) {                 // if InitPPScan() changed into PP mode
         scanFunc[SCAN_NUM] = scanNum; // reset back to normal mode
-        scanFunc[SCAN_FLOAT] = scanFloat;
+        scanFunc[SCAN_DOT] = scanDot;
     }
 }
 

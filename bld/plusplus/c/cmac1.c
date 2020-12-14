@@ -781,7 +781,7 @@ static MACRO_TOKEN *expandNestedMacros( MACRO_TOKEN *head, bool rescanning )
     MACRO_TOKEN *toklist;
     MACRO_TOKEN *old_tokenlist;
     MACRO_TOKEN **ptail;
-    int i;
+    exp_state i;
 
     ptail = &head;
     ++macroDepth;

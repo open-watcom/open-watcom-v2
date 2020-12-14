@@ -36,7 +36,7 @@ pick( SCAN_NUM,           scanNum             ) // number that starts with a dig
 pick( SCAN_DELIM1,        scanDelim1          ) // single character delimiter only
 pick( SCAN_DELIM2,        scanDelim2          ) // 1-4 characters delimiter
 pick( SCAN_SLASH,         scanSlash           ) // /, /=, // comment, or /* comment */
-pick( SCAN_FLOAT,         scanFloat           ) // .
+pick( SCAN_DOT,           scanDot             ) // .
 pick( SCAN_STRING,        scanString          ) // "string"
 pick( SCAN_STRING2,       scanStringContinue  ) // "string" continued
 pick( SCAN_LSTRING2,      scanLStringContinue ) // L"string" continued
