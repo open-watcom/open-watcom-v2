@@ -232,7 +232,7 @@ static char translateTriGraph( char c )
     for( p = TriGraphs; p->tri != '\0'; ++p ) {
         if( c == p->tri ) {
             if( CompFlags.extensions_enabled ) {
-                if( NestLevel == SkipLevel ) {
+                if( SkipLevel == NestLevel ) {
                     CompFlags.trigraph_alert = true;
                 }
             }
@@ -269,7 +269,7 @@ static int tryBackSlashNewLine( void )
         nc = getTestCharFromFile();
     }
     if( nc == '\n' ) {
-        if( CompFlags.scanning_cpp_comment && NestLevel == SkipLevel ) {
+        if( CompFlags.scanning_cpp_comment && SkipLevel == NestLevel ) {
             CWarn1( WARN_SPLICE_IN_CPP_COMMENT, ERR_SPLICE_IN_CPP_COMMENT );
         }
         if( CompFlags.cpp_mode ) {

@@ -62,8 +62,8 @@ static mac_parm_count FormalParm( MPPTR formal_parms );
 
 struct preproc {
     char  *directive;
-    void  (*samelevel)( void ); /* func to call when NestLevel == SkipLevel */
-    void  (*skipfunc)( void );  /* func to call when NestLevel != SkipLevel */
+    void  (*samelevel)( void ); /* func to call when SkipLevel == NestLevel */
+    void  (*skipfunc)( void );  /* func to call when SkipLevel != NestLevel */
 };
 
 static unsigned char PreProcWeights[] = {

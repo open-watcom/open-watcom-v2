@@ -1270,7 +1270,7 @@ void CppEmitPoundLine( unsigned line_num, const char *filename, bool newline )
 
 bool CppPrinting( void )
 {
-    return( NestLevel == SkipLevel );
+    return( SkipLevel == NestLevel );
 }
 
 void CppPrtToken( TOKEN token )
