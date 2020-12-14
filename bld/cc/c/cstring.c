@@ -250,14 +250,14 @@ static TYPEPTR StringLeafType( void )
     TYPEPTR     typ;
 
     if( CompFlags.wide_char_string ) {
-        typ = ArrayNode( GetType( TYPE_USHORT ) );
+        typ = ArrayNode( GetType( TYP_USHORT ) );
         typ->u.array->dimension = CLitLength >> 1;
     } else if( StringArrayType != NULL ) {
         typ = StringArrayType;
         StringArrayType->u.array->dimension = CLitLength;
         StringArrayType = NULL;
     } else {
-        typ = ArrayNode( GetType( TYPE_PLAIN_CHAR ) );
+        typ = ArrayNode( GetType( TYP_PLAIN_CHAR ) );
         typ->u.array->dimension = CLitLength;
     }
     return( typ );

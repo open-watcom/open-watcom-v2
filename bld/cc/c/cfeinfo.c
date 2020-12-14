@@ -149,7 +149,7 @@ bool VarParm( SYMPTR sym )
         SKIP_TYPEDEFS( fn_typ );
         if( fn_typ->u.fn.parms != NULL ) {
             for( parm_types = fn_typ->u.fn.parms; (typ = *parm_types) != NULL; ++parm_types ) {
-                if( typ->decl_type == TYPE_DOT_DOT_DOT ) {
+                if( typ->decl_type == TYP_DOT_DOT_DOT ) {
                     return( true );
                 }
             }
@@ -431,7 +431,7 @@ aux_info *FindInfo( SYMPTR sym, SYM_HANDLE sym_handle )
     if( inf == &DefaultInfo ) {
         typ = sym->sym_type;
         SKIP_DUMMY_TYPEDEFS( typ );
-        if( typ->decl_type == TYPE_TYPEDEF ) {
+        if( typ->decl_type == TYP_TYPEDEF ) {
             SymGet( &sym_typedef, typ->u.typedefn );
             if( sym_typedef.name != NULL ) {
                 ent = AuxLookup( sym_typedef.name );
@@ -703,16 +703,16 @@ static unsigned GetParmsSize( SYM_HANDLE sym_handle )
     SymGet( &sym, sym_handle );
     fn_typ = sym.sym_type;
     SKIP_TYPEDEFS( fn_typ );
-    if( fn_typ->decl_type == TYPE_FUNCTION ) {
+    if( fn_typ->decl_type == TYP_FUNCTION ) {
         if( fn_typ->u.fn.parms != NULL ) {
             for( parm_types = fn_typ->u.fn.parms; (typ = *parm_types) != NULL; ++parm_types ) {
-                if( typ->decl_type == TYPE_DOT_DOT_DOT ) {
+                if( typ->decl_type == TYP_DOT_DOT_DOT ) {
                     total_parm_size = (unsigned)-1;
                     break;
                 }
 
                 SKIP_TYPEDEFS( typ );
-                if( typ->decl_type == TYPE_VOID )
+                if( typ->decl_type == TYP_VOID )
                     break;
 
                 parm_size = _RoundUp( TypeSize( typ ), TARGET_INT );

@@ -418,16 +418,16 @@ static TOKEN doScanFloat( bool hex )
     }
     if( c == 'f' || c == 'F' ) {
         SaveCharNextChar( c );
-        ConstType = TYPE_FLOAT;
+        ConstType = TYP_FLOAT;
     } else if( c == 'l' || c == 'L' ) {
         SaveCharNextChar( c );
         if( CompFlags.use_long_double ) {
-            ConstType = TYPE_LONG_DOUBLE;
+            ConstType = TYP_LONG_DOUBLE;
         } else {
-            ConstType = TYPE_DOUBLE;
+            ConstType = TYP_DOUBLE;
         }
     } else {
-        ConstType = TYPE_DOUBLE;
+        ConstType = TYP_DOUBLE;
     }
     WriteBufferNullChar();
     return( token );
@@ -790,30 +790,30 @@ static TOKEN doScanNum( void )
         }
         if( value == 64 ) {
             if( con.suffix == SUFF_I ) {
-                ConstType = TYPE_LONG64;
+                ConstType = TYP_LONG64;
             } else {
-                ConstType = TYPE_ULONG64;
+                ConstType = TYP_ULONG64;
             }
             if( ov == CNV_32 ) {
                 U32ToU64( Constant, &Constant64 );
             }
         } else if( value == 32 ) {
             if( con.suffix == SUFF_I ) {
-                ConstType = TYPE_LONG;
+                ConstType = TYP_LONG;
             } else {
-                ConstType = TYPE_ULONG;
+                ConstType = TYP_ULONG;
             }
         } else if( value == 16 ) {
             if( con.suffix == SUFF_I ) {
-                ConstType = TYPE_SHORT;
+                ConstType = TYP_SHORT;
             } else {
-                ConstType = TYPE_USHORT;
+                ConstType = TYP_USHORT;
             }
         } else if( value == 8 ) {
             if( con.suffix == SUFF_I ) {
-                ConstType = TYPE_CHAR;
+                ConstType = TYP_CHAR;
             } else {
-                ConstType = TYPE_UCHAR;
+                ConstType = TYP_UCHAR;
             }
         } else {
             if( diagnose_lex_error() ) {
@@ -831,40 +831,40 @@ static TOKEN doScanNum( void )
         switch( con.suffix ) {
         case SUFF_NONE:
             if( Constant <= TARGET_INT_MAX ) {
-                ConstType = TYPE_INT;
+                ConstType = TYP_INT;
 #if TARGET_INT < TARGET_LONG
             } else if( Constant <= TARGET_UINT_MAX && con.form != CON_DEC ) {
-                ConstType = TYPE_UINT;
+                ConstType = TYP_UINT;
             } else if( Constant <= 0x7fffffffU ) {
-                ConstType = TYPE_LONG;
+                ConstType = TYP_LONG;
             } else {
-                ConstType = TYPE_ULONG;
+                ConstType = TYP_ULONG;
             }
 #else
             } else if( con.form != CON_DEC ) {
-                ConstType = TYPE_UINT;
+                ConstType = TYP_UINT;
             } else {
-                ConstType = TYPE_ULONG;
+                ConstType = TYP_ULONG;
             }
 #endif
             break;
         case SUFF_L:
             if( Constant <= 0x7FFFFFFFU ) {
-                ConstType = TYPE_LONG;
+                ConstType = TYP_LONG;
             } else {
-                ConstType = TYPE_ULONG;
+                ConstType = TYP_ULONG;
             }
             break;
         case SUFF_U:
-            ConstType = TYPE_UINT;
+            ConstType = TYP_UINT;
 #if TARGET_INT < TARGET_LONG
             if( Constant > TARGET_UINT_MAX ) {
-                ConstType = TYPE_ULONG;
+                ConstType = TYP_ULONG;
             }
 #endif
             break;
         case SUFF_UL:
-            ConstType = TYPE_ULONG;
+            ConstType = TYP_ULONG;
             break;
         default:
             break;
@@ -872,9 +872,9 @@ static TOKEN doScanNum( void )
     } else {
         switch( con.suffix ) {
         case SUFF_NONE:
-            ConstType = TYPE_LONG64;
+            ConstType = TYP_LONG64;
             if( Constant64.u._32[I64HI32] & 0x80000000 ) {
-                ConstType = TYPE_ULONG64;
+                ConstType = TYP_ULONG64;
             }
             break;
         case SUFF_L:
@@ -883,9 +883,9 @@ static TOKEN doScanNum( void )
                 U32ToU64( Constant, &Constant64 );
             }
             if( Constant64.u._32[I64HI32] & 0x80000000 ) {
-                ConstType = TYPE_ULONG64;
+                ConstType = TYP_ULONG64;
             } else {
-                ConstType = TYPE_LONG64;
+                ConstType = TYP_LONG64;
             }
             break;
         case SUFF_U:
@@ -894,7 +894,7 @@ static TOKEN doScanNum( void )
             if( ov == CNV_32 ) {
                 U32ToU64( Constant, &Constant64 );
             }
-            ConstType = TYPE_ULONG64;
+            ConstType = TYP_ULONG64;
             break;
         default:
             break;
@@ -1397,7 +1397,7 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
                             n = n * 8 + c - '0';
                             Buffer[TokenLen++] = c;
                             NextChar();
-                            if( n > 0377 && char_type != TYPE_WCHAR ) {
+                            if( n > 0377 && char_type != TYP_WCHAR ) {
                                 BadTokenInfo = ERR_CONSTANT_TOO_BIG;
                                 if( diagnose_lex_error() ) {
                                     CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
@@ -1415,7 +1415,7 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
                         }
                     }
                 }
-                if( char_type == TYPE_WCHAR ) {
+                if( char_type == TYP_WCHAR ) {
                     ++i;
                     value = (value << 8) + ((c & 0xFF00) >> 8);
                     c &= 0x00FF;
@@ -1425,7 +1425,7 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
                 NextChar();
                 if( CharSet[c] & C_DB ) {   /* if double-byte char */
                     c = (c << 8) + (CurrChar & 0x00FF);
-                    if( char_type == TYPE_WCHAR ) {
+                    if( char_type == TYP_WCHAR ) {
                         if( CompFlags.jis_to_unicode ) {
                             c = JIS2Unicode( c );
                         }
@@ -1435,7 +1435,7 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
                     c &= 0x00FF;
                     Buffer[TokenLen++] = CurrChar;
                     NextChar();
-                } else if( char_type == TYPE_WCHAR ) {
+                } else if( char_type == TYP_WCHAR ) {
                     if( CompFlags.use_unicode ) {
                         c = UniCode[c];
                     } else if( CompFlags.jis_to_unicode ) {
@@ -1477,7 +1477,7 @@ static TOKEN doScanCharConst( DATA_TYPE char_type )
     }
     Buffer[TokenLen] = '\0';
     ConstType = char_type;
-    if( char_type == TYPE_CHAR && CompFlags.signed_char ) {
+    if( char_type == TYP_CHAR && CompFlags.signed_char ) {
         if( value < 256 && value > 127 ) {
             value -= 256;
         }
@@ -1491,7 +1491,7 @@ static TOKEN ScanCharConst( void )
 {
     Buffer[0] = '\'';
     TokenLen = 1;
-    return( doScanCharConst( TYPE_CHAR ) );
+    return( doScanCharConst( TYP_CHAR ) );
 }
 
 static TOKEN doScanString( bool wide )
@@ -1578,7 +1578,7 @@ static TOKEN ScanWide( void )           // scan something that starts with L
         TokenLen = 1;
         if( c == '\'' ) {               // L'a'
             Buffer[TokenLen++] = '\'';
-            token = doScanCharConst( TYPE_WCHAR );
+            token = doScanCharConst( TYP_WCHAR );
         } else {                        // regular identifier
             token = doScanName();
         }

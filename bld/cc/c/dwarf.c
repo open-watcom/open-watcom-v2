@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -100,7 +101,7 @@ static void dwarfStructInfo( TAGPTR tag )
     for( field = tag->u.field_list; field != NULL; field = field->next_field ) {
         xref = field->xref;
         typ = field->field_type;
-        if( typ->decl_type == TYPE_FIELD || typ->decl_type == TYPE_UFIELD ) {
+        if( typ->decl_type == TYP_FIELD || typ->decl_type == TYP_UFIELD ) {
             fld_dh = dwarfType( GetType( typ->u.f.field_type ), DC_DEFAULT );
             if( xref != NULL ) {    //stupid struct { int x; int y[] ) = init thing
                 // Also watch for side effects with the DWDeclPos and a dwtype
@@ -149,7 +150,7 @@ static dw_handle dwarfStructUnion( TYPEPTR typ, DC_CONTROL control )
     if( typ->type_flags & TF2_DWARF ) {
         dh = typ->u1.dwarf_type;
     } else {
-        if( typ->decl_type == TYPE_STRUCT ) {
+        if( typ->decl_type == TYP_STRUCT ) {
             dh = DWStruct( Client, DW_ST_STRUCT );
         } else {
             dh = DWStruct( Client, DW_ST_UNION );
@@ -247,7 +248,7 @@ static dw_handle dwarfTypeFunction( TYPEPTR typ, char *name )
     type_update( typ, TF2_DWARF_DEF, dh );
     if( typ->u.fn.parms != NULL ) {
         for( parm_types = typ->u.fn.parms; (typ = *parm_types) != NULL; ++parm_types ) {
-            if( typ->decl_type == TYPE_DOT_DOT_DOT ) {
+            if( typ->decl_type == TYP_DOT_DOT_DOT ) {
                 DWAddEllipsisToSubroutineType( Client );
             } else {
                 DWAddParmToSubroutineType( Client,
@@ -311,74 +312,74 @@ static dw_handle dwarfType( TYPEPTR typ, DC_CONTROL control )
         return( typ->u1.dwarf_type );
 
     switch( typ->decl_type ) {
-    case TYPE_BOOL:
+    case TYP_BOOL:
         dh = DWFundamental( Client, "_Bool", DW_FT_UNSIGNED_CHAR, TypeSize( typ ) );
         type_update( typ, TF2_DWARF_DEF, dh );
         break;
-    case TYPE_CHAR:
+    case TYP_CHAR:
         dh = DWFundamental( Client, "char", DW_FT_SIGNED_CHAR, TypeSize( typ ) );
         type_update( typ, TF2_DWARF_DEF, dh );
         break;
-    case TYPE_UCHAR:
+    case TYP_UCHAR:
         dh = DWFundamental( Client, "unsigned char", DW_FT_UNSIGNED_CHAR, TypeSize( typ ) );
         type_update( typ, TF2_DWARF_DEF, dh );
         break;
-    case TYPE_WCHAR:
+    case TYP_WCHAR:
         dh = DWFundamental( Client, "wchar_t", DW_FT_UNSIGNED_CHAR, TypeSize( typ ) );
         type_update( typ, TF2_DWARF_DEF, dh );
         break;
-    case TYPE_SHORT:
+    case TYP_SHORT:
         dh = DWFundamental( Client, "signed short", DW_FT_SIGNED, TypeSize( typ ) );
         type_update( typ, TF2_DWARF_DEF, dh );
         break;
-    case TYPE_USHORT:
+    case TYP_USHORT:
         dh = DWFundamental( Client, "unsigned short", DW_FT_UNSIGNED, TypeSize( typ ) );
         type_update( typ, TF2_DWARF_DEF, dh );
         break;
-    case TYPE_INT:
+    case TYP_INT:
         dh = DWFundamental( Client, "signed int", DW_FT_SIGNED, TypeSize( typ ) );
         type_update( typ, TF2_DWARF_DEF, dh );
         break;
-    case TYPE_UINT:
+    case TYP_UINT:
         dh = DWFundamental( Client, "unsigned int", DW_FT_UNSIGNED, TypeSize( typ ) );
         type_update( typ, TF2_DWARF_DEF, dh );
         break;
-    case TYPE_LONG:
+    case TYP_LONG:
         dh = DWFundamental( Client, "signed long", DW_FT_SIGNED, TypeSize( typ ) );
         type_update( typ, TF2_DWARF_DEF, dh );
         break;
-    case TYPE_ULONG:
+    case TYP_ULONG:
         dh = DWFundamental( Client, "unsigned long", DW_FT_UNSIGNED, TypeSize( typ ) );
         type_update( typ, TF2_DWARF_DEF, dh );
         break;
-    case TYPE_LONG64:
+    case TYP_LONG64:
         dh = DWFundamental( Client, "__int64", DW_FT_UNSIGNED, TypeSize( typ ) );
         type_update( typ, TF2_DWARF_DEF, dh );
         break;
-    case TYPE_ULONG64:
+    case TYP_ULONG64:
         dh = DWFundamental( Client, "unsigned __int64", DW_FT_UNSIGNED, TypeSize( typ ) );
         type_update( typ, TF2_DWARF_DEF, dh );
         break;
-    case TYPE_FLOAT:
+    case TYP_FLOAT:
         dh = DWFundamental( Client, "float", DW_FT_FLOAT, TypeSize( typ ) );
         type_update( typ, TF2_DWARF_DEF, dh );
         break;
-    case TYPE_DOUBLE:
+    case TYP_DOUBLE:
         dh = DWFundamental( Client, "double", DW_FT_FLOAT, TypeSize( typ ) );
         type_update( typ, TF2_DWARF_DEF, dh );
         break;
-    case TYPE_LONG_DOUBLE:
+    case TYP_LONG_DOUBLE:
         dh = DWFundamental( Client, "long double", DW_FT_FLOAT, TypeSize( typ ) );
         type_update( typ, TF2_DWARF_DEF, dh );
         break;
-    case TYPE_ENUM:
+    case TYP_ENUM:
         dh = dwarfEnum( typ );
         break;
-    case TYPE_POINTER:
+    case TYP_POINTER:
         dh = DWPointer( Client, dwarfType( typ->object, DC_DEFAULT ), 0 );
         type_update( typ, TF2_DWARF_DEF, dh );
         break;
-    case TYPE_TYPEDEF:
+    case TYP_TYPEDEF:
         dh = dwarfType( typ->object, DC_DEFAULT );
         sym = SymGetPtr( typ->u.typedefn );
         dwarfLocation( &sym->src_loc );
@@ -389,17 +390,17 @@ static dw_handle dwarfType( TYPEPTR typ, DC_CONTROL control )
                         0 );
         type_update( typ, TF2_DWARF_DEF, dh );
         break;
-    case TYPE_STRUCT:
-    case TYPE_UNION:
+    case TYP_STRUCT:
+    case TYP_UNION:
         dh = dwarfStructUnion( typ, DC_DEFAULT );
         break;
-    case TYPE_FUNCTION:
+    case TYP_FUNCTION:
         dh = dwarfTypeFunction( typ, NULL );
         break;
-    case TYPE_ARRAY:
+    case TYP_ARRAY:
         dh = dwarfTypeArray( typ );
         break;
-    case TYPE_VOID:
+    case TYP_VOID:
         dh = DWFundamental( Client, "void", DW_FT_UNSIGNED, 0 );
         type_update( typ, TF2_DWARF_DEF, dh );
         break;
@@ -653,7 +654,7 @@ static void dwarfEmit( void )
     DATA_TYPE   i;
 
     dwarfInitTypes();
-    for( i = TYPE_BOOL; i <= TYPE_LONG_DOUBLE; i++ ) {
+    for( i = TYP_BOOL; i <= TYP_LONG_DOUBLE; i++ ) {
         dwarfType( GetType( i ), DC_DEFAULT );
     }
     WalkTypeList( EmitAType );

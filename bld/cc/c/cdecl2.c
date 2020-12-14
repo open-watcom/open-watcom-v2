@@ -47,13 +47,13 @@ void Chk_Struct_Union_Enum( TYPEPTR typ )
 {
     SKIP_DUMMY_TYPEDEFS( typ );
     switch( typ->decl_type ) {
-    case TYPE_STRUCT:
-    case TYPE_UNION:
+    case TYP_STRUCT:
+    case TYP_UNION:
         if( typ->u.tag->name[0] == '\0' ) {
             InvDecl();
         }
         break;
-    case TYPE_ENUM:
+    case TYP_ENUM:
         break;
     default:
         InvDecl();
@@ -150,7 +150,7 @@ static void CmpFuncDecls( SYMPTR new_sym, SYMPTR old_sym )
         //return value used in forward
         if( old_sym->attribs.stg_class != SC_FORWARD ) {
             CErr2p( ERR_INCONSISTENT_TYPE, new_sym->name );
-        } else if( ret_new->decl_type != TYPE_VOID || (old_sym->flags & SYM_TYPE_GIVEN) ) {
+        } else if( ret_new->decl_type != TYP_VOID || (old_sym->flags & SYM_TYPE_GIVEN) ) {
             CErr2p( ERR_INCONSISTENT_TYPE, new_sym->name );
         }
     }
@@ -219,8 +219,8 @@ static SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state
                 if( sym->sym_type->u.fn.parms != NULL
                   || ( CurToken != T_COMMA && CurToken != T_SEMI_COLON ) ) {
                     old_typ = old_sym.sym_type;
-                    if( old_typ->decl_type == TYPE_TYPEDEF &&
-                       old_typ->object->decl_type == TYPE_FUNCTION ) {
+                    if( old_typ->decl_type == TYP_TYPEDEF &&
+                       old_typ->object->decl_type == TYP_FUNCTION ) {
                         SymGet( &sym_typedef, old_typ->u.typedefn );
                         sym_name = SymName( &sym_typedef, old_typ->u.typedefn );
                         sym_len = strlen( sym_name ) + 1;
@@ -285,7 +285,7 @@ static SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state
             if( stg_class == SC_NONE && old_sym.attribs.stg_class != SC_FORWARD ) {
                 stg_class = old_sym.attribs.stg_class;
             }
-            if( old_sym.sym_type->decl_type == TYPE_FUNCTION ) {
+            if( old_sym.sym_type->decl_type == TYP_FUNCTION ) {
                 old_sym.sym_type = FuncNode( old_sym.sym_type->object,
                     old_sym.mods, old_sym.sym_type->u.fn.parms );
             }
@@ -505,14 +505,14 @@ new_var:
         sym->flags |= SYM_DEFINED;
         typ = sym->sym_type;
         SKIP_DUMMY_TYPEDEFS( typ );
-        if( typ->decl_type == TYPE_TYPEDEF ) {
+        if( typ->decl_type == TYP_TYPEDEF ) {
             SymGet( &sym2, typ->u.typedefn );
             if( sym->u.var.segid == SEG_NULL && sym2.u.var.segid != SEG_NULL ) {
                 sym->u.var.segid = sym2.u.var.segid;
             }
             SKIP_TYPEDEFS( typ );
         }
-        if( typ->decl_type == TYPE_VOID ) {
+        if( typ->decl_type == TYP_VOID ) {
             CErr2p( ERR_VAR_CANT_BE_VOID, sym->name );
             sym->sym_type = TypeDefault();
         }
@@ -610,7 +610,7 @@ static SYM_HANDLE InitDeclarator( SYMPTR sym, decl_info const * const info, decl
             }
         }
         AdjModsTypeNode( &sym->sym_type, info->decl_mod, sym );
-        if( typ->decl_type == TYPE_FUNCTION ) {
+        if( typ->decl_type == TYP_FUNCTION ) {
             sym_handle = FuncDecl( sym, info->stg, state );
         } else {
             sym_handle = VarDecl( sym, info->stg, state );
@@ -728,10 +728,10 @@ bool DeclList( SYM_HANDLE *sym_head )
                     typedef double math(double);
                     math sin { ; }
             That's the reason for the check
-                    "typ->decl_type != TYPE_FUNCTION"
+                    "typ->decl_type != TYP_FUNCTION"
 */
             if( SymLevel == 0 && CurToken != T_SEMI_COLON && sym_handle != SYM_NULL ) {
-                if( sym.sym_type->decl_type == TYPE_FUNCTION && sym.sym_type != info.typ ) {
+                if( sym.sym_type->decl_type == TYP_FUNCTION && sym.sym_type != info.typ ) {
                     CurFuncHandle = sym_handle;
                     CurFunc = &CurFuncSym;
                     memcpy( CurFunc, &sym, sizeof( SYM_ENTRY ) );
@@ -891,14 +891,14 @@ static TYPEPTR Pointer( TYPEPTR typ, struct mod_info *info )
     SYM_ENTRY       sym;
 
     sym_handle = SYM_NULL;
-    if( (typ != NULL) && (typ->decl_type == TYPE_TYPEDEF) ) {
+    if( (typ != NULL) && (typ->decl_type == TYP_TYPEDEF) ) {
         // get segment from typedef TODO should be done sooner
         TYPEPTR     ptr_typ;
         SYMPTR      symp;
 
         ptr_typ = typ;
         SKIP_DUMMY_TYPEDEFS( ptr_typ );
-        if( ptr_typ->decl_type == TYPE_TYPEDEF ) {
+        if( ptr_typ->decl_type == TYP_TYPEDEF ) {
             symp = SymGetPtr( ptr_typ->u.typedefn );
             if( info->modifier & FLAG_BASED ) {
                 info->segid = symp->u.var.segid;
@@ -932,7 +932,7 @@ static TYPEPTR Pointer( TYPEPTR typ, struct mod_info *info )
                     SymCreate( &sym, Buffer );
                     sym.attribs.stg_class = SC_EXTERN;  /* indicate extern decl */
                     CErr2p( ERR_UNDECLARED_SYM, Buffer );
-                    sym.sym_type = GetType( TYPE_INT );
+                    sym.sym_type = GetType( TYP_INT );
                     sym_handle = SymAdd( HashValue, &sym );
                 } else {
                     TYPEPTR     sym_typ;
@@ -942,13 +942,13 @@ static TYPEPTR Pointer( TYPEPTR typ, struct mod_info *info )
                     SKIP_TYPEDEFS( sym_typ );
                     if( use_seg ) {
                         info->based_kind = BASED_VARSEG;
-                        if( sym_typ->decl_type != TYPE_POINTER ) {
+                        if( sym_typ->decl_type != TYP_POINTER ) {
                            CErr1( ERR_SYM_MUST_BE_TYPE_SEGMENT );
                            info->based_kind = BASED_NONE;
                         }
-                    } else if( sym_typ->decl_type == TYPE_POINTER ) {
+                    } else if( sym_typ->decl_type == TYP_POINTER ) {
                         info->based_kind = BASED_VAR;
-                    } else if( sym_typ->decl_type < TYPE_FLOAT ) {
+                    } else if( sym_typ->decl_type < TYP_FLOAT ) {
                         info->based_kind = BASED_SEGVAR;
                     } else {
                         CErr1( ERR_SYM_MUST_BE_TYPE_SEGMENT );
@@ -1003,7 +1003,7 @@ static TYPEPTR Pointer( TYPEPTR typ, struct mod_info *info )
                         SymCreate( &sym, Buffer );
                         sym.attribs.stg_class = SC_EXTERN;  /* indicate extern decl */
                         CErr2p( ERR_UNDECLARED_SYM, Buffer );
-                        sym.sym_type = GetType( TYPE_INT );
+                        sym.sym_type = GetType( TYP_INT );
                         sym_handle = SymAdd( HashValue, &sym );
                     } else {
                         SymGet( &sym, sym_handle );
@@ -1065,14 +1065,14 @@ static void ParseDeclPart2( TYPEPTR *typep, TYPEPTR typ, type_modifiers mod )
         }
     }
     // Pass on pointer flags
-    if( (decl1 != NULL) && (decl1->decl_type == TYPE_POINTER) )
+    if( (decl1 != NULL) && (decl1->decl_type == TYP_POINTER) )
         mod = decl1->u.p.decl_flags;
     decl2 = DeclPart2( typ, mod );
     if( decl1 == NULL ) {
         *typep = decl2;
     } else {
         decl1->object = decl2;
-        if( decl1->decl_type == TYPE_POINTER && decl2 != NULL ) {
+        if( decl1->decl_type == TYP_POINTER && decl2 != NULL ) {
             AddPtrTypeHash( decl1 );
         }
     }
@@ -1184,7 +1184,7 @@ void Declarator( SYMPTR sym, type_modifiers mod, TYPEPTR typ, decl_state state )
         sym->sym_type = typ;
     }
     if( typ != NULL ) {
-        if( typ->decl_type == TYPE_FUNCTION ) {
+        if( typ->decl_type == TYP_FUNCTION ) {
             if( state & DECL_STATE_FORLOOP ) {
                 CErr2p( ERR_DECL_IN_LOOP_NOT_OBJECT, sym->name );
             } else if( info.segid != SEG_NULL ) {           // __based( __segname("X"))
@@ -1264,7 +1264,7 @@ static TYPEPTR ArrayDecl( TYPEPTR typ )
     TYPEPTR     first_node, next_node, prev_node;
 
     if( typ != NULL ) {
-        if( typ->decl_type == TYPE_FUNCTION ) {
+        if( typ->decl_type == TYP_FUNCTION ) {
             CErr1( ERR_CANT_HAVE_AN_ARRAY_OF_FUNCTIONS );
         }
     }
@@ -1278,16 +1278,16 @@ static TYPEPTR ArrayDecl( TYPEPTR typ )
             if( ConstExprAndType( &val ) ) {
                 dimension = U32FetchTrunc( val.value );
                 switch( val.type ) {
-                case TYPE_ULONG64:
+                case TYP_ULONG64:
                     if( !U64IsU32( val.value ) )
                         CErr1( ERR_CONSTANT_TOO_BIG );
                     break;
-                case TYPE_LONG64:
+                case TYP_LONG64:
                     if( !U64IsI32( val.value ) )
                         CErr1( ERR_CONSTANT_TOO_BIG );
                     break;
-                case TYPE_ULONG:
-                case TYPE_UINT:
+                case TYP_ULONG:
+                case TYP_UINT:
                     break;
                 default:
                     if( I32FetchTrunc( val.value ) <= 0 ) {
@@ -1362,9 +1362,9 @@ static TYPEPTR DeclPart3( TYPEPTR typ, type_modifiers mod )
 
         typ2 = typ;
         SKIP_TYPEDEFS( typ2 );
-        if( typ2->decl_type == TYPE_ARRAY ) {
+        if( typ2->decl_type == TYP_ARRAY ) {
             CErr1( ERR_FUNCTION_CANT_RETURN_AN_ARRAY );
-        } else if( typ2->decl_type == TYPE_FUNCTION ) {
+        } else if( typ2->decl_type == TYP_FUNCTION ) {
             CErr1( ERR_FUNCTION_CANT_RETURN_A_FUNCTION );
         }
     }
@@ -1429,10 +1429,10 @@ void AdjParmType( SYMPTR sym )
 
     typ = sym->sym_type;
     SKIP_TYPEDEFS( typ );
-    if( typ->decl_type == TYPE_FUNCTION ) {
+    if( typ->decl_type == TYP_FUNCTION ) {
         sym->sym_type = PtrNode( sym->sym_type, sym->mods, SEG_CODE );
         sym->mods = FLAG_NONE;
-    } else if( typ->decl_type == TYPE_ARRAY ) {
+    } else if( typ->decl_type == TYP_ARRAY ) {
         sym->sym_type = PtrNode( typ->object, FLAG_WAS_ARRAY | sym->mods, SEG_DATA );
         sym->mods = FLAG_NONE;
     }
@@ -1483,7 +1483,7 @@ static TYPEPTR *GetProtoType( decl_info *first )
         Declarator( sym, mod, typ, state );
         typ = sym->sym_type;
         SKIP_TYPEDEFS( typ );
-        if( typ->decl_type == TYPE_VOID ) {
+        if( typ->decl_type == TYP_VOID ) {
             char    buffer[20];
             char    *name;
             if( sym->name[0] == '\0' ) {
@@ -1521,7 +1521,7 @@ static TYPEPTR *GetProtoType( decl_info *first )
             break;
         MustRecog( T_COMMA );
         if( CurToken == T_DOT_DOT_DOT ) {
-            typ = GetType( TYPE_DOT_DOT_DOT );
+            typ = GetType( TYP_DOT_DOT_DOT );
             parmlist = NewParm( typ, parmlist );
             NextToken();
             break;
@@ -1604,7 +1604,7 @@ static bool VoidType( TYPEPTR typ )
 {
     if( typ != NULL ) {
         SKIP_TYPEDEFS( typ );
-        if( typ->decl_type == TYPE_VOID ) {
+        if( typ->decl_type == TYP_VOID ) {
             return( true );
         }
     }
@@ -1727,12 +1727,12 @@ static bool IsIntComp( TYPEPTR ret1 )
 
     SKIP_TYPEDEFS( ret1 );
     switch( ret1->decl_type ) {
-    case TYPE_CHAR:
-    case TYPE_UCHAR:
-    case TYPE_SHORT:
-    case TYPE_USHORT:
-    case TYPE_INT:
-    case TYPE_LONG:
+    case TYP_CHAR:
+    case TYP_UCHAR:
+    case TYP_SHORT:
+    case TYP_USHORT:
+    case TYP_INT:
+    case TYP_LONG:
         ret = true;
         break;
     default:

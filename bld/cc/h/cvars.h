@@ -164,8 +164,8 @@ global MEPTR        UndefMacroList;
 global MEPTR        *MacHash;           /* [MACRO_HASH_SIZE] */
 global ENUMPTR      EnumTable[ID_HASH_SIZE];
 global SYM_HASHPTR  *HashTab;
-global TYPEPTR      BaseTypes[TYPE_LAST_ENTRY];
-global unsigned     CTypeCounts[TYPE_LAST_ENTRY];
+global TYPEPTR      BaseTypes[TYP_LAST_ENTRY];
+global unsigned     CTypeCounts[TYP_LAST_ENTRY];
 
 global char         *Buffer;
 global char         *TokenBuf;
@@ -818,19 +818,19 @@ extern void         InitStmt( void );
 extern void         SwitchPurge( void );
 
 /* Macros to skip all typedefs and arrive at the underlying type */
-#define SKIP_TYPEDEFS( typeptr )                        \
-    while( typeptr->decl_type == TYPE_TYPEDEF ) {       \
-        typeptr = typeptr->object;                      \
+#define SKIP_TYPEDEFS( typeptr )                    \
+    while( typeptr->decl_type == TYP_TYPEDEF ) {    \
+        typeptr = typeptr->object;                  \
     }
-#define SKIP_DUMMY_TYPEDEFS( typeptr )                  \
-    while( typeptr->decl_type == TYPE_TYPEDEF && (typeptr->type_flags & TF2_DUMMY_TYPEDEF) ) { \
-        typeptr = typeptr->object;                      \
+#define SKIP_DUMMY_TYPEDEFS( typeptr )              \
+    while( typeptr->decl_type == TYP_TYPEDEF && (typeptr->type_flags & TF2_DUMMY_TYPEDEF) ) { \
+        typeptr = typeptr->object;                  \
     }
-#define SKIP_ENUM( typeptr )                            \
-    if( typeptr->decl_type == TYPE_ENUM ) {             \
-        typeptr = typeptr->object;                      \
+#define SKIP_ENUM( typeptr )                        \
+    if( typeptr->decl_type == TYP_ENUM ) {          \
+        typeptr = typeptr->object;                  \
     }
-#define SKIP_ARRAYS( typeptr )                          \
-    while( typeptr->decl_type == TYPE_ARRAY ) {         \
-        typeptr = typeptr->object;                      \
+#define SKIP_ARRAYS( typeptr )                      \
+    while( typeptr->decl_type == TYP_ARRAY ) {      \
+        typeptr = typeptr->object;                  \
     }

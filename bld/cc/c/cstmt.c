@@ -413,7 +413,7 @@ static void SetFuncReturnNode( TREEPTR tree )
     typ = CurFunc->sym_type->object;
     tree->u.expr_type = typ;
     SKIP_TYPEDEFS( typ );
-    if( typ->decl_type == TYPE_STRUCT || typ->decl_type == TYPE_UNION ) {
+    if( typ->decl_type == TYP_STRUCT || typ->decl_type == TYP_UNION ) {
         tree->right = LeafNode( OPR_NOP );      // place holder
         tree->right->u.expr_type = NULL;
     }
@@ -427,7 +427,7 @@ static void ChkRetValue( void )
     typ = CurFunc->sym_type;
     typ = typ->object;
     SKIP_TYPEDEFS( typ );
-    if( typ->decl_type != TYPE_VOID ) {
+    if( typ->decl_type != TYP_VOID ) {
         CWarn2p( WARN_MISSING_RETURN_VALUE, ERR_MISSING_RETURN_VALUE, CurFunc->name );
     }
 }
@@ -811,9 +811,9 @@ static void CaseStmt( void )
     NextToken();
     if( SwitchStack ) {
         if( ConstExprAndType( &val ) ) {
-            if( ( val.type == TYPE_ULONG64 ) && !U64IsU32( val.value ) ) {
+            if( ( val.type == TYP_ULONG64 ) && !U64IsU32( val.value ) ) {
                 CErr1( ERR_CONSTANT_TOO_BIG );
-            } else if( ( val.type == TYPE_LONG64 ) && !I64IsI32( val.value ) ) {
+            } else if( ( val.type == TYP_LONG64 ) && !I64IsI32( val.value ) ) {
                 CErr1( ERR_CONSTANT_TOO_BIG );
             }
             AddCaseLabel( U32FetchTrunc( val.value) );
@@ -870,7 +870,7 @@ static SYM_HANDLE DummyTrySymbol( void )
     SYM_ENTRY   sym;
     SYM_HANDLE  sym_handle;
 
-    sym_handle = MakeNewSym( &sym, 'T', GetType( TYPE_VOID ), SC_STATIC );
+    sym_handle = MakeNewSym( &sym, 'T', GetType( TYP_VOID ), SC_STATIC );
     SymReplace( &sym, sym_handle );
     return( sym_handle );
 }
@@ -907,8 +907,8 @@ static bool EndTry( void )
         CompFlags.exception_handler = true;
         typ = TypeOf( expr );
         expr_type = DataTypeOf( typ );
-        if( expr_type != TYPE_VOID ) {
-            if( expr_type > TYPE_ULONG ) {
+        if( expr_type != TYP_VOID ) {
+            if( expr_type > TYP_ULONG ) {
                 CErr1( ERR_EXPR_MUST_BE_INTEGRAL );
             }
         }
@@ -918,7 +918,7 @@ static bool EndTry( void )
         expr->u.expr_type = typ;
         expr->op.u2.result_type = typ;
         tree = ExprNode( func, OPR_CALL, expr );
-        tree->u.expr_type = GetType( TYPE_VOID );
+        tree->u.expr_type = GetType( TYP_VOID );
         AddStmt( tree );
         return( true );
     } else if( (CurToken == T__FINALLY) || (CurToken == T___FINALLY) ) {
@@ -972,34 +972,34 @@ static void SwitchStmt( void )
     sw->high_value = 0U;
     sw->case_format = "%ld";        /* assume signed cases */
     SwitchStack = sw;
-//    switch_type = TYPE_INT;         /* assume int */
+//    switch_type = TYP_INT;         /* assume int */
     tree = RValue( BracketExpr() );
     typ = TypeOf( tree );
     SKIP_ENUM( typ );
-    if( typ->decl_type == TYPE_UFIELD ) {
+    if( typ->decl_type == TYP_UFIELD ) {
         if( typ->u.f.field_width == (TARGET_INT * 8) ) {
             sw->case_format = "%lu";
-//            switch_type = TYPE_UINT;
+//            switch_type = TYP_UINT;
         }
     }
     switch( typ->decl_type ) {
-    case TYPE_USHORT:
-    case TYPE_UINT:
+    case TYP_USHORT:
+    case TYP_UINT:
         sw->case_format = "%lu";
-//        switch_type = TYPE_UINT;
-    case TYPE_CHAR:
-    case TYPE_UCHAR:
-    case TYPE_SHORT:
-    case TYPE_INT:
-    case TYPE_FIELD:
-    case TYPE_UFIELD:
+//        switch_type = TYP_UINT;
+    case TYP_CHAR:
+    case TYP_UCHAR:
+    case TYP_SHORT:
+    case TYP_INT:
+    case TYP_FIELD:
+    case TYP_UFIELD:
         break;
-    case TYPE_ULONG:
+    case TYP_ULONG:
         sw->case_format = "%lu";
-//        switch_type = TYPE_ULONG;
+//        switch_type = TYP_ULONG;
         break;
-    case TYPE_LONG:
-//        switch_type = TYPE_LONG;
+    case TYP_LONG:
+//        switch_type = TYP_LONG;
         break;
     default:
         CErr1( ERR_INVALID_TYPE_FOR_SWITCH );
@@ -1171,7 +1171,7 @@ static void FixupC99MainReturn( SYM_HANDLE func_result_handle, struct return_inf
     main_type = CurFunc->sym_type->object;
     SKIP_TYPEDEFS( main_type );
     /* ... as long as return type is compatible with int */
-    if( main_type->decl_type == TYPE_INT ) {
+    if( main_type->decl_type == TYP_INT ) {
         tree = IntLeaf( 0 );    /* zero is the default return value */
         tree = ExprNode( NULL, OPR_RETURN, tree );
         tree->u.expr_type = main_type;

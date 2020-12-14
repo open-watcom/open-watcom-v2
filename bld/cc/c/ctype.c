@@ -55,8 +55,8 @@ static unsigned char  CTypeSizes[] = {
     #undef  pick1
 };
 
-TYPEPTR CTypeHash[TYPE_LAST_ENTRY];
-TYPEPTR PtrTypeHash[TYPE_LAST_ENTRY];
+TYPEPTR CTypeHash[TYP_LAST_ENTRY];
+TYPEPTR PtrTypeHash[TYP_LAST_ENTRY];
 
 TAGPTR  TagHash[ID_HASH_SIZE + 1];
 FIELDPTR FieldHash[ID_HASH_SIZE];
@@ -83,52 +83,52 @@ enum {
     M___LAST        = 0
 };
 
-#define TYPE_PLAIN_INT  TYPE_UFIELD
+#define TYP_PLAIN_INT   TYP_UFIELD
 
 signed char Valid_Types[] = {
         -1,             //
-        TYPE_PLAIN_CHAR,//                                          M_CHAR
-        TYPE_PLAIN_INT, //                                    M_INT
+        TYP_PLAIN_CHAR, //                                          M_CHAR
+        TYP_PLAIN_INT,  //                                    M_INT
         -1,             //                                    M_INT M_CHAR
-        TYPE_SHORT,     //                            M_SHORT
+        TYP_SHORT,      //                            M_SHORT
         -1,             //                            M_SHORT       M_CHAR
-        TYPE_SHORT,     //                            M_SHORT M_INT
+        TYP_SHORT,      //                            M_SHORT M_INT
         -1,             //                            M_SHORT M_INT M_CHAR
-        TYPE_LONG,      //                     M_LONG
+        TYP_LONG,       //                     M_LONG
         -1,             //                     M_LONG               M_CHAR
-        TYPE_LONG,      //                     M_LONG         M_INT
+        TYP_LONG,       //                     M_LONG         M_INT
         -1,             //                     M_LONG         M_INT M_CHAR
         -1,             //                     M_LONG M_SHORT
         -1,             //                     M_LONG M_SHORT       M_CHAR
         -1,             //                     M_LONG M_SHORT M_INT
         -1,             //                     M_LONG M_SHORT M_INT M_CHAR
-        TYPE_INT,       //            M_SIGNED
-        TYPE_CHAR,      //            M_SIGNED                      M_CHAR
-        TYPE_INT,       //            M_SIGNED                M_INT
+        TYP_INT,        //            M_SIGNED
+        TYP_CHAR,       //            M_SIGNED                      M_CHAR
+        TYP_INT,        //            M_SIGNED                M_INT
         -1,             //            M_SIGNED                M_INT M_CHAR
-        TYPE_SHORT,     //            M_SIGNED        M_SHORT
+        TYP_SHORT,      //            M_SIGNED        M_SHORT
         -1,             //            M_SIGNED        M_SHORT       M_CHAR
-        TYPE_SHORT,     //            M_SIGNED        M_SHORT M_INT
+        TYP_SHORT,      //            M_SIGNED        M_SHORT M_INT
         -1,             //            M_SIGNED        M_SHORT M_INT M_CHAR
-        TYPE_LONG,      //            M_SIGNED M_LONG
+        TYP_LONG,       //            M_SIGNED M_LONG
         -1,             //            M_SIGNED M_LONG               M_CHAR
-        TYPE_LONG,      //            M_SIGNED M_LONG         M_INT
+        TYP_LONG,       //            M_SIGNED M_LONG         M_INT
         -1,             //            M_SIGNED M_LONG         M_INT M_CHAR
         -1,             //            M_SIGNED M_LONG M_SHORT
         -1,             //            M_SIGNED M_LONG M_SHORT       M_CHAR
         -1,             //            M_SIGNED M_LONG M_SHORT M_INT
         -1,             //            M_SIGNED M_LONG M_SHORT M_INT M_CHAR
-        TYPE_UINT,      // M_UNSIGNED
-        TYPE_UCHAR,     // M_UNSIGNED                               M_CHAR
-        TYPE_UINT,      // M_UNSIGNED                         M_INT
+        TYP_UINT,       // M_UNSIGNED
+        TYP_UCHAR,      // M_UNSIGNED                               M_CHAR
+        TYP_UINT,       // M_UNSIGNED                         M_INT
         -1,             // M_UNSIGNED                         M_INT M_CHAR
-        TYPE_USHORT,    // M_UNSIGNED                 M_SHORT
+        TYP_USHORT,     // M_UNSIGNED                 M_SHORT
         -1,             // M_UNSIGNED                 M_SHORT       M_CHAR
-        TYPE_USHORT,    // M_UNSIGNED                 M_SHORT M_INT
+        TYP_USHORT,     // M_UNSIGNED                 M_SHORT M_INT
         -1,             // M_UNSIGNED                 M_SHORT M_INT M_CHAR
-        TYPE_ULONG,     // M_UNSIGNED          M_LONG
+        TYP_ULONG,      // M_UNSIGNED          M_LONG
         -1,             // M_UNSIGNED          M_LONG               M_CHAR
-        TYPE_ULONG,     // M_UNSIGNED          M_LONG         M_INT
+        TYP_ULONG,      // M_UNSIGNED          M_LONG         M_INT
         -1,             // M_UNSIGNED          M_LONG         M_INT M_CHAR
         -1,             // M_UNSIGNED          M_LONG M_SHORT
         -1,             // M_UNSIGNED          M_LONG M_SHORT       M_CHAR
@@ -161,7 +161,7 @@ void InitTypeHashTables( void )
     for( h1 = 0; h1 <= MAX_PARM_LIST_HASH_SIZE; ++h1 ) {
         FuncTypeHead[h1] = NULL;
     }
-    for( base_type = TYPE_BOOL; base_type < TYPE_LAST_ENTRY; ++base_type ) {
+    for( base_type = TYP_BOOL; base_type < TYP_LAST_ENTRY; ++base_type ) {
         CTypeHash[base_type] = NULL;
         PtrTypeHash[base_type] = NULL;
     }
@@ -181,15 +181,15 @@ void CTypeInit( void )
     FieldCount = 0;
     EnumCount = 0;
     InitTypeHashTables();
-    for( base_type = TYPE_BOOL; base_type < TYPE_LAST_ENTRY; ++base_type ) {
+    for( base_type = TYP_BOOL; base_type < TYP_LAST_ENTRY; ++base_type ) {
         CTypeCounts[base_type] = 0;
 #if 0
-        if ( base_type == TYPE_FCOMPLEX || base_type == TYPE_DCOMPLEX || base_type == TYPE_LDCOMPLEX ) {
-            BaseTypes[base_type] = ComplexDecl( TYPE_STRUCT, false );
+        if ( base_type == TYP_FCOMPLEX || base_type == TYP_DCOMPLEX || base_type == TYP_LDCOMPLEX ) {
+            BaseTypes[base_type] = ComplexDecl( TYP_STRUCT, false );
             BaseTypes[base_type]->decl_type = base_type;
         } else {
 #endif
-            if( CTypeSizes[base_type] != 0 || base_type == TYPE_VOID || base_type == TYPE_DOT_DOT_DOT ) {
+            if( CTypeSizes[base_type] != 0 || base_type == TYP_VOID || base_type == TYP_DOT_DOT_DOT ) {
                 BaseTypes[base_type] = TypeNode( base_type, NULL );
             } else {
                 BaseTypes[base_type] = NULL;
@@ -198,9 +198,9 @@ void CTypeInit( void )
         }
 #endif
     }
-    SetPlainCharType( TYPE_UCHAR );
+    SetPlainCharType( TYP_UCHAR );
     StringArrayType = NULL;
-    VoidParmList[0] = BaseTypes[TYPE_VOID];
+    VoidParmList[0] = BaseTypes[TYP_VOID];
     VoidParmList[1] = NULL;
 }
 
@@ -233,12 +233,12 @@ void WalkTypeList( void (*func)(TYPEPTR) )
     TYPEPTR     typ;
     DATA_TYPE   base_type;
 
-    for( base_type = TYPE_BOOL; base_type < TYPE_LAST_ENTRY; ++base_type ) {
+    for( base_type = TYP_BOOL; base_type < TYP_LAST_ENTRY; ++base_type ) {
         for( typ = CTypeHash[base_type]; typ != NULL; typ = typ->next_type ) {
             func( typ );
         }
     }
-    for( base_type = TYPE_BOOL; base_type < TYPE_LAST_ENTRY; ++base_type ) {
+    for( base_type = TYP_BOOL; base_type < TYP_LAST_ENTRY; ++base_type ) {
         for( typ = PtrTypeHash[base_type]; typ != NULL; typ = typ->next_type ) {
             func( typ );
         }
@@ -251,7 +251,7 @@ static TYPEPTR DupType( TYPEPTR typ, enum type_state flags, bool force_duplicate
     TYPEPTR     next;
 
     if( !force_duplicate ) {
-        if( typ->decl_type == TYPE_POINTER ) {
+        if( typ->decl_type == TYP_POINTER ) {
             next = PtrTypeHash[typ->object->decl_type];
         } else {
             next = CTypeHash[typ->decl_type];
@@ -278,15 +278,15 @@ static void SetPlainCharType( DATA_TYPE char_type )
     TYPEPTR     typ;
 
     typ = TypeNode( char_type, NULL );
-    typ->type_flags = TF2_TYPE_PLAIN_CHAR;
-    BaseTypes[TYPE_PLAIN_CHAR] = typ;
+    typ->type_flags = TF2_TYP_PLAIN_CHAR;
+    BaseTypes[TYP_PLAIN_CHAR] = typ;
     StringType = PtrNode( typ, FLAG_NONE, SEG_DATA );
     ConstCharType =  typ;
 }
 
 void SetSignedChar( void )
 {
-    SetPlainCharType( TYPE_CHAR );
+    SetPlainCharType( TYP_CHAR );
 }
 
 
@@ -331,71 +331,71 @@ static TYPEPTR GetScalarType( bool *plain_int, int bmask, type_modifiers flags )
     DATA_TYPE   data_type;
     TYPEPTR     typ;
 
-    data_type = TYPE_UNDEFINED;
+    data_type = TYP_UNDEFINED;
     if( bmask & M_LONG_LONG ) {
         bmask &= ~M_INT;
     }
     if( bmask & (M_VOID | M_FLOAT | M_DOUBLE | M_LONG_LONG | M_COMPLEX | M_IMAGINARY) ) {
         if( bmask == M_VOID ) {
-            data_type = TYPE_VOID;
+            data_type = TYP_VOID;
         } else if( bmask == M_LONG_LONG ) {
-            data_type = TYPE_LONG64;
+            data_type = TYP_LONG64;
         } else if( bmask == (M_LONG_LONG | M_SIGNED) ) {
-            data_type = TYPE_LONG64;
+            data_type = TYP_LONG64;
         } else if( bmask == (M_LONG_LONG | M_UNSIGNED) ) {
-            data_type = TYPE_ULONG64;
+            data_type = TYP_ULONG64;
         } else if( bmask == M_FLOAT ) {
-            data_type = TYPE_FLOAT;
+            data_type = TYP_FLOAT;
         } else if( bmask == M_DOUBLE ) {
-            data_type = TYPE_DOUBLE;
+            data_type = TYP_DOUBLE;
         } else if( bmask == (M_LONG | M_DOUBLE) ) {
             if( CompFlags.use_long_double ) {
-                data_type = TYPE_LONG_DOUBLE;
+                data_type = TYP_LONG_DOUBLE;
             } else {
-                data_type = TYPE_DOUBLE;
+                data_type = TYP_DOUBLE;
             }
         } else if( bmask == (M_COMPLEX | M_FLOAT) ) {
-            data_type = TYPE_FCOMPLEX;
+            data_type = TYP_FCOMPLEX;
         } else if( bmask == (M_COMPLEX | M_DOUBLE) ) {
-            data_type = TYPE_DCOMPLEX;
+            data_type = TYP_DCOMPLEX;
         } else if( bmask == (M_COMPLEX | M_LONG | M_DOUBLE) ) {
             if( CompFlags.use_long_double ) {
-                data_type = TYPE_LDCOMPLEX;
+                data_type = TYP_LDCOMPLEX;
             } else {
-                data_type = TYPE_DCOMPLEX;
+                data_type = TYP_DCOMPLEX;
             }
         } else if( bmask == (M_IMAGINARY | M_FLOAT) ) {
-            data_type = TYPE_FIMAGINARY;
+            data_type = TYP_FIMAGINARY;
         } else if( bmask == (M_IMAGINARY | M_DOUBLE) ) {
-            data_type = TYPE_DIMAGINARY;
+            data_type = TYP_DIMAGINARY;
         } else if( bmask == (M_IMAGINARY | M_LONG | M_DOUBLE) ) {
             if( CompFlags.use_long_double ) {
-                data_type = TYPE_LDIMAGINARY;
+                data_type = TYP_LDIMAGINARY;
             } else {
-                data_type = TYPE_DIMAGINARY;
+                data_type = TYP_DIMAGINARY;
             }
         } else {
-            data_type = TYPE_UNDEFINED;
+            data_type = TYP_UNDEFINED;
         }
     } else if( bmask == M_BOOL ) {
-        data_type = TYPE_BOOL;
+        data_type = TYP_BOOL;
     } else if( bmask == 0 ) {
-        data_type = TYPE_INT;
+        data_type = TYP_INT;
         *plain_int = true;
     } else {
         data_type = Valid_Types[bmask];
-        if( data_type == TYPE_PLAIN_INT ) {
-            data_type = TYPE_INT;
+        if( data_type == TYP_PLAIN_INT ) {
+            data_type = TYP_INT;
             *plain_int = true;
         }
     }
-    if( data_type == TYPE_UNDEFINED ) {
+    if( data_type == TYP_UNDEFINED ) {
         CErr1( ERR_INV_TYPE );
-        data_type = TYPE_INT;
+        data_type = TYP_INT;
     }
     typ = GetType( data_type );
     if( flags & FLAG_SEGMENT )
-        typ = DupType( typ, TF2_TYPE_SEGMENT, false );
+        typ = DupType( typ, TF2_TYP_SEGMENT, false );
 
     return( typ );
 }
@@ -537,13 +537,13 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
         case T_STRUCT:
             if( typ != NULL )
                 CErr1( ERR_INV_TYPE );
-            typ = StructDecl( TYPE_STRUCT, packed );
+            typ = StructDecl( TYP_STRUCT, packed );
             packed = false;
             continue;
         case T_UNION:
             if( typ != NULL )
                 CErr1( ERR_INV_TYPE );
-            typ = StructDecl( TYPE_UNION, packed );
+            typ = StructDecl( TYP_UNION, packed );
             packed = false;
             continue;
         case T_ENUM:
@@ -740,7 +740,7 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
 got_specifier:
     info->stg = specified_stg_class;
     if( typ != NULL ) {
-        /* already have a type (TYPE_STRUCT, TYPE_UNION, TYPE_ENUM) */
+        /* already have a type (TYP_STRUCT, TYP_UNION, TYP_ENUM) */
         /* or an ID that was a typedef name */
         if( bmask != 0 ) {
             CErr1( ERR_INV_TYPE );  // picked up an int
@@ -779,7 +779,7 @@ void FullDeclSpecifier( decl_info *info )
 
 TYPEPTR TypeDefault( void )
 {
-    return( GetType( TYPE_INT ) );
+    return( GetType( TYP_INT ) );
 }
 
 
@@ -834,7 +834,7 @@ static FIELDPTR NewField( FIELDPTR new_field, TYPEPTR decl )
     }
     if( new_field->name[0] == '\0' ) {
         /* allow nameless structs and unions */
-        if( (typ->decl_type != TYPE_STRUCT && typ->decl_type != TYPE_UNION)
+        if( (typ->decl_type != TYP_STRUCT && typ->decl_type != TYP_UNION)
           || !CompFlags.extensions_enabled ) {
             CErr1( ERR_INVALID_DECLARATOR );
         }
@@ -843,9 +843,9 @@ static FIELDPTR NewField( FIELDPTR new_field, TYPEPTR decl )
         CErr1( ERR_STRUCT_OR_UNION_INSIDE_ITSELF );
     } else if( SizeOfArg( typ ) == 0 ) {   /* was TypeSize(typ) */
         /* can't have an array of incomplete type */
-        if( typ->decl_type == TYPE_ARRAY
+        if( typ->decl_type == TYP_ARRAY
           && ( SizeOfArg( typ->object ) == 0 || !CompFlags.extensions_enabled )
-          || typ->decl_type != TYPE_ARRAY ) {
+          || typ->decl_type != TYP_ARRAY ) {
             CErr2p( ERR_INCOMPLETE_TYPE, new_field->name );
         }
     }
@@ -885,27 +885,27 @@ static TYPEPTR EnumFieldType( TYPEPTR ftyp, bool plain_int,
     TYPEPTR     typ;
     DATA_TYPE   data_type;
 
-    typ = TypeNode( TYPE_FIELD, NULL );
+    typ = TypeNode( TYP_FIELD, NULL );
     typ->u.f.field_start = start;
     typ->u.f.field_width = width;
     if( plain_int ) {
-        data_type = TYPE_INT;   /* default to signed bit fields */
+        data_type = TYP_INT;    /* default to signed bit fields */
     } else {
         SKIP_TYPEDEFS( ftyp );
-        if( ftyp->decl_type == TYPE_ENUM ) {
+        if( ftyp->decl_type == TYP_ENUM ) {
             ftyp = ftyp->object;
         }
         data_type = ftyp->decl_type;
     }
     typ->u.f.field_type = data_type;
     switch( data_type ) {
-    case TYPE_BOOL:
-    case TYPE_UCHAR:
-    case TYPE_USHORT:
-    case TYPE_UINT:
-    case TYPE_ULONG:
-    case TYPE_ULONG64:
-        typ->decl_type = TYPE_UFIELD;
+    case TYP_BOOL:
+    case TYP_UCHAR:
+    case TYP_USHORT:
+    case TYP_UINT:
+    case TYP_ULONG:
+    case TYP_ULONG64:
+        typ->decl_type = TYP_UFIELD;
         break;
     }
     return( typ );
@@ -916,10 +916,10 @@ align_type GetTypeAlignment( TYPEPTR typ )
 {
     align_type  size;
 
-    while( typ->decl_type == TYPE_TYPEDEF || typ->decl_type == TYPE_ARRAY ) {
+    while( typ->decl_type == TYP_TYPEDEF || typ->decl_type == TYP_ARRAY ) {
         typ = typ->object;
     }
-    if( typ->decl_type == TYPE_STRUCT || typ->decl_type == TYPE_UNION ) {
+    if( typ->decl_type == TYP_STRUCT || typ->decl_type == TYP_UNION ) {
         size = typ->u.tag->alignment;
 #if _CPU == _AXP
         if( CompFlags.align_structs_on_qwords ) {
@@ -963,27 +963,27 @@ static DATA_TYPE UnQualifiedType( TYPEPTR typ )
     // skip typedefs, go into enum base
     typ = SkipTypeFluff( typ );
     switch( typ->decl_type ) {
-    case TYPE_BOOL:
-        return( TYPE_BOOL );
-    case TYPE_CHAR:
-    case TYPE_UCHAR:
-        return( TYPE_CHAR );
-    case TYPE_SHORT:
-    case TYPE_USHORT:
-        return( TYPE_SHORT );
-    case TYPE_INT:
-    case TYPE_UINT:
-        return( TYPE_INT );
-    case TYPE_LONG:
-    case TYPE_ULONG:
-        return( TYPE_LONG );
-    case TYPE_LONG64:
-    case TYPE_ULONG64:
-        return( TYPE_LONG64 );
+    case TYP_BOOL:
+        return( TYP_BOOL );
+    case TYP_CHAR:
+    case TYP_UCHAR:
+        return( TYP_CHAR );
+    case TYP_SHORT:
+    case TYP_USHORT:
+        return( TYP_SHORT );
+    case TYP_INT:
+    case TYP_UINT:
+        return( TYP_INT );
+    case TYP_LONG:
+    case TYP_ULONG:
+        return( TYP_LONG );
+    case TYP_LONG64:
+    case TYP_ULONG64:
+        return( TYP_LONG64 );
     default:
         break;
     }
-    return( TYPE_UNDEFINED );
+    return( TYP_UNDEFINED );
 }
 
 /* clear the hash table of all fields that were just defined
@@ -1049,7 +1049,7 @@ void AdjModsTypeNode( TYPEPTR *ptyp, type_modifiers decl_mod, SYMPTR sym )
             }
         }
         typ = *ptyp;
-        if( typ->decl_type == TYPE_FUNCTION ) {
+        if( typ->decl_type == TYP_FUNCTION ) {
             if( CheckAdjModsTypeNode( typ->u.fn.decl_flags, decl_mod ) ) {
                 *ptyp = FuncNode( typ->object, typ->u.fn.decl_flags | decl_mod, typ->u.fn.parms );
             }
@@ -1077,7 +1077,7 @@ static target_size GetFields( TYPEPTR decl )
     static field_level_stype struct_level = 0;
 
     struct_level++;
-    prev_unqualified_type = TYPE_VOID;   /* so it doesn't match 1st time */
+    prev_unqualified_type = TYP_VOID;   /* so it doesn't match 1st time */
     start = 0;
     worst_alignment = 1;
     bits_available = 1;
@@ -1104,7 +1104,7 @@ static target_size GetFields( TYPEPTR decl )
             }
         }
         unqualified_type = UnQualifiedType( typ );
-        if( decl->decl_type == TYPE_UNION ) {
+        if( decl->decl_type == TYP_UNION ) {
             bits_total = TypeSize( typ ) * 8;
         } else if( bits_available == bits_total ) {
             bits_total = TypeSize( typ ) * 8;
@@ -1116,7 +1116,7 @@ static target_size GetFields( TYPEPTR decl )
         }
         prev_unqualified_type = unqualified_type;
         for( ;; ) {
-            if( decl->decl_type == TYPE_UNION ) {
+            if( decl->decl_type == TYP_UNION ) {
                 next_offset = start;
                 bits_available = bits_total;
             }
@@ -1307,7 +1307,7 @@ static target_size GetComplexFields( TYPEPTR decl )
     next_offset = start;
 
 
-    GetComplexFieldTypeSpecifier( &info, TYPE_DOUBLE );
+    GetComplexFieldTypeSpecifier( &info, TYP_DOUBLE );
 
     field = FieldCreate( "__ow_real" );
     field->attrib = 0;
@@ -1323,7 +1323,7 @@ static target_size GetComplexFields( TYPEPTR decl )
     if( next_offset > struct_size )
         struct_size = next_offset;
 
-    GetComplexFieldTypeSpecifier( &info, TYPE_DIMAGINARY );
+    GetComplexFieldTypeSpecifier( &info, TYP_DIMAGINARY );
 
     field = FieldCreate( "__ow_imaginary" );
     field->attrib = 0;
@@ -1381,19 +1381,19 @@ static void CheckBitfieldType( TYPEPTR typ )
         SKIP_ENUM( typ );
     }
     switch( typ->decl_type ) {
-    case TYPE_INT:
-    case TYPE_UINT:
-    case TYPE_BOOL:
+    case TYP_INT:
+    case TYP_UINT:
+    case TYP_BOOL:
         /* ANSI C only allows int and unsigned [int]; C99 adds _Bool */
         return;
-    case TYPE_CHAR:
-    case TYPE_UCHAR:
-    case TYPE_SHORT:
-    case TYPE_USHORT:
-    case TYPE_LONG:
-    case TYPE_ULONG:
-    case TYPE_LONG64:
-    case TYPE_ULONG64:
+    case TYP_CHAR:
+    case TYP_UCHAR:
+    case TYP_SHORT:
+    case TYP_USHORT:
+    case TYP_LONG:
+    case TYP_ULONG:
+    case TYP_LONG64:
+    case TYP_ULONG64:
         if( CompFlags.extensions_enabled ) {
             return;
         }
@@ -1471,12 +1471,12 @@ void WalkTagList( void (*func)(TAGPTR) )
 
 void AddTypeHash( TYPEPTR typ )
 {
-    if( typ->decl_type == TYPE_POINTER ) {
+    if( typ->decl_type == TYP_POINTER ) {
         if( typ->object != NULL ) {
             typ->next_type = PtrTypeHash[typ->object->decl_type];
             PtrTypeHash[typ->object->decl_type] = typ;
         }
-    } else if( typ->decl_type == TYPE_FUNCTION ) {
+    } else if( typ->decl_type == TYP_FUNCTION ) {
         typ->next_type = NULL;
     } else {
         typ->next_type = CTypeHash[typ->decl_type];
@@ -1508,7 +1508,7 @@ TYPEPTR ArrayNode( TYPEPTR the_object )
 {
     TYPEPTR     typ;
 
-    typ = TypeNode( TYPE_ARRAY, the_object );
+    typ = TypeNode( TYP_ARRAY, the_object );
     typ->u.array = CPermAlloc( sizeof( array_info ) );
     return( typ );
 }
@@ -1522,7 +1522,7 @@ static TYPEPTR MkPtrNode( TYPEPTR typ, type_modifiers flags,
     if( typ != NULL ) {
         ptrtyp = PtrTypeHash[typ->decl_type];
         for( ; ptrtyp != NULL; ptrtyp = ptrtyp->next_type ) {
-            if( ptrtyp->decl_type == TYPE_POINTER &&
+            if( ptrtyp->decl_type == TYP_POINTER &&
                 ptrtyp->object == typ &&
                 ptrtyp->u.p.segid == segid &&
                 ptrtyp->u.p.based_sym == base &&
@@ -1532,7 +1532,7 @@ static TYPEPTR MkPtrNode( TYPEPTR typ, type_modifiers flags,
             }
         }
     }
-    ptrtyp = TypeNode( TYPE_POINTER, typ );
+    ptrtyp = TypeNode( TYP_POINTER, typ );
     ptrtyp->u.p.decl_flags = flags;
     ptrtyp->u.p.segid = segid;
     ptrtyp->u.p.based_sym = base;
@@ -1580,7 +1580,7 @@ TYPEPTR FuncNode( TYPEPTR return_typ, type_modifiers flag, TYPEPTR *parm_types )
             }
         }
     }
-    typ = TypeNode( TYPE_FUNCTION, return_typ );
+    typ = TypeNode( TYP_FUNCTION, return_typ );
     typ->u.fn.decl_flags = flag;
     typ->u.fn.parms = parm_types;
     typ->next_type = FuncTypeHead[h];
@@ -1601,39 +1601,39 @@ target_size TypeSizeEx( TYPEPTR typ, bitfield_width *pFieldWidth )
         return( 0 );
     SKIP_TYPEDEFS( typ );
     switch( typ->decl_type ) {
-    case TYPE_CHAR:
-    case TYPE_UCHAR:
-    case TYPE_SHORT:
-    case TYPE_USHORT:
-    case TYPE_INT:
-    case TYPE_UINT:
-    case TYPE_LONG:
-    case TYPE_ULONG:
-    case TYPE_LONG64:
-    case TYPE_ULONG64:
-    case TYPE_FLOAT:
-    case TYPE_DOUBLE:
-    case TYPE_FUNCTION:
-    case TYPE_DOT_DOT_DOT:
-    case TYPE_PLAIN_CHAR:
-    case TYPE_LONG_DOUBLE:
-    case TYPE_FCOMPLEX:
-    case TYPE_DCOMPLEX:
-    case TYPE_LDCOMPLEX:
-    case TYPE_FIMAGINARY:
-    case TYPE_DIMAGINARY:
-    case TYPE_LDIMAGINARY:
-    case TYPE_BOOL:
+    case TYP_CHAR:
+    case TYP_UCHAR:
+    case TYP_SHORT:
+    case TYP_USHORT:
+    case TYP_INT:
+    case TYP_UINT:
+    case TYP_LONG:
+    case TYP_ULONG:
+    case TYP_LONG64:
+    case TYP_ULONG64:
+    case TYP_FLOAT:
+    case TYP_DOUBLE:
+    case TYP_FUNCTION:
+    case TYP_DOT_DOT_DOT:
+    case TYP_PLAIN_CHAR:
+    case TYP_LONG_DOUBLE:
+    case TYP_FCOMPLEX:
+    case TYP_DCOMPLEX:
+    case TYP_LDCOMPLEX:
+    case TYP_FIMAGINARY:
+    case TYP_DIMAGINARY:
+    case TYP_LDIMAGINARY:
+    case TYP_BOOL:
         size = CTypeSizes[typ->decl_type];
         break;
-    case TYPE_VOID:
+    case TYP_VOID:
         if( CompFlags.unix_ext ) {
             size = 1;
         } else {
             size = 0;
         }
         break;
-    case TYPE_POINTER:
+    case TYP_POINTER:
         if( typ->u.p.decl_flags & ( FLAG_FAR | FLAG_HUGE ) ) {
             size = TARGET_FAR_POINTER;
         } else if( typ->u.p.decl_flags & FLAG_NEAR ) {
@@ -1641,30 +1641,30 @@ target_size TypeSizeEx( TYPEPTR typ, bitfield_width *pFieldWidth )
         } else {
             typ = typ->object;
             SKIP_TYPEDEFS( typ );
-            if( typ->decl_type == TYPE_FUNCTION ) {
+            if( typ->decl_type == TYP_FUNCTION ) {
                 size = CodePtrSize;
             } else {
                 size = DataPtrSize;
             }
         }
         break;
-    case TYPE_ARRAY:
+    case TYP_ARRAY:
         size = typ->u.array->dimension;
         break;
-    case TYPE_STRUCT:
+    case TYP_STRUCT:
         size = typ->u.tag->size;
         if( typ->object != NULL ) {
             /* structure has a zero length array as last field */
-            typ = typ->object;  /* point to TYPE_ARRAY entry */
+            typ = typ->object;  /* point to TYP_ARRAY entry */
             size += SizeOfArg( typ );
         }
         break;
-    case TYPE_UNION:
-    case TYPE_ENUM:
+    case TYP_UNION:
+    case TYP_ENUM:
         size = typ->u.tag->size;
         break;
-    case TYPE_FIELD:
-    case TYPE_UFIELD:
+    case TYP_FIELD:
+    case TYP_UFIELD:
         size = CTypeSizes[typ->u.f.field_type];
         if( pFieldWidth != NULL ) {
             *pFieldWidth = typ->u.f.field_width;
@@ -1683,17 +1683,17 @@ target_size TypeSizeEx( TYPEPTR typ, bitfield_width *pFieldWidth )
  */
 TYPEPTR GetIntTypeBySize( target_size size, bool sign, bool exact )
 {
-    static const DATA_TYPE  s_types[] = { TYPE_CHAR, TYPE_SHORT, TYPE_INT, TYPE_LONG, TYPE_LONG64 };
-    static const DATA_TYPE  u_types[] = { TYPE_UCHAR, TYPE_USHORT, TYPE_UINT, TYPE_ULONG, TYPE_ULONG64 };
+    static const DATA_TYPE  s_types[] = { TYP_CHAR, TYP_SHORT, TYP_INT, TYP_LONG, TYP_LONG64 };
+    static const DATA_TYPE  u_types[] = { TYP_UCHAR, TYP_USHORT, TYP_UINT, TYP_ULONG, TYP_ULONG64 };
     const DATA_TYPE         *type_list;
     DATA_TYPE               type_id;
     TYPEPTR                 typ = NULL;
     unsigned                i;
 
     /* Make sure the types are laid out the way we expect */
-    assert( TYPE_BOOL == 0 );
-    assert( TYPE_CHAR == 1 );
-    assert( TYPE_FLOAT == TYPE_ULONG64 + 1 );
+    assert( TYP_BOOL == 0 );
+    assert( TYP_CHAR == 1 );
+    assert( TYP_FLOAT == TYP_ULONG64 + 1 );
 
     if( size ) {
         type_list = ( sign ) ? s_types : u_types;

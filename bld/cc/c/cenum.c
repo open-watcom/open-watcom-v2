@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -116,24 +117,24 @@ static uint64 const RangeTable[ENUM_SIZE][2] =
 
 struct { DATA_TYPE decl_type; target_size size; } ItypeTable[ENUM_SIZE] =
 {
-    { TYPE_CHAR, TARGET_CHAR  },    //S8
-    { TYPE_UCHAR,TARGET_CHAR  },    //U8
+    { TYP_CHAR, TARGET_CHAR  },    //S8
+    { TYP_UCHAR,TARGET_CHAR  },    //U8
 #if TARGET_INT == 2
-    { TYPE_INT,  TARGET_INT  },     //S16
-    { TYPE_UINT, TARGET_INT  },     //U16
+    { TYP_INT,  TARGET_INT  },     //S16
+    { TYP_UINT, TARGET_INT  },     //U16
 #else
-    { TYPE_SHORT, TARGET_SHORT },   //S16
-    { TYPE_USHORT,TARGET_SHORT },   //U16
+    { TYP_SHORT, TARGET_SHORT },   //S16
+    { TYP_USHORT,TARGET_SHORT },   //U16
 #endif
 #if TARGET_INT == 4
-    { TYPE_INT,   TARGET_INT  },    //S32
-    { TYPE_UINT,  TARGET_INT  },    //U32
+    { TYP_INT,   TARGET_INT  },    //S32
+    { TYP_UINT,  TARGET_INT  },    //U32
 #else
-    { TYPE_LONG,  TARGET_LONG },    //S32
-    { TYPE_ULONG, TARGET_LONG },    //U32
+    { TYP_LONG,  TARGET_LONG },    //S32
+    { TYP_ULONG, TARGET_LONG },    //U32
 #endif
-    { TYPE_LONG64, TARGET_LONG64  },//S64
-    { TYPE_ULONG64, TARGET_LONG64 },//U64
+    { TYP_LONG64, TARGET_LONG64  },//S64
+    { TYP_ULONG64, TARGET_LONG64 },//U64
 };
 
 static void get_msg_range( char *buff, enum enum_rng index )
@@ -166,18 +167,18 @@ TYPEPTR EnumDecl( type_modifiers flags )
                 CErr1( ERR_INCOMPLETE_ENUM_DECL );
                 typ = TypeDefault();
             } else {
-                if( typ->decl_type != TYPE_ENUM ) {
+                if( typ->decl_type != TYP_ENUM ) {
                     CErr2p( ERR_DUPLICATE_TAG, tag->name );
                 }
                 typ->u.tag = tag;
             }
             return( typ );
         }
-        tag = VfyNewTag( tag, TYPE_ENUM );
+        tag = VfyNewTag( tag, TYP_ENUM );
     } else {
         tag = NullTag();
     }
-    typ = TypeNode( TYPE_ENUM, GetType( TYPE_INT ) );
+    typ = TypeNode( TYP_ENUM, GetType( TYP_INT ) );
     typ->u.tag = tag;
     tag->sym_type = typ;
     tag->size = TARGET_INT;
@@ -226,9 +227,9 @@ TYPEPTR EnumDecl( type_modifiers flags )
                 error_loc = TokenLoc;
                 ConstExprAndType( &val );
                 switch( val.type ) {
-                case TYPE_ULONG:
-                case TYPE_UINT:
-                case TYPE_ULONG64:
+                case TYP_ULONG:
+                case TYP_UINT:
+                case TYP_ULONG64:
                     minus = false;
                     break;
                 default:

@@ -381,9 +381,9 @@ static bool COperand( void )
 #endif
     case T_CONSTANT:
         switch( ConstType ) {
-        case TYPE_FLOAT:
-        case TYPE_DOUBLE:
-        case TYPE_LONG_DOUBLE:
+        case TYP_FLOAT:
+        case TYP_DOUBLE:
+        case TYP_LONG_DOUBLE:
             CErr1( ERR_EXPR_MUST_BE_INTEGRAL );
             done = true;
             if( CompFlags.c99_extensions ) {
@@ -394,7 +394,7 @@ static bool COperand( void )
             // add long double support if available
             p.no_sign = 0;
             break;
-        case TYPE_ULONG64:
+        case TYP_ULONG64:
             if( CompFlags.c99_extensions ) {
                 p.u.uval = Constant64;
             } else {
@@ -402,7 +402,7 @@ static bool COperand( void )
             }
             p.no_sign = 1;
             break;
-        case TYPE_LONG64:
+        case TYP_LONG64:
             if( CompFlags.c99_extensions ) {
                 p.u.uval = Constant64;
             } else {
@@ -410,11 +410,11 @@ static bool COperand( void )
             }
             p.no_sign = 0;
             break;
-        case TYPE_WCHAR:
-        case TYPE_UCHAR:
-        case TYPE_USHORT:
-        case TYPE_UINT:
-        case TYPE_ULONG:
+        case TYP_WCHAR:
+        case TYP_UCHAR:
+        case TYP_USHORT:
+        case TYP_UINT:
+        case TYP_ULONG:
             U32ToU64Set( p, Constant );
             p.no_sign = 1;
             break;

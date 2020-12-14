@@ -429,11 +429,11 @@ void AsmSysMakeInlineAsmFunc( bool too_many_bytes )
         CurrEntry->next = AuxList;
         AuxList = CurrEntry;
         CurrEntry = NULL;
-        sym_handle = MakeFunction( name, FuncNode( GetType( TYPE_VOID ), FLAG_NONE, NULL ) );
+        sym_handle = MakeFunction( name, FuncNode( GetType( TYP_VOID ), FLAG_NONE, NULL ) );
         tree = LeafNode( OPR_FUNCNAME );
         tree->op.u2.sym_handle = sym_handle;
         tree = ExprNode( tree, OPR_CALL, NULL );
-        tree->u.expr_type = GetType( TYPE_VOID );
+        tree->u.expr_type = GetType( TYP_VOID );
         AddStmt( tree );
     }
     AsmFiniRelocs();

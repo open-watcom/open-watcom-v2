@@ -130,7 +130,7 @@ void SetFarHuge( SYMPTR sym, bool report )
             if( size == 0 ) {   /* unspecified array size */
                 if( sym->attribs.stg_class == SC_EXTERN ) {
                     typ = sym->sym_type;
-                    if( typ->decl_type == TYPE_ARRAY ) {
+                    if( typ->decl_type == TYP_ARRAY ) {
                         attrib |= FLAG_FAR;
                     }
                 }

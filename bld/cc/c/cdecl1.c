@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -101,7 +102,7 @@ static void FuncDefn( SYMPTR sym )
     typ = sym->sym_type->object;                /* get return type */
     SKIP_TYPEDEFS( typ );
 
-    if( typ->decl_type != TYPE_VOID ) {
+    if( typ->decl_type != TYP_VOID ) {
         if( TypeSize( typ ) == 0 ) {
             CErr2p( ERR_INCOMPLETE_TYPE, sym_name );
         }
@@ -263,21 +264,21 @@ static void  ArgPromotion( SYMPTR sym )
 
     switch( typ->decl_type ) {
 #if 0
-    case TYPE_CHAR:
-    case TYPE_UCHAR:
-    case TYPE_SHORT:
+    case TYP_CHAR:
+    case TYP_UCHAR:
+    case TYP_SHORT:
 #endif
-    case TYPE_ENUM:
-        arg_typ = GetType( TYPE_INT );
+    case TYP_ENUM:
+        arg_typ = GetType( TYP_INT );
         break;
 
 #if 0
-    case TYPE_USHORT:
-        arg_typ = GetType( TYPE_UINT );
+    case TYP_USHORT:
+        arg_typ = GetType( TYP_UINT );
         break;
 
-    case TYPE_FLOAT:
-        arg_typ = GetType( TYPE_DOUBLE );
+    case TYP_FLOAT:
+        arg_typ = GetType( TYP_DOUBLE );
         break;
 #endif
     default:
@@ -435,7 +436,7 @@ static void AddParms( void )
         h = parm->sym.info.hash;
         if( parm->sym.name[0] == '\0' ) {
             /* no name ==> ... */
-            parm->sym.sym_type = GetType( TYPE_DOT_DOT_DOT );
+            parm->sym.sym_type = GetType( TYP_DOT_DOT_DOT );
             parm->sym.attribs.stg_class = SC_AUTO;
         } else if( parm->sym.sym_type == NULL ) {
             parm->sym.sym_type = TypeDefault();
@@ -450,25 +451,25 @@ static void AddParms( void )
             SKIP_TYPEDEFS( typ );
 
             switch( typ->decl_type ) {
-            case TYPE_CHAR:
-            case TYPE_UCHAR:
-            case TYPE_SHORT:
+            case TYP_CHAR:
+            case TYP_UCHAR:
+            case TYP_SHORT:
                 if( CompFlags.strict_ANSI ) {
-                    parm->sym.sym_type = GetType( TYPE_INT );
+                    parm->sym.sym_type = GetType( TYP_INT );
                 }
                 break;
 
-            case TYPE_USHORT:
+            case TYP_USHORT:
                 if( CompFlags.strict_ANSI ) {
 #if TARGET_SHORT == TARGET_INT
-                    parm->sym.sym_type = GetType( TYPE_UINT );
+                    parm->sym.sym_type = GetType( TYP_UINT );
 #else
-                    parm->sym.sym_type = GetType( TYPE_INT );
+                    parm->sym.sym_type = GetType( TYP_INT );
 #endif
                 }
                 break;
 
-            case TYPE_FLOAT:
+            case TYP_FLOAT:
                 memcpy( &new_sym, &parm->sym, sizeof( SYM_ENTRY ) );
                 new_sym.handle = CurFunc->u.func.locals;
                 new_sym_handle = SymAdd( h, &new_sym );
@@ -476,7 +477,7 @@ static void AddParms( void )
                 SymReplace( &new_sym, new_sym_handle );
                 parm->sym.name = ".P";
                 parm->sym.flags |= SYM_REFERENCED;
-                parm->sym.sym_type = GetType( TYPE_DOUBLE );
+                parm->sym.sym_type = GetType( TYP_DOUBLE );
                 break;
 
             default:
@@ -534,7 +535,7 @@ static void ChkParms( void )
     CurFunc->u.func.parms = SYM_NULL;
     typ = *(CurFunc->sym_type->u.fn.parms);
     SKIP_TYPEDEFS( typ );
-    if( typ->decl_type != TYPE_VOID ) {
+    if( typ->decl_type != TYP_VOID ) {
         prev_sym_handle = SYM_NULL;
         prev_parm = NULL;
         for( parm = ParmList; parm != NULL; parm = parm->next_parm ) {
@@ -569,7 +570,7 @@ static void ChkParms( void )
                 SYM_ENTRY   var_parm;
 
                 if( VarParm( CurFunc ) ) {
-                    typ = ArrayNode( GetType( TYPE_CHAR ) );
+                    typ = ArrayNode( GetType( TYP_CHAR ) );
                     typ->u.array->dimension = 160;
                     sym_handle = GetNewSym( &var_parm, 'V', typ, SC_AUTO );
                     SymReplace( &var_parm, sym_handle );

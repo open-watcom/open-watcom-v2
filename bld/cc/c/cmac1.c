@@ -398,7 +398,7 @@ TOKEN SpecialMacro( MEPTR mentry )
     case MACRO_LINE:
         sprintf( Buffer, "%u", TokenLoc.line );
         Constant = TokenLoc.line;
-        ConstType = TYPE_INT;
+        ConstType = TYP_INT;
         token = T_CONSTANT;
         break;
     case MACRO_FILE:
@@ -423,7 +423,7 @@ TOKEN SpecialMacro( MEPTR mentry )
         Buffer[0] = '1';
         Buffer[1] = '\0';
         Constant = 1;
-        ConstType = TYPE_INT;
+        ConstType = TYP_INT;
         token = T_CONSTANT;
         break;
     case MACRO_STDC_VERSION:
@@ -434,7 +434,7 @@ TOKEN SpecialMacro( MEPTR mentry )
             CPYLIT( Buffer, "199409L" );
             Constant = 199409;
         }
-        ConstType = TYPE_LONG;
+        ConstType = TYP_LONG;
         token = T_CONSTANT;
         break;
     case MACRO_FUNCTION:
