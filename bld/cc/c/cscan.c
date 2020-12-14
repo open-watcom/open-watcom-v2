@@ -1616,7 +1616,7 @@ static void SkipWhiteSpace( int c )
         ScanWhiteSpace();
     } else {
         while( CharSet[c] & C_WS ) {
-            if( c != '\r' && PPControl == PPCTL_NORMAL ) {
+            if( c != '\r' && IS_PPCTL_NORMAL() ) {
                 CppPrtChar( c );
             }
             c = NextChar();
@@ -1635,7 +1635,7 @@ void SkipAhead( void )
             }
             if( CurrChar != '\n' )
                 break;
-            if( CompFlags.cpp_mode && PPControl == PPCTL_NORMAL ) {
+            if( CompFlags.cpp_mode && IS_PPCTL_NORMAL() ) {
                 CppPrtChar( '\n' );
             }
             SrcFileLoc = SrcFile->src_loc;

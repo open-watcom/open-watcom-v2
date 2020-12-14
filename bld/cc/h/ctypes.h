@@ -511,8 +511,7 @@ typedef enum ppctl_t {
     PPCTL_EOL               = 0x02, // return <end-of-line> as a token
     PPCTL_NO_LEX_ERRORS     = 0x04, // don't diagnose lexical problems
     PPCTL_ASM               = 0x08, // pre-processor is in _asm statement
-    PPCTL_NORMAL            = 0x00, // expand macros, treat <eol> as white space
-    PPCTL_NULL              = 0x00
+    PPCTL_NORMAL            = 0x00  // expand macros, treat <eol> as white space, diagnose lexical problems
 } ppctl_t;
 
 #define PPCTL_ENABLE_ASM()          PPControl |= PPCTL_ASM
@@ -523,6 +522,8 @@ typedef enum ppctl_t {
 #define PPCTL_DISABLE_MACROS()      PPControl |= PPCTL_NO_EXPAND
 #define PPCTL_ENABLE_LEX_ERRORS()   PPControl &= ~PPCTL_NO_LEX_ERRORS
 #define PPCTL_DISABLE_LEX_ERRORS()  PPControl |= PPCTL_NO_LEX_ERRORS
+
+#define IS_PPCTL_NORMAL()           ((PPControl & (PPCTL_EOL | PPCTL_NO_EXPAND)) == 0)
 
 typedef struct comp_flags {
     boolbit label_dropped                       : 1;
