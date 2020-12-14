@@ -746,8 +746,8 @@ static bool MacroBeingExpanded( MEPTR mentry )
     return( false );
 }
 
-static exp_state Expandable( MACRO_TOKEN *mtok, bool macro_parm, MEPTR mentry )
-/*****************************************************************************/
+static exp_state isExpandable( MEPTR mentry, MACRO_TOKEN *mtok, bool macro_parm )
+/*******************************************************************************/
 {
     int         lparen;
 
@@ -1251,7 +1251,7 @@ static MACRO_TOKEN *ExpandNestedMacros( MACRO_TOKEN *head, bool rescanning )
                             toklist = toklist->next;
                         }
                         toklist->next = TokenList;
-                        i = Expandable( mtok->next, false, mentry );
+                        i = isExpandable( mentry, mtok->next, false );
                         switch( i ) {
                         case EXPANDABLE_NO:     // macro is currently not expandable
                             mtok->token = T_MACRO;
@@ -1280,14 +1280,14 @@ static MACRO_TOKEN *ExpandNestedMacros( MACRO_TOKEN *head, bool rescanning )
                         }
                     }
                 } else {                        // expanding a macro parm
-                    i = Expandable( mtok->next, true, mentry );
+                    i = isExpandable( mentry, mtok->next, true );
                     switch( i ) {
-                    case EXPANDABLE_NO:
+                    case EXPANDABLE_NO:         // macro is currently not expandable
                         prev_tok = mtok;
                         mtok = mtok->next;      // advance onto next token
                         break;
-                    case EXPANDABLE_YES:
-                    case EXPANDABLE_WSSKIP:
+                    case EXPANDABLE_YES:        // macro is expandable
+                    case EXPANDABLE_WSSKIP:     // we skipped over some white space
                         old_tokenlist = TokenList;
                         TokenList = mtok->next;
                         if( head == mtok ) {
