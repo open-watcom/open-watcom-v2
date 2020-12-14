@@ -39,6 +39,47 @@
 #include "feprotos.h"
 
 
+#define L                   I64LO32
+#define H                   I64HI32
+
+#define I64Zero( a )        ( (a).u.uval.u._32[L] == 0 && (a).u.uval.u._32[H] == 0 )
+#define I64NonZero( a )     ( !I64Zero(a) )
+#define U64Zero( a )        ( (a).u.uval.u._32[L] == 0 && (a).u.uval.u._32[H] == 0 )
+#define U64NonZero( a )     ( !U64Zero(a) )
+#define U64Low( a )         ( (a).u.uval.u._32[L] )
+#define U64High( a )        ( (a).u.uval.u._32[H] )
+
+#define I64Low( a )         ( (signed_32)(a).u.uval.u._32[L] )
+#define U32ToU64Set( a, b ) U64Set( &((a).u.uval), b, 0 )
+
+#define U64LT( a, b )       ( U64Cmp( &((a).u.uval), &((b).u.uval) ) < 0 )
+#define U64GT( a, b )       ( U64Cmp( &((a).u.uval), &((b).u.uval) ) > 0 )
+#define U64LE( a, b )       ( U64Cmp( &((a).u.uval), &((b).u.uval) ) <= 0 )
+#define U64GE( a, b )       ( U64Cmp( &((a).u.uval), &((b).u.uval) ) >= 0 )
+#define U64EQ( a, b )       ( U64Cmp( &((a).u.uval), &((b).u.uval) ) == 0 )
+#define U64NE( a, b )       ( U64Cmp( &((a).u.uval), &((b).u.uval) ) != 0 )
+
+#define I64LT( a, b )       ( I64Cmp( &((a).u.sval), &((b).u.sval) ) < 0 )
+#define I64GT( a, b )       ( I64Cmp( &((a).u.sval), &((b).u.sval) ) > 0 )
+#define I64LE( a, b )       ( I64Cmp( &((a).u.sval), &((b).u.sval) ) <= 0 )
+#define I64GE( a, b )       ( I64Cmp( &((a).u.sval), &((b).u.sval) ) >= 0 )
+#define I64EQ( a, b )       ( I64Cmp( &((a).u.sval), &((b).u.sval) ) == 0 )
+#define I64NE( a, b )       ( I64Cmp( &((a).u.sval), &((b).u.sval) ) != 0 )
+
+#define U64AddEq(a,b)       U64Add( &((a).u.uval), &((b).u.uval), &((a).u.uval) );
+#define U64SubEq(a,b)       U64Sub( &((a).u.uval), &((b).u.uval), &((a).u.uval) );
+#define U64MulEq(a,b)       U64Mul( &((a).u.uval), &((b).u.uval), &((a).u.uval) );
+#define U64AndEq(a,b)       U64And( &((a).u.uval), &((b).u.uval), &((a).u.uval) );
+#define U64OrEq(a,b)        U64Or(  &((a).u.uval), &((b).u.uval), &((a).u.uval) );
+#define U64XOrEq(a,b)       U64Xor( &((a).u.uval), &((b).u.uval), &((a).u.uval) );
+
+#define I64SetZero( a )     ( I32ToI64( 0, &(a).u.sval) );
+#define U64SetZero( a )     ( U32ToU64( 0, &(a).u.uval) );
+
+#define LAST_TOKEN_PREC     ARRAY_SIZE( Prec )
+
+#define IS_OPERAND( token ) ( IS_ID_OR_KEYWORD( token ) || token == T_CONSTANT )
+
 #ifndef NDEBUG
     #define __xstr(x)   #x
     #define __location " (" __FILE__ "," __xstr(__LINE__) ")"
@@ -47,57 +88,8 @@
     #define DbgDefault( msg )
 #endif
 
-#define L       I64LO32
-#define H       I64HI32
-
-#define I64Zero( a )        ( (a).u.uval.u._32[L] == 0 && (a).u.uval.u._32[H] == 0 )
-#define I64NonZero( a )     ( !I64Zero(a) )
-#define U64Zero( a )        ( (a).u.uval.u._32[L] == 0 && (a).u.uval.u._32[H] == 0 )
-#define U64NonZero( a )     ( !U64Zero(a) )
-#define I64Low( a )         ( (signed_32)(a).u.uval.u._32[L] )
-#define U64Low( a )         ( (a).u.uval.u._32[L] )
-#define U64High( a )        ( (a).u.uval.u._32[H] )
-#define U32ToU64Set( a, b ) U64Set( &((a).u.uval), b, 0 )
-
-#define U64LT( a, b ) ( U64Cmp( &((a).u.uval), &((b).u.uval) ) < 0 )
-#define U64GT( a, b ) ( U64Cmp( &((a).u.uval), &((b).u.uval) ) > 0 )
-#define U64LE( a, b ) ( U64Cmp( &((a).u.uval), &((b).u.uval) ) <= 0 )
-#define U64GE( a, b ) ( U64Cmp( &((a).u.uval), &((b).u.uval) ) >= 0 )
-#define U64EQ( a, b ) ( U64Cmp( &((a).u.uval), &((b).u.uval) ) == 0 )
-#define U64NE( a, b ) ( U64Cmp( &((a).u.uval), &((b).u.uval) ) != 0 )
-
-#define I64LT( a, b ) ( I64Cmp( &((a).u.sval), &((b).u.sval) ) < 0 )
-#define I64GT( a, b ) ( I64Cmp( &((a).u.sval), &((b).u.sval) ) > 0 )
-#define I64LE( a, b ) ( I64Cmp( &((a).u.sval), &((b).u.sval) ) <= 0 )
-#define I64GE( a, b ) ( I64Cmp( &((a).u.sval), &((b).u.sval) ) >= 0 )
-#define I64EQ( a, b ) ( I64Cmp( &((a).u.sval), &((b).u.sval) ) == 0 )
-#define I64NE( a, b ) ( I64Cmp( &((a).u.sval), &((b).u.sval) ) != 0 )
-
-#define U64AddEq(a,b) U64Add( &((a).u.uval), &((b).u.uval), &((a).u.uval) );
-#define U64SubEq(a,b) U64Sub( &((a).u.uval), &((b).u.uval), &((a).u.uval) );
-#define U64MulEq(a,b) U64Mul( &((a).u.uval), &((b).u.uval), &((a).u.uval) );
-#define U64AndEq(a,b) U64And( &((a).u.uval), &((b).u.uval), &((a).u.uval) );
-#define U64OrEq(a,b)  U64Or(  &((a).u.uval), &((b).u.uval), &((a).u.uval) );
-#define U64XOrEq(a,b) U64Xor( &((a).u.uval), &((b).u.uval), &((a).u.uval) );
-
-#define I64SetZero( a ) ( I32ToI64( 0, &(a).u.sval) );
-#define U64SetZero( a ) ( U32ToU64( 0, &(a).u.uval) );
-
 #define Stack_forall( hdr, i ) \
     for( i = hdr; i != NULL; i = *((void **)i) )
-
-/* include _ctokens.h for the precedence values */
-static int  Prec[] = {     // table of token precedences
-    #define pick(token,string,class,oper,prec) prec,
-    #define OPERATORS_ONLY
-    #include "_ctokens.h"
-    #undef OPERATORS_ONLY
-    #undef pick
-};
-
-#define LAST_TOKEN_PREC     ARRAY_SIZE( Prec )
-
-#define IS_OPERAND( token ) ( IS_ID_OR_KEYWORD( token ) || token == T_CONSTANT )
 
 typedef struct ppvalue {
     union {
@@ -116,59 +108,31 @@ typedef struct operand_stack {
     struct operand_stack *next;
     ppvalue     value;
     loc_info    loc;
-} operand_stack;    // stack to store operands
-
-static operand_stack *HeadOperand = NULL;
+} PPEXPN_OPERAND_STACK;     // stack to store operands
 
 typedef struct operator_stack {
     struct operator_stack *next;
     TOKEN       token;
     loc_info    loc;
     int         prec;
-} operator_stack;   // stack to store operators
-
-static operator_stack   *HeadOperator = NULL;
-static int              Pos = 0;                // position of CurToken in parsing
-
-static void PrecedenceParse( ppvalue * );
-static bool CStart( void );
-static bool CRightParen( void );
-static bool CLeftParen( void );
-static bool CConditional( void );
-static bool CLogicalOr( void );
-static bool CLogicalAnd(void );
-static bool COr( void );
-static bool CXOr( void );
-static bool CAnd( void );
-static bool CEquality( void );
-static bool CRelational( void );
-static bool CShift( void );
-static bool CAdditive( void );
-static bool CMultiplicative( void );
-static bool CUnary( void );
-
-static bool ( *CExpr[] )(void) = { // table of functions to reduce expressions
-    CStart,             /* Level 0 */
-    CRightParen,        /* Level 1 */
-    CLeftParen,         /* Level 2 */
-    CConditional,       /* Level 3 */
-    CConditional,       /* Level 4 */
-    CLogicalOr,         /* Level 5 */
-    CLogicalAnd,        /* Level 6 */
-    COr,                /* Level 7 */
-    CXOr,               /* Level 8 */
-    CAnd,               /* Level 9 */
-    CEquality,          /* Level 10 */
-    CRelational,        /* Level 11 */
-    CShift,             /* Level 12 */
-    CAdditive,          /* Level 13 */
-    CMultiplicative,    /* Level 14 */
-    CUnary              /* Level 15 */
-};
+} PPEXPN_OPERATOR_STACK;    // stack to store operators
 
 typedef struct stack {
     struct stack    *next;
 } STACK;
+
+static PPEXPN_OPERAND_STACK     *HeadOperand = NULL;
+static PPEXPN_OPERATOR_STACK    *HeadOperator = NULL;
+static int                      Pos = 0;                // position of CurToken in parsing
+
+/* include _ctokens.h for the precedence values */
+static int  Prec[] = {     // table of token precedences
+    #define pick(token,string,class,oper,prec) prec,
+    #define OPERATORS_ONLY
+    #include "_ctokens.h"
+    #undef OPERATORS_ONLY
+    #undef pick
+};
 
 #ifndef NDEBUG
 static void CFatal( char *msg )
@@ -207,9 +171,9 @@ static void *StackPop( void *hdr )
 static void PushOperator( TOKEN token, loc_info *loc, int prec )
 /**************************************************************/
 {
-    operator_stack *stack_entry;
+    PPEXPN_OPERATOR_STACK *stack_entry;
 
-    stack_entry = (operator_stack *)CMemAlloc( sizeof( operator_stack ) );
+    stack_entry = (PPEXPN_OPERATOR_STACK *)CMemAlloc( sizeof( PPEXPN_OPERATOR_STACK ) );
     stack_entry->token = token;
     stack_entry->loc = *loc;
     stack_entry->prec = prec;
@@ -230,7 +194,7 @@ static void PushCurToken( int prec )
 static bool PopOperator( TOKEN *token, loc_info *loc )
 /****************************************************/
 {
-    operator_stack *stack_entry;
+    PPEXPN_OPERATOR_STACK *stack_entry;
 
     stack_entry = StackPop( &HeadOperator );
     if( stack_entry != NULL ) {
@@ -249,7 +213,7 @@ static bool PopOperator( TOKEN *token, loc_info *loc )
 static bool TopOperator( TOKEN *token, int *prec )
 /************************************************/
 {
-    operator_stack *stack_entry;
+    PPEXPN_OPERATOR_STACK *stack_entry;
 
     stack_entry = StackPop( &HeadOperator );
     if( stack_entry != NULL ) {
@@ -268,9 +232,9 @@ static bool TopOperator( TOKEN *token, int *prec )
 static void PushOperand( ppvalue p, loc_info *loc )
 /*************************************************/
 {
-    operand_stack *stack_entry;
+    PPEXPN_OPERAND_STACK *stack_entry;
 
-    stack_entry = (operand_stack *)CMemAlloc( sizeof( operand_stack ) );
+    stack_entry = (PPEXPN_OPERAND_STACK *)CMemAlloc( sizeof( PPEXPN_OPERAND_STACK ) );
     stack_entry->value = p;
     stack_entry->loc = *loc;
     StackPush( &HeadOperand, stack_entry );
@@ -289,7 +253,7 @@ static void PushOperandCurLocation( ppvalue p )
 static bool PopOperand( ppvalue *p, loc_info *loc )
 /*************************************************/
 {
-    operand_stack *stack_entry;
+    PPEXPN_OPERAND_STACK *stack_entry;
 
     stack_entry = StackPop( &HeadOperand );
     if( stack_entry != NULL ) {
@@ -309,7 +273,7 @@ static bool CheckToken( TOKEN prev_token )
 /****************************************/
 {
     if( IS_OPERAND( prev_token ) && IS_OPERAND( CurToken ) ) {
-        CErr1( ERR_CONSECUTIVE_OPERANDS ); //  can't have 2 operands in a row
+        CErr1( ERR_CONSECUTIVE_OPERANDS );  // can't have 2 operands in a row
         return( true );
     }
     if( ( CurToken == T_PLUS ) || ( CurToken == T_MINUS ) ) {
@@ -336,17 +300,6 @@ static bool PpNextToken( void )
     NextToken();
     Pos++;
     return( CheckToken( prev_token ) );
-}
-
-bool PpConstExpr( void )
-/***********************
- * Entry into ppexpn module
- */
-{
-    ppvalue val;
-
-    PrecedenceParse( &val );
-    return( I64NonZero( val ) );
 }
 
 static void unexpectedCurToken( void )
@@ -391,13 +344,13 @@ static bool COperand( void )
 
             old_ppctl = PPControl;
             PPCTL_DISABLE_MACROS();
-            NextToken(); // Don't error check: can have T_ID T_ID here
+            NextToken();        // Don't error check: can have T_ID T_ID here
             if( CurToken == T_LEFT_PAREN ) {
                 left_loc = SrcFileLoc;
-                NextToken(); // no need to error check or advance Pos
+                NextToken();    // no need to error check or advance Pos
                 PPControl = old_ppctl;
                 U32ToU64Set( p, MacroLookup( Buffer ) != NULL );
-                NextToken(); // no need to error check or advance Pos
+                NextToken();    // no need to error check or advance Pos
                 if( CurToken != T_RIGHT_PAREN ) {
                     SetErrLoc( &left_loc );
                     CErr1( ERR_UNMATCHED_LEFT_PAREN );
@@ -503,79 +456,10 @@ static bool CErrOccurred( unsigned *previous_state )
     return( false );
 }
 
-static void PrecedenceParse( ppvalue *p )
-/****************************************
- * main precedence parse algorithm
- */
-{
-    int prec_token;
-    int prec_operator;
-    bool done;
-    TOKEN top;
-    ppvalue empty;
-    loc_info loc;
-    unsigned error_info;
-
-    U32ToU64Set( *p, 0 );    //default value
-
-    if( CurToken == T_NULL ) {
-        unexpectedCurToken();
-        return;
-    }
-    CErrCheckpoint( &error_info );
-    prec_operator = 0;
-    Pos = 0;
-    loc.locn = SrcFileLoc;
-    loc.pos = Pos;
-    PushOperator( T_START, &loc, Prec[T_START] ); // problem because T_START is not a ppvalue
-    Pos++;
-    CheckToken( T_START ); // check for initial unary + or -
-    prec_operator = 0;
-    done = false;
-    while( !done ) {
-        if( IS_OPERAND( CurToken ) ) {
-            done = COperand(); // get operand and read next token
-        } else if( CurToken == T_LEFT_PAREN ) {
-            PushCurToken( Prec[T_LEFT_PAREN] ); // always push left paren
-            done = PpNextToken();
-        } else {
-            TopOperator( &top, &prec_operator );
-            if( CurToken < LAST_TOKEN_PREC ) {
-                prec_token = Prec[CurToken];
-                if( prec_token < prec_operator
-                  || ( ( prec_token == prec_operator ) && ( prec_token != PREC_UNARY ) ) ) {
-                    done = CExpr[prec_operator](); // reduce
-                } else {
-                    PushCurToken( prec_token ); // shift
-                    done = PpNextToken();
-                }
-            } else {
-                unexpectedCurToken();
-                done = true;
-            }
-        }
-    }
-    if( !CErrOccurred( &error_info ) ) {
-        PopOperand( p, NULL );
-        if( PopOperand( &empty, &loc ) ) {
-            SetErrLoc( &loc.locn );
-            CErr1( ERR_EXTRA_OPERAND );
-        }
-    }
-    if( CErrOccurred( &error_info ) ) {
-        // scan until EOL (T_NULL) to avoid multiple messages
-        while( CurToken != T_NULL ) {
-            NextToken();
-        }
-    }
-    // empty stacks
-    while( PopOperand( NULL, NULL ) ); // free stack
-    while( PopOperator( NULL, NULL ) ); // free stack
-}
-
 static bool CRightParen( void )
-/*****************************/
-// reduce extra )
+/******************************
+ * reduce extra )
+ */
 {
     TOKEN right_paren;
     loc_info right_info;
@@ -589,8 +473,9 @@ static bool CRightParen( void )
 }
 
 static bool CLeftParen( void )
-/****************************/
-// reduce (expr)
+/*****************************
+ * reduce (expr)
+ */
 {
     TOKEN left_paren;
     loc_info left_info;
@@ -598,7 +483,7 @@ static bool CLeftParen( void )
     ppvalue e1;
 
     PopOperator( &left_paren, &left_info );
-    if( CurToken != T_RIGHT_PAREN ) { // expect ) as current token
+    if( CurToken != T_RIGHT_PAREN ) {   // expect ) as current token
         SetErrLoc( &left_info.locn );
         CErr1( ERR_UNMATCHED_LEFT_PAREN );
         return( true );
@@ -615,8 +500,9 @@ static bool CLeftParen( void )
 }
 
 static bool CConditional( void )
-/******************************/
-// reduce an a?b:c expression
+/*******************************
+ * reduce an a?b:c expression
+ */
 {
     loc_info e1_info;
     loc_info e2_info;
@@ -659,7 +545,8 @@ static bool CConditional( void )
     if( PopOperand( &e3, &e3_info ) && ( e3_info.pos > op2_info.pos ) ) {
         if( PopOperand( &e2, &e2_info ) && ( e2_info.pos < op2_info.pos ) &&
             ( e2_info.pos > op1_info.pos ) ) {
-            if( PopOperand( &e1, &e1_info ) && ( e1_info.pos < op1_info.pos ) ) {
+            if( PopOperand( &e1, &e1_info ) &&
+                ( e1_info.pos < op1_info.pos ) ) {
                 if( I64NonZero( e1 ) ) {
                     e1.u.sval = e2.u.sval;
                 } else {
@@ -669,23 +556,24 @@ static bool CConditional( void )
                 PushOperand( e1, &e1_info );
                 return( false );
             } else {
-                SetErrLoc( &op1_info.locn ); // missing a in a?b:c
+                SetErrLoc( &op1_info.locn );    // missing a in a?b:c
                 CErr1( ERR_CONDITIONAL_MISSING_FIRST_OPERAND );
             }
         } else {
-            SetErrLoc( &op1_info.locn ); // missing b in a?b:c
+            SetErrLoc( &op1_info.locn );        // missing b in a?b:c
             CErr1( ERR_CONDITIONAL_MISSING_SECOND_OPERAND );
         }
     } else {
-        SetErrLoc( &op2_info.locn ); // missing c in a?b:c
+        SetErrLoc( &op2_info.locn );            // missing c in a?b:c
         CErr1( ERR_CONDITIONAL_MISSING_THIRD_OPERAND );
     }
     return( true );
 }
 
 static bool Binary( TOKEN *token, ppvalue *e1, ppvalue *e2, loc_info *loc )
-/*************************************************************************/
-// pop binary operand and two operands, error check
+/**************************************************************************
+ * pop binary operand and two operands, error check
+ */
 {
     loc_info e1_info;
     loc_info e2_info;
@@ -707,8 +595,9 @@ static bool Binary( TOKEN *token, ppvalue *e1, ppvalue *e2, loc_info *loc )
 }
 
 static bool CLogicalOr( void )
-/****************************/
-// reduce a || b
+/*****************************
+ * reduce a || b
+ */
 {
     ppvalue e1;
     ppvalue e2;
@@ -716,14 +605,14 @@ static bool CLogicalOr( void )
     TOKEN token;
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
-        if( I64Zero( e1 ) ) {           // e1 is zero, so consider e2
-            if( I64NonZero( e2 ) ) {    // e2 non-zero
-                U32ToU64Set( e1, 1 );   // answer is 1
+        if( I64Zero( e1 ) ) {               // e1 is zero, so consider e2
+            if( I64NonZero( e2 ) ) {        // e2 non-zero
+                U32ToU64Set( e1, 1 );       // answer is 1
             } else {
-                I64SetZero(e1);
+                I64SetZero( e1 );
             }
         } else {
-            U32ToU64Set( e1, 1 );       // answer is 1
+            U32ToU64Set( e1, 1 );           // answer is 1
         }
         e1.no_sign = 0;
         PushOperand( e1, &loc );
@@ -733,8 +622,9 @@ static bool CLogicalOr( void )
 }
 
 static bool CLogicalAnd( void )
-/*****************************/
-// reduce a && b
+/******************************
+ * reduce a && b
+ */
 {
     ppvalue e1;
     ppvalue e2;
@@ -742,11 +632,11 @@ static bool CLogicalAnd( void )
     TOKEN token;
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
-        if( I64NonZero( e1 ) ) {        // e1 is non-zero
-            if( I64Zero( e2 ) ) {       // e2 is zero
+        if( I64NonZero( e1 ) ) {            // e1 is non-zero
+            if( I64Zero( e2 ) ) {           // e2 is zero
                 e1.u.sval = e2.u.sval;
             } else {
-                U32ToU64Set( e1, 1 );   // answer is 1
+                U32ToU64Set( e1, 1 );       // answer is 1
             }
         }
         // else e1 is already zero
@@ -758,8 +648,9 @@ static bool CLogicalAnd( void )
 }
 
 static bool COr( void )
-/*********************/
-// reduce a|b
+/**********************
+ * reduce a|b
+ */
 {
     ppvalue e1;
     ppvalue e2;
@@ -780,8 +671,9 @@ static bool COr( void )
 }
 
 static bool CXOr( void )
-/**********************/
-// reduce a^b
+/***********************
+ * reduce a^b
+ */
 {
     ppvalue e1;
     ppvalue e2;
@@ -802,8 +694,9 @@ static bool CXOr( void )
 }
 
 static bool CAnd( void )
-/**********************/
-// reduce a&b
+/***********************
+ * reduce a&b
+ */
 {
     ppvalue e1;
     ppvalue e2;
@@ -824,8 +717,9 @@ static bool CAnd( void )
 }
 
 static bool CEquality( void )
-/***************************/
-// reduce a == b or a != b
+/****************************
+ * reduce a == b or a != b
+ */
 {
     ppvalue e1;
     ppvalue e2;
@@ -848,8 +742,9 @@ static bool CEquality( void )
 }
 
 static bool CRelational( void )
-/*****************************/
-// reduce a<b, a>b, a<=b, or a>=b
+/******************************
+ * reduce a<b, a>b, a<=b, or a>=b
+ */
 {
     ppvalue e1;
     ppvalue e2;
@@ -933,8 +828,9 @@ static bool CRelational( void )
 }
 
 static bool CShift( void )
-/************************/
-// reduce a<<b or a>>b
+/*************************
+ * reduce a<<b or a>>b
+ */
 {
     ppvalue e1;
     ppvalue e2;
@@ -945,7 +841,7 @@ static bool CShift( void )
         switch( token ) {
         case T_RSHIFT:
             if( CompFlags.c99_extensions ) {
-                if( U64Low(e2) > 64 || ( U64High( e2 ) != 0 ) ) {
+                if( U64Low( e2 ) > 64 || ( U64High( e2 ) != 0 ) ) {
                     if( e1.no_sign ) {
                         U64SetZero( e1 );
                     } else {
@@ -963,7 +859,7 @@ static bool CShift( void )
                     }
                 }
             } else {
-                if( U64Low(e2) > 32 || ( U64High( e2 ) != 0 ) ) {
+                if( U64Low( e2 ) > 32 || ( U64High( e2 ) != 0 ) ) {
                     if( e1.no_sign ) {
                         U64SetZero( e1 );
                     } else {
@@ -984,13 +880,13 @@ static bool CShift( void )
             break;
         case T_LSHIFT:
             if( CompFlags.c99_extensions ) {
-                if( U64Low(e2) > 64 || ( U64High( e2 ) != 0 ) ) {
+                if( U64Low( e2 ) > 64 || ( U64High( e2 ) != 0 ) ) {
                     U64SetZero( e1 );
                 } else {
                     U64ShiftL( &(e1.u.uval), U64Low( e2 ), &e1.u.uval );
                 }
             } else {
-                if( U64Low(e2) > 32 || ( U64High( e2 ) != 0 ) ) {
+                if( U64Low( e2 ) > 32 || ( U64High( e2 ) != 0 ) ) {
                     U64SetZero( e1 );
                 } else {
                     U32ToU64Set( e1, U64Low( e1 ) << U64Low( e2 ) );
@@ -1006,8 +902,9 @@ static bool CShift( void )
 }
 
 static bool CAdditive( void )
-/***************************/
-// reduce a+b or a-b
+/****************************
+ * reduce a+b or a-b
+ */
 {
     ppvalue e1;
     ppvalue e2;
@@ -1042,8 +939,9 @@ static bool CAdditive( void )
 
 
 static bool CMultiplicative( void )
-/*********************************/
-// reduce a/b or a*b
+/**********************************
+ * reduce a/b or a*b
+ */
 {
     ppvalue e1;
     ppvalue e2;
@@ -1111,8 +1009,9 @@ static bool CMultiplicative( void )
 }
 
 static bool CUnary( void )
-/************************/
-// reduce +a or -a or !a or ~a
+/*************************
+ * reduce +a or -a or !a or ~a
+ */
 {
     ppvalue p;
     loc_info operator_info;
@@ -1229,6 +1128,106 @@ TOKEN Process_Pragma( bool internal )
     return( CurToken );
 }
 #endif
+
+static bool ( *CExpr[] )(void) = { // table of functions to reduce expressions
+    CStart,             /* Level 0 */
+    CRightParen,        /* Level 1 */
+    CLeftParen,         /* Level 2 */
+    CConditional,       /* Level 3 */
+    CConditional,       /* Level 4 */
+    CLogicalOr,         /* Level 5 */
+    CLogicalAnd,        /* Level 6 */
+    COr,                /* Level 7 */
+    CXOr,               /* Level 8 */
+    CAnd,               /* Level 9 */
+    CEquality,          /* Level 10 */
+    CRelational,        /* Level 11 */
+    CShift,             /* Level 12 */
+    CAdditive,          /* Level 13 */
+    CMultiplicative,    /* Level 14 */
+    CUnary              /* Level 15 */
+};
+
+static void PrecedenceParse( ppvalue *p )
+/****************************************
+ * main precedence parse algorithm
+ */
+{
+    int prec_token;
+    int prec_operator;
+    bool done;
+    TOKEN top;
+    ppvalue empty;
+    loc_info loc;
+    unsigned error_info;
+
+    U32ToU64Set( *p, 0 );    //default value
+
+    if( CurToken == T_NULL ) {
+        unexpectedCurToken();
+        return;
+    }
+    CErrCheckpoint( &error_info );
+    prec_operator = 0;
+    Pos = 0;
+    loc.locn = SrcFileLoc;
+    loc.pos = Pos;
+    PushOperator( T_START, &loc, Prec[T_START] ); // problem because T_START is not a ppvalue
+    Pos++;
+    CheckToken( T_START ); // check for initial unary + or -
+    prec_operator = 0;
+    done = false;
+    while( !done ) {
+        if( IS_OPERAND( CurToken ) ) {
+            done = COperand(); // get operand and read next token
+        } else if( CurToken == T_LEFT_PAREN ) {
+            PushCurToken( Prec[T_LEFT_PAREN] ); // always push left paren
+            done = PpNextToken();
+        } else {
+            TopOperator( &top, &prec_operator );
+            if( CurToken < LAST_TOKEN_PREC ) {
+                prec_token = Prec[CurToken];
+                if( prec_token < prec_operator
+                  || ( ( prec_token == prec_operator ) && ( prec_token != PREC_UNARY ) ) ) {
+                    done = CExpr[prec_operator](); // reduce
+                } else {
+                    PushCurToken( prec_token ); // shift
+                    done = PpNextToken();
+                }
+            } else {
+                unexpectedCurToken();
+                done = true;
+            }
+        }
+    }
+    if( !CErrOccurred( &error_info ) ) {
+        PopOperand( p, NULL );
+        if( PopOperand( &empty, &loc ) ) {
+            SetErrLoc( &loc.locn );
+            CErr1( ERR_EXTRA_OPERAND );
+        }
+    }
+    if( CErrOccurred( &error_info ) ) {
+        // scan until EOL (T_NULL) to avoid multiple messages
+        while( CurToken != T_NULL ) {
+            NextToken();
+        }
+    }
+    // empty stacks
+    while( PopOperand( NULL, NULL ) ); // free stack
+    while( PopOperator( NULL, NULL ) ); // free stack
+}
+
+bool PpConstExpr( void )
+/***********************
+ * Entry into ppexpn module
+ */
+{
+    ppvalue val;
+
+    PrecedenceParse( &val );
+    return( I64NonZero( val ) );
+}
 
 void InitPPexpn( void )
 /*********************/
