@@ -42,6 +42,7 @@
 #include "yydriver.h"
 #include "carve.h"
 #include "dumpapi.h"
+#include "cscanbuf.h"
 
 
 #define FUNCTION_not_expandable (CompFlags.cpp_output)
@@ -170,18 +171,6 @@ static void deleteNestedMacro( void )
     }
 }
 
-static size_t copyMTokToBuffer( MACRO_TOKEN *mtok )
-{
-    const char  *s;
-    size_t      len;
-
-    s = mtok->data;
-    len = strlen( s );
-    memcpy( Buffer, s, len + 1 );
-    return( len );
-}
-
-
 static TOKEN doGetMacroToken(       // GET NEXT TOKEN
     bool internal,                  // - list of tokens
     bool doing_macro_expansion )    // - true ==> doing an expansion
@@ -207,7 +196,7 @@ static TOKEN doGetMacroToken(       // GET NEXT TOKEN
         }
         if( (token = mtok->token) != T_NULL ) {
             keep_token = false;
-            TokenLen = copyMTokToBuffer( mtok );
+            WriteBufferStr( mtok->data );
             switch( token ) {
             case T_SAVED_ID:
                 if( doing_macro_expansion ) {
@@ -272,31 +261,6 @@ TOKEN GetMacroToken(                // GET NEXT TOKEN
     return( doGetMacroToken( false, doing_macro_expansion ) );
 }
 
-static size_t copySafe( size_t i, const char *m )
-{
-    for( ;; ) {
-        if( i >= ( BUF_SIZE - 4 ) ) {
-            CErr1( ERR_TOKEN_TRUNCATED );
-            macroDiagNesting();
-            Buffer[i] = '\0';
-            break;
-        }
-        if(( Buffer[i] = *m++ ) == 0 )
-            break;
-        ++i;
-        if(( Buffer[i] = *m++ ) == 0 )
-            break;
-        ++i;
-        if(( Buffer[i] = *m++ ) == 0 )
-            break;
-        ++i;
-        if(( Buffer[i] = *m++ ) == 0 )
-            break;
-        ++i;
-    }
-    return( i );
-}
-
 static size_t expandMacroToken( size_t i, MACRO_TOKEN *m )
 {
     switch( m->token ) {
@@ -306,39 +270,22 @@ static size_t expandMacroToken( size_t i, MACRO_TOKEN *m )
     case T_UNEXPANDABLE_ID:
     case T_SAVED_ID:
     case T_BAD_TOKEN:
-        i = copySafe( i, m->data );
+        i = WriteBufferPosStr( i, m->data );
         break;
     case T_LSTRING:
-        Buffer[i++] = 'L';
+        i = WriteBufferPosChar( i, 'L' );
         /* fall through */
     case T_STRING:
-        Buffer[i++] = '"';
-        i = copySafe( i, m->data );
-        Buffer[i++] = '"';
-        Buffer[i] = '\0';
+        i = WriteBufferPosChar( i, '"' );
+        i = WriteBufferPosStr( i, m->data );
+        i = WriteBufferPosChar( i, '"' );
+        WriteBufferPosNullChar( i );
         break;
     default:
-        i = copySafe( i, Tokens[m->token] );
+        i = WriteBufferPosStr( i, Tokens[m->token] );
     }
     return( i );
 }
-
-
-static size_t file_name_copy(   // COPY STRING, ESCAPING ANY BACKSLASHES
-    char *dst,                  // - destination
-    const char *src )           // - source
-{
-    char *org = dst;
-    while( *src != '\0' ) {
-        if( *src == '\\' ) {
-            *dst++ = '\\';
-        }
-        *dst++ = *src++;
-    }
-    *dst = *src;
-    return( dst - org );
-}
-
 
 static size_t genFUNCTION(
     void )
@@ -350,31 +297,30 @@ static size_t genFUNCTION(
     sym = ParseCurrFunction();
     if( sym != NULL ) {
         FormatSymWithTypedefs( sym, &buff );
-        len = VbufLen( &buff );
-        if( len >= BUF_SIZE ) {
-            len = BUF_SIZE;
-        }
-        memcpy( Buffer, VbufString( &buff ), len );
+        len = WriteBufferPosStr( 0, VbufString( &buff ) );
         VbufFree( &buff );
     } else {
         Buffer[0] = '?';
+        Buffer[1] = '\0';
         len = 1;
     }
-    Buffer[len] = '\0';
     return( len );
 }
 
 TOKEN SpecialMacro(             // EXECUTE A SPECIAL MACRO
     MEPTR mentry )              // - macro entry
 {
+    const char *p;
+
     switch( mentry->parm_count ) {
     case MACRO_LINE:
-        sprintf( Buffer, "%u", TokenLine );
+        TokenLen = sprintf( Buffer, "%u", TokenLine );
         U32ToU64( TokenLine, &Constant64 );
         ConstType = TYP_SINT;
         return( T_CONSTANT );
     case MACRO_FILE:
-        TokenLen = file_name_copy( Buffer, SrcFileNameCurrent() ) + 1;
+        p = SrcFileNameCurrent();
+        TokenLen = WriteBufferPosEscStr( 0, &p, false ) + 1;
         return( T_STRING );
     case MACRO_DATE:
         strcpy( Buffer, __Date );
@@ -387,15 +333,15 @@ TOKEN SpecialMacro(             // EXECUTE A SPECIAL MACRO
     case MACRO_FUNCTION:
     case MACRO_FUNC:
         if( FUNCTION_not_expandable ) {
-            TokenLen = strlen( SpcMacros[mentry->parm_count].name ) + 1;
-            memcpy( Buffer, SpcMacros[mentry->parm_count].name, TokenLen );
+            TokenLen = WriteBufferPosStr( 0, SpcMacros[mentry->parm_count].name ) + 1;
             return( T_ID );
         }
-        TokenLen = genFUNCTION() + 1;
+        TokenLen = genFUNCTION();
         return( T_STRING );
     case MACRO_CPLUSPLUS:
         Buffer[0] = '1';
         Buffer[1] = '\0';
+        TokenLen = 1;
         U32ToU64( 1, &Constant64 );
         ConstType = TYP_SINT;
         return( T_CONSTANT );
@@ -1039,25 +985,12 @@ static MACRO_TOKEN *glueTokens( MACRO_TOKEN *head )
     return( head );
 }
 
-static MACRO_TOKEN **snapString( MACRO_TOKEN **ptail, size_t i )
-{
-    Buffer[i] = '\0';
-    TokenLen = i + 1;
-    ptail = buildTokenOnEnd( ptail, T_STRING, Buffer );
-    return( ptail );
-}
-
 static MACRO_TOKEN **buildString( MACRO_TOKEN **ptail, const char *p )
 {
-    MACRO_TOKEN **old_ptail;
-    const char  *token_str;
-    size_t      len;
     size_t      i;
     size_t      last_non_ws;
-    char        c;
     TOKEN       tok;
 
-    old_ptail = ptail;
     i = 0;
     last_non_ws = 0;
     // skip leading whitespace
@@ -1066,76 +999,44 @@ static MACRO_TOKEN **buildString( MACRO_TOKEN **ptail, const char *p )
     }
     while( (tok = *(TOKEN *)p) != T_NULL ) {
         p += sizeof( TOKEN );
-        if( i >= ( BUF_SIZE - 8 ) ) {
-            DbgAssert( tok != T_WHITE_SPACE && *(TOKEN *)p != T_NULL );
-            ptail = snapString( ptail, i );
-            i = 0;
-            last_non_ws = 0;
-        }
         switch( tok ) {
         case T_WHITE_SPACE:
             while( *(TOKEN *)p == T_WHITE_SPACE ) {
                 p += sizeof( TOKEN );
             }
-            Buffer[i++] = ' ';
+            i = WriteBufferPosChar( i, ' ' );
             break;
         case T_CONSTANT:
         case T_PPNUMBER:
         case T_ID:
         case T_UNEXPANDABLE_ID:
         case T_BAD_TOKEN:
-            for( ; (c = *p++) != '\0'; ) {
-                if( c == '\\' ) {
-                    Buffer[i++] = c;
-                }
-                Buffer[i++] = c;
-                if( i >= ( BUF_SIZE - 8 ) ) {
-                    ptail = snapString( ptail, i );
-                    i = 0;
-                }
-            }
+            i = WriteBufferPosEscStr( i, &p, false );
             last_non_ws = i;
             break;
         case T_LSTRING:
-            Buffer[i++] = 'L';
+            i = WriteBufferPosChar( i, 'L' );
             /* fall through */
         case T_STRING:
-            Buffer[i++] = '\\';
-            Buffer[i++] = '"';
-            for( ; (c = *p++) != '\0'; ) {
-                if( c == '\\' || c == '"' ) {
-                    Buffer[i++] = '\\';
-                }
-                Buffer[i++] = c;
-                if( i >= ( BUF_SIZE - 8 ) ) {
-                    ptail = snapString( ptail, i );
-                    i = 0;
-                }
-            }
-            Buffer[i++] = '\\';
-            Buffer[i++] = '"';
+            i = WriteBufferPosChar( i, '\\' );
+            i = WriteBufferPosChar( i, '"' );
+            i = WriteBufferPosEscStr( i, &p, true );
+            i = WriteBufferPosChar( i, '\\' );
+            i = WriteBufferPosChar( i, '"' );
             last_non_ws = i;
             break;
         case T_BAD_CHAR:
-            Buffer[i++] = *p++;
+            i = WriteBufferPosChar( i, *p++ );
             last_non_ws = i;
             break;
         default:
-            token_str = Tokens[tok];
-            len = strlen( token_str );
-            if( i >= ( BUF_SIZE - len ) ) {
-                ptail = snapString( ptail, i );
-                i = 0;
-            }
-            memcpy( &Buffer[i], token_str, len );
-            i += len;
+            i = WriteBufferPosStr( i, Tokens[tok] );
             last_non_ws = i;
             break;
         }
     }
-    if( last_non_ws != 0 || old_ptail == ptail ) {
-        ptail = snapString( ptail, last_non_ws );
-    }
+    WriteBufferPosNullChar( last_non_ws );
+    ptail = buildTokenOnEnd( ptail, T_STRING, Buffer );
     return( ptail );
 }
 
