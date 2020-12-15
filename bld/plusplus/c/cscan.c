@@ -41,6 +41,7 @@
 #include "name.h"
 #include "context.h"
 #include "unicode.h"
+#include "cscanbuf.h"
 
 
 #if defined(__DOS__) || defined(__OS2__) || defined(__NT__)
@@ -212,14 +213,7 @@ static int saveNextChar( void )
     int c;
 
     c = NextChar();
-    if( TokenLen < BUF_SIZE - 2 ) {
-        Buffer[TokenLen++] = c;
-    } else if( TokenLen == BUF_SIZE - 2 ) {
-        if( SkipLevel == NestLevel ) {
-            CErr1( ERR_TOKEN_TRUNCATED );
-        }
-        ++TokenLen;
-    }
+    WriteBufferChar( c );
     return( c );
 }
 
@@ -698,23 +692,13 @@ static TOKEN doScanFloat( void )
     }
 }
 
-static void willContinueStringLater( type_id string_type )
-{
-    if( string_type == TYP_WCHAR ) {
-        CurrChar = LCHR_CONTINUE_LSTRING;
-    } else {
-        CurrChar = LCHR_CONTINUE_STRING;
-    }
-    ++TokenLen;
-}
-
 static TOKEN doScanString( type_id string_type, bool expanding )
 {
     int c;
-    int ok;
+    bool ok;
 
     SrcFileSetSwEnd( true );
-    ok = 0;
+    ok = false;
     c = NextChar();
     Buffer[0] = c;
     TokenLen = 1;
@@ -724,19 +708,12 @@ static TOKEN doScanString( type_id string_type, bool expanding )
         if( c == LCHR_EOF )
             break;
         if( c == '"' ) {
-            ok = 2;
+            ok = true;
             break;
         }
         if( c == '\\' ) {
-            if( TokenLen > BUF_SIZE - 32 ) {
-                unGetChar( c );
-                // break long strings apart (parser will join them)
-                willContinueStringLater( string_type );
-                ok = 1;
-                break;
-            }
             c = NextChar();
-            Buffer[TokenLen++] = c;
+            WriteBufferChar( c );
             if(( CharSet[c] & C_WS ) == 0 ) {
                 doESCChar( c, expanding, string_type );
             }
@@ -745,24 +722,16 @@ static TOKEN doScanString( type_id string_type, bool expanding )
             if( CharSet[c] & C_DB ) {
                 // if first char of a double-byte char, grab next one
                 c = NextChar();
-                Buffer[TokenLen++] = c;
-            }
-            if( TokenLen > BUF_SIZE - 32 ) {
-                // break long strings apart (parser will join them)
-                willContinueStringLater( string_type );
-                ok = 1;
-                break;
+                WriteBufferChar( c );
             }
             c = NextChar();
-            Buffer[TokenLen++] = c;
+            WriteBufferChar( c );
         }
     }
     SrcFileSetSwEnd( false );
-    Buffer[TokenLen - 1] = '\0';
+    WriteBufferPosNullChar( TokenLen - 1 );
     if( ok ) {
-        if( ok == 2 ) {
-            NextChar();
-        }
+        NextChar();
         if( string_type == TYP_WCHAR ) {
             return( T_LSTRING );
         }
@@ -771,7 +740,7 @@ static TOKEN doScanString( type_id string_type, bool expanding )
     // '\n' or LCHR_EOF don't print nicely
     --TokenLen;
     if( TokenLen > 0 )
-        Buffer[TokenLen - 1] = '\0';
+        WriteBufferPosNullChar( TokenLen - 1 );
     BadTokenInfo = ERR_MISSING_QUOTE;
     return( T_BAD_TOKEN );
 }
@@ -1560,18 +1529,6 @@ static TOKEN scanString( bool expanding )
     return( doScanString( TYP_CHAR, expanding ) );
 }
 
-static TOKEN scanStringContinue( bool expanding )
-{
-    SrcFileCurrentLocation();
-    return( doScanString( TYP_CHAR, expanding ) );
-}
-
-static TOKEN scanLStringContinue( bool expanding )
-{
-    SrcFileCurrentLocation();
-    return( doScanString( TYP_WCHAR, expanding ) );
-}
-
 static TOKEN scanCharConst( bool expanding )
 {
     SrcFileCurrentLocation();
@@ -1672,8 +1629,6 @@ void ScanInit( void )
     memset( &ClassTable['a'], SCAN_NAME, 26 );
     memset( &ClassTable['0'], SCAN_NUM, 10 );
     ClassTable[LCHR_EOF] = SCAN_EOF;
-    ClassTable[LCHR_CONTINUE_STRING] = SCAN_STRING2;
-    ClassTable[LCHR_CONTINUE_LSTRING] = SCAN_LSTRING2;
     for( p = InitClassTable; *p != '\0'; p += 2 ) {
         ClassTable[p[0]] = p[1];
     }

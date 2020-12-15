@@ -38,8 +38,6 @@ pick( SCAN_DELIM2,        scanDelim2          ) // 1-4 characters delimiter
 pick( SCAN_SLASH,         scanSlash           ) // /, /=, // comment, or /* comment */
 pick( SCAN_DOT,           scanDot             ) // .
 pick( SCAN_STRING,        scanString          ) // "string"
-pick( SCAN_STRING2,       scanStringContinue  ) // "string" continued
-pick( SCAN_LSTRING2,      scanLStringContinue ) // L"string" continued
 pick( SCAN_CHARCONST,     scanCharConst       ) // 'a'
 pick( SCAN_CR,            scanCarriageReturn  ) // '\r'
 pick( SCAN_NEWLINE,       scanNewline         ) // '\n'

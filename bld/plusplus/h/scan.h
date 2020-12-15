@@ -38,8 +38,6 @@
 
 enum {
     LCHR_EOF            = 0x0100,       /* last char in program source */
-    LCHR_CONTINUE_STRING,               /* string concatenation in progress */
-    LCHR_CONTINUE_LSTRING,              /* wide string concatenation in progress */
     LCHR_MAX
 };
 
