@@ -113,10 +113,7 @@ global  char        *WholeFName;        /* whole file name with suffix */
 global  char        PreProcChar;        /* preprocessor directive indicator */
 global  int         SwitchChar;         // DOS switch character
 
-// token buffer
-// extra 16 is for unrolled scanning loops
-// extra uint_32 is for buffer overrun checking in debugging compiler
-//global  char        Buffer[BUF_SIZE + 16 + sizeof( uint_32 )];
+// token buffer, dynamicaly allocated
 global  char        *Buffer;
 
 extern  int         (*NextChar)( void );    // next-character routine (initialized in SRCFILE)

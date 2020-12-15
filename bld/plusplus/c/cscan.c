@@ -51,11 +51,6 @@
     #error SYS_EOF_CHAR is not set for this system
 #endif
 
-#ifndef NDEBUG
-#define _BufferOverrun (*((uint_32*)(&Buffer[sizeof(Buffer)-sizeof(uint_32)])))
-#define BUFFER_OVERRUN_CHECK    (0x35791113)
-#endif
-
 static void             nextMacroToken( void );
 static token_source_fn  *tokenSource;
 
@@ -824,7 +819,6 @@ static TOKEN doScanName( int c, bool expanding )
             }
         }
         DoMacroExpansion( mentry );
-        DbgAssert( _BufferOverrun == BUFFER_OVERRUN_CHECK );
         token = GetMacroToken( false );
         if( token == T_NULL ) {
             token = T_WHITE_SPACE;
@@ -1587,7 +1581,6 @@ static TOKEN scanCharConst( bool expanding )
 
 static TOKEN scanNewline( bool expanding )
 {
-    DbgAssert( _BufferOverrun == BUFFER_OVERRUN_CHECK );
     if( PPControl & PPCTL_EOL ) {
         return( T_NULL );
     }
@@ -1598,7 +1591,6 @@ static TOKEN scanCarriageReturn( bool expanding )
 {
     int         c;
 
-    DbgAssert( _BufferOverrun == BUFFER_OVERRUN_CHECK );
     // under DOS-like systems, '\r' is often followed by '\n'
     // so we perform a quick check and perform the '\n' code right away
     c = NextChar();
@@ -1631,8 +1623,6 @@ static TOKEN scanInvalid( bool expanding )
 
 static TOKEN scanEof( bool expanding )
 {
-    DbgAssert( _BufferOverrun == BUFFER_OVERRUN_CHECK );
-
     /* unused parameters */ (void)expanding;
 
     return( T_EOF );
@@ -1672,9 +1662,6 @@ void ScanInit( void )
 {
     uint_8  *p;
 
-#ifndef NDEBUG
-    _BufferOverrun = BUFFER_OVERRUN_CHECK;
-#endif
     tokenSource = nextMacroToken;
     ReScanPtr = NULL;
     PPControl = PPCTL_NORMAL;
