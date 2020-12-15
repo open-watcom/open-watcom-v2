@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,6 +63,7 @@
 
 EXIT_BEG( mem_management )      // memory manager
   EXIT_REG( memmgr )
+  EXIT_REG( membuf )
 EXIT_END
 
 // constraints:
