@@ -1399,6 +1399,7 @@ static TOKEN scanDelim2( bool expanding )
 
     /* unused parameters */ (void)expanding;
 
+    SrcFileCurrentLocation();
     token = TokValue[CurrChar];
     Buffer[0] = CurrChar;
     TokenLen = 1;
