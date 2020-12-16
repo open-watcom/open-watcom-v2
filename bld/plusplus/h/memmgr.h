@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,12 +36,12 @@
 
 extern void CMemRegisterCleanup( void (*)( void ) );
 extern void *CMemAlloc( size_t );
-extern void CMemFree(void *);
-extern void CMemFreePtr(void *);
+extern void CMemFree( void * );
+extern void CMemFreePtr( void * );
 extern void *CPermAlloc( size_t );
 
 #ifndef NDEBUG
-extern void CMemDeferredFree(void *);
+extern void CMemDeferredFree( void * );
 #endif
 
 #endif

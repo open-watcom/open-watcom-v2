@@ -522,13 +522,10 @@ PTREE NodeRemoveCasts(          // REMOVE CASTING FROM NODE
     PTREE node )                // - starting node
 {
     while( NodeIsBinaryOp( node, CO_CONVERT ) ) {
-
         node = node->u.subtree[1];
-
         while( ( node->op == PT_BINARY )
             && ( node->cgop == CO_COMMA )
             && (node->u.subtree[0]->flags & PTF_SIDE_EFF) == 0 ) {
-
             node = node->u.subtree[1];
         }
     }
@@ -602,7 +599,7 @@ PTREE MakeNodeSymbol(           // MAKE PT_SYMBOL NODE FROM SYMBOL
 PTREE NodeMakeCallee(           // MAKE A CALLEE NODE
     SYMBOL func )               // - function
 {
-    if( ! SymIsVirtual( func ) ) {
+    if( !SymIsVirtual( func ) ) {
         func = SymMarkRefed( func );
     }
     return( NodeSymbolNoRef( NULL, func, NULL ) );
