@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -332,17 +333,17 @@ bool StringSame( STRING_CONSTANT v1, STRING_CONSTANT v2 )
     return( memcmp( v1->string, v2->string, v1->len + 1 ) == 0 );
 }
 
-size_t StringByteLength( STRING_CONSTANT s )
-/******************************************/
+target_size_t StringByteLength( STRING_CONSTANT s )
+/*************************************************/
 {
     // byte length should include '\0' character
     return( s->len + TARGET_CHAR );
 }
 
-size_t StringAWStrLen( STRING_CONSTANT s )
-/****************************************/
+target_size_t StringAWStrLen( STRING_CONSTANT s )
+/***********************************************/
 {
-    size_t len;
+    target_size_t len;
 
     // string length should include '\0' character
     if( s->wide_string ) {
@@ -434,7 +435,7 @@ pch_status PCHReadStringPool( void )
 
 pch_status PCHWriteStringPool( void )
 {
-    size_t len;
+    target_size_t len;
     unsigned i;
     STRING_CONSTANT str;
     STRING_CONSTANT *p;

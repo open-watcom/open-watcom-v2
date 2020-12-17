@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,8 +53,8 @@ extern STRING_CONSTANT  StringCreate( char *, size_t );
 extern STRING_CONSTANT  StringConcat( STRING_CONSTANT, STRING_CONSTANT );
 extern void             StringConcatDifferentLines( STRING_CONSTANT );
 extern bool             StringSame( STRING_CONSTANT, STRING_CONSTANT );
-extern size_t           StringByteLength( STRING_CONSTANT );
-extern size_t           StringAWStrLen( STRING_CONSTANT );
+extern target_size_t    StringByteLength( STRING_CONSTANT );
+extern target_size_t    StringAWStrLen( STRING_CONSTANT );
 extern char             *StringBytes( STRING_CONSTANT );
 
 extern void StringWalk(         // WALK DEFINED STRING LITERALS

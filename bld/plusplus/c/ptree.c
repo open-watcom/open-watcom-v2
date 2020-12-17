@@ -285,7 +285,7 @@ static PTREE strLiteral         // MAKE A STRING LITERAL NODE
     PTREE new_tree;
     target_size_t str_len;
 
-    str_len = (target_size_t)StringAWStrLen( str );
+    str_len = StringAWStrLen( str );
     new_tree = PTreeAlloc();
     new_tree->op = PT_STRING_CONSTANT;
     new_tree->u.string = str;

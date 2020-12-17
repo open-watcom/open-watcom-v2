@@ -386,8 +386,8 @@ static void typeFree( TYPE type )
     ExtraRptDecrementCtr( types_defined );
 }
 
-TYPE MakeArrayType( target_size_t size )
-/**************************************/
+TYPE MakeArrayTypeAndSize( target_size_t size )
+/*********************************************/
 {
     TYPE    new_type;
 
@@ -401,7 +401,7 @@ TYPE MakeArrayOf( target_size_t size, TYPE base )
 {
     TYPE array_type;
 
-    array_type = MakeArrayType( size );
+    array_type = MakeArrayTypeAndSize( size );
     return( MakeTypeOf( array_type, base ) );
 }
 
@@ -413,7 +413,7 @@ TYPE MakeExpandableType( type_id base_id )
 {
     TYPE expands;
 
-    expands = MakeArrayType( 1 );
+    expands = MakeArrayTypeAndSize( 1 );
     expands->of = GetBasicType( base_id );
     return( expands );
 }
@@ -1277,10 +1277,10 @@ DECL_INFO *AddArrayDeclarator( DECL_INFO *dinfo, PTREE size )
 
     if( size != NULL ) {
         CheckDimension( size );
-        array_type = MakeArrayType( size->u.uint_constant );
+        array_type = MakeArrayTypeAndSize( size->u.uint_constant );
         PTreeFree( size );
     } else {
-        array_type = MakeArrayType( 0 );
+        array_type = MakeArrayTypeAndSize( 0 );
     }
     return( prependTypeToDeclarator( dinfo, array_type ) );
 }
@@ -2687,7 +2687,7 @@ static TYPE dupArray( TYPE type, TYPE ref_type, target_size_t size, type_flag fl
 
     mod_list = duplicateModifiers( type, ref_type );
     base_type = ref_type->of;
-    array_type = MakeArrayType( size );
+    array_type = MakeArrayTypeAndSize( size );
     array_type->flag |= flag;
     base_type = MakeTypeOf( array_type, base_type );
     base_type = replaceModifiers( mod_list, base_type );

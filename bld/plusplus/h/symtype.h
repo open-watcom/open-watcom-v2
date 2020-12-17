@@ -1505,7 +1505,7 @@ extern TYPE CheckDupType( TYPE );
 extern PTREE ProcessBitfieldId( PTREE );
 extern TYPE CheckBitfieldType( DECL_SPEC *, target_size_t );
 extern void PTypeCheckInit( void );
-extern TYPE MakeArrayType( target_size_t );
+extern TYPE MakeArrayTypeAndSize( target_size_t );
 extern TYPE MakeExpandableType( type_id );
 extern TYPE MakeModifiedType( TYPE, type_flag );
 extern TYPE MakeCommonCodeData( TYPE );

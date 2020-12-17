@@ -315,7 +315,7 @@ static void dataInitEmitAutoAssign( SYMBOL dst, SYMBOL src )
     currInit->emit_code = 1;
 #if 0
     size = currInit->nest->padded_size;
-    type = MakeArrayType( size );
+    type = MakeArrayTypeAndSize( size );
     if( size == 0 ) {
         currInit->auto_type = type;
     }
@@ -734,7 +734,7 @@ static PTREE dtorableObjectCtored(// EMIT INDEX OF DTORABLE OBJECT, IF REQ'D
         type = dtorableObjectType( info );
         if( type != NULL ) {
             if( info->target == DT_ARRAY ) {
-                unsigned index;
+                target_size_t index;
                 TYPE artype;
                 TYPE eltype;
                 eltype = arrayBaseClassType( info->type );
@@ -1761,8 +1761,8 @@ static void dataInitStashString( PTREE expr )
     target_size_t size;
     target_size_t dim;
 
-    size = (target_size_t)StringByteLength( expr->u.string );
-    dim = (target_size_t)StringAWStrLen( expr->u.string );
+    size = StringByteLength( expr->u.string );
+    dim = StringAWStrLen( expr->u.string );
     switch( currInit->location ) {
     case DL_INTERNAL_AUTO:
         mayNeedAutoStaticInitCopy();
