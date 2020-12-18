@@ -49,7 +49,7 @@ struct string_literal_t {
 };
 
 extern void             StringTrash( STRING_CONSTANT );
-extern STRING_CONSTANT  StringCreate( char *, size_t );
+extern STRING_CONSTANT  StringCreate( const char *, size_t );
 extern STRING_CONSTANT  StringConcat( STRING_CONSTANT, STRING_CONSTANT );
 extern void             StringConcatDifferentLines( STRING_CONSTANT );
 extern bool             StringSame( STRING_CONSTANT, STRING_CONSTANT );

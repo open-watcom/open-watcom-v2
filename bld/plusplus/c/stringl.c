@@ -129,8 +129,8 @@ static STRING_CONSTANT findLiteral( size_t len )
     return( initLiteral( literal ) );
 }
 
-static size_t compressLiteral( char *tgt, char *s, size_t len )
-/*************************************************************/
+static size_t compressLiteral( char *tgt, const char *s, size_t len )
+/*******************************************************************/
 {
     unsigned char   *str = (unsigned char *)s;
     int             chr;               // - current character
@@ -233,8 +233,8 @@ static size_t compressLiteral( char *tgt, char *s, size_t len )
 }
 
 
-static STRING_CONSTANT makeLiteral( char *s, size_t len )
-/*******************************************************/
+static STRING_CONSTANT makeLiteral( const char *s, size_t len )
+/*************************************************************/
 {
     STRING_CONSTANT literal;
     size_t          new_len;
@@ -281,8 +281,8 @@ static STRING_CONSTANT stringAdd(// ADD LITERAL TO STRING
 }
 
 
-STRING_CONSTANT StringCreate( char *s, size_t len )
-/*************************************************/
+STRING_CONSTANT StringCreate( const char *s, size_t len )
+/*******************************************************/
 {
     ++stringCount;
     return( stringAdd( makeLiteral( s, len ), &uniqueStrings ) );
