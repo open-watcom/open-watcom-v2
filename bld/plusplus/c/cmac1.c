@@ -379,7 +379,7 @@ static TOKEN nextMToken( TOKEN prev_token )
 
     token = doGetMacroToken( true, true );
     if( token == T_NULL ) {
-        if( ScanOptionalComment() ) {
+        if( DoScanOptionalComment() ) {
             token = T_WHITE_SPACE;
         } else {
             if( prev_token != T_WHITE_SPACE ) {

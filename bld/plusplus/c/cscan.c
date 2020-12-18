@@ -266,7 +266,7 @@ static void prt_comment_char( int c )
     }
 }
 
-static void scanCComment( void )
+static void doScanCComment( void )
 {
     int c;
     int prev_char;
@@ -349,7 +349,7 @@ static void scanCComment( void )
     NextChar();
 }
 
-static void scanCppComment( void )
+static void doScanCppComment( void )
 {
     int c;
 
@@ -561,8 +561,8 @@ static void unGetChar( int c )
     }
 }
 
-bool ScanOptionalComment( void )
-/******************************/
+bool DoScanOptionalComment( void )
+/********************************/
 {
     bool ok;
     int c;
@@ -574,10 +574,10 @@ bool ScanOptionalComment( void )
             break;
         c = NextChar();
         if( c == '*' ) {
-            scanCComment();
+            doScanCComment();
             ok = true;
         } else if( c == '/' ) {
-            scanCppComment();
+            doScanCppComment();
             ok = true;
         } else {
             unGetChar( c );
@@ -608,7 +608,7 @@ void SkipAhead( void )
         }
         if( c != '/' )
             break;
-        if( ! ScanOptionalComment() ) {
+        if( !DoScanOptionalComment() ) {
             break;
         }
     }
@@ -1416,12 +1416,12 @@ static TOKEN scanSlash( bool expanding ) // /, /=, // comment, or /*comment*/
     } else if( !expanding ) {
         if( c == '/' ) {
             // C++ comment
-            scanCppComment();
+            doScanCppComment();
             Buffer[0] = ' ';
             token = T_WHITE_SPACE;
         } else if( c == '*' ) {
             // C comment
-            scanCComment();
+            doScanCComment();
             Buffer[0] = ' ';
             token = T_WHITE_SPACE;
         }

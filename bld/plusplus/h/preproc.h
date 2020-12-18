@@ -327,7 +327,7 @@ void ReScanInit(                // RE-SCAN TOKEN INITIALIZATION
 TOKEN ReScanToken(              // RE-SCAN TOKEN FROM BUFFER
     void )
 ;
-bool ScanOptionalComment(       // SCAN AN OPTIONAL COMMENT
+bool DoScanOptionalComment(     // SCAN AN OPTIONAL COMMENT
     void )
 ;
 TOKEN ScanToken(                // SCAN NEXT TOKEN
