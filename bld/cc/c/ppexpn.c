@@ -394,6 +394,14 @@ static bool COperand( void )
             // add long double support if available
             p.no_sign = 0;
             break;
+        case TYP_WCHAR:
+        case TYP_UCHAR:
+        case TYP_USHORT:
+        case TYP_UINT:
+        case TYP_ULONG:
+            U32ToU64Set( p, Constant );
+            p.no_sign = 1;
+            break;
         case TYP_ULONG64:
             if( CompFlags.c99_extensions ) {
                 p.u.uval = Constant64;
@@ -409,14 +417,6 @@ static bool COperand( void )
                 U32ToU64Set( p, U32FetchTrunc( Constant64 ) );
             }
             p.no_sign = 0;
-            break;
-        case TYP_WCHAR:
-        case TYP_UCHAR:
-        case TYP_USHORT:
-        case TYP_UINT:
-        case TYP_ULONG:
-            U32ToU64Set( p, Constant );
-            p.no_sign = 1;
             break;
         default:
             if( CompFlags.c99_extensions ) {

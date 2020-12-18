@@ -362,7 +362,7 @@ static bool COperand( void )
             CErr1( ERR_EXPR_MUST_BE_INTEGRAL );
             done = true;
             I32ToI64( SafeAtof( Buffer ), &(p.u.sval) );
-            // LMW add long double support if available
+            // add long double support if available
             p.no_sign = 0;
             break;
         case TYP_WCHAR:
