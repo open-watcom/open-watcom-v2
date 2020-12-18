@@ -52,6 +52,7 @@
 #include "pragdefn.h"
 #endif
 #include "brinfo.h"
+#include "cscanbuf.h"
 
 #include "clibext.h"
 
@@ -1196,103 +1197,39 @@ int GetNextChar( void )
     return( getCharCheck( act, c ) );
 }
 
-void SrcFileScanName( int e )   // CALLED FROM CSCAN TO SCAN AN IDENTIFIER
+int SrcFileScanName( int c )    // CALLED FROM CSCAN TO SCAN AN IDENTIFIER
 {
-    size_t              len;
     const unsigned char *p;
     OPEN_FILE           *act;
-    int                 c;
 
-    len = TokenLen - 1;
-    if( CharSet[e] & (C_AL|C_DI) ) {
-        ++len;
-        if( NextChar == GetNextChar ) {
-            for( ;; ) {
-                // codegen can't do this optimization so we have to
-                c = '\0';
-                act = activeSrc();
-                p = act->nextc;
-                for(;;) {
-                    c = *p++;
-                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
-                        break;
-                    Buffer[len] = c;
-                    ++len;
-                    c = *p++;
-                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
-                        break;
-                    Buffer[len] = c;
-                    ++len;
-                    c = *p++;
-                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
-                        break;
-                    Buffer[len] = c;
-                    ++len;
-                    c = *p++;
-                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
-                        break;
-                    Buffer[len] = c;
-                    ++len;
-                    c = *p++;
-                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
-                        break;
-                    Buffer[len] = c;
-                    ++len;
-                    c = *p++;
-                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
-                        break;
-                    Buffer[len] = c;
-                    ++len;
-                    c = *p++;
-                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
-                        break;
-                    Buffer[len] = c;
-                    ++len;
-                    c = *p++;
-                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
-                        break;
-                    Buffer[len] = c;
-                    ++len;
-                    if( len > BUF_SIZE ) {
-                        len = BUF_SIZE;
-                    }
-                }
-                act->column += p - act->nextc;
-                act->nextc = p;
-                if(( CharSet[c] & C_EX ) == 0 )
-                    break;
-                // act->column is one too many at this point
-                --act->column;
-                c = getCharCheck( act, c );
-                if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
-                    break;
-                Buffer[len] = c;
-                ++len;
+    if( NextChar == GetNextChar ) {
+        while( CharSet[c] & (C_AL | C_DI) ) {
+            // codegen can't do this optimization so we have to
+            act = activeSrc();
+            p = act->nextc;
+            while( CharSet[c] & (C_AL | C_DI) ) {
+                WriteBufferChar( c );
+                c = *p++;
             }
-            CurrChar = c;
-        } else {
-            // it should be impossible to get here
-            // but we'll just be safe rather than sorry...
-            for(;;) {
-                c = NextChar();
-                if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
-                    break;
-                Buffer[len] = c;
-                ++len;
-                if( len > BUF_SIZE ) {
-                    len = BUF_SIZE;
-                }
-            }
+            act->column += p - act->nextc;
+            act->nextc = p;
+            if(( CharSet[c] & C_EX ) == 0 )
+                break;
+            // act->column is one too many at this point
+            --act->column;
+            c = getCharCheck( act, c );
+        }
+        CurrChar = c;
+    } else {
+        // it should be impossible to get here
+        // but we'll just be safe rather than sorry...
+        while( CharSet[c] & (C_AL | C_DI) ) {
+            WriteBufferChar( c );
+            c = NextChar();
         }
     }
-    if( len >= BUF_SIZE - 2 ) {
-        if( SkipLevel == NestLevel ) {
-            CErr1( ERR_TOKEN_TRUNCATED );
-        }
-        len = BUF_SIZE - 2;
-    }
-    Buffer[len] = '\0';
-    TokenLen = len;
+    WriteBufferNullChar();
+    return( c );
 }
 
 void SrcFileScanWhiteSpace( bool expanding )

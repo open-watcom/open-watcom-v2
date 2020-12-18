@@ -802,24 +802,19 @@ static TOKEN scanName( bool expanding )
 
     SrcFileCurrentLocation();
     Buffer[0] = CurrChar;
+    TokenLen = 1;
     c = NextChar();
-    Buffer[1] = c;
-    TokenLen = 2;
     return( doScanName( c, expanding ) );
 }
 
 static TOKEN doScanAsmToken( void )
 {
-    TokenLen = 0;
-    do {
-        Buffer[TokenLen++] = CurrChar;
-        if( CurrChar == '.' ) {
-            CurrChar = saveNextChar();
-        }
-        SrcFileScanName( CurrChar );
-    } while( CurrChar == '.' );
-    CurToken = T_ID;
-    return( CurToken );
+    NextChar();
+    while( SrcFileScanName( CurrChar ) == '.' ) {
+        WriteBufferChar( '.' );
+        NextChar();
+    }
+    return( T_ID );
 }
 
 static TOKEN scanWide( bool expanding )  // scan something that starts with L
@@ -828,16 +823,19 @@ static TOKEN scanWide( bool expanding )  // scan something that starts with L
     TOKEN token;
 
     SrcFileCurrentLocation();
-    Buffer[0] = CurrChar;
     c = NextChar();
-    Buffer[1] = c;
-    TokenLen = 2;
     if( c == '"' ) {                    // L"abc"
         token = doScanString( TYP_WCHAR, expanding );
-    } else if( c == '\'' ) {            // L'a'
-        token = doScanCharConst( TYP_WCHAR, expanding );
-    } else {                            // regular identifier
-        token = doScanName( c, expanding );
+    } else {
+        Buffer[0] = 'L';
+        if( c == '\'' ) {               // L'a'
+            Buffer[1] = c;
+            TokenLen = 2;
+            token = doScanCharConst( TYP_WCHAR, expanding );
+        } else {                        // regular identifier
+            TokenLen = 1;
+            token = doScanName( c, expanding );
+        }
     }
     return( token );
 }
@@ -1154,6 +1152,8 @@ static TOKEN scanNum( bool expanding )
 {
     SrcFileCurrentLocation();
     if( PPControl & PPCTL_ASM ) {
+        Buffer[0] = CurrChar;
+        TokenLen = 1;
         return( doScanAsmToken() );
     } else {
         return( doScanNum( expanding ) );
@@ -1435,11 +1435,11 @@ static TOKEN scanDot( bool expanding )
     /* unused parameters */ (void)expanding;
 
     SrcFileCurrentLocation();
+    Buffer[0] = '.';
+    TokenLen = 1;
     if( PPControl & PPCTL_ASM ) {
         return( doScanAsmToken() );
     } else {
-        Buffer[0] = '.';
-        TokenLen = 1;
         return( doScanFloat() );
     }
 }
