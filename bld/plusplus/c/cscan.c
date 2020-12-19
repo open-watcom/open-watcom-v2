@@ -823,6 +823,7 @@ static TOKEN doScanAsmToken( void )
         WriteBufferChar( '.' );
         NextChar();
     }
+    WriteBufferNullChar();
     return( T_ID );
 }
 
