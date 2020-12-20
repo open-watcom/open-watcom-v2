@@ -208,7 +208,7 @@ TOKEN NextToken( void )
     return( CurToken );
 }
 
-static bool scanHex( bool expanding )
+static bool doScanHex( bool expanding )
 {
     int c;
     struct {
@@ -389,7 +389,7 @@ static int doESCChar( int c, bool expanding, type_id char_type )
         }
     } else if( classification == ESCAPE_HEX ) {
         U64Clear( Constant64 );
-        if( scanHex( expanding ) ) {
+        if( doScanHex( expanding ) ) {
             n = U32FetchTrunc( Constant64 );
             if( n > 0x0ff && char_type != TYP_WCHAR ) {
                 if( diagnose_lex_error( expanding ) ) {
@@ -902,7 +902,7 @@ static TOKEN doScanNum( bool expanding )
         c = NextChar();
         WriteBufferChar( c );
         if( ONE_CASE( c ) == ONE_CASE( 'X' ) ) {
-            if( scanHex( expanding ) ) {
+            if( doScanHex( expanding ) ) {
                 c = CurrChar;       /* get next character */
             } else {
                 if( diagnose_lex_error( expanding ) ) {
