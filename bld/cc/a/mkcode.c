@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,8 +75,13 @@ int main(int argc, char *argv[])
     stat( argv[1], &bufstat );
     fp = fopen( argv[1], "rb" );
     buff = malloc( bufstat.st_size );
-    fread( buff, bufstat.st_size, 1, fp );
+    i = fread( buff, bufstat.st_size, 1, fp );
     fclose( fp );
+    if( i != 1 ) {
+        free( buff );
+        printf( "Error: can not read inp.file\n" );
+        return( 1 );
+    }
     cb = (struct bursts *)Xptr( *(short *)buff );
     fp = fopen( argv[2], "wt" );
     if( fp == NULL ) {
