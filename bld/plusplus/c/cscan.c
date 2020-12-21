@@ -52,15 +52,10 @@
     #error SYS_EOF_CHAR is not set for this system
 #endif
 
-static void             nextMacroToken( void );
-static token_source_fn  *tokenSource;
+#define prt_char( x )           if( CompFlags.cpp_output ) { PrtChar( x ); }
 
-static const char       *ReScanPtr;
-
-ExtraRptCtr( nextTokenCalls );
-ExtraRptCtr( nextTokenSavedId );
-ExtraRptCtr( nextTokenNormal );
-ExtraRptCtr( lookPastRewrite );
+#define diagnose_lex_error( e ) \
+        (!(e) && ( SkipLevel == NestLevel ) && (PPControl & PPCTL_NO_LEX_ERRORS) == 0 )
 
 typedef enum {
     #define pick(e,p) e,
@@ -68,6 +63,15 @@ typedef enum {
     #undef pick
     SCAN_MAX
 } scan_class;
+
+ExtraRptCtr( nextTokenCalls );
+ExtraRptCtr( nextTokenSavedId );
+ExtraRptCtr( nextTokenNormal );
+ExtraRptCtr( lookPastRewrite );
+
+static token_source_fn  *tokenSource;
+
+static const char       *ReScanPtr;
 
 static uint_8 ClassTable[LCHR_MAX];
 
@@ -114,9 +118,6 @@ static uint_8 InitClassTable[] = {
     '\0',       0
 };
 
-// #undef static
-// #define static
-
 #if TARGET_INT == 2
 static unsigned_64 intMax   = I64Val( 0x00000000, 0x00007fff );
 static unsigned_64 uintMax  = I64Val( 0x00000000, 0x0000ffff );
@@ -124,11 +125,6 @@ static unsigned_64 uintMax  = I64Val( 0x00000000, 0x0000ffff );
 static unsigned_64 intMax   = I64Val( 0x00000000, 0x7fffffff );
 static unsigned_64 uintMax  = I64Val( 0x00000000, 0xffffffff );
 #endif
-
-#define prt_char( x )           if( CompFlags.cpp_output ) { PrtChar( x ); }
-
-#define diagnose_lex_error( e ) \
-        (!(e) && ( SkipLevel == NestLevel ) && (PPControl & PPCTL_NO_LEX_ERRORS) == 0 )
 
 void ReScanInit( const char *ptr )
 /********************************/
@@ -184,28 +180,6 @@ void ResetTokenSource( token_source_fn *source )
 /**********************************************/
 {
     tokenSource = source;
-}
-
-TOKEN NextToken( void )
-/*********************/
-{
-#ifdef XTRA_RPT
-    ExtraRptIncrementCtr( nextTokenCalls );
-    if( tokenSource == nextMacroToken ) {
-        ExtraRptIncrementCtr( nextTokenNormal );
-    }
-#endif
-    if( CurToken == T_SAVED_ID ) {
-        ExtraRptIncrementCtr( nextTokenSavedId );
-        CurToken = LAToken;
-        return( CurToken );
-    }
-    (*tokenSource)();
-#ifndef NDEBUG
-    CtxScanToken();
-    DumpToken();
-#endif
-    return( CurToken );
 }
 
 static bool doScanHex( bool expanding )
@@ -1651,6 +1625,27 @@ static void nextMacroToken( void )
     } while( CurToken == T_WHITE_SPACE );
 }
 
+TOKEN NextToken( void )
+/*********************/
+{
+#ifdef XTRA_RPT
+    ExtraRptIncrementCtr( nextTokenCalls );
+    if( tokenSource == nextMacroToken ) {
+        ExtraRptIncrementCtr( nextTokenNormal );
+    }
+#endif
+    if( CurToken == T_SAVED_ID ) {
+        ExtraRptIncrementCtr( nextTokenSavedId );
+        CurToken = LAToken;
+        return( CurToken );
+    }
+    (*tokenSource)();
+#ifndef NDEBUG
+    CtxScanToken();
+    DumpToken();
+#endif
+    return( CurToken );
+}
 
 void ScanInit( void )
 /*******************/
