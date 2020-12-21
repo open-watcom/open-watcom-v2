@@ -32,8 +32,8 @@
 
 
 extern void     WriteBufferChar( int c );
+extern int      WriteBufferCharNextChar( int c );
 extern void     WriteBufferNullChar( void );
-extern int      SaveCharNextChar( int c );
 extern void     WriteBufferStr( const char *src );
 extern void     WriteBufferMem( const char *src, size_t len );
 extern size_t   WriteBufferPosChar( size_t pos, int c );

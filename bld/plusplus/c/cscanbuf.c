@@ -63,19 +63,19 @@ void WriteBufferChar( int c )
     Buffer[TokenLen++] = (char)c;
 }
 
+int WriteBufferCharNextChar( int c )
+/**********************************/
+{
+    EnlargeBuffer( TokenLen + 1 );
+    Buffer[TokenLen++] = (char)c;
+    return( NextChar() );
+}
+
 void WriteBufferNullChar( void )
 /******************************/
 {
     EnlargeBuffer( TokenLen + 1 );
     Buffer[TokenLen] = '\0';
-}
-
-int SaveCharNextChar( int c )
-/***************************/
-{
-    EnlargeBuffer( TokenLen + 1 );
-    Buffer[TokenLen++] = (char)c;
-    return( NextChar() );
 }
 
 void WriteBufferStr( const char *src )
@@ -127,7 +127,7 @@ size_t WriteBufferPosStr( size_t pos, const char *src )
 size_t WriteBufferPosEscStr( size_t pos, const char **src, bool quote )
 /*********************************************************************/
 {
-    const char	*p;
+    const char  *p;
     char        c;
 
     p = *src;
