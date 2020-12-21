@@ -47,11 +47,12 @@ opt_er03b = $(extref_eh)
 opt_er03c = $(extref_eh)
 
 opt_link_er01 = LIB er01.lib
+opt_link_er02 = FILE er02b.obj
 opt_link_er03 = LIB er03.lib
 
 exes = er01.$(exe) er02.$(exe) er03.$(exe)
 
-test : .symbolic start test.lnk er01.lib er03.lib $(exes) test_set_result
+test : .symbolic start test.lnk er01.lib er02b.obj er03.lib $(exes) test_set_result
     $(noecho)%make common_set_result_check
 
 check_result : .procedure
@@ -60,8 +61,6 @@ check_result : .procedure
 test_set_result : ./chk_exec.exe .symbolic
     -$(noecho)%write error.out OK
     -$]@ exec.out >>error.out
-
-er02.$(exe) : er02.obj er02b.obj
 
 er01.lib : er01b.obj er01c.obj er01d.obj
     @%make set_path_wlib

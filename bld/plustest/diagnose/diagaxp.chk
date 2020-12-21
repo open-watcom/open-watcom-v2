@@ -1685,7 +1685,6 @@ File: source\diag0079.c
 (54,9): Error! E580: cannot find a constructor for given initializer argument list
 (65,19): Warning! W004: base class 'VB' does not have a virtual destructor
 (65,19): Warning! W004: base class 'VQ' does not have a virtual destructor
-(65,19): Warning! W621: pure virtual destructors must have a definition
 End of file
 Warning! W018: no reference to anonymous union member 'b'
   definition: 'int b'
@@ -2101,7 +2100,6 @@ File: source\diag0106.c
   definition: 'X28::~X28( void )'
 (30,20): Error! E907: redeclaration of member function 'X28::~X28' not allowed
   definition: 'X28::~X28( void )'
-(33,20): Warning! W621: pure virtual destructors must have a definition
 (34,20): Error! E907: redeclaration of member function 'X32::~X32' not allowed
   definition: 'X32::~X32( void )'
 (38,8): Error! E431: defining 'x38' is not possible because 'X32' is an abstract class

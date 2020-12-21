@@ -236,7 +236,6 @@ static TOKEN doGetMacroToken(       // GET NEXT TOKEN
                 break;
             case T_STRING:
             case T_LSTRING:
-                TokenLen++;
                 break;
             }
             if( !keep_token ) {
@@ -320,20 +319,20 @@ TOKEN SpecialMacro(             // EXECUTE A SPECIAL MACRO
         return( T_CONSTANT );
     case MACRO_FILE:
         p = SrcFileNameCurrent();
-        TokenLen = WriteBufferPosEscStr( 0, &p, false ) + 1;
+        TokenLen = WriteBufferPosEscStr( 0, &p, false );
         return( T_STRING );
     case MACRO_DATE:
         strcpy( Buffer, __Date );
-        TokenLen = strlen( Buffer ) + 1;
+        TokenLen = strlen( Buffer );
         return( T_STRING );
     case MACRO_TIME:
         strcpy( Buffer, __Time );
-        TokenLen = strlen( Buffer ) + 1;
+        TokenLen = strlen( Buffer );
         return( T_STRING );
     case MACRO_FUNCTION:
     case MACRO_FUNC:
         if( FUNCTION_not_expandable ) {
-            TokenLen = WriteBufferPosStr( 0, SpcMacros[mentry->parm_count].name ) + 1;
+            TokenLen = WriteBufferPosStr( 0, SpcMacros[mentry->parm_count].name );
             return( T_ID );
         }
         TokenLen = genFUNCTION();

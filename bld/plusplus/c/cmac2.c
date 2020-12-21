@@ -370,14 +370,10 @@ static MEPTR grabTokens(            // SAVE TOKENS IN A MACRO DEFINITION
         case T_BAD_TOKEN :
         case T_CONSTANT:
         case T_PPNUMBER:
-            MacroSegmentAddToken( &mlen, CurToken );
-            MacroSegmentAddMem( &mlen, Buffer, TokenLen + 1 );
-            break;
         case T_STRING:
         case T_LSTRING:
-            // TokenLen includes '\0' for strings
             MacroSegmentAddToken( &mlen, CurToken );
-            MacroSegmentAddMem( &mlen, Buffer, TokenLen );
+            MacroSegmentAddMem( &mlen, Buffer, TokenLen + 1 );
             break;
         default :
             MacroSegmentAddToken( &mlen, CurToken );

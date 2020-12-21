@@ -22,11 +22,12 @@ stack_386=opt stack=8k
 stack_i86=opt stack=4k
 stack_axp=opt stack=8k
 
-test : .symbolic start test.lnk bitset.$(exe)
-    $(noecho)%make common_set_result
+opt_link = FILE tbitset.obj
 
-bitset.$(exe) : bitset.obj tbitset.obj
+test : .symbolic start test.lnk tbitset.obj bitset.$(exe)
+    $(noecho)%make common_set_result
 
 clean : .procedure
     @%make echo_clean
     $(noecho)%make common_clean
+

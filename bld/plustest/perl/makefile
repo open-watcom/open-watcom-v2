@@ -14,6 +14,10 @@ test_flags_386 =
 test_flags_i86 = -mm
 test_flags_axp =
 
+opt_link_perltest = FILE { perlclas.obj regex.obj }
+opt_link_perlasso = FILE { perlclas.obj regex.obj }
+opt_link_tstio = FILE { perlclas.obj regex.obj }
+
 !include testenv1.mif
 
 stack_386=opt stack=32k
@@ -27,15 +31,11 @@ exes = &
     perlasso.$(exe) &
     tstio.$(exe)
 
-test : .symbolic start test.lnk $(exes) test_set_result
+test : .symbolic start test.lnk perlclas.obj regex.obj $(exes) test_set_result
     $(noecho)%make common_set_result
 
 test_set_result : .symbolic
     cat t2.out >>$(%ERROR_FILE)
-
-perltest.$(exe) : perltest.obj perlclas.obj regex.obj
-perlasso.$(exe) : perlasso.obj perlclas.obj regex.obj
-tstio.$(exe) : tstio.obj perlclas.obj regex.obj
 
 clean : .procedure
     @%make echo_clean

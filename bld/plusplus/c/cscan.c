@@ -192,18 +192,16 @@ static bool doScanHex( bool expanding )
 
     flag.too_big = false;
     flag.at_least_one = false;
-    for(;;) {
-        c = NextChar();
-        WriteBufferChar( c );
-        if(( CharSet[c] & (C_HX|C_DI) ) == 0 )
-            break;
+    c = NextChar();
+    while( CharSet[c] & (C_HX | C_DI) ) {
         if( U64Cnv16( &Constant64, hex_dig( c ) ) ) {
             flag.too_big = true;
         }
         flag.at_least_one = true;
+        c = WriteBufferCharNextChar( c );
     }
-    if( ! flag.at_least_one ) {
-        return( false );            /* indicate no characters matched after "0x" */
+    if( !flag.at_least_one ) {
+        return( false );            /* indicate no characters matched */
     }
     if( flag.too_big ) {
         if( diagnose_lex_error( expanding ) ) {
@@ -339,17 +337,17 @@ static int doESCChar( int c, bool expanding, type_id char_type )
     unsigned    n;
     unsigned    i;
     int         classification;
+    int         c1;
 
     classification = classify_escape_char( c );
     if( classification == ESCAPE_OCTAL ) {
         n = 0;
         for( i = 3; i > 0; --i ) {
-            c = octal_dig( c );
-            if( c == 8 )
+            c1 = octal_dig( c );
+            if( c1 == 8 )
                 break;
-            n = n * 8 + c;
-            c = NextChar();
-            WriteBufferChar( c );
+            n = n * 8 + c1;
+            c = WriteBufferCharNextChar( c );
         }
         if( n > 0377 && char_type != TYP_WCHAR ) {
             if( diagnose_lex_error( expanding ) ) {
@@ -359,6 +357,7 @@ static int doESCChar( int c, bool expanding, type_id char_type )
             n &= 0377;
         }
     } else if( classification == ESCAPE_HEX ) {
+        WriteBufferChar( c );
         U64Clear( Constant64 );
         if( doScanHex( expanding ) ) {
             n = U32FetchTrunc( Constant64 );
@@ -374,12 +373,10 @@ static int doESCChar( int c, bool expanding, type_id char_type )
         }
     } else if( classification == ESCAPE_NONE ) {
         n = c;
-        NextChar();
-        WriteBufferChar( CurrChar );
+        WriteBufferCharNextChar( c );
     } else {
         n = classification;
-        NextChar();
-        WriteBufferChar( CurrChar );
+        WriteBufferCharNextChar( c );
     }
     return( n );
 }
@@ -393,83 +390,83 @@ static TOKEN doScanCharConst( type_id char_type, bool expanding )
     struct {
         unsigned double_byte_char   : 1;
     } flag;
+    bool ok;
 
+    ok = false;
     flag.double_byte_char = false;
-    token = T_CONSTANT;
-    BadTokenInfo = ERR_INV_CHAR_CONSTANT;   /* in case of error */
+    value = 0;
     i = 0;
     c = NextChar();
-    WriteBufferChar( c );
     if( c == '\'' ) {
+        Buffer[TokenLen++] = c;
         NextChar();
-        Buffer[TokenLen] = '\0';
-        return( T_BAD_TOKEN );
-    }
-    value = 0;
-    for( ;; ) {
-        if( c == '\r' || c == '\n' ) {
-            DbgAssert( Buffer[TokenLen - 1] == c );
-            --TokenLen;
-            token = T_BAD_TOKEN;
-            break;
-        }
-        if( c == '\\' ) {
-            NextChar();
-            WriteBufferChar( CurrChar );
-            c = doESCChar( CurrChar, expanding, char_type );
-            if( char_type == TYP_WCHAR ) {
-                ++i;
-                value = (value << 8) + ((c & 0xFF00) >> 8);
-                c &= 0x00FF;
+    } else {
+        for( ;; ) {
+            if( c == '\r' || c == '\n' || c == LCHR_EOF ) {
+                break;
             }
-        } else {
-            if( CharSet[c] & C_DB ) {   /* if double-byte char */
+            Buffer[TokenLen++] = c;
+            if( c == '\\' ) {
                 NextChar();
-                WriteBufferChar( CurrChar );
-                c = (c << 8) + (CurrChar & 0x00FF);
+                c = doESCChar( CurrChar, expanding, char_type );
                 if( char_type == TYP_WCHAR ) {
-                    if( CompFlags.jis_to_unicode ) {
+                    ++i;
+                    value = (value << 8) + ((c & 0xFF00) >> 8);
+                    c &= 0x00FF;
+                }
+            } else {
+                if( CharSet[c] & C_DB ) {   /* if double-byte char */
+                    NextChar();
+                    Buffer[TokenLen++] = CurrChar;
+                    c = (c << 8) + (CurrChar & 0x00FF);
+                    if( char_type == TYP_WCHAR ) {
+                        if( CompFlags.jis_to_unicode ) {
+                            c = JIS2Unicode( c );
+                        }
+                    }
+                    ++i;
+                    value = (value << 8) + ((c & 0xFF00) >> 8);
+                    c &= 0x00FF;
+                    flag.double_byte_char = true;
+                } else if( char_type == TYP_WCHAR ) {
+                    if( CompFlags.use_unicode ) {
+                        c = UniCode[c];
+                    } else if( CompFlags.jis_to_unicode ) {
                         c = JIS2Unicode( c );
                     }
+                    ++i;
+                    value = (value << 8) + ((c & 0xFF00) >> 8);
+                    c &= 0x00FF;
                 }
-                ++i;
-                value = (value << 8) + ((c & 0xFF00) >> 8);
-                c &= 0x00FF;
-                flag.double_byte_char = true;
-            } else if( char_type == TYP_WCHAR ) {
-                if( CompFlags.use_unicode ) {
-                    c = UniCode[c];
-                } else if( CompFlags.jis_to_unicode ) {
-                    c = JIS2Unicode( c );
-                }
-                ++i;
-                value = (value << 8) + ((c & 0xFF00) >> 8);
-                c &= 0x00FF;
+                NextChar();
             }
-            NextChar();
-            WriteBufferChar( CurrChar );
-        }
-        ++i;
-        value = (value << 8) + c;
-        /* handle case where user wants a \ but doesn't escape it */
-        if( c == '\'' && CurrChar != '\'' ) {
-            if( !CompFlags.cpp_output ) {
-                token = T_BAD_TOKEN;
+            ++i;
+            value = (value << 8) + c;
+            /* handle case where user wants a \ but doesn't escape it */
+            if( c == '\'' && CurrChar != '\'' ) {
+                if( !CompFlags.cpp_output ) {
+                    break;
+                }
+            }
+            c = CurrChar;
+            if( c == '\'' ) {
+                ok = true;
                 break;
             }
-        }
-        c = CurrChar;
-        if( c == '\'' )
-            break;
-        if( i >= 4 ) {
-            if( !CompFlags.cpp_output ) {
-                token = T_BAD_TOKEN;
-                break;
+            if( i >= 4 ) {
+                if( !CompFlags.cpp_output ) {
+                    break;
+                }
             }
         }
     }
-    if( token != T_BAD_TOKEN ) {
+    if( ok ) {
+        Buffer[TokenLen++] = c;
         NextChar();
+        token = T_CONSTANT;
+    } else {
+        BadTokenInfo = ERR_INV_CHAR_CONSTANT;   /* in case of error */
+        token = T_BAD_TOKEN;
     }
     Buffer[TokenLen] = '\0';
     ConstType = char_type;
@@ -588,86 +585,78 @@ void SkipAhead( void )
 
 static TOKEN doScanDotSomething( int c )
 {
-    if( c == '*' ) {
-        NextChar();
-        return( T_DOT_STAR );
-    }
+    TOKEN   token;
+
     if( c == '.' ) {
         c = NextChar();
-        WriteBufferChar( c );
         if( c == '.' ) {
-            NextChar();
-            return( T_DOT_DOT_DOT );
+            Buffer[TokenLen++] = c;
+            Buffer[TokenLen++] = c;
+            token = T_DOT_DOT_DOT;
+        } else {
+            unGetChar( c );
+            CurrChar = '.';
+            token = T_DOT;
         }
-        unGetChar( c );
-        CurrChar = '.';
+    } else if( c == '*' ) {
+        Buffer[TokenLen++] = c;
+        token = T_DOT_STAR;
+    } else {
+        token = T_DOT;
     }
-    Buffer[1] = '\0';
-    TokenLen = 1;
-    return( T_DOT );
+    if( token != T_DOT )
+        NextChar();
+    Buffer[TokenLen] = '\0';
+    return( token );
 }
 
 static TOKEN doScanFloat( void )
 {
     int c;
+    TOKEN token;
 
     c = CurrChar;
     if( c == '.' ) {
-        for(;;) {
-            c = NextChar();
-            WriteBufferChar( c );
-            if(( CharSet[c] & C_DI ) == 0 ) {
-                break;
-            }
+        c = WriteBufferCharNextChar( c );
+        while( CharSet[c] & C_DI ) {
+            c = WriteBufferCharNextChar( c );
         }
-        if( TokenLen == 2 ) {       /* .? */
+        if( TokenLen == 1 ) {       /* .? */
             return( doScanDotSomething( c ) );
         }
     }
-    CurToken = T_CONSTANT;
+    token = T_CONSTANT;
     if( ONE_CASE_EQUAL( c, 'E' ) ) {
-        c = NextChar();
-        WriteBufferChar( c );
+        c = WriteBufferCharNextChar( c );
         if( c == '+' || c == '-' ) {
-            c = NextChar();
-            WriteBufferChar( c );
+            c = WriteBufferCharNextChar( c );
         }
         if(( CharSet[c] & C_DI ) == 0 ) {
-            CurToken = T_BAD_TOKEN;
+            token = T_BAD_TOKEN;
             BadTokenInfo = ERR_INVALID_FLOATING_POINT_CONSTANT;
         }
-        for(;;) {
-            if(( CharSet[c] & C_DI ) == 0 )
-                break;
-            c = NextChar();
-            WriteBufferChar( c );
+        while( CharSet[c] & C_DI ) {
+            c = WriteBufferCharNextChar( c );
         }
     }
     if( ONE_CASE_EQUAL( c, 'F' ) ) {
-        c = NextChar();
-        WriteBufferChar( c );
+        c = WriteBufferCharNextChar( c );
         ConstType = TYP_FLOAT;
     } else if( ONE_CASE_EQUAL( c, 'L' ) ) {
-        c = NextChar();
-        WriteBufferChar( c );
+        c = WriteBufferCharNextChar( c );
         ConstType = TYP_LONG_DOUBLE;
     } else {
         ConstType = TYP_DOUBLE;
     }
     if( (PPControl & PPCTL_ASM) && (CharSet[c] & (C_AL | C_DI)) ) {
-        for(;;) {
-            c = NextChar();
-            WriteBufferChar( c );
-            if( (CharSet[c] & (C_AL | C_DI)) == 0 ) {
-                break;
-            }
+        while( CharSet[c] & (C_AL | C_DI) ) {
+            c = WriteBufferCharNextChar( c );
         }
-        Buffer[--TokenLen] = '\0';
-        return( T_BAD_TOKEN );
-    } else {
-        Buffer[--TokenLen] = '\0';
-        return( CurToken );
+        BadTokenInfo = ERR_INVALID_FLOATING_POINT_CONSTANT;
+        token = T_BAD_TOKEN;
     }
+    WriteBufferNullChar();
+    return( token );
 }
 
 static TOKEN doScanString( type_id string_type, bool expanding )
@@ -677,9 +666,8 @@ static TOKEN doScanString( type_id string_type, bool expanding )
 
     SrcFileSetSwEnd( true );
     ok = false;
+    TokenLen = 0;
     c = NextChar();
-    Buffer[0] = c;
-    TokenLen = 1;
     for(;;) {
         if( c == '\n' )
             break;
@@ -689,13 +677,13 @@ static TOKEN doScanString( type_id string_type, bool expanding )
             ok = true;
             break;
         }
+        WriteBufferChar( c );
         if( c == '\\' ) {
             c = NextChar();
-            WriteBufferChar( c );
             if(( CharSet[c] & C_WS ) == 0 ) {
                 doESCChar( c, expanding, string_type );
+                c = CurrChar;
             }
-            c = CurrChar;
         } else {
             if( CharSet[c] & C_DB ) {
                 // if first char of a double-byte char, grab next one
@@ -703,11 +691,10 @@ static TOKEN doScanString( type_id string_type, bool expanding )
                 WriteBufferChar( c );
             }
             c = NextChar();
-            WriteBufferChar( c );
         }
     }
     SrcFileSetSwEnd( false );
-    WriteBufferPosNullChar( TokenLen - 1 );
+    WriteBufferNullChar();
     if( ok ) {
         NextChar();
         if( string_type == TYP_WCHAR ) {
@@ -715,10 +702,6 @@ static TOKEN doScanString( type_id string_type, bool expanding )
         }
         return( T_STRING );
     }
-    // '\n' or LCHR_EOF don't print nicely
-    --TokenLen;
-    if( TokenLen > 0 )
-        WriteBufferPosNullChar( TokenLen - 1 );
     BadTokenInfo = ERR_MISSING_QUOTE;
     return( T_BAD_TOKEN );
 }
@@ -789,8 +772,7 @@ static TOKEN doScanAsmToken( void )
 {
     NextChar();
     while( SrcFileScanName( CurrChar ) == '.' ) {
-        WriteBufferChar( '.' );
-        NextChar();
+        WriteBufferCharNextChar( '.' );
     }
     WriteBufferNullChar();
     return( T_ID );
@@ -808,7 +790,7 @@ static TOKEN scanWide( bool expanding )  // scan something that starts with L
     } else {
         Buffer[0] = 'L';
         if( c == '\'' ) {               // L'a'
-            Buffer[1] = c;
+            Buffer[1] = '\'';
             TokenLen = 2;
             token = doScanCharConst( TYP_WCHAR, expanding );
         } else {                        // regular identifier
@@ -864,22 +846,19 @@ static TOKEN doScanNum( bool expanding )
 
     U64Clear( Constant64 );
     too_big = 0;
-    TokenLen = 1;
-    c = CurrChar;
-    Buffer[0] = c;
-    if( c == '0' ) {
+    if( CurrChar == '0' ) {
         c = NextChar();
-        WriteBufferChar( c );
         if( ONE_CASE_EQUAL( c, 'X' ) ) {
+            WriteBufferChar( c );
             if( doScanHex( expanding ) ) {
                 c = CurrChar;       /* get next character */
             } else {
                 if( diagnose_lex_error( expanding ) ) {
                     CErr1( ERR_INVALID_HEX_CONSTANT );
                 } else {
-                    unGetChar( CurrChar );
-                    --TokenLen;
-                    CurrChar = c;       /* put last character back */
+                    unGetChar( CurrChar );      /* put character after 'x' back */
+                    CurrChar = c;               /* set current character to 'x' */
+                    --TokenLen;                 /* remove character 'x' from Buffer */
                 }
             }
         } else {                    /* scan octal number */
@@ -893,18 +872,13 @@ static TOKEN doScanNum( bool expanding )
                 if( U64Cnv8( &Constant64, c - '0' ) ) {
                     too_big = 1;
                 }
-                c = NextChar();
-                WriteBufferChar( c );
+                c = WriteBufferCharNextChar( c );
             }
-            c = CurrChar;
             switch( c ) {       /* could be front of a float constant */
             case '8':           /* 0128.3 */
             case '9':           /* 0129.3 */
-                for(;;) {
-                    if(( CharSet[c] & C_DI ) == 0 )
-                        break;
-                    c = NextChar();
-                    WriteBufferChar( c );
+                while( CharSet[c] & C_DI ) {
+                    c = WriteBufferCharNextChar( c );
                 }
                 if( c != '.' && c != 'e' && c != 'E' ) {
                     if( diagnose_lex_error( expanding ) ) {
@@ -920,18 +894,14 @@ static TOKEN doScanNum( bool expanding )
         }
         max_value = &uintMax;
     } else {                /* scan decimal number */
-        // we know 'c' is a digit
-        U32ToU64( c - '0', &Constant64 );
+        // we know 'CurrChar' is a digit
+        U32ToU64( CurrChar - '0', &Constant64 );
         c = NextChar();
-        WriteBufferChar( c );
-        for(;;) {
-            if(( CharSet[c] & C_DI ) == 0 )
-                break;
+        while( CharSet[c] & C_DI ) {
             if( U64Cnv10( &Constant64, c - '0' ) ) {
                 too_big = 1;
             }
-            c = NextChar();
-            WriteBufferChar( c );
+            c = WriteBufferCharNextChar( c );
         }
         if( c == '.' || ONE_CASE_EQUAL( c, 'E' ) ) {
             return( doScanFloat() );
@@ -941,15 +911,12 @@ static TOKEN doScanNum( bool expanding )
     switch( ONE_CASE( c ) ) {
     case ONE_CASE( 'i' ):
         ConstType = TYP_SINT;
-        c = NextChar();
-        WriteBufferChar( c );
+        c = WriteBufferCharNextChar( c );
         switch( c ) {
         case '6':
-            c = NextChar();
-            WriteBufferChar( c );
+            c = WriteBufferCharNextChar( c );
             if( c == '4' ) {
-                c = NextChar();
-                WriteBufferChar( c );
+                c = WriteBufferCharNextChar( c );
                 if( U64IsI64( Constant64 ) ) {
                     ConstType = TYP_SLONG64;
                 } else {
@@ -963,11 +930,9 @@ static TOKEN doScanNum( bool expanding )
             }
             break;
         case '1':
-            c = NextChar();
-            WriteBufferChar( c );
+            c = WriteBufferCharNextChar( c );
             if( c == '6' ) {
-                c = NextChar();
-                WriteBufferChar( c );
+                c = WriteBufferCharNextChar( c );
                 msIntSuffix( 0x00007fff, TYP_SSHORT, TYP_USHORT, max_value );
             } else {
                 if( diagnose_lex_error( expanding ) ) {
@@ -976,11 +941,9 @@ static TOKEN doScanNum( bool expanding )
             }
             break;
         case '3':
-            c = NextChar();
-            WriteBufferChar( c );
+            c = WriteBufferCharNextChar( c );
             if( c == '2' ) {
-                c = NextChar();
-                WriteBufferChar( c );
+                c = WriteBufferCharNextChar( c );
                 msIntSuffix( 0x7fffffff, TYP_SLONG, TYP_ULONG, max_value );
             } else {
                 if( diagnose_lex_error( expanding ) ) {
@@ -989,8 +952,7 @@ static TOKEN doScanNum( bool expanding )
             }
             break;
         case '8':
-            c = NextChar();
-            WriteBufferChar( c );
+            c = WriteBufferCharNextChar( c );
             msIntSuffix( 0x0000007f, TYP_SCHAR, TYP_UCHAR, max_value );
             break;
         default:
@@ -1002,26 +964,22 @@ static TOKEN doScanNum( bool expanding )
         break;
     case ONE_CASE( 'L' ):
         ConstType = TYP_SLONG;
-        c = NextChar();
-        WriteBufferChar( c );
+        c = WriteBufferCharNextChar( c );
         if( ONE_CASE_EQUAL( c, 'u' ) ) {
-            c = NextChar();
-            WriteBufferChar( c );
             ConstType = TYP_ULONG;
+            c = WriteBufferCharNextChar( c );
         } else if( ONE_CASE_EQUAL( c, 'L' ) ) {
-            c = NextChar();
-            WriteBufferChar( c );
+            c = WriteBufferCharNextChar( c );
             if( ONE_CASE_EQUAL( c, 'u' ) ) {
-                c = NextChar();
-                WriteBufferChar( c );
                 ConstType = TYP_ULONG64;
+                c = WriteBufferCharNextChar( c );
             } else {
                 ConstType = TYP_SLONG64;
             }
-        } else if( ! U64IsI32( Constant64 ) ) { // Constant > 0x7FFFFFFFul
+        } else if( !U64IsI32( Constant64 ) ) { // Constant > 0x7FFFFFFFul
             ConstType = TYP_ULONG;
         }
-        if( ! U64IsU32( Constant64 ) ) {
+        if( !U64IsU32( Constant64 ) ) {
             if( U64IsI64( Constant64 ) ) {
                 ConstType = TYP_SLONG64;
             } else {
@@ -1030,20 +988,16 @@ static TOKEN doScanNum( bool expanding )
         }
         break;
     case ONE_CASE( 'u' ):
-        c = NextChar();
-        WriteBufferChar( c );
+        c = WriteBufferCharNextChar( c );
         switch( ONE_CASE( c ) ) {
         case ONE_CASE( 'i' ):
             ConstType = TYP_ULONG64;
-            c = NextChar();
-            WriteBufferChar( c );
+            c = WriteBufferCharNextChar( c );
             switch( c ) {
             case '6':
-                c = NextChar();
-                WriteBufferChar( c );
+                c = WriteBufferCharNextChar( c );
                 if( c == '4' ) {
-                    c = NextChar();
-                    WriteBufferChar( c );
+                    c = WriteBufferCharNextChar( c );
                 } else {
                     if( diagnose_lex_error( expanding ) ) {
                         CErr1( ERR_INVALID_CONSTANT_SUFFIX );
@@ -1052,11 +1006,9 @@ static TOKEN doScanNum( bool expanding )
                 }
                 break;
             case '1':
-                c = NextChar();
-                WriteBufferChar( c );
+                c = WriteBufferCharNextChar( c );
                 if( c == '6' ) {
-                    c = NextChar();
-                    WriteBufferChar( c );
+                    c = WriteBufferCharNextChar( c );
                     msIntSuffix( 0x00007fff, TYP_USHORT, TYP_USHORT, &uintMax );
                 } else {
                     if( diagnose_lex_error( expanding ) ) {
@@ -1066,11 +1018,9 @@ static TOKEN doScanNum( bool expanding )
                 }
                 break;
             case '3':
-                c = NextChar();
-                WriteBufferChar( c );
+                c = WriteBufferCharNextChar( c );
                 if( c == '2' ) {
-                    c = NextChar();
-                    WriteBufferChar( c );
+                    c = WriteBufferCharNextChar( c );
                     msIntSuffix( 0x7fffffff, TYP_ULONG, TYP_ULONG, &uintMax );
                 } else {
                     if( diagnose_lex_error( expanding ) ) {
@@ -1080,8 +1030,7 @@ static TOKEN doScanNum( bool expanding )
                 }
                 break;
             case '8':
-                c = NextChar();
-                WriteBufferChar( c );
+                c = WriteBufferCharNextChar( c );
                 msIntSuffix( 0x0000007f, TYP_UCHAR, TYP_UCHAR, &uintMax );
                 break;
             default:
@@ -1092,11 +1041,9 @@ static TOKEN doScanNum( bool expanding )
             }
             break;
         case ONE_CASE( 'L' ):
-            c = NextChar();
-            WriteBufferChar( c );
+            c = WriteBufferCharNextChar( c );
             if( ONE_CASE_EQUAL( c, 'L' ) ) {
-                c = NextChar();
-                WriteBufferChar( c );
+                c = WriteBufferCharNextChar( c );
                 ConstType = TYP_ULONG64;
             } else {
                 ConstType = TYP_ULONG;
@@ -1141,27 +1088,22 @@ static TOKEN doScanNum( bool expanding )
         }
     }
     if( (PPControl & PPCTL_ASM) && (CharSet[c] & (C_AL | C_DI)) ) {
-        for(;;) {
-            c = NextChar();
-            WriteBufferChar( c );
-            if( (CharSet[c] & (C_AL | C_DI)) == 0 ) {
-                break;
-            }
+        while( CharSet[c] & (C_AL | C_DI) ) {
+            c = WriteBufferCharNextChar( c );
         }
-        Buffer[--TokenLen] = '\0';
+        WriteBufferNullChar();
         return( T_BAD_TOKEN );
-    } else {
-        Buffer[--TokenLen] = '\0';
-        return( T_CONSTANT );
     }
+    WriteBufferNullChar();
+    return( T_CONSTANT );
 }
 
 static TOKEN scanNum( bool expanding )
 {
     SrcFileCurrentLocation();
+    Buffer[0] = CurrChar;
+    TokenLen = 1;
     if( PPControl & PPCTL_ASM ) {
-        Buffer[0] = CurrChar;
-        TokenLen = 1;
         return( doScanAsmToken() );
     } else {
         return( doScanNum( expanding ) );
@@ -1443,11 +1385,12 @@ static TOKEN scanDot( bool expanding )
     /* unused parameters */ (void)expanding;
 
     SrcFileCurrentLocation();
-    Buffer[0] = '.';
-    TokenLen = 1;
     if( PPControl & PPCTL_ASM ) {
+        Buffer[0] = '.';
+        TokenLen = 1;
         return( doScanAsmToken() );
     } else {
+        TokenLen = 0;
         return( doScanFloat() );
     }
 }

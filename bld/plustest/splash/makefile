@@ -17,6 +17,10 @@ test_flags_386 = -3s
 test_flags_i86 = -mm
 test_flags_axp =
 
+opt_link_spltest = FILE { splash.obj regex.obj }
+opt_link_splassoc = FILE { splash.obj regex.obj }
+opt_link_justify = FILE { splash.obj regex.obj }
+
 !include testenv1.mif
 
 objs = &
@@ -42,12 +46,8 @@ exes = &
     justify.$(exe) &
     spltest.$(exe)
 
-test : .symbolic start test.lnk $(exes)
+test : .symbolic start test.lnk splash.obj regex.obj $(exes)
     $(noecho)%make common_set_result
-
-spltest.$(exe) : spltest.obj splash.obj regex.obj
-splassoc.$(exe) : splassoc.obj splash.obj regex.obj
-justify.$(exe) : justify.obj splash.obj regex.obj
 
 regex.obj : regex.c
     @%make set_path_wcc

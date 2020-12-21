@@ -81,20 +81,23 @@ vi_rc FTSAddCmd( const char *data, int tok )
     assert( ftsTail );
     assert( EditFlags.FileTypeSource );
 
-    cmd_data[0] = '\0';
     // Source gets cute & trashes "set "...
-    if( tok >= SRC_T_NULL + 1 ) {
-        switch( tok ) {
-        case SRC_T_NULL + 1 + PCL_T_SET:
-            strcpy( cmd_data, "set " );
-            if( EditFlags.ScriptIsCompiled ) {
-                data = GetNextWord1( data, cmd_data + 4 );
-                ExpandTokenSet( cmd_data + 4, cmd_data + 4 );
-            }
-            break;
-        }
+    if( tok == 0 ) {
+        SKIP_SPACES( data );
+        if( *data == '\0' )
+            return( ERR_NO_ERR );
+        strcpy( cmd_data, data );
+    } else if( tok == SRC_T_NULL + 1 + PCL_T_SET ) {
+        strcpy( cmd_data, "set " );
+        data = GetNextWord1( data, cmd_data + 4 );
+        ExpandTokenSet( cmd_data + 4, cmd_data + 4 );
+        if( cmd_data[4] == '\0' )
+            return( ERR_NO_ERR );
+        strcat( cmd_data, data );
+    } else {
+        /* error only 'set' command can be in FTS */
+        return( ERR_INVALID_COMMAND );
     }
-    strcat( cmd_data, data );
 
     cmd = MemAlloc( offsetof( cmd_ll, data ) + strlen( cmd_data ) + 1 );
     strcpy( cmd->data, cmd_data );

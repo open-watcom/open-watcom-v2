@@ -14,6 +14,8 @@ test_flags_386 = -mf
 test_flags_i86 = -ml
 test_flags_axp =
 
+opt_link_strtest = FILE { string.obj strngrep.obj }
+
 !include testenv1.mif
 
 stack_386=opt stack=8k
@@ -22,10 +24,8 @@ stack_axp=opt stack=8k
 
 exes = strtest.$(exe)
 
-test : .symbolic start test.lnk $(exes)
+test : .symbolic start test.lnk string.obj strngrep.obj $(exes)
     $(noecho)%make common_set_result
-
-strtest.$(exe) : strtest.obj string.obj strngrep.obj
 
 clean : .procedure
     @%make echo_clean
