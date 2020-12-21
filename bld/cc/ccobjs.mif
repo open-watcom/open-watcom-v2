@@ -48,6 +48,7 @@ common_objs = &
     $(_subdir_)cpragma.obj &
     $(_subdir_)cpurge.obj &
     $(_subdir_)cscan.obj &
+    $(_subdir_)cscanbuf.obj &
     $(_subdir_)csizeof.obj &
     $(_subdir_)cstats.obj &
     $(_subdir_)cstring.obj &

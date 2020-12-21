@@ -36,6 +36,7 @@
 #include "dumpapi.h"
 #include "cmacadd.h"
 #include "ppexpn.h"
+#include "cscanbuf.h"
 
 #include "clibext.h"
 
@@ -389,43 +390,34 @@ static char *ExpandMacroToken( void )
 TOKEN SpecialMacro( MEPTR mentry )
 /********************************/
 {
-    char            *p;
-    char            *bufp;
-    TOKEN           token;
+    const char      *p;
 
     CompFlags.wide_char_string = false;
     switch( (special_macros)mentry->parm_count ) {
     case MACRO_LINE:
-        sprintf( Buffer, "%u", TokenLoc.line );
+        TokenLen = sprintf( Buffer, "%u", TokenLoc.line );
         Constant = TokenLoc.line;
         ConstType = TYP_INT;
-        token = T_CONSTANT;
-        break;
+        return( T_CONSTANT );
     case MACRO_FILE:
-        bufp = Buffer;
-        for( p = FileIndexToFName( TokenLoc.fno )->name; (*bufp++ = *p) != '\0'; ++p ) {
-            if( *p == '\\' ) {
-                *bufp++ = '\\';
-            }
-        }
-        token = T_STRING;
-        break;
+        p = FileIndexToFName( TokenLoc.fno )->name;
+        TokenLen = WriteBufferPosEscStr( 0, &p, false );
+        return( T_STRING );
     case MACRO_DATE:
         strcpy( Buffer, __Date );
-        token = T_STRING;
-        break;
+        TokenLen = strlen( Buffer );
+        return( T_STRING );
     case MACRO_TIME:
         strcpy( Buffer, __Time );
-        token = T_STRING;
-        break;
+        TokenLen = strlen( Buffer );
+        return( T_STRING );
     case MACRO_STDC:
     case MACRO_STDC_HOSTED:
         Buffer[0] = '1';
         Buffer[1] = '\0';
         Constant = 1;
         ConstType = TYP_INT;
-        token = T_CONSTANT;
-        break;
+        return( T_CONSTANT );
     case MACRO_STDC_VERSION:
         if( CompFlags.c99_extensions ) {
             CPYLIT( Buffer, "199901L" );
@@ -435,8 +427,7 @@ TOKEN SpecialMacro( MEPTR mentry )
             Constant = 199409;
         }
         ConstType = TYP_LONG;
-        token = T_CONSTANT;
-        break;
+        return( T_CONSTANT );
     case MACRO_FUNCTION:
     case MACRO_FUNC:
         Buffer[0] = '\0';
@@ -445,15 +436,13 @@ TOKEN SpecialMacro( MEPTR mentry )
                 strcpy( Buffer, CurFunc->name );
             }
         }
-        token = T_STRING;
-        break;
+        TokenLen = strlen( Buffer );
+        return( T_STRING );
     default:
         Buffer[0] = '\0';
-        token = T_NULL;     // shut up the compiler
-        break;
+        TokenLen = 0;
+        return( T_NULL );   // shut up the compiler
     }
-    TokenLen = strlen( Buffer );
-    return( token );
 }
 
 

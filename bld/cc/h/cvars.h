@@ -681,7 +681,6 @@ extern void         InitPurge(void);
 extern void         PurgeMemory(void);
 
 /* cscan */
-extern void         InitBuffer( size_t );
 extern void         ScanInit( void );
 extern bool         InitPPScan( void );
 extern void         FiniPPScan( bool );

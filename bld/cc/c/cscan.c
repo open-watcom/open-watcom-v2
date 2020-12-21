@@ -38,6 +38,7 @@
 #include "kwhash.h"
 #include "unicode.h"
 #include "cmacadd.h"
+#include "cscanbuf.h"
 
 
 #define diagnose_lex_error()    ((SkipLevel == NestLevel) && (PPControl & PPCTL_NO_LEX_ERRORS) == 0)
@@ -55,7 +56,6 @@ static FCB              rescan_tmp_file;
 static int              SavedCurrChar;          // used when get tokens from macro
 #endif
 static unsigned char    ClassTable[LCHR_MAX];
-static size_t           BufferSize;
 
 static unsigned char InitClassTable[] = {
     '\r',       SCAN_CR,
@@ -100,51 +100,6 @@ static unsigned char InitClassTable[] = {
     '\0',       0
 };
 
-
-void InitBuffer( size_t size )
-/****************************/
-{
-    Buffer = CMemAlloc( size );
-    BufferSize = size;
-}
-
-static void EnlargeBuffer( size_t size )
-/**************************************/
-{
-    char    *newBuffer;
-
-//    size += 32;     /* Buffer size margin */
-    if( size > BufferSize ) {
-        size = _RoundUp( size, BUF_SIZE );
-        newBuffer = CMemAlloc( size );
-        memcpy( newBuffer, Buffer, BufferSize );
-        CMemFree( (void *)Buffer );
-        Buffer = newBuffer;
-        BufferSize = size;
-    }
-}
-
-static void WriteBufferChar( int c )
-/**********************************/
-{
-    EnlargeBuffer( TokenLen + 1 );
-    Buffer[TokenLen++] = (char)c;
-}
-
-static void WriteBufferNullChar( void )
-/*************************************/
-{
-    EnlargeBuffer( TokenLen + 1 );
-    Buffer[TokenLen] = '\0';
-}
-
-static int SaveCharNextChar( int c )
-/**********************************/
-{
-    EnlargeBuffer( TokenLen + 1 );
-    Buffer[TokenLen++] = (char)c;
-    return( NextChar() );
-}
 
 void ReScanInit( const char *ptr )
 /********************************/
@@ -394,9 +349,9 @@ static TOKEN doScanFloat( bool hex )
     c = CurrChar;
     if( c == '.' ) {
         flags = ( hex ) ? C_HX | C_DI : C_DI;
-        c = SaveCharNextChar( c );
+        c = WriteBufferCharNextChar( c );
         while( CharSet[c] & flags ) {
-            c = SaveCharNextChar( c );
+            c = WriteBufferCharNextChar( c );
         }
         if( TokenLen == 1 ) {   /* .? */
             return( doScanDotSomething( c ) );
@@ -404,23 +359,23 @@ static TOKEN doScanFloat( bool hex )
     }
     token = T_CONSTANT;
     if( c == 'e' || c == 'E' || ( hex && ( c == 'p' || c == 'P' ) ) ) {
-        c = SaveCharNextChar( c );
+        c = WriteBufferCharNextChar( c );
         if( c == '+' || c == '-' ) {
-            c = SaveCharNextChar( c );
+            c = WriteBufferCharNextChar( c );
         }
         if( c < '0' || c > '9' ) {
             token = T_BAD_TOKEN;
             BadTokenInfo = ERR_INVALID_FLOATING_POINT_CONSTANT;
         }
         while( c >= '0' && c <= '9' ) {
-            c = SaveCharNextChar( c );
+            c = WriteBufferCharNextChar( c );
         }
     }
     if( c == 'f' || c == 'F' ) {
-        SaveCharNextChar( c );
+        WriteBufferCharNextChar( c );
         ConstType = TYP_FLOAT;
     } else if( c == 'l' || c == 'L' ) {
-        SaveCharNextChar( c );
+        WriteBufferCharNextChar( c );
         if( CompFlags.use_long_double ) {
             ConstType = TYP_LONG_DOUBLE;
         } else {
@@ -439,7 +394,7 @@ static TOKEN doScanAsm( void )
     BadTokenInfo = ERR_NONE;
     NextChar();
     while( getIDName( CurrChar ) == '.' ) {
-        SaveCharNextChar( '.' );
+        WriteBufferCharNextChar( '.' );
     }
     WriteBufferNullChar();
     return( T_ID );
@@ -678,9 +633,9 @@ static TOKEN doScanNum( void )
         if( c == 'x' || c == 'X' ) {
             bad_token_type = ERR_INVALID_HEX_CONSTANT;
             con.form = CON_HEX;
-            c = SaveCharNextChar( c );
+            c = WriteBufferCharNextChar( c );
             while( CharSet[c] & (C_HX | C_DI) ) {
-                c = SaveCharNextChar( c );
+                c = WriteBufferCharNextChar( c );
             }
 
             if (CompFlags.c99_extensions) {
@@ -706,7 +661,7 @@ static TOKEN doScanNum( void )
             // since the argument may be used in with # or ##.
             while( c >= '0' && c <= '9' ) {
                 digit_mask |= c;
-                c = SaveCharNextChar( c );
+                c = WriteBufferCharNextChar( c );
             }
             if( c == '.' || c == 'e' || c == 'E' ) {
                 return( doScanFloat( false ) );
@@ -724,7 +679,7 @@ static TOKEN doScanNum( void )
         con.form = CON_DEC;
         c = NextChar();
         while( c >= '0' && c <= '9' ) {
-            c = SaveCharNextChar( c );
+            c = WriteBufferCharNextChar( c );
         }
         if( c == '.' || c == 'e' || c == 'E' ) {
             return( doScanFloat( false ) );
@@ -745,14 +700,14 @@ static TOKEN doScanNum( void )
     }
     con.suffix = SUFF_NONE;
     if( c == 'l' || c == 'L' ) {   // collect suffix
-        c = SaveCharNextChar( c );
+        c = WriteBufferCharNextChar( c );
         if( c == 'u' || c == 'U' ) {
-            c = SaveCharNextChar( c );
+            c = WriteBufferCharNextChar( c );
             con.suffix = SUFF_UL;
         } else if( c == 'l' || c == 'L' ) {
-            c = SaveCharNextChar( c );
+            c = WriteBufferCharNextChar( c );
             if( c == 'u' || c == 'U' ) {
-                c = SaveCharNextChar( c );
+                c = WriteBufferCharNextChar( c );
                 con.suffix = SUFF_ULL;
             } else {
                 con.suffix = SUFF_LL;
@@ -761,23 +716,23 @@ static TOKEN doScanNum( void )
             con.suffix = SUFF_L;
         }
     } else if( c == 'u' || c == 'U' ) {
-        c = SaveCharNextChar( c );
+        c = WriteBufferCharNextChar( c );
         if( c == 'l' || c == 'L' ) {
-            c = SaveCharNextChar( c );
+            c = WriteBufferCharNextChar( c );
             if( c == 'l' || c == 'L' ) {
-                c = SaveCharNextChar( c );
+                c = WriteBufferCharNextChar( c );
                 con.suffix = SUFF_ULL;
             } else {
                 con.suffix = SUFF_UL;
             }
         } else if( c == 'i' || c == 'I' ) {
-            c = SaveCharNextChar( c );
+            c = WriteBufferCharNextChar( c );
             con.suffix = SUFF_UI;
         } else {
             con.suffix = SUFF_U;
         }
     } else if( c == 'i' || c == 'I' ) {
-        c = SaveCharNextChar( c );
+        c = WriteBufferCharNextChar( c );
         con.suffix = SUFF_I;
     }
     if( con.suffix == SUFF_UI || con.suffix == SUFF_I ) {
@@ -786,7 +741,7 @@ static TOKEN doScanNum( void )
         value = 0;
         while( c >= '0' && c <= '9' ) {
             value = value * 10 + c - '0';
-            c = SaveCharNextChar( c );
+            c = WriteBufferCharNextChar( c );
         }
         if( value == 64 ) {
             if( con.suffix == SUFF_I ) {
@@ -904,7 +859,7 @@ static TOKEN doScanNum( void )
     if( CharSet[c] & (C_AL | C_DI) ) {
         token = T_BAD_TOKEN;
         while( CharSet[c] & (C_AL | C_DI) ) {
-            c = SaveCharNextChar( c );
+            c = WriteBufferCharNextChar( c );
         }
     }
     WriteBufferNullChar();
@@ -1525,7 +1480,7 @@ static TOKEN doScanString( bool wide )
         }
 
         if( c == '\\' ) {
-            c = SaveCharNextChar( c );
+            c = WriteBufferCharNextChar( c );
             if( (CharSet[c] & C_WS) == 0 ) {
                 ESCChar( c, NextChar, &BadTokenInfo, WriteBufferChar );
                 if( diagnose_lex_error() ) {
@@ -1541,9 +1496,9 @@ static TOKEN doScanString( bool wide )
             /* if first character of a double-byte character, then
                save it and get the next one. */
             if( CharSet[c] & C_DB ) {
-                c = SaveCharNextChar( c );
+                c = WriteBufferCharNextChar( c );
             }
-            c = SaveCharNextChar( c );
+            c = WriteBufferCharNextChar( c );
         }
     }
     WriteBufferNullChar();

@@ -43,6 +43,7 @@
 #include "pathlist.h"
 #include "cmacadd.h"
 #include "pathgrp2.h"
+#include "cscanbuf.h"
 
 #include "clibext.h"
 #include "clibint.h"
@@ -93,7 +94,7 @@ void FrontEndFini( void )
     GlobalCompFlags.cc_first_use = true;
 }
 
-static void ClearGlobals( void )
+static void initGlobals( void )
 {
     InitStats();
     IsStdIn = false;
@@ -112,6 +113,11 @@ static void ClearGlobals( void )
     FNameBuf = CMemAlloc( _MAX_PATH );
     InitIncFile();
     InitErrLoc();
+}
+
+static void finiGlobals( void )
+{
+    FiniBuffer();
 }
 
 static bool ParseCmdLine( char **cmdline )
@@ -1368,8 +1374,9 @@ bool FrontEnd( char **cmdline )
     InitPurge();
 
     SwitchChar = _dos_switch_char();
-    ClearGlobals();
+    initGlobals();
     DoCCompile( cmdline );
+    finiGlobals();
     PurgeMemory();
     FiniMsg();
     CMemFini();
