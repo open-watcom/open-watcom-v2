@@ -223,10 +223,7 @@ static bool doScanHex( bool expanding )
         WriteBufferChar( c );
         if(( CharSet[c] & (C_HX|C_DI) ) == 0 )
             break;
-        if( CharSet[c] & C_HX ) {
-            c = (( c | HEX_MASK ) - HEX_BASE ) + 10 + '0';
-        }
-        if( U64Cnv16( &Constant64, c - '0' ) ) {
+        if( U64Cnv16( &Constant64, hex_dig( c ) ) ) {
             flag.too_big = true;
         }
         flag.at_least_one = true;
@@ -639,7 +636,6 @@ static TOKEN doScanDotSomething( int c )
 static TOKEN doScanFloat( void )
 {
     int c;
-    int one_case;
 
     c = CurrChar;
     if( c == '.' ) {
@@ -655,7 +651,7 @@ static TOKEN doScanFloat( void )
         }
     }
     CurToken = T_CONSTANT;
-    if( ONE_CASE( c ) == ONE_CASE( 'E' ) ) {
+    if( ONE_CASE_EQUAL( c, 'E' ) ) {
         c = NextChar();
         WriteBufferChar( c );
         if( c == '+' || c == '-' ) {
@@ -673,12 +669,11 @@ static TOKEN doScanFloat( void )
             WriteBufferChar( c );
         }
     }
-    one_case = ONE_CASE( c );
-    if( one_case == ONE_CASE( 'F' ) ) {
+    if( ONE_CASE_EQUAL( c, 'F' ) ) {
         c = NextChar();
         WriteBufferChar( c );
         ConstType = TYP_FLOAT;
-    } else if( one_case == ONE_CASE( 'L' ) ) {
+    } else if( ONE_CASE_EQUAL( c, 'L' ) ) {
         c = NextChar();
         WriteBufferChar( c );
         ConstType = TYP_LONG_DOUBLE;
@@ -901,7 +896,7 @@ static TOKEN doScanNum( bool expanding )
     if( c == '0' ) {
         c = NextChar();
         WriteBufferChar( c );
-        if( ONE_CASE( c ) == ONE_CASE( 'X' ) ) {
+        if( ONE_CASE_EQUAL( c, 'X' ) ) {
             if( doScanHex( expanding ) ) {
                 c = CurrChar;       /* get next character */
             } else {
@@ -964,7 +959,7 @@ static TOKEN doScanNum( bool expanding )
             c = NextChar();
             WriteBufferChar( c );
         }
-        if( c == '.' || ONE_CASE( c ) == ONE_CASE( 'E' ) ) {
+        if( c == '.' || ONE_CASE_EQUAL( c, 'E' ) ) {
             return( doScanFloat() );
         }
         max_value = &intMax;
@@ -1033,18 +1028,16 @@ static TOKEN doScanNum( bool expanding )
         break;
     case ONE_CASE( 'L' ):
         ConstType = TYP_SLONG;
-        NextChar();
-        WriteBufferChar( CurrChar );
-        c = ONE_CASE( CurrChar );
-        if( c == ONE_CASE( 'u' ) ) {
+        c = NextChar();
+        WriteBufferChar( c );
+        if( ONE_CASE_EQUAL( c, 'u' ) ) {
             c = NextChar();
             WriteBufferChar( c );
             ConstType = TYP_ULONG;
-        } else if( c == ONE_CASE( 'L' ) ) {
-            NextChar();
-            WriteBufferChar( CurrChar );
-            c = ONE_CASE( CurrChar );
-            if( c == ONE_CASE( 'u' ) ) {
+        } else if( ONE_CASE_EQUAL( c, 'L' ) ) {
+            c = NextChar();
+            WriteBufferChar( c );
+            if( ONE_CASE_EQUAL( c, 'u' ) ) {
                 c = NextChar();
                 WriteBufferChar( c );
                 ConstType = TYP_ULONG64;
@@ -1125,10 +1118,9 @@ static TOKEN doScanNum( bool expanding )
             }
             break;
         case ONE_CASE( 'L' ):
-            NextChar();
-            WriteBufferChar( CurrChar );
-            c = ONE_CASE( CurrChar );
-            if( c == ONE_CASE( 'L' ) ) {
+            c = NextChar();
+            WriteBufferChar( c );
+            if( ONE_CASE_EQUAL( c, 'L' ) ) {
                 c = NextChar();
                 WriteBufferChar( c );
                 ConstType = TYP_ULONG64;
@@ -1512,7 +1504,7 @@ static TOKEN doScanPPNumber( void )
         if( c == '.' ) {
             continue;
         }
-        if( ONE_CASE( prevc ) == ONE_CASE( 'e' ) ) {
+        if( ONE_CASE_EQUAL( prevc, 'e' ) ) {
             if( c == '+' || c == '-' ) {
                 if( CompFlags.extensions_enabled ) {
                     /* concession to existing practice...

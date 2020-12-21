@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -155,28 +156,20 @@ double SafeAtof( char *p )
 int hex_dig(                    // GET HEXADECIMAL DIGIT FOR CHAR (OR 16)
     int c )                     // - character
 {
-    if(( CharSet[c] & (C_HX|C_DI) ) == 0 ) {
-        return( 16 );
-    }
-    if( CharSet[c] & C_HX ) {
-        /* a-f or A-F */
-        c = (( c | HEX_MASK ) - HEX_BASE ) + 10 + '0';
-    }
-    return( c - '0' );
+    if( CharSet[c] & C_HX )     /* a-f or A-F */
+        return( HEX2BIN( c ) );
+    if( CharSet[c] & C_DI )     /* 0-9 */
+        return( DEC2BIN( c ) );
+    return( 16 );
 }
 
 
 int octal_dig(                 // GET OCTAL DIGIT FOR CHAR (OR 8)
-    int chr )                  // - character
+    int c )                    // - character
 {
-    int     retn;              // - digit returned
-
-    if( ( chr >= '0' ) && ( chr <= '7' ) ) {
-        retn = chr - '0';
-    } else {
-        retn = 8;
-    }
-    return( retn );
+    if( ( c >= '0' ) && ( c <= '7' ) )
+        return( DEC2BIN( c ) );
+    return( 8 );
 }
 
 
@@ -266,7 +259,7 @@ bool strpref(                   // IS STRING A PREFIX OF A STRING
     char const *prefix,         // - possible prefix
     char const *str )           // - string
 {
-    while( *prefix ) {
+    while( *prefix != '\0' ) {
         if( *prefix != *str ) {
             return( false );
         }

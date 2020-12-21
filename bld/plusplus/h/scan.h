@@ -77,6 +77,9 @@ typedef enum charset_flags {
 #define HEX_BASE        'a'
 #define ONE_CASE( c )   ((c)|'\x20')
 #endif
+#define ONE_CASE_EQUAL( a, b )  (ONE_CASE( a ) == ONE_CASE( b ))
+#define DEC2BIN( c )            ((c) - '0')
+#define HEX2BIN( c )            (((c) | HEX_MASK) - HEX_BASE + 10)
 
 extern charset_flags        CharSet[LCHR_MAX];      // character characterizations
 extern unsigned             JIS2Unicode( unsigned );
