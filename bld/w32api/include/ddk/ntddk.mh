@@ -3188,7 +3188,7 @@ typedef enum _WHEA_ERROR_SOURCE_STATE {
 typedef WHEA_ERROR_SOURCE_STATE *PWHEA_ERROR_SOURCE_STATE;
 
 /* The following structures get 1-byte packing. */
-#include <pshpack1.h>
+:include pshpack1.sp
 
 /* Windows Hardware Error Architecture notification flags */
 typedef union _WHEA_NOTIFICATION_FLAGS {
@@ -4500,7 +4500,7 @@ typedef struct _WHEA_GENERIC_ERROR_DATA_ENTRY {
 typedef WHEA_GENERIC_ERROR_DATA_ENTRY   *PWHEA_GENERIC_ERROR_DATA_ENTRY;
 
 /* Revert to default packing. */
-#include <poppack.h>
+:include poppack.sp
 
 /* Windows Hardware Error Architecture error injection capabilities */
 typedef union _WHEA_ERROR_INJECTION_CAPABILITIES {

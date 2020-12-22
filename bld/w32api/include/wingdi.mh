@@ -2008,7 +2008,7 @@ typedef BITMAP  *NPBITMAP;
 typedef BITMAP  *LPBITMAP;
 
 /* RGB triple */
-#include <pshpack1.h>
+:include pshpack1.sp
 typedef struct tagRGBTRIPLE {
     BYTE    rgbtBlue;
     BYTE    rgbtGreen;
@@ -2017,7 +2017,7 @@ typedef struct tagRGBTRIPLE {
 typedef RGBTRIPLE   *PRGBTRIPLE;
 typedef RGBTRIPLE   *NPRGBTRIPLE;
 typedef RGBTRIPLE   *LPRGBTRIPLE;
-#include <poppack.h>
+:include poppack.sp
 
 /* RGB quadruple */
 typedef struct tagRGBQUAD {
@@ -2190,7 +2190,7 @@ typedef BITMAPCOREINFO  *PBITMAPCOREINFO;
 typedef BITMAPCOREINFO  *LPBITMAPCOREINFO;
 
 /* Bitmap file header */
-#include <pshpack2.h>
+:include pshpack2.sp
 typedef struct tagBITMAPFILEHEADER {
     WORD    bfType;
     DWORD   bfSize;
@@ -2200,7 +2200,7 @@ typedef struct tagBITMAPFILEHEADER {
 } BITMAPFILEHEADER;
 typedef BITMAPFILEHEADER    *PBITMAPFILEHEADER;
 typedef BITMAPFILEHEADER    *LPBITMAPFILEHEADER;
-#include <poppack.h>
+:include poppack.sp
 
 /* Font signature */
 #if (WINVER >= 0x0400)
@@ -2261,7 +2261,7 @@ typedef struct tagMETAFILEPICT {
 typedef METAFILEPICT    *LPMETAFILEPICT;
 
 /* Metafile header */
-#include <pshpack2.h>
+:include pshpack2.sp
 typedef struct tagMETAHEADER {
     WORD    mtType;
     WORD    mtHeaderSize;
@@ -2273,7 +2273,7 @@ typedef struct tagMETAHEADER {
 } METAHEADER;
 typedef METAHEADER UNALIGNED    *PMETAHEADER;
 typedef METAHEADER UNALIGNED    *LPMETAHEADER;
-#include <poppack.h>
+:include poppack.sp
 
 /* Enhanced metafile record */
 typedef struct tagENHMETARECORD {
@@ -2314,7 +2314,7 @@ typedef ENHMETAHEADER   *PENHMETAHEADER;
 typedef ENHMETAHEADER   *LPENHMETAHEADER;
 
 /* Text metric */
-#include <pshpack4.h>
+:include pshpack4.sp
 typedef struct tagTEXTMETRICA {
     LONG    tmHeight;
     LONG    tmAscent;
@@ -2376,10 +2376,10 @@ typedef PTEXTMETRICA    PTEXTMETRIC;
 typedef NPTEXTMETRICA   NPTEXTMETRIC;
 typedef LPTEXTMETRICA   LPTEXTMETRIC;
 #endif
-#include <poppack.h>
+:include poppack.sp
 
 /* New text metric */
-#include <pshpack4.h>
+:include pshpack4.sp
 typedef struct tagNEWTEXTMETRICA {
     LONG    tmHeight;
     LONG    tmAscent;
@@ -2449,7 +2449,7 @@ typedef PNEWTEXTMETRICA     PNEWTEXTMETRIC;
 typedef NPNEWTEXTMETRICA    NPNEWTEXTMETRIC;
 typedef LPNEWTEXTMETRICA    LPNEWTEXTMETRIC;
 #endif
-#include <poppack.h>
+:include poppack.sp
 
 /* New text metric (extended version) */
 #if (WINVER >= 0x0400)

@@ -45,7 +45,7 @@
 #endif
 
 /* All structures in this file get one-byte packing. */
-#include <pshpack1.h>
+:include pshpack1.sp
 
 /* Control panel applet procedure */
 typedef LONG (APIENTRY *APPLET_PROC)( HWND, UINT, LPARAM, LPARAM );
@@ -91,7 +91,7 @@ typedef LPNEWCPLINFOA   LPNEWCPLINFO;
 #endif
 
 /* Revert to default packing. */
-#include <poppack.h>
+:include poppack.sp
 
 :include cplusepi.sp
 

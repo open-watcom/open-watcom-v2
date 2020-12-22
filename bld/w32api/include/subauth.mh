@@ -150,7 +150,7 @@ typedef struct _SR_SECURITY_DESCRIPTOR {
 typedef SR_SECURITY_DESCRIPTOR  *PSR_SECURITY_DESCRIPTOR;
 
 /* User all information */
-#include <pshpack4.h>
+:include pshpack4.sp
 typedef struct _USER_ALL_INFORMATION {
     LARGE_INTEGER   LastLogon;
     LARGE_INTEGER   LastLogoff;
@@ -187,7 +187,7 @@ typedef struct _USER_ALL_INFORMATION {
     BOOLEAN         PrivateDataSensitive;
 } USER_ALL_INFORMATION;
 typedef USER_ALL_INFORMATION    *PUSER_ALL_INFORMATION;
-#include <poppack.h>
+:include poppack.sp
 
 /* Clear block */
 typedef struct _CLEAR_BLOCK {

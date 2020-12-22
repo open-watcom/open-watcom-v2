@@ -434,14 +434,14 @@ typedef struct _REASSIGN_BLOCKS {
 typedef REASSIGN_BLOCKS *PREASSIGN_BLOCKS;
 
 /* IOCTL_DISK_REASSIGN_BLOCKS_EX parameters */
-#include <pshpack1.h>
+:include pshpack1.sp
 typedef struct _REASSIGN_BLOCKS_EX {
     USHORT          Reserved;
     USHORT          Count;
     LARGE_INTEGER   BlockNumber[1];
 } REASSIGN_BLOCKS_EX;
 typedef REASSIGN_BLOCKS_EX  *PREASSIGN_BLOCKS_EX;
-#include <poppack.h>
+:include poppack.sp
 
 /* Partition styles */
 #if (_WIN32_WINNT >= 0x0500)
@@ -817,7 +817,7 @@ typedef BIN_RESULTS *PBIN_RESULTS;
 
 /* Driver version input parameters */
 #if (_WIN32_WINNT >= 0x0400)
-#include <pshpack1.h>
+:include pshpack1.sp
 typedef struct _GETVERSIONINPARAMS {
     UCHAR   bVersion;
     UCHAR   bRevision;
@@ -828,12 +828,12 @@ typedef struct _GETVERSIONINPARAMS {
 } GETVERSIONINPARAMS;
 typedef GETVERSIONINPARAMS  *PGETVERSIONINPARAMS;
 typedef GETVERSIONINPARAMS  *LPGETVERSIONINPARAMS;
-#include <poppack.h>
+:include poppack.sp
 #endif
 
 /* IDE registers */
 #if (_WIN32_WINNT >= 0x0400)
-#include <pshpack1.h>
+:include pshpack1.sp
 typedef struct _IDEREGS {
     UCHAR   bFeaturesReg;
     UCHAR   bSectorCountReg;
@@ -846,12 +846,12 @@ typedef struct _IDEREGS {
 } IDEREGS;
 typedef IDEREGS *PIDEREGS;
 typedef IDEREGS *LPIDEREGS;
-#include <poppack.h>
+:include poppack.sp
 #endif
 
 /* Send command input parameters */
 #if (_WIN32_WINNT >= 0x0400)
-#include <pshpack1.h>
+:include pshpack1.sp
 typedef struct _SENDCMDINPARAMS {
     ULONG   cBufferSize;
     IDEREGS irDriveRegs;
@@ -862,12 +862,12 @@ typedef struct _SENDCMDINPARAMS {
 } SENDCMDINPARAMS;
 typedef SENDCMDINPARAMS *PSENDCMDINPARAMS;
 typedef SENDCMDINPARAMS *LPSENDCMDINPARAMS;
-#include <poppack.h>
+:include poppack.sp
 #endif
 
 /* Driver status */
 #if (_WIN32_WINNT >= 0x0400)
-#include <pshpack1.h>
+:include pshpack1.sp
 typedef struct _DRIVERSTATUS {
     UCHAR   bDriverError;
     UCHAR   bIDEError;
@@ -876,7 +876,7 @@ typedef struct _DRIVERSTATUS {
 } DRIVERSTATUS;
 typedef DRIVERSTATUS    *PDRIVERSTATUS;
 typedef DRIVERSTATUS    *LPDRIVERSTATUS;
-#include <poppack.h>
+:include poppack.sp
 #endif
 
 /* IOCTL_DISK_GET_PARTITION_ATTRIBUTES parameters */

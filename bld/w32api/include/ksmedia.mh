@@ -2077,23 +2077,23 @@ typedef CC_HW_FIELD *PCC_HW_FIELD;
 #endif
 
 /* NABTS buffer line */
-#include <pshpack1.h>
+:include pshpack1.sp
 typedef struct _NABTS_BUFFER_LINE {
     BYTE    Confidence;
     BYTE    Bytes[NABTS_BYTES_PER_LINE];
 } NABTS_BUFFER_LINE;
 typedef NABTS_BUFFER_LINE   *PNABTS_BUFFER_LINE;
-#include <poppack.h>
+:include poppack.sp
 
 /* NABTS buffer */
-#include <pshpack1.h>
+:include pshpack1.sp
 typedef struct _NABTS_BUFFER {
     VBICODECFILTERING_SCANLINES ScanlinesRequested;
     LONGLONG                    PictureNumber;
     NABTS_BUFFER_LINE           NabtsLines[MAX_NABTS_VBI_LINES_PER_FIELD];
 } NABTS_BUFFER;
 typedef NABTS_BUFFER    *PNABTS_BUFFER;
-#include <poppack.h>
+:include poppack.sp
 
 /* WST buffer line */
 #if (NTDDI_VERSION >= 0x05010000)

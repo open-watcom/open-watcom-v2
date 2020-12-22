@@ -436,17 +436,17 @@ typedef enum MUX_PID_TYPE {
 } MUX_PID_TYPE;
 
 /* BDA MUX PID list item */
-#include <pshpack2.h>
+:include pshpack2.sp
 typedef struct _BDA_MUX_PIDLISTITEM {
     USHORT          usPIDNumber;
     USHORT          usProgramNumber;
     MUX_PID_TYPE    ePIDType;
 } BDA_MUX_PIDLISTITEM;
 typedef BDA_MUX_PIDLISTITEM *PBDA_MUX_PIDLISTITEM;
-#include <poppack.h>
+:include poppack.sp
 
 /* BDA TS selector information */
-#include <pshpack1.h>
+:include pshpack1.sp
 typedef struct _BDA_TS_SELECTORINFO {
     BYTE    bTSInfoLength;
     BYTE    bReserved[2];
@@ -455,15 +455,15 @@ typedef struct _BDA_TS_SELECTORINFO {
     USHORT  usTSID[MIN_DIMENSION];
 } BDA_TS_SELECTORINFO;
 typedef BDA_TS_SELECTORINFO *PBDA_TS_SELECTORINFO;
-#include <poppack.h>
+:include poppack.sp
 
 /* BDA TS selector information ISDBS extension */
-#include <pshpack1.h>
+:include pshpack1.sp
 typedef struct _BDA_TS_SELECTORINFO_ISDBS_EXT {
     BYTE    bTMCC[48];
 } BDA_TS_SELECTORINFO_ISDBS_EXT;
 typedef BDA_TS_SELECTORINFO_ISDBS_EXT   *PBDA_TS_SELECTORINFO_ISDBS_EXT;
-#include <poppack.h>
+:include poppack.sp
 
 /* BDA DVBT2 L1 signalling data */
 typedef struct _BDA_TS_DVBT2_L1_SIGNALLING_DATA {

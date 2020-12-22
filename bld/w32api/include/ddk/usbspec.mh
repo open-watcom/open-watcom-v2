@@ -12,7 +12,7 @@
 :include cpluspro.sp
 
 /* All structures in this file get one-byte packing. */
-#include <pshpack1.h>
+:include pshpack1.sp
 
 /* USB device speeds */
 typedef enum _USB_DEVICE_SPEED {
@@ -747,6 +747,6 @@ typedef struct _USB_INTERFACE_POWER_DESCRIPTOR {
     USHORT  TransitionTimeFromD3;
 } USB_INTERFACE_POWER_DESCRIPTOR, *PUSB_INTERFACE_POWER_DESCRIPTOR;
 
-#include <poppack.H>
+:include poppack.sp
 
 #endif

@@ -65,17 +65,17 @@ typedef const SHCOLUMNID    *LPCSHCOLUMNID;
 #endif
 
 /* Shell item identifier */
-#include <pshpack1.h>
+:include pshpack1.sp
 typedef struct _SHITEMID {
     USHORT  cb;
     BYTE    abID[1];
 } SHITEMID;
 typedef SHITEMID        *LPSHITEMID;
 typedef const SHITEMID  *LPCSHITEMID;
-#include <poppack.h>
+:include poppack.sp
 
 /* Item identifier list */
-#include <pshpack1.h>
+:include pshpack1.sp
 typedef struct _ITEMIDLIST {
     SHITEMID    mkid;
 } ITEMIDLIST;
@@ -99,7 +99,7 @@ typedef PCUITEMID_CHILD const       *PCUITEMID_CHILD_ARRAY;
 typedef PCUIDLIST_RELATIVE const    *PCUIDLIST_RELATIVE_ARRAY;
 typedef PCIDLIST_ABSOLUTE const     *PCIDLIST_ABSOLUTE_ARRAY;
 typedef PCUIDLIST_ABSOLUTE const    *PCUIDLIST_ABSOLUTE_ARRAY;
-#include <poppack.h>
+:include poppack.sp
 
 /* String return types */
 typedef enum tagSTRRET_TYPE {
@@ -109,7 +109,7 @@ typedef enum tagSTRRET_TYPE {
 } STRRET_TYPE;
 
 /* String return */
-#include <pshpack8.h>
+:include pshpack8.sp
 typedef struct _STRRET {
     UINT    uType;
     union {
@@ -119,17 +119,17 @@ typedef struct _STRRET {
     } DUMMYUNIONNAME;
 } STRRET;
 typedef STRRET  *LPSTRRET;
-#include <poppack.h>
+:include poppack.sp
 
 /* Shell details */
-#include <pshpack1.h>
+:include pshpack1.sp
 typedef struct _SHELLDETAILS {
     int     fmt;
     int     cxChar;
     STRRET  str;
 } SHELLDETAILS;
 typedef SHELLDETAILS    *LPSHELLDETAILS;
-#include <poppack.h>
+:include poppack.sp
 
 /* Perceived types */
 #if (_WIN32_IE >= 0x0603)

@@ -222,7 +222,7 @@ typedef USB_TOPOLOGY_ADDRESS    *PUSB_TOPOLOGY_ADDRESS;
 #endif
 
 /* The following structures get one-byte packing. */
-#include <pshpack1.h>
+:include pshpack1.sp
 
 /* USB hub nodes */
 #ifndef USB_KERNEL_IOCTL
@@ -875,7 +875,7 @@ typedef struct _USB_NODE_CONNECTION_INFORMATION_EX_V2 {
 #endif
 
 /* Revert to default packing. */
-#include <poppack.h>
+:include poppack.sp
 
 :include cplusepi.sp
 

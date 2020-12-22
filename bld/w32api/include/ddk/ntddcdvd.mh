@@ -101,7 +101,7 @@ typedef enum {
 } DVD_KEY_TYPE;
 
 /* The following structures get one-byte packing. */
-#include <pshpack1.h>
+:include pshpack1.sp
 
 /* DVD copy protect key */
 typedef struct _DVD_COPY_PROTECT_KEY {
@@ -544,7 +544,7 @@ typedef struct _DVD_REGION {
 typedef DVD_REGION  *PDVD_REGION;
 
 /* Revert to default packing. */
-#include <poppack.h>
+:include poppack.sp
 
 /* AACS certificate */
 typedef struct _AACS_CERTIFICATE {

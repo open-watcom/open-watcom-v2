@@ -11,7 +11,7 @@
 
 :include cpluspro.sp
 
-#include <pshpack8.h>
+:include pshpack8.sp
 
 /* Performance data version numbers */
 #define PERF_DATA_VERSION   1
@@ -268,7 +268,7 @@ typedef DWORD (APIENTRY PM_COLLECT_PROC)( LPWSTR, LPVOID *, LPDWORD, LPDWORD );
 typedef DWORD (APIENTRY PM_CLOSE_PROC)( void );
 typedef DWORD (APIENTRY PM_QUERY_PROC)( LPDWORD, LPVOID *, LPDWORD, LPDWORD );
 
-#include <poppack.h>
+:include poppack.sp
 
 :include cplusepi.sp
 

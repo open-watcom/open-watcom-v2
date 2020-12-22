@@ -88,7 +88,7 @@
 #endif
 
 /* All structures in this file get one-byte packing. */
-#include <pshpack1.h>
+:include pshpack1.sp
 
 /* USB user mode error codes */
 #if (_WIN32_WINNT >= 0x0501)
@@ -475,7 +475,7 @@ typedef USBUSER_REFRESH_HCT_REG *PUSBUSER_REFRESH_HCT_REG;
 #endif
 
 /* Revert to default packing. */
-#include <poppack.h>
+:include poppack.sp
 
 :include cplusepi.sp
 

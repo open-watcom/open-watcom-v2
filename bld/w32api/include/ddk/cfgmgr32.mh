@@ -602,7 +602,7 @@ typedef PCONFLICT_DETAILS_A PCONFLICT_DETAILS;
 #endif
 
 /* The following structures get one-byte packing. */
-#include <pshpack1.h>
+:include pshpack1.sp
 
 /* Memory range */
 typedef struct Mem_Range_s {
@@ -911,7 +911,7 @@ typedef PHWPROFILEINFO_A    PHWPROFILEINFO;
 #endif
 
 /* Revert to default packing. */
-#include <poppack.h>
+:include poppack.sp
 
 /* Functions in CFGMGR32.DLL and SETUPAPI.DLL */
 CMAPI CONFIGRET WINAPI  CM_Add_Empty_Log_Conf( PLOG_CONF, DEVINST, PRIORITY, ULONG );

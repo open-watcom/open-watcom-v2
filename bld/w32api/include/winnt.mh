@@ -3288,13 +3288,13 @@ typedef struct _GENERIC_MAPPING {
 typedef GENERIC_MAPPING *PGENERIC_MAPPING;
 
 /* LUID and attributes */
-#include <pshpack4.h>
+:include pshpack4.sp
 typedef struct _LUID_AND_ATTRIBUTES {
     LUID    Luid;
     DWORD   Attributes;
 } LUID_AND_ATTRIBUTES;
 typedef LUID_AND_ATTRIBUTES *PLUID_AND_ATTRIBUTES;
-#include <poppack.h>
+:include poppack.sp
 
 /* SID identifier authority */
 typedef struct _SID_IDENTIFIER_AUTHORITY {
@@ -4905,10 +4905,10 @@ typedef SYSTEM_BATTERY_STATE    *PSYSTEM_BATTERY_STATE;
 /* All image structures should get four-byte packing unless otherwise
  * specified.
  */
-#include <pshpack4.h>
+:include pshpack4.sp
 
 /* The following structures get one-byte packing. */
-#include <pshpack1.h>
+:include pshpack1.sp
 
 /* Header shared by DOS, Win16, Win32, and Win64 executables */
 typedef struct _IMAGE_DOS_HEADER {
@@ -5026,7 +5026,7 @@ typedef struct _IMAGE_VXD_HEADER {
 typedef IMAGE_VXD_HEADER    *PIMAGE_VXD_HEADER;
 
 /* Revert to default packing. */
-#include <poppack.h>
+:include poppack.sp
 
 /* Header for PE image files */
 typedef struct _IMAGE_FILE_HEADER {
@@ -5228,7 +5228,7 @@ typedef struct _IMAGE_SECTION_HEADER {
 typedef IMAGE_SECTION_HEADER    *PIMAGE_SECTION_HEADER;
 
 /* The following structures get two-byte packing. */
-#include <pshpack2.h>
+:include pshpack2.sp
 
 /* Image symbol */
 typedef struct _IMAGE_SYMBOL {
@@ -5377,7 +5377,7 @@ typedef struct _IMAGE_LINENUMBER {
 typedef IMAGE_LINENUMBER UNALIGNED  *PIMAGE_LINENUMBER;
 
 /* Revert to default packing. */
-#include <poppack.h>
+:include poppack.sp
 
 /* Image base relocation */
 typedef struct _IMAGE_BASE_RELOCATION {
@@ -5433,7 +5433,7 @@ typedef struct _IMAGE_THUNK_DATA32 {
 typedef IMAGE_THUNK_DATA32  *PIMAGE_THUNK_DATA32;
 
 /* Image thunk data (64-bit version) */
-#include <pshpack8.h>
+:include pshpack8.sp
 typedef struct _IMAGE_THUNK_DATA64 {
     union {
         ULONGLONG   ForwarderString;
@@ -5443,7 +5443,7 @@ typedef struct _IMAGE_THUNK_DATA64 {
     } u1;
 } IMAGE_THUNK_DATA64;
 typedef IMAGE_THUNK_DATA64  *PIMAGE_THUNK_DATA64;
-#include <poppack.h>
+:include poppack.sp
 
 /* Map generic names to the 32- or 64-bit version. */
 typedef IMAGE_THUNK_DATA32  IMAGE_THUNK_DATA;
@@ -5779,7 +5779,7 @@ typedef struct _ImageArchitectureEntry {
 typedef IMAGE_ARCHITECTURE_ENTRY    *PIMAGE_ARCHITECTURE_ENTRY;
 
 /* Four-byte packing for image structures ends here. */
-#include <poppack.h>
+:include poppack.sp
 
 /* Import object header */
 typedef struct IMPORT_OBJECT_HEADER {
@@ -5972,7 +5972,7 @@ typedef RTL_CRITICAL_SECTION_DEBUG  RTL_RESOURCE_DEBUG;
 typedef RTL_CRITICAL_SECTION_DEBUG  *PRTL_RESOURCE_DEBUG;
 
 /* Critical section */
-#include <pshpack8.h>
+:include pshpack8.sp
 typedef struct _RTL_CRITICAL_SECTION {
     PRTL_CRITICAL_SECTION_DEBUG DebugInfo;
     LONG                        LockCount;
@@ -5982,7 +5982,7 @@ typedef struct _RTL_CRITICAL_SECTION {
     ULONG_PTR                   SpinCount;
 } RTL_CRITICAL_SECTION;
 typedef RTL_CRITICAL_SECTION    *PRTL_CRITICAL_SECTION;
-#include <poppack.h>
+:include poppack.sp
 
 /* Slim reader/writer lock */
 typedef struct _RTL_SRWLOCK {

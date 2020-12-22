@@ -648,7 +648,7 @@ typedef HANDLE                  HTHEME;
 #define HOMEGROUP_SECURITY_GROUP    L"HomeUsers"
 
 /* IContextMenu::InvokeCommand() parameters */
-#include <pshpack8.h>
+:include pshpack8.sp
 typedef struct _CMINVOKECOMMANDINFO {
     DWORD   cbSize;
     DWORD   fMask;
@@ -662,10 +662,10 @@ typedef struct _CMINVOKECOMMANDINFO {
 } CMINVOKECOMMANDINFO;
 typedef CMINVOKECOMMANDINFO         *LPCMINVOKECOMMANDINFO;
 typedef const CMINVOKECOMMANDINFO   *LPCCMINVOKECOMMANDINFO;
-#include <poppack.h>
+:include poppack.sp
 
 /* IContextMenu::InvokeCommand() parameters (extended version) */
-#include <pshpack8.h>
+:include pshpack8.sp
 typedef struct _CMINVOKECOMMANDINFOEX {
     DWORD   cbSize;
     DWORD   fMask;
@@ -685,11 +685,11 @@ typedef struct _CMINVOKECOMMANDINFOEX {
 } CMINVOKECOMMANDINFOEX;
 typedef CMINVOKECOMMANDINFOEX       *LPCMINVOKECOMMANDINFOEX;
 typedef const CMINVOKECOMMANDINFOEX *PCCMINVOKECOMMANDINFOEX;
-#include <poppack.h>
+:include poppack.sp
 
 /* Persist folder target information */
 #if (_WIN32_IE >= 0x0500)
-#include <pshpack8.h>
+:include pshpack8.sp
 typedef struct _PERSIST_FOLDER_TARGET_INFO {
     PIDLIST_ABSOLUTE    pidlTargetFolder;
     WCHAR               szTargetParsingName[MAX_PATH];
@@ -697,7 +697,7 @@ typedef struct _PERSIST_FOLDER_TARGET_INFO {
     DWORD               dwAttributes;
     int                 csidl;
 } PERSIST_FOLDER_TARGET_INFO;
-#include <poppack.h>
+:include poppack.sp
 #endif
 
 /* IShellFolder::GetDisplayNameOf() flags */
@@ -869,7 +869,7 @@ typedef enum SVUIA_STATUS {
 } SVUIA_STATUS;
 
 /* IShellView2::CreateViewWindow2() parameters */
-#include <pshpack8.h>
+:include pshpack8.sp
 typedef struct _SV2CVW2_PARAMS {
     DWORD               cbSize;
     IShellView          *psvPrev;
@@ -880,7 +880,7 @@ typedef struct _SV2CVW2_PARAMS {
     HWND                hwndView;
 } SV2CVW2_PARAMS;
 typedef SV2CVW2_PARAMS  *LPSV2CVW2_PARAMS;
-#include <poppack.h>
+:include poppack.sp
 
 /* IShellView3::CreateViewWindow3() flags */
 #if (NTDDI_VERSION >= 0x06000000)
@@ -1146,7 +1146,7 @@ typedef struct CATEGORY_INFO {
 
 /* Shell drag image */
 #if (NTDDI_VERSION >= 0x05000000)
-#include <pshpack8.h>
+:include pshpack8.sp
 typedef struct SHDRAGIMAGE {
     SIZE        sizeDragImage;
     POINT       ptOffset;
@@ -1154,7 +1154,7 @@ typedef struct SHDRAGIMAGE {
     COLORREF    crColorKey;
 } SHDRAGIMAGE;
 typedef SHDRAGIMAGE *LPSHDRAGIMAGE;
-#include <poppack.h>
+:include poppack.sp
 #endif
 
 /* IDragSourceHelper2::SetFlags() flags */
@@ -1238,7 +1238,7 @@ enum _EXPPS {
 typedef UINT    EXPPS;
 
 /* Desk band information */
-#include <pshpack8.h>
+:include pshpack8.sp
 typedef struct DESKBANDINFO {
     DWORD       dwMask;
     POINTL      ptMinSize;
@@ -1249,7 +1249,7 @@ typedef struct DESKBANDINFO {
     DWORD       dwModeFlags;
     COLORREF    crBkgnd;
 } DESKBANDINFO;
-#include <poppack.h>
+:include poppack.sp
 
 /* Desk band command identifiers */
 enum tagDESKBANDCID {
@@ -1282,7 +1282,7 @@ typedef enum THUMBBUTTONMASK {
 } THUMBBUTTONMASK;
 
 /* Thumb button */
-#include <pshpack8.h>
+:include pshpack8.sp
 typedef struct THUMBBUTTON {
     THUMBBUTTONMASK     dwMask;
     UINT                iId;
@@ -1292,7 +1292,7 @@ typedef struct THUMBBUTTON {
     THUMBBUTTONFLAGS    dwFlags;
 } THUMBBUTTON;
 typedef THUMBBUTTON *LPTHUMBBUTTON;
-#include <poppack.h>
+:include poppack.sp
 
 /* Taskbar progress flags */
 typedef enum TBPFLAG {
@@ -1392,13 +1392,13 @@ typedef enum {
 
 /* Band site information */
 #if (_WIN32_IE >= 0x0400)
-#include <pshpack8.h>
+:include pshpack8.sp
 typedef struct tagBANDSITEINFO {
     DWORD   dwMask;
     DWORD   dwState;
     DWORD   dwStyle;
 } BANDSITEINFO;
-#include <poppack.h>
+:include poppack.sp
 #endif
 
 /* Band site identifiers */
@@ -1561,7 +1561,7 @@ typedef enum ASSOCIATIONTYPE {
 #endif
 
 /* Delegate item identifier */
-#include <pshpack1.h>
+:include pshpack1.sp
 typedef struct DELEGATEITEMID {
     WORD    cbSize;
     WORD    wOuter;
@@ -1570,7 +1570,7 @@ typedef struct DELEGATEITEMID {
 } DELEGATEITEMID;
 typedef UNALIGNED DELEGATEITEMID        *PDELEGATEITEMID;
 typedef const UNALIGNED DELEGATEITEMID  *PCDELEGATEITEMID;
-#include <poppack.h>
+:include poppack.sp
 
 /* Browser frame options */
 #if (_WIN32_IE >= 0x0600)
@@ -1640,7 +1640,7 @@ typedef enum ATTACHMENT_ACTION {
 
 /* Shell menu data */
 #if (_WIN32_IE >= 0x0600)
-#include <pshpack8.h>
+:include pshpack8.sp
 typedef struct tagSMDATA {
     DWORD               dwMask;
     DWORD               dwFlags;
@@ -1656,12 +1656,12 @@ typedef struct tagSMDATA {
     void                *pvUserData;
 } SMDATA;
 typedef SMDATA  *LPSMDATA;
-#include <poppack.h>
+:include poppack.sp
 #endif
 
 /* Shell menu information */
 #if (_WIN32_IE >= 0x0600)
-#include <pshpack8.h>
+:include pshpack8.sp
 typedef struct tagSMINFO {
     DWORD   dwMask;
     DWORD   dwType;
@@ -1669,19 +1669,19 @@ typedef struct tagSMINFO {
     int     iIcon;
 } SMINFO;
 typedef SMINFO  *PSMINFO;
-#include <poppack.h>
+:include poppack.sp
 #endif
 
 /* IShellMenuCallback change notification structure */
 #if (_WIN32_IE >= 0x0600)
-#include <pshpack8.h>
+:include pshpack8.sp
 typedef struct SMCSHCHANGENOTIFYSTRUCT {
     long                lEvent;
     PCIDLIST_ABSOLUTE   pidl1;
     PCIDLIST_ABSOLUTE   pidl2;
 } SMCSHCHANGENOTIFYSTRUCT;
 typedef SMCSHCHANGENOTIFYSTRUCT *PSMCSHCHANGENOTIFYSTRUCT;
-#include <poppack.h>
+:include poppack.sp
 #endif
 
 /* Shell menu information masks */

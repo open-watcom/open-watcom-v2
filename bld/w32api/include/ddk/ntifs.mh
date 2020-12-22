@@ -3617,13 +3617,13 @@ typedef struct _REPARSE_GUID_DATA_BUFFER {
 typedef REPARSE_GUID_DATA_BUFFER    *PREPARSE_GUID_DATA_BUFFER;
 
 /* Reparse index key */
-#include <pshpack4.h>
+:include pshpack4.sp
 typedef struct _REPARSE_INDEX_KEY {
     ULONG           FileReparseTag;
     LARGE_INTEGER   FileId;
 } REPARSE_INDEX_KEY;
 typedef REPARSE_INDEX_KEY   *PREPARSE_INDEX_KEY;
-#include <poppack.h>
+:include poppack.sp
 
 /* FSCTL_PIPE_ASSIGN_EVENT parameters */
 typedef struct _FILE_PIPE_ASSIGN_EVENT_BUFFER {

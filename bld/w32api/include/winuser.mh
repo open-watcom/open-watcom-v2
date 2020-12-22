@@ -4608,7 +4608,7 @@ typedef FLASHWINFO  *PFLASHWINFO;
 #endif
 
 /* Dialog structures use 2-byte packing. */
-#include <pshpack2.h>
+:include pshpack2.sp
 
 /* Dialog box template */
 typedef struct {
@@ -4655,7 +4655,7 @@ typedef LPDLGITEMTEMPLATEA  LPDLGITEMTEMPLATE;
 #endif
 
 /* Revert to default packing. */
-#include <poppack.h>
+:include poppack.sp
 
 /* Mouse input information */
 #if (_WIN32_WINNT > 0x0400)
