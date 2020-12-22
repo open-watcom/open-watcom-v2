@@ -25,30 +25,24 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  define special functions
 *
 ****************************************************************************/
 
 
-#ifndef __SPECFUNS_H__
-#define __SPECFUNS_H__
-
-// SPECFUNS.H -- identification of special functions
-//
-// 94/01/28 -- J.W.Welch        -- defined
-
-
-typedef enum {
-    #define SPEC_FUN( code, name )  SPFN_ ## code
-    #include "_spcfuns.h"
-    #undef SPEC_FUN
-} SPFN;
-
-// PROTOTYPES
-
-SPFN SpecialFunction(           // IDENTIFY SPECIAL FUNCTION
-    SYMBOL func )               // - potential special function
-;
-
+    SPEC_FUN( NONE      ,""             )
+,   SPEC_FUN( MAIN      ,"main"         )
+,   SPEC_FUN( WINMAIN   ,"WinMain"      )
+,   SPEC_FUN( LIBMAIN   ,"LibMain"      )
+,   SPEC_FUN( DLLMAIN   ,"DllMain"      )
+,   SPEC_FUN( LONGJMP   ,"longjmp"      )
+,   SPEC_FUN( SETJMP    ,"_setjmp"      )
+#if _CPU == _AXP
+,   SPEC_FUN( SETJMP1   ,"_setjmpex"    )
+,   SPEC_FUN( SETJMP2   ,"_setjmpexRfp" )
+,   SPEC_FUN( SETJMP3   ,"setjmp"       )       // temporary
 #endif
+,   SPEC_FUN( wMAIN     ,"wmain"        )
+,   SPEC_FUN( wWINMAIN  ,"wWinMain"     )
+,   SPEC_FUN( wLIBMAIN  ,"wLibMain"     )
+,   SPEC_FUN( wDLLMAIN  ,"wDllMain"     )

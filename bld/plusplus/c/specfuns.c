@@ -39,10 +39,10 @@ typedef struct {
     unsigned length;
 } SPEC_FUNC;
 
-#define SPEC_FUN( code, name ) { name, sizeof(name)-1 }
-
 static SPEC_FUNC funs[] = {     // special functions
-#include "specfuns.dfn"
+    #define SPEC_FUN( code, name ) { name, sizeof(name)-1 }
+    #include "_spcfuns.h"
+    #undef SPEC_FUN
 };
 
 #define SPEC_FUN_END &funs[ARRAY_SIZE( funs )]
