@@ -13,7 +13,7 @@
     #include <windows.h>
 #endif
 
-#pragma pack( __push, 1 )
+:include pshpack1.sp
 
 :include cpluspro.sp
 
@@ -70,6 +70,6 @@ typedef UINT    (CALLBACK *LPFNIDTOSTR)( UINT, LPSTR, UINT );
 
 :include cplusepi.sp
 
-#pragma pack( __pop )
+:include poppack.sp
 
 #endif /* _INC_CUSTCNTL */

@@ -15,7 +15,7 @@
 
 :include cpluspro.sp
 
-#pragma pack( __push, 1 )
+:include pshpack1.sp
 
 /* DDE messages */
 #define WM_DDE_FIRST        0x03E0
@@ -90,7 +90,7 @@ typedef struct tagDDEUP {
 
 #endif /* RC_INVOKED */
 
-#pragma pack( __pop )
+:include poppack.sp
 
 :include cplusepi.sp
 
