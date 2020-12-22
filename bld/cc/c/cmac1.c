@@ -415,15 +415,18 @@ TOKEN SpecialMacro( MEPTR mentry )
     case MACRO_STDC_HOSTED:
         Buffer[0] = '1';
         Buffer[1] = '\0';
+        TokenLen = 1;
         Constant = 1;
         ConstType = TYP_INT;
         return( T_CONSTANT );
     case MACRO_STDC_VERSION:
         if( CompFlags.c99_extensions ) {
             CPYLIT( Buffer, "199901L" );
+            TokenLen = LENLIT( "199901L" );
             Constant = 199901;
         } else {
             CPYLIT( Buffer, "199409L" );
+            TokenLen = LENLIT( "199409L" );
             Constant = 199409;
         }
         ConstType = TYP_LONG;

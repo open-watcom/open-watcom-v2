@@ -57,7 +57,7 @@
 #define IS_PPOPERATOR_DEFINED(s)    (strcmp(s, PPOPERATOR_DEFINED) == 0)
 #define IS_PPOPERATOR_PRAGMA(s,l)   ((CompFlags.extensions_enabled || CompFlags.enable_std0x) \
                                     && l == (sizeof(PPOPERATOR_PRAGMA) - 1) \
-                                    && memcmp(s, PPOPERATOR_PRAGMA, sizeof(PPOPERATOR_PRAGMA) - 1) == 0)
+                                    && memcmp(s, PPOPERATOR_PRAGMA, sizeof(PPOPERATOR_PRAGMA)) == 0)
 
 enum {
     EL_NEW_LINE = 0x01,

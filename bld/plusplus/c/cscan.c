@@ -631,7 +631,7 @@ static TOKEN doScanFloat( void )
         if( c == '+' || c == '-' ) {
             c = WriteBufferCharNextChar( c );
         }
-        if(( CharSet[c] & C_DI ) == 0 ) {
+        if( (CharSet[c] & C_DI) == 0 ) {
             token = T_BAD_TOKEN;
             BadTokenInfo = ERR_INVALID_FLOATING_POINT_CONSTANT;
         }
@@ -712,9 +712,8 @@ static TOKEN doScanName( int c, bool expanding )
     TOKEN   token;
 
     SrcFileScanName( c );
-    if( expanding || (PPControl & PPCTL_NO_EXPAND) ) {
+    if( expanding || (PPControl & PPCTL_NO_EXPAND) )
         return( T_ID );
-    }
 
     mentry = MacroLookup( Buffer, TokenLen );
     if( mentry == NULL ) {
@@ -723,36 +722,33 @@ static TOKEN doScanName( int c, bool expanding )
         } else {
             token = KwLookup( TokenLen );
         }
-    } else {
-        prt_char( ' ' );
-        if( MacroIsSpecial( mentry ) ) {
-            return( SpecialMacro( mentry ) );
-        }
-        mentry->macro_flags |= MFLAG_REFERENCED;
-        /* if macro requires parameters and next char is not a '('
-        then this is not a macro */
-        if( MacroWithParenthesis( mentry ) ) {
-            SkipAhead();
-            if( CurrChar != '(' ) {
-                if( CompFlags.cpp_output ) {
-                    Buffer[TokenLen++] = ' ';
-                    Buffer[TokenLen] = '\0';
-                    token = T_ID;
-                } else {
-                    if( IS_PPOPERATOR_PRAGMA( Buffer, TokenLen ) ) {
-                        token = Process_Pragma( false );
-                    } else {
-                        token = KwLookup( TokenLen );
-                    }
-                }
-                return( token );
+        return( token );
+    }
+    prt_char( ' ' );
+    if( MacroIsSpecial( mentry ) )
+        return( SpecialMacro( mentry ) );
+    mentry->macro_flags |= MFLAG_REFERENCED;
+    /* if macro requires parameters and next char is not a '('
+    then this is not a macro */
+    if( MacroWithParenthesis( mentry ) ) {
+        SkipAhead();
+        if( CurrChar != '(' ) {
+            if( CompFlags.cpp_output ) {
+                InsertToken( T_WHITE_SPACE, " ", false );
+                return( T_ID );
             }
+            if( IS_PPOPERATOR_PRAGMA( Buffer, TokenLen ) ) {
+                token = Process_Pragma( false );
+            } else {
+                token = KwLookup( TokenLen );
+            }
+            return( token );
         }
-        DoMacroExpansion( mentry );
-        token = GetMacroToken( false );
-        if( token == T_NULL ) {
-            token = T_WHITE_SPACE;
-        }
+    }
+    DoMacroExpansion( mentry );
+    token = GetMacroToken( false );
+    if( token == T_NULL ) {
+        token = T_WHITE_SPACE;
     }
     return( token );
 }
@@ -1411,41 +1407,35 @@ static TOKEN doScanPPNumber( void )
     //          pp-number .
     //
     c = 0;
-    for(;;) {
+    for( ;; ) {
         prevc = c;
         c = NextChar();
-        WriteBufferChar( c );
-        if( CharSet[c] & (C_AL|C_DI) ) {
-            continue;
-        }
-        if( c == '.' ) {
-            continue;
-        }
-        if( ONE_CASE_EQUAL( prevc, 'e' ) ) {
-            if( c == '+' || c == '-' ) {
-                if( CompFlags.extensions_enabled ) {
-                    /* concession to existing practice...
-                        #define A2 0x02
-                        #define A3 0xaa0e+A2
-                        // users want: 0xaa0e + 0x02
-                        // not: 0xaa0e + A2 (but, this is what ISO C requires!)
+        if( c == '.' || (CharSet[c] & (C_AL | C_DI)) ) {
+            WriteBufferChar( c );
+        } else if( ONE_CASE_EQUAL( prevc, 'e' ) && ( c == '+' || c == '-' ) ) {
+            WriteBufferChar( c );
+            if( CompFlags.extensions_enabled ) {
+                /* concession to existing practice...
+                    #define A2 0x02
+                    #define A3 0xaa0e+A2
+                    // users want: 0xaa0e + 0x02
+                    // not: 0xaa0e + A2 (but, this is what ISO C requires!)
 
-                        after the 'sign', we bail out if we don't find a digit
-                    */
-                    prevc = c;
-                    c = NextChar();
-                    WriteBufferChar( c );
-                    if(( CharSet[c] & C_DI ) == 0 ) {
-                        // this check will kick out on a '+' and '-' also
-                        break;
-                    }
+                    after the 'sign', we bail out if we don't find a digit
+                 */
+                prevc = c;
+                c = NextChar();
+                if(( CharSet[c] & C_DI ) == 0 ) {
+                    // this check will kick out on a '+' and '-' also
+                    break;
                 }
-                continue;
+                WriteBufferChar( c );
             }
+        } else {
+            break;
         }
-        break;
     }
-    Buffer[--TokenLen] = '\0';
+    WriteBufferNullChar();
     return( T_PPNUMBER );
 }
 
@@ -1469,8 +1459,8 @@ static TOKEN scanPPDot( bool expanding )
     Buffer[0] = '.';
     TokenLen = 1;
     c = NextChar();
-    WriteBufferChar( c );
     if( c >= '0' && c <= '9' ) {
+        WriteBufferChar( c );
         return( doScanPPNumber() );
     } else {
         return( doScanDotSomething( c ) );

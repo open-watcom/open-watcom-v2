@@ -879,7 +879,7 @@ TOKEN Process_Pragma( void )
     } else {
         InsertToken( CurToken, Buffer );
         CPYLIT( Buffer, PPOPERATOR_PRAGMA );
-        TokenLen = sizeof( PPOPERATOR_PRAGMA ) - 1;
+        TokenLen = LENLIT( PPOPERATOR_PRAGMA );
         CurToken = T_ID;
     }
     return( CurToken );

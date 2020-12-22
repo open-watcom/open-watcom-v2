@@ -1098,8 +1098,7 @@ TOKEN Process_Pragma( bool internal )
         if( CurToken == T_STRING ) {
             char    *token_buf;
 
-            token_buf = CMemAlloc( strlen( Buffer ) + 1 );
-            strcpy( token_buf, Buffer );
+            token_buf = CStrSave( Buffer );
             PpNextToken();
             if( CurToken == T_RIGHT_PAREN ) {
                 ppctl_t old_ppctl;
@@ -1121,8 +1120,8 @@ TOKEN Process_Pragma( bool internal )
         }
     } else {
         InsertToken( CurToken, Buffer, internal );
-        strcpy( Buffer, "_Pragma" );
-        TokenLen = strlen( Buffer );
+        CPYLIT( Buffer, PPOPERATOR_PRAGMA );
+        TokenLen = LENLIT( PPOPERATOR_PRAGMA );
         CurToken = T_ID;
     }
     return( CurToken );

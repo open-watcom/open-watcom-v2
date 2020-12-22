@@ -274,8 +274,7 @@ static TOKEN doScanName( void )
             SkipAhead();
             if( CurrChar != '(' ) {
                 if( CompFlags.cpp_mode ) {
-                    WriteBufferChar( ' ' );
-                    WriteBufferNullChar();
+                    InsertToken( T_WHITE_SPACE, " " );
                     token = T_ID;
                 } else {
                     if( IS_PPOPERATOR_PRAGMA( Buffer, TokenLen ) ) {
@@ -578,7 +577,7 @@ static cnv_cc Cnv10( void )
     uint64          value64;
     cnv_cc          ret;
 
-    curr = Buffer;      // skip 0x thing
+    curr = Buffer;
     len = TokenLen;
     value = 0;
     while( len-- > 0 ) {

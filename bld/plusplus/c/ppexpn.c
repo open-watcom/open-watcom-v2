@@ -945,7 +945,7 @@ TOKEN Process_Pragma( bool internal )
         }
     } else {
         InsertToken( CurToken, Buffer, internal );
-        strcpy( Buffer, "_Pragma" );
+        strcpy( Buffer, PPOPERATOR_PRAGMA );
         TokenLen = strlen( Buffer );
         CurToken = T_ID;
     }

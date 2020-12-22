@@ -1613,9 +1613,9 @@ static TREEPTR ExprOpnd( void )
 #define FLOAT_PLUS_ONE "+1.0"
             tree = LeafNode( OPR_PUSHFLOAT );
             tree->op.u1.const_type = TYP_DIMAGINARY;
-            flt = CMemAlloc( sizeof( FLOATVAL ) + sizeof( FLOAT_PLUS_ONE ) - 1 );
+            flt = CMemAlloc( sizeof( FLOATVAL ) + LENLIT( FLOAT_PLUS_ONE ) );
             CPYLIT( flt->string, FLOAT_PLUS_ONE );
-            flt->len = sizeof( FLOAT_PLUS_ONE ) - 1;
+            flt->len = LENLIT( FLOAT_PLUS_ONE );
             flt->type = TYP_DIMAGINARY;
             flt->next = NULL;
             tree->op.u2.float_value = flt;
