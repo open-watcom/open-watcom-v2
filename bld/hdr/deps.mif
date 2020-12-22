@@ -316,7 +316,6 @@ sys/socket.h    : sys/socket.mh $(owhdr) $(cplus) $(packlnxk) ../incdir.sp ../un
 
 sys/_lfndos.h   : dos/sys/_lfndos.mh $(owhdrcnt)
 sys/stat.h      : sys/stat.mh $(sys_stat_deps)
-sys/time.h      : sys/time.mh $(sys_time_deps)
 
 !else ifeq system linux
 
