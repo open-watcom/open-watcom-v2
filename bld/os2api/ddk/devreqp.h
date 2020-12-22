@@ -6,7 +6,7 @@
 extern "C" {
 #endif
 
-#pragma pack(push,1)
+#pragma pack( __push, 1 )
 
 /*
  * Look at \WATCOM\H\OS2\DEVSYM.INC for a description
@@ -146,7 +146,7 @@ typedef enum {
     SHUTDOWN_END        = 0x01
 } SHDWN_subcode;
 
-#pragma pack(pop)
+#pragma pack( __pop )
 
 #ifdef __cplusplus
 }

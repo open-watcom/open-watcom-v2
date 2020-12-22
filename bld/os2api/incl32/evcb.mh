@@ -35,7 +35,7 @@
 
 #define SH_TYPE 0x80000000
 
-#pragma pack(4)
+:include pshpack4.sp
 
 typedef struct _SYNC_EVCB {
     ULONG   ulType;
@@ -130,4 +130,4 @@ typedef struct _STATUS_LEVEL_EVCB {
     ULONG   ulSample[4];
 } STATUS_LEVEL_EVCB, FAR *PSTATUS_EVCB;
 
-#pragma pack()
+:include poppack.sp

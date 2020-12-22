@@ -38,11 +38,13 @@
 
 #define SI_COLL 0x0001
 
-#pragma pack(1)
+:include pshpack1.sp
+
 struct selinfo {
     pid_t si_pid;
     short si_flags;
 };
-#pragma pack()
+
+:include poppack.sp
 
 #endif

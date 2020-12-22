@@ -53,7 +53,7 @@
 #define BD_LEVEL        0x30000000
 #define BD_SUPPORT      0x00000000
 
-#pragma pack(2)
+:include pshpack2.sp
 
 typedef struct _bdkvcb {
     USHORT BDLength;
@@ -78,7 +78,7 @@ typedef struct _csdrec {
     ULONG   BufferIndex;
 } CSDRec;
 
-#pragma pack()
+:include poppack.sp
 
 typedef CSDRec * _Seg16 PCSDRec;
 typedef PBYTE PRETINFO, PSETINFO;

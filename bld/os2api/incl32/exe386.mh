@@ -220,7 +220,7 @@
 
 #define FWD_ORDINAL     0x01
 
-#pragma pack(push,1)
+:include pshpack1.sp
 
 struct e32_exe {
     unsigned char   e32_magic[2];
@@ -356,7 +356,7 @@ struct e32_entry {
     } e32_variant;
 };
 
-#pragma pack(pop)
+:include poppack.sp
 
 :include cplusepi.sp
 

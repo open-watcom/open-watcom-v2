@@ -978,7 +978,7 @@
 #define SEMWAIT_OPERATION 9
 #define SEMPOST_OPERATION 10
 
-#pragma pack(1)
+:include pshpack1.sp
 
 typedef struct _MCI_GENERIC_PARMS {
     HWND hwndCallback;
@@ -1536,7 +1536,7 @@ typedef struct _MCI_DGV_TUNER_PARMS {
     ULONG ulReserved2;
 } MCI_DGV_TUNER_PARMS, *LPMCI_DGV_TUNER_PARMS;
 
-#pragma pack()
+:include poppack.sp
 
 ULONG APIENTRY mciSendCommand(USHORT,USHORT,ULONG,PVOID,USHORT);
 ULONG APIENTRY mciSendString(PSZ,PSZ,USHORT,HWND,USHORT);

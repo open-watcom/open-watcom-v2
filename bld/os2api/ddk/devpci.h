@@ -199,7 +199,7 @@ typedef enum {
 #define OEMHLP_READ_PCI_CONFIG      0x03
 #define OEMHLP_WRITE_PCI_CONFIG     0x04
 
-#pragma pack( push, 1 )
+#pragma pack( __push, 1 )
 
 typedef struct _PCI_PARM {
     UCHAR   SubFunc;
@@ -248,6 +248,6 @@ typedef struct _PCI_DATA {
     };
 } PCI_DATA;
 
-#pragma pack( pop )
+#pragma pack( __pop )
 
 #endif

@@ -73,17 +73,16 @@ struct timeval {
     long tv_usec;
 };
 
-#pragma pack(4)
-struct timespec {
-    time_t  ts_sec;
-    long    ts_nsec;
-};
+:include timespec.sp
+
+:include pshpack4.sp
 
 struct  itimerval {
     struct timeval it_interval;
     struct timeval it_value;
 };
-#pragma pack()
+
+:include poppack.sp
 
 struct timezone {
     int tz_minuteswest;

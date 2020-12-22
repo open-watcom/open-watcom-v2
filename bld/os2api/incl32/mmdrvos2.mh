@@ -130,7 +130,7 @@
 #define MCIDRV_SYNC_MASTER 0x00000800
 #define MCIDRV_SYNC_SET_MASTER 0x00001000
 
-#pragma pack(1)
+:include pshpack1.sp
 
 typedef USHORT GID;
 
@@ -183,7 +183,7 @@ typedef struct _MCIDRV_RESTORE_PARMS {
     ULONG ulMasterVolume;
 } MCIDRV_RESTORE_PARMS, *PMCIDRV_RESTORE_PARMS;
 
-#pragma pack()
+:include poppack.sp
 
 ULONG APIENTRY mdmDriverNotify(USHORT,HWND,USHORT,USHORT,ULONG);
 

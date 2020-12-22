@@ -63,7 +63,8 @@ char *ripcmds[RIPCMD_MAX] = {"#0", "REQUEST", "RESPONSE", "TRACEON", "TRACEOFF"}
 #define rip_nets      ripun.ru_nets
 #define rip_tracefile ripun.ru_tracefile
 
-#pragma pack(1)
+:include pshpack1.sp
+
 struct netinfo {
     struct sockaddr rip_dst;
     int    rip_metric;
@@ -78,6 +79,7 @@ struct rip {
         char    ru_tracefile[1];
     } ripun;
 };
-#pragma pack()
+
+:include poppack.sp
 
 #endif

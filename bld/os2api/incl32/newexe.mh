@@ -209,7 +209,7 @@ struct new_seg1 {
     unsigned short  ns1_handle;
 };
 
-#pragma pack(push,1)
+:include pshpack1.sp
 
 struct new_segdata {
     union {
@@ -328,7 +328,7 @@ struct new_rsrc {
 
 #endif
 
-#pragma pack(pop)
+:include poppack.sp
 
 :include cplusepi.sp
 

@@ -106,7 +106,7 @@ LONG    APIENTRY GpiWCBitBlt(HPS,HBITMAP,LONG,PPOINTL,LONG,ULONG);
 
 #define BMB_ERROR (-1)
 
-#pragma pack(1)
+:include pshpack1.sp
 
 typedef struct _RGB {
     BYTE bBlue;
@@ -219,7 +219,7 @@ typedef struct _BITMAPARRAYFILEHEADER2 {
     BITMAPFILEHEADER2 bfh2;
 } BITMAPARRAYFILEHEADER2, *PBITMAPARRAYFILEHEADER2;
 
-#pragma pack()
+:include poppack.sp
 
 HBITMAP APIENTRY GpiCreateBitmap(HPS,PBITMAPINFOHEADER2,ULONG,PBYTE,PBITMAPINFO2);
 LONG    APIENTRY GpiFloodFill(HPS,LONG,LONG);

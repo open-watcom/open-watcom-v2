@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-#pragma pack(push,1)
+#pragma pack( __push, 1 )
 
 /*
  * Device driver header
@@ -56,7 +56,7 @@ typedef enum {
     CAP_NULL      = 0x00000000, //
 } CAP_flags;
 
-#pragma pack(pop)
+#pragma pack( __pop )
 
 #ifdef __cplusplus
 }
