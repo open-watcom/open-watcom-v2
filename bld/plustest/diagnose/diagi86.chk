@@ -8587,9 +8587,6 @@ File: source\diag0245.c
 (5,42): Error! E329: modifiers of 'a' conflict with previous declaration
   definition: 'void (__based( __segname( "a" )) a)( void )'
   current declaration has type 'void (__export __based( __segname( "b" )) )( void )'
-(32,1): Error! E106: token too long; truncated
-  expanding macro 'j' defined at: (11,9)
-  expanding macro 'xstr' defined at: (10,9)
 (80,10): Error! E777: expecting 'id' after '::' but found ':'
 (80,10): Error! E118: nameless declaration is not allowed
 (80,10): Error! E006: syntax error; probable cause: missing ';'
