@@ -1048,13 +1048,13 @@ static YYTOKENTYPE yylex( PARSE_STACK *state )
         }
         break;
     case T_STRING:
-        literal = StringCreate( Buffer, TokenLen );
+        literal = StringCreate( Buffer, TokenLen, false );
         yylval.tree = PTreeLiteral( literal );
         setLocation( yylval.tree, &yylocation );
         token = Y_STRING;
         break;
     case T_LSTRING:
-        literal = StringCreate( Buffer, TokenLen );
+        literal = StringCreate( Buffer, TokenLen, true );
         yylval.tree = PTreeLiteralWide( literal );
         setLocation( yylval.tree, &yylocation );
         token = Y_STRING;

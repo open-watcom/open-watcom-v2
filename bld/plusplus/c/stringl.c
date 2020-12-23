@@ -129,8 +129,8 @@ static STRING_CONSTANT findLiteral( size_t len )
     return( initLiteral( literal ) );
 }
 
-static size_t compressLiteral( char *tgt, const char *s, size_t len )
-/*******************************************************************/
+static size_t compressLiteral( char *tgt, const char *s, size_t len, bool wide )
+/******************************************************************************/
 {
     unsigned char   *str = (unsigned char *)s;
     int             chr;               // - current character
@@ -138,16 +138,9 @@ static size_t compressLiteral( char *tgt, const char *s, size_t len )
     int             classification;    // - escape classification
     int             max_digs;          // - max digits remaining
     size_t          new_len;           // - length after escapes processed
-    struct {
-        unsigned wide_string : 1;
-    } flags;
 
 #define store_chr(tgt,chr)  if(tgt) *tgt++ = (chr)
 
-    flags.wide_string = false;
-    if( CurToken == T_LSTRING ) {
-        flags.wide_string = true;
-    }
     new_len = 0;
     for( ; len > 0; ) {
         chr = *str++;
@@ -193,14 +186,14 @@ static size_t compressLiteral( char *tgt, const char *s, size_t len )
             } else if( classification != ESCAPE_NONE ) {
                 chr = classification;
             }
-            if( flags.wide_string ) {
+            if( wide ) {
                 store_chr( tgt, chr );
                 ++ new_len;
                 chr = chr >> 8;
             }
         } else {
             if( CharSet[chr] & C_DB ) {       /* if double-byte character */
-                if( CompFlags.jis_to_unicode && flags.wide_string ) {
+                if( CompFlags.jis_to_unicode && wide ) {
                     chr = (chr << 8) + *str;
                     chr = JIS2Unicode( chr );
                     store_chr( tgt, chr );
@@ -212,7 +205,7 @@ static size_t compressLiteral( char *tgt, const char *s, size_t len )
                 ++ new_len;
                 ++ str;
                 -- len;
-            } else if( flags.wide_string ) {
+            } else if( wide ) {
                 if( CompFlags.use_unicode ) {
                     chr = UniCode[chr];
                 } else if( CompFlags.jis_to_unicode ) {
@@ -233,21 +226,16 @@ static size_t compressLiteral( char *tgt, const char *s, size_t len )
 }
 
 
-static STRING_CONSTANT makeLiteral( const char *s, size_t len )
-/*************************************************************/
+static STRING_CONSTANT makeLiteral( const char *s, size_t len, bool wide )
+/************************************************************************/
 {
     STRING_CONSTANT literal;
     size_t          new_len;
 
-    new_len = len;
-    if( CurToken == T_LSTRING ) {
-        new_len = compressLiteral( NULL, s, len + 1 );
-    }
+    new_len = compressLiteral( NULL, s, len + 1, wide );
     literal = findLiteral( new_len );
-    literal->len = compressLiteral( literal->string, s, len + 1 );
-    if( CurToken == T_LSTRING ) {
-        literal->wide_string = true;
-    }
+    literal->len = compressLiteral( literal->string, s, len + 1, wide );
+    literal->wide_string = wide;
     return( literal );
 }
 
@@ -281,11 +269,11 @@ static STRING_CONSTANT stringAdd(// ADD LITERAL TO STRING
 }
 
 
-STRING_CONSTANT StringCreate( const char *s, size_t len )
-/*******************************************************/
+STRING_CONSTANT StringCreate( const char *s, size_t len, bool wide )
+/******************************************************************/
 {
     ++stringCount;
-    return( stringAdd( makeLiteral( s, len ), &uniqueStrings ) );
+    return( stringAdd( makeLiteral( s, len, wide ), &uniqueStrings ) );
 }
 
 void StringConcatDifferentLines( STRING_CONSTANT v )
