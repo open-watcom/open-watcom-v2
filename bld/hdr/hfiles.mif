@@ -227,7 +227,7 @@
 !inject sys/sysmips.h                    hlnx
 !inject sys/term.h                            hqnx
 !inject sys/termio.h                          hqnx
-!inject sys/time.h                  hdos hlnx hqnx hrdos
+!inject sys/time.h                       hlnx hqnx hrdos
 !inject sys/timeb.h                 hdos hlnx hqnx hrdos
 !inject sys/timers.h                          hqnx
 !inject sys/times.h                      hlnx hqnx

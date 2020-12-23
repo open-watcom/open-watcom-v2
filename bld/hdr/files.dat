@@ -75,7 +75,6 @@ usr="wsample.h"
 [ DEFAULT type="s" dir="h/sys" where="c jc f77 jf77 ac" cond="dostarg wintarg os2targ wnttarg nlmtarg | | | |" ]
 usr="locking.h"
 usr="stat.h"
-usr="time.h"
 usr="timeb.h"
 usr="types.h"
 usr="utime.h"

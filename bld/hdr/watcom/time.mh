@@ -140,12 +140,7 @@ using std::time;
 :keep DECLARE_STRUCT
 :include tm.sp
 :remove DECLARE_STRUCT
-:segment DOS
-
-:include extc99.sp
-:include timespec.sp
-:include extepi.sp
-:elsesegment LINUX | QNX
+:segment DOS | LINUX | QNX
 
 :include extc99po.sp
 :include timespec.sp
