@@ -322,10 +322,19 @@ bool StringSame( STRING_CONSTANT v1, STRING_CONSTANT v2 )
 }
 
 target_size_t StringByteLength( STRING_CONSTANT s )
-/*************************************************/
+/**************************************************
+ * byte length include '\0' character
+ */
 {
-    // byte length should include '\0' character
     return( s->len + TARGET_CHAR );
+}
+
+target_size_t StringLength( STRING_CONSTANT s )
+/**********************************************
+ * length doesn't include '\0' character
+ */
+{
+    return( s->len );
 }
 
 target_size_t StringAWStrLen( STRING_CONSTANT s )

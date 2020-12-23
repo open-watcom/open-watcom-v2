@@ -54,6 +54,7 @@ extern STRING_CONSTANT  StringConcat( STRING_CONSTANT, STRING_CONSTANT );
 extern void             StringConcatDifferentLines( STRING_CONSTANT );
 extern bool             StringSame( STRING_CONSTANT, STRING_CONSTANT );
 extern target_size_t    StringByteLength( STRING_CONSTANT );
+extern target_size_t    StringLength( STRING_CONSTANT );
 extern target_size_t    StringAWStrLen( STRING_CONSTANT );
 extern char             *StringBytes( STRING_CONSTANT );
 

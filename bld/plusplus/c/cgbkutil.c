@@ -241,7 +241,7 @@ back_handle DgStringConst(          // STORE STRING CONSTANT WITH NULL
         if( handle == 0 ) {
             handle = BENewBack( 0 );
             str->cg_handle = handle;
-            str_len = str->len + TARGET_CHAR;
+            str_len = StringBytesLength( str );
             if( str->wide_string ) {
                 str_align = TARGET_WIDE_CHAR;
             } else {

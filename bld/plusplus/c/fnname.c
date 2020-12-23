@@ -358,6 +358,7 @@ static void appendBasedMod(     // APPEND A BASED MODIFIER
     void *base )                // - base modifier
 {
     STRING_CONSTANT str;
+    unsigned len;
 
     appendChar( IN_BASED );
     flags &= TF1_BASED;
@@ -376,18 +377,19 @@ static void appendBasedMod(     // APPEND A BASED MODIFIER
 #endif
         appendChar( IN_BASED_STRING );
         str = base;
-        if( str->len < ZZ_LEN_LIMIT ) {
+        len = StringLength( str );
+        if( len < ZZ_LEN_LIMIT ) {
             char    sbuf[10];
 
-            utoa_zz( str->len, sbuf );
+            utoa_zz( len, sbuf );
             appendStr( sbuf );
         } else {
             char    sbuf[60];
 
-            sprintf( sbuf, "internal name length=%d is > %d (1)", (int)str->len, ZZ_LEN_LIMIT );
+            sprintf( sbuf, "internal name length=%u is > %d (1)", len, ZZ_LEN_LIMIT );
             CFatal( sbuf );
         }
-        appendStrWithLen( str->string, str->len );
+        appendStrWithLen( str->string, len );
         break;
     case TF1_BASED_FETCH:
 #ifndef NDEBUG
