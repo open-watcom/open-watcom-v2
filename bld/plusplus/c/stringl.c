@@ -129,6 +129,19 @@ static STRING_CONSTANT findLiteral( size_t len )
     return( initLiteral( literal ) );
 }
 
+static char *store_wchar( char *tgt, int c )
+/******************************************/
+{
+    int i;
+
+    i = TARGET_WIDE_CHAR;
+    while( i-- > 0 ) {
+        *tgt++ = c;
+        c >>= 8;
+    }
+    return( tgt );
+}
+
 static size_t compressLiteral( char *tgt, const char *s, size_t len, bool wide )
 /******************************************************************************/
 {
@@ -139,7 +152,8 @@ static size_t compressLiteral( char *tgt, const char *s, size_t len, bool wide )
     int             max_digs;          // - max digits remaining
     size_t          new_len;           // - length after escapes processed
 
-#define store_chr(tgt,chr)  if(tgt) *tgt++ = (chr)
+#define STORE_CHAR(tgt,c,tlen)  if(tgt) *tgt++ = (c); tlen += TARGET_CHAR
+#define STORE_WCHAR(tgt,c,tlen) if(tgt) tgt = store_wchar(tgt, (c)); tlen += TARGET_WIDE_CHAR
 
     new_len = 0;
     for( ; len > 0; ) {
@@ -147,13 +161,13 @@ static size_t compressLiteral( char *tgt, const char *s, size_t len, bool wide )
         --len;
         if( ( len > 0 ) && ( chr == '\\' ) ) {
             chr = *str++;
-            -- len;
+            --len;
             classification = classify_escape_char( chr );
             if( classification == ESCAPE_OCTAL ) {
                 chr_1 = octal_dig( chr );
                 chr = 0;
                 max_digs = 3;
-                for( ; ; ) {
+                for( ;; ) {
                     chr = ( chr << 3 ) | chr_1;
                     if( len == 0 )
                         break;
@@ -166,10 +180,10 @@ static size_t compressLiteral( char *tgt, const char *s, size_t len, bool wide )
                     ++str;
                 }
             } else if( classification == ESCAPE_HEX ) {
+                chr = 0;
                 if( ( len > 1 ) && ( 16 != hex_dig( *str ) ) ) {
-                    chr = 0;
                     max_digs = 8;
-                    for( ; ; ) {
+                    for( ;; ) {
                         if( len == 0 )
                             break;
                         if( max_digs == 0 )
@@ -187,41 +201,40 @@ static size_t compressLiteral( char *tgt, const char *s, size_t len, bool wide )
                 chr = classification;
             }
             if( wide ) {
-                store_chr( tgt, chr );
-                ++ new_len;
-                chr = chr >> 8;
+                STORE_WCHAR( tgt, chr, new_len );
+            } else {
+                STORE_CHAR( tgt, chr, new_len );
             }
         } else {
-            if( CharSet[chr] & C_DB ) {       /* if double-byte character */
+            if( len > 0 && (CharSet[chr] & C_DB) ) {    /* if double-byte character */
                 if( CompFlags.jis_to_unicode && wide ) {
-                    chr = (chr << 8) + *str;
+                    chr = (chr << 8) + *str++;
                     chr = JIS2Unicode( chr );
-                    store_chr( tgt, chr );
-                    chr = chr >> 8;
+                    STORE_WCHAR( tgt, chr, new_len );
                 } else {
-                    store_chr( tgt, chr );
-                    chr = *str;
+                    STORE_CHAR( tgt, chr, new_len );
+                    chr = *str++;
+                    STORE_CHAR( tgt, chr, new_len );
                 }
-                ++ new_len;
-                ++ str;
-                -- len;
+                --len;
             } else if( wide ) {
                 if( CompFlags.use_unicode ) {
                     chr = UniCode[chr];
                 } else if( CompFlags.jis_to_unicode ) {
                     chr = JIS2Unicode( chr );
                 }
-                store_chr( tgt, chr );
-                ++ new_len;
-                chr = chr >> 8;
-//          } else {
+                STORE_WCHAR( tgt, chr, new_len );
+            } else {
 //              _ASCIIOUT( chr );
+                STORE_CHAR( tgt, chr, new_len );
             }
         }
-        store_chr( tgt, chr );
-        ++new_len;
     }
     --new_len;  /* take one of the '\0' from the end */
+
+#undef STORE_CHAR
+#undef STORE_WCHAR
+
     return( new_len );
 }
 

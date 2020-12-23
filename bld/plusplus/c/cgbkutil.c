@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -241,7 +241,7 @@ back_handle DgStringConst(          // STORE STRING CONSTANT WITH NULL
         if( handle == 0 ) {
             handle = BENewBack( 0 );
             str->cg_handle = handle;
-            str_len = StringBytesLength( str );
+            str_len = StringByteLength( str );
             if( str->wide_string ) {
                 str_align = TARGET_WIDE_CHAR;
             } else {
