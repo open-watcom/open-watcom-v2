@@ -97,9 +97,7 @@ static STRING_CONSTANT initLiteral( STRING_CONSTANT literal )
     literal->next = NULL;
     literal->cg_handle = NULL;
     literal->segid = SEG_NULL;
-    literal->concat = false;
-    literal->multi_line = false;
-    literal->wide_string = false;
+    literal->flags = STRLIT_NONE;
     return( literal );
 }
 
@@ -248,7 +246,8 @@ static STRING_CONSTANT makeLiteral( const char *s, size_t len, bool wide )
     new_len = compressLiteral( NULL, s, len + 1, wide );
     literal = findLiteral( new_len );
     literal->len = compressLiteral( literal->string, s, len + 1, wide );
-    literal->wide_string = wide;
+    if( wide )
+        literal->flags = STRLIT_WIDE;
     return( literal );
 }
 
@@ -292,33 +291,28 @@ STRING_CONSTANT StringCreate( const char *s, size_t len, bool wide )
 void StringConcatDifferentLines( STRING_CONSTANT v )
 /**************************************************/
 {
-    v->multi_line = true;
+    v->flags |= STRLIT_MLINE;
 }
 
 STRING_CONSTANT StringConcat( STRING_CONSTANT v1, STRING_CONSTANT v2 )
 /********************************************************************/
 {
     STRING_CONSTANT literal;
-    size_t          len;        // - length
+    target_size_t   v1_len;
 
-    if( v1->wide_string != v2->wide_string ) {
+    if( (v1->flags & STRLIT_WIDE) != (v2->flags & STRLIT_WIDE) ) {
         // an error has already been diagnosed
         StringTrash( v2 );
         return( v1 );
     }
+    v1_len = v1->len;
+    if( v1->flags & STRLIT_WIDE )
+        v1_len--;
     literal = findLiteral( v1->len + v2->len );
-    literal->concat = true;
-    memcpy( literal->string, v1->string, v1->len );
-    len = v1->len;
-    if( v1->wide_string ) {
-        --len;
-        literal->wide_string = true;
-    }
-    if( v1->multi_line ) {
-        literal->multi_line = true;
-    }
-    literal->len = len + v2->len;
-    memcpy( &(literal->string[len]), v2->string, v2->len + 1 );
+    literal->flags = v1->flags | STRLIT_CONCAT;
+    literal->len = v1_len + v2->len;
+    memcpy( literal->string, v1->string, v1_len );
+    memcpy( &(literal->string[v1_len]), v2->string, v2->len + 1 );
     StringTrash( v1 );
     StringTrash( v2 );
     ++stringCount;
@@ -356,7 +350,7 @@ target_size_t StringAWStrLen( STRING_CONSTANT s )
     target_size_t len;
 
     // string length should include '\0' character
-    if( s->wide_string ) {
+    if( s->flags & STRLIT_WIDE ) {
         DbgAssert( s->len & 1 );
         len = ( s->len + 1 ) / TARGET_WIDE_CHAR;
     } else {
@@ -435,6 +429,7 @@ pch_status PCHReadStringPool( void )
     for( ; (str_len = PCHReadUInt()) != 0; ) {
         str = findLiteral( str_len );
         str->len = str_len - 1;
+        str->flags = PCHReadUInt();
         PCHRead( str->string, str_len );
         stringAdd( str, &uniqueStrings );
         *p = str;
@@ -456,6 +451,7 @@ pch_status PCHWriteStringPool( void )
         str = p[i];
         len = StringByteLength( str );
         PCHWriteUInt( len );
+        PCHWriteUInt( str->flags );
         PCHWrite( StringBytes( str ), len );
     }
     PCHWriteUInt( 0 );

@@ -318,7 +318,7 @@ PTREE PTreeStringLiteralConcat( PTREE left, PTREE right )
     PTreeExtractLocn( right, &err_locn );
     left_str = left->u.string;
     right_str = right->u.string;
-    if( left_str->wide_string != right_str->wide_string ) {
+    if( (left_str->flags & STRLIT_WIDE) != (right_str->flags & STRLIT_WIDE) ) {
         PTreeSetErrLoc( right );
         CErr1( ERR_MISMATCHED_WIDE_STRING_CONCATENATION );
     }
@@ -326,7 +326,7 @@ PTREE PTreeStringLiteralConcat( PTREE left, PTREE right )
     if( ! SrcFileAreTLSameLine( &(left->locn), &(right->locn) ) ) {
         StringConcatDifferentLines( new_str );
     }
-    if( new_str->wide_string ) {
+    if( new_str->flags & STRLIT_WIDE ) {
         new_literal = strLiteral( new_str, TYP_WCHAR );
     } else {
         new_literal = strLiteral( new_str, TYP_CHAR );
@@ -1630,7 +1630,7 @@ bool IsStringConstant( PTREE node, bool *multi_line_concat )
     ok = false;
     if( node->op == PT_STRING_CONSTANT ) {
         str = node->u.string;
-        if( str->concat && str->multi_line ) {
+        if( (str->flags & STRLIT_CONCAT) && (str->flags & STRLIT_MLINE) ) {
             *multi_line_concat = true;
         }
         ok = true;

@@ -259,7 +259,7 @@ back_handle DgStringConst(          // STORE STRING CONSTANT WITH NULL
             handle = BENewBack( 0 );
             str->cg_handle = handle;
             str_len = StringByteLength( str );
-            if( str->wide_string ) {
+            if( str->flags & STRLIT_WIDE ) {
                 str_align = TARGET_WIDE_CHAR;
             } else {
                 str_align = TARGET_CHAR;
@@ -293,7 +293,7 @@ back_handle DgStringConst(          // STORE STRING CONSTANT WITH NULL
             DGAlign( str_align );   // NT requires word aligned wide strings
 #endif
             DGLabel( handle );
-            DgString( str->string, str->len, str->wide_string );
+            DgString( str->string, str->len, ( (str->flags & STRLIT_WIDE) != 0 ) );
 #if _CPU == _AXP
             DGAlign( TARGET_INT );
 #endif
@@ -303,7 +303,7 @@ back_handle DgStringConst(          // STORE STRING CONSTANT WITH NULL
         // char a[] = "asdf"; initialization (use current segment)
         str_segid = BEGetSeg();
         str->segid = str_segid;
-        DgString( str->string, str->len, str->wide_string );
+        DgString( str->string, str->len, ( (str->flags & STRLIT_WIDE) != 0 ) );
     }
     if( psegid != NULL ) {
         *psegid = str_segid;
