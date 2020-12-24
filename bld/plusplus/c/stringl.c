@@ -101,7 +101,7 @@ static STRING_CONSTANT initLiteral( STRING_CONSTANT literal )
     return( literal );
 }
 
-static STRING_CONSTANT findLiteral( size_t len )
+static STRING_CONSTANT allocLiteral( size_t len )
 {
     STRING_CONSTANT literal;
     STRING_CONSTANT prev;
@@ -244,7 +244,7 @@ static STRING_CONSTANT makeLiteral( const char *s, size_t len, bool wide )
     size_t          new_len;
 
     new_len = compressLiteral( NULL, s, len + 1, wide );
-    literal = findLiteral( new_len );
+    literal = allocLiteral( new_len );
     literal->len = compressLiteral( literal->string, s, len + 1, wide );
     if( wide )
         literal->flags = STRLIT_WIDE;
@@ -308,7 +308,7 @@ STRING_CONSTANT StringConcat( STRING_CONSTANT v1, STRING_CONSTANT v2 )
     v1_len = v1->len;
     if( v1->flags & STRLIT_WIDE )
         v1_len--;
-    literal = findLiteral( v1->len + v2->len );
+    literal = allocLiteral( v1->len + v2->len );
     literal->flags = v1->flags | STRLIT_CONCAT;
     literal->len = v1_len + v2->len;
     memcpy( literal->string, v1->string, v1_len );
@@ -427,7 +427,7 @@ pch_status PCHReadStringPool( void )
     stringTranslateTable = CMemAlloc( stringCount * sizeof( STRING_CONSTANT ) );
     p = stringTranslateTable;
     for( ; (str_len = PCHReadUInt()) != 0; ) {
-        str = findLiteral( str_len );
+        str = allocLiteral( str_len );
         str->len = str_len - 1;
         str->flags = PCHReadUInt();
         PCHRead( str->string, str_len );
