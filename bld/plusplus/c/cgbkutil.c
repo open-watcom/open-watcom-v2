@@ -246,69 +246,62 @@ back_handle DgStringConst(          // STORE STRING CONSTANT WITH NULL
     uint_16         *psegid,        // - addr(string segid)
     unsigned        control )       // - control mask (DSC_*)
 {
-    back_handle     handle;         // - back handle for literal
     target_offset_t str_align;      // - string's alignment
-    target_size_t   str_len;        // - string's length (in bytes)
-    segment_id      str_segid;      // - string's segment
     segment_id      old_segid;      // - old segment
+#if _CPU == _AXP
+#else
+    target_size_t   str_len;        // - string's length (in bytes)
+#endif
 
-    str_segid = str->segid;
-    handle = str->cg_handle;
     if( control & DSC_CONST ) {
-        if( handle == 0 ) {
-            handle = BENewBack( 0 );
-            str->cg_handle = handle;
+        if( str->cg_handle == NULL ) {
+            str->cg_handle = BENewBack( 0 );
+#if _CPU == _AXP
+            str_align = TARGET_INT;
+            str->segid = SEG_CONST;
+#else
             str_len = StringByteLength( str );
             if( str->flags & STRLIT_WIDE ) {
-                str_align = TARGET_WIDE_CHAR;
+                str_align = TARGET_WIDE_CHAR;   // NT requires word aligned wide strings
             } else {
                 str_align = TARGET_CHAR;
             }
-#if _CPU == _AXP
-            str_segid = SEG_CONST;
-#else
             if( CompFlags.strings_in_code_segment && ( control & DSC_CODE_OK ) != 0 ) {
                 if( IsBigData() ) {
-                    str_segid = SegmentAddStringCodeFar( str_len, str_align );
+                    str->segid = SegmentAddStringCodeFar( str_len, str_align );
                 } else {
                     if( IsFlat() ) {
-                        str_segid = SegmentAddStringCodeFar( str_len, str_align );
+                        str->segid = SegmentAddStringCodeFar( str_len, str_align );
                     } else {
-                        str_segid = SEG_CONST;
+                        str->segid = SEG_CONST;
                     }
                 }
             } else {
                 if( IsBigData() ) {
-                    str_segid = SegmentAddStringConstFar( str_len, str_align );
+                    str->segid = SegmentAddStringConstFar( str_len, str_align );
                 } else {
-                    str_segid = SEG_CONST;
+                    str->segid = SEG_CONST;
                 }
             }
 #endif
-            str->segid = str_segid;
-            old_segid = BESetSeg( str_segid );
-#if _CPU == _AXP
-            DGAlign( TARGET_INT );
-#else
-            DGAlign( str_align );   // NT requires word aligned wide strings
-#endif
-            DGLabel( handle );
+            old_segid = BESetSeg( str->segid );
+            DGAlign( str_align );
+            DGLabel( str->cg_handle );
             DgString( str->string, str->len, ( (str->flags & STRLIT_WIDE) != 0 ) );
 #if _CPU == _AXP
-            DGAlign( TARGET_INT );
+            DGAlign( str_align );
 #endif
             BESetSeg( old_segid );
         }
     } else {
         // char a[] = "asdf"; initialization (use current segment)
-        str_segid = BEGetSeg();
-        str->segid = str_segid;
+        str->segid = BEGetSeg();
         DgString( str->string, str->len, ( (str->flags & STRLIT_WIDE) != 0 ) );
     }
     if( psegid != NULL ) {
-        *psegid = str_segid;
+        *psegid = str->segid;
     }
-    return( handle );
+    return( str->cg_handle );
 }
 
 
