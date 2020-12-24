@@ -238,7 +238,7 @@ void DgString( const char *str, target_size_t len, bool wide )
     (void)wide;
 
     DGBytes( len, str );
-    DGByte( 0 );
+    DgByte( 0 );
 }
 
 back_handle DgStringConst(          // STORE STRING CONSTANT WITH NULL
