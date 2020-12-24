@@ -1050,6 +1050,11 @@ void DgPtrSymOff(               // GENERATE POINTER FOR A SYMBOL + OFFSET
     SYMBOL sym,                 // - the symbol
     target_size_t offset )      // - the offset
 ;
+void DgString(                  // STORE STRING CONSTANT
+    const char *str,            // - string to store
+    target_size_t len,          // - string length
+    bool wide )                 // - wide string
+;
 back_handle DgStringConst(      // STORE STRING CONSTANT WITH NULL
     STRING_CONSTANT str,        // - string to store
     uint_16         *psegid,    // - addr(string segid)

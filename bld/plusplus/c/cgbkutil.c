@@ -224,6 +224,23 @@ segment_id DgSetSegSym( SYMBOL sym )
     return( BESetSeg( FESegID( sym ) ) );
 }
 
+void DgString( const char *str, target_size_t len, bool wide )
+/*************************************************************
+ * store string constant
+ *
+ * potential cross-compilation character conversion
+ * must be done by front-end
+ * it requires different procesing for singe/wide characters
+ * back-end doesn't know anything about it
+ * now no character conversion is implemented
+ */
+{
+    (void)wide;
+
+    DGBytes( len, str );
+    DGByte( 0 );
+}
+
 back_handle DgStringConst(          // STORE STRING CONSTANT WITH NULL
     STRING_CONSTANT str,            // - string to store
     uint_16         *psegid,        // - addr(string segid)
@@ -276,8 +293,7 @@ back_handle DgStringConst(          // STORE STRING CONSTANT WITH NULL
             DGAlign( str_align );   // NT requires word aligned wide strings
 #endif
             DGLabel( handle );
-            DGString( str->string, str->len );
-            DgByte( 0 );
+            DgString( str->string, str->len, str->wide_string );
 #if _CPU == _AXP
             DGAlign( TARGET_INT );
 #endif
@@ -287,8 +303,7 @@ back_handle DgStringConst(          // STORE STRING CONSTANT WITH NULL
         // char a[] = "asdf"; initialization (use current segment)
         str_segid = BEGetSeg();
         str->segid = str_segid;
-        DGString( str->string, str->len );
-        DgByte( 0 );
+        DgString( str->string, str->len, str->wide_string );
     }
     if( psegid != NULL ) {
         *psegid = str_segid;

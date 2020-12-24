@@ -205,8 +205,7 @@ static void doTypeidGen( RTTI_TYPEID *r )
     if( CompFlags.obfuscate_typesig_names ) {
         runThruSimpleCipher( raw_name, raw_len );
     }
-    DGString( raw_name, raw_len );
-    DgByte( 0 );
+    DgString( raw_name, raw_len, false );
     BESetSeg( old_segid );
 }
 
