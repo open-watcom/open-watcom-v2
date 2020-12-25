@@ -238,7 +238,7 @@ void DgString( const char *str, target_size_t len, bool wide )
     (void)wide;
 
     DGBytes( len, str );
-    DgByte( 0 );
+//    DgByte( 0 );
 }
 
 back_handle DgStringConst(          // STORE STRING CONSTANT WITH NULL
@@ -248,37 +248,27 @@ back_handle DgStringConst(          // STORE STRING CONSTANT WITH NULL
 {
     target_offset_t str_align;      // - string's alignment
     segment_id      old_segid;      // - old segment
-#if _CPU == _AXP
-#else
-    target_size_t   str_len;        // - string's length (in bytes)
-#endif
 
     if( control & DSC_CONST ) {
         if( str->cg_handle == NULL ) {
             str->cg_handle = BENewBack( 0 );
+            str_align = StringAlign( str );
 #if _CPU == _AXP
-            str_align = TARGET_INT;
             str->segid = SEG_CONST;
 #else
-            str_len = StringByteLength( str );
-            if( str->flags & STRLIT_WIDE ) {
-                str_align = TARGET_WIDE_CHAR;   // NT requires word aligned wide strings
-            } else {
-                str_align = TARGET_CHAR;
-            }
             if( CompFlags.strings_in_code_segment && ( control & DSC_CODE_OK ) != 0 ) {
                 if( IsBigData() ) {
-                    str->segid = SegmentAddStringCodeFar( str_len, str_align );
+                    str->segid = SegmentAddStringCodeFar( str->len, str_align );
                 } else {
                     if( IsFlat() ) {
-                        str->segid = SegmentAddStringCodeFar( str_len, str_align );
+                        str->segid = SegmentAddStringCodeFar( str->len, str_align );
                     } else {
                         str->segid = SEG_CONST;
                     }
                 }
             } else {
                 if( IsBigData() ) {
-                    str->segid = SegmentAddStringConstFar( str_len, str_align );
+                    str->segid = SegmentAddStringConstFar( str->len, str_align );
                 } else {
                     str->segid = SEG_CONST;
                 }

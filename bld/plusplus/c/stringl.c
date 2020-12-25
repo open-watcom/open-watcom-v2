@@ -44,6 +44,8 @@
 #include "unicode.h"
 
 
+#define STRING_CHARSIZE(s)	((s->flags & STRLIT_WIDE) ? TARGET_WIDE_CHAR : TARGET_CHAR)
+
 static STRING_CONSTANT  uniqueStrings;
 static STRING_CONSTANT  trashedStrings;
 
@@ -92,16 +94,17 @@ static void stringInit(         // INITIALIZATION
 
 INITDEFN( strings, stringInit, InitFiniStub )
 
-static STRING_CONSTANT initLiteral( STRING_CONSTANT literal )
+static STRING_CONSTANT initLiteral( STRING_CONSTANT literal, target_size_t len, string_literal_flags flags )
 {
     literal->next = NULL;
     literal->cg_handle = NULL;
     literal->segid = SEG_NULL;
-    literal->flags = STRLIT_NONE;
+    literal->len = len;
+    literal->flags = flags;
     return( literal );
 }
 
-static STRING_CONSTANT allocLiteral( size_t len )
+static STRING_CONSTANT allocLiteral( target_size_t len, string_literal_flags flags )
 {
     STRING_CONSTANT literal;
     STRING_CONSTANT prev;
@@ -117,17 +120,15 @@ static STRING_CONSTANT allocLiteral( size_t len )
                 } else {
                     trashedStrings = literal->next;
                 }
-                literal->len = len;
-                return( initLiteral( literal ) );
+                return( initLiteral( literal, len, flags ) );
             }
         }
         prev = literal;
         literal = literal->next;
     }
-    literal = CPermAlloc( offsetof( STRING_LITERAL, string ) + len + 1 );
+    literal = CPermAlloc( offsetof( STRING_LITERAL, string ) + len );
     literal->alloc_len = len;
-    literal->len = len;
-    return( initLiteral( literal ) );
+    return( initLiteral( literal, len, flags ) );
 }
 
 static char *store_wchar( char *tgt, int c )
@@ -231,7 +232,6 @@ static size_t compressLiteral( char *tgt, const char *s, size_t len, bool wide )
             }
         }
     }
-    --new_len;  /* take one of the '\0' from the end */
 
 #undef STORE_CHAR
 #undef STORE_WCHAR
@@ -240,17 +240,15 @@ static size_t compressLiteral( char *tgt, const char *s, size_t len, bool wide )
 }
 
 
-static STRING_CONSTANT makeLiteral( const char *s, size_t len, bool wide )
-/************************************************************************/
+static STRING_CONSTANT makeLiteral( const char *s, target_size_t len, bool wide )
+/*******************************************************************************/
 {
     STRING_CONSTANT literal;
-    size_t          new_len;
+    target_size_t   new_len;
 
     new_len = compressLiteral( NULL, s, len + 1, wide );
-    literal = allocLiteral( new_len );
-    literal->len = compressLiteral( literal->string, s, len + 1, wide );
-    if( wide )
-        literal->flags = STRLIT_WIDE;
+    literal = allocLiteral( new_len, ( wide ) ? STRLIT_WIDE : STRLIT_NONE );
+    compressLiteral( literal->string, s, len + 1, wide );
     return( literal );
 }
 
@@ -308,14 +306,10 @@ STRING_CONSTANT StringConcat( STRING_CONSTANT v1, STRING_CONSTANT v2 )
         StringTrash( v2 );
         return( v1 );
     }
-    v1_len = v1->len;
-    if( v1->flags & STRLIT_WIDE )
-        v1_len--;
-    literal = allocLiteral( v1->len + v2->len );
-    literal->flags = v1->flags | STRLIT_CONCAT;
-    literal->len = v1_len + v2->len;
+    v1_len = StringLength( v1 );
+    literal = allocLiteral( v1_len + v2->len, v1->flags | STRLIT_CONCAT );
     memcpy( literal->string, v1->string, v1_len );
-    memcpy( &(literal->string[v1_len]), v2->string, v2->len + 1 );
+    memcpy( &(literal->string[v1_len]), v2->string, v2->len );
     StringTrash( v1 );
     StringTrash( v2 );
     ++stringCount;
@@ -328,7 +322,7 @@ bool StringSame( STRING_CONSTANT v1, STRING_CONSTANT v2 )
     if( v1->len != v2->len ) {
         return( false );
     }
-    return( memcmp( v1->string, v2->string, v1->len + 1 ) == 0 );
+    return( memcmp( v1->string, v2->string, v1->len ) == 0 );
 }
 
 target_size_t StringByteLength( STRING_CONSTANT s )
@@ -336,7 +330,7 @@ target_size_t StringByteLength( STRING_CONSTANT s )
  * byte length include '\0' character
  */
 {
-    return( s->len + TARGET_CHAR );
+    return( s->len );
 }
 
 target_size_t StringLength( STRING_CONSTANT s )
@@ -344,28 +338,44 @@ target_size_t StringLength( STRING_CONSTANT s )
  * length doesn't include '\0' character
  */
 {
-    return( s->len );
+    return( s->len - STRING_CHARSIZE( s ) );
 }
 
 target_size_t StringAWStrLen( STRING_CONSTANT s )
 /***********************************************/
 {
-    target_size_t len;
-
-    // string length should include '\0' character
-    if( s->flags & STRLIT_WIDE ) {
-        DbgAssert( s->len & 1 );
-        len = ( s->len + 1 ) / TARGET_WIDE_CHAR;
-    } else {
-        len = ( s->len + 1 ) / TARGET_CHAR;
-    }
-    return( len );
+    return( s->len / STRING_CHARSIZE( s ) );
 }
 
 char *StringBytes( STRING_CONSTANT s )
 /************************************/
 {
     return( s->string );
+}
+
+target_size_t StringAlign( STRING_CONSTANT s )
+/********************************************/
+{
+    target_size_t len;
+
+#if _CPU == _AXP
+    (void)s;
+
+    len = TARGET_INT;
+#else
+    if( s->flags & STRLIT_WIDE ) {
+        len = TARGET_WIDE_CHAR;
+    } else {
+        len = TARGET_CHAR;
+    }
+#endif
+    return( len );
+}
+
+target_size_t StringCharSize( STRING_CONSTANT s )
+/***********************************************/
+{
+    return( STRING_CHARSIZE( s ) );
 }
 
 static int cmpString( const void *lp, const void *rp )
@@ -421,7 +431,7 @@ pch_status PCHReadStringPool( void )
 {
     STRING_CONSTANT *p;
     STRING_CONSTANT str;
-    size_t str_len;
+    target_size_t str_len;
 
     while( uniqueStrings != NULL ) {
         StringTrash( uniqueStrings );
@@ -430,9 +440,7 @@ pch_status PCHReadStringPool( void )
     stringTranslateTable = CMemAlloc( stringCount * sizeof( STRING_CONSTANT ) );
     p = stringTranslateTable;
     for( ; (str_len = PCHReadUInt()) != 0; ) {
-        str = allocLiteral( str_len );
-        str->len = str_len - 1;
-        str->flags = PCHReadUInt();
+        str = allocLiteral( str_len, PCHReadUInt() );
         PCHRead( str->string, str_len );
         stringAdd( str, &uniqueStrings );
         *p = str;
@@ -443,7 +451,6 @@ pch_status PCHReadStringPool( void )
 
 pch_status PCHWriteStringPool( void )
 {
-    target_size_t len;
     unsigned i;
     STRING_CONSTANT str;
     STRING_CONSTANT *p;
@@ -452,10 +459,9 @@ pch_status PCHWriteStringPool( void )
     p = stringTranslateTable;
     for( i = 0; i < stringCount; ++i ) {
         str = p[i];
-        len = StringByteLength( str );
-        PCHWriteUInt( len );
+        PCHWriteUInt( str->len );
         PCHWriteUInt( str->flags );
-        PCHWrite( StringBytes( str ), len );
+        PCHWrite( str->string, str->len );
     }
     PCHWriteUInt( 0 );
     return( PCHCB_OK );

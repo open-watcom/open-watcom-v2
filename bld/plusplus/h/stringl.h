@@ -48,7 +48,7 @@ struct string_literal_t {
     STRING_CONSTANT         next;       // - next entry
     back_handle             cg_handle;  // - handle during code generation
     target_size_t           alloc_len;  // - allocated length in bytes
-    target_size_t           len;        // - length in bytes including null terminate character
+    target_size_t           len;        // - current used length in bytes including null terminate character
     fe_seg_id               segid;      // - segment containing string bytes
     string_literal_flags    flags;      // - attributes
     char                    string[1];  // - data
@@ -63,6 +63,8 @@ extern target_size_t    StringByteLength( STRING_CONSTANT );
 extern target_size_t    StringLength( STRING_CONSTANT );
 extern target_size_t    StringAWStrLen( STRING_CONSTANT );
 extern char             *StringBytes( STRING_CONSTANT );
+extern target_size_t    StringAlign( STRING_CONSTANT );
+extern target_size_t    StringCharSize( STRING_CONSTANT );
 
 extern void StringWalk(         // WALK DEFINED STRING LITERALS
     void (*walker)              // - walking routine
