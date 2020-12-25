@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1138,13 +1139,12 @@ static void dumpPTreeNode(      // DUMP A PARSE TREE NODE
             dumpPtreeFlags( node );
           } break;
         case PT_STRING_CONSTANT :
-            stxvcpy( buffer, node->u.string->string, node->u.string->len );
             printf( "PT_STRING_CONSTANT" F_BADDR
                     " flags"        F_HEX_4
                     " string"       F_STRING
                   , node
                   , node->flags
-                  , buffer
+                  , node->u.string->string
                   );
             dumpNodeType( node );
             dumpLocation( &node->locn );
