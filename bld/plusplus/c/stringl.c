@@ -208,7 +208,7 @@ static size_t compressLiteral( char *tgt, const char *s, size_t len, bool wide )
                 STORE_CHAR( tgt, chr, new_len );
             }
         } else {
-            if( len > 0 && (CharSet[chr] & C_DB) ) {    /* if double-byte character */
+            if( ( len > 0 ) && (CharSet[chr] & C_DB) ) {    /* if double-byte character */
                 if( CompFlags.jis_to_unicode && wide ) {
                     chr = (chr << 8) + *str++;
                     chr = JIS2Unicode( chr );

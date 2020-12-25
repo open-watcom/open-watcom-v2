@@ -432,32 +432,32 @@ static TOKEN doScanPPNumber( void )
     int         prevc;
 
     c = 0;
-    for( ;; WriteBufferChar( c ) ) {
+    for( ;; ) {
         prevc = c;
         c = NextChar();
-        if( (CharSet[c] & (C_AL | C_DI)) || c == '.' )
-            continue;
-        if( c == '+' || c == '-' ) {
-            if( prevc == 'e' || prevc == 'E' ||
-              ( CompFlags.c99_extensions && ( prevc == 'p' || prevc == 'P' ) ) ) {
-                if( CompFlags.extensions_enabled ) {
-                    WriteBufferChar( c );
-                    /* concession to existing practice...
-                        #define A2 0x02
-                        #define A3 0xaa0e+A2
-                        // users want: 0xaa0e + 0x02
-                        // not: 0xaa0e + A2 (but, this is what ISO C requires!)
-                    */
-                    prevc = c;  //advance to next
-                    c = NextChar();
-                    if( (CharSet[c] & C_DI) == 0 ) {
-                        break;  //allow e+<digit>
-                    }
+        if( (CharSet[c] & (C_AL | C_DI)) || c == '.' ) {
+            WriteBufferChar( c );
+        } else if( ( prevc == 'e' || prevc == 'E'
+          || CompFlags.c99_extensions && ( prevc == 'p' || prevc == 'P' ) )
+          && ( c == '+' || c == '-' ) ) {
+            WriteBufferChar( c );
+            if( CompFlags.extensions_enabled ) {
+                /* concession to existing practice...
+                    #define A2 0x02
+                    #define A3 0xaa0e+A2
+                    // users want: 0xaa0e + 0x02
+                    // not: 0xaa0e + A2 (but, this is what ISO C requires!)
+                */
+                prevc = c;  //advance to next
+                c = NextChar();
+                if( (CharSet[c] & C_DI) == 0 ) {
+                    break;  //allow e+<digit>
                 }
-                continue;
+                WriteBufferChar( c );
             }
+        } else {
+            break;
         }
-        break;
     }
     WriteBufferNullChar();
     return( T_PPNUMBER );
