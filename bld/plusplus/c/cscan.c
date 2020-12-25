@@ -677,9 +677,8 @@ static TOKEN doScanString( type_id string_type, bool expanding )
             ok = true;
             break;
         }
-        WriteBufferChar( c );
         if( c == '\\' ) {
-            c = NextChar();
+            c = WriteBufferCharNextChar( c );
             if(( CharSet[c] & C_WS ) == 0 ) {
                 doESCChar( c, expanding, string_type );
                 c = CurrChar;
@@ -687,10 +686,9 @@ static TOKEN doScanString( type_id string_type, bool expanding )
         } else {
             if( CharSet[c] & C_DB ) {
                 // if first char of a double-byte char, grab next one
-                c = NextChar();
-                WriteBufferChar( c );
+                c = WriteBufferCharNextChar( c );
             }
-            c = NextChar();
+            c = WriteBufferCharNextChar( c );
         }
     }
     SrcFileSetSwEnd( false );
