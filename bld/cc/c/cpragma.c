@@ -785,6 +785,7 @@ static void getPackArgs( void )
 
 /* forms:
  *
+ *      #pragma pack ()
  *      #pragma pack ( n )
  *      #pragma pack ( push )
  *      #pragma pack ( pop )
