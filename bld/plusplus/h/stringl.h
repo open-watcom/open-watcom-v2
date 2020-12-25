@@ -47,6 +47,7 @@ typedef enum string_literal_flags { // string literal flags
 struct string_literal_t {
     STRING_CONSTANT         next;       // - next entry
     back_handle             cg_handle;  // - handle during code generation
+    target_size_t           alloc_len;  // - allocated length in bytes
     target_size_t           len;        // - length in bytes including null terminate character
     fe_seg_id               segid;      // - segment containing string bytes
     string_literal_flags    flags;      // - attributes

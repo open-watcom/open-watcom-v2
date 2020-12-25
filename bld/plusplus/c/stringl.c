@@ -109,14 +109,15 @@ static STRING_CONSTANT allocLiteral( size_t len )
     prev = NULL;
     literal = trashedStrings;
     while( literal != NULL ) {
-        if( len <= literal->len ) {
+        if( len <= literal->alloc_len ) {
             /* try to use more than 1/2 of the trashed string */
-            if( len >= literal->len / 2 ) {
+            if( len >= literal->alloc_len / 2 ) {
                 if( prev != NULL ) {
                     prev->next = literal->next;
                 } else {
                     trashedStrings = literal->next;
                 }
+                literal->len = len;
                 return( initLiteral( literal ) );
             }
         }
@@ -124,6 +125,8 @@ static STRING_CONSTANT allocLiteral( size_t len )
         literal = literal->next;
     }
     literal = CPermAlloc( offsetof( STRING_LITERAL, string ) + len + 1 );
+    literal->alloc_len = len;
+    literal->len = len;
     return( initLiteral( literal ) );
 }
 
