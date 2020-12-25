@@ -733,6 +733,7 @@ TOKEN ChkControl(               // CHECK AND PROCESS DIRECTIVES
 {
     bool        lines_skipped;
     ppctl_t     old_ppctl;
+    TOKEN       token;
 
     while( CurrChar == '\n' ) {
         SrcFileCurrentLocation();
@@ -793,10 +794,10 @@ TOKEN ChkControl(               // CHECK AND PROCESS DIRECTIVES
         }
     }
     // we have already skipped past all white space at the start of the line
-    CurToken = ScanToken( expanding );
+    token = ScanToken( expanding );
     // this will be the first significant token on the source line
     SrcFileGuardStateSig();
-    return( CurToken );
+    return( token );
 }
 
 

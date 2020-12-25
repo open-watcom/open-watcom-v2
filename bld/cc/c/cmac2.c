@@ -196,6 +196,7 @@ TOKEN ChkControl( void )
 {
     bool        lines_skipped;
     ppctl_t     old_ppctl;
+    TOKEN       token;
 
     if( !CompFlags.doing_macro_expansion ) {
         if( CompFlags.cpp_mode ) {
@@ -249,9 +250,9 @@ TOKEN ChkControl( void )
         }
     }
     // we have already skipped past all white space at the start of the line
-    CurToken = T_WHITE_SPACE;
-//  CurToken = ScanToken();
-    return( T_WHITE_SPACE );
+    token = T_WHITE_SPACE;
+//  token = ScanToken();
+    return( token );
 }
 
 
