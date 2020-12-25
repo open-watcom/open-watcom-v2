@@ -40,7 +40,7 @@
 #include "dosfuncx.h"
 #include "watcom.h"
 
-#pragma pack( 1 )
+#pragma pack( __push, 1 )
 
 /*
  * miscellaneous definitions
@@ -2879,6 +2879,6 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 
 #endif
 
-#pragma pack()
+#pragma pack( __pop )
 
 #endif

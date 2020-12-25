@@ -39,7 +39,7 @@
 #include "pcobj.h"
 #include "objautod.h"
 
-#pragma pack(1)
+#pragma pack( __push, 1 )
 enum {
     TIME_SEC_B  = 0,
     TIME_SEC_F  = 0x001f,
@@ -208,4 +208,4 @@ int main( int argc, char **argv )
     return( 0 );
 }
 #endif
-#pragma pack()
+#pragma pack( __pop )
