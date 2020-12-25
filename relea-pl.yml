@@ -9,10 +9,10 @@ variables:
   owobjdir:         binbuild
   owgitverbose:     -v
 
-  owimage_lnx:      'ubuntu-latest'
+  owimage_lnx:      'ubuntu-20.04'
   owimage_nt:       'vs2017-win2016'
   owimage_osx:      'macOS-latest'
-  owimage_lnxow:    'ubuntu-latest'
+  owimage_lnxow:    'ubuntu-20.04'
   owimage_ntow:     'vs2017-win2016'
   owtools_lnx:      GCC
   owtools_nt:       VISUALC

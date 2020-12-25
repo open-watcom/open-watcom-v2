@@ -8,7 +8,7 @@ variables:
   owroot:           $(Build.SourcesDirectory)
   owobjdir:         binbuild
 
-  owimage_lnx:      'ubuntu-latest'
+  owimage_lnx:      'ubuntu-20.04'
   owimage_nt:       'vs2017-win2016'
   owimage_osx:      'macOS-latest'
   owtools_lnx:      GCC
