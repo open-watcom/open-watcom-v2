@@ -61,9 +61,8 @@ static void walk_strings(       // WALK STRINGS IN A LIST
     void (*walker)              // - walking routine
         ( STRING_CONSTANT ) )   // - - current string
 {
-    while( str != NULL ) {
+    for( ; str != NULL; str = str->next ) {
         (*walker)( str );
-        str = str->next;
     }
 }
 
@@ -110,8 +109,7 @@ static STRING_CONSTANT allocLiteral( target_size_t len, string_literal_flags fla
     STRING_CONSTANT prev;
 
     prev = NULL;
-    literal = trashedStrings;
-    while( literal != NULL ) {
+    for( literal = trashedStrings; literal != NULL; literal = literal->next ) {
         if( len <= literal->alloc_len ) {
             /* try to use more than 1/2 of the trashed string */
             if( len >= literal->alloc_len / 2 ) {
@@ -124,7 +122,6 @@ static STRING_CONSTANT allocLiteral( target_size_t len, string_literal_flags fla
             }
         }
         prev = literal;
-        literal = literal->next;
     }
     literal = CPermAlloc( offsetof( STRING_LITERAL, string ) + len );
     literal->alloc_len = len;

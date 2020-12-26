@@ -1082,7 +1082,6 @@ static void dumpPtreeFlags      // DUMP FLAGS IN PTREE NODE
 static void dumpPTreeNode(      // DUMP A PARSE TREE NODE
     PTREE node )                // - node in parse tree
 {
-    static char buffer[128];    // - debugging buffer
     char *node_name;            // - name of node
     VSTK_CTL ctl;               // - VSTK control information (nodes)
     VSTK_CTL dup;               // - VSTK control information (duplicates)
