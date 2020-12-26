@@ -15,9 +15,7 @@
 :include cpluspro.sp
 
 typedef union {
- #ifdef __WATCOM_INT64__
-    unsigned __int64 _64[1];
- #endif
+    unsigned __int64    _64[1];
     unsigned long       _32[2];
     unsigned short      _16[4];
     unsigned char        _8[8];
