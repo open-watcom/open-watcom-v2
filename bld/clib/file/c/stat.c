@@ -68,7 +68,6 @@
 {
     struct stat         buf32;
     int                 rc;
-    INT_TYPE            tmp;
 
     /*** Get the info using non-64bit version ***/
     rc = __F_NAME(stat,_wstat)( path, &buf32 );
@@ -81,8 +80,7 @@
         buf->st_uid = buf32.st_uid;
         buf->st_gid = buf32.st_gid;
         buf->st_rdev = buf32.st_rdev;
-        _clib_U32ToU64( buf32.st_size, tmp );
-        buf->st_size = GET_REALINT64(tmp);
+        buf->st_size = MAKE_SIZE64( 0, buf32.st_size );
         buf->st_atime = buf32.st_atime;
         buf->st_mtime = buf32.st_mtime;
         buf->st_ctime = buf32.st_ctime;

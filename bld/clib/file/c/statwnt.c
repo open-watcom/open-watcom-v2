@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -216,12 +216,7 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
     buf->st_rdev = buf->st_dev;
 
 #ifdef __INT64__
-    {
-        INT_TYPE        tmp;
-
-        MAKE_INT64( tmp, ffd.nFileSizeHigh, ffd.nFileSizeLow );
-        buf->st_size = GET_REALINT64(tmp);
-    }
+    buf->st_size = MAKE_SIZE64( ffd.nFileSizeHigh, ffd.nFileSizeLow );
 #else
     buf->st_size = ffd.nFileSizeLow;
 #endif

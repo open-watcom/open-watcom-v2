@@ -72,10 +72,6 @@
 !inject stksmps.obj                                                                     lmp
 !inject stkcmps.obj                                                                     lmp
 !inject stkwmps.obj                                                                     lmp
-#!inject u64add.obj      d16                             o16     q16     w16
-#!inject u64div.obj      d16                             o16     q16     w16
-#!inject u64mul.obj      d16                             o16     q16     w16
-#!inject u64shift.obj    d16                             o16     q16     w16
 
 !include ../../../../objlist.mif
 

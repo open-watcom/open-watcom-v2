@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,7 +81,6 @@ _WCRTLINK int _fstati64( int handle, struct _stati64 *buf )
 {
     struct stat         buf32;
     int                 rc;
-    INT_TYPE            tmp;
 
     /*** Get the info using non-64bit version ***/
     rc = _fstat( handle, &buf32 );
@@ -95,8 +95,7 @@ _WCRTLINK int _fstati64( int handle, struct _stati64 *buf )
     buf->st_uid = buf32.st_uid;
     buf->st_gid = buf32.st_gid;
     buf->st_rdev = buf32.st_rdev;
-    _clib_U32ToU64( buf32.st_size, tmp );
-    buf->st_size = GET_REALINT64(tmp);
+    buf->st_size = MAKE_SIZE64( 0, buf32.st_size );
     buf->st_atime = buf32.st_atime;
     buf->st_mtime = buf32.st_mtime;
     buf->st_ctime = buf32.st_ctime;

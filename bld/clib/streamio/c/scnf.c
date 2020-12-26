@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -28,8 +29,6 @@
 *
 ****************************************************************************/
 
-
-#define __LONG_LONG_SUPPORT__
 
 #if !defined( __NETWARE__ ) && !defined( __UNIX__ ) && !defined( __RDOS__ ) && !defined( __RDOSDEV__ )
     #define USE_MBCS_TRANSLATION
@@ -167,13 +166,11 @@ static const CHAR_TYPE *get_opt( const CHAR_TYPE *opt_str, PTR_SCNF_SPECS specs 
         ++opt_str;
         break;
     case STRING( 'l' ):
-#if defined( __LONG_LONG_SUPPORT__ )
         if( opt_str[1] == STRING( 'l' ) ) {
             specs->long_long_var = 1;
             opt_str += 2;
             break;
         }
-#endif
         /* fall through */
     ZSPEC_CASE_LONG
     TSPEC_CASE_LONG
@@ -181,23 +178,19 @@ static const CHAR_TYPE *get_opt( const CHAR_TYPE *opt_str, PTR_SCNF_SPECS specs 
         specs->long_var = 1;
         ++opt_str;
         break;
-#if defined( __LONG_LONG_SUPPORT__ )
     JSPEC_CASE_LLONG
         /* fall through */
-#endif
     case STRING( 'L' ):
         specs->long_double_var = 1;
         specs->long_long_var = 1;
         ++opt_str;
         break;
-#if defined( __LONG_LONG_SUPPORT__ )
     case STRING( 'I' ):
         if( opt_str[1] == STRING( '6' ) && opt_str[2] == STRING( '4' ) ) {
             specs->long_long_var = 1;
             opt_str += 3;
         }
         break;
-#endif
 #if defined( TSPEC_IS_INT ) || defined( ZSPEC_IS_INT )
     TSPEC_CASE_INT      /* If either 't' or 'z' spec corresponds to 'int',  */
     ZSPEC_CASE_INT      /* we need to parse and ignore the spec.            */
@@ -471,10 +464,8 @@ static void report_scan( PTR_SCNF_SPECS specs, my_va_list *arg, int match )
             *((FAR_SHORT)iptr) = match;
         } else if( specs->long_var ) {
             *((FAR_LONG)iptr) = match;
-#if defined( __LONG_LONG_SUPPORT__ )
         } else if( specs->long_long_var ) {
             *((FAR_INT64)iptr) = match;
-#endif
         } else {
             *iptr = match;
         }
@@ -757,13 +748,10 @@ static int scan_int( PTR_SCNF_SPECS specs, my_va_list *arg, int base, int sign_f
     int                 minus;
     int                 digit;
     FAR_INT             iptr;
-#if defined( __LONG_LONG_SUPPORT__ )
     unsigned long long  long_value;
     FAR_INT64           llptr;
 
     long_value = 0;
-#endif
-
     value = 0;
     pref_len = len = 0;
     for( ;; ) {
@@ -823,7 +811,6 @@ static int scan_int( PTR_SCNF_SPECS specs, my_va_list *arg, int base, int sign_f
             }
         }
     }
-#if defined( __LONG_LONG_SUPPORT__ )
     if( specs->long_long_var ) {
         for( ;; ) {
             digit = radix_value( c );
@@ -846,9 +833,7 @@ static int scan_int( PTR_SCNF_SPECS specs, my_va_list *arg, int base, int sign_f
                 long_value = long_value * base + digit;
             }
         }
-    } else
-#endif
-    {
+    } else {
         for( ;; ) {
             digit = radix_value( c );
             if( digit >= base )
@@ -874,7 +859,6 @@ static int scan_int( PTR_SCNF_SPECS specs, my_va_list *arg, int base, int sign_f
 ugdone:
     uncget( c, specs );
 done:
-#if defined( __LONG_LONG_SUPPORT__ )
     if( specs->long_long_var ) {
         if( minus ) {
             long_value =- long_value;
@@ -882,7 +866,7 @@ done:
         if( len > 0 ) {
             len += pref_len;
             if( specs->assign ) {
-  #if defined( __FAR_SUPPORT__ )
+#if defined( __FAR_SUPPORT__ )
                 if( specs->far_ptr ) {
                     llptr = va_arg( arg->v, unsigned long long _WCFAR * );
                 } else if( specs->near_ptr ) {
@@ -890,15 +874,13 @@ done:
                 } else {
                     llptr = va_arg( arg->v, unsigned long long * );
                 }
-  #else
+#else
                 llptr = va_arg( arg->v, unsigned long long * );
-  #endif
+#endif
                 *llptr = long_value;
             }
         }
-    } else
-#endif
-    {
+    } else {
         if( minus ) {
             value = -value;
         }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,50 +34,27 @@
 #ifndef _INT64_H_INCLUDED
 #define _INT64_H_INCLUDED
 
-#ifdef __WATCOM_INT64__
-    #define USE_INT64
-#endif
-#include "clibi64.h"
-
+#define USE_INT64
 
 #ifdef __INT64__
-    #define INT_TYPE            INT64_TYPE
-    #define UINT_TYPE           UINT64_TYPE
-    #define LONG_TYPE           INT64_TYPE
-    #define ULONG_TYPE          UINT64_TYPE
+    #define INT_TYPE            __int64
+    #define UINT_TYPE           unsigned __int64
+    #define LONG_TYPE           __int64
+    #define ULONG_TYPE          unsigned __int64
     #define __I64NAME(_n1,_n2)  _n2
 
-    #if !defined(USE_INT64)
-        #define __int64                 double
-        #define REAL_INT_TYPE           double
+    #define REAL_INT_TYPE           __int64
 
-        #define GET_INT64(__d)          ( *( (INT_TYPE*)(&(__d)) ) )
-        #define GET_UINT64(__d)         ( *( (UINT_TYPE*)(&(__d)) ) )
-        #define GET_REALINT64(__i)      ( *( (double*)(&(__i)) ) )
-        #define GET_REALUINT64(__i)     ( *( (double*)(&(__i)) ) )
+    #define GET_INT64(__d)          ( __d )
+    #define GET_UINT64(__d)         ( __d )
+    #define GET_REALINT64(__i)      ( __i )
+    #define GET_REALUINT64(__i)     ( __i )
 
-        #define HIGHWORD(__w,__i)       (__w) = (unsigned)(__i).u._32[I64HI32]
-        #define LOWWORD(__w,__i)        (__w) = (unsigned)(__i).u._32[I64LO32]
-        #define MAKE_INT64(__i,__h,__l) {                               \
-                                          (__i).u._32[I64HI32] = (__h); \
-                                          (__i).u._32[I64LO32] = (__l); \
-                                        }
+    #define HIGHWORD(__w,__i)       (__w) = (unsigned)( (__i) >> 32 )
+    #define LOWWORD(__w,__i)        (__w) = (unsigned)(__i)
+    #define MAKE_INT64(__i,__h,__l) (__i) = ( ((INT_TYPE)(__h)) << 32 )  |  (__l)
 
-        #define RETURN_INT64(__i)       return( GET_REALINT64(__i) )
-    #else
-        #define REAL_INT_TYPE           __int64
-
-        #define GET_INT64(__d)          ( __d )
-        #define GET_UINT64(__d)         ( __d )
-        #define GET_REALINT64(__i)      ( __i )
-        #define GET_REALUINT64(__i)     ( __i )
-
-        #define HIGHWORD(__w,__i)       (__w) = (unsigned)( (__i) >> 32 )
-        #define LOWWORD(__w,__i)        (__w) = (unsigned)(__i)
-        #define MAKE_INT64(__i,__h,__l) (__i) = ( ((INT_TYPE)(__h)) << 32 )  |  (__l)
-
-        #define RETURN_INT64(__i)       return( __i )
-    #endif
+    #define RETURN_INT64(__i)       return( __i )
 
 #else
     #define INT_TYPE            int
@@ -88,5 +66,6 @@
 
 #define INTSIZE                 ( sizeof( INT_TYPE ) )
 
+#define MAKE_SIZE64(__hi,__lo)    ((((__int64)(__hi)) << 32 ) | (unsigned long)(__lo))
 
 #endif

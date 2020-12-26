@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -28,8 +29,6 @@
 *
 ****************************************************************************/
 
-
-#define __LONG_LONG_SUPPORT__
 
 #if !defined( __NETWARE__ ) && !defined( __UNIX__ ) && !defined(__RDOS__) && !defined(__RDOSDEV__)
     #define USE_MBCS_TRANSLATION
@@ -160,13 +159,11 @@ static const CHAR_TYPE *getprintspecs( const CHAR_TYPE *ctl,
     }
     switch( *ctl ) {
     case STRING( 'l' ):
-#if defined( __LONG_LONG_SUPPORT__ )
         if( ctl[1] == STRING( 'l' ) ) {
             specs->_flags |= SPF_LONG_LONG;
             ctl += 2;
             break;
         }
-#endif
         /* fall through */
     ZSPEC_CASE_LONG
     TSPEC_CASE_LONG
@@ -183,7 +180,6 @@ static const CHAR_TYPE *getprintspecs( const CHAR_TYPE *ctl,
         specs->_flags |= SPF_SHORT;
         ctl++;
         break;
-#if defined( __LONG_LONG_SUPPORT__ )
     case STRING( 'I' ):
         if(( ctl[1] == STRING( '6' ) ) && ( ctl[2] == STRING( '4' ) )) {
             specs->_flags |= SPF_LONG_LONG;
@@ -192,7 +188,6 @@ static const CHAR_TYPE *getprintspecs( const CHAR_TYPE *ctl,
         break;
     JSPEC_CASE_LLONG
         /* fall through */
-#endif
     case STRING( 'L' ):
         specs->_flags |= SPF_LONG_DOUBLE | SPF_LONG_LONG;
         ctl++;
@@ -501,9 +496,7 @@ static FAR_STRING formstring( CHAR_TYPE *buffer, my_va_list *pargs,
     FAR_STRING              arg;
     int                     length;
     int                     radix;
-#if defined( __LONG_LONG_SUPPORT__ )
     unsigned long long      long_long_value;
-#endif
     unsigned long           long_value;
     unsigned int            int_value;
 #if defined( __FAR_SUPPORT__ )
@@ -521,17 +514,15 @@ static FAR_STRING formstring( CHAR_TYPE *buffer, my_va_list *pargs,
     specs->_n1 = specs->_nz1 =
     specs->_n2 = specs->_nz2 = 0;
 
-    if( ( specs->_character == STRING( 'b' ) ) ||
-        ( specs->_character == STRING( 'o' ) ) ||
-        ( specs->_character == STRING( 'u' ) ) ||
-        ( specs->_character == STRING( 'x' ) ) ||
-        ( specs->_character == STRING( 'X' ) ) ) {
-#if defined( __LONG_LONG_SUPPORT__ )
+    switch( specs->_character ) {
+    case STRING( 'b' ):
+    case STRING( 'o' ):
+    case STRING( 'u' ):
+    case STRING( 'x' ):
+    case STRING( 'X' ):
         if( specs->_flags & SPF_LONG_LONG ) {
             long_long_value = va_arg( pargs->v, unsigned long long );
-        } else
-#endif
-        if( specs->_flags & SPF_LONG ) {
+        } else if( specs->_flags & SPF_LONG ) {
             long_value = va_arg( pargs->v, unsigned long );
         } else {
             long_value = va_arg( pargs->v, unsigned );
@@ -541,17 +532,12 @@ static FAR_STRING formstring( CHAR_TYPE *buffer, my_va_list *pargs,
                 long_value = (unsigned char)long_value;
             }
         }
-    } else
-
-    if( ( specs->_character == STRING( 'd' ) ) ||
-        ( specs->_character == STRING( 'i' ) ) ) {
-
-#if defined( __LONG_LONG_SUPPORT__ )
+        break;
+    case STRING( 'd' ):
+    case STRING( 'i' ):
         if( specs->_flags & SPF_LONG_LONG ) {
             long_long_value = va_arg( pargs->v, long long );
-        } else
-#endif
-        if( specs->_flags & SPF_LONG ) {
+        } else if( specs->_flags & SPF_LONG ) {
             long_value = va_arg( pargs->v, long );
         } else {
             long_value = va_arg( pargs->v, int );
@@ -564,34 +550,28 @@ static FAR_STRING formstring( CHAR_TYPE *buffer, my_va_list *pargs,
         {
             int negative = FALSE;
 
-#if defined( __LONG_LONG_SUPPORT__ )
             if( specs->_flags & SPF_LONG_LONG ) {
                 if( (long long)long_long_value < 0 ) {
                     negative = TRUE;
                 }
-            } else
-#endif
-            if( (long)long_value < 0 ) {
+            } else if( (long)long_value < 0 ) {
                 negative = TRUE;
             }
             if( negative ) {
                 buffer[specs->_n0++] = STRING( '-' );
 
-#if defined( __LONG_LONG_SUPPORT__ )
                 if( specs->_flags & SPF_LONG_LONG ) {
                     long_long_value = -long_long_value;
                 } else {
-#endif
                     long_value = -long_value;
-#if defined( __LONG_LONG_SUPPORT__ )
                 }
-#endif
             } else if( specs->_flags & SPF_FORCE_SIGN ) {
                 buffer[specs->_n0++] = STRING( '+' );
             } else if( specs->_flags & SPF_BLANK ) {
                 buffer[specs->_n0++] = STRING( ' ' );
             }
         }
+        break;
     }
 
     radix  = 10;                        /* base 10 for 'd', 'i' and 'u' */
@@ -677,7 +657,6 @@ static FAR_STRING formstring( CHAR_TYPE *buffer, my_va_list *pargs,
             }
         } else
 #endif
-
 #ifdef __WIDECHAR__
         if( specs->_flags & SPF_SHORT ) {
 #else
@@ -697,15 +676,12 @@ static FAR_STRING formstring( CHAR_TYPE *buffer, my_va_list *pargs,
     case STRING( 'x' ):
     case STRING( 'X' ):
         if( specs->_flags & SPF_ALT ) {
-#if defined( __LONG_LONG_SUPPORT__ )
             if( specs->_flags & SPF_LONG_LONG ) {
                 if( long_long_value != 0 ) {
                     buffer[specs->_n0++] = STRING( '0' );
                     buffer[specs->_n0++] = specs->_character;
                 }
-            } else
-#endif
-            if( long_value != 0 ) {
+            } else if( long_value != 0 ) {
                 buffer[specs->_n0++] = STRING( '0' );
                 buffer[specs->_n0++] = specs->_character;
             }
@@ -735,7 +711,6 @@ processNumericTypes:
 
         arg = &buffer[ specs->_n0 ];
 
-#if defined( __LONG_LONG_SUPPORT__ )
         if( specs->_flags & SPF_LONG_LONG ) {
             if(( specs->_prec == 0 ) && ( long_long_value == 0 )) {
                 *arg = NULLCHAR;
@@ -747,9 +722,7 @@ processNumericTypes:
                 }
                 length = far_strlen( arg, -1 );
             }
-        } else
-#endif
-        if(( specs->_prec == 0 ) && ( long_value == 0 )) {
+        } else if(( specs->_prec == 0 ) && ( long_value == 0 )) {
             *arg = NULLCHAR;
             length = 0;
         } else {
@@ -962,10 +935,8 @@ int __F_NAME(__prtf,__wprtf)( void __SLIB *dest, const CHAR_TYPE *format, va_lis
                     *((FAR_SHORT)iptr) = specs._output_count;
                 } else if( specs._flags & SPF_LONG ) {
                     *((FAR_LONG)iptr) = specs._output_count;
-#if defined( __LONG_LONG_SUPPORT__ )
                 } else if( specs._flags & SPF_LONG_LONG ) {
                     *((FAR_INT64)iptr) = specs._output_count;
-#endif
                 } else {
                     *iptr = specs._output_count;
                 }

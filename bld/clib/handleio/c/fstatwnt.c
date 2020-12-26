@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,7 +65,6 @@
     DWORD                       size;
 #ifdef __INT64__
     DWORD                       highorder;
-    INT_TYPE                    tmp;
     int                         error;
 #endif
     DWORD                       ftype;
@@ -105,12 +104,7 @@
             don't want to call GetFileSize()
          */
         (ftype == FILE_TYPE_UNKNOWN) ) {
-#ifdef __INT64__
-        _clib_U32ToU64( 0L, tmp );
-        buf->st_size = GET_REALINT64(tmp);
-#else
         buf->st_size = 0;
-#endif
         buf->st_atime = buf->st_ctime = buf->st_mtime = 0;
         buf->st_attr = 0;
         buf->st_mode |= S_IRUSR | S_IRGRP | S_IROTH;
@@ -136,12 +130,7 @@
 
         /*** Get the file size ***/
         if( buf->st_mode & S_IFDIR ) {
-#ifdef __INT64__
-            _clib_U32ToU64( 0L, tmp );
-            buf->st_size = GET_REALINT64(tmp);
-#else
             buf->st_size = 0;
-#endif
         } else {
             size = GetFileSize( h, __I64NAME(NULL,&highorder) );
 #ifdef __INT64__
@@ -152,8 +141,7 @@
                     return( __set_errno_dos( error ) );
                 }
             }
-            MAKE_INT64(tmp,highorder,size);
-            buf->st_size = GET_REALINT64(tmp);
+            buf->st_size = MAKE_SIZE64( highorder, size );
 #else
             if( size == -1 ) {
                 _ReleaseFileH( hid );
