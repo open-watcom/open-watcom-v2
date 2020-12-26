@@ -67,8 +67,8 @@
     DWORD                       size;
 #ifdef __INT64__
     DWORD                       highorder;
-    int                         error;
 #endif
+    int                         error;
     DWORD                       ftype;
     FILETIME                    ctime, atime, mtime;
     HANDLE                      h;
