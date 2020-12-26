@@ -46,9 +46,10 @@
 #include "rtcheck.h"
 #include "seterrno.h"
 #include "thread.h"
+#include "i64.h"
 
 
-#define MAKE_SIZE64(__hi,__lo)    ((((__int64)(__hi)) << 32 ) | (unsigned long)(__lo))
+#define MAKE_SIZE64(__x,__hi,__lo)    ((unsigned_64 *)&__x)->u._32[I64LO32] = __lo; ((unsigned_64 *)&__x)->u._32[I64HI32] = __hi
 
 /*
     DWORD GetFileSize(
@@ -135,19 +136,22 @@
         } else {
 #ifdef __INT64__
             size = GetFileSize( h, &highorder );
-            if( size == -1 ) {
-                error = GetLastError();     // check for sure JBS 05-nov-99
+            if( size == INVALID_FILE_SIZE ) {
+                error = GetLastError();
                 if( error != NO_ERROR ) {
                     _ReleaseFileH( hid );
                     return( __set_errno_dos( error ) );
                 }
             }
-            buf->st_size = MAKE_SIZE64( highorder, size );
+            MAKE_SIZE64( buf->st_size, highorder, size );
 #else
             size = GetFileSize( h, NULL );
-            if( size == -1 ) {
-                _ReleaseFileH( hid );
-                return( __set_errno_nt() );
+            if( size == INVALID_FILE_SIZE ) {
+                error = GetLastError();
+                if( error != NO_ERROR ) {
+                    _ReleaseFileH( hid );
+                    return( __set_errno_dos( error ) );
+                }
             }
             buf->st_size = size;
 #endif
