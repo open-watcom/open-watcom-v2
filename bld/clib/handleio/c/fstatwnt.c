@@ -39,7 +39,6 @@
 #include <direct.h>
 #include <windows.h>
 #include "rterrno.h"
-#include "int64.h"
 #include "defwin.h"
 #include "iomode.h"
 #include "fileacc.h"
@@ -48,6 +47,8 @@
 #include "seterrno.h"
 #include "thread.h"
 
+
+#define MAKE_SIZE64(__hi,__lo)    ((((__int64)(__hi)) << 32 ) | (unsigned long)(__lo))
 
 /*
     DWORD GetFileSize(
@@ -132,8 +133,8 @@
         if( buf->st_mode & S_IFDIR ) {
             buf->st_size = 0;
         } else {
-            size = GetFileSize( h, __I64NAME(NULL,&highorder) );
 #ifdef __INT64__
+            size = GetFileSize( h, &highorder );
             if( size == -1 ) {
                 error = GetLastError();     // check for sure JBS 05-nov-99
                 if( error != NO_ERROR ) {
@@ -143,6 +144,7 @@
             }
             buf->st_size = MAKE_SIZE64( highorder, size );
 #else
+            size = GetFileSize( h, NULL );
             if( size == -1 ) {
                 _ReleaseFileH( hid );
                 return( __set_errno_nt() );

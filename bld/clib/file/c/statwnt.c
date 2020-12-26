@@ -48,7 +48,6 @@
 #include <mbstring.h>
 #include <windows.h>
 #include "rterrno.h"
-#include "int64.h"
 #include "libwin32.h"
 #include "ntext.h"
 #include "osver.h"
@@ -56,6 +55,8 @@
 #include "thread.h"
 #include "pathmac.h"
 
+
+#define MAKE_SIZE64(__hi,__lo)    ((((__int64)(__hi)) << 32 ) | (unsigned long)(__lo))
 
 static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
 {

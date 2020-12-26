@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of stat().
+* Description:  DOS and Windows 3.x implementation of stat().
 *
 ****************************************************************************/
 
@@ -53,9 +53,6 @@
 #include "_dtaxxx.h"
 #include "dosdir.h"
 #include "d2ttime.h"
-#ifdef __INT64__
-#include "int64.h"
-#endif
 #include "thread.h"
 #include "pathmac.h"
 
@@ -80,7 +77,7 @@
         buf->st_uid = buf32.st_uid;
         buf->st_gid = buf32.st_gid;
         buf->st_rdev = buf32.st_rdev;
-        buf->st_size = MAKE_SIZE64( 0, buf32.st_size );
+        buf->st_size = (unsigned long)buf32.st_size;
         buf->st_atime = buf32.st_atime;
         buf->st_mtime = buf32.st_mtime;
         buf->st_ctime = buf32.st_ctime;

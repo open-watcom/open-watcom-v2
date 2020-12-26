@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  DOS implementation of fstat().
+* Description:  DOS and Windows 3.x implementation of fstat().
 *
 ****************************************************************************/
 
@@ -44,7 +44,7 @@
 #include "seterrno.h"
 #include "d2ttime.h"
 #include "_doslfn.h"
-#include "int64.h"
+
 
 extern long __getfilestamp_sfn( int handle );
 #ifdef _M_I86
@@ -95,7 +95,7 @@ _WCRTLINK int _fstati64( int handle, struct _stati64 *buf )
     buf->st_uid = buf32.st_uid;
     buf->st_gid = buf32.st_gid;
     buf->st_rdev = buf32.st_rdev;
-    buf->st_size = MAKE_SIZE64( 0, buf32.st_size );
+    buf->st_size = (unsigned long)buf32.st_size;
     buf->st_atime = buf32.st_atime;
     buf->st_mtime = buf32.st_mtime;
     buf->st_ctime = buf32.st_ctime;
