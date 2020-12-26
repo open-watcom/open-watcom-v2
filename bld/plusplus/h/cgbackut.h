@@ -1053,7 +1053,7 @@ void DgPtrSymOff(               // GENERATE POINTER FOR A SYMBOL + OFFSET
 void DgString(                  // STORE STRING CONSTANT
     const char *str,            // - string to store
     target_size_t len,          // - string length
-    bool wide )                 // - wide string
+    string_literal_flags flags )// - string attributes
 ;
 back_handle DgStringConst(      // STORE STRING CONSTANT WITH NULL
     STRING_CONSTANT str,        // - string to store

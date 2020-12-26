@@ -224,8 +224,8 @@ segment_id DgSetSegSym( SYMBOL sym )
     return( BESetSeg( FESegID( sym ) ) );
 }
 
-void DgString( const char *str, target_size_t len, bool wide )
-/*************************************************************
+void DgString( const char *str, target_size_t len, string_literal_flags flags )
+/******************************************************************************
  * store string constant
  *
  * potential cross-compilation character conversion
@@ -235,7 +235,7 @@ void DgString( const char *str, target_size_t len, bool wide )
  * now no character conversion is implemented
  */
 {
-    (void)wide;
+    (void)flags;
 
     DGBytes( len, str );
 //    DgByte( 0 );
@@ -277,7 +277,7 @@ back_handle DgStringConst(          // STORE STRING CONSTANT WITH NULL
             old_segid = BESetSeg( str->segid );
             DGAlign( str_align );
             DGLabel( str->cg_handle );
-            DgString( str->string, str->len, ( (str->flags & STRLIT_WIDE) != 0 ) );
+            DgString( str->string, str->len, str->flags );
 #if _CPU == _AXP
             DGAlign( str_align );
 #endif
@@ -286,7 +286,7 @@ back_handle DgStringConst(          // STORE STRING CONSTANT WITH NULL
     } else {
         // char a[] = "asdf"; initialization (use current segment)
         str->segid = BEGetSeg();
-        DgString( str->string, str->len, ( (str->flags & STRLIT_WIDE) != 0 ) );
+        DgString( str->string, str->len, str->flags );
     }
     if( psegid != NULL ) {
         *psegid = str->segid;
