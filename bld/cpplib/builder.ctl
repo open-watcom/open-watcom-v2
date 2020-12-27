@@ -56,7 +56,7 @@ set PROJDIR=<CWD>
     <CCCMD> library/os2.286/ml_mt/plibmtl.lib       <OWRELROOT>/lib286/os2/
     <CCCMD> library/os2.286/ml_mt/plbxmtl.lib       <OWRELROOT>/lib286/os2/
 
-# generic - flat (used by WIN386, RDOS, linux, winnt, os2 )
+# generic - flat (used by WIN386, RDOS, winnt, os2 )
     <CCCMD> complex/generic.386/mf_r/cplx*.lib      <OWRELROOT>/lib386/
     <CCCMD> complex/generic.386/mf_s/cplx*.lib      <OWRELROOT>/lib386/
     <CCCMD> complex/generic.387/mf_r/cplx*.lib      <OWRELROOT>/lib386/
@@ -77,6 +77,12 @@ set PROJDIR=<CWD>
     <CCCMD> library/generic.386/ms_s/pl*.lib        <OWRELROOT>/lib386/netware/
     <CCCMD> library/netware.386/ms_smt/pl*.lib      <OWRELROOT>/lib386/netware/
 
+    <CCCMD> complex/linux.386/mf_r/cplx*.lib        <OWRELROOT>/lib386/linux/
+    <CCCMD> complex/linux.386/mf_s/cplx*.lib        <OWRELROOT>/lib386/linux/
+    <CCCMD> complex/linux.387/mf_r/cplx*.lib        <OWRELROOT>/lib386/linux/
+    <CCCMD> complex/linux.387/mf_s/cplx*.lib        <OWRELROOT>/lib386/linux/
+    <CCCMD> library/linux.386/mf_r/pl*.lib          <OWRELROOT>/lib386/linux/
+    <CCCMD> library/linux.386/mf_s/pl*.lib          <OWRELROOT>/lib386/linux/
     <CCCMD> library/linux.386/mf_rmt/pl*.lib        <OWRELROOT>/lib386/linux/
     <CCCMD> library/linux.386/mf_smt/pl*.lib        <OWRELROOT>/lib386/linux/
 
