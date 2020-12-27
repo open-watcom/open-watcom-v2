@@ -1385,7 +1385,7 @@ static_assert-declaration
         DbgAssert( $6->op == PT_STRING_CONSTANT );
 
         if( $3->u.int_constant == 0 ) {
-            CErr2p( ERR_STATIC_ASSERTION_FAILURE, StringBytes( $6->u.string ) );
+            CErr2p( ERR_STATIC_ASSERTION_FAILURE, $6->u.string->string );
         }
 
         PTreeFreeSubtrees( $3 );

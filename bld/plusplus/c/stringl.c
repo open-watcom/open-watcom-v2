@@ -322,14 +322,6 @@ bool StringSame( STRING_CONSTANT v1, STRING_CONSTANT v2 )
     return( memcmp( v1->string, v2->string, v1->len ) == 0 );
 }
 
-target_size_t StringByteLength( STRING_CONSTANT s )
-/**************************************************
- * byte length include '\0' character
- */
-{
-    return( s->len );
-}
-
 target_size_t StringLength( STRING_CONSTANT s )
 /**********************************************
  * length doesn't include '\0' character
@@ -342,12 +334,6 @@ target_size_t StringAWStrLen( STRING_CONSTANT s )
 /***********************************************/
 {
     return( s->len / STRING_CHARSIZE( s ) );
-}
-
-char *StringBytes( STRING_CONSTANT s )
-/************************************/
-{
-    return( s->string );
 }
 
 target_size_t StringAlign( STRING_CONSTANT s )
