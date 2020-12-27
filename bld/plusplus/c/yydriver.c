@@ -969,7 +969,6 @@ static YYTOKENTYPE yylex( PARSE_STACK *state )
 {
     lk_result       id_check;
     YYTOKENTYPE     token;
-    STRING_CONSTANT literal;
     PTREE           tree;
     look_ahead_storage *saved_token;
     struct {
@@ -1048,14 +1047,8 @@ static YYTOKENTYPE yylex( PARSE_STACK *state )
         }
         break;
     case T_STRING:
-        literal = StringCreate( Buffer, TokenLen, false );
-        yylval.tree = PTreeLiteral( literal );
-        setLocation( yylval.tree, &yylocation );
-        token = Y_STRING;
-        break;
     case T_LSTRING:
-        literal = StringCreate( Buffer, TokenLen, true );
-        yylval.tree = PTreeLiteralWide( literal );
+        yylval.tree = PTreeLiteral( StringCreate( Buffer, TokenLen, ( CurToken == T_LSTRING ) ) );
         setLocation( yylval.tree, &yylocation );
         token = Y_STRING;
         break;

@@ -278,32 +278,20 @@ PTREE PTreeReplaceRight( PTREE expr, PTREE new_right )
 }
 
 
-static PTREE strLiteral         // MAKE A STRING LITERAL NODE
-    ( STRING_CONSTANT str       // - the string
-    , type_id base )            // - the base type
+PTREE PTreeLiteral( STRING_CONSTANT str )
+/****************************************
+ * MAKE A STRING LITERAL TREE NODE
+ */
 {
     PTREE new_tree;
-    target_size_t str_len;
 
-    str_len = StringAWStrLen( str );
     new_tree = PTreeAlloc();
     new_tree->op = PT_STRING_CONSTANT;
     new_tree->u.string = str;
-    new_tree->type = MakeArrayOf( str_len, GetBasicType( base ) );
+    new_tree->type = MakeArrayOf( StringAWStrLen( str ),
+                        GetBasicType( ( str->flags & STRLIT_WIDE ) ? TYP_WCHAR : TYP_CHAR ) );
     new_tree->flags |= PTF_LVALUE | PTF_LV_CHECKED;
     return( new_tree );
-}
-
-PTREE PTreeLiteral( STRING_CONSTANT str )
-/***************************************/
-{
-    return( strLiteral( str, TYP_CHAR ) );
-}
-
-PTREE PTreeLiteralWide( STRING_CONSTANT str )
-/*******************************************/
-{
-    return( strLiteral( str, TYP_WCHAR ) );
 }
 
 PTREE PTreeStringLiteralConcat( PTREE left, PTREE right )
@@ -326,11 +314,7 @@ PTREE PTreeStringLiteralConcat( PTREE left, PTREE right )
     if( ! SrcFileAreTLSameLine( &(left->locn), &(right->locn) ) ) {
         StringConcatDifferentLines( new_str );
     }
-    if( new_str->flags & STRLIT_WIDE ) {
-        new_literal = strLiteral( new_str, TYP_WCHAR );
-    } else {
-        new_literal = strLiteral( new_str, TYP_CHAR );
-    }
+    new_literal = PTreeLiteral( new_str );
     PTreeSetLocn( new_literal, &err_locn );
     PTreeFree( left );
     PTreeFree( right );

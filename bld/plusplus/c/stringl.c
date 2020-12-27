@@ -44,7 +44,7 @@
 #include "unicode.h"
 
 
-#define STRING_CHARSIZE(s)	((s->flags & STRLIT_WIDE) ? TARGET_WIDE_CHAR : TARGET_CHAR)
+#define STRING_CHARSIZE(s)  ((s->flags & STRLIT_WIDE) ? TARGET_WIDE_CHAR : TARGET_CHAR)
 
 static STRING_CONSTANT  uniqueStrings;
 static STRING_CONSTANT  trashedStrings;
@@ -440,8 +440,7 @@ pch_status PCHReadStringPool( void )
         str = allocLiteral( str_len, PCHReadUInt() );
         PCHRead( str->string, str_len );
         stringAdd( str, &uniqueStrings );
-        *p = str;
-        ++p;
+        *p++ = str;
     }
     return( PCHCB_OK );
 }
