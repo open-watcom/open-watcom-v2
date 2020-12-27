@@ -309,9 +309,10 @@ static void AddInfo( void )
     /* add header (trailer), if required */
     if( res ) {
         if( fseek( finfo.fp, SEEK_POSBACK( sizeof( header ) ), SEEK_END ) )
-                Fatal( MSG_SEEK_ERROR, finfo.name );
+            Fatal( MSG_SEEK_ERROR, finfo.name );
         info.len = ftell( finfo.fp ) + sizeof( header );
-        fread( (void *)&header, 1, sizeof( header ), finfo.fp );
+        if( fread( (void *)&header, 1, sizeof( header ), finfo.fp ) != sizeof( header ) )
+            Fatal( MSG_READ_ERROR, finfo.name );
         if( header.signature != WAT_RES_SIG || header.debug_size != info.len ) {
             header.signature = WAT_RES_SIG;
             header.debug_size = info.len + sizeof( header );

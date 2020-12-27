@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -242,10 +242,11 @@ static void Compare( char *buff )
 }
 
 
-static void SubstituteAndRun( char *fname )
+static int SubstituteAndRun( char *fname )
 {
     char        *src, *dst, *start;
     PGROUP2     pg;
+    int         rc;
 
     _splitpath2( fname, pg.buffer, NULL, NULL, &pg.fname, &pg.ext );
     dst = Buff;
@@ -304,6 +305,7 @@ static void SubstituteAndRun( char *fname )
     if( Options.print || Options.noexec ) {
         printf( "%s\n", Buff );
     }
+    rc = 0;
     if( !Options.noexec ) {
         fflush( stdout );
         #define CMP_NAME        "COMPARE"
@@ -311,54 +313,60 @@ static void SubstituteAndRun( char *fname )
             Compare( &Buff[sizeof( CMP_NAME )] );
             fflush( stdout );
         } else {
-            system( Buff );
+            rc = system( Buff );
         }
     }
+    return( rc );
 }
 
 
-static void ExecuteCommands( void )
+static int ExecuteCommands( void )
 {
     DIR                 *dirp;
     struct dirent       *dire;
+    int                 rc;
 
     if( Options.verbose )
         printf( "\n>>> SWEEP >>> %s\n", CurrPath() );
     if( !Options.allfiles ) {
-        SubstituteAndRun( "" );
-        return;
-    }
-    dirp = opendir( "." );
-    if( dirp != NULL ) {
-        while( !DoneFlag && (dire = readdir( dirp )) != NULL ) {
+        rc = SubstituteAndRun( "" );
+    } else {
+        rc = 0;
+        dirp = opendir( "." );
+        if( dirp != NULL ) {
+            while( !DoneFlag && (dire = readdir( dirp )) != NULL ) {
 #ifdef __UNIX__
-            {
-                struct stat buf;
+                {
+                    struct stat buf;
 
-                stat( dire->d_name, &buf );
-                if( S_ISDIR( buf.st_mode ) ) {
-                    continue;
+                    stat( dire->d_name, &buf );
+                    if( S_ISDIR( buf.st_mode ) ) {
+                        continue;
+                    }
                 }
-            }
 #else
-            if( dire->d_attr & _A_SUBDIR )
-                continue;
+                if( dire->d_attr & _A_SUBDIR )
+                    continue;
 #endif
-            SubstituteAndRun( dire->d_name );
+                rc = SubstituteAndRun( dire->d_name );
+            }
+            closedir( dirp );
         }
-        closedir( dirp );
     }
+    return( rc );
 }
 
 
-static void ProcessCurrentDirectory( void )
+static int ProcessCurrentDirectory( void )
 {
     DIR                 *dirp;
     struct dirent       *dire;
     dirstack            *stack;
+    int                 rc;
 
+    rc = 0;
     if( !Options.depthfirst ) {
-        ExecuteCommands();
+        rc = ExecuteCommands();
     }
     if( Options.levels != 0 ) {
         dirp = opendir( "." );
@@ -379,30 +387,35 @@ static void ProcessCurrentDirectory( void )
                     continue;
 #endif
                 if( dire->d_name[0] == '.' ) {
-                    if( dire->d_name[1] == '.' || dire->d_name[1] == '\0' )
+                    if( dire->d_name[1] == '.' || dire->d_name[1] == '\0' ) {
                         continue;
+                    }
                 }
                 stack = SafeMalloc( sizeof( *stack ) );
                 stack->name_len = (unsigned short)strlen( dire->d_name );
                 memcpy( stack->name, dire->d_name, stack->name_len + 1 );
                 stack->prev = Stack;
                 Stack = stack;
-                chdir( stack->name );
-                ProcessCurrentDirectory();
-                chdir( ".." );
+                if( chdir( stack->name ) == 0 ) {
+                    rc = ProcessCurrentDirectory();
+                    if( chdir( ".." ) ) {
+                        DoneFlag = 1;
+                    }
+                }
                 Stack = stack->prev;
                 free( stack );
             }
             ++Options.levels;
             closedir( dirp );
             if( DoneFlag ) {
-                return;
+                return( rc );
             }
         }
     }
     if( Options.depthfirst ) {
-        ExecuteCommands();
+        rc = ExecuteCommands();
     }
+    return( rc );
 }
 
 
@@ -436,11 +449,14 @@ static int GetNumber( int default_num )
 #ifndef __WATCOMC__
 int main( int argc, char **argv ) 
 {
+    int rc;
+
     _argv = argv;
     _argc = argc;
 #else
 int main( void ) 
 {
+    int rc;
 #endif
 
     getcmd( CmdBuff );
@@ -488,11 +504,13 @@ int main( void )
     StringCopy( Stack->name, "." );
     if( getcwd( SaveDir, _MAX_PATH ) != NULL ) {
         signal( SIGINT, SetDoneFlag );
-        ProcessCurrentDirectory();
+        rc = ProcessCurrentDirectory();
         free( Stack );
         Stack = NULL;
         if( chdir( SaveDir ) == 0 ) {
-            return( EXIT_SUCCESS );
+            if( rc == 0 ) {
+                return( EXIT_SUCCESS );
+            }
         }
     }
     return( EXIT_FAILURE );
