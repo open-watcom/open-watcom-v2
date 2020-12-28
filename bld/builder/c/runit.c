@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,8 +63,8 @@
 
 #ifdef __UNIX__
     #define MASK_ALL_ITEMS              "*"
-    #define ENTRY_INVALID1(e)           IsDotOrDotDot(e->d_name)
-    #define ENTRY_INVALID2(n,e)         (IsDotOrDotDot(e->d_name) || fnmatch(n, e->d_name, FNM_PATHNAME | FNM_NOESCAPE) == FNM_NOMATCH)
+    #define ENTRY_INVALID(e)            IsDotOrDotDot(e->d_name)
+    #define ENTRY_NOMATCH(n,e)          (fnmatch(n, e->d_name, FNM_PATHNAME | FNM_NOESCAPE) == FNM_NOMATCH)
     #define ENTRY_SUBDIR(n,e)           chk_is_dir(n)
     #define ENTRY_RDONLY(n,e)           (access( n, W_OK ) == -1 && errno == EACCES)
     /* Linux has (strangely) no 'archive' attribute, compare modification times */
@@ -72,8 +72,8 @@
     #define ENTRY_CHANGED2(n1,e1,n2)    !chk_same_time(n1, n2)
 #else
     #define MASK_ALL_ITEMS              "*.*"
-    #define ENTRY_INVALID1(e)           (IsDotOrDotDot(e->d_name) || (e->d_attr & _A_VOLID))
-    #define ENTRY_INVALID2(n,e)         (IsDotOrDotDot(e->d_name) || fnmatch(n, e->d_name, FNM_PATHNAME | FNM_NOESCAPE | FNM_IGNORECASE) == FNM_NOMATCH)
+    #define ENTRY_INVALID(e)            (IsDotOrDotDot(e->d_name) || (e->d_attr & _A_VOLID))
+    #define ENTRY_NOMATCH(n,e)          (fnmatch(n, e->d_name, FNM_PATHNAME | FNM_NOESCAPE | FNM_IGNORECASE) == FNM_NOMATCH)
     #define ENTRY_SUBDIR(n,e)           (e->d_attr & _A_SUBDIR)
     #define ENTRY_RDONLY(n,e)           (e->d_attr & _A_RDONLY)
     #define ENTRY_CHANGED1(n1,n2)       (access(n2, R_OK) == -1 || chk_is_archived(n1))
@@ -280,19 +280,16 @@ static int BuildList( char *src, char *dst, bool test_abit, bool cond_copy, copy
         char *src_end = src + strlen( src );
 #endif
         while( (dire = readdir( dirp )) != NULL ) {
-            if( ENTRY_INVALID1( dire ) )
+            if( ENTRY_INVALID( dire ) )
                 continue;
             rc = 0;
 #ifdef __UNIX__
-            if( fnmatch( pattern, dire->d_name, FNM_PATHNAME | FNM_NOESCAPE ) == FNM_NOMATCH )
+            if( ENTRY_NOMATCH( pattern, dire ) )
                 continue;
             strcpy( src_end, dire->d_name );
-            if( chk_is_dir( src ) )
-                continue;
-#else
-            if( dire->d_attr & _A_SUBDIR )
-                continue;
 #endif
+            if( ENTRY_SUBDIR( src, dire ) )
+                continue;
             _makepath( full, pg.drive, pg.dir, dire->d_name, NULL );
             _fullpath( entry_src, full, sizeof( entry_src ) );
             strcpy( full, dst );
@@ -645,7 +642,9 @@ static int DoRM( const char *f )
     }
 
     while( (dire = readdir( dirp )) != NULL ) {
-        if( ENTRY_INVALID2( fname, dire ) )
+        if( ENTRY_INVALID( dire ) )
+            continue;
+        if( ENTRY_NOMATCH( fname, dire ) )
             continue;
         /* set up file name, then try to delete it */
         len = strlen( dire->d_name );
