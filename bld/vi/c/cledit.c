@@ -257,36 +257,15 @@ vi_rc EditFile( const char *name, bool dammit )
                     PGROUP2     pg2;
 
                     _splitpath2( il->CurrentFile->name, pg1.buffer, &pg1.drive, &pg1.dir, &pg1.fname, &pg1.ext );
-                    _splitpath2( il->CurrentFile->home, pg2.buffer, &pg2.drive, &pg2.dir, &pg2.fname, &pg2.ext );
+                    _splitpath2( il->CurrentFile->home, pg2.buffer, &pg2.drive, &pg2.dir, NULL, NULL );
                     if( pg1.drive[0] == '\0' ) {
                         pg1.drive = pg2.drive;
                     }
                     if( pg1.dir[0] == '\0' ) {
                         pg1.dir = pg2.dir;
-                    }
-                    strcpy( path, il->CurrentFile->home );
-                    len = strlen( path );
-                    if( len > 0 ) {
-                        switch( path[len - 1] ) {
-                        case FILE_SEP:
-#if !defined( __UNIX__ )
-                        case ALT_FILE_SEP:
-                        case DRV_SEP:
-#endif
-                            break;
-                        default:
-                            path[len++] = FILE_SEP;
-                            path[len] = '\0';
-                            break;
-                        }
-                    }
-                    if( pg1.dir[0] == '\0' ) {
-                        _splitpath( path, NULL, pg1.dir, NULL, NULL );
-                    } else if( pg1.dir[0] != FILE_SEP ) {
-                        char dir2[_MAX_DIR];
-                        _splitpath( path, NULL, dir2, NULL, NULL );
-                        strcat( dir2, pg1.dir );
-                        strcpy( pg1.dir, dir2 );
+                    } else if( pg1.dir[0] != '\\' && pg1.dir[0] != '/' ) {
+                        strcat( pg2.dir, pg1.dir );
+                        pg1.dir = pg2.dir;
                     }
                     _makepath( path, pg1.drive, pg1.dir, pg1.fname, pg1.ext );
 
