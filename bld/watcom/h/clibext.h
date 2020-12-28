@@ -136,25 +136,6 @@ extern "C" {
 
 #if defined( __UNIX__ )
 
-extern char   *itoa( int value, char *buf, int radix );
-extern char   *utoa( unsigned int value, char *buf, int radix );
-extern char   *ltoa( long int value, char *buf, int radix );
-extern char   *ultoa( unsigned long int value, char *buf, int radix );
-extern void   _splitpath( const char *path, char *drive, char *dir, char *fname, char *ext );
-extern void   _makepath( char *path, const char *drive, const char *dir, const char *fname, const char *ext );
-extern char   *_fullpath( char *buf, const char *path, size_t size );
-extern char   *strlwr( char *string );
-extern char   *strupr( char *string );
-extern char   *strrev( char *string );
-extern int    memicmp(const void *, const void *, size_t);
-extern off_t  tell( int handle );
-extern long   filelength(int handle);
-extern int    eof( int fildes );
-extern void   _searchenv( const char *name, const char *env_var, char *buf );
-extern char   *strnset( char *string, int c, size_t len );
-extern int    spawnlp( int mode, const char *path, const char *cmd, ... );
-extern int    spawnvp( int mode, const char *cmd, const char * const *args );
-
 #elif defined( _MSC_VER )
 
 typedef struct find_t {
@@ -184,6 +165,31 @@ typedef __int64 ssize_t;
 typedef long    ssize_t;
 #endif
 typedef int     mode_t;
+
+#endif
+
+#if defined( __UNIX__ )
+
+extern char   *itoa( int value, char *buf, int radix );
+extern char   *utoa( unsigned int value, char *buf, int radix );
+extern char   *ltoa( long int value, char *buf, int radix );
+extern char   *ultoa( unsigned long int value, char *buf, int radix );
+extern void   _splitpath( const char *path, char *drive, char *dir, char *fname, char *ext );
+extern void   _makepath( char *path, const char *drive, const char *dir, const char *fname, const char *ext );
+extern char   *_fullpath( char *buf, const char *path, size_t size );
+extern char   *strlwr( char *string );
+extern char   *strupr( char *string );
+extern char   *strrev( char *string );
+extern int    memicmp(const void *, const void *, size_t);
+extern off_t  tell( int handle );
+extern long   filelength(int handle);
+extern int    eof( int fildes );
+extern void   _searchenv( const char *name, const char *env_var, char *buf );
+extern char   *strnset( char *string, int c, size_t len );
+extern int    spawnlp( int mode, const char *path, const char *cmd, ... );
+extern int    spawnvp( int mode, const char *cmd, const char * const *args );
+
+#elif defined( _MSC_VER )
 
 extern unsigned _dos_getfileattr( const char *path, unsigned *dos_attrib );
 extern unsigned _dos_setfileattr( const char *path, unsigned dos_attrib );
