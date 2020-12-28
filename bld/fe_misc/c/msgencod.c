@@ -1227,7 +1227,7 @@ static void writeMsgH( void )
         if( flags.rc ) {
             fputs( "\n", o_msgh );
             for( m = messageSyms; m != NULL; m = m->next ) {
-                fprintf( o_msgh, "#define %s (%s+%d)\n",
+                fprintf( o_msgh, "#define %s (%s+%u)\n",
                     m->name, flags.rc_macro, m->grp->num + m->grpIndex  );
             }
             fputs( "\n", o_msgh );
@@ -1502,7 +1502,7 @@ static void writeAttrH( void )
 {
     MSGSYM      *m;
     MSGGROUP    *grp;
-    int         grp_index;
+    unsigned    grp_index;
 
     if( o_attrh != NULL ) {
         fputs( "\n\n"
@@ -1517,13 +1517,13 @@ static void writeAttrH( void )
             }
             while( grp_index < m->grpIndex ) {
                 grp_index++;
-                fprintf( o_attrh, "MSGATTR_DEF( MSGATTR_NULL ) /* %s%2.2d */ \\\n", grp->prefix, grp_index );
+                fprintf( o_attrh, "MSGATTR_DEF( MSGATTR_NULL ) /* %s%2.2u */ \\\n", grp->prefix, grp_index );
             }
             grp_index++;
             if( m->attr == NULL ) {
-                fprintf( o_attrh, "MSGATTR_DEF( MSGATTR_NULL ) /* %s%2.2d */ \\\n", grp->prefix, grp_index );
+                fprintf( o_attrh, "MSGATTR_DEF( MSGATTR_NULL ) /* %s%2.2u */ \\\n", grp->prefix, grp_index );
             } else {
-                fprintf( o_attrh, "MSGATTR_DEF( %s ) /* %s%2.2d */ \\\n", m->attr, grp->prefix, grp_index );
+                fprintf( o_attrh, "MSGATTR_DEF( %s ) /* %s%2.2u */ \\\n", m->attr, grp->prefix, grp_index );
             }
         }
         fputs( "\n\n", o_attrh );
