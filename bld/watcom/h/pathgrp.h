@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2007-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2007-2020 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -11,10 +11,9 @@
 ****************************************************************************/
 
 
-#define PGROUP  struct \
-{ \
-    char    drive[_MAX_DRIVE];  \
-    char    dir[_MAX_DIR];      \
-    char    fname[_MAX_FNAME];  \
-    char    ext[_MAX_EXT];      \
-}
+#ifdef __WATCOMC__
+
+#include "_pathgrp.h"
+
+#endif
+

@@ -11,9 +11,11 @@
 ****************************************************************************/
 
 
-#ifdef __WATCOMC__
-
-#include "_pathgr2.h"
-
-#endif
+typedef struct pgroup2 {
+    char    *drive;
+    char    *dir;
+    char    *fname;
+    char    *ext;
+    char    buffer[PATH_MAX + 4];
+} PGROUP2;
 

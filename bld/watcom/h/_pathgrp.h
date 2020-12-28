@@ -6,14 +6,14 @@
 *
 *  ========================================================================
 *
-* Description:  PathGroup2 structure declaration (for _splitpath2)
+* Description:  PathGroup structure declaration (for _splitpath)
 *
 ****************************************************************************/
 
 
-#ifdef __WATCOMC__
-
-#include "_pathgr2.h"
-
-#endif
-
+typedef struct pgroup {
+    char    drive[_MAX_DRIVE];
+    char    dir[_MAX_DIR];
+    char    fname[_MAX_FNAME];
+    char    ext[_MAX_EXT];
+} PGROUP;

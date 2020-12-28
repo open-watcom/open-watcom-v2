@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -167,6 +167,9 @@ typedef long    ssize_t;
 typedef int     mode_t;
 
 #endif
+
+//#include "_pathgrp.h"
+#include "_pathgr2.h"
 
 #if defined( __UNIX__ )
 
