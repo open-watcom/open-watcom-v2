@@ -65,7 +65,7 @@ int main( int argc, char *argv[] )
 {
     char            *pattern;
     char            path[_MAX_PATH];
-    PGROUP2         pg;
+    pgroup2         pg;
     DIR             *dirp;
     struct dirent   *dire;
 

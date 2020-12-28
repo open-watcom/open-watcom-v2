@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -178,8 +178,8 @@ static char *FNameBuf = NULL;   // file name buffer for output files
 char *IoSuppOutFileName(        // BUILD AN OUTPUT NAME FROM SOURCE NAME
     out_file_type typ )         // - extension
 {
-    PGROUP2 pg1;
-    PGROUP2 pg2;
+    pgroup2 pg1;
+    pgroup2 pg2;
     const char *ext;
     char *path;
     bool use_defaults;
@@ -390,7 +390,7 @@ static bool openSrc(            // ATTEMPT TO OPEN FILE
 
 static const char *openSrcExt(  // ATTEMPT TO OPEN FILE (EXT. TO BE APPENDED)
     const char *ext,            // - extension
-    PGROUP2 *nd,                // - name descriptor
+    pgroup2 *nd,                // - name descriptor
     src_file_type typ )         // - type of file being opened
 {
     char name[_MAX_PATH];       // - buffer for file name
@@ -405,7 +405,7 @@ static const char *openSrcExt(  // ATTEMPT TO OPEN FILE (EXT. TO BE APPENDED)
 
 static const char *openSrcExts( // ATTEMPT TO OPEN FILE (EXT.S TO BE APPENDED)
     const char **exts,          // - extensions
-    PGROUP2 *nd,                // - name descriptor
+    pgroup2 *nd,                // - name descriptor
     src_file_type typ )         // - type of file being opened
 {
     const char *ext;            // - current extension
@@ -444,12 +444,12 @@ static const char *openSrcExts( // ATTEMPT TO OPEN FILE (EXT.S TO BE APPENDED)
 
 static bool openSrcPath(        // ATTEMPT TO OPEN FILE (PATH TO BE PREPENDED)
     const char *path,           // - path
-    PGROUP2 *fd,                // - file descriptor
+    pgroup2 *fd,                // - file descriptor
     const char **exts,          // - file extensions
     src_file_type typ )         // - type of file being opened
 {
     bool ok;                    // - return: true ==> opened
-    PGROUP2 pd;                 // - path descriptor
+    pgroup2 pd;                 // - path descriptor
     char dir[_MAX_PATH * 2];    // - new path
     char *pp;                   // - pointer into path
     const char *ext;            // - extension opened
@@ -483,7 +483,7 @@ static bool openSrcPath(        // ATTEMPT TO OPEN FILE (PATH TO BE PREPENDED)
     return( ok );
 }
 
-static bool try_open_file( const char *path, PGROUP2 *fd, PGROUP2 *fa, const char **exts, src_file_type typ )
+static bool try_open_file( const char *path, pgroup2 *fd, pgroup2 *fa, const char **exts, src_file_type typ )
 {
     bool    ok;
     char    save_chr_fname;
@@ -526,8 +526,8 @@ static bool try_open_file( const char *path, PGROUP2 *fd, PGROUP2 *fa, const cha
 }
 
 static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
-    PGROUP2 *fd,                // - descriptor for file name
-    PGROUP2 *fai,               // - descriptor for alias file name
+    pgroup2 *fd,                // - descriptor for file name
+    pgroup2 *fai,               // - descriptor for alias file name
     src_file_type typ )         // - type of search path to use
 {
     const char  **paths;        // - optional paths to prepend
@@ -537,12 +537,12 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
     char bufpth[_MAX_PATH];     // - buffer for next path
     SRCFILE curr;               // - current included file
     SRCFILE stdin_srcfile;      // - srcfile for stdin
-    PGROUP2 idescr;             // - descriptor for included file
+    pgroup2 idescr;             // - descriptor for included file
     LINE_NO dummy;              // - dummy line number holder
     char prevpth[_MAX_PATH];    // - buffer for previous path
     bool alias_abs;
     bool alias_check;
-    PGROUP2 *fa;
+    pgroup2 *fa;
 
     alias_abs = false;
     alias_check = false;
@@ -712,9 +712,9 @@ bool IoSuppOpenSrc(             // OPEN A SOURCE FILE (PRIMARY,HEADER)
     const char *file_name,      // - supplied file name
     src_file_type typ )         // - type of search path to use
 {
-    PGROUP2     fd;             // - descriptor for file name
-    PGROUP2     fa;             // - descriptor for alias file name
-    PGROUP2     *fap;           // - pointer to descriptor for alias file name
+    pgroup2     fd;             // - descriptor for file name
+    pgroup2     fa;             // - descriptor for alias file name
+    pgroup2     *fap;           // - pointer to descriptor for alias file name
     const char  *alias_file_name;
 
 #ifdef OPT_BR

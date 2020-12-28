@@ -238,7 +238,7 @@ trap_retval ReqFile_string_to_fullpath( void )
     file_string_to_fullpath_ret *ret;
     char                        *name;
     char                        *fullname;
-    PGROUP2                     pg;
+    pgroup2                     pg;
 
     acc = GetInPtr( 0 );
     name = GetInPtr( sizeof( *acc ) );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -104,8 +104,8 @@ void Copy( libfile source, libfile dest, file_offset size )
 
 static char     path[_MAX_PATH];
 
-static PGROUP2  pg1;
-static PGROUP2  pg2;
+static pgroup2  pg1;
+static pgroup2  pg2;
 
 bool IsSameFile( const char *a, const char *b )
 {

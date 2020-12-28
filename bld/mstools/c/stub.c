@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -110,8 +110,8 @@ int GetCpuTypeStub( void )
 void SpawnProgStub( const char *progname )
 /****************************************/
 {
-    PGROUP2         pg1;
-    PGROUP2         pg2;
+    pgroup2         pg1;
+    pgroup2         pg2;
     char            fullPath[_MAX_PATH];
     size_t          len;
     char *          argv[3];

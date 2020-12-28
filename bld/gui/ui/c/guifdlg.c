@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -436,7 +436,7 @@ static bool buildFileTypesExts( dlg_info *dlg, const char *data )
 static bool goToDir( gui_window *gui, char *dir )
 {
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
-    PGROUP2     pg;
+    pgroup2     pg;
 #endif
     bool        removed_end;
     size_t      len;
@@ -675,7 +675,7 @@ static bool setFileList( gui_window *gui, const char *ext )
 static bool setDirList( gui_window *gui )
 {
     char                path[_MAX_PATH];
-    PGROUP2             pg;
+    pgroup2             pg;
     char                drive[_MAX_DRIVE + 3];
     DIR                 *dirp;
     struct dirent       *dire;
@@ -833,7 +833,7 @@ static process_rc processFileName( gui_window *gui )
     char        *tmp;
     char        *txt;
     size_t      len;
-    PGROUP2     pg;
+    pgroup2     pg;
     char        path[_MAX_PATH];
     char        *buff;
     bool        has_wild;

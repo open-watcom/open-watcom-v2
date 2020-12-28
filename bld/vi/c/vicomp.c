@@ -187,7 +187,7 @@ static vi_rc writeScript( const char *fn, sfile *sf, vars_list *vl, srcline *sli
 {
     sfile       *curr;
     FILE        *foo;
-    PGROUP2     pg;
+    pgroup2     pg;
     char        path[FILENAME_MAX];
     char        tmp[MAX_SRC_LINE];
     int         token;

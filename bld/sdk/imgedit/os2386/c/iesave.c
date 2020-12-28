@@ -207,7 +207,7 @@ static bool initSaveFileInfo( char *fullfile, image_type img_type )
  */
 static bool updateSaveFileInfo( const char *fname )
 {
-    PGROUP2             pg;
+    pgroup2             pg;
     size_t              len;
 
     _splitpath2( fname, pg.buffer, &pg.drive, &pg.dir, NULL, &pg.ext );

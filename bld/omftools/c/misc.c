@@ -135,7 +135,7 @@ static char *pattern = NULL;
 char *DoWildCard( char *base )
 /****************************/
 {
-    PGROUP2         pg;
+    pgroup2         pg;
     struct dirent   *dire;
 
     if( base != NULL ) {

@@ -411,8 +411,8 @@ static int DeleteEntry( arccmd *cmd )
 /***********************************/
 {
     char            tempname[ L_tmpnam ];
-    PGROUP2         pg1;
-    PGROUP2         pg2;
+    pgroup2         pg1;
+    pgroup2         pg2;
     char            *tmpfname;
     arc_header      header;         // archive main header.
     file_info       **filedata;     // block of file infos from old archive.

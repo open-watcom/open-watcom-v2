@@ -308,7 +308,7 @@ static void sort_reltab( reloc_table *reltab )
 
 static int parse_cmdline( arguments *arg, int argc, char *argv[] )
 {
-    PGROUP2 pg;
+    pgroup2 pg;
     int     i;
 
     arg->opt.be_ext   = 0;

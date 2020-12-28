@@ -40,7 +40,7 @@
  */
 static void getEXEName( char *name )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     char        path[_MAX_PATH];
     char        tmppath[_MAX_PATH];
 

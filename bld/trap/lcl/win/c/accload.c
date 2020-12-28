@@ -100,7 +100,7 @@ typedef struct
 trap_retval ReqProg_load( void )
 {
     char                exe_name[_MAX_PATH];
-    PGROUP2             pg;
+    pgroup2             pg;
     char                buff[256];
     lm_parms            loadp;
     word_struct         cmdshow;

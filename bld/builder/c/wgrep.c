@@ -760,8 +760,8 @@ static void executeWgrep( void )
     DIR                 *dirp;
     struct dirent       *dire;
     size_t              i;
-    PGROUP2             pg1;
-    PGROUP2             pg2;
+    pgroup2             pg1;
+    pgroup2             pg2;
 
     if( strcmp( CurrPattern, "@@" ) == 0 ) {
         performSearch( CurrPattern );
@@ -861,7 +861,7 @@ static void processDirectory( void )
 
 static void nextWgrep( char **paths )
 {
-    PGROUP2         pg;
+    pgroup2         pg;
     size_t          dirlen;
 
     Stack = (dirstack *)SafeMalloc( sizeof( dirstack ) );

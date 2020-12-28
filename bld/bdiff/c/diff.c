@@ -839,7 +839,7 @@ static void ProcessExe( const char *name, char *sym_name, exe_info *exe )
     addr_dbg_info           seg_chunk;
     exe_mod                 tmp_mod;
     char                    file_name[_MAX_PATH];
-    PGROUP2                 pg;
+    pgroup2                 pg;
 
     _splitpath2( name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     if( pg.ext[0] == '\0' )
@@ -1300,7 +1300,7 @@ static void WriteDiffs( void )
 
 static void AddLevel( const char *name )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
 
     memcpy( LevelBuff, PATCH_LEVEL, sizeof( PATCH_LEVEL ) );
     _splitpath2( name, pg.buffer, NULL, NULL, NULL, &pg.ext );

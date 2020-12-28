@@ -2173,7 +2173,7 @@ void ModuleFini( void )
 static void get_module_name( void )
 /*********************************/
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     char        *p;
 
     /**/myassert( AsmFiles.fname[ASM] != NULL );

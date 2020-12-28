@@ -60,7 +60,7 @@ static const char * const Types[] = {
 };
 
 static char     path[_MAX_PATH];
-static PGROUP2  pg;
+static pgroup2  pg;
 
 int main( int argc, char **argv )
 {

@@ -1399,7 +1399,7 @@ int showhelp( const char *topic, ui_event (*rtn)( ui_event ), HelpLangType lang 
     int             err;
     char            filename[_MAX_PATH];
     const char      *hfiles[] = { NULL, NULL };
-    PGROUP2         pg;
+    pgroup2         pg;
     char            *buffer;
     char            *helptopic;
     help_file_info  *fileinfo;

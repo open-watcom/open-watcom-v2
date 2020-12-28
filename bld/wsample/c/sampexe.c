@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,10 +59,10 @@ void GetProg( char *cmd, char *eoc )
 {
     char        save;
     char        prog_name[_MAX_PATH];
-    PGROUP2     pg1;
-    PGROUP2     pg2;
+    pgroup2     pg1;
+    pgroup2     pg2;
 #ifdef __WINDOWS__
-    PGROUP2     pg3;
+    pgroup2     pg3;
     unsigned    a,b;
 #endif
 

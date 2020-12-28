@@ -144,7 +144,7 @@ static bool matchsExist( const char *mask )
 BOOL IDE_EXPORT WatIDE_DirIsOk( const char *dllname )
 {
     char        mask[_MAX_PATH];
-    PGROUP2     pg;
+    pgroup2     pg;
 
     say( "DirIsOk %s", dllname );
     _splitpath2( dllname, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
@@ -239,7 +239,7 @@ WINEXPORT BOOL CALLBACK FindWatIDEHwnd( HWND hwnd, LPARAM lparam )
 
 static void mkProjectName( char *buf, const char *dllname )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
 
     _splitpath2( dllname, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
     _makepath( buf, pg.drive, pg.dir, pg.fname, WPJ_EXT );

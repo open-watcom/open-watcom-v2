@@ -39,7 +39,6 @@
 #include "watcom.h"
 #include "bool.h"
 #include "banner.h"
-#include "pathgrp.h"
 #include "bnddata.h"
 #include "pathgrp2.h"
 #include "myio.h"
@@ -306,7 +305,7 @@ int main( int argc, char *argv[] )
     bind_size           fi;
     FILE                *fp;
     struct stat         fs;
-    PGROUP2             pg;
+    pgroup2             pg;
     char                path[_MAX_PATH];
     char                tmppath[_MAX_PATH];
     bind_size           data_len;

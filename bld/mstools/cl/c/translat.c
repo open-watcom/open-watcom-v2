@@ -804,7 +804,7 @@ static void merge_opts( struct XlatStatus *status, OPT_STORAGE *cmdOpts,
 void HandleFileTranslate( const char *filename, CmdLine *compCmdLine, CmdLine *linkCmdLine )
 /******************************************************************************************/
 {
-    PGROUP2             pg;
+    pgroup2             pg;
     char                fullPath[_MAX_PATH];
     char *              newpath;
 

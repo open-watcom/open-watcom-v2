@@ -390,7 +390,7 @@ static char *WdeFindDLGInclude( WdeResInfo *rinfo )
 char *WdeCreateSymName( const char *fname )
 {
     char        fn_path[_MAX_PATH];
-    PGROUP2     pg;
+    pgroup2     pg;
 
     if( fname == NULL ) {
         return( NULL );
@@ -404,7 +404,7 @@ char *WdeCreateSymName( const char *fname )
 
 bool WdeFindAndLoadSymbols( WdeResInfo *rinfo )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     char        fn_path[_MAX_PATH];
     char        *include;
     bool        prompt;

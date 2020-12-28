@@ -590,7 +590,7 @@ UINT_PTR CALLBACK OpenOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
  */
 static bool updateOpenFileInfo( const char *fname )
 {
-    PGROUP2             pg;
+    pgroup2             pg;
     size_t              len;
 
     _splitpath2( fname, pg.buffer, &pg.drive, &pg.dir, NULL, &pg.ext );
@@ -933,7 +933,7 @@ char *GetInitOpenDir( void )
  */
 void OpenFileOnStart( const char *fname )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     FILE        *fp;
     image_type  img_type;
 

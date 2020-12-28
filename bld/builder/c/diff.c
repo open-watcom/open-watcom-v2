@@ -179,7 +179,7 @@ INT main( int argc, char **argv )
     char            *ap;
     struct stat     st;
     char            path[_MAX_PATH];
-    PGROUP2         pg;
+    pgroup2         pg;
 
     while( argc > 1 && *( ap = argv[1] ) == '-' && *++ap != EOS ) {
         while( *ap != EOS ) {

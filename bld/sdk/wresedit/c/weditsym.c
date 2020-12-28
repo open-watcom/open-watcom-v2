@@ -216,7 +216,7 @@ bool WEditSymbols( HWND parent, WRHashTable **symbol_table,
 
 char *WCreateSymFileName( const char *fname )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     char        fn_path[_MAX_PATH];
 
     if( fname == NULL ) {

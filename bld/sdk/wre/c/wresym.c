@@ -410,7 +410,7 @@ bool WRECreateDLGInclude( WResDir *dir, const char *include )
 
 char *WRECreateSymFileName( const char *fname )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     char        fn_path[_MAX_PATH];
 
     if( fname == NULL ) {
@@ -427,7 +427,7 @@ bool WREFindAndLoadSymbols( WREResInfo *rinfo )
 {
     char        inc_path[_MAX_PATH];
     char        fn_path[_MAX_PATH];
-    PGROUP2     pg;
+    pgroup2     pg;
     char        *symbol_file;
     bool        prompt;
     bool        ret;

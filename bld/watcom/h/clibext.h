@@ -169,7 +169,6 @@ typedef int     mode_t;
 
 #endif
 
-//#include "_pathgrp.h"
 #include "_pathgr2.h"
 
 #if defined( __UNIX__ )

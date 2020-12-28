@@ -522,7 +522,7 @@ vi_rc DoKeyboardSave( void )
 {
 #ifdef __WIN__
     vi_rc       rc;
-    PGROUP2     pg;
+    pgroup2     pg;
 
     if( CurrentFile != NULL ) {
         _splitpath2( CurrentFile->name, pg.buffer, NULL, NULL, &pg.fname, NULL );

@@ -75,7 +75,7 @@ static bool WildCard( bool (*rtn)( void ), tokcontrol ctrl )
     char                *start;
     DIR                 *dirp;
     struct dirent       *dire;
-    PGROUP2             pg;
+    pgroup2             pg;
     char                pathin[_MAX_PATH];
     bool                wildcrd;
     bool                retval;

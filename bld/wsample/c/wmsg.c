@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -106,7 +106,7 @@ bool MsgInit( void )
         rc = OpenResFile( &hInstance, buffer );
   #if defined(_PLS)
         if( !rc ) {
-            PGROUP2     pg;
+            pgroup2     pg;
 
             _splitpath2( buffer, pg.buffer, NULL, NULL, &pg.fname, NULL );
             _makepath( buffer, NULL, NULL, pg.fname, "exp" );

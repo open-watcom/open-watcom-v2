@@ -43,7 +43,7 @@
 int main( int argc, char **argv )
 {
     char        buff[_MAX_PATH];
-    PGROUP2     pg;
+    pgroup2     pg;
 
     _splitpath2( argv[0], pg.buffer, &pg.drive, &pg.dir, NULL, &pg.ext );
     _makepath( buff, pg.drive, pg.dir, "DOSSETUP", pg.ext );

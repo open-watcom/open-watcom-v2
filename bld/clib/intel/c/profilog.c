@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -364,7 +365,7 @@ _WCRTLINK void __ProfEpilog( info *block )
 #define VXDEXT  ".VXD"
 static int findVXD( char *buff )
 {
-    PGROUP2 pg;
+    pgroup2 pg;
 
     _splitpath2( _LpPgmName, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
     _makepath( buff, pg.drive, pg.dir, VXDNAME, VXDEXT );

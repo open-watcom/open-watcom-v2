@@ -461,8 +461,8 @@ static int FileExists( const char *name, file_info *info )
 bool DecodeFile( file_info *info, arccmd *cmd )
 /****************************************************/
 {
-    PGROUP2         pg1;
-    PGROUP2         pg2;
+    pgroup2         pg1;
+    pgroup2         pg2;
     char            *name;
     char            *thename;   // filename terminated with a nullchar.
     int             pathlen;

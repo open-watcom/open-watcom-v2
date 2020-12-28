@@ -92,8 +92,8 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
     ULONG               flen;
     int                 new_drive;
     int                 old_drive;
-    PGROUP2             pg1;
-    PGROUP2             pg2;
+    pgroup2             pg1;
+    pgroup2             pg2;
     char                *cwd;
 
     cwd = getcwd( pg2.buffer, sizeof( pg2.buffer ) );

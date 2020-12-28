@@ -97,7 +97,7 @@ static void checkRemoveButton( HWND hwnd )
 static void getFullFname( HWND hwnd, const char *fname, WString *fullname )
 {
     size_t      len;
-    PGROUP2     pg;
+    pgroup2     pg;
 
     /* unused parameters */ (void)hwnd;
 
@@ -154,7 +154,7 @@ static void getRelFname( HWND hwnd, const char *fname, WString *relname )
     GetFilesInfo    *info;
     WFileName       tgt;
     WFileName       filename;
-    PGROUP2         pg;
+    pgroup2         pg;
 
     info = (GetFilesInfo *)GET_DLGDATA( hwnd );
     getFullFname( hwnd, fname, &fullpath );
@@ -554,7 +554,7 @@ static BOOL fileSelectDlg( HINSTANCE hinst, HWND parent, GetFilesInfo *info,
     OPENFILENAME    of;
     int             rc;
     char            fname[256];
-    PGROUP2         pg;
+    pgroup2         pg;
     char            newpath[_MAX_PATH];
 
     _splitpath2( info->tgt_file, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );

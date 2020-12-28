@@ -53,7 +53,7 @@ void main( int argc, char **argv )
     static char     LevelBuff[] = PATCH_LEVEL;
     struct stat     info;
     struct utimbuf  uinfo;
-    PGROUP2         pg;
+    pgroup2         pg;
 
     if( argc != 3 )
         Usage();

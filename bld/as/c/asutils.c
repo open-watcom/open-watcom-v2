@@ -245,7 +245,7 @@ char *MakeAsmFilename( const char *orig_name )
 //********************************************
 {
     static char ret[_MAX_PATH];
-    PGROUP2     pg;
+    pgroup2     pg;
 
     _splitpath2( orig_name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     if( pg.ext[0] == '\0' ) {   // extension is not specified

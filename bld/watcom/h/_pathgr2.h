@@ -17,5 +17,5 @@ typedef struct pgroup2 {
     char    *fname;
     char    *ext;
     char    buffer[PATH_MAX + 4];
-} PGROUP2;
+} pgroup2;
 

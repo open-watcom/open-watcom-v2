@@ -103,7 +103,7 @@ static void PutNumber( const char *src, char *dst, unsigned num )
 
 static void BackupLog( const char *log_name, unsigned copies )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     char        old_name[_MAX_PATH];
     char        new_name[_MAX_PATH];
     char        temp_ext[5];
@@ -314,7 +314,7 @@ static bool ProcessEnv( bool opt_end )
 static void PushInclude( const char *name )
 {
     include_entry   *new;
-    PGROUP2         pg;
+    pgroup2         pg;
     char            dir_name[_MAX_PATH];
 
     new = MAlloc( sizeof( *new ) );
@@ -653,7 +653,7 @@ static int ProcessCtlFile( const char *name )
 
 static bool SearchUpDirs( const char *name, char *result, size_t max_len )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     char        *end;
     FILE        *fp;
 

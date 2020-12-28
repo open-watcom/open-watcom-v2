@@ -466,7 +466,7 @@ static void get_executable_name( const OPT_STORAGE *cmdOpts, char *firstObj,
                                  char *executable )
 /**************************************************************************/
 {
-    PGROUP2     pg;
+    pgroup2     pg;
 
     if( cmdOpts->out ) {
         strcpy( executable, cmdOpts->out_value->data );

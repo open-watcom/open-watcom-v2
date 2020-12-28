@@ -203,7 +203,7 @@ UINT_PTR CALLBACK SaveOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
  */
 static bool updateSaveFileInfo( const char *fname )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     size_t      len;
 
     _splitpath2( fname, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
@@ -759,7 +759,7 @@ bool SaveImgToData( img_node *node, BYTE **data, size_t *size )
  */
 static bool createNewImageLNODE( img_node *node, uint_16 type )
 {
-    PGROUP2             pg;
+    pgroup2             pg;
     WResID              *tname;
     WResID              *rname;
     WResLangType        lang;
@@ -968,7 +968,7 @@ bool SaveFileFromNode( img_node *node, int how )
 {
     img_node    *rootnode;
     char        new_name[_MAX_PATH];
-    PGROUP2     pg;
+    pgroup2     pg;
     bool        ok;
     image_type  img_type;
 

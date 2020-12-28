@@ -184,7 +184,7 @@ char *WREGetFileName( WREGetFileStruct *gf, DWORD flags, WREGetFileAction action
     bool            ret;
     DWORD           error;
     int             len;
-    PGROUP2         pg;
+    pgroup2         pg;
     char            ext[_MAX_EXT + 1];
     HINSTANCE       app_inst;
 

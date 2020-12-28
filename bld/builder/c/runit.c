@@ -221,7 +221,7 @@ static copy_entry *add_copy_entry( copy_entry *list, char *src, char *dst )
 static int BuildList( char *src, char *dst, bool test_abit, bool cond_copy, copy_entry *list )
 {
     char                *dst_end;
-    PGROUP2             pg;
+    pgroup2             pg;
     char                full[_MAX_PATH];
     DIR                 *dirp;
     struct dirent       *dire;

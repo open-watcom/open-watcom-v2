@@ -271,7 +271,7 @@ void ff_teardown( void )
 
 bool search_file_in_dirs( const char *filename, const char *defext, const char *altext, dirseq sequence )
 {
-    PGROUP2         pg;
+    pgroup2         pg;
     char            alternate_file[FILENAME_MAX];
     char            default_file[FILENAME_MAX];
     char            primary_file[FILENAME_MAX];

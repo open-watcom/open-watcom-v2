@@ -245,7 +245,7 @@ static void Compare( char *buff )
 static int SubstituteAndRun( char *fname )
 {
     char        *src, *dst, *start;
-    PGROUP2     pg;
+    pgroup2     pg;
     int         rc;
 
     _splitpath2( fname, pg.buffer, NULL, NULL, &pg.fname, &pg.ext );

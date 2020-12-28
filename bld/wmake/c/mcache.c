@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -340,7 +340,7 @@ STATIC enum cacheRet maybeCache( const char *fullpath, CENTRYPTR *pc )
     DHEADPTR        dcur;
     CENTRYPTR       centry;
     enum cacheRet   ret;
-    PGROUP2         pg;
+    pgroup2         pg;
     char const      *ext;
 
     assert( fullpath != NULL );

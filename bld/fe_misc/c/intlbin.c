@@ -78,7 +78,7 @@ static void processLang( char *prefix, unsigned lang ) {
     unsigned    component;
     fpos_t      header_posn;
     LocaleData  header;
-    PGROUP2     pg;
+    pgroup2     pg;
     char        fname[PATH_MAX];
     char        name[9];
 

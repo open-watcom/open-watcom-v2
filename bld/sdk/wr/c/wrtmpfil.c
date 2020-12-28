@@ -179,8 +179,8 @@ bool WRAPI WRCopyFile( const char *dst_name, const char *src_name )
 
 bool WRAPI WRRenameFile( const char *new, const char *old )
 {
-    PGROUP2     pg1;    /* old */
-    PGROUP2     pg2;    /* new */
+    pgroup2     pg1;    /* old */
+    pgroup2     pg2;    /* new */
 
     if( new == NULL || old == NULL ) {
         return( false );
@@ -208,7 +208,7 @@ bool WRAPI WRBackupFile( const char *name, bool use_rename )
 {
     char        fn_path[_MAX_PATH];
     char        ext[_MAX_EXT + 1];
-    PGROUP2     pg;
+    pgroup2     pg;
     size_t      len;
     bool        ret;
 
@@ -254,8 +254,8 @@ char * WRAPI WRGetTempFileName( const char *ext )
     const char  *dir;
     size_t      len;
     char        fn_path[_MAX_PATH + 1];
-    PGROUP2     pg1;
-    PGROUP2     pg2;
+    pgroup2     pg1;
+    pgroup2     pg2;
 
     if( (dir = getenv( "TMP" )) != NULL || (dir = getenv( "TEMP" )) != NULL ||
         (dir = getenv( "TMPDIR" )) != NULL || (dir = getenv( "TEMPDIR" )) != NULL ) {

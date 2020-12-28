@@ -909,7 +909,7 @@ static int tool_exec( tool_type utl, const char *p1, const char *p2 )
 static tool_type SrcName( char *name )
 /************************************/
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     tool_type   utl;
 
     _splitpath2( name, pg.buffer, NULL, NULL, NULL, &pg.ext );

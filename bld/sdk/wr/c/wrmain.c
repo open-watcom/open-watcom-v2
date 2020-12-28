@@ -323,7 +323,7 @@ bool WRAPI WRSaveResource( WRInfo *info, bool backup )
     bool        ret;
     char        *tmp;
     char        *name;
-    PGROUP2     pg;
+    pgroup2     pg;
 
     if( info->save_name == NULL ) {
         return( false );
@@ -419,7 +419,7 @@ bool WRAPI WRUpdateTmp( WRInfo *info )
     bool        ret;
     char        *tsave;
     WRFileType  ttype;
-    PGROUP2     pg;
+    pgroup2     pg;
 
     if( info == NULL || info->file_name == NULL ) {
         return( false );
@@ -576,7 +576,7 @@ bool WRAPI WRSaveObjectInto( const char *file, WRSaveIntoData *idata, bool *dup 
 {
     WRInfo      *info;
     char        *tmp_file;
-    PGROUP2     pg;
+    pgroup2     pg;
     long        type;
     bool        ok;
 

@@ -94,7 +94,7 @@ image_type GetImageFileType( const char *ext, bool res )
  */
 void CheckForExt( img_node *node )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     img_node    *next_icon;
 
     for( next_icon = node; next_icon != NULL; next_icon = next_icon->nexticon ) {
@@ -113,7 +113,7 @@ void CheckForExt( img_node *node )
  */
 void CheckForPalExt( char *filename )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
 
     _splitpath2( filename, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     if( pg.ext[0] == '\0' ) {

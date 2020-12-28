@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -124,7 +124,7 @@ static void p5_profile_fini( void )
         strcpy( &pname[i], "." "prf" );
 #else
     if( *_argv != NULL ) {
-        PGROUP2     pg;
+        pgroup2     pg;
 
         _splitpath2( *_argv, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
         _makepath( pname, pg.drive, pg.dir, pg.fname, "prf" );

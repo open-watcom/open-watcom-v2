@@ -218,7 +218,7 @@ void    SetBaseName( const char *src )
 /************************************/
 {
     char        fname[_MAX_FNAME];
-    PGROUP2     pg;
+    pgroup2     pg;
 
     assert( src );
     getFname( src, 0, fname );
@@ -255,7 +255,7 @@ void PostProcessOptions( void )
 /*****************************/
 {
     char        fname[_MAX_FNAME];
-    PGROUP2     pg;
+    pgroup2     pg;
 
     if( Options & OPT_PARENT_SET ) {
         if( (Options & OPT_PARENT_HEADER_SET) == 0 ) {

@@ -285,7 +285,7 @@ int main( int argc, char *argv[] )
     bool            dllflag = false;
     char            *wext = NULL;
     unsigned_32     exelen = 0;
-    PGROUP2         pg;
+    pgroup2         pg;
     char            rex[_MAX_PATH];
     char            exe[_MAX_PATH];
     char            dll[_MAX_PATH];

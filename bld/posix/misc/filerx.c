@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -181,7 +181,7 @@ int FileMatchNoRx( const char *name, const char *wild )
 {
     char        fname[_MAX_FNAME];
     char        ext[_MAX_EXT];
-    PGROUP2     pg;
+    pgroup2     pg;
     unsigned    j, elen, flen;
     size_t      i, k, len;
 

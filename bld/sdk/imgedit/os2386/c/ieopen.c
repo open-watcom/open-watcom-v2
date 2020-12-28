@@ -256,7 +256,7 @@ static bool initOpenFileInfo( const char *fullfile, image_type img_type )
  */
 static bool updateOpenFileInfo( const char *fname )
 {
-    PGROUP2             pg;
+    pgroup2             pg;
     size_t              len;
 
     _splitpath2( fname, pg.buffer, &pg.drive, &pg.dir, NULL, &pg.ext );
@@ -375,7 +375,7 @@ char *GetInitOpenDir( void )
  */
 void OpenFileOnStart( const char *fname )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     FILE        *fp;
     char        text[HINT_TEXT_LEN];
     char        filename[_MAX_FNAME + _MAX_EXT];

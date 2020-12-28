@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -225,7 +225,7 @@ static int sysChdir( const char *dir )
 static void PushInclude( const char *name )
 {
     include     *new;
-    PGROUP2     pg;
+    pgroup2     pg;
     char        *dir;
     char        dir_name[_MAX_PATH];
 
@@ -817,7 +817,7 @@ static void ProcessCtlFile( const char *name )
 
 static bool SearchUpDirs( const char *name, char *result )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     char        *end;
     FILE        *fp;
 

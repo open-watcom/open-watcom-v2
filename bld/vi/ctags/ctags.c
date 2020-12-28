@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -245,7 +245,7 @@ static void doOption( int ch )
  */
 static void processFile( const char *arg )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     file_type   ftype;
     unsigned    tag_count;
 
@@ -309,8 +309,8 @@ static void processFileList( const char *fullmask )
     char                fullname[_MAX_PATH];
     char                path[_MAX_PATH];
     char                mask[_MAX_PATH];
-    PGROUP2             pg1;
-    PGROUP2             pg2;
+    pgroup2             pg1;
+    pgroup2             pg2;
 
     has_wild = false;
     for( tmp = fullmask; *tmp != '\0'; tmp++ ) {

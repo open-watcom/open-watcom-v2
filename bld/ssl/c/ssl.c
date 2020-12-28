@@ -182,7 +182,7 @@ int PP_MBCharLen( const char *p )
 static void OpenFiles( bool verbose, char *path, char *out_file )
 /***************************************************************/
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     char        file_name[_MAX_PATH];
     bool        given;
 

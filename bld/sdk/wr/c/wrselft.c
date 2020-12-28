@@ -85,7 +85,7 @@ static WRFileType WRFTARRAY[3][2][2] = {
 
 static WRFileType educatedGuess( const char *name, bool is32bit, bool use_wres )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     WRFileType  guess;
 
     if( name == NULL ) {
@@ -164,7 +164,7 @@ WRFileType WRAPI WRSelectFileType( HWND parent, const char *name, bool is32bit,
 
 WRFileType WRAPI WRGuessFileType( const char *name )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     WRFileType  guess;
 
     if( name == NULL ) {
@@ -198,7 +198,7 @@ WRFileType WRAPI WRGuessFileType( const char *name )
 
 void WRSetWinInfo( HWND hDlg, WRSFT *sft )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     bool        no_exe;
 
     if( sft == NULL ) {

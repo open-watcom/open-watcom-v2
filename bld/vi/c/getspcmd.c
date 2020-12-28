@@ -130,7 +130,7 @@ void GetSpawnCommandLine( char *path, const char *cmdl, cmd_struct *cmds )
 {
     const char  *cmd;
     char        full[FILENAME_MAX];
-    PGROUP2     pg;
+    pgroup2     pg;
 #if !defined( NO_INTERNAL_COMMANDS ) || !defined( NO_EXE_EXTENSIONS )
     int         i;
     bool        is_internal = false;

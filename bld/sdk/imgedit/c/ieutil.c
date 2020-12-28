@@ -342,7 +342,7 @@ void SetIsSaved( HWND hwnd, bool issaved )
 {
     img_node    *node;
     img_node    *next_icon;
-    PGROUP2     pg;
+    pgroup2     pg;
     char        title[_MAX_EXT + _MAX_FNAME + 2];
     char        *main_title;
 
@@ -444,7 +444,7 @@ void OutlineRectangle( bool firsttime, WPI_PRES pres, WPI_RECT *prevrc, WPI_RECT
  */
 void GetFnameFromPath( const char *fullpath, char *fname )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
 
     if( strnicmp( fullpath, IEImageUntitled, strlen( IEImageUntitled ) ) == 0 ) {
         strcpy( fname, fullpath );

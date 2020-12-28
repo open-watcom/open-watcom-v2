@@ -65,7 +65,7 @@ void Test( void )
 {
     DIR             *dirp;
     struct dirent   *dire;
-    PGROUP2         pg;
+    pgroup2         pg;
     char            path[_MAX_PATH];
 
     dirp = opendir( "." );

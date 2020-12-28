@@ -365,7 +365,7 @@ bool InputQueueFile( const char *path )
     FILE        *file;
     file_list   *new;
     char        fullpath[ _MAX_PATH ];
-    PGROUP2     pg;
+    pgroup2     pg;
 
     _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     _makepath( fullpath, pg.drive, pg.dir, pg.fname, pg.ext );

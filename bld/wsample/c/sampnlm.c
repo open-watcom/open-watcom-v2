@@ -306,8 +306,8 @@ int InDOS( void )
 void GetProg( char *cmd, char *eoc )
 {
     char        save;
-    PGROUP2     pg1;
-    PGROUP2     pg2;
+    pgroup2     pg1;
+    pgroup2     pg2;
 
     save = *eoc;
     *eoc = '\0';

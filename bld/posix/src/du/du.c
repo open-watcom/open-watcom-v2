@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -195,7 +195,7 @@ void DoDU( char *dir, unsigned long * tcsum, unsigned long * tssum )
     struct dirent       *dire;
     size_t              len;
     struct stat         sb;
-    PGROUP2             pg;
+    pgroup2             pg;
 
     /*
      * initialize for file scan

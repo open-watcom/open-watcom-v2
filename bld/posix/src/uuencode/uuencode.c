@@ -152,7 +152,7 @@ int main( int argc, char **argv )
     mode_t      mode;
     int         cnt;
     char        *file_name;
-    PGROUP2     pg;
+    pgroup2     pg;
     char        full_name[_MAX_PATH];
     struct stat sbuf;
 #endif

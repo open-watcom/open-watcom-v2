@@ -235,7 +235,7 @@ void check_directory( FILE * in_file, uint32_t count )
 {
     /* Used for processing the directory file. */
 
-    PGROUP2             pg;
+    pgroup2             pg;
     char                file_path[_MAX_PATH];
     directory_entry     current_entry;
     uint32_t            i;

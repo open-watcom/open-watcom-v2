@@ -59,7 +59,7 @@ bool WRLoadBitmapFile( WRInfo *info )
     bool                ok;
     FILE                *fp;
     long int            file_length;
-    PGROUP2             pg;
+    pgroup2             pg;
     WResID              *type;
     WResID              *name;
     WResLangType        def_lang;
@@ -131,7 +131,7 @@ bool WRLoadIconFile( WRInfo *info )
     bool                dup;
     int                 i;
     bool                ok;
-    PGROUP2             pg;
+    pgroup2             pg;
 
     data = NULL;
     rih = NULL;
@@ -220,7 +220,7 @@ bool WRLoadCursorFile( WRInfo *info )
     bool                dup;
     int                 i;
     bool                ok;
-    PGROUP2             pg;
+    pgroup2             pg;
 
     data = NULL;
     rch = NULL;

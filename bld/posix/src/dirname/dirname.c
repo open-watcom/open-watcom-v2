@@ -59,7 +59,7 @@ static const char *usageMsg[] = {
 
 int main( int argc, char **argv )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
 
     argv = ExpandEnv( &argc, argv );
     GetOpt( &argc, argv, "", usageMsg );

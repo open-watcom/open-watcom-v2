@@ -147,7 +147,7 @@ static char *getFileName( const char *start, const char *following )
 
 static void composeFileNames( bool list_file )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     size_t      length;
 
     // object file name

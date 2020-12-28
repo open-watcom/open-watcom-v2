@@ -285,7 +285,7 @@ unsigned RcIoGetCurrentFileLineNo( void )
 static bool checkCurrentFileType( void )
 /**************************************/
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     bool        isCOrH;
 
     isCOrH = false;

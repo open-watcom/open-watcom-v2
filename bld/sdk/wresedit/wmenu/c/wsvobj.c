@@ -75,7 +75,7 @@ static bool WSaveObjectInto( WMenuEditInfo * );
 static bool WSaveObjectToRC( WMenuEditInfo *einfo, const char *filename,
                              bool shadow, bool append )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     char        fn_path[ _MAX_PATH ];
 
     if( einfo == NULL || filename == NULL ) {

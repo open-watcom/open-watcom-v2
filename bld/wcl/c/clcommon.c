@@ -309,8 +309,8 @@ void  AddNameObj( const char *name )
     list        *last_name;
     list        *new_name;
     char        path[_MAX_PATH];
-    PGROUP2     pg1;
-    PGROUP2     pg2;
+    pgroup2     pg1;
+    pgroup2     pg2;
 
     last_name = NULL;
     for( curr_name = Obj_List; curr_name != NULL; curr_name = curr_name->next ) {

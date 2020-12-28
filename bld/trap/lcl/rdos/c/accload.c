@@ -53,7 +53,7 @@ trap_retval ReqProg_load( void )
     prog_load_ret   *ret;
     struct TDebug   *obj;
     char            name[256];
-    PGROUP2         pg;
+    pgroup2         pg;
     char            curdir[256];
     char            argstr[256];
     char            *src;

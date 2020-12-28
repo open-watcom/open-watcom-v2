@@ -507,7 +507,7 @@ static bool ScanOptionsArg( const char *arg )
 static char *MakeFileName( const char *infilename, const char *ext )
 /******************************************************************/
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     size_t      len;
     char        *out;
 
@@ -526,7 +526,7 @@ static char *MakeFileName( const char *infilename, const char *ext )
 static void CheckExtension( char **filename, const char *defext )
 /***************************************************************/
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     size_t      len;
 
     _splitpath2( *filename, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
@@ -551,7 +551,7 @@ static const char *ExeExt[] =   {
 static void CheckPass2Only( void )
 /********************************/
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     char        **check_ext;
 
     _splitpath2( CmdLineParms.InFileName, pg.buffer, NULL, NULL, NULL, &pg.ext );

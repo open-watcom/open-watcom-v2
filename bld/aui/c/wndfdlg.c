@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +56,7 @@ bool DlgFileBrowse( char *title, char *filter, char *path, unsigned len, fn_flag
     open_file_name      ofn;
     char                fname[_MAX_PATH];
     char                cd[_MAX_DRIVE+_MAX_PATH];
-    PGROUP2             pg;
+    pgroup2             pg;
     int                 rc;
 
     memset( &ofn, 0, sizeof( ofn ) );

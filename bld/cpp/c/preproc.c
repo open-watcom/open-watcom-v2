@@ -245,7 +245,7 @@ int PPENTRY PP_IncludePathFind( const char *filename, size_t len, char *fullfile
             rc = access( fullfilename, R_OK );
         }
         if( rc == -1 && incl_type == PPINCLUDE_USR && PP_File != NULL ) {
-            PGROUP2     pg;
+            pgroup2     pg;
             size_t      len1;
 
             _splitpath2( PP_File->filename, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );

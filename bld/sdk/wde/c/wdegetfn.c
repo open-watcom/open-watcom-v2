@@ -186,7 +186,7 @@ char *WdeGetFileName( WdeGetFileStruct *gf, DWORD flags, WdeGetFileNameAction ac
     OPENFILENAME        wdeofn;
     HWND                owner_window;
     DWORD               error;
-    PGROUP2             pg;
+    pgroup2             pg;
     char                ext[_MAX_EXT + 1];
     HINSTANCE           app_inst;
     int                 len;

@@ -75,7 +75,7 @@ WINEXPORT INT_PTR CALLBACK ConfigDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LP
  */
 static bool ValidateFName( const char *path )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     char        name[_MAX_PATH];
     DIR         *info;
 

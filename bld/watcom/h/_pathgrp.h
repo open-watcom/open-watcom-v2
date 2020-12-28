@@ -16,4 +16,4 @@ typedef struct pgroup {
     char    dir[_MAX_DIR];
     char    fname[_MAX_FNAME];
     char    ext[_MAX_EXT];
-} PGROUP;
+} pgroup;

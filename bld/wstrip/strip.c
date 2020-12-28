@@ -396,7 +396,7 @@ int main( int argc, char *argv[] )
     int                 j;
     size_t              k;
     size_t              argvlen;
-    PGROUP2             pg;
+    pgroup2             pg;
     int                 add_file;
     struct stat         other_stat;
     struct utimbuf      uptime;

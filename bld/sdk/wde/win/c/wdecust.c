@@ -1148,7 +1148,7 @@ INT_PTR CALLBACK WdeSelectCustDlgProc( HWND hDlg, UINT message, WPARAM wParam, L
 
 void WdeSetLoadCustInfo( HWND hDlg, WdeCustLib *lib )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     char        info[_MAX_FNAME + 4];
     char        style[_MAX_FNAME + 5];
     char        flags[_MAX_FNAME + 5];

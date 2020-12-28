@@ -62,7 +62,7 @@ int main( int argc, char **argv )
 {
     char        *src, *ext;
     char        fname[_MAX_PATH];
-    PGROUP2     pg;
+    pgroup2     pg;
 
     argv = ExpandEnv( &argc, argv );
 

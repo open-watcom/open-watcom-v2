@@ -207,7 +207,7 @@ static char     lineBuffer2[LINE_SIZE];
 static void genTmpFName( const char *file, char *buf )
 /****************************************************/
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     char        fname[9];
     unsigned    i;
 
@@ -273,7 +273,7 @@ void GenerateCPPFiles( sru_file *sru ) {
 static void outInclude( FileInfo *fp )
 /************************************/
 {
-    PGROUP2     pg;
+    pgroup2     pg;
 
     assert( fp );
 

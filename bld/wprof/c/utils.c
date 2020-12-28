@@ -88,7 +88,7 @@ char   *DipExePathList = NULL;
 void ReplaceExt( char * path, char * addext )
 /*******************************************/
 {
-    PGROUP2     pg;
+    pgroup2     pg;
 
     _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
 #if defined(__UNIX__)
@@ -161,7 +161,7 @@ FILE *DIGLoader( Open )( const char *name, size_t name_len, const char *ext, cha
     memcpy( realname, name, name_len );
     realname[name_len] = '\0';
     if( ext != NULL && *ext != NULLCHAR ) {
-        PGROUP2     pg;
+        pgroup2     pg;
 
         _splitpath2( realname, pg.buffer, NULL, NULL, &pg.fname, NULL );
         _makepath( realname, NULL, NULL, pg.fname, ext );
@@ -278,7 +278,7 @@ void Ring( void )
 void AssertionFailed( char * file, unsigned line )
 /************************************************/
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     char        buff[ 13 + _MAX_FNAME ];
     size_t      size;
 

@@ -191,7 +191,7 @@ IntlData *LoadInternationalData(
     int fh;
     res_language_enumeration language;
     size_t len;
-    PGROUP2 pg;
+    pgroup2 pg;
     char cmd_name[_MAX_PATH];
     char base[16];
 

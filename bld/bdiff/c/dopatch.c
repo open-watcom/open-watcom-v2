@@ -442,7 +442,7 @@ PATCH_RET_CODE DoPatch(
 {
     char            patch_level[sizeof( PATCH_LEVEL_LEVEL )];
     PATCH_RET_CODE  ret;
-    PGROUP2         pg;
+    pgroup2         pg;
   #ifndef _WPATCH
     const char      *target = NULL;
   #endif

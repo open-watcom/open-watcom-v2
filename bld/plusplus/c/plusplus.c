@@ -119,7 +119,7 @@ static void resetHandlers( void )
 static void MakePgmName(        // MAKE CANONICAL FILE NAME
     char *argv )                // - input name
 {
-    PGROUP2     pg;
+    pgroup2     pg;
 
     _splitpath2( argv, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     SrcFName = FNameAdd( pg.fname );

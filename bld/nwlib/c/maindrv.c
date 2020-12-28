@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,7 +69,7 @@ static IDEDRV info =
 
 static void setWlibModeInfo( void )
 {
-    PGROUP2 pg1;
+    pgroup2 pg1;
 
     _splitpath2( _argv[0], pg1.buffer, NULL, NULL, &pg1.fname, NULL );
     if( FNCMP( pg1.fname, "ar" ) == 0 ) {

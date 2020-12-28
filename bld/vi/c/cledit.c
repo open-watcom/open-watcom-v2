@@ -253,8 +253,8 @@ vi_rc EditFile( const char *name, bool dammit )
                      * note that this will fail if an absolute path
                      * was specified thus we do the regular check first */
                     char        path[FILENAME_MAX];
-                    PGROUP2     pg1;
-                    PGROUP2     pg2;
+                    pgroup2     pg1;
+                    pgroup2     pg2;
 
                     _splitpath2( il->CurrentFile->name, pg1.buffer, &pg1.drive, &pg1.dir, &pg1.fname, &pg1.ext );
                     _splitpath2( il->CurrentFile->home, pg2.buffer, &pg2.drive, &pg2.dir, NULL, NULL );

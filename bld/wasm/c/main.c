@@ -377,8 +377,8 @@ static void get_fname( char *token, int type )
 {
     char        name [_MAX_PATH ];
     char        msgbuf[MAX_MESSAGE_SIZE];
-    PGROUP2     pg;
-    PGROUP2     def;
+    pgroup2     pg;
+    pgroup2     def;
 
     /* get filename for source file */
 

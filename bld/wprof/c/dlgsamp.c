@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,7 +58,7 @@ bool WPSampFound( void )
 /**********************/
 {
     struct stat     file_stat;
-    PGROUP2         pg;
+    pgroup2         pg;
 
     if( stat( SamplePath, &file_stat ) != -1 )
         return( true );

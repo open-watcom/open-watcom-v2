@@ -377,7 +377,7 @@ static void finiSource( labels *lab, vars_list *vl, sfile *sf, undo_stack *atomi
 void FileSPVAR( void )
 {
     char        path[_MAX_PATH];
-    PGROUP2     pg;
+    pgroup2     pg;
     int         i;
 
     /*
@@ -453,7 +453,7 @@ void SourceError( char *msg )
  */
 static void finiSourceErrFile( const char *fn )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     char        path[FILENAME_MAX];
     char        tmp[MAX_SRC_LINE];
 
@@ -481,7 +481,7 @@ static vi_rc barfScript( const char *fn, sfile *sf, vars_list *vl, srcline *slin
 {
     sfile       *curr;
     FILE        *foo;
-    PGROUP2     pg;
+    pgroup2     pg;
     char        path[FILENAME_MAX];
     char        buff[MAX_SRC_LINE];
     const char  *tmp;

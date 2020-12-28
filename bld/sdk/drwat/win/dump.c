@@ -328,7 +328,7 @@ void DoDump( HWND hwnd )
  */
 INT_PTR CALLBACK DumpDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     bool        ret;
 
     ret = false;

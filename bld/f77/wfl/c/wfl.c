@@ -685,7 +685,7 @@ static void DoWildCardClose( void )
 static const char *DoWildCard( const char *base )
 /***********************************************/
 {
-    PGROUP2         pg;
+    pgroup2         pg;
     struct dirent   *dire;
 
     if( base != NULL ) {
@@ -801,7 +801,7 @@ static  int     CompLink( void ) {
     int         rc;
     const char  *file;
     bool        comp_err;
-    PGROUP2     pg;
+    pgroup2     pg;
     int         i;
     list        *currobj;
     list        *nextobj;
@@ -938,7 +938,7 @@ static  void    Fputnl( const char *text, FILE *fptr )
 static  void    MakeName( char *name, const char *ext )
 //=====================================================
 {
-    PGROUP2 pg;
+    pgroup2 pg;
 
     _splitpath2( name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     if( pg.ext[0] != '\0' )
@@ -954,8 +954,8 @@ static  void    AddName( const char *name, FILE *link_fp )
     list        *last_name;
     list        *new_name;
     char        path[_MAX_PATH];
-    PGROUP2     pg1;
-    PGROUP2     pg2;
+    pgroup2     pg1;
+    pgroup2     pg2;
 
     last_name = NULL;
     for( curr_name = ObjList; curr_name != NULL; curr_name = curr_name->next ) {

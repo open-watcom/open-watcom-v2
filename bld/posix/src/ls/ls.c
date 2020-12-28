@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -299,7 +299,7 @@ static int CompareSizeReverse( struct dirent **p1, struct dirent **p2 )
 static void DoLS( char *path, char *name )
 {
     char                filename[_MAX_PATH];
-    PGROUP2             pg;
+    pgroup2             pg;
     int                 filecnt = 0;
     DIR                 *dirp;
     struct dirent       **files = NULL;
@@ -595,7 +595,7 @@ static int IsSpecialRoot( char * filename )
 /*****************************************/
 // Check if 'filename' is of the form 'd:'
 {
-    PGROUP2     pg;
+    pgroup2     pg;
 
     _splitpath2( filename, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
     return( pg.drive[0] != '\0' && pg.dir[0] == '\0' );

@@ -206,7 +206,7 @@ static void DelDepFile( void )
 
 static char *createFileName( const char *template, const char *ext, bool forceext )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     bool        use_defaults;
 
     use_defaults = ( template == NULL );
@@ -333,7 +333,7 @@ static void MakePgmName( void )
 // if stdin a "." then replace with "stdin" don't whack ".c"
 // If no module name make the same as fname
     size_t      len;
-    PGROUP2     pg;
+    pgroup2     pg;
 
     if( WholeFName[0] == '.' && WholeFName[1] == '\0' ) {
         IsStdIn = true;
@@ -479,7 +479,7 @@ static void OpenCppFile( void )
 
 char *GetSourceDepName( void )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
 
     _splitpath2( WholeFName, pg.buffer, NULL, NULL, NULL, &pg.ext );
     return( createFileName( SrcDepName, pg.ext, false ) );
@@ -517,7 +517,7 @@ void CppPrtChar( int c )
 
 void OpenDefFile( void )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     char        name[_MAX_PATH];
 
     if( DefFName == NULL ) {
@@ -534,7 +534,7 @@ void OpenDefFile( void )
 
 FILE *OpenBrowseFile( void )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     char        name[_MAX_PATH];
     FILE        *mbr_file;
 
@@ -613,12 +613,12 @@ static bool IsFNameOnce( char const *filename )
     return( flist->once );
 }
 
-static bool TryOpen( const char *path, PGROUP2 *ff, src_file_type typ )
+static bool TryOpen( const char *path, pgroup2 *ff, src_file_type typ )
 {
     FILE        *fp;
     char        filename[_MAX_PATH];
     char        *p;
-    PGROUP2     fd;
+    pgroup2     fd;
 
     _splitpath2( path, fd.buffer, &fd.drive, &fd.dir, NULL, NULL );
     if( ff->drive[0] != '\0' && fd.drive[0] != '\0' ) {
@@ -1075,7 +1075,7 @@ static void DoCCompile( char **cmdline )
     FreeIncFileList();
 }
 
-static bool try_open_file( const char *path, PGROUP2 *fp, PGROUP2 *fa, src_file_type typ )
+static bool try_open_file( const char *path, pgroup2 *fp, pgroup2 *fa, src_file_type typ )
 {
     bool    ok;
     char    save_chr_fname;
@@ -1120,14 +1120,14 @@ static bool try_open_file( const char *path, PGROUP2 *fp, PGROUP2 *fa, src_file_
     return( ok );
 }
 
-static bool doOpenSrcFile( PGROUP2 *fp, PGROUP2 *fa, src_file_type typ )
+static bool doOpenSrcFile( pgroup2 *fp, pgroup2 *fa, src_file_type typ )
 {
     char        *s;
     char        *p;
     char        try[_MAX_PATH];
     FCB         *curr;
     char        c;
-    PGROUP2     fd;
+    pgroup2     fd;
 
     if( typ == FT_SRC ) {
         if( try_open_file( "", fp, NULL, typ ) )
@@ -1233,9 +1233,9 @@ static void normalizeSep( char *dir )
 bool OpenSrcFile( const char *filename, src_file_type typ )
 {
     const char  *alias_filename;
-    PGROUP2     fp;
-    PGROUP2     fa;
-    PGROUP2     *fap;
+    pgroup2     fp;
+    pgroup2     fa;
+    pgroup2     *fap;
 
     _splitpath2( filename, fp.buffer, &fp.drive, &fp.dir, &fp.fname, &fp.ext );
     normalizeSep( fp.dir );

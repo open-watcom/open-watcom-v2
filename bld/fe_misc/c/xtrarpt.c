@@ -189,7 +189,7 @@ void ExtraRptDumpReport(        // DUMP REPORT INTO FILE
 {
     RPTREG *reg;
     FILE *fp;
-    PGROUP2 pg;
+    pgroup2 pg;
     char make_buff[_MAX_PATH];
 
     _splitpath2( name, pg.buffer, NULL, NULL, &pg.fname, NULL );

@@ -169,7 +169,7 @@ void DoLC( char *dir )
     struct dirent       *dire;
 #ifdef __QNX__
     char                tmpname[ _MAX_PATH ];
-    PGROUP2             pg;
+    pgroup2             pg;
 #endif
 
     /*

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -370,7 +370,7 @@ STATIC const char *addFile( const char *str ) {
 
     DIR                 *dirp;
     struct dirent       *dire;
-    PGROUP2             pg;
+    pgroup2             pg;
     char                path[ _MAX_PATH ];
     char                *p;
     size_t              len;
@@ -441,7 +441,7 @@ STATIC const char *doComment( const char *str ) {
 */
 STATIC int openIncludeFile( const char * file_name )
 {
-    PGROUP2     pg;
+    pgroup2     pg;
     char        path[ _MAX_PATH ];
     int         fh;
 
@@ -749,7 +749,7 @@ void ActionFini( cmdline_t *cmd ) {
 void ActionInfile( cmdline_t *cmd, char *buf, uint file_num ) {
 /***********************************************************/
 
-    PGROUP2     pg;
+    pgroup2     pg;
 
 /**/myassert( cmd != NULL );
 /**/myassert( cmd->action != NULL );
@@ -761,7 +761,7 @@ void ActionInfile( cmdline_t *cmd, char *buf, uint file_num ) {
 void ActionOutfile( cmdline_t *cmd, char *buf, uint file_num ) {
 /************************************************************/
 
-    PGROUP2     pg;
+    pgroup2     pg;
     char        fname[ _MAX_FNAME ];
     const char *output;
 
@@ -790,8 +790,8 @@ void ActionRename( cmdline_t *cmd, const char *in, const char *out,
     uint file_num, int make_lib, size_t page_size )
 /*************************************************/
 {
-    PGROUP2     pg1;
-    PGROUP2     pg2;
+    pgroup2     pg1;
+    pgroup2     pg2;
     char        buf[ _MAX_PATH ];
     const char  *output;
     act_grp_t   *cur;

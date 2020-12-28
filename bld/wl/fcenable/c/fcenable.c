@@ -315,7 +315,7 @@ static void CloseFiles( void )
 static void ReplaceExt( char *name, const char *new_ext, bool force )
 /*******************************************************************/
 {
-    PGROUP2     pg;
+    pgroup2     pg;
 
     _splitpath2( name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     if( force || pg.ext[0] == '\0' ) {

@@ -391,7 +391,7 @@ static BOOL StartDebuggee( void )
     SERVICE_STATUS      status;
     DWORD               i;
     char                buff[_MAX_PATH];
-    PGROUP2             pg;
+    pgroup2             pg;
 
     ParseServiceStuff( Shared.name, &dll_name, &service_name, &dll_destination, &service_parm );
     service = NULL;

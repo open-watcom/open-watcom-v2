@@ -292,7 +292,7 @@ int rcsSystem::checkin( userData *d, rcsstring name, rcsstring pj, rcsstring tgt
     char        MsgBuf[BUFLEN];
     char        Buffer[BUFLEN];
     char        path[_MAX_PATH];
-    PGROUP2     pg;
+    pgroup2     pg;
     int         i;
     FILE        *fp;
 

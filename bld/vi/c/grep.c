@@ -598,7 +598,7 @@ static void fileGrep( const char *fullmask, char **list, list_linenum *clist, wi
     char            fn[FILENAME_MAX];
     char            data[FILENAME_MAX];
     char            ts[FILENAME_MAX];
-    PGROUP2         pg;
+    pgroup2         pg;
     list_linenum    i;
 #if defined( __WIN__ ) && defined( __NT__ )
     LVITEM          lvi;
