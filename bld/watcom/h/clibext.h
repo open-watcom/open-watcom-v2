@@ -67,6 +67,7 @@
 #endif
 #define stricmp strcasecmp
 #define strnicmp strncasecmp
+#define memicmp strncasecmp
 #define _MAX_PATH   (PATH_MAX+1)
 #define _MAX_DRIVE  3
 #define _MAX_DIR    (PATH_MAX-3)
@@ -183,7 +184,6 @@ extern char   *_fullpath( char *buf, const char *path, size_t size );
 extern char   *strlwr( char *string );
 extern char   *strupr( char *string );
 extern char   *strrev( char *string );
-extern int    memicmp(const void *, const void *, size_t);
 extern off_t  tell( int handle );
 extern long   filelength(int handle);
 extern int    eof( int fildes );

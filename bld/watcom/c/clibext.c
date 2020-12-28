@@ -1111,35 +1111,6 @@ char *strupr( char *str )
 
 /****************************************************************************
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
-*
-****************************************************************************/
-
-int memicmp( const void *in_s1, const void *in_s2, size_t len )
-{
-    const unsigned char *   s1 = (const unsigned char *)in_s1;
-    const unsigned char *   s2 = (const unsigned char *)in_s2;
-    unsigned char           c1;
-    unsigned char           c2;
-
-    for( ; len; --len ) {
-        c1 = *s1;
-        c2 = *s2;
-        if( c1 >= 'A'  &&  c1 <= 'Z' )
-            c1 += 'a' - 'A';
-        if( c2 >= 'A'  &&  c2 <= 'Z' )
-            c2 += 'a' - 'A';
-        if( c1 != c2 )
-            return( c1 - c2 );
-        ++s1;
-        ++s2;
-    }
-    return( 0 );    /* both operands are equal */
-}
-
-/****************************************************************************
-*
 * Description:  Implementation of tell().
 *
 ****************************************************************************/

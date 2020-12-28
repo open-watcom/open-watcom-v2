@@ -6,7 +6,7 @@
 *
 *  ========================================================================
 *
-* Description:  PathGroup structure declaration macro (for _splitpath)
+* Description:  PathGroup structure declaration (for _splitpath)
 *
 ****************************************************************************/
 
@@ -16,4 +16,3 @@
 #include "_pathgrp.h"
 
 #endif
-
