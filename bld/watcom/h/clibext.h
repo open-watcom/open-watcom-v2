@@ -177,7 +177,6 @@ extern char   *itoa( int value, char *buf, int radix );
 extern char   *utoa( unsigned int value, char *buf, int radix );
 extern char   *ltoa( long int value, char *buf, int radix );
 extern char   *ultoa( unsigned long int value, char *buf, int radix );
-extern void   _splitpath( const char *path, char *drive, char *dir, char *fname, char *ext );
 extern void   _makepath( char *path, const char *drive, const char *dir, const char *fname, const char *ext );
 extern char   *_fullpath( char *buf, const char *path, size_t size );
 extern char   *strlwr( char *string );

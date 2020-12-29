@@ -155,185 +155,11 @@ char *ltoa( long value, char *buffer, int radix )
     return( buffer );
 }
 
-/****************************************************************************
-*
-* Description:  Platform independent _splitpath() implementation.
-*
-****************************************************************************/
-
-#if defined(__UNIX__)
-  #define PC '/'
-#else   /* DOS, OS/2, Windows, Netware */
-  #define PC '\\'
-  #define ALT_PC '/'
-#endif
-
-#ifdef __NETWARE__
-  #undef _MAX_PATH
-  #undef _MAX_SERVER
-  #undef _MAX_VOLUME
-  #undef _MAX_DRIVE
-  #undef _MAX_DIR
-  #undef _MAX_FNAME
-  #undef _MAX_EXT
-
-  #define _MAX_PATH    255 /* maximum length of full pathname */
-  #define _MAX_SERVER  48  /* maximum length of server name */
-  #define _MAX_VOLUME  16  /* maximum length of volume component */
-  #define _MAX_DRIVE   3   /* maximum length of drive component */
-  #define _MAX_DIR     255 /* maximum length of path component */
-  #define _MAX_FNAME   9   /* maximum length of file name component */
-  #define _MAX_EXT     5   /* maximum length of extension component */
-#endif
-
-
-static void copypart( char *buf, const char *p, int len, int maxlen )
-{
-    if( buf != NULL ) {
-        if( len > maxlen )
-            len = maxlen;
-#ifdef __UNIX__
-        memcpy( buf, p, len );
-        buf[len] = '\0';
-#else
-        len = _mbsnccnt( p, len );          /* # chars in len bytes */
-        _mbsncpy( buf, p, len );            /* copy the chars */
-        buf[_mbsnbcnt( buf, len )] = '\0';
-#endif
-    }
-}
-
-#if !defined(_MAX_NODE)
-#define _MAX_NODE   _MAX_DRIVE  /*  maximum length of node name w/ '\0' */
-#endif
-
-/* split full QNX path name into its components */
-
-/* Under QNX we will map drive to node, dir to dir, and
- * filename to (filename and extension)
- *          or (filename) if no extension requested.
- */
-
-/* Under Netware, 'drive' maps to 'volume' */
-
-void _splitpath( const char *path,
-    char *drive, char *dir, char *fname, char *ext )
-{
-    const char *dotp;
-    const char *fnamep;
-    const char *startp;
-    unsigned    ch;
-#ifdef __NETWARE__
-    const char *ptr;
-#endif
-
-    /* take apart specification like -> //0/hd/user/fred/filename.ext for QNX */
-    /* take apart specification like -> c:\fred\filename.ext for DOS, OS/2 */
-
-#if defined(__UNIX__)
-
-    /* process node/drive specification */
-    startp = path;
-    if( path[0] == PC  &&  path[1] == PC ) {
-        path += 2;
-        for( ;; ) {
-            if( *path == '\0' )
-                break;
-            if( *path == PC )
-                break;
-            if( *path == '.' )
-                break;
-  #ifdef __UNIX__
-            path++;
-  #else
-            path = _mbsinc( path );
-  #endif
-        }
-    }
-    copypart( drive, startp, path - startp, _MAX_NODE );
-
-#elif defined(__NETWARE__)
-
-  #ifdef __UNIX__
-    ptr = strchr( path, ':' );
-  #else
-    ptr = _mbschr( path, ':' );
-  #endif
-    if( ptr != NULL ) {
-        if( drive != NULL ) {
-            copypart( drive, path, ptr - path + 1, _MAX_SERVER + _MAX_VOLUME + 1 );
-        }
-  #ifdef __UNIX__
-        path = ptr + 1;
-  #else
-        path = _mbsinc( ptr );
-  #endif
-    } else if( drive != NULL ) {
-        *drive = '\0';
-    }
-
-#else
-
-    /* processs drive specification */
-    if( path[0] != '\0'  &&  path[1] == ':' ) {
-        if( drive != NULL ) {
-            drive[0] = path[0];
-            drive[1] = ':';
-            drive[2] = '\0';
-        }
-        path += 2;
-    } else if( drive != NULL ) {
-        drive[0] = '\0';
-    }
-
-#endif
-
-    /* process /user/fred/filename.ext for QNX */
-    /* process /fred/filename.ext for DOS, OS/2 */
-    dotp = NULL;
-    fnamep = path;
-    startp = path;
-
-    for(;;) {           /* 07-jul-91 DJG -- save *path in ch for speed */
-        if( *path == '\0' )
-            break;
-  #ifdef __UNIX__
-        ch = *path;
-  #else
-        ch = _mbsnextc( path );
-  #endif
-        if( ch == '.' ) {
-            dotp = path;
-            ++path;
-            continue;
-        }
-  #ifdef __UNIX__
-        path++;
-  #else
-        path = _mbsinc( path );
-  #endif
-#if defined(__UNIX__)
-        if( ch == PC ) {
-#else /* DOS, OS/2, Windows, Netware */
-        if( ch == PC  ||  ch == ALT_PC ) {
-#endif
-            fnamep = path;
-            dotp = NULL;
-        }
-    }
-    copypart( dir, startp, fnamep - startp, _MAX_DIR - 1 );
-    if( dotp == NULL )
-        dotp = path;
-    copypart( fname, fnamep, dotp - fnamep, _MAX_FNAME - 1 );
-    copypart( ext,   dotp,   path - dotp,   _MAX_EXT - 1);
-}
-
 #endif /* !_MSC_VER */
 
 /****************************************************************************
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Platform independent _splitpath2() implementation.
 *
 ****************************************************************************/
 
@@ -352,9 +178,9 @@ void _splitpath( const char *path,
  */
 
 
-static unsigned char *pcopy( unsigned char **pdst, unsigned char *dst, const unsigned char *b_src, const unsigned char *e_src ) {
-/*========================================================================*/
-
+static unsigned char *pcopy( unsigned char **pdst, unsigned char *dst, const unsigned char *b_src, const unsigned char *e_src )
+/*===========================================================================================================================*/
+{
     size_t    len;
 
     if( pdst == NULL )

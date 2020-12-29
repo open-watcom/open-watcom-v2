@@ -983,26 +983,26 @@ static void RemoveDstDir( int dir_index, VBUF *buff )
 }
 
 
-static void MakeParentDir( const VBUF *dir, char *drive, char *path )
-/*******************************************************************/
+static void MakeParentDir( const VBUF *dir, pgroup2 *pg )
+/*******************************************************/
 {
     char                *end;
     size_t              path_len;
     VBUF                parent;
 
-    _splitpath( VbufString( dir ), drive, path, NULL, NULL );
-    if( *path == '\0' )
+    _splitpath2( VbufString( dir ), pg->buffer, &pg->drive, &pg->path, NULL, NULL );
+    if( pg->path[0] == '\0' )
         return;
-    path_len = strlen( path );
-    end = path + path_len - 1;
+    path_len = strlen( pg->path );
+    end = pg->path + path_len - 1;
     if( IS_DIR_SEP( *end ) )
         *end = '\0';
-    if( *path == '\0' )
+    if( pg->path[0] == '\0' )
         return;
     VbufInit( &parent );
-    VbufConcStr( &parent, drive );
-    VbufConcStr( &parent, path );
-    MakeParentDir( &parent, drive, path );
+    VbufConcStr( &parent, pg->drive );
+    VbufConcStr( &parent, pg->path );
+    MakeParentDir( &parent, pg );
 #if defined( __UNIX__ )
     mkdir_vbuf( &parent, PMODE_RWX );
 #else
@@ -1019,8 +1019,7 @@ static bool CreateDstDir( int i, VBUF *buff )
 {
     bool                ok;
     int                 parent;
-    char                drive[_MAX_DRIVE];
-    char                path[_MAX_PATH];
+    pgroup2             pg;
 
     parent = SimDirParent( i );
     if( parent != -1 ) {
@@ -1032,7 +1031,7 @@ static bool CreateDstDir( int i, VBUF *buff )
     SimDirNoEndSlash( i, buff );
     if( access_vbuf( buff, F_OK ) == 0 )          // check for existance
         return( true );
-    MakeParentDir( buff, drive, path );
+    MakeParentDir( buff, &pg );
 #if defined( __UNIX__ )
     if( mkdir_vbuf( buff, PMODE_RWX ) == 0 )
 #else

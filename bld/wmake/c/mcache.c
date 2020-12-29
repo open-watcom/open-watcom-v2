@@ -283,7 +283,7 @@ STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
 STATIC DHEADPTR findDir( const char *path )
 /******************************************
  * Walk the directory linked list, and find the directory with the name
- * path.  (Path must end in \ - ie: as returned by _splitpath() )
+ * path.  (Path must end in \ - ie: as returned by _splitpath2() )
  * Returns NULL if not found, or if cacheHead == NULL.
  * Move the directory to the beginning of the list (adaptive search)
  */

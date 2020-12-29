@@ -1965,9 +1965,10 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
 
 #if defined( __DOS__ )
     {
-        char    ext[_MAX_EXT];
+        char    ext_buf[10];
+        char    *ext;
 
-        _splitpath( cmdname, NULL, NULL, NULL, ext );
+        _splitpath2( cmdname, ext_buf, NULL, NULL, NULL, &ext );
         if( ext[0] == '.' ) {
             FixName( ext );
             /* if extension specified let the shell handle it */
