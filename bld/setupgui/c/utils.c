@@ -64,6 +64,7 @@
 #include "setupio.h"
 #include "iopath.h"
 #include "guistats.h"
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -987,21 +988,21 @@ static void MakeParentDir( const VBUF *dir, pgroup2 *pg )
 /*******************************************************/
 {
     char                *end;
-    size_t              path_len;
+    size_t              dir_len;
     VBUF                parent;
 
-    _splitpath2( VbufString( dir ), pg->buffer, &pg->drive, &pg->path, NULL, NULL );
-    if( pg->path[0] == '\0' )
+    _splitpath2( VbufString( dir ), pg->buffer, &pg->drive, &pg->dir, NULL, NULL );
+    if( pg->dir[0] == '\0' )
         return;
-    path_len = strlen( pg->path );
-    end = pg->path + path_len - 1;
+    dir_len = strlen( pg->dir );
+    end = pg->dir + dir_len - 1;
     if( IS_DIR_SEP( *end ) )
         *end = '\0';
-    if( pg->path[0] == '\0' )
+    if( pg->dir[0] == '\0' )
         return;
     VbufInit( &parent );
     VbufConcStr( &parent, pg->drive );
-    VbufConcStr( &parent, pg->path );
+    VbufConcStr( &parent, pg->dir );
     MakeParentDir( &parent, pg );
 #if defined( __UNIX__ )
     mkdir_vbuf( &parent, PMODE_RWX );
