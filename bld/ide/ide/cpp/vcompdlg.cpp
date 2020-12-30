@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -266,7 +267,7 @@ bool VCompDialog::checkName()
         if( m != _comp ) {
             WFileName cn;
             m->target()->absName( cn );
-            if( fn.match( cn, matchDrive|matchDir ) ) {
+            if( fn.match( cn, matchDrive | matchDir ) ) {
                 if( fn.match( cn, matchFName ) ) {
                     WMessageDialog::messagef( this, MsgError, MsgOk, _viperError,
                         "Targets '%s' and '%s' have the same name and must be in different directories.", (const char*)*_fn, (const char*)*m->target() );

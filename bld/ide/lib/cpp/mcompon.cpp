@@ -584,7 +584,7 @@ void MComponent::initWorkFiles()
         if( !w->isMask() ) {
             for( int j=0; j<_workFiles.count(); j++ ) {
                 MWorkFile* x = (MWorkFile*)_workFiles[j];
-                if( x->isMask() && w->match( *x, matchFName|matchExt ) ) {
+                if( x->isMask() && w->match( *x, matchFName | matchExt ) ) {
                     w->insertStates( x );
                 }
             }
@@ -600,13 +600,15 @@ void MComponent::finiWorkFiles()
 void MComponent::writeTargetCD( ContFile& mak )
 {
     WFileName path;
-    _filename.path( path, false );
+    const char *drive;
 
+    _filename.path( path, false );
     if( path.match( NULL, matchDir ) ) {
         path.concat( "\\" );
     }
-    if( path.drive()[0] != '\0' && path.drive()[1] == ':' )
-        mak.printf( " @%s\n", path.drive() );
+    drive = path.drive();
+    if( drive[0] != '\0' && drive[1] == ':' )
+        mak.printf( " @%s\n", drive );
     mak.printf( " cd %s\n", (const char*)path );
 }
 
@@ -715,13 +717,13 @@ bool MComponent::writeCBR( bool mustExist )
             if( brow.open( browfile, OStyleWrite ) ) {
                 WFileName tfile;
                 _target->absResult( tfile );
-                tfile.setExt( "dbr" );
+                tfile.setExt( ".dbr" );
                 brow.printf( "d %s\n", (const char*)tfile );
                 for( ; i<_workFiles.count(); i++ ) {
                     w = (MWorkFile*)_workFiles[i];
                     if( w->browseable() ) {
                         w->item()->absResult( tfile );
-                        tfile.setExt( "mbr" );
+                        tfile.setExt( ".mbr" );
                         if( mustExist ) {
                             if( access( (const char*)tfile, F_OK ) == 0 )  {
                                 // file must be there
