@@ -95,6 +95,7 @@ ext =
 names = $+ $(template) $-
 
 # define flags specific to tests here
+opt_lim01 = -ze
 opt_typetr01 = -za0x
 opt_mmwin16 = $(incl_sys_win) -dmmWin16
 opt_mmwindef = $(incl_sys_nt)
