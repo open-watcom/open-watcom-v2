@@ -298,7 +298,7 @@ bool VComponent::okToInclude( MItem* item, bool warn, MItem* dupitem )
     }
     WFileName fullNameItem( *item ); fullNameItem.absoluteTo( _component->filename() );
     WFileName fullNameTarget; target()->absName( fullNameTarget );
-    if( fullNameItem.match( fullTarget, matchAll ) ) {
+    if( fullNameItem.match( fullNameTarget, matchAll ) ) {
         if( warn ) {
             WMessageDialog::messagef( this, MsgError, MsgOk, _viperError,
                                       "'%s' cannot include itself",
@@ -331,8 +331,7 @@ bool VComponent::newItem( WFileName& fn, bool warn, bool mark, unsigned owner )
             }
         }
     }
-    MRule* rule = _config->findMatchingRule( fn, target()->rule(),
-                      _component->mask() );
+    MRule* rule = _config->findMatchingRule( fn, target()->rule(), _component->mask() );
     if( rule ) {
         MItem* item = new MItem( fn, _component, rule );
         if( okToInclude( item, warn ) ) {
@@ -466,8 +465,7 @@ void VComponent::mRenameItem( WMenuItem* )
             if( !inp.getInput( fn, "Enter new filename" ) ) break;
 //            fn.toLower();
             fn.removeQuotes();
-            MRule* rule = _config->findMatchingRule( fn, target()->rule(),
-                              _component->mask() );
+            MRule* rule = _config->findMatchingRule( fn, target()->rule(), _component->mask() );
             if( rule ) {
                 MItem* item = new MItem( fn, _component, rule );
                 if( okToInclude( item, true, m ) ) {
@@ -566,8 +564,7 @@ static rtn_status captureName( time_t, char* name, void* data )
     MComponent* comp = ((CapData*)data)->comp;
     WPickList* incList = ((CapData*)data)->incList;
     WFileName fn( name ); //fn.toLower();
-    MRule* rule = _config->findMatchingRule(
-        fn, comp->target()->rule(), comp->mask() );
+    MRule* rule = _config->findMatchingRule( fn, comp->target()->rule(), comp->mask() );
     if( rule ) {
         incList->add( new MItem( fn, comp, rule ) );
     }
