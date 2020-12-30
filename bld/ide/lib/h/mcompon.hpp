@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -111,8 +112,7 @@ WCLASS MComponent : public WObject, public WModel
                 void writeTargetCD( ContFile& mak );
                 void writeRule( ContFile& mak );
                 void expand( WString& c, const MCommand& cmd );
-                void addWorkFiles( WVList& workfiles, SwMode mode, MComponent* comp );
-                void initWorkFiles( WVList& workfiles );
+                void initWorkFiles();
                 void finiWorkFiles();
                 bool writeCBR( bool mustExist=false );
                 void makeNames( const char* spec, WFileName& filename, WFileName& relname, WFileName& targ );

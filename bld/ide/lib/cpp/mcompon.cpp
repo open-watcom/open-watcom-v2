@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -424,7 +424,7 @@ void MComponent::touchTarget( bool all )
 {
     _target->touchResult();
     if( all ) {
-        initWorkFiles( _workFiles );
+        initWorkFiles();
         for( int i=0; i<_workFiles.count(); i++ ) {
             MItem* m = ((MWorkFile*)_workFiles[i])->item();
             if( !m->isMask() ) {
@@ -446,7 +446,7 @@ void MComponent::getTargetCommand( WString& cmd )
 
 void MComponent::getItemCommand( MItem* item, WString& cmd )
 {
-    initWorkFiles( _workFiles );
+    initWorkFiles();
     for( int i=0; i<_workFiles.count(); i++ ) {
         MWorkFile* w = (MWorkFile*)_workFiles[i];
         if( w->item() == item ) {
@@ -554,7 +554,7 @@ bool MComponent::makeMakeFile( bool long_lines )
             ok = false;
         } else {
             tmak.puts( "!define BLANK \"\"\n" );
-            initWorkFiles( _workFiles );
+            initWorkFiles();
 //          for( int i=0; i<_workFiles.count(); i++ ) {
 //              ((MWorkFile*)_workFiles[i])->dump( tmak );
 //          }
@@ -568,21 +568,18 @@ bool MComponent::makeMakeFile( bool long_lines )
     return( ok );
 }
 
-void MComponent::addWorkFiles( WVList& workFiles, SwMode mode, MComponent* comp )
+void MComponent::initWorkFiles()
 {
-    for( int i=0; i<_items.count(); i++ ) {
+    int i;
+
+    for( i = 0; i < _items.count(); i++ ) {
         MItem* m = (MItem*)_items[i];
         WFileName f;
         m->absName( f );
-        MWorkFile* w = new MWorkFile( f, mode, m, comp );
-        workFiles.add( w );
+        MWorkFile* w = new MWorkFile( f, _mode, m, this );
+        _workFiles.add( w );
     }
-}
-
-void MComponent::initWorkFiles( WVList& workFiles )
-{
-    addWorkFiles( workFiles, _mode, this );
-    for( int i=0; i<_workFiles.count(); i++ ) {
+    for( i = 0; i < _workFiles.count(); i++ ) {
         MWorkFile* w = (MWorkFile*)_workFiles[i];
         if( !w->isMask() ) {
             for( int j=0; j<_workFiles.count(); j++ ) {
@@ -784,8 +781,8 @@ void MComponent::makeNames( const char* spec, WFileName& filename, WFileName& re
 bool MComponent::tryBrowse()
 {
     bool rc = false;
-    initWorkFiles( _workFiles );
 
+    initWorkFiles();
     for( int i=0; i<_workFiles.count(); i++ ) {
         MItem* m = ((MWorkFile*)_workFiles[i])->item();
 

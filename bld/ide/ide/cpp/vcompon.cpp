@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -296,9 +296,9 @@ bool VComponent::okToInclude( MItem* item, bool warn, MItem* dupitem )
         }
         return( false );
     }
-    WFileName fullName( *item ); fullName.absoluteTo( _component->filename() );
-    WFileName fullTarget; target()->absName( fullTarget );
-    if( fullName.match( fullTarget, matchAll ) ) {
+    WFileName fullNameItem( *item ); fullNameItem.absoluteTo( _component->filename() );
+    WFileName fullNameTarget; target()->absName( fullNameTarget );
+    if( fullNameItem.match( fullTarget, matchAll ) ) {
         if( warn ) {
             WMessageDialog::messagef( this, MsgError, MsgOk, _viperError,
                                       "'%s' cannot include itself",
