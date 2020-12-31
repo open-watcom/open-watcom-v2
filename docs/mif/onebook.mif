@@ -71,22 +71,22 @@ bmp2eps = bmp2eps
 #
 
 !ifeq header 1
-dep_nt = $(hbook).h
+dep_nt = $(hbook).gh
 !else ifneq hc_nt
 dep_nt = $(hbook).hlp $(hbook).cnt
 !endif
 !ifeq header 1
-dep_win = $(hbook).h
+dep_win = $(hbook).gh
 !else
 dep_win = $(hbook).hlp
 !endif
 !ifeq header 1
-dep_os2 = $(hbook).h
+dep_os2 = $(hbook).gh
 !else
 dep_os2 = $(hbook).inf $(hbook).hlp
 !endif
 !ifeq header 1
-dep_dos = $(hbook).h
+dep_dos = $(hbook).gh
 !else
 dep_dos = $(hbook).ihp
 !endif
@@ -193,7 +193,7 @@ $(hbook).cnt : $(hbook).cn1
     awk -f ../makecnt2.awk -v file=$(hbook).hlp -v title="$(book_title)" -v multi=$(book_multi_chapter) $[@ > $(hbook).cnt
 !endif
 
-$(hbook).rtf $(hbook).cn1 $(hbook).h $(hbook).hh : $(book_objs) $(proj_objs)
+$(hbook).rtf $(hbook).cn1 $(hbook).gh $(hbook).hh : $(book_objs) $(proj_objs)
     @%make compile_gml_to_xxx
 
 ####################################################
@@ -211,7 +211,7 @@ $(hbook).hlp : $(hbook).hpj $(hbook).rtf $(hbook).hh
 $(hbook).hpj : $(proj_objs)
     @%make compile_hpj_win
 
-$(hbook).rtf $(hbook).h $(hbook).hh : $(book_objs) $(proj_objs)
+$(hbook).rtf $(hbook).gh $(hbook).hh : $(book_objs) $(proj_objs)
     @%make compile_gml_to_xxx
 
 ####################################################
@@ -226,7 +226,7 @@ $(hbook).rtf $(hbook).h $(hbook).hh : $(book_objs) $(proj_objs)
 $(hbook).ihp : $(hbook).ib
     $(hcdos) -h 25 -w 80 $(hbook).ib $(hbook).ihp
 
-$(hbook).ib $(hbook).h : $(book_objs) $(proj_objs)
+$(hbook).ib $(hbook).gh : $(book_objs) $(proj_objs)
     @%make compile_gml_to_xxx
 
 
@@ -246,12 +246,12 @@ $(hbook).ib $(hbook).h : $(book_objs) $(proj_objs)
 
 .EXTENSIONS: .chm 
 
-$(hbook).chm : $(hbook).htm $(hbook).h
+$(hbook).chm : $(hbook).htm $(hbook).gh
     @if not exist $(hbook) mkdir $(hbook)
 !ifdef book_bmroot
     $(noecho)cp -f $(book_bmroot)/*.bmp $(hbook)/ > $(nulldevice)
 !endif
-    cp -f $(hbook).h $(hbook)/$(hbook).h > $(nulldevice)
+    cp -f $(hbook).gh $(hbook)/$(hbook).gh > $(nulldevice)
     awk -f ../splithtm.awk -v dir=$(hbook) $(hbook).htm
     awk -f ../makehha.awk $(hbook).htm >$(hbook)/$(hbook).hha
     awk -f ../makehhc.awk $(hbook).htm >$(hbook)/$(hbook).hhc
@@ -323,7 +323,7 @@ $(hbook).hlp : $(hbook).ipf
 $(hbook).hlp : .symbolic
 !endif
 
-$(hbook).ipf $(hbook).h : $(book_objs) $(proj_objs)
+$(hbook).ipf $(hbook).gh : $(book_objs) $(proj_objs)
     @%make compile_gml_to_xxx
 
 !endif
@@ -363,7 +363,7 @@ $(hbook).ps : $(book_objs) $(book_objs_ps) $(proj_objs)
 
 .EXTENSIONS: .htm
 
-$(hbook).h $(hbook).htm : $(book_objs) $(proj_objs)
+$(hbook).gh $(hbook).htm : $(book_objs) $(proj_objs)
 !ifneq dotarget htmlhelp
 !ifdef book_bmroot
     $(noecho)cp -f $(book_bmroot)/*.bmp . > $(nulldevice)
@@ -413,6 +413,8 @@ prepare_whpcvt_opts : .PROCEDURE
     @%append $(whpcvt_optfile) -k
     @%append $(whpcvt_optfile) -up
 !endif
+    @%append $(whpcvt_optfile) -hf
+    @%append $(whpcvt_optfile) $*.gh
     @%append $(whpcvt_optfile) -hn
     @%append $(whpcvt_optfile) -i
 
@@ -574,8 +576,8 @@ compile_gml_to_xxx : .PROCEDURE
     $(noecho)%ren $(wgml_tmpfile) $*.ptf
     @if exist $*.mix @%erase $*.mix
     @%ren $(wgml_sysfile_01) $*.mix
-    @if exist $*.h @%erase $*.h
-    @%ren $(wgml_sysfile_02) $*.h
+    @if exist $*.gh @%erase $*.gh
+    @%ren $(wgml_sysfile_02) $*.gh
     @if exist $*.cn1 @%erase $*.cn1
     @%ren $(wgml_sysfile_03) $*.cn1
     whpcvt -h -@ $(whpcvt_optfile) $*.ptf

@@ -69,7 +69,7 @@
 #include "wflashp.hpp"
 #include "vhelpstk.hpp"
 #include "veditdlg.hpp"
-#include "ide.h"
+#include "ide.gh"
 #include "autoenv.h"
 
 #include "clibext.h"

@@ -12,7 +12,7 @@ target_win = win
 
 docs_host_dir = $(docs_dir)/$(host_os)
 
-additional_clean = $(docs_host_dir)/ide.h
+additional_clean = $(docs_host_dir)/ide.gh
 
 !include cproj.mif
 !include defrule.mif
@@ -70,7 +70,7 @@ extra_l_flags   = op eliminate op description 'Open Watcom IDE'
 #
 # EXE
 #
-exetarg_prebuild_objs = $(docs_host_dir)/ide.h
+exetarg_prebuild_objs = $(docs_host_dir)/ide.gh
 exetarg_objs          = $(objs)
 exetarg_libs          = $(idelib_lib) $(wclass_lib) $(gui_lib) $(wres_lib)
 exetarg_res_version_res_exe_nt_386 = exever.res
@@ -102,6 +102,6 @@ curr_dir=$+$(%__CWD__)$-
 $(docs_host_dir) : .SYMBOLIC
     $(noecho)cd $@
 
-$(docs_host_dir)/ide.h: $(docs_host_dir) .ALWAYS
+$(docs_host_dir)/ide.gh : $(docs_host_dir) .ALWAYS
     $(noecho)!$(nested_wmake) -h -f ../mif/onebook.mif hbook=ide header=1 dotarget=$(host_os)
     $(noecho)cd $(curr_dir)

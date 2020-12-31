@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,6 +57,7 @@
     pick( ARG_OL,   "ol" ) \
     pick( ARG_UL,   "ul" ) \
     pick( ARG_H,    "h" ) \
+    pick( ARG_HF,   "hf" ) \
     pick( ARG_HH,   "hh" ) \
     pick( ARG_HN,   "hn" ) \
     pick( ARG_B,    "b" ) \
@@ -135,6 +136,8 @@ const char Fonttype_helv[] = "helv";
 const char Fonttype_courier[] = "courier";
 
 /* local variables */
+
+static char     *h_file_name = NULL;
 
 static const char *Help_info[] = {
     "Usage: whpcvt [options] <in_file> [<out_file>]",
@@ -501,6 +504,14 @@ static int process_args( int argc, char *argv[] )
                 break;
             case ARG_H:
                 Do_def = true;
+                break;
+            case ARG_HF:
+                start_arg++;
+                if( start_arg < argc ) {
+                    h_file_name = normalize_fname( h_file_name, argv[start_arg], NULL );
+                } else {
+                    error_err( ERR_BAD_ARGS );
+                }
                 break;
             case ARG_HH:
                 Do_hdef = true;
@@ -2058,8 +2069,12 @@ int main( int argc, char *argv[] )
     In_file = NULL;
 
     if( Do_ctx_ids ) {
-        strcpy( strrchr( file, '.' ), EXT_DEF_FILE );
-        In_file = fopen( file, "r" );
+        if( h_file_name != NULL ) {
+            In_file = fopen( h_file_name, "r" );
+        } else {
+            strcpy( strrchr( file, '.' ), EXT_DEF_FILE );
+            In_file = fopen( file, "r" );
+        }
         if( In_file != NULL ) {
             read_ctx_ids();
             fclose( In_file );
@@ -2069,11 +2084,19 @@ int main( int argc, char *argv[] )
     set_ctx_ids();
 
     if( Do_def ) {
-        strcpy( strrchr( file, '.' ), EXT_DEF_FILE );
-        Def_file = fopen( file, "w" );
-        if( Def_file == NULL ) {
-            printf( "Could not open define file: %s\n", file );
-            goto error_exit;
+        if( h_file_name != NULL ) {
+            Def_file = fopen( h_file_name, "w" );
+            if( Def_file == NULL ) {
+                printf( "Could not open define file: %s\n", h_file_name );
+                goto error_exit;
+            }
+        } else {
+            strcpy( strrchr( file, '.' ), EXT_DEF_FILE );
+            Def_file = fopen( file, "w" );
+            if( Def_file == NULL ) {
+                printf( "Could not open define file: %s\n", file );
+                goto error_exit;
+            }
         }
     }
 
@@ -2139,6 +2162,9 @@ int main( int argc, char *argv[] )
 
 error_exit:
 
+    if( h_file_name != NULL ) {
+        free( h_file_name );
+    }
     if( Header_File != NULL ) {
         free( Header_File );
     }

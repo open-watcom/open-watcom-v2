@@ -8,7 +8,7 @@ browse_trmem = 1
 
 docs_host_dir = $(docs_dir)/$(host_os)
 
-additional_clean = $(docs_host_dir)/wbrw.h
+additional_clean = $(docs_host_dir)/wbrw.gh
 
 .extensions: .gpp
 
@@ -99,7 +99,7 @@ objs_dbg  = debuglog.obj
 #
 # EXE
 #
-exetarg_prebuild_objs = $(docs_host_dir)/wbrw.h
+exetarg_prebuild_objs = $(docs_host_dir)/wbrw.gh
 exetarg_objs          = $(objs) $(objs_dbg)
 exetarg_libs_dos      = $(ui_lib)
 exetarg_libs          = $(gui_lib) $(exetarg_libs_$(host_os)) $(dwarfr_lib) $(wclass_lib)
@@ -142,7 +142,7 @@ curr_dir=$+$(%__CWD__)$-
 $(docs_host_dir) : .SYMBOLIC
     $(noecho)cd $@
 
-$(docs_host_dir)/wbrw.h : $(docs_host_dir) .ALWAYS
+$(docs_host_dir)/wbrw.gh : $(docs_host_dir) .ALWAYS
     $(noecho)!$(nested_wmake) -h -f ../mif/onebook.mif hbook=wbrw header=1 dotarget=$(host_os)
     $(noecho)cd $(curr_dir)
 

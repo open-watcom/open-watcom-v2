@@ -6,7 +6,7 @@ clean : .procedure
  @if exist *.bmp rm -f *.bmp
  @if exist *.hlp rm -f *.hlp
  @if exist *.cnt rm -f *.cnt
- @if exist *.h rm -f *.h
+ @if exist *.gh rm -f *.gh
  @if exist *.ipf rm -f *.ipf
  @if exist *.inf rm -f *.inf
  @if exist *.tmp rm -f *.tmp

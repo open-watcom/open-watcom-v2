@@ -28,7 +28,7 @@ BEGIN {
     gsub( /\"> (.*) <\/h.>/, "", file )
 
     # "Index_of_Topics" should be included since it is
-    # defined in the .h file, but we'll place it last
+    # defined in the .gh file, but we'll place it last
     # since it shouldn't be our first page
     if (file == "Index_of_Topics") {
         last_file = file
@@ -64,7 +64,7 @@ END {
     print ""
 
     print "[MAP]"
-    print "#include " hbook ".h"
+    print "#include " hbook ".gh"
     print ""
 
     # Directly write aliases into the project rather
