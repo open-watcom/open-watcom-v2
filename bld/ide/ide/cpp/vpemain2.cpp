@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,7 @@
 #include <stdio.h>
 #include <io.h>
 #include <stdlib.h>
-#include "rcdefs.rh"
+#include "ide.rh"
 #include "banner.h"
 
 #include "vpemain.hpp"

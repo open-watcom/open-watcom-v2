@@ -1,5 +1,5 @@
 #include "gui.rc"
-#include "rcdefs.rh"
+#include "ide.rh"
 
 BITMAP  B_newproj       "newproj.bmp"
 BITMAP  B_openproj      "openproj.bmp"
