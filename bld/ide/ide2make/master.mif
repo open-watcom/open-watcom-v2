@@ -25,6 +25,6 @@ inc_dirs = -I"../h" $(idelib_inc_dirs) $(wclass_inc_dirs)
 #
 # EXE
 #
-exetarg_objs = bviper.obj
+exetarg_objs = ide2make.obj
 exetarg_libs = $(idelib_lib) $(wclass_lib)
 !include exetarg.mif

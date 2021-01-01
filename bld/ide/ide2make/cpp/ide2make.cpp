@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +31,7 @@
 
 
 #include <stdio.h>
+#include "ide2make.hpp"
 #include "mconfig.hpp"
 #include "mproject.hpp"
 #include "mcompon.hpp"
@@ -186,7 +188,7 @@ WEXPORT VpeMain::VpeMain( int argc, char** argv )
                 _project->attachComponent( f );
             }
             if( sMode ) {
-                SwMode mode = (sMode=='d') ? SWMODE_DEBUG : SWMODE_RELEASE;
+                SwMode mode = ( sMode == 'd' ) ? SWMODE_DEBUG : SWMODE_RELEASE;
                 for( i = 0; i < _project->components().count(); i++ ) {
                     MComponent* comp = (MComponent*)_project->components()[i];
                     comp->setMode( mode );
