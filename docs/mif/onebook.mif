@@ -544,7 +544,7 @@ prepare_wgml_opts : .PROCEDURE
 #      contents and index of topics
 #
 #  whpcvt must be called after 2nd pass with -h and -hn
-#  options; it creates correct index in .h file
+#  options; it creates correct index in .gh file
 #
 #  following whpcvt call must be done only with -hn option
 #   do not use -h option
