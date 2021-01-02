@@ -504,8 +504,8 @@ vi_rc StartMenu( const char *data )
         return( ERR_INVALID_MENU );
     }
 
-    GetStringWithPossibleQuote( &data, name );
-    GetStringWithPossibleQuote( &data, help );
+    GetNextWordOrString( &data, name );
+    GetNextWordOrString( &data, help );
     need_hook = false;
     if( data[0] != '\0' ) {
         need_hook = true;
@@ -533,8 +533,8 @@ vi_rc MenuItem( const char *data )
     if( currMenu == NULL ) {
         return( ERR_INVALID_MENU );
     }
-    GetStringWithPossibleQuote( &data, name );
-    GetStringWithPossibleQuote( &data, help );
+    GetNextWordOrString( &data, name );
+    GetNextWordOrString( &data, help );
     TranslateTabs( name );
     addItemToMenu( currMenu, name, help, data, false );
     return( ERR_NO_ERR );
@@ -551,9 +551,9 @@ vi_rc AddMenuItem( const char *data )
     char        help[MAX_STR];
     menu        *m;
 
-    GetStringWithPossibleQuote( &data, menu_name );
-    GetStringWithPossibleQuote( &data, name );
-    GetStringWithPossibleQuote( &data, help );
+    GetNextWordOrString( &data, menu_name );
+    GetNextWordOrString( &data, name );
+    GetNextWordOrString( &data, help );
     m = findMenu( rootMenu, menu_name );
     if( m != NULL ) {
         addItemToMenu( m, name, help, data, false );

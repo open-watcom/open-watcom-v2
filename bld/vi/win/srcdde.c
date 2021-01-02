@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -180,7 +180,7 @@ bool RunDDECommand( int token, const char *data, char *buffer, vi_rc *result, va
             rc = ERR_INVALID_DDE;
             break;
         }
-        if( GetStringWithPossibleQuote( &data, tmp1 ) != ERR_NO_ERR ) {
+        if( GetNextWordOrString( &data, tmp1 ) != ERR_NO_ERR ) {
             rc = ERR_INVALID_DDE;
             break;
         }
@@ -240,7 +240,7 @@ bool RunDDECommand( int token, const char *data, char *buffer, vi_rc *result, va
             rc = ERR_INVALID_DDE;
             break;
         }
-        if( GetStringWithPossibleQuote( &data, tmp1 ) != ERR_NO_ERR ) {
+        if( GetNextWordOrString( &data, tmp1 ) != ERR_NO_ERR ) {
             rc = ERR_INVALID_DDE;
             break;
         }
@@ -327,7 +327,7 @@ bool RunDDECommand( int token, const char *data, char *buffer, vi_rc *result, va
          * syntax: ddepoke "<data>" <conv> <strhandle>
          */
         data = Expand( tmp1, data, vl );
-        if( GetStringWithPossibleQuote( &data, buffer ) != ERR_NO_ERR ) {
+        if( GetNextWordOrString( &data, buffer ) != ERR_NO_ERR ) {
             rc = ERR_INVALID_DDE;
             break;
         }

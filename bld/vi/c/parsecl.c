@@ -139,7 +139,8 @@ vi_rc ParseCommandLine( const char *cmdl, linenum *n1, bool *n1flag, linenum *n2
      * check for system token
      */
     if( *cmdl == '!' ) {
-        strcpy( data, cmdl + 1 );
+        SKIP_CHAR_SPACES( cmdl );
+        strcpy( data, cmdl );
         *token = PCL_T_SYSTEM;
         return( ERR_NO_ERR );
     }
@@ -203,14 +204,30 @@ vi_rc GetAddress( const char **buffp, linenum *num  )
      */
     buff = *buffp;
     c = *buff;
-    if( !(c == '/' || c == '?' || c == '+' || c == '-' || c == '\'' ||
-        c == '.' || c == '$' || (c >= '0' && c <= '9')) ) {
-        return( NO_NUMBER );
-    }
-    if( c == '+' || c == '-' ) {
+    switch( c ) {
+    case '+':
+    case '-':
         sum = CurrentPos.line;
-    } else {
+        break;
+    case '/':
+    case '?':
+    case '\'':
+    case '.':
+    case '$':
+    case '0':
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+    case '7':
+    case '8':
+    case '9':
         sum = 0;
+        break;
+    default:
+        return( NO_NUMBER );
     }
     numptr = nument = 0;
     csign = numsign = 1;
@@ -232,6 +249,7 @@ vi_rc GetAddress( const char **buffp, linenum *num  )
         case '9':
             currnum[numptr++] = c;
             numinprog = true;
+            buff++;
             break;
         case '/':
         case '?':
@@ -254,8 +272,8 @@ vi_rc GetAddress( const char **buffp, linenum *num  )
             if( rc != ERR_NO_ERR ) {
                 return( rc );
             }
-            if( *buff == '\0' )
-                --buff;
+            if( *buff != '\0' )
+                SKIP_CHAR_SPACES( buff );
             break;
         case '\'':
             if( numinprog ) {
@@ -268,7 +286,7 @@ vi_rc GetAddress( const char **buffp, linenum *num  )
             }
             numstack[nument] = MarkList[j].p.line;
             stopnum = true;
-            ++buff;
+            buff += 2;
             break;
         case '+':
             csign = 1;
@@ -277,6 +295,7 @@ vi_rc GetAddress( const char **buffp, linenum *num  )
             } else {
                 numsign = 1;
             }
+            buff++;
             break;
         case '-':
             if( numinprog ) {
@@ -286,6 +305,7 @@ vi_rc GetAddress( const char **buffp, linenum *num  )
                 numsign = -1;
                 csign = 1;
             }
+            buff++;
             break;
         case '.':
             if( numinprog ) {
@@ -293,6 +313,7 @@ vi_rc GetAddress( const char **buffp, linenum *num  )
             }
             numstack[nument] = CurrentPos.line;
             stopnum = true;
+            buff++;
             break;
         case '$':
             if( numinprog ) {
@@ -303,16 +324,15 @@ vi_rc GetAddress( const char **buffp, linenum *num  )
                 return( rc );
             }
             stopnum = true;
+            buff++;
             break;
         default:
-            --buff;
             endparse = true;
             if( numinprog ) {
                 stopnum = true;
             }
             break;
         }
-        ++buff;
 
         /*
          * check if a number was being scanned

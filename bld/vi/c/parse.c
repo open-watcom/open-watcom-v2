@@ -71,14 +71,14 @@ void TranslateTabs( char *buff )
 } /* TranslateTabs */
 
 /*
- * GetStringWithPossibleQuote2
+ * GetNextWordOrString
  */
-vi_rc GetStringWithPossibleQuote2( const char **pbuff, char *st, bool allow_slash )
+vi_rc GetNextWordOrString( const char **pbuff, char *st )
 {
     const char  *buff = *pbuff;
 
     SKIP_SPACES( buff );
-    if( allow_slash && *buff == '/' ) {
+    if( *buff == '/' ) {
         buff = GetNextWord( buff, st, SingleSlash );
         if( *buff == '/' ) {
             SKIP_CHAR_SPACES( buff );
@@ -97,13 +97,7 @@ vi_rc GetStringWithPossibleQuote2( const char **pbuff, char *st, bool allow_slas
     }
     return( ERR_NO_ERR );
 
-} /* GetStringWithPossibleQuote2 */
-
-vi_rc GetStringWithPossibleQuote( const char **pbuff, char *st )
-{
-    return( GetStringWithPossibleQuote2( pbuff, st, true ) );
-
-} /* GetStringWithPossibleQuote */
+} /* GetNextWordOrString */
 
 /*
  * GetNextWord1 - get next space delimited word in buff

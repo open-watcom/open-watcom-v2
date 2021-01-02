@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -741,12 +741,12 @@ vi_rc RunCommandLine( const char *cmdl )
                     ci = false;
                     data += 2;
                     SKIP_SPACES( data );
-                    rc = GetStringWithPossibleQuote( &data, st );
+                    rc = GetNextWordOrString( &data, st );
                 } else if( data[1] == 'i' ) {
                     ci = true;
                     data += 2;
                     SKIP_SPACES( data );
-                    rc = GetStringWithPossibleQuote( &data, st );
+                    rc = GetNextWordOrString( &data, st );
                 } else if( data[1] == 'f' ) {
                     data += 2;
                     SKIP_SPACES( data );
@@ -782,7 +782,7 @@ vi_rc RunCommandLine( const char *cmdl )
 #endif
                 }
             } else {
-                rc = GetStringWithPossibleQuote( &data, st );
+                rc = GetNextWordOrString( &data, st );
             }
             if( rc != ERR_NO_STRING ) {
                 rc = DoFGREP( data, st, ci );
@@ -790,7 +790,7 @@ vi_rc RunCommandLine( const char *cmdl )
         }
         break;
     case PCL_T_EGREP:
-        rc = GetStringWithPossibleQuote( &data, st );
+        rc = GetNextWordOrString( &data, st );
         if( rc != ERR_NO_STRING ) {
             rc = DoEGREP( data, st );
         }
@@ -839,7 +839,7 @@ vi_rc RunCommandLine( const char *cmdl )
          * editor ready for tomorrow. Brad.
          */
         if( data[0] == '"' || data[0] == '/' ) {
-            GetStringWithPossibleQuote( &data, st );
+            GetNextWordOrString( &data, st );
             if( x > 2 ) {
                 /* this is obviously a sick individual */
                 Error( "Invalid Echo" );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -300,14 +300,14 @@ vi_rc AddBitmapToToolBar( const char *data, bool tip )
     dont_save = false;
     if( strnicmp( data, "temp", 4 ) == 0 ) {
         /* get to the command */
-        GetStringWithPossibleQuote( &data, help );
+        GetNextWordOrString( &data, help );
         dont_save = true;
     }
 
-    GetStringWithPossibleQuote( &data, file );
-    GetStringWithPossibleQuote( &data, help );
+    GetNextWordOrString( &data, file );
+    GetNextWordOrString( &data, help );
     if( tip ) {
-        GetStringWithPossibleQuote( &data, tooltip );
+        GetNextWordOrString( &data, tooltip );
     } else {
         tooltip[0] = '\0';
     }

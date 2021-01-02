@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -132,7 +132,15 @@ vi_rc EditFile( const char *name, bool dammit )
     mask[0] = '\0';
     fn[0] = '\0';
 //    if( NextWord1FN( name, fn ) <= 0 )
-    if( GetStringWithPossibleQuote2( &name, fn, false ) != ERR_NO_ERR ) {
+    if( *name == '"' ) {
+        name = GetNextWord( name, fn, SingleDQuote );
+        if( *name == '"' ) {
+            SKIP_CHAR_SPACES( name );
+        }
+    } else {
+        name = GetNextWord1( name, fn );
+    }
+    if( *fn == '\0' ) {
         usedir = true;
         mask[0] = '*';
         mask[1] = '\0';

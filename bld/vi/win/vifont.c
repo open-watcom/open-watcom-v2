@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -313,7 +313,7 @@ static bool getLogFont( LOGFONT *lf, const char **data )
             getByte( &lf->lfClipPrecision, data ) &&
             getByte( &lf->lfQuality, data ) &&
             getByte( &lf->lfPitchAndFamily, data ) &&
-            GetStringWithPossibleQuote( data, &lf->lfFaceName[0] ) == ERR_NO_ERR );
+            GetNextWordOrString( data, &lf->lfFaceName[0] ) == ERR_NO_ERR );
 }
 
 static bool userPickFont( LOGFONT *lf, HWND parent )

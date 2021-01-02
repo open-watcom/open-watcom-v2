@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -649,8 +649,7 @@ vi_rc   LocateCmd( const char * );
 
 /* parse.c */
 void    TranslateTabs( char * );
-vi_rc   GetStringWithPossibleQuote( const char **, char * );
-vi_rc   GetStringWithPossibleQuote2( const char **, char *, bool );
+vi_rc   GetNextWordOrString( const char **, char * );
 const char  *GetNextWord( const char *, char *, const char *);
 const char  *GetNextWord1( const char *, char * );
 const char  *GetNextWord2( const char *, char *, char );

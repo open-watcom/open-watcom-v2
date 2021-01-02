@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -373,11 +373,8 @@ int main( int argc, char *argv[] )
             Abort( "Could not open %s", bindfile );
         }
         while( (ptr = myfgets( buff3, MAX_LINE_LEN, fp )) != NULL ) {
-            if( ptr[0] == '\0' ) {
-                continue;
-            }
             SKIP_SPACES( ptr );
-            if( ptr[0] == '#' ) {
+            if( ptr[0] == '\0' || ptr[0] == '#' ) {
                 continue;
             }
             dats[FileCount] = MyAlloc( strlen( ptr ) + 1 );
@@ -428,11 +425,8 @@ int main( int argc, char *argv[] )
             lines = 0;
             len1 = 0;
             while( (ptr = myfgets( buff3, MAX_LINE_LEN, fp )) != NULL ) {
-                if( ptr[0] == '\0' ) {
-                    continue;
-                }
                 SKIP_SPACES( ptr );
-                if( ptr[0] == '#' ) {
+                if( ptr[0] == '\0' || ptr[0] == '#' ) {
                     continue;
                 }
                 len = strlen( ptr );
