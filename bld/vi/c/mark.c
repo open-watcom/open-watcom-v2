@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +50,7 @@ static vi_rc tryToFindMark( mark *, unsigned );
  */
 #define NO_MARK         0
 #define MARK_PTR( x )   (&MarkList[(x) - 1])
-#define KEY_TO_NO( c )  (((c) == VI_KEY( GRAVE ) || (c) == VI_KEY( QUOTE )) ? MAX_MARKS + 1 : (c) - VI_KEY( a ) + 1)
+#define KEY_TO_NO( c )  (((c) == VI_KEY( GRAVE ) || (c) == VI_KEY( SQUOTE )) ? MAX_MARKS + 1 : (c) - VI_KEY( a ) + 1)
 
 static mark *currContext;
 

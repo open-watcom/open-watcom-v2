@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,7 +77,7 @@ vi_pick( VI_KEY( HASH ),         IMChar,              IMChar,               Inva
 vi_pick( VI_KEY( DOLLAR ),       IMChar,              IMChar,               MoveLineEnd,             VIBITS(EVENT_REL_MOVE, 0, 0, 0, 0, 0, 0), VIBITS(EVENT_INS,      1, 0, 0, 0, 0, 0) )
 vi_pick( VI_KEY( PERCENT ),      IMChar,              IMChar,               DoMatching,              VIBITS(EVENT_ABS_MOVE, 0, 0, 0, 0, 0, 0), VIBITS(EVENT_INS,      1, 0, 0, 0, 0, 0) )
 vi_pick( VI_KEY( AMPERSAND ),    IMChar,              IMChar,               InvalidKey,              VIBITS(EVENT_MISC,     0, 0, 0, 0, 0, 0), VIBITS(EVENT_INS,      1, 0, 0, 0, 0, 0) )
-vi_pick( VI_KEY( QUOTE ),        IMChar,              IMChar,               GoMarkLine,              VIBITS(EVENT_ABS_MOVE, 0, 0, 0, 0, 0, 0), VIBITS(EVENT_INS,      1, 0, 0, 0, 0, 0) )
+vi_pick( VI_KEY( SQUOTE ),       IMChar,              IMChar,               GoMarkLine,              VIBITS(EVENT_ABS_MOVE, 0, 0, 0, 0, 0, 0), VIBITS(EVENT_INS,      1, 0, 0, 0, 0, 0) )
 vi_pick( VI_KEY( OPARENTH ),     IMChar,              IMChar,               InvalidKey,              VIBITS(EVENT_MISC,     0, 0, 0, 0, 0, 0), VIBITS(EVENT_INS,      1, 0, 0, 0, 0, 0) )
 vi_pick( VI_KEY( CPARENTH ),     IMCloseBracket,      IMCloseBracket,       InvalidKey,              VIBITS(EVENT_MISC,     0, 0, 0, 0, 0, 0), VIBITS(EVENT_INS,      1, 0, 0, 0, 0, 0) )
 vi_pick( VI_KEY( STAR ),         IMChar,              IMChar,               InvalidKey,              VIBITS(EVENT_MISC,     0, 0, 0, 0, 0, 0), VIBITS(EVENT_INS,      1, 0, 0, 0, 0, 0) )
