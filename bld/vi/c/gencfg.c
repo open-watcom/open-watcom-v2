@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -251,14 +251,14 @@ vi_rc GenerateConfiguration( const char *fname, bool is_cmdline )
         case SETVAR_T_HISTORYFILE:
         case SETVAR_T_TMPDIR:
             /* strings with possible spaces */
-            MyFprintf( fp, "set %s = \"%s\"\n", token, res );
+            MyFprintf( fp, "set %s" CFG_SET_SEPARATOR "\"%s\"\n", token, res );
             break;
         case SETVAR_T_GADGETSTRING:
             if( !IsGadgetStringChanged( res ) )
                 break;
             // fall through
         default:
-            MyFprintf( fp, "set %s = %s\n", token, res );
+            MyFprintf( fp, "set %s" CFG_SET_SEPARATOR "%s\n", token, res );
             break;
         }
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -81,12 +81,12 @@ vi_rc GetStringWithPossibleQuote2( const char **pbuff, char *st, bool allow_slas
     if( allow_slash && *buff == '/' ) {
         buff = GetNextWord( buff, st, SingleSlash );
         if( *buff == '/' ) {
-            ++buff;
+            SKIP_CHAR_SPACES( buff );
         }
     } else if( *buff == '"' ) {
         buff = GetNextWord( buff, st, SingleQuote );
         if( *buff == '"' ) {
-            ++buff;
+            SKIP_CHAR_SPACES( buff );
         }
     } else {
         buff = GetNextWord1( buff, st );
@@ -117,8 +117,10 @@ const char *GetNextWord1( const char *buff, char *res )
      * get word
      */
     for( ; (c = *buff) != '\0'; ++buff ) {
-        if( isspace( c ) )
+        if( isspace( c ) ) {
+            SKIP_CHAR_SPACES( buff );
             break;
+        }
         *res++ = c;
     }
     *res = '\0';
@@ -138,19 +140,19 @@ const char *GetNextWord2( const char *buff, char *res, char alt_delim )
      * get word
      */
     for( ; (c = *buff) != '\0'; ++buff ) {
-        if( c == alt_delim ) {
-            break;
-        }
         if( isspace( c ) ) {
-            ++buff;
-            SKIP_SPACES( buff );
+            SKIP_CHAR_SPACES( buff );
+            c = *buff;
             break;
         }
+        if( c == alt_delim )
+            break;
         *res++ = c;
     }
     *res = '\0';
-    if( *buff == alt_delim )
-        ++buff;
+    if( c == alt_delim ) {
+        SKIP_CHAR_SPACES( buff );
+    }
     return( (char *)buff );
 
 } /* GetNextWord2 */

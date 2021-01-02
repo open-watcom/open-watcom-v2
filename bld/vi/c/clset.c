@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -603,11 +603,10 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
         if( *value == '"' ) {
             value = GetNextWord( value, fn, SingleQuote );
             if( *value == '"' ) {
-                ++value;
+                SKIP_CHAR_SPACES( value );
             }
-            SKIP_SPACES( value );
             if( *value == ',' ) {
-                ++value;
+                SKIP_CHAR_SPACES( value );
             }
         } else {
             value = GetNextWord2( value, fn, ',' );
@@ -1302,7 +1301,7 @@ char *ExpandTokenSet( char *token_no, char *buff )
     if( tok >= SETVAR_T_ ) {
         sprintf( buff, "%s%s", GET_BOOL_PREFIX( val ), GetTokenStringCVT( SetFlagTokens, tok - SETVAR_T_, settokstr, true ) );
     } else {
-        sprintf( buff, "%s", GetTokenStringCVT( SetVarTokens, tok, settokstr, true ) );
+        sprintf( buff, "%s" CFG_SET_SEPARATOR, GetTokenStringCVT( SetVarTokens, tok, settokstr, true ) );
     }
     return( buff );
 }

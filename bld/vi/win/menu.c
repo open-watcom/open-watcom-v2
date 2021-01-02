@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -506,7 +506,6 @@ vi_rc StartMenu( const char *data )
 
     GetStringWithPossibleQuote( &data, name );
     GetStringWithPossibleQuote( &data, help );
-    SKIP_SPACES( data );
     need_hook = false;
     if( data[0] != '\0' ) {
         need_hook = true;
@@ -536,7 +535,6 @@ vi_rc MenuItem( const char *data )
     }
     GetStringWithPossibleQuote( &data, name );
     GetStringWithPossibleQuote( &data, help );
-    SKIP_SPACES( data );
     TranslateTabs( name );
     addItemToMenu( currMenu, name, help, data, false );
     return( ERR_NO_ERR );
@@ -556,7 +554,6 @@ vi_rc AddMenuItem( const char *data )
     GetStringWithPossibleQuote( &data, menu_name );
     GetStringWithPossibleQuote( &data, name );
     GetStringWithPossibleQuote( &data, help );
-    SKIP_SPACES( data );
     m = findMenu( rootMenu, menu_name );
     if( m != NULL ) {
         addItemToMenu( m, name, help, data, false );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -82,17 +82,19 @@ vi_rc FTSAddCmd( const char *data, int tok )
     assert( EditFlags.FileTypeSource );
 
     // Source gets cute & trashes "set "...
-    if( tok == 0 ) {
-        SKIP_SPACES( data );
-        if( *data == '\0' )
-            return( ERR_NO_ERR );
-        strcpy( cmd_data, data );
-    } else if( tok == SRC_T_NULL + 1 + PCL_T_SET ) {
+    if( tok == SRC_T_NULL + 1 + PCL_T_SET ) {
         strcpy( cmd_data, "set " );
-        data = GetNextWord1( data, cmd_data + 4 );
-        ExpandTokenSet( cmd_data + 4, cmd_data + 4 );
-        if( cmd_data[4] == '\0' )
-            return( ERR_NO_ERR );
+        if( EditFlags.ScriptIsCompiled ) {
+            data = GetNextWord1( data, cmd_data + 4 );
+            ExpandTokenSet( cmd_data + 4, cmd_data + 4 );
+            if( cmd_data[4] == '\0' ) {
+                return( ERR_NO_ERR );
+            }
+        } else {
+            if( data[0] == '\0' ) {
+                return( ERR_NO_ERR );
+            }
+        }
         strcat( cmd_data, data );
     } else {
         /* error only 'set' command can be in FTS */

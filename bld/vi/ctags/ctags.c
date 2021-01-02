@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -371,8 +371,7 @@ static void processOptionFile( const char *fname )
                 continue;
             }
             *ptr = '\0';
-            ptr++;
-            SKIP_SPACES( ptr );
+            SKIP_CHAR_SPACES( ptr );
             if( *ptr == '\0' ) {
                 continue;
             }
@@ -399,8 +398,7 @@ static void processOptionFile( const char *fname )
                 WantUSE = false;
                 for( ; *ptr != '\0'; ptr++ ) {
                     if( *ptr == 'f' ) {
-                        ptr++;
-                        SKIP_SPACES( ptr );
+                        SKIP_CHAR_SPACES( ptr );
                         if( *ptr != '\0' ) {
                             strcpy( tmpFileName, ptr );
                             ptr = tmpFileName;

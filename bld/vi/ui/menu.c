@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -244,7 +244,6 @@ vi_rc StartMenu( const char *data )
     menu        **predef_menu;
 
     GetStringWithPossibleQuote( &data, str );
-    SKIP_SPACES( data );
     need_hook = false;
     if( data[0] != '\0' ) {
         need_hook = true;
@@ -358,7 +357,6 @@ vi_rc MenuItem( const char *data )
         return( ERR_INVALID_MENU );
     }
     GetStringWithPossibleQuote( &data, str );
-    SKIP_SPACES( data );
     ch = extractMenuStr( str, &hioff );
     len = strlen( str );
     size = sizeof( menu_item ) + len + strlen( data ) + 2;

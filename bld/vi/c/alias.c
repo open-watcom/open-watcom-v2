@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,7 +47,6 @@ static vi_rc setGenericAlias( const char *what, alias_list **head, alias_list **
     if( *str == '\0' ) {
         return( ERR_INVALID_ALIAS );
     }
-    SKIP_SPACES( what );
 
     /*
      * see if alias is already in list: if so, and there is expansion data,

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,8 +76,7 @@ vi_rc ParseCommandLine( const char *cmdl, linenum *n1, bool *n1flag, linenum *n2
         if( rc != ERR_NO_ERR ) {
             return( rc );
         }
-        cmdl++;
-        SKIP_SPACES( cmdl );
+        SKIP_CHAR_SPACES( cmdl );
     /*
      * check for magic '#' - selected region
      */
@@ -100,8 +99,7 @@ vi_rc ParseCommandLine( const char *cmdl, linenum *n1, bool *n1flag, linenum *n2
             *n1 = SelRgn.start.line;
             *n2 = SelRgn.end.line;
         }
-        cmdl++;
-        SKIP_SPACES( cmdl );
+        SKIP_CHAR_SPACES( cmdl );
     /*
      * try to get line range
      */
@@ -115,8 +113,7 @@ vi_rc ParseCommandLine( const char *cmdl, linenum *n1, bool *n1flag, linenum *n2
             *n1 = l;
             SKIP_SPACES( cmdl );
             if( *cmdl == ',' ) {
-                cmdl++;
-                SKIP_SPACES( cmdl );
+                SKIP_CHAR_SPACES( cmdl );
                 rc = GetAddress( &cmdl, &l );
                 if( rc > ERR_NO_ERR ) {
                     return( rc );

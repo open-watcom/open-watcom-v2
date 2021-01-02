@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -345,7 +345,6 @@ void AutoSaveInit( void )
             if( fp != NULL ) {
                 while( (p = myfgets( path2, sizeof( path2 ), fp )) != NULL ) {
                     p = GetNextWord1( p, path );
-                    SKIP_SPACES( p );
                     NewFile( path, false );
                     ReplaceString( &(CurrentFile->name), p );
                     SetFileWindowTitle( current_window_id, CurrentInfo, true );
@@ -472,7 +471,6 @@ void RemoveFromAutoSaveList( void )
     }
     while( (p = myfgets( path2, sizeof( path2 ), fpi )) != NULL ) {
         p = GetNextWord1( p, data );
-        SKIP_SPACES( p );
         if( strcmp( path, p ) == 0 ) {
             p = MakeTmpPath( path2, CurrentFile->as_name );
             if( strcmp( data, p ) == 0 ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -176,7 +176,6 @@ static vi_rc selectTag( FILE *fp, const char *str, char *fname, char *buff, int 
     tag_list = NULL;
     p = GetNextWord1( buff, tag );
     for( ;; ) {
-        SKIP_SPACES( p );
         tag_list = _MemReallocList( tag_list, tag_count + 1 );
         p1 = tag_list[tag_count] = DupString( p );
         SKIP_NOSPACES( p1 );
@@ -215,7 +214,6 @@ static vi_rc selectTag( FILE *fp, const char *str, char *fname, char *buff, int 
     if( *fname == '\0' ) {
         return( ERR_INVALID_TAG_FOUND );
     }
-    SKIP_SPACES( p );
     if( p[0] == '\0' ) {
         return( ERR_INVALID_TAG_FOUND );
     }
