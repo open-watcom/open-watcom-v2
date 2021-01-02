@@ -601,7 +601,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
 #endif /* VICOMP */
         SKIP_SPACES( value );
         if( *value == '"' ) {
-            value = GetNextWord( value, fn, SingleQuote );
+            value = GetNextWord( value, fn, SingleDQuote );
             if( *value == '"' ) {
                 SKIP_CHAR_SPACES( value );
             }
@@ -623,7 +623,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
                 case SETVAR_T_HISTORYFILE:
                 case SETVAR_T_TMPDIR:
                 case SETVAR_T_TAGFILENAME:
-                    StrMerge( 4, WorkLine->data, SingleBlank, SingleQuote, fn, SingleQuote );
+                    StrMerge( 4, WorkLine->data, SingleBlank, SingleDQuote, fn, SingleDQuote );
                     break;
                 case SETVAR_T_COMMANDCURSORTYPE:
                 case SETVAR_T_OVERSTRIKECURSORTYPE:

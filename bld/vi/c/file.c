@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -325,7 +325,7 @@ static void make_short_name( char *name, size_t len, char *buffer )
     size_t  newlen;
 
     len -= 2; /* for 2 quotes */
-    strcpy( buffer, SingleQuote );
+    strcpy( buffer, SingleDQuote );
     start = strchr( name, '\\' );
     if( start ) {
         for( end = name + strlen( name ) - 1; *end != '\\'; end-- )
@@ -335,13 +335,13 @@ static void make_short_name( char *name, size_t len, char *buffer )
             strncat( buffer, name, start - name + 1 );
             strcat( buffer, "..." );
             strcat( buffer, end );
-            strcat( buffer, SingleQuote );
+            strcat( buffer, SingleDQuote );
             return;
         }
     }
     strcat( buffer, "..." );
     strncat( buffer, name + strlen( name ) - len + 3, len - 3 );
-    strcat( buffer, SingleQuote );
+    strcat( buffer, SingleDQuote );
 }
 
 /*

@@ -84,7 +84,7 @@ vi_rc GetStringWithPossibleQuote2( const char **pbuff, char *st, bool allow_slas
             SKIP_CHAR_SPACES( buff );
         }
     } else if( *buff == '"' ) {
-        buff = GetNextWord( buff, st, SingleQuote );
+        buff = GetNextWord( buff, st, SingleDQuote );
         if( *buff == '"' ) {
             SKIP_CHAR_SPACES( buff );
         }
