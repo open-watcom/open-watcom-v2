@@ -312,7 +312,6 @@ vi_rc AddBitmapToToolBar( const char *data, bool tip )
         tooltip[0] = '\0';
     }
 
-    SKIP_SPACES( data );
     cmd_len = strlen( data );
     name_len = strlen( file );
     help_len = strlen( help );
