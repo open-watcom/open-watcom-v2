@@ -733,6 +733,13 @@ vi_rc RunCommandLine( const char *cmdl )
     case PCL_T_FGREP:
         {
             bool        ci;
+#ifdef __WIN__
+            fancy_find  *ff;
+            /* ff will be set to point at a static fancy find struct
+             * in the snoop module
+             */
+            char        snoopbuf[FILENAME_MAX];
+#endif
 
             SKIP_SPACES( data );
             ci = EditFlags.CaseIgnore;
@@ -741,49 +748,38 @@ vi_rc RunCommandLine( const char *cmdl )
                     ci = false;
                     data += 2;
                     SKIP_SPACES( data );
-                    rc = GetNextWordOrString( &data, st );
                 } else if( data[1] == 'i' ) {
                     ci = true;
                     data += 2;
                     SKIP_SPACES( data );
-                    rc = GetNextWordOrString( &data, st );
                 } else if( data[1] == 'f' ) {
                     data += 2;
                     SKIP_SPACES( data );
 #ifdef __WIN__
                     // call fancy grep window
-                    {
-                        fancy_find      *ff;
-                        /* ff will be set to point at a static fancy find struct
-                         * in the snoop module */
-                        char snoopbuf[FILENAME_MAX];
-
-                        if( !GetSnoopStringDialog( &ff ) ) {
-                            return( ERR_NO_ERR );
-                        }
-
-                        strcpy( snoopbuf, ff->path );
-                        /* assume no string means current directory */
-                        if( strlen( snoopbuf ) &&
-                            snoopbuf[strlen( snoopbuf ) - 1] != '\\' ) {
-                            strcat( snoopbuf, "\\" );
-                        }
-                        MySprintf( st, "%s", ff->find );
-                        strcat( snoopbuf, ff->ext );
-                        ci = ff->case_ignore;
-                        if( !ff->use_regexp ) {
-                            //MakeExpressionNonRegular( st );
-                            rc = DoFGREP( snoopbuf, st, ci );
-                        } else {
-                            rc = DoEGREP( snoopbuf, st );
-                        }
-                        break;
+                    if( !GetSnoopStringDialog( &ff ) ) {
+                        return( ERR_NO_ERR );
                     }
+                    strcpy( snoopbuf, ff->path );
+                    /* assume no string means current directory */
+                    if( strlen( snoopbuf ) &&
+                        snoopbuf[strlen( snoopbuf ) - 1] != '\\' ) {
+                        strcat( snoopbuf, "\\" );
+                    }
+                    MySprintf( st, "%s", ff->find );
+                    strcat( snoopbuf, ff->ext );
+                    ci = ff->case_ignore;
+                    if( !ff->use_regexp ) {
+                        //MakeExpressionNonRegular( st );
+                        rc = DoFGREP( snoopbuf, st, ci );
+                    } else {
+                        rc = DoEGREP( snoopbuf, st );
+                    }
+                    break;
 #endif
                 }
-            } else {
-                rc = GetNextWordOrString( &data, st );
             }
+            rc = GetNextWordOrString( &data, st );
             if( rc != ERR_NO_STRING ) {
                 rc = DoFGREP( data, st, ci );
             }
