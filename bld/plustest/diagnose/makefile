@@ -30,7 +30,6 @@ test01 : .symbolic source/diag0001.c
     -$(wpp_$(arch)) $[@ $(diagnose_opts) $(opt_diag0001)
     @%make set_old_path
     @$(fix_source_path) diag0001.err >>exec.out
-    @%make diag_clean
 
 diag_clean : .procedure
     @if exist *.err $(noecho)rm -f *.err

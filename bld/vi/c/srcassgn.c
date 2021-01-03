@@ -80,6 +80,7 @@ vi_rc SrcAssign( const char *data, vars_list *vl )
     if( stricmp( tmp, "=" ) != 0 ) {
         return( ERR_SRC_INVALID_ASSIGN );
     }
+    SKIP_SPACES( data );
     if( data[0] == '/' || data[0] == '"' ) {
         check_end = false;
         if( data[0] == '"' ) {
@@ -94,9 +95,8 @@ vi_rc SrcAssign( const char *data, vars_list *vl )
             }
         }
         if( check_end ) {
-            SKIP_CHAR_SPACES( data );
-            while( data[0] != '\0' ) {
-                switch( *data++ ) {
+            for( ++data; data[0] != '\0'; data++ ) {
+                switch( data[0] ) {
                 case 't':
                     timeflag = true;
                     break;

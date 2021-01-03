@@ -158,6 +158,7 @@ void GenTestCond( const char *data )
      * process syntax of test condition
      * IF expr
      */
+    SKIP_SPACES( data );
     if( data[0] == '\0' ) {
         AbortGen( ERR_SRC_INVALID_IF );
     }
@@ -222,6 +223,7 @@ static void genExpr( const char *data )
             AbortGen( ERR_SRC_INVALID_EXPR );
         }
     }
+    SKIP_SPACES( data );
     if( data[0] == '\0' ) {
         AbortGen( ERR_SRC_INVALID_EXPR );
     }
@@ -315,12 +317,13 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
      * process each line
      */
     while( (tmp = SpecialFgets( tmp1, sizeof( tmp1 ) - 1, &gf )) != NULL ) {
+
         /*
          * prepare this line
          */
         CurrentSrcLine++;
         SKIP_SPACES( tmp );
-        if( tmp[0] == '\0' ) {
+        if( tmp[0] == '\0') {
             continue;
         }
 
@@ -362,6 +365,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
          */
         if( token != TOK_INVALID ) {
 
+            SKIP_SPACES( tmp );
             if( token > SRC_T_NULL ) {
                 genItem( token, tmp );
                 continue;
@@ -440,6 +444,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
         } else {
 #ifndef VICOMP
             if( EditFlags.ScriptIsCompiled ) {
+                SKIP_SPACES( tmp );
                 genItem( token, tmp );
                 continue;
             }
@@ -506,6 +511,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
             case PCL_T_ACTIVEMENUWINDOW:
             case PCL_T_GREYEDMENUWINDOW:
             case PCL_T_ACTIVEGREYEDMENUWINDOW:
+                SKIP_SPACES( tmp );
                 token += SRC_T_NULL + 1;
                 genItem( token, tmp );
                 break;

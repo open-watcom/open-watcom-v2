@@ -102,6 +102,7 @@ static vi_rc removeGenericAlias( const char *which, alias_list **head, alias_lis
 {
     alias_list  *curr;
 
+    SKIP_SPACES( which );
     curr = checkGenericAlias( which, 0, *head );
     if( curr == NULL ) {
         return( ERR_NO_SUCH_ALIAS );

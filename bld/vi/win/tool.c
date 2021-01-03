@@ -296,6 +296,7 @@ vi_rc AddBitmapToToolBar( const char *data, bool tip )
     char                *p;
 
     help[0] = '\0';
+    SKIP_SPACES( data );
     dont_save = false;
     if( strnicmp( data, "temp", 4 ) == 0 ) {
         /* get to the command */

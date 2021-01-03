@@ -824,6 +824,7 @@ vi_rc RunCommandLine( const char *cmdl )
             break;
         }
         x = atoi( st );
+        SKIP_SPACES( data );
         /*
          * FIXME: This is not good - I will definately have to
          * fix this code up. But right now I have to get the

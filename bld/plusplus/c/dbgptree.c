@@ -326,7 +326,6 @@ static char *textPTREE(         // GET TEXT FOR A PARSE-TREE NODE
     static char buffer[256];    // - buffer (valid until next call)
     bool type_add;              // - true ==> add type
     PTREE pnode;                // - parse-tree node
-    size_t len;
 
     pnode = node->pnode;
     switch( pnode->op ) {
@@ -367,11 +366,7 @@ static char *textPTREE(         // GET TEXT FOR A PARSE-TREE NODE
         type_add = printTypes;
         break;
     case PT_STRING_CONSTANT :
-        len = pnode->u.string->len;
-        if( len > 255 )
-            len = 255;
-        memcpy( buffer, pnode->u.string->string, len );
-        buffer[len] = '\0';
+        memcpy( buffer, pnode->u.string->string, pnode->u.string->len );
         type_add = printTypes;
         break;
     case PT_TYPE :

@@ -30,18 +30,17 @@
 ****************************************************************************/
 
 
-#define LINKAGE_OS              ( 1L << ( _TARG_AUX_SHIFT + 0 ) )
-#define LINKAGE_OSFUNC          ( 1L << ( _TARG_AUX_SHIFT + 1 ) )
-#define LINKAGE_OSENTRY         ( 1L << ( _TARG_AUX_SHIFT + 2 ) )
-#define LINKAGE_CLINK           ( 1L << ( _TARG_AUX_SHIFT + 3 ) )
-#define CALLER_POPS             ( 1L << ( _TARG_AUX_SHIFT + 4 ) )
-#define NO_MEMORY_READ          ( 1L << ( _TARG_AUX_SHIFT + 5 ) )
-#define NO_MEMORY_CHANGED       ( 1L << ( _TARG_AUX_SHIFT + 6 ) )
-#define DLL_EXPORT              ( 1L << ( _TARG_AUX_SHIFT + 7 ) )
+#define LINKAGE_OS                      ( 0x00000001L << _TARG_AUX_SHIFT )
+#define LINKAGE_OSFUNC                  ( 0x00000002L << _TARG_AUX_SHIFT )
+#define LINKAGE_OSENTRY                 ( 0x00000004L << _TARG_AUX_SHIFT )
+#define LINKAGE_CLINK                   ( 0x00000008L << _TARG_AUX_SHIFT )
+#define CALLER_POPS                     ( 0x00000010L << _TARG_AUX_SHIFT )
+#define NO_MEMORY_READ                  ( 0x00000020L << _TARG_AUX_SHIFT )
+#define NO_MEMORY_CHANGED               ( 0x00000040L << _TARG_AUX_SHIFT )
+#define DLL_EXPORT                      ( 0x00000080L << _TARG_AUX_SHIFT )
+#define LAST_TARG_AUX_ATTRIBUTE         ( 0x00000080L << _TARG_AUX_SHIFT )
 
-#define USED_BITS               8
-
-#if USED_BITS + _TARG_AUX_SHIFT > 32
+#if LAST_TARG_AUX_ATTRIBUTE == 0
     #error Overflowed a long
 #endif
 
