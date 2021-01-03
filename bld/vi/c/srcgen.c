@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -316,18 +316,21 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
     /*
      * process each line
      */
-    while( !SpecialFgets( tmp1, sizeof( tmp1 ) - 1, &gf ) ) {
+    while( (tmp = SpecialFgets( tmp1, sizeof( tmp1 ) - 1, &gf )) != NULL ) {
 
         /*
          * prepare this line
          */
         CurrentSrcLine++;
+        SKIP_SPACES( tmp );
+        if( tmp[0] == '\0') {
+            continue;
+        }
+
 #ifndef VICOMP
         if( !EditFlags.ScriptIsCompiled ) {
 #endif
-            tmp = tmp1;
-            SKIP_SPACES( tmp );
-            if( tmp[0] == '\0' || tmp[0] == '#' ) {
+            if( tmp[0] == '#' ) {
                 continue;
             }
             tmp3 = tmp;
@@ -351,7 +354,7 @@ vi_rc PreProcess( const char *fn, sfile **sf, labels *lab )
             }
 #ifndef VICOMP
         } else {
-            tmp = GetNextWord1( tmp1, tmp2 );
+            tmp = GetNextWord1( tmp, tmp2 );
             hasVar = ( tmp2[0] != '0' );
             token = atoi( &tmp2[1] );
             tmp3 = tmp;

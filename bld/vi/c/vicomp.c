@@ -267,13 +267,13 @@ void SpecialFclose( GENERIC_FILE *gf )
 /*
  * SpecialFgets - get from either file or exe
  */
-bool SpecialFgets( char *buff, int max_len, GENERIC_FILE *gf )
+char *SpecialFgets( char *buff, int max_len, GENERIC_FILE *gf )
 {
     if( myfgets( buff, max_len, gf->data.fp ) == NULL ) {
-        return( true );
+        return( NULL );
     }
     gf->gf.a.currline++;
-    return( false );
+    return( buff );
 
 } /* SpecialFgets */
 
