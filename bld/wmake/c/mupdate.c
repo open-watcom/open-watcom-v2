@@ -951,8 +951,10 @@ bool Update( TARGET *targ )
     }
 
     target_exists = targExists( targ );
-    if( target_exists || targ->attr.symbolic || Glob.ignore ) {
-        // Target exists or it is symbolic or we're ignoring errors,
+//    if( target_exists || targ->attr.symbolic || Glob.ignore ) {
+//        // Target exists or it is symbolic or we're ignoring errors,
+    if( target_exists || targ->attr.symbolic ) {
+        // Target exists or it is symbolic,
         // therefore everyone's happy and we can charge forward
         PrtMsg( DBG | INF | TARGET_IS_UPDATED, targ->node.name );
     } else {
