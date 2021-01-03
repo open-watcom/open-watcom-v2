@@ -320,7 +320,6 @@ vi_rc RunCommandLine( const char *cmdl )
         rc = PopFileStack();
         break;
     case PCL_T_EXECUTE:
-        SKIP_SPACES( data );
         if( *data != '\0' ) {
             key_map     scr;
 
@@ -367,7 +366,6 @@ vi_rc RunCommandLine( const char *cmdl )
         rc = ERR_NO_ERR;
         break;
     case PCL_T_KEYADD:
-        SKIP_SPACES( data );
         KeyAddString( data );
         rc = ERR_NO_ERR;
         break;
@@ -677,7 +675,6 @@ vi_rc RunCommandLine( const char *cmdl )
         if( n1f && n2f ) {
             rc = DoGenericFilter( n1, n2, data );
         } else {
-            SKIP_SPACES( data );
             if( *data == '\0' ) {
                 goto EVIL_SHELL;
             }
@@ -741,7 +738,6 @@ vi_rc RunCommandLine( const char *cmdl )
             char        snoopbuf[FILENAME_MAX];
 #endif
 
-            SKIP_SPACES( data );
             ci = EditFlags.CaseIgnore;
             if( data[0] == '-' ) {
                 if( data[1] == 'c' ) {
