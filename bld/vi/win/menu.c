@@ -649,7 +649,6 @@ vi_rc DoMenuDelete( const char *data )
 {
     menu    *m;
 
-    SKIP_SPACES( data );
     m = specialMenu( data );
     if( m == NULL ) {
         m = findMenu( rootMenu, data );

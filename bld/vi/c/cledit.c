@@ -465,7 +465,6 @@ vi_rc OpenWindowOnFile( const char *data )
     vi_rc       rc;
     window_id   wid;
 
-    SKIP_SPACES( data );
     if( data[0] == '\0' ) {
         data = NULL;
     }
