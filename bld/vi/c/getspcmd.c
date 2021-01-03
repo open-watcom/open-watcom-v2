@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -136,7 +136,6 @@ void GetSpawnCommandLine( char *path, const char *cmdl, cmd_struct *cmds )
     bool        is_internal = false;
 #endif
 
-    SKIP_SPACES( cmdl );
     cmd = GetNextWord1( cmdl, full );
     strcpy( path, full );
     _splitpath2( full, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
@@ -183,7 +182,6 @@ void GetSpawnCommandLine( char *path, const char *cmdl, cmd_struct *cmds )
         strcat( cmds->cmd, cmdl );
     } else {
 #endif
-        SKIP_SPACES( cmd );
         strcpy( cmds->cmd, cmd );
 #if !defined( NO_EXE_EXTENSIONS ) || !defined( NO_INTERNAL_COMMANDS )
     }

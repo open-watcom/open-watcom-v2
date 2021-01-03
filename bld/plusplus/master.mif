@@ -72,7 +72,6 @@ extra_cpp_flags_maindrv  = -Dwpp_drv -DDLL_NAME=$(dlltarg_name)
 !endif
 extra_cpp_flags_memmgr = $(trmem_cpp_flags)
 
-#extra_c_flags = -pcl
 extra_c_flags =
 !ifeq release 0
 extra_c_flags += -db

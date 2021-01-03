@@ -58,7 +58,6 @@ vi_rc Global( linenum n1, linenum n2, const char *data, int dmt )
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    SKIP_SPACES( data );
     data = GetNextWord( data, sstr, SingleSlash );
     if( *sstr == '\0' || *data != '/' ) {
         return( ERR_INVALID_GLOBAL_CMD );

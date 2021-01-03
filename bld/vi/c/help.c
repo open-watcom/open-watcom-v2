@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -88,7 +88,6 @@ vi_rc DoHelp( const char *data )
     LPSTR win_helpfile = "win31wh.hlp";
 #endif
 
-    SKIP_SPACES( data );
     if( strcmp( data, "OnHelp" ) == 0 ) {
         WWinHelp( root_window_id, NULL, HELP_HELPONHELP, (HELP_DATA)0 );
     } else if( strcmp( data, "Contents" ) == 0 ) {
@@ -122,7 +121,6 @@ vi_rc DoHelp( const char *data )
     char        tmp[MAX_STR];
     int         i;
 
-    SKIP_SPACES( data );
     token = Tokenize( HelpCmdTokens, data, false );
     if( token == TOK_INVALID ) {
         if( data[0] == '\0' ) {

@@ -59,7 +59,7 @@ vi_rc SrcNextWord( const char *data, vars_list *vl )
     if( *data == '"' ) {
         data = GetNextWord( data, str, SingleDQuote );
         if( *data == '"' ) {
-            ++data;
+            SKIP_CHAR_SPACES( data );
         }
     } else {
         data = GetNextWord1( data, str );

@@ -1,4 +1,4 @@
-#pragma warning 933 11
+#pragma warning 933 10
 #line 1
 static union {
     int a;
@@ -9,8 +9,8 @@ void foo( void )
 {
     a = 1;
     union {
-	int x;
-	int y;
+        int x;
+        int y;
     };
     x = 1;
 }
