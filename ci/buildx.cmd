@@ -54,16 +54,19 @@ if "%OWBUILD_STAGE%" == "boot" (
         set RC=!ERRORLEVEL!
         if not %RC% == 1 (
             cd %OWSRCDIR%
+            set OWVERBOSE=1
             builder boot
             set RC=!ERRORLEVEL!
         )
     )
 )
 if "%OWBUILD_STAGE%" == "build" (
+    set OWVERBOSE=1
     builder rel
     set RC=!ERRORLEVEL!
 )
 if "%OWBUILD_STAGE%" == "tests" (
+REM    set OWVERBOSE=1
 REM    builder test %OWTESTTARGET%
 REM    set RC=!ERRORLEVEL!
 )
@@ -71,6 +74,7 @@ if "%OWBUILD_STAGE%" == "docs" (
     REM register all Help Compilers DLL's
     regsvr32 -u -s itcc.dll
     regsvr32 -s %OWCIBIN32%\itcc.dll
+    set OWVERBOSE=1
     builder docs %OWDOCTARGET%
     set RC=!ERRORLEVEL!
 )

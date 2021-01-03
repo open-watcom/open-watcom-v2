@@ -65,11 +65,13 @@ build_proc()
             bootutil_proc
             if [ $RC -eq 0 ]; then
                 cd $OWSRCDIR
+                export OWVERBOSE=1
                 builder boot
                 RC=$?
             fi
             ;;
         "build")
+            export OWVERBOSE=1
             builder rel
             RC=$?
             ;;
