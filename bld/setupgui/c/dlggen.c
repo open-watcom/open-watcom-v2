@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -108,9 +108,9 @@ static void SetDynamic( gui_window *gui, vhandle var_handle, bool *drive_checked
 
     p = VarGetStrVal( var_handle );
     if( !*drive_checked ) {
-        while( *p ) {
+        while( *p != '\0' ) {
             if( *p == '%' ) {
-                if( strnicmp( p, "%DriveFree", 10 ) == 0 ) {
+                if( strnicmp( p + 1, "DriveFree", 9 ) == 0 ) {
                     CheckDrive( false );
                     *drive_checked = true;
                 }

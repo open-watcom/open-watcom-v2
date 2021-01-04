@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -285,17 +285,21 @@ static bool ZapKey( const VBUF *app_name, const char *old, const char *new,
         if( buff[0] == '[' ) {
             if( in_sect )
                 break;
-            if( VbufCompBuffer( app_name, buff + 1, app_len, false ) == 0 && buff[app_len + 1] == ']' ) {
-                in_sect = true;
+            if( buff[app_len + 1] == ']' ) {
+                if( strncmp( app_name->buf, buff + 1, app_len ) == 0 ) {
+                    in_sect = true;
+                }
             }
         } else if( in_sect ) {
-            if( strncmp( old, buff, old_len ) == 0 && buff[old_len] == '=' ) {
-                if( num++ == pos ) {
-                    memcpy( buff, new, old_len );
-                    fseek( io, -(long)(strlen( buff ) + 1), SEEK_CUR );
-                    fputs( buff, io );
-                    fclose( io );
-                    return( true );
+            if( buff[old_len] == '=' ) {
+                if( strncmp( old, buff, old_len ) == 0 ) {
+                    if( num++ == pos ) {
+                        memcpy( buff, new, old_len );
+                        fseek( io, -(long)(strlen( buff ) + 1), SEEK_CUR );
+                        fputs( buff, io );
+                        fclose( io );
+                        return( true );
+                    }
                 }
             }
         }

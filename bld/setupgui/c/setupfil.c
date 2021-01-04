@@ -54,11 +54,13 @@
     #define SETENV_LEN      7
     #define NAME_PREFIX     "$"
     #define NAME_SUFFIX     ""
+    #define IS_SETENVCMD(s) (strncmp(s, SETENV, SETENV_LEN) == 0)
 #else
     #define SETENV          "SET "
     #define SETENV_LEN      4
     #define NAME_PREFIX     "%"
     #define NAME_SUFFIX     "%"
+    #define IS_SETENVCMD(s) (strnicmp(s, SETENV, SETENV_LEN) == 0)
 #endif
 
 typedef enum {
@@ -281,7 +283,7 @@ static var_type parse_line( char *line, VBUF *name, VBUF *value, var_type vt_set
     // NAME VALUE
     VbufRewind( name );
     SKIP_SPACES( line );
-    if( strnicmp( line, SETENV, SETENV_LEN ) == 0 ) {
+    if( IS_SETENVCMD( line ) ) {
         line += SETENV_LEN;
         SKIP_SPACES( line );
         if( vt_setenv == VAR_ASSIGN_SETENV ) {
@@ -599,7 +601,7 @@ static var_type getAutoVarType( const VBUF *auto_var )
 {
     var_type        vt;
 
-    if( VbufCompBuffer( auto_var, SETENV, SETENV_LEN, true ) == 0 ) {
+    if( IS_SETENVCMD( auto_var->buf ) ) {
         vt = VAR_ASSIGN_SETENV;
     } else {
         vt = VAR_CMD;
@@ -756,7 +758,7 @@ static var_type getConfigVarType( const VBUF *cfg_var )
 {
     var_type        vt;
 
-    if( VbufCompBuffer( cfg_var, SETENV, SETENV_LEN, true ) == 0 ) {
+    if( IS_SETENVCMD( cfg_var->buf ) ) {
         vt = VAR_ASSIGN_SETENV;
     } else {
         vt = VAR_ASSIGN;

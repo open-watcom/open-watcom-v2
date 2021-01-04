@@ -1933,7 +1933,7 @@ static bool DoCopyFiles( void )
                 VbufSetLen( &src_path, src_path_pos1 );     // nuke sub-dir and name from end of src_path
                 dst_dir = GetVariableStrVal( "DstDir" );
                 len = strlen( dst_dir );
-                if( VbufCompBuffer( &dir, dst_dir, len, false ) == 0 ) {
+                if( strncmp( dir.buf, dst_dir, len ) == 0 ) {
                     if( VbufString( &dir )[len] == DIR_SEP ) {      // if 1st char to concat is a backslash, skip it
                         len++;
                     }
