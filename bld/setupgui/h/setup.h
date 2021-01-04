@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -101,6 +101,9 @@
 #endif
 
 #define IS_VALID_DIR(p)     ((p)->d_name[0] != '.' || (p)->d_name[1] != '\0' && ((p)->d_name[1] != '.' || (p)->d_name[2] != '\0'))
+
+#define SKIP_SPACES(s)      while(isspace(*s)) s++
+#define SKIP_CHAR_SPACES(s) while(isspace(*++s))
 
 typedef enum {
     CFE_NOERROR,

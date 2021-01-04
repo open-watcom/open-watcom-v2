@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -280,12 +280,10 @@ static var_type parse_line( char *line, VBUF *name, VBUF *value, var_type vt_set
     // NAME = VALUE
     // NAME VALUE
     VbufRewind( name );
-    while( isspace( *line ) )
-        ++line;
+    SKIP_SPACES( line );
     if( strnicmp( line, SETENV, SETENV_LEN ) == 0 ) {
         line += SETENV_LEN;
-        while( isspace( *line ) )
-            ++line;
+        SKIP_SPACES( line );
         if( vt_setenv == VAR_ASSIGN_SETENV ) {
             VbufConcStr( name, SETENV );
         }
@@ -294,20 +292,20 @@ static var_type parse_line( char *line, VBUF *name, VBUF *value, var_type vt_set
         vt = VAR_ASSIGN;
     }
     s = line;
-    for( c = *line; c != '\0' && !isspace( c ) && c != '='; c = *(++line) )
-        ;
+    for( ; (c = *line) != '\0'; line++ ) {
+        if( isspace( c ) || c == '=' ) {
+            break;
+        }
+    }
     VbufConcBuffer( name, s, line - s );
     VbufRewind( value );
-    while( isspace( *line ) )
-        ++line;
     if( *line == '=' ) {
-        ++line;
-        while( isspace( *line ) )
-            ++line;
+        SKIP_CHAR_SPACES( line );
         VbufConcStr( value, line );
     } else if( vt == vt_setenv ) {
         vt = VAR_ERROR;
     } else {
+        SKIP_SPACES( line );
         VbufConcStr( value, line );
         vt = VAR_CMD;
     }
@@ -556,7 +554,8 @@ static bool ModFile( const VBUF *orig, const VBUF *new,
             *line = '\0';
         }
         // don't process empty lines but keep them in new file
-        for( line = envbuf; isspace( *line ); ++line );
+        line = envbuf;
+        SKIP_SPACES( line );
         if( line[0] != '\0' ) {
             func_xxx( line, num_xxx, found_xxx, uninstall );
             if( num_env > 0 ) {

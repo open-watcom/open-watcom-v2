@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -2640,6 +2640,17 @@ bool FreeDirParams( void )
     return( true );
 }
 
+static void removeTrailingSpaces( char *s )
+/*****************************************/
+{
+    size_t  len;
+
+    len = strlen( s );
+    while( len-- > 0 && isspace( s[len] ) ) {
+        s[len] = '\0';
+    }
+}
+
 void ReadVariablesFile( const char *name )
 /****************************************/
 {
@@ -2654,29 +2665,18 @@ void ReadVariablesFile( const char *name )
         return;
     }
 
-    while( fgets( buf, sizeof( buf ), fp ) != NULL ) {
-        line = buf;
-        while( isspace( *line ) != 0 ) {
-            line++;
-        }
-        if( *line == '#' ) {
+    while( (line = fgets( buf, sizeof( buf ), fp )) != NULL ) {
+        SKIP_SPACES( line );
+        if( *line == '#' || *line == '\0' ) {
             continue;
         }
-        while( strlen( line ) > 0 && isspace( line[strlen( line ) - 1] ) ) {
-            line[strlen( line ) - 1] = '\0';
-        }
+        removeTrailingSpaces( line );
         variable = strtok( line, " =\t" );
-        value = strtok( NULL, "=\t\0" );
-        if( value != NULL ) {
-            while( isspace( *value ) ) {
-                value++;
-            }
-
-            while( strlen( value ) > 0 &&
-                   isspace( value[strlen( value ) - 1] ) ) {
-                value[strlen( value ) - 1] = '\0';
-            }
-            if( variable != NULL ) {
+        if( variable != NULL ) {
+            value = strtok( NULL, "=\t\0" );
+            if( value != NULL ) {
+                SKIP_SPACES( value );
+                removeTrailingSpaces( value );
                 if( name == NULL || stricmp( name, variable ) == 0 ) {
                     if( stricmp( value, "true" ) == 0 ) {
                         SetBoolVariableByName( variable, true );
