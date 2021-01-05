@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -132,6 +132,8 @@ TAG( USAGEOGRP )
 #define IS_ASCII(c)             (c < 0x80)
 
 #define GET_OUTPUT_BUF(l)       (outputbuff + l * BUFF_SIZE)
+
+#define SKIP_SPACES(s)          while( myisspace( *s ) ) s++
 
 typedef const char              *lang_data[LANG_MAX];
 
@@ -838,34 +840,32 @@ static bool procCmdLine( int argc1, char **argv1 )
     return( false );
 }
 
-static size_t skipSpace( const char *start )
+static const char *nextWord( const char *s, char *o )
 {
-    const char  *p;
-
-    for( p = start; *p != '\0'; ++p ) {
-        if( !myisspace( *p ) ) {
+    while( *s != '\0' ) {
+        if( myisspace( *s ) )
             break;
-        }
-    }
-    return( p - start );
-}
-
-static size_t copyNonSpaceUntil( const char *start, char *o, char t )
-{
-    const char  *i;
-
-    for( i = start; *i != '\0'; ++i ) {
-        if( myisspace( *i ) )
-            break;
-        if( *i == t ) {
-            ++i;
-            break;
-        }
-        *o = *i;
-        ++o;
+        *o++ = *s++;
     }
     *o = '\0';
-    return( i - start );
+    SKIP_SPACES( s );
+    return( s );
+}
+
+static const char *nextTag( const char *s, char *o )
+{
+    while( *s != '\0' ) {
+        if( myisspace( *s ) )
+            break;
+        if( *s == '.' ) {
+            s++;
+            break;
+        }
+        *o++ = *s++;
+    }
+    *o = '\0';
+    SKIP_SPACES( s );
+    return( s );
 }
 
 static tag_id findTag( char const *t )
@@ -883,13 +883,12 @@ static tag_id findTag( char const *t )
 static tag_id isTag( const char **eot )
 {
     tag_id tag;
-    char *p;
+    const char *p;
 
     p = ibuff;
-    p += skipSpace( p );
-    if( *p == ':' ) {
-        ++p;
-        p += copyNonSpaceUntil( p, tagbuff, '.' );
+    SKIP_SPACES( p );
+    if( *p++ == ':' ) {
+        p = nextTag( p, tagbuff );
         if( (tag = findTag( tagbuff )) == TAG_UNKNOWN )
             fail( "unknown tag: %s\n", tagbuff );
         *eot = p;
@@ -945,7 +944,6 @@ static char *pickUpRest( const char *p )
 // :argequal. <char>
 static void doARGEQUAL( const char *p )
 {
-    p += skipSpace( p );
     if( *p == '\0' ) {
         fail( ":argequal. must have <char> specified\n" );
     } else {
@@ -980,10 +978,7 @@ static void doOPTION( const char *p )
     targetTitle = NULL;
     synonym = NULL;
     while( *p != '\0' ) {
-        p += skipSpace( p );
-        if( *p == '\0' )
-            break;
-        p += copyNonSpaceUntil( p, tokbuff, '\0' );
+        p = nextWord( p, tokbuff );
         synonym = pushNewOption( tokbuff, synonym );
     }
     getsUsage = TAG_OPTION;
@@ -996,10 +991,7 @@ static void doTARGET( const char *p )
     OPTION *o;
 
     while( *p != '\0' ) {
-        p += skipSpace( p );
-        if( *p == '\0' )
-            break;
-        p += copyNonSpaceUntil( p, tokbuff, '\0' );
+        p = nextWord( p, tokbuff );
         if( (mask = findTarget( tokbuff )) == 0 ) {
             fail( "invalid target name '%s'\n", tokbuff );
         }
@@ -1020,10 +1012,7 @@ static void doNTARGET( const char *p )
     OPTION *o;
 
     while( *p != '\0' ) {
-        p += skipSpace( p );
-        if( *p == '\0' )
-            break;
-        p += copyNonSpaceUntil( p, tokbuff, '\0' );
+        p = nextWord( p, tokbuff );
         if( (mask = findTarget( tokbuff )) == 0 ) {
             fail( "invalid target name '%s'\n", tokbuff );
         }
@@ -1046,18 +1035,16 @@ static void doNUMBER( const char *p )
         o->is_number = true;
         o->is_simple = false;
     }
-    p += skipSpace( p );
     if( *p != '\0' ) {
-        p += copyNonSpaceUntil( p, tokbuff, '\0' );
+        p = nextWord( p, tokbuff );
         if( NOSKIP( tokbuff ) ) {
             for( o = optionList; o != NULL; o = o->synonym ) {
                 o->check_func = strdup( tokbuff );
             }
         }
     }
-    p += skipSpace( p );
     if( *p != '\0' ) {
-        p += copyNonSpaceUntil( p, tokbuff, '\0' );
+        p = nextWord( p, tokbuff );
         if( NOSKIP( tokbuff ) ) {
             for( o = optionList; o != NULL; o = o->synonym ) {
                 o->number_default = atoi( tokbuff );
@@ -1065,9 +1052,8 @@ static void doNUMBER( const char *p )
             }
         }
     }
-    p += skipSpace( p );
     if( *p != '\0' ) {
-        p += copyNonSpaceUntil( p, tokbuff, '\0' );
+        p = nextWord( p, tokbuff );
         for( o = optionList; o != NULL; o = o->synonym ) {
             o->usage_argid = strdup( tokbuff );
         }
@@ -1107,18 +1093,16 @@ static void doID( const char *p )
         o->is_id = true;
         o->is_simple = false;
     }
-    p += skipSpace( p );
-    if( p[0] != '\0' ) {
-        p += copyNonSpaceUntil( p, tokbuff, '\0' );
+    if( *p != '\0' ) {
+        p = nextWord( p, tokbuff );
         if( NOSKIP( tokbuff ) ) {
             for( o = optionList; o != NULL; o = o->synonym ) {
                 o->check_func = strdup( tokbuff );
             }
         }
     }
-    p += skipSpace( p );
     if( *p != '\0' ) {
-        p += copyNonSpaceUntil( p, tokbuff, '\0' );
+        p = nextWord( p, tokbuff );
         for( o = optionList; o != NULL; o = o->synonym ) {
             o->usage_argid = strdup( tokbuff );
         }
@@ -1134,18 +1118,16 @@ static void doCHAR( const char *p )
         o->is_char = true;
         o->is_simple = false;
     }
-    p += skipSpace( p );
     if( *p != '\0' ) {
-        p += copyNonSpaceUntil( p, tokbuff, '\0' );
+        p = nextWord( p, tokbuff );
         if( NOSKIP( tokbuff ) ) {
             for( o = optionList; o != NULL; o = o->synonym ) {
                 o->check_func = strdup( tokbuff );
             }
         }
     }
-    p += skipSpace( p );
     if( *p != '\0' ) {
-        p += copyNonSpaceUntil( p, tokbuff, '\0' );
+        p = nextWord( p, tokbuff );
         for( o = optionList; o != NULL; o = o->synonym ) {
             o->usage_argid = strdup( tokbuff );
         }
@@ -1161,18 +1143,16 @@ static void doIMMEDIATE( const char *p )
         o->is_immediate = true;
         o->is_simple = false;
     }
-    p += skipSpace( p );
     if( *p != '\0' ) {
-        p += copyNonSpaceUntil( p, tokbuff, '\0' );
+        p = nextWord( p, tokbuff );
         for( o = optionList; o != NULL; o = o->synonym ) {
             o->immediate_func = strdup( tokbuff );
         }
     } else {
         fail( ":immediate. must have <fn> specified\n" );
     }
-    p += skipSpace( p );
     if( *p != '\0' ) {
-        p += copyNonSpaceUntil( p, tokbuff, '\0' );
+        p = nextWord( p, tokbuff );
         for( o = optionList; o != NULL; o = o->synonym ) {
             o->usage_argid = strdup( tokbuff );
         }
@@ -1188,7 +1168,6 @@ static void doCODE( const char *p )
         o->is_code = true;
         o->is_simple = false;
     }
-    p += skipSpace( p );
     if( *p != '\0' ) {
         for( o = optionList; o != NULL; o = o->synonym ) {
             o->code = strdup( p );
@@ -1209,9 +1188,8 @@ static void doFILE( const char *p )
         o->is_file = true;
         o->is_simple = false;
     }
-    p += skipSpace( p );
     if( *p != '\0' ) {
-        p += copyNonSpaceUntil( p, tokbuff, '\0' );
+        p = nextWord( p, tokbuff );
         for( o = optionList; o != NULL; o = o->synonym ) {
             o->usage_argid = strdup( tokbuff );
         }
@@ -1271,9 +1249,8 @@ static void doPATH( const char *p )
         o->is_path = true;
         o->is_simple = false;
     }
-    p += skipSpace( p );
     if( *p != '\0' ) {
-        p += copyNonSpaceUntil( p, tokbuff, '\0' );
+        p = nextWord( p, tokbuff );
         for( o = optionList; o != NULL; o = o->synonym ) {
             o->usage_argid = strdup( tokbuff );
         }
@@ -1288,13 +1265,11 @@ static void doCHAIN( const char *p )
 {
     CHAIN *cn;
 
-    p += skipSpace( p );
     if( *p == '\0' ) {
         fail( "missing <option> in :chain. tag\n" );
     }
-    p += copyNonSpaceUntil( p, tokbuff, '\0' );
+    p = nextWord( p, tokbuff );
     cn = addChain( tokbuff, true );
-    p += skipSpace( p );
     cn->Usage[LANG_English] = pickUpRest( p );
     lastChain = cn;
     getsUsage = TAG_CHAIN;
@@ -1306,14 +1281,12 @@ static void doENUMERATE( const char *p )
     NAME *en;
     OPTION *o;
 
-    p += skipSpace( p );
     if( *p == '\0' ) {
         fail( "missing <name> in :enumerate. tag\n" );
     }
-    p += copyNonSpaceUntil( p, tokbuff, '\0' );
+    p = nextWord( p, tokbuff );
     en = addEnumName( &enumList, tokbuff );
-    p += skipSpace( p );
-    p += copyNonSpaceUntil( p, tokbuff, '\0' );
+    p = nextWord( p, tokbuff );
     if( *tokbuff != '\0' ) {
         addEnumerator( en->name, tokbuff );
     }
@@ -1338,17 +1311,15 @@ static void doSPECIAL( const char *p )
         o->is_special = true;
         o->is_simple = false;
     }
-    p += skipSpace( p );
     if( *p == '\0' ) {
         fail( "missing <fn> in :special. tag\n" );
     }
-    p += copyNonSpaceUntil( p, tokbuff, '\0' );
+    p = nextWord( p, tokbuff );
     for( o = optionList; o != NULL; o = o->synonym ) {
         o->special_func = strdup( tokbuff );
     }
-    p += skipSpace( p );
     if( *p != '\0' ) {
-        p += copyNonSpaceUntil( p, tokbuff, '\0' );
+        p = nextWord( p, tokbuff );
         for( o = optionList; o != NULL; o = o->synonym ) {
             o->usage_argid = strdup( tokbuff );
         }
@@ -1470,9 +1441,8 @@ static void doGROUP( const char *p )
     OPTION *o;
     GROUP  *gr;
 
-    p += skipSpace( p );
     if( *p != '\0' ) {
-        p += copyNonSpaceUntil( p, tokbuff, '\0' );
+        p = nextWord( p, tokbuff );
         gr = findGroup( tokbuff );
         if( gr != NULL ) {
             for( o = optionList; o != NULL; o = o->synonym ) {
@@ -1507,13 +1477,11 @@ static void doUSAGEOGRP( const char *p )
 {
     CHAIN *cn;
 
-    p += skipSpace( p );
     if( *p == '\0' ) {
         fail( "missing <option> in :usageogrp. tag\n" );
     }
-    p += copyNonSpaceUntil( p, tokbuff, '\0' );
+    p = nextWord( p, tokbuff );
     cn = addChain( tokbuff, false );
-    p += skipSpace( p );
     cn->Usage[LANG_English] = pickUpRest( p );
     lastChain = cn;
     getsUsage = TAG_CHAIN;
@@ -1527,13 +1495,11 @@ static void doUSAGEGRP( const char *p )
 {
     GROUP *gr;
 
-    p += skipSpace( p );
     if( *p == '\0' ) {
         fail( "missing <num> in :usagegrp. tag\n" );
     }
-    p += copyNonSpaceUntil( p, tokbuff, '\0' );
+    p = nextWord( p, tokbuff );
     gr = addGroup( tokbuff );
-    p += skipSpace( p );
     gr->Usage[LANG_English] = pickUpRest( p );
     lastGroup = gr;
     getsUsage = TAG_GROUP;
@@ -1597,7 +1563,6 @@ static void readInputFile( void )
         checkForGMLEscapeSequences();
         tag = isTag( &eot );
         if( tag != TAG_NULL ) {
-            eot += skipSpace( eot );
             (*processTag[tag])( eot );
         }
     }

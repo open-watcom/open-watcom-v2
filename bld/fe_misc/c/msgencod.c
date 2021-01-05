@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,6 +54,7 @@
 
 
 #define ALL_TAGS \
+def_tag( cmt ) \
 def_tag( msggrp ) \
 def_tag( emsggrp ) \
 def_tag( msggrptxt ) \
@@ -105,6 +106,8 @@ def_msg_type( JCK, "JCK_" ) \
 #define IS_ASCII(c)     (c < 0x80)
 
 #define LINE_SIZE       (512)
+
+#define SKIP_SPACES(s)  while( isspace( *s ) ) s++
 
 typedef enum {
 #define def_tag( e ) TAG_##e,
@@ -185,7 +188,7 @@ const char *langName[] = {
 unsigned langTextCount[LANG_MAX];
 
 static const char *tagNames[] = {
-#define def_tag( e ) #e "." ,
+#define def_tag( e ) #e,
     ALL_TAGS
 #undef def_tag
     NULL
@@ -442,45 +445,43 @@ static bool processOptions( int argc1, char **argv1 )
     return( false );
 }
 
-static size_t skipSpace( const char *start )
+static const char *nextWord( char *t, const char *s )
 {
-    const char  *p;
-
-    for( p = start; *p != '\0'; ++p ) {
-        if( !isspace( *p ) ) {
+    while( *s != '\0' ) {
+        if( isspace( *s ) ) {
             break;
         }
-    }
-    return( p - start );
-}
-
-static size_t skipNonSpace( char *t, const char *start )
-{
-    const char  *p;
-
-    for( p = start; *p != '\0'; ++p ) {
-        if( isspace( *p ) ) {
-            break;
-        }
-        *t++ = *p;
+        *t++ = *s++;
     }
     *t = '\0';
-    return( p - start );
+    return( s );
+}
+
+static const char *nextTag( char *t, const char *s )
+{
+    while( *s != '\0' ) {
+        if( isspace( *s ) ) {
+            break;
+        }
+        if( *s == '.' ) {
+            s++;
+            break;
+        }
+        *t++ = *s++;
+    }
+    *t = '\0';
+    SKIP_SPACES( s );
+    return( s );
 }
 
 static tag_id getId( const char *p, const char **update_p )
 {
     const char  **tc;
 
-    p += skipNonSpace( tag, p );
-    if( p[-1] != '.' ) {
-        error( "tag missing '.': %s\n", tag );
-        return( TAG_MAX );
-    }
-    p += skipSpace( p );
-    *update_p = p;
+    p = nextTag( tag, p );
     for( tc = tagNames; *tc != NULL; ++tc ) {
         if( stricmp( tag, *tc ) == 0 ) {
+            *update_p = p;
             return( tc - tagNames );
         }
     }
@@ -503,7 +504,6 @@ static unsigned long pickUpNum( const char *p )
     unsigned long   num;
     char            *end;
 
-    p += skipSpace( p );
     num = strtoul( p, &end, 0 );
     return( num );
 }
@@ -550,6 +550,7 @@ static MSGSYM *addToSorted( MSGSYM *m )
 #define do_msgjgrptxt   NULL
 #define do_ansicomp     NULL
 #define do_errbreak     NULL
+#define do_cmt          NULL
 
 static void noActive( err_type kind )
 {
@@ -611,7 +612,7 @@ static void do_msggrpstr( const char *p )
     MSGGROUP *grp;
 
     grp = currGroup;
-    p += skipNonSpace( group, p );
+    nextWord( group, p );
     if( grp != NULL ) {
         if( grp->prefix != grp->name )
             free( grp->prefix );
@@ -622,6 +623,7 @@ static void do_msggrpstr( const char *p )
 static void do_msggrpnum( const char *p )
 {
     MSGGROUP *grp;
+
     grp = currGroup;
     groupIndex = pickUpNum( p );
     if( grp != NULL ) {
@@ -664,7 +666,7 @@ static void do_msggrp( const char *p )
         }
     }
     flags.grouped = true;
-    p += skipNonSpace( group, p );
+    nextWord( group, p );
     len = strlen( group );
     if( !flags.rc && !flags.gen_gpick && len != 2 ) {
         error( ":msggroup code '%s' not two characters\n", group );
@@ -712,7 +714,7 @@ static void do_msgsym( const char *p )
 
     ++messageCounter;
     flags.have_msg = true;
-    p += skipNonSpace( sym, p );
+    nextWord( sym, p );
     if( strcmp( sym, "UNUSED" ) != 0 ) {
         len = strlen( sym );
         msg = calloc( 1, sizeof( *msg ) + len );
@@ -882,8 +884,7 @@ static char *inputIO( void )
         if( c == '\n' )
             break;
         if( c == '\r' && p[1] == '\n' ) {
-            *p = '\0';
-            ++p;
+            *p++ = '\0';
             break;
         }
         ++p;
@@ -1009,7 +1010,6 @@ static void readGML( void )
 {
     tag_id      tag_id;
     const char  *p;
-    void        (*process)( const char * );
 
     suckInFile();
     line = 0;
@@ -1021,18 +1021,12 @@ static void readGML( void )
         if( ibuff[0] != ':' ) {
             continue;
         }
-        if( tolower( ibuff[1] ) == 'c'
-          && tolower( ibuff[2] ) == 'm'
-          && tolower( ibuff[3] ) == 't' ) {
-            continue;
-        }
         tag_id = getId( ibuff + 1, &p );
         if( tag_id == TAG_MAX ) {
             continue;
         }
-        process = processLine[tag_id];
-        if( process != NULL ) {
-            process( p );
+        if( processLine[tag_id] != NULL ) {
+            processLine[tag_id]( p );
         }
     }
     messageIndex = 0;
@@ -1169,19 +1163,19 @@ static void splitIntoWords( void )
     MSGWORD *w;
     MSGWORDREF *r;
     MSGWORDREF **a;
-    char *p;
+    const char *p;
 
     for( m = messageSyms; m != NULL; m = m->next ) {
         p = m->lang_txt[LANG_English];
         a = &(m->words);
         for( ;; ) {
-            if( p[0] && isspace( p[0] ) && isspace( p[1] ) ) {
+            if( isspace( p[0] ) && isspace( p[1] ) ) {
                 errorLocn( m->fname, m->line, "MSGSYM %s text has too many blanks '%s'\n", m->name, p );
             }
-            p += skipSpace( p );
+            SKIP_SPACES( p );
             if( *p == '\0' )
                 break;
-            p += skipNonSpace( word, p );
+            p = nextWord( word, p );
             w = addWord( m );
             r = malloc( sizeof( *r ) );
             r->word = w;
