@@ -700,7 +700,7 @@
 .   .if &*ind2. eq 0 .se *ind2=&*ind1.
 .   .se *ind=&'min(&*ind1.,&*ind2.)
 .   .se *ind=&*ind.-1
-.   .sr cnt_ttl=&'insert('\',›&cnt_ttl.›,&*ind.)
+.   .sr cnt_ttl=&'insert('\',&cnt_ttl.,&*ind.)
 .   .se *ind=&*ind.+3
 .   .go replace
 .dm repchars end
@@ -711,7 +711,7 @@
 :set symbol="SCTlvl" value = "0".
 .do end
 .sr *sct=0
-.if ›&cnt_ttl› ne › › .do begin
+.if &'length(&cnt_ttl.) ne 1 or '&cnt_ttl.' ne ' ' .do begin
 .   .ctxstr &cnt_pfx.&cnt_ctx.
 .   .reptilde
 .   .repchars
