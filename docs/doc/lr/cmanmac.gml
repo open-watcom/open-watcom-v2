@@ -97,14 +97,14 @@
 .   .me
 .do end
 .if &__sysl(&*fnd.) eq 0 .ty ***WARNING*** &*1 not defined in liblist7.gml
-.if |&fncttl.| eq || .do begin
+.if &'length(&fncttl.) eq 0 .do begin
 .   .sr fncttl=&*1
 .do end
-.el .if '&funcgrp.' eq '' .do begin
+.el .if &'length(&funcgrp.) eq 0 .do begin
 .   .sr fncttl=&fncttl., &*1
 .do end
-.if '&funcb' eq '' .sr funcb=&*1
-.if '&funcn' eq '' .sr funcn=&'strip(&*1,'L','_')
+.if &'length(&funcb.) eq 0 .sr funcb=&*1
+.if &'length(&funcn.) eq 0 .sr funcn=&'strip(&*1,'L','_')
 .addsyinfo &*1
 .* try to classify type of function
 .if &'pos('i64',&*1) ne 0 .do begin
@@ -154,11 +154,11 @@
 .*  .func norm _norm __norm _wnorm _fnorm _mbsnorm
 .*
 .dm func begin
-.if |&*1| ne |end| .do begin
+.if &'compare(&*1.,'end') ne 0 .do begin
 .   .sr *cnt=&*0
 .   .sr *i=1
 .   .funcinit
-.   .if |&*1| eq |begin| .do begin
+.   .if &'compare(&*1.,'begin') eq 0 .do begin
 .   .   .sr *i=&*i.+1
 .   .   .sr *cnt=&*cnt.-1
 .   .do end
@@ -169,7 +169,7 @@
 .   .   .if '&*second' eq 'Functions' .do begin
 .   .   .   .sr fncttl=&*first. &*second.
 .   .   .   .sr funcgrp=&'strip(&*first.,'T',',')
-.   .   .   .if |&'right(&funcgrp,&'length(&grpsfx.))| eq |&grpsfx.| .do begin
+.   .   .   .if &'compare(&'right(&funcgrp,&'length(&grpsfx.)).,&grpsfx.) eq 0 .do begin
 .   .   .   .   .sr groupfun=1
 .   .   .   .   .addclinf &funcgrp
 .   .   .   .do end
@@ -179,10 +179,10 @@
 .   .   .do end
 .   .do end
 .do end
-.if |&*1| ne |begin| .do begin
+.if &'compare(&*1.,'begin') ne 0 .do begin
 .*  generate title and start of code (declaration)
 .   .topsect &fncttl.
-.   .if '&funcgrp.' ne '' .do begin
+.   .if &'length(&funcgrp.) ne 0 .do begin
 .   .   .sr functiong=&funcgrp.
 .   .   .ixm '&funcgrp. Functions'
 .   .do end
@@ -234,7 +234,7 @@
 .dm ixfunc2 end
 .*
 .dm desc begin
-.if '&*' eq 'begin' .newtext Description:
+.if &'compare(&*.,'begin') eq 0 .newtext Description:
 .el .if '&*' eq 'end' .oldtext
 .dm desc end
 .*
@@ -307,7 +307,7 @@ contains a value indicating the type of error that has been detected.
 .dm error end
 .*
 .dm begterm begin
-.if '&*1' ne '' .do begin
+.if &'length(&*1.) ne 0 .do begin
 .begnote $setptnt &*.
 .do end
 .el .do begin
@@ -395,14 +395,14 @@ Prototype in
 .dm idbold end
 .*
 .dm clitm begin
-.if |&*| ne || .do begin
+.if &'length(&*.) ne 0 .do begin
 .   .ct &*
 .   .br
 .do end
 .dm clitm end
 .*
 .dm ansiname begin
-.if '&*' eq '' .me
+.if &'length(&*.) eq 0 .me
 .sr *i=0
 ...loopa .sr *i=&*i.+1
 .   .if '&*' eq '&__clnam(&*i.)' .do begin
@@ -416,7 +416,7 @@ Prototype in
 .sr *i=1
 ...loopc .se *i=&*i.+1
 .   .sr *clatr=&__clatr(&*i.).
-.   .if '&__cltxt(&*i.)' ne '' .do begin
+.   .if &'length(&__cltxt(&*i.).) ne 0 .do begin
 .   .   .if &clatr ge 2 .do begin
 .   .   .   .clitm &__clnam(&*i) &__cltxt(&*i.), conforms to ANSI naming conventions
 .   .   .do end
@@ -437,8 +437,8 @@ Prototype in
 .*
 .dm class begin
 .sr *extr=0
-.if |&*1| ne |end| .do begin
-.   .if |&*1| eq |begin| .do begin
+.if &'compare(&*1.,'end') ne 0 .do begin
+.   .if &'compare(&*1.,'begin') eq 0 .do begin
 .   .   .sr __class=&*2
 .   .   .sr *all=&'strip(&'substr(&*,6),'L',' ')
 .   .do end
@@ -468,7 +468,7 @@ Prototype in
 .   .   .do end
 .   .do end
 .do end
-.if |&*1| ne |begin| .do begin
+.if &'compare(&*1.,'begin') ne 0 .do begin
 .   .listend
 .do end
 .dm class end
@@ -481,7 +481,7 @@ Prototype in
 ...loopsys
 .se *stm=&*stm.+1
 .sysstr &$$fnc(&*stm.)
-.if '&$$str' ne '' .do begin
+.if &'length(&$$str.) ne 0 .do begin
 .   .if &*flg. eq 0 .do begin
 .   .   .se *flg=1
 .   .   .listnew Systems:
@@ -514,7 +514,7 @@ Prototype in
 .dm seelist end
 .*
 .dm seekw begin
-.if '&*2' ne '' .do begin
+.if &'length(&*2.) ne 0 .do begin
 .   .if '&*2' ne 'Functions' .do begin
 .   .   .if '&*1' ne '&*2' .do begin
 .   .   .   .if &'vecpos(&*2,fnclst) ne 0 .do begin

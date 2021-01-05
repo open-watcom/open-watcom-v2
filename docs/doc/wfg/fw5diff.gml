@@ -50,7 +50,7 @@ statement separator.
 .exam end
 .pc
 Since &cmpname supports
-..if '&machsys' = 'VM/SP CMS' | '&machsys' = 'VAX/VMS' ..do begin
+..if '&machsys' = 'VM/SP CMS' or '&machsys' = 'VAX/VMS' ..do begin
 object files as well as
 ..do end
 variable length FORTRAN statements, it was felt that this feature

@@ -329,7 +329,7 @@
 :cmt. **** :H1 ****
 .dm ZH1 begin
 .se hdtxt=`&hdpfx.&*.`
-.if `&*id.` eq `` .do begin
+.if &'length(&*id.) eq 0 .do begin
 .   :H1.&hdtxt.
 .do end
 .el .do begin
@@ -367,7 +367,7 @@
 :cmt. **** :H2 ****
 .dm ZH2 begin
 .se title=`&hdpfx.&*.`
-.if `&*id.` eq `` .do begin
+.if &'length(&*id.) eq 0 .do begin
 .   :H2.&title.
 .do end
 .el .do begin
@@ -399,7 +399,7 @@
 :cmt. **** :H3 ****
 .dm ZH3 begin
 .se title=`&hdpfx.&*.`
-.if `&*id.` eq `` .do begin
+.if &'length(&*id.) eq 0 .do begin
 .   :H3.&title.
 .do end
 .el .do begin
@@ -431,7 +431,7 @@
 :cmt. **** :H4 ****
 .dm ZH4 begin
 .se title=`&hdpfx.&*.`
-.if `&*id.` eq `` .do begin
+.if &'length(&*id.) eq 0 .do begin
 .   :H4.&title.
 .do end
 .el .do begin
