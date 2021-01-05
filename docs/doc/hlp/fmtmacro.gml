@@ -55,7 +55,7 @@
 .se *iwrd=&*1
 .do end
 .se *iwrd="&'strip('&*iwrd.','T',',')"
-.if &'length(&*iwrd.) ne 1 or '&*iwrd.' ne '.' .do begin
+.if &'compare(&*iwrd.,'.') ne 0 .do begin
 .se *iwrd="&'strip('&*iwrd.','T','.')"
 .do end
 .se *iwrd2='&*iwrd.'
@@ -93,10 +93,10 @@
 .*
 .dm ix2 begin
 .se *iw="&*"
-.if &'length(&*iw.) ne 1 or '&*iw.' ne ',' .do begin
+.if &'compare(&*iw.,',') ne 0 .do begin
 .se *iw="&'strip('&*iw.','T',',')"
 .do end
-.if &'length(&*iw.) ne 1 or '&*iw.' ne '.' .do begin
+.if &'compare(&*iw.,'.') ne 0 .do begin
 .se *iw="&'strip('&*iw.','T','.')"
 .do end
 .se *iw2='&*iw.'
@@ -653,11 +653,11 @@
 .*
 .dm cntents begin
 .if &e'&dohelp eq 0 .me
-.if ›&*› eq ›end_of_book› .do begin
+.if &'compare(&*,'end_of_book') eq 0 .do begin
 :set symbol="SCTlvl" value = "0".
 .do end
 .sr *sct=0
-.if &'length(&cnt_ttl.) ne 1 or '&cnt_ttl.' ne ' ' .do begin
+.if &'compare(&cnt_ttl.,' ','x') ne 0 .do begin
 .   .ctxstr &cnt_pfx.&cnt_ctx.
 .   .reptilde
 .   .repchars
@@ -677,7 +677,7 @@
 .   .   .do end
 .   .do end
 .   .if &*sct. ge 5 .do begin
-.   .   .if ›&cnt_ttl.› ne ›Introduction› .do begin
+.   .   .if &'compare(&cnt_ttl.,'Introduction') ne 0 .do begin
 .   .   .   .ty ***WARNING*** nesting too deep for Contents file (.CNT)
 .   .   .   .ty ***WARNING*** &*sct &cnt_ttl.
 .   .   .do end

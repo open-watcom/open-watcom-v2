@@ -707,11 +707,11 @@
 .*
 .dm cntents begin
 .if &e'&dohelp eq 0 .me
-.if ›&*› eq ›end_of_book› .do begin
+.if &'compare(&*.,'end_of_book') eq 0 .do begin
 :set symbol="SCTlvl" value = "0".
 .do end
 .sr *sct=0
-.if &'length(&cnt_ttl.) ne 1 or '&cnt_ttl.' ne ' ' .do begin
+.if &'compare(&cnt_ttl.,' ','x') ne 0 .do begin
 .   .ctxstr &cnt_pfx.&cnt_ctx.
 .   .reptilde
 .   .repchars
@@ -731,7 +731,7 @@
 .   .   .do end
 .   .do end
 .   .if &*sct. ge 5 .do begin
-.   .   .if ›&cnt_ttl.› ne ›Introduction› .do begin
+.   .   .if &'compare(&cnt_ttl.,'Introduction') ne 0 .do begin
 .   .   .   .ty ***WARNING*** nesting too deep for Contents file (.CNT)
 .   .   .   .ty ***WARNING*** &*sct &cnt_ttl.
 .   .   .do end
