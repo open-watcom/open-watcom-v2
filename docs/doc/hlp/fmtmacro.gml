@@ -51,7 +51,7 @@
 .pu 1 .ixline &*
 .* The next 2 lines correct problems with ".ix NAME="
 .se *iwrd=&*
-.if ›&*1› ne ›› .do begin
+.if &'length(&*1.) ne 0 .do begin
 .se *iwrd=&*1
 .do end
 .se *iwrd="&'strip('&*iwrd.','T',',')"
@@ -78,10 +78,10 @@
 .   .do end
 .do end
 .el .do begin
-.   .if ›&*3› ne ›› .do begin
+.   .if &'length(&*3.) ne 0 .do begin
 .   .   .sr *ixstr="&*iwrd., &*2, &*3"
 .   .do end
-.   .el .if ›&*2› ne ›› .do begin
+.   .el .if &'length(&*2.) ne 0 .do begin
 .   .   .sr *ixstr="&*iwrd., &*2"
 .   .do end
 .   .el .do begin
@@ -626,7 +626,7 @@
 .* replace all "~x" with "x"
 .se *ind=1
 ...replace
-.   .se *ind=&'index(›&cnt_ttl.›,'~',&*ind.)
+.   .se *ind=&'index(&cnt_ttl.,'~',&*ind.)
 .   .if &*ind. eq 0 .me
 .   .sr cnt_ttl=&'delstr(&cnt_ttl.,&*ind.,1)
 .   .se *ind=&*ind.+1
@@ -639,8 +639,8 @@
 .* replace all "=" with "\="
 .se *ind=1
 ...replace
-.   .se *ind1=&'index(›&cnt_ttl.›,';',&*ind.)
-.   .se *ind2=&'index(›&cnt_ttl.›,'=',&*ind.)
+.   .se *ind1=&'index(&cnt_ttl.,';',&*ind.)
+.   .se *ind2=&'index(&cnt_ttl.,'=',&*ind.)
 .   .if &*ind1. eq 0 .se *ind1=&*ind2.
 .   .if &*ind1. eq 0 .me
 .   .if &*ind2. eq 0 .se *ind2=&*ind1.

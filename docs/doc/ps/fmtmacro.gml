@@ -680,7 +680,7 @@
 .* replace all "~x" with "x"
 .se *ind=1
 ...replace
-.   .se *ind=&'index(›&cnt_ttl.›,'~',&*ind.)
+.   .se *ind=&'index(&cnt_ttl.,'~',&*ind.)
 .   .if &*ind. eq 0 .me
 .   .sr cnt_ttl=&'delstr(&cnt_ttl.,&*ind.,1)
 .   .se *ind=&*ind.+1
@@ -693,8 +693,8 @@
 .* replace all "=" with "\="
 .se *ind=1
 ...replace
-.   .se *ind1=&'index(›&cnt_ttl.›,';',&*ind.)
-.   .se *ind2=&'index(›&cnt_ttl.›,'=',&*ind.)
+.   .se *ind1=&'index(&cnt_ttl.,';',&*ind.)
+.   .se *ind2=&'index(&cnt_ttl.,'=',&*ind.)
 .   .if &*ind1. eq 0 .se *ind1=&*ind2.
 .   .if &*ind1. eq 0 .me
 .   .if &*ind2. eq 0 .se *ind2=&*ind1.
