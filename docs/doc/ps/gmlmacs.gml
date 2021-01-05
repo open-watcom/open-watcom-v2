@@ -648,10 +648,10 @@ The following pages contain cross-references to the
 .se *iwrd="&*1"
 .se *iwrd="&'strip(&*iwrd.,'T',',')"
 .se *iwrd="&'strip(&*iwrd.,'T','.')"
-.if ›&*3› ne ›› .do begin
+.if &'length(&*3) ne 0 .do begin
 .   .sr *ixstr="&*iwrd., &*2, &*3"
 .do end
-.el .if ›&*2› ne ›› .do begin
+.el .if &'length(&*2) ne 0 .do begin
 .   .sr *ixstr="&*iwrd., &*2"
 .do end
 .el .do begin
