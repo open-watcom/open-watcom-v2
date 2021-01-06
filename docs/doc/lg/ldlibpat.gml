@@ -9,9 +9,11 @@ directives and object files appearing in subsequent "LIBFILE"
 directives.
 The format of the "LIBPATH" directive (short form "LIBP") is as
 follows.
+.cw !
 .mbigbox
     LIBPATH [path_name{&ps.path_name}]
 .embigbox
+.cw ;
 .synote
 .mnote path_name
 is a path name.

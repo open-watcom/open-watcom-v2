@@ -1,7 +1,5 @@
-.ti 3b bb
-.tr bb 3b
 :set symbol="pc" value="\".
-:set symbol="ps" value="~;".
+:set symbol="ps" value=";".
 :set symbol="dr1" value="a:".
 :set symbol="dr2" value="b:".
 :set symbol="dr3" value="c:".

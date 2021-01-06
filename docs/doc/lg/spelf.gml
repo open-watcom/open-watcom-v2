@@ -22,7 +22,6 @@
 where
 .bi directive
 is any of the following:
-.cw `
 .begnote $compact
 .note ALIAS alias_name=symbol_name{,alias_name=symbol_name}
 .note DEBUG dbtype [dblist] | DEBUG [dblist]
@@ -34,7 +33,9 @@ is any of the following:
 .note IMPORT external_name {,external_name}
 .note LANGUAGE lang
 .note LIBFILE obj_file{,obj_file}
+.cw !
 .note LIBPATH path_name{&ps.path_name}
+.cw ;
 .note LIBRARY library_file{,library_file}
 .note MODFILE obj_file{,obj_file}
 .note MODTRACE obj_module{,obj_module}
@@ -72,7 +73,9 @@ is any of the following:
 .note VFREMOVAL
 .endnote
 .note OPTLIB library_file{,library_file}
+.cw !
 .note PATH path_name{&ps.path_name}
+.cw ;
 .note REFERENCE symbol_name{,symbol_name}
 .note RUNTIME run_option
 .note SORT [GLOBAL] [ALPHABETICAL]
@@ -83,7 +86,6 @@ is any of the following:
 .note # comment
 .note @ directive_file
 .endnote
-.cw ;
 :CMT. .synote
 :CMT. .im objfile
 :CMT. .im libfile
