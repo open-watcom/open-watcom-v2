@@ -24,7 +24,7 @@
 .dm msgtxt begin
 .cw $
 .se *ttl="&'strip(&*)"
-.if !&*ttl.! ne !filler! .do begin
+.if &'compare(&*ttl.,'filler') ne 0 .do begin
 .   .if &e'&dohelp eq 0 .do begin
 .   .	.keep
 .   .	.note &$$msgnumb
