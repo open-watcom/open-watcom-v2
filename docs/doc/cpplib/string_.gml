@@ -146,7 +146,7 @@ The &fn. returns the previous allocation multiple size.
 :SNPF index='get_at'.char const &amp.String::get_at( size_t pos );
 :eSNPL.
 :SMTICS.
-.'se str_sub_pm='constant'
+.se str_sub_pm='constant'
 :INCLUDE file='str_subs'.
 :SALSO.
 :SAL typ='mfun'.put_at
@@ -327,7 +327,7 @@ parameter are different, otherwise zero is returned.
 :SNPF index='operator ()'.char &amp.String::operator ()( size_t pos );
 :eSNPL.
 :SMTICS.
-.'se str_sub_pm='dynamic'
+.se str_sub_pm='dynamic'
 :INCLUDE file='str_subs'.
 :SALSO.
 :SAL typ='mfun'.operator~b[]
