@@ -67,10 +67,10 @@ static void removeSepFromEnd( char *dir, char pathsep )
 {
     size_t len;
 
-    if( *dir != '\0' ) {
-        len = strlen( dir );
-        if( dir[len - 1] == pathsep ) {
-            dir[len - 1] = '\0';
+    if( dir[0] != '\0' ) {
+        len = strlen( dir ) - 1;
+        if( dir[len] == pathsep ) {
+            dir[len] = '\0';
         }
     }
 }
@@ -79,11 +79,11 @@ static void addSepToEnd( char *dir, char pathsep )
 {
     size_t len;
 
-    if( *dir != '\0' ) {
+    if( dir[0] != '\0' ) {
         len = strlen( dir );
         if( dir[len - 1] != pathsep ) {
-            dir[len] = pathsep;
-            dir[len + 1] = '\0';
+            dir[len++] = pathsep;
+            dir[len] = '\0';
         }
     }
 }
@@ -91,7 +91,7 @@ static void addSepToEnd( char *dir, char pathsep )
 #ifndef __UNIX__
 static bool setdrive( const char* drive, int* olddrive )
 {
-    if( *drive != '\0' ) {
+    if( drive[0] != '\0' ) {
         *olddrive = _getdrive();
         int drv = toupper( (unsigned char)drive[0] ) - 'A' + 1;    // 1='A'; 2='B'; ...
         if( *olddrive != drv ) {
@@ -140,8 +140,8 @@ WFileName* WEXPORT WFileName::createSelf( WObjectFile& )
 
 void WEXPORT WFileName::readSelf( WObjectFile& p )
 {
-    char    *x;
-    char    from;
+    const char  *x;
+    char        from;
 
     WString::readSelf( p );
     if( PATHSEP_CHAR == '/' ) {
@@ -149,23 +149,23 @@ void WEXPORT WFileName::readSelf( WObjectFile& p )
     } else {
         from = '/';
     }
-    for( x = *(char **)this; (x = strchr( x, from )) != NULL; ++x ) {
-        *x = PATHSEP_CHAR;
+    for( x = *this; (x = strchr( x, from )) != NULL; ++x ) {
+        setChar( x - *this, PATHSEP_CHAR );
     }
 }
 
 void WEXPORT WFileName::writeSelf( WObjectFile& p )
 {
-    char    *x;
-    char    from;
+    const char  *x;
+    char        from;
 
     if( PATHSEP_CHAR == '/' ) {
         from = '\\';
     } else {
         from = '/';
     }
-    for( x = *(char **)this; (x = strchr( x, from )) != NULL; ++x ) {
-        *x = PATHSEP_CHAR;
+    for( x = *this; (x = strchr( x, from )) != NULL; ++x ) {
+        setChar( x - *this, PATHSEP_CHAR );
     }
     WString::writeSelf( p );
 }
