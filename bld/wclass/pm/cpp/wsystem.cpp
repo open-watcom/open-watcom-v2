@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -111,9 +112,7 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
     }
 
     WFileName exename( pgm );
-    if( *exename.ext() == NULLCHAR ) {
-        exename.setExt( "exe" );
-    }
+    exename.setExtIfNone( "exe" );
 
     // Try to determine full pathname; the process PATH may not be what
     // we started with.
@@ -184,9 +183,7 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
     }
 
     WFileName fn( pgm );
-    if( *fn.ext() == NULLCHAR ) {
-        fn.setExt( "exe" );
-    }
+    fn.setExtIfNone( "exe" );
     if( pgm_starter == PGM_DOSEXECPGM ) {
         char    *exec_env;
 

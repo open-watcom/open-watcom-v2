@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -456,6 +456,17 @@ const char* WEXPORT WFileName::ext() const
 {
     _splitpath2( *this, _result_buf, NULL, NULL, NULL, &_x.ext );
     return( _x.ext );
+}
+
+void WEXPORT WFileName::setExtIfNone( const char* ext )
+{
+    char    tmp_buf[PATH_MAX + 1];
+
+    _splitpath2( *this, _x.buffer, &_x.drive, &_x.dir, &_x.fname, &_x.ext );
+    if( _x.ext[0] == '\0' ) {
+        makepath( tmp_buf, _x.drive, _x.dir, _x.fname, ext );
+        *this = tmp_buf;
+    }
 }
 
 static const char legalChars[] = { "_^$~!#%&-{}()@`'." };

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,6 +65,7 @@ WCLASS WFileName : public WString {
         const char* WEXPORT fName() const;
         void WEXPORT setExt( const char* ext );
         const char* WEXPORT ext() const;
+        void WEXPORT setExtIfNone( const char* ext );
         bool WEXPORT legal() const;
         bool WEXPORT needQuotes( char ch='\"' ) const;
         void WEXPORT addQuotes( char ch='\"' );
