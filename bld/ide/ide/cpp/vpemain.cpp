@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -94,7 +94,30 @@ MAINOBJECT( VpeMain, COORD_USER, 10240, 10240 )
 #define _pModel ((MProject*)model())
 
 Define( VpeMain )
-static char pFilter[] = { "Project Files (*.wpj)\0*.wpj\0All Files (*.*)\0*.*\0\0" };
+
+static char pFilter[] = {
+    "Project Files (*.wpj)\0*.wpj\0"
+    "All Files (*.*)\0*.*\0"
+    "\0"
+};
+#if 0
+static char cFilter[] = {
+    "Executables (*.exe)\0*.exe\0"
+    "Static Libraries (*.lib)\0*.lib\0"
+    "Dynamic Libraries (*.dll)\0*.dll\0"
+    "All Files (*.*)\0*.*\0"
+    "\0"
+};
+#else
+static char cFilter[] = {
+    "Target Files (*.tgt)\0*.tgt\0"
+    "Executables (*.exe)\0*.exe\0"
+    "Static Libraries (*.lib)\0*.lib\0"
+    "Dynamic Libraries (*.dll)\0*.dll\0"
+    "All Files(*.*)\0*.*\0"
+    "\0"
+};
+#endif
 
 static WHotSpots _hotSpotList( 4 );
 
@@ -1090,9 +1113,7 @@ bool VpeMain::validateProjectName( WFileName& fn )
     if( fn.size() > 0 ) {
 //        fn.toLower();
         if( fn.legal() ) {
-            if( strlen( fn.ext() ) == 0 ) {
-                fn.setExt( ".wpj" );
-            }
+            fn.setExtIfNone( ".wpj" );
             return( true );
         }
         WMessageDialog::messagef( this, MsgError, MsgOk, _viperError, "Project name '%s' is invalid", (const char*)fn );
@@ -1538,7 +1559,6 @@ WStyle VpeMain::vCompStyle()
 
 bool VpeMain::addComponent( WMenuItem* )
 {
-static char cFilter[] = { "Target Files (*.tgt)\0*.tgt\0Executables (*.exe)\0*.exe\0Static Libraries (*.lib)\0*.lib\0Dynamic Libraries (*.dll)\0*.dll\0All Files (*.*)\0*.*\0\0" };
     bool ok = false;
     HelpStack.push( HLP_ADDING_A_TARGET );
     VCompDialog dlg( this, "New Target", _project, cFilter );
@@ -1603,8 +1623,6 @@ void VpeMain::renameComponent( WMenuItem* )
     HelpStack.push( HLP_RENAMING_A_TARGET );
     _activeVComp->setFocus();
     VComponent* vcomp = _activeVComp;
-//static char cFilter[] = { "Executables (*.exe)\0*.exe\0Static Libraries (*.lib)\0*.lib\0Dynamic Libraries (*.dll)\0*.dll\0All Files (*.*)\0*.*\0\0" };
-static char cFilter[] = { "Target Files (*.tgt)\0*.tgt\0Executables (*.exe)\0*.exe\0Static Libraries (*.lib)\0*.lib\0Dynamic Libraries (*.dll)\0*.dll\0All Files(*.*)\0*.*\0\0" };
     VCompDialog dlg( this, "Rename Target", _project, cFilter );
     MComponent* comp = vcomp->component();
     WFileName fn( comp->relFilename() );

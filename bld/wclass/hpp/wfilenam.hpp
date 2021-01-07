@@ -82,7 +82,7 @@ WCLASS WFileName : public WString {
         void WEXPORT fullName( WFileName& f ) const;
         void WEXPORT noExt( WFileName& f ) const;
         void WEXPORT noPath( WFileName& f ) const;
-        void WEXPORT noPathNoExt( WFileName& f ) const { f = fName(); }
+        void WEXPORT noPathNoExt( WFileName& f ) const;
         void WEXPORT path( WFileName& f, bool slash=true ) const;
         bool WEXPORT removeFile() const;
         bool WEXPORT renameFile( const char* newname ) const;

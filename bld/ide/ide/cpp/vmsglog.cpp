@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,7 +68,12 @@
 extern char _viperError[];
 
 static WString lastCD;
-static char sFilter[] = { "Listing Files(*.txt)\0*.txt\0All files(*.*)\0*.*\0\0" };
+
+static char sFilter[] = {
+    "Listing Files(*.txt)\0*.txt\0"
+    "All files(*.*)\0*.*\0"
+    "\0"
+};
 
 static int _connectionTries = 0;
 

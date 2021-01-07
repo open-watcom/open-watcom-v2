@@ -637,6 +637,13 @@ void WEXPORT WFileName::noPath( WFileName& f ) const
     f = _result_buf;
 }
 
+void WEXPORT WFileName::noPathNoExt( WFileName& f ) const
+{
+    _splitpath2( *this, _x.buffer, NULL, NULL, &_x.fname, NULL );
+    makepath( _result_buf, NULL, NULL, _x.fname, NULL );
+    f = _result_buf;
+}
+
 void WEXPORT WFileName::path( WFileName& f, bool slash ) const
 {
     _splitpath2( *this, _x.buffer, &_x.drive, &_x.dir, NULL, NULL );

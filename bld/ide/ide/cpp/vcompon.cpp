@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -702,7 +702,13 @@ void WEXPORT VComponent::renameComponent( WFileName& fn, MRule* rule, WString& m
 #else
 void WEXPORT VComponent::renameComponent()
 {
-static char cFilter[] = { "Executables(*.exe)\0*.exe\0Static Libraries(*.lib)\0*.lib\0Dynamic Libraries(*.dll)\0*.dll\0All files(*.*)\0*.*\0\0" };
+    static char cFilter[] = {
+        "Executables(*.exe)\0*.exe\0"
+        "Static Libraries(*.lib)\0*.lib\0"
+        "Dynamic Libraries(*.dll)\0*.dll\0"
+        "All files(*.*)\0*.*\0"
+        "\0"
+    };
     VCompDialog dlg( this, "Rename Target", _parent->project(), cFilter );
     WFileName fn( _component->relFilename() );
     fn.setExt( target()->ext() );

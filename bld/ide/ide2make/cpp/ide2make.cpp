@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -156,9 +156,7 @@ WEXPORT VpeMain::VpeMain( int argc, char** argv )
             parms.add( new WString( argv[i] ) );
         }
     }
-    if( strlen( pfile.ext() ) == 0 ) {
-        pfile.setExt( ".wpj" );
-    }
+    pfile.setExtIfNone( ".wpj" );
 
     new MConfig( cfg, debug, host, incdir );
     WString err;

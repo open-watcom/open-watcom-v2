@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -229,11 +229,8 @@ bool VCompDialog::legalExt()
     if( i >= 0 ) {
         curtarg = (MTarget *)_tgList[i];
         WString ext1( curtarg->tgtMask().ext() );
+        _fn->setExtIfNone( ext1 );
         WString ext2( _fn->ext() );
-        if( ext2.size() == 0 ) {
-            _fn->setExt( ext1 );
-            return( true );
-        }
         if( ext1 == ext2 ) {
             return( true );
         }
