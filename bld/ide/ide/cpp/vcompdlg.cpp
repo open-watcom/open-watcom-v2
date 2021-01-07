@@ -122,8 +122,7 @@ void VCompDialog::initialize()
         singletarg = true;
         i = 0;
         _cur_os = *(WString *)list[0];
-        WText* t3 = new WText( this, WRect( 11*sx, 41*sy, 135*sx, rb_hite * sy ),
-                            _cur_os.gets() );
+        WText* t3 = new WText( this, WRect( 11*sx, 41*sy, 135*sx, rb_hite * sy ), _cur_os.gets() );
         t3->show();
     } else {
         singletarg = false;
@@ -294,8 +293,7 @@ void VCompDialog::updateCurOs( void )
     for( i=0; i< icount; i++ ) {
         curtarg = (MTarget *)targets[i];
         if( _cur_os == curtarg->targetOS() ) {
-            curname.printf( "%s [%s]", curtarg->imageName().gets(),
-                                       curtarg->tgtMask().ext() );
+            curname.printf( "%s [%s]", curtarg->imageName().gets(), curtarg->tgtMask().ext() );
             _imagelist->insertString( curname.gets(), pos );
             _tgList.insertAt( pos, curtarg );
             pos++;

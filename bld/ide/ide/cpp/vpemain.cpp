@@ -114,7 +114,7 @@ static char cFilter[] = {
     "Executables (*.exe)\0*.exe\0"
     "Static Libraries (*.lib)\0*.lib\0"
     "Dynamic Libraries (*.dll)\0*.dll\0"
-    "All Files(*.*)\0*.*\0"
+    "All Files (*.*)\0*.*\0"
     "\0"
 };
 #endif
