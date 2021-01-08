@@ -229,7 +229,7 @@ void WEXPORT WFileName::relativeTo( const char* f )
                 }
                 s.dir[0] = '\0';
                 if( n > 0 ) {
-                    for( int j=0; j<n; j++ ) {
+                    for( int j = 0; j < n; j++ ) {
                         strcpy( &s.dir[3 * j], PARENTSEP_STR );
                     }
                 }
@@ -432,7 +432,7 @@ const char* WEXPORT WFileName::drive()
     pgroup2 x;
 
     _splitpath2( *this, x.buffer, &x.drive, NULL, NULL, NULL );
-    _drive = x.drive;
+    _drive.puts( x.drive );
     return( _drive );
 }
 
@@ -454,7 +454,7 @@ const char* WEXPORT WFileName::dir( bool slash )
     if( !slash ) {
         removeSepFromEnd( x.dir, PATHSEP_CHAR );
     }
-    _dir = x.dir;
+    _dir.puts( x.dir );
     return( _dir );
 }
 
@@ -473,7 +473,7 @@ const char* WEXPORT WFileName::fName()
     pgroup2 x;
 
     _splitpath2( *this, x.buffer, NULL, NULL, &x.fname, NULL );
-    _fname = x.fname;
+    _fname.puts( x.fname );
     return( _fname );
 }
 
@@ -492,7 +492,7 @@ const char* WEXPORT WFileName::ext()
     pgroup2 x;
 
     _splitpath2( *this, x.buffer, NULL, NULL, NULL, &x.ext );
-    _ext = x.ext;
+    _ext.puts( x.ext );
     return( _ext );
 }
 
