@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,8 +45,7 @@ WEXPORT WStatWindow::WStatWindow( WWindow* parent, const WRect& r,
     _fg_bg.fore = GUI_BLACK;
     _fg_bg.back = GUI_GREY;
     GUICreateStatusWindow( parent->handle(), r.x(), r.h(), &_fg_bg );
-    const char *text = _defText;
-    GUIDrawStatusText( parent->handle(), (char *)text );
+    GUIDrawStatusText( parent->handle(), _defText );
 }
 
 
@@ -64,15 +64,13 @@ void WStatWindow::setStatus( const char *text ) {
     } else {
         _text = _defText;
     }
-    const char *txt = _text;
-    GUIDrawStatusText( parent()->handle(), (char *)txt );
+    GUIDrawStatusText( parent()->handle(), _text );
 }
 
 
 bool WStatWindow::statusWindowCleared( void ) {
 /*********************************************/
 
-    const char *txt = _defText;
-    GUIDrawStatusText( parent()->handle(), (char *)txt );
+    GUIDrawStatusText( parent()->handle(), _defText );
     return( true );
 }
