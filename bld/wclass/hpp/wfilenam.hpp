@@ -58,13 +58,13 @@ WCLASS WFileName : public WString {
         void WEXPORT touch( time_t tm=0 ) const;
 
         void WEXPORT setDrive( const char* drive );
-        const char* WEXPORT drive() const;
+        const char* WEXPORT drive();
         void WEXPORT setDir( const char* dir );
-        const char* WEXPORT dir( bool slash=true ) const;
+        const char* WEXPORT dir( bool slash=true );
         void WEXPORT setFName( const char* fName );
-        const char* WEXPORT fName() const;
+        const char* WEXPORT fName();
         void WEXPORT setExt( const char* ext );
-        const char* WEXPORT ext() const;
+        const char* WEXPORT ext();
         void WEXPORT setExtIfNone( const char* ext );
         bool WEXPORT legal() const;
         bool WEXPORT needQuotes( char ch='\"' ) const;
@@ -92,6 +92,10 @@ WCLASS WFileName : public WString {
         bool WEXPORT addPath( const char *path );
     private:
         char _pathsep[4];
+        WString _drive;
+        WString _dir;
+        WString _fname;
+        WString _ext;
 };
 
 #endif

@@ -61,7 +61,6 @@ extern "C" {
 #define PARENTSEP_STR   (_pathsep)
 
 static pgroup2  _x;
-static char     _result_buf[PATH_MAX + 1];
 
 static void removeSepFromEnd( char *dir, char pathsep )
 {
@@ -143,6 +142,7 @@ WFileName* WEXPORT WFileName::createSelf( WObjectFile& )
 void WEXPORT WFileName::readSelf( WObjectFile& p )
 {
     const char  *x;
+    const char  *s;
     char        from;
 
     WString::readSelf( p );
@@ -151,14 +151,16 @@ void WEXPORT WFileName::readSelf( WObjectFile& p )
     } else {
         from = '/';
     }
-    for( x = *this; (x = strchr( x, from )) != NULL; ++x ) {
-        setChar( x - *this, PATHSEP_CHAR );
+    s = *this;
+    for( x = s; (x = strchr( x, from )) != NULL; ++x ) {
+        setChar( x - s, PATHSEP_CHAR );
     }
 }
 
 void WEXPORT WFileName::writeSelf( WObjectFile& p )
 {
     const char  *x;
+    const char  *s;
     char        from;
 
     if( PATHSEP_CHAR == '/' ) {
@@ -166,8 +168,9 @@ void WEXPORT WFileName::writeSelf( WObjectFile& p )
     } else {
         from = '/';
     }
-    for( x = *this; (x = strchr( x, from )) != NULL; ++x ) {
-        setChar( x - *this, PATHSEP_CHAR );
+    s = *this;
+    for( x = s; (x = strchr( x, from )) != NULL; ++x ) {
+        setChar( x - s, PATHSEP_CHAR );
     }
     WString::writeSelf( p );
 }
@@ -420,10 +423,13 @@ void WEXPORT WFileName::setDrive( const char* drive )
     *this = tmp;
 }
 
-const char* WEXPORT WFileName::drive() const
+const char* WEXPORT WFileName::drive()
 {
-    _splitpath2( *this, _result_buf, &_x.drive, NULL, NULL, NULL );
-    return( _x.drive );
+    pgroup2 x;
+
+    _splitpath2( *this, x.buffer, &x.drive, NULL, NULL, NULL );
+    _drive.puts( x.drive );
+    return( _drive );
 }
 
 void WEXPORT WFileName::setDir( const char* dir )
@@ -435,13 +441,16 @@ void WEXPORT WFileName::setDir( const char* dir )
     *this = tmp;
 }
 
-const char* WEXPORT WFileName::dir( bool slash ) const
+const char* WEXPORT WFileName::dir( bool slash )
 {
-    _splitpath2( *this, _result_buf, NULL, &_x.dir, NULL, NULL );
+    pgroup2 x;
+
+    _splitpath2( *this, x.buffer, NULL, &x.dir, NULL, NULL );
     if( !slash ) {
-        removeSepFromEnd( _x.dir, PATHSEP_CHAR );
+        removeSepFromEnd( x.dir, PATHSEP_CHAR );
     }
-    return( _x.dir );
+    _dir.puts( x.dir );
+    return( _dir );
 }
 
 void WEXPORT WFileName::setFName( const char* fName )
@@ -453,10 +462,13 @@ void WEXPORT WFileName::setFName( const char* fName )
     *this = tmp;
 }
 
-const char* WEXPORT WFileName::fName() const
+const char* WEXPORT WFileName::fName()
 {
-    _splitpath2( *this, _result_buf, NULL, NULL, &_x.fname, NULL );
-    return( _x.fname );
+    pgroup2 x;
+
+    _splitpath2( *this, x.buffer, NULL, NULL, &x.fname, NULL );
+    _fname.puts( x.fname );
+    return( _fname );
 }
 
 void WEXPORT WFileName::setExt( const char* ext )
@@ -468,10 +480,13 @@ void WEXPORT WFileName::setExt( const char* ext )
     *this = tmp;
 }
 
-const char* WEXPORT WFileName::ext() const
+const char* WEXPORT WFileName::ext()
 {
-    _splitpath2( *this, _result_buf, NULL, NULL, NULL, &_x.ext );
-    return( _x.ext );
+    pgroup2 x;
+
+    _splitpath2( *this, x.buffer, NULL, NULL, NULL, &x.ext );
+    _ext.puts( x.ext );
+    return( _ext );
 }
 
 void WEXPORT WFileName::setExtIfNone( const char* ext )
