@@ -1,12 +1,15 @@
 :set symbol="isbn" value="".
 .*
 :INCLUDE file='LYTCHG'.
-:INCLUDE file='FMTMACRO'.
-:INCLUDE file='GMLMACS'.
-:INCLUDE file='XDEFS'.
 .if &e'&dohelp eq 0 .do begin
 :INCLUDE file='WNOHELP'.
 .do end
+.el .do begin
+:INCLUDE file='WHELP'.
+.do end
+:INCLUDE file='FMTMACRO'.
+:INCLUDE file='GMLMACS'.
+:INCLUDE file='XDEFS'.
 .*
 :GDOC.
 .*

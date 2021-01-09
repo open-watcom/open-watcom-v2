@@ -195,7 +195,7 @@ allow advanced tasks to be completed more quickly.
 .np
 When you are in &cmdmode, you may move around in your text using
 various cursor keys.  The basic keys that you use to move around are:
-:INCLUDE file='basicmv'
+:INCLUDE file='basicmv'.
 .np
 These same cursor keys may also be used when entering text in &tinsmode..
 .* ******************************************************************
@@ -306,7 +306,7 @@ key to return to &cmdmode..
 .np
 While you are in &tinsmode, the basic keys that allow you to move through
 the text are:
-:INCLUDE file='basicmv'
+:INCLUDE file='basicmv'.
 .np
 These keys allow you to manipulate the text while in &tinsmode:
 .*

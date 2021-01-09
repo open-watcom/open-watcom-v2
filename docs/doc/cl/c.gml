@@ -4,6 +4,9 @@
 ..if &e'&dohelp eq 0 ..do begin
 .  ..im wnohelp
 ..do end
+..el .do begin
+.  ..im whelp
+..do end
 ..im fmtmacro
 ..im gmlmacs
 :CMT. ..im htmlmacs

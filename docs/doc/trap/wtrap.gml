@@ -1,6 +1,12 @@
 .se trp_majver=17
 .se trp_minver=1
 :INCLUDE file='LYTCHG'.
+.if &e'&dohelp eq 0 .do begin
+:INCLUDE file='WNOHELP'.
+.do end
+.el .do begin
+:INCLUDE file='WHELP'.
+.do end
 :INCLUDE file='FMTMACRO'.
 :INCLUDE file='GMLMACS'.
 :INCLUDE file='XDEFS'.
@@ -17,7 +23,6 @@
 :H0
     number_reset=yes
 :eLAYOUT.
-:INCLUDE file='WNOHELP'.
 .do end
 .*
 :GDOC.

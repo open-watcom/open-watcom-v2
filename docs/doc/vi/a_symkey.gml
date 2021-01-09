@@ -52,4 +52,4 @@ this guide to represent a special key.
 .* ******************************************************************
 .section 'Symbols and Meaning'
 .* ******************************************************************
-:INCLUDE file='symkey'
+:INCLUDE file='symkey'.

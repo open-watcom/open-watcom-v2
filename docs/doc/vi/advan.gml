@@ -328,7 +328,7 @@ If you need to use one or more special keys (e.g. ENTER, F1, etc) in
 .param &lt.string&gt.
 then you may enter:
 .np
-:INCLUDE file='spmapkey'
+:INCLUDE file='spmapkey'.
 .*
 .exercises
 :OL.

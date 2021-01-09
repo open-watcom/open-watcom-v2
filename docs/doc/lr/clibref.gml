@@ -13,6 +13,12 @@
 .do end
 .*
 :INCLUDE file='LYTCHG'.
+.if &e'&dohelp eq 0 .do begin
+:INCLUDE file='WNOHELP'.
+.do end
+.el .do begin
+:INCLUDE file='WHELP'.
+.do end
 :INCLUDE file='BANTOP'.
 :INCLUDE file='FMTMACRO'.
 :INCLUDE file='LRSYMS'.

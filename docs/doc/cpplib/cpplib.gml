@@ -4,6 +4,9 @@
 .if &e'&dohelp eq 0 .do begin
 :INCLUDE file='wnohelp'.
 .do end
+.el .do begin
+:INCLUDE file='whelp'.
+.do end
 :INCLUDE file='fmtmacro'.
 :INCLUDE file='gmlmacs'.
 :INCLUDE file='xdefs'.
