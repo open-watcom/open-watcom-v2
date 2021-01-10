@@ -28,7 +28,6 @@ dos_gendev_tmp_batch=gendevb.bat
 dos_wgml_tmp_batch=wgmlb.bat
 
 wgml_subdir = docs\$(dotarget)
-gendev_subdir = testlib
 
 
 !ifdef __UNIX__
@@ -37,10 +36,17 @@ dosbox_cfg = $(%OWROOT)/build/dosbox.cfg
 dosbox_cfg = $(%OWROOT)\build\dosbox.cfg
 !endif
 
+!ifdef %WGMLDEBUG
+dosbox_options_nt =
+dosbox_options_osx = -c "config -set cpu core=normal"
+
+dosemu_options = -I 'keyboard {layout us}'
+!else
 dosbox_options_nt = -noconsole
 dosbox_options_osx = -c "config -set cpu core=normal"
 
 dosemu_options = -dumb -quiet -I 'keyboard {layout us}'
+!endif
 
 !ifeq bld_os dos
 
@@ -55,7 +61,7 @@ GENDEVCMD = $(docs_dir)\gml\os2\gendev $(gendev_cmdl_params)
 !else ifdef dosbox
 
 WGMLCMD = $(dosbox) -conf $(dosbox_cfg) $(dosbox_options_$(bld_os)) -c "mount c $(%OWROOT)" -c "c:\$(wgml_subdir)\$(dos_wgml_tmp_batch)"
-GENDEVCMD = $(dosbox) -conf $(dosbox_cfg) $(dosbox_options_$(bld_os)) -c "mount c .." -c "c:\$(gendev_subdir)\$(dos_gendev_tmp_batch)"
+GENDEVCMD = $(dosbox) -conf $(dosbox_cfg) $(dosbox_options_$(bld_os)) -c "mount c .." -c "c:$(gendev_subdir)\$(dos_gendev_tmp_batch)"
 # only DOSBOX use upper cased file name
 wgml_ucase=1
 use_dosemu = dosbox
@@ -64,6 +70,8 @@ use_dosemu = dosbox
 
 WGMLCMD = $(docs_dir)\gml\dos\wgml $(wgml_cmdl_params)
 GENDEVCMD = $(docs_dir)\gml\dos\gendev $(gendev_cmdl_params)
+# DOSX use upper cased file name
+wgml_ucase=1
 
 !else ifeq bld_os linux
 
@@ -133,7 +141,7 @@ prepare_gendev_tmp_batch : .PROCEDURE .EXPLICIT
     @%create $(dos_gendev_tmp_batch)
     @%append $(dos_gendev_tmp_batch) mount d $(docs_dir)
     @%append $(dos_gendev_tmp_batch) c:
-    @%append $(dos_gendev_tmp_batch) cd \$(gendev_subdir)
+    @%append $(dos_gendev_tmp_batch) cd $(gendev_subdir)
     @%append $(dos_gendev_tmp_batch) $(noecho)set GMLLIB=$(%GMLLIB)
     @%append $(dos_gendev_tmp_batch) $(noecho)set GMLINC=$(%GMLINC)
     @%append $(dos_gendev_tmp_batch) d:\gml\dos\gendev.exe $(gendev_cmdl_params)
