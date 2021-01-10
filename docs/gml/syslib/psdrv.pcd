@@ -188,7 +188,7 @@
           %image('        }') %recordbreak()
           %image('      if') %recordbreak()
           %image('      pcfont setfont') %recordbreak()
-          %image('      dup length () stringwidth pop dup 1000 600 div mul') %recordbreak()
+          %image('      dup length (\1) stringwidth pop dup 1000 600 div mul') %recordbreak()
           %image('      0 1 index .75 mul rlineto') %recordbreak()
           %image('      2 index 2 index mul 0 rlineto') %recordbreak()
           %image('      0 1 index neg rlineto') %recordbreak()
