@@ -1883,21 +1883,25 @@ void scr_bx( void )
     /* Identify any non-numeric operand */
 
     cur_op = bx_none;
-    if( (len == 2) && !memicmp( pa , "on", len ) ) {
-        cur_op = bx_on;
+    if( len == 2 ) {
+        if( strnicmp( pa , "on", 2 ) == 0 ) {
+            cur_op = bx_on;
+        }
     } else if( len == 3 ) {
-        if( !memicmp( pa , "can", len ) || !memicmp( pa , "del", len ) ) {
+        if( strnicmp( pa , "can", 3 ) == 0 || strnicmp( pa , "del", 3 ) == 0 ) {
             cur_op = bx_can;
-        } else if( !memicmp( pa , "new", len ) ) {
+        } else if( strnicmp( pa , "new", 3 ) == 0 ) {
             cur_op = bx_new;
-        } else if( !memicmp( pa , "off", len ) ) {
+        } else if( strnicmp( pa , "off", 3 ) == 0 ) {
             cur_op = bx_off;
-        } else if( !memicmp( pa , "set", len ) ) {
+        } else if( strnicmp( pa , "set", 3 ) == 0 ) {
             cur_op = bx_set;
         }
-    } else if( (len == 4) && !memicmp( pa , "char", len ) ) {
-        scan_restart = scan_stop;
-        return;
+    } else if( len == 4 ) {
+        if( strnicmp( pa , "char", 4 ) == 0 ) {
+            scan_restart = scan_stop;
+            return;
+        }
     }
 
     if( cur_op == bx_none ) {               // reuse token if not recognized
