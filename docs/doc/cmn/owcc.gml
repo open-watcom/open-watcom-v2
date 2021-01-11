@@ -70,8 +70,8 @@ displays its name and hints towards the "-?" option.
 .section owcc Options Summary
 .*
 .begnote $compact $setptnt 10
-:DTHD.General options:
-:DDHD.Description:
+.notehd1 General options:
+.notehd2 Description:
 .note c
 .ix 'owcc options' 'c'
 compile the files only, do not link them
@@ -112,8 +112,8 @@ operate quietly (default).  This is the opposite of the "-v" option.
 .dm optref end
 .*
 .begnote $compact $setptnt 10
-:DTHD.Compiler options:
-:DDHD.Description:
+.notehd1 Compiler options:
+.notehd2 Description:
 .ix 'owcc options' 'compile'
 .im owccopts
 .endnote
@@ -122,8 +122,8 @@ See the
 .book &product User's Guide
 for a full description of compiler options.
 .begnote $compact $setptnt 10
-:DTHD.Linker options:
-:DDHD.Description:
+.notehd1 Linker options:
+.notehd2 Description:
 .note b <target name>
 .ix 'owcc options' 'b <system name>'
 Compile and link for the specified target system name. 

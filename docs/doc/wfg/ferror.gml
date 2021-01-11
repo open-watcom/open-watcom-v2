@@ -1,6 +1,6 @@
 .begnote
-:DTHD.Subprogram Arguments
-:DDHD.~b
+.notehd1 Subprogram Arguments
+.notehd2 ~b
 .note AR-01
 .bi invalid number of arguments to intrinsic function %s1
 .pc
@@ -74,8 +74,8 @@ The called subprogram expected the address of the argument instead of its
 value.
 .endnote
 .begnote
-:DTHD.Block Data Subprograms
-:DDHD.~b
+.notehd1 Block Data Subprograms
+.notehd2 ~b
 .note BD-01
 .bi %s1 was initialized in a block data subprogram but is not in COMMON
 .pc
@@ -90,8 +90,8 @@ IMPLICIT, PARAMETER, DIMENSION, COMMON, SAVE, EQUIVALENCE, DATA, END,
 and type statements.
 .endnote
 .begnote
-:DTHD.Source Format and Contents
-:DDHD.~b
+.notehd1 Source Format and Contents
+.notehd2 ~b
 .note CC-01
 .bi invalid character encountered in source input
 .pc
@@ -150,8 +150,8 @@ If the "xline" option is used, a minimum of 31 continuation lines is
 permitted.
 .endnote
 .begnote
-:DTHD.COMMON Blocks
-:DDHD.~b
+.notehd1 COMMON Blocks
+.notehd2 ~b
 .note CM-01
 .bi %s1 already in COMMON
 .pc
@@ -190,8 +190,8 @@ another subprogram.
 This is legal but a warning message is issued.
 .endnote
 .begnote
-:DTHD.Constants
-:DDHD.~b
+.notehd1 Constants
+.notehd2 ~b
 .note CN-01
 .bi DOUBLE PRECISION COMPLEX constants are not FORTRAN 77 standard
 .pc
@@ -224,8 +224,8 @@ Octal constants can only contain the digits '0' through '7'.
 Hexadecimal and octal constants are extensions to the FORTRAN 77 standard.
 .endnote
 .begnote
-:DTHD.Compiler Options
-:DDHD.~b
+.notehd1 Compiler Options
+.notehd2 ~b
 .note CO-01
 .bi %s1 is already being included
 .pc
@@ -290,8 +290,8 @@ The DATA compiler option can not appear a file that is compiled with the
 OBJECT option.
 .endnote
 .begnote
-:DTHD.Compiler Errors
-:DDHD.~b
+.notehd1 Compiler Errors
+.notehd2 ~b
 .note CP-01
 .bi program abnormally terminated
 .pc
@@ -322,8 +322,8 @@ Please report this error and any other helpful information about the program
 being compiled to WATCOM so that the problem can be fixed.
 .endnote
 .begnote
-:DTHD.Character Variables
-:DDHD.~b
+.notehd1 Character Variables
+.notehd2 ~b
 .note CV-01
 .bi CHARACTER variable %s1 with length (*) not allowed in this expression
 .pc
@@ -346,8 +346,8 @@ character variable and tries to assign it to an overlapping part of
 the same character variable.
 .endnote
 .begnote
-:DTHD.Data Initialization
-:DDHD.~b
+.notehd1 Data Initialization
+.notehd2 ~b
 .note DA-01
 .bi implied DO variable %s1 must be an integer variable
 .pc
@@ -411,8 +411,8 @@ An attempt has been made to initialize an entity more than once in
 DATA statements.
 .endnote
 .begnote
-:DTHD.Dimensioned Variables
-:DDHD.~b
+.notehd1 Dimensioned Variables
+.notehd2 ~b
 .note DM-01
 .bi using %s1 incorrectly in dimension expression
 .pc
@@ -430,8 +430,8 @@ The dummy argument, array %s1, is defined to be larger than the size
 of the actual argument.
 .endnote
 .begnote
-:DTHD.DO-loops
-:DDHD.~b
+.notehd1 DO-loops
+.notehd2 ~b
 .note DO-01
 .bi statement number %d1 already defined in line %d2 - DO loop is backwards
 .pc
@@ -497,8 +497,8 @@ iteration of the DO loop.
 If the increment expression is not specified a value of 1 is assumed.
 .endnote
 .begnote
-:DTHD.Equivalence and/or Common
-:DDHD.~b
+.notehd1 Equivalence and/or Common
+.notehd2 ~b
 .note EC-01
 .bi equivalencing %s1 has caused extension of COMMON block %s2 to the left
 .pc
@@ -514,8 +514,8 @@ occupies its own piece of storage and therefore cannot be
 equivalenced.
 .endnote
 .begnote
-:DTHD.END Statement
-:DDHD.~b
+.notehd1 END Statement
+.notehd2 ~b
 .note EN-01
 .bi missing END statement
 .pc
@@ -524,8 +524,8 @@ was not found before the next subprogram or the end of the source input
 stream.
 .endnote
 .begnote
-:DTHD.Equal Sign
-:DDHD.~b
+.notehd1 Equal Sign
+.notehd2 ~b
 .note EQ-01
 .bi target of assignment is illegal
 .pc
@@ -564,8 +564,8 @@ The DO statement uses an equal sign to assign the initial value to
 the DO variable.
 .endnote
 .begnote
-:DTHD.Equivalenced Variables
-:DDHD.~b
+.notehd1 Equivalenced Variables
+.notehd2 ~b
 .note EV-01
 .bi %s1 has been equivalenced to 2 different relative positions
 .pc
@@ -602,8 +602,8 @@ EQUIVALENCE statement but the type of the name is %s2 and should be
 of type CHARACTER.
 .endnote
 .begnote
-:DTHD.Exponentiation
-:DDHD.~b
+.notehd1 Exponentiation
+.notehd2 ~b
 .note EX-01
 .bi zero**J where J <= 0 is not allowed
 .pc
@@ -619,8 +619,8 @@ In complex exponentiation, when the base is zero, the exponent may only be a
 real number or a complex number whose imaginary part is zero.
 .endnote
 .begnote
-:DTHD.ENTRY Statement
-:DDHD.~b
+.notehd1 ENTRY Statement
+.notehd2 ~b
 .note EY-01
 .bi type of entry %s1 does not match type of function %s2
 .pc
@@ -642,8 +642,8 @@ specification of (*) otherwise they must all have a length
 specification of the same integer value.
 .endnote
 .begnote
-:DTHD.Format
-:DDHD.~b
+.notehd1 Format
+.notehd2 ~b
 .note FM-01
 .bi missing delimiter in format string, comma assumed
 .pc
@@ -762,8 +762,8 @@ The omission of the constant before an X edit descriptor in a format
 specification is an extension to the FORTRAN 77 language.
 .endnote
 .begnote
-:DTHD.GOTO and ASSIGN Statements
-:DDHD.~b
+.notehd1 GOTO and ASSIGN Statements
+.notehd2 ~b
 .note GO-01
 .bi %s1 statement label may not appear in ASSIGN statement but did in line %d2
 .pc
@@ -786,8 +786,8 @@ statement.
 The keyword TO is missing or misplaced in the ASSIGN statement.
 .endnote
 .begnote
-:DTHD.Hollerith Constants
-:DDHD.~b
+.notehd1 Hollerith Constants
+.notehd2 ~b
 .note HO-01
 .bi hollerith constant is not FORTRAN 77 standard
 .pc
@@ -802,8 +802,8 @@ n followed by the letter H or h followed by a string of exactly n
 characters.
 .endnote
 .begnote
-:DTHD.IF Statements
-:DDHD.~b
+.notehd1 IF Statements
+.notehd2 ~b
 .note IF-01
 .bi ELSE block must be the last block in block IF
 .pc
@@ -835,8 +835,8 @@ ENDIF
 .millust end
 .endnote
 .begnote
-:DTHD.I/O Lists
-:DDHD.~b
+.notehd1 I/O Lists
+.notehd2 ~b
 .note IL-01
 .bi missing or invalid format/FMT specification
 .pc
@@ -955,8 +955,8 @@ A format specifier must be of type character unless it is an array name.
 Allowing a non-character array name is an extension to the FORTRAN 77 standard.
 .endnote
 .begnote
-:DTHD.IMPLICIT Statements
-:DDHD.~b
+.notehd1 IMPLICIT Statements
+.notehd2 ~b
 .note IM-01
 .bi illegal range of characters
 .pc
@@ -987,8 +987,8 @@ the program unit in which it appears.
 Only one IMPLICIT NONE statement is allowed in a program unit.
 .endnote
 .begnote
-:DTHD.Input/Output
-:DDHD.~b
+.notehd1 Input/Output
+.notehd2 ~b
 .note IO-01
 .bi BACKSPACE statement requires sequential access mode
 .pc
@@ -1211,8 +1211,8 @@ For example, it is illegal to use a BACKSPACE statement for a file that
 has no record structure.
 .endnote
 .begnote
-:DTHD.Program Termination
-:DDHD.~b
+.notehd1 Program Termination
+.notehd2 ~b
 .note KO-01
 .bi floating-point divide by zero
 .pc
@@ -1266,8 +1266,8 @@ by using the "time=t" option in the command line or specifying C$TIME=t
 in the source file.
 .endnote
 .begnote
-:DTHD.Library Routines
-:DDHD.~b
+.notehd1 Library Routines
+.notehd2 ~b
 .note LI-01
 .bi argument must be greater than zero
 .pc
@@ -1367,8 +1367,8 @@ The argument to the intrinsic function ISIZEOF must be a user-defined
 structure name, a symbol name, or a constant.
 .endnote
 .begnote
-:DTHD.Mixed Mode
-:DDHD.~b
+.notehd1 Mixed Mode
+.notehd2 ~b
 .note MD-01
 .bi relational operator has a logical operand
 .pc
@@ -1418,8 +1418,8 @@ FORTRAN 77 language.
 The specified logical operator is an extension to the FORTRAN 77 standard.
 .endnote
 .begnote
-:DTHD.Memory Overflow
-:DDHD.~b
+.notehd1 Memory Overflow
+.notehd2 ~b
 .note MO-01
 .bi %s1 exceeds compiler limit of %d2 bytes
 .pc
@@ -1462,8 +1462,8 @@ The "/codesize" option can be used to increase the amount of memory
 allocated for object code.
 .endnote
 .begnote
-:DTHD.Parentheses
-:DDHD.~b
+.notehd1 Parentheses
+.notehd2 ~b
 .note PC-01
 .bi missing or misplaced closing parenthesis
 .pc
@@ -1485,8 +1485,8 @@ expected.
 The parentheses in the expression are not balanced.
 .endnote
 .begnote
-:DTHD.PRAGMA Compiler Directive
-:DDHD.~b
+.notehd1 PRAGMA Compiler Directive
+.notehd2 ~b
 .note PR-01
 .bi expecting symbolic name
 .pc
@@ -1521,8 +1521,8 @@ A syntax error was found while processing a PRAGMA directive.
 pragma the error occurred.
 .endnote
 .begnote
-:DTHD.RETURN Statement
-:DDHD.~b
+.notehd1 RETURN Statement
+.notehd2 ~b
 .note RE-01
 .bi alternate return specifier only allowed in subroutine
 .pc
@@ -1535,8 +1535,8 @@ A RETURN statement in the main program is allowed as an extension to the
 FORTRAN 77 standard.
 .endnote
 .begnote
-:DTHD.SAVE Statement
-:DDHD.~b
+.notehd1 SAVE Statement
+.notehd2 ~b
 .note SA-01
 .bi COMMON block %s1 saved but not properly defined
 .pc
@@ -1557,8 +1557,8 @@ The indicated name has already been referenced in another SAVE
 statement in this subprogram.
 .endnote
 .begnote
-:DTHD.Statement Functions
-:DDHD.~b
+.notehd1 Statement Functions
+.notehd2 ~b
 .note SF-01
 .bi statement function definition contains duplicate dummy arguments
 .pc
@@ -1601,8 +1601,8 @@ If the statement function is of type CHARACTER, its length specification
 must not be (*); it must be an integer constant expression.
 .endnote
 .begnote
-:DTHD.Source Management
-:DDHD.~b
+.notehd1 Source Management
+.notehd2 ~b
 .note SM-01
 .bi system file error reading %s1 - %s2
 .pc
@@ -1630,8 +1630,8 @@ An error occurred while trying to create the executable file.  See the
 WLINK documentation for a description of the error.
 .endnote
 .begnote
-:DTHD.Structured Programming Features
-:DDHD.~b
+.notehd1 Structured Programming Features
+.notehd2 ~b
 .note SP-01
 .bi cannot have both ATEND and the END= specifier
 .pc
@@ -1842,8 +1842,8 @@ When an integer expression is used, it is converted to a logical expression
 by comparing the value of the integer expression to zero.
 .endnote
 .begnote
-:DTHD.Subprograms
-:DDHD.~b
+.notehd1 Subprograms
+.notehd2 ~b
 .note SR-01
 .bi name can only appear in an EXTERNAL statement once
 .pc
@@ -1971,8 +1971,8 @@ Unions are considered equivalent if their sizes are the same.
 Field names, and the structure name itself, do not have to be the same.
 .endnote
 .begnote
-:DTHD.Subscripts and Substrings
-:DDHD.~b
+.notehd1 Subscripts and Substrings
+.notehd2 ~b
 .note SS-01
 .bi substringing of function or statement function return value is not FORTRAN 77 standard
 .pc
@@ -2002,8 +2002,8 @@ The substring expression must be one in which
 .millust end
 .endnote
 .begnote
-:DTHD.Statements and Statement Numbers
-:DDHD.~b
+.notehd1 Statements and Statement Numbers
+.notehd2 ~b
 .note ST-01
 .bi statement number %d1 has already been defined in line %d2
 .pc
@@ -2172,8 +2172,8 @@ control.
 This value references a statement inside a control structure.
 .endnote
 .begnote
-:DTHD.Subscripted Variables
-:DDHD.~b
+.notehd1 Subscripted Variables
+.notehd2 ~b
 .note SV-01
 .bi variable %s1 in array declarator must be in COMMON or a dummy argument
 .pc
@@ -2234,8 +2234,8 @@ On the IBM PC, for 16-bit real mode applications, the number of elements in a
 dimension must not exceed 65535.
 .endnote
 .begnote
-:DTHD.Syntax Errors
-:DDHD.~b
+.notehd1 Syntax Errors
+.notehd2 ~b
 .note SX-01
 .bi unexpected number or name %s1
 .pc
@@ -2383,8 +2383,8 @@ was not found or incorrectly specified.
 A character constant is required.
 .endnote
 .begnote
-:DTHD.Type Statements
-:DDHD.~b
+.notehd1 Type Statements
+.notehd2 ~b
 .note TY-01
 .bi length specification before array declarator is not FORTRAN 77 standard
 .pc
@@ -2433,8 +2433,8 @@ For example, a symbol of type STRUCTURE cannot be used in a PARAMETER
 statement.
 .endnote
 .begnote
-:DTHD.Undefined Variables
-:DDHD.~b
+.notehd1 Undefined Variables
+.notehd2 ~b
 .note UV-01
 .bi substring (%d1:%d2) of expression on right side of equal sign is undefined
 .pc
@@ -2471,8 +2471,8 @@ or data initialization in specification statements.
 The actual argument number %d1 does not have a value assigned to it.
 .endnote
 .begnote
-:DTHD.Variable Names
-:DDHD.~b
+.notehd1 Variable Names
+.notehd2 ~b
 .note VA-01
 .bi illegal use of %s1 name %s2 in %s3 statement
 .pc

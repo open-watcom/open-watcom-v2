@@ -427,8 +427,8 @@ The INTEGER function
 allows your application to respond to certain events that occur during
 execution.
 .begnote $setptnt 12
-:DTHD.Event
-:DDHD.Meaning
+.notehd1 Event
+.notehd2 Meaning
 .note SIGBREAK
 .ix 'Ctrl/Break'
 an interactive attention (Ctrl/Break on keyboard) is signalled

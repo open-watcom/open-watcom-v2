@@ -46,8 +46,8 @@ A list of valid options, each preceded by a slash (/) or a dash (&minus.).
 .np
 Options may be specified in any order.
 .begpoint $compact $setptnt 11
-:DTHD.Options:
-:DDHD.Description:
+.notehd1 Options:
+.notehd2 Description:
 .point &sw.?
 print this help summary
 .point &sw.q
@@ -293,8 +293,8 @@ semantics of such resource files.
 .ix '&wrccmdup options'
 .ix '&wrcname' 'options'
 .begpoint $break
-:DTHD.Options:
-:DDHD.Description:
+.notehd1 Options:
+.notehd2 Description:
 .*
 .point &sw.?
 Displays a summary of &wrcname command line options.

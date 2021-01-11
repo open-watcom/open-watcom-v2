@@ -249,8 +249,8 @@ Memory Interfaces:
 .np
 The information provided by RMINFO includes:
 :CMT. .begnote $break
-:CMT. :DTHD.Measurement
-:CMT. :DDHD.Purpose
+:CMT. .notehd1 Measurement
+:CMT. .notehd2 Purpose
 :CMT. .note Triple fault flag
 :CMT. .ix 'triple fault flag'
 :CMT. Whether triple faulting is used to switch back to real mode from

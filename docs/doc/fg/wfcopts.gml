@@ -1,6 +1,6 @@
 .begnote $compact $setptnt 12
-:DTHD.Compiler options:
-:DDHD.Description:
+.notehd1 Compiler options:
+.notehd2 Description:
 .note 0
 .ix 'options' '0'
 (16-bit only)

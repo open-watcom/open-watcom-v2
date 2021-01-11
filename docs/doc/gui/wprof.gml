@@ -222,8 +222,8 @@ C>&smpcmd
 .pc
 Here are the &smpname executable names provided.
 .begpoint $break $setptnt 20
-:DTHD.Operating System:
-:DDHD.Command:
+.notehd1 Operating System:
+.notehd2 Command:
 .point DOS
 &smpdosup
 .point OS/2
@@ -908,8 +908,8 @@ a program will benefit most from improvement.
 A simple example will illustrate how this is accomplished.
 Suppose we have a program that has three distinct regions.
 .begpoint $break
-:DTHD.Region
-:DDHD.Percentage
+.notehd1 Region
+.notehd2 Percentage
 .point 1
 10%
 .point 2

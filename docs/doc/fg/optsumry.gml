@@ -24,8 +24,8 @@ prefix.
 .np
 Short forms are indicated by upper case letters.
 .begnote $break
-:DTHD.Option:
-:DDHD.Description:
+.notehd1 Option:
+.notehd2 Description:
 .*
 .if '&cmpclass' ne 'load-n-go' .do begin
 .*

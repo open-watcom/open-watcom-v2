@@ -1140,8 +1140,8 @@ statement.
 The precedence of a connection between a unit number and a file
 is as follows:
 .begnote
-:DTHD.Precedence:
-:DDHD.User option:
+.notehd1 Precedence:
+.notehd2 User option:
 .note Lowest
 Preconnection Specifications
 .note Highest

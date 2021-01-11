@@ -589,8 +589,8 @@ directive in a makefile has the same effect as the "z" option.
 &makname has many different special macros.
 Here are some of the simpler ones.
 .begpoint $compact $break
-:DTHD.Macro
-:DDHD.Expansion
+.notehd1 Macro
+.notehd2 Expansion
 .point $$
 .ix '&makcmdup special macros' '$$'
 represents the character "$"
@@ -613,8 +613,8 @@ list of dependents that are younger than the target
 .pc
 The following macros are for more sophisticated makefiles.
 .begpoint $break $setptnt 14
-:DTHD.Macro
-:DDHD.Expansion
+.notehd1 Macro
+.notehd2 Expansion
 .point __MSDOS__
 This macro is defined in the MS/DOS environment.
 .point __NT__
@@ -648,8 +648,8 @@ The expansion is presented for the following example:
 a:\dir\target.ext : b:\dir1\dep1.ex1 c:\dir2\dep2.ex2
 .exam end
 .begpoint $compact $break
-:DTHD.Macro
-:DDHD.Expansion
+.notehd1 Macro
+.notehd2 Expansion
 .point $^@
 .ix '&makcmdup special macros' '$^ form'
 .ix '&makcmdup special macros' '$^@'
@@ -668,8 +668,8 @@ target.ext
 a:\dir\
 .endpoint
 .begpoint $compact $break
-:DTHD.Macro
-:DDHD.Expansion
+.notehd1 Macro
+.notehd2 Expansion
 .point $[@
 .ix '&makcmdup special macros' '$[ form'
 .ix '&makcmdup special macros' '$[@'
@@ -688,8 +688,8 @@ dep1.ex1
 b:\dir1\
 .endpoint
 .begpoint $compact $break
-:DTHD.Macro
-:DDHD.Expansion
+.notehd1 Macro
+.notehd2 Expansion
 .point $]@
 .ix '&makcmdup special macros' '$] form'
 .ix '&makcmdup special macros' '$]@'
@@ -1915,8 +1915,8 @@ identifier represents an environment variable.
 For instance, the macro identifier "%path" represents the environment
 variable "path".
 .begpoint $compact $setptnt 16
-:DTHD.Macro identifiers
-:DDHD.Valid?
+.notehd1 Macro identifiers
+.notehd2 Valid?
 .point 2morrow
 yes
 .point stitch_in_9
@@ -2427,8 +2427,8 @@ If the file "D:\DIR1\DIR2\NAME.EXT" is the current target being
 updated then the following example will show how the form qualifiers
 are used.
 .begpoint
-:DTHD.Macro
-:DDHD.Expansion for D:\DIR1\DIR2\NAME.EXT
+.notehd1 Macro
+.notehd2 Expansion for D:\DIR1\DIR2\NAME.EXT
 .point $^@
 .fi D:\DIR1\DIR2\NAME.EXT
 .point $^*
@@ -2747,8 +2747,8 @@ sub-directories.
 :set symbol='srcup'     value='SRC'
 .do end
 .begpoint
-:DTHD.Files
-:DDHD.Sub-directory
+.notehd1 Files
+.notehd2 Sub-directory
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .point *.&hdrsuffup
 .fi \EXAMPLE\&hdrsuffup
@@ -2946,8 +2946,8 @@ If the application requires many source files in different directories
 specifications.
 For instance, if the current example files were setup as follows:
 .begpoint $break
-:DTHD.Sub-directory
-:DDHD.Contents
+.notehd1 Sub-directory
+.notehd2 Contents
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .point \EXAMPLE\&hdrsuffup
 .fi DEFS.&hdrsuffup,
@@ -3420,8 +3420,8 @@ use of the
 .id !include
 preprocessing directive.
 .begpoint $break
-:DTHD.Sub-directory
-:DDHD.Contents
+.notehd1 Sub-directory
+.notehd2 Contents
 .point \WINDOW
 .fi WINDOW.CMD,
 .fi WINDOW.MIF
@@ -5076,8 +5076,8 @@ extensions, only the concept of a file suffix.
 for compatibility with UNIX makefiles.
 The UNIX compatible special macros supported are:
 .begpoint $compact
-:DTHD.Macro
-:DDHD.Expansion
+.notehd1 Macro
+.notehd2 Expansion
 .ix '&makcmdup special macros' '$@'
 .point $@
 full name of the target

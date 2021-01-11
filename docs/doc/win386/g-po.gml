@@ -151,8 +151,8 @@ header file will apply to routines declared
 in the other header files.
 .np
 .begnote $compact $setptnt 30
-:DTHD.Macro name
-:DDHD.File included
+.notehd1 Macro name
+.notehd2 File included
 .note #define INCLUDE_COMMDLG_H
 .ix 'COMMDLG.H'
 .fi COMMDLG.H
@@ -1142,8 +1142,8 @@ The second argument to
 is a string identifying the types of the parameters to be passed to
 the 16-bit function.
 .begnote $compact
-:DTHD.Character
-:DDHD.Parameter Type
+.notehd1 Character
+.notehd2 Parameter Type
 .note c
 call a 'cdecl' function as opposed to a 'pascal' function
 (if specified, it must be listed first)

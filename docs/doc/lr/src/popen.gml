@@ -64,8 +64,8 @@ is set appropriately.
 .return end
 .error begin
 .begterm 12
-:DTHD.Constant
-:DDHD.Meaning
+.termhd1 Constant
+.termhd2 Meaning
 .term EINVAL
 The
 .arg mode

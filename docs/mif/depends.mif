@@ -224,8 +224,6 @@ objs_cpplib = &
 ../doc/cpplib/listcont.gml &
 ../doc/cpplib/listiter.gml &
 ../doc/cpplib/manip_.gml &
-../doc/cpplib/mkdos.cmd &
-../doc/cpplib/mkqnx.cmd &
 ../doc/cpplib/ofstrm_.gml &
 ../doc/cpplib/osstrm_.gml &
 ../doc/cpplib/ostr_out.gml &

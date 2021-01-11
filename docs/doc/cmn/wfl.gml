@@ -55,8 +55,8 @@ A summary of options is displayed on the screen by simply entering the
 .section &wclname Options Summary
 .*
 .begnote $compact $setptnt 12
-:DTHD.General options:
-:DDHD.Description:
+.notehd1 General options:
+.notehd2 Description:
 .note C
 .ix '&wclcmdup16 options' 'C'
 .ix '&wclcmdup32 options' 'C'
@@ -72,8 +72,8 @@ ignore the &wclcmdup16/&wclcmdup32 environment variable
 .*
 .im WFCOPTS
 .begnote $compact $setptnt 12
-:DTHD.Linker options:
-:DDHD.Description:
+.notehd1 Linker options:
+.notehd2 Description:
 .note FD[=<directive_file>]
 .ix '&wclcmdup16 options' 'FD[=<directive_file>]'
 .ix '&wclcmdup32 options' 'FD[=<directive_file>]'

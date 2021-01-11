@@ -77,8 +77,8 @@ A summary of options is displayed on the screen by simply entering the
 .section &wclname Options Summary
 .*
 .begnote $compact $setptnt 10
-:DTHD.General options:
-:DDHD.Description:
+.notehd1 General options:
+.notehd2 Description:
 .note c
 .ix '&wclcmdup16 options' 'c'
 .ix '&wclcmdup32 options' 'c'
@@ -101,8 +101,8 @@ ignore the &wclcmdup16/&wclcmdup32 environment variable
 .dm optref end
 .*
 .begnote $compact $setptnt 10
-:DTHD.Compiler options:
-:DDHD.Description:
+.notehd1 Compiler options:
+.notehd2 Description:
 .ix '&wclcmdup16 options' 'compile'
 .ix '&wclcmdup32 options' 'compile'
 .im CPOPTSUM
@@ -112,8 +112,8 @@ See the
 .book &product User's Guide
 for a full description of compiler options.
 .begnote $compact $setptnt 10
-:DTHD.Linker options:
-:DDHD.Description:
+.notehd1 Linker options:
+.notehd2 Description:
 .note bcl=<system name>
 .ix '&wclcmdup16 options' 'bcl=<system name>'
 .ix '&wclcmdup32 options' 'bcl=<system name>'

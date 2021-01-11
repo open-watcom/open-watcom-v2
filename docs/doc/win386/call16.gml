@@ -30,8 +30,8 @@ The second argument
 is a string identifying the types of the parameters to be passed to
 the 16-bit function.
 .begnote $compact
-:DTHD.Character
-:DDHD.Parameter Type
+.notehd1 Character
+.notehd2 Parameter Type
 .note c
 call a 'cdecl' function as opposed to a 'pascal' function
 (if specified, it must be listed first)
