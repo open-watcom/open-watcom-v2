@@ -413,7 +413,7 @@ generate calls to floating-point library
 :CMT. .ix 'options' 'fpi'
 &286only.
 generate in-line 80x87 instructions with emulation (default)
-.np
+.notebreak
 &386only.
 generate in-line 387 instructions with emulation (default)
 :optref refid='SWfpi'.
@@ -422,7 +422,7 @@ generate in-line 387 instructions with emulation (default)
 :CMT. .ix 'options' 'fpi87'
 &286only.
 generate in-line 80x87 instructions
-.np
+.notebreak
 &386only.
 generate in-line 387 instructions
 :optref refid='SWfpi87'.
@@ -533,13 +533,20 @@ continue processing files (ignore errors)
 .note m{f,s,m,c,l,h}
 :CMT. .ix 'options' 'mf, ms, mm, mc, ml, mh'
 &x86only.
-memory model &mdash.
+memory model
+.notebreak
 mf=flat :optref refid='SWmf'.,
+.notebreak
 ms=small :optref refid='SWms'.,
+.notebreak
 mm=medium :optref refid='SWmm'.,
+.notebreak
 mc=compact :optref refid='SWmc'.,
+.notebreak
 ml=large :optref refid='SWml'.,
+.notebreak
 mh=huge :optref refid='SWmh'.
+.notebreak
 (default is "ms" for 16-bit and Netware, "mf" for 32-bit)
 .*
 .if &e'&wcldesc. eq 1 .do begin
@@ -670,11 +677,15 @@ preprocessor ignores #line directives
 :CMT. .ix 'options' 'pc'
 :CMT. .ix 'options' 'pw'
 .*
-preprocess file only, sending output to standard output;
-"c" include comments;
-"e" encrypt identifiers (C++ only);
-"l" include #line directives;
-w=<num> wrap output lines at <num> columns (zero means no wrap)
+preprocess file only, sending output to standard output
+.notebreak
+"c" include comments
+.notebreak
+"e" encrypt identifiers (C++ only)
+.notebreak
+"l" include #line directives
+.notebreak
+"w=<num>" wrap output lines at <num> columns (zero means no wrap)
 :optref refid='SWp'.
 .*
 .note q

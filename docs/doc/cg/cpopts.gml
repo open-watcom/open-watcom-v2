@@ -1413,7 +1413,7 @@ For example, specifying the option:
 .millust begin
 bt=foo
 .millust end
-.pc
+.np
 would cause the compiler to define the macro
 .millust begin
 __FOO__
@@ -1433,8 +1433,7 @@ if using the Windows NT or Windows 95 hosted compiler,
 .kwm __QNX__
 and
 .kwm __UNIX__
-if using the QNX hosted version.
-or
+if using the QNX hosted version or
 .kwm __LINUX__
 and
 .kwm __UNIX__
