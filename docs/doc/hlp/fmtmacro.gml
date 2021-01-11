@@ -411,6 +411,15 @@
 .el .if '&NTEset' eq 'dl' .noteDL &*
 .dm note end
 .*
+.dm notebreak begin
+.if &e'&dohelp eq 0 .do begin
+:DD.&*
+.do end
+.el .do begin
+:ZDD.&*
+.do end
+.dm notebreak end
+.*
 .dm point begin
 .if '&NTEset' eq 'ol' .noteOL
 .el .if '&NTEset' eq 'dl' .noteDL &*

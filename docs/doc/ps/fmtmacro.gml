@@ -456,6 +456,15 @@
 .el .ty ***ERROR*** note without autonote/begnote &sysfile.(&sysfnum)
 .dm note end
 .*
+.dm notebreak begin
+.if &e'&dohelp eq 0 .do begin
+.br
+.do end
+.el .do begin
+.br
+.do end
+.dm notebreak end
+.*
 .dm point begin
 .if '&NTEset' eq 'oln' .do begin
 .   .ty ***ERROR*** point with autonote &sysfile.(&sysfnum)
