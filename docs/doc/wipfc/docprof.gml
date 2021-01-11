@@ -21,6 +21,7 @@ Parameters to pass to the dll.
 Specifies where the control area that contains push buttons is located. If 'page' is specified, place the control 
 area on the text window. If 'coverpage' is specified, place the control area on the cover page. If 'both' is specified, 
 place the control are in both locations. If 'none' is specified, suppress the control area.
+.tattrend
 .tclass Document Header
 .tcont None
 .tag end

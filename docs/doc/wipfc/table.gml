@@ -14,6 +14,7 @@ appears in it place. The default is 'both'.
 .tattr frame=rule|box|none
 Specifies the frame around the table. If no frame is drawn, blank space appears in its place. The default 
 is 'box'.
+.tattrend
 .tclass Block
 .tcont :HDREF refid='row'.
 .tag end

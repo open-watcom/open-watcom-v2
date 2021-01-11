@@ -11,6 +11,7 @@ The list of synonyms must be on the same line as the tag and cannot contain othe
 .tattrbs
 .tattr root=text
 The root word for which the synonyms apply. This word will also appear in the 'roots' attribute of the i1 tag.
+.tattrend
 .tclass Block
 .tcont Text
 .tseealso

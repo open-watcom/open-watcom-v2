@@ -39,26 +39,24 @@
 .dm tattrbs begin
 .if &e'&dohelp eq 0 .do begin
 :DT.Attributes:
-:DD.~b
+:DD.
 .do end
 .el .do begin
 :ZDT.Attributes
-:ZDD.~b
+:ZDD.
 .do end
+.begnote $break
 .dm tattrbs end
 .*
 .* tattr attribname
 .* description
 .dm tattr begin
-.if &e'&dohelp eq 0 .do begin
-:DT.&*
-:DD.
-.do end
-.el .do begin
-:ZDT.&*
-:ZDD.
-.do end
+.note &*.
 .dm tattr end
+.*
+.dm tattrend begin
+.endnote
+.dm tattrend end
 .*
 .* tclass classes...
 .dm tclass begin

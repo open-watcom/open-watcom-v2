@@ -13,6 +13,7 @@ less are reserved.
 .tattr text='text'
 The button text. May include spaces. May not include entity references. Must not conflict with any pre-defined
 buttons.
+.tattrend
 .tno Note:
 All pbutton tags must appear inside a ctrldef block and before any ctrl tags.
 .tclass Document Header

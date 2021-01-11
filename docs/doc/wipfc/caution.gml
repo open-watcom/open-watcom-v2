@@ -11,6 +11,7 @@ followed on the next line by the contents enclosed by the caution tag block.
 .tattrbs
 .tattr text='message'
 Use 'message' instead of 'CAUTION: ' as the introductory text.
+.tattrend
 .tclass Block
 .tcont Text, Formatting, In-line, Block (except acviewport, fn, h1-h6), List-block
 .tseealso

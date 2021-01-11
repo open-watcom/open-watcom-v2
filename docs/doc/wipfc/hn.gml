@@ -39,8 +39,6 @@ The y origin of the window in the parent window. See :HDREF refid='units'..
 The width of the window in the parent window. See :HDREF refid='units'..
 .tattr height=measurement
 The height of the window in the parent window. See :HDREF refid='units'..
-.tno Note:
-You cannot mix absolute units with dynamic or relative units when specifying x and width, or y and height.
 .tattr group=number
 The group number of the window (1 to 64000). All pages in the same group are displayed in the same window, 
 one replacing the other.
@@ -70,6 +68,9 @@ area on the text window. If 'none' is specified, suppress the control area on th
 set in the docprof tag.
 .tattr ctrlrefid=text
 An alphanumeric identifier of the set of controls you wish to display.
+.tattrend
+.tno Note:
+You cannot mix absolute units with dynamic or relative units when specifying x and width, or y and height.
 .tclass Block
 .tcont Text, Formatting, In-line, Block, List-block
 .tseealso

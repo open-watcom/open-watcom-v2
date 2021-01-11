@@ -18,6 +18,7 @@ then the description is on the same line as the term provided that the width of 
 characters. If break is 'none' then the description is on the same line as the term.
 .tattr compact
 Do not add blank lines between each term/description pair.
+.tattrend
 .tclass List-block
 .tcont :HDREF refid='pt'., :HDREF refid='pd'.
 .tseealso

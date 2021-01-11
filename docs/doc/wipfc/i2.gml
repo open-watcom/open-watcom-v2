@@ -14,6 +14,7 @@ For HLP files, allows this entry to also appear in the global index.
 .tattr sortkey='key-text'.index-text
 Specify a string used to sort this entry in the index, and a string to use in its place. In other words, place 
 index-text where key-text would sort in index.
+.tattrend
 .tno Conditions
 Cannot appear in a fn/efn footnote. If the global flag is set for the i1 tag, it must be set for the i2 tag.
 .tclass Block

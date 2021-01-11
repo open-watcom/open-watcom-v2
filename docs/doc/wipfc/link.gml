@@ -67,6 +67,7 @@ The y origin of the active area of the graphic. Valid only if the link is in an 
 The width of the active area of the graphic. Valid only if the link is in an artlink.
 .tattr cy=number
 The height of the active area of the graphic. Valid only if the link is in an artlink.
+.tattrend
 .tno Note:
 If the link is to contain an image, the link must be enclosed in an artlink tag block.
 .tclass In-line

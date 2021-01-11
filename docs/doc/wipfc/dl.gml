@@ -17,6 +17,7 @@ Controls how a description follows a term. If break is set to "none", descriptio
 the term, even if the length of the term exceeds "tsize" characters. If break is set to "fit", descriptions 
 are placed on the next line only if the length of the term exceeds "tsize" characters. If break is set to "all" 
 descriptions are always placed on the next line.
+.tattrend
 .tno Conditions:
 The dthd and ddhd tags must occur before any dt and dd tags. Multiple consecutive dt tags are allowed (synonyms), 
 but only one dd tag is allowed for each set of dt tags.

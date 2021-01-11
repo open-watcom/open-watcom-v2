@@ -16,6 +16,7 @@ Specifies a space separated list of root words (as defined by isyn) that act as 
 .tattr sortkey='key-text'.index-text
 Specify a string used to sort this entry in the index, and a string to use in its place. In other words, place 
 index-text where key-text would sort in index.
+.tattrend
 .tno Conditions
 Cannot appear in a footnote (fn/efn block).
 .tclass Block

@@ -9,6 +9,7 @@ Sets the left margin. The margin remains in effect until it is reset or until th
 .tattr margin=number
 The number of character spaces. If the tag appears more than 'margin' character spaces into a line of text, 
 the margin becomes effective on the next line.
+.tattrend
 .tclass Formatting
 .tcont Text, Formatting, In-line, Block, List-block
 .tseealso

@@ -7,6 +7,7 @@ Display dynamically formatted text in an application-controlled window.
 .tattrbs
 .tattr res=number
 The resource id number. Must be between 1 and 64000.
+.tattrend
 .tclass Block
 .tcont None
 .tseealso

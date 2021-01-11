@@ -9,6 +9,7 @@ formatting of the text as it was entered. The text can be left or right aligned,
 .tattrbs
 .tattr align=left | center | right
 Left, center, or right align the block of text in the window.
+.tattrend
 .tclass Block
 .tcont Text, Formatting, In-line
 .tseealso

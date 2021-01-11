@@ -21,6 +21,7 @@ the text appearing above and below.
 .tattr fit
 This flag causes the image to be scaled to fill the window. Note that this may distort the image if the
 aspect ratio of the window and image differ.
+.tattrend
 .tclass In-line
 .tcont None
 .tseealso

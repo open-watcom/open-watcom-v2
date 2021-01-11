@@ -17,6 +17,7 @@ define your own button (using the pbutton tag), use the id from that tag as the 
 Put the buttons in the control area of a page.
 .tattr coverpage
 Put the buttons in the control area of the cover (main) page.
+.tattrend
 .tno Conditions
 The ctrl tag must be enclosed in a ctrldef block, and must follow all pbutton tags
 .tclass Document Header

@@ -23,6 +23,7 @@ The y origin of the child window. May be absolute, relative, or dynamic. See :HD
 The width of the child window. May be absolute, relative, or dynamic. See :HDREF refid='units'..
 .tattr vpcy=measurement
 The height of the child window.  May be absolute, relative, or dynamic. See :HDREF refid='units'..
+.tattrend
 .tclass Block
 .tcont None
 .tseealso

@@ -14,6 +14,7 @@ Do not put blank lines between each list item.
 .tattr verycompact
 Do not put blank lines between each list item, and do not put blank lines before or after the list. An &ipfname
 extension.
+.tattrend
 .tclass List-block
 .tcont Text, Formatting, In-line, Block, List-block
 .tseealso

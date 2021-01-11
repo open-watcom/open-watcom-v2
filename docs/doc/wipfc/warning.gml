@@ -11,6 +11,7 @@ followed immediately by the contents enclosed by the warning tag block.
 .tattrbs
 .tattr text='message'
 Use 'message' instead of 'Warning: ' as the introductory text.
+.tattrend
 .tclass Block
 .tcont Text, Formatting, In-line, Block (except acviewport, fn, h1-h6), List-block
 .tseealso

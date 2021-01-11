@@ -14,6 +14,7 @@ Sets the height and width of the font. If either value is 0, resets the font to 
 This attribute is required. The 'x' separating the numbers is required.
 .tattr codepage=number
 Sets the encoding of the displayed text. The value is a 3 digit number.
+.tattrend
 .tclass Formatting
 .tcont Text, Formatting, In-line, Block, List-block
 .tag end

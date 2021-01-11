@@ -10,6 +10,7 @@ This text appears after the local-specific phrase ("Note:  " in the en_US locale
 .tattrbs
 .tattr text='text'
 Substitute 'text' for the default "Note:  " phrase.
+.tattrend
 .tclass Block
 .tcont Text, Formatting, In-line
 .tseealso

@@ -10,6 +10,7 @@ Link to a heading. The text of the link is "Reference".
 The resource id of the header tag.
 .tattr refid=text
 The id of the header tag. Alphanumeric.
+.tattrend
 .tclass In-line
 .tcont None
 .tseealso

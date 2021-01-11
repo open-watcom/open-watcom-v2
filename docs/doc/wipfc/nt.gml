@@ -11,6 +11,7 @@ text. The text begins with a local-specific phrase ("Note:  " in the en_US local
 .tattrbs
 .tattr text='text'
 Substitute 'text' for the default "Note:  " phrase.
+.tattrend
 .tclass Block
 .tcont Text, Formatting, In-line, Block, List-block
 .tseealso
