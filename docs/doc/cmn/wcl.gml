@@ -154,13 +154,15 @@ Among the supported systems are:
 .note 286
 16-bit DOS executables (synonym for "DOS") under DOS, NT and Linux
 .notebreak
-16-bit OS/2 executables (synonym for "OS2") under 32-bit OS/2 hosted OS/2 session
+16-bit OS/2 executables (synonym for "OS2") under 32-bit OS/2 hosted OS/2
+session
 .note 386
 32-bit DOS executables (synonym for "DOS4G") under DOS
 .notebreak
 32-bit NT character-mode executables (synonym for "NT") under Windows NT
 .notebreak
-32-bit OS/2 executables (synonym for "OS2V2") under 32-bit OS/2 hosted OS/2 session
+32-bit OS/2 executables (synonym for "OS2V2") under 32-bit OS/2 hosted OS/2
+session
 .notebreak
 32-bit Linux executables (synonym for "LINUX") under Linux
 .note COM
