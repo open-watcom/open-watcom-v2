@@ -211,8 +211,13 @@
 /bld/wv/os2/os2i86.gui/*.dlg
 ###
 
+# DOSBOX files to ignore
 stderr.txt
 stdout.txt
+gendevb.bat
+wgmlb.bat
+
+# regresion tests files to ignore
 failures.log
 
 !makefile
