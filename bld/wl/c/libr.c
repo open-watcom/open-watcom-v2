@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -443,8 +443,8 @@ static void SetDict( file_list *lib, unsigned dict_page )
     }
 }
 
-static unsigned OMFCompName( const char *name, const unsigned_8 *buff, unsigned index )
-/*************************************************************************************/
+static unsigned OMFCompName( const char *name, const char *buff, unsigned index )
+/*******************************************************************************/
 /* Compare name. */
 {
     size_t      len;
@@ -455,11 +455,12 @@ static unsigned OMFCompName( const char *name, const unsigned_8 *buff, unsigned 
     returnval = 0;
     off = buff[index];
     buff += off * 2;
-    len = *buff++;
+    len = *(unsigned char *)buff;
+    buff++;
     if( LinkFlags & LF_CASE_FLAG ) {
-        result = memcmp( buff, name, len );
+        result = strncmp( buff, name, len );
     } else {
-        result = memicmp( buff, name, len );
+        result = strnicmp( buff, name, len );
     }
     if( result == 0 && name[len] == '\0' ) {
         returnval = _ReadLittleEndian16UN( buff + len );
@@ -491,7 +492,7 @@ static bool OMFSearchExtLib( file_list *lib, const char *name, unsigned long *of
                     return( false );
                 break;
             }
-            sector = OMFCompName( name, dict->buffer, h.bucket );
+            sector = OMFCompName( name, (char *)dict->buffer, h.bucket );
             if( sector != 0 ) {
                 *off = dict->rec_length * sector;
                 return( true );

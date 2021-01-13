@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -153,7 +153,7 @@ static void DumpInfo( debug_info *dinfo, const void *data, size_t len )
     dinfo->dump_addr += len;
 }
 
-static bool FindMatch( size_t len, const void *buff, unsigned *offset )
+static bool FindMatch( size_t len, const char *buff, unsigned *offset )
 /*********************************************************************/
 // returns false if not found
 {
@@ -162,7 +162,7 @@ static bool FindMatch( size_t len, const void *buff, unsigned *offset )
     *offset = 0;
     for( node = DBISourceLang; node != NULL; node = node->next ) {
         if( node->len == len ) {
-            if( memicmp( buff, node->name, len ) == 0 ) {
+            if( strnicmp( buff, node->name, len ) == 0 ) {
                 return( true );
             }
         }

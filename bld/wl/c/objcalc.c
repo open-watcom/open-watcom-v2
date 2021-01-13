@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -145,7 +145,7 @@ bool IsCodeClass( const char *name, size_t namelen )
 /**************************************************/
 {
     return( ( namelen >= CODECL_SIZE )
-        && ( memicmp( name + namelen - CODECL_SIZE, CodeClassName, CODECL_SIZE ) == 0 ) );
+        && ( strnicmp( name + namelen - CODECL_SIZE, CodeClassName, CODECL_SIZE ) == 0 ) );
 }
 
 #define CONSTCL_SIZE ( sizeof( ConstClassName ) - 1 )
@@ -154,7 +154,7 @@ bool IsConstClass( const char *name, size_t namelen )
 /***************************************************/
 {
     return( ( namelen >= CONSTCL_SIZE )
-        && ( memicmp( name + namelen - CONSTCL_SIZE, ConstClassName, CONSTCL_SIZE ) == 0 ) );
+        && ( strnicmp( name + namelen - CONSTCL_SIZE, ConstClassName, CONSTCL_SIZE ) == 0 ) );
 }
 
 #define STACKCL_SIZE ( sizeof( StackClassName ) - 1 )

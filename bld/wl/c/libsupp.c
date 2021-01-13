@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -132,7 +132,7 @@ bool ModNameCompare( const char *tname, const char *membname )
     namestart = GetBaseName( tname, 0, &lentheadr );
     lenmember = strlen( membname );
     if( lentheadr == lenmember ) {
-        if( memicmp( namestart, membname, lenmember ) == 0 ) {
+        if( strnicmp( namestart, membname, lenmember ) == 0 ) {
             return( true );
         }
     }

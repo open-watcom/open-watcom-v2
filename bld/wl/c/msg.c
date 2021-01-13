@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -664,12 +664,12 @@ int SymAlphaCompare( const void *a, const void *b )
         rightsize = strlen( rightname );
     }
     if( leftsize < rightsize ) {
-        result = memicmp( leftname, rightname, leftsize );
+        result = strnicmp( leftname, rightname, leftsize );
         if( result == 0 ) {
             result = -1;  // since leftsize < rightsize;
         }
     } else {
-        result = memicmp( leftname, rightname, rightsize );
+        result = strnicmp( leftname, rightname, rightsize );
         if( result == 0 ) {
             if( leftsize > rightsize ) {
                 result = 1;

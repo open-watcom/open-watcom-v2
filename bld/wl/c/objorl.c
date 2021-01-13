@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -382,7 +382,7 @@ static void AllocSeg( void *_snode, void *dummy )
         }
     }
     isdbi = false;
-    if( memicmp( CoffDebugPrefix, sdata->u.name.u.ptr, sizeof( CoffDebugPrefix ) - 1 ) == 0 ) {
+    if( strnicmp( CoffDebugPrefix, sdata->u.name.u.ptr, sizeof( CoffDebugPrefix ) - 1 ) == 0 ) {
         if( CurrMod->modinfo & MOD_IMPORT_LIB ) {
             snode->info |= SEG_DEAD;
             snode->entry = NULL;
@@ -397,7 +397,7 @@ static void AllocSeg( void *_snode, void *dummy )
         } else {
             clname = _DwarfClass;
         }
-    } else if( memicmp( TLSSegPrefix, sdata->u.name.u.ptr, sizeof( TLSSegPrefix ) - 1 ) == 0 ) {
+    } else if( strnicmp( TLSSegPrefix, sdata->u.name.u.ptr, sizeof( TLSSegPrefix ) - 1 ) == 0 ) {
         clname = TLSClassName;
     } else if( sdata->iscode ) {
         clname = CodeClassName;
@@ -507,7 +507,7 @@ static orl_return DeclareSegment( orl_sec_handle sec )
         unsigned namelen;
 
         namelen = strlen( name );
-        if( namelen >= 3 && memicmp( name + namelen - 3, "bss", 3 ) == 0 ) {
+        if( namelen >= 3 && strnicmp( name + namelen - 3, "bss", 3 ) == 0 ) {
             LnkMsg( ERR+MSG_INTERNAL, "s", "Initialized BSS found" );
         }
 #endif
@@ -542,10 +542,10 @@ static void ImpProcSymbol( segnode *snode, orl_symbol_type type, const char *nam
     if( type & ORL_SYM_TYPE_UNDEFINED ) {
         if( namelen > sizeof( CoffImportRefName ) - 1 ) {
             namelen -= sizeof( CoffImportRefName ) - 1;
-            if( memicmp( name + namelen, CoffImportRefName, sizeof( CoffImportRefName ) - 1 ) == 0 ) {
+            if( strnicmp( name + namelen, CoffImportRefName, sizeof( CoffImportRefName ) - 1 ) == 0 ) {
                 _ChkAlloc( ImpModName, namelen + 5 );
                 memcpy( ImpModName, name, namelen );
-                if( memicmp( CurrMod->name.u.ptr + strlen( CurrMod->name.u.ptr ) - 4, ".drv", 4 ) == 0 ) { //KLUDGE!!
+                if( strnicmp( CurrMod->name.u.ptr + strlen( CurrMod->name.u.ptr ) - 4, ".drv", 4 ) == 0 ) { //KLUDGE!!
                     memcpy( ImpModName + namelen, ".drv", 5 );
                 } else {
                     memcpy( ImpModName + namelen, ".dll", 5 );

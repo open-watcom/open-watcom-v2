@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -404,8 +404,8 @@ static FullTypeRecord *findExeTypeRecord( ResTable *restab,
             exe_type_name = (StringItem16 *) ((char *) restab->Str.StringBlock +
                             (exe_type->Info.type - restab->Dir.TableSize));
             if( exe_type_name->NumChars == type->TypeName.ID.Name.NumChars
-                && !memicmp( exe_type_name->Name, type->TypeName.ID.Name.Name,
-                            exe_type_name->NumChars ) ) {
+                && strnicmp( exe_type_name->Name, type->TypeName.ID.Name.Name,
+                            exe_type_name->NumChars ) == 0 ) {
                 break;
             }
         } else if( !(type->TypeName.IsName) && (exe_type->Info.type & 0x8000) ) {
