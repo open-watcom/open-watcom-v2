@@ -20,9 +20,7 @@ int _mbsicoll( const unsigned char *s1, const unsigned char *s2 );
 .do end
 .synop end
 .desc begin
-The
-.id &funcb.
-function performs a case insensitive comparison of the
+The function performs a comparison without case sensitivity of the
 string pointed to by
 .arg s1
 to the string pointed to by
@@ -31,11 +29,16 @@ to the string pointed to by
 The comparison uses the current code page which can be selected by the
 .kw _setmbcp
 function.
+All uppercase characters from
+.arg s1
+and
+.arg s2
+are mapped to lowercase for the purposes of doing the comparison.
 .im widefun1
 .im mbsfunc
 .desc end
 .return begin
-These functions return an integer less than, equal to, or greater than
+The function returns an integer less than, equal to, or greater than
 zero, indicating that the string pointed to by
 .arg s1
 is less than, equal to, or greater than the string pointed to by

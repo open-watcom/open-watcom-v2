@@ -39,10 +39,8 @@ int _fmbsicmp( const unsigned char __far *s1,
 .do end
 .synop end
 .desc begin
-The
-.id &funcb.
-function compares, with case insensitivity, the string
-pointed to by
+The function compares, without case sensitivity,
+the string pointed to by
 .arg s1
 to the string pointed to by
 .arg s2
@@ -58,10 +56,8 @@ are mapped to lowercase for the purposes of doing the comparison.
 .im mbsffunc
 .desc end
 .return begin
-The
-.id &funcb.
-function returns an integer less than, equal to, or greater
-than zero, indicating that the string pointed to by
+The function returns an integer less than, equal to,
+or greater than zero, indicating that the string pointed to by
 .arg s1
 is less than, equal to, or greater than the string pointed to by
 .arg s2

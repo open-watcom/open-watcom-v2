@@ -12,19 +12,8 @@ int __far _fjstricmp( const JCHAR __far *s1,
 .do end
 .synop end
 .desc begin
-.if &farfnc eq 0 .do begin
-The
-.id &funcb.
-function compares,
-.do end
-.el .do begin
-The
-.id &funcb.
-and
-.id &ffunc.
-functions compare,
-.do end
-with case insensitivity, the Kanji string pointed to by
+The function compares, without case sensitivity, 
+the Kanji string pointed to by
 .arg s1
 to the Kanji string pointed to by
 .arg s2
@@ -41,20 +30,8 @@ ASCII and numeric characters < Katakana characters < Kanji characters
 .im ffarparm
 .desc end
 .return begin
-.if &farfnc eq 0 .do begin
-The
-.id &funcb.
-function returns
-.do end
-.el .do begin
-The
-.id &funcb.
-and
-.id &ffunc.
-functions return
-.do end
-an integer less than, equal to, or greater than zero, indicating that
-the Kanji string pointed to by
+The function returns an integer less than, equal to,
+or greater than zero, indicating that the Kanji string pointed to by
 .arg s1
 is less than, equal to, or greater than the Kanji string pointed to by
 .arg s2

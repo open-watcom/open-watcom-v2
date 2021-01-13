@@ -15,19 +15,8 @@ int __far _fjstrnicmp( const JCHAR __far *s1,
 .do end
 .synop end
 .desc begin
-.if &farfnc eq 0 .do begin
-The
-.id &funcb.
-function compares,
-.do end
-.el .do begin
-The
-.id &funcb.
-and
-.id &ffunc.
-functions compare,
-.do end
-without case sensitivity, the Kanji string pointed to by
+The function compares, without case sensitivity,
+the Kanji string pointed to by
 .arg s1
 to the Kanji string pointed to by
 .arg s2
@@ -37,23 +26,16 @@ characters.
 All ASCII characters are less than any 1-byte Katakana chracters.
 All 1-byte Katakana charaters are less than any 2-byte Kanji
 characters.
+All uppercase Roman characters (A-Z) from
+.arg s1
+and
+.arg s2
+are mapped to lowercase for the purposes of doing the comparison.
 .im ffarparm
 .desc end
 .return begin
-.if &farfnc eq 0 .do begin
-The
-.id &funcb.
-function returns
-.do end
-.el .do begin
-The
-.id &funcb.
-and
-.id &ffunc.
-functions return
-.do end
-an integer less than, equal to, or greater than zero, indicating that
-the Kanji string pointed to by
+The function returns an integer less than, equal to,
+or greater than zero, indicating that the Kanji string pointed to by
 .arg s1
 is less than, equal to, or greater than the Kanji string pointed to by
 .arg s2

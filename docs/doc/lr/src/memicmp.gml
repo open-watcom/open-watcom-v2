@@ -19,9 +19,7 @@ int _fmemicmp( const void __far *s1,
 .do end
 .synop end
 .desc begin
-The
-.id &funcb.
-function compares, with case insensitivity (upper- and
+The function compares, without case sensitivity (upper- and
 lowercase characters are equivalent), the first
 .arg length
 characters of the object pointed to by
@@ -29,13 +27,16 @@ characters of the object pointed to by
 to the object pointed to by
 .arg s2
 .period
+All uppercase characters from
+.arg s1
+and
+.arg s2
+are mapped to lowercase for the purposes of doing the comparison.
 .im farparm
 .im ansiconf
 .desc end
 .return begin
-The
-.id &funcb.
-function returns an integer less than, equal to, or greater
+The function returns an integer less than, equal to, or greater
 than zero, indicating that the object pointed to by
 .arg s1
 is less than, equal to, or greater than the object pointed to by
@@ -43,7 +44,7 @@ is less than, equal to, or greater than the object pointed to by
 .period
 .return end
 .see begin
-.seelist memchr memcmp memcpy memicmp memset
+.seelist memchr memcmp memcpy memset
 .see end
 .exmp begin
 #include <stdio.h>

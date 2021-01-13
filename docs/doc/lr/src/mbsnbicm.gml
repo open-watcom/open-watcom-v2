@@ -15,9 +15,7 @@ int _fmbsnbicmp( const unsigned char __far *s1,
 .do end
 .synop end
 .desc begin
-The
-.id &funcb.
-lexicographically compares not more than
+The function lexicographically compares not more than
 .arg n
 bytes from the string pointed to by
 .arg s1
@@ -25,12 +23,15 @@ to the string pointed to by
 .arg s2
 .period
 The comparison is insensitive to case.
+All uppercase characters from
+.arg s1
+and
+.arg s2
+are mapped to lowercase for the purposes of doing the comparison.
 .im farparm
 .desc end
 .return begin
-The
-.id &funcb.
-function returns an integer less than, equal to, or greater
+The function returns an integer less than, equal to, or greater
 than zero, indicating that the string pointed to by
 .arg s1
 is less than, equal to, or greater than the string pointed to by
@@ -41,7 +42,7 @@ is similar to
 .kw _mbsncmp
 .ct , except that
 .id &funcb.
-compares strings by bytes rather than by characters.
+compares strings by length in bytes rather than by length in characters.
 .return end
 .see begin
 .seelist _mbsnbcat _mbsnbcmp _mbsnbicmp strncmp strnicmp

@@ -11,29 +11,20 @@ int _fmbcicmp( const unsigned char __far *s1,
 .do end
 .synop end
 .desc begin
-The
-.id &funcb.
-function compares one multibyte character from
+The function compares one multibyte character from
 .arg s1
 to one multibyte character from
 .arg s2
 using a case-insensitive comparison.
+All uppercase characters from
+.arg s1
+and
+.arg s2
+are mapped to lowercase for the purposes of doing the comparison.
 .im farparm
 .desc end
 .return begin
-.if &farfnc eq 0 .do begin
-The
-.id &funcb.
-function returns
-.do end
-.el .do begin
-The
-.id &funcb.
-and
-.id &ffunc.
-functions return
-.do end
-the following values.
+The function returns the following values.
 .begnote
 .termhd1 Value
 .termhd2 Meaning

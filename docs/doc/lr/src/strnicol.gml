@@ -26,7 +26,7 @@ int _mbsnicoll( const unsigned char *s1,
 .do end
 .synop end
 .desc begin
-These functions perform a case insensitive comparison of the first
+The function performs a comparison without case sensitivity of the first
 .arg count
 characters of the string pointed to by
 .arg s1
@@ -36,12 +36,17 @@ to the string pointed to by
 The comparison uses the current code page which can be selected by the
 .kw _setmbcp
 function.
+All uppercase characters from
+.arg s1
+and
+.arg s2
+are mapped to lowercase for the purposes of doing the comparison.
 .im widefun1
 .im mbsfunc
 .desc end
 .return begin
-These functions return an integer less than, equal to, or greater than
-zero, indicating that the string pointed to by
+The function returns an integer less than, equal to,
+or greater than zero, indicating that the string pointed to by
 .arg s1
 is less than, equal to, or greater than the string pointed to by
 .arg s2
