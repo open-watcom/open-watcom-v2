@@ -42,7 +42,7 @@
 
 #define _64KB           (64 * 1024UL)
 
-#define DUPBUF_STACK(p,s,l)  {void *x=alloca(l);memcpy(x,s,l);p=x;}
+#define DUPBUF_STACK(p,s,l)  {void *x=alloca(l);strncpy(x,s,l);p=x;}
 
 static void             (*MultiLine)( void ) = NULL;
 static char             *OptionBuffer;
@@ -509,7 +509,7 @@ static void ProcCode( void )
     char    *result;
     size_t  len;
 
-    memcpy( buffer, "segment type code", 17 );
+    strncpy( buffer, "segment type code", 17 );
     OptionBuffer = buffer + 17;
     BufferLeft = CODE_BUFFER_LEN - 18;
     if( !ProcessKeyword( CodeAttributes ) ) {
@@ -520,7 +520,7 @@ static void ProcCode( void )
         if( BufferLeft != CODE_BUFFER_LEN - 18 ) {      // attribute spec'd.
             len = CODE_BUFFER_LEN - BufferLeft - 1;
             result = MemAlloc( CODE_BUFFER_LEN - BufferLeft + 1 );
-            memcpy( result, buffer, len );
+            strncpy( result, buffer, len );
             *(result + len) = '\0';
             AddCommand( result, OPTION_SLOT, false );
         }
@@ -535,7 +535,7 @@ static void ProcData( void )
     char    *result;
     size_t  len;
 
-    memcpy( buffer, "segment type data", 17 );
+    strncpy( buffer, "segment type data", 17 );
     OptionBuffer = buffer + 17;
     BufferLeft = CODE_BUFFER_LEN - 18;
     if( !ProcessKeyword( DataAttributes ) ) {
@@ -546,7 +546,7 @@ static void ProcData( void )
         if( BufferLeft != CODE_BUFFER_LEN - 18 ) {      // attribute spec'd.
             len = CODE_BUFFER_LEN - BufferLeft - 1;
             result = MemAlloc( CODE_BUFFER_LEN - BufferLeft + 1 );
-            memcpy( result, buffer, len );
+            strncpy( result, buffer, len );
             *(result + len) = '\0';
             AddCommand( result, OPTION_SLOT, false );
         }
@@ -561,8 +561,9 @@ static void AddToBuffer( const char *cmd, size_t len )
     } else {
         BufferLeft -= len + 1;
         *OptionBuffer++ = ' ';
-        memcpy( OptionBuffer, cmd, len );
+        strncpy( OptionBuffer, cmd, len );
         OptionBuffer += len;
+        *OptionBuffer = '\0';
     }
 }
 
@@ -693,8 +694,8 @@ static void ProcDescription( void )
 
     MakeToken( SEP_QUOTE, true );
     msg = alloca( CmdFile->len + sizeof( PREFIX ) + 1 );
-    memcpy( msg, PREFIX, sizeof( PREFIX ) );
-    memcpy( msg + sizeof( PREFIX ) - 1, CmdFile->token, CmdFile->len );
+    strncpy( msg, PREFIX, sizeof( PREFIX ) );
+    strncpy( msg + sizeof( PREFIX ) - 1, CmdFile->token, CmdFile->len );
     strcpy( msg + sizeof( PREFIX ) - 1 + CmdFile->len, "'" );
     AddOption( msg );
 }
@@ -752,7 +753,7 @@ static void GetExport( void )
     EatWhite();
     gottoken = MakeToken( SEP_NO, true );
     if( gottoken ) {
-        if( CmdFile->len == 12 && memicmp( CmdFile->token, "residentname", 12 ) == 0 ) {
+        if( CmdFile->len == 12 && strnicmp( CmdFile->token, "residentname", 12 ) == 0 ) {
             isresident = true;
             gottoken = MakeToken( SEP_NO, true );
             toklen += 9;           // length of resident + space.
@@ -760,7 +761,7 @@ static void GetExport( void )
     }
     gotnodata = false;
     if( gottoken ) {
-        if( memicmp( CmdFile->token, "nodata", 6 ) == 0 ) {
+        if( strnicmp( CmdFile->token, "nodata", 6 ) == 0 ) {
             gottoken = MakeToken( SEP_NO, true );
             gotnodata = true;
         }
@@ -777,7 +778,7 @@ static void GetExport( void )
         }
     }
     if( gottoken && !gotnodata ) {
-        if( memicmp( CmdFile->token, "nodata", 6 ) == 0 ) {
+        if( strnicmp( CmdFile->token, "nodata", 6 ) == 0 ) {
             gotnodata = true;
         } else {
             CmdFile->current = CmdFile->token;      // reparse the token later
@@ -785,9 +786,9 @@ static void GetExport( void )
     }
     toklen += 8;       // export keyword + space + nullchar;
     command = MemAlloc( toklen );
-    memcpy( command, "export ", 7 );
+    strncpy( command, "export ", 7 );
     currloc = command + 7;
-    memcpy( currloc, name, namelen );
+    strncpy( currloc, name, namelen );
     currloc += namelen;
     if( value <= _64KB ) {   // if an ordinal was specified....
         *currloc++ = '.';
@@ -798,12 +799,12 @@ static void GetExport( void )
     }
     if( internal != NULL ) {
         *currloc++ = '=';
-        memcpy( currloc, internal, intlen );
+        strncpy( currloc, internal, intlen );
         currloc += intlen;
     }
     if( isresident ) {
         *currloc++ = ' ';
-        memcpy( currloc, "resident", 8 );
+        strncpy( currloc, "resident", 8 );
         currloc += 8;
     }
     if( iopl <= 63 ) {
@@ -844,7 +845,7 @@ static void ProcHeapsize( void )
 
     if( !MakeToken( SEP_NO, true ) ) {
         Warning( "argument for heapsize not recognized", OPTION_SLOT );
-    } else if( memicmp( CmdFile->token, "maxval", 6 ) == 0 ) {
+    } else if( strnicmp( CmdFile->token, "maxval", 6 ) == 0 ) {
         AddNumOption( "heapsize", 0xFFFF );
     } else if( !GetNumber( &value ) || value >= _64KB ) {
         Warning( "argument for heapsize not valid", OPTION_SLOT );
@@ -897,19 +898,19 @@ static void GetImport( void )
     }
     toklen += 8;       // import keyword + space + nullchar;
     result = MemAlloc( toklen );
-    memcpy( result, "import ", 7 );
+    strncpy( result, "import ", 7 );
     currloc = result + 7;
     if( second != NULL ) {       // got a internal name in first.
-        memcpy( currloc, first, firstlen );
+        strncpy( currloc, first, firstlen );
         currloc += firstlen;
         first = second;         // make sure module name is in first.
         firstlen = secondlen;
     } else {
-        memcpy( currloc, CmdFile->token, CmdFile->len );
+        strncpy( currloc, CmdFile->token, CmdFile->len );
         currloc += CmdFile->len;
     }
     *currloc++ = ' ';
-    memcpy( currloc, first, firstlen );   // module name
+    strncpy( currloc, first, firstlen );   // module name
     currloc += firstlen;
     if( value < _64KB ) {
         *currloc++ = '.';
@@ -917,7 +918,7 @@ static void GetImport( void )
     } else {
         if( second != NULL ) {
             *currloc++ = '.';
-            memcpy( currloc, CmdFile->token, CmdFile->len );
+            strncpy( currloc, CmdFile->token, CmdFile->len );
             currloc += CmdFile->len;
         }
         *currloc = '\0';
@@ -945,10 +946,10 @@ static void ProcInclude ( void )
 static bool IsInitType( void )
 /****************************/
 {
-    if( CmdFile->len == 10 && memicmp( CmdFile->token, "initglobal", 10 ) == 0 ) {
+    if( CmdFile->len == 10 && strnicmp( CmdFile->token, "initglobal", 10 ) == 0 ) {
         FmtInfo = DLL_INITGLOBAL;
         return( true );
-    } else if( CmdFile->len == 12 && memicmp( CmdFile->token, "initinstance", 12 ) == 0 ) {
+    } else if( CmdFile->len == 12 && strnicmp( CmdFile->token, "initinstance", 12 ) == 0 ) {
         FmtInfo = DLL_INITINSTANCE;
         return( true );
     }
@@ -1115,13 +1116,13 @@ static void GetSegments( void )
         if( BufferLeft != CODE_BUFFER_LEN && !GotOvl ) { // something spec'd.
             len = CODE_BUFFER_LEN - BufferLeft;
             result = MemAlloc( len + seglen + 12 );
-            memcpy( result, "segment '", 9 );
+            strncpy( result, "segment '", 9 );
             currloc = result + 9;
-            memcpy( currloc, segname, seglen );
+            strncpy( currloc, segname, seglen );
             currloc += seglen;
             *currloc++ = '\'';
             *currloc++ = ' ';
-            memcpy( currloc, buffer, len );
+            strncpy( currloc, buffer, len );
             *(currloc + len) = '\0';
             AddCommand( result, OPTION_SLOT, false );
         }
