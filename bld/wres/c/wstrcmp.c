@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2016-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,24 +33,55 @@
 
 #include <stddef.h>
 #include <ctype.h>
-#include "wmemicmp.h"
+#include "bool.h"
+#include "wstrcmp.h"
 
 
-int WresMemicmp( const void *p1, const void *p2, size_t len )
-/************************************************************
- * Kludge to get around memicmp behavior where comparing upper case letters
- * against characters in the range z-A would return the negative
- * result */
+int WresStrnicmp( const void *p1, const void *p2, size_t len )
+/*************************************************************
+ * comparision is handled specialy
+ * if compare two alphabet characters then compare lower cased values
+ * if compare non-alphabet character with alphabet character then
+ * original values are used for comparision
+ */
 {
     char        ch1;
     char        ch2;
     size_t      i;
+    bool        a1;
+    bool        a2;
 
     for( i = 0; i < len; i++ ) {
-        ch1 = (char)toupper( ((const char *)p1)[i] );
-        ch2 = (char)toupper( ((const char *)p2)[i] );
+        ch1 = ((const char *)p1)[i];
+        if( ch1 >= 'A' && ch1 <= 'Z' ) {
+            a1 = true;
+            ch1 += 'a' - 'A';
+        } else if( ch1 >= 'a' && ch1 <= 'z' ) {
+            a1 = true;
+        } else {
+            a1 = false;
+        }
+        ch2 = ((const char *)p2)[i];
+        if( ch2 >= 'A' && ch2 <= 'Z' ) {
+            a2 = true;
+            ch2 += 'a' - 'A';
+        } else if( ch2 >= 'a' && ch2 <= 'z' ) {
+            a2 = true;
+        } else {
+            a2 = false;
+        }
         if( ch1 != ch2 ) {
-            return( ch1 - ch2 );
+            if( a1 != a2 ) {
+                if( a1 ) {
+                    ch1 = ((const char *)p1)[i];
+                } else {
+                    ch2 = ((const char *)p2)[i];
+                }
+            }
+            return( ( ch1 < ch2 ) ? -1 : 1 );
+        }
+        if( ch1 == 0 ) {
+            break;      /* equal to 0, end of string */
         }
     }
     return( 0 );
