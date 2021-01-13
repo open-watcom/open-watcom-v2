@@ -198,11 +198,11 @@ static void proccoment( void )
     WriteRecord();
 }
 
-static bool FindName( name_list *list, byte *name, int name_len )
-/***************************************************************/
+static bool FindName( name_list *list, const char *name, size_t name_len )
+/************************************************************************/
 {
     for( ; list != NULL; list = list->next ) {
-        if( memicmp( list->name, name, name_len ) == 0 ) {
+        if( strnicmp( list->name, name, name_len ) == 0 ) {
             list->lnameidx = NameIndex;
             return( true );
         }
@@ -210,13 +210,13 @@ static bool FindName( name_list *list, byte *name, int name_len )
     return( false );
 }
 
-static void SetExLnames( byte *name, int name_len )
-/*************************************************/
+static void SetExLnames( const char *name, size_t name_len )
+/**********************************************************/
 {
     exclude_list *  list;
 
     for( list = ExcludeList; list != NULL; list = list->next ) {
-        if( memicmp( list->name, name, name_len ) == 0 ) {
+        if( strnicmp( list->name, name, name_len ) == 0 ) {
             list->lnameidx = NameIndex;
         }
     }
@@ -225,14 +225,14 @@ static void SetExLnames( byte *name, int name_len )
 static void proclnames( void )
 /****************************/
 {
-    unsigned        rec_len;
-    byte            name_len;
-    byte            *buff;
+    size_t          rec_len;
+    size_t          name_len;
+    const char      *buff;
 
-    buff = Rec1->u.anyobj.rest;
+    buff = (char *)Rec1->u.anyobj.rest;
     for( rec_len = Rec1->head.length; rec_len > 1; rec_len -= name_len + 1 ) {
         ++NameIndex;
-        name_len = *buff;
+        name_len = *(unsigned char *)buff;
         buff++;
         if( !FindName( ClassList, buff, name_len ) ) {
             FindName( SegList, buff, name_len );
