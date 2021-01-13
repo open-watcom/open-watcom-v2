@@ -62,7 +62,7 @@
 #define STATIC_TABALLOC (256 * sizeof( symbol * ))  // 1st power of 128 > TABSIZE
 #define GLOBAL_TABALLOC (1792 * sizeof( symbol * )) // 1st power of 128 > TABSIZE
 
-int             (*CmpRtn)( const void *, const void *, size_t );
+int             (*CmpRtn)( const char *, const char *, size_t );
 size_t          NameLen;
 symbol          *LastSym;
 
@@ -598,7 +598,7 @@ void ResetSym( void )
     SymList = NULL;
     HeadSym = NULL;
     LastSym = NULL;
-    CmpRtn = memicmp;
+    CmpRtn = strnicmp;
     ResetPermBlocks();
     ClearHashPointers();
 }
@@ -760,9 +760,9 @@ void SetSymCase( void )
 /****************************/
 {
     if( LinkFlags & LF_CASE_FLAG ) {
-        CmpRtn = memcmp;
+        CmpRtn = strncmp;
     } else {
-        CmpRtn = memicmp;
+        CmpRtn = strnicmp;
     }
 }
 
