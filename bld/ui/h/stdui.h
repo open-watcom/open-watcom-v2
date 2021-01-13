@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -680,7 +680,7 @@ extern void             UIAPI uiblankarea( SAREA );
 extern void             UIAPI uiblankscreen( void );
 extern void             UIAPI uiblankattr( ATTR );
 extern void             UIAPI uicntrtext( VSCREEN _FARD *, SAREA *, ATTR, unsigned, const char * );
-extern bool             UIAPI uiconfig( char *, char ** );
+extern bool             UIAPI uiconfig( const char *, char ** );
 extern void             UIAPI uicursor( VSCREEN _FARD *, CURSORORD, CURSORORD, CURSOR_TYPE );
 extern ui_event         UIAPI uidialogevent( VSCREEN _FARD * );
 extern void             UIAPI uidirty( SAREA );
