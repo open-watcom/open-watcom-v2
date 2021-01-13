@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -288,8 +288,8 @@ static void DoIncSymbol( void *_sym )
     }
 }
 
-static class_entry *FindNamedClass( char *name )
-/**********************************************/
+static class_entry *FindNamedClass( const char *name )
+/****************************************************/
 // NYI:  this doesn't take into account 16 & 32 bit classes with the same name.
 {
     class_entry   *class;
@@ -315,7 +315,7 @@ static bool DefIncGroup( void *_def, void *_grouptab )
     group_entry     ***grouptab = _grouptab;
     group_entry     *group;
     unsigned        index;
-    char            **currname;
+    const char      **currname;
     class_entry     *class;
     seg_leader      *leader;
 
@@ -325,7 +325,7 @@ static bool DefIncGroup( void *_def, void *_grouptab )
         class = FindNamedClass( *currname );
         currname++;
         if( class != NULL ) {
-            leader = RingLookup( class->segs, CmpSegName, *currname );
+            leader = RingLookup( class->segs, CmpSegName, (void *)*currname );
             if( leader != NULL ) {
                 AddToGroup( group, leader );
             }

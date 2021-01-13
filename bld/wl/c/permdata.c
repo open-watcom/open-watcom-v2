@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -624,7 +624,7 @@ static void ReadGroupsList( unsigned count, perm_read_info *info )
 {
     incgroupdef         *def;
     unsigned_32         size;
-    char                **p;
+    const char          **p;
 
     while( count-- ) {
         size = BufReadU32( info );
