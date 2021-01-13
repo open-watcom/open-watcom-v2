@@ -453,7 +453,7 @@ static unsigned OMFCompName( const char *name, const char *buff, unsigned index 
     int         result;
 
     returnval = 0;
-    off = buff[index];
+    off = ((unsigned char *)buff)[index];
     buff += off * 2;
     len = *(unsigned char *)buff;
     buff++;
