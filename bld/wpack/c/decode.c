@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -547,7 +547,7 @@ int Decode( arccmd *cmd )
             for( currfile = filedata; *currfile != NULL; currfile++ ) {
                 namelen = (*currfile)->namelen & NAMELEN_MASK;
                 if( strlen( currname->filename ) == namelen &&
-                    memicmp(currname->filename, (*currfile)->name, namelen) == 0 ) {
+                    strnicmp( currname->filename, (*currfile)->name, namelen ) == 0 ) {
                     if( BufSeek( (*currfile)->disk_addr ) != -1 ) {
                         if( !DecodeFile( *currfile, cmd ) ) {
                             return false;
@@ -557,7 +557,8 @@ int Decode( arccmd *cmd )
                 }
             }
             if( *currfile == NULL ) {
-                char msgx[ 50 ];
+                char msgx[50];
+
                 strcpy( msgx, LookupText( NULL, TXT_NOT_IN_ARC ) );
                 Log( LookupText( NULL, TXT_WARN_FILE ), "\"", currname->filename, "\"", msgx, NULL );
             }

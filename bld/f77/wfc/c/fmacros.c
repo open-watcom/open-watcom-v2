@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -120,7 +120,7 @@ static macro_entry *FindMacroEntry( const char *macro, size_t macro_len )
     for( me = MacroList; me != NULL; me = me->link ) {
         if( me->name_len != macro_len )
             continue;
-        if( memicmp( me->name, macro, macro_len ) == 0 ) {
+        if( strnicmp( me->name, macro, macro_len ) == 0 ) {
             return( me );
         }
     }
@@ -164,7 +164,7 @@ void MacroUNDEFINE( const char *macro, size_t macro_len )
     for( me = &MacroList; *me != NULL; me = &(*me)->link ) {
         if( (*me)->name_len != macro_len )
             continue;
-        if( memicmp( (*me)->name, macro, macro_len ) == 0 ) {
+        if( strnicmp( (*me)->name, macro, macro_len ) == 0 ) {
             free_me = *me;
             *me = free_me->link;
             FMemFree( free_me );

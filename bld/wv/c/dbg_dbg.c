@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -89,20 +89,20 @@ static wv_sym_list      *WmonSymLst;
 
 static const wv_sym_entry   *StaticInternalLookup( lookup_item *li )
 {
-    cmp_func                    *cmp;
+    strcompn_fn                 *scompn;
     const wv_sym_entry          *curr;
     const wv_sym_entry * const  *list;
+    const char                  *name;
+    size_t                      len;
 
     if( li->scope.start != NULL )
         return( NULL );
-    if( li->case_sensitive ) {
-        cmp = memcmp;
-    } else {
-        cmp = memicmp;
-    }
+    scompn = ( li->case_sensitive ) ? strncmp : strnicmp;
+    name = li->name.start;
+    len = li->name.len;
     for( list = ListInternal; (curr = *list) != NULL; ++list ) {
-        if( li->name.len == SYM_NAME_LEN( curr->name )
-          && cmp( li->name.start, SYM_NAME_NAME( curr->name ), li->name.len ) == 0 ) {
+        if( len == SYM_NAME_LEN( curr->name )
+          && scompn( name, SYM_NAME_NAME( curr->name ), len ) == 0 ) {
             return( curr );
         }
     }
@@ -112,7 +112,7 @@ static const wv_sym_entry   *StaticInternalLookup( lookup_item *li )
 struct lookup_reg {
     const char          *name;
     unsigned            len;
-    cmp_func            *cmp;
+    strcompn_fn         *scompn;
     const mad_reg_info  *ri;
 };
 
@@ -122,7 +122,7 @@ static walk_result FindReg( const mad_reg_info *ri, int has_sublist, void *d )
 
     /* unused parameters */ (void)has_sublist;
 
-    if( memicmp( ld->name, ri->name, ld->len ) != 0 )
+    if( strnicmp( ld->name, ri->name, ld->len ) != 0 )
         return( WR_CONTINUE );
     if( ri->name[ld->len] != NULLCHAR )
         return( WR_CONTINUE );
@@ -136,11 +136,7 @@ const mad_reg_info *LookupRegName( const mad_reg_info *parent, lookup_item *li )
 
     if( li->scope.start != NULL )
         return( NULL );
-    if( li->case_sensitive ) {
-        lr.cmp = memcmp;
-    } else {
-        lr.cmp = memicmp;
-    }
+    lr.scompn = ( li->case_sensitive ) ? strncmp : strnicmp;
     lr.name = li->name.start;
     lr.len  = li->name.len;
     lr.ri   = NULL;
@@ -153,7 +149,7 @@ const wv_sym_entry *LookupInternalName( lookup_item *li )
     const wv_sym_entry  *se;
     const char          *null_start;
     size_t              null_len;
-    cmp_func            *cmp;
+    strcompn_fn         *scompn;
 
     se = StaticInternalLookup( li );
     if( se != NULL )
@@ -163,12 +159,8 @@ const wv_sym_entry *LookupInternalName( lookup_item *li )
         --null_len;
         if( null_len != li->name.len )
             return( NULL );
-        if( li->case_sensitive ) {
-            cmp = memcmp;
-        } else {
-            cmp = memicmp;
-        }
-        if( cmp( null_start, li->name.start, null_len ) == 0 ) {
+        scompn = ( li->case_sensitive ) ? strncmp : strnicmp;
+        if( scompn( null_start, li->name.start, null_len ) == 0 ) {
             return( (const wv_sym_entry *)&wvINT_NIL );
         }
     }
@@ -178,17 +170,17 @@ const wv_sym_entry *LookupInternalName( lookup_item *li )
 const wv_sym_entry *LookupUserName( lookup_item *li )
 {
     wv_sym_list         *sl;
-    cmp_func            *cmp;
+    strcompn_fn         *scompn;
+    const char          *name;
+    size_t              len;
 
-    if( li->case_sensitive ) {
-        cmp = memcmp;
-    } else {
-        cmp = memicmp;
-    }
+    scompn = ( li->case_sensitive ) ? strncmp : strnicmp;
+    name = li->name.start;
+    len = li->name.len;
     for( sl = WmonSymLst; sl != NULL; sl = sl->next ) {
-        if( li->name.len != SYM_NAME_LEN( sl->s.name ) )
+        if( len != SYM_NAME_LEN( sl->s.name ) )
             continue;
-        if( cmp( li->name.start, SYM_NAME_NAME( sl->s.name ), li->name.len ) != 0 )
+        if( scompn( name, SYM_NAME_NAME( sl->s.name ), len ) != 0 )
             continue;
         return( &sl->s );
     }

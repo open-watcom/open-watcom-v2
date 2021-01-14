@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1097,7 +1098,7 @@ typedef struct {
 
 typedef struct {
     blk_wlk_com         com;
-    int                 (*comp)(const void *, const void *, size_t);
+    strcompn_fn         *scompn;
     lookup_item         *li;
     search_result       sr;
     char                *buff;
@@ -1229,7 +1230,7 @@ static bool ASymLookup( drmem_hdl var, int index, void *_df )
 
     len = DRGetNameBuff( var, df->buff, df->len );
     if( len == df->len
-      && df->comp( df->buff, df->li->name.start, df->li->name.len ) == 0 ) {
+      && df->scompn( df->buff, df->li->name.start, df->li->name.len ) == 0 ) {
         /* Found symbol by name */
         if( !DRIsFunc( var ) && !DRIsStatic( var ) && !DRIsSymDefined( var ) ) {
             /* If symbol is a global variable declaration, ignore it; it
@@ -1540,7 +1541,7 @@ static void CollectSymHdl( const char *ep, imp_sym_handle *ish )
 typedef struct {
     imp_image_handle    *iih;
     void                *d;
-    int                 (*compare)(char const *, char const *);
+    strcomp_fn          *scomp;
     const char          *name;
     drmem_hdl           sym;
 } hash_look_data;
@@ -1551,7 +1552,7 @@ static bool AHashItem( void *_find, drmem_hdl dr_sym, const char *name )
     hash_look_data  *find = _find;
     imp_sym_handle  *ish;
 
-    if( find->compare( name, find->name ) == 0 ) {
+    if( find->scomp( name, find->name ) == 0 ) {
         find->sym = dr_sym;
         ish = DCSymCreate( find->iih, find->d );
         ish->imh = DwarfMod( find->iih, dr_sym );
@@ -1642,7 +1643,7 @@ static search_result HashSearchGbl( imp_image_handle *iih,
 
     sr = SR_NONE;
     data.iih  = iih;
-    data.compare = li->case_sensitive ? &strcmp : &stricmp;
+    data.scomp = ( li->case_sensitive ) ? &strcmp : &stricmp;
     data.sym = DRMEM_HDL_NULL;
     len = QualifiedName( li, buff, sizeof( buff ) );
     if( len <= sizeof( buff ) ) {
@@ -1708,7 +1709,7 @@ static search_result DoLookupSym( imp_image_handle *iih, symbol_source ss, void 
     df.com.containing = DRMEM_HDL_NULL;
     df.com.cont = true;
     df.com.kind = WLK_LOOKUP;
-    df.lookup.comp = li->case_sensitive ? memcmp : memicmp;
+    df.lookup.scompn = ( li->case_sensitive ) ? strncmp : strnicmp;
     df.lookup.li = li;
     df.lookup.len =  li->name.len + 1;
     if( df.lookup.len <= sizeof( buff ) ) {

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -338,7 +339,7 @@ static address DefnAddr( imp_image_handle *iih, lcl_defn *defn, lclinfo *local )
 search_result SearchLclMod( imp_image_handle *iih, imp_mod_handle imh, lookup_item *li, void *d )
 {
     lcl_defn            defn;
-    int                 (*compare)(void const*,void const*,size_t);
+    strcompn_fn         *scompn;
     const char          *curr;
     const char          *next;
     const char          *name;
@@ -353,16 +354,12 @@ search_result SearchLclMod( imp_image_handle *iih, imp_mod_handle imh, lookup_it
     if( li->scope.start == NULL ) {
         if( LoadLocalSyms( iih, imh, &lclld ) == DS_OK ) {
             local = &lclld;
-            if( li->case_sensitive ) {
-                compare = memcmp;
-            } else {
-                compare = memicmp;
-            }
+            scompn = ( li->case_sensitive ) ? strncmp : strnicmp;
             name = li->name.start;
             len = li->name.len;
             for( curr = local->start; (curr = ModAddrLkupVar( iih, curr, local )) != NULL; curr = next ) {
                 next = ProcDefn( iih, curr, &defn, local );
-                if( len == defn.i.namelen && compare( name, defn.i.name, len ) == 0 ) {
+                if( len == defn.i.namelen && scompn( name, defn.i.name, len ) == 0 ) {
                     ish = DCSymCreate( iih, d );
                     LclCreate( ish, curr, defn.i.name, local );
                     sr = SR_EXACT;
@@ -382,7 +379,7 @@ static search_result DoLclScope( imp_image_handle *iih, imp_mod_handle imh,
     lcl_defn            defn;
     const char          *curr;
     const char          *next;
-    int                 (*compare)(void const*,void const*,size_t);
+    strcompn_fn         *scompn;
     const char          *name;
     size_t              len;
     search_result       sr;
@@ -401,19 +398,15 @@ static search_result DoLclScope( imp_image_handle *iih, imp_mod_handle imh,
             return( sr );
         return( SearchMbr( iih, &ith, li, d ) );
     }
+    scompn = ( li->case_sensitive ) ? strncmp : strnicmp;
+    name = li->name.start;
+    len = li->name.len;
     sr = SR_NONE;
     for( curr = local->start; (curr = FindBlockRout( iih, curr, local )) != NULL; curr = next ) {
         next = ProcDefn( iih, curr, &blk, local );
         if( DCSameAddrSpace( blk.b.start, addr ) == DS_OK
           && ( blk.b.start.mach.offset <= addr.mach.offset )
           && ( blk.b.start.mach.offset + blk.b.size > addr.mach.offset ) ) {
-            name = li->name.start;
-            len = li->name.len;
-            if( li->case_sensitive ) {
-                compare = memcmp;
-            } else {
-                compare = memicmp;
-            }
             for( ;; ) {
                 if( blk.i.class == (CODE_SYMBOL | CODE_MEMBER_SCOPE) ) {
                     if( FindTypeHandle( iih, imh, blk.i.type_index, &ith ) == DS_OK ) {
@@ -422,7 +415,7 @@ static search_result DoLclScope( imp_image_handle *iih, imp_mod_handle imh,
                 } else {
                     for( ; (curr = FindLclVar( iih, curr, local )) != NULL; curr = next ) {
                         next = ProcDefn( iih, curr, &defn, local );
-                        if( len == defn.i.namelen && compare( name, defn.i.name, len ) == 0 ) {
+                        if( len == defn.i.namelen && scompn( name, defn.i.name, len ) == 0 ) {
                             ish = DCSymCreate( iih, d );
                             LclCreate( ish, curr, defn.i.name, local );
                             sr = SR_EXACT;

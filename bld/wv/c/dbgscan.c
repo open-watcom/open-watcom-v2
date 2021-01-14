@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -94,7 +94,7 @@ static void SetRadixSpec( const char *str, size_t len, mad_radix value, bool cle
     owner = &RadixStrs;
     for( radixstr = RadixStrs; radixstr != NULL; radixstr = radixstr->next ) {
         if( SYM_NAME_LEN( radixstr->string ) == len
-          && memicmp( SYM_NAME_NAME( radixstr->string ), str, len ) == 0 )
+          && strnicmp( SYM_NAME_NAME( radixstr->string ), str, len ) == 0 )
             break;
         if( SYM_NAME_LEN( radixstr->string ) < len )
             break;
@@ -229,7 +229,7 @@ static mad_type_handle DoScanType( mad_type_kind tk, char *prefix )
     size_t              len;
 
     len = strlen( prefix );
-    if( memicmp( TokenStart, prefix, len ) != 0 ) {
+    if( strnicmp( TokenStart, prefix, len ) != 0 ) {
         return( MAD_NIL_TYPE_HANDLE );
     }
     data.start = TokenStart + len;
@@ -620,7 +620,7 @@ static bool ScanNumber( void )
     } else {
         CurrToken = T_BAD_NUM; /* assume we'll find a bad number */
         for( radixstr = RadixStrs; radixstr != NULL; radixstr = radixstr->next ) {
-            if( memicmp( ScanPtr, SYM_NAME_NAME( radixstr->string ), SYM_NAME_LEN( radixstr->string ) ) == 0 ) {
+            if( strnicmp( ScanPtr, SYM_NAME_NAME( radixstr->string ), SYM_NAME_LEN( radixstr->string ) ) == 0 ) {
                 ret = true;
                 ScanPtr += SYM_NAME_LEN( radixstr->string );
                 hold_scan = ScanPtr;
@@ -706,8 +706,8 @@ static bool ScanKeyword( const char *table )
     for( ; *table != NULLCHAR; table += (keylen + 3) ) {
          keylen = strlen( table );
          if( keylen == namelen && ( _IsOn( SW_SSL_CASE_SENSITIVE )  ?
-                memcmp( table, TokenStart, namelen ) == 0 :
-                memicmp( table, TokenStart, namelen ) == 0 ) ) {
+                strncmp( table, TokenStart, namelen ) == 0 :
+                strnicmp( table, TokenStart, namelen ) == 0 ) ) {
              table += (namelen + 1);
              CurrToken = (tokens)GETWORD( table );
              return( true );

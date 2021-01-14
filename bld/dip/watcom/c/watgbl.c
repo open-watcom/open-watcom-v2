@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -147,7 +148,7 @@ static search_result LkupGblName( imp_image_handle *iih, section_info *inf, imp_
     gbl_link            *lnk_array;
     gbl_info            *gbl;
     hash_link           lnk_off;
-    int                 (*compare)(void const *,void const *,size_t);
+    strcompn_fn         *scompn;
     const char          *gblname;
     size_t              gbllen;
     const char          *nam = NULL;
@@ -165,7 +166,7 @@ static search_result LkupGblName( imp_image_handle *iih, section_info *inf, imp_
     search_result       sr;
 
     sr = SR_NONE;
-    compare = li->case_sensitive ? memcmp : memicmp;
+    scompn = ( li->case_sensitive ) ? strncmp : strnicmp;
 
     lkup_dtor = (li->type == ST_DESTRUCTOR);
     lkup_full = false;
@@ -215,7 +216,7 @@ static search_result LkupGblName( imp_image_handle *iih, section_info *inf, imp_
             gblname = mangled_name;
             if( !lkup_full )
                 gblname += lnk->src_off;
-            if( compare( gblname, nam, namlen ) != 0 )
+            if( scompn( gblname, nam, namlen ) != 0 )
                 continue;
             if( li->scope.start != NULL ) {
                 int     rc;
@@ -224,7 +225,7 @@ static search_result LkupGblName( imp_image_handle *iih, section_info *inf, imp_
                 for( entry = 0;
                   (rc = __scope_name( mangled_name, mangled_len, entry, &gblname, &gbllen )) != 0;
                   ++entry ) {
-                    if( li->scope.len == gbllen && compare( li->scope.start, gblname, gbllen ) == 0 ) {
+                    if( li->scope.len == gbllen && scompn( li->scope.start, gblname, gbllen ) == 0 ) {
                         break;
                     }
                 }

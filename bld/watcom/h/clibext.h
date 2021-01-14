@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -67,7 +67,6 @@
 #endif
 #define stricmp strcasecmp
 #define strnicmp strncasecmp
-#define memicmp strncasecmp
 #define _MAX_PATH   (PATH_MAX+1)
 #define _MAX_DRIVE  3
 #define _MAX_DIR    (PATH_MAX-3)

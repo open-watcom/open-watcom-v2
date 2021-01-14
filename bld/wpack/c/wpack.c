@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -455,9 +455,9 @@ static int DeleteEntry( arccmd *cmd )
         for( currfile = cmd->files; currfile->filename != NULL; currfile++ ) {
             namelen = (*currdata)->namelen & NAMELEN_MASK;
             if( strlen( currfile->filename ) == namelen &&
-                memicmp( currfile->filename, (*currdata)->name, namelen ) == 0 ) {
-               deletethis = true;
-               break;
+                strnicmp( currfile->filename, (*currdata)->name, namelen ) == 0 ) {
+                deletethis = true;
+                break;
             }
         }
         nextdata = *(currdata + 1);

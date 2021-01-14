@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -940,7 +940,7 @@ static walk_result sem_FindCue( cue_handle *cueh, void *d )
         return( WR_CONTINUE );
     if( memcmp( &file[len - cd->len], cd->name, cd->len ) == 0 ) {
         match = CMP_SENSITIVE;
-    } else if( memicmp( &file[len - cd->len], cd->name, cd->len ) == 0 ) {
+    } else if( strnicmp( &file[len - cd->len], cd->name, cd->len ) == 0 ) {
         match = CMP_INSENSITIVE;
     } else {
         return( WR_CONTINUE );
@@ -1106,7 +1106,7 @@ static ssl_value MechGet( unsigned select, ssl_value parm )
                     #define ANY_IMAGE_NAME      "_anyimage"
                     #define ANY_IMAGE_NAME_LEN  (sizeof(ANY_IMAGE_NAME)-1)
                     if( CurrGet.li.name.len != ANY_IMAGE_NAME_LEN
-                      || memicmp( CurrGet.li.name.start, ANY_IMAGE_NAME, ANY_IMAGE_NAME_LEN ) != 0 ) {
+                      || strnicmp( CurrGet.li.name.start, ANY_IMAGE_NAME, ANY_IMAGE_NAME_LEN ) != 0 ) {
                         Error( ERR_NONE, LIT_ENG( ERR_NO_IMAGE ), CurrGet.li.name.start, CurrGet.li.name.len );
                     } else {
                         CurrGet.any_image = true;

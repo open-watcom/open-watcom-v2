@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -707,7 +708,7 @@ search_result DIPIMPENTRY( AddrSym )( imp_image_handle *iih,
 
 struct lookup_data {
     lookup_item         *li;
-    int                 (*cmp)( const void *, const void *, size_t );
+    strcompn_fn         *scompn;
     void                *d;
     char                *unmatched;
     search_result       sr;
@@ -820,11 +821,7 @@ search_result DIPIMPENTRY( LookupSym )( imp_image_handle *iih,
     data.li = li;
     data.d = d;
     data.sr = SR_NONE;
-    if( li->case_sensitive ) {
-        data.cmp = memcmp;
-    } else {
-        data.cmp = memicmp;
-    }
+    data.scompn = ( li->case_sensitive ) ? strncmp : strnicmp;
     data.static_only = FALSE;
     len = GetString( GetPointer( iih->cc + offsetof( ClassClass, name ) ), NameBuff, sizeof( NameBuff ) );
     p = strrchr( NameBuff, '/' );

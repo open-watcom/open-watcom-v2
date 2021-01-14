@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -385,13 +386,13 @@ static walk_result FindTheMad( dig_arch arch, void *d )
     MADNameFile( arch, buff, sizeof( buff ) );
 //    p = SkipPathInfo( buff, 0 );
     SkipPathInfo( buff, 0 );
-    if( memicmp( buff, fd->name, fd->len ) == 0 ) {
+    if( strnicmp( buff, fd->name, fd->len ) == 0 ) {
         fd->arch = arch;
         return( WR_STOP );
     }
     MADNameDescription( arch, buff, sizeof( buff ) );
     doNormalizedString( buff );
-    if( memicmp( buff, fd->name, fd->len ) == 0 ) {
+    if( strnicmp( buff, fd->name, fd->len ) == 0 ) {
         fd->arch = arch;
         return( WR_STOP );
     }

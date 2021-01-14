@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1056,7 +1056,7 @@ bool IsInternalModName( const char *start, size_t len )
 {
     if( len != sizeof( InternalName ) - 1 )
         return( false );
-    if( memicmp( start, InternalName, len ) != 0 )
+    if( strnicmp( start, InternalName, len ) != 0 )
         return( false );
     return( true );
 }

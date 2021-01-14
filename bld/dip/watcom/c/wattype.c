@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -515,17 +516,17 @@ static const char *FindAName( struct name_state *state, const char *p,
 {
     const char  *name;
     size_t      len;
-    int         (*comp)(void const*,void const*,size_t);
+    const char  *lookup_name;
+    size_t      lookup_len;
+    strcompn_fn *scompn;
     unsigned    index;
     unsigned    i;
     symbol_type type;
     byte        kind;
 
-    if( li->case_sensitive ) {
-        comp = memcmp;
-    } else {
-        comp = memicmp;
-    }
+    scompn = ( li->case_sensitive ) ? strncmp : strnicmp;
+    lookup_name = li->name.start;
+    lookup_len = li->name.len;
     for( ; p < Type->end; p = NEXT_TYPE( p ) ) {
         state->curr_idx++;
         kind = GETU8( p + 1 );
@@ -593,7 +594,7 @@ static const char *FindAName( struct name_state *state, const char *p,
         }
         name = NamePtr( p );
         len = GETU8( p ) - ( name - p );
-        if( len == li->name.len && comp( name, li->name.start, len ) == 0 ) {
+        if( len == lookup_len && scompn( name, lookup_name, len ) == 0 ) {
             return( p );
         }
     }
@@ -1673,10 +1674,12 @@ search_result SearchMbr( imp_image_handle *iih, imp_type_handle *ith,
     struct anc_graph    *pending, *new;
     imp_type_handle     new_ith;
     unsigned            index;
-    int                 (*comp)(void const*,void const*,size_t);
+    strcompn_fn         *scompn;
     imp_sym_handle      *ish;
     const char          *name;
     size_t              len;
+    const char          *lookup_name;
+    size_t              lookup_len;
     typeinfo            typeld;
 
     sr = SR_NONE;
@@ -1684,11 +1687,9 @@ search_result SearchMbr( imp_image_handle *iih, imp_type_handle *ith,
     if( LoadType( iih, ith->imh, ith->t.entry ) == DS_OK ) {
         p = Type->start + ith->t.offset;
         if( (GETU8( p + 1 ) & CLASS_MASK) == STRUCT_TYPE ) {
-            if( li->case_sensitive ) {
-                comp = memcmp;
-            } else {
-                comp = memicmp;
-            }
+            scompn = ( li->case_sensitive ) ? strncmp : strnicmp;
+            lookup_name = li->name.start;
+            lookup_len = li->name.len;
             pending = NULL;
             count = GETU16( p + 2 );
             for( ;; ) {
@@ -1723,7 +1724,7 @@ search_result SearchMbr( imp_image_handle *iih, imp_type_handle *ith,
                 } else {
                     name = NamePtr( p );
                     len = GETU8( p ) - ( name - p );
-                    if( len == li->name.len && comp( name, li->name.start, len ) == 0 ) {
+                    if( len == lookup_len && scompn( name, lookup_name, len ) == 0 ) {
                         ish = DCSymCreate( iih, d );
                         ish->u.typ.t.offset = p - Type->start;
                         ish->u.typ.t.entry = Type->entry;

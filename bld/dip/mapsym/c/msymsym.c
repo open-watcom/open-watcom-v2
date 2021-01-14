@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -208,8 +208,10 @@ static search_result DoLookupSym( imp_image_handle *iih,
                 symbol_source ss, void *source, lookup_item *li,
                 location_context *lc, void *d )
 {
-    int         (*cmp)(const void *, const void *, size_t);
+    strcompn_fn *scompn;
     msym_sym    *s;
+    const char  *name;
+    size_t      len;
 
     /* unused parameters */ (void)lc; (void)source;
 
@@ -224,13 +226,11 @@ static search_result DoLookupSym( imp_image_handle *iih,
         return( SR_NONE );
     if( li->scope.start != NULL )
         return( SR_NONE );
-    if( li->case_sensitive ) {
-        cmp = memcmp;
-    } else {
-        cmp = memicmp;
-    }
+    scompn = ( li->case_sensitive ) ? strncmp : strnicmp;
+    name = li->name.start;
+    len = li->name.len;
     for( s = iih->gbl; s != NULL; s = s->next ) {
-        if( s->len == li->name.len && cmp( s->name, li->name.start, s->len ) == 0 ) {
+        if( s->len == len && scompn( s->name, name, s->len ) == 0 ) {
             DCSymCreate( iih, d )->p = s;
             return( SR_EXACT );
         }

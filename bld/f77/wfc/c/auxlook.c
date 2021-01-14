@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,7 +59,7 @@ aux_info *AuxLookupName( const char *name, uint name_len )
         if( aux == NULL )
             break;
         if( aux->sym_len == name_len ) {
-            if( memicmp( name, aux->sym_name, name_len ) == 0 ) {
+            if( strnicmp( name, aux->sym_name, name_len ) == 0 ) {
                 break;
             }
         }
