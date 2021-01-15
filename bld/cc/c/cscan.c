@@ -229,7 +229,7 @@ TOKEN KwLookup( const char *buf, size_t len )
 static int getIDName( int c )
 /***************************/
 {
-    do {
+    while( CharSet[c] & (C_AL | C_DI) ) {
         while( CharSet[c] & (C_AL | C_DI) ) {
             WriteBufferChar( c );
             c = *SrcFile->src_ptr++;
@@ -237,7 +237,7 @@ static int getIDName( int c )
         if( (CharSet[c] & C_EX) == 0 )
             break;
         c = GetCharCheck( c );
-    } while( CharSet[c] & (C_AL | C_DI) );
+    }
     CurrChar = c;
     return( c );
 }
