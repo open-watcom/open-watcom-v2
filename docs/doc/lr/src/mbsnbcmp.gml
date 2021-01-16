@@ -40,10 +40,10 @@ is similar to
 .kw _mbsncmp
 .ct , except that
 .id &funcb.
-compares strings by bytes rather than by characters.
+compares strings by length in bytes rather than by length in characters.
 .return end
 .see begin
-.seelist _mbsnbcat _mbsnbcmp _mbsnbicmp strncmp strnicmp
+.seelist _mbsnbcat _mbsnbcmp _mbsnbicmp _mbsncmp _mbsnicmp strncmp strnicmp
 .see end
 .exmp begin
 #include <stdio.h>

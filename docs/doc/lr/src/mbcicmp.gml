@@ -16,7 +16,7 @@ The function compares one multibyte character from
 to one multibyte character from
 .arg s2
 using a case-insensitive comparison.
-All uppercase characters from
+Uppercase character from
 .arg s1
 and
 .arg s2
