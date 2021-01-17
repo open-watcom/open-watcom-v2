@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +45,7 @@ charset_flags CharSet[LCHR_MAX] = {                         /* ASCII */
     C_EX,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  /* NUL to BEL */
 
 /* 08 BS  09 HT  0A LF  0B VT  0C FF  0D CR  0E SO  0F SI   */
-    C_BC,  C_WS,  C_EX,  C_WS,  C_WS,  C_WS,  C_BC,  C_BC,  /* BS  to SI */
+    C_BC,  C_WS,  C_BC,  C_WS,  C_WS,  C_WS,  C_BC,  C_BC,  /* BS  to SI */
 
 /* 10 DLE 11 DC1 12 DC2 13 DC3 14 DC4 15 NAK 16 SYN 17 ETB  */
     C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  /* DLE to ETB */

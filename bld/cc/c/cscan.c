@@ -1104,6 +1104,7 @@ static void doScanComment( void )
             }
             if( c == '\n' ) {
                 CppPrtChar( c );
+                NewLineStartPos( SrcFile );
             } else if( c != '\r' && CompFlags.cpp_keep_comments ) {
                 CppPrtChar( c );
             }
@@ -1111,12 +1112,14 @@ static void doScanComment( void )
         }
         CppComment( '\0' );
     } else {
-        // make '/' a special character so that we only have to do one test
-        // for each character inside the main loop
+        // make '/' anf '\n' a special characters so that we only have
+        // to do one test for each character inside the main loop
         CharSet['/'] |= C_EX;           // make '/' special character
+        CharSet['\n'] |= C_EX;          // make '\n' special character
         c = '\0';
         for( ; c != LCHR_EOF; ) {
             if( c == '\n' ) {
+                NewLineStartPos( SrcFile );
                 TokenLoc = SrcFileLoc = SrcFile->src_loc;
             }
             do {
@@ -1146,6 +1149,7 @@ static void doScanComment( void )
                 c = NextChar();
             }
         }
+        CharSet['\n'] &= ~C_EX;         // undo '\n' special character
         CharSet['/'] &= ~C_EX;          // undo '/' special character
     }
     if( c != LCHR_EOF ) {
@@ -1598,6 +1602,7 @@ void SkipAhead( void )
             if( CompFlags.cpp_mode && IS_PPCTL_NORMAL() ) {
                 CppPrtChar( '\n' );
             }
+            NewLineStartPos( SrcFile );
             SrcFileLoc = SrcFile->src_loc;
             NextChar();
         }
@@ -1618,6 +1623,7 @@ void SkipAhead( void )
 static TOKEN ScanNewline( void )
 /******************************/
 {
+    NewLineStartPos( SrcFile );
     SrcFileLoc = SrcFile->src_loc;
     if( PPControl & PPCTL_EOL )
         return( T_NULL );
