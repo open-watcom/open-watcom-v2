@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,6 +72,7 @@ msg_level_info      msg_level[MESSAGE_COUNT] = {
 
 static ErrPostList  *PostList;
 static unsigned     error_line = 0;
+static unsigned     error_column = 0;
 static char         *error_fname = NULL;
 
 void OpenErrFile( void )
@@ -131,27 +132,30 @@ static void CMsgInfo( cmsg_info *info, int parmno, msg_codes msgnum, va_list arg
 {
     char        *fname;
     unsigned    line;
+    unsigned    column;
     char const  *msgstr;
     int         prefix_len;
 
     info->msgnum = msgnum;
 //  CMsgSetClass( info, msgnum );
-    info->col = 0;
     switch( msgnum ) {
     case ERR_INVALID_MEMORY_MODEL:
     case ERR_INVALID_OPTION:
     case ERR_INVALID_OPTIMIZATION:
         /* no location for error message */
         line = 0;
+        column = 0;
         fname = NULL;
         break;
     default:
         if( error_fname != NULL ) {
             fname = error_fname;
             line = error_line;
+            column = error_column;
         } else {
             fname = FileIndexToCorrectName( TokenLoc.fno );
             line = TokenLoc.line;
+            column = TokenLoc.column;
         }
     }
     prefix_len = 0;
@@ -164,6 +168,7 @@ static void CMsgInfo( cmsg_info *info, int parmno, msg_codes msgnum, va_list arg
     _vsnprintf( info->msgtxt + prefix_len, MAX_MSG_LEN - prefix_len, msgstr, args );
     info->msgtxt[MAX_MSG_LEN - 1] = '\0';
     info->line = line;
+    info->column = column;
     info->fname = fname;
 }
 
@@ -393,6 +398,7 @@ void SetErrLoc( source_loc *src_loc )
 {
     error_fname = FileIndexToCorrectName( src_loc->fno );
     error_line = src_loc->line;
+    error_column = src_loc->column;
 }
 
 
@@ -444,14 +450,16 @@ static void DoMsgInfo( msg_codes msgnum )
     cmsg_info   *info;
     char        pre[MAX_MSG_LEN]; //actual message text
     unsigned    line;
+    unsigned    column;
 
     info = &sinfo;
     info->msgnum = msgnum;
     CMsgSetClass( info, msgnum );
-    info->col = 0;
     line = 0;
+    column = 0;
     CGetMsg( info->msgtxt, msgnum );
     info->line = line;
+    info->column = column;
     info->fname = NULL;
     FmtCMsg( pre, info );
     printf( "%s%s\n", pre,info->msgtxt );

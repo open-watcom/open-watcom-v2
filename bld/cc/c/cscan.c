@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -100,6 +100,14 @@ static unsigned char InitClassTable[] = {
     '\0',       0
 };
 
+
+void NewLineStartPos( FCB *srcfile )
+/**********************************/
+{
+    srcfile->src_line_cnt++;
+    srcfile->src_loc.line++;
+    srcfile->src_loc.column = 0;
+}
 
 void ReScanInit( const char *ptr )
 /********************************/
@@ -1092,8 +1100,7 @@ static void doScanComment( void )
                 continue; //could be **/
             }
             if( c == LCHR_EOF ) {
-                CppComment( '\0' );
-                return;
+                break;
             }
             if( c == '\n' ) {
                 CppPrtChar( c );
@@ -1108,7 +1115,7 @@ static void doScanComment( void )
         // for each character inside the main loop
         CharSet['/'] |= C_EX;           // make '/' special character
         c = '\0';
-        for( ;; ) {
+        for( ; c != LCHR_EOF; ) {
             if( c == '\n' ) {
                 TokenLoc = SrcFileLoc = SrcFile->src_loc;
             }
@@ -1119,7 +1126,7 @@ static void doScanComment( void )
                 } while( (CharSet[c] & C_EX) == 0 );
                 c = GetCharCheck( c );
                 if( c == LCHR_EOF ) {
-                    return;
+                    break;
                 }
             } while( (CharSet[c] & C_EX) == 0 );
             if( c == '/' ) {
@@ -1135,17 +1142,16 @@ static void doScanComment( void )
                 }
             }
             // NextChar might not be pointing to GetNextChar at this point
-            while( NextChar != GetNextChar ) {
+            while( c != LCHR_EOF && NextChar != GetNextChar ) {
                 c = NextChar();
-                if( c == LCHR_EOF ) {
-                    return;
-                }
             }
         }
         CharSet['/'] &= ~C_EX;          // undo '/' special character
     }
-    CompFlags.scanning_comment = false;
-    NextChar();
+    if( c != LCHR_EOF ) {
+        CompFlags.scanning_comment = false;
+        NextChar();
+    }
 }
 
 static TOKEN ScanSlash( void )

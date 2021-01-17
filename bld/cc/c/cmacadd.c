@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -259,5 +259,6 @@ MEPTR CreateMEntry( const char *name, size_t len )
     mentry->parm_count = 0;
     mentry->src_loc.fno = 0;
     mentry->src_loc.line = 0;
+    mentry->src_loc.column = 0;
     return( mentry );
 }

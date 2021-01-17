@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -280,8 +280,7 @@ static int tryBackSlashNewLine( void )
                 CppPrtChar( '\n' );
             }
         }
-        SrcFile->src_line_cnt++;
-        SrcFile->src_loc.line++;
+        NewLineStartPos( SrcFile );
         SrcFileLoc = SrcFile->src_loc;
 //      SrcFile->column = 0;
         return( GetNextChar() );
@@ -342,8 +341,7 @@ int GetCharCheckFile( int c )
             }
             return( CurrChar );
         case '\n':
-            SrcFile->src_line_cnt++;
-            SrcFile->src_loc.line++;
+            NewLineStartPos( SrcFile );
 //          SrcFile->column = 0;
             break;
         case '\t':
@@ -500,6 +498,7 @@ static bool FCB_Alloc( FILE *fp, const char *filename, src_file_type typ )
         srcfcb->src_name = flist->name;
         srcfcb->src_line_cnt = 0;
         srcfcb->src_loc.line = 1;
+        srcfcb->src_loc.column = 0;
         srcfcb->src_loc.fno = flist->index;
         SrcFileLoc = srcfcb->src_loc;
         srcfcb->src_flist = flist;
@@ -509,7 +508,7 @@ static bool FCB_Alloc( FILE *fp, const char *filename, src_file_type typ )
         srcfcb->prev_file = SrcFile;
         srcfcb->prev_currchar = CurrChar;
 #if _CPU == 370
-        srcfcb->colum = 0;     /* init colum, trunc info */
+        srcfcb->column = 0;     /* init colum, trunc info */
         srcfcb->trunc = 0;
         srcfcb->prevcount = 0;
 #endif

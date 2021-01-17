@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -670,6 +670,7 @@ extern void DwarfBrowseEmit( void )
     dummyLoc = DWLocFini( Client, DWLocInit( Client ) );
     CurLoc.fno = 0;
     CurLoc.line = 0;
+    CurLoc.column = 0;
     dwarfEmit();
     DWLocTrash( Client, dummyLoc );
     DwarfFini( Client );

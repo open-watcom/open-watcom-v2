@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,10 +50,13 @@ void InitGlobalVars( void )
     BadTokenInfo            = ERR_NONE;
     TokenLen                = 0;
     TokenLoc.line           = 0;
+    TokenLoc.column         = 0;
     TokenLoc.fno            = 0;
     SrcFileLoc.line         = 0;
+    SrcFileLoc.column       = 0;
     SrcFileLoc.fno          = 0;
     CommentLoc.line         = 0;
+    CommentLoc.column       = 0;
     CommentLoc.fno          = 0;
     CurrChar                = 0;
     ConstType               = 0;
@@ -75,6 +78,7 @@ void InitGlobalVars( void )
     CppStack                = NULL;     /* #if structure control stack */
     IncPathList             = NULL;     /* list of path names to try for include files */
     SrcLoc.line             = 0;
+    SrcLoc.column           = 0;
     SrcLoc.fno              = 0;
     SrcLineCount            = 0;        /* # of lines in primary source file */
     IncLineCount            = 0;        /* # of lines in all included files  */
@@ -92,6 +96,7 @@ void InitGlobalVars( void )
     SavedId                 = NULL;     /* saved id when doing look ahead */
     SavedHash               = 0;        /* hash value for saved id */
     SavedTokenLoc.line      = 0;        /* value of TokenLine when id saved */
+    SavedTokenLoc.column    = 0;        /* value of TokenColumn when id saved */
     SavedTokenLoc.fno       = 0;        /* value of TokenFno when id saved */
     LAToken                 = T_NULL;   /* look ahead token */
     LabelHead               = NULL;     /* list of all labels defined in function */

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -318,6 +318,7 @@ typedef struct incfile {
 typedef struct source_loc {
     unsigned            fno;
     unsigned            line;
+    unsigned            column;
 } source_loc;
 
 typedef struct xref_entry {
