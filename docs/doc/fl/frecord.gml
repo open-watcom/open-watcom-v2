@@ -1,6 +1,6 @@
 .chap *refid=frecord Structures, Unions and Records
 .*
-.if &e'&dohelp eq 1 .do begin
+.if &e'&dohelp ne 0 .do begin
 .np
 The following sections describe support for composite data types.
 .do end

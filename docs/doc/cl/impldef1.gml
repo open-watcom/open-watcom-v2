@@ -25,7 +25,7 @@ msg_text
 .cillust end
 .pp
 where:
-..if &e'&dohelp eq 1 ..in 0
+..if &e'&dohelp ne 0 ..in 0
 :ZDL termhi=1 tsize='1.0i' break.
 :ZDT.filename
 :ZDD.

@@ -201,7 +201,7 @@
 .do end
 .el .do begin
 :ZH2 ctx='&*tag.'.&* [&*cl_tmp.]
-.' .'if &e'&dohelp eq 1 .do begin
+.' .'if &e'&dohelp ne 0 .do begin
 .' .' .'pu 1 .ixsect &* [&*cl_tmp.]
 .' .' .'pu 1 .ixsectid &*tag.
 .' .' .'se SCTlvl=2
@@ -261,7 +261,7 @@
 .gt HDG add hdg
 .dm hdg begin
 .sk 1
-.if &e'&dohelp eq 1 .do begin
+.if &e'&dohelp ne 0 .do begin
 .cp &WDWlvl
 .do end
 :HILITE.&*.

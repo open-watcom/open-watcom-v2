@@ -950,7 +950,7 @@ or
 .dm topsect end
 .*
 .dm helppref begin
-.if &e'&dohelp eq 1 .do begin
+.if &e'&dohelp ne 0 .do begin
 .if '&*' ne '' .do begin
 :helppfx pfx='&* '.
 .se pfx$='&* '

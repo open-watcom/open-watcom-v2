@@ -11,7 +11,7 @@
 :INCLUDE file='defs'.
 :INCLUDE file='cppextra'.
 .*
-.if &e'&dohelp eq 1 .do begin
+.if &e'&dohelp ne 0 .do begin
 .dm sepsect begin
 .dm sepsect end
 .do end
@@ -43,7 +43,7 @@
 .do end
 .*
 :BODY.
-.if &e'&dohelp eq 1 .do begin
+.if &e'&dohelp ne 0 .do begin
 :exhelp
 :include file='&book..idx'
 :include file='&book..tbl'

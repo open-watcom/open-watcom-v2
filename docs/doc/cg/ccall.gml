@@ -1765,7 +1765,7 @@ All other values are returned in the manner described earlier in this
 chapter.
 .endlevel
 .*
-.if &e'&dohelp eq 1 .do begin
+.if &e'&dohelp ne 0 .do begin
 .   .if '&machine' eq '8086' .do begin
 .   .   .helppref
 .   .do end

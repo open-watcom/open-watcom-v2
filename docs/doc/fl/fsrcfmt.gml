@@ -1,6 +1,6 @@
 .chap FORTRAN Source Program Format
 .*
-.if &e'&dohelp eq 1 .do begin
+.if &e'&dohelp ne 0 .do begin
 .np
 The following sections describe input rules for FORTRAN source
 programs.

@@ -197,7 +197,7 @@
 .*
 .im pragstx
 .*
-.if &e'&dohelp eq 1 .do begin
+.if &e'&dohelp ne 0 .do begin
 .   .if '&machine' eq '8086' .do begin
 .   .   .helppref 16-bit:
 .   .do end
@@ -5221,7 +5221,7 @@ in the 80x87 cache before calling the specified routine.
 .*
 .endlevel
 .*
-.if &e'&dohelp eq 1 .do begin
+.if &e'&dohelp ne 0 .do begin
 .   .if '&machine' eq '8086' .do begin
 .   .   .helppref
 .   .do end

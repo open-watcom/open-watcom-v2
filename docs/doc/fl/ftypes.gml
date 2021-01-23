@@ -1,6 +1,6 @@
 .chap *refid=ftypes Names, Data Types and Constants
 .*
-.if &e'&dohelp eq 1 .do begin
+.if &e'&dohelp ne 0 .do begin
 .np
 The following sections describe naming rules, data types supported
 by &product, and formats for constants.

@@ -439,10 +439,10 @@ This message may be ignored.
 :cmt.exe2. .endnote
 .do end
 .do end
-.if &e'&dohelp eq 1 .do begin
+.if &e'&dohelp ne 0 .do begin
 .   .helppref 16-bit
 .do end
 .im wmemlay
-.if &e'&dohelp eq 1 .do begin
+.if &e'&dohelp ne 0 .do begin
 .   .helppref
 .do end

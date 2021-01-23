@@ -81,7 +81,7 @@
 .dm keyword end
 
 .dm keyref begin
-.if &e'&dohelp eq 1 .do begin
+.if &e'&dohelp ne 0 .do begin
 .   .se *lc1 = &'lower(&*1.)
 .   .getid &*lc1. &*2.
 .   .if &*0 > 1 .do begin

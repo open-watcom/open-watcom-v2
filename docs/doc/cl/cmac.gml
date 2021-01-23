@@ -277,7 +277,7 @@
 .*
 .* Redefine paragraph control macros for on-line help
 .*
-.if &e'&dohelp eq 1 .do begin
+.if &e'&dohelp ne 0 .do begin
 .*
 .dm pp begin
 :P.
@@ -417,7 +417,7 @@
 :SET symbol='MSUPER9'  value='9'.
 .*
 .dm helppref begin
-.if &e'&dohelp eq 1 .do begin
+.if &e'&dohelp ne 0 .do begin
 .   .if '&*' ne '' .do begin
 .   :helppfx pfx='&* '.
 .   .se pfx$='&* '
@@ -450,14 +450,14 @@
 .   .tb set \
 .   .tb &*t0 &*t2 &*t3 &*t4 &*t5 &*t6 &*t7 &*t8 &*t1
 .   .bx on &*2 &*4 &*5 &*6 &*7 &*8 &*9 &*10 &*3
-.   .if &e'&dohelp eq 1 .do begin
+.   .if &e'&dohelp ne 0 .do begin
 .   .   .codeon
 .   .do end
 .do end
 .el .if '&*' eq 'off' .do begin
 .   .tb set
 .   .tb
-.   .if &e'&dohelp eq 1 .do begin
+.   .if &e'&dohelp ne 0 .do begin
 .   .   .codeoff
 .   .do end
 .   .bx off
@@ -465,11 +465,11 @@
 .   .xtxmp end &$$bextrb &$$bextre
 .do end
 .el .do begin
-.   .if &e'&dohelp eq 1 .do begin
+.   .if &e'&dohelp ne 0 .do begin
 .   .   .codeoff
 .   .do end
 .   .bx
-.   .if &e'&dohelp eq 1 .do begin
+.   .if &e'&dohelp ne 0 .do begin
 .   .   .codeon
 .   .do end
 .do end
@@ -631,7 +631,7 @@
 .dm xtnada end
 .do end
 .*
-.if &e'&dohelp eq 1 .do begin
+.if &e'&dohelp ne 0 .do begin
 .dm xt begin
 .   .if '&*' eq 'on' .do begin
 .   .do end

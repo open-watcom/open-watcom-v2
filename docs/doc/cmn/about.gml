@@ -1,6 +1,6 @@
 .chap *refid=cpabout About This Manual
 .*
-.if &e'&dohelp eq 1 .do begin
+.if &e'&dohelp ne 0 .do begin
 .if '&lang' eq 'C/C++' .do begin
 :HBMP 'cguide.bmp' i
 .do end

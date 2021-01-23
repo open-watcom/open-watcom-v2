@@ -58,7 +58,7 @@ the &cmppname compiler for DEC Alpha AXP platforms.
 .endnote
 .do end
 .*
-.if &e'&dohelp eq 1 .do begin
+.if &e'&dohelp ne 0 .do begin
 .*
 .section Compiler Options - Indexed
 .*

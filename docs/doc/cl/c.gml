@@ -83,7 +83,7 @@
 .   .pa odd
 .   ..do end
 .   :BODY.
-.   .   ..if &e'&dohelp eq 1 ..do begin
+.   .   ..if &e'&dohelp ne 0 ..do begin
 .   .   :exhelp
 .   .   :INCLUDE file='&book..idx'.
 .   .   :INCLUDE file='&book..tbl'.

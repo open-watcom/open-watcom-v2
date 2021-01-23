@@ -196,9 +196,9 @@
 .* func2 create an index entry for &* also
 .*
 .dm func2 begin
-:cmt .if &e'&dohelp eq 1 .xmpoff
+:cmt .if &e'&dohelp ne 0 .xmpoff
 .funkw &*
-:cmt. .if &e'&dohelp eq 1 .xmpon
+:cmt. .if &e'&dohelp ne 0 .xmpon
 .dm func2 end
 .*
 .dm fungroup begin
@@ -227,9 +227,9 @@
 .*
 .dm ixfunc2 begin
 .if &'vecpos(&*2,fnclst) ne 0 .do begin
-.if &e'&dohelp eq 1 .xmpoff
+.if &e'&dohelp ne 0 .xmpoff
 .ix '&*1' '&*2'
-.if &e'&dohelp eq 1 .xmpon
+.if &e'&dohelp ne 0 .xmpon
 .do end
 .dm ixfunc2 end
 .*

@@ -4,7 +4,7 @@
 .discuss begin
 The date of translation of the source file (a string literal).
 The form of the date is "Mmm&SYSRB.dd&SYSRB.yyyy" where:
-..if &e'&dohelp eq 1 ..in 0
+..if &e'&dohelp ne 0 ..in 0
 :ZDL termhi=0.
 :ZDT.Mmm
 :ZDD.

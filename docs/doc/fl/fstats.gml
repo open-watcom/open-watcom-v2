@@ -1,6 +1,6 @@
 .chap *refid=fstats FORTRAN Statements
 .*
-.if &e'&dohelp eq 1 .do begin
+.if &e'&dohelp ne 0 .do begin
 .np
 The following sections describe each FORTRAN 77 statement.
 .do end

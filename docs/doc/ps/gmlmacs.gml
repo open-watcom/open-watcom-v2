@@ -100,7 +100,7 @@
 .do end
 :FIG place=inline frame=none.
 .if '&*file.' ne '' .do begin
-.   .if &e'&dohelp eq 1 .do begin
+.   .if &e'&dohelp ne 0 .do begin
 :HBMP '&*file..bmp' c
 .   .do end
 .   .el .do begin
@@ -139,7 +139,7 @@
 .ga * text any
 .*
 .dm image begin
-.if &e'&dohelp eq 1 .do begin
+.if &e'&dohelp ne 0 .do begin
     .imbmp &*xoff. &*depth. &*file. &*text.
 .do end
 .el .do begin
@@ -579,7 +579,7 @@ or
 .dm topsect end
 .*
 .dm helppref begin
-.if &e'&dohelp eq 1 .do begin
+.if &e'&dohelp ne 0 .do begin
 .if '&*' ne '' .do begin
 :helppfx pfx='&* '.
 .   .if '&dotarget' eq 'os2' .do begin
