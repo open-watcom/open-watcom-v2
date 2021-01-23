@@ -549,7 +549,7 @@ mh=huge :optref refid='SWmh'.
 .notebreak
 (default is "ms" for 16-bit and Netware, "mf" for 32-bit)
 .*
-.if &e'&wcldesc. eq 1 .do begin
+.if &e'&wcldesc. ne 0 .do begin
 .note mt
 :CMT. .ix '&wclcmdup16 options' 'mt'
 :CMT. .ix '&wclcmdup32 options' 'mt'

@@ -256,7 +256,7 @@ segment referencing the symbol.
 If the segment that references the symbol is allocated far enough away
 from the segment that defines the symbol, the linker will issue this
 message.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -269,7 +269,7 @@ and "FORMAT DOS COM", "FORMAT PHARLAP" or "FORMAT NOVELL" has been
 specified.
 None of the above executable file formats allow segment relocation.
 "%a" identifies the location of the segment relocation.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -300,7 +300,7 @@ Any datum whose size exceeds the value of the data threshold will be
 placed in a far segment.
 .endnote
 .do end
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -321,7 +321,7 @@ You can overlay your application or compile it for a large code model
 You can compile your application for a large code model
 .do end
 if you cannot reduce the amount of code in your application.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -333,7 +333,7 @@ When generating an OS/2 executable file, a symbol imported from a DLL
 cannot be a start address.
 When generating a NetWare executable file, a symbol imported from
 an NLM cannot be a start address.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -356,7 +356,7 @@ This message is issued when an overlayed 16-bit DOS executable is
 being linked and the overlay manager has not been encountered.
 This usually happens if the linker cannot find the run-time libraries
 required to link your application.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -374,7 +374,7 @@ vector, all code including the overlay manager and all overlay vectors
 must be less than 64K.
 This message is issued if the offset of an overlay vector from the
 overlay loader or the corresponding routine exceeds 64K.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -463,7 +463,7 @@ References to imported symbols must always have an offset value of 0.
 If "DosWrite" is an imported symbol, then referencing "DosWrite+2" is
 illegal.
 "%a" defines the location of the illegal reference.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -476,7 +476,7 @@ This message is issued if the first "DEBUG" directive appears after a
 A common error is to specify a "DEBUG" directive after the "FILE"
 directives in which case no debugging information for those object
 files is generated in the executable file.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued when using &powerpp..
 If it is issued, please report this problem.
@@ -496,7 +496,7 @@ The smaller the alignment, the bigger the value required in the
 segment table to point to the segment.
 If this value exceeds 64K, then a larger alignment value is required
 to decrease the size that goes in the segment table.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -507,7 +507,7 @@ If it is issued, please report this problem.
 The specified ordinal in the "IMPORT" directive is incorrect (e.g.,
 -1).
 An ordinal number must be in the range 0 to 65535.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -518,7 +518,7 @@ If it is issued, please report this problem.
 The specified ordinal in the "EXPORT" directive is incorrect (e.g.,
 -1).
 An ordinal number must be in the range 0 to 65535.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -527,7 +527,7 @@ If it is issued, please report this problem.
 .errnote 2042 too many IOPL words in EXPORT directive
 .np
 The maximum number of IOPL words for a 16-bit executable is 63.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -552,7 +552,7 @@ that does not exist.
 .np
 A segment appearing in a "SEGMENT" directive has been given conflicting
 or duplicate attributes.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -562,7 +562,7 @@ If it is issued, please report this problem.
 .np
 The segment name specified in a "SEGMENT" directive has not been
 defined.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -571,7 +571,7 @@ If it is issued, please report this problem.
 .errnote 1047 class name %s not found
 .np
 The class name specified in a "SEGMENT" directive has not been defined.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -584,7 +584,7 @@ Two conflicting attributes were specified for the automatic data
 segment.
 For example, "LOADONCALL" and "PRELOAD" are conflicting attributes.
 Only the first attribute is used.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -595,7 +595,7 @@ If it is issued, please report this problem.
 The stub file is not a valid executable file.
 The stub file is only used for OS/2 executable files
 and Windows (both Win16 and Win32) executable files.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -605,7 +605,7 @@ If it is issued, please report this problem.
 .np
 The DLL specified in an "OLDLIBRARY" option is not a valid dynamic
 link library.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -615,7 +615,7 @@ If it is issued, please report this problem.
 .np
 When generating an OS/2 or Windows (Win16, Win32) executable file, the
 stub file name must not be same as the executable file name.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -627,7 +627,7 @@ This message is only issued for Windows (Win16), OS/2, Phar Lap, and
 QNX executables.
 A relative fixup must relocate to the same segment.
 "%a" defines the location of the fixup.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -638,7 +638,7 @@ If it is issued, please report this problem.
 A reference to a symbol in an OS/2 or Windows 16-bit DLL must not be
 relative.
 "%a" defines the location of the reference.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -648,7 +648,7 @@ If it is issued, please report this problem.
 .np
 An attempt has been made to link an object file with out-of-date
 debugging information.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -663,7 +663,7 @@ In protected mode, the segment of the target must be the same as the
 frame.
 "%a" defines the location of the fixup.
 This message does not apply to 32-bit OS/2 and Windows (Win32).
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -678,7 +678,7 @@ library file did not contain the specified member.
 .errnote 3057 executable format has been established
 .np
 This message is issued if there is more than one "FORMAT" directive.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -688,7 +688,7 @@ If it is issued, please report this problem.
 .np
 The option "%s1" can only be specified if an executable file whose
 format is "%s2" is being generated.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -697,7 +697,7 @@ If it is issued, please report this problem.
 .errnote 1059,2059 value for %s too large
 .np
 The value specified for option "%s" exceeds its limit.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -706,7 +706,7 @@ If it is issued, please report this problem.
 .errnote 1060 value for %s incorrect
 .np
 The value specified for option "%s" is not in the allowable range.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -716,7 +716,7 @@ If it is issued, please report this problem.
 .np
 The "REALBREAK" option for Phar Lap executables can only be specified
 once.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -727,7 +727,7 @@ If it is issued, please report this problem.
 This message is issued if a reference to a DLL is encountered and the
 executable file format is not one that supports DLLs.
 The file format is represented by "%f".
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -748,7 +748,7 @@ by a 386 compiler is the most probable cause of this error.
 .np
 The symbol specified in the "REALBREAK" option for Phar Lap
 executables has not been defined.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -763,7 +763,7 @@ or an import library.
 Any reference to an imported symbol must not refer to the segment of
 the imported symbol.
 "%a" defines the location of the reference.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -775,7 +775,7 @@ This message is issued only if a NetWare executable file is being
 generated.
 Segment relocation is not permitted.
 "%a" defines the location of the fixup.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -801,7 +801,7 @@ directive.
 This message is issued only if a NetWare executable file is being
 generated.
 The symbol specified in the "CHECK" option has not been defined.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -813,7 +813,7 @@ This message is issued only if a NetWare executable file is being
 generated.
 The symbol specified in the "START" option has not been defined.
 The default "START" symbol is "_Prelude".
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -825,7 +825,7 @@ This message is issued only if a NetWare executable file is being
 generated.
 The symbol specified in the "EXIT" option has not been defined.
 The default "STOP" symbol is "_Stop".
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -836,7 +836,7 @@ If it is issued, please report this problem.
 .np
 When describing 16-bit overlays, "SECTION" directives must appear
 between a "BEGIN" directive and its corresponding "END" directive.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -848,7 +848,7 @@ If it is issued, please report this problem.
 An invalid NetWare executable file format was specified.
 Valid formats are NLM, DSK, NAM, LAN, MSL, HAM, CDM or a numerical
 module type.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -862,7 +862,7 @@ For example:
 .millust begin
 ALIAS foo1=foo2, foo2=foo1
 .millust end
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -872,7 +872,7 @@ If it is issued, please report this problem.
 .errnote 2075 expecting an END directive
 .np
 A "BEGIN" directive is missing its corresponding "END" directive.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -882,7 +882,7 @@ If it is issued, please report this problem.
 .errnote 1076 %s option multiply specified
 .np
 The option "%s" can only be specified once.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -907,7 +907,7 @@ linker does not recognize.
 .np
 When generating a 16-bit executable, the offset of a referenced symbol
 was greater than 64K from the location referencing it.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -918,7 +918,7 @@ If it is issued, please report this problem.
 When generating a 16-bit executable, the computed offset for a symbol
 exceeds 64K.
 "%a" defines the location of the fixup.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -928,7 +928,7 @@ If it is issued, please report this problem.
 .np
 The value of the segment of the starting address for a 16-bit DOS
 "COM" file, as specified in the map file, must be 0.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -941,7 +941,7 @@ file.
 Only a single physical segment is allowed in a DOS "COM" file.
 The stack is allocated from the high end of the physical segment.
 That is, the initial value of SP is hexadecimal FFFE.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -954,7 +954,7 @@ The DOS-hosted version of the linker has run out of memory trying to
 keep track of virtual memory blocks.
 Virtual memory blocks are allocated from expanded memory, extended
 memory and the spill file.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -967,7 +967,7 @@ That is, the total amount of code and data must be less than 64K since
 only a single physical segment is allowed in a DOS "COM" file.
 You must decrease the size of your program or generate a DOS "EXE"
 file.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -985,7 +985,7 @@ and
 are encountered and "OPTION NAMELEN=7" is specified, then this message
 will be issued since the first seven characters of the two symbols are
 identical.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -996,7 +996,7 @@ If it is issued, please report this problem.
 .np
 A group that spans more than one section in a 16-bit DOS executable
 has been detected.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1007,7 +1007,7 @@ If it is issued, please report this problem.
 .np
 The 16-bit "NEWSEGMENT" directive must appear after a "FILE"
 directive.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1034,7 +1034,7 @@ executables is specified.
 The linker has run out of memory trying to keep track of the
 relationship between object modules extracted from libraries and the
 overlays they should be placed in.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1046,7 +1046,7 @@ If it is issued, please report this problem.
 The value specified with the "OFFSET" option must be
 a multiple of 4K (4096) for Phar Lap and QNX executables and
 a multiple of 64K (65536) for OS/2 and Windows 32-bit executables.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1068,7 +1068,7 @@ ones will be generated.
 .np
 A "SYMTRACE" or "MODTRACE" directive contained an object file (namely
 %s) that could not be found.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1078,7 +1078,7 @@ If it is issued, please report this problem.
 .np
 A "SYMTRACE" or "MODTRACE" directive contained an object module
 (namely module %s1 in library %s2 ) that could not be found.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1090,7 +1090,7 @@ If it is issued, please report this problem.
 The value specified with the "AREA" option for 16-bit DOS executables
 results in an executable file that requires more than 1 megabyte of
 memory to execute.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1101,7 +1101,7 @@ If it is issued, please report this problem.
 .np
 The name %s was referenced in a "SYSTEM" directive but never defined by
 a system block definition.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1110,7 +1110,7 @@ If it is issued, please report this problem.
 .errnote 1108 system %s defined more than once
 .np
 The name %s has appeared in a system definition block more than once.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1121,7 +1121,7 @@ If it is issued, please report this problem.
 For the QNX operating system, the stack is placed at the front of the
 executable image and thus the initial load address must leave enough
 room for the stack.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1132,7 +1132,7 @@ If it is issued, please report this problem.
 Only object files are allowed in a "LIBFILE" directive.
 This message will be issued if a module from a library file is
 specified in a "LIBFILE" directive.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1146,7 +1146,7 @@ a directive error.
 The system name "286" or "386" is automatically referenced by the
 linker when the format of the executable cannot be determined (i.e. no
 "FORMAT" directive has been specified).
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1168,7 +1168,7 @@ space.
 This message is issued if the size of the largest overlay exceeds the
 size of the overlay area specified by the "AREA" option for 16-bit DOS
 executables.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1180,7 +1180,7 @@ If it is issued, please report this problem.
 The segment number of a moveable segment must not exceed 255 for
 16-bit executables.
 Reduce the number of segments or use the "PACKCODE" option.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1190,7 +1190,7 @@ If it is issued, please report this problem.
 .np
 This message is issued if the size of the heap, stack and the default
 data segment (group DGROUP) exceeds 64K for 16-bit executables.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1206,7 +1206,7 @@ An invalid command was detected.
 See the section entitled "The EXPORT Directive" for the correct format
 of these commands.
 .do end
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1231,7 +1231,7 @@ This message is only a warning.
 .np
 This message is issued if no "FILE" directive has been specified.
 In other words, you have specified no object files to link.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1265,7 +1265,7 @@ An incremental link will not be done.
 :CMT. memory.
 :CMT. The interrupt 15 vector (used to access extended memory) has been
 :CMT. corrupted during the linking process.
-:CMT. .if &e'&optdoc eq 1 .do begin
+:CMT. .if &e'&optdoc ne 0 .do begin
 :CMT. .np
 :CMT. This message should not be issued for a &powerpp Win32 executable.
 :CMT. If it is issued, please report this problem.
@@ -1284,7 +1284,7 @@ An incremental link will not be done.
 :CMT. A serious problem has occurred while trying to access expanded memory.
 :CMT. The EMS frame has been corrupted.
 :CMT. This can be caused by a TSR that is using the EMS frame for other reasons.
-:CMT. .if &e'&optdoc eq 1 .do begin
+:CMT. .if &e'&optdoc ne 0 .do begin
 :CMT. .np
 :CMT. These messages should not be issued for a &powerpp Win32 executable.
 :CMT. If they are issued, please report this problem.
@@ -1300,7 +1300,7 @@ directive.
 .errnote 3128 directive error near beginning of input
 .np
 The linker detected an error at the start of the command line.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1313,7 +1313,7 @@ object files.
 An empty segment does not affect this limit.
 This can only occur with Watcom debugging information.
 If this message appears, switch to DWARF debugging information.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1322,7 +1322,7 @@ If it is issued, please report this problem.
 .errnote 1130 %s is an invalid shared nlm file
 .np
 The NLM specified in a "SHAREDNLM" option is not valid.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1335,7 +1335,7 @@ use.
 Spill files can accumulate when linking on a multi-tasking system and
 the directory in which the spill file is created is identical for each
 invocation of the linker.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1345,7 +1345,7 @@ If it is issued, please report this problem.
 .np
 A list delimited by curly braces is not correct.
 The most likely cause is a missing right brace.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1356,7 +1356,7 @@ If it is issued, please report this problem.
 While generating a Phar Lap executable file, both 16-bit and 32-bit
 code was linked together and no "REALBREAK" option has been specified.
 A warning message is issued since this may be a potential problem.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1366,7 +1366,7 @@ If it is issued, please report this problem.
 .np
 The file specified in a "MESSAGE" option for NetWare executable
 files is invalid.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1377,7 +1377,7 @@ If it is issued, please report this problem.
 .np
 Only a single overlay area is supported by the 16-bit dynamic overlay
 manager.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1390,7 +1390,7 @@ The "RWRELOCCHECK" option for 16-bit Windows (Win16) executables has
 been specified and the linker has detected a segment relocation to a
 read/write data segment. Where the name of the offending symbol is not
 available, "identifier unavailable" is used.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1400,7 +1400,7 @@ If it is issued, please report this problem.
 .np
 This message is issued when the number of error messages issued by the
 linker exceeds the number specified by the "MAXERRORS" option.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1416,7 +1416,7 @@ For example, a directory specification is not a valid filename.
 .np
 It is impossible to mix 16-bit code and 32-bit code in the same
 executable when generating a QNX executable file.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1425,7 +1425,7 @@ If it is issued, please report this problem.
 .errnote 1140 invalid message number
 .np
 An invalid message number has been specified in a "DISABLE" directive.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1442,7 +1442,7 @@ If the message is issued, please report this problem.
 There was not enough memory for the linker to sort the symbols in the
 "Memory Map" portion of the map file.
 This will only occur when the "SORT GLOBAL" option has been specified.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1467,7 +1467,7 @@ FORMAT OS2
 .millust end
 .pc
 will generate this message.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1476,7 +1476,7 @@ If it is issued, please report this problem.
 .errnote 1148 Invalid segment type specified
 .np
 The segment type must be one of CODE or DATA.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1487,7 +1487,7 @@ If it is issued, please report this problem.
 The debugging format must be one of Watcom, CodeView, DWARF (default),
 or Novell.
 You cannot specify multiple debugging formats.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1518,7 +1518,7 @@ specified by "%s2".
 .np
 Some relocations in Alpha executables require that the object be
 aligned on a 4 byte boundary.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1529,7 +1529,7 @@ If it is issued, please report this problem.
 The option must be specified before any option or directive which
 modifies the linker's symbol table (e.g., IMPORT, EXPORT, REFERENCE,
 ALIAS).
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1539,7 +1539,7 @@ If it is issued, please report this problem.
 .np
 The linker requires that there be at least 1 byte of either code or
 data in the executable.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1554,7 +1554,7 @@ The resource file is invalid or corrupt.
 When OPTION INCREMENTAL is used, you cannot specify non-DWARF
 debugging information for the executable.  You must specify DEBUG
 DWARF when requesting debugging information.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1563,7 +1563,7 @@ If it is issued, please report this problem.
 .errnote 3160 incremental linking does not support dead code elimination
 .np
 When OPTION INCREMENTAL is used, you cannot specify OPTION ELIMINATE.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1585,7 +1585,7 @@ been compiled with this option.
 .np
 When OPTION INCREMENTAL is used, you cannot also specify OPTION
 VFREMOVAL.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.
@@ -1596,7 +1596,7 @@ If it is issued, please report this problem.
 The resource file specified in OPTION RESOURCE was too big to fit
 inside the QNX executable. The maximum size is approximately 32000
 bytes.
-.if &e'&optdoc eq 1 .do begin
+.if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
 If it is issued, please report this problem.

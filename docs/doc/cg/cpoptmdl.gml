@@ -19,7 +19,7 @@
 :cmt. .*
 :cmt. :OPTLIST.
 .*
-.if &e'&$SWmf eq 1 .do begin
+.if &e'&$SWmf ne 0 .do begin
 :OPT refid='SWmf' name='mf'.
 .ix 'options' 'mf'
 (32-bit only)

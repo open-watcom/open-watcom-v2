@@ -39,7 +39,7 @@
 :FRONTM.
 :TITLEP.
 :TITLE stitle="Library Reference".&company C Library Reference
-.if &e'&forw eq 1 .do begin
+.if &e'&forw ne 0 .do begin
 :TITLE.&forw.
 .do end
 .if '&machsys' eq 'NEC' .do begin

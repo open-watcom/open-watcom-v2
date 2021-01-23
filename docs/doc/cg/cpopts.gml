@@ -102,73 +102,73 @@ options organized into categories.
 .ix 'options' 'target specific'
 .notehd1 Option:
 .notehd2 Description:
-.if &e'&$SWbc eq 1 .do begin
+.if &e'&$SWbc ne 0 .do begin
 .note bc
 build target is a console application
 :optref refid='SWbc'.
 .do end
-.if &e'&$SWbd eq 1 .do begin
+.if &e'&$SWbd ne 0 .do begin
 .note bd
 build target is a Dynamic Link Library (DLL)
 :optref refid='SWbd'.
 .do end
-.if &e'&$SWbg eq 1 .do begin
+.if &e'&$SWbg ne 0 .do begin
 .note bg
 build target is a GUI application
 :optref refid='SWbg'.
 .do end
-.if &e'&$SWbm eq 1 .do begin
+.if &e'&$SWbm ne 0 .do begin
 .note bm
 build target is a multi-threaded environment
 :optref refid='SWbm'.
 .do end
-.if &e'&$SWbr eq 1 .do begin
+.if &e'&$SWbr ne 0 .do begin
 .note br
 build target uses DLL version of C/C++ run-time library
 :optref refid='SWbr'.
 .do end
-.if &e'&$SWbt eq 1 .do begin
+.if &e'&$SWbt ne 0 .do begin
 .note bt[=<os>]
 build target for operating system <os>
 :optref refid='SWbt'.
 .do end
-.if &e'&$SWbw eq 1 .do begin
+.if &e'&$SWbw ne 0 .do begin
 .note bw
 build target uses default windowing support
 :optref refid='SWbw'.
 .do end
-.if &e'&$SWof eq 1 .do begin
+.if &e'&$SWof ne 0 .do begin
 .note of
 generate traceable stack frames as needed
 :optref refid='SWof'.
 .do end
-.if &e'&$SWofpls eq 1 .do begin
+.if &e'&$SWofpls ne 0 .do begin
 .note of+
 always generate traceable stack frames
 :optref refid='SWofpls'.
 .do end
-.if &e'&$SWsg eq 1 .do begin
+.if &e'&$SWsg ne 0 .do begin
 .note sg
 generate calls to grow the stack
 :optref refid='SWsg'.
 .do end
-.if &e'&$SWst eq 1 .do begin
+.if &e'&$SWst ne 0 .do begin
 .note st
 touch stack through SS first
 :optref refid='SWst'.
 .do end
-.if &e'&$SWzw eq 1 .do begin
+.if &e'&$SWzw ne 0 .do begin
 .note zw
 generate code for Microsoft Windows
 :optref refid='SWzw'.
 .do end
-.if &e'&$SWzW86 eq 1 .do begin
+.if &e'&$SWzW86 ne 0 .do begin
 .note zW
 &286only.
 Microsoft Windows optimized prologue/epilogue code sequences
 :optref refid='SWzW86'.
 .do end
-.if &e'&$SWzWs eq 1 .do begin
+.if &e'&$SWzWs ne 0 .do begin
 .note zWs
 &286only.
 Microsoft Windows smart callback sequences
@@ -182,95 +182,95 @@ Microsoft Windows smart callback sequences
 .ix 'options' 'debugging/profiling'
 .notehd1 Option:
 .notehd2 Description:
-.if &e'&$SWd0 eq 1 .do begin
+.if &e'&$SWd0 ne 0 .do begin
 .note d0
 (C++ only)
 no debugging information
 :optref refid='SWd0'.
 .do end
-.if &e'&$SWd1 eq 1 .do begin
+.if &e'&$SWd1 ne 0 .do begin
 .note d1
 line number debugging information
 :optref refid='SWd1'.
 .do end
-.if &e'&$SWd1pls eq 1 .do begin
+.if &e'&$SWd1pls ne 0 .do begin
 .note d1+
 (C only)
 line number debugging information plus typing information for global
 symbols and local structs and arrays
 :optref refid='SWd1pls'.
 .do end
-.if &e'&$SWd2 eq 1 .do begin
+.if &e'&$SWd2 ne 0 .do begin
 .note d2
 full symbolic debugging information
 :optref refid='SWd2'.
 .do end
-.if &e'&$SWd2i eq 1 .do begin
+.if &e'&$SWd2i ne 0 .do begin
 .note d2i
 (C++ only)
 d2 and debug inlines; emit inlines as external out-of-line functions
 :optref refid='SWd2i'.
 .do end
-.if &e'&$SWd2s eq 1 .do begin
+.if &e'&$SWd2s ne 0 .do begin
 .note d2s
 (C++ only)
 d2 and debug inlines; emit inlines as static out-of-line functions
 :optref refid='SWd2s'.
 .do end
-.if &e'&$SWd2t eq 1 .do begin
+.if &e'&$SWd2t ne 0 .do begin
 .note d2t
 (C++ only)
 d2 but without type names
 :optref refid='SWd2t'.
 .do end
-.if &e'&$SWd3 eq 1 .do begin
+.if &e'&$SWd3 ne 0 .do begin
 .note d3
 full symbolic debugging with unreferenced type names
 :optref refid='SWd3'.
 .do end
-.if &e'&$SWd3i eq 1 .do begin
+.if &e'&$SWd3i ne 0 .do begin
 .note d3i
 (C++ only)
 d3 plus debug inlines; emit inlines as external out-of-line functions
 :optref refid='SWd3i'.
 .do end
-.if &e'&$SWd3s eq 1 .do begin
+.if &e'&$SWd3s ne 0 .do begin
 .note d3s
 (C++ only)
 d3 plus debug inlines; emit inlines as static out-of-line functions
 :optref refid='SWd3s'.
 .do end
-.if &e'&$SWee eq 1 .do begin
+.if &e'&$SWee ne 0 .do begin
 .note ee
 call epilogue hook routine
 :optref refid='SWee'.
 .do end
-.if &e'&$SWen eq 1 .do begin
+.if &e'&$SWen ne 0 .do begin
 .note en
 emit routine names in the code segment
 :optref refid='SWen'.
 .do end
-.if &e'&$SWep eq 1 .do begin
+.if &e'&$SWep ne 0 .do begin
 .note ep[<number>]
 call prologue hook routine with number stack bytes available
 :optref refid='SWep'.
 .do end
-.if &e'&$SWet eq 1 .do begin
+.if &e'&$SWet ne 0 .do begin
 .note et
 Pentium profiling
 :optref refid='SWet'.
 .do end
-.if &e'&$SWhwdc eq 1 .do begin
+.if &e'&$SWhwdc ne 0 .do begin
 .note h{w,d,c}
 set debug output format (&company, DWARF, Codeview)
 :optref refid='SWhwdc'
 .do end
-.if &e'&$SWs eq 1 .do begin
+.if &e'&$SWs ne 0 .do begin
 .note s
 remove stack overflow checks
 :optref refid='SWs'.
 .do end
-.if &e'&$SWsi eq 1 .do begin
+.if &e'&$SWsi ne 0 .do begin
 .note si
 &AXPonly.
 initialize stack frame storage with pattern
@@ -284,27 +284,27 @@ initialize stack frame storage with pattern
 .ix 'options' 'preprocessor'
 .notehd1 Option:
 .notehd2 Description:
-.if &e'&$SWd eq 1 .do begin
+.if &e'&$SWd ne 0 .do begin
 .note d<name>[=text]
 precompilation #define name [text]
 :optref refid='SWd'.
 .do end
-.if &e'&$SWdpls eq 1 .do begin
+.if &e'&$SWdpls ne 0 .do begin
 .note d+
 allow extended "d" macro definitions on command line
 :optref refid='SWdpls'.
 .do end
-.if &e'&$SWfo eq 1 .do begin
+.if &e'&$SWfo ne 0 .do begin
 .note fo[=<file_name>]
 set preprocessor output file name
 :optref refid='SWfo'.
 .do end
-.if &e'&$SWpil eq 1 .do begin
+.if &e'&$SWpil ne 0 .do begin
 .note pil
 preprocessor ignores #line directives
 :optref refid='SWpil'.
 .do end
-.if &e'&$SWp eq 1 .do begin
+.if &e'&$SWp ne 0 .do begin
 .note p{e,l,c,w=<num>}
 preprocess file
 .begnote $compact
@@ -320,7 +320,7 @@ wrap output lines at <num> columns. Zero means no wrap.
 .np
 :optref refid='SWp'.
 .do end
-.if &e'&$SWu eq 1 .do begin
+.if &e'&$SWu ne 0 .do begin
 .note u<name>
 undefine macro name
 :optref refid='SWu'.
@@ -333,80 +333,80 @@ undefine macro name
 .ix 'options' 'diagnostics'
 .notehd1 Option:
 .notehd2 Description:
-.if &e'&$SWe eq 1 .do begin
+.if &e'&$SWe ne 0 .do begin
 .note e<number>
 set error limit number
 :optref refid='SWe'.
 .do end
-.if &e'&$SWef eq 1 .do begin
+.if &e'&$SWef ne 0 .do begin
 .note ef
 use full path names in error messages
 :optref refid='SWef'.
 .do end
-.if &e'&$SWeq eq 1 .do begin
+.if &e'&$SWeq ne 0 .do begin
 .note eq
 do not display error messages (they are still written to a file)
 :optref refid='SWeq'.
 .do end
-.if &e'&$SWer eq 1 .do begin
+.if &e'&$SWer ne 0 .do begin
 .note er
 (C++ only)
 do not recover from undefined symbol errors
 :optref refid='SWer'.
 .do end
-.if &e'&$SWew eq 1 .do begin
+.if &e'&$SWew ne 0 .do begin
 .note ew
 (C++ only)
 alternate error message formatting
 :optref refid='SWew'.
 .do end
-.if &e'&$SWq eq 1 .do begin
+.if &e'&$SWq ne 0 .do begin
 .note q
 operate quietly
 :optref refid='SWq'.
 .do end
-.if &e'&$SWt eq 1 .do begin
+.if &e'&$SWt ne 0 .do begin
 .note t=<num>
 set tab stop multiplier
 :optref refid='SWt'.
 .do end
-.if &e'&$SWw eq 1 .do begin
+.if &e'&$SWw ne 0 .do begin
 .note w<number>
 set warning level number
 :optref refid='SWw'.
 .do end
-.if &e'&$SWwcd eq 1 .do begin
+.if &e'&$SWwcd ne 0 .do begin
 .note wcd=<num>
 warning control: disable warning message <num>
 :optref refid='SWwcd'.
 .do end
-.if &e'&$SWwce eq 1 .do begin
+.if &e'&$SWwce ne 0 .do begin
 .note wce=<num>
 warning control: enable warning message <num>
 :optref refid='SWwce'.
 .do end
-.if &e'&$SWwe eq 1 .do begin
+.if &e'&$SWwe ne 0 .do begin
 .note we
 treat all warnings as errors
 :optref refid='SWwe'.
 .do end
-.if &e'&$SWwx eq 1 .do begin
+.if &e'&$SWwx ne 0 .do begin
 .note wx
 set warning level to maximum setting
 :optref refid='SWwx'.
 .do end
-.if &e'&$SWza eq 1 .do begin
+.if &e'&$SWza ne 0 .do begin
 .note z{a,e}
 disable/enable language extensions
 :optref refid='SWza'.
 :optref refid='SWze'.
 .do end
-.if &e'&$SWzq eq 1 .do begin
+.if &e'&$SWzq ne 0 .do begin
 .note zq
 operate quietly
 :optref refid='SWzq'.
 .do end
-.if &e'&$SWzs eq 1 .do begin
+.if &e'&$SWzs ne 0 .do begin
 .note zs
 syntax check only
 :optref refid='SWzs'.
@@ -419,186 +419,186 @@ syntax check only
 .ix 'options' 'source/output control'
 .notehd1 Option:
 .notehd2 Description:
-.if &e'&$SWad eq 1 .do begin
+.if &e'&$SWad ne 0 .do begin
 .note ad[=<file_name>]
 generate make style auto-dependency file
 :optref refid='SWad'.
 .do end
-.if &e'&$SWadbs eq 1 .do begin
+.if &e'&$SWadbs ne 0 .do begin
 .note adbs
 force path separators generated in make style auto-dependency file to
 backslashes
 :optref refid='SWadbs'.
 .do end
-.if &e'&$SWadd eq 1 .do begin
+.if &e'&$SWadd ne 0 .do begin
 .note add[=<file_name>]
 set source name (the first dependency) for make style auto-dependency file
 :optref refid='SWadd'.
 .do end
-.if &e'&$SWadhp eq 1 .do begin
+.if &e'&$SWadhp ne 0 .do begin
 .note adhp[=<path prefix>]
 set default path for header dependencies which result in filename only
 :optref refid='SWadhp'.
 .do end
-.if &e'&$SWadfs eq 1 .do begin
+.if &e'&$SWadfs ne 0 .do begin
 .note adfs
 force path separators generated in make style auto-dependency file to
 forward slashes
 :optref refid='SWadfs'.
 .do end
-.if &e'&$SWadt eq 1 .do begin
+.if &e'&$SWadt ne 0 .do begin
 .note adt[=<target_name>]
 specify target name generated in make style auto-dependency file
 :optref refid='SWadt'.
 .do end
-.if &e'&$SWdb eq 1 .do begin
+.if &e'&$SWdb ne 0 .do begin
 .note db
 generate browsing information
 :optref refid='SWdb'.
 .do end
-.if &e'&$SWez eq 1 .do begin
+.if &e'&$SWez ne 0 .do begin
 .note ez
 generate PharLap EZ-OMF object files
 :optref refid='SWez'.
 .do end
-.if &e'&$SWfc eq 1 .do begin
+.if &e'&$SWfc ne 0 .do begin
 .note fc=<file_name>
 (C++ only)
 specify file of command lines to be batch processed
 :optref refid='SWfc'.
 .do end
-.if &e'&$SWfh eq 1 .do begin
+.if &e'&$SWfh ne 0 .do begin
 .note fh[q][=<file_name>]
 use precompiled headers
 :optref refid='SWfh'.
 .do end
-.if &e'&$SWfhd eq 1 .do begin
+.if &e'&$SWfhd ne 0 .do begin
 .note fhd
 store debug info for pre-compiled header once (DWARF only)
 :optref refid='SWfhd'.
 .do end
-.if &e'&$SWfhr eq 1 .do begin
+.if &e'&$SWfhr ne 0 .do begin
 .note fhr
 (C++ only)
 force compiler to read pre-compiled header (will never write)
 :optref refid='SWfhr'.
 .do end
-.if &e'&$SWfhw eq 1 .do begin
+.if &e'&$SWfhw ne 0 .do begin
 .note fhw
 (C++ only)
 force compiler to write pre-compiled header (will never read)
 :optref refid='SWfhw'.
 .do end
-.if &e'&$SWfhwe eq 1 .do begin
+.if &e'&$SWfhwe ne 0 .do begin
 .note fhwe
 (C++ only)
 don't include pre-compiled header warnings when "we" is used
 :optref refid='SWfhwe'.
 .do end
-.if &e'&$SWfi eq 1 .do begin
+.if &e'&$SWfi ne 0 .do begin
 .note fi=<file_name>
 force file_name to be included
 :optref refid='SWfi'.
 .do end
-.if &e'&$SWfo eq 1 .do begin
+.if &e'&$SWfo ne 0 .do begin
 .note fo[=<file_name>]
 set object or preprocessor output file name
 :optref refid='SWfo2'.
 .do end
-.if &e'&$SWfr eq 1 .do begin
+.if &e'&$SWfr ne 0 .do begin
 .note fr[=<file_name>]
 set error file name
 :optref refid='SWfr'.
 .do end
-.if &e'&$SWft eq 1 .do begin
+.if &e'&$SWft ne 0 .do begin
 .note ft
 try truncated (8.3) header file specification
 :optref refid='SWft'.
 .do end
-.if &e'&$SWfti eq 1 .do begin
+.if &e'&$SWfti ne 0 .do begin
 .note fti
 (C only)
 track include file opens
 :optref refid='SWfti'.
 .do end
-.if &e'&$SWfx eq 1 .do begin
+.if &e'&$SWfx ne 0 .do begin
 .note fx
 do not try truncated (8.3) header file specification
 :optref refid='SWfx'.
 .do end
-.if &e'&$SWfzh eq 1 .do begin
+.if &e'&$SWfzh ne 0 .do begin
 .note fzh
 (C++ only)
 do not automatically append extensions for include files
 :optref refid='SWfzh'.
 .do end
-.if &e'&$SWfzs eq 1 .do begin
+.if &e'&$SWfzs ne 0 .do begin
 .note fzs
 (C++ only)
 do not automatically append extensions for source files
 :optref refid='SWfzs'.
 .do end
-.if &e'&$SWi eq 1 .do begin
+.if &e'&$SWi ne 0 .do begin
 .note i=<directory>
 another include directory
 :optref refid='SWi'.
 .do end
-.if &e'&$SWk eq 1 .do begin
+.if &e'&$SWk ne 0 .do begin
 .note k
 continue processing files (ignore errors)
 :optref refid='SWk'.
 .do end
-.if &e'&$SWv eq 1 .do begin
+.if &e'&$SWv ne 0 .do begin
 .note v
 output function declarations to .def
 :optref refid='SWv'.
 .do end
-.if &e'&$SWx eq 1 .do begin
+.if &e'&$SWx ne 0 .do begin
 .note x
 ignore environment variables when searching for include files
 :optref refid='SWx'.
 .do end
-.if &e'&$SWxx eq 1 .do begin
+.if &e'&$SWxx ne 0 .do begin
 .note xx
 ignore default directories for file search (.,../h,../c,...)
 :optref refid='SWxx'.
 .do end
-.if &e'&$SWzam eq 1 .do begin
+.if &e'&$SWzam ne 0 .do begin
 .note zam
 disable all predefined old extension macros (keyword macros, non-ISO names)
 :optref refid='SWzam'.
 .do end
-.if &e'&$SWzat eq 1 .do begin
+.if &e'&$SWzat ne 0 .do begin
 .note zat
 (C++ only) disable alternative tokens
 :optref refid='SWzat'.
 .do end
-.if &e'&$SWzf eq 1 .do begin
+.if &e'&$SWzf ne 0 .do begin
 .note zf
 (C++ only) let scope of for loop initialization extend beyond loop
 :optref refid='SWzf'.
 .do end
-.if &e'&$SWzg eq 1 .do begin
+.if &e'&$SWzg ne 0 .do begin
 .note zg
 generate function prototypes using base types
 :optref refid='SWzg'.
 .do end
-.if &e'&$SWzl eq 1 .do begin
+.if &e'&$SWzl ne 0 .do begin
 .note zl
 remove default library information
 :optref refid='SWzl'.
 .do end
-.if &e'&$SWzld eq 1 .do begin
+.if &e'&$SWzld ne 0 .do begin
 .note zld
 remove file dependency information
 :optref refid='SWzld'.
 .do end
-.if &e'&$SWzlf eq 1 .do begin
+.if &e'&$SWzlf ne 0 .do begin
 .note zlf
 add default library information to object files
 :optref refid='SWzlf'.
 .do end
-.if &e'&$SWzls eq 1 .do begin
+.if &e'&$SWzls ne 0 .do begin
 .note zls
 remove automatically generated symbols references
 :optref refid='SWzls'.
@@ -610,105 +610,105 @@ remove automatically generated symbols references
 .ix 'options' 'code generation'
 .notehd1 Option:
 .notehd2 Description:
-.if &e'&$SWas eq 1 .do begin
+.if &e'&$SWas ne 0 .do begin
 .note as
 &AXPonly.
 assume short integers are aligned
 :optref refid='SWas'.
 .do end
-.if &e'&$SWecc eq 1 .do begin
+.if &e'&$SWecc ne 0 .do begin
 .note ecc
 set default calling convention to __cdecl
 :optref refid='SWecc'.
 .do end
-.if &e'&$SWecd eq 1 .do begin
+.if &e'&$SWecd ne 0 .do begin
 .note ecd
 set default calling convention to __stdcall
 :optref refid='SWecd'.
 .do end
-.if &e'&$SWecf eq 1 .do begin
+.if &e'&$SWecf ne 0 .do begin
 .note ecf
 set default calling convention to __fastcall
 :optref refid='SWecf'.
 .do end
-:CMT. .if &e'&$SWeco eq 1 .do begin
+:CMT. .if &e'&$SWeco ne 0 .do begin
 :CMT. .note eco
 :CMT. set default calling convention to _Optlink
 :CMT. :optref refid='SWeco'.
 :CMT. .do end
-.if &e'&$SWecp eq 1 .do begin
+.if &e'&$SWecp ne 0 .do begin
 .note ecp
 set default calling convention to __pascal
 :optref refid='SWecp'.
 .do end
-.if &e'&$SWecr eq 1 .do begin
+.if &e'&$SWecr ne 0 .do begin
 .note ecr
 set default calling convention to __fortran
 :optref refid='SWecr'.
 .do end
-.if &e'&$SWecs eq 1 .do begin
+.if &e'&$SWecs ne 0 .do begin
 .note ecs
 set default calling convention to __syscall
 :optref refid='SWecs'.
 .do end
-.if &e'&$SWecw eq 1 .do begin
+.if &e'&$SWecw ne 0 .do begin
 .note ecw
 set default calling convention to __watcall (default)
 :optref refid='SWecw'.
 .do end
-.if &e'&$SWei eq 1 .do begin
+.if &e'&$SWei ne 0 .do begin
 .note ei
 force enum base type to use at least an int
 :optref refid='SWei'.
 .do end
-.if &e'&$SWem eq 1 .do begin
+.if &e'&$SWem ne 0 .do begin
 .note em
 force enum base type to use minimum
 :optref refid='SWem'.
 .do end
-.if &e'&$SWj eq 1 .do begin
+.if &e'&$SWj ne 0 .do begin
 .note j
 change char default from unsigned to signed
 :optref refid='SWj'.
 .do end
-.if &e'&$SWri eq 1 .do begin
+.if &e'&$SWri ne 0 .do begin
 .note ri
 return chars and shorts as ints
 :optref refid='SWri'.
 .do end
-.if &e'&$SWxr eq 1 .do begin
+.if &e'&$SWxr ne 0 .do begin
 .note xr
 (C++ only)
 enable RTTI
 :optref refid='SWxr'.
 .do end
-.if &e'&$SWzc eq 1 .do begin
+.if &e'&$SWzc ne 0 .do begin
 .note zc
 place literal strings in the code segment
 :optref refid='SWzc'.
 .do end
-.if &e'&$SWzp eq 1 .do begin
+.if &e'&$SWzp ne 0 .do begin
 .note zp{1,2,4,8,16}
 pack structure members
 :optref refid='SWzp'.
 .do end
-.if &e'&$SWzps eq 1 .do begin
+.if &e'&$SWzps ne 0 .do begin
 .note zps
 &AXPonly.
 always align structs on qword boundaries
 :optref refid='SWzps'.
 .do end
-.if &e'&$SWzpw eq 1 .do begin
+.if &e'&$SWzpw ne 0 .do begin
 .note zpw
 output warning when padding is added in a struct/class
 :optref refid='SWzpw'.
 .do end
-.if &e'&$SWzt eq 1 .do begin
+.if &e'&$SWzt ne 0 .do begin
 .note zt<number>
 set data threshold
 :optref refid='SWzt'.
 .do end
-.if &e'&$SWzv eq 1 .do begin
+.if &e'&$SWzv ne 0 .do begin
 .note zv
 (C++ only)
 enable virtual function removal optimization
@@ -722,47 +722,47 @@ enable virtual function removal optimization
 .ix 'options' 'floating point'
 .notehd1 Option:
 .notehd2 Description:
-.if &e'&$SWfpc eq 1 .do begin
+.if &e'&$SWfpc ne 0 .do begin
 .note fpc
 calls to floating-point library
 :optref refid='SWfpc'.
 .do end
-.if &e'&$SWfpi eq 1 .do begin
+.if &e'&$SWfpi ne 0 .do begin
 .note fpi
 in-line 80x87 instructions with emulation
 :optref refid='SWfpi'.
 .do end
-.if &e'&$SWfpi87 eq 1 .do begin
+.if &e'&$SWfpi87 ne 0 .do begin
 .note fpi87
 in-line 80x87 instructions
 :optref refid='SWfpi87'.
 .do end
-.if &e'&$SWfp2 eq 1 .do begin
+.if &e'&$SWfp2 ne 0 .do begin
 .note fp2
 generate floating-point for 80x87
 :optref refid='SWfp2'.
 .do end
-.if &e'&$SWfp3 eq 1 .do begin
+.if &e'&$SWfp3 ne 0 .do begin
 .note fp3
 generate floating-point for 387
 :optref refid='SWfp3'.
 .do end
-.if &e'&$SWfp5 eq 1 .do begin
+.if &e'&$SWfp5 ne 0 .do begin
 .note fp5
 optimize floating-point for Pentium
 :optref refid='SWfp5'.
 .do end
-.if &e'&$SWfp6 eq 1 .do begin
+.if &e'&$SWfp6 ne 0 .do begin
 .note fp6
 optimize floating-point for Pentium Pro
 :optref refid='SWfp6'.
 .do end
-.if &e'&$SWfpd eq 1 .do begin
+.if &e'&$SWfpd ne 0 .do begin
 .note fpd
 enable generation of Pentium FDIV bug check code
 :optref refid='SWfpd'.
 .do end
-.if &e'&$SW7 eq 1 .do begin
+.if &e'&$SW7 ne 0 .do begin
 .note 7
 in-line 80x87 instructions
 :optref refid='SW7'.
@@ -775,37 +775,37 @@ in-line 80x87 instructions
 .ix 'options' 'segments/modules'
 .notehd1 Option:
 .notehd2 Description:
-.if &e'&$SWg eq 1 .do begin
+.if &e'&$SWg ne 0 .do begin
 .note g=<codegroup>
 set code group name
 :optref refid='SWg'.
 .do end
-.if &e'&$SWnc eq 1 .do begin
+.if &e'&$SWnc ne 0 .do begin
 .note nc=<name>
 set code class name
 :optref refid='SWnc'.
 .do end
-.if &e'&$SWnd eq 1 .do begin
+.if &e'&$SWnd ne 0 .do begin
 .note nd=<name>
 set data segment name
 :optref refid='SWnd'.
 .do end
-.if &e'&$SWnm eq 1 .do begin
+.if &e'&$SWnm ne 0 .do begin
 .note nm=<name>
 set module name
 :optref refid='SWnm'.
 .do end
-.if &e'&$SWnt eq 1 .do begin
+.if &e'&$SWnt ne 0 .do begin
 .note nt=<name>
 set name of text segment
 :optref refid='SWnt'.
 .do end
-.if &e'&$SWzm eq 1 .do begin
+.if &e'&$SWzm ne 0 .do begin
 .note zm
 place each function in separate segment (near functions not allowed)
 :optref refid='SWzm'.
 .do end
-.if &e'&$SWzmf eq 1 .do begin
+.if &e'&$SWzmf ne 0 .do begin
 .note zmf
 (C++ only)
 place each function in separate segment (near functions allowed)
@@ -819,49 +819,49 @@ place each function in separate segment (near functions allowed)
 .ix 'options' 'run-time conventions'
 .notehd1 Option:
 .notehd2 Description:
-.if &e'&$SW0 eq 1 .do begin
+.if &e'&$SW0 ne 0 .do begin
 .note 0
 &286only.
 8088 and 8086 instructions
 :optref refid='SW0'.
 .do end
-.if &e'&$SW1 eq 1 .do begin
+.if &e'&$SW1 ne 0 .do begin
 .note 1
 &286only.
 188 and 186 instructions
 :optref refid='SW1'.
 .do end
-.if &e'&$SW2 eq 1 .do begin
+.if &e'&$SW2 ne 0 .do begin
 .note 2
 &286only.
 286 instructions
 :optref refid='SW2'.
 .do end
-.if &e'&$SW3 eq 1 .do begin
+.if &e'&$SW3 ne 0 .do begin
 .note 3
 &286only.
 386 instructions
 :optref refid='SW3'.
 .do end
-.if &e'&$SW4 eq 1 .do begin
+.if &e'&$SW4 ne 0 .do begin
 .note 4
 &286only.
 486 instructions
 :optref refid='SW4'.
 .do end
-.if &e'&$SW5 eq 1 .do begin
+.if &e'&$SW5 ne 0 .do begin
 .note 5
 &286only.
 Pentium instructions
 :optref refid='SW5'.
 .do end
-.if &e'&$SW6 eq 1 .do begin
+.if &e'&$SW6 ne 0 .do begin
 .note 6
 &286only.
 Pentium Pro instructions
 :optref refid='SW6'.
 .do end
-.if &e'&$SW3RS eq 1 .do begin
+.if &e'&$SW3RS ne 0 .do begin
 .note 3r
 &386only.
 386 register calling conventions
@@ -871,7 +871,7 @@ Pentium Pro instructions
 386 stack calling conventions
 :optref refid='SW3RS'.
 .do end
-.if &e'&$SW4RS eq 1 .do begin
+.if &e'&$SW4RS ne 0 .do begin
 .note 4r
 &386only.
 486 register calling conventions
@@ -881,7 +881,7 @@ Pentium Pro instructions
 486 stack calling conventions
 :optref refid='SW4RS'.
 .do end
-.if &e'&$SW5RS eq 1 .do begin
+.if &e'&$SW5RS ne 0 .do begin
 .note 5r
 &386only.
 Pentium register calling conventions
@@ -891,7 +891,7 @@ Pentium register calling conventions
 Pentium stack calling conventions
 :optref refid='SW5RS'.
 .do end
-.if &e'&$SW6RS eq 1 .do begin
+.if &e'&$SW6RS ne 0 .do begin
 .note 6r
 &386only.
 Pentium Pro register calling conventions
@@ -901,27 +901,27 @@ Pentium Pro register calling conventions
 Pentium Pro stack calling conventions
 :optref refid='SW6RS'.
 .do end
-.if &e'&$SWmf eq 1 .do begin
+.if &e'&$SWmf ne 0 .do begin
 .note m{f,s,m,c,l,h}
 memory model (Flat,Small,Medium,Compact,Large,Huge)
 :optref refid='SWmf'.
 .do end
-.if &e'&$SWzdfp eq 1 .do begin
+.if &e'&$SWzdfp ne 0 .do begin
 .note zdf
 DS floats i.e. not fixed to DGROUP
 :optref refid='SWzdfp'.
 .do end
-.if &e'&$SWzdfp eq 1 .do begin
+.if &e'&$SWzdfp ne 0 .do begin
 .note zdp
 DS is pegged to DGROUP
 :optref refid='SWzdfp'.
 .do end
-.if &e'&$SWzdl eq 1 .do begin
+.if &e'&$SWzdl ne 0 .do begin
 .note zdl
 Load DS directly from DGROUP
 :optref refid='SWzdl'.
 .do end
-.if &e'&$SWzffp eq 1 .do begin
+.if &e'&$SWzffp ne 0 .do begin
 .note zff
 FS floats i.e. not fixed to a segment
 :optref refid='SWzffp'.
@@ -929,12 +929,12 @@ FS floats i.e. not fixed to a segment
 FS is pegged to a segment
 :optref refid='SWzffp'.
 .do end
-.if &e'&$SWzfp eq 1 .do begin
+.if &e'&$SWzfp ne 0 .do begin
 .note zfp
 Generate FWAIT instructions on 386 and later
 :optref refid='SWzfp'.
 .do end
-.if &e'&$SWzgfp eq 1 .do begin
+.if &e'&$SWzgfp ne 0 .do begin
 .note zgf
 GS floats i.e. not fixed to a segment
 :optref refid='SWzgfp'.
@@ -942,17 +942,17 @@ GS floats i.e. not fixed to a segment
 GS is pegged to a segment
 :optref refid='SWzgfp'.
 .do end
-.if &e'&$SWzri eq 1 .do begin
+.if &e'&$SWzri ne 0 .do begin
 .note zri
 Inline floating point rounding code
 :optref refid='SWzri'.
 .do end
-.if &e'&$SWzro eq 1 .do begin
+.if &e'&$SWzro ne 0 .do begin
 .note zro
 Omit floating point rounding code
 :optref refid='SWzro'.
 .do end
-.if &e'&$SWzu eq 1 .do begin
+.if &e'&$SWzu ne 0 .do begin
 .note zu
 SS != DGROUP
 :optref refid='SWzu'.
@@ -965,108 +965,108 @@ SS != DGROUP
 .ix 'options' 'optimizations'
 .notehd1 Option:
 .notehd2 Description:
-.if &e'&$SWoa eq 1 .do begin
+.if &e'&$SWoa ne 0 .do begin
 .note oa
 relax aliasing constraints
 :optref refid='SWoa'.
 .do end
-.if &e'&$SWob eq 1 .do begin
+.if &e'&$SWob ne 0 .do begin
 .note ob
 enable branch prediction
 :optref refid='SWob'.
 .do end
-.if &e'&$SWoc eq 1 .do begin
+.if &e'&$SWoc ne 0 .do begin
 .note oc
 disable <call followed by return> to <jump> optimization
 :optref refid='SWoc'.
 .do end
-.if &e'&$SWod eq 1 .do begin
+.if &e'&$SWod ne 0 .do begin
 .note od
 disable all optimizations
 :optref refid='SWod'.
 .do end
-.if &e'&$SWoe eq 1 .do begin
+.if &e'&$SWoe ne 0 .do begin
 .note oe[=<num>]
 expand user functions in-line. <num> controls max size
 :optref refid='SWoe'.
 .do end
-.if &e'&$SWoh eq 1 .do begin
+.if &e'&$SWoh ne 0 .do begin
 .note oh
 enable repeated optimizations (longer compiles)
 :optref refid='SWoh'.
 .do end
-.if &e'&$SWoi eq 1 .do begin
+.if &e'&$SWoi ne 0 .do begin
 .note oi
 expand intrinsic functions in-line
 :optref refid='SWoi'.
 .do end
-.if &e'&$SWoipls eq 1 .do begin
+.if &e'&$SWoipls ne 0 .do begin
 .note oi+
 (C++ only)
 expand intrinsic functions in-line and set inline_depth to maximum
 :optref refid='SWoipls'.
 .do end
-.if &e'&$SWok eq 1 .do begin
+.if &e'&$SWok ne 0 .do begin
 .note ok
 enable control flow prologues and epilogues
 :optref refid='SWok'.
 .do end
-.if &e'&$SWol eq 1 .do begin
+.if &e'&$SWol ne 0 .do begin
 .note ol
 enable loop optimizations
 :optref refid='SWol'.
 .do end
-.if &e'&$SWolpls eq 1 .do begin
+.if &e'&$SWolpls ne 0 .do begin
 .note ol+
 enable loop optimizations with loop unrolling
 :optref refid='SWolpls'.
 .do end
-.if &e'&$SWom eq 1 .do begin
+.if &e'&$SWom ne 0 .do begin
 .note om
 generate in-line 80x87 code for math functions
 :optref refid='SWom'.
 .do end
-.if &e'&$SWon eq 1 .do begin
+.if &e'&$SWon ne 0 .do begin
 .note on
 allow numerically unstable optimizations
 :optref refid='SWon'.
 .do end
-.if &e'&$SWoo eq 1 .do begin
+.if &e'&$SWoo ne 0 .do begin
 .note oo
 continue compilation if low on memory
 :optref refid='SWoo'.
 .do end
-.if &e'&$SWop eq 1 .do begin
+.if &e'&$SWop ne 0 .do begin
 .note op
 generate consistent floating-point results
 :optref refid='SWop'.
 .do end
-.if &e'&$SWor eq 1 .do begin
+.if &e'&$SWor ne 0 .do begin
 .note or
 reorder instructions for best pipeline usage
 :optref refid='SWor'.
 .do end
-.if &e'&$SWos eq 1 .do begin
+.if &e'&$SWos ne 0 .do begin
 .note os
 favor code size over execution time in optimizations
 :optref refid='SWos'.
 .do end
-.if &e'&$SWot eq 1 .do begin
+.if &e'&$SWot ne 0 .do begin
 .note ot
 favor execution time over code size in optimizations
 :optref refid='SWot'.
 .do end
-.if &e'&$SWou eq 1 .do begin
+.if &e'&$SWou ne 0 .do begin
 .note ou
 all functions must have unique addresses
 :optref refid='SWou'.
 .do end
-.if &e'&$SWox eq 1 .do begin
+.if &e'&$SWox ne 0 .do begin
 .note ox
 equivalent to -obmiler -s
 :optref refid='SWox'.
 .do end
-.if &e'&$SWoz eq 1 .do begin
+.if &e'&$SWoz ne 0 .do begin
 .note oz
 NULL points to valid memory in the target environment
 :optref refid='SWoz'.
@@ -1081,37 +1081,37 @@ NULL points to valid memory in the target environment
 .notehd1 Option:
 .notehd2 Description:
 .*
-.if &e'&$SWxd eq 1 .do begin
+.if &e'&$SWxd ne 0 .do begin
 .note xd
 disable exception handling (default)
 :optref refid='SWxd'.
 .do end
 .*
-.if &e'&$SWxdt eq 1 .do begin
+.if &e'&$SWxdt ne 0 .do begin
 .note xdt
 disable exception handling (same as "xd")
 :optref refid='SWxdt'.
 .do end
 .*
-.if &e'&$SWxds eq 1 .do begin
+.if &e'&$SWxds ne 0 .do begin
 .note xds
 disable exception handling (table-driven destructors)
 :optref refid='SWxds'.
 .do end
 .*
-.if &e'&$SWxs eq 1 .do begin
+.if &e'&$SWxs ne 0 .do begin
 .note xs
 enable exception handling
 :optref refid='SWxs'.
 .do end
 .*
-.if &e'&$SWxst eq 1 .do begin
+.if &e'&$SWxst ne 0 .do begin
 .note xst
 enable exception handling (direct calls for destruction)
 :optref refid='SWxst'.
 .do end
 .*
-.if &e'&$SWxss eq 1 .do begin
+.if &e'&$SWxss ne 0 .do begin
 .note xss
 enable exception handling (table-driven destructors)
 :optref refid='SWxss'.
@@ -1126,24 +1126,24 @@ enable exception handling (table-driven destructors)
 .ix 'options' 'double-byte characters'
 .notehd1 Option:
 .notehd2 Description:
-.if &e'&$SWzk eq 1 .do begin
+.if &e'&$SWzk ne 0 .do begin
 .note zk{0,1,2,l}
 double-byte char support: 0=Kanji,1=Chinese/Taiwanese,2=Korean,l=local
 :optref refid='SWzk'.
 .do end
-.if &e'&$SWzk0u eq 1 .do begin
+.if &e'&$SWzk0u ne 0 .do begin
 .note zk0u
 translate double-byte Kanji to UNICODE
 :optref refid='SWzk0u'.
 .do end
-.if &e'&$SWzku eq 1 .do begin
+.if &e'&$SWzku ne 0 .do begin
 .note zku=<codepage>
 load UNICODE translate table for specified code page
 :optref refid='SWzku'.
 .do end
 .endnote
 .*
-.if &e'&$SWvc eq 1 .do begin
+.if &e'&$SWvc ne 0 .do begin
 .*
 .section Compatibility with Microsoft Visual C++
 .*
@@ -1165,17 +1165,17 @@ allow alloca() or _alloca() in a parameter list
 .ix 'options' 'compatibility with older versions'
 .notehd1 Option:
 .notehd2 Description:
-.if &e'&$SWr eq 1 .do begin
+.if &e'&$SWr ne 0 .do begin
 .note r
 save/restore segment registers across calls
 :optref refid='SWr'.
 .do end
-.if &e'&$SWfpr eq 1 .do begin
+.if &e'&$SWfpr ne 0 .do begin
 .note fpr
 generate backward compatible 80x87 code
 :optref refid='SWfpr'.
 .do end
-.if &e'&$SWzz eq 1 .do begin
+.if &e'&$SWzz ne 0 .do begin
 .note zz
 generate backward compatible __stdcall conventions by removing the
 "@size" from __stdcall function names (10.0 compatible)
@@ -1208,7 +1208,7 @@ and so on.
 .*
 :OPTLIST.
 .*
-.if &e'&$SWbc eq 1 .do begin
+.if &e'&$SWbc ne 0 .do begin
 :OPT refid='SWbc' name='bc'.
 .ix 'options' 'bc'
 .ix 'console application'
@@ -1282,7 +1282,7 @@ This option does not apply to QNX.
 .do end
 .do end
 .*
-.if &e'&$SWbd eq 1 .do begin
+.if &e'&$SWbd ne 0 .do begin
 :OPT refid='SWbd' name='bd'.
 .ix 'options' 'bd'
 .ix 'dynamic link library'
@@ -1317,7 +1317,7 @@ This option does not apply to QNX.
 .do end
 .do end
 .*
-.if &e'&$SWbg eq 1 .do begin
+.if &e'&$SWbg ne 0 .do begin
 :OPT refid='SWbg' name='bg'.
 .ix 'options' 'bg'
 .ix 'console application'
@@ -1341,7 +1341,7 @@ This option does not apply to QNX.
 .do end
 .do end
 .*
-.if &e'&$SWbm eq 1 .do begin
+.if &e'&$SWbm ne 0 .do begin
 :OPT refid='SWbm' name='bm'.
 .ix 'options' 'bm'
 (Netware, OS/2, Win32 only)
@@ -1359,7 +1359,7 @@ This option does not apply to QNX.
 .do end
 .do end
 .*
-.if &e'&$SWbr eq 1 .do begin
+.if &e'&$SWbr ne 0 .do begin
 :OPT refid='SWbr' name='br'.
 .ix 'options' 'br'
 (OS/2, Win32 only)
@@ -1381,7 +1381,7 @@ This option does not apply to QNX.
 .do end
 .do end
 .*
-.if &e'&$SWbt eq 1 .do begin
+.if &e'&$SWbt ne 0 .do begin
 :OPT refid='SWbt' name='bt'.[=<os>]
 .ix 'options' 'bt'
 This option causes the compiler to define the "build" target.
@@ -1497,7 +1497,7 @@ Specifying "bt" with no target name following restores the default
 target name.
 .do end
 .*
-.if &e'&$SWbw eq 1 .do begin
+.if &e'&$SWbw ne 0 .do begin
 :OPT refid='SWbw' name='bw'.
 .ix 'options' 'bw'
 (Win16 only)
@@ -1527,7 +1527,7 @@ This option does not apply to QNX.
 .*
 
 
-.if &e'&$SWof eq 1 .do begin
+.if &e'&$SWof ne 0 .do begin
 :OPT refid='SWof' name='of'.
 .ix 'options' 'of'
 This option selects the generation of traceable stack frames for those
@@ -1584,7 +1584,7 @@ The macro
 will be predefined if "of" is selected.
 .do end
 .*
-.if &e'&$SWofpls eq 1 .do begin
+.if &e'&$SWofpls ne 0 .do begin
 :OPT refid='SWofpls' name='of+'.
 .ix 'options' 'of+'
 This option selects the generation of traceable stack frames for all
@@ -1638,7 +1638,7 @@ It will alter the code sequence generated for "_export" functions.
 .exam end
 .do end
 .*
-.if &e'&$SWsg eq 1 .do begin
+.if &e'&$SWsg ne 0 .do begin
 :OPT refid='SWsg' name='sg'.
 .ix 'stack growing'
 .ix 'options' 'sg'
@@ -1707,7 +1707,7 @@ The macro
 will be predefined if "sg" is selected.
 .do end
 .*
-.if &e'&$SWst eq 1 .do begin
+.if &e'&$SWst ne 0 .do begin
 :OPT refid='SWst' name='st'.
 .ix 'stack touching'
 .ix 'options' 'st'
@@ -1737,7 +1737,7 @@ The macro
 will be predefined if "st" is selected.
 .do end
 .*
-.if &e'&$SWzw eq 1 .do begin
+.if &e'&$SWzw ne 0 .do begin
 :OPT refid='SWzw' name='zw'.
 .ix 'options' 'zw'
 &286only.
@@ -1791,7 +1791,7 @@ This option does not apply to QNX.
 .do end
 .do end
 .*
-.if &e'&$SWzW86 eq 1 .do begin
+.if &e'&$SWzW86 ne 0 .do begin
 :OPT refid='SWzW86' name='zW (optimized)'.&optdag.
 .ix 'options' 'zW'
 &286only.
@@ -1836,7 +1836,7 @@ This option does not apply to QNX.
 .do end
 .do end
 .*
-.if &e'&$SWzWs eq 1 .do begin
+.if &e'&$SWzWs ne 0 .do begin
 :OPT refid='SWzWs' name='zWs'.&optdag
 .ix 'options' 'zWs'
 &286only.
@@ -1905,14 +1905,14 @@ Support for profiling of Pentium code is also described.
 .*
 :OPTLIST.
 .*
-.if &e'&$SWd0 eq 1 .do begin
+.if &e'&$SWd0 ne 0 .do begin
 :OPT refid='SWd0' name='d0'.
 .ix 'options' 'd0'
 (C++ only)
 No debugging information is included in the object file.
 .do end
 .*
-.if &e'&$SWd1 eq 1 .do begin
+.if &e'&$SWd1 ne 0 .do begin
 :OPT refid='SWd1' name='d1'.
 .ix 'options' 'd1'
 Line number debugging information is included in the object file.
@@ -1925,7 +1925,7 @@ To avoid recompiling, the &stripname can be used to remove debugging
 information from the executable image.
 .do end
 .*
-.if &e'&$SWd1pls eq 1 .do begin
+.if &e'&$SWd1pls ne 0 .do begin
 :OPT refid='SWd1pls' name='d1+'.
 .ix 'options' 'd1+'
 (C only)
@@ -1942,7 +1942,7 @@ To avoid recompiling, the &stripname can be used to remove debugging
 information from the executable image.
 .do end
 .*
-.if &e'&$SWd2 eq 1 .do begin
+.if &e'&$SWd2 ne 0 .do begin
 :OPT refid='SWd2' name='d2'.
 .ix 'options' 'd2'
 In addition to line number information, local symbol and data
@@ -1965,7 +1965,7 @@ at the expense of code speed and size.
 To create production code, you should recompile without this option.
 .do end
 .*
-.if &e'&$SWd2i eq 1 .do begin
+.if &e'&$SWd2i ne 0 .do begin
 :OPT refid='SWd2i' name='d2i'.
 .ix 'options' 'd2i'
 (C++ only)
@@ -1976,7 +1976,7 @@ This option can result in larger object and/or executable files than
 with "d2" (we are discussing both "code" and "file" size here).
 .do end
 .*
-.if &e'&$SWd2s eq 1 .do begin
+.if &e'&$SWd2s ne 0 .do begin
 :OPT refid='SWd2s' name='d2s'.
 .ix 'options' 'd2s'
 (C++ only)
@@ -1990,7 +1990,7 @@ Link times are faster than "d2i" (fewer segment relocations) but
 executables are slightly larger.
 .do end
 .*
-.if &e'&$SWd2t eq 1 .do begin
+.if &e'&$SWd2t ne 0 .do begin
 :OPT refid='SWd2t' name='d2t'.
 .ix 'options' 'd2t'
 (C++ only)
@@ -2000,7 +2000,7 @@ This option can result in smaller object and/or executable files (we
 are discussing "file" size here).
 .do end
 .*
-.if &e'&$SWd3 eq 1 .do begin
+.if &e'&$SWd3 ne 0 .do begin
 :OPT refid='SWd3' name='d3'.
 .ix 'options' 'd3'
 This option is identical to "d2" but also includes symbolic debugging
@@ -2013,7 +2013,7 @@ or
 are included.
 .do end
 .*
-.if &e'&$SWd3i eq 1 .do begin
+.if &e'&$SWd3i ne 0 .do begin
 :OPT refid='SWd3i' name='d3i'.
 .ix 'options' 'd3i'
 (C++ only)
@@ -2024,7 +2024,7 @@ This option can result in larger object and/or executable files than
 with "d3" (we are discussing both "code" and "file" size here).
 .do end
 .*
-.if &e'&$SWd3s eq 1 .do begin
+.if &e'&$SWd3s ne 0 .do begin
 :OPT refid='SWd3s' name='d3s'.
 .ix 'options' 'd3s'
 (C++ only)
@@ -2038,7 +2038,7 @@ Link times are faster than "d3i" (fewer segment relocations) but
 executables are slightly larger.
 .do end
 .*
-.if &e'&$SWee eq 1 .do begin
+.if &e'&$SWee ne 0 .do begin
 :OPT refid='SWee' name='ee'.
 .ix 'options' 'ee'
 &x86only.
@@ -2057,7 +2057,7 @@ The macro
 will be predefined if "ee" is selected.
 .do end
 .*
-.if &e'&$SWen eq 1 .do begin
+.if &e'&$SWen ne 0 .do begin
 :OPT refid='SWen' name='en'.
 .ix 'options' 'en'
 &x86only.
@@ -2088,7 +2088,7 @@ The macro
 will be predefined if "en" is selected.
 .do end
 .*
-.if &e'&$SWep eq 1 .do begin
+.if &e'&$SWep ne 0 .do begin
 :OPT refid='SWep' name='ep'.[<number>]
 .ix 'options' 'ep'
 &x86only.
@@ -2112,7 +2112,7 @@ The macro
 will be predefined if "ep" is selected.
 .do end
 .*
-.if &e'&$SWet eq 1 .do begin
+.if &e'&$SWet ne 0 .do begin
 :OPT refid='SWet' name='et'.
 .ix 'options' 'et'
 (Pentium only)
@@ -2154,7 +2154,7 @@ less accurate on non-Pentium processors.
 .do end
 .do end
 .*
-.if &e'&$SWhwdc eq 1 .do begin
+.if &e'&$SWhwdc ne 0 .do begin
 :OPT refid='SWhwdc' name='h'.{w,d,c}
 .ix 'debugging information format'
 .ix 'options' 'hw'
@@ -2194,7 +2194,7 @@ for more information.
 .do end
 .do end
 .*
-.if &e'&$SWs eq 1 .do begin
+.if &e'&$SWs ne 0 .do begin
 :OPT refid='SWs' name='s'.
 .ix 'stack overflow'
 .ix 'options' 's'
@@ -2208,7 +2208,7 @@ The macro
 will be predefined if "s" is selected.
 .do end
 .*
-.if &e'&$SWsi eq 1 .do begin
+.if &e'&$SWsi ne 0 .do begin
 :OPT refid='SWsi' name='si'.
 .ix 'stack growing'
 .ix 'options' 'si'
@@ -2233,7 +2233,7 @@ This group of options deals with the compiler preprocessor.
 .*
 :OPTLIST.
 .*
-.if &e'&$SWd eq 1 .do begin
+.if &e'&$SWd ne 0 .do begin
 :OPT refid='SWd' name='d'.<name>[=text]
 .ix 'options' 'd'
 This option can be used to define a preprocessor macro from the
@@ -2267,7 +2267,7 @@ containing:
 .millust end
 .do end
 .*
-.if &e'&$SWdpls eq 1 .do begin
+.if &e'&$SWdpls ne 0 .do begin
 :OPT refid='SWdpls' name='d+'.
 .ix 'options' 'd+'
 The syntax of any "d" option which follows on the command line is
@@ -2299,7 +2299,7 @@ This is equivalent to specifying the following in the source code.
 .exam end
 .do end
 .*
-.if &e'&$SWfo eq 1 .do begin
+.if &e'&$SWfo ne 0 .do begin
 :OPT refid='SWfo' name='fo'.[=<file_name>] (preprocessor)
 .ix 'options' 'fo'
 .ix 'preprocessor'
@@ -2324,7 +2324,7 @@ A default filename extension must be preceded by a period (".").
 &prompt.:SF font=1.compiler_name:eSF. report &sw.p &sw.fo=&dr4.&pc.proj&pc.prep&pc..cpr
 .exam end
 .do end
-.if &e'&$SWpil eq 1 .do begin
+.if &e'&$SWpil ne 0 .do begin
 :OPT refid='SWpil' name='pil'.
 .ix 'options' 'pil'
 By default, #line directives embedded in source files are processed and
@@ -2334,7 +2334,7 @@ preprocessor to ignore #line directives and refer to actual file names and
 line numbers.
 .do end
 .*
-.if &e'&$SWp eq 1 .do begin
+.if &e'&$SWp ne 0 .do begin
 :OPT refid='SWp' name='p'.{e,l,c,w=<num>}
 .ix 'options' 'p'
 .ix 'options' 'pc'
@@ -2387,7 +2387,7 @@ The options which are supported when the &product preprocessor is
 requested are: "d", "fi", "fo", "i", "m?", and "u".
 .do end
 .*
-.if &e'&$SWu eq 1 .do begin
+.if &e'&$SWu ne 0 .do begin
 :OPT refid='SWu' name='u'.<name>
 .ix 'options' 'u'
 The "u" option may be used to turn off the definition of a predefined
@@ -2414,7 +2414,7 @@ This group of options deals with the control of compiler diagnostics.
 .*
 :OPTLIST.
 .*
-.if &e'&$SWe eq 1 .do begin
+.if &e'&$SWe ne 0 .do begin
 :OPT refid='SWe' name='e'.<number>
 .ix 'options' 'e'
 The compiler will stop compilation after reaching
@@ -2423,14 +2423,14 @@ errors.
 By default, the compiler will stop compilation after 20 errors.
 .do end
 .*
-.if &e'&$SWef eq 1 .do begin
+.if &e'&$SWef ne 0 .do begin
 :OPT refid='SWef' name='ef'.
 .ix 'options' 'ef'
 This option causes the compiler to display full path names for files
 in error messages.
 .do end
 .*
-.if &e'&$SWeq eq 1 .do begin
+.if &e'&$SWeq ne 0 .do begin
 :OPT refid='SWeq' name='eq'.
 .ix 'options' 'eq'
 This option causes the compiler to not display error messages on the
@@ -2438,7 +2438,7 @@ console; however, they are still written to a file
 :optref refid='SWfr'..
 .do end
 .*
-.if &e'&$SWer eq 1 .do begin
+.if &e'&$SWer ne 0 .do begin
 :OPT refid='SWer' name='er'.
 .ix 'options' 'er'
 (C++ only)
@@ -2464,7 +2464,7 @@ void bar( S *p ) {
 .do end
 .*
 .*
-.if &e'&$SWew eq 1 .do begin
+.if &e'&$SWew ne 0 .do begin
 :OPT refid='SWew' name='ew'.
 .ix 'options' 'ew'
 (C++ only)
@@ -2472,13 +2472,13 @@ This option causes the C++ compiler to generate equivalent but less
 verbose diagnostic messages.
 .do end
 .*
-.if &e'&$SWq eq 1 .do begin
+.if &e'&$SWq ne 0 .do begin
 :OPT refid='SWq' name='q'.
 .ix 'options' 'q'
 This option is equivalent to the "zq" option :optref refid='SWzq'..
 .do end
 .*
-.if &e'&$SWt eq 1 .do begin
+.if &e'&$SWt ne 0 .do begin
 :OPT refid='SWt' name='t'.=<num>
 .ix 'options' 't'
 .ix 'preprocessor'
@@ -2496,7 +2496,7 @@ of 8, then you should use this option.
 .exam end
 .do end
 .*
-.if &e'&$SWw eq 1 .do begin
+.if &e'&$SWw ne 0 .do begin
 :OPT refid='SWw' name='w'.<number>
 .ix 'options' 'w'
 The compiler will issue only warning type messages of severity
@@ -2508,14 +2508,14 @@ Specify "w0" to prevent warning messages from being issued.
 Specify "wx" to obtain all warning messages.
 .do end
 .*
-.if &e'&$SWwcd eq 1 .do begin
+.if &e'&$SWwcd ne 0 .do begin
 :OPT refid='SWwcd' name='wcd'.=<number>
 .ix 'options' 'wcd'
 The compiler will not issue the warning message indicated by
 .sy <number>.
 .do end
 .*
-.if &e'&$SWwce eq 1 .do begin
+.if &e'&$SWwce ne 0 .do begin
 :OPT refid='SWwce' name='wce'.=<number>
 .ix 'options' 'wce'
 The compiler will issue the warning message indicated by
@@ -2523,7 +2523,7 @@ The compiler will issue the warning message indicated by
 despite any pragmas that may have disabled it.
 .do end
 .*
-.if &e'&$SWwe eq 1 .do begin
+.if &e'&$SWwe ne 0 .do begin
 :OPT refid='SWwe' name='we'.
 .ix 'options' 'we'
 By default, the compiler will continue to create an object file when
@@ -2533,7 +2533,7 @@ preventing the compiler from creating an object file if there are
 warnings found within a module.
 .do end
 .*
-.if &e'&$SWwo eq 1 .do begin
+.if &e'&$SWwo ne 0 .do begin
 :OPT refid='SWwo' name='wo'.
 .ix 'options' 'wo'
 (C only)
@@ -2542,13 +2542,13 @@ This option tells the compiler to emit warnings for things that will
 cause problems when compiling code for use in overlays.
 .do end
 .*
-.if &e'&$SWwx eq 1 .do begin
+.if &e'&$SWwx ne 0 .do begin
 :OPT refid='SWwx' name='wx'.
 .ix 'options' 'wx'
 This option sets the warning level to its maximum setting.
 .do end
 .*
-.if &e'&$SWza eq 1 .do begin
+.if &e'&$SWza ne 0 .do begin
 :OPT refid='SWza' name='za'.
 .ix 'options' 'za'
 .ix 'ISO/ANSI compatibility'
@@ -2570,7 +2570,7 @@ the ISO C standard programming language specification.
 The use of C++ style comments (// comment) are not diagnosed.
 .do end
 .*
-.if &e'&$SWze eq 1 .do begin
+.if &e'&$SWze ne 0 .do begin
 :OPT refid='SWze' name='ze'.
 .ix 'options' 'ze'
 The "ze" option (default) enables the use of the following compiler
@@ -2783,7 +2783,7 @@ These messages are all suppressed by the "quiet mode" option.
 Error and warning messages are not suppressed.
 .do end
 .*
-.if &e'&$SWzs eq 1 .do begin
+.if &e'&$SWzs ne 0 .do begin
 :OPT refid='SWzs' name='zs'.
 .ix 'options' 'zs'
 The compiler will check the source code only and omit the generation
@@ -2802,7 +2802,7 @@ output files that the compiler processes and/or creates.
 .*
 :OPTLIST.
 .*
-.if &e'&$SWad eq 1 .do begin
+.if &e'&$SWad ne 0 .do begin
 :OPT refid='SWad' name='ad[=<file_name>]'.
 .ix 'options' 'ad'
 This option enables generation of automatic dependency infomation in
@@ -2832,7 +2832,7 @@ Note that the header files listed in the dependency file normally do not
 include the standard library headers.
 .do end
 .*
-.if &e'&$SWadbs eq 1 .do begin
+.if &e'&$SWadbs ne 0 .do begin
 :OPT refid='SWadbs' name='adbs'.
 .ix 'options' 'adbs'
 When generating make style automatic dependency files, this option forces all
@@ -2842,7 +2842,7 @@ automatic dependency information in a format appropriate for the
 make tool used.
 .do end
 .*
-.if &e'&$SWadd eq 1 .do begin
+.if &e'&$SWadd ne 0 .do begin
 :OPT refid='SWadd' name='add[=<file_name>]'.
 .ix 'options' 'add'
 Set the first dependency name in a make style automatic dependency file.
@@ -2850,7 +2850,7 @@ By default, the name of the source file to be compiled is used.
 :optref refid='SWad'.
 .do end
 .*
-.if &e'&$SWadhp eq 1 .do begin
+.if &e'&$SWadhp ne 0 .do begin
 :OPT refid='SWadhp' name='adhp[=<path_name>]'.
 .ix 'options' 'adhp'
 When including a file with "" delimiters, the resulting filename in make
@@ -2870,7 +2870,7 @@ the current directory at the time of compilation (i.e., when the automatic
 dependency information was generated).
 .do end
 .*
-.if &e'&$SWadfs eq 1 .do begin
+.if &e'&$SWadfs ne 0 .do begin
 :OPT refid='SWadfs' name='adfs'.
 .ix 'options' 'adfs'
 When generating make style automatic dependency files, this option forces all
@@ -2880,7 +2880,7 @@ automatic dependency information in a format appropriate for the
 make tool used.
 .do end
 .*
-.if &e'&$SWadt eq 1 .do begin
+.if &e'&$SWadt ne 0 .do begin
 :OPT refid='SWadt' name='adt[=<target_name>]'.
 .ix 'options' 'adt'
 This option enables generation of automatic dependency infomation in the
@@ -2911,7 +2911,7 @@ Note that the header files listed in the dependency file normally do not
 include the standard library headers.
 .do end
 .*
-.if &e'&$SWdb eq 1 .do begin
+.if &e'&$SWdb ne 0 .do begin
 :OPT refid='SWdb' name='db'.
 .ix 'options' 'db'
 Use this option to generate browsing information.
@@ -2919,7 +2919,7 @@ The browsing information is recorded in a file whose name is
 constructed from the source file name and the extension ".mbr".
 .do end
 .*
-.if &e'&$SWez eq 1 .do begin
+.if &e'&$SWez ne 0 .do begin
 :OPT refid='SWez' name='ez'.&optdag.
 .ix 'options' 'ez'
 &386only.
@@ -2931,7 +2931,7 @@ The macro
 will be predefined if "ez" is selected.
 .do end
 .*
-.if &e'&$SWfc eq 1 .do begin
+.if &e'&$SWfc ne 0 .do begin
 :OPT refid='SWfc' name='fc'.=<file_name>
 .ix 'options' 'fc'
 (C++ only)
@@ -2961,7 +2961,7 @@ subsequent command lines is halted unless the "k" option was specified
 :optref refid='SWk'..
 .do end
 .*
-.if &e'&$SWfh eq 1 .do begin
+.if &e'&$SWfh ne 0 .do begin
 :OPT refid='SWfh' name='fh'.[q][=<file_name>]
 .ix 'options' 'fh'
 .ix 'options' 'fhq'
@@ -2972,7 +2972,7 @@ in the source file.
 See the chapter entitled :HDREF refid='cphdr'. for more information.
 .do end
 .*
-.if &e'&$SWfhd eq 1 .do begin
+.if &e'&$SWfhd ne 0 .do begin
 :OPT refid='SWfhd' name='fhd'.
 .ix 'options' 'fhd'
 The compiler will store debug info for the pre-compiled header once
@@ -2980,7 +2980,7 @@ The compiler will store debug info for the pre-compiled header once
 See the chapter entitled :HDREF refid='cphdr'. for more information.
 .do end
 .*
-.if &e'&$SWfhr eq 1 .do begin
+.if &e'&$SWfhr ne 0 .do begin
 :OPT refid='SWfhr' name='fhr'.
 .ix 'options' 'fhr'
 (C++ only)
@@ -2992,7 +2992,7 @@ out-of-date).
 See the chapter entitled :HDREF refid='cphdr'. for more information.
 .do end
 .*
-.if &e'&$SWfhw eq 1 .do begin
+.if &e'&$SWfhw ne 0 .do begin
 :OPT refid='SWfhw' name='fhw'.
 .ix 'options' 'fhw'
 (C++ only)
@@ -3001,7 +3001,7 @@ This option will force the compiler to write the pre-compiled header
 See the chapter entitled :HDREF refid='cphdr'. for more information.
 .do end
 .*
-.if &e'&$SWfhwe eq 1 .do begin
+.if &e'&$SWfhwe ne 0 .do begin
 :OPT refid='SWfhwe' name='fhwe'.
 .ix 'options' 'fhwe'
 (C++ only)
@@ -3010,7 +3010,7 @@ counted as errors when the "we" (treat warnings as errors) option is
 specified.
 .do end
 .*
-.if &e'&$SWfi eq 1 .do begin
+.if &e'&$SWfi ne 0 .do begin
 :OPT refid='SWfi' name='fi'.=<file_name>
 .ix 'options' 'fi'
 The specified file is included as if a
@@ -3024,7 +3024,7 @@ directive were placed at the start of the source file.
 .exam end
 .do end
 .*
-.if &e'&$SWfo2 eq 1 .do begin
+.if &e'&$SWfo2 ne 0 .do begin
 :OPT refid='SWfo2' name='fo'.[=<file_name>]
 .ix 'options' 'fo'
 When generating an object file, the "fo" option may be used to name
@@ -3050,7 +3050,7 @@ A default filename extension must be preceded by a period (".").
 .exam end
 .do end
 .*
-.if &e'&$SWfr eq 1 .do begin
+.if &e'&$SWfr ne 0 .do begin
 :OPT refid='SWfr' name='fr'.[=<file_name>]
 .ix 'options' 'fr'
 .ix 'error file'
@@ -3080,7 +3080,7 @@ A default filename extension must be preceded by a period (".").
 .exam end
 .do end
 .*
-.if &e'&$SWft eq 1 .do begin
+.if &e'&$SWft ne 0 .do begin
 :OPT refid='SWft' name='ft'.
 .ix 'options' 'ft'
 If the compiler cannot open a header file whose file name is longer
@@ -3095,7 +3095,7 @@ it will attempt to open a header file called
 .fi strstrea.h.
 .do end
 .*
-.if &e'&$SWfti eq 1 .do begin
+.if &e'&$SWfti ne 0 .do begin
 :OPT refid='SWfti' name='fti'.
 .ix 'options' 'fti'
 (C only)
@@ -3107,14 +3107,14 @@ contains the file name and line number identifying where the
 directive was located.
 .do end
 .*
-.if &e'&$SWfx eq 1 .do begin
+.if &e'&$SWfx ne 0 .do begin
 :OPT refid='SWfx' name='fx'.
 .ix 'options' 'fx'
 This option can be used to disable the truncated header filename
 processing that the compiler does by default (see "ft" above).
 .do end
 .*
-.if &e'&$SWfzh eq 1 .do begin
+.if &e'&$SWfzh ne 0 .do begin
 :OPT refid='SWfzh' name='fzh'.
 .ix 'options' 'fzh'
 (C++ only)
@@ -3128,7 +3128,7 @@ macro
 will be defined when this switch is used.
 .do end
 .*
-.if &e'&$SWfzs eq 1 .do begin
+.if &e'&$SWfzs ne 0 .do begin
 :OPT refid='SWfzs' name='fzs'.
 .ix 'options' 'fzs'
 (C++ only)
@@ -3142,7 +3142,7 @@ macro
 will be defined when this switch is used.
 .do end
 .*
-.if &e'&$SWi eq 1 .do begin
+.if &e'&$SWi ne 0 .do begin
 :OPT refid='SWi' name='i'.=<directory>
 .ix 'options' 'i'
 where "<directory>" takes the form
@@ -3163,7 +3163,7 @@ See the section entitled :HDREF refid='wccinc'. for information on
 directory searching.
 .do end
 .*
-.if &e'&$SWk eq 1 .do begin
+.if &e'&$SWk ne 0 .do begin
 :OPT refid='SWk' name='k'.
 .ix 'options' 'k'
 (C++ only)
@@ -3174,7 +3174,7 @@ See the option :HDREF refid='SWfc'. for information on compiling
 multiple source files.
 .do end
 .*
-.if &e'&$SWv eq 1 .do begin
+.if &e'&$SWv ne 0 .do begin
 :OPT refid='SWv' name='v'.
 .ix 'options' 'v'
 &cmpcname will output function declarations to a file with the same
@@ -3184,7 +3184,7 @@ other modules in order to take advantage of the compiler's function
 and argument type checking.
 .do end
 .*
-.if &e'&$SWx eq 1 .do begin
+.if &e'&$SWx ne 0 .do begin
 :OPT refid='SWx' name='x'.
 .ix 'options' 'x'
 The compiler ignores the
@@ -3196,7 +3196,7 @@ See the section entitled :HDREF refid='wccinc'. for information on
 directory searching.
 .do end
 .*
-.if &e'&$SWxx eq 1 .do begin
+.if &e'&$SWxx ne 0 .do begin
 :OPT refid='SWxx' name='xx'.
 .ix 'options' 'xx'
 The compiler behaviour for file search changes following way:
@@ -3218,7 +3218,7 @@ See the section entitled :HDREF refid='wccinc'. for information on
 directory searching.
 .do end
 .*
-.if &e'&$SWzam eq 1 .do begin
+.if &e'&$SWzam ne 0 .do begin
 :OPT refid='SWzam' name='zam'.
 .ix 'options' 'zam'
 Open Watcom define many extension macros for compatibility
@@ -3228,7 +3228,7 @@ These macros use names which are not ISO C/C++ compliant.
 The option disables all these predefined macros.
 .do end
 .*
-.if &e'&$SWzat eq 1 .do begin
+.if &e'&$SWzat ne 0 .do begin
 :OPT refid='SWzat' name='zat'.
 .ix 'options' 'zat'
 ISO C++ defines a number of alternative tokens that can be used instead
@@ -3238,7 +3238,7 @@ complete list of such tokens. The "zat" option disables support for
 these tokens so that the names "and", "or", etc are no longer reserved.
 .do end
 .*
-.if &e'&$SWzf eq 1 .do begin
+.if &e'&$SWzf ne 0 .do begin
 :OPT refid='SWzf' name='zf'.
 .ix 'options' 'zf'
 Starting with Open Watcom 1.3, the scope of a variable declared in the
@@ -3267,7 +3267,7 @@ option will allow such code to compile by extending the scope of "i"
 beyond the loop.
 .do end
 .*
-.if &e'&$SWzg eq 1 .do begin
+.if &e'&$SWzg ne 0 .do begin
 :OPT refid='SWzg' name='zg'.
 .ix 'options' 'zg'
 The "zg" option is similar to the "v" option except that
@@ -3292,7 +3292,7 @@ extern unsigned int f(unsigned int );
 .millust end
 .do end
 .*
-.if &e'&$SWzl eq 1 .do begin
+.if &e'&$SWzl ne 0 .do begin
 :OPT refid='SWzl' name='zl'.
 .ix 'options' 'zl'
 By default, the compiler places in the object file the names of the C
@@ -3315,7 +3315,7 @@ Use this option when you wish to create a library of object modules
 which do not contain &product library name references.
 .do end
 .*
-.if &e'&$SWzld eq 1 .do begin
+.if &e'&$SWzld ne 0 .do begin
 :OPT refid='SWzld' name='zld'.
 .ix 'options' 'zld'
 By default, the compiler places in the object file the names and time
@@ -3333,7 +3333,7 @@ This option causes the compiler to not emit this information into the
 object file.
 .do end
 .*
-.if &e'&$SWzlf eq 1 .do begin
+.if &e'&$SWzlf ne 0 .do begin
 :OPT refid='SWzlf' name='zlf'.&optdag.
 .ix 'options' 'zlf'
 The "zlf" option tells the compilers to emit references for all default
@@ -3341,7 +3341,7 @@ library information into the compiled object file. See also the options
 "zl", "zld" and "zls".
 .do end
 .*
-.if &e'&$SWzls eq 1 .do begin
+.if &e'&$SWzls ne 0 .do begin
 :OPT refid='SWzls' name='zls'.&optdag.
 .ix 'options' 'zls'
 The "zls" option tells the compilers to remove automatically inserted
@@ -3361,7 +3361,7 @@ that is generated by the compiler.
 .*
 :OPTLIST.
 .*
-.if &e'&$SWas eq 1 .do begin
+.if &e'&$SWas ne 0 .do begin
 :OPT refid='SWas' name='as'.
 .ix 'options' 'as'
 &AXPonly.
@@ -3375,55 +3375,55 @@ The macro
 will be predefined if "as" is selected.
 .do end
 .*
-.if &e'&$SWecc eq 1 .do begin
+.if &e'&$SWecc ne 0 .do begin
 :OPT refid='SWecc' name='ecc'.
 .ix 'options' 'ecc'
 set default calling convention to __cdecl
 .do end
 .*
-.if &e'&$SWecd eq 1 .do begin
+.if &e'&$SWecd ne 0 .do begin
 :OPT refid='SWecd' name='ecd'.
 .ix 'options' 'ecd'
 set default calling convention to __stdcall
 .do end
 .*
-.if &e'&$SWecf eq 1 .do begin
+.if &e'&$SWecf ne 0 .do begin
 :OPT refid='SWecf' name='ecf'.
 .ix 'options' 'ecf'
 set default calling convention to __fastcall
 .do end
 .*
-:CMT. .if &e'&$SWeco eq 1 .do begin
+:CMT. .if &e'&$SWeco ne 0 .do begin
 :CMT. :OPT refid='SWeco' name='eco'.
 :CMT. .ix 'options' 'eco'
 :CMT. set default calling convention to _Optlink
 :CMT. .do end
 .*
-.if &e'&$SWecp eq 1 .do begin
+.if &e'&$SWecp ne 0 .do begin
 :OPT refid='SWecp' name='ecp'.
 .ix 'options' 'ecp'
 set default calling convention to __pascal
 .do end
 .*
-.if &e'&$SWecr eq 1 .do begin
+.if &e'&$SWecr ne 0 .do begin
 :OPT refid='SWecr' name='ecr'.
 .ix 'options' 'ecr'
 set default calling convention to __fortran
 .do end
 .*
-.if &e'&$SWecs eq 1 .do begin
+.if &e'&$SWecs ne 0 .do begin
 :OPT refid='SWecs' name='ecs'.
 .ix 'options' 'ecs'
 set default calling convention to __syscall
 .do end
 .*
-.if &e'&$SWecw eq 1 .do begin
+.if &e'&$SWecw ne 0 .do begin
 :OPT refid='SWecw' name='ecw'.
 .ix 'options' 'ecw'
 set default calling convention to __watcall (default)
 .do end
 .*
-.if &e'&$SWei eq 1 .do begin
+.if &e'&$SWei ne 0 .do begin
 :OPT refid='SWei' name='ei'.
 .ix 'options' 'ei'
 This option can be used to force the compiler to allocate at least an
@@ -3437,7 +3437,7 @@ The macro
 will be predefined if "ei" is selected.
 .do end
 .*
-.if &e'&$SWem eq 1 .do begin
+.if &e'&$SWem ne 0 .do begin
 :OPT refid='SWem' name='em'.
 .ix 'options' 'em'
 This option can be used to force the compiler to allocate the smallest
@@ -3450,7 +3450,7 @@ The macro
 will be predefined if "em" is selected.
 .do end
 .*
-.if &e'&$SWj eq 1 .do begin
+.if &e'&$SWj ne 0 .do begin
 :OPT refid='SWj' name='j'.
 .ix 'options' 'j'
 The default
@@ -3465,7 +3465,7 @@ and
 will be predefined if "j" is selected.
 .do end
 .*
-.if &e'&$SWri eq 1 .do begin
+.if &e'&$SWri ne 0 .do begin
 :OPT refid='SWri' name='ri'.&optdag.
 .ix 'options' 'ri'
 Functions declared to return integral types such as chars and shorts
@@ -3475,7 +3475,7 @@ declare the return types of functions to work properly.
 The use of this option should be avoided.
 .do end
 .*
-.if &e'&$SWxr eq 1 .do begin
+.if &e'&$SWxr ne 0 .do begin
 :OPT refid='SWxr' name='xr'.&optdag.
 .ix 'options' 'xr'
 .ix 'options' 'RTTI'
@@ -3498,7 +3498,7 @@ or throw an exception) if used on a class instance that was not
 compiled with the "xr" option.
 .do end
 .*
-.if &e'&$SWzc eq 1 .do begin
+.if &e'&$SWzc ne 0 .do begin
 :OPT refid='SWzc' name='zc'.
 .ix 'options' 'zc'
 .ix 'code segment'
@@ -3529,7 +3529,7 @@ The macro
 will be predefined if "zc" is selected.
 .do end
 .*
-.if &e'&$SWzp eq 1 .do begin
+.if &e'&$SWzp ne 0 .do begin
 :OPT refid='SWzp' name='zp'.{1,2,4,8,16}
 .ix 'options' 'zp'
 The "zp" option allows you to specify the alignment of members in
@@ -3663,7 +3663,7 @@ Number of padding bytes is 3
 .millust end
 .do end
 .*
-.if &e'&$SWzps eq 1 .do begin
+.if &e'&$SWzps ne 0 .do begin
 :OPT refid='SWzps' name='zps'.
 .ix 'options' 'zps'
 &AXPonly.
@@ -3674,14 +3674,14 @@ Although this will improve execution performance, it could result in
 increased memory requirements.
 .do end
 .*
-.if &e'&$SWzpw eq 1 .do begin
+.if &e'&$SWzpw ne 0 .do begin
 :OPT refid='SWzpw' name='zpw'.
 .ix 'options' 'zpw'
 The compiler will output a warning message whenever padding is added
 to a struct/class for alignment purposes.
 .do end
 .*
-.if &e'&$SWzt eq 1 .do begin
+.if &e'&$SWzt ne 0 .do begin
 :OPT refid='SWzt' name='zt'.<number>
 .ix 'options' 'zt'
 The "data threshold" option is used to set the maximum size for data
@@ -3748,7 +3748,7 @@ declaring an object's size, or, (2) do not specify the size in data
 reference declarations.
 .do end
 .*
-.if &e'&$SWzv eq 1 .do begin
+.if &e'&$SWzv ne 0 .do begin
 :OPT refid='SWzv' name='zv'.
 .ix 'options' 'zv'
 (C++ only)
@@ -3897,7 +3897,7 @@ main_   push    ebx
 .*
 :OPTLIST.
 .*
-.if &e'&$SWfpc eq 1 .do begin
+.if &e'&$SWfpc ne 0 .do begin
 :OPT refid='SWfpc' name='fpc'.
 .ix 'options' 'fpc'
 All floating-point arithmetic is done with calls to a floating-point
@@ -3936,7 +3936,7 @@ equipped with a coprocessor.
 .do end
 .do end
 .*
-.if &e'&$SWfpi eq 1 .do begin
+.if &e'&$SWfpi ne 0 .do begin
 :OPT refid='SWfpi' name='fpi'.&optdag.
 .ix 'options' 'fpi'
 &286only.
@@ -4012,7 +4012,7 @@ testing the math coprocessor emulation code on personal computers
 equipped with a coprocessor.
 .do end
 .*
-.if &e'&$SWfpi87 eq 1 .do begin
+.if &e'&$SWfpi87 ne 0 .do begin
 :OPT refid='SWfpi87' name='fpi87'.&optdag.
 .ix 'options' 'fpi87'
 &286only.
@@ -4041,7 +4041,7 @@ will be predefined if "fpi87" is selected.
 See Note with description of "fpi" option.
 .do end
 .*
-.if &e'&$SWfp2 eq 1 .do begin
+.if &e'&$SWfp2 ne 0 .do begin
 :OPT refid='SWfp2' name='fp2'.&optdag.
 .ix 'options' 'fp2'
 The compiler will generate in-line 80x87 numeric data processor
@@ -4061,7 +4061,7 @@ The macro
 will be predefined if "fp2" is selected.
 .do end
 .*
-.if &e'&$SWfp3 eq 1 .do begin
+.if &e'&$SWfp3 ne 0 .do begin
 :OPT refid='SWfp3' name='fp3'.
 .ix 'options' 'fp3'
 The compiler will generate in-line 387-compatible numeric data
@@ -4079,7 +4079,7 @@ The macro
 will be predefined if "fp3" is selected.
 .do end
 .*
-.if &e'&$SWfp5 eq 1 .do begin
+.if &e'&$SWfp5 ne 0 .do begin
 :OPT refid='SWfp5' name='fp5'.
 .ix 'options' 'fp5'
 The compiler will generate in-line 80x87 numeric data processor
@@ -4096,7 +4096,7 @@ The macro
 will be predefined if "fp5" is selected.
 .do end
 .*
-.if &e'&$SWfp6 eq 1 .do begin
+.if &e'&$SWfp6 ne 0 .do begin
 :OPT refid='SWfp6' name='fp6'.
 .ix 'options' 'fp6'
 The compiler will generate in-line 80x87 numeric data processor
@@ -4113,7 +4113,7 @@ The macro
 will be predefined if "fp6" is selected.
 .do end
 .*
-.if &e'&$SWfpd eq 1 .do begin
+.if &e'&$SWfpd ne 0 .do begin
 :OPT refid='SWfpd' name='fpd'.
 .ix 'options' 'fpd'
 .ix 'FDIV bug'
@@ -4164,7 +4164,7 @@ The macro
 will be predefined if "fpd" is selected.
 .do end
 .*
-.if &e'&$SW7 eq 1 .do begin
+.if &e'&$SW7 ne 0 .do begin
 :OPT refid='SW7' name='7'.&optdag.
 .ix 'options' '7'
 &286only.
@@ -4196,7 +4196,7 @@ generated by the compiler.
 .*
 :OPTLIST.
 .*
-.if &e'&$SWg eq 1 .do begin
+.if &e'&$SWg ne 0 .do begin
 :OPT refid='SWg' name='g'.=<codegroup>
 .ix 'options' 'g'
 The generated code is placed in the group called "<codegroup>".
@@ -4236,7 +4236,7 @@ not possible.
 >> &286only.
 .do end
 .*
-.if &e'&$SWnc eq 1 .do begin
+.if &e'&$SWnc ne 0 .do begin
 :OPT refid='SWnc' name='nc'.=<name>
 .ix 'options' 'nc'
 .ix 'CODE class'
@@ -4267,7 +4267,7 @@ Note that the default "data" class names are "DATA" (for the "CONST",
 There is no provision for changing the data class names.
 .do end
 .*
-.if &e'&$SWnd eq 1 .do begin
+.if &e'&$SWnd ne 0 .do begin
 :OPT refid='SWnd' name='nd'.=<name>
 .ix 'options' 'nt'
 .ix 'CONST segment'
@@ -4353,7 +4353,7 @@ The macro
 will be predefined if "nd" is selected.
 .do end
 .*
-.if &e'&$SWnm eq 1 .do begin
+.if &e'&$SWnm ne 0 .do begin
 :OPT refid='SWnm' name='nm'.=<name>
 .ix 'options' 'nm'
 .ix '_TEXT segment'
@@ -4388,7 +4388,7 @@ called
 .fi report&obj..
 .do end
 .*
-.if &e'&$SWnt eq 1 .do begin
+.if &e'&$SWnt ne 0 .do begin
 :OPT refid='SWnt' name='nt'.=<name>
 .ix 'options' 'nt'
 The name of the "text" segment is explicitly set to "<name>".
@@ -4410,7 +4410,7 @@ Type        Model       Segment
 .millust end
 .do end
 .*
-.if &e'&$SWzm eq 1 .do begin
+.if &e'&$SWzm ne 0 .do begin
 :OPT refid='SWzm' name='zm'.
 .ix 'options' 'zm'
 The "zm" option instructs the code generator to place each function
@@ -4425,7 +4425,7 @@ concatenated with the string "_TEXT".
 (C++ only)
 In large code models, the segment name is composed of the module name
 concatenated with the string "_TEXT" and a unique integral number.
-.if &e'&$SWnt eq 1 .do begin
+.if &e'&$SWnt ne 0 .do begin
 .np
 The default string "_TEXT" can be altered using the "nt" option
 :optref refid='SWnt'..
@@ -4522,7 +4522,7 @@ The macro
 will be predefined if "zm" is selected.
 .do end
 .*
-.if &e'&$SWzmf eq 1 .do begin
+.if &e'&$SWzmf ne 0 .do begin
 :OPT refid='SWzmf' name='zmf'.
 .ix 'options' 'zmf'
 (C++ only)
@@ -4574,7 +4574,7 @@ This group of options deals with the 80x86 run-time environment.
 .*
 :OPTLIST.
 .*
-.if &e'&$SW0 eq 1 .do begin
+.if &e'&$SW0 ne 0 .do begin
 :OPT refid='SW0' name='0'.
 .ix 'options' '0'
 &286only.
@@ -4588,7 +4588,7 @@ The macro
 will be predefined if "0" is selected.
 .do end
 .*
-.if &e'&$SW1 eq 1 .do begin
+.if &e'&$SW1 ne 0 .do begin
 :OPT refid='SW1' name='1'.
 .ix 'options' '1'
 &286only.
@@ -4601,7 +4601,7 @@ The macro
 will be predefined if "1" is selected.
 .do end
 .*
-.if &e'&$SW2 eq 1 .do begin
+.if &e'&$SW2 ne 0 .do begin
 :OPT refid='SW2' name='2'.
 .ix 'options' '2'
 &286only.
@@ -4614,7 +4614,7 @@ The macro
 will be predefined if "2" is selected.
 .do end
 .*
-.if &e'&$SW3 eq 1 .do begin
+.if &e'&$SW3 ne 0 .do begin
 :OPT refid='SW3' name='3'.
 .ix 'options' '3'
 &286only.
@@ -4630,7 +4630,7 @@ The macro
 will be predefined if "3" is selected.
 .do end
 .*
-.if &e'&$SW4 eq 1 .do begin
+.if &e'&$SW4 ne 0 .do begin
 :OPT refid='SW4' name='4'.
 .ix 'options' '4'
 &286only.
@@ -4646,7 +4646,7 @@ The macro
 will be predefined if "4" is selected.
 .do end
 .*
-.if &e'&$SW5 eq 1 .do begin
+.if &e'&$SW5 ne 0 .do begin
 :OPT refid='SW5' name='5'.
 .ix 'options' '5'
 &286only.
@@ -4662,7 +4662,7 @@ The macro
 will be predefined if "5" is selected.
 .do end
 .*
-.if &e'&$SW6 eq 1 .do begin
+.if &e'&$SW6 ne 0 .do begin
 :OPT refid='SW6' name='6'.
 .ix 'options' '6'
 &286only.
@@ -4679,7 +4679,7 @@ The macro
 will be predefined if "6" is selected.
 .do end
 .*
-.if &e'&$SW3RS eq 1 .do begin
+.if &e'&$SW3RS ne 0 .do begin
 :OPT refid='SW3RS' name='3'.{r|s}&optdag.
 .ix 'options' '3r, 3s'
 &386only.
@@ -4750,7 +4750,7 @@ The macro
 will be predefined if "s" is selected.
 .do end
 .*
-.if &e'&$SW4RS eq 1 .do begin
+.if &e'&$SW4RS ne 0 .do begin
 :OPT refid='SW4RS' name='4'.{r|s}&optdag.
 .ix 'options' '4r, 4s'
 &386only.
@@ -4769,7 +4769,7 @@ The macro
 will be predefined if "s" is selected.
 .do end
 .*
-.if &e'&$SW5RS eq 1 .do begin
+.if &e'&$SW5RS ne 0 .do begin
 :OPT refid='SW5RS' name='5'.{r|s}&optdag.
 .ix 'options' '5r, 5s'
 &386only.
@@ -4790,7 +4790,7 @@ The macro
 will be predefined if "s" is selected.
 .do end
 .*
-.if &e'&$SW6RS eq 1 .do begin
+.if &e'&$SW6RS ne 0 .do begin
 :OPT refid='SW6RS' name='6'.{r|s}&optdag.
 .ix 'options' '6r, 6s'
 &386only.
@@ -4815,7 +4815,7 @@ will be predefined if "s" is selected.
 .*
 .im CPOPTMDL
 .*
-.if &e'&$SWzdfp eq 1 .do begin
+.if &e'&$SWzdfp ne 0 .do begin
 :OPT refid='SWzdfp' name='zd'.{f,p}&optdag.
 .ix 'options' 'zdf'
 .ix 'options' 'zdp'
@@ -4838,7 +4838,7 @@ The macro
 will be predefined if "zdp" is selected.
 .do end
 .*
-.if &e'&$SWzdl eq 1 .do begin
+.if &e'&$SWzdl ne 0 .do begin
 :OPT refid='SWzdl' name='zdl'.&optdag.
 .ix 'options' 'zdl'
 &386only.
@@ -4848,7 +4848,7 @@ This option causes the generation of a segment relocation.
 This option is used with the "zdp" option but not the "zdf" option.
 .do end
 .*
-.if &e'&$SWzev eq 1 .do begin
+.if &e'&$SWzev ne 0 .do begin
 :OPT refid='SWzev' name='zev'.&optdag.
 .ix 'options' 'zev'
 The "zev" option is an extension to the Watcom C compiler to allow
@@ -4857,7 +4857,7 @@ for compatibility with some Unix compilers and is not ISO compliant.
 The use of this option should be avoided.
 .do end
 .*
-.if &e'&$SWzffp eq 1 .do begin
+.if &e'&$SWzffp ne 0 .do begin
 :OPT refid='SWzffp' name='zf'.{f,p}&optdag.
 .ix 'options' 'zff'
 .ix 'options' 'zfp'
@@ -4873,7 +4873,7 @@ The macro
 will be predefined if "zfp" is selected.
 .do end
 .*
-.if &e'&$SWzfw eq 1 .do begin
+.if &e'&$SWzfw ne 0 .do begin
 :OPT refid='SWzfw' name='zfw'.&optdag.
 .ix 'options' 'zfw'
 The "zfw" option turns on generation of FWAIT instructions on 386 and later
@@ -4888,7 +4888,7 @@ The macro
 will be predefined if "zfw" is selected.
 .do end
 .*
-.if &e'&$SWzgfp eq 1 .do begin
+.if &e'&$SWzgfp ne 0 .do begin
 :OPT refid='SWzgfp' name='zg'.{f,p}&optdag.
 .ix 'options' 'zgf'
 .ix 'options' 'zgp'
@@ -4904,7 +4904,7 @@ The macro
 will be predefined if "zgp" is selected.
 .do end
 .*
-.if &e'&$SWzri eq 1 .do begin
+.if &e'&$SWzri ne 0 .do begin
 :OPT refid='SWzri' name='zri'.&optdag.
 .ix 'options' 'zri'
 &386only.
@@ -4917,7 +4917,7 @@ The macro
 will be predefined if "zri" is selected.
 .do end
 .*
-.if &e'&$SWzro eq 1 .do begin
+.if &e'&$SWzro ne 0 .do begin
 :OPT refid='SWzro' name='zro'.&optdag.
 .ix 'options' 'zro'
 The "zro" option omits the code for floating point rounding.
@@ -4929,7 +4929,7 @@ The macro
 will be predefined if "zro" is selected.
 .do end
 .*
-.if &e'&$SWzu eq 1 .do begin
+.if &e'&$SWzu ne 0 .do begin
 :OPT refid='SWzu' name='zu'.&optdag.
 .ix 'options' 'zu'
 .ix 'SS segment register'
@@ -4973,7 +4973,7 @@ specified individually (oa, oi) or the letters may be string together
 .*
 :OPTLIST.
 .*
-.if &e'&$SWoa eq 1 .do begin
+.if &e'&$SWoa ne 0 .do begin
 :OPT refid='SWoa' name='oa'.
 .ix 'options' 'oa'
 .ix 'aliasing'
@@ -5016,7 +5016,7 @@ The macro
 will be predefined if "oa" is selected.
 .do end
 .*
-.if &e'&$SWob eq 1 .do begin
+.if &e'&$SWob ne 0 .do begin
 :OPT refid='SWob' name='ob'.
 .ix 'options' 'ob'
 When the "ob" option is specified, the code generator will try to
@@ -5029,7 +5029,7 @@ If the heuristics do not apply to your code, it could result in a
 performance decrease.
 .do end
 .*
-.if &e'&$SWoc eq 1 .do begin
+.if &e'&$SWoc ne 0 .do begin
 :OPT refid='SWoc' name='oc'.
 .ix 'options' 'oc'
 This option may be used to disable the optimization where a "CALL"
@@ -5049,7 +5049,7 @@ The macro
 will be predefined if "oc" is selected.
 .do end
 .*
-.if &e'&$SWod eq 1 .do begin
+.if &e'&$SWod ne 0 .do begin
 :OPT refid='SWod' name='od'.
 .ix 'options' 'od'
 Non-optimized code sequences are generated.
@@ -5068,7 +5068,7 @@ The macro
 will be predefined if "od" is selected.
 .do end
 .*
-.if &e'&$SWoe eq 1 .do begin
+.if &e'&$SWoe ne 0 .do begin
 :OPT refid='SWoe' name='oe'.=<num>
 .ix 'options' 'oe'
 Certain user functions are expanded in-line.
@@ -5095,14 +5095,14 @@ functions are small in size.
 .exam end
 .do end
 .*
-.if &e'&$SWoh eq 1 .do begin
+.if &e'&$SWoh ne 0 .do begin
 :OPT refid='SWoh' name='oh'.
 .ix 'options' 'oh'
 This option enables repeated optimizations (which can result in longer
 compiles).
 .do end
 .*
-.if &e'&$SWoi eq 1 .do begin
+.if &e'&$SWoi ne 0 .do begin
 :OPT refid='SWoi' name='oi'.
 .ix 'options' 'oi'
 Certain library functions are generated in-line.
@@ -5161,7 +5161,7 @@ and
 will be predefined if "oi" is selected.
 .do end
 .*
-.if &e'&$SWoipls eq 1 .do begin
+.if &e'&$SWoipls ne 0 .do begin
 :OPT refid='SWoipls' name='oi+'.
 .ix 'options' 'oi+'
 (C++ only)
@@ -5177,7 +5177,7 @@ can also be changed by using the C++
 .mono inline_depth
 pragma.
 .*
-.if &e'&$SWok eq 1 .do begin
+.if &e'&$SWok ne 0 .do begin
 :OPT refid='SWok' name='ok'.
 .ix 'options' 'ok'
 This option enables flowing of register save (from prologue) down into
@@ -5188,7 +5188,7 @@ if-else construct with a simple part that does little and a more
 complex part that does a lot).
 .do end
 .*
-.if &e'&$SWol eq 1 .do begin
+.if &e'&$SWol ne 0 .do begin
 :OPT refid='SWol' name='ol'.
 .ix 'options' 'ol'
 Loop optimizations are performed.
@@ -5199,7 +5199,7 @@ The macro
 will be predefined if "ol" is selected.
 .do end
 .*
-.if &e'&$SWolpls eq 1 .do begin
+.if &e'&$SWolpls ne 0 .do begin
 :OPT refid='SWolpls' name='ol+'.
 .ix 'options' 'ol+'
 Loop optimizations are performed including loop unrolling.
@@ -5211,7 +5211,7 @@ The macro
 will be predefined if "ol+" is selected.
 .do end
 .*
-.if &e'&$SWom eq 1 .do begin
+.if &e'&$SWom ne 0 .do begin
 :OPT refid='SWom' name='om'.
 Generate in-line 80x87 code for math functions like sin, cos, tan, etc.
 If this option is selected, it is the programmer's responsibility to
@@ -5242,7 +5242,7 @@ The macro
 will be predefined if "om" is selected.
 .do end
 .*
-.if &e'&$SWon eq 1 .do begin
+.if &e'&$SWon ne 0 .do begin
 :OPT refid='SWon' name='on'.
 .ix 'options' 'on'
 This option allows the compiler to replace floating-point divisions
@@ -5255,7 +5255,7 @@ The macro
 will be predefined if "on" is selected.
 .do end
 .*
-.if &e'&$SWoo eq 1 .do begin
+.if &e'&$SWoo ne 0 .do begin
 :OPT refid='SWoo' name='oo'.
 .ix 'options' 'oo'
 By default, the compiler will abort compilation if it runs low on memory.
@@ -5267,7 +5267,7 @@ The macro
 will be predefined if "oo" is selected.
 .do end
 .*
-.if &e'&$SWop eq 1 .do begin
+.if &e'&$SWop ne 0 .do begin
 :OPT refid='SWop' name='op'.
 .ix 'options' 'op'
 This option causes the compiler to store intermediate floating-point
@@ -5280,7 +5280,7 @@ The macro
 will be predefined if "op" is selected.
 .do end
 .*
-.if &e'&$SWor eq 1 .do begin
+.if &e'&$SWor ne 0 .do begin
 :OPT refid='SWor' name='or'.
 .ix 'options' 'or'
 This option enables reordering of instructions (instruction scheduling)
@@ -5298,7 +5298,7 @@ The macro
 will be predefined if "or" is selected.
 .do end
 .*
-.if &e'&$SWos eq 1 .do begin
+.if &e'&$SWos ne 0 .do begin
 :OPT refid='SWos' name='os'.
 .ix 'options' 'os'
 Space is favoured over time when generating code (smaller code
@@ -5311,7 +5311,7 @@ The macro
 will be predefined if "os" is selected.
 .do end
 .*
-.if &e'&$SWot eq 1 .do begin
+.if &e'&$SWot ne 0 .do begin
 :OPT refid='SWot' name='ot'.
 .ix 'options' 'ot'
 Time is favoured over space when generating code (faster
@@ -5324,7 +5324,7 @@ The macro
 will be predefined if "ot" is selected.
 .do end
 .*
-.if &e'&$SWou eq 1 .do begin
+.if &e'&$SWou ne 0 .do begin
 :OPT refid='SWou' name='ou'.
 .ix 'options' 'ou'
 This option forces the compiler to make sure that all function labels
@@ -5338,7 +5338,7 @@ The macro
 will be predefined if "ou" is selected.
 .do end
 .*
-.if &e'&$SWox eq 1 .do begin
+.if &e'&$SWox ne 0 .do begin
 :OPT refid='SWox' name='ox'.
 .ix 'options' 'ox'
 .ix 'fastest code'
@@ -5353,7 +5353,7 @@ The "obiler" and "s" (no stack overflow checking) options are selected.
 .do end
 .do end
 .*
-.if &e'&$SWoz eq 1 .do begin
+.if &e'&$SWoz ne 0 .do begin
 :OPT refid='SWoz' name='oz'.
 .ix 'options' 'oz'
 This option prevents the compiler from omitting NULL pointer checks on
@@ -5442,7 +5442,7 @@ created object should be destructed by the exception mechanism.
 .*
 :OPTLIST.
 .*
-.if &e'&$SWxd eq 1 .do begin
+.if &e'&$SWxd ne 0 .do begin
 :OPT refid='SWxd' name='xd'.
 .ix 'options' 'xd'
 This option disables exception handling.
@@ -5458,13 +5458,13 @@ destructors to destruct base classes and class members.
 .endbull
 .do end
 .*
-.if &e'&$SWxdt eq 1 .do begin
+.if &e'&$SWxdt ne 0 .do begin
 :OPT refid='SWxdt' name='xdt'.
 .ix 'options' 'xdt'
 This option is the same as "xd" :optref refid='SWxd'..
 .do end
 .*
-.if &e'&$SWxds eq 1 .do begin
+.if &e'&$SWxds ne 0 .do begin
 :OPT refid='SWxds' name='xds'.
 .ix 'options' 'xds'
 This option disables exception handling.
@@ -5483,7 +5483,7 @@ the linker.
 .endbull
 .do end
 .*
-.if &e'&$SWxs eq 1 .do begin
+.if &e'&$SWxs ne 0 .do begin
 :OPT refid='SWxs' name='xs'.
 .ix 'options' 'xs'
 This option enables exception handling using a balanced scheme.
@@ -5497,7 +5497,7 @@ members.
 .endbull
 .do end
 .*
-.if &e'&$SWxst eq 1 .do begin
+.if &e'&$SWxst ne 0 .do begin
 :OPT refid='SWxst' name='xst'.
 .ix 'options' 'xst'
 This option enables exception handling using a time-saving scheme.
@@ -5513,7 +5513,7 @@ This scheme will execute faster, but will use more space in general.
 .endbull
 .do end
 .*
-.if &e'&$SWxss eq 1 .do begin
+.if &e'&$SWxss ne 0 .do begin
 :OPT refid='SWxss' name='xss'.
 .ix 'options' 'xss'
 This option enables exception handling using a space-saving scheme.
@@ -5539,7 +5539,7 @@ sets used in the source code.
 .*
 :OPTLIST.
 .*
-.if &e'&$SWzk eq 1 .do begin
+.if &e'&$SWzk ne 0 .do begin
 :OPT refid='SWzk' name='zk'.{0,1,2,l}
 .ix 'options' 'zk'
 This option causes the compiler to recognize double-byte characters
@@ -5573,7 +5573,7 @@ The macro
 will be predefined if any "zk" option is selected.
 .do end
 .*
-.if &e'&$SWzk0u eq 1 .do begin
+.if &e'&$SWzk0u ne 0 .do begin
 :OPT refid='SWzk0u' name='zk0u'.
 .ix 'options' 'zk0u'
 This option causes the compiler to process strings for Japanese
@@ -5589,7 +5589,7 @@ This will prevent the compiler from misinterpreting the second byte as
 a "\" or quote (") character.
 .do end
 .*
-.if &e'&$SWzku eq 1 .do begin
+.if &e'&$SWzku ne 0 .do begin
 :OPT refid='SWzku' name='zku'.=<codepage>
 .ix 'options' 'zku'
 Characters in wide characters (L'c') and wide strings (L"string") are
@@ -5623,7 +5623,7 @@ The following table lists the supported code pages.
 .*
 :eOPTLIST.
 .*
-.if &e'&$SWvc eq 1 .do begin
+.if &e'&$SWvc ne 0 .do begin
 .*
 .section Compatibility with Microsoft Visual C++
 .*
@@ -5660,7 +5660,7 @@ This group of options deals with compatibility with older versions of
 .*
 :OPTLIST.
 .*
-.if &e'&$SWr eq 1 .do begin
+.if &e'&$SWr ne 0 .do begin
 :OPT refid='SWr' name='r'.&optdag.
 .ix 'save/restore segment registers'
 .ix 'options' 'r'
@@ -5683,7 +5683,7 @@ The macro
 will be predefined if "r" is selected.
 .do end
 .*
-.if &e'&$SWfpr eq 1 .do begin
+.if &e'&$SWfpr ne 0 .do begin
 :OPT refid='SWfpr' name='fpr'.
 .ix 'options' 'fpr'
 Use this option if you want to generate floating-point instructions
@@ -5692,7 +5692,7 @@ For more information on floating-point conventions see the sections
 entitled :HDREF refid='prg87'. and :HDREF refid='prg387'..
 .do end
 .*
-.if &e'&$SWzz eq 1 .do begin
+.if &e'&$SWzz ne 0 .do begin
 :OPT refid='SWzz' name='zz'.
 .ix 'options' 'zz'
 Use this option if you want to generate __stdcall function names that

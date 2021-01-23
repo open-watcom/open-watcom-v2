@@ -489,7 +489,7 @@
 ~b~b~b~b~b~b
 .br
 .*
-.if &e'&wcldesc. eq 1 .do begin
+.if &e'&wcldesc. ne 0 .do begin
 :CMT. .note mt
 .do end
 .*
