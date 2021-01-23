@@ -2485,51 +2485,6 @@ objs_trap = &
 #../doc/trap/extra.gml &
 #../doc/trap/dbg.gml &
 
-# wfg sub-directory
-incs_wfg = ../doc/wfg
-objs_wfg = &
-../doc/wfg/ed1.ps &
-../doc/wfg/fcpopts.gml &
-../doc/wfg/fdosedit.gml &
-../doc/wfg/fdosexe.gml &
-../doc/wfg/fdosguid.gml &
-../doc/wfg/fdosintr.gml &
-../doc/wfg/fdoslink.gml &
-../doc/wfg/ferror.gml &
-../doc/wfg/fpstyle.gml &
-../doc/wfg/fw4pref.gml &
-../doc/wfg/fw4story.gml &
-../doc/wfg/fw5diff.gml &
-../doc/wfg/pcguide.scr &
-../doc/wfg/root.for &
-../doc/wfg/syntax.for &
-../doc/wfg/ugprg0.ps &
-../doc/wfg/ugprg1.gml &
-../doc/wfg/ugprg1.ps &
-../doc/wfg/ugprg10.ps &
-../doc/wfg/ugprg11.ps &
-../doc/wfg/ugprg12.ps &
-../doc/wfg/ugprg13.ps &
-../doc/wfg/ugprg14.ps &
-../doc/wfg/ugprg15.ps &
-../doc/wfg/ugprg2.gml &
-../doc/wfg/ugprg2.ps &
-../doc/wfg/ugprg3.gml &
-../doc/wfg/ugprg3.ps &
-../doc/wfg/ugprg4.ps &
-../doc/wfg/ugprg5.gml &
-../doc/wfg/ugprg5.ps &
-../doc/wfg/ugprg6.gml &
-../doc/wfg/ugprg6.ps &
-../doc/wfg/ugprg7.gml &
-../doc/wfg/ugprg7.ps &
-../doc/wfg/ugprg8.gml &
-../doc/wfg/ugprg8.ps &
-../doc/wfg/ugprg9.ps &
-../doc/wfg/wfdebug.gml &
-../doc/wfg/wfmacs.gml &
-../doc/wfg/wfmacs32.gml
-
 # win386 sub-directory
 incs_win386 = ../doc/win386
 objs_win386 = &
