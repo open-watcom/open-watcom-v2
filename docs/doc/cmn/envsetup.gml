@@ -29,19 +29,15 @@ Applications for various target systems
 .do end
 .if '&machine' eq '80386' .do begin
 (including extended DOS,
-.if '&cmpclass' ne 'load-n-go' .do begin
 Microsoft Windows 3.x,
 Microsoft Windows NT,
-.do end
 and OS/2 2.0)
 .do end
 can be created using &cmpname and related tools on host systems
 including DOS,
-.if '&cmpclass' ne 'load-n-go' .do begin
 Microsoft Windows 3.x,
 .if '&machine' eq '80386' .do begin
 Microsoft Windows NT,
-.do end
 .do end
 and OS/2 2.0.
 .do end

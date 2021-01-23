@@ -4,7 +4,6 @@
 .*
 .np
 .ix 'pragma'
-.if '&cmpclass' ne 'load-n-go' .do begin
 A pragma is  a compiler directive that provides the following
 capabilities.
 .begbull
@@ -33,7 +32,6 @@ including DOS and BIOS function calls,
 can be generated in the object code.
 .endbull
 .np
-.do end
 Pragmas are specified in the source file using the
 .kw pragma
 directive.

@@ -27,8 +27,6 @@ Short forms are indicated by upper case letters.
 .notehd1 Option:
 .notehd2 Description:
 .*
-.if '&cmpclass' ne 'load-n-go' .do begin
-.*
 .note 0
 .ixm 'options' '0'
 (16-bit only)
@@ -108,33 +106,6 @@ requirements of your application.
 You can increase your stack size by using the "STACK" option when you
 link your application.
 .*
-.do end
-.*
-.if '&cmpclass' eq 'load-n-go' .do begin
-.*
-.note [NO]ARraycheck
-.ixm 'ARRAYCHECK option'
-.ixm 'options' 'ARRAYCHECK'
-:cmt. .ixm 'NOARRAYCHECK option'
-:cmt. .ixm 'options' 'NOARRAYCHECK'
-This option is used to control type checking on array arguments.
-It may be placed anywhere in the source input stream or it may be
-specified in the options list of the command line.
-Specifying the "arraycheck" option turns on the generation of type
-checking on array arguments while "noarraycheck" turns it off.
-The default is "arraycheck".
-.np
-Using "noarraycheck" allows the programmer, for example, to pass an array
-of type INTEGER to an array of type REAL.
-Although this is not FORTRAN 77 standard, it allows the sharing of
-array storage for data of different types.
-You can selectively choose which argument lists are
-.us not
-to be checked by enclosing the calling statement with *$NOARRAYCHECK
-and *$ARRAYCHECK.
-.*
-.do end
-.*
 .note BD
 .ixm 'BD option'
 .ixm 'options' 'BD'
@@ -187,44 +158,6 @@ Note that a blank carriage control character will automatically be
 generated for list-directed output and will be interpreted as a
 single-line spacing command.
 .*
-.if '&cmpclass' eq 'load-n-go' .do begin
-.*
-.note [NO]CHeck
-.ixm 'CHECK option'
-.ixm 'options' 'CHECK'
-:cmt. .ixm 'NOCHECK option'
-:cmt. .ixm 'options' 'NOCHECK'
-.ix 'undefined variable'
-.ix 'variable' 'undefined'
-This option is used to control undefined variable checking by the
-compiler.
-It may be placed anywhere in the source input stream or it may be
-specified in the options list of the command line.
-Specifying the "check" option turns on the generation of undefined
-variable checking code, while "nocheck" turns it off.
-The default is "check".
-.np
-.ix 'hexadecimal 80'
-The hexadecimal (base 16) value used for undefined variable checking
-is 80.
-This pattern is stored in each byte that represents the variable's
-value before the start of program execution.
-If a case arises where the legitimate value of a variable happens
-to coincide with the undefined pattern, you may wish to place
-*$NOCHECK and *$CHECK option lines around the FORTRAN statement
-in question.
-.np
-At execution-time, formatted output of undefined variables
-results in "?" characters being written to the output file.
-To disable this feature, place *$NOCHECK and *$CHECK option lines
-around the FORTRAN
-.kw PRINT
-or
-.kw WRITE
-statement in question.
-.*
-.do end
-.*
 .note CHInese
 .ixm 'CHINESE option'
 .ixm 'options' 'CHINESE'
@@ -237,13 +170,6 @@ This option enables the use of Chinese variable names.
 The compiler's run-time system will ensure that character strings are
 not split in the middle of a double-byte character when output spans
 record boundaries (as can happen in list-directed output).
-.if '&cmpclass' eq 'load-n-go' .do begin
-The compiler's run-time undefined variable checking routines will ignore
-the second byte of a double-byte character (see the description of the
-"check" option).
-.do end
-.*
-.if '&cmpclass' ne 'load-n-go' .do begin
 .*
 .note [NO]COde
 .ixm 'CODE option'
@@ -255,28 +181,6 @@ numeric constants in code segment.
 Data generated for FORMAT statements will also be placed in the code
 segment.
 The default option is "nocode".
-.*
-.do end
-.*
-.if '&cmpclass' eq 'load-n-go' .do begin
-.*
-.note COdesize=n
-.ixm 'CODESIZE option'
-.ixm 'options' 'CODESIZE'
-This option is used to control the maximum amount of memory that is to
-be used for the object code of the source program.
-.us n
-must be an unsigned integer constant optionally followed by the letter
-"k", in which case
-.us n
-is multiplied by 1024.
-The amount of unused object memory is shown in the listing file
-statistics as the "Object bytes free" statistic.
-The default is 512k.
-.*
-.do end
-.*
-.if '&cmpclass' ne 'load-n-go' .do begin
 .*
 .note D1
 .ixm 'D1 option'
@@ -302,10 +206,6 @@ This option provides additional information to &dbgname (at the
 expense of larger object files and executable files).
 However, it will make the debugging chore somewhat easier.
 .*
-.do end
-.*
-.if '&cmpclass' ne 'load-n-go' .do begin
-.*
 :CMT. .note [NO]DB
 :CMT. .ixm 'DB option'
 :CMT. .ixm 'options' 'DB'
@@ -317,27 +217,17 @@ However, it will make the debugging chore somewhat easier.
 :CMT. constructed from the source file name and the extension "MBR".
 :CMT. The default option is "nodb".
 .*
-.do end
-.*
 .note [NO]DEBug
 .ixm 'DEBUG option'
 .ixm 'options' 'DEBUG'
 :cmt. .ixm 'NODEBUG option'
 :cmt. .ixm 'options' 'NODEBUG'
-.if '&cmpclass' eq 'load-n-go' .do begin
-This option is used to invoke the interactive debugger at execution time.
-For more information on the interactive debugger, see the chapter
-entitled "The &product Debugger".
-The default is "nodebug".
-.do end
-.el .do begin
 The "debug" option causes the generation of run-time checking code.
 .ix 'debugging' 'bounds check'
 .ix 'debugging' 'traceback'
 This includes subscript and substring bounds checking as well as code
 that allows a run-time traceback to be issued when an error occurs.
 The default option is "nodebug".
-.do end
 .*
 .note DEFine=<macro>
 .ixm 'DEFINE=<macro> option'
@@ -386,16 +276,8 @@ conventions are to be used for code generation.
 The macro
 .mono __fpi__
 is a special macro that is defined
-.if '&cmpclass' eq 'load-n-go' .do begin
-when using &c2cmdup (requires a math coprocessor) as opposed to &ccmdup
-(no math coprocessor required).
-.do end
-.el .do begin
 by the compiler when one of the following floating-point options is
 specified: "fpi" or "fpi87".
-.do end
-.*
-.if '&cmpclass' ne 'load-n-go' .do begin
 .*
 .note [NO]DEPendency
 .ixm 'DEPENDENCY option'
@@ -409,10 +291,6 @@ This option is used by the &wide. to determine if an object file is
 up-to-date with respect to the source files used to build it.
 You can specify the "nodependency" option if you do not want file
 dependencies to be included in the object file.
-.*
-.do end
-.*
-.if '&cmpclass' ne 'load-n-go' .do begin
 .*
 .note [NO]DEScriptor
 .ixm 'DESCRIPTOR option'
@@ -431,8 +309,6 @@ following the normal argument list.
 For character functions, the pointer to the data and the length of the
 character function will be passed as the first two arguments.
 .*
-.do end
-.*
 .note DIsk
 .ixm 'DISK option'
 .ixm 'options' 'DISK'
@@ -443,8 +319,6 @@ file extension will be :FNAME.&lst:eFNAME..
 By default, listing files are written to disk.
 The "disk" option will override any previously specified "type" or
 "print" option.
-.*
-.if '&cmpclass' ne 'load-n-go' .do begin
 .*
 .note DT=<size>
 .ixm 'DT=<size> option'
@@ -466,39 +340,6 @@ data segment.
 The "data threshold" only applies to the large and huge memory models
 where there can be more than one data segment.
 The default data threshold value is 256.
-.*
-.do end
-.*
-.if '&cmpclass' eq 'load-n-go' .do begin
-.*
-.note [NO]EDit
-.ixm 'EDIT option'
-.ixm 'options' 'EDIT'
-:cmt. .ixm 'NOEDIT option'
-:cmt. .ixm 'options' 'NOEDIT'
-.if '&target' eq 'NEC' .do begin
-This option is not supported in the Japanese PC environment.
-.do end
-.el .do begin
-This option is used to control whether the editor interface to &product
-is to be used or not.
-Specifying the "edit" option causes the editor user interface to be
-used.
-The default is "noedit" and causes the batch user interface to be used.
-.np
-The editor is supplied as the program :FNAME.weditf&exe:eFNAME..
-When the "edit" option is specified, &product will load and run
-the editor provided that it is located in the current directory
-or a directory listed in the
-.ev PATH
-environment string.
-.np
-This option can only be specified when invoking &product from
-the command line and not from the batch prompt (i.e. the
-"WATFOR>" prompt).
-.do end
-.*
-.do end
 .*
 .note [NO]ERrorfile
 .ixm 'ERRORFILE option'
@@ -549,11 +390,7 @@ following form.
 .pc
 The "extensions" option enables the printing of extension messages, while
 "noextensions" disables the printing of these messages.
-By default, extension messages are
-.if '&cmpclass' ne 'load-n-go' .do begin
-not
-.do end
-printed.
+By default, extension messages are not printed.
 .*
 .note [NO]EZ
 .ixm 'EZ option'
@@ -564,8 +401,6 @@ printed.
 &cmpname will generate an object file in Phar Lap Easy OMF-386 (object
 module format) instead of the default Microsoft OMF.
 The default option is "noez".
-.*
-.if '&cmpclass' ne 'load-n-go' .do begin
 .*
 .note FO=<obj_default>
 .ixm 'FO=<obj_default> option'
@@ -588,8 +423,6 @@ A default extension must be preceded by a period (".").
 C>&ccmd32 report /fo=d:\programs\obj\.dbo
 .exam end
 .*
-.do end
-.*
 .note [NO]FORmat
 .ixm 'FORMAT option'
 .ixm 'options' 'FORMAT'
@@ -606,43 +439,6 @@ Normally, this generates an error.
 The "format" option is particularly useful for applications that use
 integer arrays to store integer and floating-point data.
 The default option is "noformat".
-.*
-.if '&cmpclass' eq 'load-n-go' .do begin
-.*
-.note [NO]FOVer
-.ixm 'FOVER option'
-.ixm 'options' 'FOVER'
-:cmt. .ixm 'NOFOVER option'
-:cmt. .ixm 'options' 'NOFOVER'
-The "fover" option causes the compiler to issue an error when a
-floating-point overflow occurs during the execution of the program.
-Generally, floating-point overflows indicate an error in the program
-that should be corrected.
-For this reason, the default for this option is "fover" (issue an
-error when a floating-point overflow occurs).
-If you wish to ignore floating-point overflows, specify the "nofover"
-option.
-.*
-.note [NO]FUNder
-.ixm 'FUNDER option'
-.ixm 'options' 'FUNDER'
-:cmt. .ixm 'NOFUNDER option'
-:cmt. .ixm 'options' 'NOFUNDER'
-.ix 'debugging' 'traceback'
-The "funder" option causes the compiler to issue an error when a
-floating-point underflow occurs during the execution of the program.
-Generally, floating-point underflows do not indicate an error in the
-program.
-Typically, underflows occur when an iterative calculation converges to
-zero.
-For this reason, the default for this option is "nofunder" (ignore
-floating-point underflows).
-If you wish the compiler to issue an error when a floating-point
-underflow occurs, specify the "funder" option.
-.*
-.do end
-.*
-.if '&cmpclass' ne 'load-n-go' .do begin
 .*
 .note FPC
 .ixm 'FPC option'
@@ -883,8 +679,6 @@ See the
 .book &lnkname User's Guide
 for more information.
 .*
-.do end
-.*
 .note [NO]INCList
 .ixm 'INCLIST option'
 .ixm 'options' 'INCLIST'
@@ -905,24 +699,6 @@ Each path is separated from the previous by a semicolon (";").
 These directories are searched in the order listed before those in the
 .ev FINCLUDE
 environment variable.
-.*
-.if '&cmpclass' eq 'load-n-go' .do begin
-.*
-.note [NO]IOVer
-.ixm 'IOVER option'
-.ixm 'options' 'IOVER'
-:cmt. .ixm 'NOIOVER option'
-:cmt. .ixm 'options' 'NOIOVER'
-The "iover" option causes the compiler to issue an error when an
-integer overflow occurs during the execution of the program.
-Integer overflows are generated by many random number generators.
-These integer overflows do not indicate an error in the program.
-For this reason, the default for this option is "noiover" (ignore
-integer overflows).
-If you wish the compiler to issue an error when an integer overflow
-occurs, specify the "iover" option.
-.*
-.do end
 .*
 .note [NO]IPromote
 .ixm 'IPROMOTE option'
@@ -959,11 +735,6 @@ This option enables the use of Japanese variable names.
 The compiler's run-time system will ensure that character strings are
 not split in the middle of a double-byte character when output spans
 record boundaries (as can happen in list-directed output).
-.if '&cmpclass' eq 'load-n-go' .do begin
-The compiler's run-time undefined variable checking routines will
-ignore the second byte of a double-byte character (see the description
-of the "check" option).
-.do end
 .*
 .note KORean
 .ixm 'KOREAN option'
@@ -977,13 +748,6 @@ This option enables the use of Korean variable names.
 The compiler's run-time system will ensure that character strings are
 not split in the middle of a double-byte character when output spans
 record boundaries (as can happen in list-directed output).
-.if '&cmpclass' eq 'load-n-go' .do begin
-The compiler's run-time undefined variable checking routines will
-ignore the second byte of a double-byte character (see the description
-of the "check" option).
-.do end
-.*
-.if '&cmpclass' ne 'load-n-go' .do begin
 .*
 .note [NO]LFwithff
 .ixm 'LFWITHFF option'
@@ -1006,10 +770,6 @@ overwritten text when form-feed characters are not handled by the
 output device.
 The default option is "nolfwithff".
 .*
-.do end
-.*
-.if '&cmpclass' ne 'load-n-go' .do begin
-.*
 .note [NO]LIBinfo
 .ixm 'LIBINFO option'
 .ixm 'options' 'LIBINFO'
@@ -1021,34 +781,6 @@ The "libinfo" option enables the inclusion of default library
 information, while "nolibinfo" disables the inclusion of this
 information.
 The default option is "libinfo".
-.*
-.do end
-.*
-.if '&cmpclass' eq 'load-n-go' .do begin
-.*
-.note [NO]LInk[=<lnk_file>]
-.ixm 'LINK option'
-.ixm 'options' 'LINK'
-:cmt. .ixm 'NOLINK option'
-:cmt. .ixm 'options' 'NOLINK'
-This option controls the creation of an executable file.
-When the "link" option is specified, the program is not placed into
-execution but a file with extension "&exe" is created instead.
-The data following the *$DATA compiler directive is ignored but the
-source input stream is still terminated at the *$DATA line.
-When the "nolink" option is specified, no executable file is created
-and the program in memory is executed (provided there were no source
-errors).
-The default is "nolink".
-.np
-An optional link file can be specified.
-This file contains additional object files and libraries that are to
-be used to link your application.
-For more information on the use of this option and the format of the
-link file, see the chapter entitled "Linking with External
-Subprograms".
-.*
-.do end
 .*
 .note [NO]LISt
 .ixm 'LIST option'
@@ -1074,28 +806,6 @@ be listed in the source listing file while
 *$NOLIST disables the listing of the source lines that follow.
 This option cannot appear on the same source line with other options.
 .*
-.if '&cmpclass' eq 'load-n-go' .do begin
-.*
-.note [NO]LOgio
-.ixm 'LOGIO option'
-.ixm 'options' 'LOGIO'
-:cmt. .ixm 'NOLOGIO option'
-:cmt. .ixm 'options' 'NOLOGIO'
-This option is used to enable or disable logging of all unit 5 and 6
-input or output during execution time.
-The log will appear in the listing file.
-The format of logged input or output is described under the "LOGIO"
-command in the chapter entitled "The &product Debugger".
-This option may not be used to selectively log unit 5 and 6 input or
-output, hence it should only be specified once.
-.np
-This option is useful for obtaining a record of an interactive,
-screen-oriented application.
-In an educational environment, the listing file may be turned in
-by the student for examination by the teacher.
-.*
-.do end
-.*
 .note [NO]MAngle
 .ixm 'MANGLE option'
 .ixm 'options' 'MANGLE'
@@ -1119,8 +829,6 @@ and the class is named "_COMMON_BLK_DATA".
 .code begin
 _COMMON_BLK     SEGMENT PARA COMMON USE32 '_COMMON_BLK_DATA'
 .code end
-.*
-.if '&cmpclass' ne 'load-n-go' .do begin
 .*
 .note MC
 .ixm 'MC option'
@@ -1171,29 +879,6 @@ entitled :HDREF refid='mdl86'. and :HDREF refid='mdl386'..
 The "small" memory model (small code, small data) is selected.
 The various models supported by &cmpname are described in the chapters
 entitled :HDREF refid='mdl86'. and :HDREF refid='mdl386'..
-.*
-.do end
-.*
-.if '&cmpclass' eq 'load-n-go' .do begin
-.*
-.note [NO]OBject
-.ixm 'OBJECT option'
-.ixm 'options' 'OBJECT'
-:cmt. .ixm 'NOOBJECT option'
-:cmt. .ixm 'options' 'NOOBJECT'
-This option is used to control the creation of an object file by the
-compiler.
-When the "object" option is specified, the program is not placed into
-execution and a file of type :FNAME.&obj:eFNAME. is created instead.
-When the "noobject" option is specified, no object file is created and
-the program in memory is executed (provided there were no source
-errors).
-The data following the DATA directive is ignored but the source input
-stream is still terminated.
-The default is "noobject".
-.*
-.do end
-.el .do begin
 .*
 .note OB
 .ixm 'OB option'
@@ -1453,34 +1138,6 @@ Specifying the "ox" option is equivalent to specifying the
 "ob" (32-bit only), "obp", "odo", "oi", "ok", "ol", "om", "or", and
 "ot" options.
 .*
-.do end
-.*
-.if '&cmpclass' eq 'load-n-go' .do begin
-.*
-.note Pages=<n>
-.ixm 'PAGES=<n> option'
-.ixm 'options' 'PAGES=<n>'
-This option is used to control the maximum number of pages that will
-be produced in the listing file once the program enters the execution
-phase.
-.us n
-must be an unsigned integer constant.
-If
-.us n
-is 0, no limit on the number of pages is imposed.
-This is the default.
-.*
-.note PAGESIze=<n>
-.ixm 'PAGESIZE=<n> option'
-.ixm 'options' 'PAGESIZE=<n>'
-This option is used to specify the number of lines per page that your
-printer can produce.
-In this way, a listing file can be printed with the appropriate form
-feeds.
-The default page size is 66.
-.*
-.do end
-.*
 .note PRint
 .ixm 'PRINT option'
 .ixm 'options' 'PRINT'
@@ -1542,24 +1199,6 @@ All messages will be extracted from the resource area of the
 executable file when they are required; no messages will be linked
 with the application.
 The default option is "noresource".
-.*
-.if '&cmpclass' eq 'load-n-go' .do begin
-.*
-.note [NO]RUN
-.ixm 'RUN option'
-.ixm 'options' 'RUN'
-:cmt. .ixm 'NORUN option'
-:cmt. .ixm 'options' 'NORUN'
-This option is used to control whether the executable file generated by
-specifying the "link" option is executed automatically by the compiler.
-If the "run" option is specified, the executable file will be executed.
-If the "norun" option is specified, the executable file will only be
-generated and not executed.
-The default option is "norun".
-.*
-.do end
-.*
-.if '&cmpclass' ne 'load-n-go' .do begin
 .*
 .note [NO]SAve
 .ixm 'SAVE option'
@@ -1641,8 +1280,6 @@ The "stack growth" run-time routine is called
 .np
 The default option is "nosg".
 .*
-.do end
-.*
 .note [NO]SHort
 .ixm 'SHORT option'
 .ixm 'options' 'SHORT'
@@ -1653,8 +1290,6 @@ INTEGER size to 2 bytes and the default LOGICAL size to 1 bytes.
 As required by the FORTRAN 77 language standard, the default INTEGER
 size is 4 bytes and the default LOGICAL size is 4 bytes.
 The default option is "noshort".
-.*
-.if '&cmpclass' ne 'load-n-go' .do begin
 .*
 .note [NO]SR
 .ixm 'SR option'
@@ -1698,27 +1333,6 @@ every subprogram that will check for the "stack overflow" condition.
 By default, stack overflow checking is omitted from the generated code
 ("nostack").
 .*
-.do end
-.*
-.if '&cmpclass' eq 'load-n-go' .do begin
-.*
-.note Statements=<n>
-.ixm 'STATEMENTS=<n> option'
-.ixm 'options' 'STATEMENTS=<n>'
-This option is used to control the maximum number of statements that
-will be executed once the program enters the execution phase.
-.us n
-must be an unsigned integer constant.
-If
-.us n
-is 0, no limit on the number statements that will be executed is
-imposed.
-This is the default.
-.*
-.do end
-.*
-.if '&cmpclass' ne 'load-n-go' .do begin
-.*
 .note [NO]SYntax
 .ixm 'SYNTAX option'
 .ixm 'options' 'SYNTAX'
@@ -1730,8 +1344,6 @@ Syntax checking, type checking, and so on are performed as usual.
 By default, code is generated if there are no source code errors
 (i.e., "nosyntax" is the default).
 .*
-.do end
-.*
 .note [NO]TErminal
 .ixm 'TERMINAL option'
 .ixm 'options' 'TERMINAL'
@@ -1740,27 +1352,6 @@ By default, code is generated if there are no source code errors
 The "noterminal" option may be used to suppress the display of
 diagnostic messages to the screen.
 By default, diagnostic messages are displayed.
-.*
-.if '&cmpclass' eq 'load-n-go' .do begin
-.*
-.note Time=<t>
-.ixm 'TIME=<t> option'
-.ixm 'options' 'TIME=<t>'
-This option is used to control the maximum amount of time, in seconds,
-that is allotted to a program once it begins executing.
-.us t
-must be an unsigned integer constant.
-If
-.us t
-is 0, no limit on the execution time is imposed.
-This is the default.
-.np
-Note that execution time is the elapsed time using the time-of-day
-clock and includes time for input/output.
-.*
-.do end
-.*
-.if '&cmpclass' ne 'load-n-go' .do begin
 .*
 .note [NO]TRace
 .ixm 'TRACE option'
@@ -1771,8 +1362,6 @@ The "trace" option causes the generation of code that allows a
 traceback to be issued when an error occurs during the execution of
 your program.
 The default option is "notrace".
-.*
-.do end
 .*
 .note TYpe
 .ixm 'TYPE option'
@@ -1823,8 +1412,6 @@ not adhere to the branching restrictions imposed by the FORTRAN 77
 standard (i.e. mainframe applications that are being ported to the PC
 environment), can be compiled by &product..
 .*
-.if '&cmpclass' ne 'load-n-go' .do begin
-.*
 .note [NO]WIndows
 .ixm 'WINDOWS option'
 .ixm 'options' 'WINDOWS'
@@ -1835,10 +1422,6 @@ The "windows" option causes the compiler to generate the
 prologue/epilogue code sequences necessary for use in Microsoft
 Windows applications.
 The default option is "nowindows".
-.*
-.do end
-.*
-.if '&cmpclass' ne 'load-n-go' .do begin
 .*
 .note [NO]XFloat
 .ixm 'XFLOAT option'
@@ -1853,8 +1436,6 @@ Note that the "xfloat" option has implications on the alignment of
 variables in common blocks.
 The default option is "noxfloat".
 .*
-.do end
-.*
 .note [NO]Xline
 .ixm 'XLINE option'
 .ixm 'options' 'XLINE'
@@ -1863,26 +1444,6 @@ The default option is "noxfloat".
 The "xline" option informs the &cmpname compiler to extend the last
 column of the statement portion of a line to column 132.
 The default is 72.
-.*
-.if '&cmpclass' eq 'load-n-go' .do begin
-.*
-.note [NO]XType
-.ixm 'XTYPE option'
-.ixm 'options' 'XTYPE'
-:cmt. .ixm 'NOXTYPE option'
-:cmt. .ixm 'options' 'NOXTYPE'
-The "xtype" option is used to indicate that all output to unit 6
-should be written to the terminal instead of the listing file.
-If "noxtype" is specified, all output to unit 6 will appear following
-the source program listing.
-The connection of unit 6 to the terminal or listing file using the
-"xtype" option may be overridden by a preconnection specification or a
-FORTRAN
-.kw OPEN
-statement.
-The default is "xtype".
-.*
-.do end
 .*
 .endnote
 .*

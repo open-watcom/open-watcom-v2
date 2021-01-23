@@ -414,8 +414,6 @@ included in the
 environment variable so that the compiler can locate the include file.
 .endnote
 .*
-.if '&cmpclass' ne 'load-n-go' .do begin
-.*
 .section INTEGER Function FSIGNAL
 .*
 .np
@@ -510,8 +508,6 @@ In this case, we want to retrieve the value of
 .id break_flag
 from memory each time the loop is iterated.
 .endnote
-.*
-.do end
 .*
 .section INTEGER Function FSPAWN
 .*
@@ -631,8 +627,6 @@ included in the
 environment variable so that the compiler can locate the include file.
 .endnote
 .*
-.if '&cmpclass' ne 'load-n-go' .do begin
-.*
 .section Subroutine FTRACEBACK
 .*
 .np
@@ -684,8 +678,6 @@ included in the
 .ev &incvarup
 environment variable so that the compiler can locate the include file.
 .endnote
-.*
-.do end
 .*
 .section Subroutine GETDAT
 .*
@@ -871,8 +863,6 @@ included in the
 environment variable so that the compiler can locate the include file.
 .endnote
 .*
-.if '&cmpclass' ne 'load-n-go' .do begin
-.*
 .section Math Error Functions
 .*
 .np
@@ -985,8 +975,6 @@ The include file :FNAME.mathcode.fi:eFNAME. is included by the file
 It defines the information that is contained in the error information
 argument that is passed to all math error functions.
 .*
-.do end
-.*
 .section INTEGER Function SEEKUNIT
 .*
 .np
@@ -1049,8 +1037,6 @@ environment variable so that the compiler can locate the include file.
 .note
 A value of -1 is returned if the requested positioning cannot be done.
 .endnote
-.*
-.if '&cmpclass' ne 'load-n-go' .do begin
 .*
 .section INTEGER Function SETJMP/Subroutine LONGJMP
 .*
@@ -1139,8 +1125,6 @@ included in the
 environment variable so that the compiler can locate these include
 files.
 .endnote
-.*
-.do end
 .*
 .section INTEGER Function SETSYSHANDLE
 .*

@@ -221,12 +221,7 @@ pragmas that describe the way structures are stored in memory
 .do end
 .bull
 pragmas that provide auxiliary information used for
-.if '&cmpclass' eq 'load-n-go' .do begin
-argument passing.
-.do end
-.el .do begin
 code generation
-.do end
 .endbull
 .*
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
@@ -351,7 +346,6 @@ HelXY world
 .*
 .section *refid=&praglib Using Pragmas to Specify Default Libraries
 .*
-.if '&cmpclass' ne 'load-n-go' .do begin
 .np
 .ix 'pragmas' 'specifying default libraries'
 .ix 'default libraries' 'using pragmas'
@@ -390,21 +384,9 @@ calls floating-point model, the library "flib" will be
 .do end
 .do end
 placed in the object file.
-.do end
-.if '&cmpclass' eq 'load-n-go' .do begin
-.np
-The library pragma can be used to specify object libraries that are to
-be searched by &product when resolving references to undefined
-symbols.
-.ix '&ccmdup options' 'link'
-These libraries will only be searched when the "link" compiler option
-has been specified.
-.do end
-.el .do begin
 .np
 If you wish to add your own default libraries to this list, you can do
 so with a library pragma.
-.do end
 Consider the following example.
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .millust begin
@@ -418,12 +400,7 @@ Consider the following example.
 .do end
 .pc
 The name "mylib" will be added to the list of default libraries
-.if '&cmpclass' eq 'load-n-go' .do begin
-searched by &product when resolving undefined references.
-.do end
-.el .do begin
 specified in the object file.
-.do end
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .np
 If the library specification contains characters such as '&pc', ':' or
@@ -463,7 +440,6 @@ must separate them with spaces as in the following example.
 *$pragma library mylib &pathnam.&libdir32.&pc.dos&pc.graph.lib
 .do end
 .millust end
-.if '&cmpclass' ne 'load-n-go' .do begin
 .np
 If no libraries are specified as in the following example,
 .millust begin
@@ -472,7 +448,6 @@ If no libraries are specified as in the following example,
 .pc
 the run-time libraries corresponding to the memory and floating-point models
 used to compile the file will be generated.
-.do end
 .do end
 .*
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
@@ -1439,22 +1414,12 @@ The line continuing the pragma must start with a comment character
 .ix 'pragmas' 'auxiliary'
 .ix 'auxiliary pragma'
 Auxiliary pragmas are used to describe attributes that affect
-.if '&cmpclass' eq 'load-n-go' .do begin
-the method used for passing arguments.
-.do end
-.el .do begin
 code generation.
-.do end
 Initially, the compiler defines a default set of attributes.
 Each auxiliary pragma refers to one of the following.
 .autopoint
 .point
-.if '&cmpclass' = 'load-n-go' .do begin
-a symbol (such as a subroutine or function)
-.do end
-.el .do begin
 a symbol (such as a variable or function)
-.do end
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .point
 a type definition that resolves to a function type
@@ -1490,10 +1455,8 @@ set of attributes.
 The resulting attributes are used by all symbols that have not been
 specifically referenced by a previous auxiliary pragma.
 .np
-.if '&cmpclass' ne 'load-n-go' .do begin
 Note that all auxiliary pragmas are processed before code generation
 begins.
-.do end
 Consider the following example.
 .millust begin
 code in which symbol x is referenced
@@ -1732,8 +1695,6 @@ in the pragma for
 .id &alias_name.
 .period
 .ewarn
-.*
-.if '&cmpclass' ne 'load-n-go' .do begin
 .*
 .section Predefined Aliases
 .*
@@ -2064,9 +2025,6 @@ preserved by the called routine.
 .*
 .endlevel
 .*
-.do end
-.* end of if '&cmpclass' ne 'load-n-go'
-.*
 .section Alternate Names for Symbols
 .*
 .np
@@ -2191,8 +2149,6 @@ by the following example.
 .pc
 The above auxiliary pragma specifies that all names will be prefixed
 and suffixed by an underscore character ('_').
-.*
-.if '&cmpclass' ne 'load-n-go' .do begin
 .*
 .section Describing Calling Information
 .*
@@ -2598,9 +2554,6 @@ is a &function name.
 .*
 .endlevel
 .*
-.do end
-.* end of if '&cmpclass' ne 'load-n-go'
-.*
 .section Describing Argument Information
 .*
 .np
@@ -2611,7 +2564,6 @@ Using auxiliary pragmas, you can describe the calling convention that
 This is particularly useful when interfacing to &functions that have
 been compiled by other compilers or &functions written in other
 programming languages.
-.if '&cmpclass' ne 'load-n-go' .do begin
 .np
 The general form of an auxiliary pragma that describes argument
 passing is the following.
@@ -2652,7 +2604,6 @@ argument passing.
 A register set is a list of registers separated by spaces and enclosed
 in square brackets.
 .esynote
-.do end
 .*
 .beglevel
 .*
@@ -2671,7 +2622,6 @@ the chapter entitled "Assembly Language Considerations".
 .np
 The following form of the auxiliary pragma can be used to alter the
 default calling mechanism used for passing arguments.
-.if '&cmpclass' ne 'load-n-go' .do begin
 .cp 15
 .mbox begin
 :prgbeg. aux :id.sym:eid. parm ( :id.arg_attr:eid. :rp., :id.arg_attr:eid.:erp. )
@@ -2686,19 +2636,6 @@ default calling mechanism used for passing arguments.
 
 :id.d_attr ::=:eid. :op.far :or. near:eop.
 .mbox end
-.do end
-.el .do begin
-.cp 11
-.mbox begin
-:prgbeg. aux :id.sym:eid. parm ( :id.arg_attr:eid. :rp., :id.arg_attr:eid.:erp. )
-
-:id.arg_attr ::=:eid. value:id. :op.:id.v_attr:eid.:eop. :or. reference :op.:id.r_attr:eid.:eop.
-
-:id.v_attr ::=:eid. far :or. near :or. *1 :or. *2 :or. *4 :or. *8
-
-:id.r_attr ::=:eid. :op.far :or. near:eop.
-.mbox end
-.do end
 .synote
 .note sym
 is a &function name.
@@ -2712,15 +2649,12 @@ of a string descriptor.
 This is the default calling mechanism.
 If "NEAR" or "FAR" is specified, a near pointer or far pointer is passed
 regardless of the memory model used at compile-time.
-.if '&cmpclass' ne 'load-n-go' .do begin
 .np
 If the "DESCRIPTOR" attribute is specified, a pointer to the string descriptor
 is passed.
 This is the default.
 If the "NODESCRIPTOR" attribute is specified, a pointer to the the actual
 character data is passed instead of a pointer to the string descriptor.
-.do end
-.if '&cmpclass' ne 'load-n-go' .do begin
 .note DATA_REFERENCE
 .ix 'arguments' 'passing by data reference'
 specifies that arguments are to be passed by data reference.
@@ -2729,7 +2663,6 @@ For character items, a pointer to the actual character data (instead of the
 string descriptor) is passed.
 If "NEAR" or "FAR" is specified, a near pointer or far pointer is passed
 regardless of the memory model used at compile-time.
-.do end
 .note VALUE
 .ix 'arguments' 'passing by value'
 specifies that arguments are to be passed by value.
@@ -2749,18 +2682,11 @@ descriptor is passed.
 The string descriptor contains the address of the actual character data and
 the number of characters.
 When character arguments are passed by
-.if '&cmpclass' ne 'load-n-go' .do begin
 value or data reference,
-.do end
-.el .do begin
-value,
-.do end
 the address of the actual character data is passed instead of the address
 of a string descriptor.
 Character arguments are passed by value by specifying the "VALUE"
-.if '&cmpclass' ne 'load-n-go' .do begin
 or "DATA_REFERENCE"
-.do end
 attribute.
 If "NEAR" or "FAR" is specified, a near pointer or far pointer to the
 character data is passed regardless of the memory model used at compile-time.
@@ -2830,7 +2756,6 @@ argument-attribute list, the last attribute will be assumed for the
 remaining arguments.
 .endnote
 .np
-.if '&cmpclass' ne 'load-n-go' .do begin
 Consider the following example.
 .millust begin
 *$pragma aux printf "*_" parm (value) caller []
@@ -2851,22 +2776,6 @@ arguments, all passed on the stack (an empty register set was
 specified), and that the caller must remove the arguments from the
 stack.
 .do end
-.el .do begin
-Consider the following example.
-.millust begin
-*$pragma aux c_function "*_" parm (value)
-      call c_function( 383, 13143, 1033 )
-      end
-.millust end
-.pc
-The function
-.id c_function
-is a function compiled using &company C.
-It is called with three arguments, all passed by value.
-.do end
-.do end
-.*
-.if '&cmpclass' ne 'load-n-go' .do begin
 .*
 .section Passing Arguments in Registers
 .*
@@ -5311,8 +5220,6 @@ in the 80x87 cache before calling the specified routine.
 .endlevel
 .*
 .endlevel
-.*
-.do end
 .*
 .if &e'&dohelp eq 1 .do begin
 .   .if '&machine' eq '8086' .do begin

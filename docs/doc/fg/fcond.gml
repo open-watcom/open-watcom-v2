@@ -15,10 +15,6 @@ sign ('$') immediately followed by the compiler directive.
 The following lists all of the compiler directives available with
 &cmpname..
 .autopoint
-.if '&cmpclass' eq 'load-n-go' .do begin
-.point
-DATA
-.do end
 .point
 EJECT
 .point
@@ -57,67 +53,10 @@ The following lists these options.
 [NO]REFERENCE
 .point
 [NO]WARNINGS
-.if '&cmpclass' eq 'load-n-go' .do begin
-.point
-[NO]ARRAYCHECK
-.point
-[NO]CHECK
-.point
-PAGES=
-.point
-STATEMENTS=
-.point
-TIME=
-.do end
 .endpoint
 .np
 For more information on these options, see the the chapter
 entitled :HDREF refid='fpopts'..
-.if '&cmpclass' eq 'load-n-go' .do begin
-.*
-.section The DATA Compiler Directive
-.*
-.np
-.ix 'compiler directives' 'data'
-.ix 'DATA compiler directive'
-This compiler directive is used to indicate the end of FORTRAN source input
-and the start of data records to be read by the FORTRAN program.
-Unit 5 becomes preconnected to the source
-input stream following the line containing the DATA directive.
-Connection of unit 5 to the source input stream using the DATA
-directive may be overridden by a preconnection specification or a
-FORTRAN
-.kw OPEN
-statement.
-.np
-This compiler directive allows data for the program to be included along with
-the source code.
-It must not be specified:
-.autopoint
-.point
-in a file which has been included using the INCLUDE compiler directive.
-.point
-in a file which has been included from a source library.
-.point
-in an editor buffer.
-.endpoint
-.pc
-No FORTRAN source or compiler directives may follow the DATA compiler
-directive.
-.np
-The following example illustrates the use of the DATA compiler directive.
-.exam begin
-      INTEGER I, VALUE(5)
-      READ *, VALUE
-      DO I = 1, 5
-          PRINT *, VALUE(I), VALUE(I)**2
-      END DO
-      END
-*$DATA
-3, 45, 23, 12, 4
-.exam end
-.*
-.do end
 .*
 .section The EJECT Compiler Directive
 .*
@@ -385,13 +324,8 @@ The macro
 .ix 'predefined macros' '__fpi__'
 .mono __fpi__
 is a special macro that is defined
-.if '&cmpclass' = 'load-n-go' .do begin
-when using &c2cmdup16. or &c2cmdup32..
-.do end
-.el .do begin
 by the compiler when one of the following floating-point options is
 specified: "fpi" or "fpi87".
-.do end
 .note
 .ix 'debugging macro' '__debug__'
 The macro

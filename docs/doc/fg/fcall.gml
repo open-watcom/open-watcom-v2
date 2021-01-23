@@ -31,15 +31,6 @@ The method for passing arguments and returning values.
 .note
 The two methods for passing floating-point arguments and returning
 floating-point values.
-.if '&cmpclass' eq 'load-n-go' .do begin
-.np
-One method is used when :FNAME.&c2cmdup.&exe:eFNAME.,
-the version of &product that requires a math coprocessor, is used.
-.np
-The other method is used when :FNAME.&ccmdup.&exe:eFNAME.,
-the version of &product that does not require a math coprocessor, is used.
-.do end
-.el .do begin
 .np
 One method is used when one of the &cmpname
 .if '&machine' eq '8086' .do begin
@@ -63,7 +54,6 @@ option is used exclusively, the 80x87 emulator will not be included.
 The other method is used when the &cmpname "fpc" option is specified.
 In this case, the compiler generates calls to floating-point support
 routines in the alternate math libraries.
-.do end
 .endnote
 .pc
 An understanding of the Intel 80x86 architecture is assumed.
@@ -161,7 +151,7 @@ left.
 .*
 .beglevel
 .*
-.if '&machine' eq '80386' and '&cmpclass' ne 'load-n-go' .do begin
+.if '&machine' eq '80386' .do begin
 .*
 .section Stack-Based Calling Convention
 .*
@@ -182,16 +172,7 @@ to pass arguments.
 Instead, all arguments are passed on the stack.
 .do end
 .*
-.if '&cmpclass' eq 'load-n-go' .do begin
-.*
-.section Processing Function Return Values with &ccmdup.
-.*
-.do end
-.el .do begin
-.*
 .section Processing Function Return Values with no 80x87
-.*
-.do end
 .*
 .np
 The way in which function values are returned is also dependent on the
@@ -322,7 +303,6 @@ DX:AX
 .do end
 respectively.
 .endnote
-.if '&cmpclass' ne 'load-n-go' .do begin
 .if '&machine' eq '80386' .do begin
 .remark
 .ix 'stack-based calling convention'
@@ -330,28 +310,13 @@ The way in which a function returns its value does not change when the
 stack-based calling convention is used.
 .eremark
 .do end
-.do end
-.*
-.if '&cmpclass' eq 'load-n-go' .do begin
-.*
-.section Processing Function Return Values with &cmp2cmdup.
-.*
-.do end
-.el .do begin
 .*
 .section Processing Function Return Values Using an 80x87
-.*
-.do end
 .*
 .np
 The following describes the method used to return function values when
 your application is compiled using
-.if '&cmpclass' eq 'load-n-go' .do begin
-&cmp2cmdup..
-.do end
-.el .do begin
 the "fpi87" or "fpi" option.
-.do end
 .autopoint
 .point
 For
@@ -365,7 +330,7 @@ functions, the result is returned in floating-point register ST(0).
 All other function values are returned in the way described in the
 previous section.
 .endpoint
-.if '&machine' eq '80386' and '&cmpclass' ne 'load-n-go' .do begin
+.if '&machine' eq '80386' .do begin
 .remark
 .ix 'stack-based calling convention'
 When the stack-based calling convention is used, floating-point values
@@ -400,15 +365,13 @@ AX
 .do end
 is ignored if there are no alternate return specifiers in the actual
 argument list.
-.if '&machine' eq '80386' and '&cmpclass' ne 'load-n-go' .do begin
+.if '&machine' eq '80386' .do begin
 .remark
 .ix 'stack-based calling convention'
 The way in which a alternate returns are processed does not change
 when the stack-based calling convention is used.
 .eremark
 .do end
-.*
-.if '&cmpclass' ne 'load-n-go' .do begin
 .*
 .section Alternate Method of Passing Character Arguments
 .*
@@ -521,12 +484,9 @@ the size of the storage.
 .*
 .endlevel
 .*
-.do end
 .endlevel
 .*
-.if '&cmpclass' ne 'load-n-go' .do begin
 .im WMEMLAY
-.do end
 .*
 .section Writing Assembly Language Subprograms
 .*
@@ -537,71 +497,40 @@ guidelines.
 .note
 All used registers must be saved on entry and restored on exit except
 those used to pass arguments and return values.
-.if '&cmpclass' ne 'load-n-go' .do begin
 Note that segment registers only have to be saved and restored if you
 are compiling your application with the "sr" option.
-.do end
 .note
 The direction flag must be clear before returning to the caller.
 .note
-.if '&cmpclass' eq 'load-n-go' .do begin
-Any
-.do end
-.el .do begin
 In a small code model, any
-.do end
 segment containing executable code must belong to the segment
 "_TEXT" and the class "CODE".
 The segment "_TEXT" must have a "combine" type of "PUBLIC".
 On entry, register CS contains the segment address of the segment
 "_TEXT".
-.if '&cmpclass' ne 'load-n-go' .do begin
 In a big code model there is no restriction on the naming of segments
 which contain executable code.
-.do end
 .note
-.if '&cmpclass' eq 'load-n-go' .do begin
-Segment
-.do end
-.el .do begin
 In a small data model, segment
-.do end
 register DS contains the segment address
 of the default data segment (group "DGROUP").
-.if '&cmpclass' ne 'load-n-go' .do begin
 In a big data model, segment register SS (not DS) contains the segment
 address of the default data segment (group "DGROUP").
-.do end
-.if '&cmpclass' eq 'load-n-go' .do begin
-.note
-When writing assembly language subprograms,
-you must declare them as
-.if '&machine' eq '80386' .do begin
-"near".
-.do end
-.el .do begin
-"far".
-.do end
-.do end
-.el .do begin
 .note
 When writing assembly language subprograms for the small code model,
 you must declare them as "near".
 If you wish to write assembly language subprograms for the big code
 model, you must declare them as "far".
-.do end
 .note
 Use the ".8087" pseudo-op so that floating-point constants are in the
 correct format.
 .note
 The called subprogram must remove arguments that were passed on the
 stack in the "ret" instruction.
-.if '&cmpclass' ne 'load-n-go' .do begin
 .note
 In general, when naming segments for your code or data, you should
 follow the conventions described in the section
 entitled "Memory Layout" in this chapter.
-.do end
 .endnote
 .np
 Consider the following example.
@@ -661,10 +590,8 @@ The following is an assembly language subprogram which implements
 .id GETTIM
 .period
 .if '&machine' eq '80386' .do begin
-.if '&cmpclass' ne 'load-n-go' .do begin
 .sk 1
 .us Small or Flat Memory Model (small code, small data)
-.do end
 .code begin
 
 _TEXT   segment byte public 'CODE'
@@ -711,10 +638,8 @@ were used to pass arguments.
 .endnote
 .do end
 .if '&machine' eq '8086' .do begin
-.if '&cmpclass' ne 'load-n-go' .do begin
 .sk 1
 .us Large Memory Model (big code, big data)
-.do end
 .code begin
 
 GETTIM_TEXT segment byte public 'CODE'
@@ -848,7 +773,7 @@ register BP and the fourth argument is at offset 16.
 .*
 .beglevel
 .*
-.if '&machine' eq '80386' and '&cmpclass' ne 'load-n-go' .do begin
+.if '&machine' eq '80386' .do begin
 .*
 .section Using the Stack-Based Calling Convention
 .*
@@ -1033,7 +958,7 @@ and the fourth argument is at offset 20.
 .np
 The following illustrates the way function values are to be returned
 from assembly language functions.
-.if '&machine' eq '80386' and '&cmpclass' ne 'load-n-go' .do begin
+.if '&machine' eq '80386' .do begin
 .remark
 .ix 'stack-based calling convention'
 The way in which a function returns its value does not change when the
@@ -1343,12 +1268,7 @@ STRUCT_DATA ends
 .endpoint
 .np
 If you are using
-.if '&cmpclass' eq 'load-n-go' .do begin
-&cmp2cmdup,
-.do end
-.el .do begin
 an 80x87 to return floating-point values,
-.do end
 only assembly language functions of type
 .bd REAL*4
 and
@@ -1658,7 +1578,6 @@ _TEXT   ends
 
         end
 .code end
-.if '&cmpclass' ne 'load-n-go' .do begin
 .np
 Remember, if you are using stack calling conventions (i.e., you
 specified the "sc" compiler option), arguments will be passed on the
@@ -1682,7 +1601,6 @@ _TEXT   ends
 
         end
 .code end
-.do end
 .pc
 .point
 A function returning a user-defined structure.
@@ -1722,7 +1640,7 @@ If you are using an 80x87 to return floating-point values, only
 and
 .bd REAL*8
 assembly language functions need to be modified.
-.if '&machine' eq '80386' and '&cmpclass' ne 'load-n-go' .do begin
+.if '&machine' eq '80386' .do begin
 .ix 'stack-based calling convention'
 .us Remember, this does not apply if you are using the stack-based
 .us calling convention.
