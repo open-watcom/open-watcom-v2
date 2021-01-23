@@ -303,14 +303,14 @@
 .   .tb set \
 .   .tb &*t0 &*t2 &*t3 &*t4 &*t5 &*t6 &*t7 &*t8 &*t1
 :cmt..   .bx on &*2 &*4 &*5 &*6 &*7 &*8 &*9 &*10 &*3
-.   .if &e'&dohelp eq 1 .do begin
+.   .if &e'&dohelp ne 0 .do begin
 .   .   .codeon
 .   .do end
 .do end
 .el .if '&*' eq 'off' .do begin
 .   .tb set
 .   .tb
-.   .if &e'&dohelp eq 1 .do begin
+.   .if &e'&dohelp ne 0 .do begin
 .   .   .codeoff
 .   .do end
 :cmt..   .bx off
@@ -318,11 +318,11 @@
 .   .xtxmp end &$$bextrb &$$bextre
 .do end
 .el .do begin
-.   .if &e'&dohelp eq 1 .do begin
+.   .if &e'&dohelp ne 0 .do begin
 .   .   .codeoff
 .   .do end
 :cmt..   .bx
-.   .if &e'&dohelp eq 1 .do begin
+.   .if &e'&dohelp ne 0 .do begin
 .   .   .codeon
 .   .do end
 .do end
@@ -345,25 +345,25 @@
 .   .tb set \
 .   .tb &*t0 &*t1 &*t2 &*t3 &*t4 &*t5 &*t6 &*t7 &*t8
 :cmt..   .bx on &*2 &*3 &*4 &*5 &*6 &*7 &*8 &*9 &*10
-.   .if &e'&dohelp eq 1 .do begin
+.   .if &e'&dohelp ne 0 .do begin
 .   .   .codeon
 .   .do end
 .do end
 .el .if '&*' eq 'off' .do begin
 .   .tb set
 .   .tb
-.   .if &e'&dohelp eq 1 .do begin
+.   .if &e'&dohelp ne 0 .do begin
 .   .   .codeoff
 .   .do end
 :cmt..   .bx off
 .   .in &INDlvl
 .do end
 .el .do begin
-.   .if &e'&dohelp eq 1 .do begin
+.   .if &e'&dohelp ne 0 .do begin
 .   .   .codeoff
 .   .do end
 :cmt..   .bx
-.   .if &e'&dohelp eq 1 .do begin
+.   .if &e'&dohelp ne 0 .do begin
 .   .   .codeon
 .   .do end
 .do end
