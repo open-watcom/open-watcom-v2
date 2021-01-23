@@ -65,7 +65,7 @@ is less than, equal to, or greater than the string pointed to by
 .period
 .return end
 .see begin
-.seelist strcmp stricmp strncmp strnicmp
+.seelist strcmp stricmp strncmp strnicmp strcmpi strcasecmp strncasecmp
 .see end
 .exmp begin
 #include <stdio.h>

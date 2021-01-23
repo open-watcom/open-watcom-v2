@@ -43,7 +43,7 @@ is similar to
 compares strings by length in bytes rather than by length in characters.
 .return end
 .see begin
-.seelist _mbsnbcat _mbsnbcmp _mbsnbicmp _mbsncmp _mbsnicmp strncmp strnicmp
+.seelist _mbsnbcat _mbsnbcmp _mbsnbicmp strncmp strnicmp
 .see end
 .exmp begin
 #include <stdio.h>

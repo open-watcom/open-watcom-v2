@@ -38,7 +38,7 @@ to by
 .period
 .return end
 .see begin
-.seelist strnicmp strcmp stricmp strncmp strcasecmp
+.seelist strcmp stricmp strncmp strnicmp strcmpi strcasecmp strncasecmp
 .see end
 .exmp begin
 #include <stdio.h>

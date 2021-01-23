@@ -162,7 +162,7 @@
 .   .   .sr *i=&*i.+1
 .   .   .sr *cnt=&*cnt.-1
 .   .do end
-.   .if &'&*cnt ne 0 .do begin
+.   .if &'max(&*cnt.,0) ne 0 .do begin
 .   .   .sr *j=&*i.+1
 .   .   .sr *first=&*&*i.
 .   .   .sr *second=&*&*j.
