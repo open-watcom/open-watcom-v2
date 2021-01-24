@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,6 +47,12 @@ static const char *PromptText[] = {
 
 static const char *DefExt[] = {
     #define SLOTDEF( e, pt, et )  et,
+    SLOT_DEFS
+    #undef SLOTDEF
+};
+
+static unsigned char DefExtLen[] = {
+    #define SLOTDEF( e, pt, et )  sizeof( et ) - 1,
     SLOT_DEFS
     #undef SLOTDEF
 };
@@ -99,8 +105,9 @@ char *FileName( const char *buff, prompt_slot slot, bool force )
         if( cnt != 0 ) {
             len = cnt;
         }
-        ptr = MemAlloc( len + strlen( DefExt[slot] ) + 1 );
+        ptr = MemAlloc( len + 1 + DefExtLen[slot] + 1 );
         memcpy( ptr, buff, len );
+        ptr[len++] = '.';
         strcpy( ptr + len, DefExt[slot] );
     } else {
         ptr = MemAlloc( len + 1 );

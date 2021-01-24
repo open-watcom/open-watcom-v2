@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,10 +68,16 @@ typedef struct {
 
 /* Default File Extension array, see ldefext.h */
 
-static  char    *DefExt[] = {
-    #define pick1(enum,text) text,
+static const char       *DefExt[] = {
+    #define pick(enum,text) text,
     #include "ldefext.h"
-    #undef pick1
+    #undef pick
+};
+
+static unsigned char    DefExtLen[] = {
+    #define pick(enum,text) sizeof( text ) - 1,
+    #include "ldefext.h"
+    #undef pick
 };
 
 void WriteNulls( f_handle file, size_t len, const char *name )
@@ -666,6 +672,7 @@ char *FileName( const char *buff, size_t len, file_defext etype, bool force )
     size_t      cnt;
     size_t      namelen;
     char        c;
+    size_t      extlen;
 
 
     for( namptr = buff + len; namptr != buff; --namptr ) {
@@ -693,9 +700,15 @@ char *FileName( const char *buff, size_t len, file_defext etype, bool force )
         if( cnt != 0 ) {
             len = namptr - buff;
         }
-        _ChkAlloc( ptr, len + strlen( DefExt[etype] ) + 1 );
+        extlen = DefExtLen[etype];
+        _ChkAlloc( ptr, len + 1 + extlen + 1 );
         memcpy( ptr, buff, len );
-        strcpy( ptr + len, DefExt[etype] );
+        if( extlen > 0 ) {
+            ptr[len++] = '.';
+            memcpy( ptr + len, DefExt[etype], extlen );
+            len += extlen;
+        }
+        ptr[len] = '\0';
     } else {
         ptr = ChkToString( buff, len );
     }

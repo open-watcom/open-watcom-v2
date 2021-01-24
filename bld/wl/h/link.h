@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -151,9 +151,9 @@ typedef enum {
 /* Default File Extension Enumeration, see ldefext.h */
 
 typedef enum {
-    #define pick1(enum,text) enum,
+    #define pick(enum,text) enum,
     #include "ldefext.h"
-    #undef pick1
+    #undef pick
 } file_defext;
 
 

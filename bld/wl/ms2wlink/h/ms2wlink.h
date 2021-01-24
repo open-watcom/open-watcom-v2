@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,13 +41,13 @@
 /* Slot related data definition */
 /*           slot enum      prompt text    default file extension */
 #define SLOT_DEFS \
-    SLOTDEF( OBJECT_SLOT,  "Object Modules ",   ".obj" ) \
-    SLOTDEF( RUN_SLOT,     "Run File ",         ".exe" ) \
-    SLOTDEF( MAP_SLOT,     "List File ",        ".map" ) \
-    SLOTDEF( LIBRARY_SLOT, "Libraries ",        ".lib" ) \
-    SLOTDEF( DEF_SLOT,     "Definitions File ", ".def" ) \
-    SLOTDEF( OPTION_SLOT,  "",                  ".lnk" ) \
-    SLOTDEF( OVERLAY_SLOT, "",                  ".obj" )     /* for overlay object files. */
+    SLOTDEF( OBJECT_SLOT,  "Object Modules ",   "obj" ) \
+    SLOTDEF( RUN_SLOT,     "Run File ",         "exe" ) \
+    SLOTDEF( MAP_SLOT,     "List File ",        "map" ) \
+    SLOTDEF( LIBRARY_SLOT, "Libraries ",        "lib" ) \
+    SLOTDEF( DEF_SLOT,     "Definitions File ", "def" ) \
+    SLOTDEF( OPTION_SLOT,  "",                  "lnk" ) \
+    SLOTDEF( OVERLAY_SLOT, "",                  "obj" )     /* for overlay object files. */
 
 typedef enum {
     #define SLOTDEF( e, pt, et )  e,
