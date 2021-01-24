@@ -194,7 +194,7 @@
 ~.686p~b~b~b~b~b~b~b~b~b
 ~.8086~b~b~b~b~b~b~b~b~b
 ~.8087~b~b~b~b~b~b~b~b~b
-.if &wasmfull. eq 1 .do begin
+.if &wasmfull. ne 0 .do begin
 addr~b~b~b~b~b~b~b~b~b~b
 alias~b~b~b~b~b~b~b~b~b
 align~b~b~b~b~b~b~b~b~b
@@ -204,7 +204,7 @@ assume~b~b~b~b~b~b~b~b
 ~.break~b~b~b~b~b~b~b~b
 .do end
 byte~b~b~b~b~b~b~b~b~b~b
-.if &wasmfull. eq 1 .do begin
+.if &wasmfull. ne 0 .do begin
 casemap~b~b~b~b~b~b~b
 catstr~b~b~b~b~b~b~b~b
 ~.code~b~b~b~b~b~b~b~b~b
@@ -219,7 +219,7 @@ comment~b~b~b~b~b~b~b
 db~b~b~b~b~b~b~b~b~b~b~b~b
 dd~b~b~b~b~b~b~b~b~b~b~b~b
 df~b~b~b~b~b~b~b~b~b~b~b~b
-.if &wasmfull. eq 1 .do begin
+.if &wasmfull. ne 0 .do begin
 ~.dosseg~b~b~b~b~b~b~b
 dosseg~b~b~b~b~b~b~b~b
 .do end
@@ -229,7 +229,7 @@ dt~b~b~b~b~b~b~b~b~b~b~b~b
 dup~b~b~b~b~b~b~b~b~b~b~b
 dw~b~b~b~b~b~b~b~b~b~b~b~b
 dword~b~b~b~b~b~b~b~b~b
-.if &wasmfull. eq 1 .do begin
+.if &wasmfull. ne 0 .do begin
 echo~b~b~b~b~b~b~b~b~b~b
 ~.else~b~b~b~b~b~b~b~b~b
 else~b~b~b~b~b~b~b~b~b~b
@@ -263,7 +263,7 @@ externdef~b~b~b~b~b
 extrn~b~b~b~b~b~b~b~b~b
 .do end
 far~b~b~b~b~b~b~b~b~b~b~b
-.if &wasmfull. eq 1 .do begin
+.if &wasmfull. ne 0 .do begin
 ~.fardata~b~b~b~b~b~b
 ~.fardata?~b~b~b~b~b
 for~b~b~b~b~b~b~b~b~b~b~b
@@ -295,7 +295,7 @@ irp~b~b~b~b~b~b~b~b~b~b~b
 irpc~b~b~b~b~b~b~b~b~b~b
 .do end
 ~.k3d~b~b~b~b~b~b~b~b~b~b
-.if &wasmfull. eq 1 .do begin
+.if &wasmfull. ne 0 .do begin
 label~b~b~b~b~b~b~b~b~b
 le~b~b~b~b~b~b~b~b~b~b~b~b
 length~b~b~b~b~b~b~b~b
@@ -315,7 +315,7 @@ macro~b~b~b~b~b~b~b~b~b
 mask~b~b~b~b~b~b~b~b~b~b
 .do end
 ~.mmx~b~b~b~b~b~b~b~b~b~b
-.if &wasmfull. eq 1 .do begin
+.if &wasmfull. ne 0 .do begin
 mod~b~b~b~b~b~b~b~b~b~b~b
 ~.model~b~b~b~b~b~b~b~b
 name~b~b~b~b~b~b~b~b~b~b
@@ -323,32 +323,32 @@ ne~b~b~b~b~b~b~b~b~b~b~b~b
 .do end
 near~b~b~b~b~b~b~b~b~b~b
 ~.no87~b~b~b~b~b~b~b~b~b
-.if &wasmfull. eq 1 .do begin
+.if &wasmfull. ne 0 .do begin
 ~.nocref~b~b~b~b~b~b~b
 ~.nolist~b~b~b~b~b~b~b
 .do end
 offset~b~b~b~b~b~b~b~b
-.if &wasmfull. eq 1 .do begin
+.if &wasmfull. ne 0 .do begin
 opattr~b~b~b~b~b~b~b~b
 option~b~b~b~b~b~b~b~b
 org~b~b~b~b~b~b~b~b~b~b~b
 .do end
 oword~b~b~b~b~b~b~b~b~b
-.if &wasmfull. eq 1 .do begin
+.if &wasmfull. ne 0 .do begin
 page~b~b~b~b~b~b~b~b~b~b
 popcontext~b~b~b~b
 proc~b~b~b~b~b~b~b~b~b~b
 proto~b~b~b~b~b~b~b~b~b
 .do end
 ptr~b~b~b~b~b~b~b~b~b~b~b
-.if &wasmfull. eq 1 .do begin
+.if &wasmfull. ne 0 .do begin
 public~b~b~b~b~b~b~b~b
 purge~b~b~b~b~b~b~b~b~b
 pushcontext~b~b~b
 .do end
 pword~b~b~b~b~b~b~b~b~b
 qword~b~b~b~b~b~b~b~b~b
-.if &wasmfull. eq 1 .do begin
+.if &wasmfull. ne 0 .do begin
 ~.radix~b~b~b~b~b~b~b~b
 record~b~b~b~b~b~b~b~b
 ~.repeat~b~b~b~b~b~b~b
@@ -358,7 +358,7 @@ sbyte~b~b~b~b~b~b~b~b~b
 sdword~b~b~b~b~b~b~b~b
 .do end
 seg~b~b~b~b~b~b~b~b~b~b~b
-.if &wasmfull. eq 1 .do begin
+.if &wasmfull. ne 0 .do begin
 segment~b~b~b~b~b~b~b
 ~.seq~b~b~b~b~b~b~b~b~b~b
 ~.sfcond~b~b~b~b~b~b~b
@@ -367,7 +367,7 @@ sizeof~b~b~b~b~b~b~b~b
 ~.stack~b~b~b~b~b~b~b~b
 ~.startup~b~b~b~b~b~b
 .do end
-.if &wasmfull. eq 1 .do begin
+.if &wasmfull. ne 0 .do begin
 struc~b~b~b~b~b~b~b~b~b
 struct~b~b~b~b~b~b~b~b
 subtitle~b~b~b~b~b~b
@@ -375,7 +375,7 @@ subttl~b~b~b~b~b~b~b~b
 sword~b~b~b~b~b~b~b~b~b
 .do end
 tbyte~b~b~b~b~b~b~b~b~b
-.if &wasmfull. eq 1 .do begin
+.if &wasmfull. ne 0 .do begin
 textequ~b~b~b~b~b~b~b
 ~.tfcond~b~b~b~b~b~b~b
 this~b~b~b~b~b~b~b~b~b~b
@@ -388,7 +388,7 @@ uses~b~b~b~b~b~b~b~b~b~b
 width~b~b~b~b~b~b~b~b~b
 .do end
 word~b~b~b~b~b~b~b~b~b~b
-.if &wasmfull. eq 1 .do begin
+.if &wasmfull. ne 0 .do begin
 ~.xcref~b~b~b~b~b~b~b~b
 ~.xlist~b~b~b~b~b~b~b~b
 .do end

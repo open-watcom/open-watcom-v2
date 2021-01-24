@@ -49,12 +49,13 @@
 :cmt. .'se cmdline=';.bd command line;.ct '
 :cmt. .'se copybuffer=';.bd copy buffer;.ct '
 
-.'se cmdmode='command mode'
-.'se tinsmode='text insertion mode'
-.'se cmdline='command line'
-.'se copybuffer='copy buffer'
+.se cmdmode='command mode'
+.se tinsmode='text insertion mode'
+.se cmdline='command line'
+.se copybuffer='copy buffer'
 
 .se idcnt=0
+.se sein=0
 
 .dm setid begin
 .sr idcnt=&idcnt.+1
@@ -66,13 +67,13 @@
 .dm getid begin
 .if '&*2.' eq '1' .do begin
 .   .se idnum = &'veclastpos(&*1, _id)
-.   .do end
+.do end
 .el .do begin
 .   .se idnum = &'vecpos(&*1, _id)
-.   .do end
+.do end
 .if &idnum < 1 .do begin
 .   .ty *****Bad ID value for &*1.*****
-.   .do end
+.do end
 .dm getid end
 
 .dm keyword begin
@@ -86,10 +87,10 @@
 .   .getid &*lc1. &*2.
 .   .if &*0 > 1 .do begin
 .   .   .se *id=id&idnum.B
-.   .   .do end
+.   .do end
 .   .el .do begin
 .   .   .se *id=id&idnum.
-.   .   .do end
+.   .do end
 .   :ZHDREF refid='&*id'.
 .do end
 .el .do begin
@@ -109,14 +110,14 @@
 .if '&*1.' eq 'begin' .do begin
 .   .se fn_topic='&*2.'
 .   .beglevel
-.   .do end
+.do end
 .el .if '&*1.' eq 'end' .do begin
 .   .se fn_topic=''
 .   .endlevel
-.   .do end
+.do end
 .el .do begin
 .   .ty *****begin or end required in fnlist*****
-.   .do end
+.do end
 .dm fnlist end
 
 .dm begfunc begin
@@ -127,7 +128,7 @@
 .em .section *refid=&*id &func_name.
 .if '&fn_topic.' ne '' .do begin
 .   .ix '&fn_topic.' '&*lc1.'
-.   .do end
+.do end
 .ix '&*lc1.'
 .dm begfunc end
 
@@ -141,23 +142,23 @@
 .   :DT.Syntax:
 .   .if '&*1.' eq '*' .do begin
 .   .   :DD.&*2. &*3. &*4. &*5. &*6. &*7. &*8.
-.   .   .do end
+.   .do end
 .   .el .do begin
 .   .   :DD.&*.
-.   .   .do end
-.   :eDL
 .   .do end
+.   :eDL
+.do end
 .el .do begin
 .   :ZDL termhi=0.
 .   :ZDT.Syntax:
 .   .if '&*1.' eq '*' .do begin
 .   .   :ZDD.&*2. &*3. &*4. &*5. &*6. &*7. &*8.
-.   .   .do end
+.   .do end
 .   .el .do begin
 .   .   :ZDD.&*.
-.   .   .do end
-.   :ZeDL
 .   .do end
+.   :ZeDL
+.do end
 .'se range =';.param &*1.;.ct '
 .'se parm1 =';.param &*3.;.ct '
 .'se parm2 =';.param &*4.;.ct '
@@ -172,21 +173,21 @@
 .   :DL termhi=0 break.
 .   :DT.Description:
 .   :DD.
-.   .do end
+.do end
 .el .do begin
 .   :ZDL termhi=0 break.
 .   :ZDT.Description:
 .   :ZDD.
-.   .do end
+.do end
 .dm begdescr end
 
 .dm enddescr begin
 .if &e'&dohelp eq 0 .do begin
 .   :eDL.
-.   .do end
+.do end
 .el .do begin
 .   :ZeDL.
-.   .do end
+.do end
 .dm enddescr end
 
 .dm xmplsect begin
@@ -194,24 +195,24 @@
 .   .if &e'&dohelp eq 0 .do begin
 .   .   :SF font=2.Example(s): :eSF.
 .   .   .in +0.6i
-.   .   .do end
+.   .do end
 .   .el .do begin
 .       :ZDL termhi = 0.
 .       :ZDT.Example(s):
 .       :ZDD.
-.   .   .do end
 .   .do end
+.do end
 .el .if '&*1.' eq 'end' .do begin
 .   .if &e'&dohelp eq 0 .do begin
 .   .   .in -0.6i
-.   .   .do end
+.   .do end
 .   .el .do begin
 .   .   :ZeDL.
-.   .   .do end
 .   .do end
+.do end
 .el .do begin
 .   .ty *****begin or end required in xmplsect*****
-.   .do end
+.do end
 .dm xmplsect end
 
 .dm begxmpl begin
@@ -219,19 +220,19 @@
 .if &e'&dohelp eq 0 .do begin
 .   :SF font=4.&*.:eSF.
 .   .in +0.2i
-.   .do end
+.do end
 .el .do begin
 .   .np
 .   :SF font=4.&*.:eSF.
 .   .np
-.   .do end
+.do end
 .dm begxmpl end
 
 .dm endxmpl begin
 .if &e'&dohelp eq 0 .do begin
 .   .in -0.2i
 .   .sk
-.   .do end
+.do end
 .dm endxmpl end
 
 .dm alsosee begin
@@ -241,38 +242,38 @@
 .       :DL termhi = 0.
 .       :DT.See Also: 
 .       :DD.
-.       .do end
+.   .do end
 .   .el .do begin
 .       :ZDL termhi = 0.
 .       :ZDT.See Also: 
 .       :ZDD.
-.       .do end
 .   .do end
+.do end
 .el .if '&*.' eq 'end' .do begin
 .   .if &e'&dohelp eq 0 .do begin
 .       :eDL.
-.       .do end
+.   .do end
 .   .el .do begin
 .       :ZeDL.
-.       .do end
 .   .do end
+.do end
 .el .do begin
 .   .ty *****begin or end required in alsosee*****
-.   .do end
+.do end
 .dm alsosee end
 
 .dm seethis begin
 .if '&see.' eq '1' .do begin
 .   .ct ,
-.   .do end
+.do end
 .se see = 1
 .if '&*key.' eq '1' .do begin
 .   .keyref &*1.
 .   key (Command Mode)
-.   .do end
+.do end
 .el .do begin
 .   .keyref &*.
-.   .do end
+.do end
 .dm seethis end
 
 .dm returns begin
@@ -282,72 +283,72 @@
 .       :DL termhi=0 break.
 .       :DT.Returns:
 .       :DD.:DL break.
-.       .do end
+.   .do end
 .   .el .do begin
 .       :ZDL termhi=0 break.
 .       :ZDT.Returns:
 .       :ZDD.:ZDL break.
-.       .do end
 .   .do end
+.do end
 .el .if '&*.' eq 'end' .do begin
 .   .if &e'&dohelp eq 0 .do begin
 .       :eDL.
 .       :eDL.
-.       .do end
+.   .do end
 .   .el .do begin
 .       :ZeDL.
 .       :ZeDL.
-.       .do end
 .   .do end
+.do end
 .el .do begin
 .   .ty *****begin or end required in returns*****
-.   .do end
+.do end
 .dm returns end
 
 .dm retval begin
 .if &e'&dohelp eq 0 .do begin
 .   :DT. &*.
 .   :DD.
-.   .do end
+.do end
 .el .do begin
 .   :ZDT. &*.
 .   :ZDD.
-.   .do end
+.do end
 .dm retval end
 
 .dm sesect begin
 .if '&*1.' eq 'begin' .do begin
 .   .beglevel
 .   .section 'Example - &*2.'
-.   .do end
+.do end
 .el .if '&*1.' eq 'end' .do begin
 .   .endlevel
-.   .do end
+.do end
 .el .do begin
 .   .ty *****begin or end required in sesect*****
-.   .do end
+.do end
 .dm sesect end
 
 .dm sexmp begin
 .if '&*.' eq 'begin' .do begin
 .   .millust begin
 .   .se currline=1
-.   .do end
+.do end
 .el .if '&*.' eq 'end' .do begin
 .   .millust end
-.   .do end
+.do end
 .el .do begin
 .   .ty *****begin or end required in sexmp*****
-.   .do end
+.do end
 .dm sexmp end
 
 .dm seline begin
 .if &currline. le 9 .do begin
 .   .se *tmp2 = ' &currline.) &*.'
-.   .do end
+.do end
 .el .do begin
 .   .se *tmp2 = '&currline.) &*.'
-.   .do end
+.do end
 .se *tmp = '> &*.'
 &*tmp2.
 .se line(&currline) = &*tmp.
@@ -358,15 +359,15 @@
 .dm seref begin
 .if '&*.' eq 'begin' .do begin
 .   .se sein = 0
-.   .do end
+.do end
 .el .if '&*.' eq 'end' .do begin
-.   .if &sein. eq 1 .do begin
+.   .if &sein. ne 0 .do begin
 .   .   .in -0.1i
-.   .   .do end
 .   .do end
+.do end
 .el .do begin
 .   .ty *****begin or end required in seref*****
-.   .do end
+.do end
 .dm seref end
 
 .dm segrp begin
@@ -376,9 +377,9 @@
 .dm segrp end
 
 .dm serefer begin
-.if &sein. eq 1 .do begin
+.if &sein. ne 0 .do begin
 .   .in -0.1i
-.   .do end
+.do end
 .se sein = 1
 .np
 .se s = &*1.
@@ -386,12 +387,12 @@
 .*  italics
 .   :SF font=1.Lines &*1.-&*2.:eSF.
 .   .se *e = &*2.
-.   .do end
+.do end
 .el .do begin
 .*  italics
 .   :SF font=1.Line &*1.:eSF.
 .   .se *e = &*1.
-.   .do end
+.do end
 .millust begin
 .pe on;.segrp;.if &s gt &*e .pe delete
 .millust end
@@ -404,23 +405,23 @@
 .   :SF font=4.&*2.:eSF.
 .   .if &e'&dohelp eq 0 .do begin
 .       :OL compact.
-.       .do end
+.   .do end
 .   .el .do begin
         :ZOL compact.
-.       .do end
 .   .do end
+.do end
 .el .if '&*1.' eq 'end' .do begin
 .   .if &e'&dohelp eq 0 .do begin
 .       :eOL.
-.       .do end
+.   .do end
 .   .el .do begin
 .       :ZeOL.
-.       .do end
-.   .sk
 .   .do end
+.   .sk
+.do end
 .el .do begin
 .   .ty *****begin or end required in rxxmp*****
-.   .do end
+.do end
 .dm rxxmp end
 
 .dm rxorig begin
@@ -432,7 +433,7 @@
 .   :DD.
 .   :SF font=0.&*.:eSF.
 .   :eDL.
-.   .do end
+.do end
 .el .do begin
 .   :ZLI.
 .   .'se orig = '&*.'
@@ -441,7 +442,7 @@
 .   :ZDD.
 .   :SF font=0.&*.:eSF.
 .   :ZeDL.
-.   .do end
+.do end
 .dm rxorig end
 
 .dm rxres begin
@@ -449,43 +450,43 @@
 .   :DL termhi=0 compact.
 .   :DT.Matches:
 .   :DD.
-.   .do end
+.do end
 .el .do begin
 .   :ZDL termhi=0 compact.
 .   :ZDT.Matches:
 .   :ZDD.
-.   .do end
+.do end
 .if '&*3.' eq '' .do begin
 .   .if '&*2.' eq '' .do begin
 .   .   &*.
-.   .do end
+.do end
 .   .el .do begin
 .   .   .if '&*1.' eq '*' .do begin
 .   .   .   :SF font=3.&*2.:eSF
-.   .   .   .do end
+.   .   .do end
 .   .   .el .do begin
 .   .   .   :SF font=3.&*1.:eSF
 .   .   .   .ct &*2.
-.   .   .   .do end
 .   .   .do end
 .   .do end
+.do end
 .el .do begin
 .   .if '&*1.' eq '*' .do begin
 .   .   &*2.
 .   .   .ct :SF font=3.&*3.:eSF
-.   .   .do end
+.   .do end
 .   .el .do begin
 .   .   &*1.
 .   .   .ct :SF font=3.&*2.:eSF
 .   .   .ct &*3.
-.   .   .do end
 .   .do end
+.do end
 .if &e'&dohelp eq 0 .do begin
 .   :eDL.
-.   .do end
+.do end
 .el .do begin
 .   :ZeDL.
-.   .do end
+.do end
 .dm rxres end
 
 .dm setcmd begin
@@ -498,18 +499,18 @@
 .if '&fn_topic' eq 'Boolean Settings' .do begin
 .   .getid &*lc1. 1
 .   .se *id=id&idnum.B
-.   .do end
+.do end
 .el .do begin
 .   .getid &*lc1. 0
 .   .se *id=id&idnum.
-.   .do end
+.do end
 .em .section *refid=&*id &*1.
 .if '&fn_topic.' ne '' .do begin
 .   .ix '&fn_topic.' '&*1.'
-.   .do end
+.do end
 .if '&*short' ne '' .do begin
 .   .ix '&*short.'
-.   .do end
+.do end
 .ix '&*1.'
 .dm setcmd end
 
@@ -519,33 +520,33 @@
 .   :DT.Syntax:
 .   .if '&cmd_short.' <> '' .th .do begin
 .       :DD.&cmd_long. [&cmd_short.]
-.   .   .do end
+.   .do end
 .   .el .do begin
 .   .   .if '&parm.' <> '' .th .do begin
 .           :DD.&cmd_long. <&parm.>
-.   .   .   .do end
+.   .   .do end
 .   .   .el .do begin
 .           :DD.&cmd_long.
-.   .   .   .do end
 .   .   .do end
-.   :eDL.
 .   .do end
+.   :eDL.
+.do end
 .el .do begin
 .   :ZDL termhi=0.
 .   :ZDT.Syntax:
 .   .if '&cmd_short.' <> '' .th .do begin
 .       :zDD.&cmd_long. [&cmd_short.]
-.   .   .do end
+.   .do end
 .   .el .do begin
 .   .   .if '&parm.' <> '' .th .do begin
 .           :zDD.&cmd_long. <&parm.>
-.   .   .   .do end
+.   .   .do end
 .   .   .el .do begin
 .           :zDD.&cmd_long.
-.   .   .   .do end
 .   .   .do end
-.   :ZeDL
 .   .do end
+.   :ZeDL
+.do end
 .dm setsyntx end
 
 .dm exmode begin
@@ -553,62 +554,62 @@
 .   :DL termhi = 0.
 .   :DT.Notes:
 .   :DD.
-.   .do end
+.do end
 .el .do begin
 .   :ZDL termhi = 0.
 .   :ZDT.Notes:
 .   :ZDD.
-.   .do end
+.do end
 Only valid in
 .keyword EX mode
 .period
 .if &e'&dohelp eq 0 .do begin
 .   :eDL.
-.   .do end
+.do end
 .el .do begin
 .   :ZeDL.
-.   .do end
+.do end
 .dm exmode end
 
 .dm keylist begin
 .if '&*1.' eq 'begin' .do begin
 .   .if &e'&dohelp eq 0 .do begin
 .   .   :DL break.
-.   .   .do end
+.   .do end
 .   .el .do begin
 .   .   :ZDL break.
-.   .   .do end
-.   .se cindex=&*2.
 .   .do end
+.   .se cindex=&*2.
+.do end
 .el .if '&*1.' eq 'end' .do begin
 .   .se cindex=''.
 .   .if &e'&dohelp eq 0 .do begin
 .   .   :eDL.
-.   .   .do end
+.   .do end
 .   .el .do begin
 .   .   :ZeDL.
-.   .   .do end
 .   .do end
+.do end
 .el .do begin
 .   .ty *****begin or end required in keylist*****
-.   .do end
+.do end
 .dm keylist end
 
 .dm begkey begin
 .if &e'&dohelp eq 0 .do begin
 .   :DT.&*2. &*3. &*4. &*5. &*6. &*7. &*8.
-.   .do end
+.do end
 .el .do begin
 .   :ZDT.&*2. &*3. &*4. &*5. &*6. &*7. &*8.
-.   .do end
+.do end
 .ix 'Command Mode' '&cindex.' '&*1.'
 .se keysp=1
 .if &e'&dohelp eq 0 .do begin
 .   :DD.
-.   .do end
+.do end
 .el .do begin
 .   :ZDD.
-.   .do end
+.do end
 .dm begkey end
 
 .dm endkey begin

@@ -31,7 +31,7 @@
 .* corresponding to regular entry (e.g., memccpy)
 .*
 .dm fnf begin
-.if &farfnc. eq 1 .do begin
+.if &farfnc ne 0 .do begin
 .  .fnc &*
 .do end
 .dm fnf end
@@ -49,7 +49,7 @@
 .* corresponding to regular entry (e.g., _mbsbtype)
 .*
 .dm fnn begin
-.if &farfnc. eq 1 .do begin
+.if &farfnc ne 0 .do begin
 .if &vermacro ge 1070 .do begin
 .  .fnc &*
 .do end
