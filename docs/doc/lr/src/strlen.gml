@@ -3,7 +3,7 @@
 #include <string.h>
 size_t strlen( const char *s );
 .ixfunc2 '&String' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 size_t _fstrlen( const char __far *s );
 .ixfunc2 '&String' &ffunc
 .do end

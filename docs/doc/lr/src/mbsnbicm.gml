@@ -6,7 +6,7 @@ int _mbsnbicmp( const unsigned char *s1,
                size_t n );
 .ixfunc2 '&String' &funcb
 .ixfunc2 '&Compare' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 int _fmbsnbicmp( const unsigned char __far *s1,
                 const unsigned char __far *s2,
                 size_t n );

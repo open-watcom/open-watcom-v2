@@ -4,7 +4,7 @@
 size_t wcstombs( char *s, const wchar_t *pwcs, size_t n );
 .ixfunc2 '&Wide' &funcb
 .ixfunc2 '&Multibyte' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 #include <mbstring.h>
 size_t _fwcstombs( char __far *s,
                    const wchar_t __far *pwcs,

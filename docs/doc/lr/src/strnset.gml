@@ -7,7 +7,7 @@ char *strnset( char *str, int fill, size_t count );
 char *_strnset( char *str, int fill, size_t count );
 .ixfunc2 '&String' &_func
 .do end
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 char __far *_fstrnset( char __far *str,
                        int fill,
                        size_t count );

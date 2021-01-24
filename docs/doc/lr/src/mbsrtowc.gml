@@ -5,7 +5,7 @@ size_t mbsrtowcs( wchar_t *dst,
                const char **src,
                size_t len, mbstate_t *ps );
 .ixfunc2 '&Multibyte' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 #include <mbstring.h>
 size_t _fmbsrtowcs( wchar_t __far *dst,
          const char __far * __far *src,

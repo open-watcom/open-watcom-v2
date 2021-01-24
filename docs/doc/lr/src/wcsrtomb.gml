@@ -6,7 +6,7 @@ size_t wcsrtombs( char *dst,
          size_t n, mbstate_t *ps );
 .ixfunc2 '&Wide' &funcb
 .ixfunc2 '&Multibyte' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 #include <wchar.h>
 size_t _fwcsrtombs( char __far *dst,
         const wchar_t __far * __far *src,

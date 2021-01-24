@@ -6,7 +6,7 @@ unsigned char *_mbsnbcpy( unsigned char *dst,
                     size_t n );
 .ixfunc2 '&String' &funcb
 .ixfunc2 '&Copy' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 unsigned char __far *_fmbsnbcpy( unsigned char __far *dst,
                            const unsigned char __far *src,
                            size_t n );

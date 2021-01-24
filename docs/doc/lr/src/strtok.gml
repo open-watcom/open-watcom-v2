@@ -11,7 +11,7 @@ char *strtok( char *s1, const char *s2 );
 char *strtok_r( char *s1, const char *s2, char **p1 );
 .ixfunc2 '&String' &funcb
 .ixfunc2 '&Search' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 char __far *_fstrtok( char __far *s1,
                       const char __far *s2 );
 char __far *_fstrtok_r( char __far *s1,

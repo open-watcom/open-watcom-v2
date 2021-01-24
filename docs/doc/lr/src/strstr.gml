@@ -9,7 +9,7 @@ char *strstr( const char *str,
               const char *substr );
 .ixfunc2 '&String' &funcb
 .ixfunc2 '&Search' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 char __far *_fstrstr( const char __far *str,
                       const char __far *substr );
 .ixfunc2 '&String' &ffunc

@@ -4,7 +4,7 @@
 size_t jstrspn( const JCHAR *str, const JCHAR *charset );
 .ixfunc2 '&Jstring' &funcb
 .ixfunc2 '&Jsearch' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 size_t __far _fjstrspn( const JCHAR __far *str,
                         const JCHAR __far *charset );
 .ixfunc2 '&Jstring' &ffunc

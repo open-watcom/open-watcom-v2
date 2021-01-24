@@ -5,7 +5,7 @@
 size_t _mbsnccnt( const unsigned char *string, size_t n );
 .ixfunc2 '&String' &mfunc
 .ixfunc2 '&Multibyte' &mfunc
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 size_t _fmbsnccnt( const unsigned char __far *string,
                    size_t n );
 .ixfunc2 '&String' &fmfunc
@@ -38,7 +38,7 @@ character, the first (lead) byte is not included in the count.
 This function was called
 .kw btom
 in earlier versions.
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 .np
 The
 .id &fmfunc.

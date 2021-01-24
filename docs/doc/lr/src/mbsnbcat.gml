@@ -6,7 +6,7 @@ unsigned char *_mbsnbcat( unsigned char *dst,
                                  size_t n );
 .ixfunc2 '&String' &funcb
 .ixfunc2 '&Concats' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 unsigned char __far *_fmbsnbcat( unsigned char __far *dst,
                            const unsigned char __far *src,
                                               size_t n );

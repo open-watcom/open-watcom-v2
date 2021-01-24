@@ -4,7 +4,7 @@
 int wcrtomb( char *s, wchar_t wc, mbstate_t *ps );
 .ixfunc2 '&Wide' &funcb
 .ixfunc2 '&Multibyte' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 int _fwcrtomb( char __far *s, wchar_t wc, mbstate_t __far *ps );
 .ixfunc2 '&Wide' &ffunc
 .ixfunc2 '&Multibyte' &ffunc

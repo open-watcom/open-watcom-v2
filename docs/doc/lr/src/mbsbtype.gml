@@ -3,7 +3,7 @@
 #include <mbstring.h>
 #include <mbctype.h> (for manifest constants)
 int _mbsbtype( const unsigned char *mbstr, int count );
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 int _fmbsbtype( const unsigned char __far *mbstr,
                 int count );
 .do end

@@ -13,7 +13,7 @@ int _strnicmp( const char *s1,
 .ixfunc2 '&String' &_func
 .ixfunc2 '&Compare' &_func
 .do end
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 int _fstrnicmp( const char __far *s1,
                 const char __far *s2,
                 size_t len );

@@ -10,7 +10,7 @@ errno_t wctomb_s( int * restrict status,
                   wchar_t wc);
 .ixfunc2 '&Wide' &funcb
 .ixfunc2 '&Multibyte' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 errno_t _fwctomb_s( int __far * restrict status,
                   char __far * restrict s,
                   rsize_t smax,

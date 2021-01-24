@@ -4,7 +4,7 @@
 int wctomb( char *s, wchar_t wc );
 .ixfunc2 '&Wide' &funcb
 .ixfunc2 '&Multibyte' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 #include <mbstring.h>
 int _fwctomb( char __far *s, wchar_t wc );
 .ixfunc2 '&Wide' &ffunc

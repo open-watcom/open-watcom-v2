@@ -3,7 +3,7 @@
 #include <jstring.h>
 int nthctype( const char * str, size_t n );
 .ixfunc2 '&Jstring' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 int far _fnthctype( const char far * str, size_t n );
 .ixfunc2 '&Jstring' &ffunc
 .do end

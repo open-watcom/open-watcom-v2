@@ -3,7 +3,7 @@
 #include <mbstring.h>
 unsigned char *_mbgetcode( unsigned char *mbstr,
                            unsigned int *dbchp );
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 unsigned char far *_fmbgetcode( unsigned char far *mbstr,
                                 unsigned int *dbchp );
 .do end

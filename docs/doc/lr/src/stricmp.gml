@@ -9,7 +9,7 @@ int _stricmp( const char *s1, const char *s2 );
 .ixfunc2 '&String' &_func
 .ixfunc2 '&Compare' &_func
 .do end
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 int _fstricmp( const char __far *s1,
                const char __far *s2 );
 .ixfunc2 '&String' &ffunc

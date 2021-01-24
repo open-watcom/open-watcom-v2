@@ -2,7 +2,7 @@
 .synop begin
 #include <mbstring.h>
 unsigned int _mbptov( const unsigned char *string );
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 unsigned int _fmbptov( const unsigned char __far *string );
 .do end
 .synop end

@@ -4,7 +4,7 @@
 void *memccpy( void *dest, const void *src,
                int c, size_t cnt );
 .ixfunc2 '&String' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 void __far *_fmemccpy( void __far *dest,
                        const void __far *src,
                        int c, size_t cnt );

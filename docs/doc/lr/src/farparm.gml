@@ -1,4 +1,4 @@
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 .np
 The
 .id &ffunc.

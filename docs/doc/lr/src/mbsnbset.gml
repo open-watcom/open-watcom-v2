@@ -5,7 +5,7 @@ unsigned char *_mbsnbset( unsigned char *str,
                           unsigned int fill,
                           size_t count );
 .ixfunc2 '&String' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 unsigned char __far *_fmbsnbset( unsigned char __far *str,
                                  unsigned int fill,
                                  size_t count );

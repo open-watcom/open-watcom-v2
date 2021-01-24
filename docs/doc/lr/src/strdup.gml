@@ -9,7 +9,7 @@ char *_strdup( const char *src );
 .ixfunc2 '&String' &_func
 .ixfunc2 '&Copy' &_func
 .do end
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 char __far *_fstrdup( const char __far *src );
 .ixfunc2 '&String' &ffunc
 .ixfunc2 '&Copy' &ffunc

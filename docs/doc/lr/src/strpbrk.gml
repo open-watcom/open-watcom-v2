@@ -4,7 +4,7 @@
 char *strpbrk( const char *str, const char *charset );
 .ixfunc2 '&String' &funcb
 .ixfunc2 '&Search' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 char __far *_fstrpbrk( const char __far *str,
                        const char __far *charset );
 .ixfunc2 '&String' &ffunc

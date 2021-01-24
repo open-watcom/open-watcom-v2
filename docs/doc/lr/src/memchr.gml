@@ -5,7 +5,7 @@
 #include <string.h>
 void *memchr( const void *buf, int ch, size_t length );
 .ixfunc2 '&Search' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 void __far *_fmemchr( const void __far *buf,
                       int ch,
                       size_t length );

@@ -7,7 +7,7 @@ int memcmp( const void *s1,
             const void *s2,
             size_t length );
 .ixfunc2 '&Compare' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 int _fmemcmp( const void __far *s1,
               const void __far *s2,
               size_t length );

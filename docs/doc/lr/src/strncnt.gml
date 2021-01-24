@@ -47,7 +47,7 @@ character, the first (lead) byte is not included in the count.
 This function was called
 .kw btom
 in earlier versions.
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 .np
 The
 .id &fmfunc.

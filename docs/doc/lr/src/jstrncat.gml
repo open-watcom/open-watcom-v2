@@ -6,7 +6,7 @@ JSTRING jstrncat( JCHAR *dst,
                   size_t n );
 .ixfunc2 '&String' &funcb
 .ixfunc2 '&Concats' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 FJSTRING __far _fjstrncat( JCHAR __far *dst,
                            const JCHAR __far *src,
                            size_t n );

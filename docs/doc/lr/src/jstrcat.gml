@@ -2,7 +2,7 @@
 .synop begin
 #include <jstring.h>
 JSTRING jstrcat( JCHAR *dst, const JCHAR *src );
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 FJSTRING __far _fjstrcat( JCHAR __far *dst,
                           const JCHAR __far *src );
 .do end

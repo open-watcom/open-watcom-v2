@@ -6,7 +6,7 @@ int strncmp( const char *s1,
              size_t n );
 .ixfunc2 '&String' &funcb
 .ixfunc2 '&Compare' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 int _fstrncmp( const char __far *s1,
                const char __far *s2,
                size_t n );

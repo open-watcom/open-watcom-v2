@@ -11,7 +11,7 @@ int _memicmp( const void *s1,
               size_t length );
 .ixfunc2 '&Compare' &_func
 .do end
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 int _fmemicmp( const void __far *s1,
                const void __far *s2,
                size_t length );

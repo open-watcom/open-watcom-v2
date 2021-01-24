@@ -4,7 +4,7 @@
 JSTRING jstrrchr( const JCHAR *s, JMOJI c );
 .ixfunc2 '&Jstring' &funcb
 .ixfunc2 '&Jsearch' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 FJSTRING __far _fjstrrchr( const JCHAR __far *s,
                            JMOJI c );
 .ixfunc2 '&Jstring' &ffunc

@@ -5,7 +5,7 @@
 #include <mbstring.h>
 int mblen( const char *s, size_t n );
 .ixfunc2 '&Multibyte' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 int _fmblen( const char __far *s, size_t n );
 .ixfunc2 '&Multibyte' &ffunc
 .do end

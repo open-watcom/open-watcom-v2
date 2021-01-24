@@ -3,7 +3,7 @@
 #include <mbstring.h>
 int _mbterm( const unsigned char *ch );
 .ixfunc2 '&Multibyte' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 int _fmbterm( const unsigned char __far *ch );
 .ixfunc2 '&Multibyte' &ffunc
 .do end

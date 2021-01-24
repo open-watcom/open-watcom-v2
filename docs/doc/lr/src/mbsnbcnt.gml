@@ -5,7 +5,7 @@
 size_t _mbsnbcnt( const unsigned char *string, size_t n );
 .ixfunc2 '&String' &mfunc
 .ixfunc2 '&Multibyte' &mfunc
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 size_t _fmbsnbcnt( const unsigned char __far *string,
                    size_t n );
 .ixfunc2 '&String' &fmfunc
@@ -33,7 +33,7 @@ multibyte characters of the string
 This function was called
 .kw mtob
 in earlier versions.
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 .np
 The
 .id &fmfunc.

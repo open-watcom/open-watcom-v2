@@ -6,7 +6,7 @@ char *strncpy( char *dst,
                size_t n );
 .ixfunc2 '&String' &funcb
 .ixfunc2 '&Copy' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 char __far *_fstrncpy( char __far *dst,
                        const char __far *src,
                        size_t n );

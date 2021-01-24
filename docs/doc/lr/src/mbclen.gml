@@ -3,7 +3,7 @@
 #include <mbstring.h>
 size_t _mbclen( const unsigned char *ch );
 .ixfunc2 '&Multibyte' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 size_t far _fmbclen( const unsigned char __far *ch );
 .ixfunc2 '&Multibyte' &ffunc
 .do end

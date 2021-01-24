@@ -6,7 +6,7 @@ JSTRING jstrncpy( JCHAR *dst,
                   size_t n );
 .ixfunc2 '&Jstring' &funcb
 .ixfunc2 '&Jcopy' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 FJSTRING __far _fjstrncpy( JCHAR __far *dst,
                            const JCHAR __far *src,
                            size_t n );

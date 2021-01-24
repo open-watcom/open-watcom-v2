@@ -6,7 +6,7 @@ function is a multibyte character version of
 .id &funcb.
 that
 operates with multibyte character strings.
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 .np
 The
 .id &fmfunc.

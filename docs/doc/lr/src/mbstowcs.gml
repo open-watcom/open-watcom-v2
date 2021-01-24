@@ -3,7 +3,7 @@
 #include <stdlib.h>
 size_t mbstowcs( wchar_t *pwcs, const char *s, size_t n );
 .ixfunc2 '&Multibyte' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 #include <mbstring.h>
 size_t _fmbstowcs( const wchar_t __far *pwcs,
                    char __far *s,

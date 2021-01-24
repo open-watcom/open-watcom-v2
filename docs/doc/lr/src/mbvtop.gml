@@ -4,7 +4,7 @@
 unsigned char *_mbvtop( unsigned int ch,
                         unsigned char *addr );
 .ixfunc2 '&Multibyte' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 unsigned char __far *_fmbvtop( unsigned int ch,
                         unsigned char __far *addr );
 .ixfunc2 '&Multibyte' &ffunc

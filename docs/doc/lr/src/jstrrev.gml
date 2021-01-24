@@ -3,7 +3,7 @@
 #include <jstring.h>
 JSTRING jstrrev( JCHAR *s1 );
 .ixfunc2 '&Jstring' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 FJSTRING __far _fjstrrev( JCHAR __far *s1 );
 .ixfunc2 '&Jstring' &ffunc
 .do end

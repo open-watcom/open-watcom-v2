@@ -11,7 +11,7 @@ errno_t wcsrtombs_s( size_t * restrict retval,
                      mbstate_t * restrict ps);
 .ixfunc2 '&Wide' &funcb
 .ixfunc2 '&Multibyte' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 errno_t _fwcsrtombs_s( size_t __far * restrict retval,
                        char __far * restrict dst,
                        rsize_t dstmax,

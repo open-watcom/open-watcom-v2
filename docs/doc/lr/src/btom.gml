@@ -3,7 +3,7 @@
 #include <jstring.h>
 size_t btom( const unsigned char *str, size_t nb );
 .ixfunc2 '&Jstring' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 size_t far _fbtom( const unsigned char far *str, size_t nb );
 .ixfunc2 '&Jstring' &ffunc
 .do end

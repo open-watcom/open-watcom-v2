@@ -11,7 +11,7 @@ char *_strspnp( const char *str,
 .ixfunc2 '&String' &_func
 .ixfunc2 '&Search' &_func
 .do end
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 char __far *_fstrspnp( const char __far *str,
                        const char __far *charset );
 .ixfunc2 '&String' &ffunc

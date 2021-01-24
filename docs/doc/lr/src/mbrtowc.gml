@@ -3,7 +3,7 @@
 #include <wchar.h>
 int mbrtowc( wchar_t *pwc, const char *s,
              size_t n, mbstate_t *ps );
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 int _fmbrtowc( wchar_t __far *pwc, const char __far *s,
                size_t n, mbstate_t __far *ps );
 .do end

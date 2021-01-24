@@ -4,7 +4,7 @@
 JSTRING jstrtok( JCHAR *s1, const JCHAR *s2 );
 .ixfunc2 '&Jstring' &funcb
 .ixfunc2 '&Jsearch' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 FJSTRING __far _fjstrtok( JCHAR __far *s1,
                           const JCHAR __far *s2 );
 .ixfunc2 '&Jstring' &ffunc

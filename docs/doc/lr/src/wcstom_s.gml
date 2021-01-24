@@ -11,7 +11,7 @@ errno_t wcstombs_s( size_t * restrict retval,
                     rsize_t len);
 .ixfunc2 '&Wide' &funcb
 .ixfunc2 '&Multibyte' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 
 errno_t _fwcstombs_s( size_t __far * restrict retval,
                       char __far * restrict dst,

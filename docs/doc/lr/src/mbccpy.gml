@@ -4,7 +4,7 @@
 void _mbccpy( unsigned char *dest,
               const unsigned char *ch );
 .ixfunc2 '&Multibyte' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 void _fmbccpy( unsigned char __far *dest,
                const unsigned char __far *ch );
 .ixfunc2 '&Multibyte' &ffunc

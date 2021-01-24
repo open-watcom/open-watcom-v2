@@ -4,7 +4,7 @@
 int _mbccmp( const unsigned char *s1,
              const unsigned char *s2 );
 .ixfunc2 '&Multibyte' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 int _fmbccmp( const unsigned char __far *s1,
               const unsigned char __far *s2 );
 .ixfunc2 '&Multibyte' &ffunc

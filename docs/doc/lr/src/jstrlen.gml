@@ -3,7 +3,7 @@
 #include <jstring.h>
 size_t jstrlen( const JCHAR *s );
 .ixfunc2 '&Jstring' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 size_t __far _fjstrlen( const JCHAR __far *s );
 .ixfunc2 '&Jstring' &ffunc
 .do end

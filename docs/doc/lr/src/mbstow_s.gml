@@ -9,7 +9,7 @@ errno_t mbstowcs_s( size_t * restrict retval,
                     rsize_t dstmax,
                     const char * restrict src, rsize_t len);
 .ixfunc2 '&Multibyte' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 .ixfunc2 '&Multibyte' &fmfunc
 errno_t _fmbstowcs_s( size_t __far * restrict retval,
                     wchar_t __far * restrict dst,

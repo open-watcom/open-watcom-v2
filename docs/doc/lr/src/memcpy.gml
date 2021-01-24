@@ -7,7 +7,7 @@ void *memcpy( void *dst,
               const void *src,
               size_t length );
 .ixfunc2 '&Copy' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 void __far *_fmemcpy( void __far *dst,
                       const void __far *src,
                       size_t length );

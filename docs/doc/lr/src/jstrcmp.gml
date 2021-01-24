@@ -4,7 +4,7 @@
 int jstrcmp( const JCHAR *s1, const JCHAR *s2 );
 .ixfunc2 '&Jstring' &funcb
 .ixfunc2 '&Jcompare' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 int __far _fjstrcmp( const JCHAR __far *s1,
                      const JCHAR __far *s2 );
 .ixfunc2 '&Jstring' &ffunc

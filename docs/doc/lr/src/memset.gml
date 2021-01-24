@@ -5,7 +5,7 @@
 #include <string.h>
 void *memset( void *dst, int c, size_t length );
 .ixfunc2 '&String' &funcb
-.if &farfnc eq 1 .do begin
+.if &farfnc ne 0 .do begin
 void __far *_fmemset( void __far *dst, int c,
                       size_t length );
 .ixfunc2 '&String' &ffunc
