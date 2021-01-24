@@ -47,6 +47,13 @@
 #include "clibext.h"
 
 
+#if defined( __UNIX__ )
+    #define OBJSUFFIX   "o"
+#else
+    #define OBJSUFFIX   "obj"
+#endif
+#define LSTSUFFIX       "lst"
+
 bool Descriptions;
 bool InterpretComent;
 bool quiet;
@@ -75,7 +82,7 @@ static void usage( void )
 {
     ShowProductInfo();
 
-    Output( "Usage: dmpobj [options] objfile[" OBJSUFFIX "]..." CRLF );
+    Output( "Usage: dmpobj [options] objfile[." OBJSUFFIX "]..." CRLF );
     Output( "Options:" CRLF );
     Output( "-l\t\tProduce listing file" CRLF );
     Output( "-d\t\tPrint descriptive titles for some output" CRLF );

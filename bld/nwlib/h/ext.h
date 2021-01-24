@@ -30,13 +30,13 @@
 ****************************************************************************/
 
 
-#define EXT_LST ".lst"
-#define EXT_CMD ".lbc"
-#define EXT_LIB ".lib"
+#define EXT_LST "lst"
+#define EXT_CMD "lbc"
+#define EXT_LIB "lib"
 #ifdef __UNIX__
-#define EXT_OBJ ".o"
+#define EXT_OBJ "o"
 #else
-#define EXT_OBJ ".obj"
+#define EXT_OBJ "obj"
 #endif
-#define EXT_BAK ".bak"
-#define EXT_DLL ".dll"
+#define EXT_BAK "bak"
+#define EXT_DLL "dll"

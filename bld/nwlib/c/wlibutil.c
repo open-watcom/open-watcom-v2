@@ -37,6 +37,12 @@
 #include "clibext.h"
 
 
+#ifdef __UNIX__
+#define FNCMP strcmp
+#else
+#define FNCMP stricmp
+#endif
+
 int SymbolNameCmp( const char *s1, const char *s2)
 {
     if( Options.respect_case ) {
@@ -131,7 +137,7 @@ char *MakeFName( const char *a )
 bool IsExt( const char *a, const char *b )
 {
     _splitpath2( a, pg1.buffer, NULL, NULL, NULL, &pg1.ext );
-    return( FNCMP( pg1.ext, b ) == 0 );
+    return( pg1.ext[0] == '.' && FNCMP( pg1.ext + 1, b ) == 0 );
 }
 
 void DefaultExtension( char *name, const char *def_ext )

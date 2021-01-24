@@ -40,14 +40,6 @@ typedef unsigned_8          byte;
 
 #define CRLF            "\n"
 
-#if defined( __QNX__ )
-    #define OBJSUFFIX   ".o"
-    #define LSTSUFFIX   ".lst"
-#else
-    #define OBJSUFFIX   ".obj"
-    #define LSTSUFFIX   ".lst"
-#endif
-
 #define INDENT          "    "
 #define INDWIDTH        (sizeof( INDENT ) - 1)
 #define BAILOUT         CRLF INDENT "!! "

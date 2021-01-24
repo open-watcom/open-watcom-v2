@@ -101,7 +101,7 @@ static const char *GetEqual( const char *c, char *buff, const char *ext, char **
         *ret = NULL;
     } else {
         c = GetString( c, buff, false, false );
-        if( ext != NULL ) {
+        if( ext != NULL && *ext != '\0' ) {
             DefaultExtension( buff, ext );
         }
         *ret = DupStr( buff );
@@ -272,10 +272,10 @@ static const char *ParseOption( const char *c, char *buff )
         }
         c = GetEqual( c, buff, NULL, &Options.explode_ext );
         if( Options.explode_ext == NULL )
-            Options.explode_ext = EXT_OBJ;
+            Options.explode_ext = "." EXT_OBJ;
         if( Options.explode_count ) {
-            char  cn[20] = "00000000";
-            strcat( cn, Options.explode_ext );
+            char    cn[20] = FILE_TEMPLATE_MASK;
+            strcpy( cn + sizeof( FILE_TEMPLATE_MASK ) - 1, Options.explode_ext );
             Options.explode_ext = DupStr( cn );
         }
 #else

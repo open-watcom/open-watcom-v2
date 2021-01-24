@@ -362,7 +362,7 @@ _WCRTLINK void __ProfEpilog( info *block )
 #if 0 // not currently in use
 #ifdef __NT__
 #define VXDNAME "P5PROF"
-#define VXDEXT  ".VXD"
+#define VXDEXT  "VXD"
 static int findVXD( char *buff )
 {
     pgroup2 pg;
@@ -372,7 +372,7 @@ static int findVXD( char *buff )
     if( access( buff, R_OK ) == 0 )
         return( TRUE );
 
-    strcpy( buff, ".\\" VXDNAME VXDEXT );
+    strcpy( buff, ".\\" VXDNAME "." VXDEXT );
     if( access( buff, R_OK ) == 0 )
         return( TRUE );
 

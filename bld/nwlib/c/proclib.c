@@ -77,8 +77,8 @@ static void ProcessOneObject( arch_header *arch, libfile io )
     if( Options.explode ) {
         if( Options.explode_count ) {
             char number[10];
-            sprintf( number, "%8.8d", Options.explode_count );
-            memcpy( Options.explode_ext, number, 8 );
+            sprintf( number, FILE_TEMPLATE_FMT, Options.explode_count );
+            memcpy( Options.explode_ext, number, sizeof( FILE_TEMPLATE_MASK ) - 1 );
             Options.explode_count++;
         }
         ExtractObj( io, arch->name, arch, Options.explode_ext );
@@ -86,13 +86,12 @@ static void ProcessOneObject( arch_header *arch, libfile io )
     deleted = false;
     for( cmd = CmdList; cmd != NULL; cmd = cmd->next ) {
         if( IsSameFName( arch->name, cmd->name ) ) {
-
             if( !Options.explode ) {
                 if( (cmd->ops & OP_EXTRACT) && (cmd->ops & OP_EXTRACTED) == 0 ) {
                     if( cmd->fname != NULL ) {
                         ExtractObj( io, cmd->name, arch, cmd->fname );
                     } else {
-                        ExtractObj( io, cmd->name, arch, EXT_OBJ );
+                        ExtractObj( io, cmd->name, arch, "." EXT_OBJ );
                     }
                     cmd->ops |= OP_EXTRACTED;
                 }

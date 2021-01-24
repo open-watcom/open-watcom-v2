@@ -32,16 +32,6 @@
 #ifndef WDIS_ARGS_INCLUDED
 #define WDIS_ARGS_INCLUDED
 
-#if defined( __UNIX__ )
-    #define OBJ_FILE_EXTENSION ".o"
-    #define IS_OPT_DELIM( c )   ((c) == '-')
-#else
-    #define OBJ_FILE_EXTENSION ".obj"
-    #define IS_OPT_DELIM( c )   ((c)=='-' || (c) == '/')
-#endif
-
-#define LIST_FILE_EXTENSION ".lst"
-
 extern return_val HandleArgs( void );
 
 #endif
