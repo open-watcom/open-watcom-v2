@@ -158,7 +158,7 @@ void MProject::setFilename( const WFileName& f )
 void MProject::setMakefile()
 {
     _makefile = _filename;
-    _makefile.setExt( ".mk" );
+    _makefile.setExt( "mk" );
 
     WFileName mkFile( _makefile );
     if( mkFile.needQuotes() ) {

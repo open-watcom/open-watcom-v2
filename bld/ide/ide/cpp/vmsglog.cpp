@@ -289,7 +289,7 @@ bool VMsgLog::saveLogAs()
     if( project ) {
         project->filename().noPath( fn );
     }
-    fn.setExt( ".txt" );
+    fn.setExt( "txt" );
     WFileDialog fd( this, sFilter );
     fn = fd.getOpenFileName( fn, "Save Log as", WFSaveDefault );
     if( fn.legal() ) {

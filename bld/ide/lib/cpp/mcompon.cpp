@@ -281,7 +281,8 @@ void MComponent::updateItemList( bool update )
                     }
                 }
                 if( !item->parent() ) {
-                    WFileName fn( "*.*" ); fn.setExt( item->ext() );
+                    WFileName fn( "*.*" );
+                    fn.setExt( item->ext() );
                     MItem* m = new MItem( fn, this, item->rule() );
                     item->setParent( m );
                     _items.add( m );
@@ -526,12 +527,10 @@ bool MComponent::addFromMask( WFileName& search, WString& err )
     return( ok );
 }
 
-static char makeExt[] = { ".mk1" };
-
 void MComponent::addMakeFile( ContFile& pmak )
 {
     WFileName mk( _filename );
-    mk.setExt( makeExt );
+    mk.setExt( "mk1" );
     if( mk.needQuotes() ) {
         mk.addQuotes();
     }
@@ -542,7 +541,7 @@ bool MComponent::makeMakeFile( bool long_lines )
 {
     bool ok = true;
     WFileName mk( _filename );
-    mk.setExt( makeExt );
+    mk.setExt( "mk1" );
 
     updateItemList();
 
@@ -712,18 +711,18 @@ bool MComponent::writeCBR( bool mustExist )
         MWorkFile* w = (MWorkFile*)_workFiles[i];
         if( w->browseable() ) {
             WFileName browfile( _filename );
-            browfile.setExt( ".cbr" );
+            browfile.setExt( "cbr" );
             WFile brow;
             if( brow.open( browfile, OStyleWrite ) ) {
                 WFileName tfile;
                 _target->absResult( tfile );
-                tfile.setExt( ".dbr" );
+                tfile.setExt( "dbr" );
                 brow.printf( "d %s\n", (const char*)tfile );
                 for( ; i<_workFiles.count(); i++ ) {
                     w = (MWorkFile*)_workFiles[i];
                     if( w->browseable() ) {
                         w->item()->absResult( tfile );
-                        tfile.setExt( ".mbr" );
+                        tfile.setExt( "mbr" );
                         if( mustExist ) {
                             if( access( (const char*)tfile, F_OK ) == 0 )  {
                                 // file must be there
@@ -775,7 +774,7 @@ void MComponent::makeNames( const char* spec, WFileName& filename, WFileName& re
 {
     relname = spec;
     relname.noPath( targ );
-    relname.setExt( ".tgt" );
+    relname.setExt( "tgt" );
     filename = relname;
     filename.absoluteTo( _project->filename() );
 }
@@ -790,7 +789,7 @@ bool MComponent::tryBrowse()
 
         WFileName fn = m->component()->relFilename(); // target file name
         fn.setFName( m->fName() );
-        fn.setExt( ".mbr" );
+        fn.setExt( "mbr" );
 
         if( access( (const char *)fn, F_OK ) == 0 ) {
             rc = true;

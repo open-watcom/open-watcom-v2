@@ -147,7 +147,7 @@ MConfig::MConfig( WFileName& filename, bool debug, HostType host, const char *in
 
 void MConfig::writeConfig()
 {
-    _filename.setExt( ".cfc" );
+    _filename.setExt( "cfc" );
     WObjectFile of( 9 );
     if( of.open( _filename, OStyleWrite ) ) {
         of.writeObject( this );

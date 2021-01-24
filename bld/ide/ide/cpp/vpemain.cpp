@@ -1113,7 +1113,7 @@ bool VpeMain::validateProjectName( WFileName& fn )
     if( fn.size() > 0 ) {
 //        fn.toLower();
         if( fn.legal() ) {
-            fn.setExtIfNone( ".wpj" );
+            fn.setExtIfNone( "wpj" );
             return( true );
         }
         WMessageDialog::messagef( this, MsgError, MsgOk, _viperError, "Project name '%s' is invalid", (const char*)fn );
@@ -1611,7 +1611,7 @@ void VpeMain::removeComponent( WMenuItem* )
     _activeVComp->setFocus();
     MComponent* comp = (MComponent*)_activeVComp->model();
     WFileName target( *comp->target() );
-    target.setExt( ".tgt" );
+    target.setExt( "tgt" );
     if( confirm( "Are you sure you wish to remove '%s'?", target ) ) {
         delete _compViews.removeSame( _activeVComp );
         delete _project->removeComponent( comp );

@@ -103,7 +103,7 @@ void VpeMain::cForPBProject( WFileName &pj, bool nt ) {
             _project = new MProject( pj );
             attachModel( _project );
             WFileName targname( pj );
-            targname.setExt( ".dll" );
+            targname.setExt( "dll" );
             MRule *rule = _config->findMatchingRule( targname, mask );
             MComponent* mcomp = new MComponent( _project, rule, mask, targname );
             _project->addComponent( mcomp );

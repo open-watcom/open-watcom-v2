@@ -156,7 +156,7 @@ WEXPORT VpeMain::VpeMain( int argc, char** argv )
             parms.add( new WString( argv[i] ) );
         }
     }
-    pfile.setExtIfNone( ".wpj" );
+    pfile.setExtIfNone( "wpj" );
 
     new MConfig( cfg, debug, host, incdir );
     WString err;
@@ -182,7 +182,8 @@ WEXPORT VpeMain::VpeMain( int argc, char** argv )
             int icount = parms.count();
             for( i = 0; i < icount; i++ ) {
                 WFileName f( parms.cStringAt(i) );
-                f.absoluteTo(); f.setExt( ".tgt" );
+                f.absoluteTo();
+                f.setExt( "tgt" );
                 _project->attachComponent( f );
             }
             if( sMode ) {
