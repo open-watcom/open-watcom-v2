@@ -172,7 +172,8 @@ vi_rc ParseCommandLine( const char *cmdl, linenum *n1, bool *n1flag, linenum *n2
         }
     }
     StaticFree( tok_buf );
-    SKIP_CHAR_SPACES( cmdl );
+    if( *cmdl != '\0' )
+        SKIP_CHAR_SPACES( cmdl );
     strcpy( data, cmdl );
     return( ERR_NO_ERR );
 
