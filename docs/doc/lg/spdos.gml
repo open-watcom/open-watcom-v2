@@ -168,7 +168,7 @@ is any of the following:
 .section *refid=useover Using Overlays
 .*
 .np
-.if '&overlay' eq 'no' .do begin
+.if '&overlay' ne 'yes' .do begin
 The creation of overlaid executables is not supported by this version
 of the &lnkname..
 .do end
