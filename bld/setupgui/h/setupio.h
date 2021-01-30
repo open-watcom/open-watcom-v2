@@ -40,7 +40,6 @@ extern int          FileStat( const VBUF *path, struct stat *buf );
 extern file_handle  FileOpen( const VBUF *path, const char *flags );
 extern size_t       FileRead( file_handle fh, void *buffer, size_t length );
 extern int          FileClose( file_handle fh );
-extern long         FileSeek( file_handle fh, long offset, int origin );
 extern int          FileIsPlainFS( void );
 extern int          FileIsArchive( void );
 

@@ -231,30 +231,6 @@ int FileClose( file_handle fh )
 }
 
 
-long FileSeek( file_handle fh, long offset, int origin )
-{
-    long            pos;
-
-    switch( fh->type ) {
-    case DS_FILE:
-        if( fseek( fh->u.fp, offset, origin ) ) {
-            pos = -1;
-        } else {
-            pos = ftell( fh->u.fp );
-        }
-        break;
-#ifdef USE_ZIP
-    case DS_ZIP:
-        /* I really want to be able to seek! */
-#endif
-    default:
-        pos = -1;
-    }
-
-    return( pos );
-}
-
-
 size_t FileRead( file_handle fh, void *buffer, size_t length )
 {
     size_t          amt;

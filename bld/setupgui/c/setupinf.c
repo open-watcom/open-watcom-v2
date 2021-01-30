@@ -2381,10 +2381,6 @@ long SimInit( const VBUF *inf_name )
     }
     SetVariableByName_vbuf( "SetupInfFile", inf_name );
     result = PrepareSetupInfo( fh, PRESCAN_FILE );
-#if 0
-    // Currently doesn't work for archives
-    FileSeek( fh, 0, SEEK_SET );
-#else
     FileClose( fh );
     fh = FileOpen( inf_name, "rb" );
     if( fh == NULL ) {
@@ -2392,7 +2388,6 @@ long SimInit( const VBUF *inf_name )
         GUIMemFree( RawReadBuf );
         return( SIM_INIT_NOFILE );
     }
-#endif
     InitArray( (void **)&DirInfo, sizeof( struct dir_info ), &SetupInfo.dirs );
     InitArray( (void **)&FileInfo, sizeof( struct file_info ), &SetupInfo.files );
     InitArray( (void **)&PMInfo, sizeof( struct pm_info ), &SetupInfo.pm_files );
