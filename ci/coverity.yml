@@ -25,6 +25,7 @@ jobs:
         owcoverity.results.archive: open-watcom-v2.zip
       owcoverity.project:  open-watcom/open-watcom-v2
       owcoverity.tool.cmd: ''
+      DECODE_PERCENTS:     true
     pool:
       ${{ if eq(parameters.arch, 'lnx') }}:
         vmImage: $(owimage_lnx)
