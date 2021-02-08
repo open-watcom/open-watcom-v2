@@ -64,7 +64,9 @@ This chapter discusses the advanced features of &edvi..
 :DT.Chapter 5
 :DD.:CIT.Command Mode Keys:eCIT.
 This chapter describes the keystrokes that initiate the many different
-features of command mode.
+features of
+.keyword &cmdmode.
+.
 
 :DT.Chapter 6
 :DD.:CIT.Editor Command Line:eCIT.

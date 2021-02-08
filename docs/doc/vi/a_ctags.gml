@@ -46,9 +46,11 @@ enums and unions.  In a C++ file, you will also be able to locate classes.
 Tags will help you find all function and subroutines in FORTRAN files.
 .np
 Once you select a tag that you wish to locate (by either using the
-&cmdmode key CTRL_] (control close square bracket) or the
-&cmdline command
-.keyword tag
+.keyword &cmdmode.
+key CTRL_] (control close square bracket) or the
+.keyword &cmdline.
+command
+.keyref tag
 :cont.), &edname searchs a special tag file for the specified tag.
 The name of the tag file is determined by the setting of
 .keyword tagfilename

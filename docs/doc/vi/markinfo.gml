@@ -36,6 +36,7 @@ Text marks are used to memorize a position in the edit buffer
 that you may want to return to later.  Each file may have up to 26
 marks in it (identified via the letters 'a' through 'z').  Marks may also
 be set with the
-&cmdline command
+.keyword &cmdline.
+command
 .keyref mark
 .period

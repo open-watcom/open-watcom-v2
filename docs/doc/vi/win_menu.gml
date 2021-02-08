@@ -37,7 +37,8 @@
 :cmt. .   .section 'Introduction'
 :cmt. .do end
 .np
-This chapter describes the &cmdline
+This chapter describes the
+.keyword &cmdline.
 commands devoted to configuring the
 &edname.'s windows and menus.  All windows are fully configurable:
 dimension, colors, existence of borders.  The menus are fully configurable:
@@ -50,7 +51,8 @@ are described in the following section.
 .section 'Window Properties'
 .* ******************************************************************
 .np
-Some of the following &cmdline
+Some of the following
+.keyword &cmdline.
 commands accept colors as parameters.
 These colors may be numbers in the range 0 through 15.  As well,
 &edvi has symbolic names for these colors, they are:
@@ -174,7 +176,8 @@ text with a black background.
 .* ******************************************************************
 .np
 This section describes all possible windows that may be selected.  These
-&cmdline commands select the window to start setting properties.
+.keyword &cmdline.
+commands select the window to start setting properties.
 See the previous section for properties that may be set.
 .*
 .fnlist begin 'Window Types'
@@ -183,8 +186,9 @@ See the previous section for properties that may be set.
 .syntx * COMMANDWindow
 .begdescr
 This is the window that is displayed whenever &edname is prompting
-for a &cmdline,
-a search string, a filter command or any other command or data.
+for a
+.keyword &cmdline.
+, a search string, a filter command or any other command or data.
 .enddescr
 .endfunc
 
@@ -214,7 +218,8 @@ default can be specified after.
 .syntx * DIRWindow
 .begdescr
 This is the window that you select a file from whenever no file
-is specified from the &cmdline
+is specified from the
+.keyword &cmdline.
 commands
 .keyref edit
 or
@@ -235,7 +240,9 @@ This is the window that files are edited from.
 .begdescr
 This window contains extra information about possible things that
 may be done.
-It is displayed when selecting results from the &cmdline commands
+It is displayed when selecting results from the
+.keyword &cmdline.
+commands
 .keyref fgrep
 :cont.,
 .keyref egrep
@@ -250,7 +257,9 @@ and
 .syntx * FILEWindow
 .begdescr
 The window in which list of files currently being edited is displayed.
-This is displayed when the &cmdline command
+This is displayed when the
+.keyword &cmdline.
+command
 .keyref files
 is executed.
 .enddescr
@@ -298,7 +307,8 @@ menu is variable.
 .syntx * MENUBARWindow
 .begdescr
 This window is the menu bar.
-This is where all menus set up with the &cmdline
+This is where all menus set up with the
+.keyword &cmdline.
 .keyref menu
 are displayed.
 .enddescr
@@ -322,7 +332,8 @@ so you can get by with a message window that is only one line high.
 .syntx * SETWindow
 .begdescr
 The window in which &edname settings are displayed.
-This window is displayed when the &cmdline
+This window is displayed when the
+.keyword &cmdline.
 .keyref set
 command is entered without parameters or with
 .param 2
@@ -335,7 +346,8 @@ as its only parameter.
 .begdescr
 The window in which the new value of an editor setting is entered.
 This window is displayed if a value change is requested
-after entering the &cmdline
+after entering the
+.keyword &cmdline.
 .keyref set
 with
 .param 2
@@ -361,7 +373,8 @@ is not set.
 .* ******************************************************************
 .np
 The following examples are sample settings of the different types of
-windows. These commands may be issued from the &cmdline
+windows. These commands may be issued from the
+.keyword &cmdline.
 one at at time, or may be executed from a &edname script.
 Typically, these commands will be found in the &edname
 .keyword configuration script
@@ -564,7 +577,8 @@ cannot fit, then it will try to open above the position that it was told
 to, to the left of the position that it was told to, and above and to the
 left of the position that it was told to.
 .np
-The following sections describe each of the &cmdline
+The following sections describe each of the
+.keyword &cmdline.
 commands for controlling menus.
 .*
 .fnlist begin 'Menu Commands'
@@ -575,7 +589,9 @@ commands for controlling menus.
 Adds a new item to a previously created menu &parm1..
 The item &parm2 is added to the menu.
 .np
-This command is similar to the &cmdline command
+This command is similar to the
+.keyword &cmdline.
+command
 .keyref menuitem
 :cont., only the
 .keyref menuitem
@@ -589,7 +605,8 @@ A character in &parm2 preceded with an '&' will be the hot key
 for activating the menu, e.g. &Control would have 'C' as
 the hot key.
 .np
-The command &parm3 may be any &edname &cmdline
+The command &parm3 may be any &edname
+.keyword &cmdline.
 command, and is run whenever the item is selected.
 .enddescr
 .alsosee begin
@@ -649,7 +666,9 @@ float1, float2, or float3
 .begdescr
 Adds the item &parm1 to the last menu started with the
 .keyref menu
-command.   Menu items may be added until the &cmdline command
+command.   Menu items may be added until the
+.keyword &cmdline.
+command
 .keyref endmenu
 has been issued.
 .np
@@ -661,7 +680,8 @@ A character in &parm1 preceded
 with an ampersand ('&') will be the hot key for activating the menu
 item, e.g. &Exit would have 'E' as the hot key.
 .np
-The command &parm2 may be any &edname &cmdline
+The command &parm2 may be any &edname
+.keyword &cmdline.
 command, and is run whenever the item is selected.
 .enddescr
 .alsosee begin
@@ -677,7 +697,8 @@ command, and is run whenever the item is selected.
 .* ******************************************************************
 .np
 The following examples are sample menu setups.
-These commands may be issued from the &cmdline
+These commands may be issued from the
+.keyword &cmdline.
 one at at time, or may be contained in a
 .keyword script
 and executed in the script.

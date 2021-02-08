@@ -50,7 +50,9 @@ Along with the &edname executable, there are a number of files that are needed:
 .keyword configuration script
 (contains editor setup)
 :DT.keys.dat
-:DD.Symbolic key names used by the &cmdline commands
+:DD.Symbolic key names used by the
+.keyword &cmdline.
+commands
 .keyref map
 :cont.,
 .keyref mapbase

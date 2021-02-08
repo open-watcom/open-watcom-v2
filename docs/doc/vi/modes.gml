@@ -37,10 +37,12 @@
 :cmt. .   .section 'Introduction'
 :cmt. .do end
 .np
-The &edname is a modal editor.  When you are in &cmdmode
+The &edname is a modal editor.  When you are in
+.keyword &cmdmode.
 (the default mode), there are a number of valid keys that may be pressed.
-To ensure that you are in &cmdmode,
-press the
+To ensure that you are in
+.keyword &cmdmode.
+, press the
 .param ESC
 key until the mode indicator
 on the menu bar displays:
@@ -48,15 +50,19 @@ on the menu bar displays:
 Mode: command
 .millust end
 .np
-When in &tinsmode, text may be entered.  There are two aspects to
-&tinsmode.:
+When in
+.keyword &tinsmode.
+, text may be entered.  There are two aspects to
+.keyword &tinsmode.
+:
 .keyword insert
 and
 .keyword overstrike
 .period
-.keyword Text insertion mode
-is entered via a number of different commands from &cmdmode,
-and is indicated by a
+.keyword &tinsmode.
+is entered via a number of different commands from
+.keyword &cmdmode.
+, and is indicated by a
 larger cursor, along with a mode line indication.  The
 types of cursor are controlled with the
 .keyref commandcursortype
@@ -67,8 +73,9 @@ and
 .keyref overstrikecursortype
 settings.
 .np
-When &edvi is in a &tinsmode.,
-the mode indicator on the menu bar displays one of:
+When &edvi is in a
+.keyword &tinsmode.
+, the mode indicator on the menu bar displays one of:
 .millust begin
 Mode: insert
 .millust end
@@ -80,20 +87,29 @@ Mode: overstrike
 .section *refid=timode 'Text Insertion Mode'
 .* ******************************************************************
 .np
-When in &tinsmode (either inserting or overstriking), you
+When in
+.keyword &tinsmode.
+(either inserting or overstriking), you
 may enter text and freely cursor about through the file.  When you
 are finished adding text, the
 .param ESC
-key returns you to &cmdmode..
+key returns you to
+.keyword &cmdmode.
+.
 .np
 It should be remembered that an undo applies to
-changes caused by commands; so all changes made while in &tinsmode
+changes caused by commands; so all changes made while in
+.keyword &tinsmode.
 are part of a single undo record. For more information on
 undos, see the section
 :HDREF refid='cmundo'.
 later on in this chapter.
 .np
-The following keys, when pressed in &cmdmode, place you into &tinsmode:
+The following keys, when pressed in
+.keyword &cmdmode.
+, place you into
+.keyword &tinsmode.
+:
 .*
 :DL break.
 .*
@@ -107,16 +123,22 @@ current line in the edit buffer.
 
 :DT.C
 :DD.Changes text from the current position to the end of the current line.
-Deletes the text, and enters &tinsmode..
+Deletes the text, and enters
+.keyword &tinsmode.
+.
 
 :DT.&lt.n&gt.c&lt.oper&gt.
 :DD.Change command.  Deletes the text in the range specified by
 .param &lt.oper&gt.
-:cont., and enters &tinsmode..
+:cont., and enters
+.keyword &tinsmode.
+.
 
 :DT.g
 :DD.Starts inserting or overstriking text at the current cursor position,
-depending on how you were adding text the last time you were in &tinsmode..
+depending on how you were adding text the last time you were in
+.keyword &tinsmode.
+.
 
 
 :DT.i
@@ -127,10 +149,14 @@ depending on how you were adding text the last time you were in &tinsmode..
 the current line.
 
 :DT.o
-:DD.Opens a line after the current line, and enters &tinsmode..
+:DD.Opens a line after the current line, and enters
+.keyword &tinsmode.
+.
 
 :DT.O
-:DD.Opens a line before the current line, and enters &tinsmode..
+:DD.Opens a line before the current line, and enters
+.keyword &tinsmode.
+.
 
 :DT.R
 :DD.Starts overstriking text at the current character in the edit buffer.
@@ -140,13 +166,16 @@ the current line.
 .param &lt.n&gt.
 characters.  The first
 .param &lt.n&gt.
-characters from the current cursor position are deleted, and &tinsmode
+characters from the current cursor position are deleted, and
+.keyword &tinsmode.
 is entered.
 
 :DT.&lt.n&gt.S
 :DD.Substitute lines of text.
 .param &lt.n&gt.
-lines from the current line forward are deleted, and &tinsmode is entered.
+lines from the current line forward are deleted, and
+.keyword &tinsmode.
+is entered.
 
 :DT.INS
 :DD.Start inserting text at the current cursor position.
@@ -158,7 +187,9 @@ lines from the current line forward are deleted, and &tinsmode is entered.
 .section 'Special Keys'
 .* ******************************************************************
 .np
-While in &tinsmode, certain keys do special things.  These keys are:
+While in
+.keyword &tinsmode.
+, certain keys do special things.  These keys are:
 .*
 :DL break.
 .*
@@ -186,10 +217,13 @@ of the current edit buffer.
 of the current edit buffer.
 
 :DT.SHIFT_DEL
-:DD.Deletes the currently selected region into the active &copybuffer..
+:DD.Deletes the currently selected region into the active
+.keyword &copybuffer.
+.
 
 :DT.SHIFT_INS
-:DD.Pastes the active &copybuffer
+:DD.Pastes the active
+.keyword &copybuffer.
 into the text after the current position.
 
 :DT.SHIFT_TAB
@@ -197,10 +231,14 @@ into the text after the current position.
 cursor.
 
 :DT.CTRL_DEL (ctrl-delete)
-:DD.Delete the current line into the active &copybuffer..
+:DD.Delete the current line into the active
+.keyword &copybuffer.
+.
 
 :DT.CTRL_INS (ctrl-insert)
-:DD.Pastes the active &copybuffer into the text before the current position.
+:DD.Pastes the active
+.keyword &copybuffer.
+into the text before the current position.
 
 :DT.CTRL_D
 :DD.Move backwards
@@ -266,7 +304,9 @@ are inserted.
 .section 'Command Mode'
 .* ******************************************************************
 .np
-The following &cmdmode command descriptions show items within
+The following
+.keyword &cmdmode.
+command descriptions show items within
 angle brackets (&lt.&gt.).
 The angle brackets are there to indicate items that you may supply.
 You are not required to type the brackets.  For example, &lt.n&gt. simply
@@ -284,12 +324,15 @@ is enabled, the number that is typed appears in a special window called the
 .keyref countwindow
 .period
 .np
-Other commands may be preceded with a &copybuffer
+Other commands may be preceded with a
+.keyword &copybuffer.
 name, which is indicated with a
 .param &lt."?&gt.
 .period
 If you do not want the result of the operation to be copied into the
-active buffer, then an alternate buffer may be specified.
+active
+.keyword &copybuffer.
+, then an alternate buffer may be specified.
 The double quotes (")
 are required (this indicates that an alternate buffer is being specified),
 and then a buffer '1'-'9' or 'a'-'z' is specified. See the section
@@ -301,7 +344,9 @@ for more information.
 .section *refid=mvement 'Movement'
 .* ******************************************************************
 .np
-The following are &cmdmode commands that cause movement in the
+The following are
+.keyword &cmdmode.
+commands that cause movement in the
 current edit buffer.
 .*
 .keylist begin Movement
@@ -367,7 +412,8 @@ if( ( i=foo( x ) ) ) return;
 .millust end
 moves the cursor to the last closing brace (')') on the line.
 It is possible to set arbitrary pairs of match strings using the
-&cmdline command
+.keyword &cmdline.
+command
 .keyref match
 .period
 .endkey
@@ -1114,7 +1160,9 @@ instead of a letter, it puts &edvi in
 All characters typed are memorized until another dot ('.')
 is pressed.  The memorized keystrokes may be repeated by pressing
 a dot ('.').
-See the dot ('.') &cmdmode command later in this chapter.
+See the dot ('.')
+.keyword &cmdmode.
+command later in this chapter.
 .np
 If
 .param &lt.?&gt.
@@ -1125,7 +1173,9 @@ instead of a letter, it puts &edvi in alternate
 All characters typed are memorized until another equals sign ('=')
 is pressed.  The memorized keystrokes may be repeated by pressing
 an equals sign ('=').
-See the equals sign ('=') &cmdmode command later in this chapter.
+See the equals sign ('=')
+.keyword &cmdmode.
+command later in this chapter.
 .seecmd mark
 .np
 .xmplsect begin
@@ -1200,10 +1250,14 @@ foo, since the previous `` command was a non-linear movement command.
 .section *refid=cpybuff 'Copy Buffers'
 .* ******************************************************************
 .np
-A &copybuffer is a buffer where copied or deleted data is kept.
+A
+.keyword &copybuffer.
+is a buffer where copied or deleted data is kept.
 There are a number of these buffers available.  There are 9 default
 buffers that text is placed into when it is deleted/yanked (see
-the &cmdline commands
+the
+.keyword &cmdline.
+commands
 .keyref delete
 and
 .keyref yank
@@ -1214,26 +1268,37 @@ and
 :HDREF refid='cpytext'
 later in this chapter).
 These buffers are numbered 1 through 9, and any of these buffers may
-be the active &copybuffer..
+be the active
+.keyword &copybuffer.
+.
 .np
-The active &copybuffer may be selected using function keys. 
+The active
+.keyword &copybuffer.
+may be selected using function keys. 
 CTRL_F1 through CTRL_F9 select buffers 1 through 9 respectively.
 When a buffer is selected,
 information about its contents is displayed in the message window.
-This buffer becomes the active &copybuffer..
-All yanked/deleted text is copied into this buffer.
+This buffer becomes the active
+.keyword &copybuffer.
+. All yanked/deleted text is copied into this buffer.
 .np
-When text is yanked/deleted into the active &copybuffer,
-the contents of the the buffers are cascaded forward from the active
-buffer into the next one, with the last numbered &copybuffer
+When text is yanked/deleted into the active
+.keyword &copybuffer.
+, the contents of the the buffers are cascaded forward from the active
+buffer into the next one, with the last numbered
+.keyword &copybuffer.
 losing its contents. Any buffers that are before the active
-&copybuffer have their contents preserved.  For example, if buffer 3
-is the active buffer, then a deletion will cascade buffer 3 to buffer 4,
+.keyword &copybuffer.
+have their contents preserved.  For example, if buffer 3
+is the active
+.keyword &copybuffer.
+, then a deletion will cascade buffer 3 to buffer 4,
 buffer 4 to buffer 5, and so on, with the contents of buffer 9 being lost.
 Buffers 1 and 2 remain untouched, and buffer 3 gets a copy of the deleted text.
 .np
-There are several &cmdmode commands that add text to buffers; they
-are
+There are several
+.keyword &cmdmode.
+commands that add text to buffers; they are
 .*
 :DL break.
 .*
@@ -1260,10 +1325,12 @@ are
 .*
 :eDL.
 .*
-There is more information on these &cmdmode
+There is more information on these
+.keyword &cmdmode.
 commands later in this chapter.
 .np
-Text may be yanked/deleted into a specific &copybuffer
+Text may be yanked/deleted into a specific
+.keyword &copybuffer.
 by typing "[1-9] before
 the appropriate command. As well, there are 26 named buffers that may
 be used, 'a'-'z'.  When text is yanked or deleted into a named buffer,
@@ -1274,7 +1341,8 @@ To retrieve the contents of a buffer, use:
 .keylist begin 'Copy Buffers'
 .*
 .begkey SHIFT_INS &lt."?&gt.SHIFT_INS
-Puts (pastes) the contents of the active &copybuffer
+Puts (pastes) the contents of the active
+.keyword &copybuffer.
 after the cursor position in the current edit buffer. 
 .seecmd put
 .np
@@ -1285,20 +1353,23 @@ Copy the data in the named buffer
 after the current position in the file.
 .endxmpl
 .begxmpl SHIFT_INS
-Copy the data in the active buffer
+Copy the data in the active
+.keyword &copybuffer.
 after the current position in the file.
 .endxmpl
 .xmplsect end
 .endkey
 
 .begkey p &lt."?&gt.p
-Puts (pastes) the contents of the active &copybuffer
+Puts (pastes) the contents of the active
+.keyword &copybuffer.
 after the cursor position in the current edit buffer.
 .seecmd put
 .np
 .xmplsect begin
 .begxmpl p
-Copies the data in the active buffer after the current position in the file.
+Copies the data in the active
+.keyword &copybuffer.after the current position in the file.
 .endxmpl
 .begxmpl "5p
 Copies the data in the numbered buffer
@@ -1309,7 +1380,8 @@ after the current position in the file.
 .endkey
 
 .begkey P &lt."?&gt.P
-Puts (pastes) the contents of the active &copybuffer
+Puts (pastes) the contents of the active
+.keyword &copybuffer.
 before the cursor position in the current edit buffer.
 .seecmd put
 .np
@@ -1320,7 +1392,8 @@ Copy the data in the named buffer
 before the current position in the file.
 .endxmpl
 .begxmpl P
-Copy the data in the active buffer
+Copy the data in the active
+.keyword &copybuffer.
 before the current position in the file.
 .endxmpl
 .xmplsect end
@@ -1331,18 +1404,24 @@ before the current position in the file.
 .np
 Without a
 .param "?
-prefix, these commands retrieve the contents of the active buffer.
+prefix, these commands retrieve the contents of the active
+.keyword &copybuffer.
+.
 .np
-The contents of a &copybuffer
+The contents of a
+.keyword &copybuffer.
 may be executed, as if the contents were typed from the
 keyboard. See the
 .keyword @
-&cmdmode command later in this chapter.
+.keyword &cmdmode.
+command later in this chapter.
 .* ******************************************************************
 .section *refid=srching 'Searching'
 .* ******************************************************************
 .np
-The following &cmdmode commands are used for searching for text:
+The following
+.keyword &cmdmode.
+commands are used for searching for text:
 .*
 .keylist begin Searching
 .*
@@ -1409,8 +1488,11 @@ Once in the search string window, a number of keys have special meaning:
 .section 'Inserting Text'
 .* ******************************************************************
 .np
-The following commands cause &edvi to go from &cmdmode
-directly into &tinsmode:
+The following commands cause &edvi to go from
+.keyword &cmdmode.
+directly into
+.keyword &tinsmode.
+:
 .*
 .keylist begin 'Inserting Text'
 .*
@@ -1440,23 +1522,33 @@ edit buffer.
 .endkey
 
 .begkey o o
-Opens a line after the current line, and enters &tinsmode..
+Opens a line after the current line, and enters
+.keyword &tinsmode.
+.
 .endkey
 
 .begkey O O
-Opens a line before the current line, and enters &tinsmode..
+Opens a line before the current line, and enters
+.keyword &tinsmode.
+.
 .endkey
 .*
 .keylist end
 .*
-Once you are in &tinsmode, you can toggle back and forth between
+Once you are in
+.keyword &tinsmode.
+, you can toggle back and forth between
 insert and overstrike using the
 .keyword INS
-key.  You exit &tinsmode by pressing the
+key.  You exit
+.keyword &tinsmode.
+by pressing the
 .keyword ESC
 key. See the previous section,
 :HDREF refid='timode'.
-:cont., for more information on manipulating text in &tinsmode..
+:cont., for more information on manipulating text in
+.keyword &tinsmode.
+.
 .* ******************************************************************
 .section 'Replacing Text'
 .* ******************************************************************
@@ -1472,11 +1564,15 @@ Starts overstriking text at the current character in the edit buffer.
 Once you are overstriking text, you can toggle back and forth between
 overstrike and insert using the
 .keyword INS
-key.   You exit &tinsmode by pressing the
+key.   You exit
+.keyword &tinsmode.
+by pressing the
 .keyword ESC
 key. See the previous section,
 :HDREF refid='timode'.
-:cont., for more information on manipulating text in &tinsmode..
+:cont., for more information on manipulating text in
+.keyword &tinsmode.
+.
 .endkey
 
 .begkey r &lt.n&gt.r&lt.?&gt.
@@ -1509,7 +1605,8 @@ Replaces the next 10 characters with the letter
 .* ******************************************************************
 .np
 The commands in this section are for deleting text in
-an edit buffer.  All deleted text is copied into a &copybuffer
+an edit buffer.  All deleted text is copied into a
+.keyword &copybuffer.
 for later use, see the section
 :HDREF refid='cpybuff'.
 .period
@@ -1567,7 +1664,9 @@ Delete the next 17 characters into the numbered buffer
 
 .begkey DEL &lt.n&gt.&lt."?&gt.DEL
 Delete the character at the current cursor position. This behaves
-the same as the &cmdmode command
+the same as the
+.keyword &cmdmode.
+command
 .keyword x
 .period
 .np
@@ -1599,7 +1698,8 @@ Delete text from the current position in the file to the
 position specified by
 .param &lt.oper&gt.
 .period
-A copy of the text is placed into the specified &copybuffer
+A copy of the text is placed into the specified
+.keyword &copybuffer.
 .param &lt."?&gt.
 .period
 If no buffer is specified, then the text is placed into the active
@@ -1622,16 +1722,21 @@ which causes a single line to be deleted.
 .xmplsect begin
 .begxmpl dr
 Deletes the current selected (highlighted) region in the edit buffer.
-A copy is placed into the active &copybuffer..
+A copy is placed into the active
+.keyword &copybuffer.
+.
 .endxmpl
 .begxmpl "zdd
-Deletes the current line. A copy is placed into the named &copybuffer
+Deletes the current line. A copy is placed into the named
+.keyword &copybuffer.
 .param z
 .period
 .endxmpl
 .begxmpl 95dd
 Deletes 95 lines, starting at the current. A copy of the lines
-is placed into the active buffer.
+is placed into the active
+.keyword &copybuffer.
+.
 .endxmpl
 .begxmpl "cdfa
 Deletes the characters from the current column up to and including
@@ -1662,7 +1767,9 @@ buffer.
 .* ******************************************************************
 .np
 This section describes commands that are for yanking (copying) text.
-This text is placed into a &copybuffer, see the section
+This text is placed into a
+.keyword &copybuffer.
+, see the section
 :HDREF refid='cpybuff'.
 for more information.
 .*
@@ -1693,7 +1800,8 @@ Yanks (copies) text from the current position in the file to the
 position specified by
 .param &lt.oper&gt.
 .period
-Text is placed into the specified &copybuffer
+Text is placed into the specified
+.keyword &copybuffer.
 .param &lt."?&gt.
 .period
 If no buffer is specified, then the text is placed into the active
@@ -1715,15 +1823,21 @@ which causes a single line to be yanked.
 .np
 .xmplsect begin
 .begxmpl yy
-Yanks (copies) the current line into the active &copybuffer..
+Yanks (copies) the current line into the active
+.keyword &copybuffer.
+.
 .endxmpl
 .begxmpl 10yy
-Copies 10 lines, starting at the current, into the active buffer.
+Copies 10 lines, starting at the current, into the active
+.keyword &copybuffer.
+.
 .endxmpl
 .begxmpl y$
 Copies the characters from the current column to the end of the
 current line into
-the active buffer.
+the active
+.keyword &copybuffer.
+.
 .endxmpl
 .begxmpl "ay'm
 Yanks the lines from the current line to the line with mark
@@ -1756,7 +1870,9 @@ from the start of the line to the first letter in the string
 .np
 The following commands are for changing text.
 If a range of lines is being changed, the lines are deleted and &edvi
-enters &tinsmode..
+enters
+.keyword &tinsmode.
+.
 .np
 If the change is taking place on the single line, the range of
 characters being changed is highlighted, and the last character in the
@@ -1769,7 +1885,9 @@ is not set, then the change command is cancelled. If
 .keyref changelikevi 1
 is set, then the highlighted area is deleted.  If anything other than the
 .keyword ESC
-key is pressed, the highlighted area is deleted and &edvi enters &tinsmode..
+key is pressed, the highlighted area is deleted and &edvi enters
+.keyword &tinsmode.
+.
 .*
 .keylist begin 'Changing Text'
 .*
@@ -1777,7 +1895,8 @@ key is pressed, the highlighted area is deleted and &edvi enters &tinsmode..
 This command changes the characters on the current line from the current
 character to the end of the line.  The character range is highlighted, and
 once a character is typed, the highlighted text is
-deleted, and &tinsmode
+deleted, and
+.keyword &tinsmode.
 is entered.
 .np
 This command is the same as typing
@@ -1787,7 +1906,9 @@ This command is the same as typing
 
 .begkey S &lt.n&gt.S
 This command substitutes the current line with text.  The text on the current
-line is deleted, and &tinsmode is entered.  If a repeat count
+line is deleted, and
+.keyword &tinsmode.
+is entered.  If a repeat count
 .param &lt.n&gt.
 is specified, then
 .param &lt.n&gt.
@@ -1847,31 +1968,40 @@ which causes a single line to be changed.
 Changes the current selected (highlighted) region in the edit buffer.
 .endxmpl
 .begxmpl cc
-Change the current line. The current line is deleted, and &tinsmode
+Change the current line. The current line is deleted, and
+.keyword &tinsmode.
 is entered.
 .endxmpl
 .begxmpl 95cc
 Changes 95 lines, starting at the current. The lines are deleted,
-and &tinsmode is entered.
+and
+.keyword &tinsmode.
+is entered.
 .endxmpl
 .begxmpl cw
 Change the current word.  The current word is highlighted, and once
 a character other than
 .param ESC
-is typed, the word is deleted and &tinsmode is entered.
+is typed, the word is deleted and
+.keyword &tinsmode.
+is entered.
 .endxmpl
 .begxmpl c$
 Changes from the current column to the end of the
 current line. 
 The column range is highlighted, and once a character other than
 .param ESC
-is typed, the column range is deleted and &tinsmode is entered.
+is typed, the column range is deleted and
+.keyword &tinsmode.
+is entered.
 .endxmpl
 .begxmpl 2cfa
 Changes from the current column to the second letter a on the current line.
 The column range is highlighted, and once a character other than
 .param ESC
-is typed, the column range is deleted and &tinsmode is entered.
+is typed, the column range is deleted and
+.keyword &tinsmode.
+is entered.
 .endxmpl
 .xmplsect end
 .endkey
@@ -1980,7 +2110,9 @@ spaces.
 .section 'Case Toggling'
 .* ******************************************************************
 .np
-The case toggle &cmdmode command switches upper case letters to
+The case toggle
+.keyword &cmdmode.
+command switches upper case letters to
 lower case, and lower case letters to upper case.
  An example of its behaviour is changing the
 line
@@ -2050,8 +2182,11 @@ Toggles the case of the current line and the 9 lines following.
 .section 'Filters'
 .* ******************************************************************
 .np
-The &cmdmode filter command has the same functionality as the
-&cmdline command
+The
+.keyword &cmdmode.
+filter command has the same functionality as the
+.keyword &cmdline.
+command
 .keyword filter
 .period
 .se plural = 0
@@ -2127,7 +2262,9 @@ background the colors of the line.  A selected region could look
 as follows:
 .figure *depth='2.47' *scale='59' *file='vi026' Selected Text Region
 .np
-The following are the &cmdmode commands for selecting text and
+The following are the
+.keyword &cmdmode.
+commands for selecting text and
 manipulating selected text.
 .*
 .keylist begin 'Text Selection'
@@ -2183,16 +2320,21 @@ position are selected.
 .endkey
 
 .begkey SHIFT_DEL &lt."?&gt.SHIFT_DEL
-Deletes the currently selected region.  If the &copybuffer
+Deletes the currently selected region.  If the
+.keyword &copybuffer.
 .param &lt."?&gt.
 is specified, the region is copied into that buffer,
-otherwise the data is copied into the active buffer.
+otherwise the data is copied into the active
+.keyword &copybuffer.
+.
 .endkey
 
 .begkey _ _ (underscore)
 Simulates the right mouse being clicked at the current cursor position.
 If a region is not selected, then the current word will be selected.
-The word is defined using the &cmdline command
+The word is defined using the
+.keyword &cmdline.
+command
 .keyref word
 .period
 .endkey
@@ -2251,7 +2393,8 @@ Char 'e': 0x65 (101)
 
 .begkey CTRL_] CTRL_]  (control right square bracket)
 Go to the tag given by the current word.  The word is defined using the
-&cmdline command
+.keyword &cmdline.
+command
 .keyref word
 .period
 .seecmd tag
@@ -2282,14 +2425,19 @@ be inserted directly into the edit buffer.
 .endkey
 
 .begkey : : (colon)
-Allows entry of a &cmdline..
+Allows entry of a
+.keyword &cmdline.
+.
 See the chapter
 :HDREF refid='cmds'
-for full details on &cmdline commands.
+for full details on
+.keyword &cmdline.
+commands.
 .endkey
 
 .begkey @ @&lt.?&gt. (at sign)
-This command executes the &copybuffer
+This command executes the
+.keyword &copybuffer.
 .param &lt.?&gt.
 .period
 &edvi behaves as if the contents
@@ -2401,7 +2549,9 @@ Restore the last pushed file and position.
 .endkey
 
 .begkey . . (dot)
-Repeat the last &cmdmode command that changed text in
+Repeat the last
+.keyword &cmdmode.
+command that changed text in
 the edit buffer. It is also possible to memorize more than
 just one command for '.' by using
 .keyword memorize mode

@@ -32,7 +32,10 @@
 .* 28-sept-05   L. Haynes       reformat for hlp
 .*
 .****************************************************************************/
-:LI.Make sure you are in &cmdmode and enter the &cmdline
+:LI.Make sure you are in
+.keyword &cmdmode.
+and enter the
+.keyword &cmdline.
 .millust begin
 :q!
 .millust end

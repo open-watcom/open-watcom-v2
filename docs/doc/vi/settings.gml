@@ -103,16 +103,22 @@ The section contains descriptions of the boolean settings.
 .setcmd *short=ai autoindent
 .setsyntx
 .begdescr
-In text insertion mode, &cmd_long causes the cursor to move to
+In
+.keyword &tinsmode.
+, &cmd_long causes the cursor to move to
 start of previous line when a new line is started.
-In &cmdmode, &cmd_long causes the cursor to go to the first non
+In
+.keyword &cmdmode.
+, &cmd_long causes the cursor to go to the first non
 white-space when ENTER is pressed.
 .enddescr
 
 .setcmd *short=ac automessageclear
 .setsyntx
 .begdescr
-Automatically erases the message window when a key is typed in &cmdmode..
+Automatically erases the message window when a key is typed in
+.keyword &cmdmode.
+.
 .enddescr
 
 .setcmd *short=bf beepflag
@@ -210,7 +216,9 @@ characters.
 .begdescr
 Display the current file status whenever the
 .keyword ESC
-key is pressed in &cmdmode..
+key is pressed in
+.keyword &cmdmode.
+.
 .enddescr
 
 .setcmd *short=xm extendedmemory
@@ -393,7 +401,7 @@ to the next or previous line.
 If this option is set, pressing backspace while on column one of
 a line will cause &edvi to wrap to the end of the previous line
 (while in
-.keyword text insertion mode
+.keyword &tinsmode.
 :cont.).
 .enddescr
 
@@ -548,7 +556,9 @@ parameter.
 .setcmd *parm=size commandcursortype
 .setsyntx
 .begdescr
-Sets the size of the cursor when in &cmdmode..
+Sets the size of the cursor when in
+.keyword &cmdmode.
+.
 Values for &cmd_parm are 0 to 100 (0=full size, 100=thin).
 .enddescr
 
@@ -612,7 +622,9 @@ saved across editing sessions in the file &cmd_parm..
 .setcmd *parm=size insertcursortype
 .setsyntx
 .begdescr
-Sets the size of the cursor when inserting text in &tinsmode..
+Sets the size of the cursor when inserting text in
+.keyword &tinsmode.
+.
 Values for &cmd_parm
 are 0 to 100 (0=full size, 100=thin).
 .enddescr
@@ -633,7 +645,9 @@ Magic characters are:
 .setcmd *parm=numcmds maxclhistory
 .setsyntx
 .begdescr
-&edvi keeps a history of commands entered at the &cmdline..
+&edvi keeps a history of commands entered at the
+.keyword &cmdline.
+.
 &cmd_parm sets the number of commands kept in the history.
 .enddescr
 
@@ -710,7 +724,7 @@ top of the new page.
 .setsyntx
 .begdescr
 Sets the size of the cursor when in overstriking text in
-.keyword text insertion mode
+.keyword &tinsmode.
 .period
 Values for &cmd_parm are 0 to 100 (0=full size, 100=thin).
 .enddescr
@@ -719,7 +733,8 @@ Values for &cmd_parm are 0 to 100 (0=full size, 100=thin).
 .setsyntx
 .begdescr
 Sets the radix (base) of the results of using the
-&cmdline command
+.keyword &cmdline.
+command
 .keyref eval
 .period
 The default is base 10.
@@ -729,7 +744,9 @@ The default is base 10.
 .setsyntx
 .begdescr
 Sets the number of spaces inserted/deleted by the shift operators ('&gt.'
-and '&lt.'), CTRL_D and CTRL_T in text insertion mode, and by
+and '&lt.'), CTRL_D and CTRL_T in
+.keyword &tinsmode.
+, and by
 .keyref autoindent 1
 and
 .keyref cmode 1
@@ -822,8 +839,9 @@ command.
 .setcmd *parm=nsp tabamount
 .setsyntx
 .begdescr
-Sets the number of spaces inserted when the tab key is pressed in
-a text insertion mode.  If
+Sets the number of spaces inserted when the tab key is pressed in a
+.keyword &tinsmode.
+.  If
 .keyref realtabs 1
 is set, these spaces will be changed into tabs, based on the setting of
 .keyref hardtab

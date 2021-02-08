@@ -41,14 +41,30 @@
 Regular expressions are a powerful method of matching strings in your text.
 Commands that use regular expressions are:
 :UL.
-:LI.forward slash ('/') command mode key (search forwards)
-:LI.question mark ('?') command mode key (search backwards)
-:LI.forward slash ('/') command line address (search forwards)
-:LI.question mark ('?') command line address (search backwards)
-:LI.substitute command line command
-:LI.global command line command
-:LI.egrep command line command
-:LI.match command line command
+:LI.forward slash ('/')
+.keyword &cmdmode.
+key (search forwards)
+:LI.question mark ('?')
+.keyword &cmdmode.
+key (search backwards)
+:LI.forward slash ('/')
+.keyword &cmdline.
+address (search forwards)
+:LI.question mark ('?')
+.keyword &cmdline.
+address (search backwards)
+:LI.substitute
+.keyword &cmdline.
+command
+:LI.global
+.keyword &cmdline.
+command
+:LI.egrep
+.keyword &cmdline.
+command
+:LI.match
+.keyword &cmdline.
+command
 :eUL.
 .np
 Different characters in a regular expression match different things.
@@ -354,7 +370,9 @@ If
 is NOT set, then any special characters listed in
 .keyref magicstring
 lose their special meaning, and are treated as regular characters.
-For example, the following &cmdline commands
+For example, the following
+.keyword &cmdline.
+commands
 .millust begin
 set nomagic
 set magicstring=()

@@ -38,14 +38,18 @@
 :cmt. .do end
 .*
 The &edname supports a powerful command language.  In a script,
-you may use any &cmdline command, along with a number of special commands
+you may use any
+.keyword &cmdline.
+command, along with a number of special commands
 explicitly for the script environment.
 .np
 White space is ignored in a script file, unless a line starts with a
 right angle bracket ('&gt.'). Comments may be imbedded in a script file
 by starting the line with pound sign ('#').
 .np
-A script is invoked using the &cmdline command
+A script is invoked using the
+.keyword &cmdline.
+command
 .keyref source
 .period
 Examples are:
@@ -121,7 +125,8 @@ the section
 of this chapter.
 .do end
 .np
-There are several useful &cmdline
+There are several useful
+.keyword &cmdline.
 commands dealing with &edvi scripts, they are:
 
 .*
@@ -292,7 +297,9 @@ The hook points are:
 :UL.
 :LI.after a new file has been read.
 :LI.before a modified file is saved and exited.
-:LI.after return is pressed on the &cmdline..
+:LI.after return is pressed on the
+.keyword &cmdline.
+.
 :LI.whenever an unmodified file is modified.
 :LI.whenever a selected (highlighted) column range is
 chosen (via mouse click or keyboard).
@@ -320,11 +327,14 @@ The script invoked is the file specified by the global variable
 
 :DT.Command Hook
 :DD.The hook script
-is called after the return is pressed from the &cmdline..
+is called after the return is pressed from the
+.keyword &cmdline.
+.
 The global variable
 .var %(Com)
 contains the current command string, and may be modified.
-Whatever it is modified to is what will be processed by the &cmdline
+Whatever it is modified to is what will be processed by the
+.keyword &cmdline.
 processor.
 .np
 The script invoked is the file specified by the global variable
@@ -346,7 +356,8 @@ The script invoked is the file specified by the global variable
 is called whenever a selected column range
 has been picked.  Picking a selected region is done by
 right-clicking the region with the mouse, or by double clicking
-the region with the mouse, or by using the underscore ('_') &cmdmode
+the region with the mouse, or by using the underscore ('_')
+.keyword &cmdmode.
 keystroke.
 .np
 The script is invoked with the following parameters:
@@ -370,7 +381,8 @@ is called whenever a selected line range
 has been picked.  Picking a selected region is done by
 right-clicking the region with the mouse, or by double clicking
 the region with the mouse, or by using the underscore ('_')
-&cmdmode keystroke.
+.keyword &cmdmode.
+keystroke.
 :DL break.
 :DT.%1
 :DD.Line on screen where selection request occurred.
@@ -1635,7 +1647,9 @@ If the script was invoked by another script, then this value becomes
 .keyword lastrc
 .period
 .np
-If the script was invoked at the &cmdline, then this return code
+If the script was invoked at the
+.keyword &cmdline.
+, then this return code
 is reported as the appropriate error, if &parm1 is not
 .param ERR_NO_ERR
 .period

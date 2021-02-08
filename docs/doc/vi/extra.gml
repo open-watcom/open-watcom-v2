@@ -42,13 +42,6 @@
 .* 12   sans-serif 32pt
 .****************************************************************************/
 
-:cmt. CTRL_A, 0x01
-
-:cmt. .'se cmdmode=';.bd command mode;.ct '
-:cmt. .'se tinsmode=';.bd text insertion mode;.ct '
-:cmt. .'se cmdline=';.bd command line;.ct '
-:cmt. .'se copybuffer=';.bd copy buffer;.ct '
-
 .se cmdmode='command mode'
 .se tinsmode='text insertion mode'
 .se cmdline='command line'
@@ -78,7 +71,7 @@
 
 .dm keyword begin
 :cmt. .ix '&*'
-:SF font=2.&*:eSF.
+:SF font=3.&*:eSF.
 .dm keyword end
 
 .dm keyref begin
@@ -619,7 +612,7 @@ Only valid in
 .dm seecmd begin
 .sk
 Also see the
-:SF font=2.command line:eSF.
+.keyword &cmdline.
 command
 .keyref &*.
 .period

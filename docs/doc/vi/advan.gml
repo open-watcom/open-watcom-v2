@@ -44,7 +44,9 @@ is assumed.
 .section 'The Substitute Command'
 .*
 .np
-The &cmdline command
+The
+.keyword &cmdline.
+command
 .keyref substitute
 is a powerful mechanism for changing text in your file.  For every match
 of a string, the string can be replaced with something else.
@@ -90,21 +92,29 @@ that you want it to be done.
 in the previous chapter
 :HDREF page=no refid='inter'.
 .period
-Enter the &cmdline command (remember to press colon (':') to bring up the
+Enter the
+.keyword &cmdline.
+command (remember to press colon (':') to bring up the
 command window):
 .millust begin
 :1,$s/This/This This/
 .millust end
 All lines will have the word "This" replaced with "This This".
 
-:LI.Enter the &cmdline command:
+:LI.Enter the
+.keyword &cmdline.
+command:
 .millust begin
 :1,$s/This/Change/
 .millust end
 Notice that only the first occurrence of the word "This" was replaced.
 
-:LI.Type the letter 'u' in &cmdmode to undo the change you just made.
-Then enter the &cmdline command:
+:LI.Type the letter 'u' in
+.keyword &cmdmode.
+to undo the change you just made.
+Then enter the
+.keyword &cmdline.
+command:
 .millust begin
 :1,$s/This/Change/g
 .millust end
@@ -117,7 +127,9 @@ Now all of the occurrences of "This" were replaced.
 .section 'The Global Command'
 .* ******************************************************************
 .np
-The &cmdline command
+The
+.keyword &cmdline.
+command
 .keyref global
 is a method of executing a command on every line that has (or does not have)
 a specific string.
@@ -138,13 +150,17 @@ specifies the lines that the
 command is to work on.  If no line range
 is specified, then all the lines in the file is assumed.
 .np
-The &cmdline command
+The
+.keyword &cmdline.
+command
 .param &lt.cmd&gt.
 will be executed on every line that has the string
 .param &lt.string&gt.
 .period
 .np
-If the exclamation mark ('!') is used, then the &cmdline command
+If the exclamation mark ('!') is used, then the
+.keyword &cmdline.
+command
 .param &lt.cmd&gt.
 will be executed on every line that does not have the string
 .param &lt.string&gt.
@@ -158,7 +174,9 @@ will be executed on every line that does not have the string
 in the previous chapter
 :HDREF page=no refid='inter'.
 .period
-Enter the &cmdline command (remember to press colon (':') to bring up the
+Enter the
+.keyword &cmdline.
+command (remember to press colon (':') to bring up the
 command window):
 .millust begin
 :g/This/delete
@@ -167,14 +185,16 @@ Each line that contains the word "This" on it will have the
 .keyref delete
 command executed on it.
 :LI.Press the 'u' key to undo the previous global command, then enter the
-&cmdline command:
+.keyword &cmdline.
+command:
 .millust begin
 :g/1/delete
 .millust end
 All lines with the character '1' in them will be deleted.
 
 :LI.Press the 'u' key to undo the previous global command, then enter the
-&cmdline command:
+.keyword &cmdline.
+command:
 .millust begin
 :g!/1/delete
 .millust end
@@ -187,7 +207,9 @@ All lines without the character '1' in them will be deleted.
 .section 'Searching Files For Text'
 .* ******************************************************************
 .np
-There are &cmdline commands provided to search through all files for
+There are
+.keyword &cmdline.
+commands provided to search through all files for
 some text.  These commands differ from the search commands outlined
 in the section
 :HDREF refid='stext'.
@@ -270,11 +292,17 @@ The selection window appears as follows:
 .* ******************************************************************
 .np
 A powerful feature in &edname is the ability to change the meaning of
-any key in &cmdmode or &tinsmode..
+any key in
+.keyword &cmdmode.
+or
+.keyword &tinsmode.
+.
 Using this feature, you can configure the editor any way which suits your
 needs.
 .np
-The &cmdline commands
+The
+.keyword &cmdline.
+commands
 .keyref map
 and
 .keyref mapbase
@@ -290,7 +318,9 @@ Both commands remap the specified key
 to execute the characters in
 .param &lt.string&gt.
 .period
-Whenever the specified key is pressed while in &cmdmode, it is equivalent
+Whenever the specified key is pressed while in
+.keyword &cmdmode.
+, it is equivalent
 to typing the characters in
 .param &lt.string&gt.
 .period
@@ -298,7 +328,11 @@ to typing the characters in
 In the
 .keyref map
 command, specifying the exclamation point ('!') causes the map to be
-for &tinsmode, rather than &cmdmode..
+for
+.keyword &tinsmode.
+, rather than
+.keyword &cmdmode.
+.
 .np
 It is possible for
 .param &lt.string&gt.
@@ -308,7 +342,9 @@ should use the
 .keyref mapbase
 command.
 .np
-To remove the mapping of a key, the &cmdline command
+To remove the mapping of a key, the
+.keyword &cmdline.
+command
 .keyref unmap
 is used.  The syntax of this command is:
 .millust begin
@@ -338,7 +374,9 @@ then you may enter:
 in the previous chapter
 :HDREF page=no refid='inter'.
 .period
-Enter the following &cmdline command:
+Enter the following
+.keyword &cmdline.
+command:
 .millust begin
 :map F5 dd
 .millust end
@@ -350,13 +388,17 @@ Try pressing
 .param F5
 a few times to verify this.
 
-:LI.Enter the &cmdline command
+:LI.Enter the
+.keyword &cmdline.
+command
 .millust begin
 :unmap F5
 .millust end
 and try pressing F5 again.  It will no longer delete lines.
 
-:LI.Enter the &cmdline command
+:LI.Enter the
+.keyword &cmdline.
+command
 .millust begin
 :map F6 :date\n
 .millust end
@@ -379,7 +421,8 @@ The time and date will be displayed in the message window.
 You will notice that the command window no longer flashes.
 
 :LI. Bring up the command window ( press ':') and press cursor up.  You will
-notice that the date commands are in your history.  Now, enter the &cmdline
+notice that the date commands are in your history.  Now, enter the
+.keyword &cmdline.
 command:
 .millust begin
 :map F6 \x:\hdate\n
@@ -389,24 +432,35 @@ Press
 a few times.  Bring up the command window again and cursor up.  You
 will see that the date commands did not get added to the history.
 
-:LI.Enter the &cmdline command:
+:LI.Enter the
+.keyword &cmdline.
+command:
 .millust begin
 :map! F6 \edwi
 .millust end
 Whenever you press
 .param F6
-in &tinsmode, you will exit insert mode (the \e is like pressing the
+in
+.keyword &tinsmode.
+, you will exit insert mode (the \e is like pressing the
 .param ESC
 key), delete the current word, and then re-enter insert mode.
-Try entering &tinsmode and pressing
+Try entering
+.keyword &tinsmode.
+and pressing
 .param F6
 .period
 
-:LI.Exit &tinsmode and press
+:LI.Exit
+.keyword &tinsmode.
+and press
 .param F6
 .period
-You will notice that the date is still displayed, since the &tinsmode
-and &cmdmode mappings for
+You will notice that the date is still displayed, since the
+.keyword &tinsmode.
+and
+.keyword &cmdmode.
+mappings for
 .param F6
 are different.
 

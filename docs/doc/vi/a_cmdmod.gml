@@ -38,7 +38,8 @@
 :cmt. .do end
 .np
 The following is a list of all possible keys that may be pressed in
-command mode, and their default behaviour.
+.keyword &cmdmode.
+, and their default behaviour.
 .np
 Commands preceded with a
 .param <n>
@@ -46,7 +47,9 @@ take a repeat count.
 .np
 Commands preceded with a
 .param <"?>
-accept a copy buffer name.
+accept a
+.keyword &copybuffer.
+name.
 .np
 Commands that accept mark letter ('a'-'z') have a
 .param <?>
@@ -127,7 +130,9 @@ in their definition.
 :DD.Go to the start of the previous line.
 
 :DT..
-:DD.Repeat last command mode sequence that changed the edit buffer.
+:DD.Repeat last
+.keyword &cmdmode.
+sequence that changed the edit buffer.
 
 :DT./
 :DD.Search forward for a string.
@@ -136,7 +141,9 @@ in their definition.
 :DD.Move to the first character on the current line.
 
 :DT.:
-:DD.Enter a command line command.
+:DD.Enter a
+.keyword &cmdline.
+command.
 
 .dc cw OFF
 :DT.;
@@ -153,7 +160,9 @@ in their definition.
 :DD.Search backwards for a string
 
 :DT.@
-:DD.Execute a copy buffer as if it were typed at the keyboard.
+:DD.Execute a
+.keyword &copybuffer.
+as if it were typed at the keyboard.
 
 :DT.A
 :DD.Start inserting text at the end of the current line.
@@ -196,11 +205,14 @@ current line.
 :DD.Repeat the last find command, only search in the opposite direction.
 
 :DT.O
-:DD.Open a blank line above the current line, and enter &tinsmode
+:DD.Open a blank line above the current line, and enter
+.keyword &tinsmode.
 .period
 
 :DT.<"?>P
-:DD.Insert a copy buffer before the current position.
+:DD.Insert a
+.keyword &copybuffer.
+before the current position.
 
 :DT.Q
 :DD.Enter
@@ -292,7 +304,9 @@ on the current line.
 :DD.Open a new line after the current line, and start inserting text.
 
 :DT.<"?>p
-:DD.Insert a copy buffer at the current position in the edit buffer.
+:DD.Insert a
+.keyword &copybuffer.
+at the current position in the edit buffer.
 
 :DT.<n>r
 :DD.Replace the current character.
@@ -375,31 +389,49 @@ on the current line.
 :DD.Move to the end of the current line.
 
 :DT.CTRL_F1
-:DD.Make copy buffer 1 active.
+:DD.Make
+.keyword &copybuffer.
+1 active.
 
 :DT.CTRL_F2
-:DD.Make copy buffer 2 active.
+:DD.Make
+.keyword &copybuffer.
+2 active.
 
 :DT.CTRL_F3
-:DD.Make copy buffer 3 active.
+:DD.Make
+.keyword &copybuffer.
+3 active.
 
 :DT.CTRL_F4
-:DD.Make copy buffer 4 active.
+:DD.Make
+.keyword &copybuffer.
+4 active.
 
 :DT.CTRL_F5
-:DD.Make copy buffer 5 active.
+:DD.Make
+.keyword &copybuffer.
+5 active.
 
 :DT.CTRL_F6
-:DD.Make copy buffer 6 active.
+:DD.Make
+.keyword &copybuffer.
+6 active.
 
 :DT.CTRL_F7
-:DD.Make copy buffer 7 active.
+:DD.Make
+.keyword &copybuffer.
+7 active.
 
 :DT.CTRL_F8
-:DD.Make copy buffer 8 active.
+:DD.Make
+.keyword &copybuffer.
+8 active.
 
 :DT.CTRL_F9
-:DD.Make copy buffer 9 active.
+:DD.Make
+.keyword &copybuffer.
+9 active.
 
 :DT.ALT_M
 :DD.Display current memory state.
@@ -432,7 +464,9 @@ on the current line.
 :DD.Delete selected region.
 
 :DT.<"?>SHIFT_INS
-:DD.Insert a copy buffer at the current position in the edit buffer.
+:DD.Insert a
+.keyword &copybuffer.
+at the current position in the edit buffer.
 .*
 :eDL.
 .*
