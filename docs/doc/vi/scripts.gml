@@ -299,7 +299,7 @@ The hook points are:
 :LI.before a modified file is saved and exited.
 :LI.after return is pressed on the
 .keyword &cmdline.
-.
+.period
 :LI.whenever an unmodified file is modified.
 :LI.whenever a selected (highlighted) column range is
 chosen (via mouse click or keyboard).
@@ -329,7 +329,7 @@ The script invoked is the file specified by the global variable
 :DD.The hook script
 is called after the return is pressed from the
 .keyword &cmdline.
-.
+.period
 The global variable
 .var %(Com)
 contains the current command string, and may be modified.

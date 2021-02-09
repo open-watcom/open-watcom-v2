@@ -36,6 +36,7 @@
 .keyword &cmdmode.
 and enter the
 .keyword &cmdline.
+command:
 .millust begin
 :q!
 .millust end

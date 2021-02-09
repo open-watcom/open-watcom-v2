@@ -95,7 +95,7 @@ on what mode you are in.  &edvi has two main modes,
 .keyword &cmdmode.
 and
 .keyword &tinsmode.
-.
+.period
 .np
 While in
 .keyword &cmdmode.
@@ -152,14 +152,14 @@ key is one of the more important keys in &edvi.. Pressing
 once will stop whatever you are doing and
 return you to
 .keyword &cmdmode.
-.
+.period
 If you have started a
 .keyword &cmdmode.
 sequence, pressing
 .param ESC
 will cancel the command and return you to
 .keyword &cmdmode.
-.
+.period
 .exercises
 Start up &edvi by typing
 .millust begin
@@ -225,7 +225,7 @@ various cursor keys.  The basic keys that you use to move around are:
 .np
 These same cursor keys may also be used when entering text in
 .keyword &tinsmode.
-.
+.period
 .* ******************************************************************
 .section *refid=savexit 'Saving and Exiting a File'
 .* ******************************************************************
@@ -334,7 +334,7 @@ may press the
 .param ESC
 key to return to
 .keyword &cmdmode.
-.
+.period
 .np
 While you are in
 .keyword &tinsmode.
@@ -476,7 +476,7 @@ When you are done typing these lines, remember to press the
 .param ESC
 key to return to
 .keyword &cmdmode.
-.
+.period
 .np
 Press
 .param CTRL_G
@@ -598,7 +598,7 @@ noted that pressing
 (control-delete) deleted a line when inputting text.
 This same command can be used while in
 .keyword &cmdmode.
-.
+.period
 .np
 If you want to delete more than one line at once, you may precede
 this delete command with a

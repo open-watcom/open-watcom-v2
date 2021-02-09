@@ -66,7 +66,7 @@ This chapter discusses the advanced features of &edvi..
 This chapter describes the keystrokes that initiate the many different
 features of
 .keyword &cmdmode.
-.
+.period
 
 :DT.Chapter 6
 :DD.:CIT.Editor Command Line:eCIT.

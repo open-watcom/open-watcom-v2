@@ -296,7 +296,7 @@ any key in
 .keyword &cmdmode.
 or
 .keyword &tinsmode.
-.
+.period
 Using this feature, you can configure the editor any way which suits your
 needs.
 .np
@@ -332,7 +332,7 @@ for
 .keyword &tinsmode.
 , rather than
 .keyword &cmdmode.
-.
+.period
 .np
 It is possible for
 .param &lt.string&gt.

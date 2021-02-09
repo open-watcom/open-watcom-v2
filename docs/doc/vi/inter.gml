@@ -61,7 +61,7 @@ menu.
 
 :LI.Press the colon (':') key when in
 .keyword &cmdmode.
-.
+.period
 Remember to press the
 .param ESC
 key to ensure that you are in
@@ -293,7 +293,7 @@ key while in
 .keyword &cmdmode.
 or
 .keyword &tinsmode.
-.
+.period
 This function key moves you to the next file in the list of files that
 you are editing.
 .np
@@ -303,7 +303,7 @@ key while in
 .keyword &cmdmode.
 or
 .keyword &tinsmode.
-.
+.period
 This function key moves you to the previous file in the list of files that
 you are editing.
 .np
@@ -715,7 +715,7 @@ The
 if it has been modified, and then exit the file.  This is the exact
 same as typing 'ZZ' in
 .keyword &cmdmode.
-.
+.period
 .*
 .exercises
 :OL.
@@ -827,7 +827,7 @@ You could also use the command
 to do the same thing.  Both of these commands do the same thing as
 pressing 'ZZ' while in
 .keyword &cmdmode.
-.
+.period
 
 :LI.Start up &edvi as follows:
 .millust begin
@@ -1375,16 +1375,21 @@ you do not specify a buffer, then the active
 .keyword &copybuffer.
 is assumed.
 There are 9 numbered buffers (1-9) that may be selected as the active
-buffer (buffer 1 is the default active
 .keyword &copybuffer.
-).  When text enters the
-active
+(buffer 1 is the default active
+.keyword &copybuffer.
+).  When text enters the active
 .keyword &copybuffer.
 , the old contents of the active
 .keyword &copybuffer.
-spills into the
-next buffer.  The contents of each buffer spills into the next, with the end
-buffer (9) losing its contents.
+spills into the next
+.keyword &copybuffer.
+.period
+The contents of each
+.keyword &copybuffer.
+spills into the next, with the end
+.keyword &copybuffer.
+(9) losing its contents.
 .np
 The active
 .keyword &copybuffer.
@@ -1394,7 +1399,7 @@ through
 .param CTRL_F9
 in
 .keyword &cmdmode.
-.
+.period
 When you do this, a message appears showing you which buffer
 has been selected, how many lines/characters are in the buffer, and the first
 line of the buffer.
@@ -1403,7 +1408,9 @@ There are also 26 named buffers, 'a' through 'z'.  The contents of
 these buffers is constant over the life of your editing session.  They
 retain their contents until you update them.
 .np
-For more information on copy buffers, see the section
+For more information on
+.keyword &copybuffer.
+, see the section
 :HDREF refid='cpybuff'
 in the chapter
 :HDREF page=no refid='modes'
@@ -1454,8 +1461,7 @@ The put (paste)
 .keyword &cmdline.
 commands accept a
 .keyword &copybuffer.
-as the buffer
-to paste out of.  The default is the active
+as the buffer to paste out of.  The default is the active
 .keyword &copybuffer.
 , but any buffer can be specified. Once again,
 .param &lt."?&gt.
@@ -1490,7 +1496,7 @@ The
 .param &lt."?&gt.
 is an optional
 .keyword &copybuffer.
-.
+.period
 If it is not specified, then the active
 .keyword &copybuffer.
 is used.  The double quotes (") must be specified.
@@ -1603,11 +1609,11 @@ key, the change will be cancelled.
 Once you type a character, the characters will be deleted and you will
 enter
 .keyword &tinsmode.
-.
+.period
 .np
 If you are changing whole lines, the lines are deleted and you enter
 .keyword &tinsmode.
-.
+.period
 .np
 Once you have entered the change sub-mode, you can then specify one of the
 following operations:
@@ -1651,7 +1657,7 @@ and press the
 .param ESC
 key to exit
 .keyword &tinsmode.
-.
+.period
 Your original line:
 .millust begin
 01 This is a test line.
@@ -1663,7 +1669,8 @@ This is new text. This is a test line.
 
 :LI.Type '2cc'.  The first two lines will be deleted, and you will enter
 .keyword &tinsmode.
-.  Type the following:
+.period
+Type the following:
 .millust begin
 This is more new text.
 .millust end
@@ -1694,7 +1701,7 @@ you made the changes.
 .np
 A change can be undone by pressing the letter 'u' while in
 .keyword &cmdmode.
-.
+.period
 You can undo further changes by pressing 'u' repeatedly.
 .np
 If you undo a change you wanted to keep, you can
@@ -1732,7 +1739,8 @@ for more information.
 Delete the first line, delete the second line, then delete the third
 line (one at a time).  Then, press 'u' in
 .keyword &cmdmode.
-.  The third line will come back.
+.period
+The third line will come back.
 
 :LI.Press 'u' again.  The second line will come back.
 
@@ -1759,7 +1767,7 @@ appear.
 
 :LI.Press the capital u ('U') key in
 .keyword &cmdmode.
-.
+.period
 The first line will now disappear, as you are undoing your undo.
 
 :LI.Press 'U' again.  The second line will disappear.

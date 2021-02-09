@@ -118,7 +118,7 @@ white-space when ENTER is pressed.
 .begdescr
 Automatically erases the message window when a key is typed in
 .keyword &cmdmode.
-.
+.period
 .enddescr
 
 .setcmd *short=bf beepflag
@@ -218,7 +218,7 @@ Display the current file status whenever the
 .keyword ESC
 key is pressed in
 .keyword &cmdmode.
-.
+.period
 .enddescr
 
 .setcmd *short=xm extendedmemory
@@ -558,7 +558,7 @@ parameter.
 .begdescr
 Sets the size of the cursor when in
 .keyword &cmdmode.
-.
+.period
 Values for &cmd_parm are 0 to 100 (0=full size, 100=thin).
 .enddescr
 
@@ -624,7 +624,7 @@ saved across editing sessions in the file &cmd_parm..
 .begdescr
 Sets the size of the cursor when inserting text in
 .keyword &tinsmode.
-.
+.period
 Values for &cmd_parm
 are 0 to 100 (0=full size, 100=thin).
 .enddescr
@@ -647,7 +647,7 @@ Magic characters are:
 .begdescr
 &edvi keeps a history of commands entered at the
 .keyword &cmdline.
-.
+.period
 &cmd_parm sets the number of commands kept in the history.
 .enddescr
 
@@ -841,7 +841,8 @@ command.
 .begdescr
 Sets the number of spaces inserted when the tab key is pressed in a
 .keyword &tinsmode.
-.  If
+.period
+If
 .keyref realtabs 1
 is set, these spaces will be changed into tabs, based on the setting of
 .keyref hardtab

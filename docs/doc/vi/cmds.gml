@@ -534,12 +534,12 @@ Deletes the specified line range &range..
 If &parm1 is not specified,
 the text is deleted into the active
 .keyword &copybuffer.
-.
+.period
 .np
 If &parm1 ('1'-'9', or 'a'-'z') is specified, the text is deleted into
 that
 .keyword &copybuffer.
-.
+.period
 .np
 The
 .keyref put
@@ -551,7 +551,7 @@ into the file.
 .begxmpl % d
 Deletes all lines into the active
 .keyword &copybuffer.
-.
+.period
 .endxmpl
 .begxmpl 1,10 d a
 Deletes lines 1 to 10 into the named
@@ -994,7 +994,7 @@ commands.
 :DT.KEYS
 :DD.What different keystrokes do in
 .keyword &cmdmode.
-.
+.period
 
 :DT.REGularexpressions
 :DD.How to use regular expressions.
@@ -1146,13 +1146,13 @@ and makes it resident.
 Tells the editor to run the string of keys &parm3 whenver the
 key &parm2 is pressed in
 .keyword &cmdmode.
-.
+.period
 .np
 If &parm1 is specified,
 then the string of keys &parm3 is executed whenever &parm2 is pressed
 in
 .keyword &tinsmode.
-.
+.period
 .np
 When a mapped key is pressed, it acts is if the characters in &parm3
 are being typed at the keyboard.
@@ -1215,7 +1215,7 @@ keeps the command window from opening.
 simulates CTRL_W being pressed, so the current word is inserted into
 the
 .keyword &cmdline.
-.
+.period
 .endxmpl
 .begxmpl map! CTRL_W \edwi
 Whenever CTRL_W is pressed in
@@ -1230,7 +1230,7 @@ deleting the current word in
 .keyword &tinsmode.
 and appearing to remain in
 .keyword &tinsmode.
-.
+.period
 .endxmpl
 .xmplsect end
 .alsosee begin
@@ -1246,7 +1246,7 @@ and appearing to remain in
 Tells the editor to run the string of keys &parm3 whenver the
 key &parm2 is pressed in
 .keyword &cmdmode.
-.
+.period
 .np
 This works the same as the
 .keyref map
@@ -2019,10 +2019,10 @@ last undo.
 .begdescr
 Removes the mapping of the key &parm2 for
 .keyword &cmdmode.
-.
+.period
 If &parm1 is specified, then the key mapping is removed for
 .keyword &tinsmode.
-.
+.period
 See the
 .keyref map
 command for details on mapping keys.
@@ -2037,14 +2037,14 @@ These are described in the Appendix
 .begxmpl unmap CTRL_W
 Removes the mapping of CTRL_W for
 .keyword &cmdmode.
-.
+.period
 Pressing CTRL_W in command
 mode will now do the default action.
 .endxmpl
 .begxmpl unmap! F1
 Removes the mapping of F1 for
 .keyword &tinsmode.
-.
+.period
 Typing F1 in
 .keyword &tinsmode.
 will now do the default action.
@@ -2175,12 +2175,12 @@ Yank (make a copy of) the specified line range &range..
 .np
 If &parm1 is not specified, the text is yanked (copied) into the active
 .keyword &copybuffer.
-.
+.period
 .np
 If &parm1 ('1'-'9', or 'a'-'z') is specified, the text is yanked into
 that
 .keyword &copybuffer.
-.
+.period
 .np
 The
 .keyref put
@@ -2192,7 +2192,7 @@ into the file.
 .begxmpl % y
 Yanks (copies) all lines into the active
 .keyword &copybuffer.
-.
+.period
 .endxmpl
 .begxmpl .,$ y z
 Yanks the lines from the current line to the last line in the file
