@@ -483,11 +483,12 @@
 .dm rxres end
 
 .dm setcmd begin
-.se cmd_short='&*short.'
-.'se cmd_parm='<&*parm.>'
+.se short=&*short.
+.se cmd_short=[&short.]
+.se parm=&*parm.
+.se cmd_parm=<&parm.>
 .'se nocmd_long='no&*1.'
 .'se cmd_long='&*1.'
-.'se parm='&*parm.'
 .se *lc1 = &'lower(&*1.)
 .if '&fn_topic' eq 'Boolean Settings' .do begin
 .   .getid &*lc1. 1
@@ -501,8 +502,8 @@
 .if '&fn_topic.' ne '' .do begin
 .   .ix '&fn_topic.' '&*1.'
 .do end
-.if '&*short' ne '' .do begin
-.   .ix '&*short.'
+.if &'length(&short) ne 0 .do begin
+.   .ix '&short.'
 .do end
 .ix '&*1.'
 .dm setcmd end
@@ -511,12 +512,12 @@
 .if &e'&dohelp eq 0 .do begin
 .   :DL termhi=0.
 .   :DT.Syntax:
-.   .if '&cmd_short.' <> '' .th .do begin
-.       :DD.&cmd_long. [&cmd_short.]
+.   .if &'length(&short.) ne 0 .th .do begin
+.       :DD.&cmd_long. &cmd_short.
 .   .do end
 .   .el .do begin
-.   .   .if '&parm.' <> '' .th .do begin
-.           :DD.&cmd_long. <&parm.>
+.   .   .if &'length(&parm.) ne 0 .th .do begin
+.           :DD.&cmd_long. &cmd_parm.
 .   .   .do end
 .   .   .el .do begin
 .           :DD.&cmd_long.
@@ -527,12 +528,12 @@
 .el .do begin
 .   :ZDL termhi=0.
 .   :ZDT.Syntax:
-.   .if '&cmd_short.' <> '' .th .do begin
-.       :zDD.&cmd_long. [&cmd_short.]
+.   .if &'length(&short.) ne 0 .th .do begin
+.       :zDD.&cmd_long. &cmd_short.
 .   .do end
 .   .el .do begin
-.   .   .if '&parm.' <> '' .th .do begin
-.           :zDD.&cmd_long. <&parm.>
+.   .   .if &'length(&parm.) ne 0 .th .do begin
+.           :zDD.&cmd_long. &cmd_parm.
 .   .   .do end
 .   .   .el .do begin
 .           :zDD.&cmd_long.

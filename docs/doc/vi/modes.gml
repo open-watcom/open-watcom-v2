@@ -2408,7 +2408,7 @@ for more information.
 .begkey ALT_W ALT_W
 Activates the current edit window's menu.  This menu is defined
 using the
-.keyword windowgadgetmenu
+.keyword windowgadget
 .keyref menu
 .period
 See the chapter

@@ -547,7 +547,6 @@ The section contains descriptions of the non-boolean settings.
 .begdescr
 Sets the number of seconds between autosaves of the current file to the
 backup directory. Autosave is disabled if &cmd_parm is 0.  The backup
-&cmd_short
 directory is defined using the
 .keyref tmpdir
 parameter.
