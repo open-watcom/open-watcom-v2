@@ -119,7 +119,7 @@
 .getid &*lc1. 0
 .se *id=id&idnum.
 .em .section *refid=&*id &func_name.
-.if '&fn_topic.' ne '' .do begin
+.if &'length(&fn_topic.) ne 0 .do begin
 .   .ix '&fn_topic.' '&*lc1.'
 .do end
 .ix '&*lc1.'
@@ -376,7 +376,7 @@
 .se sein = 1
 .np
 .se s = &*1.
-.if '&*2.' ne '' .do begin
+.if &'length(&*2.) ne 0 .do begin
 .*  italics
 .   :SF font=1.Lines &*1.-&*2.:eSF.
 .   .se *e = &*2.
@@ -449,8 +449,8 @@
 .   :ZDT.Matches:
 .   :ZDD.
 .do end
-.if '&*3.' eq '' .do begin
-.   .if '&*2.' eq '' .do begin
+.if &'length(&*3.) eq 0 .do begin
+.   .if &'length(&*2.) eq 0 .do begin
 .   .   &*.
 .do end
 .   .el .do begin
@@ -499,7 +499,7 @@
 .   .se *id=id&idnum.
 .do end
 .em .section *refid=&*id &*1.
-.if '&fn_topic.' ne '' .do begin
+.if &'length(&fn_topic.) ne 0 .do begin
 .   .ix '&fn_topic.' '&*1.'
 .do end
 .if &'length(&short) ne 0 .do begin
