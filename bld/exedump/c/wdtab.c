@@ -39,6 +39,11 @@
 
 struct  int_entry_pnt     *Entry_pnts = NULL;
 
+static  char    *bund_types[] = {
+    "EMPTY", "ENTRY16", "GATE16", "ENTRY32",
+    "ENTRYFWD", "Unknown", "Unknown", "Unknown"
+};
+
 /*
  * Read a resident/nonresident name and ordinal
  */
@@ -295,6 +300,8 @@ static void dmp_ent_tab( unsigned_32 ent_tab )
         Puthex( ent_bund_pfx.b32_cnt, 2 );
         Wdputslc( "\ntype = " );
         Puthex( ent_bund_pfx.b32_type, 2 );
+        Wdputs( "  " );
+        Wdputs( bund_types[ ent_bund_pfx.b32_type & 0x7 ] );
         if( ent_bund_pfx.b32_type != FLT_BNDL_EMPTY ) {
             Wread( &object, sizeof( object ) );
             Wdputslc( "\nobject number = " );
