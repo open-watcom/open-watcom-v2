@@ -1649,7 +1649,7 @@ If the script was invoked by another script, then this value becomes
 .np
 If the script was invoked at the
 .keyword &cmdline.
-, then this return code
+.ct , then this return code
 is reported as the appropriate error, if &parm1 is not
 .param ERR_NO_ERR
 .period

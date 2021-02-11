@@ -98,7 +98,7 @@ The chapter
 :HDREF refid='cmds'.
 describes the
 .keyword &cmdline.
-in more detail.
+commands in more detail.
 .*
 .beglevel
 .* ******************************************************************
@@ -160,7 +160,7 @@ Line addresses are discussed in greater detail in the section
 .np
 If you just enter a line address on its own on the
 .keyword &cmdline.
-, then you will go directly to that line.
+.ct , then you will go directly to that line.
 .*
 .exercises
 :OL.
@@ -176,7 +176,7 @@ key to cancel the command.
 
 :LI.Make sure that you are in
 .keyword &cmdmode.
-, then press the colon (':') key.
+.ct , then press the colon (':') key.
 Once again, the command window pops up.
 Try typing and cursoring around. When you are done, press the
 .param ESC
@@ -205,8 +205,7 @@ In the chapter
 :HDREF refid='basic' page=no.
 :cont.,
 you saw that you could edit a file by either specifying the name on the
-.keyword &cmdline.
-when invoking &edvi, or by selecting the
+command line when invoking &edvi, or by selecting the
 .keyword File
 menu and picking the
 .keyword Edit new file
@@ -252,19 +251,24 @@ key to cancel the selection list.
 
 :LI.Try entering the following
 .keyword &cmdline.
+command
 .millust begin
 :e afile
 .millust end
 This will cause &edvi to start editing a new file called "afile".
 
-:LI.Try entering the command
+:LI.Try entering the
+.keyword &cmdline.
+command
 .millust begin
 :e bfile cfile
 .millust end
 This will cause &edvi to edit two new files, one named "bfile"
 and one named "cfile".
 
-:LI.Enter the command
+:LI.Enter the
+.keyword &cmdline.
+command
 .millust begin
 :e afile
 .millust end
@@ -309,7 +313,7 @@ you are editing.
 .np
 The previous two function keys that you may use also have
 .keyword &cmdline.
-equivalents.
+command equivalents.
 The
 .keyword &cmdline.
 command
@@ -329,7 +333,7 @@ key in either
 .keyword &cmdmode.
 or
 .keyword &tinsmode.
-, or enter the
+.ct , or enter the
 .keyword &cmdline.
 command
 .keyref files
@@ -359,6 +363,7 @@ That file will become the current file being edited.
 
 :LI.Type the
 .keyword &cmdline.
+command
 .millust begin
 :files
 .millust end
@@ -400,7 +405,7 @@ and
 You have already learned to use the cursor keys to move around through
 a file.  When you are in
 .keyword &cmdmode.
-, there are a number of keys that
+.ct , there are a number of keys that
 also cause movement through the file. Many of these keys may be
 preceded with a repeat count.  You enter the repeat count
 by typing a number (which will be echoed in a special window on the
@@ -537,7 +542,7 @@ in the copy.  Press 'p' 28 more times, so that you create a file with
 
 :LI.So that we can more easily see the results, type the following
 .keyword &cmdline.
-:
+command:
 .millust begin
 :%s/^/\# /
 .millust end
@@ -925,7 +930,7 @@ called a line region.
 You can select text with the mouse by holding down the right or left mouse
 button, and moving the mouse up and down or left and right.
 When using the right button, a selection menu will appear after the mouse
-button is released , from which you choose what
+button is released, from which you choose what
 you wish to do with the selected text.
 .np
 If you highlight a region by holding down the left button and moving
@@ -933,7 +938,7 @@ the mouse, then releasing the button has no effect
 (the region simply remains highlighted).  This region may then be operated
 on from the
 .keyword &cmdline.
-, using different
+.ct , using different
 .keyword &cmdmode.
 commands, or by right-clicking
 the mouse in the selected region.
@@ -1065,7 +1070,7 @@ key to cancel your selection.
 &edvi has the ability to join two lines together.  If you press the
 letter 'J' (capital 'j') while in
 .keyword &cmdmode.
-, then the next line will join to the
+.ct , then the next line will join to the
 end of the current line.  All white space except for a single space
 will be removed. For example, typing 'J' while on the first line in these
 two lines:
@@ -1226,6 +1231,7 @@ as follows (remember to press colon (':') to bring up the command window)
 
 :LI.Go to the top of the file (using CTRL_PAGEUP), and enter the
 .keyword &cmdline.
+command
 .millust begin
 :'z
 .millust end
@@ -1233,6 +1239,7 @@ This will return you to the last line of the file
 
 :LI.Now, type the following
 .keyword &cmdline.
+command
 .millust begin
 :'a
 .millust end
@@ -1328,7 +1335,7 @@ and search backwards until the '1' on line 21 is encountered.
 There are two useful commands in &edvi for deleting and
 copying text.  In
 .keyword &cmdmode.
-, you press the 'd' key to start the delete
+.ct , you press the 'd' key to start the delete
 sub-mode.  You press the 'y' key to start the yank (copy) sub-mode.  Each
 of these sub-modes is indicated on the mode indicator on the menu bar:
 .millust begin
@@ -1380,7 +1387,7 @@ There are 9 numbered buffers (1-9) that may be selected as the active
 .keyword &copybuffer.
 ).  When text enters the active
 .keyword &copybuffer.
-, the old contents of the active
+.ct , the old contents of the active
 .keyword &copybuffer.
 spills into the next
 .keyword &copybuffer.
@@ -1410,7 +1417,7 @@ retain their contents until you update them.
 .np
 For more information on
 .keyword &copybuffer.
-, see the section
+.ct , see the section
 :HDREF refid='cpybuff'
 in the chapter
 :HDREF page=no refid='modes'
@@ -1432,7 +1439,7 @@ The
 .param &lt."?&gt.
 indicates a
 .keyword &copybuffer.
-, and
+.ct , and
 .param &lt.range&gt.
 indicates a line range.  If no line range is specified, then the
 current line is assumed.  Some examples are:
@@ -1463,11 +1470,11 @@ commands accept a
 .keyword &copybuffer.
 as the buffer to paste out of.  The default is the active
 .keyword &copybuffer.
-, but any buffer can be specified. Once again,
+.ct , but any buffer can be specified. Once again,
 .param &lt."?&gt.
 indicates a
 .keyword &copybuffer.
-:
+.ct :
 .millust begin
 &lt."?&gt.p
 &lt."?&gt.P
@@ -1597,7 +1604,7 @@ You could change text by deleting the text and then entering insert mode.
 However, &edvi provides a special method for doing both of these
 things at once.  By pressing the 'c' key in
 .keyword &cmdmode.
-, you enter the
+.ct , you enter the
 change sub-mode.  You will see the mode line indicate:
 .millust begin
 Mode: change
@@ -1825,7 +1832,7 @@ Memorize Mode started
 From this point forward, every key that you type is memorized.  When you
 are done memorizing, you can then press the dot ('.') key while in
 .keyword &cmdmode.
-, and this ends memorize mode.
+.ct , and this ends memorize mode.
 You will see the message:
 .millust begin
 Memorize Mode ended

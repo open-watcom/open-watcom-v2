@@ -50,7 +50,7 @@ menu.
 .np
 To ensure that you are in
 .keyword &cmdmode.
-, press
+.ct , press
 .keyword ESC
 until the mode indicator says
 .millust begin
@@ -328,7 +328,7 @@ Temporarily leaves &edvi. and enters an operating system command shell.
 Create an abbreviation of &parm1 for &parm2..
 Whenever &parm1 is typed as a word during
 .keyword &tinsmode.
-, it is expanded to &parm2..
+.ct , it is expanded to &parm2..
 .keyref unabbrev
 is used to remove the abbreviation.
 .enddescr
@@ -354,7 +354,7 @@ Creates an
 alias of &parm1 for &parm2..
 Whenever &parm1. is typed on the
 .keyword &cmdline.
-, the full command &parm2 is substituted.
+.ct , the full command &parm2 is substituted.
 .keyref unalias
 is used to remove the abbreviation.
 .enddescr
@@ -364,7 +364,7 @@ Whenever
 .param ai
 is entered on the
 .keyword &cmdline.
-, the command
+.ct , the command
 .param set autoindent
 is executed.
 .endxmpl
@@ -425,7 +425,8 @@ Display the current working directory
 .begfunc CHANGE
 .syntx &lt.line_range&gt. Change
 .begdescr
-Deletes the line range &parm1, and replaces the range with inputted
+Deletes the line range &parm1.
+.ct , and replaces the range with inputted
 source lines.  The input of text is terminated when a line with
 nothing on it but a dot ('.') is entered.
 .exmode
@@ -1186,7 +1187,7 @@ command.
 .begxmpl map K \x:next\n
 Whenever K is pressed in
 .keyword &cmdmode.
-, the
+.ct , the
 .keyref next
 command is executed. The command window will not be displayed,
 because of the
@@ -1196,7 +1197,7 @@ because of the
 .begxmpl map CTRL_T \x:\hda\n
 Whenever CTRL_T is pressed in
 .keyword &cmdmode.
-, the current date is displayed. The command window will not be
+.ct , the current date is displayed. The command window will not be
 displayed, because of the
 .param \x
 .period
@@ -1207,7 +1208,7 @@ The command will not be added to the command history, because of the
 .begxmpl map CTRL_W \x:fgrep \&lt.CTRL_W&gt.\n
 Whenever CTRL_W is pressed in
 .keyword &cmdmode.
-, an fgrep command, searching for
+.ct , an fgrep command, searching for
 the current word, is executed.  The
 .param \x
 keeps the command window from opening.
@@ -1220,7 +1221,7 @@ the
 .begxmpl map! CTRL_W \edwi
 Whenever CTRL_W is pressed in
 .keyword &tinsmode.
-,
+.ct ,
 .keyword &tinsmode.
 is exited (\e simulates the ESC key being pressed), the current word is
 deleted, and

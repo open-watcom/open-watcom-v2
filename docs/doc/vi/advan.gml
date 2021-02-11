@@ -320,7 +320,7 @@ to execute the characters in
 .period
 Whenever the specified key is pressed while in
 .keyword &cmdmode.
-, it is equivalent
+.ct , it is equivalent
 to typing the characters in
 .param &lt.string&gt.
 .period
@@ -330,7 +330,7 @@ In the
 command, specifying the exclamation point ('!') causes the map to be
 for
 .keyword &tinsmode.
-, rather than
+.ct , rather than
 .keyword &cmdmode.
 .period
 .np
@@ -442,7 +442,7 @@ Whenever you press
 .param F6
 in
 .keyword &tinsmode.
-, you will exit insert mode (the \e is like pressing the
+.ct , you will exit insert mode (the \e is like pressing the
 .param ESC
 key), delete the current word, and then re-enter insert mode.
 Try entering

@@ -105,11 +105,11 @@ The section contains descriptions of the boolean settings.
 .begdescr
 In
 .keyword &tinsmode.
-, &cmd_long causes the cursor to move to
+.ct , &cmd_long causes the cursor to move to
 start of previous line when a new line is started.
 In
 .keyword &cmdmode.
-, &cmd_long causes the cursor to go to the first non
+.ct , &cmd_long causes the cursor to go to the first non
 white-space when ENTER is pressed.
 .enddescr
 
@@ -745,7 +745,7 @@ The default is base 10.
 Sets the number of spaces inserted/deleted by the shift operators ('&gt.'
 and '&lt.'), CTRL_D and CTRL_T in
 .keyword &tinsmode.
-, and by
+.ct , and by
 .keyref autoindent 1
 and
 .keyref cmode 1

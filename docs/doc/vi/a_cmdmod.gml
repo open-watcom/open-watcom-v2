@@ -39,7 +39,7 @@
 .np
 The following is a list of all possible keys that may be pressed in
 .keyword &cmdmode.
-, and their default behaviour.
+.ct , and their default behaviour.
 .np
 Commands preceded with a
 .param <n>

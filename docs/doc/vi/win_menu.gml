@@ -188,7 +188,7 @@ See the previous section for properties that may be set.
 This is the window that is displayed whenever &edname is prompting
 for a
 .keyword &cmdline.
-, a search string, a filter command or any other command or data.
+.ct , a search string, a filter command or any other command or data.
 .enddescr
 .endfunc
 

@@ -42,7 +42,7 @@ The &edname is a modal editor.  When you are in
 (the default mode), there are a number of valid keys that may be pressed.
 To ensure that you are in
 .keyword &cmdmode.
-, press the
+.ct , press the
 .param ESC
 key until the mode indicator
 on the menu bar displays:
@@ -52,7 +52,7 @@ Mode: command
 .np
 When in
 .keyword &tinsmode.
-, text may be entered.  There are two aspects to
+.ct , text may be entered.  There are two aspects to
 .keyword &tinsmode.
 :
 .keyword insert
@@ -62,7 +62,7 @@ and
 .keyword &tinsmode.
 is entered via a number of different commands from
 .keyword &cmdmode.
-, and is indicated by a
+.ct , and is indicated by a
 larger cursor, along with a mode line indication.  The
 types of cursor are controlled with the
 .keyref commandcursortype
@@ -75,7 +75,7 @@ settings.
 .np
 When &edvi is in a
 .keyword &tinsmode.
-, the mode indicator on the menu bar displays one of:
+.ct , the mode indicator on the menu bar displays one of:
 .millust begin
 Mode: insert
 .millust end
@@ -107,7 +107,7 @@ later on in this chapter.
 .np
 The following keys, when pressed in
 .keyword &cmdmode.
-, place you into
+.ct , place you into
 .keyword &tinsmode.
 :
 .*
@@ -189,7 +189,7 @@ is entered.
 .np
 While in
 .keyword &tinsmode.
-, certain keys do special things.  These keys are:
+.ct , certain keys do special things.  These keys are:
 .*
 :DL break.
 .*
@@ -332,7 +332,7 @@ name, which is indicated with a
 If you do not want the result of the operation to be copied into the
 active
 .keyword &copybuffer.
-, then an alternate buffer may be specified.
+.ct , then an alternate buffer may be specified.
 The double quotes (")
 are required (this indicates that an alternate buffer is being specified),
 and then a buffer '1'-'9' or 'a'-'z' is specified. See the section
@@ -1285,7 +1285,7 @@ All yanked/deleted text is copied into this buffer.
 .np
 When text is yanked/deleted into the active
 .keyword &copybuffer.
-, the contents of the the buffers are cascaded forward from the active
+.ct , the contents of the the buffers are cascaded forward from the active
 buffer into the next one, with the last numbered
 .keyword &copybuffer.
 losing its contents. Any buffers that are before the active
@@ -1293,7 +1293,7 @@ losing its contents. Any buffers that are before the active
 have their contents preserved.  For example, if buffer 3
 is the active
 .keyword &copybuffer.
-, then a deletion will cascade buffer 3 to buffer 4,
+.ct , then a deletion will cascade buffer 3 to buffer 4,
 buffer 4 to buffer 5, and so on, with the contents of buffer 9 being lost.
 Buffers 1 and 2 remain untouched, and buffer 3 gets a copy of the deleted text.
 .np
@@ -1539,7 +1539,7 @@ Opens a line before the current line, and enters
 .*
 Once you are in
 .keyword &tinsmode.
-, you can toggle back and forth between
+.ct , you can toggle back and forth between
 insert and overstrike using the
 .keyword INS
 key.  You exit
@@ -1771,7 +1771,7 @@ buffer.
 This section describes commands that are for yanking (copying) text.
 This text is placed into a
 .keyword &copybuffer.
-, see the section
+.ct , see the section
 :HDREF refid='cpybuff'.
 for more information.
 .*

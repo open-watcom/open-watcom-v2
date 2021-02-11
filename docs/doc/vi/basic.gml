@@ -99,21 +99,21 @@ and
 .np
 While in
 .keyword &cmdmode.
-, pressing a key on your keyboard can cause something
+.ct , pressing a key on your keyboard can cause something
 different to happen.  For example, pressing the letter D (capital 'd')
 deletes all characters from the current cursor position to the end of the
 line.
 If the same letter 'D' (is pressed while in
 .keyword &tinsmode.
-, the letter 'D' appears in your text (much as you would expect).
+.ct , the letter 'D' appears in your text (much as you would expect).
 .np
 It is easy to tell what mode you are in while using &edvi..
 When you are in
 .keyword &cmdmode.
-, the cursor is a thin line.  When
+.ct , the cursor is a thin line.  When
 you are in
 .keyword &tinsmode.
-, the cursor is much thicker: if you are inserting
+.ct , the cursor is much thicker: if you are inserting
 text, the cursor is one half of a full block, and if you are overstriking
 text, the cursor is a full block.
 .np
@@ -121,13 +121,13 @@ The mode indicator on the menu bar at the
 top of your screen shows the current mode.
 While in
 .keyword &cmdmode.
-, you will see the following:
+.ct , you will see the following:
 .millust begin
 Mode: command
 .millust end
 While in
 .keyword &tinsmode.
-, you will see either:
+.ct , you will see either:
 .millust begin
 Mode: insert
 .millust end
@@ -141,7 +141,7 @@ depending on whether you are inserting or overstriking text.
 .keyword &cmdmode.
 by default.  There are numerous ways to enter
 .keyword &tinsmode.
-, the easiest of which is to press the
+.ct , the easiest of which is to press the
 .param Insert
 key on your keyboard.
 .np
@@ -219,7 +219,7 @@ allow advanced tasks to be completed more quickly.
 .np
 When you are in
 .keyword &cmdmode.
-, you may move around in your text using
+.ct , you may move around in your text using
 various cursor keys.  The basic keys that you use to move around are:
 :INCLUDE file='basicmv'.
 .np
@@ -338,13 +338,13 @@ key to return to
 .np
 While you are in
 .keyword &tinsmode.
-, the basic keys that allow you to move through
+.ct , the basic keys that allow you to move through
 the text are:
 :INCLUDE file='basicmv'.
 .np
 These keys allow you to manipulate the text while in
 .keyword &tinsmode.
-:
+.ct :
 .*
 :DL break.
 
@@ -376,7 +376,7 @@ key, there are a number of other keys that you can press in
 .keyword &cmdmode.
 that will place you in
 .keyword &tinsmode.
-, where you can edit text.
+.ct , where you can edit text.
 The difference between
 all of these commands is where the cursor moves to before you start
 inputting text.  The basic set of keys is:
@@ -419,7 +419,7 @@ on the new line.
 .np
 Remember, while in
 .keyword &tinsmode.
-, the following mode indicator will appear
+.ct , the following mode indicator will appear
 on the menu bar:
 .millust begin
 Mode: insert
@@ -609,7 +609,7 @@ simply by typing numbers before you press
 .period
 As you type a number in
 .keyword &cmdmode.
-, it will appear in a special window,
+.ct , it will appear in a special window,
 as follows:
 .figure *depth='2.47' *scale='59' *file='vi008' Repeat Count Display
 The number that you are typing is displayed in the repeat count window.
@@ -682,7 +682,7 @@ Once you have yanked the lines, you may paste them in, as discussed above.
 .np
 To delete characters while in
 .keyword &cmdmode.
-, you can press the
+.ct , you can press the
 .param DEL
 key or the 'x' key.  The current character under the cursor will be deleted.
 You may type a repeat count before you type
@@ -1210,6 +1210,7 @@ commands.
 .keyword &cmdmode.
 and
 .keyword &tinsmode.
+.period
 
 :DT.Regular expressions
 :DD.Gives help on the search and replace abilities of &edvi's
