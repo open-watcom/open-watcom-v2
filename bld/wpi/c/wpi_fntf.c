@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WPI OS/2 font routines that require floating-point.
+* Description:  Font functions for OS/2 (using floating-point).
 *
 ****************************************************************************/
 
