@@ -1126,15 +1126,15 @@ is enabled.
 .setsyntx
 .begdescr
 Sets tile area
-.param &lt.n&gt.
+.paramt n
 to have the foreground color
-.param &lt.fg&gt.
+.paramt fg
 and the background color
-.param &lt.bg&gt.
+.paramt bg
 .period
 .np
 The tile area
-.param &lt.n&gt.
+.paramt n
 must be in the range 1 to
 .keyref maxtilecolors
 .period

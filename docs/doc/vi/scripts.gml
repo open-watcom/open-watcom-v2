@@ -860,7 +860,7 @@ letters are required (there are no abbreviations, only "assign" is
 accepted as the command).
 .np
 The term
-.param &lt.expr&gt.
+.paramt expr
 is used to indicate an expression in the following commands.
 Expressions are discussed in full detail in the section
 :HDREF refid='screxpr'.
@@ -897,13 +897,13 @@ script can be eliminated with a single
 .syntx * ASSIGN &lt.v1&gt. "=" /&lt.val&gt./"r$@xl"
 .begdescr
 This command is used to assign the value
-.param &lt.val&gt.
+.paramt val
 to the variable &parm1..
 .np
 The forward slashes ('/') around
-.param &lt.val&gt.
+.paramt val
 are only need if there are spaces in
-.param &lt.val&gt.
+.paramt val
 :cont.,
 or if one of the special flags
 .param r
@@ -923,7 +923,7 @@ The special flags have the following meaning:
 .*
 :DT.r
 :DD.When this flag is used,
-.param &lt.val&gt.
+.paramt val
 may contain regular expression replacement
 strings (using the last regular expression searched for). 
 For more information on regular expressions, see the chapter
@@ -932,14 +932,14 @@ For more information on regular expressions, see the chapter
 
 :DT.l
 :DD.When this flag is used,
-.param &lt.val&gt.
+.paramt val
 is assumed to be an expression that indicates a line number. The expression
 is evaluated, and the data on the corresponding line number is assigned
 to &parm1..
 
 :DT.x
 :DD.When this flag is used,
-.param &lt.val&gt.
+.paramt val
 is assumed to be an expression, and is evaluated. The result is
 assigned to &parm1..
 For another way of assigning expression results to a variable, see the
@@ -948,13 +948,13 @@ script command.
 
 :DT.$ (dollar sign)
 :DD.When this flag is used,
-.param &lt.val&gt.
+.paramt val
 is assumed to be the name of an operating system environment variable,
 and the contents of that environment variable is what is assigned to &parm1..
 
 :DT.@
 :DD.When this flag is used,
-.param &lt.val&gt.
+.paramt val
 may be the name of one of the
 .keyref set
 command parameters. &parm1 will be given the current value of that
@@ -963,9 +963,9 @@ parameter.
 :eDL.
 .*
 .np
-.param &lt.val&gt.
+.paramt val
 may be coded as a special operator.  If
-.param &lt.val&gt.
+.paramt val
 is coded this way, the forward slashes ('/') must NOT be used.
 The special operators are:
 .*
@@ -973,36 +973,36 @@ The special operators are:
 .*
 :DT.strlen &lt.v&gt.
 :DD.Computes the length of the variable
-.param &lt.v&gt.
+.paramt v
 .period
 This value is assigned to &parm1..
 
 :DT.strchr &lt.v&gt. &lt.c&gt.
 :DD.Computes the offset of the character
-.param &lt.c&gt.
+.paramt c
 in the variable
-.param &lt.v&gt.
+.paramt v
 .period
 The offset is assigned to &parm1..
 Note that the character
-.param &lt.c&gt.
+.paramt c
 may be a variable, the value of which will be expanded before offset
 is computed.
 
 :DT.substr &lt.v&gt. &lt.n1&gt. &lt.n2&gt.
 :DD.Computes a substring of the string contained in the variable
-.param &lt.v&gt.
+.paramt v
 .period
 The substring is composed of characters from offset
-.param &lt.n1&gt.
+.paramt n1
 to offset
-.param &lt.n2&gt.
+.paramt n2
 .period
 The substring is assigned to &parm1..
 Note that the parameters 
-.param &lt.n1&gt.
+.paramt n1
 and
-.param &lt.n2&gt.
+.paramt n2
 may be variables, the values of which will be expanded before the substring
 is computed.
 .*

@@ -58,7 +58,7 @@ If a search command is specified, then the range that the command
 will act on is from the current position to the position that would
 be achieved by using the search command.
 :LI.The current selected (highlighted) region.  In this case,
-.param &lt.oper&gt.
+.paramt oper
 is the
 .param r
 key.

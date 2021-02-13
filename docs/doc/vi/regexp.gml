@@ -290,10 +290,10 @@ is set).
 
 :DT.\&lt.n&gt.
 :DD.Each instance of
-.param &lt.n&gt.
+.paramt n
 :cont.,
 where
-.param &lt.n&gt.
+.paramt n
 is a digit from 0 to 9, is replaced by the
 n'th sub-expression in the regular expression.
 
@@ -335,10 +335,10 @@ is encountered
 
 :DT.\|&lt.n&gt.
 :DD.Substitutes spaces up to column
-.param &lt.n&gt.
+.paramt n
 :cont.,
 so that the item that follows occurs at column
-.param &lt.n&gt.
+.paramt n
 .period
 
 :DT.\#

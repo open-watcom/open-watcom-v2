@@ -34,12 +34,12 @@
 .****************************************************************************/
 .*
 The
-.param &lt.oper&gt.
+.paramt oper
 notation in the following
 .if '&plural' eq '1' commands
 .if '&plural' ne '1' command
 indicates some sort of operator
 that the command will act on.
-.param &lt.oper&gt.
+.paramt oper
 may be one of:
 :INCLUDE file='operlist'.

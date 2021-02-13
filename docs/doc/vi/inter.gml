@@ -1090,8 +1090,8 @@ line will be joined to the current line.  For example, typing
 while on the first line of:
 .millust begin
 Line 1.
-   Line 2.
-   Line 3.
+    Line 2.
+    Line 3.
 Line 4.
     Line 5.
     Line 6.
@@ -1109,10 +1109,10 @@ command called
 that is used to join lines of text together.  This command is used
 as follows:
 .millust begin
-&lt.linerange&gt. join
+&lt.line_range&gt. join
 .millust end
 The lines in the specified range
-.param &lt.linerange&gt.
+.paramt line_range
 are joined together.  If a single line number is specified, then the
 line after that line is joined to the specified line.  If no line number
 is specified, then the line after the current line is joined to the current
@@ -1156,11 +1156,11 @@ The syntax of the command is
 &lt.line&gt. mark &lt.letter&gt.
 .millust end
 You specify which line the mark is to be set on with
-.param &lt.line&gt.
+.paramt line
 .period
 If no line is specified, the current line is assumed.  You specify
 the mark id ('a'-'z') with
-.param &lt.letter&gt.
+.paramt letter
 .period
 .np
 For example, the following
@@ -1436,11 +1436,11 @@ operate on line ranges.  Their syntax is:
 &lt.range&gt. yank &lt."?&gt.
 .millust end
 The
-.param &lt."?&gt.
+.paramt "?
 indicates a
 .keyword &copybuffer.
 .ct , and
-.param &lt.range&gt.
+.paramt range
 indicates a line range.  If no line range is specified, then the
 current line is assumed.  Some examples are:
 .millust begin
@@ -1471,7 +1471,7 @@ commands accept a
 as the buffer to paste out of.  The default is the active
 .keyword &copybuffer.
 .ct , but any buffer can be specified. Once again,
-.param &lt."?&gt.
+.paramt "?
 indicates a
 .keyword &copybuffer.
 .ct :
@@ -1489,7 +1489,7 @@ command. The syntax is:
 &lt.line&gt. put &lt.!&gt. &lt."?&gt.
 .millust end
 If the line
-.param &lt.line&gt.
+.paramt line
 is specified, then the buffer is pasted around the specified line instead
 of the current line.
 .np
@@ -1500,7 +1500,7 @@ are pasted before the specified line.  Otherwise, the contents of the
 are pasted after the specified line.
 .np
 The
-.param &lt."?&gt.
+.paramt "?
 is an optional
 .keyword &copybuffer.
 .period

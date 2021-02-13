@@ -95,6 +95,10 @@
 :SF font=2.&*.:eSF.
 .dm param end
 
+.dm paramt begin
+&lt.:SF font=2.&*.:eSF.&gt.
+.dm paramt end
+
 .dm var begin
 :SF font=1.&*.:eSF.
 .dm var end

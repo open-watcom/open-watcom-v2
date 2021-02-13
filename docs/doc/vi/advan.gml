@@ -57,27 +57,27 @@ The syntax of the
 .keyref substitute
 command is:
 .millust begin
-&lt.linerange&gt. substitute /&lt.string&gt./&lt.subs&gt./"g""i"
+&lt.line_range&gt. substitute /&lt.string&gt./&lt.subs&gt./"g""i"
 .millust end
 .np
 The line range
-.param &lt.linerange&gt.
+.paramt line_range
 specifies the lines that the
 .keyref substitute
 command is to work on.  If no line range is specified, then the
 current line is assumed.
 .np
 The first occurrence of the search string
-.param &lt.string&gt.
+.paramt string
 on each line is replaced with the string
-.param &lt.subs&gt.
+.paramt subs
 .period
 .np
 If the letter 'g' is specified at the end, then every occurrence of
 the search string
-.param &lt.string&gt.
+.paramt string
 on each line is replaced with the string
-.param &lt.subs&gt.
+.paramt subs
 .period
 .np
 If the letter 'i' is specified at the end, then the substitution is
@@ -140,11 +140,11 @@ The syntax of the
 .keyref global
 command is:
 .millust begin
-&lt.linerange&gt. global "!" /&lt.string&gt./ &lt.cmd&gt.
+&lt.line_range&gt. global "!" /&lt.string&gt./ &lt.cmd&gt.
 .millust end
 .np
 The line range
-.param &lt.linerange&gt.
+.paramt line_range
 specifies the lines that the
 .keyref global
 command is to work on.  If no line range
@@ -153,17 +153,17 @@ is specified, then all the lines in the file is assumed.
 The
 .keyword &cmdline.
 command
-.param &lt.cmd&gt.
+.paramt cmd
 will be executed on every line that has the string
-.param &lt.string&gt.
+.paramt string
 .period
 .np
 If the exclamation mark ('!') is used, then the
 .keyword &cmdline.
 command
-.param &lt.cmd&gt.
+.paramt cmd
 will be executed on every line that does not have the string
-.param &lt.string&gt.
+.paramt string
 .period
 .*
 .exercises
@@ -228,9 +228,9 @@ is:
 fgrep "-c" "-i" &lt.string&gt. &lt.files&gt..
 .millust end
 The file list
-.param &lt.files&gt.
+.paramt files
 is searched for the string
-.param &lt.string&gt.
+.paramt string
 .period
 The file list may contain wild cards.
 .np
@@ -262,9 +262,9 @@ command.  The syntax of this command is:
 egrep &lt.regexp&gt. &lt.files&gt..
 .millust end
 The file list
-.param &lt.files&gt.
+.paramt files
 is searched for the regular expression
-.param &lt.regexp&gt.
+.paramt regexp
 .period
 The file list may contain wild cards.
 .np
@@ -314,15 +314,15 @@ mapbase &lt.key&gt. &lt.string&gt.
 .millust end
 .np
 Both commands remap the specified key
-.param &lt.key&gt.
+.paramt key
 to execute the characters in
-.param &lt.string&gt.
+.paramt string
 .period
 Whenever the specified key is pressed while in
 .keyword &cmdmode.
 .ct , it is equivalent
 to typing the characters in
-.param &lt.string&gt.
+.paramt string
 .period
 .np
 In the
@@ -335,7 +335,7 @@ for
 .period
 .np
 It is possible for
-.param &lt.string&gt.
+.paramt string
 to contain keys that are mapped themselves.  If you want to do a key
 mapping that is in terms of the base definitions of the keys, then you
 should use the
@@ -352,7 +352,7 @@ unmap &lt.key&gt.
 .millust end
 .np
 If you need to specify a special key (e.g. ENTER, F1, etc) for
-.param &lt.key&gt.
+.paramt key
 you specify a symbolic name for it.
 There are a number of pre-defined key
 symbols that are recognized when specifying which key is being
@@ -361,7 +361,7 @@ mapped or unmapped. These are described in the Appendix
 .period
 .np
 If you need to use one or more special keys (e.g. ENTER, F1, etc) in
-.param &lt.string&gt.
+.paramt string
 then you may enter:
 .np
 :INCLUDE file='spmapkey'.

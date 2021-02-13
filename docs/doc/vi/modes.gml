@@ -129,7 +129,7 @@ Deletes the text, and enters
 
 :DT.&lt.n&gt.c&lt.oper&gt.
 :DD.Change command.  Deletes the text in the range specified by
-.param &lt.oper&gt.
+.paramt oper
 :cont., and enters
 .keyword &tinsmode.
 .period
@@ -163,16 +163,16 @@ the current line.
 
 :DT.&lt.n&gt.s
 :DD.Substitute
-.param &lt.n&gt.
+.paramt n
 characters.  The first
-.param &lt.n&gt.
+.paramt n
 characters from the current cursor position are deleted, and
 .keyword &tinsmode.
 is entered.
 
 :DT.&lt.n&gt.S
 :DD.Substitute lines of text.
-.param &lt.n&gt.
+.paramt n
 lines from the current line forward are deleted, and
 .keyword &tinsmode.
 is entered.
@@ -315,7 +315,7 @@ a number.
 .np
 Many commands may be preceded with a repeat count, which is
 indicated by a
-.param &lt.n&gt.
+.paramt n
 before a command.
 The number is not required; if it is not supplied, it is usually assumed
 that a 1 was entered for the repeat count. As long as the setting
@@ -327,7 +327,7 @@ is enabled, the number that is typed appears in a special window called the
 Other commands may be preceded with a
 .keyword &copybuffer.
 name, which is indicated with a
-.param &lt."?&gt.
+.paramt "?
 .period
 If you do not want the result of the operation to be copied into the
 active
@@ -353,7 +353,7 @@ current edit buffer.
 .*
 .begkey "|" "&lt.n&gt.|" '(or bar)'
 Move to the column number specified by
-.param &lt.n&gt.
+.paramt n
 .period
 .np
 .xmplsect begin
@@ -368,7 +368,7 @@ Move to column 15 of the current line.
 
 .begkey ` `&lt.?&gt. (back quote)
 Moves to the mark position (line and column) specified by
-.param &lt.?&gt.
+.paramt ?
 See the section
 :HDREF refid='marks'.
 for more information.
@@ -385,7 +385,7 @@ Move to the line and column with mark
 
 .begkey "'" "'&lt.?&gt." (front quote)
 Move to the start of line with the mark
-.param &lt.?&gt.
+.paramt ?
 .period
 See the section
 :HDREF refid='marks'.
@@ -477,17 +477,17 @@ movement command is executed.
 
 .begkey - &lt.n&gt.- (dash)
 Moves the cursor to the start of the previous line.  If a repeat count
-.param &lt.n&gt.
+.paramt n
 is specified, then you are moved up
-.param &lt.n&gt.
+.paramt n
 lines.
 .endkey
 
 .begkey + &lt.n&gt.+ (plus)
 Moves the cursor to the start of the next line.  If a repeat count
-.param &lt.n&gt.
+.paramt n
 is specified, then you are moved down
-.param &lt.n&gt.
+.paramt n
 lines.
 .endkey
 
@@ -507,9 +507,9 @@ of the current edit buffer.
 
 .begkey DOWN &lt.n&gt.DOWN
 Move the cursor down one line.
-.param &lt.n&gt.
+.paramt n
 is specified, the cursor moves down
-.param &lt.n&gt.
+.paramt n
 lines.
 .endkey
 
@@ -519,9 +519,9 @@ Moves the cursor to the last character on the current line.
 
 .begkey ENTER &lt.n&gt.ENTER
 Moves the cursor to the start of the next line.  If a repeat count
-.param &lt.n&gt.
+.paramt n
 is specified, then the cursor is moved down
-.param &lt.n&gt.
+.paramt n
 lines.
 .endkey
 
@@ -531,17 +531,17 @@ Moves the cursor the first character of the current line.
 
 .begkey LEFT &lt.n&gt.LEFT
 Move the cursor left one character.  If
-.param &lt.n&gt.
+.paramt n
 is specified, the cursor moves left
-.param &lt.n&gt.
+.paramt n
 characters.
 .endkey
 
 .begkey PAGEDOWN &lt.n&gt.PAGEDOWN
 Moves forwards one page.  If a repeat count
-.param &lt.n&gt.
+.paramt n
 is specified, then you are moved ahead
-.param &lt.n&gt.
+.paramt n
 pages.
 The number of lines of context maintained
 is controlled by the
@@ -551,9 +551,9 @@ setting.
 
 .begkey PAGEUP &lt.n&gt.PAGEUP
 Moves backwards one page.  If a repeat count
-.param &lt.n&gt.
+.paramt n
 is specified, then you are moved back
-.param &lt.n&gt.
+.paramt n
 pages.
 The number of lines of context maintained
 is controlled by the
@@ -563,9 +563,9 @@ setting.
 
 .begkey RIGHT &lt.n&gt.RIGHT
 Move the cursor right one character.  If
-.param &lt.n&gt.
+.paramt n
 is specified, the cursor moves right
-.param &lt.n&gt.
+.paramt n
 characters.
 .endkey
 
@@ -573,7 +573,7 @@ characters.
 Moves the cursor left by
 .keyref tabamount
 characters. A repeat count
-.param &lt.n&gt.
+.paramt n
 multiplies this.
 .endkey
 
@@ -581,23 +581,23 @@ multiplies this.
 Moves the cursor right by
 .keyref tabamount
 characters. A repeat count
-.param &lt.n&gt.
+.paramt n
 multiplies this.
 .endkey
 
 .begkey UP &lt.n&gt.UP
 Move the cursor up one line.
-.param &lt.n&gt.
+.paramt n
 is specified, the cursor moves up
-.param &lt.n&gt.
+.paramt n
 lines.
 .endkey
 
 .begkey CTRL_B &lt.n&gt.CTRL_B
 Moves backwards one page.  If a repeat count
-.param &lt.n&gt.
+.paramt n
 is specified, then you are moved back
-.param &lt.n&gt.
+.paramt n
 pages.
 The number of lines of context maintained
 is controlled by the
@@ -608,7 +608,7 @@ setting.
 .begkey CTRL_D &lt.n&gt.CTRL_D
 Move down a certain number of lines.  The default is to move down
 half a page.  If the repeat count
-.param &lt.n&gt.
+.paramt n
 is specified, then that becomes the number of lines moved from then on.
 Also see the
 .param CTRL_U
@@ -619,15 +619,15 @@ key.
 Expose the line below the last line in the current edit window,
 leaving the cursor on the same line if possible.  If a repeat
 count
-.param &lt.n&gt.
+.paramt n
 is specified, then that many lines are exposed.
 .endkey
 
 .begkey CTRL_F &lt.n&gt.CTRL_F
 Moves forwards one page.  If a repeat count
-.param &lt.n&gt.
+.paramt n
 is specified, then you are moved ahead
-.param &lt.n&gt.
+.paramt n
 pages.
 The number of lines of context maintained
 is controlled by the
@@ -637,24 +637,24 @@ setting.
 
 .begkey CTRL_N &lt.n&gt.CTRL_N
 Move the cursor to the next line.  If a repeat count
-.param &lt.n&gt.
+.paramt n
 is specified, then you are moved down
-.param &lt.n&gt.
+.paramt n
 lines.
 .endkey
 
 .begkey CTRL_P &lt.n&gt.CTRL_P
 Move the cursor to the previous line.  If a repeat count
-.param &lt.n&gt.
+.paramt n
 is specified, then you are moved up
-.param &lt.n&gt.
+.paramt n
 lines.
 .endkey
 
 .begkey CTRL_U &lt.n&gt.CTRL_U
 Move up a certain number of lines.  The default is to move up
 half a page.  If the repeat count
-.param &lt.n&gt.
+.paramt n
 is specified, then that becomes the number of lines moved from then on.
 Also see the
 .keyword CTRL_D
@@ -665,7 +665,7 @@ key.
 Expose the line above the first line in the current edit window,
 leaving the cursor on the same line if possible.  If a repeat
 count
-.param &lt.n&gt.
+.paramt n
 is specified, then that many lines are exposed.
 .endkey
 
@@ -790,11 +790,11 @@ then the cursor moves to the left parenthesis
 
 .begkey F &lt.n&gt.F&lt.?&gt.
 Moves the cursor backwards from its current position to the character
-.param &lt.?&gt.
+.paramt ?
 on the current line.  If a repeat count
-.param &lt.n&gt.
+.paramt n
 is specified, then the nth occurrence of the character
-.param &lt.?&gt.
+.paramt ?
 is moved to.
 .np
 .xmplsect begin
@@ -823,13 +823,13 @@ in
 
 .begkey f &lt.n&gt.f&lt.?&gt.
 Moves the cursor forwards from its current position to the character
-.param &lt.?&gt.
+.paramt ?
 on the current line.  If a repeat count
-.param &lt.n&gt.
+.paramt n
 is specified, then the
 .param nth
 occurrence of the character
-.param &lt.?&gt.
+.paramt ?
 is moved to.
 .np
 .xmplsect begin
@@ -862,7 +862,7 @@ in
 
 .begkey G &lt.n&gt.G
 Goes to the line specified by the repeat count
-.param &lt.n&gt.
+.paramt n
 .period
 If no repeat count is specified, you move the the last line in the
 current edit buffer.
@@ -879,9 +879,9 @@ Moves to the last line in the current edit buffer.
 
 .begkey h &lt.n&gt.h
 Move the cursor left one character.  If
-.param &lt.n&gt.
+.paramt n
 is specified, the cursor moves left
-.param &lt.n&gt.
+.paramt n
 characters.
 .endkey
 
@@ -902,17 +902,17 @@ Moves to the line at the top of the current file window.
 
 .begkey j &lt.n&gt.j
 Move the cursor down one line.
-.param &lt.n&gt.
+.paramt n
 is specified, the cursor moves down
-.param &lt.n&gt.
+.paramt n
 lines.
 .endkey
 
 .begkey k &lt.n&gt.k
 Move the cursor up one line.
-.param &lt.n&gt.
+.paramt n
 is specified, the cursor moves up
-.param &lt.n&gt.
+.paramt n
 lines.
 .endkey
 
@@ -933,9 +933,9 @@ Moves to the line at the bottom of the current file window.
 
 .begkey l &lt.n&gt.l
 Move the cursor right one character.  If
-.param &lt.n&gt.
+.paramt n
 is specified, the cursor moves right
-.param &lt.n&gt.
+.paramt n
 characters.
 .endkey
 
@@ -946,12 +946,12 @@ Moves the cursor to the line in the middle of the current file window.
 .begkey T &lt.n&gt.T&lt.?&gt.
 Moves the cursor backwards from its current position to the character
 after the character
-.param &lt.?&gt.
+.paramt ?
 on the current line.  If a repeat count
-.param &lt.n&gt.
+.paramt n
 is specified, then the the character after the nth
 occurrence of the character
-.param &lt.?&gt.
+.paramt ?
 is moved to.
 .np
 .xmplsect begin
@@ -981,12 +981,12 @@ in
 .begkey t &lt.n&gt.t&lt.?&gt.
 Moves the cursor forwards from its current position to the character before
 the character
-.param &lt.?&gt.
+.paramt ?
 on the current line.  If a repeat count
-.param &lt.n&gt.
+.paramt n
 is specified, then the the character before the nth
 occurrence of the character
-.param &lt.?&gt.
+.paramt ?
 is moved to.
 .np
 .xmplsect begin
@@ -1143,16 +1143,16 @@ Mark commands are:
 .*
 .begkey m m&lt.?&gt.
 Allows the setting of mark
-.param &lt.?&gt.
+.paramt ?
 .period
 .np
 If
-.param &lt.?&gt.
+.paramt ?
 is an exclamation mark ('!')
 instead of a letter, it clears all marks on the current line.
 .np
 If
-.param &lt.?&gt.
+.paramt ?
 is a dot ('.')
 instead of a letter, it puts &edvi in
 .keyword memorize mode
@@ -1165,7 +1165,7 @@ See the dot ('.')
 command later in this chapter.
 .np
 If
-.param &lt.?&gt.
+.paramt ?
 is an equals sign ('=')
 instead of a letter, it puts &edvi in alternate
 .keyword memorize mode
@@ -1193,7 +1193,7 @@ Clear any marks set on the current line.
 
 .begkey "'" "'&lt.?&gt." (front quote)
 Move to the start of the line with the mark
-.param &lt.?&gt.
+.paramt ?
 .period
 .np
 .xmplsect begin
@@ -1211,7 +1211,7 @@ non-linear movement command was issued.
 
 .begkey '`' '`&lt.?&gt.' (back quote)
 Move to the position in the edit buffer with the mark
-.param &lt.?&gt.
+.paramt ?
 .period
 .np
 .xmplsect begin
@@ -1579,12 +1579,12 @@ key. See the previous section,
 
 .begkey r &lt.n&gt.r&lt.?&gt.
 Replaces the current character with the next character typed,
-.param &lt.?&gt.
+.paramt ?
 .period
 If a repeat count is specified, then the next
-.param &lt.n&gt.
+.paramt n
 characters are replaced with the character
-.param &lt.?&gt.
+.paramt ?
 .period
 .np
 .xmplsect begin
@@ -1698,23 +1698,23 @@ Delete the next 5 characters into the named buffer
 .begkey d &lt.n&gt.&lt."?&gt.d&lt.oper&gt.
 Delete text from the current position in the file to the
 position specified by
-.param &lt.oper&gt.
+.paramt oper
 .period
 A copy of the text is placed into the specified
 .keyword &copybuffer.
-.param &lt."?&gt.
+.paramt "?
 .period
 If no buffer is specified, then the text is placed into the active
 buffer.
 A repeat count
-.param &lt.n&gt.
+.paramt n
 may precede the command, this causes
-.param &lt.n&gt.
+.paramt n
 units of the
-.param &lt.oper&gt.
+.paramt oper
 command to be deleted.
 .np
-.param &lt.oper&gt.
+.paramt oper
 may be specified as
 .param d
 :cont.,
@@ -1779,9 +1779,9 @@ for more information.
 .*
 .begkey Y &lt.n&gt.Y
 Yank (copy) the current line.  If a repeat count
-.param &lt.n&gt.
+.paramt n
 is specified, then
-.param &lt.n&gt.
+.paramt n
 lines are copied.
 .np
 This command is the same as typing
@@ -1800,23 +1800,23 @@ This command is the same as typing
 .begkey y '&lt.n&gt.&lt."?&gt.y&lt.oper&gt.'
 Yanks (copies) text from the current position in the file to the
 position specified by
-.param &lt.oper&gt.
+.paramt oper
 .period
 Text is placed into the specified
 .keyword &copybuffer.
-.param &lt."?&gt.
+.paramt "?
 .period
 If no buffer is specified, then the text is placed into the active
 buffer.
 A repeat count
-.param &lt.n&gt.
+.paramt n
 may precede the command, this causes
-.param &lt.n&gt.
+.paramt n
 units of the
-.param &lt.oper&gt.
+.paramt oper
 command to be copied.
 .np
-.param &lt.oper&gt.
+.paramt oper
 may be specified as
 .param y
 :cont.,
@@ -1911,9 +1911,9 @@ This command substitutes the current line with text.  The text on the current
 line is deleted, and
 .keyword &tinsmode.
 is entered.  If a repeat count
-.param &lt.n&gt.
+.paramt n
 is specified, then
-.param &lt.n&gt.
+.paramt n
 lines are deleted.
 .np
 This command is the same as typing
@@ -1923,9 +1923,9 @@ This command is the same as typing
 
 .begkey s &lt.n&gt.s
 This command substitutes the current character with text.  If
-.param &lt.n&gt.
+.paramt n
 is specified, then
-.param &lt.n&gt.
+.paramt n
 characters are substituted.
 .np
 This command is the same as typing
@@ -1949,17 +1949,17 @@ or
 .begkey c &lt.n&gt.c&lt.oper&gt.
 Change text from the current position in the file to the
 position specified by
-.param &lt.oper&gt.
+.paramt oper
 .period
 A repeat count
-.param &lt.n&gt.
+.paramt n
 may precede the command, this causes
-.param &lt.n&gt.
+.paramt n
 units of the
-.param &lt.oper&gt.
+.paramt oper
 command to be changed.
 .np
-.param &lt.oper&gt.
+.paramt oper
 may be specified as
 .keyword c
 :cont.,
@@ -2028,14 +2028,14 @@ spaces, inserting necessary leading tabs if
 is specified.
 .np
 A repeat count
-.param &lt.n&gt.
+.paramt n
 may precede the command, this causes
-.param &lt.n&gt.
+.paramt n
 units of the
-.param &lt.oper&gt.
+.paramt oper
 command to be shifted to the right.
 .np
-.param &lt.oper&gt.
+.paramt oper
 may be specified as
 .param &gt.
 :cont.,
@@ -2069,16 +2069,16 @@ This is the shift left command. It shifts the specified lines to the left
 spaces.
 .np
 A repeat count
-.param &lt.n&gt.
+.paramt n
 may precede the command, this causes
-.param &lt.n&gt.
+.paramt n
 units of the
-.param &lt.oper&gt.
+.paramt oper
 command to be shifted to the left
 .keyref shiftwidth
 spaces.
 .np
-.param &lt.oper&gt.
+.paramt oper
 may be specified as
 .param &lt.
 :cont.,
@@ -2146,17 +2146,17 @@ However, if
 .keyword togglecaselikevi
 is not set, then this command toggles the case of the characters
 over the range specified by
-.param &lt.oper&gt.
+.paramt oper
 .np
 A repeat count
-.param &lt.n&gt.
+.paramt n
 may precede the command, this causes
-.param &lt.n&gt.
+.paramt n
 units of the
-.param &lt.oper&gt.
+.paramt oper
 command to be case toggled.
 .np
-.param &lt.oper&gt.
+.paramt oper
 may be specified as
 .param &tilde.
 :cont.,
@@ -2197,17 +2197,17 @@ command filter
 .*
 .begkey ! &lt.n&gt.!&lt.oper&gt. (exclamation mark)
 Filter text. The line range specified by
-.param &lt.oper&gt.
+.paramt oper
 are run through a specified filter.
 A repeat count
-.param &lt.n&gt.
+.paramt n
 may precede the command, this causes
-.param &lt.n&gt.
+.paramt n
 units of the
-.param &lt.oper&gt.
+.paramt oper
 command to be run through the filter.
 .np
-.param &lt.oper&gt.
+.paramt oper
 may be specified as
 .param !
 :cont.,
@@ -2280,9 +2280,9 @@ If region is already selected, then cancel the selected region.
 Starts selection (if not already started) and moves up to the previous
 line.  The previous line and the current line are selected.
 If a repeat count
-.param &lt.n&gt.
+.paramt n
 is specified, then the cursor moves up
-.param &lt.n&gt.
+.paramt n
 lines, and all the lines between the starting and ending
 position are selected.
 .endkey
@@ -2291,9 +2291,9 @@ position are selected.
 Starts selection (if not already started) and moves down to the next line.
 The next line and the current line are selected.
 If a repeat count
-.param &lt.n&gt.
+.paramt n
 is specified, then the cursor moves down
-.param &lt.n&gt.
+.paramt n
 lines, and all the lines between the starting and ending
 position are selected.
 .endkey
@@ -2302,9 +2302,9 @@ position are selected.
 Starts selection (if not already started) and move left to the previous
 character.  The current character and the previous character are selected.
 If a repeat count
-.param &lt.n&gt.
+.paramt n
 is specified, then the cursor moves left
-.param &lt.n&gt.
+.paramt n
 characters, and all the characters between the starting and ending
 position are selected.
 .endkey
@@ -2313,9 +2313,9 @@ position are selected.
 Starts selection (if not already started) and move right to the next
 character.  The current character and the next character are selected.
 If a repeat count
-.param &lt.n&gt.
+.paramt n
 is specified, then the cursor moves right
-.param &lt.n&gt.
+.paramt n
 characters, and all the characters between the starting and ending
 position are selected.
 .endkey
@@ -2323,7 +2323,7 @@ position are selected.
 .begkey SHIFT_DEL &lt."?&gt.SHIFT_DEL
 Deletes the currently selected region.  If the
 .keyword &copybuffer.
-.param &lt."?&gt.
+.paramt "?
 is specified, the region is copied into that buffer,
 otherwise the data is copied into the active
 .keyword &copybuffer.
@@ -2439,7 +2439,7 @@ commands.
 .begkey @ @&lt.?&gt. (at sign)
 This command executes the
 .keyword &copybuffer.
-.param &lt.?&gt.
+.paramt ?
 .period
 &edvi behaves as if the contents
 of the buffer were being typed at the keyboard.
@@ -2447,9 +2447,9 @@ of the buffer were being typed at the keyboard.
 
 .begkey J &lt.n&gt.J
 Joins the next line to the current line.  If a repeat count
-.param &lt.n&gt.
+.paramt n
 is specified, the next
-.param &lt.n&gt.
+.paramt n
 lines are joined to the current line.
 (lines are concatenated one after another).
 .seecmd join
@@ -2492,7 +2492,7 @@ Finished with current edit buffer.
 .begkey z &lt.n&gt.z&lt.?&gt.
 Reorients the current screen position.  The current line moves
 as follows, depending on the value of
-.param &lt.?&gt.
+.paramt ?
 :cont.:
 :DL break.
 :DT.ENTER
@@ -2503,9 +2503,9 @@ as follows, depending on the value of
 :DD.Moves the current line to the bottom of the screen.
 :eDL.
 If a repeat count
-.param &lt.n&gt.
+.paramt n
 is specified, then
-.param &lt.n&gt.
+.paramt n
 is made the current line.
 .np
 .xmplsect begin

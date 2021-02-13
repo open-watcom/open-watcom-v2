@@ -66,7 +66,8 @@ Commands may be up to 512 bytes in length; the command window scrolls.
 .np
 There are a special set of commands that may be entered at the
 .keyword &cmdline.
-for controlling the various windows and menus of &edvi..
+for controlling the various windows and menus of &edvi.
+.period
 These commands are discussed in the next chapter,
 :HDREF refid=winmenu.
 .period
@@ -325,10 +326,12 @@ Temporarily leaves &edvi. and enters an operating system command shell.
 .begfunc ABBREV
 .syntx * ABbrev &lt.short&gt. &lt.long&gt.
 .begdescr
-Create an abbreviation of &parm1 for &parm2..
+Create an abbreviation of &parm1 for &parm2.
+.period
 Whenever &parm1 is typed as a word during
 .keyword &tinsmode.
-.ct , it is expanded to &parm2..
+.ct , it is expanded to &parm2.
+.period
 .keyref unabbrev
 is used to remove the abbreviation.
 .enddescr
@@ -351,7 +354,8 @@ is substituted.
 .begdescr
 Creates an
 .keyword &cmdline.
-alias of &parm1 for &parm2..
+alias of &parm1 for &parm2.
+.period
 Whenever &parm1. is typed on the
 .keyword &cmdline.
 .ct , the full command &parm2 is substituted.
@@ -377,7 +381,8 @@ is executed.
 .begfunc APPEND
 .syntx &lt.line_num&gt. Append
 .begdescr
-Appends source lines after line &range..
+Appends source lines after line &range.
+.period
 Append is terminated when a line
 with nothing but a dot ('.') is entered.
 .exmode
@@ -407,7 +412,8 @@ border of each visible).
 .begfunc CD
 .syntx * CD &lt.dir&gt.
 .begdescr
-Changes current working directory to &parm1..
+Changes current working directory to &parm1.
+.period
 If &parm1 is not specified,
 then the current directory is displayed in the message window.  &parm1
 may be specified with drive and path.
@@ -425,7 +431,7 @@ Display the current working directory
 .begfunc CHANGE
 .syntx &lt.line_range&gt. Change
 .begdescr
-Deletes the line range &parm1.
+Deletes the line range &range.
 .ct , and replaces the range with inputted
 source lines.  The input of text is terminated when a line with
 nothing on it but a dot ('.') is entered.
@@ -440,7 +446,8 @@ nothing on it but a dot ('.') is entered.
 .begfunc COMPILE
 .syntx * COMPile '"-a"' '"-A"' &lt.script&gt. &lt.result&gt.
 .begdescr
-Compiles the editor script &parm3..
+Compiles the editor script &parm3.
+.period
 .np
 If
 .param -a
@@ -506,7 +513,8 @@ a quoted string are not replaced with a tab.
 .begfunc COPY
 .syntx &lt.line_range&gt. COpy &lt.line_number&gt.
 .begdescr
-Copies the specified range of lines &range after the line &parm1..
+Copies the specified range of lines &range after the line &parm1.
+.period
 .enddescr
 .xmplsect begin
 .begxmpl % copy $
@@ -530,7 +538,8 @@ Display the current time and date in the message window.
 .begfunc DELETE
 .syntx &lt.line_range&gt. Delete &lt.buffer&gt.
 .begdescr
-Deletes the specified line range &range..
+Deletes the specified line range &range.
+.period
 .np
 If &parm1 is not specified,
 the text is deleted into the active
@@ -613,7 +622,8 @@ will appear on line 2 of the message window.
 .begfunc EDIT
 .syntx * Edit '"!"' &lt.files&gt.
 .begdescr
-Edits the specified files &parm2..
+Edits the specified files &parm2.
+.period
 &parm2 may be a single file or a list of files.
 .np
 Each file name may contain file regular expressions, see the section
@@ -677,7 +687,8 @@ Gives a file selection display:
 .begfunc EGREP
 .syntx * EGRep &lt.regexp&gt. &lt.files&gt.
 .begdescr
-Searches the file list &parm2 for the regular expression &parm1..
+Searches the file list &parm2 for the regular expression &parm1.
+.period
 .np
 &parm1 may be surrounded by double quotes (") or a forward slash (/)
 if it contains any spaces.
@@ -698,7 +709,8 @@ are searched, based on the setting of
 .period
 .np
 When all matches are found, a selection window is presented with
-all the files that contained &parm1..
+all the files that contained &parm1.
+.period
 .np
 If you are not using regular
 expressions, the
@@ -766,7 +778,8 @@ and displays the result (27) in the message window.
 .begfunc EXECUTE
 .syntx * EXECUTE &lt.str&gt.
 .begdescr
-Execute the string &parm1..
+Execute the string &parm1.
+.period
 This causes the editor to behave as if
 the string &parm1 was typed at the keyboard.
 .np
@@ -818,7 +831,8 @@ Replaces all tabs in the current edit buffer with spaces.
 .begfunc FGREP
 .syntx * FGRep '"-c"' '"-u"' &lt.string&gt. &lt.files&gt.
 .begdescr
-Searches the file list &parm4 for the string &parm3..
+Searches the file list &parm4 for the string &parm3.
+.period
 .np
 The search is by default case insensitive, unless
 .param -c
@@ -846,7 +860,8 @@ If &parm4 is not specified, it defaults to the setting of
 While searching for the item, &edvi. displays a window that shows
 all files being searched.
 When all matches are found, a selection window is presented with
-all the files that contained &parm4..
+all the files that contained &parm4.
+.period
 .enddescr
 .xmplsect begin
 .begxmpl fgrep window *.c
@@ -929,7 +944,8 @@ at all other corners of the string.
 .begfunc GENCONFIG
 .syntx * GENCONFIG &lt.filename&gt.
 .begdescr
-Writes the current editor configuration out to the file &parm1..
+Writes the current editor configuration out to the file &parm1.
+.period
 If &parm1 is not specified, then the file name "ed.cfg" is assumed.
 .enddescr
 .endfunc
@@ -938,7 +954,7 @@ If &parm1 is not specified, then the file name "ed.cfg" is assumed.
 .syntx &lt.line_range&gt. Global '"!"' /&lt.regexp&gt./ &lt.cmd&gt.
 .begdescr
 For each line in the range &range that matches the regular expression
-.param &lt.regexp&gt.
+.paramt regexp
 :cont.,
 the editor command &parm3 is executed.  &parm3 may contain replacement
 expressions, see the chapter
@@ -947,7 +963,7 @@ for more information.
 .np
 If &parm1 is specified, then the command &parm3 is executed on every line
 that does NOT match the regular expression
-.param &lt.regexp&gt.
+.paramt regexp
 .period
 .np
 If &range is not specified, then the
@@ -1031,7 +1047,8 @@ Gives list of help topics.
 .begfunc INSERT
 .syntx &lt.line_number&gt. Insert
 .begdescr
-Inserts text after a the specified line number &range..
+Inserts text after a the specified line number &range.
+.period
 Insert is terminated when a line with nothing but a '.' is entered.
 .exmode
 .enddescr
@@ -1268,7 +1285,8 @@ behaviour.
 .begdescr
 Sets the
 .keyword text mark
-&parm1 on the line &range..
+&parm1 on the line &range.
+.period
 The mark name is a single letter from
 .param a
 to
@@ -1317,9 +1335,9 @@ moves the cursor to the last ')' in the line.
 .np
 This command allows you to extend what is matched to 
 general regular expressions.
-.param &lt.rx1&gt.
+.paramt rx1
 is the regular expression that opens a match,
-.param &lt.rx2&gt.
+.paramt rx2
 is the regular expression that closes a match.
 .np
 Note that in the matching regular expressions, 
@@ -1387,7 +1405,8 @@ Minimizes the current edit buffer window.
 .syntx &lt.line_range&gt. Move &lt.line_number&gt.
 .begdescr
 Deletes the specified range of lines &range and places them
-after the line &parm1..
+after the line &parm1.
+.period
 .enddescr
 .xmplsect begin
 .begxmpl 1,10 move $
@@ -1510,14 +1529,16 @@ command does an implicit push.
 Puts (pastes) the
 .keyword &copybuffer.
 &parm2 ('1'-'9', or 'a'-'z') after the
-line &range..
+line &range.
+.period
 .np
 If &parm2 is not specified, the active
 .keyword &copybuffer.
 is assumed.
 .np
 If &parm1 is specified, then the lines are put before the
-line &range..
+line &range.
+.period
 .enddescr
 .xmplsect begin
 .begxmpl put
@@ -1595,7 +1616,8 @@ If files have been modified, the following prompt is displayed:
 .syntx &lt.line_number&gt. Read &lt.file_name&gt.
 .begdescr
 Reads the text from file &parm1 into the current edit buffer.
-The lines are placed after line specified by &range..
+The lines are placed after line specified by &range.
+.period
 If &range is not specified, the current line is assumed.
 .np
 Line 0 may be specified as &range in order to read a file
@@ -1690,7 +1712,8 @@ cursor keys are used as follows:
 .syntx * SEt &lt.variable&gt. &lt.value&gt.
 .begdescr
 Certain variables within &edvi. may be changed after &edvi. is
-executing.  &parm2 is assigned to &parm1..
+executing.  &parm2 is assigned to &parm1.
+.period
 .np
 If &parm1 and
 &parm2 are not specified, the a window containing a list
@@ -1730,7 +1753,8 @@ see the chapter
 .begfunc SETCOLOR
 .syntx * SETCOLOR &lt.c&gt. &lt.r&gt. &lt.g&gt. &lt.b&gt.
 .begdescr
-Set the color number &parm1 to have the RGB value &parm2, &parm3, &parm4..
+Set the color number &parm1 to have the RGB value &parm2, &parm3, &parm4.
+.period
 &parm1 may have a value of 0 to 15.
 &parm1, &parm2, and &parm3 may have values from 0 to 63.
 .np
@@ -1783,7 +1807,8 @@ upper left-hand corner at (0,0) and lower right-hand corner at (10,10).
 .begfunc SOURCE
 .syntx * SOurce &lt.script&gt. &lt.p1&gt. &lt.p2&gt. ... &lt.pn&gt.
 .begdescr
-Execute &edvi. source script file &parm1..
+Execute &edvi. source script file &parm1.
+.period
 Optional parameters &parm2 to
 &parm5 may be specified, these are passed to the specified script.
 .np
@@ -1819,17 +1844,17 @@ Executes the current edit buffer as a script.
 .begdescr
 Over the line range &range,
 replace each occurrence of regular expression
-.param &lt.regexp&gt.
+.paramt regexp
 with the replacement expression
-.param &lt.replexp&gt.
+.paramt replexp
 .period
 .np
 Only the first occurrence on each line is replaced, unless
-.param &lt.g&gt.
+.paramt g
 is specified, in which case all occurrences on a line are replaced.
 .np
 If
-.param &lt.i&gt.
+.paramt i
 is specified, each replacement is verified before it is performed.
 .np
 See the chapter
@@ -1875,7 +1900,8 @@ to the line containing mark
 .begfunc TAG
 .syntx * TAG &lt.tagname&gt.
 .begdescr
-Searches for the tag &parm1..
+Searches for the tag &parm1.
+.period
 Tags are kept in a special file,
 which must be located somewhere in your path.
 This file is controlled with the
@@ -1954,7 +1980,8 @@ Tile windows according to default tile grid.
 .begfunc UNABBREV
 .syntx * UNABbrev &lt.abbrev&gt.
 .begdescr
-Removes the abbreviation &parm1..
+Removes the abbreviation &parm1.
+.period
 See the
 .keyref abbrev
 command for how to set an abbreviation.
@@ -1976,7 +2003,8 @@ Remove the abbreviation
 .begdescr
 Removes the
 .keyword &cmdline.
-alias &parm1..
+alias &parm1.
+.period
 See the
 .keyref alias
 command for how to set a
@@ -2029,7 +2057,8 @@ See the
 command for details on mapping keys.
 .np
 There are a number of pre-defined
-symbols that are recognized for &parm1..
+symbols that are recognized for &parm1.
+.period
 These are described in the Appendix
 :HDREF refid='symkey'.
 .period
@@ -2125,7 +2154,8 @@ Return to full screen editing mode (if in
 .begfunc WRITE
 .syntx &lt.line_range&gt. Write '"!"' &lt.file_name&gt.
 .begdescr
-Writes the specified range of lines &range to the file &parm2..
+Writes the specified range of lines &range to the file &parm2.
+.period
 .np
 If no line range is specified, then all lines are written.
 .np
@@ -2172,7 +2202,8 @@ Writes current file, and exits.
 .begfunc YANK
 .syntx &lt.line_range&gt. Yank &lt.buffer&gt.
 .begdescr
-Yank (make a copy of) the specified line range &range..
+Yank (make a copy of) the specified line range &range.
+.period
 .np
 If &parm1 is not specified, the text is yanked (copied) into the active
 .keyword &copybuffer.
