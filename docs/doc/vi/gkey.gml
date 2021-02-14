@@ -34,13 +34,13 @@
 .****************************************************************************/
 .begkey g g
 Enters
-.keyword &tinsmode.
+.keyword &tinsmode
 at the current cursor position.  This sets you up in
 .param overstrike
 or
 .param insert
 mode, depending on the mode you were in last time you were in
-.keyword &tinsmode.
+.keyword &tinsmode
 .period
 .sp
 This key is useful to
@@ -48,8 +48,8 @@ This key is useful to
 in a
 .keyword script
 .ct , to return to the exact same type of
-.keyword &tinsmode.
+.keyword &tinsmode
 the user was in before leaving
-.keyword &tinsmode.
+.keyword &tinsmode
 .period
 .endkey

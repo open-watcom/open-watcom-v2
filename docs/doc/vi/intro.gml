@@ -66,7 +66,7 @@ are configurable.
 :LI.powerful script language
 :UL compact.
 :LI.local and global variables
-:LI.structured constructs (loop, while, if/elseif/else )
+:LI.structured constructs (loop, while, if/elseif/else)
 :LI.arbitrary conditional expressions
 :LI.file I/O
 :eUL.
@@ -136,18 +136,20 @@ which contains all of the menu choices, the current mode, and the current
 time.
 
 :LI.The large window below the menu bar is the
-.keyword edit window.
-Since
-&edvi is a multiple file editor, you may have more than one edit window.
+.keyword edit window
+.period
+Since &edvi is a multiple file editor, you may have more than one edit window.
 Other edit windows are usually covered by the current edit window, unless
 you change the size and position of the edit windows.
 
 :LI.The lower left corner of the screen contains the
-.keyword status window.
+.keyword status window
+.period
 This window typically shows the current row and column.
 
 :LI.The majority of the bottom of the screen contains the
-.keyword message window.
+.keyword message window
+.period
 This window displays all errors and informational messages.
 
 :eUL.

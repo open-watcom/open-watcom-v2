@@ -38,7 +38,7 @@
 :cmt. .do end
 .np
 The following is a list of all possible keys that may be pressed in
-.keyword &cmdmode.
+.keyword &cmdmode
 .ct , and their default behaviour.
 .np
 Commands preceded with a
@@ -48,7 +48,7 @@ take a repeat count.
 Commands preceded with a
 .paramt "?
 accept a
-.keyword &copybuffer.
+.keyword &copybuffer
 name.
 .np
 Commands that accept mark letter ('a'-'z') have a
@@ -131,7 +131,7 @@ in their definition.
 
 :DT..
 :DD.Repeat last
-.keyword &cmdmode.
+.keyword &cmdmode
 sequence that changed the edit buffer.
 
 :DT./
@@ -142,7 +142,7 @@ sequence that changed the edit buffer.
 
 :DT.:
 :DD.Enter a
-.keyword &cmdline.
+.keyword &cmdline
 command.
 
 .dc cw OFF
@@ -161,7 +161,7 @@ command.
 
 :DT.@
 :DD.Execute a
-.keyword &copybuffer.
+.keyword &copybuffer
 as if it were typed at the keyboard.
 
 :DT.A
@@ -206,12 +206,12 @@ current line.
 
 :DT.O
 :DD.Open a blank line above the current line, and enter
-.keyword &tinsmode.
+.keyword &tinsmode
 .period
 
 :DT.<"?>P
 :DD.Insert a
-.keyword &copybuffer.
+.keyword &copybuffer
 before the current position.
 
 :DT.Q
@@ -304,7 +304,7 @@ on the current line.
 
 :DT.<"?>p
 :DD.Insert a
-.keyword &copybuffer.
+.keyword &copybuffer
 at the current position in the edit buffer.
 
 :DT.<n>r
@@ -389,47 +389,47 @@ on the current line.
 
 :DT.CTRL_F1
 :DD.Make
-.keyword &copybuffer.
+.keyword &copybuffer
 1 active.
 
 :DT.CTRL_F2
 :DD.Make
-.keyword &copybuffer.
+.keyword &copybuffer
 2 active.
 
 :DT.CTRL_F3
 :DD.Make
-.keyword &copybuffer.
+.keyword &copybuffer
 3 active.
 
 :DT.CTRL_F4
 :DD.Make
-.keyword &copybuffer.
+.keyword &copybuffer
 4 active.
 
 :DT.CTRL_F5
 :DD.Make
-.keyword &copybuffer.
+.keyword &copybuffer
 5 active.
 
 :DT.CTRL_F6
 :DD.Make
-.keyword &copybuffer.
+.keyword &copybuffer
 6 active.
 
 :DT.CTRL_F7
 :DD.Make
-.keyword &copybuffer.
+.keyword &copybuffer
 7 active.
 
 :DT.CTRL_F8
 :DD.Make
-.keyword &copybuffer.
+.keyword &copybuffer
 8 active.
 
 :DT.CTRL_F9
 :DD.Make
-.keyword &copybuffer.
+.keyword &copybuffer
 9 active.
 
 :DT.ALT_M
@@ -464,7 +464,7 @@ on the current line.
 
 :DT.<"?>SHIFT_INS
 :DD.Insert a
-.keyword &copybuffer.
+.keyword &copybuffer
 at the current position in the edit buffer.
 .*
 :eDL.

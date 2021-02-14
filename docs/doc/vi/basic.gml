@@ -81,27 +81,27 @@ will edit all files that have the extension
 .np
 A modal editor is one where keystrokes have different meaning, depending
 on what mode you are in.  &edvi has two main modes,
-.keyword &cmdmode.
+.keyword &cmdmode
 and
-.keyword &tinsmode.
+.keyword &tinsmode
 .period
 .np
 While in
-.keyword &cmdmode.
+.keyword &cmdmode
 .ct , pressing a key on your keyboard can cause something
 different to happen.  For example, pressing the letter D (capital 'd')
 deletes all characters from the current cursor position to the end of the
 line.
 If the same letter 'D' (is pressed while in
-.keyword &tinsmode.
+.keyword &tinsmode
 .ct , the letter 'D' appears in your text (much as you would expect).
 .np
 It is easy to tell what mode you are in while using &edvi..
 When you are in
-.keyword &cmdmode.
+.keyword &cmdmode
 .ct , the cursor is a thin line.  When
 you are in
-.keyword &tinsmode.
+.keyword &tinsmode
 .ct , the cursor is much thicker: if you are inserting
 text, the cursor is one half of a full block, and if you are overstriking
 text, the cursor is a full block.
@@ -109,13 +109,13 @@ text, the cursor is a full block.
 The mode indicator on the menu bar at the
 top of your screen shows the current mode.
 While in
-.keyword &cmdmode.
+.keyword &cmdmode
 .ct , you will see the following:
 .millust begin
 Mode: command
 .millust end
 While in
-.keyword &tinsmode.
+.keyword &tinsmode
 .ct , you will see either:
 .millust begin
 Mode: insert
@@ -127,11 +127,11 @@ Mode: overstrike
 depending on whether you are inserting or overstriking text.
 .np
 &edvi is in
-.keyword &cmdmode.
+.keyword &cmdmode
 by default.  There are numerous ways to enter
-.keyword &tinsmode.
+.keyword &tinsmode
 .ct , the easiest of which is to press the
-.param Insert
+.param INS
 key on your keyboard.
 .np
 The
@@ -140,14 +140,14 @@ key is one of the more important keys in &edvi.. Pressing
 .param ESC
 once will stop whatever you are doing and
 return you to
-.keyword &cmdmode.
+.keyword &cmdmode
 .period
 If you have started a
-.keyword &cmdmode.
+.keyword &cmdmode
 sequence, pressing
 .param ESC
 will cancel the command and return you to
-.keyword &cmdmode.
+.keyword &cmdmode
 .period
 .exercises
 Start up &edvi by typing
@@ -159,9 +159,9 @@ at your command prompt.
 You will see a screen that looks like the following:
 .figure *depth='2.47' *scale='59' *file='vi001' The &edvi screen
 .np
-Press the insert (
+Press the
 .param INS
-) key.  The cursor will get larger and you will see the mode indicator change
+key.  The cursor will get larger and you will see the mode indicator change
 from
 .millust begin
 Mode: command
@@ -207,13 +207,13 @@ allow advanced tasks to be completed more quickly.
 .* ******************************************************************
 .np
 When you are in
-.keyword &cmdmode.
+.keyword &cmdmode
 .ct , you may move around in your text using
 various cursor keys.  The basic keys that you use to move around are:
 :INCLUDE file='basicmv'.
 .np
 These same cursor keys may also be used when entering text in
-.keyword &tinsmode.
+.keyword &tinsmode
 .period
 .* ******************************************************************
 .section *refid=savexit 'Saving and Exiting a File'
@@ -237,7 +237,7 @@ particular edit session, the fastest way to do it is to use the
 command 'ZZ'.  Press
 .param ESC
 to make sure that you are in
-.keyword &cmdmode.
+.keyword &cmdmode
 .ct , and then type two capital z's ('ZZ')
 in a row.  This saves the file, then exits the edit buffer for the file.
 If you are editing any other files, the next
@@ -315,24 +315,24 @@ the file has been modified, then the option will fail.
 You have already learned that pressing the
 .param INS
 key while in
-.keyword &cmdmode.
+.keyword &cmdmode
 puts &edvi into insert mode.  Once you are in insert mode, you
 may enter whatever text you like.  You may cursor around and modify
 your text in whatever way you choose.  Once you are done, you
 may press the
 .param ESC
 key to return to
-.keyword &cmdmode.
+.keyword &cmdmode
 .period
 .np
 While you are in
-.keyword &tinsmode.
+.keyword &tinsmode
 .ct , the basic keys that allow you to move through
 the text are:
 :INCLUDE file='basicmv'.
 .np
 These keys allow you to manipulate the text while in
-.keyword &tinsmode.
+.keyword &tinsmode
 .ct :
 .*
 :DL break.
@@ -353,7 +353,7 @@ has the same effect as pressing
 :DT.ENTER
 :DD.Start a new line.
 
-:DT.INS
+:DT.INS (Insert key)
 :DD.Toggles between inserting and overstriking text.
 
 :eDL.
@@ -362,9 +362,9 @@ has the same effect as pressing
 Along with the
 .param INS
 key, there are a number of other keys that you can press in
-.keyword &cmdmode.
+.keyword &cmdmode
 that will place you in
-.keyword &tinsmode.
+.keyword &tinsmode
 .ct , where you can edit text.
 The difference between
 all of these commands is where the cursor moves to before you start
@@ -407,7 +407,7 @@ on the new line.
 .*
 .np
 Remember, while in
-.keyword &tinsmode.
+.keyword &tinsmode
 .ct , the following mode indicator will appear
 on the menu bar:
 .millust begin
@@ -422,7 +422,7 @@ As well, the cursor will change to a larger block cursor
 to help you remember that you are are inputting text.
 .np
 To exit
-.keyword &tinsmode.
+.keyword &tinsmode
 at any time, press the
 .param ESC
 key.  Your mode indicator will switch to
@@ -453,7 +453,7 @@ You may see that message any time by pressing
 (hold down the Ctrl key and press the g key).
 .np
 Enter
-.keyword &tinsmode.
+.keyword &tinsmode
 by pressing the
 .param INS
 key, and type the following lines:
@@ -464,7 +464,7 @@ This is another test line.
 When you are done typing these lines, remember to press the
 .param ESC
 key to return to
-.keyword &cmdmode.
+.keyword &cmdmode
 .period
 .np
 Press
@@ -586,24 +586,25 @@ noted that pressing
 .param CTRL_DEL
 (control-delete) deleted a line when inputting text.
 This same command can be used while in
-.keyword &cmdmode.
+.keyword &cmdmode
 .period
 .np
 If you want to delete more than one line at once, you may precede
 this delete command with a
-.keyword repeat count.
+.keyword repeat count
+.period
 You enter a repeat count
 simply by typing numbers before you press
 .param CTRL_DEL
 .period
 As you type a number in
-.keyword &cmdmode.
+.keyword &cmdmode
 .ct , it will appear in a special window,
 as follows:
 .figure *depth='2.47' *scale='59' *file='vi008' Repeat Count Display
 The number that you are typing is displayed in the repeat count window.
 As with all
-.keyword &cmdmode.
+.keyword &cmdmode
 commands, if you decide that you have made a mistake,
 just press the
 .param ESC
@@ -669,7 +670,7 @@ Once you have yanked the lines, you may paste them in, as discussed above.
 .* ******************************************************************
 .np
 To delete characters while in
-.keyword &cmdmode.
+.keyword &cmdmode
 .ct , you can press the
 .param DEL
 key or the 'x' key.  The current character under the cursor will be deleted.
@@ -824,7 +825,7 @@ This is a test line.
 :LI.Go to the first line in the file, and to the first column
 (try pressing
 .param CTRL_PAGEUP
-).  Then press the 'x' key.  The first line should become:
+.ct ).  Then press the 'x' key.  The first line should become:
 .millust begin
 his is a test line.
 .millust end
@@ -1008,7 +1009,8 @@ the following menu appears:
 :DT.Settings
 :DD.This brings up a list of all settings for &edvi..
 For more information on settings, see the chapter
-:HDREF refid='edset'..
+:HDREF refid='edset'.
+.period
 
 :eDL.
 .* ******************************************************************
@@ -1060,12 +1062,13 @@ editing any other files, then &edvi will exit.
 
 :DT.Enter command
 :DD.Allows you to enter a
-.keyword &cmdline.
+.keyword &cmdline
 command.
 The
-.keyword &cmdline.
+.keyword &cmdline
 is discussed in the next chapter,
-:HDREF refid='inter'..
+:HDREF refid='inter'.
+.period
 
 :DT.System
 :DD.Starts an operating system command shell.  You exit the command shell
@@ -1187,14 +1190,14 @@ the following menu appears:
 
 :DT.Command line
 :DD.Gives help on all
-.keyword &cmdline.
+.keyword &cmdline
 commands.
 
 :DT.Keystrokes
 :DD.Gives help on
-.keyword &cmdmode.
+.keyword &cmdmode
 and
-.keyword &tinsmode.
+.keyword &tinsmode
 .period
 
 :DT.Regular expressions

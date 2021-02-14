@@ -51,7 +51,7 @@ Along with the &edname executable, there are a number of files that are needed:
 (contains editor setup)
 :DT.keys.dat
 :DD.Symbolic key names used by the
-.keyword &cmdline.
+.keyword &cmdline
 commands
 .keyref map
 .ct ,

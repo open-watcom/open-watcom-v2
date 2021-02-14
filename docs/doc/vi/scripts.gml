@@ -39,7 +39,7 @@
 .*
 The &edname supports a powerful command language.  In a script,
 you may use any
-.keyword &cmdline.
+.keyword &cmdline
 command, along with a number of special commands
 explicitly for the script environment.
 .np
@@ -48,7 +48,7 @@ right angle bracket ('&gt.'). Comments may be imbedded in a script file
 by starting the line with pound sign ('#').
 .np
 A script is invoked using the
-.keyword &cmdline.
+.keyword &cmdline
 command
 .keyref source
 .period
@@ -126,7 +126,7 @@ of this chapter.
 .do end
 .np
 There are several useful
-.keyword &cmdline.
+.keyword &cmdline
 commands dealing with &edvi scripts, they are:
 
 .*
@@ -297,7 +297,7 @@ The hook points are:
 :LI.after a new file has been read.
 :LI.before a modified file is saved and exited.
 :LI.after return is pressed on the
-.keyword &cmdline.
+.keyword &cmdline
 .period
 :LI.whenever an unmodified file is modified.
 :LI.whenever a selected (highlighted) column range is
@@ -327,13 +327,13 @@ The script invoked is the file specified by the global variable
 :DT.Command Hook
 :DD.The hook script
 is called after the return is pressed from the
-.keyword &cmdline.
+.keyword &cmdline
 .period
 The global variable
 .var %(Com)
 contains the current command string, and may be modified.
 Whatever it is modified to is what will be processed by the
-.keyword &cmdline.
+.keyword &cmdline
 processor.
 .np
 The script invoked is the file specified by the global variable
@@ -356,7 +356,7 @@ is called whenever a selected column range
 has been picked.  Picking a selected region is done by
 right-clicking the region with the mouse, or by double clicking
 the region with the mouse, or by using the underscore ('_')
-.keyword &cmdmode.
+.keyword &cmdmode
 keystroke.
 .np
 The script is invoked with the following parameters:
@@ -380,7 +380,7 @@ is called whenever a selected line range
 has been picked.  Picking a selected region is done by
 right-clicking the region with the mouse, or by double clicking
 the region with the mouse, or by using the underscore ('_')
-.keyword &cmdmode.
+.keyword &cmdmode
 keystroke.
 :DL break.
 :DT.%1
@@ -1642,7 +1642,7 @@ If the script was invoked by another script, then this value becomes
 .period
 .np
 If the script was invoked at the
-.keyword &cmdline.
+.keyword &cmdline
 .ct , then this return code
 is reported as the appropriate error, if &parm1 is not
 .param ERR_NO_ERR

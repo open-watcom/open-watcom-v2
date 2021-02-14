@@ -33,9 +33,9 @@
 .*
 .****************************************************************************/
 :LI.Make sure you are in
-.keyword &cmdmode.
+.keyword &cmdmode
 and enter the
-.keyword &cmdline.
+.keyword &cmdline
 command:
 .millust begin
 :q!

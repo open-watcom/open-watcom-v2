@@ -40,7 +40,7 @@
 .np
 This chapter describes the various editor commands that may be entered.
 A command is entered by pressing the colon (':') key while in
-.keyword &cmdmode.
+.keyword &cmdmode
 .ct , or by selecting the
 .keyword Enter command
 option in the
@@ -48,7 +48,7 @@ option in the
 menu.
 .np
 To ensure that you are in
-.keyword &cmdmode.
+.keyword &cmdmode
 .ct , press
 .keyword ESC
 until the mode indicator says
@@ -64,15 +64,15 @@ windowing command (character mode versions of the editor only).
 Commands may be up to 512 bytes in length; the command window scrolls.
 .np
 There are a special set of commands that may be entered at the
-.keyword &cmdline.
+.keyword &cmdline
 for controlling the various windows and menus of &edvi.
 .period
 These commands are discussed in the next chapter,
-:HDREF refid=winmenu.
+:HDREF refid='winmenu'.
 .period
 .np
 The
-.keyword &cmdline.
+.keyword &cmdline
 has a command history associated with it; the size
 of this command history is controlled using the
 .keyref maxclhistory
@@ -224,14 +224,14 @@ of them).
 Some commands are noted as "EX mode
 only".  This means that the command
 is not available from the normal
-.keyword &cmdline.
+.keyword &cmdline
 ; it may only be used from an editor
 .keyword script
 or from
 .keyword EX mode
 (which is entered by pressing 'Q' in
-.keyword &cmdmode.
-).
+.keyword &cmdmode
+.ct ).
 .*
 .fnlist begin Commands
 .*
@@ -328,7 +328,7 @@ Temporarily leaves &edvi. and enters an operating system command shell.
 Create an abbreviation of &parm1 for &parm2.
 .period
 Whenever &parm1 is typed as a word during
-.keyword &tinsmode.
+.keyword &tinsmode
 .ct , it is expanded to &parm2.
 .period
 .keyref unabbrev
@@ -352,11 +352,11 @@ is substituted.
 .syntx * ALias &lt.alias&gt. &lt.data&gt.
 .begdescr
 Creates an
-.keyword &cmdline.
+.keyword &cmdline
 alias of &parm1 for &parm2.
 .period
 Whenever &parm1. is typed on the
-.keyword &cmdline.
+.keyword &cmdline
 .ct , the full command &parm2 is substituted.
 .keyref unalias
 is used to remove the abbreviation.
@@ -366,7 +366,7 @@ is used to remove the abbreviation.
 Whenever
 .param ai
 is entered on the
-.keyword &cmdline.
+.keyword &cmdline
 .ct , the command
 .param set autoindent
 is executed.
@@ -541,29 +541,29 @@ Deletes the specified line range &range.
 .np
 If &parm1 is not specified,
 the text is deleted into the active
-.keyword &copybuffer.
+.keyword &copybuffer
 .period
 .np
 If &parm1 ('1'-'9', or 'a'-'z') is specified, the text is deleted into
 that
-.keyword &copybuffer.
+.keyword &copybuffer
 .period
 .np
 The
 .keyref put
 command may be used to place contents of a
-.keyword &copybuffer.
+.keyword &copybuffer
 into the file.
 .enddescr
 .xmplsect begin
 .begxmpl % d
 Deletes all lines into the active
-.keyword &copybuffer.
+.keyword &copybuffer
 .period
 .endxmpl
 .begxmpl 1,10 d a
 Deletes lines 1 to 10 into the named
-.keyword &copybuffer.
+.keyword &copybuffer
 .param a
 .period
 .endxmpl
@@ -625,7 +625,7 @@ Edits the specified files &parm2.
 Each file name may contain file regular expressions, see the section
 :HDREF refid='fmrx'.
 in the chapter
-:HDREF page=no refid='rxchap'
+:HDREF page=no refid='rxchap'.
 for more information.
 .np
 If &parm1 is specified, then the current file is discarded before editing
@@ -693,7 +693,7 @@ if it contains any spaces.
 contain file regular expressions, see the section
 :HDREF refid='fmrx'.
 in the chapter
-:HDREF page=no refid='rxchap'
+:HDREF page=no refid='rxchap'.
 for more information.
 .np
 If &parm2 is not specified, it defaults to the setting of
@@ -846,7 +846,7 @@ if it contains any spaces.
 contain file regular expressions, see the section
 :HDREF refid='fmrx'.
 in the chapter
-:HDREF page=no refid='rxchap'
+:HDREF page=no refid='rxchap'.
 for more information.
 .np
 If &parm4 is not specified, it defaults to the setting of
@@ -896,12 +896,12 @@ Displays following screen
 Activates the floating (popup) menu &parm1 (&parm1 may be 0, 1, 2 or 3).
 .np
 The floating menus are defined using the
-.keyword &cmdline.
+.keyword &cmdline
 command
 .keyref menu
 (See the section
 :HDREF refid='menucmd'.
-).
+.ct ).
 .np
 &parm3, &parm4 specify the coordinates of the upper left hand corner
 of the floating menu.  (0,0) specifies the upper left hand corner
@@ -999,12 +999,12 @@ topics are:
 .*
 :DT.COMmandline
 :DD.All
-.keyword &cmdline.
+.keyword &cmdline
 commands.
 
 :DT.KEYS
 :DD.What different keystrokes do in
-.keyword &cmdmode.
+.keyword &cmdmode
 .period
 
 :DT.REGularexpressions
@@ -1013,7 +1013,7 @@ commands.
 :DT.SETtings
 :DD.Everything that can be modified with the
 .keyref set
-.keyword &cmdline.
+.keyword &cmdline
 command.
 
 :DT.SCRipts
@@ -1029,7 +1029,7 @@ guide.
 .xmplsect begin
 .begxmpl help com
 Gives help on
-.keyword &cmdline.
+.keyword &cmdline
 commands.
 .endxmpl
 .begxmpl help
@@ -1157,13 +1157,13 @@ and makes it resident.
 .begdescr
 Tells the editor to run the string of keys &parm3 whenver the
 key &parm2 is pressed in
-.keyword &cmdmode.
+.keyword &cmdmode
 .period
 .np
 If &parm1 is specified,
 then the string of keys &parm3 is executed whenever &parm2 is pressed
 in
-.keyword &tinsmode.
+.keyword &tinsmode
 .period
 .np
 When a mapped key is pressed, it acts is if the characters in &parm3
@@ -1197,7 +1197,7 @@ command.
 .xmplsect begin
 .begxmpl map K \x:next\n
 Whenever K is pressed in
-.keyword &cmdmode.
+.keyword &cmdmode
 .ct , the
 .keyref next
 command is executed. The command window will not be displayed,
@@ -1207,7 +1207,7 @@ because of the
 .endxmpl
 .begxmpl map CTRL_T \x:\hda\n
 Whenever CTRL_T is pressed in
-.keyword &cmdmode.
+.keyword &cmdmode
 .ct , the current date is displayed. The command window will not be
 displayed, because of the
 .param \x
@@ -1218,7 +1218,7 @@ The command will not be added to the command history, because of the
 .endxmpl
 .begxmpl map CTRL_W \x:fgrep \&lt.CTRL_W&gt.\n
 Whenever CTRL_W is pressed in
-.keyword &cmdmode.
+.keyword &cmdmode
 .ct , an fgrep command, searching for
 the current word, is executed.  The
 .param \x
@@ -1226,22 +1226,22 @@ keeps the command window from opening.
 .param \&lt.CTRL_W&gt.
 simulates CTRL_W being pressed, so the current word is inserted into
 the
-.keyword &cmdline.
+.keyword &cmdline
 .period
 .endxmpl
 .begxmpl map! CTRL_W \edwi
 Whenever CTRL_W is pressed in
-.keyword &tinsmode.
+.keyword &tinsmode
 .ct ,
-.keyword &tinsmode.
+.keyword &tinsmode
 is exited (\e simulates the ESC key being pressed), the current word is
 deleted, and
-.keyword &tinsmode.
+.keyword &tinsmode
 is re-entered.  This has the effect of
 deleting the current word in
-.keyword &tinsmode.
+.keyword &tinsmode
 and appearing to remain in
-.keyword &tinsmode.
+.keyword &tinsmode
 .period
 .endxmpl
 .xmplsect end
@@ -1257,7 +1257,7 @@ and appearing to remain in
 .begdescr
 Tells the editor to run the string of keys &parm3 whenver the
 key &parm2 is pressed in
-.keyword &cmdmode.
+.keyword &cmdmode
 .period
 .np
 This works the same as the
@@ -1287,9 +1287,9 @@ to
 .param z
 .period
 This mark may then be referred to on the
-.keyword &cmdline.
+.keyword &cmdline
 or in
-.keyword &cmdmode.
+.keyword &cmdmode
 by using a front quote (') before the mark name, e.g.:
 .millust begin
 'a
@@ -1318,7 +1318,7 @@ on line 100.
 .syntx * match //&lt.rx1&gt./&lt.rx2&gt.//
 .begdescr
 Set what is matched by the '%'
-.keyword &cmdmode.
+.keyword &cmdmode
 command.  Defaults are "{","}"
 and "(",")". For example, by pressing the percent key ('%') when
 the cursor is on the first open bracket ('(') in the line:
@@ -1521,13 +1521,13 @@ command does an implicit push.
 .syntx &lt.line_number&gt. PUt '"!"' &lt.buffer&gt.
 .begdescr
 Puts (pastes) the
-.keyword &copybuffer.
+.keyword &copybuffer
 &parm2 ('1'-'9', or 'a'-'z') after the
 line &range.
 .period
 .np
 If &parm2 is not specified, the active
-.keyword &copybuffer.
+.keyword &copybuffer
 is assumed.
 .np
 If &parm1 is specified, then the lines are put before the
@@ -1537,23 +1537,23 @@ line &range.
 .xmplsect begin
 .begxmpl put
 Pastes the active
-.keyword &copybuffer.
+.keyword &copybuffer
 after the current line.
 .endxmpl
 .begxmpl 1 put!
 Pastes the active
-.keyword &copybuffer.
+.keyword &copybuffer
 before the first line in the edit buffer.
 .endxmpl
 .begxmpl $ put a
 Pastes named
-.keyword &copybuffer.
+.keyword &copybuffer
 .param a
 after the last line in the file.
 .endxmpl
 .begxmpl put! 4
 Pastes numbered
-.keyword &copybuffer.
+.keyword &copybuffer
 before the current line.
 .endxmpl
 .xmplsect end
@@ -1620,7 +1620,7 @@ in before the first line of the current edit buffer.
 Each file name &parm1 may contain file regular expressions, see the section
 :HDREF refid='fmrx'.
 in the chapter
-:HDREF page=no refid='rxchap'
+:HDREF page=no refid='rxchap'.
 for more information.
 .np
 If &parm1 is not specified, then a window containing
@@ -1906,7 +1906,7 @@ along with the file in which they are located and a search command/line
 number with which to exactly locate the tag.
 .np
 See the appendix
-:HDREF refid='ctags'
+:HDREF refid='ctags'.
 for more information.
 .enddescr
 .xmplsect begin
@@ -1993,19 +1993,19 @@ Remove the abbreviation
 .syntx * UNALias &lt.alias&gt.
 .begdescr
 Removes the
-.keyword &cmdline.
+.keyword &cmdline
 alias &parm1.
 .period
 See the
 .keyref alias
 command for how to set a
-.keyword &cmdline.
+.keyword &cmdline
 alias.
 .enddescr
 .xmplsect begin
 .begxmpl unalias ai
 Remove the
-.keyword &cmdline.
+.keyword &cmdline
 alias
 .param ai
 .period
@@ -2038,10 +2038,10 @@ last undo.
 .syntx * UNMAP '"!"' &lt.key&gt.
 .begdescr
 Removes the mapping of the key &parm2 for
-.keyword &cmdmode.
+.keyword &cmdmode
 .period
 If &parm1 is specified, then the key mapping is removed for
-.keyword &tinsmode.
+.keyword &tinsmode
 .period
 See the
 .keyref map
@@ -2057,17 +2057,17 @@ These are described in the Appendix
 .xmplsect begin
 .begxmpl unmap CTRL_W
 Removes the mapping of CTRL_W for
-.keyword &cmdmode.
+.keyword &cmdmode
 .period
 Pressing CTRL_W in command
 mode will now do the default action.
 .endxmpl
 .begxmpl unmap! F1
 Removes the mapping of F1 for
-.keyword &tinsmode.
+.keyword &tinsmode
 .period
 Typing F1 in
-.keyword &tinsmode.
+.keyword &tinsmode
 will now do the default action.
 .endxmpl
 .xmplsect end
@@ -2195,30 +2195,30 @@ Yank (make a copy of) the specified line range &range.
 .period
 .np
 If &parm1 is not specified, the text is yanked (copied) into the active
-.keyword &copybuffer.
+.keyword &copybuffer
 .period
 .np
 If &parm1 ('1'-'9', or 'a'-'z') is specified, the text is yanked into
 that
-.keyword &copybuffer.
+.keyword &copybuffer
 .period
 .np
 The
 .keyref put
 command may be used to place the contents of a
-.keyword &copybuffer.
+.keyword &copybuffer
 into the file.
 .enddescr
 .xmplsect begin
 .begxmpl % y
 Yanks (copies) all lines into the active
-.keyword &copybuffer.
+.keyword &copybuffer
 .period
 .endxmpl
 .begxmpl .,$ y z
 Yanks the lines from the current line to the last line in the file
 into the
-.keyword &copybuffer.
+.keyword &copybuffer
 .param z
 .period
 .endxmpl

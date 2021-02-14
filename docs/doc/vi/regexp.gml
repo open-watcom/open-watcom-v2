@@ -42,28 +42,28 @@ Regular expressions are a powerful method of matching strings in your text.
 Commands that use regular expressions are:
 :UL.
 :LI.forward slash ('/')
-.keyword &cmdmode.
+.keyword &cmdmode
 key (search forwards)
 :LI.question mark ('?')
-.keyword &cmdmode.
+.keyword &cmdmode
 key (search backwards)
 :LI.forward slash ('/')
-.keyword &cmdline.
+.keyword &cmdline
 address (search forwards)
 :LI.question mark ('?')
-.keyword &cmdline.
+.keyword &cmdline
 address (search backwards)
 :LI.substitute
-.keyword &cmdline.
+.keyword &cmdline
 command
 :LI.global
-.keyword &cmdline.
+.keyword &cmdline
 command
 :LI.egrep
-.keyword &cmdline.
+.keyword &cmdline
 command
 :LI.match
-.keyword &cmdline.
+.keyword &cmdline
 command
 :eUL.
 .np
@@ -367,7 +367,7 @@ is NOT set, then any special characters listed in
 .keyref magicstring
 lose their special meaning, and are treated as regular characters.
 For example, the following
-.keyword &cmdline.
+.keyword &cmdline
 commands
 .millust begin
 set nomagic

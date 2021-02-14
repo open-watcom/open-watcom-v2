@@ -50,7 +50,7 @@ symbols that are recognized. These are described in the Appendix
 
 :DT.\h
 :DD.If a
-.keyword &cmdline.
+.keyword &cmdline
 command is used in the sequence, and it follows the
 colon (':'), the command is not added to the history.  For example:
 .millust begin
@@ -61,7 +61,7 @@ the command history.
 
 :DT.\x
 :DD.If a
-.keyword &cmdline.
+.keyword &cmdline
 command is used in the sequence, then this stops the
 command window from opening.  This prevents the "flashing" of the
 command window as it is opened then closed. For example:
