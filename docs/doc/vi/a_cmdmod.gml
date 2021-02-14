@@ -42,17 +42,17 @@ The following is a list of all possible keys that may be pressed in
 .ct , and their default behaviour.
 .np
 Commands preceded with a
-.param <n>
+.paramt n
 take a repeat count.
 .np
 Commands preceded with a
-.param <"?>
+.paramt "?
 accept a
 .keyword &copybuffer.
 name.
 .np
 Commands that accept mark letter ('a'-'z') have a
-.param <?>
+.paramt ?
 in their definition.
 
 .np
@@ -254,7 +254,7 @@ saves the current file (if it has been modified) and quits the file.
 
 :DT.`<?>
 :DD.Go to the line and column with the mark
-.param <?>
+.paramt ?
 .period
 
 :DT.a
@@ -274,7 +274,7 @@ saves the current file (if it has been modified) and quits the file.
 
 :DT.<n>f<?>
 :DD.Move forward to the character
-.param <?>
+.paramt ?
 on the current line.
 
 :DT.<n>h
@@ -294,7 +294,7 @@ on the current line.
 
 :DT.m<?>
 :DD.Set the mark
-.param <?>
+.paramt ?
 .period
 
 :DT.n
@@ -316,7 +316,7 @@ at the current position in the edit buffer.
 
 :DT.<n>t<?>
 :DD.Move up to the character before the character
-.param <?>
+.paramt ?
 on the current line.
 
 :DT.u

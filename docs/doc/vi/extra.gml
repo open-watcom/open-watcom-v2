@@ -95,6 +95,10 @@
 :SF font=2.&*.:eSF.
 .dm param end
 
+.dm paramq begin
+":SF font=2.&*.:eSF."
+.dm paramq end
+
 .dm paramt begin
 &lt.:SF font=2.&*.:eSF.&gt.
 .dm paramt end
@@ -156,13 +160,13 @@
 .   .do end
 .   :ZeDL
 .do end
-.'se range =';.param &*1.;.ct '
-.'se parm1 =';.param &*3.;.ct '
-.'se parm2 =';.param &*4.;.ct '
-.'se parm3 =';.param &*5.;.ct '
-.'se parm4 =';.param &*6.;.ct '
-.'se parm5 =';.param &*7.;.ct '
-.'se parm6 =';.param &*8.;.ct '
+.'se range =';.ct .param &*1.;.ct '
+.'se parm1 =';.ct .param &*3.;.ct '
+.'se parm2 =';.ct .param &*4.;.ct '
+.'se parm3 =';.ct .param &*5.;.ct '
+.'se parm4 =';.ct .param &*6.;.ct '
+.'se parm5 =';.ct .param &*7.;.ct '
+.'se parm6 =';.ct .param &*8.;.ct '
 .dm syntx end
 
 .dm begdescr begin
@@ -617,7 +621,7 @@ Only valid in
 .dm seecmd begin
 .sk
 Also see the
-.keyword &cmdline.
+.keyword &cmdline
 command
 .keyref &*.
 .period

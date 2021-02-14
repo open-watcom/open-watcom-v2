@@ -1823,7 +1823,8 @@ known as
 and
 .keyword alternate memorize mode
 .period
-You enter memorize mode
+You enter
+.keyword memorize mode
 by pressing the letter 'm' (also used to set a mark) followed by a dot ('.').
 You will then see the message
 .millust begin
@@ -1832,7 +1833,9 @@ Memorize Mode started
 From this point forward, every key that you type is memorized.  When you
 are done memorizing, you can then press the dot ('.') key while in
 .keyword &cmdmode.
-.ct , and this ends memorize mode.
+.ct , and this ends
+.keyword memorize mode
+.period
 You will see the message:
 .millust begin
 Memorize Mode ended
@@ -1847,8 +1850,9 @@ change the text other than with '.'.  To memorize a sequence that will
 always be remembered, you can use
 .keyword alternate memorize mode
 .period
-This mode is used the same way as memorize mode,
-only you use an equals sign ('=') instead of a dot ('.').
+This mode is used the same way as
+.keyword memorize mode
+.ct , only you use an equals sign ('=') instead of a dot ('.').
 .*
 .exercises
 :OL.
@@ -1870,13 +1874,18 @@ command:
 .millust begin
 m.
 .millust end
-This will start you in memorize mode. Now, type:
+This will start you in
+.keyword memorize mode
+.period
+Now, type:
 .millust begin
 dwjdwj.
 .millust end
 This deletes the word on the first line, goes down to the next line,
 deletes another word on the next line, and goes down one more line.
-The final dot ('.') terminates memorize mode.
+The final dot ('.') terminates
+.keyword memorize mode
+.period
 
 :LI.Now, press dot ('.').  This will delete the first word of the next
 two lines.

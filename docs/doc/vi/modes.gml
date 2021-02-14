@@ -2556,16 +2556,16 @@ command that changed text in
 the edit buffer. It is also possible to memorize more than
 just one command for '.' by using
 .keyword memorize mode
-:cont.:
+.ct :
 :OL.
-:LI.Type "
-.param m.
-:cont.".
-(&edvi enters memorize mode).
+:LI.Type
+.paramq m.
+(&edvi enters
+.keyword memorize mode
+.ct ).
 :LI.Enter keystrokes.
-:LI.Type "
-.param .
-:cont."
+:LI.Type
+.paramq .
 :eOL.
 Now, whenever you press dot ('.'),
 all the entered keystrokes will be executed.
@@ -2576,25 +2576,23 @@ Performs the last alternate memorized command sequence.  The
 .keyword alternate memorize mode
 is used as follows:
 :OL.
-:LI.Type "
-.param m=
-:cont.".
+:LI.Type
+.paramq m=
 (&edvi enters
 .keyword alternate memorize mode
-:cont.).
+.ct ).
 :LI.Enter keystrokes.
-:LI.Type "
-.param =
-:cont."
+:LI.Type
+.paramq =
 :eOL.
 Now, whenever you press the equals sign ('='),
 all the entered keystrokes will be executed as if you typed them
 again from the keyboard.
 .np
 This memorized keystroke sequence will last until you memorize
-another, unlike using "
-.param m.
-:cont.".
+another, unlike using
+.paramq m.
+.period
 .endkey
 
 .begkey ALT_M ALT_M

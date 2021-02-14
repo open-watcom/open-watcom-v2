@@ -49,17 +49,6 @@ at the command prompt.  Try typing this.  You will see something similar
 to the following:
 .figure *depth='2.47' *scale='59' *file='vi001' The &edvi screen
 .np
-If you are running DOS on a 386 (or higher)
-machine, then you can also use the
-.keyword protected mode
-version of &edvi..  This version of &edvi runs as a native 386
-application, which means that it has access to more memory and will do its
-processing more quickly. You can start this version by typing
-.millust begin
-vip
-.millust end
-at the command prompt.
-.np
 &edvi also accepts one or more files as an optional parameter.  Each
 file that you specify will be edited by &edvi..  For example, typing
 .millust begin
