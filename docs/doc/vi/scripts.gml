@@ -877,7 +877,7 @@ Script commands that set this have a
 .keyword Returns
 section.
 .* ******************************************************************
-.fnlist begin '&edvi. Script Commands'
+.fnlist begin '&edvi Script Commands'
 .* ******************************************************************
 .begfunc ATOMIC
 .syntx * ATOMIC

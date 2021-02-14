@@ -35,8 +35,8 @@
 .****************************************************************************/
 .chap *refid=basic 'Basic Usage'
 .np
-Using any editor as powerful as &edvi. takes some practice. This chapter
-will lead you through the basics or using &edvi.
+Using any editor as powerful as &edvi takes some practice. This chapter
+will lead you through the basics or using &edvi..
 .* ******************************************************************
 .section 'Starting the &edname.'
 .* ******************************************************************

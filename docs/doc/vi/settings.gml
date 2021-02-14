@@ -136,7 +136,7 @@ Causes all searches to be case insensitive if set.
 .setcmd *short=cv changelikevi
 .setsyntx
 .begdescr
-If set, then the change command behaves like UNIX &edvi., i.e.
+If set, then the change command behaves like UNIX &edvi, i.e.
 if ESC is pressed when no change has been made, the text is deleted.
 Normally, pressing ESC cancels the change without deleting the text.
 .enddescr
@@ -377,7 +377,7 @@ list of choices is displayed if &cmd_long is set.
 .ix 'undo setting'
 .setsyntx
 .begdescr
-Setting &nocmd_long disables &edvi.'s undo ability.
+Setting &nocmd_long disables &edvi's undo ability.
 .enddescr
 
 .setcmd *short=ve verbose
