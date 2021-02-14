@@ -66,10 +66,9 @@ is entered via a number of different commands from
 larger cursor, along with a mode line indication.  The
 types of cursor are controlled with the
 .keyref commandcursortype
-:cont.,
+.ct ,
 .keyref insertcursortype
-:cont.,
-and
+.ct , and
 .keyref overstrikecursortype
 settings.
 .np
@@ -130,7 +129,7 @@ Deletes the text, and enters
 :DT.&lt.n&gt.c&lt.oper&gt.
 :DD.Change command.  Deletes the text in the range specified by
 .paramt oper
-:cont., and enters
+.ct , and enters
 .keyword &tinsmode.
 .period
 
@@ -431,9 +430,9 @@ Moves the cursor to the first non-whitespace character on the current line.
 .dc cw ;
 Repeats the last
 .keyword f
-:cont.,
+.ct ,
 .keyword F
-:cont.,
+.ct ,
 .keyword t
 or
 .keyword T
@@ -443,9 +442,9 @@ movement commands.
 .begkey ',' ',' (comma)
 Repeats the last
 .keyword f
-:cont.,
+.ct ,
 .keyword F
-:cont.,
+.ct ,
 .keyword t
 or
 .keyword T
@@ -1238,8 +1237,7 @@ take you to the last position you were at before you used a
 non-linear movement command (', `, ?, /, G, n, and N commands).
 So, if you are at line 5 column 10 and type
 .param /foo
-:cont.,
-pressing
+.ct , pressing
 .param ``
 will first move
 you back to line 5 column 10. Pressing
@@ -1261,8 +1259,7 @@ commands
 .keyref delete
 and
 .keyref yank
-:cont.,
-along with the sections
+.ct , along with the sections
 :HDREF refid='deltext'
 and
 :HDREF refid='cpytext'
@@ -1548,7 +1545,7 @@ by pressing the
 .keyword ESC
 key. See the previous section,
 :HDREF refid='timode'.
-:cont., for more information on manipulating text in
+.ct , for more information on manipulating text in
 .keyword &tinsmode.
 .period
 .* ******************************************************************
@@ -1572,7 +1569,7 @@ by pressing the
 .keyword ESC
 key. See the previous section,
 :HDREF refid='timode'.
-:cont., for more information on manipulating text in
+.ct , for more information on manipulating text in
 .keyword &tinsmode.
 .period
 .endkey
@@ -1717,8 +1714,7 @@ command to be deleted.
 .paramt oper
 may be specified as
 .param d
-:cont.,
-which causes a single line to be deleted.
+.ct , which causes a single line to be deleted.
 .seecmd delete
 .np
 .xmplsect begin
@@ -1819,8 +1815,7 @@ command to be copied.
 .paramt oper
 may be specified as
 .param y
-:cont.,
-which causes a single line to be yanked.
+.ct , which causes a single line to be yanked.
 .seecmd delete
 .np
 .xmplsect begin
@@ -1856,7 +1851,7 @@ end of the line
 :LI.all lines between the current line and the first line
 containing the string
 .param foo
-:LI the part of the line containing
+:LI.the part of the line containing
 .param foo
 from the start of the line to the first letter in the string
 .param foo
@@ -1930,10 +1925,9 @@ characters are substituted.
 .np
 This command is the same as typing
 .param cl
-:cont.,
+.ct ,
 .param cRIGHT
-:cont.,
-or
+.ct , or
 .param cSPACE
 .period
 .endkey
@@ -1962,8 +1956,7 @@ command to be changed.
 .paramt oper
 may be specified as
 .keyword c
-:cont.,
-which causes a single line to be changed.
+.ct , which causes a single line to be changed.
 .np
 .xmplsect begin
 .begxmpl cr
@@ -2038,8 +2031,7 @@ command to be shifted to the right.
 .paramt oper
 may be specified as
 .param &gt.
-:cont.,
-which causes a single line to be shifted to the right.
+.ct , which causes a single line to be shifted to the right.
 .seecmd &gt.
 .np
 .xmplsect begin
@@ -2081,8 +2073,7 @@ spaces.
 .paramt oper
 may be specified as
 .param &lt.
-:cont.,
-which causes a single line to be shifted to the left
+.ct , which causes a single line to be shifted to the left
 .keyref shiftwidth
 spaces.
 .seecmd &lt.
@@ -2159,8 +2150,7 @@ command to be case toggled.
 .paramt oper
 may be specified as
 .param &tilde.
-:cont.,
-which causes a single line to be have its case toggled.
+.ct , which causes a single line to be have its case toggled.
 .np
 .xmplsect begin
 .begxmpl &tilde.r
@@ -2210,8 +2200,7 @@ command to be run through the filter.
 .paramt oper
 may be specified as
 .param !
-:cont.,
-which causes a single line to be run through the filter.
+.ct , which causes a single line to be run through the filter.
 .np
 The lines specified are run through a specified
 system command (filter).  Once the filter range has been specified, a window
@@ -2472,8 +2461,7 @@ Enters
 is a line-oriented mode of &edvi..
 To exit
 .keyword EX mode
-:cont.,
-use the
+.ct , use the
 .keyref visual
 command.
 .endkey
@@ -2493,7 +2481,7 @@ Finished with current edit buffer.
 Reorients the current screen position.  The current line moves
 as follows, depending on the value of
 .paramt ?
-:cont.:
+.ct :
 :DL break.
 :DT.ENTER
 :DD.Moves the current line to the top of the screen.
@@ -2536,9 +2524,8 @@ Move backwards through the file list to the previous file.
 .begkey F11 F11
 Push the current file and position.  If you press
 .param F12
-:cont.,
-you will be restored to this position.  These positions are stacked
-up, up to a maximum of
+.ct , you will be restored to this position.  
+These positions are stacked up, up to a maximum of
 .keyref maxpush
 .period
 .seecmd push

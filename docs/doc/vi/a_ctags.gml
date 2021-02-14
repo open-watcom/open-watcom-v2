@@ -51,10 +51,10 @@ key CTRL_] (control close square bracket) or the
 .keyword &cmdline.
 command
 .keyref tag
-:cont.), &edname searchs a special tag file for the specified tag.
+.ct ), &edname searchs a special tag file for the specified tag.
 The name of the tag file is determined by the setting of
 .keyword tagfilename
-:cont., the default is
+.ct , the default is
 .param tags
 .period
 .np

@@ -45,8 +45,7 @@ the &edname.'s
 .keyref set
 command.  Options are typically set in the
 .keyword configuration script
-:cont.;
-however, options are settable at execution time as well.
+.ct ; however, options are settable at execution time as well.
 .np
 If you know the option you wish to set, you may just issue the
 .keyref set
@@ -165,7 +164,7 @@ and not in another (during the same editing session) will work.
 .np
 One thing that is useful is to add the following lines to your read
 .keyword hook script
-:cont.:
+.ct :
 .millust begin
     if %E == .c
         set cmode
@@ -402,7 +401,7 @@ If this option is set, pressing backspace while on column one of
 a line will cause &edvi to wrap to the end of the previous line
 (while in
 .keyword &tinsmode.
-:cont.).
+.ct ).
 .enddescr
 
 .setcmd *short=wl writecrlf

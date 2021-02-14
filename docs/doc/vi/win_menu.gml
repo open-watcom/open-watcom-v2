@@ -244,10 +244,9 @@ It is displayed when selecting results from the
 .keyword &cmdline.
 commands
 .keyref fgrep
-:cont.,
+.ct ,
 .keyref egrep
-:cont.,
-and
+.ct , and
 .keyref files
 .period
 .enddescr
@@ -382,7 +381,7 @@ Typically, these commands will be found in the &edname
 
 .np
 .keyword Commandwindow
-:cont.:
+.ct :
 .millust begin
 commandwindow
     dimension 2 %(SH)-7 %(SW)-3 %(SH)-5
@@ -394,7 +393,7 @@ endwindow
     
 .np
 .keyword Countwindow
-:cont.:
+.ct :
 .millust begin
 countwindow
     dimension 28 %(SH)-5 43 %(SH)-3
@@ -406,7 +405,7 @@ endwindow
     
 .np
 .keyword Dirwindow
-:cont.:
+.ct :
 .millust begin
 dirwindow
     dimension 15 2 %(SW)-12 %(SH)-7
@@ -418,7 +417,7 @@ endwindow
 
 .np
 .keyword Editwindow
-:cont.:
+.ct :
 .millust begin
 editwindow
     dimension 0 1 %(SW)-1 %(SH)-2
@@ -446,7 +445,7 @@ endwindow
 
 .np
 .keyword Extrainfowindow
-:cont.:
+.ct :
 .millust begin
 extrainfowindow
     dimension 0 1 %(SW)-1 %(SH)-3
@@ -457,7 +456,7 @@ endwindow
 .millust end
     
 .keyword Filecwindow
-:cont.:
+.ct :
 .millust begin
 filecwindow
     dimension 4 7 %(SW)-5 %(SH)-9
@@ -469,7 +468,7 @@ endwindow
 
 .np
 .keyword Filewindow
-:cont.:
+.ct :
 .millust begin
 filewindow
     dimension 26 2 %(SW)-2 %(SH)-7
@@ -481,7 +480,7 @@ endwindow
 
 .np
 .keyword Messagewindow
-:cont.:
+.ct :
 .millust begin
 messagewindow
     dimension 18 %(SH)-1 %(SW)-1 %(SH)-1
@@ -493,7 +492,7 @@ endwindow
 
 .np
 .keyword Menuwindow
-:cont.:
+.ct :
 .millust begin
 menuwindow
     dimension 0 1 %(SW)-1 %(SH)-3
@@ -505,7 +504,7 @@ endwindow
     
 .np
 .keyword Menubarwindow
-:cont.:
+.ct :
 .millust begin
 menubarwindow
     dimension 0 0 %(SW)-1 0
@@ -516,7 +515,7 @@ endwindow
 .millust end
 
 .keyword Setvalwindow
-:cont.:
+.ct :
 .millust begin
 setvalwindow
     dimension 46 6 %(SW)-7 9
@@ -528,7 +527,7 @@ endwindow
     
 .np
 .keyword Setwindow
-:cont.:
+.ct :
 .millust begin
 setwindow
     dimension 12 2 43 %(SH)-4
@@ -540,7 +539,7 @@ endwindow
     
 .np
 .keyword Statuswindow
-:cont.:
+.ct :
 .millust begin
 statuswindow
     dimension 0 %(SH)-1 17 %(SH)-1
@@ -593,7 +592,7 @@ This command is similar to the
 .keyword &cmdline.
 command
 .keyref menuitem
-:cont., only the
+.ct , only the
 .keyref menuitem
 command is used when first defining a menu.
 .np

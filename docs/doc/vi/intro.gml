@@ -177,7 +177,7 @@ the edit window scrolls up one line.
 :LI.The scroll down ('') gadget.  When you click on this with your mouse,
 the edit window scrolls down one line.
 
-:LI. The scroll thumb ('Û').  The scroll thumb indicates the relative position
+:LI.The scroll thumb ('Û').  The scroll thumb indicates the relative position
 of the current line in the file.  When you click on the scroll thumb with
 your mouse and drag it, you can move to a new position in the file.  If
 you click with your mouse on the scroll bar above the scroll thumb, you

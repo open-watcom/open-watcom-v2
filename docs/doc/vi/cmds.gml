@@ -41,8 +41,7 @@
 This chapter describes the various editor commands that may be entered.
 A command is entered by pressing the colon (':') key while in
 .keyword &cmdmode.
-:cont.,
-or by selecting the
+.ct , or by selecting the
 .keyword Enter command
 option in the
 .keyword File
@@ -468,8 +467,7 @@ unless &parm4 is specified.
 .np
 For information on editor
 .keyword scripts
-:cont.,
-see the chapter
+.ct , see the chapter
 :HDREF refid='scripts'.
 .period
 .enddescr
@@ -588,13 +586,11 @@ Echos the message &parm2 on line &parm1 of the message window.
 .np
 If &parm1 is specified as
 .param off
-:cont.,
-then nothing is echoed into the message window from then on.
+.ct , then nothing is echoed into the message window from then on.
 .np
 If &parm1 is specified as
 .param on
-:cont.,
-messages will start to appear in the message window again.
+.ct , messages will start to appear in the message window again.
 .np
 &parm2 may be surrounded by double quotes (") or a forward slash (/)
 if it contains any spaces.
@@ -955,8 +951,7 @@ If &parm1 is not specified, then the file name "ed.cfg" is assumed.
 .begdescr
 For each line in the range &range that matches the regular expression
 .paramt regexp
-:cont.,
-the editor command &parm3 is executed.  &parm3 may contain replacement
+.ct , the editor command &parm3 is executed.  &parm3 may contain replacement
 expressions, see the chapter
 :HDREF refid='rxchap'.
 for more information.
@@ -985,8 +980,7 @@ regular expression
 .begxmpl g/(abc)*/ execute Iabc\e
 For every line that matches the regular expression
 .param (abc)*
-:cont.,
-execute the keystrokes
+.ct , execute the keystrokes
 .param Iabc&lt.ESC&gt.
 (this will insert the characters abc at the start of the line).
 .endxmpl
@@ -1722,8 +1716,7 @@ of all boolean values is displayed.
 If &parm1 is specified
 as a
 .param 2
-:cont.,
-then a window containing all other values is displayed.
+.ct , then a window containing all other values is displayed.
 .np
 From the selection window, a variable may be selected (with ENTER or
 double clicking the mouse), and a
@@ -1824,8 +1817,7 @@ see the chapter
 .begxmpl source foo.vi abc
 Executes the script
 .param foo.vi
-:cont.,
-passing it the parm
+.ct , passing it the parm
 .param abc
 .period
 .endxmpl
@@ -1923,8 +1915,7 @@ Locates the tag
 .param MyFunc
 in the tags file, edits the source file that contains the function
 .param MyFunc
-:cont.,
-and moves the cursor to the definition of the function in the source file.
+.ct , and moves the cursor to the definition of the function in the source file.
 .endxmpl
 .xmplsect end
 :cmt. .alsosee begin
@@ -2134,14 +2125,13 @@ command.
 .begxmpl vi test.c
 Return to full screen editing mode (if in
 .keyword EX mode
-:cont.)
-and edit the file
+.ct ) and edit the file
 test.c
 .endxmpl
 .begxmpl vi
 Return to full screen editing mode (if in
 .keyword EX mode
-:cont.).
+.ct ).
 .endxmpl
 .xmplsect end
 .alsosee begin
@@ -2169,8 +2159,7 @@ Specifying &parm1 forces an overwrite of an existing file.
 .begxmpl 1,10 w! test.c
 Write the first 10 lines of the current file to the file
 .param test.c
-:cont.,
-and overwrite
+.ct , and overwrite
 .param test.c
 if it already exists.
 .endxmpl

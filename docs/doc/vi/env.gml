@@ -54,11 +54,11 @@ Along with the &edname executable, there are a number of files that are needed:
 .keyword &cmdline.
 commands
 .keyref map
-:cont.,
+.ct ,
 .keyref mapbase
-:cont.,
+.ct ,
 .keyref unmap
-:cont.,
+.ct ,
 .keyref execute
 and
 .keyref keyadd
@@ -97,8 +97,7 @@ Note that your configuration file must be the FIRST FILE in the
 :fname.edbind.dat:efname.
 file.  The first file is designated to be the file containing the
 .keyword configuration script
-:cont.,
-the name is irrelevant.
+.ct , the name is irrelevant.
 .np
 The contents of
 :fname.edbind.dat:efname.
@@ -237,8 +236,7 @@ The parameters are associated with the most recently specified startup script.
 :DT.-c <cfg>   
 :DD.Runs the configuration script
 .param <cfg>
-:cont.,
-instead of the default
+.ct , instead of the default
 :fname.ed.cfg:efname.
 .period
 .*

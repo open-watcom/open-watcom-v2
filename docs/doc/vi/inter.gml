@@ -81,8 +81,7 @@ key and the window will disappear.
 You may cursor back and forth in the command window, and use the
 backspace and delete keys to change mistakes.  Once you press
 .param ENTER
-:cont.,
-the command will be processed.
+.ct , the command will be processed.
 .np
 If you cursor up, you will go through a list of commands
 that you have entered at the command window (newest to oldest).  This
@@ -203,9 +202,8 @@ you have typed.
 .np
 In the chapter
 :HDREF refid='basic' page=no.
-:cont.,
-you saw that you could edit a file by either specifying the name on the
-command line when invoking &edvi, or by selecting the
+.ct , you saw that you could edit a file by either specifying the name
+on the command line when invoking &edvi, or by selecting the
 .keyword File
 menu and picking the
 .keyword Edit new file
@@ -276,7 +274,7 @@ This returns you to the first file ("afile") that you were already editing.
 
 :LI.Press
 .param CTRL_C
-:cont., and &edvi will quit all the files that you have started editing.
+.ct , and &edvi will quit all the files that you have started editing.
 
 :eOL.
 .* ******************************************************************
@@ -767,8 +765,7 @@ You will see the message:
 .millust end
 This indicates that the file has been written.  Now press
 .param CTRL_G
-:cont.,
-and you will see:
+.ct , and you will see:
 .millust begin
 "abc" line 3 of 3  -- 100% --
 .millust end
@@ -811,8 +808,7 @@ you specify the exclamation point, as follows:
 
 :LI.Re-edit the file "abc".  Delete the last line.  Press
 .param CTRL_G
-:cont.,
-and you will see that the file is modified.  Now, enter the
+.ct , and you will see that the file is modified.  Now, enter the
 .keyword &cmdline.
 command (remembering to press ':'):
 .millust begin
@@ -1274,11 +1270,9 @@ This window behaves just like the command window:
 you may cursor back and forth in the command window, and use the
 backspace and delete keys to change mistakes.  Once you press
 .param ENTER
-:cont.,
-the command will be processed.  If you press
+.ct , the command will be processed.  If you press
 .param ESC
-:cont.,
-the search in cancelled.
+.ct , the search in cancelled.
 .np
 If you press '?' (backwards search), you will be able to enter a backwards
 search string.

@@ -149,8 +149,7 @@ command), then &edvi does not
 pause after the system command is finished running.  However, if
 you set
 .keyref pauseonspawnerr 1
-:cont.,
-then &edvi will pause after a system command is executed from a script
+.ct , then &edvi will pause after a system command is executed from a script
 if the system command returned an error.
 .*
 .* ******************************************************************
@@ -446,42 +445,42 @@ If an expression contains conditional operators, then the result of the
 expression is a boolean value (1 or 0). The following script language
 control flow commands expect boolean results:
 :UL compact.
-:LI.:cont.
+:LI.
 .keyref if
-:LI.:cont.
-.keyref elseif
-:LI.:cont.
+:LI.
+.ct .keyref elseif
+:LI.
 .keyref quif
-:LI.:cont.
+:LI.
 .keyref while
-:LI.:cont.
+:LI.
 .keyref until
 :eUL.
 .np
 The following are conditional operators in an expression:
 :UL compact.
-:LI.:cont.
+:LI.
 .keyword ==
 (equal to)
-:LI.:cont.
+:LI.
 .keyword !=
 (not equal to)
-:LI.:cont.
+:LI.
 .keyword &gt.
 (greater than)
-:LI.:cont.
+:LI.
 .keyword &gt.=
 (greater than or equal to)
-:LI.:cont.
+:LI.
 .keyword &lt.
 (less than)
-:LI.:cont.
+:LI.
 .keyword &lt.=
 (less than or equal to)
-:LI.:cont.
+:LI.
 .keyword &&
 (boolean AND)
-:LI.:cont.
+:LI.
 .keyword ||
 (boolean OR)
 :eUL.
@@ -489,34 +488,34 @@ The following are conditional operators in an expression:
 An expression may also operate on its token using various mathematical
 operators, these operators are
 :UL compact.
-:LI.:cont.
+:LI.
 .keyword +
 (plus)
-:LI.:cont.
+:LI.
 .keyword -
 (minus)
-:LI.:cont.
+:LI.
 .keyword *
 (multiply)
-:LI.:cont.
+:LI.
 .keyword /
 (divide)
-:LI.:cont.
+:LI.
 .keyword **
 (exponentiation)
-:LI.:cont.
+:LI.
 .keyword &caret.
 (bitwise NOT)
-:LI.:cont.
+:LI.
 .keyword |
 (bitwise OR)
-:LI.:cont.
+:LI.
 .keyword &
 (bitwise AND)
-:LI.:cont.
+:LI.
 .keyword &gt.&gt.
 (bit shift down)
-:LI.:cont.
+:LI.
 .keyword &lt.&lt.
 (bit shift up)
 :eUL.
@@ -753,9 +752,8 @@ block is similar to the
 .keyword do-while
 construct in C.  The flow of the loop may be modified using the
 .keyref break
-:cont.,
+.ct ,
 .keyref continue
-:cont.
 or
 .keyref quif
 script commands.
@@ -800,9 +798,8 @@ block is similar to the
 .keyword while
 loop construct in C.  The flow of the while loop may be modified using the
 .keyref break
-:cont.,
+.ct ,
 .keyref continue
-:cont.
 or
 .keyref quif
 script commands.
@@ -889,7 +886,7 @@ This command causes all editing actions done by the script
 to all be part of one undo record.  This way, the action of the entire
 script can be eliminated with a single
 .keyref 'undo (command)'
-:cont.; i.e., it is an atomic action.
+.ct ; i.e., it is an atomic action.
 .enddescr
 .endfunc
 
@@ -904,14 +901,13 @@ The forward slashes ('/') around
 .paramt val
 are only need if there are spaces in
 .paramt val
-:cont.,
-or if one of the special flags
+.ct , or if one of the special flags
 .param r
-:cont.,
+.ct ,
 .param x
-:cont.,
+.ct ,
 .param l
-:cont.,
+.ct ,
 .param $
 or
 .param @
@@ -1084,8 +1080,7 @@ Assuming
 .var %(str)
 has been assigned the value
 .param xyz
-:cont.,
-then the string
+.ct , then the string
 .param abc xyz def
 is assigned to the local variable
 .var %(res)
@@ -1112,7 +1107,7 @@ of
 .keyref loop
 -
 .keyref endloop
-:cont.,
+.ct ,
 .keyref loop
 -
 .keyref until
@@ -1140,7 +1135,7 @@ Restarts the current looping block. This causes a jump to the top of
 .keyref loop
 -
 .keyref endloop
-:cont.,
+.ct ,
 .keyref loop
 -
 .keyref until
@@ -1233,7 +1228,7 @@ If &parm1 is true, then the code following the
 .keyword elseif
 is executed.  If &parm1 is false, control goes to the next
 .keyword elseif
-:cont.,
+.ct ,
 .keyref else
 or
 .keyref endif
@@ -1323,7 +1318,7 @@ This command opens file &parm1, assigning it file handle &parm2..
 &parm2 may be a value from 1 to 9.  This number is used to identify
 the file for future
 .keyref fread
-:cont.,
+.ct ,
 .keyref fwrite
 or
 .keyref fclose
@@ -1492,7 +1487,7 @@ If &parm1 is true, then the code following the
 .keyword if
 is executed.  If &parm1 is false, control goes to the next
 .keyref elseif
-:cont.,
+.ct ,
 .keyref else
 or
 .keyref endif
@@ -1510,7 +1505,7 @@ command.
 .begdescr
 Open a window (the
 .keyref commandwindow
-:cont.) and get a string from the user.  The string is assigned to the
+.ct ) and get a string from the user.  The string is assigned to the
 variable &parm1..
 .np
 If &parm1 was assigned a value before the
@@ -1545,8 +1540,7 @@ However, if
 .var %(str)
 had the value
 .param Type in a filename:
-:cont.,
-then the user would be prompted with:
+.ct , then the user would be prompted with:
 .millust begin
 Type in a filename:
 .millust end
@@ -1573,7 +1567,7 @@ Defines the a label with the name &parm1 at the current line in the script.
 .begdescr
 Start a loop block.  This is the top of the block, after a
 .keyref continue
-:cont.,
+.ct ,
 .keyref endloop
 or
 .keyref until
@@ -1874,8 +1868,7 @@ If he cancels the
 .keyref input
 command by pressing the ESC key, then the script returns
 .param DO_NOT_CLEAR_MESSAGE_WINDOW
-:cont.,
-which is not an error condition but causes the save process to abort
+.ct , which is not an error condition but causes the save process to abort
 (remember, a hook point stops what it is doing if an
 non-zero return code is returned from the hook script).
 .serefer 9

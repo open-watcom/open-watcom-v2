@@ -70,7 +70,7 @@ command
 Different characters in a regular expression match different things.
 A list of all special (or "magical") characters is:
 :UL
-:LI. A backslash ('\') followed by a single character other than new line
+:LI.A backslash ('\') followed by a single character other than new line
 matches that character.
 :LI.The caret ('&caret.') matches the beginning of a line.
 :LI.The dollar sign ('$') matches the end of a line.
@@ -91,17 +91,16 @@ more matches of the regular expression.
 or one matches of the regular expression.
 :LI.Two regular expressions concatenated match a match of the first
 followed by a match of the second.
-:LI. Two regular expressions separated by an or bar ('|')
+:LI.Two regular expressions separated by an or bar ('|')
 match either a match for the first or a match for the second.
 :LI.A regular expression enclosed in parentheses matches a match for
 the regular expression.
-:LI. The order of precedence of operators at the same parenthesis level is
+:LI.The order of precedence of operators at the same parenthesis level is
 the following:
 .bd []
-:cont.,
-then
+.ct , then
 .bd *+?
-:cont., then concatenation, then
+.ct , then concatenation, then
 .bd |
 .period
 :LI.
@@ -291,8 +290,7 @@ is set).
 :DT.\&lt.n&gt.
 :DD.Each instance of
 .paramt n
-:cont.,
-where
+.ct , where
 .paramt n
 is a digit from 0 to 9, is replaced by the
 n'th sub-expression in the regular expression.
@@ -336,8 +334,7 @@ is encountered
 :DT.\|&lt.n&gt.
 :DD.Substitutes spaces up to column
 .paramt n
-:cont.,
-so that the item that follows occurs at column
+.ct , so that the item that follows occurs at column
 .paramt n
 .period
 
@@ -352,8 +349,7 @@ By default, all special characters in a regular expression are "magical";
 that is, if a special character is used it has a special meaning.  To
 use a special character, like
 .keyword (
-:cont.,
-it must be escaped:
+.ct , it must be escaped:
 .keyword \(
 .period
 .np

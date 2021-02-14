@@ -247,11 +247,11 @@ current
 .keyref caseignore 1
 setting (for more information about
 .keyref caseignore 1
-:cont.,see the section
+.ct , see the section
 :HDREF refid='boolset'
 in the chapter
 :HDREF page=no refid='edset'.
-:cont.).
+.ct ).
 .np
 The
 .keyref egrep
@@ -382,8 +382,7 @@ command:
 .millust end
 Now, whenever you press
 .param F5
-:cont.,
-a line will be deleted.
+.ct , a line will be deleted.
 Try pressing
 .param F5
 a few times to verify this.

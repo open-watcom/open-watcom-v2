@@ -47,8 +47,7 @@ This key is useful to
 .keyref keyadd
 in a
 .keyword script
-:cont.,
-to return to the exact same type of
+.ct , to return to the exact same type of
 .keyword &tinsmode.
 the user was in before leaving
 .keyword &tinsmode.

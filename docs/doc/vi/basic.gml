@@ -238,7 +238,7 @@ command 'ZZ'.  Press
 .param ESC
 to make sure that you are in
 .keyword &cmdmode.
-:cont., and then type two capital z's ('ZZ')
+.ct , and then type two capital z's ('ZZ')
 in a row.  This saves the file, then exits the edit buffer for the file.
 If you are editing any other files, the next
 one in the list will become the current one.  If you are not
@@ -249,7 +249,7 @@ The main menu option
 .keyword File
 (by clicking on it with the mouse or by pressing
 .param ALT_F
-:cont.) has options for saving the current file. As well,
+.ct ) has options for saving the current file. As well,
 each edit window has a menu associated with it that you can access
 by pressing
 .param ALT_G
@@ -282,7 +282,7 @@ If you activate the individual file menu either by clicking on the gadget
 at the top-left corner of the edit window
 with the mouse or by pressing
 .param ALT_G
-:cont., then a menu will pop up as follows:
+.ct , then a menu will pop up as follows:
 .figure *depth='2.47' *scale='59' *file='vi005' The Individual Edit Window menu
 .np
 If you select the
@@ -611,9 +611,8 @@ key and the count you have been typing will be cancelled.
 .np
 So, if you type a repeat count of 5 and then press
 .param CTRL_DEL
-:cont.,
-five lines will be deleted.  If you do not type a repeat count, then
-one line will be deleted.
+.ct , five lines will be deleted.
+If you do not type a repeat count, then one line will be deleted.
 .np
 You can also delete a line by pressing the 'd' key twice in a row ('dd').
 This has the exact same effect as pressing the
@@ -636,7 +635,7 @@ you press
 the line(s) you deleted will be pasted in before the current line (which
 reverses the action of
 .param CTRL_DEL
-:cont.).
+.ct ).
 .np
 There are two other keys for pasting, the letters
 'p' and 'P' (small p and capital p).  Small 'p' pastes the line(s) you deleted after
@@ -791,8 +790,7 @@ This is another test line.
 :LI.Paste the line you deleted back in.  If you press the letter 'p'
 or
 .param SHIFT_INS
-:cont.,
-the line you deleted will appear after the first line:
+.ct , the line you deleted will appear after the first line:
 .millust begin
 This is another test line.
 This is a test line.
@@ -1153,16 +1151,14 @@ you are placed at that line.
 :DT.Search forwards
 :DD.Prompts for some search text.  Once you type some text and press
 .param ENTER
-:cont.,
-&edvi searches forwards through the current edit buffer for the text.
+.ct , &edvi searches forwards through the current edit buffer for the text.
 If the text is found, it is highlighted and the cursor is placed on the
 first character of the text.
 
 :DT.Search backwards
 :DD.Prompts for some search text.  Once you type some text and press
 .param ENTER
-:cont.,
-&edvi searches backwards through the current edit buffer for the text.
+.ct , &edvi searches backwards through the current edit buffer for the text.
 If the text is found, it is highlighted and the cursor is placed on the
 first character of the text.
 

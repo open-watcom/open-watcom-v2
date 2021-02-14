@@ -243,8 +243,7 @@ before the current position.
 :DT.Z
 :DD.If followed by another
 .param Z
-:cont.,
-saves the current file (if it has been modified) and quits the file.
+.ct , saves the current file (if it has been modified) and quits the file.
 
 :DT.&caret.
 :DD.Move to the first non-whitespace character on the line.
