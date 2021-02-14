@@ -1066,7 +1066,7 @@ editing any other files, then &edvi will exit.
 command.
 The
 .keyword &cmdline
-is discussed in the next chapter,
+is discussed in the next chapter
 :HDREF refid='inter'.
 .period
 

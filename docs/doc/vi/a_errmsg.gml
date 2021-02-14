@@ -53,16 +53,13 @@ is filled in when you see it.  These special characters are:
 :DL break.
 .*
 :DT.%s
-:DD.An appropriate string is filled in by &edvi
-.period
+:DD.An appropriate string is filled in by &edvi..
 
 :DT.%c
-:DD.An appropriate character is filled in by &edvi
-.period
+:DD.An appropriate character is filled in by &edvi..
 
 :DT.%d
-:DD.An appropriate number is filled in by &edvi
-.period
+:DD.An appropriate number is filled in by &edvi..
 .*
 :eDL.
 .*

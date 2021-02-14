@@ -65,8 +65,7 @@ Commands may be up to 512 bytes in length; the command window scrolls.
 .np
 There are a special set of commands that may be entered at the
 .keyword &cmdline
-for controlling the various windows and menus of &edvi
-.period
+for controlling the various windows and menus of &edvi..
 These commands are discussed in the next chapter,
 :HDREF refid='winmenu'.
 .period
@@ -445,7 +444,7 @@ nothing on it but a dot ('.') is entered.
 .begfunc COMPILE
 .syntx * COMPile '"-a"' '"-A"' &lt.script&gt. &lt.result&gt.
 .begdescr
-Compiles the editor script &parm3.
+Compiles the editor script &parm3
 .period
 .np
 If
@@ -462,7 +461,7 @@ is specified, all variables (both local and global)
 are translated at compile time.
 .np
 The file will be compiled
-into a file with the same name as the script and the extension ._vi.,
+into a file with the same name as the script and the extension ._vi,
 unless &parm4 is specified.
 .np
 For information on editor
@@ -827,7 +826,7 @@ Replaces all tabs in the current edit buffer with spaces.
 .begfunc FGREP
 .syntx * FGRep '"-c"' '"-u"' &lt.string&gt. &lt.files&gt.
 .begdescr
-Searches the file list &parm4 for the string &parm3.
+Searches the file list &parm4 for the string &parm3
 .period
 .np
 The search is by default case insensitive, unless
@@ -856,7 +855,7 @@ If &parm4 is not specified, it defaults to the setting of
 While searching for the item, &edvi displays a window that shows
 all files being searched.
 When all matches are found, a selection window is presented with
-all the files that contained &parm4.
+all the files that contained &parm4
 .period
 .enddescr
 .xmplsect begin
@@ -1746,7 +1745,7 @@ see the chapter
 .begfunc SETCOLOR
 .syntx * SETCOLOR &lt.c&gt. &lt.r&gt. &lt.g&gt. &lt.b&gt.
 .begdescr
-Set the color number &parm1 to have the RGB value &parm2, &parm3, &parm4.
+Set the color number &parm1 to have the RGB value &parm2, &parm3, &parm4
 .period
 &parm1 may have a value of 0 to 15.
 &parm1, &parm2, and &parm3 may have values from 0 to 63.

@@ -1165,8 +1165,8 @@ command later in this chapter.
 If
 .paramt ?
 is an equals sign ('=')
-instead of a letter, it puts &edvi in alternate
-.keyword memorize mode
+instead of a letter, it puts &edvi in
+.keyword alternate memorize mode
 .period
 All characters typed are memorized until another equals sign ('=')
 is pressed.  The memorized keystrokes may be repeated by pressing
@@ -1181,7 +1181,8 @@ command later in this chapter.
 Sets the mark a at the current cursor position
 .endxmpl
 .begxmpl m.
-Enter memorize mode
+Enter
+.keyword memorize mode
 .endxmpl
 .begxmpl m!
 Clear any marks set on the current line.
