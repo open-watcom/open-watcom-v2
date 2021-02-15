@@ -1346,9 +1346,9 @@ operations:
 .np
 Some examples are:
 .millust begin
-dw     -  delete a word
-yr     -  yank (copy) highlighted region
-d/text - delete up to the word "text".
+dw     - delete a word
+yr     - yank (copy) highlighted region
+d/text - delete up to the word "text"
 .millust end
 .np
 These commands can be preceded by an optional repeat count.  This repeat
@@ -1366,8 +1366,8 @@ can be specified between the repeat count and the command.
 The buffer is identified by preceding it with double quotes (").  For
 example:
 .millust begin
-3"ayy - copy 3 lines into buffer 'a'.
-"zdd  - delete 3 lines into buffer 'z'.
+3"ayy - copy 3 lines into buffer 'a'
+"zdd  - delete 3 lines into buffer 'z'
 .millust end
 The optional
 .keyword &copybuffer

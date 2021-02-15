@@ -254,7 +254,7 @@ each edit window has a menu associated with it that you can access
 by pressing
 .param ALT_G
 .period
-You can also access this menu by clicking on the gadget ('ð') in the top left hand
+You can also access this menu by clicking on the gadget ('ï¿½') in the top left hand
 corner of an edit window.  This menu has a number of choices for dealing with
 the file.
 .np
@@ -739,8 +739,7 @@ Edit the file "test" created in the previous examples by typing:
 .millust begin
 vi test
 .millust end
-You should
-see the lines:
+You should see the lines:
 .millust begin
 This is a test line.
 This is another test line.

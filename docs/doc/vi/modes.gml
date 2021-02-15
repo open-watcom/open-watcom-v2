@@ -2524,7 +2524,7 @@ Move backwards through the file list to the previous file.
 .begkey F11 F11
 Push the current file and position.  If you press
 .param F12
-.ct , you will be restored to this position.  
+.ct , you will be restored to this position.
 These positions are stacked up, up to a maximum of
 .keyref maxpush
 .period

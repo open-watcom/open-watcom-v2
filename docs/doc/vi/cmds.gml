@@ -1116,7 +1116,8 @@ was typed, and the number 15 gets displayed in the message window.
 .begfunc LIST
 .syntx &lt.line_range&gt. List
 .begdescr
-Lists lines in the specified line range.
+Lists lines in the specified line range &range
+.period
 .exmode
 .enddescr
 .endfunc
@@ -1833,8 +1834,7 @@ Executes the current edit buffer as a script.
 .begfunc SUBSTITUTE
 .syntx &lt.line_range&gt. Substitute /&lt.regexp&gt./&lt.replexp&gt./&lt.g&gt.&lt.i&gt.
 .begdescr
-Over the line range &range,
-replace each occurrence of regular expression
+Over the line range &range, replace each occurrence of regular expression
 .paramt regexp
 with the replacement expression
 .paramt replexp
