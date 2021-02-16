@@ -279,11 +279,11 @@ and
 Three overlays are defined.
 The first overlay (overlay #1) contains
 .id file2
-, the second overlay (overlay #2) contains
+.ct , the second overlay (overlay #2) contains
 .id file3
 and
 .id file4
-, and the third overlay (overlay #3) contains
+.ct , and the third overlay (overlay #3) contains
 .id file5
 .period
 .endnote
@@ -360,9 +360,9 @@ example.
 The second overlay area contains three overlays; the first overlay
 (overlay #4) contains
 .id file6
-, the second overlay (overlay #5) contains
+.ct , the second overlay (overlay #5) contains
 .id file7
-, and the third overlay (overlay #6) contains
+.ct , and the third overlay (overlay #6) contains
 .id file8
 .period
 .np
@@ -579,13 +579,13 @@ and
 Four overlays are defined.
 The first overlay (overlay #1) contains
 .id file2
-, the second overlay (overlay #2) contains
+.ct , the second overlay (overlay #2) contains
 .id file3
-, the third overlay (overlay #3) contains
+.ct , the third overlay (overlay #3) contains
 .id file4
 and
 .id file5
-, and the fourth overlay (overlay #4) contains
+.ct , and the fourth overlay (overlay #4) contains
 .id file6
 .period
 .endnote

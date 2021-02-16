@@ -223,7 +223,7 @@ full symbolic debugging information, without type names
 :CMT. .ix 'options' 'd3'
 full symbolic debugging with unreferenced type names
 :optref refid='SWd3'.
-,*
+.*
 .note d3i
 :CMT. .ix 'options' 'd3i'
 (C++ only)

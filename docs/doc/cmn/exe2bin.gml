@@ -149,7 +149,7 @@ This happens when cs:ip = 0x0000:0x0100 causes &e2bcmd. to skip additional
 .exam end
 Displays the header of
 .mono prog.exe
-, strips it off and copies the binary part to
+.ct , strips it off and copies the binary part to
 .mono test.bin.
 .*
 .exam begin

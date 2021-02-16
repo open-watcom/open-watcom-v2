@@ -680,7 +680,7 @@ When the system calls
 .kw LibMain
 with any value other than
 .id DLL_PROCESS_ATTACH
-, the return value is ignored.
+.ct , the return value is ignored.
 .endnote
 .do end
 .el .if '&targetos' eq 'OS/2 2.x' .do begin

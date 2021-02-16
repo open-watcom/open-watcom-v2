@@ -292,7 +292,7 @@ When I get the
 .id lpCreateParams
 parameter in
 .id WM_CREATE
-, I don't get the original
+.ct , I don't get the original
 .id dwAlias
 but something else which looks like another alias to me.
 So the question is: Must the
@@ -311,7 +311,7 @@ created for the 3 pointers inside the struct. If you need to have this done,
 then you will have to create the aliases yourself. If you create aliases for
 the parameters to
 .id CreateWindowEx
-, then you must call the
+.ct , then you must call the
 .id _16CreateWindowEx
 function which will not create any aliases.
 .np

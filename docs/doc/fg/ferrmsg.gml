@@ -115,9 +115,9 @@ represents a string of digits;
 .id %s
 any string, usually a symbolic name such as
 .id AMOUNT
-, a type such as
+.ct , a type such as
 .id INTEGER
-, or a symbol class such as
+.ct , or a symbol class such as
 .id SUBROUTINE
 .period
 An error message may contain more than one reference to %d.

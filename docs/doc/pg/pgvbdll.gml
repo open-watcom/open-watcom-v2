@@ -161,7 +161,7 @@ Use the specific entry point, one of
 .id DLL1
 through
 .id DLL128
-, corresponding to the DLL routine that you want to call.
+.ct , corresponding to the DLL routine that you want to call.
 Each entry point can be described to take different arguments.  We can
 still use the "Alias" attribute to make the link between the name we
 use in the Visual Basic function and the name in the 32-bit extended

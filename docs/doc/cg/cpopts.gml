@@ -1397,8 +1397,7 @@ when the host operating system is OS/2,
 .note NT
 when the host operating system is Windows NT (including Windows 95),
 .note QNX
-when the host operating system is QNX.
-or
+when the host operating system is QNX, or
 .note LINUX
 when the host operating system is Linux.
 .endnote
@@ -1433,7 +1432,7 @@ if using the Windows NT or Windows 95 hosted compiler,
 .kwm __QNX__
 and
 .kwm __UNIX__
-if using the QNX hosted version or
+if using the QNX hosted version, or
 .kwm __LINUX__
 and
 .kwm __UNIX__
@@ -3520,7 +3519,7 @@ and the strings
 .id "robin"
 .ct ,
 .id "finch"
-, etc. are placed in the code segment.
+.ct , etc. are placed in the code segment.
 This option is supported in large data or flat memory models only, or
 if the item is explicitly "far".
 .ix 'macros' '__SW_ZC'

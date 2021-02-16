@@ -113,7 +113,7 @@ duplicated if the string is to be re-used.
 .np
 The reentrant form of this function,
 .kw strtok_r
-, also requires a pointer to a string pointer to be passed.
+.ct , also requires a pointer to a string pointer to be passed.
 This pointer is used internally by the function for subsequent
 calls to perform tokenizing without relying on internal state
 within the function.

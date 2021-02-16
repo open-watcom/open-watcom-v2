@@ -203,7 +203,7 @@ When control is returned from
 .id FINTR
 or
 .id FINTRF
-, it contains the values of the registers after the software interrupt
+.ct , it contains the values of the registers after the software interrupt
 has completed.
 The registers are mapped onto the array
 .id REGS
@@ -573,7 +573,7 @@ environment variable so that the compiler can locate the include file.
 .note
 The INTEGER function
 .id FSYSTEM
-, which is described in a later section, implements a more general form
+.ct , which is described in a later section, implements a more general form
 of the example given above.
 We recommend its use.
 .endnote
@@ -696,7 +696,7 @@ has three arguments of type
 .period
 When control is returned from
 .id GETDAT
-, they contain the year, month and day
+.ct , they contain the year, month and day
 of the current date.
 .np
 The following program prints the current date in the form
@@ -741,7 +741,7 @@ has four arguments of type
 .period
 When control is returned from
 .id GETTIM
-, they contain the hours, minutes, seconds, and hundredths of seconds
+.ct , they contain the hours, minutes, seconds, and hundredths of seconds
 of the current time.
 .np
 The following program prints the current time in the form
@@ -1269,7 +1269,7 @@ In the following example, 100 random numbers are printed.
 .note
 Upon each invocation of
 .id URAND
-, the seed argument is updated by the random number generator.
+.ct , the seed argument is updated by the random number generator.
 Therefore, the argument must not be a constant and, once the seed
 value has been set, it must
 .us not

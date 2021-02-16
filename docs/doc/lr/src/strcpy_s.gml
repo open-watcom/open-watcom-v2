@@ -42,7 +42,7 @@ is not a null pointer and
 .arg s1max
 is greater than zero and not greater than
 .kw RSIZE_MAX
-, then
+.ct , then
 .kw strcpy_s
 sets
 .arg s1[0]

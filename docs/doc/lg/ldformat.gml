@@ -158,7 +158,7 @@ The name of the file will have extension "386". Note that this default
 extension can be overridden by using the "NAME" directive to name
 the driver file.
 .np
-Specifying "DYNAMIC" (short form "DYN") , dynamicaly loadable driver will
+Specifying "DYNAMIC" (short form "DYN"), dynamicaly loadable driver will
 be generated (only for Windows 3.11 or 9x). By default the &lnkname
 generate staticaly loadable driver (for Windows 3.x or 9x).
 .if '&target' ne 'QNX' .do begin

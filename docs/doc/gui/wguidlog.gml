@@ -894,7 +894,7 @@ ordering up to that point and proceed.
 :cmt.To avoid name conflicts, (you can't have two dialog resources with the same
 :cmt.name, in the same file) you will want to change the name of your dialog (the
 :cmt.editor gives you one as a default) Type in the edit field a name you want to
-:cmt.give your dialog, or , if you have loaded symbols, you can select a symbol
+:cmt.give your dialog, or, if you have loaded symbols, you can select a symbol
 :cmt.from the combo box. You can drop down the combo list box and select a
 :cmt.symbol from there. For more information about loading and selecting symbols,
 :cmt.see the sections titled Loading Symbols and Selecting Symbols

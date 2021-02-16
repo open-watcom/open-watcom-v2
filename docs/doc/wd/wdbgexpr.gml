@@ -1258,7 +1258,7 @@ which is a
 type.
 To display all the fields of
 .id x
-, you can type cast it as follows.
+.ct , you can type cast it as follows.
 .exam begin 1
 *(DERIVED *)p
 .exam end

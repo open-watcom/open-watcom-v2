@@ -691,9 +691,9 @@ when the host operating system is DOS,
 .point OS2
 when the host operating system is OS/2,
 .point NT
-when the host operating system is Windows NT/95, or
+when the host operating system is Windows NT/95,
 .point QNX
-when the host operating system is QNX.
+when the host operating system is QNX, or
 .point LINUX
 when the host operating system is Linux.
 .endpoint
@@ -2725,7 +2725,7 @@ DLLImport int  dll_data;
 Functions, data and objects are exported from a DLL by
 use of
 .kwm __declspec(dllexport)
-ct , the
+.ct , the
 .kwm __export
 keyword (for which
 .kwm __declspec(dllexport)

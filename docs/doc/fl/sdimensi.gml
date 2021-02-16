@@ -65,7 +65,7 @@ columns.
 .id C
 .ct ,
 .id I
-, and
+.ct , and
 .id J
 must be
 .us dummy arguments

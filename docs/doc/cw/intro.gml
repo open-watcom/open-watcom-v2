@@ -146,7 +146,7 @@ further detail.  Note that a single keypress value will not work properly.
 .ix 'virtual memory'
 The 
 .ev TEMP
-, 
+.ct ,
 .ev TMP
 and 
 .ev CAUSEWAY=SWAP 
@@ -157,7 +157,7 @@ provide their own virtual memory management).  Since CauseWay has integrated
 virtual memory, disk space is considered part of total memory.  If you
 use the 
 .ev TEMP
-, 
+.ct ,
 .ev TMP
 or 
 .ev SWAP 
@@ -186,9 +186,9 @@ processing of the list. If CauseWay reaches the end of the list without
 finding a valid drive, it disables the virtual memory manager. The order
 of priority is 
 .ev CAUSEWAY=SWAP
-, 
+.ct ,
 .ev TEMP
-, 
+.ct ,
 .ev TMP
 and application execution path.
 .np
@@ -228,7 +228,7 @@ conventional memory is left for CauseWay's operating requirements.
 .np
 CauseWay can make use of three environment variables at runtime:
 .ev TEMP
-, 
+.ct ,
 .ev TMP
 and 
 .ev CAUSEWAY
@@ -267,7 +267,7 @@ file, if any, in the C:\SWAP directory.
 .np
 If no 
 .ev TEMP
-, 
+.ct ,
 .ev TMP 
 and 
 .ev CAUSEWAY=SWAP 
@@ -384,9 +384,9 @@ Set a name, without a
 pathspec, to use the virtual memory temporary swap file.  To set a path
 for the swap file, use the 
 .ev CAUSEWAY=SWAP
-,
+.ct ,
 .ev TEMP
-, or 
+.ct , or 
 .ev TMP
 environment variable. The filename
 must be valid, 12 characters or less.  Additional characters are

@@ -356,7 +356,7 @@ of the
 .id host_os
 followed by the
 .id host_cpu
-, if convenient. For example, NT versions for the PPC should be genned into
+.ct , if convenient. For example, NT versions for the PPC should be genned into
 a ntppc directory. If a directory structure which is different than this
 is used for some reason, then comments explaining exactly what is built
 where would be nice in the
@@ -373,7 +373,7 @@ people would think of the
 .id host_os
 and
 .id host_cpu
-, as target OS and CPU. However, the 'target' designation is reserved for
+.ct , as target OS and CPU. However, the 'target' designation is reserved for
 the target architecture of the generated binary. In the above case of
 a compiler that runs on Alpha AXP NT and produces 386 code, the makefile
 contains:

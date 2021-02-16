@@ -923,7 +923,7 @@ For example, assume we have 3 functions in our DLL,
 .id Initialize
 .ct ,
 .id DoStuff
-, and
+.ct , and
 .id Finish
 .period
 Assume
