@@ -42,6 +42,11 @@
 :set symbol='rsspace'   value='&'d2c(255)'. :CMT. WHP_SPACE_NOBREAK
 :set symbol='rstbxmp'   value='&'d2c(170)'. :CMT. WHP_TABXMP
 :set symbol='rsflnk'    value='&'d2c(232)'. :CMT. WHP_FLINK
+:CMT. **** This list of characters used by GML WHELPDRV driver.
+:CMT. WGML symbol        value                WHPCVT symbol
+:CMT.                   value='&'d2c(157)'.  WHP_FONTTYPE
+:CMT.                   value='&'d2c(239)'.  WHP_FONTSTYLE_START
+:CMT.                   value='&'d2c(240)'.  WHP_FONTSTYLE_END
 
 :set symbol='hlptype'   value=''.
 :set symbol='hlvl'      value='0'.

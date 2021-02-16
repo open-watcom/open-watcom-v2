@@ -198,7 +198,7 @@ The WHP File Format:
         - 'i' is for inline, 'l' for left, 'r' for right, and 'c' for centered.
         - <file> is the name of the bitmap file.
 
-    WHP_FONTSTYLE_START (239/0xEF) Font Style.
+    WHP_FONTSTYLE_START (239/0xEF) Font Style start (used by GML WHELPDRV driver).
         - in text lines.
         - format: WHP_FONTSTYLE_START<font_styles>WHP_FONTSTYLE_START 
           {with ending WHP_FONTSTYLE_END later}
@@ -208,11 +208,11 @@ The WHP File Format:
           styles. Hence, font stylings do NOT nest (this is due the the 
           stupidity of OS/2 IPF).
 
-    WHP_FONTSTYLE_END (240/0xF0) Font Style End.
+    WHP_FONTSTYLE_END (240/0xF0) Font Style end (used by GML WHELPDRV driver).
         - in text lines.
         - see 'Font Style'.
 
-    WHP_FONTTYPE (157/0x9D) Font Type.
+    WHP_FONTTYPE (157/0x9D) Font Type (used by GML WHELPDRV driver).
         - in text lines.
         - format: WHP_FONTTYPE<facename>WHP_FONTTYPE<point_size>WHP_FONTTYPE
         - valid facenames are recognized by the following subwords:
