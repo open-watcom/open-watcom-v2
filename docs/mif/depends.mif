@@ -2590,12 +2590,21 @@ gml_objs = &
 # whelp sub-directory
 whelp_incs = ../doc/whelp
 whelp_objs =		   &
-../doc/whelp/mono01.cop    &
 ../doc/whelp/whelp.gml     &
-../doc/whelp/whelp.cop     &
-../doc/whelp/whelpdrv.cop  &
 ../doc/whelp/whelplay.gml  &
-../doc/whelp/wnohelp.gml
+../doc/whelp/wnohelp.gml   &
+../doc/whelp/whelp.opt
+
+# gml/whelp sub-directory
+gml_whelp_incs = ../gml/whelp
+gml_whelp_objs =           &
+../gml/whelp/mono01.cop    &
+../gml/whelp/whelp.cop     &
+../gml/whelp/whelpdrv.cop  &
+../gml/syslib/mono01.fon   &
+../gml/whelp/whelp.pcd     &
+../gml/whelp/whelpdrv.pcd  &
+../gml/whelp/makefile
 
 # ps sub-directory
 ps_incs = ../doc/ps

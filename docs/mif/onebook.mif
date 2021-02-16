@@ -49,7 +49,7 @@ company=Open Watcom
 
 wgml_optfile=wgmlopts.tmp
 whpcvt_optfile=whpcopts.tmp
-gml_lib=../gml/syslib
+gml_lib=../gml/syslib;../gml/whelp
 wine_hc_batch=winehc.bat
 
 #
@@ -557,7 +557,7 @@ compile_gml_to_xxx : .PROCEDURE
     @if not exist $*.idx @%create $*.idx
     @if not exist $*.tbl @%create $*.tbl
     @if not exist $*.kw @%create $*.kw
-    $(noecho)set OWGMLINC=.;$(whelp_incs);$(hlp_incs);$(book_incs);$(gml_incs);
+    $(noecho)set OWGMLINC=.;$(hlp_incs);$(book_incs);$(whelp_incs);$(gml_incs);
     @%make prepare_wgml_opts
 !ifeq verbose 0
     @echo wgml $@
