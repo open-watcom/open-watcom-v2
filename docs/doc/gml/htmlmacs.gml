@@ -555,13 +555,13 @@
 .dm ev end
 .*
 .dm kw begin
-<dfn>&*</dfn>
 .ix '&*'
+<dfn>&*</dfn>
 .dm kw end
 .*
 .dm kwm begin
-<kbd>&*</kbd>
 .ix '&*'
+<kbd>&*</kbd>
 .dm kwm end
 .*
 .dm id begin

@@ -24,19 +24,19 @@
 .dm sy end
 .*
 .dm ev begin
-:SF font=2.&*:eSF.
 .ix 'environment variables' '&*'
 .ix '&* environment variable'
+:SF font=2.&*:eSF.
 .dm ev end
 .*
 .dm kw begin
-:SF font=3.&*:eSF.
 .ix '&*'
+:SF font=3.&*:eSF.
 .dm kw end
 .*
 .dm kwm begin
-:SF font=4.&*:eSF.
 .ix '&*'
+:SF font=4.&*:eSF.
 .dm kwm end
 .*
 .dm id begin
