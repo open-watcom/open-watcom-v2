@@ -526,7 +526,7 @@ If it is issued, please report this problem.
 .*
 .errnote 2042 too many IOPL words in EXPORT directive
 .np
-The maximum number of IOPL words for a 16-bit executable is 63.
+The maximum number of IOPL words for an OS/2 executable is 31, i.e. 62 bytes.
 .if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
@@ -1655,6 +1655,12 @@ Windows) exceeds the maximum allowed size. The default data segment includes
 the data segment plus default stack size plus default heap size. The total
 size must be 64K or less for OS/2 executables and 65,533 bytes or less for
 Windows executables.
+.errnote 1174 IOPL bytes in EXPORT directive odd, ignoring low bit
+.np
+The EXPORT directive accepts the number of IOPL bytes, but the OS/2
+executable formats, as well as the CPU, only work with the number of words.
+If the specified number of IOPL bytes is an odd number, the lowest bit will
+be ignored.
 .*
 .if &e'&dohelp eq 0 .do begin
 .endnote

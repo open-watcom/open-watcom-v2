@@ -79,10 +79,15 @@ described in :HDREF refid='xanonym'..
 (OS/2 only)
 is required for functions that execute with I/O privilege.
 .sy iopl_bytes
-specifies that total size of the function's arguments in bytes.
+specifies the total size of the function's arguments in bytes.
 When such a function is executed, the specified number of bytes is
 copied from the caller's stack to the I/O-privileged function's stack.
-The maximum number of bytes allowed is 63.
+Note that the processor copies 
+.us words
+rather than bytes and can copy up to
+31 words. Thus the maximum number of 
+.us bytes
+allowed is 62, and must even.
 .mnote lbc_file
 is a file specification for the name of a librarian command file.
 If no file extension is specified, a file extension of "lbc" is
