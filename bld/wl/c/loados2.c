@@ -670,15 +670,15 @@ unsigned long ResNonResNameTable( bool dores )
 
 
 /*
- * NOTE: The routine DumpFlatEntryTable in LOADFLAT.C is very similar to this
+ * NOTE: The routine WriteFlatEntryTable in LOADFLAT.C is very similar to this
  *       one, however there are a enough differences to preclude the use
- *       of one routine to dump both tables. Therefore any logic bugs that
+ *       of one routine to write both tables. Therefore any logic bugs that
  *       occur in this routine will likely have to be fixed in the other
  *       one as well.
  */
-static unsigned long DumpEntryTable( void )
-/*****************************************/
-/* Dump the entry table to the file */
+static unsigned long WriteEntryTable( void )
+/******************************************/
+/* Write the entry table to the file */
 {
     entry_export    *start;
     entry_export    *place;
@@ -856,7 +856,7 @@ void ChkOS2Exports( void )
             if( sym->p.seg == NULL || IS_SYM_IMPORTED( sym ) ) {
                 if( FmtData.type & MK_OS2_FLAT ) {
                     // MN: Create a forwarder - add a special flag?
-                    // Currently DumpFlatEntryTable() in loadflat.c will
+                    // Currently WriteFlatEntryTable() in loadflat.c will
                     // recognize a forwarder by segment == 0xFFFF
                 } else {
                     LnkMsg( ERR+MSG_CANT_EXPORT_ABSOLUTE, "S", sym );
@@ -865,11 +865,21 @@ void ChkOS2Exports( void )
                 group = sym->p.seg->u.leader->group;
                 if( FmtData.type & MK_OS2_FLAT ) {
                     exp->addr.off -= group->grp_addr.off;
+                    if( (group->segflags & SEG_LEVEL_MASK) == SEG_LEVEL_2 ) {
+                        exp->isiopl = TRUE; // Conforming or not doesn't matter!
+                        if( exp->addr.off > 65535 ) {
+                            // Call gates are 16-bit only
+                            LnkMsg( LOC+ERR+MSG_BAD_TARG_OFF, "a", &exp->addr );
+                        }
+                    }
                 } else if( FmtData.type & MK_PE ) {
                     exp->addr.off += (group->linear - group->grp_addr.off);
                 }
                 if( group->segflags & SEG_MOVABLE ) {
                     exp->ismovable = true;
+                }
+                if( group->segflags & SEG_MOVABLE ) {
+                    exp->ismovable = TRUE;
                 }
             }
         }
@@ -1034,7 +1044,7 @@ void FiniOS2LoadFile( void )
     exe_head.import_off = temp;
     temp += ImportNameTable();
     exe_head.entry_off = temp;
-    size = DumpEntryTable();
+    size = WriteEntryTable();
     exe_head.entry_size = size;
     temp += size;
     temp += stub_len;

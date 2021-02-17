@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Utilities for creation of OS/2 flat (LX) executable files.
+* Description:  Utilities for creation of OS/2 flat (LX/LE) executable files.
 *
 ****************************************************************************/
 
@@ -200,15 +200,15 @@ static unsigned_32 WriteObjectTables( os2_flat_header *header,unsigned long loc)
 }
 
 /*
- * NOTE: The routine DumpEntryTable in LOADOS2.C is very similar to this
+ * NOTE: The routine WriteEntryTable in LOADOS2.C is very similar to this
  *       one, however there are enough differences to preclude the use
- *       of one routine to dump both tables. Therefore any logic bugs that
+ *       of one routine to write both tables. Therefore any logic bugs that
  *       occur in this routine will likely have to be fixed in the other
  *       one as well.
  */
-static unsigned long DumpFlatEntryTable( void )
-/*********************************************/
-/* Dump the entry table to the file */
+static unsigned long WriteFlatEntryTable( void )
+/**********************************************/
+/* Write the entry table to the file */
 {
     entry_export        *start;
     entry_export        *place;
@@ -223,7 +223,14 @@ static unsigned long DumpFlatEntryTable( void )
     }                   prefix;
     flat_bundle_entry32 bundle_item;
     flat_bundle_entryfwd bundle_fwd;
+    flat_bundle_gate16  bundle_gate;
 
+    // NB: The logic here relies on the fact that entries into a particular
+    // object will always be of the same type. All forwarder entries will be
+    // associated with nonexistent object 0. IOPL objects will have call gate
+    // entries, and the rest will have 32-bit entries.
+    // Note: 16-bit objects smaller than 64K could use 16-bit entries to save
+    // space, but that should not be required.
     size = 0;
     start = FmtData.u.os2fam.exports;
     if( start != NULL ) {
@@ -262,6 +269,11 @@ static unsigned long DumpFlatEntryTable( void )
                 prefix.real.b32_type = FLT_BNDL_ENTRYFWD;
                 prefix.real.b32_obj = 0;
                 size += entries * sizeof( flat_bundle_entryfwd );
+            } else if( start->isiopl ) {
+                // Call gate entry
+                prefix.real.b32_type = FLT_BNDL_GATE16;
+                prefix.real.b32_obj  = start->addr.seg;
+                size += entries * sizeof( flat_bundle_gate16 );
             } else {
                 // 32-bit entry
                 prefix.real.b32_type = FLT_BNDL_ENTRY32;
@@ -285,6 +297,14 @@ static unsigned long DumpFlatEntryTable( void )
                         bundle_fwd.value = dll->u.entry->num;
                     }
                     WriteLoad( &bundle_fwd, sizeof( flat_bundle_entryfwd ) );
+                } else if( start->isiopl ) {
+                    // Call gate entry
+                    bundle_gate.e32_flags = (start->iopl_words << IOPL_WORD_SHIFT);
+                    if( start->isexported )
+                        bundle_gate.e32_flags |= ENTRY_EXPORTED | ENTRY_SHARED;
+                    bundle_gate.offset   = start->addr.off;
+                    bundle_gate.callgate = 0;
+                    WriteLoad( &bundle_gate, sizeof( bundle_gate ) );
                 } else {
                     // 32-bit entry
                     bundle_item.e32_flags = (start->iopl_words << IOPL_WORD_SHIFT);
@@ -296,7 +316,7 @@ static unsigned long DumpFlatEntryTable( void )
             }
         }
     }
-    PadLoad( 1 );
+    PadLoad( 1 );   // A bundle with zero count terminates the entry table
     return( size + 1 );
 }
 
@@ -325,7 +345,7 @@ static unsigned_32 WriteRelocSize( void *** reloclist, unsigned_32 size,
 
 static unsigned_32 WriteFixupTables( os2_flat_header *header, unsigned long loc)
 /******************************************************************************/
-/* dump the fixup page table and the fixup record table */
+/* write the fixup page table and the fixup record table */
 {
     unsigned_32     size;
     unsigned_32     numpages;
@@ -355,7 +375,7 @@ static unsigned_32 WriteFixupTables( os2_flat_header *header, unsigned long loc)
     }
     WriteLoadU32( size );
     ++numentries;
-    /* now that the page table is dumped, do the fixups. */
+    /* now that the page table is written out, do the fixups. */
     header->fixrec_off = loc + numentries * sizeof( unsigned_32 );
     size += numentries * sizeof( unsigned_32 );
     for( group = Groups; group != NULL; group = group->next_group ) {
@@ -434,7 +454,7 @@ void FiniOS2FlatLoadFile( void )
     exe_head.rsrc_off = exe_head.resname_off;
     exe_head.num_rsrcs = 0;
     exe_head.entry_off = curr_loc;
-    curr_loc += DumpFlatEntryTable();
+    curr_loc += WriteFlatEntryTable();
     exe_head.loader_size = curr_loc - exe_head.objtab_off;
     exe_head.moddir_off = 0;
     curr_loc += WriteFixupTables( &exe_head, curr_loc );

@@ -203,6 +203,7 @@ entry_export *AllocExport( const char *name, size_t len )
     exp->isanonymous = false;
     exp->isfree = false;
     exp->isprivate = false;
+    exp->isiopl = false;
     if( name == NULL ) {
         exp->name.u.ptr = NULL;
     } else {
