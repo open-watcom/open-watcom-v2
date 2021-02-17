@@ -13,3 +13,9 @@ SEGMENTS
     'D32B'          SHARED
     'SWL'           SHARED
     'D16B'  PRELOAD SHARED
+
+EXPORTS
+    Func1       1
+    Func2@5     7
+    Func3       31
+    Func4       32

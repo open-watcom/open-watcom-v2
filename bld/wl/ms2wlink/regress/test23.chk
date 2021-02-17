@@ -15,3 +15,8 @@ segment 'D32A'  preload shared
 segment 'D32B'  shared
 segment 'SWL'  shared
 segment 'D16B'  preload shared
+export Func1 2
+export Func2.5 14
+export Func3 62
+# iopl value is invalid
+export Func4
