@@ -583,7 +583,11 @@ static bool getexport( void )
             if( val16 > 63 ) {
                 LnkMsg( LOC+LINE+MSG_TOO_MANY_IOPL_WORDS+ ERR, NULL );
             } else {
-                exp->iopl_words = val16;
+                if( val16 & 1 ) {
+                    LnkMsg( LOC+LINE+WRN+MSG_IOPL_BYTES_ODD, NULL );
+                }
+                // The linker takes bytes as input!
+                exp->iopl_words = val16 / 2;
             }
         } else {
             Token.thumb = true;     // reprocess the token.

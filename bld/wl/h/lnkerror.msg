@@ -341,3 +341,5 @@ pick(    MSG_STACK_SMALL,           "stack size is less than %d bytes" ,
                      "stack size is less than %d bytes" )
 pick(    MSG_DEFDATA_TOO_BIG,       "default data segment exceeds maximum size by %l bytes" ,
                     "default data segment exceeds maximum size by %l bytes" )
+pick(    MSG_IOPL_BYTES_ODD,        "IOPL bytes in EXPORT directive odd, ignoring low bit" ,
+                    "IOPL bytes in EXPORT directive odd, ignoring low bit" )
