@@ -85,9 +85,9 @@ copied from the caller's stack to the I/O-privileged function's stack.
 Note that the processor copies 
 .us words
 rather than bytes and can copy up to
-31 words. Thus the maximum number of 
+31 words. Thus the number of 
 .us bytes
-allowed is 62, and must even.
+allowed is up to 62, and must be even.
 .mnote lbc_file
 is a file specification for the name of a librarian command file.
 If no file extension is specified, a file extension of "lbc" is
