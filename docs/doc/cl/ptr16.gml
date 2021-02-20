@@ -1,4 +1,4 @@
-.section The &kwfar16_sp. and &kwisg16_sp. Keywords
+.section The &kwfar16. and &kwiseg16. Keywords
 .*
 .pp
 With the 80386 processor, a far pointer consists of a 16-bit
@@ -22,8 +22,7 @@ A far16 pointer consists of a 16-bit selector referring to one of the
 64K byte areas, and a 16-bit offset into that area.
 .pp
 For compatibility with Microsoft C, &wc386. provides the
-.kwix &kwfar16_sp.
-.kwfont &kwfar16.
+.kw &kwfar16.
 keyword.
 A pointer declared as,
 .cillust begin
@@ -93,17 +92,14 @@ equivalent location in the 32-bit address space.
 .pp
 For compatibility with IBM C Set/2,
 &wc386. provides the
-.kwix &kwisg16_sp.
-.kwfont &kwiseg16.
+.kw &kwiseg16.
 keyword.
 Note that
-.kwix &kwisg16_sp.
-.kwfont &kwiseg16.
+.kw &kwiseg16.
 is
 .bd not
 interchangeable with
-.kwix &kwfar16_sp.
-.kwfont &kwfar16.
+.kw &kwfar16.
 .period
 .pp
 A pointer declared as,
@@ -113,13 +109,11 @@ type :MONO. * &kwiseg16. :eMONO. name:MSEMI.
 .pc
 defines an object that is a far16 pointer.
 Note that the
-.kwix &kwisg16_sp.
-.kwfont &kwiseg16.
+.kw &kwiseg16.
 appears on the opposite side of the
 .mono *
 than the
-.kwix &kwfar16_sp.
-.kwfont &kwfar16.
+.kw &kwfar16.
 keyword described above.
 .pp
 For example,
@@ -134,8 +128,7 @@ to be a far16 pointer to
 (the same as above).
 .pp
 The
-.kwix &kwisg16_sp.
-.kwfont &kwiseg16.
+.kw &kwiseg16.
 keyword may not be used to describe a 16-bit function.
 A
 .kwpp #pragma

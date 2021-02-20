@@ -51,7 +51,7 @@
 :SET symbol='basedptr'  value="Based Pointers for &wcboth.".
 :SET symbol='ptr86'     value="Special Pointer Types for &wc286.".
 :SET symbol='ptr386'    value="Special Pointer Types for &wc386.".
-:SET symbol='hugekw'    value="The &kwhuge_sp. Keyword".
+:SET symbol='hugekw'    value="The &kwhuge. Keyword".
 :SET symbol='appkw'     value="Compiler Keywords".
 :SET symbol='struct'    value="Structures".
 :SET symbol='inttoflt'  value="Integer to Floating-Point Conversion".

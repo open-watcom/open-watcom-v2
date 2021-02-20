@@ -73,11 +73,9 @@ are also provided:
 They are used in a similar manner to
 .mkw NULL
 .ct , but are used with objects declared as
-.kwix &kwsegm_sp.
-.kwfont &kwsegment.
+.kw &kwsegment.
 and
-.kwix &kwbased_sp.
-.kwfont &kwbased.
+.kw &kwbased.
 respectively.
 .*
 .section Segment Constant Based Pointers and Objects
@@ -172,13 +170,11 @@ where
 is an object defined
 .* or cast
 as type
-.kwix &kwsegm_sp.
-.kwfont &kwsegment.
+.kw &kwsegment.
 .period
 .pp
 An object of type
-.kwix &kwsegm_sp.
-.kwfont &kwsegment.
+.kw &kwsegment.
 may contain a segment value.
 Such an object is particularly designed for use with segment object
 based pointers.
@@ -236,8 +232,7 @@ the result of the library function
 .bull
 the segment portion of another pointer value, by casting it to the
 type
-.kwix &kwsegm_sp.
-.kwfont &kwsegment.
+.kw &kwsegment.
 .period
 .endbull
 .*
@@ -285,8 +280,7 @@ operator is:
 where
 .ul segment
 is an expression of type
-.kwix &kwsegm_sp.
-.kwfont &kwsegment.
+.kw &kwsegment.
 .ct , and
 .ul offset
 is an expression of type

@@ -1086,16 +1086,13 @@ implementation-defined.
 .shade begin
 With &wc286.,
 for the purposes of conversion between pointers and integers,
-.kwix &kwnear_sp.
-.kwfont &kwnear.
+.kw &kwnear.
 pointers are treated as
 .kw unsigned int
 .period
-.kwix &kwfar_sp.
-.kwfont &kwfar.
+.kw &kwfar.
 and
-.kwix &kwhuge_sp.
-.kwfont &kwhuge.
+.kw &kwhuge.
 pointers are treated as
 .kw unsigned long int
 .ct , with the pointer's segment value in the high-order
@@ -1109,24 +1106,20 @@ are not normalized in any way.
 .shade begin
 With &wc386.,
 for the purposes of conversion between pointers and integers,
-.kwix &kwnear_sp.
-.kwfont &kwnear.
+.kw &kwnear.
 pointers are treated as
 .kw unsigned int
 .period
-.kwix &kwfar16_sp.
-.kwfont &kwfar16.
+.kw &kwfar16.
 and
-.kwix &kwisg16_sp.
-.kwfont &kwiseg16.
+.kw &kwiseg16.
 pointers are also treated as
 .kw unsigned int
 .ct , with the pointer's segment value in the high-order
 (most significant) two bytes.
 All the usual integer conversion rules then apply.
 Note that
-.kwix &kwfar_sp.
-.kwfont &kwfar.
+.kw &kwfar.
 pointers may not be converted to an integer without losing
 the segment information.
 .shade end

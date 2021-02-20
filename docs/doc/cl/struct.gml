@@ -232,8 +232,7 @@ to control the alignment of members of structures.
 See the &userguide. for details.
 .pp
 In addition, the
-.kwix &kwipckd_sp.
-.kwfont &kwipacked.
+.kw &kwipacked.
 keyword is provided, and if specified before the
 .kw struct
 keyword, will force the structure to be packed (no alignment, no gaps)

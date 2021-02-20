@@ -353,7 +353,7 @@ returning a &SUPER7.pointer to an &SUPER8.integer.
 .*
 ..if '&target' eq 'PC' or '&target' eq 'PC 370' ..th ..do begin
 .*
-.section &kwfar_sp., &kwnear_sp. and &kwhuge_sp. Declarations
+.section &kwfar., &kwnear. and &kwhuge. Declarations
 .*
 ..if '&target' eq 'PC 370' ..th ..do begin
 .shade begin
@@ -362,11 +362,9 @@ These examples apply only to the &wcboth. compilers.
 ..do end
 .pp
 The following examples illustrate the use of the
-.kwix &kwfar_sp.
-.kwfont &kwfar.
+.kw &kwfar.
 and
-.kwix &kwhuge_sp.
-.kwfont &kwhuge.
+.kw &kwhuge.
 keywords.
 .* The examples assume that the
 .* .ix 'small code'
@@ -379,12 +377,10 @@ keywords.
 .* is being used.
 .* .pp
 .* No examples of the
-.* .kwix &kwnear_sp.
-.* .kwfont &kwnear.
+.* .kw &kwnear.
 .* keyword have been given since its use is
 .* symmetrical with the use of the
-.* .kwix &kwfar_sp.
-.* .kwfont &kwfar.
+.* .kw &kwfar.
 .* keyword (when the
 .* .ix 'big code'
 .* big code and/or
@@ -393,14 +389,11 @@ keywords.
 .* is being used).
 .pp
 The use of the
-.kwix &kwnear_sp.
-.kwfont &kwnear.
+.kw &kwnear.
 keyword is symmetrical with the use of the
-.kwix &kwfar_sp.
-.kwfont &kwfar.
+.kw &kwfar.
 keyword, so no examples of
-.kwix &kwnear_sp.
-.kwfont &kwnear.
+.kw &kwnear.
 are shown.
 .keep begin
 .millust begin
@@ -576,7 +569,7 @@ returning a &SUPER5.far &SUPER6.pointer to an &SUPER7.integer.
 .discuss end
 .keep end
 .*
-.section &kwintr_sp. Declarations
+.section &kwintrpt. Declarations
 .*
 ..if '&target' eq 'PC 370' ..th ..do begin
 .shade begin
@@ -585,8 +578,7 @@ This example applies only to the &wcboth. compilers.
 ..do end
 .pp
 The following example illustrates the use of the
-.kwix &kwintr_sp.
-.kwfont &kwintrpt.
+.kw &kwintrpt.
 keyword.
 .keep begin
 .millust begin
