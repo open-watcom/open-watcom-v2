@@ -137,25 +137,25 @@ are used in.
 There are a number of global variables that take on values as the
 editor runs, they are:
 :DEFLIST.
-:DEFITEM.%C   	 
+:DEFITEM.%C   	
 Contains the current column number in the current edit buffer.
-:DEFITEM.%D   	 
+:DEFITEM.%D   	
 Drive of current file, based on the actual path.
-:DEFITEM.%(D1)  	 
+:DEFITEM.%(D1)  	
 Drive of current file, as typed by the user.  This could have no value.
-:DEFITEM.%E   	 
+:DEFITEM.%E   	
 File name extension of current file.
-:DEFITEM.%F   	 
+:DEFITEM.%F   	
 Current file name (including name and extension).
-:DEFITEM.%H   	 
+:DEFITEM.%H   	
 Home directory of a file. This is the directory where the edit command
 was issued.
-:DEFITEM.%N   	 
+:DEFITEM.%N   	
 Name of the current file, extension removed.
-:DEFITEM.%M   	 
+:DEFITEM.%M   	
 Modified status of the current file - set to 1 if the file
 has been modified, and a 0 otherwise.
-:DEFITEM.%(OS)    
+:DEFITEM.%(OS)
 What operating system the editor is hosted on. Possible values are:
 :UL compact.
 :LI.dos (protect and real mode).
@@ -164,7 +164,7 @@ What operating system the editor is hosted on. Possible values are:
 :LI.os2v2
 :LI.nt
 :eUL.
-:DEFITEM.%(OS386) 
+:DEFITEM.%(OS386)
 This variable is set to 1 is the host operating system is 386
 (or higher) based.  The possible 386 environments are:
 :UL compact.
@@ -173,17 +173,17 @@ This variable is set to 1 is the host operating system is 386
 :LI.nt
 :LI.unix (when running on a 386)
 :eUL.
-:DEFITEM.%P   	 
+:DEFITEM.%P   	
 Path of current file (no extension, name, or drive) based on the actual
 full path to the file.
-:DEFITEM.%(P1)	 
+:DEFITEM.%(P1)	
 Path of current file (no extension, name, or drive) based on the name
 typed by the user.  This could have no value.
-:DEFITEM.%R   	 
+:DEFITEM.%R   	
 Contains the current row (line number) in the current edit buffer.
-:DEFITEM.%(SH)	 
+:DEFITEM.%(SH)	
 Height of entire screen in characters.
-:DEFITEM.%(SW)	 
+:DEFITEM.%(SW)	
 Width of entire screen in characters.
 :DEFITEM.%(Sysrc)
 Return code from last system command.
@@ -698,7 +698,7 @@ are discussed in full detail in the section
 :HDREF refid='scrvars'.
 of this chapter.
 :P.
-When a script command terminates, 
+When a script command terminates,
 :HILITE.lastrc
 is sometimes set to a value.  This value may be tested in an expression.
 Script commands that set this have a
@@ -746,7 +746,7 @@ The special flags have the following meaning:
 When this flag is used,
 :CMDPARM.<val>
 may contain regular expression replacement
-strings (using the last regular expression searched for). 
+strings (using the last regular expression searched for).
 For more information on regular expressions, see the chapter
 :HDREF refid='rxchap'.
 :PERIOD.
@@ -815,7 +815,7 @@ to offset
 :PERIOD.
 The substring is assigned to &parm1.
 :PERIOD.
-Note that the parameters 
+Note that the parameters
 :CMDPARM.<n1>
 and
 :CMDPARM.<n2>
@@ -911,7 +911,7 @@ is assigned to the global variable
 :SEE.expr
 :eSEEALSO.
 :eFUNC.
-      
+
 :FUNC.BREAK
 :SYNTAX.* BREAK
 Unconditionally exits the current looping block. This breaks out
@@ -1204,7 +1204,7 @@ if the file being written was not opened with
 :PERIOD.
 :eRETURNS.
 :EXAMPLE.fwrite 3 %(line)
-Writes the contents of the variable 
+Writes the contents of the variable
 :ITALICS.%(line)
 to file handle 3
 :PERIOD.

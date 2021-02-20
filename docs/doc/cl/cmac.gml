@@ -141,14 +141,6 @@
 .  .mono &*
 .dm kw end
 .*
-.dm kwix begin
-.  .ix 'keyword' '&*'
-.dm kwix end
-.*
-.dm kwfont begin
-.  .mono &*
-.dm kwfont end
-.*
 .dm kwon begin
 .  .monoon
 .dm kwon end
@@ -164,14 +156,6 @@
 .  .mono &*
 .dm kwpp end
 .*
-.dm ppix begin
-.  .ix 'preprocessor directive' '&*'
-.dm ppix end
-.*
-.dm ppfont begin
-.  .mono &*
-.dm ppfont end
-.*
 .* Show a constant name in mono.
 .*
 .dm kwconst begin
@@ -185,14 +169,6 @@
 .  .ix 'macro' 'predefined' '&*'
 .  .mono &*
 .dm mkw end
-.*
-.dm mkwfont begin
-.  .mono &*
-.dm mkwfont end
-.*
-.dm mkwix begin
-.  .ix 'macro' 'predefined' '&*'
-.dm mkwix end
 .*
 .* Show a library headername, and add an index reference for it.
 .*

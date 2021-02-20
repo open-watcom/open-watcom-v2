@@ -59,29 +59,29 @@ necessary to create each specific executable file format.
 .note dos4gnz
 non-zero based 32-bit x86 DOS/4GW executable
 .note netware
-32-bit x86 NetWare Loadable Module. Uses original Novell developer kit 
-(NOVH + NOVI). This is a legacy system type. It is recommended to 
+32-bit x86 NetWare Loadable Module. Uses original Novell developer kit
+(NOVH + NOVI). This is a legacy system type. It is recommended to
 use one of the netware_clib or netware_libc system types instead.
 .note novell
-synonym for "netware". This is a legacy system type. It is recommended to 
+synonym for "netware". This is a legacy system type. It is recommended to
 use one of the netware_clib or netware_libc system types instead.
 .note netware_libc
-32-bit x86 NetWare Loadable Module. Targetted for Novells LibC based 
-environment on NetWare 5 and later. Uses the full Open Watcom run-time 
+32-bit x86 NetWare Loadable Module. Targetted for Novells LibC based
+environment on NetWare 5 and later. Uses the full Open Watcom run-time
 library for NetWare.
 .note netware_libc_lite
-32-bit x86 NetWare Loadable Module. Targetted for Novells LibC based 
-environment on NetWare 5 and later. Uses the thin Open Watcom run-time 
+32-bit x86 NetWare Loadable Module. Targetted for Novells LibC based
+environment on NetWare 5 and later. Uses the thin Open Watcom run-time
 library support for NetWare and consumes C library functionality from
 the server libraries.
 .note netware_clib
-32-bit x86 NetWare Loadable Module. Targetted for Novells traditional 
-CLIB based environment on NetWare 3 and later. Uses the full Open Watcom 
+32-bit x86 NetWare Loadable Module. Targetted for Novells traditional
+CLIB based environment on NetWare 3 and later. Uses the full Open Watcom
 run-time library for NetWare.
 .note netware_clib_lite
-32-bit x86 NetWare Loadable Module. Targetted for Novells traditional 
-CLIB based environment on NetWare 3 and later. Uses the thin Open Watcom 
-run-time library support for NetWare and consumes C library functionality 
+32-bit x86 NetWare Loadable Module. Targetted for Novells traditional
+CLIB based environment on NetWare 3 and later. Uses the thin Open Watcom
+run-time library support for NetWare and consumes C library functionality
 from the server libraries.
 .note os2
 16-bit x86 OS/2 executable
@@ -401,7 +401,7 @@ system   netware_(clib|libc)[_lite]
 .im tutsteps
 module   mod_name
 .millust end
-For more information, see the chapter entitled 
+For more information, see the chapter entitled
 :HDREF refid='novchap'..
 .*
 .section Linking 32-bit x86 OS/2 Executable Files

@@ -6,21 +6,21 @@ void *mmap(void *address, size_t len, int prot, int flags, int fd, off_t offset)
 .desc begin
 The
 .id &funcb.
-function creates a mapping of a file specified by 
+function creates a mapping of a file specified by
 .arg fd
-and the process address space, allowing the file to be accessed via the 
-returned pointer.  
+and the process address space, allowing the file to be accessed via the
+returned pointer.
 .np
 The argument
 .arg address
 provides the kernel a "suggestion" as to where to locate the pointer
 returned by this function.  The argmuent
 .arg address
-is normally set to NULL, however.  
+is normally set to NULL, however.
 .np
 The argument
 .arg len
-specifies the number of bytes of the file to map. 
+specifies the number of bytes of the file to map.
 .np
 The
 .arg prot
@@ -48,7 +48,7 @@ entirely
 .term MAP_FIXED
 Use
 .arg address
-exactly 
+exactly
 .term MAP_LOCKED
 Lock the memory contents
 .term MAP_NORESERVE
@@ -88,7 +88,7 @@ is zero, or value of any argument was invalid
 .term ENOMEM
 Memory could not be allocated
 .term EOVERFLOW
-An overflow occurred due to the 
+An overflow occurred due to the
 .arg len
 value
 .term EPERM

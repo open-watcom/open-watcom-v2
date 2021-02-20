@@ -285,7 +285,7 @@ spaces to the left.
 .begdescr
 If &range is specified, then the lines are run through the specified
 system command &parm1 (the command must get its input from standard in and
-write its output to standard out) and replaces the lines with the output 
+write its output to standard out) and replaces the lines with the output
 of the command.
 .np
 If no range is specified, then the system command
@@ -501,7 +501,7 @@ and generates the compiled script file
 .begfunc COMPRESS
 .syntx * COMpress
 .begdescr
-Replaces spaces in the current edit buffer with 
+Replaces spaces in the current edit buffer with
 tabs.  Single spaces are not replaced with a tab, and spaces inside
 a quoted string are not replaced with a tab.
 .enddescr
@@ -1327,14 +1327,14 @@ the cursor is on the first open bracket ('(') in the line:
 .millust end
 moves the cursor to the last ')' in the line.
 .np
-This command allows you to extend what is matched to 
+This command allows you to extend what is matched to
 general regular expressions.
 .paramt rx1
 is the regular expression that opens a match,
 .paramt rx2
 is the regular expression that closes a match.
 .np
-Note that in the matching regular expressions, 
+Note that in the matching regular expressions,
 .keyref magic 1
 is set (special characters automatically
 have their meaning, and do not need to be escaped).
@@ -1447,7 +1447,7 @@ Moves to the next file in the list of files being edited.
 .begfunc OPEN
 .syntx * Open &lt.file&gt.
 .begdescr
-Opens a new window on the specified file. 
+Opens a new window on the specified file.
 If no file is specified,
 then a new window is opened on the current edit buffer.
 These new
@@ -1591,7 +1591,7 @@ Quits the current file, discarding all modifications since the last write.
 .begdescr
 Exits the editor if no files have been modified.  If files have been modified,
 a prompt is displayed asking to you verify that you really want to discard
-the modified file(s).  
+the modified file(s).
 If you do not respond with a 'y', then the command is cancelled.
 .enddescr
 .xmplsect begin
@@ -1938,7 +1938,7 @@ are used (this is the default tile grid).
 If &parm1 is specified,
 then files are tiled horizontally (as many as will fit).
 .np
-If &parm3 is specified, then files are tiled vertically (as many as will fit).  
+If &parm3 is specified, then files are tiled vertically (as many as will fit).
 .np
 Specifying &parm5 &parm6 overrides the default tile grid. As a special
 case, specifying &parm5 &parm6 as 1 1 causes all windows to be restored.

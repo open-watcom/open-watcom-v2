@@ -4,7 +4,7 @@
 .ix 'Links' 'images'
 .tag begin
 .tdesc
-The artlink tag is used in conjunction with the artwork tag to define rectangular regions of a bitmap 
+The artlink tag is used in conjunction with the artwork tag to define rectangular regions of a bitmap
 that each act as a hypergraphic link.
 .tno Note
 The artlink tag must immediately follow the artwork tag that declares the bit-mapped image, or be included

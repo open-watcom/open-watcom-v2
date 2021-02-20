@@ -1,5 +1,5 @@
 .gfunc settextwindow
-.gsynop begin 
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 void _FAR _settextwindow( short row1, short col1,
                           short row2, short col2 );

@@ -27,9 +27,9 @@ On most modern Linux implementations, the resulting password
 will simply be 'x' as passwords are not normally stored in the
 password database itself.
 .np
-The pointer returned by 
+The pointer returned by
 .id &funcb.
-points to a static location, and the user should free neither 
+points to a static location, and the user should free neither
 the pointer itself nor any of its consituent structure members.
 .np
 This function is not thread-safe.  Other calls to functions

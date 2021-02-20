@@ -14,7 +14,7 @@ argument.
 .return begin
 If successful, the function will return the maximum priority allowed
 for the given scheduling policy. If the call fails, the
-return value is -1 and 
+return value is -1 and
 .kw errno
 is appropriately set.
 .return end

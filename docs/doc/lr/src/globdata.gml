@@ -190,7 +190,7 @@ to reserve when running a 32-bit DOS extended application.
 .do end
 .df optarg
 .proto unistd.h
-This 
+This
 .id char *
 variable contains a pointer to an option-argument parsed by the
 .kw getopt
@@ -205,7 +205,7 @@ function will print error messages. The default value is non-zero and
 will cause the
 .kw getopt
 function to print error messages on the console.
-.df optind 
+.df optind
 .proto unistd.h
 This
 .id int

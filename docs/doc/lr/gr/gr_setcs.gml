@@ -1,5 +1,5 @@
 .gfuncw setcharsize
-.gsynop begin 
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 void _FAR _setcharsize( short height, short width );
 

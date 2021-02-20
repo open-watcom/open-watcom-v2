@@ -78,12 +78,12 @@
 :cmt.	:noequal.                                   args can't have option '='
 :cmt.	:argequal. <char>                           args use <char> instead of '='
 :cmt.
-:cmt. where <targ>: 
+:cmt. where <targ>:
 :cmt.		    default - any, dbg
 :cmt.		    architecture - i86, 386, x64, axp, ppc, mps, sparc
 :cmt.		    host OS - bsd, dos, linux, nt, os2, osx, qnx, haiku, rdos, win
 :cmt.		    extra - targ1, targ2
-:cmt. 
+:cmt.
 :cmt.	Translations are required for the :jtitle. and :jusage. tags
 :cmt.	if there is no text associated with the tag.
 
@@ -107,7 +107,7 @@
 :target. any
 
 :title.  . <commands>  ::= <cmd> <commands>
-:jtitle. 
+:jtitle.
 :target. any
 
 :title.  .               | @<env_var> <commands>
@@ -255,13 +255,13 @@
 :target. any
 :file.
 :usage.  output library file name
-:jusage. 
+:jusage.
 
 :option. p
 :target. any
 :number.
 :usage.  set OMF library page size
-:jusage. 
+:jusage.
 
 :option. q
 :target. any
@@ -271,7 +271,7 @@
 :option. s
 :target. any
 :usage.  strip line number debug info
-:jusage. 
+:jusage.
 
 :option. t
 :target. any
@@ -281,7 +281,7 @@
 :option. v
 :target. any
 :usage.  print header
-:jusage. 
+:jusage.
 
 :option. x
 :target. any
@@ -291,7 +291,7 @@
 :option. zld
 :target. any
 :usage.  strip file dependency info
-:jusage. 
+:jusage.
 
 :option. ? h
 :target. any

@@ -6,7 +6,7 @@ int sched_setparam(pid_t pid, const struct sched_param *sp);
 struct sched_param {
     int sched_priority;
 };
-    
+
 .synop end
 .desc begin
 The
@@ -23,7 +23,7 @@ set.
 .desc end
 .return begin
 If successful, the function will return zero. If the call fails, the
-return value is -1 and 
+return value is -1 and
 .kw errno
 is appropriately set.
 .return end
@@ -36,13 +36,13 @@ The process ID
 .arg pid
 is invalid or could not be found
 .term EINVAL
-The value of 
+The value of
 .arg pid
 or
 .arg sp
 is invalid
 .term EFAULT
-The memory at 
+The memory at
 .arg sp
 could not be read
 .endterm

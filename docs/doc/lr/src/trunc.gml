@@ -11,7 +11,7 @@ function truncates the argument
 .arg x
 to the appropriate integer.  The function is equivalent to
 .kw floor
-for positive numbers and 
+for positive numbers and
 .kw ceil
 for negative numbers.
 .desc end

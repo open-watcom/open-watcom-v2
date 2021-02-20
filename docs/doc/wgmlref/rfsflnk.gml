@@ -6,7 +6,7 @@ Attributes
 :I2.fonts
 in the GML tag set and the layout which accept vertical or
 horizontal space values are linked to specific fonts.
-When values are specified in terms of characters 
+When values are specified in terms of characters
 (such as 12 or 5M),
 the absolute amount of space is
 determined using a font assigned to that attribute value.

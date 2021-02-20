@@ -111,7 +111,7 @@ One thing that is useful is to add the following lines to your read
 :KEYWORD.hook script
 :CONT.:
 :ILLUST.
-			      
+			
     if %E == .c
 	set cmode
     else
@@ -357,7 +357,7 @@ backup directory. Autosave is disabled if &cmd_parm is 0.  The backup
 directory is defined using the
 :KEYWORD.tmpdir
 parameter.
-    
+
 :SETCMD parm=size.commandcursortype
 Sets the size of the cursor when in &cmdmode.
 :PERIOD.

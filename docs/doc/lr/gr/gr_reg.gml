@@ -1,5 +1,5 @@
 .gfunc registerfonts
-.gsynop begin 
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _registerfonts( char _FAR *path );
 .do end

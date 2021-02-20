@@ -72,7 +72,7 @@ line.
 If the same letter 'D' (is pressed while in &tinsmode,
 the letter 'D' appears in your text (much as you would expect).
 :P.
-It is easy to tell what mode you are in while using &edname.. 
+It is easy to tell what mode you are in while using &edname..
 When you are in &cmdmode, the cursor is a thin line.  When
 you are in &tinsmode, the cursor is much thicker: if you are inserting
 text, the cursor is one half of a full block, and if you are overstriking
@@ -317,7 +317,7 @@ all of these commands is where the cursor moves to before you start
 inputting text.  The basic set of keys is:
 :DEFLIST.
 :DEFITEM.a
-Starts appending (inserting) text after the current character. 
+Starts appending (inserting) text after the current character.
 :DEFITEM.A
 Starts appending (inserting) text after the last character on the
 current line.
@@ -504,7 +504,7 @@ text.  This same command can be used while in &cmdmode
 If you want to delete more than one line at once, you may precede
 this delete command with a
 :KEYWORD.repeat count.
-You enter a 
+You enter a
 :KEYWORD.repeat count
 simply by typing numbers before you press
 :HILITE.CTRL_DEL

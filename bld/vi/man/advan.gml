@@ -213,7 +213,7 @@ for the string
 :ITALICS.window
 :PERIOD.
 While searching for the item, &edname displays a window that shows
-all files being searched. 
+all files being searched.
 :P.
 When all matches are found, a selection window is presented with
 all the files that contained the search string.

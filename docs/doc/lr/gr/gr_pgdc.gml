@@ -1,5 +1,5 @@
 .gfunc pg_defaultchart
-.gsynop begin 
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _pg_defaultchart( chartenv _FAR *env,
                              short type, short style );

@@ -5,7 +5,7 @@
 .ix 'List-block' 'ul'
 .tag begin
 .tdesc
-An unordered list (bullets precede each list item). List items begin with the li tag and can be continued in 
+An unordered list (bullets precede each list item). List items begin with the li tag and can be continued in
 another paragraph (without numbering) by using the lp tag.
 .tclose eul
 .tattrbs

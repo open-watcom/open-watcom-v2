@@ -19,7 +19,7 @@ use stack-based argument passing conventions
 generate auto depend makefile fragment
 .*
 .note MF <file>
-change name of makefile style auto depend file. 
+change name of makefile style auto depend file.
 Without this option, the filename is the same as the the base name of the
 source file, with a suffix of ".d".
 .*
@@ -38,7 +38,7 @@ build target is a GUI application
 .*
 .note mthreads
 build target is a multi-thread environment
-.* 
+.*
 .note mrtdll
 build target uses DLL version of C/C++ run-time libraries
 .*
@@ -173,12 +173,12 @@ continue processing files (ignore errors)
 &x86only.
 select a memory model from these choices:
 .begnote $compact
-.note f;flat 
-.note s;small 
-.note m;medium 
-.note c;compact 
-.note l;large 
-.note h;huge 
+.note f;flat
+.note s;small
+.note m;medium
+.note c;compact
+.note l;large
+.note h;huge
 .note t
 &286only.
 compile code for the small memory model and then use the &lnkname to
@@ -277,7 +277,7 @@ remove stack overflow checks
 generate calls to grow the stack
 .*
 .if '&alpha' eq 'AXP' .do begin
-.note si 
+.note si
 &AXPonly.
 FIXME: translate this!?
 initialize stack frame storage with pattern

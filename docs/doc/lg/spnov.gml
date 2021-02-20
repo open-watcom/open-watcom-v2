@@ -116,7 +116,7 @@ is any of the following:
 :CMT. .mnote exe_file
 :CMT. is a file specification for the name of the executable file.
 :CMT. If no file extension is specified, a file extension of "nlm", "dsk",
-:CMT. "lan", "nam", "cdm", "msl" or "ham" is assumed depending on the 
+:CMT. "lan", "nam", "cdm", "msl" or "ham" is assumed depending on the
 :CMT. executable file format selected.
 :CMT. .mnote help_file
 :CMT. is a file specification for the name of an internationalized help
@@ -164,7 +164,7 @@ server is running.
 When running they actually become part of the operating system thus
 acting as building blocks for a server environment tailored to your needs.
 .np
-There are multiple types of NLMs, each identified by the file extension 
+There are multiple types of NLMs, each identified by the file extension
 of the executable file and the internal module type number.
 .begbull
 .bull
@@ -185,13 +185,13 @@ Mirrored server link modules (executable files with extension "msl").
 .bull
 Module types specified by number. These are the current defined values:
 .begpoint
-.point 0 
+.point 0
 Specifies a standard NLM (default extension .NLM)
 .point 1
 Specifies a disk driver module (default extension .DSK)
-.point 2 
+.point 2
 Specifies a namespace driver module (default extension .NAM)
-.point 3 
+.point 3
 Specifies a LAN driver module (default extension .LAN)
 .point 4
 Specifies a utility NLM (default extension .NLM)

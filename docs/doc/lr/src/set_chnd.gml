@@ -67,7 +67,7 @@ void my_handler( const char *msg, void *ptr, errno_t error )
     fprintf( stderr, msg );
     fprintf( stderr, "\n" );
 }
-.exmp break    
+.exmp break
 void main( void )
 {
     constraint_handler_t    old_handler;

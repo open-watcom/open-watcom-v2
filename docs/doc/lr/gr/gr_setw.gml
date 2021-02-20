@@ -1,5 +1,5 @@
 .gfunc setwindow
-.gsynop begin 
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _setwindow( short invert,
                        double x1, double y1,

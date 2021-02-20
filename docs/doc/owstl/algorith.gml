@@ -2,8 +2,8 @@
 .*
 .sect Introduction
 .*
-The algorithm header (truncated to :Q.algorith:eQ. for 8.3 file name 
-compatibility) contains definitions of the algorthms from chaper 25 of 
+The algorithm header (truncated to :Q.algorith:eQ. for 8.3 file name
+compatibility) contains definitions of the algorthms from chaper 25 of
 the standard.
 .*
 .section Status

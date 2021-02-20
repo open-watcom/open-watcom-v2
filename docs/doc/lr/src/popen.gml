@@ -97,18 +97,18 @@ int main()
 {
     FILE *fp;
     char readbuf[256];
-    
+
     fp = popen("ls", "r");
     if(fp == NULL) {
         printf("Failed to open pipe\n");
         exit(1);
     }
-    
+
     while(fgets(readbuf, 256, fp))
         printf("-> %s", readbuf);
-        
+
     pclose(fp);
-    
+
     return 0;
 }
 .exmp end

@@ -130,7 +130,7 @@ with the ._vi extension).
 Usage is as follows:
 .millust begin
 edbind <editor exe name> (-s)
- 
+
     Options -s: strip info from executable
 .millust end
 .np
@@ -160,10 +160,10 @@ The parameters cause the following:
 .*
 :DL break.
 .*
-:DT.-?         
+:DT.-?
 :DD.Displays the possible options, and what they do.
 
-:DT.--         
+:DT.--
 :DD.Starts &edvi in
 .keyword stdio mode
 .period
@@ -176,64 +176,64 @@ This is useful for including &edvi in a pipe.
 :fname.ed.cfg:efname.
 when it starts up.
 
-:DT.-i           
+:DT.-i
 :DD.Ignore lost files.  &edvi will not let you start if there are files
 to be recovered. This option will cause &edvi to get rid of its
 checkpoint file, so that it will no longer complain about files
 that have not been recovered.
 
-:DT.-n         
+:DT.-n
 :DD.This option will cause &edvi to read a file as it needs the data, instead
 of reading the file all at once.  It is useful if you wish to look at
 the first lines of a huge file.  This option overrides any setting of
 .keyref readentirefile 1
 in your configuration.
 
-:DT.-q         
+:DT.-q
 :DD.Causes &edvi to run in quiet mode (no screen usage).  This is useful
 for using &edvi as a batch script processor.
 
-:DT.-r           
+:DT.-r
 :DD.Recover lost files, if there are any.  If this option is specified,
 files specified on the command line are ignored.
 
-:DT.-v         
+:DT.-v
 :DD.Causes file edited to be a "view only" file.
 
-:DT.-z         
+:DT.-z
 :DD.Causes &edvi not to terminate a file read when finding a ctrl-z in a file.
 This option is the same as the
 .keyref ignorectrlz 1
 setting.
 
-:DT.+<n>       
+:DT.+<n>
 :DD.Cause &edvi set the edit buffer to line <n> in the file edited.
 
-:DT.-k "keys"  
+:DT.-k "keys"
 :DD.Execute the string
 .param keys
 as if they were typed from the keyboard. These keystrokes are processed
 once &edvi is initialized and all files have been read in.
 
-:DT.-s <scr>   
+:DT.-s <scr>
 :DD.Runs the startup script
 .param <scr>
 once &edvi is initialized and all files have been read in.
 Up to 10 startup scripts may be specified.
 
-:DT.-p "parms" 
+:DT.-p "parms"
 :DD.Specify the parameters
 .param parms
 for each startup script. Multiple parms
 may be specified as long as they are in double quotes.
 The parameters are associated with the most recently specified startup script.
 
-:DT.-t <tag>   
+:DT.-t <tag>
 :DD.Edits the file containing the tag
 .param <tag>
 .period
 
-:DT.-c <cfg>   
+:DT.-c <cfg>
 :DD.Runs the configuration script
 .param <cfg>
 .ct , instead of the default

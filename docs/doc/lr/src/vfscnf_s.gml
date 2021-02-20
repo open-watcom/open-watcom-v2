@@ -10,7 +10,7 @@ int vfscanf_s( FILE * restrict stream,
 #include <stdarg.h>
 #include <stdio.h>
 #include <wchar.h>
-int vfwscanf_s( FILE * restrict stream, 
+int vfwscanf_s( FILE * restrict stream,
        const wchar_t * restrict format, va_list arg );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc

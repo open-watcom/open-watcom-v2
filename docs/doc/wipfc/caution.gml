@@ -5,7 +5,7 @@
 .ix 'Notices' 'caution'
 .tag begin
 .tdesc
-Displays a locale-specific cautionary message ("Caution: " in the en_US locale) 
+Displays a locale-specific cautionary message ("Caution: " in the en_US locale)
 followed on the next line by the contents enclosed by the caution tag block.
 .tclose ecaution
 .tattrbs

@@ -12,13 +12,13 @@ The POSIX-compliant
 function retrieves the name of a TTY as specified by the
 .arg fd
 file descriptor, returning a static pointer to the name.
-Subsequent calls may change the contents of the string 
-pointed to by the original call to 
+Subsequent calls may change the contents of the string
+pointed to by the original call to
 .id &funcb.
 .ct , and the memory to which the return value points should not
 be freed.
 .np
-The 
+The
 .kw ttyname_r
 function performs the same function as
 .id &funcb.
@@ -30,11 +30,11 @@ should specify the size of the
 .arg buf
 argument.  The
 .kw ttyname_r
-function is an Open Watcom extension commonly implemented in other 
+function is an Open Watcom extension commonly implemented in other
 standard libraries.
 .desc end
 .return begin
-Upon success, the 
+Upon success, the
 .id &funcb.
 function returns a pointer to statically allocated memory containing
 the name of the TTY.   Upon failure, the returned pointer will be

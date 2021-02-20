@@ -1,4 +1,7 @@
 .beglevel
+.sr firstc=&SYSIN.+3
+.tb set $
+.tb &firstc.
 .*
 .pp
 Near pointers are generally the most efficient type of pointer because
@@ -35,23 +38,16 @@ be combined explicitly with a segment value to produce a valid pointer.
 .endbull
 .pp
 To support based pointers, the following keywords are provided:
-..sk 1 c
+.sk 1
 .ix 'keyword'
-..sr firsttab=&SYSIN.+3
-..tb set $
-..tb &firsttab. +9 +9 +9 +9
-.kwon
-$&kwbased.
-.kwix &kwbased.
-$&kwsegment.
-.kwix &kwsegment.
-$&kwsegname.
-.kwix &kwsegname.
-$&kwself.
-.kwix &kwself.
-.kwoff
-..tb set
-..tb
+$
+.kw &kwbased.
+$
+.kw &kwsegment.
+$
+.kw &kwsegname.
+$
+.kw &kwself.
 .keep begin
 .pp
 The following operator is also provided:
@@ -63,12 +59,11 @@ These keywords and operator are described in the following sections.
 Two macros, defined in
 .hdr <malloc.h>
 are also provided:
-.mkwix &mkwNULLSEG.
-.mkwix &mkwNULLOFF.
-.millust begin
-&mkwNULLSEG.
-&mkwNULLOFF.
-.millust end
+.sk 1
+$
+.kw &mkwNULLSEG.
+$
+.kw &mkwNULLOFF.
 .pc
 They are used in a similar manner to
 .mkw NULL
@@ -84,14 +79,16 @@ respectively.
 A segment constant based pointer or object
 has its segment value based on a specific, named segment.
 A segment constant based object is specified as:
-.cillust begin
+.sk 1
+$
 type :MONO. &kwbased.( &kwsegname.( ":eMONO.segment:MONO." ) ) :eMONO.object-name:MSEMI.
-.cillust end
 .pc
 and a segment constant based pointer is specified as:
-.cillust begin
+.sk 1
+$
 type :MONO. &kwbased.( &kwsegname.( ":eMONO.segment:MONO." ) ) * :eMONO.object-name:MSEMI.
-.cillust end
+.tb set
+.tb
 .pc
 where
 .ul segment

@@ -41,7 +41,7 @@
 :cmt. .do end
 .np
 This chapter describes the various options that may be controlled using
-the &edname.'s 
+the &edname.'s
 .keyref set
 command.  Options are typically set in the
 .keyword configuration script
@@ -550,7 +550,7 @@ directory is defined using the
 .keyref tmpdir
 parameter.
 .enddescr
-    
+
 .setcmd *parm=size commandcursortype
 .setsyntx
 .begdescr

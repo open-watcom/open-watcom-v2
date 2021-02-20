@@ -1,5 +1,5 @@
 .gfunc settextalign
-.gsynop begin 
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 void _FAR _settextalign( short horiz, short vert );
 .do end

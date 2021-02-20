@@ -183,7 +183,7 @@ and
 require two arguments.
 .autopoint
 .point
-The first argument is an interrupt number. These subroutines will generate 
+The first argument is an interrupt number. These subroutines will generate
 the software interrupt given by the this argument. The type must be
 .id INTEGER
 .period
@@ -241,7 +241,7 @@ Difference between
 .id FINTR
 and
 .id FINTRF
-is that 
+is that
 .id FINTR
 reset CPU flags before generate the software interrupt, but
 .id FINTRF

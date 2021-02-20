@@ -69,15 +69,15 @@ The &ipfname allows source files to be embedded in other source files. The top-m
 The imbed command '&period.im' is followed by the name of the file to include. This file is then processed as if it
 were in-line with the document including it.
 .np
-The ability to include other files makes it possible to break large documents into smaller, more manageable 
+The ability to include other files makes it possible to break large documents into smaller, more manageable
 logical chunks.
 .begnote
 .note Note:
-The embedded files cannot contain the userdoc and euserdoc tags (see :HDREF refid='userdoc'.). Only the master 
+The embedded files cannot contain the userdoc and euserdoc tags (see :HDREF refid='userdoc'.). Only the master
 document may contain these tags.
 .endnote
 .np
-The embedded files must be in the current directory or in a directory listed in the IPFCIMBED environment 
+The embedded files must be in the current directory or in a directory listed in the IPFCIMBED environment
 variable (see :HDREF refid="ipfenv".). Otherwise, a full path name must be used.
 .*
 .section *refid='nameit' Macro
@@ -95,13 +95,13 @@ The '&period.nameit' command creates a text-substitution macro. This command tak
 .np
 The
 .keyword symbol
-parameter is the name of the macro. Symbol names were limited to 10 characters (0-9A-Za-z) for the 
-original OS/2 help compiler, but &ipfname does not have this restriction. Note that the '&' character 
+parameter is the name of the macro. Symbol names were limited to 10 characters (0-9A-Za-z) for the
+original OS/2 help compiler, but &ipfname does not have this restriction. Note that the '&' character
 is not part of the symbol name, but is used when referencing the symbol.
 .np
-The 
+The
 .keyword text
-parameter defines 'string' as the text to be substituted on each occurrence of &amp.name. in the text. 
+parameter defines 'string' as the text to be substituted on each occurrence of &amp.name. in the text.
 .np
 A '&period.nameit' symbol is used in the same way as an entity reference.
 

@@ -886,14 +886,14 @@ A pragma operator of the form,
 ( string-literal )
 .cillust end
 .pc
-is an alternative method of specifying #pragma directives. 
+is an alternative method of specifying #pragma directives.
 For example, the following two statements are equivalent.
 .cillust begin
 _Pragma( "library (\"kernel32.lib\")" )
 .cillust break
 #pragma library ("kernel32.lib")
 .cillust end
-The _Pragma operator can be used in macro definition. 
+The _Pragma operator can be used in macro definition.
 .cillust begin
 # define LIBRARY(X) PRAGMA(library (#X))
 .cillust break

@@ -1,8 +1,8 @@
 .func begin strtok strtok_r _fstrtok _fstrtok_r
 .func2 wcstok ISO C95
-.func2 _mbstok 
+.func2 _mbstok
 .func2 _mbstok_r
-.func2 _fmbstok 
+.func2 _fmbstok
 .func2 _fmbstok_r
 .func end
 .synop begin

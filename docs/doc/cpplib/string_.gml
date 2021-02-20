@@ -501,12 +501,12 @@ object. Like C strings, the value of the
 without the addition of any characters. No special processing occurs for any
 characters in the &obj. that have special meaning for the
 :ARG.strm
-object, such as carriage-returns. 
+object, such as carriage-returns.
 :P.
-The underlying implementation of the &fn. uses the ostream write method, which 
-writes unformatted characters to the output stream. If formatted output is required, 
-then the programmer should make use of the classes accessor methods, such as 
-c_str(), and pass the resulting data item to the stream using the appropriate 
+The underlying implementation of the &fn. uses the ostream write method, which
+writes unformatted characters to the output stream. If formatted output is required,
+then the programmer should make use of the classes accessor methods, such as
+c_str(), and pass the resulting data item to the stream using the appropriate
 insert operator.
 :RSLTS.
 The &fn. returns a reference to the

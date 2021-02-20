@@ -1,5 +1,5 @@
 .gfunc settextpath
-.gsynop begin 
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 void _FAR _settextpath( short path );
 .do end

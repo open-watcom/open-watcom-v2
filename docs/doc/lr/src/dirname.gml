@@ -1,4 +1,4 @@
-.func dirname 
+.func dirname
 .synop begin
 #include <libgen.h>
 char *dirname( char *path );

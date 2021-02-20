@@ -1,5 +1,5 @@
 .gfuncw setpixel
-.gsynop begin 
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _setpixel( short x, short y );
 

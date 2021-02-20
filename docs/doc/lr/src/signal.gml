@@ -243,9 +243,9 @@ file.
 .np
 Under OS/2, the
 .kw SIGBREAK
-signal can only be received if Ctrl+Break is pressed and the keyboard is in 
+signal can only be received if Ctrl+Break is pressed and the keyboard is in
 binary (raw) mode. In ASCII (cooked) mode, which is the default, both Ctrl+C
-and Ctrl+Break combinations will raise the 
+and Ctrl+Break combinations will raise the
 .kw SIGINT
 signal.
 .do end

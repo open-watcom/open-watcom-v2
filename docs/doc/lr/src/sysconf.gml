@@ -1,7 +1,7 @@
 .func sysconf
 .synop begin
 #include <unistd.h>
-long sysconf( int name ); 
+long sysconf( int name );
 .synop end
 .desc begin
 The
@@ -14,8 +14,8 @@ passed.  This implementation currently supports the following inputs:
 .termhd1 Member
 .termhd2 Meaning
 .term _SC_ARG_MAX
-The maximum number of arguments supported by 
-.id execv 
+The maximum number of arguments supported by
+.id execv
 and related arguments
 .term _SC_CHILD_MAX
 The maximum number of per-user child processes

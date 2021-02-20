@@ -286,7 +286,7 @@ padded on the right with blanks to the length of
 .ix 'extended assignment statement'
 .ix 'assignment statement' 'extended'
 &product supports an extension to the FORTRAN 77 assignment
-statement, namely the 
+statement, namely the
 .us extended assignment statement
 shown here:
 .mext begin

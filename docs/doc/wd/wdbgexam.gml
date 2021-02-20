@@ -271,14 +271,14 @@ To see protected functions, you must also select
 .menuitem Class/Show Static
 Display static members of this object.
 .menuitem Type/All Hex
-This item is only available when the display item is an array or a fake 
+This item is only available when the display item is an array or a fake
 array (a pointer changed to display as if it were an array using
 .mi Type/Array
 ). Change the value of all sibling array entries to be displayed in hexadecimal.
 .menuitem Type/Hex
 Change the value to be displayed in hexadecimal.
 .menuitem Type/All Decimal
-This item is only available when the display item is an array or a fake 
+This item is only available when the display item is an array or a fake
 array (a pointer changed to display as if it were an array using
 .mi Type/Array
 ). Change the value of all sibling array entries to be displayed in decimal.

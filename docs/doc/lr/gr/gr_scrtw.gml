@@ -1,5 +1,5 @@
 .gfunc scrolltextwindow
-.gsynop begin 
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 void _FAR _scrolltextwindow( short rows );
 .do end

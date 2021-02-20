@@ -1,5 +1,5 @@
 .gfunc getarcinfo
-.gsynop begin 
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _getarcinfo( struct xycoord _FAR *start_pt,
                         struct xycoord _FAR *end_pt,

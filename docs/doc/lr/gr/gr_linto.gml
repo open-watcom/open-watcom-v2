@@ -1,5 +1,5 @@
 .gfuncw lineto
-.gsynop begin 
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _lineto( short x, short y );
 

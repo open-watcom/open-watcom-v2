@@ -1,5 +1,5 @@
 .gfuncwxy polygon
-.gsynop begin 
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _polygon( short fill, short numpts,
                      struct xycoord _FAR *points );

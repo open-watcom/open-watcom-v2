@@ -37,7 +37,7 @@
 This chapter discusses a number of the less commonly used features of the &edname..
 The knowledge of the information in the chapter
 :HDREF page=no refid='basic'.
-and 
+and
 :HDREF page=no refid='inter'.
 is assumed.
 .*
@@ -280,7 +280,7 @@ for the string
 .param window
 .period
 While searching for the item, &edname displays a window that shows
-all files being searched. 
+all files being searched.
 .np
 When all matches are found, a selection window is presented with
 all the files that contained the search string.

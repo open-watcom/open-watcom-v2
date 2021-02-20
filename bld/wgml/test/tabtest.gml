@@ -19,7 +19,7 @@
 .im ttsyms.gml
 .im ttmacs.gml
 
-:CMT.This is from cg\ccall.gml and is in the User's Guide 
+:CMT.This is from cg\ccall.gml and is in the User's Guide
 :CMT.Topics: "16-bit: Sizes of Predefined Types" and "32-bit: Sizes of Predefined Types"
 .tb set ^
 .tb &sysin.+5 &sysin.+15c &sysin.+23c &sysin.+31
@@ -38,7 +38,7 @@
 .tb set
 .tb
 
-:CMT.This is from cg\ccall.gml and is in the User's Guide 
+:CMT.This is from cg\ccall.gml and is in the User's Guide
 :CMT.Topics: "16-bit: Interfacing to Assembly Language Functions" and "32-bit: Interfacing to Assembly Language Functions"
 .tb set $
 .tb 20 28 38
@@ -139,7 +139,7 @@ $or$&company.-extended-keyword
 ..tb set $
 ..tb &firsttab. +13 +13 +13 +13
 .kwon
-$auto     $double     $inline   $static   
+$auto     $double     $inline   $static
 $_Bool    $else       $int      $struct
 $break    $enum       $long     $switch
 $case     $extern     $register $typedef
@@ -148,7 +148,7 @@ $_Complex $for        $return   $unsigned
 $const    $goto       $short    $void
 $continue $if         $signed   $volatile
 $default  $_Imaginary $sizeof   $while
-$do       
+$do
 .kwoff
 ..tb set
 ..tb
@@ -162,23 +162,23 @@ Microsoft compilers compatible
 ..tb set $
 ..tb &firsttab. +20 +20
 .kwon
-$&kwasm.     $&kwfinally. $&kwpascal.  
+$&kwasm.     $&kwfinally. $&kwpascal.
 $&kwbased.   $&kwfortran. $&kwsaveregs.
-$&kwcdecl.   $&kwhuge.    $&kwsegment. 
-$&kwdeclspec.$&kwinline.  $&kwsegname.    
+$&kwcdecl.   $&kwhuge.    $&kwsegment.
+$&kwdeclspec.$&kwinline.  $&kwsegname.
 $&kwexcept.  $&kwint64.   $&kwself.
-$&kwexport.  $&kwintrpt.  $&kwstdcall. 
+$&kwexport.  $&kwintrpt.  $&kwstdcall.
 $&kwfar.     $&kwleave.   $&kwsyscall.
-$&kwfar16.   $&kwloadds.  $&kwtry.     
-$&kwfastcall.$&kwnear.    $&kwunalign.     
+$&kwfar16.   $&kwloadds.  $&kwtry.
+$&kwfastcall.$&kwnear.    $&kwunalign.
 .kwoff
 .sk 1
 IBM compilers compatible
 .kwon
-$&kwicdecl.  $&kwifinally.$&kwiseg16.  
+$&kwicdecl.  $&kwifinally.$&kwiseg16.
 $&kwiexcept. $&kwileave.  $&kwisyscall.
-$&kwiexport. $&kwipacked. $&kwisystem. 
-$&kwifar16.  $&kwipascal. $&kwitry.    
+$&kwiexport. $&kwipacked. $&kwisystem.
+$&kwifar16.  $&kwipascal. $&kwitry.
 $&kwifastcal.
 .kwoff
 .sk 1
@@ -572,10 +572,10 @@ $or$&company.-type-qualifier
 ..tb &firsttab. +18 +18
 .kwon
 $&kwbased.   $&kwfortran. $&kwiseg16.
-$&kwicdecl.  $&kwhuge.    $&kwsegment. 
-$&kwcdecl.   $&kwinline.  $&kwsegname. 
-$&kwdeclspec.$&kwint64.   $&kwself.   
-$&kwiexport. $&kwintrpt.  $&kwstdcall. 
+$&kwicdecl.  $&kwhuge.    $&kwsegment.
+$&kwcdecl.   $&kwinline.  $&kwsegname.
+$&kwdeclspec.$&kwint64.   $&kwself.
+$&kwiexport. $&kwintrpt.  $&kwstdcall.
 $&kwexport.  $&kwloadds.  $&kwisyscall.
 $&kwfar.     $&kwnear.    $&kwsyscall.
 $&kwifar16.  $&kwipacked. $&kwisystem.
@@ -2260,7 +2260,7 @@ Mouse Messages
 $WM_CAPTURECHANGED (**)$WM_LBUTTONDBLCLK
 $WM_LBUTTONDOWN     $WM_LBUTTONUP
 $WM_MBUTTONDBLCLK   $WM_MBUTTONDOWN
-$WM_MBUTTONUP       $WM_MOUSEACTIVATE   
+$WM_MBUTTONUP       $WM_MOUSEACTIVATE
 $WM_MOUSEHOVER (**) $WM_MOUSEHWHEEL (**)
 $WM_MOUSELEAVE (**) $WM_MOUSEMOVE
 $WM_MOUSEWHEEL (**) $WM_RBUTTONDBLCLK

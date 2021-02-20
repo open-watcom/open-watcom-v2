@@ -5,16 +5,16 @@
 .ix 'List-block' 'parml'
 .tag begin
 .tdesc
-A two-column list of parameters and their definitions, similar to a definition list (dl tag). A pt tag defines 
-the term, and a pd tag defines a definition of the term. Each pt tag must have a pd tag. Multiple consecutive 
-pt tags are allowed (synonyms), but only one pd tag is allowed for each set of pt tags. Other lists and blocks 
+A two-column list of parameters and their definitions, similar to a definition list (dl tag). A pt tag defines
+the term, and a pd tag defines a definition of the term. Each pt tag must have a pd tag. Multiple consecutive
+pt tags are allowed (synonyms), but only one pd tag is allowed for each set of pt tags. Other lists and blocks
 may be nested in a parameter table.
 .tattrbs
 .tattr tsize=number
 The width of the term column. The default is 10.
 .tattr break=all | fit | none
-If break is 'all' then each description is on a line below the term. This is the default. If break is 'fit' 
-then the description is on the same line as the term provided that the width of the term is less than tsize 
+If break is 'all' then each description is on a line below the term. This is the default. If break is 'fit'
+then the description is on the same line as the term provided that the width of the term is less than tsize
 characters. If break is 'none' then the description is on the same line as the term.
 .tattr compact
 Do not add blank lines between each term/description pair.

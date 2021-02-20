@@ -8,7 +8,7 @@ double lgamma_r( double x, int *y );
 The
 .id &funcb.
 function returns the natural logarithm of the
-absolute value of the Gamma function of 
+absolute value of the Gamma function of
 .arg x
 .period The sign of the Gamma function will be returned
 in the location pointed to by
@@ -19,7 +19,7 @@ in the location pointed to by
 If successful, the return value is the natural logarithm of
 the absolute value of the Gamma function computed for
 .arg x
-.period  When the argument is not-a-number, the function 
+.period  When the argument is not-a-number, the function
 returns NAN.  For arguments of the values positive or negative
 infinity, the function returns positive or negative infinity
 respectively.

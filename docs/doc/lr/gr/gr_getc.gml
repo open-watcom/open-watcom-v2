@@ -1,5 +1,5 @@
 .gfunc getcolor
-.gsynop begin 
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _getcolor( void );
 .do end

@@ -15,13 +15,13 @@
 .tag begin
 .tdesc
 A heading tag defines a new page (window), provided the heading level is less than the maximum value set
-using the docprof tag. The text of the header immediately follows the close of the tag, either on the same 
-or the next line. The attributes of the heading tag can be used to set the properties of the window 
-that displays the page of information. Heading tags must appear in consecutive ascending (but not descending) 
+using the docprof tag. The text of the header immediately follows the close of the tag, either on the same
+or the next line. The attributes of the heading tag can be used to set the properties of the window
+that displays the page of information. Heading tags must appear in consecutive ascending (but not descending)
 order. That is, you cannot go from h1 to h3 without an intervening h2, but you can go from h3 to h1.
 .tattrbs
 .tattr res=number
-Specify the resource id of the header. It must be in the range of 1 to 64000. This attribute is required for 
+Specify the resource id of the header. It must be in the range of 1 to 64000. This attribute is required for
 HLP files.
 .tattr id=text
 The id of the header. Alphanumeric.
@@ -40,7 +40,7 @@ The width of the window in the parent window. See :HDREF refid='units'..
 .tattr height=measurement
 The height of the window in the parent window. See :HDREF refid='units'..
 .tattr group=number
-The group number of the window (1 to 64000). All pages in the same group are displayed in the same window, 
+The group number of the window (1 to 64000). All pages in the same group are displayed in the same window,
 one replacing the other.
 .tattr viewport
 Force the opening of a new window for this page.
@@ -59,12 +59,12 @@ Do not print the contents of a secondary window separately. Print it as part of 
 .tattr hide
 Do not include this header in the table of contents.
 .tattr toc=numbers
-Controls which heading levels are included in the table of contents. For example, '123' (the default) places 
-headings defined by the h1, h2, and h3 tags in the table of contents. The numbers must be consecutive, beginning 
+Controls which heading levels are included in the table of contents. For example, '123' (the default) places
+headings defined by the h1, h2, and h3 tags in the table of contents. The numbers must be consecutive, beginning
 with 1. Valid until the end of the file or until the next header with a toc attribute.
 .tattr ctrlarea=page|none
-Specifies where the control area that contains push buttons is located. If 'page' is specified, place the control 
-area on the text window. If 'none' is specified, suppress the control area on this page. This overrides the value 
+Specifies where the control area that contains push buttons is located. If 'page' is specified, place the control
+area on the text window. If 'none' is specified, suppress the control area on this page. This overrides the value
 set in the docprof tag.
 .tattr ctrlrefid=text
 An alphanumeric identifier of the set of controls you wish to display.

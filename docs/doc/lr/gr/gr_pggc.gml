@@ -1,5 +1,5 @@
 .gfunc pg_getchardef
-.gsynop begin 
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _pg_getchardef( short ch,
                            unsigned char _FAR *def );

@@ -1,5 +1,5 @@
 .gfunc settextposition
-.gsynop begin 
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 struct rccoord _FAR _settextposition( short row,
                                       short col );

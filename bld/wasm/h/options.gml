@@ -78,12 +78,12 @@
 :cmt.	:noequal.                                   args can't have option '='
 :cmt.	:argequal. <char>                           args use <char> instead of '='
 :cmt.
-:cmt. where <targ>: 
+:cmt. where <targ>:
 :cmt.		    default - any, dbg
 :cmt.		    architecture - i86, 386, x64, axp, ppc, mps, sparc
 :cmt.		    host OS - bsd, dos, linux, nt, os2, osx, qnx, haiku, rdos, win
 :cmt.		    extra - targ1, targ2
-:cmt. 
+:cmt.
 :cmt.	Translations are required for the :jtitle. and :jusage. tags
 :cmt.	if there is no text associated with the tag.
 
@@ -207,7 +207,7 @@
 :usage. set the build target to <os>
 :jusage. set the build target to <os>
 
-:option. c 
+:option. c
 :target. any
 :usage. disable output OMF COMMENT record about data in code
 :jusage. disable output OMF COMMENT record about data in code
@@ -223,7 +223,7 @@
 :usage. line number debugging support
 :jusage. 行番号デバッグ情報を出力します
 
-:option. e 
+:option. e
 :target. any
 :usage. stop reading ASM file at END directive
 :jusage. ENDディレクティブでASMファイルの読み込みを止めます
@@ -247,42 +247,42 @@
 :usage. set object file name
 :jusage. オブジェクトファイルを設定します
 
-:option. fp0 
+:option. fp0
 :target. any
 :usage. floating-point for 8087
 :jusage. floating-point for 8087
 
-:option. fp2 
+:option. fp2
 :target. any
 :usage. floating-point for 287
 :jusage. floating-point for 287
 
-:option. fp3 
+:option. fp3
 :target. any
 :usage. floating-point for 387
 :jusage. floating-point for 387
 
-:option. fp5 
+:option. fp5
 :target. any
 :usage. floating-point for Pentium
 :jusage. floating-point for Pentium
 
-:option. fp6 
+:option. fp6
 :target. any
 :usage. floating-point for Pentium Pro
 :jusage. floating-point for Pentium Pro
 
-:option. fpc 
+:option. fpc
 :target. any
 :usage. calls to floating-point library
 :jusage. calls to floating-point library
 
-:option. fpi 
+:option. fpi
 :target. any
 :usage. inline 80x87 instructions with emulation
 :jusage. inline 80x87 instructions with emulation
 
-:option. fpi87 
+:option. fpi87
 :target. any
 :usage. inline 80x87 instructions
 :jusage. inline 80x87 instructions

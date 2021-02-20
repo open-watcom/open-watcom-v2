@@ -12,7 +12,7 @@ int __far _fjstricmp( const JCHAR __far *s1,
 .do end
 .synop end
 .desc begin
-The function compares, without case sensitivity, 
+The function compares, without case sensitivity,
 the Kanji string pointed to by
 .arg s1
 to the Kanji string pointed to by

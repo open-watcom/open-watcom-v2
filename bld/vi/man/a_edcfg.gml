@@ -125,7 +125,7 @@ Each section of the script is explained.
 :SELINE.#
 :SELINE.# parameters
 :SELINE.#
-:SELINE.if %(OS) == unix 
+:SELINE.if %(OS) == unix
 :SELINE.    set historyfile = /tmp/vi.his
 :SELINE.    set tmpdir = /tmp
 :SELINE.    set nowritecrlf
@@ -251,7 +251,7 @@ Each section of the script is explained.
 :SELINE.#    set tilecolor 1 %(text_white) %(pink)
 :SELINE.#    set tilecolor 2 %(text_white) %(pale_green)
 :SELINE.#    set tilecolor 3 %(text_white) %(black)
-:SELINE.    
+:SELINE.
 :SELINE.    setcolor %(blue) 0 0 29
 :SELINE.    setcolor %(text_white) 52 52 52
 :SELINE.    setcolor %(Brw) 63 63 63
@@ -263,10 +263,10 @@ Each section of the script is explained.
 :SELINE.    setcolor %(pale_green) 25 40 25
 :SELINE.    #setcolor %(orange) 35 00 00
 :SELINE.    setcolor %(yellow) 63 63 0
-:SELINE.     
+:SELINE.
 :SELINE.    set resizecolor = %(yellow)
 :SELINE.    set movecolor = %(pink)
-:SELINE.    
+:SELINE.
 :SELINE.    editwindow
 :SELINE.       border 1 %(bright_cyan) %(blue)
 :SELINE.       dimension 0 1 %(SW)-1 %(SH)-3
@@ -275,24 +275,24 @@ Each section of the script is explained.
 :SELINE.        hilight %(pink) %(blue)
 :SELINE.endif
 :SELINE.    endwindow
-:SELINE.    
+:SELINE.
 :SELINE.    extrainfowindow
 :SELINE.        border 1 %(Brw) %(pale_green)
 :SELINE.        text %(Brw) %(pale_green)
 :SELINE.    endwindow
-:SELINE.    
+:SELINE.
 :SELINE.    filecwindow
 :SELINE.       border 1 %(yellow) %(white)
 :SELINE.       dimension 4 8 %(SW)-5 %(SH)-8
 :SELINE.       text %(black) %(white)
 :SELINE.    endwindow
-:SELINE.    
+:SELINE.
 :SELINE.    countwindow
 :SELINE.        dimension 28 %(SH)-5 43 %(SH)-3
 :SELINE.        border 1 %(yellow) %(red)
 :SELINE.        text %(Brw) %(red)
 :SELINE.    endwindow
-:SELINE.    
+:SELINE.
 :SELINE.    commandwindow
 :SELINE.if %(OS) == dos
 :SELINE.       text %(yellow) %(pale_blue)
@@ -300,52 +300,52 @@ Each section of the script is explained.
 :SELINE.endif
 :SELINE.       dimension 2 %(SH)-7 %(SW)-3 %(SH)-5
 :SELINE.    endwindow
-:SELINE.    
+:SELINE.
 :SELINE.    dirwindow
 :SELINE.        dimension 15 2 %(SW)-14 %(SH)-7
 :SELINE.        border 1 %(Brw) %(pink)
 :SELINE.        text %(yellow) %(pink)
 :SELINE.        hilight %(Brw) %(pale_blue)
 :SELINE.    endwindow
-:SELINE.    
+:SELINE.
 :SELINE.    setwindow
 :SELINE.        border 1 %(Brw) %(pale_blue)
 :SELINE.        dimension 12 2 43 %(SH)-4
 :SELINE.        text %(yellow) %(pale_blue)
 :SELINE.    endwindow
-:SELINE.    
+:SELINE.
 :SELINE.    setvalwindow
 :SELINE.        border 1 %(Brw) %(pink)
 :SELINE.        text %(yellow) %(pink)
 :SELINE.        dimension 46 6 73 9
 :SELINE.    endwindow
-:SELINE.    
+:SELINE.
 :SELINE.    filewindow
 :SELINE.        border 1 %(Brw) %(red)
 :SELINE.        text %(Brw) %(red)
 :SELINE.        hilight %(black) %(yellow)
 :SELINE.        dimension 26 2 %(SW)-2 %(SH)-7
 :SELINE.    endwindow
-:SELINE.    
+:SELINE.
 :SELINE.    statuswindow
 :SELINE.       border -1
 :SELINE.       dimension 0 %(SH)-2 7 %(SH)-1
 :SELINE.       text %(black) %(white)
 :SELINE.    endwindow
-:SELINE.    
+:SELINE.
 :SELINE.    messagewindow
 :SELINE.        border -1
 :SELINE.        dimension 8 %(SH)-2 %(SW)-1 %(SH)-1
 :SELINE.        text %(text_white) %(pale_blue)
 :SELINE.        hilight %(blue) %(pale_blue)
 :SELINE.    endwindow
-:SELINE.    
+:SELINE.
 :SELINE.    menuwindow
 :SELINE.        border 1 %(Brw) %(pink)
 :SELINE.        text %(yellow) %(pink)
 :SELINE.        hilight %(Brw) %(pale_blue)
 :SELINE.    endwindow
-:SELINE.    
+:SELINE.
 :SELINE.    menubarwindow
 :SELINE.if %(OS) == dos
 :SELINE.        text %(Brw) %(white)
@@ -353,9 +353,9 @@ Each section of the script is explained.
 :SELINE.endif
 :SELINE.#        dimension 0 0 %(SW)-1 0
 :SELINE.    endwindow
-:SELINE.    
+:SELINE.
 :SELINE.#
-:SELINE.# MONOCOLOR CONFIGURATION  
+:SELINE.# MONOCOLOR CONFIGURATION
 :SELINE.#
 :SELINE.elseif config == 1
 :SELINE.
@@ -365,32 +365,32 @@ Each section of the script is explained.
 :SELINE.       text %(white) %(black)
 :SELINE.        hilight %(Brw) %(black)
 :SELINE.    endwindow
-:SELINE.    
+:SELINE.
 :SELINE.    setwindow
 :SELINE.        border 1 %(white) %(black)
 :SELINE.        dimension 12 2 43 %(SH)-4
 :SELINE.        text %(white) %(black)
 :SELINE.    endwindow
-:SELINE.    
+:SELINE.
 :SELINE.    commandwindow
 :SELINE.       text %(white) %(black)
 :SELINE.       border 1 %(white) %(black)
 :SELINE.       dimension 2 %(SH)-7 %(SW)-3 %(SH)-5
 :SELINE.    endwindow
-:SELINE.    
+:SELINE.
 :SELINE.    statuswindow
 :SELINE.       border -1
 :SELINE.       dimension 0 %(SH)-2 7 %(SH)-1
 :SELINE.       text %(white) %(black)
 :SELINE.    endwindow
-:SELINE.    
+:SELINE.
 :SELINE.    messagewindow
 :SELINE.        border -1
 :SELINE.        dimension 9 %(SH)-2 %(SW)-1 %(SH)-1
 :SELINE.        text %(white) %(black)
 :SELINE.        hilight %(Brw) %(black)
 :SELINE.    endwindow
-:SELINE.    
+:SELINE.
 :SELINE.    filecwindow
 :SELINE.       border 1 %(white) %(black)
 :SELINE.       dimension 4 8 %(SW)-5 %(SH)-8
@@ -400,7 +400,7 @@ Each section of the script is explained.
 :SELINE.
 :SELINE.#
 :SELINE.# BLACK AND WHITE CONFGURATION
-:SELINE.# 
+:SELINE.#
 :SELINE.else
 :SELINE.
 :SELINE.endif

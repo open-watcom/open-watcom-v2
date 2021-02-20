@@ -1,5 +1,5 @@
 .gfunc setfont
-.gsynop begin 
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _setfont( char _FAR *opt );
 .do end

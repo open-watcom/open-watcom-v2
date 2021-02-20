@@ -16,8 +16,8 @@ compilers and tools, the Windows 95-hosted compilers and tools, or the
 OS/2-hosted compilers and tools.
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .np
-Note - If you are on the host with operating system other then 32-bit 
-Windows, you should setup INCLUDE environment variable correctly 
+Note - If you are on the host with operating system other then 32-bit
+Windows, you should setup INCLUDE environment variable correctly
 to compile for 32-bit Windows target.
 .np
 You can do that by command (DOS, OS/2, Windows 3.x)
@@ -73,14 +73,14 @@ applications to Windows NT.
 .begbull
 .bull
 You may choose to create a character-mode application that makes no
-use of the windowing capabilities of the system. In this case Application 
+use of the windowing capabilities of the system. In this case Application
 must be created as Windows NT Character-mode Application.
 .np
 .bull
 Or, you may choose to make use of &company's default windowing system
 in which application output will be directed to one or more windows.
 The latter can give somewhat of a GUI look-and-feel to an application
-what wasn't designed for the GUI environment. In this case Application 
+what wasn't designed for the GUI environment. In this case Application
 must be created as Windows NT Non-GUI Application.
 .endbull
 .do end

@@ -70,7 +70,7 @@ The currently selected window has a yellow border with a black background.
 of the window, and (&parm3, &parm4) specifies the coordinates of the
 lower right-hand corner of the window.
 :BLANKLINE.
-&edname editor automatically senses the number of lines and columns 
+&edname editor automatically senses the number of lines and columns
 available.  The global variables %(SW) (screen width) and %(SH)
 (screen height) are always set.  These are useful for coding
 dimensions that are relative to the size of the screen.
@@ -114,7 +114,7 @@ of text in the currently selected window.
 Sets the text color of the currently selected window to be white
 text with a black background.
 :eFUNC.
-	 
+	
 :eFNLIST.
 
 :SECTION.Window Types
@@ -229,7 +229,7 @@ are displayed.
 
 :FUNC.MESSAGEWINDOW
 :SYNTAX.* MESSAGEWindow
-The window in which all all editor feedback is reported. 
+The window in which all all editor feedback is reported.
 The
 :KEYWORD.hilight
 color is the color that errors are reported in.
@@ -291,7 +291,7 @@ commandwindow
    dimension 2 %(SH)-7 %(SW)-3 %(SH)-5
 endwindow
 :eILLUST.
-    
+
 :P.
 :KEYWORD.Countwindow
 :CONT.:
@@ -302,7 +302,7 @@ countwindow
     text bright_white red
 endwindow
 :eILLUST.
-    
+
 :P.
 :KEYWORD.Dirwindow
 :CONT.:
@@ -336,7 +336,7 @@ extrainfowindow
     text bright_white light_green
 endwindow
 :eILLUST.
-    
+
 :KEYWORD.Filecwindow
 :CONT.:
 :ILLUST.
@@ -381,7 +381,7 @@ menuwindow
     hilight bright_white light_blue
 endwindow
 :eILLUST.
-    
+
 :P.
 :KEYWORD.Menubarwindow
 :CONT.:
@@ -401,7 +401,7 @@ setvalwindow
     dimension 46 6 73 9
 endwindow
 :eILLUST.
-    
+
 :P.
 :KEYWORD.Setwindow
 :CONT.:
@@ -412,7 +412,7 @@ setwindow
     text yellow light_blue
 endwindow
 :eILLUST.
-    
+
 :P.
 :KEYWORD.Statuswindow
 :CONT.:

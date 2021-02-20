@@ -9,17 +9,17 @@ struct timespec {
     time_t tv_sec;
     long tv_nsec;
 };
-    
+
 .synop end
 .desc begin
 The
 .id &funcb.
 function causes the current thread to be suspended until
-the time period specified by 
+the time period specified by
 .arg request
 has elapsed according to the clock specified by
 .arg clockid
-if the 
+if the
 .arg flags
  do not contain the value TIMER_ABSTIME.
 .np

@@ -1,5 +1,5 @@
 .*
-.* Macros for API heading boxes, api:eapi for API name, dsc:edsc for 
+.* Macros for API heading boxes, api:eapi for API name, dsc:edsc for
 .* description.
 .*
 .dm @api begin
@@ -488,7 +488,7 @@ DS:[E]DX= File name.
 .br
 ES:[E]SI= Command line. First byte is length, then real data.
 .br
-CX= Environment selector, 0 to use existing copy. 
+CX= Environment selector, 0 to use existing copy.
 .note Outputs:
 Carry set on error and AX = error code, else
 .br
@@ -516,7 +516,7 @@ DS:EDX= File name.
 .br
 ES:ESI= Command line. First byte is length, then real data.
 .br
-CX= Environment selector, 0 to use existing copy. 
+CX= Environment selector, 0 to use existing copy.
 .note Outputs:
 Carry set on error and AX = error code, else
 .br
@@ -885,7 +885,7 @@ returns with carry set.
 .note Inputs:
 AX= 0ff29h
 .br
-CX= Number of selectors. 
+CX= Number of selectors.
 .note Outputs:
 BX= Base selector.
 .note Errors:
@@ -1401,7 +1401,7 @@ allocate memory from two sources.  Allocation requests below the value
 returned by this function are allocated from a memory pool controlled
 via conventional style MCB's. Requests above this value are allocated
 via the normal DPMI functions. Because DPMI memory is always allocated
-in multiples of pages (4KB) it can become very inefficient for any program 
+in multiples of pages (4KB) it can become very inefficient for any program
 that needs to allocate small blocks of memory. The value set by this function
 controls the size of memory chunks that will be allocated to and managed
 by the MCB system.

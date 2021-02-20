@@ -5,13 +5,13 @@
 .tdesc
 Defines which push-buttons are displayed in the control area, and where. For on-line documents, the default
 push-buttons are: Previous, Search, Print, Index, Contents, Back, Forward, Tutorial (if a tutorial is present).
-These are displayed in the control area of the cover window. For help windows, the default buttons are: 
+These are displayed in the control area of the cover window. For help windows, the default buttons are:
 Previous, Search, Print, Index, Tutorial (if a tutorial is present).
 .tattrbs
 .tattr ctrlid=text
 Specifies the id by which this control group can be referenced. Alphanumeric. Duplicate ids are not allowed.
 .tattr controls='search print index contents esc back forward custom-id'
-A space-separated list of the ids of the buttons you want to display, in the order to be displayed. If you 
+A space-separated list of the ids of the buttons you want to display, in the order to be displayed. If you
 define your own button (using the pbutton tag), use the id from that tag as the custom-id.
 .tattr page
 Put the buttons in the control area of a page.

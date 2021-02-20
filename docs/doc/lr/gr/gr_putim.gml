@@ -1,5 +1,5 @@
 .gfuncw putimage
-.gsynop begin 
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 void _FAR _putimage( short x, short y,
                      char _HUGE *image, short mode );

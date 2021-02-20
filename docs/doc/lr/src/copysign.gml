@@ -8,7 +8,7 @@ double copysign( double x, double y );
 The
 .id &funcb.
 function returns a value whose absolute value is equal
-to the absolute value of the argument 
+to the absolute value of the argument
 .arg x
 and whose sign matches argument
 .arg y

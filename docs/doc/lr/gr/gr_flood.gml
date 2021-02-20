@@ -1,5 +1,5 @@
 .gfuncw floodfill
-.gsynop begin 
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _floodfill( short x, short y,
                        short stop_color );

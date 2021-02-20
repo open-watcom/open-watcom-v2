@@ -208,7 +208,7 @@ If you are dealing with regular expression search and replace, then there
 are some special character sequences in the replacement string.
 :DEFLIST.
 :DEFITEM.&
-Each instance of `&' in the replacement string is replaced by the 
+Each instance of `&' in the replacement string is replaced by the
 entire string of matched characters.
 
 :DEFITEM.\\

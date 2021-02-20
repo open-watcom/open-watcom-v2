@@ -5,7 +5,7 @@
 .ix 'List-block' 'sl'
 .tag begin
 .tdesc
-A simple list (neither numbered, nor bulleted). List items begin with the li tag and can be continued in 
+A simple list (neither numbered, nor bulleted). List items begin with the li tag and can be continued in
 another paragraph (without numbering) by using the lp tag.
 .tclose esl
 .tattrbs

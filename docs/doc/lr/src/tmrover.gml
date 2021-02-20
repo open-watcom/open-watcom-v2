@@ -12,7 +12,7 @@ since expiration.
 .desc end
 .return begin
 If successful, the function will return the number of
-elapsed intervals since the latest timer expiration. If the 
+elapsed intervals since the latest timer expiration. If the
 call fails, the
 return value is -1, and
 .kw errno

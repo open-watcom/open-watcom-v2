@@ -17,7 +17,7 @@ is zero, the policy for the calling process will be returned.
 .return begin
 If successful, the function will return the kernel's scheduling
 policy for the specified process. If the call fails, the
-return value is -1 and 
+return value is -1 and
 .kw errno
 is appropriately set.
 .return end

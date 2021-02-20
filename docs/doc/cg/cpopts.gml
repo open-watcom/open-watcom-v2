@@ -2560,7 +2560,7 @@ The macro
 (no extended keywords)
 will be predefined if "za" is selected.
 The "ou" option will be enabled :optref refid='SWou'..
-This option also suppress all predefined macros which name is not 
+This option also suppress all predefined macros which name is not
 ISO/ANSI C/C++ standard compliant.
 See also the description of the "ze" option.
 .np
@@ -3098,7 +3098,7 @@ it will attempt to open a header file called
 :OPT refid='SWfti' name='fti'.
 .ix 'options' 'fti'
 (C only)
-Whenever a file is open as a result of 
+Whenever a file is open as a result of
 .id #include
 directive processing, an informational message is printed. The message
 contains the file name and line number identifying where the
@@ -3221,7 +3221,7 @@ directory searching.
 :OPT refid='SWzam' name='zam'.
 .ix 'options' 'zam'
 Open Watcom define many extension macros for compatibility
-with old MS C compiler (far, _far, near, _near, cdecl, _cdecl, etc.). 
+with old MS C compiler (far, _far, near, _near, cdecl, _cdecl, etc.).
 For details see Open Watcom compilers predefined macros.
 These macros use names which are not ISO C/C++ compliant.
 The option disables all these predefined macros.

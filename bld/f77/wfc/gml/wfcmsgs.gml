@@ -460,7 +460,7 @@
 :MSGTXT. The automatic equivalence containing %s1 exceeds 32K limit
 :MSGJTXT. %s1を含む自動等価変数が32Kの限界を超えました。
 :MSGATTR. 0
- In 16-bit environments, the size of an equivalence on the stack must not 
+ In 16-bit environments, the size of an equivalence on the stack must not
  exceed 32767 bytes.
 :MSGSYM. CP_AUTO_RET_TOO_LARGE
 :MSGTXT. The return value of %s1 exceeds 32K limit

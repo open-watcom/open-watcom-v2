@@ -9,9 +9,9 @@ The
 function writes all modified data to permanent storage
 corresponding to the memory mapping at
 .arg address
-measuring 
+measuring
 .arg len
-bytes.  
+bytes.
 .np
 The
 .arg flags

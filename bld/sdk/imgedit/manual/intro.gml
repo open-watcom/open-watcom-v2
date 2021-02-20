@@ -58,7 +58,7 @@ Some of the significant features of &imgname are:
 :P.
 &imgname is available for the following environments:
 :UL.
-:LI.Windows 3.x 
+:LI.Windows 3.x
 :LI.Windows NT
 :LI.Win 32s
 :eUL.
@@ -87,7 +87,7 @@ The &imgname screen has several windows.
 :LI.The
 :KEYWORD.main window
 :CONT.
-has the title 
+has the title
 :HILITE.WATCOM Image Editor
 and represents the area in which
 the image will be prepared.  The main window can be moved and sized
@@ -97,7 +97,7 @@ is the
 :KEYWORD.menu bar
 :CONT.,
 which contains all the menu choices.
-:LI.The bar directly below the menu bar is the 
+:LI.The bar directly below the menu bar is the
 :KEYWORD.function bar
 :PERIOD.
 The function bar provides easy access to the most commonly used edit
@@ -114,7 +114,7 @@ section and indicates the coordinates of the cursor in the edit window
 (described below).  The second section is the
 :KEYWORD.size
 section and indicates the last size of a
-shape being created.  The 
+shape being created.  The
 :KEYWORD.hotspot
 section is the third section and it specifies the coordinates of
 the hot spot for cursors.  If the image being edited is not a cursor,
@@ -140,15 +140,15 @@ number of colored boxes.  This is the
 :KEYWORD.color palette
 and represents the location at which colors are selected and edited.
 A highlighted box displays the current color selected for the left
-mouse button (marked by 
+mouse button (marked by
 :HILITE.L
 :CONT.) and for the right mouse button (marked
-by 
+by
 :HILITE.R
 :CONT.)
 :PERIOD.
 The block of colors next to the current color
-selection box represent the 
+selection box represent the
 colors available to the user.
 :eUL.
 :P.
@@ -178,9 +178,9 @@ and contains the image in its actual size.
 Both the edit window and the view window are moveable.  The view
 window can be moved anywhere on the screen and the edit window can be
 placed anywhere inside the area of the main window.  The edit window
-can also be sized to the preference of the user.  
+can also be sized to the preference of the user.
 :UL.
-:LI.The main window contains 
+:LI.The main window contains
 :KEYWORD.maximize
 and
 :KEYWORD.minimize
@@ -198,15 +198,15 @@ at their upper left corners, which contain options for closing and
 moving the window among other possible options.  Clicking on them
 once displays the system menu and clicking on them twice closes
 that particular window.
-:eUL.      
+:eUL.
 :eSUBSECT.
 
 :SUBSECT.Editing Terms
-&imgname allows you to have a number of images open at one time. 
+&imgname allows you to have a number of images open at one time.
 However there is only one view window (this can be changed later)
 displaying the
 :KEYWORD.current
-or 
+or
 :KEYWORD.active
 image.  The current image is the image currently being altered or
 modified.  It is important to know which is
@@ -223,7 +223,7 @@ Many edit operations can take place on the entire image or only a
 :KEYWORD.selected region
 :PERIOD.
 When refered to in this manual, a selected region can be either the
-entire edit area of the image or it can be a region specifed by the 
+entire edit area of the image or it can be a region specifed by the
 region selecting tool described at a later time.
 :eSUBSECT.
 :SUBSECT.The Function Bar
@@ -234,7 +234,7 @@ and is always visible under the menu bar.  The buttons are displayed
 in groups which deal with similar operations.  The following list gives the
 names of the buttons from left to right and the operation they perform:
 :UL.
-:LI.The 
+:LI.The
 :KEYWORD.new
 button creates a new image.
 :LI.The
@@ -245,10 +245,10 @@ button opens an existing image.
 button saves the current image.  If the file is named, it is
 saved under the current file name.  If it is untitled, &imgname
 requests that a filename be supplied.
-:LI.The 
+:LI.The
 :KEYWORD.grid
 button toggles the display of the grid in the edit window.  If the
-button is down, the grid is displayed (this is the default). 
+button is down, the grid is displayed (this is the default).
 Clicking on the button will pop it back up and cause the grid to
 disappear.
 :LI.The
@@ -260,8 +260,8 @@ button is the
 :KEYWORD.cut
 button.  It cuts a region from the image and stores it in the
 clipboard.
-:LI.The 
-:KEYWORD.copy 
+:LI.The
+:KEYWORD.copy
 button copies the selected region in the image to the clipboard.
 :LI.The
 :KEYWORD.paste
@@ -276,7 +276,7 @@ to undo, this button does nothing.
 :KEYWORD.redo
 button.  Clicking on this button will redo an operation that has been
 undone.  If no operations have been undone, this button does nothing.
-:LI.The 
+:LI.The
 :KEYWORD.clear
 button clears the entire image or a selected region of it.
 :LI.Next to the clear button is the
@@ -305,7 +305,7 @@ button and it reflects a region in its horizontal axis.
 button reflects a region in its vertical axis.
 :LI.The
 :KEYWORD.clockwise rotate
-button rotates an image or selected region ninety degrees in the 
+button rotates an image or selected region ninety degrees in the
 clockwise direction.  The rotation is performed about the center of
 the region.
 :LI.The last button is the

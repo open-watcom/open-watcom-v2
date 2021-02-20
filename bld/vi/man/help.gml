@@ -145,12 +145,12 @@ the figure in the Users Guide
 .gt HDREF add hdref att nocont
 .ga * PAGE value yes
 .ga * PAGE value no
-.ga * REFID 
-.ga * * ANY 
+.ga * REFID
+.ga * * ANY
 
 .gt FIGREF add FIGREF att nocont
-.ga * REFID 
-.ga * * ANY 
+.ga * REFID
+.ga * * ANY
 .ga * PAGE
 .ga * * VALUE '' DEFAULT
-.ga * * ANY 
+.ga * * ANY

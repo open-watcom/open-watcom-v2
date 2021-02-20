@@ -1,5 +1,5 @@
 .gfunc pg_getpalette
-.gsynop begin 
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _pg_getpalette( paletteentry _FAR *pal );
 .do end

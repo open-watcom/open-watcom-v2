@@ -3,7 +3,7 @@
 .ix 'Block' 'lines'
 .tag begin
 .tdesc
-Renders the enclosed block in a proportional font, but honoring white space and line breaks to preserve the 
+Renders the enclosed block in a proportional font, but honoring white space and line breaks to preserve the
 formatting of the text as it was entered. The text can be left or right aligned, or centered.
 .tclose elines
 .tattrbs

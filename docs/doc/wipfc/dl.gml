@@ -14,12 +14,12 @@ Omit inserting a blank line between each term-description pair.
 Sets the width of the "term " column (the default is 10).
 .tattr break=none | fit | all
 Controls how a description follows a term. If break is set to "none", descriptions are on the same line as
-the term, even if the length of the term exceeds "tsize" characters. If break is set to "fit", descriptions 
-are placed on the next line only if the length of the term exceeds "tsize" characters. If break is set to "all" 
+the term, even if the length of the term exceeds "tsize" characters. If break is set to "fit", descriptions
+are placed on the next line only if the length of the term exceeds "tsize" characters. If break is set to "all"
 descriptions are always placed on the next line.
 .tattrend
 .tno Conditions:
-The dthd and ddhd tags must occur before any dt and dd tags. Multiple consecutive dt tags are allowed (synonyms), 
+The dthd and ddhd tags must occur before any dt and dd tags. Multiple consecutive dt tags are allowed (synonyms),
 but only one dd tag is allowed for each set of dt tags.
 .tclass List-block
 .tcont :HDREF refid='dthd'., :HDREF refid='ddhd'., :HDREF refid='dt'., :HDREF refid='dd'., Block, List-block

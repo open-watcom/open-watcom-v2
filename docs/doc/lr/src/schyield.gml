@@ -7,7 +7,7 @@ int sched_yield( );
 The
 .id &funcb.
 function causes the calling thread to yield the processor to other
-threads until the kernel assigns it to be the current thread once 
+threads until the kernel assigns it to be the current thread once
 again.
 .desc end
 .return begin

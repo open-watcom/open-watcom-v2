@@ -56,7 +56,7 @@ string, not including the terminating null character.
 void main( void )
 {
     char    buffer[10];
-.exmp break 
+.exmp break
     printf( "%d:'%s'\n", strlcpy( buffer,
         "Buffer overflow", sizeof( buffer ) ), buffer );
 }

@@ -1,5 +1,5 @@
 .gfuncw getcurrentposition
-.gsynop begin 
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 struct xycoord _FAR _getcurrentposition( void );
 

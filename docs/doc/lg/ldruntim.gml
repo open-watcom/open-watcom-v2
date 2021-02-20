@@ -291,7 +291,7 @@ runtime abiver=3.0
 indicates that the application is a generic ELF application conforming to
 the System V Release 4 ABI. This is the default.
 .*
-.mnote LINUX 
+.mnote LINUX
 .ix 'RUNTIME options' 'LINUX'
 .ix 'LINUX runtime option'
 (short form "LIN") indicates that the application is a Linux application.

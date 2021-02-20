@@ -120,7 +120,7 @@ files of source code became an important task.
 :P
 The method we used to solve this problem is called a pre-compiled header file.
 The problems encountered in implementing this feature of the compiler include
-saving and restoring the complete internal state of the compiler.  This 
+saving and restoring the complete internal state of the compiler.  This
 involved research into the latest papers on persistent objects combined
 with some Watcom innovations.  The completed implementation satisfied our
 goal of increased throughput during compilation of C++ source code.
@@ -142,7 +142,7 @@ required of the runtime library.
 :H6.The compiler support routines
 
 :P.
-The ISO C++ standard was changed to specify that the life-time of 
+The ISO C++ standard was changed to specify that the life-time of
 temporary objects is the duration of a statement. The WATCOM compiler
 was implemented with life-times being the duration of a scope.
 :P

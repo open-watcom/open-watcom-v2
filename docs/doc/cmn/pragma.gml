@@ -967,7 +967,7 @@ was included.
 .np
 Note that only simple textual substitution is performed. The aliased name
 must match exactly, including double quotes or angle brackets, as well as
-any directory separators. 
+any directory separators.
 Also, double quotes and angle brackets may not be mixed a single pragma.
 .np
 The value of the predefined
@@ -1979,7 +1979,7 @@ right to left. The calling routine will remove the arguments if any
 were pushed on the stack.
 .note
 When a structure is returned, the caller allocates space on the stack.
-The address of the allocated space is put into &siup register. 
+The address of the allocated space is put into &siup register.
 The called routine then places the return value there.
 Upon returning from the call, register &axup will contain address of
 the space allocated for the return value.

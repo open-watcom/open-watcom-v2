@@ -1,7 +1,7 @@
 .func sem_getvalue
 .synop begin
 #include <semaphore.h>
-int sem_getvalue(sem_t *semaphore, int *dest);    
+int sem_getvalue(sem_t *semaphore, int *dest);
 .synop end
 .desc begin
 The

@@ -207,7 +207,7 @@ in along with the project and built as part of the build process (so that
 we don't have to check in zillions of binaries for all supported platforms). An
 important future consideration will be the ability to build on a different
 architecture. Please try and avoid weirdo tools that have no hope of running
-on an Alpha or PPC running NT or on Linux. These tools should be referenced 
+on an Alpha or PPC running NT or on Linux. These tools should be referenced
 from the makefile as
 .id $(bld_dir)\tool
 .period

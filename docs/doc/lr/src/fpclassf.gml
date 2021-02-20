@@ -62,7 +62,7 @@ appropriate to the value of its argument
 void main( void )
 {
     printf( "infinity %s a normal number\n",
-        fpclassify( INFINITY ) == FP_NORMAL ? 
+        fpclassify( INFINITY ) == FP_NORMAL ?
 	"is" : "is not" );
 }
 .exmp output

@@ -20,7 +20,7 @@ important to understand something about how colors work in Windows.
 This chapter
 looks at selecting different colors, using screen and inverse
 colors, editing colors and saving, loading and restoring color
-palettes.  
+palettes.
 :P.
 Windows stores colors as
 :ITALICS.RGB values
@@ -30,7 +30,7 @@ green and blue in the color.  Each value in the three-tuple can
 range from zero to 255.  For example: an RGB value of (0, 0, 0)
 represents black, an RGB value of (255, 0, 0) represents bright red
 and an RGB value of (255, 255, 255) represents white.  Under this
-scheme, there are almost seventeen million colors representable. 
+scheme, there are almost seventeen million colors representable.
 Unfortunately, most display drivers cannot display that many colors
 so Windows resorts to
 :ITALICS.dithering
@@ -64,16 +64,16 @@ and
 :HILITE.Fill
 :PERIOD.
 The difference between the colors specified in these two boxes is
-that the color indicated in the 
+that the color indicated in the
 :HILITE.Draw
-box is always a pure color and the color given in the 
+box is always a pure color and the color given in the
 :HILITE.Fill
 box can be a dithered color.  The fill color will always be the color
 that was selected.  The draw color will be the pure color that most
 accurately represents the fill color.  &imgname uses this color
 when performing drawing
 operations such as using the pencil, drawing lines,
-outlined rectangles, outlined ellipses and using the paint brush. 
+outlined rectangles, outlined ellipses and using the paint brush.
 Since these operations deal with individual pixels instead of an
 area of pixels, they must be performed with a pure color.  The color
 given under the
@@ -89,20 +89,20 @@ fact that a fill acts only on solid colors.
 :P.
 On the right side of the color palette is a display of the colors
 available for use.
-To select different colors, move the cursor to the 
+To select different colors, move the cursor to the
 available colors.  The
 cursor will change into a hand and you will be allowed to pick a
 color.  If you wish to choose a color for the left mouse button,
 click the left mouse button and if you wish to choose a color for
 the right button, click the right button.  As you click a button, you
 will see the current colors box reflect the new color selection you
-have made.  If the color selected is a dithered color, the 
+have made.  If the color selected is a dithered color, the
 :HILITE.Draw
 and
 :HILITE.Fill
-colors will be different.  Otherwise they will be exactly the same. 
+colors will be different.  Otherwise they will be exactly the same.
 Under the default settings, the pure colors reside on the left
-side of the available colors and the dithered colors on the right. 
+side of the available colors and the dithered colors on the right.
 This may change as you edit colors.
 :P.
 When editing a two color bitmap,
@@ -123,7 +123,7 @@ To edit a color, move to that color in the display of the available
 colors.  Double click the left mouse button or select that color
 as the left mouse color and choose
 :HILITE.Edit Current Color
-from the 
+from the
 :HILITE.Palette
 menu.  You will be
 presented with a window similar to the following:
@@ -141,7 +141,7 @@ indicator on the far right of the dialog box
 up and down the gray scale.  As you change these values,
 the color will change and the RGB value will be displayed on the far
 right of the window.  When you have established the new color, click the
-left mouse button on the 
+left mouse button on the
 :HILITE.Add to Custom Colors
 button.  The display of custom colors will show the new color you
 have added.
@@ -150,7 +150,7 @@ You may add up to 16 custom colors by simply repeating the process
 for the other custom color boxes.  Once you have added all the
 colors you wish, select the custom color you would like to have
 replace the current color in the &imgname color palette with the
-left mouse button.  Clicking on the 
+left mouse button.  Clicking on the
 :HILITE.OK
 button will exit the color window and you will see that the color
 selected with the left mouse button will be the custom color created
@@ -169,14 +169,14 @@ When editing icons or cursors, two colors are added to the color
 palette.  These colors represent the color of the screen
 (or background) and the
 inverse color of the screen.  The two colors are often collectively
-referred to as screen colors.  Since it is often desireable to have 
+referred to as screen colors.  Since it is often desireable to have
 icons and cursors take on shapes other than rectangular, the edges of
 the icon or cursor image can take on the color of the screen over which
 they are displayed.  Moreover, to give emphasis to parts of icons or
 cursors or to guarantee their visibility on any screen color, you
 can choose to draw with the inverse of the screen color.  To do so
 with &imgname, you simply select either the screen color or the
-inverse color as the current color.  
+inverse color as the current color.
 :P.
 Initially, the screen color is set to be white and the inverse
 color black.  You may change this by either double clicking on the
@@ -194,7 +194,7 @@ The inverse color will always be set to the inverse
 of the color you have selected.  You may choose different
 screen colors by clicking on them with the left mouse button.  As
 you select different colors that color and its inverse are
-displayed as the currently selected screen colors.  Click on the 
+displayed as the currently selected screen colors.  Click on the
 :HILITE.OK
 button when you have established the colors to represent the screen
 and inverse colors.  The new screen and inverse colors are displayed
@@ -237,14 +237,14 @@ Brush.
 :P.
 In order to load a color palette to replace the existing one, choose
 :HILITE.Load Color Palette
-from the 
+from the
 :HILITE.Palette
 menu.  Again, you will be presented with a dialog box requesting the
 filename of the palette to load.  Once this is specified, &imgname
 will read the file and replace the existing palette in the color
 palette window with the new palette.  You may still edit the colors
 in the current palette with the method described above.  When
-resetting the color palette from the 
+resetting the color palette from the
 :HILITE.Palette
 menu, the palette will return to its last loaded form.  To return the
 color palette to the default palette of &imgname, choose

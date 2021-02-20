@@ -241,12 +241,12 @@
 .   .se see = 0
 .   .if &e'&dohelp eq 0 .do begin
 .       :DL termhi = 0.
-.       :DT.See Also: 
+.       :DT.See Also:
 .       :DD.
 .   .do end
 .   .el .do begin
 .       :ZDL termhi = 0.
-.       :ZDT.See Also: 
+.       :ZDT.See Also:
 .       :ZDD.
 .   .do end
 .do end

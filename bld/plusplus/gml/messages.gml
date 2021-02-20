@@ -11920,7 +11920,7 @@ The register name is invalid/unknown.
 :MSGTXT. Archaic syntax: class/struct missing in explicit template instantiation
 :MSGJTXT. 旧式な構文：explicitなテンプレートのインスタンス化にclass/structがありません
 :WARNING. 1
-Archaic syntax has been used.  The standard requires a 
+Archaic syntax has been used.  The standard requires a
 .kw class
 or
 .kw struct

@@ -1,7 +1,7 @@
 .func timer_settime
 .synop begin
 #include <time.h>
-int timer_settime(timer_t timerid, int flags, 
+int timer_settime(timer_t timerid, int flags,
                   struct itimerspec *new_value,
                   struct itimerspec *old_value );
 
@@ -16,23 +16,23 @@ struct itimerspec {
     int             notify_type;
     int             timer_type;
     long            data;
-    
+
 .synop end
 .desc begin
 The
 .id &funcb.
 function arms or resets the timer
 .arg timerid
-using the interval and value specified in 
+using the interval and value specified in
 .arg new_value
 pointer.  The previous interval and value is returned in the
 .arg oldvalue
-pointer.  
+pointer.
 .np
 The structure pointed to by the "it_value" member of
 .arg new_value
 specifies the time in the future when the timer will expire,
-and effectively arms the timer.  If the it_value member of 
+and effectively arms the timer.  If the it_value member of
 .arg new_value
 specifies a time of zero, the timer is disarmed.  The structure
 pointed to by the "it_interval" member of
@@ -48,9 +48,9 @@ The "it_value" member of
 .arg new_value
 is regarded, by default, as a time relative to the system clock
 at the time of the function call.  If flags incorporates the
-TIMER_ABSTIME constant, the time in "it_value" is regarded as 
-an absolute system time as opposed to a time relative to 
-calling this function.  
+TIMER_ABSTIME constant, the time in "it_value" is regarded as
+an absolute system time as opposed to a time relative to
+calling this function.
 .desc end
 .return begin
 If successful, the function will return zero. If the call fails, the

@@ -926,7 +926,7 @@ Turn this option on, if you want to be prompted when you tag a function
 that has multiple entries in the tags file.
 .endpoint
 .np
-Tag files are created by the CTAGS utility, which is described in the 
+Tag files are created by the CTAGS utility, which is described in the
 &company VI editor documentation.
 .*
 .section File Specific Options : Miscellaneous

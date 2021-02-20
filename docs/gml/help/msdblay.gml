@@ -1,7 +1,7 @@
 :layout
 :cmt. Local modifications to the layout
 :cmt. Make :h4 large headings
-:H4     
+:H4
         display_heading=no
         page_position=centre
         number_form = none

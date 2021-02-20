@@ -273,7 +273,7 @@ are some special character sequences in the replacement string.
 :DL.
 .*
 :DT.&
-:DD.Each instance of `&' in the replacement string is replaced by the 
+:DD.Each instance of `&' in the replacement string is replaced by the
 entire string of matched characters.
 
 :DT.\\

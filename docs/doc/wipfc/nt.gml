@@ -5,7 +5,7 @@
 .ix 'Notices' 'nt'
 .tag begin
 .tdesc
-Begins a multi-paragraph note. All of the text in the note left aligns with the first word after the message 
+Begins a multi-paragraph note. All of the text in the note left aligns with the first word after the message
 text. The text begins with a local-specific phrase ("Note:  " in the en_US locale).
 .tclose ent
 .tattrbs

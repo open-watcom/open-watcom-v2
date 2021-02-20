@@ -158,7 +158,7 @@ The
 .id &funcb.
 function returns zero when
 .arg string
-matches the pattern specified by 
+matches the pattern specified by
 .arg pattern
 .period
 If there is no match, FNM_NOMATCH is returned. If an error occurs, &funcb

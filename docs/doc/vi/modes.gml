@@ -717,7 +717,7 @@ If the cursor was on the right parenthesis (')') of
 .millust begin
 x = foo(abc) + 3;
 .millust end
-then the cursor moves to left parenthesis 
+then the cursor moves to left parenthesis
 .param (
 .period
 .endxmpl
@@ -747,7 +747,7 @@ in
 .millust begin
 x = foo(abc) + 3;
 .millust end
-then the cursor moves to the 
+then the cursor moves to the
 .param +
 sign.
 .endxmpl
@@ -1027,7 +1027,7 @@ in
 .millust begin
 x = foo(abc) + 3;
 .millust end
-then the cursor moves to the 
+then the cursor moves to the
 .param +
 sign.
 .endxmpl
@@ -1271,7 +1271,7 @@ be the active
 .np
 The active
 .keyword &copybuffer
-may be selected using function keys. 
+may be selected using function keys.
 CTRL_F1 through CTRL_F9 select buffers 1 through 9 respectively.
 When a buffer is selected,
 information about its contents is displayed in the message window.
@@ -1341,7 +1341,7 @@ To retrieve the contents of a buffer, use:
 .begkey SHIFT_INS &lt."?&gt.SHIFT_INS
 Puts (pastes) the contents of the active
 .keyword &copybuffer
-after the cursor position in the current edit buffer. 
+after the cursor position in the current edit buffer.
 .seecmd put
 .np
 .xmplsect begin
@@ -1983,7 +1983,7 @@ is entered.
 .endxmpl
 .begxmpl c$
 Changes from the current column to the end of the
-current line. 
+current line.
 The column range is highlighted, and once a character other than
 .param ESC
 is typed, the column range is deleted and
@@ -2007,7 +2007,7 @@ is entered.
 .* ******************************************************************
 .np
 The following commands are used to shift lines to the right or left,
-inserting or deleting leading whitespace. 
+inserting or deleting leading whitespace.
 .se plural = 1
 :INCLUDE file='oper'.
 .*
@@ -2338,7 +2338,7 @@ command
 .begkey CTRL_C CTRL_C
 Exits the editor if no files have been modified.  If files have been modified,
 a prompt is displayed asking you to verify that you really want to discard
-the modified file(s).  
+the modified file(s).
 If you do not respond with a 'y', then the command is cancelled.
 .seecmd quitall
 .endkey

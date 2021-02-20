@@ -203,7 +203,7 @@ spaces to the left.
 :SYNTAX.<line_range> ! <cmd>
 If &range is specified, then the lines are run through the specified
 system command &parm1 (the command must get its input from standard in and
-write its output to standard out) and replaces the lines with the output 
+write its output to standard out) and replaces the lines with the output
 of the command.
 :BLANKLINE.
 If no range is specified, then the system command
@@ -388,7 +388,7 @@ file
 
 :FUNC.COMPRESS
 :SYNTAX.* COMpress
-Replaces spaces in the current edit buffer with 
+Replaces spaces in the current edit buffer with
 tabs.  Single spaces are not replaced with a tab, and spaces inside
 a quoted string are not replaced with a tab.
 :eFUNC.
@@ -1059,14 +1059,14 @@ the cursor is on the first open bracket ('(') in the line:
 :eILLUST.
 moves the cursor to the last ')' in the line.
 :BLANKLINE.
-This command allows you to extend what is matched to 
+This command allows you to extend what is matched to
 general regular expressions.
 :ITALICS.<rx1>
 is the regular expression that opens a match,
 :ITALICS.<rx2>
 is the regular expression that closes a match.
 :BLANKLINE.
-Note that in the matching regular expressions, 
+Note that in the matching regular expressions,
 :KEYWORD.magic
 is set (special characters automatically
 have their meaning, and do not need to be escaped).
@@ -1160,7 +1160,7 @@ Moves to the next file in the list of files being edited.
 
 :FUNC.OPEN
 :SYNTAX.* Open <file>
-Opens a new window on the specified file. 
+Opens a new window on the specified file.
 If no file is specified,
 then a new window is opened on the current edit buffer.
 These new
@@ -1273,7 +1273,7 @@ Quits the current file, discarding all modifications since the last write.
 :SYNTAX.* QUITAll
 Exits the editor if no files have been modified.  If files have been modified,
 a prompt is displayed asking to you verify that you really want to discard
-the modified file(s).  
+the modified file(s).
 If you do not respond with a 'y', then the command is cancelled.
 :EXAMPLE.quitall
 If files have been modified, the following prompt is displayed:
@@ -1454,7 +1454,7 @@ Optional parameters &parm2 to
 If "." is specified as the
 :KEYWORD.script
 name, the current
-file being edited is run as a 
+file being edited is run as a
 :KEYWORD.script
 :PERIOD.
 :BLANKLINE.
@@ -1578,7 +1578,7 @@ are used (this is the default tile grid).
 If &parm1 is specified,
 then files are tiled horizontally (as many as will fit).
 :BLANKLINE.
-If &parm3 is specified, then files are tiled vertically (as many as will fit).  
+If &parm3 is specified, then files are tiled vertically (as many as will fit).
 :BLANKLINE.
 Specifying &parm5 &parm6 overrides the default tile grid. As a special
 case, specifying &parm5 &parm6 as 1 1 causes all windows to be restored.

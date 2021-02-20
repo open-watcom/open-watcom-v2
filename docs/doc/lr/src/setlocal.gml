@@ -33,9 +33,9 @@ Potentially, there may be many such environments.
 &company C/C++ supports only the
 .mono "C"
 locale and so invoking this function will have no effect upon the
-behavior of a program at present.  Specifying the 
+behavior of a program at present.  Specifying the
 .mono "POSIX"
-locale is supported for POSIX compatibility and equivalent to 
+locale is supported for POSIX compatibility and equivalent to
 specifying the
 .mono "C"
 locale.

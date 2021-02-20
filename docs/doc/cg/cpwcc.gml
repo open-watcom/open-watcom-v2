@@ -2815,7 +2815,7 @@ In this example, any calls generated to the virtual methods 'method_a' or 'metho
 will use the THISCALL ( my_thiscall ) calling convention. Calls generated to 'method_c'
 will use the prefefined
 .kw __cdecl
-calling convention. 
+calling convention.
 .np
 It is also possible to forward define the class with modifiers for occasions where
 you do not want to change original source code.

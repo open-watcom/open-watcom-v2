@@ -1,5 +1,5 @@
 .gfunc pg_resetpalette
-.gsynop begin 
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _pg_resetpalette( void );
 .do end

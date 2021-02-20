@@ -2,7 +2,7 @@
 .*
 .sect Introduction
 .*
-The header type_traits is based on the metaprogramming section of n1836 
+The header type_traits is based on the metaprogramming section of n1836
 :Q.Draft Technical Report on C++ Library Extensions:eQ..
 It contains a set of templates that allow compile type testing and modification
 of types.

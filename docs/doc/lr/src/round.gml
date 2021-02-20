@@ -13,7 +13,7 @@ to the nearest integer. Values halfway between integers
 always rounded away from zero.
 .desc end
 .return begin
-The rounded value of 
+The rounded value of
 .arg x
 .period
 .return end

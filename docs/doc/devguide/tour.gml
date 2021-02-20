@@ -124,7 +124,7 @@ directory should be placed at or near the start of your
 .id PATH
 environment variable.
 .note build/bin
-contains binaries created during first build phase (bootstrap) and used during 
+contains binaries created during first build phase (bootstrap) and used during
 main building process (second build phase).
 .note build/mif
 contains all main make files (global).

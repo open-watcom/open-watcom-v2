@@ -501,7 +501,7 @@ next parameter in the variable list.
 .pp
 In the case of
 .libfn printf
-.ct , the parameter type expected is determined by the 
+.ct , the parameter type expected is determined by the
 "conversion specifications" such as
 .mono %s
 .ct ,

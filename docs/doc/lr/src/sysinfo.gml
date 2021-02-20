@@ -18,7 +18,7 @@ struct sysinfo {
     unsigned mem_unit;
     char __reserved[];
 };
-   
+
 .synop end
 .desc begin
 The

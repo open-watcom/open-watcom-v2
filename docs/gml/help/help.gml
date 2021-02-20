@@ -129,51 +129,51 @@ the figure in the Users Guide
 .   .helphd &hlptxt
 .dm H4 end
 
-.gt HDREF add HDREF att nocont 
-.ga * REFID 
-.ga * * ANY 
+.gt HDREF add HDREF att nocont
+.ga * REFID
+.ga * * ANY
 
 .gt FIGREF add FIGREF att nocont
-.ga * REFID 
-.ga * * ANY 
+.ga * REFID
+.ga * * ANY
 .ga * PAGE
 .ga * * VALUE '' DEFAULT
-.ga * * ANY 
+.ga * * ANY
 
-.gt H0 add H0 att nocont 
+.gt H0 add H0 att nocont
 .ga * ID
 .ga * * VALUE '' DEFAULT
-.ga * * ANY 
+.ga * * ANY
 .ga * STITLE any
 
-.gt H1 add H1 att nocont 
-.ga * ID 
+.gt H1 add H1 att nocont
+.ga * ID
 .ga * * VALUE '' DEFAULT
-.ga * * ANY 
+.ga * * ANY
 .ga * STITLE any
 
-.gt H2 add H2 att nocont 
-.ga * ID 
+.gt H2 add H2 att nocont
+.ga * ID
 .ga * * VALUE '' DEFAULT
-.ga * * ANY 
+.ga * * ANY
 .ga * STITLE any
 
-.gt H3 add H3 att nocont 
-.ga * ID 
+.gt H3 add H3 att nocont
+.ga * ID
 .ga * * VALUE '' DEFAULT
-.ga * * ANY 
+.ga * * ANY
 .ga * STITLE any
 
-.gt H4 add H4 att nocont 
-.ga * ID 
+.gt H4 add H4 att nocont
+.ga * ID
 .ga * * VALUE '' DEFAULT
-.ga * * ANY 
+.ga * * ANY
 .ga * STITLE any
 
 :cmt. ACME quick reference uses this HH4 tag
 .gt HH4 add H4 att nocont
-.ga * ID 
+.ga * ID
 .ga * * VALUE '' DEFAULT
-.ga * * ANY 
+.ga * * ANY
 .ga * STITLE any
 

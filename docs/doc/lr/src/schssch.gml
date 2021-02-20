@@ -7,25 +7,25 @@ int sched_setscheduler(pid_t pid, int policy,
 struct sched_param {
     int sched_priority;
 };
-    
+
 .synop end
 .desc begin
 The
 .id &funcb.
-function sets the scheduling policy and parameters for the 
+function sets the scheduling policy and parameters for the
 process specified by the
 .arg pid
 argument.
 .np
 If
 .arg pid
-is zero, the policy and parameters for the calling process 
+is zero, the policy and parameters for the calling process
 will be set.
 .desc end
 .return begin
 If successful, the function will return the kernel's former
-scheduling policy for the specified process. If the call fails, 
-the return value is -1 and 
+scheduling policy for the specified process. If the call fails,
+the return value is -1 and
 .kw errno
 is appropriately set.
 .return end
@@ -46,7 +46,7 @@ The process ID
 .arg sp
 is invalid
 .term EFAULT
-The memory at 
+The memory at
 .arg sp
 could not be read
 .endterm

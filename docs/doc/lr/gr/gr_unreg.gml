@@ -1,5 +1,5 @@
 .gfunc unregisterfonts
-.gsynop begin 
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 void _FAR _unregisterfonts( void );
 .do end

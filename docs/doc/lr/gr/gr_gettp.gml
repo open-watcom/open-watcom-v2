@@ -1,5 +1,5 @@
 .gfunc gettextposition
-.gsynop begin 
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 struct rccoord _FAR _gettextposition( void );
 .do end

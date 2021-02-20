@@ -3,7 +3,7 @@
 ..tb set $
 ..tb &firsttab. +13 +13 +13 +13
 .kwon
-$auto     $double     $inline   $static   
+$auto     $double     $inline   $static
 $_Bool    $else       $int      $struct
 $break    $enum       $long     $switch
 $case     $extern     $register $typedef
@@ -12,7 +12,7 @@ $_Complex $for        $return   $unsigned
 $const    $goto       $short    $void
 $continue $if         $signed   $volatile
 $default  $_Imaginary $sizeof   $while
-$do       
+$do
 .kwoff
 ..tb set
 ..tb

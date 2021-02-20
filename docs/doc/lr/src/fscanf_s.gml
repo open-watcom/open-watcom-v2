@@ -8,7 +8,7 @@ int fscanf_s( FILE * restrict stream,
 .if &'length(&wfunc.) ne 0 .do begin
 #include <stdio.h>
 #include <wchar.h>
-int fwscanf_s( FILE * restrict stream, 
+int fwscanf_s( FILE * restrict stream,
       const wchar_t * restrict format, ... );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc

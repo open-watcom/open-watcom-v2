@@ -184,7 +184,7 @@ so this call should be avoided if at all possible.
 :XMP.
 Inputs:                         Outputs:
 AX = request number (6)         AX = 1 if the section exists
-CX:BX = far pointer to               0 otherwise   
+CX:BX = far pointer to               0 otherwise
         overlay address
 :eXMP.
 :P.
@@ -198,7 +198,7 @@ or the debugger has invoked the SET_OVERLAY_STATE request. The request
 returns the first section whose id larger than the section number that
 is in the overlay address being passed in. The overlay manager will fill
 in the overlay address with the section number that has moved and its new
-segment address. The offset portion of the overlay address is unused. The 
+segment address. The offset portion of the overlay address is unused. The
 request will return a one in AX. If there are no sections numbers larger
 than the one being passed in that have moved, a zero is returned.
 :P.
@@ -219,7 +219,7 @@ void CheckMovedSections()
 :XMP.
 Inputs:                         Outputs:
 AX = request number (7)         AX = 1 if the section exists
-CX:BX = far pointer to               0 otherwise   
+CX:BX = far pointer to               0 otherwise
         overlay address
 :eXMP.
 :P.
@@ -296,11 +296,11 @@ the overlay table). If the top bit of the offset is on, then the file is
 the original EXE file rather than a separate overlay file, and the overlay
 manager should use the program file name obtained from DOS (if the version
 is 3.0. or greater). The :F.disk_addr:eF. field gives
-the starting offset the overlay data in the overlay file. 
+the starting offset the overlay data in the overlay file.
 The segment relocation
 items immediately follow the data.
 :P.
-The end of the :F.entries:eF. array is indicated when an element's 
+The end of the :F.entries:eF. array is indicated when an element's
 :F.flags_anc:eF.
 field contains the value 0xffff. The remaining fields in that element contain
 garbage values.

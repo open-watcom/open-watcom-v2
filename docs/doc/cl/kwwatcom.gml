@@ -4,23 +4,23 @@ Microsoft compilers compatible
 ..tb set $
 ..tb &firsttab. +20 +20
 .kwon
-$&kwasm.     $&kwfinally. $&kwpascal.  
+$&kwasm.     $&kwfinally. $&kwpascal.
 $&kwbased.   $&kwfortran. $&kwsaveregs.
-$&kwcdecl.   $&kwhuge.    $&kwsegment. 
-$&kwdeclspec.$&kwinline.  $&kwsegname.    
+$&kwcdecl.   $&kwhuge.    $&kwsegment.
+$&kwdeclspec.$&kwinline.  $&kwsegname.
 $&kwexcept.  $&kwint64.   $&kwself.
-$&kwexport.  $&kwintrpt.  $&kwstdcall. 
+$&kwexport.  $&kwintrpt.  $&kwstdcall.
 $&kwfar.     $&kwleave.   $&kwsyscall.
-$&kwfar16.   $&kwloadds.  $&kwtry.     
-$&kwfastcall.$&kwnear.    $&kwunalign.     
+$&kwfar16.   $&kwloadds.  $&kwtry.
+$&kwfastcall.$&kwnear.    $&kwunalign.
 .kwoff
 .sk 1
 IBM compilers compatible
 .kwon
-$&kwicdecl.  $&kwifinally.$&kwiseg16.  
+$&kwicdecl.  $&kwifinally.$&kwiseg16.
 $&kwiexcept. $&kwileave.  $&kwisyscall.
-$&kwiexport. $&kwipacked. $&kwisystem. 
-$&kwifar16.  $&kwipascal. $&kwitry.    
+$&kwiexport. $&kwipacked. $&kwisystem.
+$&kwifar16.  $&kwipascal. $&kwitry.
 $&kwifastcal.
 .kwoff
 .sk 1

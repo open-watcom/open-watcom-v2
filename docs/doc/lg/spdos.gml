@@ -69,7 +69,7 @@ is any of the following:
 .do end
 .note ELIMINATE
 .note [NO]FARCALLS
-.note FULLHEADER 
+.note FULLHEADER
 :cmt. crashes linker .note INCREMENTAL
 .note MANGLEDNAMES
 .note MAP[=map_file]

@@ -15,7 +15,7 @@ struct itimerspec {
     int             notify_type;
     int             timer_type;
     long            data;
-    
+
 .synop end
 .desc begin
 The

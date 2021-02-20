@@ -30,7 +30,7 @@ Customize the behavior of windows in the help viewer
 Create communication links to other applications
 .endbull
 .np
-This document provides a basic description of how tags are used (:HDREF refid='ipftags'.) as well as a 
+This document provides a basic description of how tags are used (:HDREF refid='ipftags'.) as well as a
 complete reference for each tag (:HDREF refid='ipftref'.). For more advanced topics, please refer to IBM's
 "IPF Programming Guide and Reference" (ipfref.inf) which is available on the internet.
 

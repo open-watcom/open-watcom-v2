@@ -108,7 +108,7 @@ The currently selected window has a yellow border with a black background.
 of the window, and (&parm3, &parm4) specifies the coordinates of the
 lower right-hand corner of the window.
 .np
-&edname editor automatically senses the number of lines and columns 
+&edname editor automatically senses the number of lines and columns
 available.  The global variables %(SW) (screen width) and %(SH)
 (screen height) are always set.  These are useful for coding
 dimensions that are relative to the size of the screen.
@@ -280,7 +280,7 @@ key is pressed in a command window.
 .begdescr
 This is the window that line numbers are displayed in.
 The dimension of this window is ignored, the absolute position of the window
-is decided by the position of the edit window that it is associated with. 
+is decided by the position of the edit window that it is associated with.
 :cmt. However, the width of this window may be set using the
 :cmt. .keyref linenumwidth
 :cmt. setting.
@@ -316,7 +316,7 @@ are displayed.
 .begfunc MESSAGEWINDOW
 .syntx * MESSAGEWindow
 .begdescr
-The window in which all all editor feedback is reported. 
+The window in which all all editor feedback is reported.
 The
 .keyref hilight
 color is the color that errors are reported in.
@@ -390,7 +390,7 @@ commandwindow
     hilight %(highwhite) %(cyan) 1
 endwindow
 .millust end
-    
+
 .np
 .keyword Countwindow
 .ct :
@@ -402,7 +402,7 @@ countwindow
     hilight %(highwhite) %(cyan) 1
 endwindow
 .millust end
-    
+
 .np
 .keyword Dirwindow
 .ct :
@@ -454,7 +454,7 @@ extrainfowindow
     hilight %(purple) %(cyan) 1
 endwindow
 .millust end
-    
+
 .keyword Filecwindow
 .ct :
 .millust begin
@@ -501,7 +501,7 @@ menuwindow
     hilight %(yellow) %(blue) 1
 endwindow
 .millust end
-    
+
 .np
 .keyword Menubarwindow
 .ct :
@@ -524,7 +524,7 @@ setvalwindow
     hilight %(highwhite) %(cyan) 1
 endwindow
 .millust end
-    
+
 .np
 .keyword Setwindow
 .ct :
@@ -536,7 +536,7 @@ setwindow
     hilight %(highwhite) %(cyan) 1
 endwindow
 .millust end
-    
+
 .np
 .keyword Statuswindow
 .ct :

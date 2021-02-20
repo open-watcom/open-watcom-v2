@@ -7,7 +7,7 @@ double exp2( double x );
 .desc begin
 The
 .id &funcb.
-function computes 2.0 raised to the value 
+function computes 2.0 raised to the value
 .arg x
 .period  The current implementation uses a simple power
 calculation.

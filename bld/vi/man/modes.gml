@@ -577,7 +577,7 @@ If the cursor was on the right parenthesis (')') of
 :ILLUST.
 x = foo(abc) + 3;
 :eILLUST.
-then the cursor moves to left parenthesis 
+then the cursor moves to left parenthesis
 :ITALICS.(
 :PERIOD.
 
@@ -601,7 +601,7 @@ in
 :ILLUST.
 x = foo(abc) + 3;
 :eILLUST.
-then the cursor moves to the 
+then the cursor moves to the
 :ITALICS.+
 sign.
 
@@ -823,7 +823,7 @@ in
 :ILLUST.
 x = foo(abc) + 3;
 :eILLUST.
-then the cursor moves to the 
+then the cursor moves to the
 :ITALICS.+
 sign.
 :EXAMPLE.2W
@@ -1012,7 +1012,7 @@ These buffers are numbered 1 through 9, and any of these buffers may
 be the active &copybuffer
 :PERIOD.
 :P.
-The active &copybuffer may be selected using function keys. 
+The active &copybuffer may be selected using function keys.
 CTRL_F1 through CTRL_F9 select buffers 1 through 9 respectively.
 When a buffer is selected,
 information about its contents is displayed in the message window.
@@ -1060,7 +1060,7 @@ To retrieve the contents of a buffer, use:
 :KEYLIST.
 :KEY.SHIFT_INS <"?>SHIFT_INS
 Puts (pastes) the contents of the active &copybuffer
-after the cursor position in the current edit buffer. 
+after the cursor position in the current edit buffer.
 :SEECMD.put
 :EXAMPLE."aSHIFT_INS
 Copy the data in the named buffer
@@ -1527,7 +1527,7 @@ a character other than
 is typed, the word is deleted and &tinsmode is entered.
 :EXAMPLE.c$
 Changes from the current column to the end of the
-current line. 
+current line.
 The column range is highlighted, and once a character other than
 :ITALICS.ESC
 is typed, the column range is deleted and &tinsmode is entered.
@@ -1543,7 +1543,7 @@ is typed, the column range is deleted and &tinsmode is entered.
 :CMSECT.Shifting Text
 
 The following commands are used to shift lines to the right or left,
-inserting or deleting leading whitespace. 
+inserting or deleting leading whitespace.
 .se plural = 1
 :INCLUDE file='oper'.
 
@@ -1824,7 +1824,7 @@ The word is defined using the &cmdline command
 :KEY.CTRL_C CTRL_C
 Exits the editor if no files have been modified.  If files have been modified,
 a prompt is displayed asking you to verify that you really want to discard
-the modified file(s).  
+the modified file(s).
 If you do not respond with a 'y', then the command is cancelled.
 :SEECMD.quitall
 

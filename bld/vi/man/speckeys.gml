@@ -25,7 +25,7 @@ Add the current "dot buffer" to the input string;
 this is useful in conjunction with
 :KEYWORD.memorize mode
 ("m.").
-Once a sequence has been memorized, then this can be 
+Once a sequence has been memorized, then this can be
 used to make a map command
 :ILLUST.
 map F1 <press CTRL_D>

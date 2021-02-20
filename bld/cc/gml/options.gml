@@ -78,12 +78,12 @@
 :cmt.	:noequal.                                   args can't have option '='
 :cmt.	:argequal. <char>                           args use <char> instead of '='
 :cmt.
-:cmt. where <targ>: 
+:cmt. where <targ>:
 :cmt.		    default - any, dbg
 :cmt.		    architecture - i86, 386, x64, axp, ppc, mps, sparc
 :cmt.		    host OS - bsd, dos, linux, nt, os2, osx, qnx, haiku, rdos, win
 :cmt.		    extra - targ1, targ2
-:cmt. 
+:cmt.
 :cmt.	Translations are required for the :jtitle. and :jusage. tags
 :cmt.	if there is no text associated with the tag.
 
@@ -661,7 +661,7 @@
 :usageogrp. h Debugging Information format
 
 :option. hw
-:target. i86 386 
+:target. i86 386
 :enumerate. dbg_output
 :usage. generate Watcom debugging information
 :jusage. Watcomデバッグ情報を生成します
@@ -1033,7 +1033,7 @@
 :nochain.
 :internal.
 :usage. do not align segments if at all possible
-:jusage. 
+:jusage.
 
 :option. xd
 :target. axp

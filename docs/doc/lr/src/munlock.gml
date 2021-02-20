@@ -8,7 +8,7 @@ The
 .id &funcb.
 function causes memory located at
 .arg address
-measuring 
+measuring
 .arg len
 bytes to be released regardless of the number of prior calls
 to lock the referenced memory.

@@ -4,7 +4,7 @@
 The C preprocessor
 recognizes the following directives:
 .ix 'include'
-.ppix #include
+.kwpp #include
 .millust #include
 Include the named header, substituting the directive with
 the contents of the header.
@@ -19,7 +19,8 @@ If the header name is of the form
 .ct , then the preprocessor looks for the file named within the quotes.
 If it is not found, then the preprocessor treats the header name as if
 it had been specified as
-.mono <headername>.
+.mono <headername>
+.period
 .pp
 Otherwise,
 macro substitutions are performed on the tokens following the
@@ -28,9 +29,9 @@ macro substitutions are performed on the tokens following the
 After substitution,
 the directive
 must match either the
-.ppfont <headername>
+.mono <headername>
 or
-.ppfont "headername"
+.mono "headername"
 forms described above (including < and >, or quotes),
 in which case the
 .kwpp #include
@@ -39,8 +40,8 @@ is processed in the corresponding manner.
 See the &userguide. for details about how the compiler
 searches for included files.
 .*
-.ppix #define
 .ix 'macro' 'defining'
+.kwpp #define
 .millust #define
 Create the macro definition for the name following the directive, using
 the tokens following the macro name. The definition ends at the end
@@ -52,14 +53,14 @@ backslash (\) character.
 In later parts of the source code, invocations of the macro are
 replaced using the macro definition.
 .*
-.ppix #undef
 .ix 'macro' 'undefining'
 .ix 'undefining a macro'
+.kwpp #undef
 .millust #undef
 The macro named following the directive is discarded.
 .*
-.ppix #if
 .ix 'conditional compilation'
+.kwpp #if
 .millust #if
 If the condition following the directive evaluates to a non-zero
 value, then the source lines up to the next corresponding
@@ -71,7 +72,7 @@ or
 are included and analyzed. If the condition evaluates to zero, then
 the lines are not included.
 .*
-.ppix #elif
+.kwpp #elif
 .millust #elif
 Valid only within the body of a
 .kwpp #if
@@ -90,7 +91,7 @@ or
 to be included and analyzed. If the condition evaluates to zero, then
 the lines are not included.
 .*
-.ppix #else
+.kwpp #else
 .millust #else
 Valid only within the body of a
 .kwpp #if
@@ -112,13 +113,13 @@ following the
 .kwpp #else
 are not included.
 .*
-.ppix #endif
+.kwpp #endif
 .millust #endif
 This directive terminates a
 .kwpp #if
 directive.
 .*
-.ppix #ifdef
+.kwpp #ifdef
 .millust #ifdef
 This directive determines if the macro named in the directive is
 currently defined. If so, the source lines following the directive, up
@@ -131,7 +132,7 @@ or
 directive, are included and analyzed. Otherwise, the macro is not
 defined and the source lines are not included.
 .*
-.ppix #ifndef
+.kwpp #ifndef
 .millust #ifndef
 This directive determines if the macro named in the directive is
 currently defined. If not, the source lines following the directive, up
@@ -144,7 +145,7 @@ or
 directive, are included and analyzed. Otherwise, the macro is defined
 and the source lines are not included.
 .*
-.ppix #line
+.kwpp #line
 .millust #line
 The digit sequence following the directive (on the same line)
 is used to set a new
@@ -155,13 +156,13 @@ then the name that the compiler
 remembers as being the name of the source file currently being read is
 changed to the one contained in the string literal.
 .*
-.ppix #error
+.kwpp #error
 .millust #error
 The tokens following the directive (on the same line)
 are produced in a diagnostic message
 from the compiler.
 .*
-.ppix #pragma
+.kwpp #pragma
 .millust #pragma
 The tokens following the directive (on the same line)
 are used by the compiler in an implementation-defined manner.
@@ -182,8 +183,8 @@ directive.
 Any
 pragma not recognized by the compiler is ignored.
 .*
-.ppix #
-.ppix null
+.ix 'preprocessor directive' 'null'
+.kwpp #
 .millust #
 This directive has no effect.
 .*

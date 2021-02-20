@@ -3578,7 +3578,7 @@ segment.
 .chap Debugging Open Watcom Code Generator
 .*
 :P.If you want to use vc.dbg command, make sure you have a tmp directory in
-root of used filesystem (see bld/cg/dumpio.c for details). 
+root of used filesystem (see bld/cg/dumpio.c for details).
 :P.Note: make a s:\tmp to facilitate debugging in s:\brad :) Yeah, it's a cheap
 and sleazy hack...
 :P.If you need to dump something and don't know the routine to call,

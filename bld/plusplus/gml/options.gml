@@ -78,12 +78,12 @@
 :cmt.	:noequal.                                   args can't have option '='
 :cmt.	:argequal. <char>                           args use <char> instead of '='
 :cmt.
-:cmt. where <targ>: 
+:cmt. where <targ>:
 :cmt.		    default - any, dbg
 :cmt.		    architecture - i86, 386, x64, axp, ppc, mps, sparc
 :cmt.		    host OS - bsd, dos, linux, nt, os2, osx, qnx, haiku, rdos, win
 :cmt.		    extra - targ1, targ2
-:cmt. 
+:cmt.
 :cmt.	Translations are required for the :jtitle. and :jusage. tags
 :cmt.	if there is no text associated with the tag.
 
@@ -703,7 +703,7 @@
 :usageogrp. h Debugging Information Format
 
 :option. hw
-:target. i86 386 
+:target. i86 386
 :enumerate. dbg_output
 :usage.  generate Watcom debugging information
 :jusage. Watcomデバッグ情報を生成します
@@ -1125,19 +1125,19 @@
 :target. any
 :internal.
 :usage.  use latest (incompatible) name mangling algorithms
-:jusage. 
+:jusage.
 
 :option. xbsa
 :target. any
 :internal.
 :usage.  do not align segments if at all possible
-:jusage. 
+:jusage.
 
 :option. xbov1
 :target. any
 :internal.
 :usage.  WP 13.3.3.2 change
-:jusage. 
+:jusage.
 
 :option. xcmb
 :target. any
@@ -1154,8 +1154,8 @@
 :option. xd
 :target. any
 :enumerate. exc_level
-:usage.  disable exception handling (default) 
-:jusage. 例外処理を使用不可にします(デフォルト) 
+:usage.  disable exception handling (default)
+:jusage. 例外処理を使用不可にします(デフォルト)
 
 :option. xds
 :target. any
@@ -1177,7 +1177,7 @@
 :option. xs
 :target. any
 :enumerate. exc_level
-:usage.  enable exception handling 
+:usage.  enable exception handling
 :jusage. 例外処理を使用可能にします
 
 :option. xss

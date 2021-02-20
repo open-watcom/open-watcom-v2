@@ -50,7 +50,7 @@ This chapter shows all the different settings that are used for
 configuring &edname.
 :DT.Chapter 8
 :DD.:CIT.Windowing, Menus and the Mouse:eCIT.
-This chapter provides a guide for using and configuring the 
+This chapter provides a guide for using and configuring the
 user interface of &edname to suit your needs.
 :DT.Chapter 9
 :DD.:CIT.Editor Script Reference:eCIT.

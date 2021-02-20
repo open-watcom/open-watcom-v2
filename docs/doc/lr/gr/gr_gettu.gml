@@ -1,5 +1,5 @@
 .gfunc gettextcursor
-.gsynop begin 
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _gettextcursor( void );
 .do end

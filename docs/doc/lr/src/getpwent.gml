@@ -6,7 +6,7 @@ struct passwd *getpwent( void );
 .desc begin
 The
 .id &funcb.
-function reads, parses, and returns entries from the password 
+function reads, parses, and returns entries from the password
 database at /etc/passwd.  The first call will return the first
 entry, and subsequent calls return subsequent entries.  A null
 pointer is returned if either an error is encountered or no
@@ -29,9 +29,9 @@ On most modern Linux implementations, the resulting password
 will simply be 'x' as passwords are not normally stored in the
 password database itself.
 .np
-The pointer returned by 
+The pointer returned by
 .id &funcb.
-points to a static location, and the user should free neither 
+points to a static location, and the user should free neither
 the pointer itself nor any of its consituent structure members.
 .np
 This function is not thread-safe.  Other calls to functions

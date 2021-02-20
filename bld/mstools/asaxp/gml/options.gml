@@ -78,12 +78,12 @@
 :cmt.	:noequal.                                   args can't have option '='
 :cmt.	:argequal. <char>                           args use <char> instead of '='
 :cmt.
-:cmt. where <targ>: 
+:cmt. where <targ>:
 :cmt.		    default - any, dbg
 :cmt.		    architecture - i86, 386, x64, axp, ppc, mps, sparc
 :cmt.		    host OS - bsd, dos, linux, nt, os2, osx, qnx, haiku, rdos, win
 :cmt.		    extra - targ1, targ2
-:cmt. 
+:cmt.
 :cmt.	Translations are required for the :jtitle. and :jusage. tags
 :cmt.	if there is no text associated with the tag.
 
@@ -122,14 +122,14 @@
 :cmt    /Fo
 :option. fo
 :target. any
-:immediate. handle_Fo 
+:immediate. handle_Fo
 :special. parse_Fo <filename>
 :usage. rename object file
 
 :cmt    /o
 :option. o
 :target. any
-:immediate. handle_Fo 
+:immediate. handle_Fo
 :special. parse_Fo <filename>
 :usage. rename object file
 
@@ -139,86 +139,86 @@
 :special. parse_I <directory>
 :usage. specifies path for include files
 
-:cmt    /O0     
+:cmt    /O0
 :option. O0
 :target. any
 :internal.
 :usage. turn off code scheduling optimization
 
-:cmt    /O1          
-:option. O1     
+:cmt    /O1
+:option. O1
 :target. any
 :internal.
 :usage. turn on code scheduling optimization (default)
 
-:cmt    /resumption_safe          
-:option. resumption_safe     
+:cmt    /resumption_safe
+:option. resumption_safe
 :target. any
 :internal.
 :usage. prevent the scheduler from moving floating point operating instructions
 
-:cmt    /symbols_aligned_0mod4                  
-:option. symbols_aligned_0mod4             
+:cmt    /symbols_aligned_0mod4
+:option. symbols_aligned_0mod4
 :target. any
 :internal.
 :usage. symbols are longword granular (default)
 
-:cmt    /symbols_not_aligned                    
-:option. symbols_not_aligned               
+:cmt    /symbols_not_aligned
+:option. symbols_not_aligned
 :target. any
 :internal.
 :usage. no attempt is made to align symbols
 
-:cmt    /stack_aligned_0mod8                        
-:option. stack_aligned_0mod8                   
+:cmt    /stack_aligned_0mod8
+:option. stack_aligned_0mod8
 :target. any
 :internal.
 :usage. lign stack on a quadword boundary(default)
 
-:cmt    /stack_not_aligned                            
-:option. stack_not_aligned                       
+:cmt    /stack_not_aligned
+:option. stack_not_aligned
 :target. any
 :internal.
 :usage. no attempt is made to align stack
 
-:cmt    /eflag flags                            
-:option. eflag                       
+:cmt    /eflag flags
+:option. eflag
 :target. any
 :number.
 :internal.
 :usage. encode the exception-related flags
 
-:cmt    /QApdst                               
-:option. QApdst                        
+:cmt    /QApdst
+:option. QApdst
 :target. any
 :internal.
 :usage. set the exception-related flags to EXCEPTION_MODE_SILENT(default)
 
-:cmt    /QApdsg                                
-:option. QApdsg                         
+:cmt    /QApdsg
+:option. QApdsg
 :target. any
 :internal.
 :usage. set the exception-related flags to EXCEPTION_MODE_SIGNAL
 
-:cmt    /QApdsa                                 
-:option. QApdsa                          
+:cmt    /QApdsa
+:option. QApdsa
 :target. any
 :internal.
 :usage. set the exception-related flags to EXCEPTION_MODE_SIGNAL_ALL
 
-:cmt    /QApdie                                  
-:option. QApdie                           
+:cmt    /QApdie
+:option. QApdie
 :target. any
 :internal.
 :usage. set the exception-related flags to EXCEPTION_MODE_IEEE
 
-:cmt    /QApdca                                   
-:option. QApdca                            
+:cmt    /QApdca
+:option. QApdca
 :target. any
 :internal.
-:usage. set the exception-related flags to EXCEPTION_MODE_CALLER 
+:usage. set the exception-related flags to EXCEPTION_MODE_CALLER
 
-:cmt    /U<symbol>      
+:cmt    /U<symbol>
 :option. u
 :target. any
 :internal.
@@ -231,7 +231,7 @@
 :internal.
 :usage. emit line numbers and public symbols for debugging
 
-:cmt    /Zi     
+:cmt    /Zi
 :option. Zi
 :target. any
 :internal.
@@ -246,7 +246,7 @@
 :option. ?
 :target. any
 :usage. display brief usage message
-   
+
 :option. noinvoke
 :target. any
 :usage. don't invoke the Watcom tool

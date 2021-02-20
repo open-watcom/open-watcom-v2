@@ -24,37 +24,37 @@
 .gt H_0 add H_0 att nocont
 .ga * ID
 .ga * * VALUE '' DEFAULT
-.ga * * ANY 
+.ga * * ANY
 .ga * STITLE any
 
 .gt H_1 add H_1 att nocont
-.ga * ID 
+.ga * ID
 .ga * * VALUE '' DEFAULT
-.ga * * ANY 
+.ga * * ANY
 .ga * STITLE any
 
 .gt H_2 add H_2 att nocont
-.ga * ID 
+.ga * ID
 .ga * * VALUE '' DEFAULT
-.ga * * ANY 
+.ga * * ANY
 .ga * STITLE any
 
 .gt H_3 add H_3 att nocont
-.ga * ID 
+.ga * ID
 .ga * * VALUE '' DEFAULT
-.ga * * ANY 
+.ga * * ANY
 .ga * STITLE any
 
 .gt H_4 add H_4 att nocont
-.ga * ID 
+.ga * ID
 .ga * * VALUE '' DEFAULT
-.ga * * ANY 
+.ga * * ANY
 .ga * STITLE any
 
 .gt H_5 add H_5 att nocont
-.ga * ID 
+.ga * ID
 .ga * * VALUE '' DEFAULT
-.ga * * ANY 
+.ga * * ANY
 .ga * STITLE any
 
 .'se cmdmode='.kwd command mode.ct '

@@ -112,7 +112,7 @@ start with the text you typed.
 Reposition the window to the currently executing location. The cursor will move to
 the next line of the program to be executed.
 .menuitem No source
-Toggle the Assembly window display between only assembly code and assembly 
+Toggle the Assembly window display between only assembly code and assembly
 code intermixed with source lines.
 :INCLUDE file='wdbgopt.gml'
 .menuitem Hex

@@ -78,7 +78,7 @@ The
 .id &funcb.
 function returns the number of characters that would have been
 written had
-.arg n 
+.arg n
 been sufficiently large, not counting the terminating null character, or a
 negative value if a runtime-constraint violation occurred. Thus, the
 null-terminated output has been completely written if and only if the
@@ -91,7 +91,7 @@ The
 .id &funcb.
 function returns the number of wide characters that would have been
 written had
-.arg n 
+.arg n
 been sufficiently large, not counting the terminating wide null character, or
 a negative value if a runtime-constraint violation occurred. Thus, the
 null-terminated output has been completely written if and only if the

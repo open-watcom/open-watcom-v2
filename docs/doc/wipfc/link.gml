@@ -4,7 +4,7 @@
 .ix 'In-line' 'link'
 .tag begin
 .tdesc
-A link to additional information. Activating the link may jump to a different location in the same or a different 
+A link to additional information. Activating the link may jump to a different location in the same or a different
 document, open a footnote, launch an application, or send a notification to another running process.
 .tclose elink
 Unless the link is contained in an artlink tag, or if reftype is 'inform'.
@@ -12,9 +12,9 @@ Unless the link is contained in an artlink tag, or if reftype is 'inform'.
 .tattr reftype=hd | fn | launch | inform
 If reftype is 'hd', then it links to a heading and the refid attribute must be specified. If the heading is
 in an external file, the database must also be set and the heading must have its 'global' attribute set.
-If reftype is 'fn', the link is to a footnote and the 'refid' attribute must be set. Note that a split window 
+If reftype is 'fn', the link is to a footnote and the 'refid' attribute must be set. Note that a split window
 cannot contain a link to a footnote.
-If reftype is 'launch', the link starts the external program specified by the 'object' attribute with parameters 
+If reftype is 'launch', the link starts the external program specified by the 'object' attribute with parameters
 specified in the 'data' attribute.
 If reftype is 'inform', the value of the 'res' attribute is sent to the application.
 .tattr res=number
@@ -35,15 +35,15 @@ Open a secondary window when the link that refers to it is opened.
 .tattr dependent
 Make the automatically opened window close when the secondary window that opened it is closed.
 .tattr split
-Open a secondary window when the link is activated. Note that the primary window can only contain links to 
-secondary windows. Each of the secondary windows must have a different group number if they are to be displayed 
+Open a secondary window when the link is activated. Note that the primary window can only contain links to
+secondary windows. Each of the secondary windows must have a different group number if they are to be displayed
 at the same time.
 .tattr child
-Open the page being linked to as a child of the current page, clipped to fit within the current page. The child 
-is always on top, is closed when the parent is closed, resized when the parent's size is changed. 
+Open the page being linked to as a child of the current page, clipped to fit within the current page. The child
+is always on top, is closed when the parent is closed, resized when the parent's size is changed.
 If only the child is minimized, its icon appears within the parent's border.
 .tattr group=number
-The group number of the window (1 to 64000). All pages in the same group are displayed in the same window, 
+The group number of the window (1 to 64000). All pages in the same group are displayed in the same window,
 one replacing the other.
 .tattr vpx=measurement
 The x origin of the window. See :HDREF refid='units'.. Not valid for footnotes.

@@ -8,7 +8,7 @@ The
 .id &funcb.
 function causes memory located at
 .arg address
-measuring 
+measuring
 .arg len
 bytes to be held in physical memory until unlocked or
 the process terminates.

@@ -1,7 +1,7 @@
 .func gethostbyaddr
 .synop begin
 #include <netdb.h>
-struct hostent *gethostbyaddr( const void *addr, 
+struct hostent *gethostbyaddr( const void *addr,
                                socklen_t len,
                                int type );
 .synop end
@@ -16,7 +16,7 @@ The
 .arg len
 argument specifies the length in bytes of the
 .arg addr
-argument, and 
+argument, and
 .arg type
 specifies the address type.  Accepted types, such as
 .kw AF_INET
@@ -29,7 +29,7 @@ The structure returned is defined as:
 .blkcode begin
 struct hostent {
     char        *h_name;       /* host official name */
-    char        **h_aliases;   /* host alternate names, up to 16, 
+    char        **h_aliases;   /* host alternate names, up to 16,
                                 * terminated by a NULL pointer
                                 */
     int         h_addrtype;    /* address type */
@@ -42,15 +42,15 @@ struct hostent {
 };
 .blkcode end
 .np
-The pointer returned by 
+The pointer returned by
 .id &funcb.
-points to a private location, and the user should free neither 
+points to a private location, and the user should free neither
 the pointer itself nor any of its constituent structure members.
 Subsequent calls to this function may result in the values
 changing.
 .np
 This function is not thread-safe.  Other calls to this function
-or to other functions accessing the hostname database may affect 
+or to other functions accessing the hostname database may affect
 the return value from this function.
 .desc end
 .return begin
@@ -61,8 +61,8 @@ If the host is found, the
 .kw h_name
 member will be the defintive name of the host, and
 .kw h_aliases
-will contain a NULL-terminated list of aliases.  The addresses 
-are contained in the 
+will contain a NULL-terminated list of aliases.  The addresses
+are contained in the
 .kw h_addr_list
 member as a NULL-terminated list, and this structure entry will
 never be NULL.

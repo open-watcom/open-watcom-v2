@@ -1,5 +1,5 @@
 .gfunc getwindowcoord
-.gsynop begin 
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 struct _wxycoord _FAR _getwindowcoord( short x, short y );
 .do end

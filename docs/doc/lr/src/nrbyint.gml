@@ -16,7 +16,7 @@ the current value of
 .period
 .desc end
 .return begin
-The rounded value of 
+The rounded value of
 .arg x
 .period
 .return end

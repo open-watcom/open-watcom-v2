@@ -3,7 +3,7 @@ This document describes the object and executable file structures
 used by the &company Debugger to provide symbolic information about a program.
 This information is subject to change.
 :P
-Note that version 4.0 of the &company debugger supports the DWARF and 
+Note that version 4.0 of the &company debugger supports the DWARF and
 CodeView symbolic debugging information formats in addition to the format
 described in this document. For the purposes of discussion, this format
 will be known as the "WATCOM" format. DWARF is now the primary format used
@@ -186,7 +186,7 @@ for 386 programs. A BP_OFFSET could also be expressed with the following
 series of operations:
 :XMP.
 MULTI_REG(1) SS
-IND_2 
+IND_2
 MULTI_REG(1) EBP
 IND_4
 MK_FP
@@ -270,7 +270,7 @@ BIT: 7 6 5 4 3 2 1 0
 :eXMP.
 :PC.
 To create an unnamed scalar type, for use in other definitions, just
-use a zero length name. 
+use a zero length name.
 :NOTE.
 BASIC would have been a better name for this, since complex is not a
 scalar type, but the name was chosen before complex support was added.
@@ -1009,7 +1009,7 @@ cue_entry[entry].cue <= (line_number & 0x7fff) < cue_entry[entry+1].cue
 :PC.
 Once you have the cue entry, you can extract the true line number by:
 :XMP.
-line = cue_entry[entry].line + (line_number & 0x7fff) 
+line = cue_entry[entry].line + (line_number & 0x7fff)
                - cue_entry[entry].cue;
 :eXMP.
 :PC.
@@ -1019,7 +1019,7 @@ fname_index = file_name_index_table[ cue_entry[entry].fno ]
 fname =  file_name_table[ fname_index ]
 :eXMP.
 :PC.
-The code offset and segment are found in the :F.line_info:eF and 
+The code offset and segment are found in the :F.line_info:eF and
 :F.line_segment:eF structures as usual.
 .endlevel
 .section Module information class
@@ -1084,7 +1084,7 @@ class
 +--------+
 |        |          demand link
    ...              table             demand info
-|        |          +--------+        data block 
+|        |          +--------+        data block
 |        |          |        |        +------+
 +--------+             ...       +--->|      |
 | offset | ---+     |        |   |      ...
@@ -1093,8 +1093,8 @@ class
 +--------+          +--------+
 |        |          |        |
    ...                 ...
-|        |          |        |  
-+--------+          +--------+        demand info 
+|        |          |        |
++--------+          +--------+        demand info
                     | offset |---+    data block
                     +--------+   |    +------+
                     |        |   +--->|      |
@@ -1172,9 +1172,9 @@ struct seg_info {
 The :F.addr:eF. field identifies the start of a segment in memory.
 This field contains the unrelocated value of the segment starting address
 (i.e. as if the executable had been loaded at 0:0).
-The the low order 15 bits of the next field, :F.num:eF. tells 
+The the low order 15 bits of the next field, :F.num:eF. tells
 how many of the :F.sects:eF. entries
-there are in the structure. 
+there are in the structure.
 The top bit of the field is a one when the segment belongs to "NonSect".
 "NonSect" is the overlay section which holds all program data that is not
 in the root or an overlay section. Typically this consists of DGROUP and

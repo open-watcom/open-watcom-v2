@@ -1,5 +1,5 @@
 .gfunc pg_setstyleset
-.gsynop begin 
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 void _FAR _pg_setstyleset( unsigned short _FAR *style );
 .do end

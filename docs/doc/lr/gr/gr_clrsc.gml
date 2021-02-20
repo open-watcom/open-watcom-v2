@@ -1,5 +1,5 @@
 .gfunc clearscreen
-.gsynop begin 
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 void _FAR _clearscreen( short area );
 .do end

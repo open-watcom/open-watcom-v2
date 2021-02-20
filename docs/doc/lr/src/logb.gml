@@ -15,7 +15,7 @@ as a double.
 If successful, the return value is the exponent of
 .arg x
 .period  When the argument is zero, the function returns
-infinity.  
+infinity.
 .return end
 .see begin
 .seelist ilogb

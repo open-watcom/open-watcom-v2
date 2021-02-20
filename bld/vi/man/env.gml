@@ -136,7 +136,7 @@ with the ._vi extension).
 Usage is as follows:
 :ILLUST.
 edbind <editor exe name> (-s)
- 
+
     Options -s: strip info from executable
 :eILLUST.
 :P.
@@ -161,10 +161,10 @@ The files specified may contain regular expressions.
 :P.
 The parameters cause the following:
 :DEFLIST.
-:DEFITEM.-?         
+:DEFITEM.-?
 Displays the possible options, and what they do.
 
-:DEFITEM.--         
+:DEFITEM.--
 Starts &edname in
 :KEYWORD.stdio mode
 :PERIOD.
@@ -177,63 +177,63 @@ Use default configuration.  &edname will not invoke
 :KEYWORD.ed.cfg
 when it starts up.
 
-:DEFITEM.-i	    
+:DEFITEM.-i	
 Ignore lost files.  &edname will not let you start if there are files
 to be recovered. This option will cause &edname to get rid of its
 checkpoint file, so that it will no longer complain about files
 that have not been recovered.
 
-:DEFITEM.-n         
+:DEFITEM.-n
 This option will cause &edname to read a file as it needs the data, instead
 of reading the file all at once.  It is useful if you wish to look at
 the first lines of a huge file.  This option overrides any setting of
 :KEYWORD.readentirefile
 in your configuration.
 
-:DEFITEM.-q         
+:DEFITEM.-q
 Causes &edname to run in quiet mode (no screen usage).  This is useful
 for using &edname as a batch script processor.
 
-:DEFITEM.-r	    
+:DEFITEM.-r	
 Recover lost files, if there are any.  If this option is specified,
 files specified on the command line are ignored.
 
-:DEFITEM.-v         
+:DEFITEM.-v
 Causes file edited to be a "view only" file.
 
-:DEFITEM.-z         
+:DEFITEM.-z
 Causes &edname not to terminate a file read when finding a ctrl-z in a file.
 This option is the same as the
 :KEYWORD.ignorectrlz
 setting.
 
-:DEFITEM.+<n>       
+:DEFITEM.+<n>
 Cause &edname set the edit buffer to line <n> in the file edited.
 
-:DEFITEM.-k "keys"  
+:DEFITEM.-k "keys"
 Execute the string
 :ITALICS.keys
 as if they were typed from the keyboard. These keystrokes are processed
 once &edname is initialized and all files have been read in.
 
-:DEFITEM.-s <scr>   
+:DEFITEM.-s <scr>
 Runs the startup script
 :ITALICS.<scr>
 once &edname is initialized and all files have been read in.
 Up to 10 startup scripts may be specified.
 
-:DEFITEM.-p "parms" 
+:DEFITEM.-p "parms"
 Specify the parameters
 :ITALICS parms
 for each startup script. Multiple parms
 may be specified as long as they are in double quotes.
 The parameters are associated with the most recently specified startup script.
 
-:DEFITEM.-t <tag>   
+:DEFITEM.-t <tag>
 Edits the file containing the tag
 :ITALICS.<tag>
 :PERIOD.
-:DEFITEM.-c <cfg>   
+:DEFITEM.-c <cfg>
 Runs the
 :KEYWORD.configuration script
 :ITALICS.<cfg>

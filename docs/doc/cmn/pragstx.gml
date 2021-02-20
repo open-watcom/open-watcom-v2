@@ -35,11 +35,11 @@ can be generated in the object code.
 Pragmas are specified in the source file using the
 .kw pragma
 directive.
-A pragma operator of the form, 
-.kw _Pragma 
-( string-literal ) 
+A pragma operator of the form,
+.kw _Pragma
+( string-literal )
 is an alternative method of specifying
-.kw pragma 
+.kw pragma
 directives.
 .np
 For example, the following two statements are equivalent.

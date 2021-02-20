@@ -97,23 +97,23 @@
 :cmt. ..gt HH0 add HH0 att nocont
 :cmt. ..ga * ID length 7
 :cmt. ..ga * STITLE any
-:cmt. 
+:cmt.
 :cmt. ..gt HH1 add HH1 att nocont
 :cmt. ..ga * ID length 7
 :cmt. ..ga * STITLE any
-:cmt. 
+:cmt.
 :cmt. ..gt HH2 add HH2 att nocont
 :cmt. ..ga * ID length 7
-:cmt. 
+:cmt.
 :cmt. ..gt HH3 add HH3 att nocont
 :cmt. ..ga * ID length 7
-:cmt. 
+:cmt.
 :cmt. ..gt HH4 add HH4 att nocont
 :cmt. ..ga * ID length 7
-:cmt. 
+:cmt.
 :cmt. ..gt HH5 add HH5 att nocont
 :cmt. ..ga * ID length 7
-:cmt. 
+:cmt.
 :cmt. ..gt HDREF add @hdref att nocont
 :cmt. ..ga * ID length 7
 

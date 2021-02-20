@@ -25,13 +25,13 @@ For some reason, writing to the file has failed. The disk might be full.
 .note "Unexpected end of file"
 The source file has unexpectedly ended. This can occur if you have forgotten the euserdoc tag.
 .note "Text conversion error"
-&ipfcmd uses wide characters internally. All text is converted from multi-byte characters to wide 
+&ipfcmd uses wide characters internally. All text is converted from multi-byte characters to wide
 characters when read, and back to multi-byte characters when written. If a character cannot be converted
 successfully, this error is generated.
 .note "Syntax error"
 A syntax error has occurred. Usually, this is because an end-of-tag delimiter is missing.
 .note "Invalid country code or codepage"
-The appropriate file of entity references cannot be found or cannot be read. Usually, this is because the 
+The appropriate file of entity references cannot be found or cannot be read. Usually, this is because the
 WIPFC environment variable is not setup or is pointing to the wrong place.
 .note "Invalid language code"
 The appropriate nls file cannot be found or cannot be read. Usually, this is because the WIPFC environment
@@ -56,7 +56,7 @@ setup or is pointing to the wrong place.
 .section Level 1 Warnings
 .*
 .np
-Level 1 warnings are the most serious. Unless they are corrected, your help file is not likely to contain 
+Level 1 warnings are the most serious. Unless they are corrected, your help file is not likely to contain
 information presented as you intended.
 .begnote $break
 .note "This command is not defined"
@@ -139,9 +139,9 @@ Footnotes cannot have in1, in2, or icmd tags.
 .note "Too many (> 14) fonts have been used"
 You need to user fewer fonts.
 .note "Title or index text is too long"
-The length of title text is limited to 47 characters; index text, to 255 characters. 
+The length of title text is limited to 47 characters; index text, to 255 characters.
 .note "Subindexes of a global index must be global, too"
-If an index is global, all of its subindexes must be global, too. Set the 'global' flag. 
+If an index is global, all of its subindexes must be global, too. Set the 'global' flag.
 .note "An index entry requires text"
 Text must follow an in1, in2, or icmd tag.
 .endnote

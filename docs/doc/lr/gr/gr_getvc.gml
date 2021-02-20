@@ -1,5 +1,5 @@
 .gfunc getvideoconfig
-.gsynop begin 
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 struct videoconfig _FAR * _FAR _getvideoconfig
     ( struct videoconfig _FAR *config );

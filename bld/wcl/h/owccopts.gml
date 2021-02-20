@@ -78,12 +78,12 @@
 :cmt.	:noequal.                                   args can't have option '='
 :cmt.	:argequal. <char>                           args use <char> instead of '='
 :cmt.
-:cmt. where <targ>: 
+:cmt. where <targ>:
 :cmt.		    default - any, dbg
 :cmt.		    architecture - i86, 386, x64, axp, ppc, mps, sparc
 :cmt.		    host OS - bsd, dos, linux, nt, os2, osx, qnx, haiku, rdos, win
 :cmt.		    extra - targ1, targ2
-:cmt. 
+:cmt.
 :cmt.	Translations are required for the :jtitle. and :jusage. tags
 :cmt.	if there is no text associated with the tag.
 
@@ -138,9 +138,9 @@
 :usage. treat source files as C or C++ code
 :target. any
 
-:cmt 
+:cmt
 :cmt Processor options
-:cmt 
+:cmt
 :usagegrp. 1 [Processor options]
 
 :option. march
@@ -161,9 +161,9 @@
 :id. . {i386,i486,i586,i686}
 :target. any
 
-:cmt 
+:cmt
 :cmt x86 Floating-point processor options
-:cmt 
+:cmt
 :usagegrp. 2 [x86 Floating-point processor options]
 
 :option. fpmath
@@ -188,9 +188,9 @@
 :group. 2
 :target. any
 
-:cmt 
+:cmt
 :cmt Compiler options
-:cmt 
+:cmt
 :usagegrp. 3 [Compiler options]
 
 :option. fbrowser
@@ -460,11 +460,11 @@
 :number.
 :target. any
 
-:cmt 
+:cmt
 :cmt Debugging options
-:cmt 
+:cmt
 :usagegrp. 4 [Debugging options]
-                
+
 :option. g0
 :usage. no debugging information
 :group. 4
@@ -525,11 +525,11 @@
 :group. 4
 :target. any
 
-:cmt 
+:cmt
 :cmt Optimization options
-:cmt 
+:cmt
 :usagegrp. 5 [Optimization options]
-                
+
 :option. feh{,=s,=t}
 :usage. exception handling: balanced, space, time
 :group. 5
@@ -646,11 +646,11 @@
 :group. 5
 :target. any
 
-:cmt 
+:cmt
 :cmt Preprocessor options
-:cmt 
+:cmt
 :usagegrp. 6 [Preprocessor options]
-               
+
 :option. C
 :usage. preserve comments
 :group. 6
@@ -745,9 +745,9 @@
 :special. . <name>
 :target. any
 
-:cmt 
+:cmt
 :cmt Linker options
-:cmt 
+:cmt
 :usagegrp. 7 [Linker options]
 
 :option. fd

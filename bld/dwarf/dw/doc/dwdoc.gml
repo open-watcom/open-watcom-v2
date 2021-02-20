@@ -114,7 +114,7 @@ numbers passed to :hp2.DWLineNum:ehp2. or :hp2.DWReference:ehp2..
 :DT.dw_column
 :DD.A column number.  It must be an unsigned integer type.
 :DT.dw_column_delta
-:DD.Type that can hold the largest possible difference between two 
+:DD.Type that can hold the largest possible difference between two
 adjacent column numbers passed to :hp2.DWReference:ehp2..
 :DT.dw_size_t
 :DD.Used for sizes of various things such as block constants
@@ -127,10 +127,10 @@ unsigned integer constant.
 :DD.A signed integer type that can hold the largest possible
 signed integer constant.
 :DT.dw_sectnum
-:DD.Enumerated type that can hold all defined Dwarf sections, 
+:DD.Enumerated type that can hold all defined Dwarf sections,
 passed to client functions
 :DT.dw_out_offset
-:DD.A integer type that can hold the largest possible section offset 
+:DD.A integer type that can hold the largest possible section offset
 passed to :hp2.CLISeek:ehp2. and returned by :hp2.CLITell:ehp2.
 :DT.dw_reloc_type
 :DD.A integer type that can hold the all relocation type

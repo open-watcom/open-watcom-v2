@@ -1,7 +1,7 @@
 .func lldiv
 .synop begin
 #include <stdlib.h>
-lldiv_t lldiv( long long int numer, 
+lldiv_t lldiv( long long int numer,
                long long int denom );
 
 typedef struct {

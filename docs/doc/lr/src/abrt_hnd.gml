@@ -4,7 +4,7 @@
 #include <stdlib.h>
 void abort_handler_s(
         const char * restrict msg,
-        void * restrict ptr, 
+        void * restrict ptr,
         errno_t error );
 .ixfunc2 '&Process' &funcb
 .synop end

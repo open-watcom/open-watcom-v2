@@ -12,7 +12,7 @@ The id of the primary index entry to which this belongs.
 .tattr global
 For HLP files, allows this entry to also appear in the global index.
 .tattr sortkey='key-text'.index-text
-Specify a string used to sort this entry in the index, and a string to use in its place. In other words, place 
+Specify a string used to sort this entry in the index, and a string to use in its place. In other words, place
 index-text where key-text would sort in index.
 .tattrend
 .tno Conditions

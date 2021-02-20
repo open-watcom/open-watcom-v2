@@ -1,5 +1,5 @@
 .gfuncwxy rectangle
-.gsynop begin 
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _rectangle( short fill,
                        short x1, short y1,

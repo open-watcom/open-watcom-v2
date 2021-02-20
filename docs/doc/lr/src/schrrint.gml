@@ -29,7 +29,7 @@ argument.
 .desc end
 .return begin
 If successful, the function will return zero. If the call fails, the
-return value is -1 and 
+return value is -1 and
 .kw errno
 is appropriately set.
 .return end

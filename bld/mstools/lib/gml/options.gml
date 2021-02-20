@@ -78,12 +78,12 @@
 :cmt.	:noequal.                                   args can't have option '='
 :cmt.	:argequal. <char>                           args use <char> instead of '='
 :cmt.
-:cmt. where <targ>: 
+:cmt. where <targ>:
 :cmt.		    default - any, dbg
 :cmt.		    architecture - i86, 386, x64, axp, ppc, mps, sparc
 :cmt.		    host OS - bsd, dos, linux, nt, os2, osx, qnx, haiku, rdos, win
 :cmt.		    extra - targ1, targ2
-:cmt. 
+:cmt.
 :cmt.	Translations are required for the :jtitle. and :jusage. tags
 :cmt.	if there is no text associated with the tag.
 
@@ -97,7 +97,7 @@
 :title.  .         ( /option is also accepted )
 :target. any
 :ntarget. qnx linux osx bsd haiku
-                                                                         
+
 
 :argequal. :
 
@@ -108,7 +108,7 @@
 :special. parse_debugtype
 :internal.
 :usage. include specified type of debugging information
-    
+
 :cmt    /DEF:[filename]
 :option. def
 :target. any

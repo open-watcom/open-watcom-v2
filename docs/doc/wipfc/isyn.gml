@@ -4,9 +4,9 @@
 .ix 'Block' 'isyn'
 .tag begin
 .tdesc
-Create a list of synonyms or variations of a word in a primary index tag (i1). If the user enters one of the 
-words in the isyn list, the corresponding i1 index referencing the root word is returned. The synonyms 
-themselves do not appear in the index. The isyn tag can be placed on any page that contains related i1 tags. 
+Create a list of synonyms or variations of a word in a primary index tag (i1). If the user enters one of the
+words in the isyn list, the corresponding i1 index referencing the root word is returned. The synonyms
+themselves do not appear in the index. The isyn tag can be placed on any page that contains related i1 tags.
 The list of synonyms must be on the same line as the tag and cannot contain other tags.
 .tattrbs
 .tattr root=text

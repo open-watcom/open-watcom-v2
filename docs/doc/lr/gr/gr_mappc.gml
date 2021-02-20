@@ -1,5 +1,5 @@
 .gfunc remappalette
-.gsynop begin 
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 long _FAR _remappalette( short pixval, long color );
 .do end

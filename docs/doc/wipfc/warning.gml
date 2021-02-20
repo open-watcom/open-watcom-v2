@@ -5,7 +5,7 @@
 .ix 'Notices' 'warning'
 .tag begin
 .tdesc
-Displays a locale-specific warning message ("Warning: " in the en_US locale) 
+Displays a locale-specific warning message ("Warning: " in the en_US locale)
 followed immediately by the contents enclosed by the warning tag block.
 .tclose ewarning
 .tattrbs

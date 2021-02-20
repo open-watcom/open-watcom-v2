@@ -28,7 +28,7 @@ does not constitute a valid single-byte character in the initial
 shift state. Otherwise,
 .id &funcb.
 returns the wide character representation of
-that character. 
+that character.
 .return end
 .*
 .see begin

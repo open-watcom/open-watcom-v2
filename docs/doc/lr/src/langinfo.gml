@@ -1,7 +1,7 @@
 .func nl_langinfo
 .synop begin
 #include <langinfo.h>
-char *nl_langinfo( int item ); 
+char *nl_langinfo( int item );
 .synop end
 .desc begin
 The

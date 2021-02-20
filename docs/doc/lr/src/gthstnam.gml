@@ -10,14 +10,14 @@ function determines the address or addresses of a host specified
 by the
 .arg name
 argument.  The routine will query the local database initially.
-If not found, the routine will perform a DNS query, returning 
+If not found, the routine will perform a DNS query, returning
 all "A" records for the given host name.
 .np
 The structure returned is defined as:
 .blkcode begin
 struct hostent {
     char        *h_name;       /* host official name */
-    char        **h_aliases;   /* host alternate names, up to 16, 
+    char        **h_aliases;   /* host alternate names, up to 16,
                                 * terminated by a NULL pointer
                                 */
     int         h_addrtype;    /* address type */
@@ -31,19 +31,19 @@ struct hostent {
 .blkcode end
 .np
 In the current Open Watcom implementation, this routine will only
-ever return IPv4 addresses, and all addresses will be of 
+ever return IPv4 addresses, and all addresses will be of
 .kw AF_INET
 address type.
 .np
-The pointer returned by 
+The pointer returned by
 .id &funcb.
-points to a private location, and the user should free neither 
+points to a private location, and the user should free neither
 the pointer itself nor any of its constituent structure members.
 Subsequent calls to this function may result in the values
 changing.
 .np
 This function is not thread-safe.  Other calls to this function
-or to other functions accessing the hostname database may affect 
+or to other functions accessing the hostname database may affect
 the return value from this function.
 .desc end
 .return begin
@@ -54,7 +54,7 @@ If the host is found, the
 .kw h_name
 member will be a copy of the
 .arg name
-argument.  The addresses are contained in the 
+argument.  The addresses are contained in the
 .kw h_addr_list
 member as a NULL-terminated list, and this structure entry will
 never be NULL.
@@ -80,12 +80,12 @@ int main(int argc, char *argv[])
     int i;
     struct hostent *he;
     struct in_addr **addr_list;
-    
+
     if (argc != 2) {
         fprintf(stderr,"usage: %s <hostname>\n", argv[0]);
         return 1;
     }
-    
+
     if ((he = gethostbyname(argv[1])) == NULL) {  // get the host info
         printf("Failed to find %s\n", argv[1]);
         return 2;

@@ -8,7 +8,7 @@ The
 .id &funcb.
 function removes any mapping at the address
 .arg address
-measuring 
+measuring
 .arg len
 bytes from the process address space.
 .desc end

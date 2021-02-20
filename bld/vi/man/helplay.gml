@@ -78,7 +78,7 @@
 :FIGDESC
         pre_lines=0
         font=1
-        
+
 :CMT.*******************************************************************
 :CMT. Headings:
 :CMT.      :h0         - major document sections (eg, tutorial, reference)
@@ -145,14 +145,14 @@
         font=0
         number_font=0
         page_eject = yes
-:cmt.:H4        
+:cmt.:H4
 :cmt.   page_position=centre
 :cmt.   number_form = none
 :cmt.   post_skip=1
 :cmt.   pre_top_skip=1
 :cmt.   font=11
 :cmt.   page_eject = yes
-:H5     
+:H5
         display_heading=yes
         number_form=none
         post_skip=0
@@ -160,7 +160,7 @@
         font=3
         page_eject = no
         line_break = yes
-:H6     
+:H6
         display_heading=yes
         number_form = none
         post_skip=0
@@ -175,19 +175,19 @@
         spacing=1
         post_skip=1
 :UL
-        left_indent=2 
-        align=2 
-        skip=0 
+        left_indent=2
+        align=2
+        skip=0
         spacing=1
         pre_skip=1
         post_skip=1
 :SL
-        left_indent=0 
-        pre_skip=0 
-        skip=0 
-        spacing=1 
+        left_indent=0
+        pre_skip=0
+        skip=0
+        spacing=1
         post_skip=0
-:DL 
+:DL
         left_indent='0.4i'
         pre_skip=1
         post_skip=1
@@ -195,58 +195,58 @@
         font=3
 :DDHD
         font=3
-:DT 
+:DT
         font=1
 :DD
         font=0
-:TOC 
+:TOC
         spacing = 1
         toc_levels = 5
-:TOCH0  
+:TOCH0
         skip = 2
         indent = 2
         pre_skip = 2
         post_skip = 1
-:TOCH1  
+:TOCH1
         skip = 1
         indent = 2
         pre_skip = 1
         post_skip = 0
-:TOCH2  
+:TOCH2
         skip = 0
         indent = 2
         pre_skip=0
         post_skip=0
-:TOCH3  
+:TOCH3
         skip = 0
         indent = 2
         pre_skip=0
         post_skip=0
-:TOCH4  
+:TOCH4
         skip = 0
         indent = 2
         pre_skip=0
         post_skip=0
-:TOCH5  
+:TOCH5
         skip = 0
         indent = 2
         pre_skip=0
         post_skip=0
-:INDEX  
+:INDEX
         columns = 2
         spacing = 1
 :IXHEAD
         post_skip=2
-:I1     
+:I1
         pre_skip = 0
         post_skip = 0
         skip = 0
-:I2     
+:I2
         pre_skip = 0
         post_skip = 0
         skip = 0
         indent = '0.4cm'
-:I3     
+:I3
         pre_skip = 0
         post_skip = 0
         skip = 0

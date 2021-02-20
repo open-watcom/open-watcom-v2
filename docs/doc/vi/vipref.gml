@@ -80,7 +80,7 @@ configuring &edvi..
 
 :DT.Chapter 8
 :DD.:CIT.Windowing, Menus and the Mouse:eCIT.
-This chapter provides a guide for using and configuring the 
+This chapter provides a guide for using and configuring the
 user interface of &edvi to suit your needs.
 
 :DT.Chapter 9

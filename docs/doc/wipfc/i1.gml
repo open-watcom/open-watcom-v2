@@ -12,9 +12,9 @@ A cross-reference for use by a secondary index (i2) tag.
 .tattr global
 For HLP files, allows this entry to also appear in the global index.
 .tattr roots='text'
-Specifies a space separated list of root words (as defined by isyn) that act as index entries to specific topics. 
+Specifies a space separated list of root words (as defined by isyn) that act as index entries to specific topics.
 .tattr sortkey='key-text'.index-text
-Specify a string used to sort this entry in the index, and a string to use in its place. In other words, place 
+Specify a string used to sort this entry in the index, and a string to use in its place. In other words, place
 index-text where key-text would sort in index.
 .tattrend
 .tno Conditions

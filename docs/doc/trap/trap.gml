@@ -163,7 +163,7 @@ This function initializes the environment for proper operation of
 :F.TrapRequest:eF..
 .np
 :XMP.
-trap_version TRAPENTRY TrapInit( 
+trap_version TRAPENTRY TrapInit(
     char       *parm,
     char       *error,
     unsigned_8 remote
@@ -2524,7 +2524,7 @@ if( rc != 0 ) {
 }
 if( DosGetProcAddr( dll_module, "#1", &TrapInit ) != 0
  || DosGetProcAddr( dll_module, "#2", &TrapFini ) != 0
- || DosGetProcAddr( dll_module, "#3", &TrapRequest ) != 0 ) 
+ || DosGetProcAddr( dll_module, "#3", &TrapRequest ) != 0 )
 {
     return( "incorrect version of trap file" );
 }

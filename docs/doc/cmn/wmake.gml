@@ -4512,7 +4512,7 @@ It uses following syntax:
 echo [<value>]
 
 .millust end
-The "echo" command may be used to output any string to standard 
+The "echo" command may be used to output any string to standard
 output without length limitation.
 .*
 .section set command
@@ -4707,15 +4707,15 @@ rm [-frv] <files/directories>
 
 .millust end
 The "rm" command may be used to delete files or directories.
-&maksname "rm" command is simplified implementation of the POSIX rm command. 
+&maksname "rm" command is simplified implementation of the POSIX rm command.
 It handles file/directory names consistently with other &maksname commands.
 Following options are support.
 .begpoint $compact
-.point -f 
+.point -f
 force deletion of read-only files, no diagnostics messages about missing items
 .point -r
 deletion of directories
-.point -v 
+.point -v
 verbose operation
 .endpoint
 .*
@@ -4731,11 +4731,11 @@ mkdir [-p] <directory>
 
 .millust end
 The "mkdir" command may be used to create a directory.
-&maksname "mkdir" command is simplified implementation of the POSIX "mkdir" command. 
+&maksname "mkdir" command is simplified implementation of the POSIX "mkdir" command.
 It handles directory names consistently with other &maksname commands.
 Following options are support.
 .begpoint $compact
-.point -p 
+.point -p
 force creation of all parent directories
 .endpoint
 .*
@@ -4751,7 +4751,7 @@ rmdir <directory>
 
 .millust end
 The "rmdir" command may be used to delete a directory.
-&maksname "rmdir" command is is simplified implementation of the POSIX "rmdir" command. 
+&maksname "rmdir" command is is simplified implementation of the POSIX "rmdir" command.
 It handles directory names consistently with other &maksname commands.
 .*
 .section &maksname internal commands

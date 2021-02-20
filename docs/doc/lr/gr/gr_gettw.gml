@@ -1,5 +1,5 @@
 .gfunc gettextwindow
-.gsynop begin 
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 void _FAR _gettextwindow(
                 short _FAR *row1, short _FAR *col1,

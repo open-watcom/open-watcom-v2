@@ -770,7 +770,7 @@ The loop may be set to run without any termination condition by using the
 .keyref endloop
 commands.
 .np
-An overview of a 
+An overview of a
 .keyword loop
 block is:
 .millust begin
@@ -870,7 +870,7 @@ are discussed in full detail in the section
 of this chapter.
 .do end
 .np
-When a script command terminates, 
+When a script command terminates,
 .var lastrc
 is sometimes set to a value.  This value may be tested in an expression.
 Script commands that set this have a
@@ -921,7 +921,7 @@ The special flags have the following meaning:
 :DD.When this flag is used,
 .paramt val
 may contain regular expression replacement
-strings (using the last regular expression searched for). 
+strings (using the last regular expression searched for).
 For more information on regular expressions, see the chapter
 :HDREF refid='rxchap'.
 .period
@@ -995,7 +995,7 @@ to offset
 .paramt n2
 .period
 The substring is assigned to &parm1..
-Note that the parameters 
+Note that the parameters
 .paramt n1
 and
 .paramt n2
@@ -1431,7 +1431,7 @@ if the file being written was not opened with
 .returns end
 .xmplsect begin
 .begxmpl fwrite 3 %(line)
-Writes the contents of the variable 
+Writes the contents of the variable
 .var %(line)
 to file handle 3.
 .endxmpl
@@ -1781,7 +1781,7 @@ the file is saved.  If he replies 'n', the file is discarded.  If
 he presses the ESC key and cancels the input, the script is exited.
 .sexmp begin
 .seline loop
-.seline 
+.seline
 .seline     quit
 .seline     if lastrc == ERR_FILE_MODIFIED
 .seline         assign %a = /Save "%F" (y\/n)?/
@@ -1795,7 +1795,7 @@ he presses the ESC key and cancels the input, the script is exited.
 .seline         endif
 .seline     endif
 .seline     quif lastrc != ERR_NO_ERR
-.seline 
+.seline
 .seline endloop
 .sexmp end
 .seref begin

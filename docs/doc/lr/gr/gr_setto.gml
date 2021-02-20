@@ -1,5 +1,5 @@
 .gfunc settextorient
-.gsynop begin 
+.gsynop begin
 .if '&lang' eq 'C' .do begin
 void _FAR _settextorient( short vecx, short vecy );
 .do end

@@ -172,7 +172,7 @@ If you do not specify a file, then a directory listing is displayed.
 :P.
 You may also specify one or more files after the
 :KEYWORD.edit
-command. 
+command.
 If a file you specify is the same as one already being edited,
 then control is simply transferred to the window with that file.
 :EXERCISES.
@@ -438,9 +438,9 @@ and
 in the file.
 :LI.Try using 'j' and 'k' to cursor up and down in the file.
 :LI.Try using 'l' and 'h' to cursor left and right in the file.
-:LI.Press the 'H' key.  The cursor will move to the top line 
+:LI.Press the 'H' key.  The cursor will move to the top line
 in the edit window.
-:LI.Press the 'L' key.  The cursor will move to the bottom line 
+:LI.Press the 'L' key.  The cursor will move to the bottom line
 in the edit window.
 :LI.Try typing some numbers before pressing the 'H' and 'L' keys.  For
 example, typing
@@ -1180,7 +1180,7 @@ around the current line when you paste.
 :P.
 The put (paste) &cmdline commands accept a &copybuffer as the buffer
 to paste out of.  The default is the active &copybuffer, but any
-buffer can be specified. Once again, 
+buffer can be specified. Once again,
 :HILITE.<"?>
 indicates a &copybuffer:
 :ILLUST.
@@ -1388,7 +1388,7 @@ redo them after you modify the file.
 :P.
 The &cmdline command for undoing changes has the following syntax:
 :ILLUST.
-undo 
+undo
 :eILLUST.
 If you specify an exclamation point ('!') after the
 :KEYWORD.undo

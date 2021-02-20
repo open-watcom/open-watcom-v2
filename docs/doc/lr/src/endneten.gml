@@ -9,7 +9,7 @@ The
 function closes the network database.
 .np
 This function is not thread-safe.  Other calls to this function
-or to other functions accessing the hostname database may affect 
+or to other functions accessing the hostname database may affect
 the return value from this function.
 .desc end
 .see begin
