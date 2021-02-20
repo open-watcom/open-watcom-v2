@@ -42,13 +42,13 @@ To support based pointers, the following keywords are provided:
 ..tb &firsttab. +9 +9 +9 +9
 .kwon
 $&kwbased.
-.kwix &kwbased_sp.
+.kwix &kwbased.
 $&kwsegment.
-.kwix &kwsegm_sp.
+.kwix &kwsegment.
 $&kwsegname.
-.kwix &kwsegnm_sp.
+.kwix &kwsegname.
 $&kwself.
-.kwix &kwself_sp.
+.kwix &kwself.
 .kwoff
 ..tb set
 ..tb

@@ -2,133 +2,90 @@
 :CMT.*********************** Keywords ***********************************
 :CMT.
 :SET symbol='kwasm'         value='__asm'.
-:SET symbol='kwasm_sp'      value='_&SYSRB._asm'.
 :CMT.
 :SET symbol='kwbased'       value='__based'.
-:SET symbol='kwbased_sp'    value='_&SYSRB._based'.
 :CMT.
 :SET symbol='kwbldiflt'     value='__builtin_isfloat'.
-:SET symbol='kwbldif_sp'    value='_&SYSRB._builtin_isfloat'.
 :CMT.
 :SET symbol='kwicdecl'      value='_Cdecl'.
-:SET symbol='kwicdec_sp'    value='_Cdecl'.
 :CMT.
 :SET symbol='kwcdecl'       value='__cdecl'.
-:SET symbol='kwcdecl_sp'    value='_&SYSRB._cdecl'.
 :CMT.
 :SET symbol='kwdeclspec'    value='__declspec'.
-:SET symbol='kwdclsp_sp'    value='_&SYSRB._declspec'.
 :CMT.
 :SET symbol='kwiexcept'     value='_Except'.
-:SET symbol='kwiexcp_sp'    value='_Except'.
 :CMT.
 :SET symbol='kwexcept'      value='__except'.
-:SET symbol='kwexcpt_sp'    value='_&SYSRB._except'.
 :CMT.
 :SET symbol='kwiexport'     value='_Export'.
-:SET symbol='kwiexpr_sp'    value='_Export'.
 :CMT.
 :SET symbol='kwexport'      value='__export'.
-:SET symbol='kwexprt_sp'    value='_&SYSRB._export'.
 :CMT.
 :SET symbol='kwfar'         value='__far'.
-:SET symbol='kwfar_sp'      value='_&SYSRB._far'.
 :CMT.
 :SET symbol='kwifar16'      value='_Far16'.
-:SET symbol='kwifa16_sp'    value='_Far16'.
 :CMT.
 :SET symbol='kwfar16'       value='__far16'.
-:SET symbol='kwfar16_sp'    value='_&SYSRB._far16'.
 :CMT.
 :SET symbol='kwifastcal'    value='_Fastcall'.
-:SET symbol='kwifstc_sp'    value='_Fastcall'.
 :CMT.
 :SET symbol='kwfastcall'    value='__fastcall'.
-:SET symbol='kwfastc_sp'    value='_&SYSRB._fastcall'.
 :CMT.
 :SET symbol='kwifinally'    value='_Finally'.
-:SET symbol='kwifnly_sp'    value='_Finally'.
 :CMT.
 :SET symbol='kwfinally'     value='__finally'.
-:SET symbol='kwfnly_sp'     value='_&SYSRB._finally'.
 :CMT.
 :SET symbol='kwfortran'     value='__fortran'.
-:SET symbol='kwfortr_sp'    value='_&SYSRB._fortran'.
 :CMT.
 :SET symbol='kwhuge'        value='__huge'.
-:SET symbol='kwhuge_sp'     value='_&SYSRB._huge'.
 :CMT.
 :SET symbol='kwinline'      value='__inline'.
-:SET symbol='kwinlin_sp'    value='_&SYSRB._inline'.
 :CMT.
 :SET symbol='kwint64'       value='__int64'.
-:SET symbol='kwint64_sp'    value='_&SYSRB._int64'.
 :CMT.
 :SET symbol='kwintrpt'      value='__interrupt'.
-:SET symbol='kwintr_sp'     value='_&SYSRB._interrupt'.
 :CMT.
 :SET symbol='kwileave'      value='_Leave'.
-:SET symbol='kwileav_sp'    value='_Leave'.
 :CMT.
 :SET symbol='kwleave'       value='__leave'.
-:SET symbol='kwleave_sp'    value='_&SYSRB._leave'.
 :CMT.
 :SET symbol='kwloadds'      value='__loadds'.
-:SET symbol='kwlodds_SP'    value='_&SYSRB._loadds'.
 :CMT.
 :SET symbol='kwnear'        value='__near'.
-:SET symbol='kwnear_sp'     value='_&SYSRB._near'.
 :CMT.
 :SET symbol='kwimagunit'    value='__ow_imaginary_unit'.
-:SET symbol='kwimagu_sp'    value='_&SYSRB._ow_imaginary_unit'.
 :CMT.
 :SET symbol='kwipacked'     value='_Packed'.
-:SET symbol='kwipckd_sp'    value='_Packed'.
 :CMT.
 :SET symbol='kwipascal'     value='_Pascal'.
-:SET symbol='kwipasc_sp'    value='_Pascal'.
 :CMT.
 :SET symbol='kwpascal'      value='__pascal'.
-:SET symbol='kwpascl_sp'    value='_&SYSRB._pascal'.
 :CMT.
 :SET symbol='kwsaveregs'    value='__saveregs'.
-:SET symbol='kwsvreg_sp'    value='_&SYSRB._saveregs'.
 :CMT.
 :SET symbol='kwsegment'     value='__segment'.
-:SET symbol='kwsegm_sp'     value='_&SYSRB._segment'.
 :CMT.
 :SET symbol='kwsegname'     value='__segname'.
-:SET symbol='kwsegnm_sp'    value='_&SYSRB._segname'.
 :CMT.
 :SET symbol='kwiseg16'      value='_Seg16'.
-:SET symbol='kwisg16_sp'    value='_Seg16'.
 :CMT.
 :SET symbol='kwself'        value='__self'.
-:SET symbol='kwself_sp'     value='_&SYSRB._self'.
 :CMT.
 :SET symbol='kwisyscall'    value='_Syscall'.
-:SET symbol='kwisysc_sp'    value='_Syscall'.
 :CMT.
 :SET symbol='kwsyscall'     value='__syscall'.
-:SET symbol='kwsyscl_sp'    value='_&SYSRB._syscall'.
 :CMT.
 :SET symbol='kwstdcall'     value='__stdcall'.
-:SET symbol='kwstdcl_sp'    value='_&SYSRB._stdcall'.
 :CMT.
 :SET symbol='kwisystem'     value='_System'.
-:SET symbol='kwisyst_sp'    value='_System'.
 :CMT.
 :SET symbol='kwitry'        value='_Try'.
-:SET symbol='kwitry_sp'     value='_Try'.
 :CMT.
 :SET symbol='kwtry'         value='__try'.
-:SET symbol='kwtry_sp'      value='_&SYSRB._try'.
 :CMT.
 :SET symbol='kwunalign'     value='__unaligned'.
-:SET symbol='kwunalg_sp'    value='_&SYSRB._unaligned'.
 :CMT.
 :SET symbol='kwwatcall'     value='__watcall'.
-:SET symbol='kwwatcl_sp'    value='_&SYSRB._watcall'.
 :CMT.
 :CMT. ********************** Macros *************************************
 :CMT.
