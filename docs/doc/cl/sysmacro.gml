@@ -183,7 +183,7 @@ The macro is identically equal to 100 times the architecture compiler
 option value (-0, -1, -2, -3, -4, -5, etc.).
 If "-5" (Pentium instruction timings) was specified as a compiler
 option, then the value of
-.mkwfont &mkwM_IX86.
+.mkw &mkwM_IX86.
 would be 500.
 .discuss end
 .*

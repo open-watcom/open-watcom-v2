@@ -1,8 +1,8 @@
 .ix 'preprocessor'
 .pp
 The
-.us preprocessor,
-as its name suggests,
+.us preprocessor
+.ct , as its name suggests,
 is that part of the C compiler which processes certain directives
 embedded in the source file(s) in advance of the actual compilation
 of the program. Specifically, the preprocessor allows a source file

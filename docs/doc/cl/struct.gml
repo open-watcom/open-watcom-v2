@@ -225,8 +225,7 @@ and an unnamed area at the end of the structure.
 .*
 ..if '&target' eq 'PC' or '&target' eq 'PC 370' ..th ..do begin
 .shade begin
-The &wcboth. compilers provide a command-line switch
-and a
+The &wcboth. compilers provide a command-line switch and a
 .kwpp #pragma
 to control the alignment of members of structures.
 See the &userguide. for details.

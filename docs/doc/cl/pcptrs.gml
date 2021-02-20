@@ -288,13 +288,13 @@ If
 precedes
 .mono *
 (as in
-.mono &kwfar. *
-.ct ), then the pointer points to something far. Otherwise, if
+.kw &kwfar.
+*), then the pointer points to something far. Otherwise, if
 .kw &kwfar.
 precedes the identifier of the object or function being declared
 (as in
-.mono &kwfar. x)
-.ct , then the object itself is far.
+.kw &kwfar.
+x), then the object itself is far.
 .pp
 The keyword
 .kw &kwfar.
@@ -455,13 +455,13 @@ If
 precedes
 .mono *
 (as in
-.mono &kwnear. *
-.ct ), then the pointer points to something near. Otherwise, if
+.kw &kwnear.
+*), then the pointer points to something near. Otherwise, if
 .kw &kwnear.
 precedes the identifier of the object or function being declared
 (as in
-.mono &kwnear. x)
-.ct , then the object itself is near.
+.kw &kwnear.
+x), then the object itself is near.
 .pp
 The keyword
 .kw &kwnear.
@@ -691,14 +691,14 @@ If
 precedes
 .mono *
 (as in
-.mono &kwfar. *
-.ct ), then the pointer points to something that is far (not in the
+.kw &kwfar.
+*), then the pointer points to something that is far (not in the
 normal data region).
 Otherwise, if
 .kw &kwfar.
 precedes the identifier of the object or function being declared (as in
-.mono &kwfar. x
-.ct ), then the object or function is far.
+.kw &kwfar.
+x), then the object or function is far.
 .pp
 The keyword
 .kw &kwfar.
@@ -826,14 +826,14 @@ If
 precedes
 .mono *
 (as in
-.mono &kwnear. *
-.ct ), then the pointer points to something that is near (in the
+.kw &kwnear.
+*), then the pointer points to something that is near (in the
 normal data region).
 Otherwise, if
 .kw &kwnear.
 precedes the identifier of the object or function being declared (as in
-.mono &kwnear. x
-.ct ), then the object or function is near.
+.kw &kwnear.
+x), then the object or function is near.
 .pp
 The keyword
 .kw &kwnear.

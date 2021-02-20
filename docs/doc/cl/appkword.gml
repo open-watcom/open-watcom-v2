@@ -190,7 +190,7 @@ calling convention for the function is suitable for
 calling a function written in Pascal.
 All parameters are pushed onto the stack, but in reverse order to the
 order specified by
-.kwfont &kwcdecl.
+.kw &kwcdecl.
 .period
 This calling convention may be controlled by a
 .kwpp #pragma
@@ -272,10 +272,10 @@ In addition, any
 .ul call back
 function whose address is passed to Windows (and which Windows will
 "call back") must be defined with the
-.kwfont &kwexport.
+.kw &kwexport.
 keyword, otherwise the call will fail and cause unpredictable results.
 The
-.kwfont &kwexport.
+.kw &kwexport.
 keyword may be omitted if the object or function is exported by an
 option specified using the linker.
 See the &linkref..
@@ -296,7 +296,7 @@ The machine language return instruction for the function is changed to
 .mono iret
 (interrupt return).
 Functions written using
-.kwfont &kwintrpt.
+.kw &kwintrpt.
 are suitable for attaching to the
 .ix 'interrupt'
 interrupt vector using the library
