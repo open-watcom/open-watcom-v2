@@ -592,6 +592,7 @@ compile_hpj_win : .PROCEDURE
     @%append $@ WARNING=3
     @%append $@ CONTENTS=table_of_contents
     @%append $@ Title=$(book_title) Help
+    @%append $@ COPYRIGHT=Copyright 2002-$(curr_year) Open Watcom Contributors, 1996 Sybase, Inc. and its subsidiaries. All rights reserved.
 !ifdef book_bmroot
     @%append $@ BMROOT=$(book_bmroot)
 !else
@@ -621,7 +622,7 @@ compile_hpj_nt : .PROCEDURE
     @%append $@ REPORT=Yes
     @%append $@ CONTENTS=table_of_contents
     @%append $@ TITLE=$(book_title) Help
-    @%append $@ COPYRIGHT=Copyright 1996 Sybase, Inc. and its subsidiaries. All rights reserved. %date
+    @%append $@ COPYRIGHT=Copyright 2002-$(curr_year) Open Watcom Contributors, 1996 Sybase, Inc. and its subsidiaries. All rights reserved. %date
 !ifdef book_bmroot
     @%append $@ BMROOT=$(book_bmroot:/=\)
 !else
