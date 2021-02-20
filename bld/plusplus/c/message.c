@@ -70,8 +70,8 @@ static unsigned internalErrCount;
 static unsigned suppressCount;
 
 static FILE *err_file;                  // ERROR FILE
-static TOKEN_LOCN err_locn;             // error location
-static TOKEN_LOCN notes_locn;           // notes location
+static TOKEN_LOCN err_location;         // error location
+static TOKEN_LOCN notes_location;           // notes location
 static msg_level_info* orig_msg_level;  // original message levels
 static bool errLimitExceeded;           // have exceeded error limit
 static IntlData *internationalData;     // translated messages
@@ -117,16 +117,16 @@ static void build_file_nesting  // DUMP OUT THE INCLUDE NESTING TRACEBACK
     char *fname;
     LINE_NO line;
 
-    if( NULL != err_locn.src_file ) {
-        if( SrcFileTraceBackReqd( err_locn.src_file ) ) {
-            SrcFileTraceBack( err_locn.src_file );
+    if( NULL != err_location.src_file ) {
+        if( SrcFileTraceBackReqd( err_location.src_file ) ) {
+            SrcFileTraceBack( err_location.src_file );
             CompFlags.log_note_msgs = true;
             if( CompFlags.ew_switch_used ) {
                 MsgDisplayArgs( IDEMSGSEV_NOTE_MSG
                               , INF_FILE_LOCATION
-                              , fileName( err_locn.src_file ) );
+                              , fileName( err_location.src_file ) );
             }
-            for( src_file = err_locn.src_file; ; ) {
+            for( src_file = err_location.src_file; ; ) {
                 src_file = SrcFileIncluded( src_file, &line );
                 if( src_file == NULL )
                     break;
@@ -258,7 +258,7 @@ static void ideDisplay          // DISPLAY USING IDE INTERFACE
             IdeMsgSetSrcLine( &inf, msg_locn->line );
             IdeMsgSetSrcColumn( &inf, msg_locn->column );
         }
-        notes_locn = *msg_locn;
+        notes_location = *msg_locn;
     }
     goes_in_err_file = false;
     switch( severity ) {
@@ -303,20 +303,20 @@ static void setMsgLocation      // SET LOCATION FOR MESSAGE
     case CTX_CMDLN_ENV :
     case CTX_CMDLN_PGM :
     case CTX_CMDLN_VALID :
-            err_locn.src_file = NULL;
+            err_location.src_file = NULL;
             break;
         }
         /* fall through */
     case CTX_PREINCL :
     case CTX_FORCED_INCS :
     case CTX_SOURCE :
-        if( err_locn.src_file == NULL ) {
+        if( err_location.src_file == NULL ) {
             if( SrcFilesOpen() ) {
-                SrcFileGetTokenLocn( &err_locn );
+                SrcFileGetTokenLocn( &err_location );
             } else {
-                err_locn.line = SrcLineCount;
-                err_locn.column = 0;
-                err_locn.src_file = SrcFileCurrent();
+                err_location.line = SrcLineCount;
+                err_location.column = 0;
+                err_location.src_file = SrcFileCurrent();
             }
         }
         break;
@@ -341,7 +341,7 @@ void MsgDisplay                 // DISPLAY A MESSAGE
 
     context_changed = CtxCurrent( &context, &inf, &inf_prefix );
     setMsgLocation( context );
-    prt_locn = err_locn;
+    prt_locn = err_location;
     ++reserveDepth;
     VbufInit( &buffer );
     sym = msgBuild( msgnum, args, &buffer );
@@ -383,7 +383,7 @@ void MsgDisplay                 // DISPLAY A MESSAGE
         break;
     case IDEMSGSEV_NOTE :
     case IDEMSGSEV_NOTE_MSG :
-        msg_locn = &notes_locn;
+        msg_locn = &notes_location;
         break;
     default :
         msg_locn = NULL;
@@ -399,7 +399,7 @@ void MsgDisplay                 // DISPLAY A MESSAGE
     }
     --reserveDepth;
     if( NULL != sym ) {
-        notes_locn = sym->locn->tl;
+        notes_location = sym->locn->tl;
         MsgDisplayArgs( IDEMSGSEV_NOTE
                       , SymIsFunctionTemplateModel( sym )
                             ? INF_TEMPLATE_FN_DECL : INF_SYMBOL_DECLARATION
@@ -483,7 +483,7 @@ static void prtMsg(             // PRINT A MESSAGE
     IDEMsgSeverity severity;    // - message severity
 
     if( warn_level == WLEVEL_NOTE ) {
-        err_locn = notes_locn;
+        err_location = notes_location;
         severity = IDEMSGSEV_NOTE;
     } else if( warn_level == WLEVEL_ERROR ) {
         ++ErrCount;
@@ -583,9 +583,9 @@ void SetErrLoc(                 // SET ERROR LOCATION
     TOKEN_LOCN *locn )          // - error location
 {
     if( locn == NULL ) {
-        err_locn.src_file = NULL;
+        err_location.src_file = NULL;
     } else {
-        err_locn = *locn;
+        err_location = *locn;
     }
 }
 
@@ -692,7 +692,7 @@ static msg_status_t doError(    // ISSUE ERROR
         }
     }
     /* turn off SetErrLoc setting */
-    err_locn.src_file = NULL;
+    err_location.src_file = NULL;
     return( retn );
 }
 
@@ -1037,7 +1037,7 @@ static void errFileInit(        // INITIALIZE FOR NO ERROR FILE
 
     errLimitExceeded = false;
     err_file = NULL;
-    err_locn.src_file = NULL;
+    err_location.src_file = NULL;
     suicideCallbacks = NULL;
     orig_msg_level = NULL;
     reserveSize = RESERVE_MAX;

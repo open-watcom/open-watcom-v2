@@ -249,8 +249,7 @@ static void doScanCComment( void )
                     break;
                 if( c == LCHR_EOF ) {
                     /* unterminated comment already detected in NextChar() */
-                    CompFlags.scanning_c_comment = false;
-                    return;
+                    break;
                 }
             }
             if( prev_char == '*' )
@@ -266,8 +265,7 @@ static void doScanCComment( void )
                     break;
                 if( c == LCHR_EOF ) {
                     /* unterminated comment already detected in NextChar() */
-                    CompFlags.scanning_c_comment = false;
-                    return;
+                    break;
                 }
                 SrcFileSetErrLoc();
                 CErr2( WARN_NESTED_COMMENT, start_line );
@@ -283,8 +281,7 @@ static void doScanCComment( void )
                     break;
                 if( c == LCHR_EOF ) {
                     /* unterminated comment already detected in NextChar() */
-                    CompFlags.scanning_c_comment = false;
-                    return;
+                    break;
                 }
             }
             if( prev_char == '*' )
@@ -298,8 +295,7 @@ static void doScanCComment( void )
                     break;
                 if( c == LCHR_EOF ) {
                     /* unterminated comment already detected in NextChar() */
-                    CompFlags.scanning_c_comment = false;
-                    return;
+                    break;
                 }
                 SrcFileSetErrLoc();
                 CErr2( WARN_NESTED_COMMENT, start_line );
@@ -307,7 +303,9 @@ static void doScanCComment( void )
         }
     }
     CompFlags.scanning_c_comment = false;
-    NextChar();
+    if( c != LCHR_EOF ) {
+        NextChar();
+    }
 }
 
 static void doScanCppComment( void )

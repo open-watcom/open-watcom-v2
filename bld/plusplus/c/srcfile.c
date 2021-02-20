@@ -178,6 +178,15 @@ static OPEN_FILE *activeSrc( void )
 #define activeSrc()     (openFile)
 #endif
 
+
+static void newLineStartPos( OPEN_FILE *act )
+/*******************************************/
+{
+    act->line++;
+    act->column = 0;
+}
+
+
 static void set_srcFile( SRCFILE src )
 {
     srcFile = src;
@@ -963,8 +972,7 @@ static int tryBackSlashNewLine( OPEN_FILE *act )
                 PrtChar( '\n' );
             }
         }
-        act->line++;
-        act->column = 0;
+        newLineStartPos( act );
         return( GetNextChar() );
     case '?':
         NextChar = tryTrigraphStart;
@@ -1026,8 +1034,7 @@ static int getCharCheck( OPEN_FILE *act, int c )
             CurrChar = c;
             return( CurrChar );
         case '\n':
-            act->line++;
-            act->column = 0;
+//            newLineStartPos( act );
             break;
         case '\t':
             act->column = ( act->column + tabWidth ) & - tabWidth;
@@ -1278,8 +1285,7 @@ void SrcFileScanWhiteSpace( bool expanding )
             if(( CharSet[c] & C_EX ) == 0 )
                 break;
             if( c == '\n' ) {
-                act->line++;
-                act->column = 0;
+                newLineStartPos( act );
                 break;
             }
             // act->column is one too many at this point
@@ -1340,8 +1346,7 @@ void SrcFileScanCppComment( void )
             // act->column += p - act->nextc;
             act->nextc = p;
             if( c == '\n' ) {
-                act->line++;
-                act->column = 0;
+                newLineStartPos( act );
                 break;
             }
             if( c != '\t' && c != '\r' ) {
