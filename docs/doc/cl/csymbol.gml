@@ -139,8 +139,6 @@
 :CMT.
 :SET symbol='mkwSTDC'       value='__STDC__'.
 :CMT.
-:SET symbol='mkwSTDC'       value='__STDC__'.
-:CMT.
 :SET symbol='mkwSTDCH'      value='__STDC_HOSTED__'.
 :CMT.
 :SET symbol='mkwSTDCX'      value='__STDC_LIB_EXT1__'.
