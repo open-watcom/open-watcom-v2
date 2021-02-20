@@ -63,8 +63,8 @@ These keywords and operator are described in the following sections.
 Two macros, defined in
 .hdr <malloc.h>
 are also provided:
-.mkwix &mkwNSEG_sp.
-.mkwix &mkwNOFF_sp.
+.mkwix &mkwNULLSEG.
+.mkwix &mkwNULLOFF.
 .millust begin
 &mkwNULLSEG.
 &mkwNULLOFF.

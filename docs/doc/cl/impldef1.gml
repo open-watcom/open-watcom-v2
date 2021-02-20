@@ -862,11 +862,9 @@ directive (6.8.6).
 See the &userguide..
 .bigterm
 The definitions for
-.mkwix &mkwDATE_sp.
-.mkwfont &mkwDATE.
+.mkw &mkwDATE.
 and
-.mkwix &mkwTIME_sp.
-.mkwfont &mkwTIME.
+.mkw &mkwTIME.
 when respectively, the date and time of translation are not available (6.8.8).
 .bigdesc
 .pp

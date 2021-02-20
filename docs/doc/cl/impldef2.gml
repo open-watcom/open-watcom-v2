@@ -432,11 +432,9 @@ See the &userguide for details.
 ..sk 1 c
 .bd on
 The definitions for
-.mkwix &mkwDATE_sp.
-.mkwfont &mkwDATE.
+.mkw &mkwDATE.
 and
-.mkwix &mkwTIME_sp.
-.mkwfont &mkwTIME.
+.mkw &mkwTIME.
 when the date and/or time of compilation are not available.
 .bd off
 .discuss begin
