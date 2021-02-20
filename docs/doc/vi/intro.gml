@@ -163,23 +163,23 @@ special symbols are referred to as
 .keyword gadgets
 :UL.
 
-:LI.In the top left corner of the edit window is the gadget ('ð') that opens
+:LI.In the top left corner of the edit window is the gadget character that opens
 up the menu for the window.
 
-:LI.In the lower right corner of the edit window is the resize gadget ('').
-When you click on this gadget with your mouse and then drag the mouse, you
+:LI.In the lower right corner of the edit window is the resize gadget character.
+When you click on this gadget character with your mouse and then drag the mouse, you
 can resize the edit window.
 
 :LI.On the right hand side of the edit window is the scroll bar.  The
 scroll bar has several components:
 
-:LI.The scroll up ('') gadget.  When you click on this with your mouse,
+:LI.The scroll up gadget character.  When you click on this with your mouse,
 the edit window scrolls up one line.
 
-:LI.The scroll down ('') gadget.  When you click on this with your mouse,
+:LI.The scroll down gadget character.  When you click on this with your mouse,
 the edit window scrolls down one line.
 
-:LI.The scroll thumb ('Û').  The scroll thumb indicates the relative position
+:LI.The scroll thumb character.  The scroll thumb indicates the relative position
 of the current line in the file.  When you click on the scroll thumb with
 your mouse and drag it, you can move to a new position in the file.  If
 you click with your mouse on the scroll bar above the scroll thumb, you

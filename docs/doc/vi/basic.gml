@@ -254,7 +254,7 @@ each edit window has a menu associated with it that you can access
 by pressing
 .param ALT_G
 .period
-You can also access this menu by clicking on the gadget ('�') in the top left hand
+You can also access this menu by clicking on the gadget character in the top left hand
 corner of an edit window.  This menu has a number of choices for dealing with
 the file.
 .np
@@ -279,7 +279,7 @@ one in the list will become the current one.  If you are not
 editing any other files, then &edvi will exit.
 .np
 If you activate the individual file menu either by clicking on the gadget
-at the top-left corner of the edit window
+character at the top-left corner of the edit window
 with the mouse or by pressing
 .param ALT_G
 .ct , then a menu will pop up as follows:
@@ -889,7 +889,7 @@ This will display the menu.
 There is also a menu associated with each edit window.  You can activate
 this window by pressing
 .param ALT_G
-or by clicking on the gadget in the upper left hand corner of
+or by clicking on the gadget character in the upper left hand corner of
 the edit window.
 .np
 You may activate a menu on the menu bar by pressing the appropriate
@@ -932,7 +932,7 @@ menu item is used.
 .np
 This menu is selected by pressing
 .param ALT_G
-or by clicking on the gadget in the upper left hand corner of an edit
+or by clicking on the gadget character in the upper left hand corner of an edit
 window with the mouse.  Once you have done one of these, the following menu
 appears:
 .figure *depth='2.47' *scale='59' *file='vi005' The Individual Edit Window menu
