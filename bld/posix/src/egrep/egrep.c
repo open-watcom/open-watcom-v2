@@ -92,7 +92,7 @@ static const char *usageMsg[] = {
     NULL
 };
 
-static  char    CharExist[ ALPHA_SIZE ] = {
+static  char    CharExist[ALPHA_SIZE] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -111,7 +111,7 @@ static  char    CharExist[ ALPHA_SIZE ] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
-static  unsigned char    CharTrans[ ALPHA_SIZE ] = {
+static  unsigned char    CharTrans[ALPHA_SIZE] = {
     0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
     0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
     0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
@@ -146,11 +146,11 @@ static  unsigned char    CharTrans[ ALPHA_SIZE ] = {
     0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff
 };
 
-static  regexp      *ePatterns[ MAX_SEARCH_STR ];
-static  char        *fPatterns[ MAX_SEARCH_STR ];
+static  regexp      *ePatterns[MAX_SEARCH_STR];
+static  char        *fPatterns[MAX_SEARCH_STR];
 static  unsigned    PatCount = 0;
 
-static  unsigned    IObsize   = IOBUF_MIN;
+static  size_t      IObsize   = IOBUF_MIN;
 static  char        *IObuffer = NULL;
 
 static  int         Flags = 0;              // search flags
@@ -165,7 +165,7 @@ static void freePatterns( void )
     unsigned    ui;
 
     for( ui = 0; ui < PatCount; ui++ ) {
-        free( ePatterns[ ui ] );
+        free( ePatterns[ui] );
     }
 }
 
@@ -192,25 +192,25 @@ static int searchBuffer( char *buf )
 #ifdef FGREP
     if( Flags & M_SEARCH_EXACT ) {
         for( ui = 0; ui < PatCount; ui++ )
-            if( strcmp( fPatterns[ ui ], buf ) == 0 )
+            if( strcmp( fPatterns[ui], buf ) == 0 )
                 return( 1 );
     } else {
         for( ui = 0; ui < PatCount; ui++ ) {
             char       *s = buf;
-            char const *p = fPatterns[ ui ];
+            char const *p = fPatterns[ui];
             char const  first = *p++;
 
             for( ;; ) {
-                if( CharTrans[ *(unsigned char *)s ] == first ) {
+                if( CharTrans[*(unsigned char *)s] == first ) {
                     char       * const next = ++s;
 
                     for( ; ; s++, p++ ) {
                         if( *p == '\0' )
                             return( 1 );
-                        if( CharTrans[ *(unsigned char *)s ] != *p ) {
+                        if( CharTrans[*(unsigned char *)s] != *p ) {
                             if( *s == '\0' ) {
                                 goto outer;
-                            } else if( CharExist[ CharTrans[ *(unsigned char *)s ] ] == 0 ) {
+                            } else if( CharExist[CharTrans[*(unsigned char *)s]] == 0 ) {
                                 s++;
                             } else {
                                 s = next;
@@ -218,7 +218,7 @@ static int searchBuffer( char *buf )
                             break;
                         }
                     }
-                    p = fPatterns[ ui ] + 1;
+                    p = fPatterns[ui] + 1;
                 } else if( *s == '\0' ) {
                     break;
                 } else {
@@ -230,15 +230,15 @@ static int searchBuffer( char *buf )
     }
 #else
     for( ui = 0; ui < PatCount; ui++ )
-        if( RegExec( ePatterns[ ui ], buf, 1 ) )
+        if( RegExec( ePatterns[ui], buf, 1 ) )
             return( 1 );
 #endif
     return( 0 );
 }
 
-static char *getNextLine( int in, int newfile, const char *filename, unsigned lineno )
+static char *getNextLine( FILE *ifp, int newfile, const char *filename, unsigned lineno )
 {
-    static int          rd;
+    static size_t       rd;
     static char         *offset;
     static char         *start;
     static char         *endbuf;
@@ -250,26 +250,27 @@ static char *getNextLine( int in, int newfile, const char *filename, unsigned li
         return( NULL );
     }
     if( newfile ) {
-        rd = read( in, IObuffer, IObsize );
-        if( -1 == rd )
+        rd = fread( IObuffer, 1, IObsize, ifp );
+        if( ferror( ifp ) )
             errorExit( "I/O error" );
         start = offset = IObuffer;
         endbuf = IObuffer + rd;
-        finalread = ( (unsigned)rd != IObsize );
+        finalread = ( rd != IObsize );
     }
-    for( ; ; ) {
-        unsigned const      len = (unsigned)( endbuf - offset );
+    for( ;; ) {
+        size_t const        len = endbuf - offset;
         char * const        lf = memchr( offset, '\n', len );
         char * const        line = start;
 
         if( lf != NULL ) {
-            if( lf > IObuffer && lf[-1] == '\r' ) lf[-1] = '\0';
+            if( lf > IObuffer && lf[-1] == '\r' )
+                lf[-1] = '\0';
             *lf = '\0';
             offset = start = lf + 1;
             return( line );
         }
         if( finalread ) {
-            endbuf[1] = '\0';
+            endbuf[0] = '\0';
             done = 1;
             return( start );
         }
@@ -277,33 +278,33 @@ static char *getNextLine( int in, int newfile, const char *filename, unsigned li
             free( IObuffer );
             IObsize += IObsize >> 1;
             IObuffer = malloc( IObsize );
-            if( IObuffer == NULL || -1 == lseek( in, -rd, SEEK_CUR ) )
+            if( IObuffer == NULL || fseek( ifp, -rd, SEEK_CUR ) )
                 errorExit( "line too long: len (%lu) >= IObsize (%lu) at \"%s\":%u",
                     (unsigned long)len, (unsigned long)IObsize, filename, lineno );
-            return getNextLine( in, newfile, filename, lineno );
+            return( getNextLine( ifp, newfile, filename, lineno ) );
         }
         memmove( IObuffer, offset, len );
         start = IObuffer;
         offset = IObuffer + len;
-        rd = read( in, offset, IObsize - len );
-        if( -1 == rd )
+        rd = fread( offset, 1, IObsize - len, ifp );
+        if( ferror( ifp ) )
             errorExit( "I/O error" );
-        finalread = ( (unsigned)rd != IObsize - len );
+        finalread = ( rd != IObsize - len );
         endbuf = offset + rd;
     }
 }
 
-static unsigned searchFile( const char *filename, int in, int numfile )
+static unsigned searchFile( const char *filename, FILE *ifp, int numfile )
 {
     char        *line;
-    char         match;
+    char        match;
 
-    char const   invert  = ((Flags & M_SEARCH_INVERT) != 0);
-    unsigned     lineno  = 1;
-    unsigned     matches = 0;
-    int          new = 1;
+    char const  invert  = ((Flags & M_SEARCH_INVERT) != 0);
+    unsigned    lineno  = 1;
+    unsigned    matches = 0;
+    int         new = 1;
 
-    while( ( line = getNextLine( in, new, filename, lineno ) ) != NULL ) {      // returns offset into IObuffer
+    while( (line = getNextLine( ifp, new, filename, lineno )) != NULL ) {      // returns offset into IObuffer
         new  = 0;
         match = (char) searchBuffer( line );
         if( match ^ invert ) {
@@ -333,8 +334,8 @@ static void parsePatterns( void )
 
     for( pat = fPatterns; *pat != NULL; pat++ ) {
         for( p = *pat; *p; p++ ) {
-            *p = CharTrans[ *(unsigned char *)p ];
-            CharExist[ *(unsigned char *)p ] = 1;
+            *p = CharTrans[*(unsigned char *)p];
+            CharExist[*(unsigned char *)p] = 1;
         }
     }
 }
@@ -345,10 +346,10 @@ static void insertPattern( const char *pat )
         errorExit( "too many search patterns" );
     }
 #ifdef FGREP
-    fPatterns[ PatCount ] = strdup( pat );
+    fPatterns[PatCount] = strdup( pat );
 #else
-    ePatterns[ PatCount ] = RegComp( pat );
-    if( ePatterns[ PatCount ] == NULL ) {
+    ePatterns[PatCount] = RegComp( pat );
+    if( ePatterns[PatCount] == NULL ) {
         errorExit( "error forming regular expression" );
     }
 #endif
@@ -357,21 +358,23 @@ static void insertPattern( const char *pat )
 
 static void readPatternFile( const char *filename )
 {
-    FILE               *fp = fopen( filename, "r" );
-    char               *cr;
+    FILE                *fp;
+    char                *cr;
     unsigned const      patstart = PatCount;
 
+    fp = fopen( filename, "rt" );
     if( fp == NULL )
         errorExit( "cannot open pattern file \"%s\"", filename );
     while( fgets( IObuffer, IObsize, fp ) ) {
-        if( ( cr = strrchr( IObuffer, '\n' ) ) == NULL )
+        if( (cr = strrchr( IObuffer, '\n' )) == NULL )
             errorExit( "invalid pattern \"%s\" in \"%s\"", IObuffer, filename );
         *cr = '\0';
         insertPattern( IObuffer );
     }
     (void) fclose( fp );
-    if( patstart == PatCount )
+    if( patstart == PatCount ) {
         errorExit( "No pattern in \"%s\"", filename );
+    }
 }
 
 static void changeTransTable( void )
@@ -379,7 +382,7 @@ static void changeTransTable( void )
     int         ch;
 
     for( ch = 'A'; ch <= 'Z'; ch++ ) {      // Change uppers to lowers in
-        CharTrans[ ch ] |= 0x20;            // translation table
+        CharTrans[ch] |= 0x20;            // translation table
     }
 }
 
@@ -387,42 +390,42 @@ static void handle_options( int *pargc, char **argv, bool *prematch )
 {
     int         ch;             // switch chars
 
-    while( -1 != ( ch = GetOpt( pargc, argv, "ce:f:ilnsvXx", usageMsg ) ) ) {
+    while( -1 != (ch = GetOpt( pargc, argv, "ce:f:ilnsvXx", usageMsg )) ) {
         switch( ch ) {
-            case 'c':
-                Omode = OUT_COUNT;
-                break;
-            case 'e':
-                insertPattern( OptArg );
-                break;
-            case 'f':
-                readPatternFile( OptArg );
-                break;
-            case 'i':
-                Flags |= M_SEARCH_IGNORE;
-                CaseIgnore = true;
-                changeTransTable( );
-                break;
-            case 'l':
-                Omode = OUT_FILES;
-                break;
-            case 'n':
-                Flags |= M_PREFIX_LINE;
-                break;
-            case 's':
-                Flags |= M_SUPPRESS_ERROR;
-                break;
-            case 'v':
-                Flags |= M_SEARCH_INVERT;
-                break;
-            case 'X':
-                *prematch = true;
-                break;
-            case 'x':
-                Flags |= M_SEARCH_EXACT;
-                break;
-            default: /* Do nothing */
-                break;
+        case 'c':
+            Omode = OUT_COUNT;
+            break;
+        case 'e':
+            insertPattern( OptArg );
+            break;
+        case 'f':
+            readPatternFile( OptArg );
+            break;
+        case 'i':
+            Flags |= M_SEARCH_IGNORE;
+            CaseIgnore = true;
+            changeTransTable( );
+            break;
+        case 'l':
+            Omode = OUT_FILES;
+            break;
+        case 'n':
+            Flags |= M_PREFIX_LINE;
+            break;
+        case 's':
+            Flags |= M_SUPPRESS_ERROR;
+            break;
+        case 'v':
+            Flags |= M_SEARCH_INVERT;
+            break;
+        case 'X':
+            *prematch = true;
+            break;
+        case 'x':
+            Flags |= M_SEARCH_EXACT;
+            break;
+        default: /* Do nothing */
+            break;
         }
     }
 }
@@ -456,15 +459,16 @@ int main( int argc, char **argv )
         matches = searchFile( "stdin", STDIN_FILENO, 1 );
     } else {
         while( *argv != NULL ) {
-            int const   in = open( *argv, O_BINARY | O_RDONLY );        // input file handle
+            FILE *ifp;
 
-            if( in == -1 ) {
+            ifp = fopen( *argv, "rb" );      // input file handle
+            if( ifp == NULL ) {
                 if( !(Flags & M_SUPPRESS_ERROR) )
                     fprintf( stderr, "%s: cannot open input file \"%s\"\n",
                         OptEnvVar, *argv );
             } else {
-                matches += searchFile( *argv, in, argc - 1 );
-                close( in );
+                matches += searchFile( *argv, ifp, argc - 1 );
+                fclose( ifp );
             }
             argv++;
         }
