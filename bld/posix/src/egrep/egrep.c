@@ -278,7 +278,7 @@ static char *getNextLine( FILE *ifp, int newfile, const char *filename, unsigned
             free( IObuffer );
             IObsize += IObsize >> 1;
             IObuffer = malloc( IObsize );
-            if( IObuffer == NULL || fseek( ifp, -rd, SEEK_CUR ) )
+            if( IObuffer == NULL || fseek( ifp, -(long)rd, SEEK_CUR ) )
                 errorExit( "line too long: len (%lu) >= IObsize (%lu) at \"%s\":%u",
                     (unsigned long)len, (unsigned long)IObsize, filename, lineno );
             return( getNextLine( ifp, newfile, filename, lineno ) );
@@ -365,7 +365,7 @@ static void readPatternFile( const char *filename )
     fp = fopen( filename, "rt" );
     if( fp == NULL )
         errorExit( "cannot open pattern file \"%s\"", filename );
-    while( fgets( IObuffer, IObsize, fp ) ) {
+    while( fgets( IObuffer, (int)IObsize, fp ) ) {
         if( (cr = strrchr( IObuffer, '\n' )) == NULL )
             errorExit( "invalid pattern \"%s\" in \"%s\"", IObuffer, filename );
         *cr = '\0';
@@ -434,6 +434,7 @@ int main( int argc, char **argv )
 {
     bool        rematch;
     unsigned    matches = 0;    // number of matches
+    FILE        *ifp;
 
     IObuffer = malloc( IObsize );
     if( IObuffer == NULL )
@@ -455,17 +456,15 @@ int main( int argc, char **argv )
     argv = ExpandArgv( &argc, argv, rematch );
 
     if( *++argv == NULL ) {
-        (void) setmode( STDIN_FILENO, O_BINARY );
-        matches = searchFile( "stdin", STDIN_FILENO, 1 );
+        ifp = freopen( "stdin", "rb", stdin );
+        matches = searchFile( "stdin", ifp, 1 );
     } else {
         while( *argv != NULL ) {
-            FILE *ifp;
-
             ifp = fopen( *argv, "rb" );      // input file handle
             if( ifp == NULL ) {
-                if( !(Flags & M_SUPPRESS_ERROR) )
-                    fprintf( stderr, "%s: cannot open input file \"%s\"\n",
-                        OptEnvVar, *argv );
+                if( !(Flags & M_SUPPRESS_ERROR) ) {
+                    fprintf( stderr, "%s: cannot open input file \"%s\"\n", OptEnvVar, *argv );
+                }
             } else {
                 matches += searchFile( *argv, ifp, argc - 1 );
                 fclose( ifp );
