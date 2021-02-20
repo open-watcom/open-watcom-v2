@@ -13,7 +13,6 @@
 :INCLUDE file='FMTMACRO'.
 :INCLUDE file='GMLMACS'.
 :INCLUDE file='XDEFS'.
-:INCLUDE file='SYMBOLS'
 .*
 :GDOC.
 .*
