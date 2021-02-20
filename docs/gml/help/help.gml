@@ -7,13 +7,13 @@
 :set symbol='colon' value=':'
 :set symbol='appsp' value=''.
 
-:set symbol='crsup'     value=';.sf20;.ct ;.esf;.ct '.
-:set symbol='crsdn'     value=';.sf20;.ct ;.esf;.ct '.
-:set symbol='crslt'     value=';.sf20;.ct ®;.esf;.ct '.
-:set symbol='crsrt'     value=';.sf20;.ct ¯;.esf;.ct '.
-:set symbol='bksp'      value=';.sf20;.ct ;.esf;.ct '.
-:set symbol=bup         value=';.sf21;.ct ;.esf;.ct '.
-:set symbol=bdown       value=';.sf21;.ct ;.esf;.ct '.
+:set symbol='crsup'     value=';.sf20;.ct &'d2c(24).;.esf;.ct '.
+:set symbol='crsdn'     value=';.sf20;.ct &'d2c(25).;.esf;.ct '.
+:set symbol='crslt'     value=';.sf20;.ct &'d2c(174).;.esf;.ct '.
+:set symbol='crsrt'     value=';.sf20;.ct &'d2c(175).;.esf;.ct '.
+:set symbol='bksp'      value=';.sf20;.ct &'d2c(27).;.esf;.ct '.
+:set symbol=bup         value=';.sf21;.ct &'d2c(30).;.esf;.ct '.
+:set symbol=bdown       value=';.sf21;.ct &'d2c(31).;.esf;.ct '.
 
 .dm tail begin
 :fig frame=none.
