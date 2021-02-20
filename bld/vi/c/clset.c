@@ -300,13 +300,6 @@ static const char *getOneSetVal( int token, bool isbool, char *tmpstr, bool want
 } /* getOneSetVal */
 
 /*
- * setOneSetVal - set a single set value
- */
-static const char *setOneSetVal( int token, bool isbool, char *tmpstr, bool want_boolstr )
-{
-}
-
-/*
  * GetNewValueDialog - get a new value from the user
  */
 #ifndef __WIN__

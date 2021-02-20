@@ -495,14 +495,10 @@ static TOKEN ScanPPDot( void )
     }
 }
 
-typedef enum {
-    CCNV_32,
-    CCNV_64,
-    CCNV_OVR
-} cnv_cc;
+typedef enum { CNV_32, CNV_64, CNV_OVR } cnv_cc;
 
-static cnv_cc CnvBase8( void )
-/****************************/
+static cnv_cc Cnv8( void )
+/************************/
 {
     char        *curr;
     char        c;
@@ -522,14 +518,14 @@ static cnv_cc CnvBase8( void )
         ++curr;
     }
     Constant = value;
-    return( CCNV_32 );
+    return( CNV_32 );
 is64:
-    ret = CCNV_64;
+    ret = CNV_64;
     U32ToU64( value, &value64 );
     do {
         c = *curr;
         if( U64Cnv8( &value64, c-'0' ) ) {
-            ret = CCNV_OVR;
+            ret = CNV_OVR;
         }
         ++curr;
     } while( len-- > 0 );
@@ -537,8 +533,8 @@ is64:
     return( ret );
 }
 
-static cnv_cc CnvBase16( void )
-/*****************************/
+static cnv_cc Cnv16( void )
+/*************************/
 {
     const char      *curr;
     unsigned char   c;
@@ -561,9 +557,9 @@ static cnv_cc CnvBase16( void )
         ++curr;
     }
     Constant = value;
-    return( CCNV_32 );
+    return( CNV_32 );
 is64:
-    ret = CCNV_64;
+    ret = CNV_64;
     U32ToU64( value, &value64 );
     do {
         c = *curr;
@@ -571,7 +567,7 @@ is64:
             c = (( c | HEX_MASK ) - HEX_BASE ) + 10 + '0';
         }
         if( U64Cnv16( &value64, c-'0' ) ) {
-            ret = CCNV_OVR;
+            ret = CNV_OVR;
         }
         ++curr;
     } while( len-- > 0 );
@@ -579,8 +575,8 @@ is64:
     return( ret );
 }
 
-static cnv_cc CnvBase10( void )
-/*****************************/
+static cnv_cc Cnv10( void )
+/*************************/
 {
     const char      *curr;
     unsigned char   c;
@@ -607,14 +603,14 @@ static cnv_cc CnvBase10( void )
         ++curr;
     }
     Constant = value;
-    return( CCNV_32 );
+    return( CNV_32 );
 is64:
-    ret = CCNV_64;
+    ret = CNV_64;
     U32ToU64( value, &value64 );
     do {
         c = *curr;
         if( U64Cnv10( &value64, c-'0') ) {
-            ret = CCNV_OVR;
+            ret = CNV_OVR;
         }
         ++curr;
     } while( len-- > 0 );
@@ -626,32 +622,24 @@ static TOKEN doScanNum( void )
 /****************************/
 {
     int         c;
-    cnv_cc      const_ov;
-    enum {
-        CFMT_DEC,
-        CFMT_HEX,
-        CFMT_OCT
-    }           const_form;
-    enum {
-        CSUFF_NONE,
-        CSUFF_U,
-        CSUFF_L,
-        CSUFF_UL,
-        CSUFF_I,
-        CSUFF_UI,
-        CSUFF_LL,
-        CSUFF_ULL
-    }           const_suffix;
+    msg_codes   bad_token_type;
+    cnv_cc      ov;
+    TOKEN       token;
 
-//    BadTokenInfo = ERR_NONE;
-    const_ov = CCNV_32;
+    struct {
+        enum { CON_DEC, CON_HEX, CON_OCT, CON_ERR } form;
+        enum { SUFF_NONE,SUFF_U, SUFF_L,SUFF_UL,  SUFF_I, SUFF_UI,
+               SUFF_LL,SUFF_ULL } suffix;
+    } con;
+
+    BadTokenInfo = ERR_NONE;
+    ov = CNV_32;
     Constant = 0;
     if( CurrChar == '0' ) {
         c = NextChar();
         if( c == 'x' || c == 'X' ) {
-            const_form = CFMT_HEX;
-            BadTokenInfo = ERR_INVALID_HEX_CONSTANT;
-
+            bad_token_type = ERR_INVALID_HEX_CONSTANT;
+            con.form = CON_HEX;
             c = WriteBufferCharNextChar( c );
             while( CharSet[c] & (C_HX | C_DI) ) {
                 c = WriteBufferCharNextChar( c );
@@ -664,19 +652,18 @@ static TOKEN doScanNum( void )
             }
 
             if( TokenLen == 2 ) {   /* just collected a 0x */
+                BadTokenInfo = ERR_INVALID_HEX_CONSTANT;
+                con.form = CON_ERR;
                 if( diagnose_lex_error() ) {
                     CErr1( ERR_INVALID_HEX_CONSTANT );
                 }
-            } else {
-                const_ov = CnvBase16();
             }
         } else {    /* scan octal number */
             unsigned char   digit_mask;
 
-            const_form = CFMT_OCT;
-            BadTokenInfo = ERR_INVALID_OCTAL_CONSTANT;
+            bad_token_type = ERR_INVALID_OCTAL_CONSTANT;
+            con.form = CON_OCT;
             digit_mask = 0;
-
             // if collecting tokens for macro preprocessor, allow 8 and 9
             // since the argument may be used in with # or ##.
             while( c >= '0' && c <= '9' ) {
@@ -687,17 +674,16 @@ static TOKEN doScanNum( void )
                 return( doScanFloat( false ) );
             }
             if( digit_mask & 0x08 ) {   /* if digit 8 or 9 somewhere */
+                BadTokenInfo = ERR_INVALID_OCTAL_CONSTANT;
+                con.form = CON_ERR;
                 if( diagnose_lex_error() ) {
                     CErr1( ERR_INVALID_OCTAL_CONSTANT );
                 }
-            } else {
-                const_ov = CnvBase8();
             }
         }
     } else {    /* scan decimal number */
-        const_form = CFMT_DEC;
-        BadTokenInfo = ERR_INVALID_CONSTANT;
-
+        bad_token_type = ERR_INVALID_CONSTANT;
+        con.form = CON_DEC;
         c = NextChar();
         while( c >= '0' && c <= '9' ) {
             c = WriteBufferCharNextChar( c );
@@ -705,24 +691,36 @@ static TOKEN doScanNum( void )
         if( c == '.' || c == 'e' || c == 'E' ) {
             return( doScanFloat( false ) );
         }
-        const_ov = CnvBase10();
     }
-    const_suffix = CSUFF_NONE;
-    if( c == 'l' || c == 'L' ) {   // collect const_suffix
+    switch( con.form ) {
+    case CON_OCT:
+        ov = Cnv8();
+        break;
+    case CON_HEX:
+        ov = Cnv16();
+        break;
+    case CON_DEC:
+        ov = Cnv10();
+        break;
+    case CON_ERR:
+        ov = CNV_32;
+    }
+    con.suffix = SUFF_NONE;
+    if( c == 'l' || c == 'L' ) {   // collect suffix
         c = WriteBufferCharNextChar( c );
         if( c == 'u' || c == 'U' ) {
             c = WriteBufferCharNextChar( c );
-            const_suffix = CSUFF_UL;
+            con.suffix = SUFF_UL;
         } else if( c == 'l' || c == 'L' ) {
             c = WriteBufferCharNextChar( c );
             if( c == 'u' || c == 'U' ) {
                 c = WriteBufferCharNextChar( c );
-                const_suffix = CSUFF_ULL;
+                con.suffix = SUFF_ULL;
             } else {
-                const_suffix = CSUFF_LL;
+                con.suffix = SUFF_LL;
             }
         } else {
-            const_suffix = CSUFF_L;
+            con.suffix = SUFF_L;
         }
     } else if( c == 'u' || c == 'U' ) {
         c = WriteBufferCharNextChar( c );
@@ -730,21 +728,21 @@ static TOKEN doScanNum( void )
             c = WriteBufferCharNextChar( c );
             if( c == 'l' || c == 'L' ) {
                 c = WriteBufferCharNextChar( c );
-                const_suffix = CSUFF_ULL;
+                con.suffix = SUFF_ULL;
             } else {
-                const_suffix = CSUFF_UL;
+                con.suffix = SUFF_UL;
             }
         } else if( c == 'i' || c == 'I' ) {
             c = WriteBufferCharNextChar( c );
-            const_suffix = CSUFF_UI;
+            con.suffix = SUFF_UI;
         } else {
-            const_suffix = CSUFF_U;
+            con.suffix = SUFF_U;
         }
     } else if( c == 'i' || c == 'I' ) {
         c = WriteBufferCharNextChar( c );
-        const_suffix = CSUFF_I;
+        con.suffix = SUFF_I;
     }
-    if( const_suffix == CSUFF_UI || const_suffix == CSUFF_I ) {
+    if( con.suffix == SUFF_UI || con.suffix == SUFF_I ) {
         unsigned_32 value;
 
         value = 0;
@@ -753,28 +751,28 @@ static TOKEN doScanNum( void )
             c = WriteBufferCharNextChar( c );
         }
         if( value == 64 ) {
-            if( const_suffix == CSUFF_I ) {
+            if( con.suffix == SUFF_I ) {
                 ConstType = TYP_LONG64;
             } else {
                 ConstType = TYP_ULONG64;
             }
-            if( const_ov == CCNV_32 ) {
+            if( ov == CNV_32 ) {
                 U32ToU64( Constant, &Constant64 );
             }
         } else if( value == 32 ) {
-            if( const_suffix == CSUFF_I ) {
+            if( con.suffix == SUFF_I ) {
                 ConstType = TYP_LONG;
             } else {
                 ConstType = TYP_ULONG;
             }
         } else if( value == 16 ) {
-            if( const_suffix == CSUFF_I ) {
+            if( con.suffix == SUFF_I ) {
                 ConstType = TYP_SHORT;
             } else {
                 ConstType = TYP_USHORT;
             }
         } else if( value == 8 ) {
-            if( const_suffix == CSUFF_I ) {
+            if( con.suffix == SUFF_I ) {
                 ConstType = TYP_CHAR;
             } else {
                 ConstType = TYP_UCHAR;
@@ -784,17 +782,20 @@ static TOKEN doScanNum( void )
                 CErr1( ERR_INVALID_CONSTANT );
             }
         }
-        if( const_ov == CCNV_64 && value < 64 ) {
-            const_ov = CCNV_OVR;
+        if( ov == CNV_64 && value < 64 ) {
+            BadTokenInfo = ERR_CONSTANT_TOO_BIG;
             Constant =  Constant64.u._32[I64LO32];
+            if( diagnose_lex_error() ) {
+                CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
+            }
         }
-    } else if( const_ov == CCNV_32 && const_suffix != CSUFF_LL && const_suffix != CSUFF_ULL ) {
-        switch( const_suffix ) {
-        case CSUFF_NONE:
+    } else if( ov == CNV_32 && con.suffix != SUFF_LL && con.suffix != SUFF_ULL ) {
+        switch( con.suffix ) {
+        case SUFF_NONE:
             if( Constant <= TARGET_INT_MAX ) {
                 ConstType = TYP_INT;
 #if TARGET_INT < TARGET_LONG
-            } else if( Constant <= TARGET_UINT_MAX && const_form != CFMT_DEC ) {
+            } else if( Constant <= TARGET_UINT_MAX && con.form != CON_DEC ) {
                 ConstType = TYP_UINT;
             } else if( Constant <= 0x7fffffffU ) {
                 ConstType = TYP_LONG;
@@ -802,21 +803,21 @@ static TOKEN doScanNum( void )
                 ConstType = TYP_ULONG;
             }
 #else
-            } else if( const_form != CFMT_DEC ) {
+            } else if( con.form != CON_DEC ) {
                 ConstType = TYP_UINT;
             } else {
                 ConstType = TYP_ULONG;
             }
 #endif
             break;
-        case CSUFF_L:
+        case SUFF_L:
             if( Constant <= 0x7FFFFFFFU ) {
                 ConstType = TYP_LONG;
             } else {
                 ConstType = TYP_ULONG;
             }
             break;
-        case CSUFF_U:
+        case SUFF_U:
             ConstType = TYP_UINT;
 #if TARGET_INT < TARGET_LONG
             if( Constant > TARGET_UINT_MAX ) {
@@ -824,23 +825,23 @@ static TOKEN doScanNum( void )
             }
 #endif
             break;
-        case CSUFF_UL:
+        case SUFF_UL:
             ConstType = TYP_ULONG;
             break;
         default:
             break;
         }
     } else {
-        switch( const_suffix ) {
-        case CSUFF_NONE:
+        switch( con.suffix ) {
+        case SUFF_NONE:
             ConstType = TYP_LONG64;
             if( Constant64.u._32[I64HI32] & 0x80000000 ) {
                 ConstType = TYP_ULONG64;
             }
             break;
-        case CSUFF_L:
-        case CSUFF_LL:
-            if( const_ov == CCNV_32 ) {
+        case SUFF_L:
+        case SUFF_LL:
+            if( ov == CNV_32 ) {
                 U32ToU64( Constant, &Constant64 );
             }
             if( Constant64.u._32[I64HI32] & 0x80000000 ) {
@@ -849,10 +850,10 @@ static TOKEN doScanNum( void )
                 ConstType = TYP_LONG64;
             }
             break;
-        case CSUFF_U:
-        case CSUFF_UL:
-        case CSUFF_ULL:
-            if( const_ov == CCNV_32 ) {
+        case SUFF_U:
+        case SUFF_UL:
+        case SUFF_ULL:
+            if( ov == CNV_32 ) {
                 U32ToU64( Constant, &Constant64 );
             }
             ConstType = TYP_ULONG64;
@@ -861,21 +862,23 @@ static TOKEN doScanNum( void )
             break;
         }
     }
-    if( !IS_PPCTL_NORMAL() && (CharSet[c] & (C_AL | C_DI)) ) {
+    token = T_CONSTANT;
+    if( CharSet[c] & (C_AL | C_DI) ) {
+        token = T_BAD_TOKEN;
         while( CharSet[c] & (C_AL | C_DI) ) {
             c = WriteBufferCharNextChar( c );
         }
-        WriteBufferNullChar();
-        return( T_BAD_TOKEN );
     }
     WriteBufferNullChar();
-    if( const_ov == CCNV_OVR ) {
+    if( token == T_BAD_TOKEN ) {
+        BadTokenInfo = bad_token_type;
+    } else if( ov == CNV_OVR ) {
         BadTokenInfo = ERR_CONSTANT_TOO_BIG;
         if( diagnose_lex_error() ) {
             CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
         }
     }
-    return( T_CONSTANT );
+    return( token );
 }
 
 static TOKEN ScanNum( void )

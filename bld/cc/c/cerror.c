@@ -202,7 +202,7 @@ void FmtCMsg( char *buff, cmsg_info *info )
     len = 0;
     if( info->line != 0 ) {
         if( info->fname != NULL ) {
-            len += _snprintf( &buff[len], MAX_MSG_LEN - len, "%s(%u,%u): ", info->fname, info->line, info->column );
+            len += _snprintf( &buff[len], MAX_MSG_LEN - len, "%s(%u): ", info->fname, info->line );
         }
     } else {
         buff[0] = '\0';
