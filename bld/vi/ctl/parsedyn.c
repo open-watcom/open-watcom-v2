@@ -38,7 +38,9 @@
 
 #define MAX_LINE_LEN    200
 
-static char White_space[] = " \t";
+#define IS_WS( x )      ((x) == ' ' || (x) == '\t')
+
+static char WS_delims[] = " \t";
 
 static int Line = 1;
 
@@ -49,7 +51,7 @@ static char *get_line( char *buf, int max_len, FILE *file )
 
     while( (ret = myfgets( buf, max_len, file )) != NULL ) {
         ++Line;
-        ret += strspn( ret, White_space );
+        ret += strspn( ret, WS_delims );
         if( ret[0] != '#' && ret[0] != '\0' ) {
             break;
         }
@@ -65,7 +67,7 @@ static bool empty_data( char *ret )
 
     if( ret != NULL && *ret == '*' ) {
         for( end = ret + 1; *end != '\0'; ++end ) {
-            if( *end != ' ' && *end != '\t' ) {
+            if( !IS_WS( *end ) ) {
                 return( false );
             }
         }
@@ -114,7 +116,7 @@ int main( int argc, char *argv[] )
 
     elt = 1;
     while( (line = get_line( buf, sizeof( buf ), in )) != NULL ) {
-        end = strpbrk( line, White_space );
+        end = strpbrk( line, WS_delims );
         if( end == NULL ) {
             printf( "No template on line %d\n", Line );
             goto error;
@@ -155,7 +157,7 @@ int main( int argc, char *argv[] )
     in = fopen( argv[1], "r" );
 
     while( (line = get_line( buf, sizeof( buf ), in )) != NULL ) {
-        start = strpbrk( line, White_space );
+        start = strpbrk( line, WS_delims );
         if( start != NULL )
             *start++ = '\0';
         strcpy( type, line );
@@ -167,7 +169,7 @@ int main( int argc, char *argv[] )
         }
 
         do {
-            end = strpbrk( start, White_space );
+            end = strpbrk( start, WS_delims );
             if( end != NULL ) {
                 *end++ = '\0';
             }

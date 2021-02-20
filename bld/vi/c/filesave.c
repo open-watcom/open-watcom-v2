@@ -43,6 +43,8 @@
 #include "clibext.h"
 
 
+#define IS_WS( x )  ((x) == ' ' || (x) == '\t')
+
 static int fileHandle;
 
 /*
@@ -58,7 +60,7 @@ static int trimLine( char *buffer, line *cline )
     len = strlen( data );
     if( EditFlags.CMode || EditFlags.RemoveSpaceTrailing ) {
         for( i = len; i-- > 0; ) {
-            if( data[i] != ' ' && data[i] != '\t' ) {
+            if( !IS_WS( data[i] ) ) {
                 break;
             }
             len = i;
