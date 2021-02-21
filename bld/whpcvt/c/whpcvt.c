@@ -939,6 +939,15 @@ size_t trans_add_str( const char *str, section_def *section )
     return( len );
 }
 
+size_t trans_add_str_nl( const char *str, section_def *section )
+/**************************************************************/
+{
+    size_t      len;
+
+    len = trans_add_str( str, section );
+    return( len + trans_add_char( '\n', section ) );
+}
+
 void add_link( const char *link_name )
 /************************************/
 {

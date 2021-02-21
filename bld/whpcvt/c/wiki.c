@@ -86,7 +86,7 @@ static int          tabs_num = 0;
 static void draw_line( section_def *section )
 /*******************************************/
 {
-    trans_add_str( "----\n", section );
+    trans_add_str_nl( "----", section );
 }
 
 static size_t translate_char_wiki( char ch, char next_ch, char *buf )
@@ -184,7 +184,7 @@ static size_t trans_add_list( char *list, section_def *section, char *ptr )
     if( *ptr == 'c' ) {
         len += trans_add_str( " compact", section );
     }
-    len += trans_add_str( ">\n", section );
+    len += trans_add_str_nl( ">", section );
 #endif
     return( len );
 }
@@ -260,11 +260,11 @@ void wiki_trans_line( char *line_buf, section_def *section )
     case WHP_TABXMP:
         if( *skip_blanks( ptr + 1 ) == '\0' ) {
             Tab_xmp = false;
-            trans_add_str( "</pre>\n", section );
+            trans_add_str_nl( "</pre>", section );
             Blank_line_sfx = false;     // remove following blanks
         } else {
             read_tabs( ptr + 1 );
-            trans_add_str( "<pre>\n", section );
+            trans_add_str_nl( "<pre>", section );
             Tab_xmp = true;
             Blank_line_pfx = false;     // remove preceding blanks
         }
@@ -298,19 +298,19 @@ void wiki_trans_line( char *line_buf, section_def *section )
         Blank_line_pfx = false;
         return;
     case WHP_SLIST_END:
-        trans_add_str( "\n", section );
+        trans_add_str_nl( "", section );
         Blank_line_sfx = false;
         return;
     case WHP_OLIST_END:
-        trans_add_str( "\n", section );
+        trans_add_str_nl( "", section );
         Blank_line_sfx = false;
         return;
     case WHP_LIST_END:
-        trans_add_str( "\n", section );
+        trans_add_str_nl( "", section );
         Blank_line_sfx = false;
         return;
     case WHP_DLIST_END:
-        trans_add_str( "\n", section );
+        trans_add_str_nl( "", section );
         Blank_line_sfx = false;
         return;
     case WHP_LIST_ITEM:
@@ -346,7 +346,7 @@ void wiki_trans_line( char *line_buf, section_def *section )
        put out the blank line */
 
     if( Blank_line_pfx || Blank_line_sfx ) {
-        line_len += trans_add_str( "\n", section );
+        line_len += trans_add_str_nl( "", section );
         Blank_line_pfx = false;
     }
     Blank_line_sfx = true;

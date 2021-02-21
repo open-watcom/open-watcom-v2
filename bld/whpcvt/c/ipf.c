@@ -87,11 +87,11 @@ static void draw_line( section_def *section )
 {
     int         i;
 
-    trans_add_str( ":cgraphic.\n", section );
+    trans_add_str_nl( ":cgraphic.", section );
     for( i = BOX_LINE_SIZE; i > 0; --i ) {
         trans_add_char( BOX_HBAR, section );
     }
-    trans_add_str( "\n:ecgraphic.\n", section );
+    trans_add_str_nl( "\n:ecgraphic.", section );
 }
 
 static size_t translate_char_ipf( char ch, char *buf )
@@ -179,7 +179,7 @@ static size_t trans_add_list( char *list, section_def *section, char *ptr )
     if( *ptr == 'c' ) {
         len += trans_add_str( " compact", section );
     }
-    len += trans_add_str( ".\n", section );
+    len += trans_add_str_nl( ".", section );
     return( len );
 }
 
@@ -254,11 +254,11 @@ void ipf_trans_line( char *line_buf, section_def *section )
     case WHP_TABXMP:
         if( *skip_blanks( ptr + 1 ) == '\0' ) {
             Tab_xmp = false;
-            trans_add_str( ":exmp.\n", section );
+            trans_add_str_nl( ":exmp.", section );
             Blank_line_sfx = false;     // remove following blanks
         } else {
             read_tabs( ptr + 1 );
-            trans_add_str( ":xmp.\n", section );
+            trans_add_str_nl( ":xmp.", section );
             Tab_xmp = true;
             Blank_line_pfx = false;     // remove preceding blanks
         }
@@ -284,7 +284,7 @@ void ipf_trans_line( char *line_buf, section_def *section )
         Blank_line_pfx = false;
         return;
     case WHP_DLIST_START:
-        trans_add_str( ":dl break=all tsize=5.\n", section );
+        trans_add_str_nl( ":dl break=all tsize=5.", section );
         Blank_line_pfx = false;
         return;
     case WHP_SLIST_START:
@@ -292,19 +292,19 @@ void ipf_trans_line( char *line_buf, section_def *section )
         Blank_line_pfx = false;
         return;
     case WHP_SLIST_END:
-        trans_add_str( ":esl.\n", section );
+        trans_add_str_nl( ":esl.", section );
         Blank_line_sfx = false;
         return;
     case WHP_OLIST_END:
-        trans_add_str( ":eol.\n", section );
+        trans_add_str_nl( ":eol.", section );
         Blank_line_sfx = false;
         return;
     case WHP_LIST_END:
-        trans_add_str( ":eul.\n", section );
+        trans_add_str_nl( ":eul.", section );
         Blank_line_sfx = false;
         return;
     case WHP_DLIST_END:
-        trans_add_str( ":edl.\n", section );
+        trans_add_str_nl( ":edl.", section );
         Blank_line_sfx = false;
         return;
     case WHP_LIST_ITEM:
@@ -341,7 +341,7 @@ void ipf_trans_line( char *line_buf, section_def *section )
 
     if( Blank_line_pfx ) {
         if( Blank_line_sfx ) {
-            line_len += trans_add_str( ".br\n", section );
+            line_len += trans_add_str_nl( ".br", section );
         }
         Blank_line_pfx = false;
     }
@@ -359,7 +359,7 @@ void ipf_trans_line( char *line_buf, section_def *section )
     ch = *ptr;
     if( ch != WHP_LIST_ITEM && ch != WHP_DLIST_TERM && ch != WHP_DLIST_DESC && !Tab_xmp ) {
         /* a .br in front of li and dt would generate extra spaces */
-        line_len += trans_add_str( ".br\n", section );
+        line_len += trans_add_str_nl( ".br", section );
     }
 
     term_fix = false;
