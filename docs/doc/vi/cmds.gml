@@ -223,7 +223,7 @@ of them).
 Some commands are noted as "EX mode only".
 This means that the command is not available from the normal
 .keyword &cmdline
-; it may only be used from an editor
+.ct ; it may only be used from an editor
 .keyword script
 or from
 .keyword EX mode
@@ -409,7 +409,7 @@ border of each visible).
 .begdescr
 Changes current working directory to &parm1
 .period
-If &parm1 is not specified, then the current directory is displayed in 
+If &parm1 is not specified, then the current directory is displayed in
 the message window.
 &parm1
 may be specified with drive and path.
@@ -1522,16 +1522,14 @@ command does an implicit push.
 .begdescr
 Puts (pastes) the
 .keyword &copybuffer
-&parm2 ('1'-'9', or 'a'-'z') after the
-line &range
+&parm2 ('1'-'9', or 'a'-'z') after the line &range
 .period
 .np
 If &parm2 is not specified, the active
 .keyword &copybuffer
 is assumed.
 .np
-If &parm1 is specified, then the lines are put before the
-line &range
+If &parm1 is specified, then the lines are put before the line &range
 .period
 .enddescr
 .xmplsect begin
@@ -1798,14 +1796,13 @@ upper left-hand corner at (0,0) and lower right-hand corner at (10,10).
 .begdescr
 Execute &edvi source script file &parm1
 .period
-Optional parameters &parm2 to
-&parm5 may be specified, these are passed to the specified script.
+Optional parameters &parm2 to &parm5 may be specified, these are passed
+to the specified script.
 .np
-If "." is specified as the script name, the current
-file being edited is run as a script.
+If "." is specified as the script name, the current file being edited
+is run as a script.
 .np
-For information on editor scripts,
-see the chapter
+For information on editor scripts, see the chapter
 :HDREF refid='scripts'.
 .period
 .enddescr
@@ -1889,8 +1886,7 @@ to the line containing mark
 .begdescr
 Searches for the tag &parm1
 .period
-Tags are kept in a special file,
-which must be located somewhere in your path.
+Tags are kept in a special file, which must be located somewhere in your path.
 This file is controlled with the
 .keyref tagfilename
 setting; the default for this setting is
@@ -2043,8 +2039,7 @@ See the
 .keyref map
 command for details on mapping keys.
 .np
-There are a number of pre-defined
-symbols that are recognized for &parm1
+There are a number of pre-defined symbols that are recognized for &parm1
 .period
 These are described in the Appendix
 :HDREF refid='symkey'.
@@ -2055,8 +2050,7 @@ These are described in the Appendix
 Removes the mapping of CTRL_W for
 .keyword &cmdmode
 .period
-Pressing CTRL_W in command
-mode will now do the default action.
+Pressing CTRL_W in command mode will now do the default action.
 .endxmpl
 .begxmpl unmap! F1
 Removes the mapping of F1 for
@@ -2108,12 +2102,10 @@ in view-only mode.
 .begfunc VISUAL
 .syntx * VIsual &lt.file_name&gt.
 .begdescr
-Causes &edvi to re-enter visual mode (full screen editing mode)
-if &edvi is in
+Causes &edvi to re-enter visual mode (full screen editing mode) if &edvi is in
 .keyword EX mode
 .period
-If the filename &parm1 is specified,
-this functions just like the
+If the filename &parm1 is specified, this functions just like the
 .keyref edit
 command.
 .enddescr
@@ -2121,8 +2113,7 @@ command.
 .begxmpl vi test.c
 Return to full screen editing mode (if in
 .keyword EX mode
-.ct ) and edit the file
-test.c
+.ct ) and edit the file test.c
 .endxmpl
 .begxmpl vi
 Return to full screen editing mode (if in
@@ -2194,8 +2185,7 @@ If &parm1 is not specified, the text is yanked (copied) into the active
 .keyword &copybuffer
 .period
 .np
-If &parm1 ('1'-'9', or 'a'-'z') is specified, the text is yanked into
-that
+If &parm1 ('1'-'9', or 'a'-'z') is specified, the text is yanked into that
 .keyword &copybuffer
 .period
 .np
@@ -2212,8 +2202,7 @@ Yanks (copies) all lines into the active
 .period
 .endxmpl
 .begxmpl .,$ y z
-Yanks the lines from the current line to the last line in the file
-into the
+Yanks the lines from the current line to the last line in the file into the
 .keyword &copybuffer
 .param z
 .period

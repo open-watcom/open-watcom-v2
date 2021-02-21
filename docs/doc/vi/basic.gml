@@ -712,7 +712,7 @@ and the cursor will be on the 't' just before the period.
 .np
 If you wish to delete the character before the cursor, you may
 press the letter 'X' (capital x).
-This will delete the character before the cursor, and move 
+This will delete the character before the cursor, and move
 the cursor back one (i.e. the cursor stays on the character that
 it was on before you pressed the 'X').
 You may use a repeat count with this command.
@@ -1184,7 +1184,7 @@ Once you enter the number, you are placed at that line.
 
 :DT.Search forwards
 :DD.Prompts for some search text.
-Once you type some text and press 
+Once you type some text and press
 .param ENTER
 .ct , &edvi searches forwards through the current edit buffer for the text.
 If the text is found, it is highlighted and the cursor is placed on the
