@@ -20,15 +20,15 @@
 :set symbol='rslnk'     value='&'d2c(127)'. :CMT. WHP_HLINK
 :set symbol='rsdfn'     value='&'d2c(234)'. :CMT. WHP_DFN
 :set symbol='rslsti'    value='&'d2c(211)'. :CMT. WHP_LIST_ITEM
-:set symbol='rslsts'    value='&'d2c(210)'. :CMT. WHP_LIST_START
-:set symbol='rslste'    value='&'d2c(212)'. :CMT. WHP_LIST_END
-:set symbol='rsslsts'   value='&'d2c(213)'. :CMT. WHP_SLIST_START
-:set symbol='rsslste'   value='&'d2c(214)'. :CMT. WHP_SLIST_END
-:set symbol='rsolsts'   value='&'d2c(200)'. :CMT. WHP_OLIST_START
-:set symbol='rsolste'   value='&'d2c(201)'. :CMT. WHP_OLIST_END
-:set symbol='rssdl'     value='&'d2c(202)'. :CMT. WHP_DLIST_START
-:set symbol='rsedl'     value='&'d2c(203)'. :CMT. WHP_DLIST_END
-:set symbol='rsdt'      value='&'d2c(204)'. :CMT. WHP_DLIST_TERM
+:set symbol='rslstus'   value='&'d2c(210)'. :CMT. WHP_LIST_START
+:set symbol='rslstue'   value='&'d2c(212)'. :CMT. WHP_LIST_END
+:set symbol='rslstss'   value='&'d2c(213)'. :CMT. WHP_SLIST_START
+:set symbol='rslstse'   value='&'d2c(214)'. :CMT. WHP_SLIST_END
+:set symbol='rslstos'   value='&'d2c(200)'. :CMT. WHP_OLIST_START
+:set symbol='rslstoe'   value='&'d2c(201)'. :CMT. WHP_OLIST_END
+:set symbol='rslstds'   value='&'d2c(202)'. :CMT. WHP_DLIST_START
+:set symbol='rslstde'   value='&'d2c(203)'. :CMT. WHP_DLIST_END
+:set symbol='rslstdt'   value='&'d2c(204)'. :CMT. WHP_DLIST_TERM
 :set symbol='rskw'      value='&'d2c(236)'. :CMT. WHP_CTX_KW
 :set symbol='rshln'     value='&'d2c(167)'. :CMT. WHP_TOPIC_LN
 :set symbol='rshnln'    value='&'d2c(248)'. :CMT. WHP_TOPIC_NOLN
@@ -42,6 +42,8 @@
 :set symbol='rsspace'   value='&'d2c(255)'. :CMT. WHP_SPACE_NOBREAK
 :set symbol='rstbxmp'   value='&'d2c(170)'. :CMT. WHP_TABXMP
 :set symbol='rsflnk'    value='&'d2c(232)'. :CMT. WHP_FLINK
+:CMT. **** list type character (second byte) supported by WHPCVT ***/
+:set symbol='rslstc'    value='c'.          :CMT. WHP_LIST_COMPACT
 :CMT. **** This list of characters used by GML WHELPDRV driver.
 :CMT. WGML symbol        value                WHPCVT symbol
 :CMT.                   value='&'d2c(157)'.  WHP_FONTTYPE
@@ -147,7 +149,7 @@
 :cmt. **** :UL ****
 .dm zul begin
 :sl
-.se stlst=`&rslsts.c`
+.se stlst=`&rslstus.&rslstc.`
 .dm zul end
 .gt ul add zul
 .gt zul add zul
@@ -177,7 +179,7 @@
 
 :cmt. **** :EUL ****
 .dm zeul begin
-:pb.&rslste.
+:pb.&rslstue.
 :esl
 .dm zeul end
 .gt eul add zeul
@@ -186,14 +188,14 @@
 :cmt. **** :OL ****
 .dm zol begin
 :sl
-.se stlst=`&rsolsts`
+.se stlst=`&rslstos`
 .dm zol end
 .gt ol add zol
 .gt zol add zol
 
 :cmt. **** :EOL ****
 .dm zeol begin
-:pb.&rsolste
+:pb.&rslstoe
 :esl
 .dm zeol end
 .gt eol add zeol
@@ -202,14 +204,14 @@
 :cmt. **** :SL ****
 .dm zsl begin
 :sl
-.se stlst=`&rsslsts.c`
+.se stlst=`&rslstss.&rslstc.`
 .dm zsl end
 .gt sl add zsl
 .gt zsl add zsl
 
 :cmt. **** :ESL ****
 .dm zesl begin
-:pb.&rsslste
+:pb.&rslstse
 :esl
 .dm zesl end
 .gt esl add zesl
@@ -226,7 +228,7 @@
 
 :cmt. **** :EDL ****
 .dm zedl begin
-:pb.&rsedl.
+:pb.&rslstde.
 .sk 1
 .dm zedl end
 .gt edl add zedl
@@ -243,11 +245,11 @@
 .dm zdt begin
 .sk 1
 .if '&dfnst.' eq 'first' .do begin
-&rssdl.
+&rslstds.
 .   :pb.
 .   .se dfnst=''
 .do end
-&rsdt.&*.
+&rslstdt.&*.
 .dm zdt end
 .gt dt add zdt
 .gt zdt add zdt
