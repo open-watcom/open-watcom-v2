@@ -396,8 +396,8 @@ static size_t trans_add_str_wrap( const char *str, section_def *section )
     return( len );
 }
 
-static void new_list( char *ptr )
-/*******************************/
+static void new_list( const char *ptr )
+/*************************************/
 {
     list_type   type;
 
