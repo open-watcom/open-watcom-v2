@@ -140,18 +140,6 @@ static line_postfix     Line_postfix = LPOSTFIX_NONE;
 static char             IB_Hyperlink_L;
 static char             IB_Hyperlink_R;
 
-static void set_compact( char *line )
-/***********************************/
-{
-    ++line;
-    if( *line == 'c' ) {
-        /* compact list */
-        Curr_list->compact = LIST_SPACE_COMPACT;
-    } else {
-        Curr_list->compact = LIST_SPACE_STANDARD;
-    }
-}
-
 // this function will change all of the spaces in a string into non-breaking
 // spaces (character 0xFF ). It's currently only used for the labels on
 // hyper-links to ensure that they do not get broken across lines as
@@ -408,8 +396,8 @@ static size_t trans_add_str_wrap( const char *str, section_def *section )
     return( len );
 }
 
-static void new_list( char chtype )
-/*********************************/
+static void new_list( char *ptr )
+/*******************************/
 {
     list_type   type;
 
@@ -418,7 +406,7 @@ static void new_list( char chtype )
         error( ERR_MAX_LISTS );
     }
     Curr_list = &Lists[List_level];
-    switch( chtype ) {
+    switch( ptr[0] ) {
     case WHP_LIST_START:
         type = LIST_TYPE_UNORDERED;
         break;
@@ -438,7 +426,11 @@ static void new_list( char chtype )
     Curr_list->type = type;
     Curr_list->number = 1;
     Curr_list->prev_indent = Curr_indent;
-    Curr_list->compact = LIST_SPACE_STANDARD;
+    if( ptr[1] == WHP_LIST_COMPACT ) {
+        Curr_list->compact = LIST_SPACE_COMPACT;
+    } else {
+        Curr_list->compact = LIST_SPACE_STANDARD;
+    }
 }
 
 static void pop_list( void )
@@ -572,10 +564,11 @@ void ib_trans_line( char *line_buf, section_def *section )
                 indent = 0;
             }
         }
-        new_list( ch );
-        set_compact( ptr );
+        new_list( ptr );
         Curr_indent += indent;
         if( ch == WHP_DLIST_START ) {
+            if( ptr[1] == WHP_LIST_COMPACT )
+                ptr++;
             ptr = skip_blanks( ptr + 1 );
             if( *ptr != '\0' ) {
                 /* due to a weakness in GML, the definition term must be

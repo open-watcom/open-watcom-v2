@@ -109,18 +109,6 @@ static void trans_add_tabs( section_def *section )
     trans_add_str( buf, section );
 }
 
-static void set_compact( char *line )
-/***********************************/
-{
-    ++line;
-    if( *line == 'c' ) {
-        /* compact list */
-        Curr_list->compact = LIST_SPACE_COMPACT;
-    } else {
-        Curr_list->compact = LIST_SPACE_STANDARD;
-    }
-}
-
 static size_t translate_char_rtf( char ch, char *buf, bool do_quotes )
 /*******************************************************************/
 {
@@ -187,8 +175,8 @@ static size_t trans_add_char_rtf( char ch, section_def *section )
     return( trans_add_str( buf, section ) );
 }
 
-static void new_list( char chtype )
-/*********************************/
+static void new_list( const char *ptr )
+/*************************************/
 {
     list_type   type;
 
@@ -197,7 +185,7 @@ static void new_list( char chtype )
         error( ERR_MAX_LISTS );
     }
     Curr_list = &Lists[List_level];
-    switch( chtype ) {
+    switch( ptr[0] ) {
     case WHP_LIST_START:
         type = LIST_TYPE_UNORDERED;
         break;
@@ -218,6 +206,11 @@ static void new_list( char chtype )
     Curr_list->number = 1;
     Curr_list->prev_indent = Curr_indent;
     Curr_list->compact = LIST_SPACE_STANDARD;
+    if( ptr[1] == WHP_LIST_COMPACT ) {
+        Curr_list->compact = LIST_SPACE_COMPACT;
+    } else {
+        Curr_list->compact = LIST_SPACE_STANDARD;
+    }
 }
 
 static void pop_list( void )
@@ -334,13 +327,14 @@ void rtf_trans_line( char *line_buf, section_def *section )
             }
             break;
         }
-        new_list( ch );
-        set_compact( ptr );
+        new_list( ptr );
         Curr_indent += indent;
         if( ch != WHP_SLIST_START || indent != 0 ) {
             Line_prefix |= LPREFIX_S_LIST;
         }
         if( ch == WHP_DLIST_START ) {
+            if( ptr[1] == WHP_LIST_COMPACT )
+                ptr++;
             ptr = skip_blanks( ptr + 1 );
             if( *ptr != '\0' ) {
                 /* due to a weakness in GML, the definition term must be

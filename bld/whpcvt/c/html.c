@@ -175,22 +175,6 @@ static size_t trans_add_str_html( const char *str, section_def *section )
     return( len );
 }
 
-static size_t trans_add_list( char *list, section_def *section, char *ptr )
-/*************************************************************************/
-{
-    size_t      len;
-
-    len = trans_add_str( list, section );
-    ++ptr;
-#if 0
-    if( *ptr == 'c' ) {
-        len += trans_add_str( " compact", section );
-    }
-    len += trans_add_str_nl( ">", section );
-#endif
-    return( len );
-}
-
 static void read_tabs( char *tab_line )
 /*************************************/
 {
@@ -284,35 +268,55 @@ void html_trans_line( char *line_buf, section_def *section )
         Blank_line_sfx = false;
         return;
     case WHP_OLIST_START:
-        trans_add_str_nl( "<ol>", section );
-        Blank_line_pfx = false;
-        return;
     case WHP_LIST_START:
-        trans_add_str_nl( "<ul>", section );
-        Blank_line_pfx = false;
-        return;
     case WHP_DLIST_START:
-        trans_add_str_nl( "<dl>", section );
-        Blank_line_pfx = false;
-        return;
     case WHP_SLIST_START:
-        trans_add_str_nl( "<ul>", section );
+        switch( ch ) {
+        case WHP_OLIST_START:
+            trans_add_str( "<ol", section );
+            break;
+        case WHP_LIST_START:
+            trans_add_str( "<ul", section );
+            break;
+        case WHP_DLIST_START:
+            trans_add_str( "<dl", section );
+            break;
+        case WHP_SLIST_START:
+            trans_add_str( "<ul style=\"list-style-type:none;\"", section );
+            break;
+        }
+//        if( ptr[1] == WHP_LIST_COMPACT )
+//            trans_add_str( " compact", section );
+        trans_add_str_nl( ">", section );
         Blank_line_pfx = false;
-        return;
-    case WHP_SLIST_END:
-        trans_add_str_nl( "</ul>", section );
-        Blank_line_sfx = false;
+        if( ch == WHP_DLIST_START ) {
+            if( ptr[1] == WHP_LIST_COMPACT )
+                ptr++;
+            ptr = skip_blanks( ptr + 1 );
+            if( *ptr != '\0' ) {
+                /* due to a weakness in GML, the definition term must be
+                   allowed on the same line as the definition tag. So
+                   if its there, continue */
+                break;
+            }
+        }
         return;
     case WHP_OLIST_END:
-        trans_add_str_nl( "</ol>", section );
-        Blank_line_sfx = false;
-        return;
     case WHP_LIST_END:
-        trans_add_str_nl( "</ul>", section );
-        Blank_line_sfx = false;
-        return;
     case WHP_DLIST_END:
-        trans_add_str_nl( "</dl>", section );
+    case WHP_SLIST_END:
+        switch( ch ) {
+        case WHP_OLIST_END:
+            trans_add_str_nl( "</ol>", section );
+            break;
+        case WHP_LIST_END:
+        case WHP_SLIST_END:
+            trans_add_str_nl( "</ul>", section );
+            break;
+        case WHP_DLIST_END:
+            trans_add_str_nl( "</dl>", section );
+            break;
+        }
         Blank_line_sfx = false;
         return;
     case WHP_LIST_ITEM:

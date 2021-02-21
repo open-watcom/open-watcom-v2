@@ -169,20 +169,6 @@ static size_t trans_add_str_ipf( const char *str, section_def *section )
     return( len );
 }
 
-static size_t trans_add_list( char *list, section_def *section, char *ptr )
-/*************************************************************************/
-{
-    size_t      len;
-
-    len = trans_add_str( list, section );
-    ++ptr;
-    if( *ptr == 'c' ) {
-        len += trans_add_str( " compact", section );
-    }
-    len += trans_add_str_nl( ".", section );
-    return( len );
-}
-
 static void read_tabs( char *tab_line )
 /*************************************/
 {
@@ -275,36 +261,58 @@ void ipf_trans_line( char *line_buf, section_def *section )
         draw_line( section );
         Blank_line_sfx = false;
         return;
-    case WHP_OLIST_START:
-        trans_add_list( ":ol", section, ptr );
-        Blank_line_pfx = false;
-        return;
     case WHP_LIST_START:
-        trans_add_list( ":ul", section, ptr );
-        Blank_line_pfx = false;
-        return;
     case WHP_DLIST_START:
-        trans_add_str_nl( ":dl break=all tsize=5.", section );
-        Blank_line_pfx = false;
-        return;
+    case WHP_OLIST_START:
     case WHP_SLIST_START:
-        trans_add_list( ":sl", section, ptr );
+        switch( ch ) {
+        case WHP_OLIST_START:
+            trans_add_str( ":ol", section );
+            break;
+        case WHP_LIST_START:
+            trans_add_str( ":ul", section );
+            break;
+        case WHP_DLIST_START:
+            trans_add_str( ":dl break=all tsize=5", section );
+            break;
+        case WHP_SLIST_START:
+            trans_add_str( ":sl", section );
+            break;
+        }
+        if( ptr[1] == WHP_LIST_COMPACT )
+            trans_add_str( " compact", section );
+        trans_add_str_nl( ".", section );
         Blank_line_pfx = false;
-        return;
-    case WHP_SLIST_END:
-        trans_add_str_nl( ":esl.", section );
-        Blank_line_sfx = false;
-        return;
-    case WHP_OLIST_END:
-        trans_add_str_nl( ":eol.", section );
-        Blank_line_sfx = false;
+        if( ch == WHP_DLIST_START ) {
+            if( ptr[1] == WHP_LIST_COMPACT )
+                ptr++;
+            ptr = skip_blanks( ptr + 1 );
+            if( *ptr != '\0' ) {
+                /* due to a weakness in GML, the definition term must be
+                   allowed on the same line as the definition tag. So
+                   if its there, continue */
+                break;
+            }
+        }
         return;
     case WHP_LIST_END:
-        trans_add_str_nl( ":eul.", section );
-        Blank_line_sfx = false;
-        return;
     case WHP_DLIST_END:
-        trans_add_str_nl( ":edl.", section );
+    case WHP_OLIST_END:
+    case WHP_SLIST_END:
+        switch( ch ) {
+        case WHP_SLIST_END:
+            trans_add_str_nl( ":esl.", section );
+            break;
+        case WHP_OLIST_END:
+            trans_add_str_nl( ":eol.", section );
+            break;
+        case WHP_LIST_END:
+            trans_add_str_nl( ":eul.", section );
+            break;
+        case WHP_DLIST_END:
+            trans_add_str_nl( ":edl.", section );
+            break;
+        }
         Blank_line_sfx = false;
         return;
     case WHP_LIST_ITEM:
