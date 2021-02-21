@@ -75,8 +75,8 @@ The
 has a command history associated with it; the size
 of this command history is controlled using the
 .keyref maxclhistory
-setting.  As well, the command history is preserved across sessions of
-&edvi if the
+setting.
+As well, the command history is preserved across sessions of &edvi if the
 .keyref historyfile
 parameter is set.
 .np
@@ -85,9 +85,9 @@ If a command is being executed through a mapped key (see the
 and
 .keyref mapbase
 commands later in this chapter), then it can be useful to keep the command
-from being added to the history.  By having a "\h" as the first characters
-after the ':' character, the command will not be added to the command
-history.
+from being added to the history.
+By having a "\h" as the first characters after the ':' character, the command
+will not be added to the command history.
 .* ******************************************************************
 .section 'Special Keys In The Command Window'
 .* ******************************************************************
@@ -220,9 +220,8 @@ the edit command is specified as "Edit", indicating that the "e", "ed",
 "edi", and "edit" are acceptable abbreviations (and that "e" is the shortest
 of them).
 .np
-Some commands are noted as "EX mode
-only".  This means that the command
-is not available from the normal
+Some commands are noted as "EX mode only".
+This means that the command is not available from the normal
 .keyword &cmdline
 ; it may only be used from an editor
 .keyword script
@@ -237,8 +236,7 @@ or from
 .begfunc &gt. '(Shift Right)'
 .syntx &lt.line_range&gt. &gt.
 .begdescr
-This command shifts the specified line range &range to the
-right
+This command shifts the specified line range &range to the right
 .keyref shiftwidth
 spaces, inserting necessary leading tabs if
 .keyref realtabs 1
@@ -261,8 +259,7 @@ spaces.
 .begfunc &lt. '(Shift Left)'
 .syntx &lt.line_range&gt. &lt.
 .begdescr
-This command shifts the specified line range &range to the
-left
+This command shifts the specified line range &range to the left
 .keyref shiftwidth
 spaces.
 .enddescr
@@ -288,9 +285,8 @@ system command &parm1 (the command must get its input from standard in and
 write its output to standard out) and replaces the lines with the output
 of the command.
 .np
-If no range is specified, then the system command
-&parm1 is run.  If &parm1 is not specified, then an operating
-system shell is started.
+If no range is specified, then the system command &parm1 is run.
+If &parm1 is not specified, then an operating system shell is started.
 .np
 The global variable %(Sysrc) contains the return code
 from the last system command, and %(Syserr) contains
@@ -300,13 +296,14 @@ the errno value.
 .begxmpl 1,$ ! sort
 Takes all lines in the current edit buffer and runs them through the
 .param sort
-command.  The lines are then replaced with the output of the sort
 command.
+The lines are then replaced with the output of the sort command.
 .endxmpl
 .begxmpl ! dir
 Executes the system
 .param dir
-command.  After
+command.
+After
 .param dir
 is finished executing, you are prompted to press a key before returning
 to the editor.
@@ -412,8 +409,9 @@ border of each visible).
 .begdescr
 Changes current working directory to &parm1
 .period
-If &parm1 is not specified,
-then the current directory is displayed in the message window.  &parm1
+If &parm1 is not specified, then the current directory is displayed in 
+the message window.
+&parm1
 may be specified with drive and path.
 .enddescr
 .xmplsect begin
@@ -430,9 +428,9 @@ Display the current working directory
 .syntx &lt.line_range&gt. Change
 .begdescr
 Deletes the line range &range
-.ct , and replaces the range with inputted
-source lines.  The input of text is terminated when a line with
-nothing on it but a dot ('.') is entered.
+.ct , and replaces the range with inputted source lines.
+The input of text is terminated when a line with nothing on it but
+a dot ('.') is entered.
 .exmode
 .enddescr
 .alsosee begin
@@ -475,14 +473,13 @@ For information on editor
 Compiles the default
 .keyword configuration script
 :fname.ed.cfg:efname.
-and expands all local variables to any values assigned to them in
-the script.  The compiled script file
+and expands all local variables to any values assigned to them in the script.
+The compiled script file
 :fname.ed._vi:efname.
 is generated.
 .np
 If any errors occur while compiling, a file with the the same name
-as the script and the extension .err
-is created.
+as the script and the extension .err is created.
 .endxmpl
 .begxmpl comp test.vi test.out
 Compiles the script
@@ -501,8 +498,8 @@ and generates the compiled script file
 .begfunc COMPRESS
 .syntx * COMpress
 .begdescr
-Replaces spaces in the current edit buffer with
-tabs.  Single spaces are not replaced with a tab, and spaces inside
+Replaces spaces in the current edit buffer with tabs.
+Single spaces are not replaced with a tab, and spaces inside
 a quoted string are not replaced with a tab.
 .enddescr
 .endfunc
@@ -688,8 +685,8 @@ Searches the file list &parm2 for the regular expression &parm1
 &parm1 may be surrounded by double quotes (") or a forward slash (/)
 if it contains any spaces.
 .np
-&parm2 may be a single file, a directory, or a list of files.  &parm2 may
-contain file regular expressions, see the section
+&parm2 may be a single file, a directory, or a list of files.
+&parm2 may contain file regular expressions, see the section
 :HDREF refid='fmrx'.
 in the chapter
 :HDREF page=no refid='rxchap'.
@@ -746,8 +743,9 @@ for the regular expression
 .syntx * EVAL &lt.expr&gt.
 .begdescr
 Evalutes a given mathematical expression, and displays the result on
-line 1 of the message window.  For a full explanation of the rules
-for formulating the expression &parm1, see the chapter
+line 1 of the message window.
+For a full explanation of the rules for formulating the expression &parm1,
+see the chapter
 :HDREF refid='scripts'.
 .period
 .enddescr
@@ -807,8 +805,9 @@ was typed, and the number 15 gets displayed in the message window.
 .begfunc EXITALL
 .syntx * EXITALL
 .begdescr
-Exits all files.  For each file that has been modified, you are prompted
-as to whether you want to save the file or not.
+Exits all files.
+For each file that has been modified, you are prompted as to whether you
+want to save the file or not.
 .enddescr
 .alsosee begin
 .seethis quitall
@@ -841,8 +840,8 @@ to determine whether or not to be case sensitive in the search.
 &parm3 may be surrounded by double quotes (") or a forward slash (/)
 if it contains any spaces.
 .np
-&parm4 may be a single file or a list of files.  Each file name may
-contain file regular expressions, see the section
+&parm4 may be a single file or a list of files.
+Each file name may contain file regular expressions, see the section
 :HDREF refid='fmrx'.
 in the chapter
 :HDREF page=no refid='rxchap'.
@@ -903,29 +902,28 @@ command
 .ct ).
 .np
 &parm3, &parm4 specify the coordinates of the upper left hand corner
-of the floating menu.  (0,0) specifies the upper left hand corner
-of the screen.
+of the floating menu.
+(0,0) specifies the upper left hand corner of the screen.
 .np
 &parm2 defines the length of a string that the menu is around; the
-floating menu will try to appear around the string (&parm1 may
-be 0).  This is useful if you wish to pop up a menu around some
+floating menu will try to appear around the string (&parm1 may be 0).
+This is useful if you wish to pop up a menu around some
 selected characters on a line, for example.
 .np
-If &parm2 is non-zero, then the coordinates
-is assumed to be the lower right-hand side of the string that the menu
-is popping up around.
+If &parm2 is non-zero, then the coordinates is assumed to be the lower
+right-hand side of the string that the menu is popping up around.
 .enddescr
 .xmplsect begin
 .begxmpl float 0 0 10 10
-Bring up floating menu 0 at location (10,10) on the screen.  There is
-no string, so the menu position will simply cycle around (10,10)
+Bring up floating menu 0 at location (10,10) on the screen.
+There is no string, so the menu position will simply cycle around (10,10)
 in an attempt to position itself.
 .endxmpl
 .begxmpl float 0 6 50 20
-Bring up floating menu 0 at location (50,20) on the screen.  This
-is assumed to be on the lower right hand side of a string of length 5
-(i.e., it is assumed that the string is on line 19 and starts at column
-45). If the menu cannot fit by opening at (50,20), it will try to open
+Bring up floating menu 0 at location (50,20) on the screen.
+This is assumed to be on the lower right hand side of a string of length 5
+(i.e., it is assumed that the string is on line 19 and starts at column 45).
+If the menu cannot fit by opening at (50,20), it will try to open
 at all other corners of the string.
 .endxmpl
 .xmplsect end
@@ -950,8 +948,8 @@ If &parm1 is not specified, then the file name "ed.cfg" is assumed.
 .begdescr
 For each line in the range &range that matches the regular expression
 .paramt regexp
-.ct , the editor command &parm3 is executed.  &parm3 may contain replacement
-expressions, see the chapter
+.ct , the editor command &parm3 is executed.
+&parm3 may contain replacement expressions, see the chapter
 :HDREF refid='rxchap'.
 for more information.
 .np
@@ -992,8 +990,8 @@ For every line that matches the regular expression
 .begfunc HELP
 .syntx * HELP &lt.topic&gt.
 .begdescr
-Starts a view-only edit buffer on help for a specified topic.  Possible
-topics are:
+Starts a view-only edit buffer on help for a specified topic.
+Possible topics are:
 :DL break.
 .*
 :DT.COMmandline
@@ -1070,10 +1068,10 @@ Joins the current line and the next 2 lines into a single line.
 .begfunc KEYADD
 .syntx * KEYAdd &lt.string&gt.
 .begdescr
-Adds a set of keystrokes &parm1 to the key buffer just as if they
-were typed by the user.  The processing of these keystrokes is deferred
-until &edvi finishes its current processing, and is ready to process
-keystrokes again.
+Adds a set of keystrokes &parm1 to the key buffer just as if they were typed
+by the user.
+The processing of these keystrokes is deferred until &edvi finishes its
+current processing, and is ready to process keystrokes again.
 This is different than the
 .keyref execute
 command, which processes the keystrokes immediately.
@@ -1085,7 +1083,8 @@ script is exited.
 This prevents re-entrance of a script that is being executed by a
 mapped key in input mode, for example.
 .np
-Keys are processed in FIFO order. Multiple
+Keys are processed in FIFO order.
+Multiple
 .keyref keyadd
 commands cause more keys to queue up for processing.
 .np
@@ -1127,15 +1126,13 @@ Lists lines in the specified line range &range
 .begdescr
 Loads a script
 into memory for the life of the edit session.
-This allows for much faster access to the script,
-since the data structures for the script do not have to be built
-every time the script is invoked.  This is especially important
-for a
+This allows for much faster access to the script, since the data structures
+for the script do not have to be built every time the script is invoked.
+This is especially important for a
 .keyword hook script
 .period
 .np
-For information on editor scripts,
-see the chapter
+For information on editor scripts, see the chapter
 :HDREF refid='scripts'.
 .period
 .enddescr
@@ -1179,9 +1176,9 @@ after the character in column 1.
 .np
 If you need to specify a special key (e.g. ENTER, F1, etc) in &parm2,
 you specify a symbolic name for that key.
-There are a number of pre-defined keys
-symbols that are recognized when specifying which key is being
-mapped/unmapped. These are described in the Appendix
+There are a number of pre-defined keys symbols that are recognized when
+specifying which key is being mapped/unmapped.
+These are described in the Appendix
 :HDREF refid='symkey'.
 .period
 .np
@@ -1200,16 +1197,16 @@ Whenever K is pressed in
 .keyword &cmdmode
 .ct , the
 .keyref next
-command is executed. The command window will not be displayed,
-because of the
+command is executed.
+The command window will not be displayed, because of the
 .param \x
 .period
 .endxmpl
 .begxmpl map CTRL_T \x:\hda\n
 Whenever CTRL_T is pressed in
 .keyword &cmdmode
-.ct , the current date is displayed. The command window will not be
-displayed, because of the
+.ct , the current date is displayed.
+The command window will not be displayed, because of the
 .param \x
 .period
 The command will not be added to the command history, because of the
@@ -1219,13 +1216,12 @@ The command will not be added to the command history, because of the
 .begxmpl map CTRL_W \x:fgrep \&lt.CTRL_W&gt.\n
 Whenever CTRL_W is pressed in
 .keyword &cmdmode
-.ct , an fgrep command, searching for
-the current word, is executed.  The
+.ct , an fgrep command, searching for the current word, is executed.
+The
 .param \x
 keeps the command window from opening.
 .param \&lt.CTRL_W&gt.
-simulates CTRL_W being pressed, so the current word is inserted into
-the
+simulates CTRL_W being pressed, so the current word is inserted into the
 .keyword &cmdline
 .period
 .endxmpl
@@ -1237,8 +1233,8 @@ Whenever CTRL_W is pressed in
 is exited (\e simulates the ESC key being pressed), the current word is
 deleted, and
 .keyword &tinsmode
-is re-entered.  This has the effect of
-deleting the current word in
+is re-entered.
+This has the effect of deleting the current word in
 .keyword &tinsmode
 and appearing to remain in
 .keyword &tinsmode
@@ -1299,7 +1295,8 @@ by using a front quote (') before the mark name, e.g.:
 .begxmpl mark a
 Sets the mark
 .param a
-on the current line.  Typing the command
+on the current line.
+Typing the command
 .param 'a
 will return you to that mark.
 .endxmpl
@@ -1319,8 +1316,9 @@ on line 100.
 .begdescr
 Set what is matched by the '%'
 .keyword &cmdmode
-command.  Defaults are "{","}"
-and "(",")". For example, by pressing the percent key ('%') when
+command.
+Defaults are "{","}" and "(",")".
+For example, by pressing the percent key ('%') when
 the cursor is on the first open bracket ('(') in the line:
 .millust begin
     if( ( i=foo( x ) ) ) return;
@@ -1353,7 +1351,8 @@ the '#' sign and the
 .param if
 or
 .param endif
-words.  If '%' is pressed while over a
+words.
+If '%' is pressed while over a
 .param #if
 statement, the cursor is moved to the corresponding
 .param #endif
@@ -1419,8 +1418,8 @@ and places the lines one line after the current line.
 .begfunc MOVEWIN
 .syntx * MOVEWin
 .begdescr
-Enter window movement mode.  The cursor keys are then used to move the
-current edit buffer window.
+Enter window movement mode.
+The cursor keys are then used to move the current edit buffer window.
 .enddescr
 .alsosee begin
 .seethis cascade
@@ -1497,7 +1496,8 @@ Moves to the previous file in the list of files being edited.
 .begfunc PUSH
 .syntx * PUSH
 .begdescr
-Saves the current file position.  The next
+Saves the current file position.
+The next
 .keyref pop
 command will cause a return to this position.
 .np
@@ -1589,9 +1589,9 @@ Quits the current file, discarding all modifications since the last write.
 .begfunc QUITALL
 .syntx * QUITAll
 .begdescr
-Exits the editor if no files have been modified.  If files have been modified,
-a prompt is displayed asking to you verify that you really want to discard
-the modified file(s).
+Exits the editor if no files have been modified.
+If files have been modified, a prompt is displayed asking to you verify that
+you really want to discard the modified file(s).
 If you do not respond with a 'y', then the command is cancelled.
 .enddescr
 .xmplsect begin
@@ -1623,15 +1623,14 @@ in the chapter
 :HDREF page=no refid='rxchap'.
 for more information.
 .np
-If &parm1 is not specified, then a window containing
-a list of files in the current directory is opened, from
-which a file may be selected.
+If &parm1 is not specified, then a window containing a list of files
+in the current directory is opened, from which a file may be selected.
 .np
 If the first character of &parm1 is a dollar sign ('$'), then this
-indicates that a directory is to be read in.  If nothing follows,
-then the current directory is read.  Otherwise, all characters that
-follow the dollar sign are treated as a file regular expression, which
-is used to read in the directory.
+indicates that a directory is to be read in.
+If nothing follows, then the current directory is read.
+Otherwise, all characters that follow the dollar sign are treated as a file
+regular expression, which is used to read in the directory.
 .enddescr
 .xmplsect begin
 .begxmpl 0 read test.c
@@ -1662,8 +1661,8 @@ Gives a file selection display:
 .begfunc RESIZE
 .syntx * RESize
 .begdescr
-Allows resizing of the current edit window with the keyboard.  The
-cursor keys are used as follows:
+Allows resizing of the current edit window with the keyboard.
+The cursor keys are used as follows:
 :DL break.
 .*
 :DT.UP
@@ -1705,23 +1704,21 @@ cursor keys are used as follows:
 .begfunc SET
 .syntx * SEt &lt.variable&gt. &lt.value&gt.
 .begdescr
-Certain variables within &edvi may be changed after &edvi is
-executing.  &parm2 is assigned to &parm1
+Certain variables within &edvi may be changed after &edvi is executing.
+&parm2 is assigned to &parm1
 .period
 .np
-If &parm1 and
-&parm2 are not specified, the a window containing a list
+If &parm1 and &parm2 are not specified, the a window containing a list
 of all boolean values is displayed.
 .np
-If &parm1 is specified
-as a
+If &parm1 is specified as a
 .param 2
 .ct , then a window containing all other values is displayed.
 .np
-From the selection window, a variable may be selected (with ENTER or
-double clicking the mouse), and a
-new value entered. If the variable was boolean, then pressing
-ENTER or double clicking toggles the value.
+From the selection window, a variable may be selected (with ENTER or double
+clicking the mouse), and a new value entered.
+If the variable was boolean, then pressing ENTER or double clicking toggles
+the value.
 .np
 If a variable is a boolean variable, then it is be set via
 .millust begin
@@ -1736,8 +1733,7 @@ set var  test   - set var to 'test'
 .millust end
 Note that the '=' operator is optional.
 .np
-For information on all the different settable options,
-see the chapter
+For information on all the different settable options, see the chapter
 :HDREF refid='edset'.
 .period
 .enddescr
@@ -1875,8 +1871,8 @@ Any line that starts with
 has the
 .param abc
 changed to the null string.
-The user is prompted before each change.  The changes are only applied
-from the line containing mark
+The user is prompted before each change.
+The changes are only applied from the line containing mark
 .param a
 to the line containing mark
 .param b
@@ -1925,9 +1921,10 @@ in the tags file, edits the source file that contains the function
 .begfunc TILE
 .syntx * TILE '"h"' '|' '"v"' '|' &lt.x&gt. &lt.y&gt.
 .begdescr
-Tile all current file windows.  The tiling layout is specified
-as an &parm5 by &parm6  grid.  The or bars ('|') in the command
-syntax indicate that only one of the options may be used.
+Tile all current file windows.
+The tiling layout is specified as an &parm5 by &parm6 grid.
+The or bars ('|') in the command syntax indicate that only one of the options
+may be used.
 .np
 If no parameters are specified,
 .keyref maxwindowtilex
@@ -1935,13 +1932,13 @@ and
 .keyref maxwindowtiley
 are used (this is the default tile grid).
 .np
-If &parm1 is specified,
-then files are tiled horizontally (as many as will fit).
+If &parm1 is specified, then files are tiled horizontally (as many as will fit).
 .np
 If &parm3 is specified, then files are tiled vertically (as many as will fit).
 .np
-Specifying &parm5 &parm6 overrides the default tile grid. As a special
-case, specifying &parm5 &parm6 as 1 1 causes all windows to be restored.
+Specifying &parm5 &parm6 overrides the default tile grid.
+As a special case, specifying &parm5 &parm6 as 1 1 causes all windows
+to be restored.
 .enddescr
 .xmplsect begin
 .begxmpl tile 3 5
@@ -2019,13 +2016,13 @@ alias
 :cmt. .ix 'undo command'
 .syntx * Undo '"!"'
 .begdescr
-Undo the last change.  There is no limit on the number of undo's
-that can be saved, except for memory.  Continuing to issue undo commands
-walks you backwards through your edit history.
+Undo the last change.
+There is no limit on the number of undo's that can be saved, except for memory.
+Continuing to issue undo commands walks you backwards through your edit history.
 .np
-Specifying &parm1 undoes the last undo (redo).  Again, there are no
-restrictions on this.  However, once you modify the file, you can longer undo the
-last undo.
+Specifying &parm1 undoes the last undo (redo).
+Again, there are no restrictions on this.
+However, once you modify the file, you can longer undo the last undo.
 .enddescr
 :cmt. .alsosee begin
 :cmt. .seethis *key=1 u

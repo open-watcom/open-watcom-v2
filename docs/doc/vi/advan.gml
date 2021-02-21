@@ -48,8 +48,8 @@ The
 .keyword &cmdline
 command
 .keyref substitute
-is a powerful mechanism for changing text in your file.  For every match
-of a string, the string can be replaced with something else.
+is a powerful mechanism for changing text in your file.
+For every match of a string, the string can be replaced with something else.
 .np
 :INCLUDE file='rxexp'.
 .np
@@ -64,8 +64,8 @@ The line range
 .paramt line_range
 specifies the lines that the
 .keyref substitute
-command is to work on.  If no line range is specified, then the
-current line is assumed.
+command is to work on.
+If no line range is specified, then the current line is assumed.
 .np
 The first occurrence of the search string
 .paramt string
@@ -73,16 +73,17 @@ on each line is replaced with the string
 .paramt subs
 .period
 .np
-If the letter 'g' is specified at the end, then every occurrence of
-the search string
+If the letter 'g' is specified at the end, then every occurrence
+of the search string
 .paramt string
 on each line is replaced with the string
 .paramt subs
 .period
 .np
 If the letter 'i' is specified at the end, then the substitution is
-interactive.  You will be prompted before each replacement to verify
-that you want it to be done.
+interactive.
+You will be prompted before each replacement to verify that you want
+it to be done.
 .*
 .exercises
 :OL.
@@ -147,8 +148,8 @@ The line range
 .paramt line_range
 specifies the lines that the
 .keyref global
-command is to work on.  If no line range
-is specified, then all the lines in the file is assumed.
+command is to work on.
+If no line range is specified, then all the lines in the file is assumed.
 .np
 The
 .keyword &cmdline
@@ -209,12 +210,12 @@ All lines without the character '1' in them will be deleted.
 .np
 There are
 .keyword &cmdline
-commands provided to search through all files for
-some text.  These commands differ from the search commands outlined
-in the section
+commands provided to search through all files for some text.
+These commands differ from the search commands outlined in the section
 :HDREF refid='stext'.
 in the previous chapter in that they search files in directories rather
-than files that are being edited. These file search commands are
+than files that are being edited.
+These file search commands are
 .keyref fgrep
 and
 .keyref egrep
@@ -222,8 +223,8 @@ and
 .np
 The
 .keyref fgrep
-command is a fast search for a specified string.  The syntax of this command
-is:
+command is a fast search for a specified string.
+The syntax of this command is:
 .millust begin
 fgrep "-c" "-i" &lt.string&gt. &lt.files&gt..
 .millust end
@@ -239,11 +240,12 @@ string in either double quotes ('"') or forward slashes ('/').
 .np
 If
 .param -c
-is specified, then the search is made case sensitive.  If
+is specified, then the search is made case sensitive.
+If
 .param -i
-is specified, then the search is made case insensitive.  If neither of
-these options is specified, then case sensitivity is determined by the
-current
+is specified, then the search is made case insensitive.
+If neither of these options is specified, then case sensitivity is determined
+by the current
 .keyref caseignore 1
 setting (for more information about
 .keyref caseignore 1
@@ -257,7 +259,8 @@ The
 .keyref egrep
 command searches for regular expressions, and is slower than the
 .keyref fgrep
-command.  The syntax of this command is:
+command.
+The syntax of this command is:
 .millust begin
 egrep &lt.regexp&gt. &lt.files&gt..
 .millust end
@@ -306,8 +309,8 @@ commands
 .keyref map
 and
 .keyref mapbase
-are used to remap the definition of a key.  The syntax of these commands
-is as follows:
+are used to remap the definition of a key.
+The syntax of these commands is as follows:
 .millust begin
 map "!" &lt.key&gt. &lt.string&gt.
 mapbase &lt.key&gt. &lt.string&gt.
@@ -336,9 +339,9 @@ for
 .np
 It is possible for
 .paramt string
-to contain keys that are mapped themselves.  If you want to do a key
-mapping that is in terms of the base definitions of the keys, then you
-should use the
+to contain keys that are mapped themselves.
+If you want to do a key mapping that is in terms of the base definitions
+of the keys, then you should use the
 .keyref mapbase
 command.
 .np
@@ -346,7 +349,8 @@ To remove the mapping of a key, the
 .keyword &cmdline
 command
 .keyref unmap
-is used.  The syntax of this command is:
+is used.
+The syntax of this command is:
 .millust begin
 unmap &lt.key&gt.
 .millust end
@@ -354,9 +358,9 @@ unmap &lt.key&gt.
 If you need to specify a special key (e.g. ENTER, F1, etc) for
 .paramt key
 you specify a symbolic name for it.
-There are a number of pre-defined key
-symbols that are recognized when specifying which key is being
-mapped or unmapped. These are described in the Appendix
+There are a number of pre-defined key symbols that are recognized when
+specifying which key is being mapped or unmapped.
+These are described in the Appendix
 :HDREF refid='symkey'.
 .period
 .np
@@ -393,7 +397,8 @@ command
 .millust begin
 :unmap F5
 .millust end
-and try pressing F5 again.  It will no longer delete lines.
+and try pressing F5 again.
+It will no longer delete lines.
 
 :LI.Enter the
 .keyword &cmdline
@@ -409,7 +414,9 @@ You will notice that the command window flashes as you push
 .param F6
 .period
 
-:LI.
+:LI.Enter the
+.keyword &cmdline
+command
 .millust begin
 :map F6 \x:date\n
 .millust end
@@ -419,8 +426,9 @@ Press
 The time and date will be displayed in the message window.
 You will notice that the command window no longer flashes.
 
-:LI. Bring up the command window ( press ':') and press cursor up.  You will
-notice that the date commands are in your history.  Now, enter the
+:LI.Bring up the command window ( press ':') and press cursor up.
+You will notice that the date commands are in your history.
+Now, enter the
 .keyword &cmdline
 command:
 .millust begin
@@ -428,8 +436,9 @@ command:
 .millust end
 Press
 .param F6
-a few times.  Bring up the command window again and cursor up.  You
-will see that the date commands did not get added to the history.
+a few times.
+Bring up the command window again and cursor up.
+You will see that the date commands did not get added to the history.
 
 :LI.Enter the
 .keyword &cmdline

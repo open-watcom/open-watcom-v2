@@ -43,7 +43,8 @@
 This chapter describes the various options that may be controlled using
 the &edname.'s
 .keyref set
-command.  Options are typically set in the
+command.
+Options are typically set in the
 .keyword configuration script
 .ct ; however, options are settable at execution time as well.
 .np
@@ -78,13 +79,13 @@ set command with no option at the command prompt, e.g.:
 .millust begin
 set
 .millust end
-This will cause a menu of all possible settings to appear.  These
-values may be changed by either cursoring to the desired one and pressing
-enter, or by double clicking on the desired one with the mouse.  Boolean
-settings will toggle between TRUE and FALSE.  Selecting any other setting
-will cause a window to pop up, displaying the old
-value and prompting you for the new value.  This window may be cancelled
-by pressing the ESC key.
+This will cause a menu of all possible settings to appear.
+These values may be changed by either cursoring to the desired one and
+pressing enter, or by double clicking on the desired one with the mouse.
+Boolean settings will toggle between TRUE and FALSE.
+Selecting any other setting will cause a window to pop up, displaying
+the old value and prompting you for the new value.
+This window may be cancelled by pressing the ESC key.
 .figure *depth='2.47' *scale='59' *file='vi031' '&edvi Settings Selection list'
 .np
 When you are finished with the settings menus, you may close the window
@@ -123,8 +124,8 @@ Automatically erases the message window when a key is typed in
 .setcmd *short=bf beepflag
 .setsyntx
 .begdescr
-&edvi normally beeps when an error is encountered.  Setting &nocmd_long
-disables the beeping.
+&edvi normally beeps when an error is encountered.
+Setting &nocmd_long disables the beeping.
 .enddescr
 
 .setcmd *short=ci caseignore
@@ -149,9 +150,9 @@ When cmode is set, certain things will happen when you are entering text:
 :LI.After entering a line ending in '{', the next line will be indented a
 .keyref shiftwidth
 further than the current one.
-:LI.After entering a line ending in '}', the current line is shifted to match the
-indentation of the line with the matching '{'.  The cursor will flash for
-a brief instant on the matching '{' if
+:LI.After entering a line ending in '}', the current line is shifted
+to match the indentation of the line with the matching '{'.
+The cursor will flash for a brief instant on the matching '{' if
 .keyref showmatch 1
 is set.
 :LI.All lines entered will have trailing white space trimmed off.
@@ -186,8 +187,8 @@ Causes the current column to be added to file status display
 .setcmd *short=ct currentstatus
 .setsyntx
 .begdescr
-Enables the display of the current status on the menu bar. The position
-on the menu bar is controlled with
+Enables the display of the current status on the menu bar.
+The position on the menu bar is controlled with
 .keyref currentstatuscolumn
 .period
 .enddescr
@@ -205,9 +206,9 @@ will be displayed after the last line with data.
 .setcmd *short=eb eightbits
 .setsyntx
 .begdescr
-If &cmd_long is set, then all characters are displayed as normal.  If
-&nocmd_long is set then non-printable ASCII will be displayed as control
-characters.
+If &cmd_long is set, then all characters are displayed as normal.
+If &nocmd_long is set then non-printable ASCII will be displayed
+as control characters.
 .enddescr
 
 .setcmd *short=em escapemessage
@@ -224,16 +225,17 @@ key is pressed in
 .setsyntx
 .begdescr
 If &cmd_long is set, extended memory is used if it is present
-(standard extended, EMS, XMS). This option applies to the real-mode
-DOS version of &edvi only.
+(standard extended, EMS, XMS).
+This option applies to the real-mode DOS version of &edvi only.
 .enddescr
 
 .setcmd *short=iz ignorectrlz
 .setsyntx
 .begdescr
-Normally, a CTRL_Z in a file acts as an end-of-file indicator.  Setting
-&cmd_long causes &edvi to treat CTRL_Z as just another character in
-the file.  This option may also be selected using the '-z' option
+Normally, a CTRL_Z in a file acts as an end-of-file indicator.
+Setting &cmd_long causes &edvi to treat CTRL_Z as just
+another character in the file.
+This option may also be selected using the '-z' option
 when invoking &edvi..
 .enddescr
 
@@ -241,16 +243,16 @@ when invoking &edvi..
 .setsyntx
 .begdescr
 When using the "-t" command line option of &edvi, the tag that is matched
-is normally case sensitive.  Setting &cmd_long causes the tag matching
-to be case insensitive.
+is normally case sensitive.
+Setting &cmd_long causes the tag matching to be case insensitive.
 .enddescr
 
 .setcmd *short=ma magic
 .setsyntx
 .begdescr
 If &cmd_long is set, then all special characters in a regular expression
-are treated as "magic", and must be escaped to be used in an ordinary
-fashion.  If &nocmd_long is set, then any special characters in
+are treated as "magic", and must be escaped to be used in an ordinary fashion.
+If &nocmd_long is set, then any special characters in
 .keyref  magicstring
 are NOT treated as magic characters by the regular expression
 handler, and must be escaped to have special meaning.
@@ -272,10 +274,10 @@ does not pause when control returns to the editor.
 .setcmd *short=qu quiet
 .setsyntx
 .begdescr
-When running in quiet mode, &edvi does not update the screen.  This
-is useful when running a complex script,
-so that the activity of the
-editor is hidden.  This option may be selected when invoking
+When running in quiet mode, &edvi does not update the screen.
+This is useful when running a complex script, so that the activity of the
+editor is hidden.
+This option may be selected when invoking
 &edvi by using the '-q' switch, causing &edvi to run in a 'batch mode'.
 .enddescr
 
@@ -283,19 +285,21 @@ editor is hidden.  This option may be selected when invoking
 .setsyntx
 .begdescr
 If this option is set, then when a file is quit, the next file in the list
-of files is moved to.  Otherwise, the previous file in the list of files
-is moved to.
+of files is moved to.
+Otherwise, the previous file in the list of files is moved to.
 .enddescr
 
 .setcmd *short=rf readentirefile
 .setsyntx
 .begdescr
 If &cmd_long is set, then the entire file is read into memory when
-it is edited.  This is the default setting.  However, if &nocmd_long
-is set, then the file is only read into memory as it is needed.  This
-option is useful when you only want to look at the first few pages of
-a large file.  This option may be selected when invoking &edvi by
-using the '-n' switch.
+it is edited.
+This is the default setting.
+However, if &nocmd_long is set, then the file is only read into memory
+as it is needed.
+This option is useful when you only want to look at the first few pages
+of a large file.
+This option may be selected when invoking &edvi by using the '-n' switch.
 .enddescr
 
 .setcmd *short=rc readonlycheck
@@ -323,9 +327,9 @@ in regular expression substitution expressions.
 .setsyntx
 .begdescr
 Normally, &edvi just warns you if you edit a file twice
-(with a different path). If &cmd_long is set, then if you
-edit a file that is the same as a file already being edited (only you
-specified a different path), then that file will be brought up, rather
+(with a different path).
+If &cmd_long is set, then if you edit a file that is the same as a file
+already being edited (only you specified a different path), then that file will be brought up, rather
 than a new copy being read in.
 .enddescr
 
@@ -1138,8 +1142,8 @@ must be in the range 1 to
 .keyref maxtilecolors
 .period
 .np
-The colors may be in the range 0-15, or one of
-the previously defined color keywords.
+The colors may be in the range 0-15, or one of the previously defined color
+keywords.
 .np
 &charonly.
 .enddescr

@@ -391,7 +391,7 @@ would be longer than the setting of "maxlinelen".
 :DD.You attempted a command mode command that tried to access more words than
 were on the current line.
 
-:DT.Not valid while in ex mode
+:DT.Not valid while in EX mode
 :DD.You attempted to use a command from EX mode that was not allowed:
 an "edit" command line command with no parameter, or a "read" command line
 command with no parameter.
@@ -400,7 +400,7 @@ command with no parameter.
 :DD.You used the command mode percent ('%') keystroke, but there was nothing
 on the current line that could be matched.
 
-:DT.Only valid in ex mode
+:DT.Only valid in EX mode
 :DD.You attempted to use an EX mode only command from the command line: "append",
 "change", "insert", or "list".
 

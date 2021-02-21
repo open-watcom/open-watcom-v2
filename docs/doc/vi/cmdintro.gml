@@ -34,18 +34,20 @@
 .****************************************************************************/
 The following command descriptions show items within angle brackets (&lt.&gt.).
 The angle brackets are there to indicate items that you may supply.
-You are not required to type the brackets.  For example, <filename> simply
-means that in the corresponding place in the command you should enter
-the name of a file.  For example, <filename> may be replaced with
+You are not required to type the brackets.
+For example, <filename> simply means that in the corresponding place
+in the command you should enter the name of a file.
+For example, <filename> may be replaced with
 .millust begin
    test.c
 .millust end
 and the brackets are not entered.
 .np
-The command descriptions also show items inside double quotes (").  The
-double quotes are used to indicate a literal option that you may supply.
-You are not required to type the quotes.  For example, "-c" indicates
-that in the corresponding place in the command you may enter
+The command descriptions also show items inside double quotes (").
+The double quotes are used to indicate a literal option that you may supply.
+You are not required to type the quotes.
+For example, "-c" indicates that in the corresponding place in the command
+you may enter
 .param -c
 .period
 .np

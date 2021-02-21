@@ -34,19 +34,21 @@
 .***************************************************************************
 .chap 'Introduction to the &edname'
 .np
-&edname (&edvi) is a programmer's editor.  It is
-loosely based on UNIX &edvi, but is much more powerful.
+&edname (&edvi) is a programmer's editor.
+It is loosely based on UNIX &edvi, but is much more powerful.
 This manual may be used by someone without any knowledge
 of &edvi, or by an experienced &edvi user.
 People familiar with &edvi will find the &edname is very similar
 in its basic behaviour.
 .np
-An editor is very personal thing.  Every person uses an editor
-in a different way, or wants things to look slightly different.
-&edvi was designed with this in mind.  Most features in &edvi
-are configurable.
+An editor is very personal thing.
+Every person uses an editor in a different way, or wants things to look
+slightly different.
+&edvi was designed with this in mind.
+Most features in &edvi are configurable.
 .np
-&edvi has many powerful features.  Some of the more significant are:
+&edvi has many powerful features.
+Some of the more significant are:
 :UL compact.
 :LI.fully configurable
 :UL compact.
@@ -105,7 +107,8 @@ document.
 .np
 If you have a mouse, you may use it with &edvi..
 When you move your mouse, you will see a large block move around
-on your screen.  This is called the mouse cursor.
+on your screen.
+This is called the mouse cursor.
 .np
 These terms are used when referring to things that may be done with
 the mouse.
@@ -154,37 +157,40 @@ This window displays all errors and informational messages.
 
 :eUL.
 .np
-In the edit window will be a flashing line.  This flashing line is the
-cursor, and it indicates which line you are on and the position
-within the line.
+In the edit window will be a flashing line.
+This flashing line is the cursor, and it indicates which line you are
+on and the position within the line.
 .np
-On the border of the edit window are a number of special symbols.  These
-special symbols are referred to as
+On the border of the edit window are a number of special symbols.
+These special symbols are referred to as
 .keyword gadgets
+.ct :
 :UL.
 
 :LI.In the top left corner of the edit window is the gadget character that opens
 up the menu for the window.
 
 :LI.In the lower right corner of the edit window is the resize gadget character.
-When you click on this gadget character with your mouse and then drag the mouse, you
-can resize the edit window.
+When you click on this gadget character with your mouse and then drag the mouse,
+you can resize the edit window.
 
-:LI.On the right hand side of the edit window is the scroll bar.  The
-scroll bar has several components:
+:LI.On the right hand side of the edit window is the scroll bar.
+The scroll bar has several components:
 
-:LI.The scroll up gadget character.  When you click on this with your mouse,
-the edit window scrolls up one line.
+:LI.The scroll up gadget character.
+When you click on this with your mouse, the edit window scrolls up one line.
 
-:LI.The scroll down gadget character.  When you click on this with your mouse,
-the edit window scrolls down one line.
+:LI.The scroll down gadget character.
+When you click on this with your mouse, the edit window scrolls down one line.
 
-:LI.The scroll thumb character.  The scroll thumb indicates the relative position
-of the current line in the file.  When you click on the scroll thumb with
-your mouse and drag it, you can move to a new position in the file.  If
-you click with your mouse on the scroll bar above the scroll thumb, you
-move one page up in the file.  If you click on the scroll bar below the
-scroll thumb, you move one page down in the file.
+:LI.The scroll thumb character.
+The scroll thumb indicates the relative position of the current line in the file.
+When you click on the scroll thumb with your mouse and drag it,
+you can move to a new position in the file.
+If you click with your mouse on the scroll bar above the scroll thumb,
+you move one page up in the file.
+If you click on the scroll bar below the scroll thumb, you move one page
+down in the file.
 
 :eUL.
 .*

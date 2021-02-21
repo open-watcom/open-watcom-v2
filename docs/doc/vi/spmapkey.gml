@@ -37,8 +37,8 @@
 .param "key"
 .period
 The angle brackets are required.
-There are a number of pre-defined keys
-symbols that are recognized. These are described in the Appendix
+There are a number of pre-defined keys symbols that are recognized.
+These are described in the Appendix
 :HDREF refid='symkey'.
 .period
 
@@ -51,8 +51,9 @@ symbols that are recognized. These are described in the Appendix
 :DT.\h
 :DD.If a
 .keyword &cmdline
-command is used in the sequence, and it follows the
-colon (':'), the command is not added to the history.  For example:
+command is used in the sequence, and it follows the colon (':'),
+the command is not added to the history.
+For example:
 .millust begin
 :\hdate\n
 .millust end
@@ -62,9 +63,11 @@ the command history.
 :DT.\x
 :DD.If a
 .keyword &cmdline
-command is used in the sequence, then this stops the
-command window from opening.  This prevents the "flashing" of the
-command window as it is opened then closed. For example:
+command is used in the sequence, then this stops the command window
+from opening.
+This prevents the "flashing" of the command window as it is opened
+then closed.
+For example:
 .millust begin
 \x:date\n
 .millust end

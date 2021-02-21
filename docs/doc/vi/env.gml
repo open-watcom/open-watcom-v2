@@ -64,8 +64,8 @@ and
 .keyref keyadd
 .period
 :DT.error.dat
-:DD.Symbolic names for errors that can occur.  These are used for testing
-return codes in editor scripts.
+:DD.Symbolic names for errors that can occur.
+These are used for testing return codes in editor scripts.
 :eDL.
 .np
 The editor searches for its special files as follows:
@@ -78,24 +78,27 @@ The editor searches for its special files as follows:
 .np
 The environment variable
 .ev EDPATH
-is used so that the support files
-for &edvi do not have to be in your PATH.  Only &edvi itself has
-to be in your PATH.
+is used so that the support files for &edvi do not have to be in your PATH.
+Only &edvi itself has to be in your PATH.
 .* ******************************************************************
 .section 'Using Edbind'
 .* ******************************************************************
 .np
 Edbind is a utility designed to place any specified files onto the
-end of the editor executable.  The file
+end of the editor executable.
+The file
 :fname.edbind.dat:efname.
-contains the list of all files to bind. This would normally include
+contains the list of all files to bind.
+This would normally include
 :fname.ed.cfg:efname.
-and all the .dat files.  This eliminates the need to have these files
-in your path, and allows &edvi to locate the files faster.
+and all the .dat files.
+This eliminates the need to have these files in your path, and allows &edvi
+to locate the files faster.
 .np
 Note that your configuration file must be the FIRST FILE in the
 :fname.edbind.dat:efname.
-file.  The first file is designated to be the file containing the
+file.
+The first file is designated to be the file containing the
 .keyword configuration script
 .ct , the name is irrelevant.
 .np
@@ -172,30 +175,32 @@ When the file is written, the lines are written to standard out.
 This is useful for including &edvi in a pipe.
 
 :DT.-d
-:DD.Use default configuration.  &edvi will not invoke
+:DD.Use default configuration.
+&edvi will not invoke
 :fname.ed.cfg:efname.
 when it starts up.
 
 :DT.-i
-:DD.Ignore lost files.  &edvi will not let you start if there are files
-to be recovered. This option will cause &edvi to get rid of its
-checkpoint file, so that it will no longer complain about files
-that have not been recovered.
+:DD.Ignore lost files.
+&edvi will not let you start if there are files to be recovered.
+This option will cause &edvi to get rid of its checkpoint file, so that
+it will no longer complain about files that have not been recovered.
 
 :DT.-n
-:DD.This option will cause &edvi to read a file as it needs the data, instead
-of reading the file all at once.  It is useful if you wish to look at
-the first lines of a huge file.  This option overrides any setting of
+:DD.This option will cause &edvi to read a file as it needs the data,
+instead of reading the file all at once.
+It is useful if you wish to look at the first lines of a huge file.
+This option overrides any setting of
 .keyref readentirefile 1
 in your configuration.
 
 :DT.-q
-:DD.Causes &edvi to run in quiet mode (no screen usage).  This is useful
-for using &edvi as a batch script processor.
+:DD.Causes &edvi to run in quiet mode (no screen usage).
+This is useful for using &edvi as a batch script processor.
 
 :DT.-r
-:DD.Recover lost files, if there are any.  If this option is specified,
-files specified on the command line are ignored.
+:DD.Recover lost files, if there are any.
+If this option is specified, files specified on the command line are ignored.
 
 :DT.-v
 :DD.Causes file edited to be a "view only" file.
@@ -212,30 +217,31 @@ setting.
 :DT.-k "keys"
 :DD.Execute the string
 .param keys
-as if they were typed from the keyboard. These keystrokes are processed
-once &edvi is initialized and all files have been read in.
+as if they were typed from the keyboard.
+These keystrokes are processed once &edvi is initialized and all files
+have been read in.
 
 :DT.-s <scr>
 :DD.Runs the startup script
-.param <scr>
+.paramt scr
 once &edvi is initialized and all files have been read in.
 Up to 10 startup scripts may be specified.
 
 :DT.-p "parms"
 :DD.Specify the parameters
 .param parms
-for each startup script. Multiple parms
-may be specified as long as they are in double quotes.
+for each startup script.
+Multiple parms may be specified as long as they are in double quotes.
 The parameters are associated with the most recently specified startup script.
 
 :DT.-t <tag>
 :DD.Edits the file containing the tag
-.param <tag>
+.paramt tag
 .period
 
 :DT.-c <cfg>
 :DD.Runs the configuration script
-.param <cfg>
+.paramt cfg
 .ct , instead of the default
 :fname.ed.cfg:efname.
 .period
@@ -246,8 +252,8 @@ The parameters are associated with the most recently specified startup script.
 .* ******************************************************************
 .np
 &edvi has an autosave feature that periodically makes a backup
-copy of the current edit buffer.  This backup is kept in the directory
-specified by the
+copy of the current edit buffer.
+This backup is kept in the directory specified by the
 .keyref tmpdir
 setting.
 .np
@@ -264,9 +270,9 @@ is set to 0, then the autosave feature is disabled.
 in its
 .keyref tmpdir
 .period
-The question mark ('?') will be a letter.  There may be more than
-one lock file, if more than one copy of &edvi is running on
-the current machine.
+The question mark ('?') will be a letter.
+There may be more than one lock file, if more than one copy of &edvi is
+running on the current machine.
 .np
 &edvi keeps a checkpoint file called
 .keyword asave_?.fil
@@ -308,10 +314,11 @@ Files have been lost since your last session, use -r to recover or
 &edvi cannot be invoked until either -i or -r is specified.
 .np
 If -i is specified, then the checkpoint files are erased and
-&edvi starts up normally.  The .tmp files that contain the
-lost files still remain in the backup directory, however.
+&edvi starts up normally.
+The .tmp files that contain the lost files still remain in the backup
+directory, however.
 .np
-If -r is specified, then &edvi recovers the lost files.  Note that
-the recovered files must be saved in order to overwrite the original
-copy.
+If -r is specified, then &edvi recovers the lost files.
+Note that the recovered files must be saved in order to overwrite
+the original copy.
 

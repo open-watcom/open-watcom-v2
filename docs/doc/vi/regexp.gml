@@ -78,11 +78,12 @@ matches that character.
 :LI.A single character that does not have any other special meaning matches
 that character.
 :LI.A string enclosed in brackets [] matches any single character from
-the string.  Ranges of ASCII character codes may be abbreviated as
-in "a-z0-9".  A ']' may occur only as the first character of the
-string.  A literal '-' must be placed where it cannot be mistaken as a
-range indicator. If a caret ('&caret.') occurs as the first character inside
-the brackets, then any characters NOT in the string are matched.
+the string.
+Ranges of ASCII character codes may be abbreviated as in "a-z0-9".
+A ']' may occur only as the first character of the string.
+A literal '-' must be placed where it cannot be mistaken as a range indicator.
+If a caret ('&caret.') occurs as the first character inside the brackets,
+then any characters NOT in the string are matched.
 :LI.A regular expression followed by an asterisk ('*')
 matches a sequence of 0 or more matches of the regular expression.
 :LI.A regular expression followed by a plus sign ('+') matches one or
@@ -203,8 +204,7 @@ it causes the ignoring of the
 setting; that is,
 all magic characters are treated as magical.
 .param !
-is treated
-as a regular character if it occurs anywhere but at
+is treated as a regular character if it occurs anywhere but at
 the very start of the regular expression.
 
 :DT.char
@@ -224,8 +224,9 @@ is set.
 .* ******************************************************************
 .np
 When specifying a file name in &edvi, it is possible to use a
-file matching regular expression.  This expression is similar to
-a regular expression, but has a couple of differences:
+file matching regular expression.
+This expression is similar to a regular expression,
+but has a couple of differences:
 :OL.
 :LI.A dot ('.') specifies an actual dot in the file name.
 :LI.An asterisk ('*') is equivalent to '.*' (matches 0 or more characters).
@@ -322,12 +323,14 @@ is encountered
 
 :DT.\e
 :DD.Terminate a
-.param \U or
+.param \U
+or
 .param \L
 
 :DT.\E
 :DD.Terminate a
-.param \U or
+.param \U
+or
 .param \L
 .period
 
@@ -346,8 +349,8 @@ is encountered
 .* ******************************************************************
 .np
 By default, all special characters in a regular expression are "magical";
-that is, if a special character is used it has a special meaning.  To
-use a special character, like
+that is, if a special character is used it has a special meaning.
+To use a special character, like
 .keyword (
 .ct , it must be escaped:
 .keyword \(
@@ -510,12 +513,13 @@ In the result, the part of the string that is matched is underlined.
 .section 'Replacement Examples'
 .* ******************************************************************
 .np
-Regular expressions and replacement expressions.  Each example
-shows the regular expression and the replacement expression,
+Regular expressions and replacement expressions.
+Each example shows the regular expression and the replacement expression,
 the initial string, the match, and the resulting string after the replacement.
 .np
-The regular expression and the replacement are separated by forward
-slashes ('/'). For example, in the string
+The regular expression and the replacement are separated by forward slashes
+('/').
+For example, in the string
 .millust begin
 /([a-z]+)((a|b))/Test:\1\2/
 .millust end
