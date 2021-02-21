@@ -1609,7 +1609,7 @@ static void output_kw_file( void )
 
     // output header
     whp_fprintf( KW_file, ":H1.%s\n", Gen_titles[GEN_TITLE_KEYWORD][Title_case] );
-    whp_fprintf( KW_file, ":pb.%cc\n", WHP_SLIST_START );
+    whp_fprintf( KW_file, ":pb.%c%c\n", WHP_SLIST_START, WHP_LIST_COMPACT );
 
     // count the number of keywords in our list
     for( temp_kw = Keyword_list; temp_kw !=NULL; temp_kw = temp_kw->next )
@@ -1662,13 +1662,14 @@ static void output_kw_file( void )
                             // output keyword
                             whp_fprintf( KW_file,
                                         ":pb.%c:pb.%cb%c%s%c\n"
-                                        ":pb.%cc\n",
+                                        ":pb.%c%c\n",
                                         WHP_LIST_ITEM,
                                         WHP_FONTSTYLE_START,
                                         WHP_FONTSTYLE_START,
                                         kw[i]->keyword,
                                         WHP_FONTSTYLE_END,
-                                        WHP_SLIST_START );
+                                        WHP_SLIST_START,
+                                        WHP_LIST_COMPACT );
                             title = true;
                         }
                         whp_fprintf( KW_file, ":pb.%c%c%s%c%s%c\n",
@@ -1764,7 +1765,7 @@ static void output_contents_file( void )
         }
         if( ctx->head_level > level ) {
             for( i = level + 1; i <= ctx->head_level; ++i ) {
-                whp_fprintf( Contents_file, ":pb.%cc\n", WHP_SLIST_START );
+                whp_fprintf( Contents_file, ":pb.%c%c\n", WHP_SLIST_START, WHP_LIST_COMPACT );
             }
             level = ctx->head_level;
         } else if( ctx->head_level < level ) {
