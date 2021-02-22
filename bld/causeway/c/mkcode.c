@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Convertor from binary format file to C source code, for 
+* Description:  Convertor from binary format file to C source code, for
 *                assembly code bursts.
 *
 ****************************************************************************/
@@ -40,48 +40,62 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/types.h>
-#include "wio.h"
-
-#include "clibext.h"
 
 
-static unsigned char *buff;
+#define BUFSIZE         4096
 
 int main(int argc, char *argv[])
 {
-    FILE                *fp = NULL;
-    int                 fi = -1;
-    int                 i;
-    int                 len;
-    unsigned char       *p;
-    struct stat         bufstat;
+    FILE            *fp;
+    FILE            *fi;
+    int             i;
+    size_t          len;
+    unsigned char   *buff;
+    unsigned char   *p;
+    size_t          size;
+    int             rc;
 
-
-    if( argc > 2 ) {
-        fi = open( argv[1], O_BINARY );
-        fp = fopen( argv[2], "w" );
-        stat( argv[1], &bufstat );
-    } else {
+    if( argc < 3 ) {
         printf( "Usage: inp.file out.file\n" );
         return( 1 );
     }
-    buff = malloc( bufstat.st_size );
-    read( fi, buff, bufstat.st_size );
-    close( fi );
-    p = buff;
-    i = 0;
-    fprintf( fp, "    " );
-    for( len = bufstat.st_size; len > 0; --len ) {
-        fprintf( fp, "0x%2.2X,", *p++ );
-        i++;
-        if( i == 16 ) {
-            fprintf( fp, "\n    " );
-            i = 0;
+    rc = 1;
+    buff = malloc( BUFSIZE );
+    if( buff == NULL ) {
+        printf( "Error: Not enough memory.\n" );
+    } else {
+        fi = fopen( argv[1], "rb" );
+        if( fi == NULL ) {
+            printf( "Error: Can not open input file.\n" );
+        } else {
+            fp = fopen( argv[2], "w" );
+            if( fp == NULL ) {
+                printf( "Error: Can not create output file.\n" );
+            } else {
+                i = 0;
+                fprintf( fp, "    " );
+                for( ; ferror( fi ) == 0; ) {
+                    size = fread( buff, 1, BUFSIZE, fi );
+                    if( size == 0 ) {
+                        break;
+                    }
+                    p = buff;
+                    for( len = size; len > 0; --len ) {
+                        fprintf( fp, "0x%2.2X,", *p++ );
+                        i++;
+                        if( i == 16 ) {
+                            fprintf( fp, "\n    " );
+                            i = 0;
+                        }
+                    }
+                }
+                fprintf( fp, "\n" );
+                fclose( fp );
+                rc = 0;
+            }
+            fclose( fi );
         }
+        free( buff );
     }
-    fprintf( fp, "\n" );
-    fclose( fp );
-    free( buff );
-    return( 0 );
+    return( rc );
 }
