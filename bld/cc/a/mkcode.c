@@ -42,22 +42,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include "watcom.h"
 
-#include "clibext.h"
 
+#define BUFSIZE 4096
+
+#define Xptr(x) (unsigned char *)(buff + x)
 
 struct bursts {
     unsigned short defs;
     unsigned short name;
     unsigned short burst;
 };
-
-static unsigned char *buff;
-
-#define Xptr(x) (unsigned char *)(buff + x)
 
 int main(int argc, char *argv[])
 {
@@ -66,22 +61,34 @@ int main(int argc, char *argv[])
     int                 len;
     unsigned char       *p;
     struct bursts       *cb;
-    struct stat         bufstat;
+    unsigned char       *buff;
+    size_t              size;
 
     if( argc < 3 ) {
         printf( "Usage: inp.file out.file\n" );
         return( 1 );
     }
-    stat( argv[1], &bufstat );
     fp = fopen( argv[1], "rb" );
-    buff = malloc( bufstat.st_size );
-    i = fread( buff, bufstat.st_size, 1, fp );
-    fclose( fp );
-    if( i != 1 ) {
+    if( fp == NULL ) {
+        printf( "Error: Can not open input file.\n" );
+        return( 1 );
+    }
+    size = 0;
+    buff = NULL;
+    for( ;; ) {
+        buff = realloc( buff, size + BUFSIZE );
+        if( fread( buff + size, 1, BUFSIZE, fp ) < BUFSIZE ) {
+            break;
+        }
+        size += BUFSIZE;
+    }
+    if( ferror( fp ) ) {
+        fclose( fp );
         free( buff );
         printf( "Error: can not read inp.file\n" );
         return( 1 );
     }
+    fclose( fp );
     cb = (struct bursts *)Xptr( *(short *)buff );
     fp = fopen( argv[2], "wt" );
     if( fp == NULL ) {
