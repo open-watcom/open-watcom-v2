@@ -37,15 +37,16 @@
 :cmt. .   .section 'Introduction'
 :cmt. .do end
 .*
-The &edname supports a powerful command language.  In a script,
-you may use any
+The &edname supports a powerful command language.
+In a script, you may use any
 .keyword &cmdline
-command, along with a number of special commands
-explicitly for the script environment.
+command, along with a number of special commands explicitly for the script
+environment.
 .np
-White space is ignored in a script file, unless a line starts with a
-right angle bracket ('&gt.'). Comments may be imbedded in a script file
-by starting the line with pound sign ('#').
+White space is ignored in a script file, unless a line starts with a right
+angle bracket ('&gt.').
+Comments may be imbedded in a script file by starting the line with pound sign
+('#').
 .np
 A script is invoked using the
 .keyword &cmdline
@@ -70,8 +71,8 @@ These optional parameters are accessed in the script by using
 Every occurrence of
 .var %n
 in the script is replaced by the corresponding parameter.
-To access parameter above 9, brackets must surround the number.  This
-is because:
+To access parameter above 9, brackets must surround the number.
+This is because:
 
 .millust begin
 %10
@@ -95,9 +96,9 @@ All parameters can be accessed by using
 .var %*
 .period
 .np
-To allow multiple words
-in a single parameter, delimit the sequence by forward slashes ('/') or
-double quotes ('"').  For example, the line
+To allow multiple words in a single parameter, delimit the sequence
+by forward slashes ('/') or double quotes ('"').
+For example, the line
 
 .millust begin
 source test.vi "a b c" d e
@@ -115,11 +116,11 @@ would cause the script test.vi to have the following variables defined:
 
 .np
 General variables, both local and global, are also supported in the
-editor script language. Any line in a script
-that is not one of the script commands
-has all the variables on it expanded before the line is processed.
-Script commands can manipulate the variables. For more information, see
-the section
+editor script language.
+Any line in a script that is not one of the script commands has all
+the variables on it expanded before the line is processed.
+Script commands can manipulate the variables.
+For more information, see the section
 :HDREF refid='scrvars'.
 .if &e'&dohelp eq 0 .do begin
 of this chapter.
@@ -145,9 +146,8 @@ since &edvi does not have to search for it or parse it.
 .*
 .np
 If a system command is spawned from a script (using the exclamation point ('!')
-command), then &edvi does not
-pause after the system command is finished running.  However, if
-you set
+command), then &edvi does not pause after the system command is finished running.
+However, if you set
 .keyref pauseonspawnerr 1
 .ct , then &edvi will pause after a system command is executed from a script
 if the system command returned an error.
@@ -171,10 +171,11 @@ example:
 The brackets are required to disambiguate single letter variables followed
 by text from multiple letter variables.
 .np
-Both local and global variables are supported.  They are distinguished
-by the case of the first letter:  local variables must begin with
-a lower case letter, and global variables begin with an upper case
-variable.  Example variables:
+Both local and global variables are supported.
+They are distinguished by the case of the first letter:  local variables
+must begin with a lower case letter, and global variables begin with
+an upper case variable.
+Example variables:
 
 .millust begin
 %A     - global variable named A.
@@ -184,11 +185,9 @@ variable.  Example variables:
 .millust end
 
 .np
-Global variables are valid for the life of the editing
-session.
+Global variables are valid for the life of the editing session.
 .np
-Local variables are only valid for the life of the script that they
-are used in.
+Local variables are only valid for the life of the script that they are used in.
 .*
 .beglevel
 .*
@@ -209,7 +208,8 @@ editor runs, they are:
 :DD.Drive of current file, based on the actual path.
 
 :DT.%(D1)
-:DD.Drive of current file, as typed by the user.  This could have no value.
+:DD.Drive of current file, as typed by the user.
+This could have no value.
 
 :DT.%E
 :DD.File name extension of current file.
@@ -218,8 +218,8 @@ editor runs, they are:
 :DD.Current file name (including name and extension).
 
 :DT.%H
-:DD.Home directory of a file. This is the directory where the edit command
-was issued.
+:DD.Home directory of a file.
+This is the directory where the edit command was issued.
 
 :DT.%N
 :DD.Name of the current file, extension removed.
@@ -229,7 +229,8 @@ was issued.
 has been modified, and a 0 otherwise.
 
 :DT.%(OS)
-:DD.What operating system the editor is hosted on. Possible values are:
+:DD.What operating system the editor is hosted on.
+Possible values are:
 :UL compact.
 :LI.dos (protect and real mode).
 :LI.unix (QNX, Linux or other Unix-based systems)
@@ -240,7 +241,8 @@ has been modified, and a 0 otherwise.
 
 :DT.%(OS386)
 :DD.This variable is set to 1 is the host operating system is 386
-(or higher) based.  The possible 386 environments are:
+(or higher) based.
+The possible 386 environments are:
 :UL compact.
 :LI.dos (protect mode).
 :LI.os2v2
@@ -254,7 +256,8 @@ full path to the file.
 
 :DT.%(P1)
 :DD.Path of current file (no extension, name, or drive) based on the name
-typed by the user.  This could have no value.
+typed by the user.
+This could have no value.
 
 :DT.%R
 :DD.Contains the current row (line number) in the current edit buffer.
@@ -277,20 +280,16 @@ typed by the user.  This could have no value.
 .* ******************************************************************
 .*
 .np
-&edvi has several hook points where a script,
-if defined by the user, is invoked.  This allows you to
-intercept the editor at key points
-to change its behaviour.  A script
-that is invoked at a hook point
-is referred to as a
+&edvi has several hook points where a script, if defined by the user, is invoked.
+This allows you to intercept the editor at key points to change its behaviour.
+A script that is invoked at a hook point is referred to as a
 .keyword hook script
 .period
 .np
-Each hook script
-is identified by a particular global variable.  Whenever &edvi
-reaches a hook point, it checks if the global variable is defined,
-and if it is, the global variables contents are treated like a script
-name, and that script is invoked.
+Each hook script is identified by a particular global variable.
+Whenever &edvi reaches a hook point, it checks if the global variable
+is defined, and if it is, the global variables contents are treated like
+a script name, and that script is invoked.
 .np
 The hook points are:
 :UL.
@@ -300,10 +299,10 @@ The hook points are:
 .keyword &cmdline
 .period
 :LI.whenever an unmodified file is modified.
-:LI.whenever a selected (highlighted) column range is
-chosen (via mouse click or keyboard).
-:LI.whenever a selected (highlighted) line range
-is chosen (via mouse click or keyboard).
+:LI.whenever a selected (highlighted) column range is chosen
+(via mouse click or keyboard).
+:LI.whenever a selected (highlighted) line range is chosen
+(via mouse click or keyboard).
 :eUL.
 .*
 :DL break.
@@ -341,21 +340,19 @@ The script invoked is the file specified by the global variable
 .period
 
 :DT.Modified Hook
-:DD.The hook script
-is called whenever
-a command is about to modify an unmodified file.  If the file is
-modified, the hook is not called.
+:DD.The hook script is called whenever a command is about to modify
+an unmodified file.
+If the file is modified, the hook is not called.
 .np
 The script invoked is the file specified by the global variable
 .var %(Modhook)
 .period
 
 :DT.Mouse Columns Sel Hook
-:DD.The hook script
-is called whenever a selected column range
-has been picked.  Picking a selected region is done by
-right-clicking the region with the mouse, or by double clicking
-the region with the mouse, or by using the underscore ('_')
+:DD.The hook script is called whenever a selected column range
+has been picked.
+Picking a selected region is done by right-clicking the region with the mouse,
+or by double clicking the region with the mouse, or by using the underscore ('_')
 .keyword &cmdmode
 keystroke.
 .np
@@ -375,11 +372,9 @@ The script invoked is the file is specified by the global variable
 .period
 
 :DT.Mouse Lines Sel Hook
-:DD.The hook script
-is called whenever a selected line range
-has been picked.  Picking a selected region is done by
-right-clicking the region with the mouse, or by double clicking
-the region with the mouse, or by using the underscore ('_')
+:DD.The hook script is called whenever a selected line range has been picked.
+Picking a selected region is done by right-clicking the region with the mouse,
+or by double clicking the region with the mouse, or by using the underscore ('_')
 .keyword &cmdmode
 keystroke.
 :DL break.
@@ -392,8 +387,7 @@ keystroke.
 :DT.%4
 :DD.Last line of selected region.
 :eDL.
-The script invoked is the file specified by the global
-variable
+The script invoked is the file specified by the global variable
 .var %(MLselhook)
 .period
 .*
@@ -404,8 +398,8 @@ variable
 .* ******************************************************************
 .*
 .np
-&edvi allows the use of constant expressions in its script
-language. Long integers and strings may be used in an expression.
+&edvi allows the use of constant expressions in its script language.
+Long integers and strings may be used in an expression.
 Some sample expressions are:
 .millust begin
 5*3+12
@@ -416,21 +410,19 @@ Some sample expressions are:
 rdonly == 1
 .millust end
 .np
-An expression is composed of operators and tokens.  Operators act
-on the tokens to give a final result.
+An expression is composed of operators and tokens.
+Operators act on the tokens to give a final result.
 .np
 A token in an expression may be a special keyword, a boolean setting
-value, an integer, or
-a string.
+value, an integer, or a string.
 .np
 A string is indicated by surrounding the string with double quotes (").
-A token is an integer if it starts with a numeric
-digit (0 to 9).
+A token is an integer if it starts with a numeric digit (0 to 9).
 .np
 If a token starts with a dot ('.'), then the remainder of the token
-is assumed to be a setting token.  This token evaluates to be
-1 or 0 for a boolean setting, or to the actual value of the setting
-for all others.
+is assumed to be a setting token.
+This token evaluates to be 1 or 0 for a boolean setting, or to the actual
+value of the setting for all others.
 .millust begin
  .autoindent - 1 if autoindent is true, 0 otherwise
  .ai         - 1 if autoindent is true, 0 otherwise
@@ -442,8 +434,8 @@ If a token is not surrounded by double quotes, and is not a keyword and
 is not an integer, then that token is assumed to be a string.
 .np
 If an expression contains conditional operators, then the result of the
-expression is a boolean value (1 or 0). The following script language
-control flow commands expect boolean results:
+expression is a boolean value (1 or 0).
+The following script language control flow commands expect boolean results:
 :UL compact.
 :LI.
 .keyref if
@@ -525,8 +517,9 @@ Special keyword tokens are:
 :DL break.
 .*
 :DT.ERR_???
-:DD.These are symbolic representations of all possible errors while
-executing in &edvi..  These values are found in
+:DD.These are symbolic representations of all possible errors while executing
+in &edvi..
+These values are found in
 :fname.error.dat:efname.
 .period
 These values are described in the appendix
@@ -535,7 +528,8 @@ These values are described in the appendix
 
 :DT.lastrc
 :DD.This keyword evaluates to the return code issued by the last command run
-in the script. Possible values to compare against are found in
+in the script.
+Possible values to compare against are found in
 :fname.error.dat:efname.
 .period
 These values may are described in the appendix
@@ -548,7 +542,8 @@ These values may are described in the appendix
 
 :DT.config
 :DD.This keyword evalutes to a number representing the current mode
-the screen is configured to. Possible values are:
+the screen is configured to.
+Possible values are:
 :DL break.
 :DT.100
 :DD.Screen is in color mode.
@@ -734,8 +729,8 @@ This section describes a BNF for the construction of constant expressions.
 .*
 .np
 This section gives a brief overview of the control flow commands of the
-&edvi script language.  For a full description of all
-script commands, see the next section
+&edvi script language.
+For a full description of all script commands, see the next section
 :HDREF refid='scrcmds'.
 .period
 .*
@@ -750,7 +745,8 @@ The
 .keyword loop
 block is similar to the
 .keyword do-while
-construct in C.  The flow of the loop may be modified using the
+construct in C.
+The flow of the loop may be modified using the
 .keyref break
 .ct ,
 .keyref continue
@@ -796,7 +792,8 @@ The
 .keyword while
 block is similar to the
 .keyword while
-loop construct in C.  The flow of the while loop may be modified using the
+loop construct in C.
+The flow of the while loop may be modified using the
 .keyref break
 .ct ,
 .keyref continue
@@ -863,8 +860,8 @@ Expressions are discussed in full detail in the section
 :HDREF refid='screxpr'.
 of this chapter.
 .np
-Script variables are used by some of the following commands.  Variables
-are discussed in full detail in the section
+Script variables are used by some of the following commands.
+Variables are discussed in full detail in the section
 :HDREF refid='scrvars'.
 .if &e'&dohelp eq 0 .do begin
 of this chapter.
@@ -872,7 +869,8 @@ of this chapter.
 .np
 When a script command terminates,
 .var lastrc
-is sometimes set to a value.  This value may be tested in an expression.
+is sometimes set to a value.
+This value may be tested in an expression.
 Script commands that set this have a
 .keyword Returns
 section.
@@ -883,8 +881,8 @@ section.
 .syntx * ATOMIC
 .begdescr
 This command causes all editing actions done by the script
-to all be part of one undo record.  This way, the action of the entire
-script can be eliminated with a single
+to all be part of one undo record.
+This way, the action of the entire script can be eliminated with a single
 .keyref 'undo (command)'
 .ct ; i.e., it is an atomic action.
 .enddescr
@@ -895,7 +893,8 @@ script can be eliminated with a single
 .begdescr
 This command is used to assign the value
 .paramt val
-to the variable &parm1..
+to the variable &parm1
+.period
 .np
 The forward slashes ('/') around
 .paramt val
@@ -929,15 +928,17 @@ For more information on regular expressions, see the chapter
 :DT.l
 :DD.When this flag is used,
 .paramt val
-is assumed to be an expression that indicates a line number. The expression
-is evaluated, and the data on the corresponding line number is assigned
-to &parm1..
+is assumed to be an expression that indicates a line number.
+The expression is evaluated, and the data on the corresponding line number
+is assigned to &parm1
+.period
 
 :DT.x
 :DD.When this flag is used,
 .paramt val
-is assumed to be an expression, and is evaluated. The result is
-assigned to &parm1..
+is assumed to be an expression, and is evaluated.
+The result is assigned to &parm1
+.period
 For another way of assigning expression results to a variable, see the
 .keyref expr
 script command.
@@ -946,21 +947,23 @@ script command.
 :DD.When this flag is used,
 .paramt val
 is assumed to be the name of an operating system environment variable,
-and the contents of that environment variable is what is assigned to &parm1..
+and the contents of that environment variable is what is assigned to &parm1
+.period
 
 :DT.@
 :DD.When this flag is used,
 .paramt val
 may be the name of one of the
 .keyref set
-command parameters. &parm1 will be given the current value of that
-parameter.
+command parameters.
+&parm1 will be given the current value of that parameter.
 .*
 :eDL.
 .*
 .np
 .paramt val
-may be coded as a special operator.  If
+may be coded as a special operator.
+If
 .paramt val
 is coded this way, the forward slashes ('/') must NOT be used.
 The special operators are:
@@ -971,7 +974,8 @@ The special operators are:
 :DD.Computes the length of the variable
 .paramt v
 .period
-This value is assigned to &parm1..
+This value is assigned to &parm1
+.period
 
 :DT.strchr &lt.v&gt. &lt.c&gt.
 :DD.Computes the offset of the character
@@ -979,7 +983,8 @@ This value is assigned to &parm1..
 in the variable
 .paramt v
 .period
-The offset is assigned to &parm1..
+The offset is assigned to &parm1
+.period
 Note that the character
 .paramt c
 may be a variable, the value of which will be expanded before offset
@@ -994,7 +999,8 @@ The substring is composed of characters from offset
 to offset
 .paramt n2
 .period
-The substring is assigned to &parm1..
+The substring is assigned to &parm1
+.period
 Note that the parameters
 .paramt n1
 and
@@ -1102,8 +1108,8 @@ is assigned to the global variable
 .begfunc BREAK
 .syntx * BREAK
 .begdescr
-Unconditionally exits the current looping block. This breaks out
-of
+Unconditionally exits the current looping block.
+This breaks out of
 .keyref loop
 -
 .keyref endloop
@@ -1131,7 +1137,8 @@ blocks.
 .begfunc CONTINUE
 .syntx * CONTINUE
 .begdescr
-Restarts the current looping block. This causes a jump to the top of
+Restarts the current looping block.
+This causes a jump to the top of
 .keyref loop
 -
 .keyref endloop
@@ -1177,7 +1184,8 @@ block.
 .begfunc ENDLOOP
 .syntx * ENDLOOP
 .begdescr
-Terminates a loop block.  Control goes to the top of the current loop.
+Terminates a loop block.
+Control goes to the top of the current loop.
 .enddescr
 .alsosee begin
 .seethis break
@@ -1193,8 +1201,8 @@ Terminates a loop block.  Control goes to the top of the current loop.
 .begfunc ENDWHILE
 .syntx * ENDWHILE
 .begdescr
-Terminates a while block.  Control goes to the top of the current
-while loop.
+Terminates a while block.
+Control goes to the top of the current while loop.
 .enddescr
 .alsosee begin
 .seethis break
@@ -1212,7 +1220,8 @@ while loop.
 .begdescr
 An alternate case in an
 .keyref if
-block.  If the opening
+block.
+If the opening
 .keyref if
 script command
 and none of the
@@ -1226,7 +1235,8 @@ is evaluated.
 .np
 If &parm1 is true, then the code following the
 .keyword elseif
-is executed.  If &parm1 is false, control goes to the next
+is executed.
+If &parm1 is false, control goes to the next
 .keyword elseif
 .ct ,
 .keyref else
@@ -1246,7 +1256,8 @@ command.
 .begdescr
 This is the alternate case in an
 .keyref if
-block.  If none of the preceding
+block.
+If none of the preceding
 .keyref if
 or
 .keyref elseif
@@ -1264,7 +1275,8 @@ command is executed.
 .begfunc EXPR
 .syntx * EXPR &lt.v1&gt. "=" &lt.expr&gt.
 .begdescr
-Assigns the expression &parm3 to the variable &parm1..
+Assigns the expression &parm3 to the variable &parm1
+.period
 .np
 Any variables contained in &parm3 are expanded before the expression
 is evaluated.
@@ -1313,10 +1325,11 @@ Closes file 1.
 .begfunc FOPEN
 .syntx * FOPEN &lt.name&gt. &lt.n&gt. &lt.how&gt.
 .begdescr
-This command opens file &parm1, assigning it file handle &parm2..
+This command opens file &parm1, assigning it file handle &parm2
+.period
 .np
-&parm2 may be a value from 1 to 9.  This number is used to identify
-the file for future
+&parm2 may be a value from 1 to 9.
+This number is used to identify the file for future
 .keyref fread
 .ct ,
 .keyref fwrite
@@ -1324,7 +1337,8 @@ or
 .keyref fclose
 script commands.
 .np
-&parm3 specifies the method that the file is opened. Methods are:
+&parm3 specifies the method that the file is opened.
+Methods are:
 .*
 :DL break.
 .*
@@ -1338,8 +1352,8 @@ script commands.
 :DD.Opens file for write.
 
 :DT.x
-:DD.Checks if the file exists.  This does not actually open the file,
-so no
+:DD.Checks if the file exists.
+This does not actually open the file, so no
 .keyref fclose
 is required.
 :eDL.
@@ -1378,8 +1392,10 @@ Opens file test.dat for append, and uses file handle 9.
 .begfunc FREAD
 .syntx * FREAD &lt.n&gt. &lt.v1&gt.
 .begdescr
-Reads a line from the file identified by handle &parm1..
-The line is stored in the variable &parm2..
+Reads a line from the file identified by handle &parm1
+.period
+The line is stored in the variable &parm2
+.period
 .enddescr
 .returns begin
 .retval ERR_NO_ERR
@@ -1415,7 +1431,8 @@ Reads the next line from file handle 1 into the variable
 .syntx * FWRITE &lt.n&gt. &lt.v1&gt.
 .begdescr
 Writes the contents of the variable &parm2 to the file identified
-by handle &parm1..
+by handle &parm1
+.period
 .enddescr
 .returns begin
 .retval ERR_NO_ERR
@@ -1447,7 +1464,8 @@ to file handle 3.
 .syntx * GET &lt.v1&gt.
 .begdescr
 Waits for the user to type a single keystroke, and then assigns
-the keystroke into variable &parm1..
+the keystroke into variable &parm1
+.period
 .enddescr
 .xmplsect begin
 .begxmpl get %(ch)
@@ -1485,7 +1503,8 @@ is evaluated.
 .np
 If &parm1 is true, then the code following the
 .keyword if
-is executed.  If &parm1 is false, control goes to the next
+is executed.
+If &parm1 is false, control goes to the next
 .keyref elseif
 .ct ,
 .keyref else
@@ -1505,8 +1524,9 @@ command.
 .begdescr
 Open a window (the
 .keyref commandwindow
-.ct ) and get a string from the user.  The string is assigned to the
-variable &parm1..
+.ct ) and get a string from the user.
+The string is assigned to the variable &parm1
+.period
 .np
 If &parm1 was assigned a value before the
 .keyword input
@@ -1565,7 +1585,8 @@ Defines the a label with the name &parm1 at the current line in the script.
 .begfunc LOOP
 .syntx * LOOP
 .begdescr
-Start a loop block.  This is the top of the block, after a
+Start a loop block.
+This is the top of the block, after a
 .keyref continue
 .ct ,
 .keyref endloop
@@ -1590,8 +1611,10 @@ command.
 .begfunc NEXTWORD
 .syntx * NEXTWORD &lt.srcvar&gt. &lt.resvar&gt.
 .begdescr
-Remove the next space-delimited word from the variable &parm1..
-The word is placed in the variable specified by &parm1..
+Remove the next space-delimited word from the variable &parm1
+.period
+The word is placed in the variable specified by &parm1
+.period
 Both &parm1 and &parm2 must be variables only.
 .enddescr
 .xmplsect begin
@@ -1635,7 +1658,8 @@ If &parm1 is false, execution continues at the next line.
 .begfunc RETURN
 .syntx * RETURN &lt.rc&gt.
 .begdescr
-Exit the script, returning &parm1..
+Exit the script, returning &parm1
+.period
 .np
 If the script was invoked by another script, then this value becomes
 .keyword lastrc
@@ -1684,9 +1708,9 @@ executes again.
 .begfunc WHILE
 .syntx * WHILE &lt.expr&gt.
 .begdescr
-Start a loop block.  If &parm1 is true, the body of the loop
-is executed.  If &parm1 is false, execution transfers to the
-instruction after the
+Start a loop block.
+If &parm1 is true, the body of the loop is executed.
+If &parm1 is false, execution transfers to the instruction after the
 .keyref endwhile
 command.
 .np
@@ -1720,8 +1744,8 @@ command.
 .*
 .np
 The following section describes a number of the scripts
-that are provided with &edvi.. Each script
-is discussed in detail.
+that are provided with &edvi..
+Each script is discussed in detail.
 
 .sesect begin 'err.vi'
 This is a simple script that edits a file that has the exact same
@@ -1741,7 +1765,8 @@ The global variable
 .var %N
 contains the name of the current file (extension removed).
 These are combined with the .err extension to create a full path
-to an error file.  This file is edited.
+to an error file.
+This file is edited.
 .seref end
 .sesect end
 
@@ -1774,11 +1799,11 @@ This assumes that the user will type a number.
 .sesect end
 
 .sesect begin 'qall.vi'
-This script
-tries to quit each file being edited.  If the file has been modified,
-the user is prompted if he wishes to save the file.  If he replies 'y',
-the file is saved.  If he replies 'n', the file is discarded.  If
-he presses the ESC key and cancels the input, the script is exited.
+This script tries to quit each file being edited.
+If the file has been modified, the user is prompted if he wishes to save the file.
+If he replies 'y', the file is saved.
+If he replies 'n', the file is discarded.
+If he presses the ESC key and cancels the input, the script is exited.
 .sexmp begin
 .seline loop
 .seline
@@ -1802,8 +1827,8 @@ he presses the ESC key and cancels the input, the script is exited.
 .serefer 1
 Starts the loop.
 .serefer 3 4
-Tries to to quit the file.  If the quit command fails, and the
-return code is
+Tries to to quit the file.
+If the quit command fails, and the return code is
 .param ERR_FILE_MODIFIED
 (the
 .keyref quit
@@ -1830,16 +1855,17 @@ not return the "everything is OK" return code,
 .param ERR_NO_ERR
 .period
 .serefer 17
-Ends the loop.  Control is returned to line 3.
+Ends the loop.
+Control is returned to line 3.
 .seref end
 .sesect end
 
 .sesect begin 'wrme.vi'
 This example is the default write hook script.
 This is called just before a edit buffer is saved and exited.
-If the file has a null name, then the user is prompted for a name. If
-he cancels the prompt, then the save is aborted. Otherwise, the
-new name is set and the save continues.
+If the file has a null name, then the user is prompted for a name.
+If he cancels the prompt, then the save is aborted.
+Otherwise, the new name is set and the save continues.
 .sexmp begin
 .seline if "%F" != ""
 .seline     return ERR_NO_ERR
@@ -1856,8 +1882,8 @@ new name is set and the save continues.
 .sexmp end
 .seref begin
 .serefer 1 3
-Checks if the current file name is the empty string.  If it is not,
-then there is a filename and the script returns
+Checks if the current file name is the empty string.
+If it is not, then there is a filename and the script returns
 .param ERR_NO_ERR
 to indicate that processing is to continue.
 .serefer 4 8
@@ -1868,8 +1894,8 @@ If he cancels the
 .keyref input
 command by pressing the ESC key, then the script returns
 .param DO_NOT_CLEAR_MESSAGE_WINDOW
-.ct , which is not an error condition but causes the save process to abort
-(remember, a hook point stops what it is doing if an
+.ct , which is not an error condition but causes the save process
+to abort (remember, a hook point stops what it is doing if an
 non-zero return code is returned from the hook script).
 .serefer 9
 Echo is disabled so that the setting of the filename will not
@@ -1886,8 +1912,8 @@ to indicate that processing is to continue.
 .sesect end
 
 .sesect begin 'proc.vi'
-This example prompts the user for a procedure name.  If the user types
-one, then a procedure skeleton is added:
+This example prompts the user for a procedure name.
+If the user types one, then a procedure skeleton is added:
 .millust begin
 /*
  * ProcName
@@ -1976,16 +2002,16 @@ void ProcName( @ )
 .serefer 15
 This line simulates the typing of a number of keystrokes at the keyboard.
 The effect of these keystrokes is to move forward to the '@' character
-and delete it.  This leaves the cursor in the position necessary to
-enter procedure parameters.
+and delete it.
+This leaves the cursor in the position necessary to enter procedure parameters.
 .serefer 16
 Enables output to the message window.
 .serefer 17 18
 Displays a message.
 .serefer 19
-Adds the key 'i' to the keyboard buffer.  Once the script exits, &edvi
-will process this key as if the user had typed it.  Thus, once the
-script is done, the user is left inserting text.
+Adds the key 'i' to the keyboard buffer.
+Once the script exits, &edvi will process this key as if the user had typed it.
+Thus, once the script is done, the user is left inserting text.
 .seref end
 .sesect end
 

@@ -106,8 +106,7 @@ commands in more detail.
 .np
 Some
 .keyword &cmdline
-commands accept a line address or a line range as a
-parameter.
+commands accept a line address or a line range as a parameter.
 For example, when specifying the
 .keyref write
 command, you may specify
@@ -636,8 +635,7 @@ These methods included typing 'ZZ' and using the menus.
 .np
 There are a number of different
 .keyword &cmdline
-commands that can be used for
-saving and/or quitting your files.
+commands that can be used for saving and/or quitting your files.
 :OL.
 
 :LI.
@@ -691,7 +689,7 @@ The
 .keyref write
 command is used to write the current file.
 If you specify a file name, the edit buffer will be written to a file
- with that name.
+with that name.
 .millust begin
 :write new.txt
 .millust end
@@ -760,8 +758,7 @@ The message window will indicate the following:
 .millust begin
 "abc" [modified] line 3 of 3  -- 100% --
 .millust end
-As you can see, the file has been modified, so you are not
-allowed to quit.
+As you can see, the file has been modified, so you are not allowed to quit.
 .np
 
 :LI.Enter the
@@ -780,8 +777,7 @@ Now press
 .millust begin
 "abc" line 3 of 3  -- 100% --
 .millust end
-Notice that the file no longer is marked as modified once it is
-written.
+Notice that the file no longer is marked as modified once it is written.
 
 :LI.Try the
 .keyword &cmdline
@@ -918,8 +914,8 @@ If you click the left mouse button below the scroll thumb, you will move down
 a page in the file you are editing.
 If you hold the left mouse button down, then you will page continuously.
 .np
-By pressing and holding down the left mouse button on the scroll
-thumb, you can set the edit position yourself.
+By pressing and holding down the left mouse button on the scroll thumb,
+you can set the edit position yourself.
 As you drag the scroll thumb up and down, the edit window will be redrawn
 to show you the corresponding portion of your file.
 .* ******************************************************************
@@ -945,12 +941,11 @@ is called a line region.
 You can select text with the mouse by holding down the right or left mouse
 button, and moving the mouse up and down or left and right.
 When using the right button, a selection menu will appear after the mouse
-button is released, from which you choose what
-you wish to do with the selected text.
+button is released, from which you choose what you wish to do with
+the selected text.
 .np
-If you highlight a region by holding down the left button and moving
-the mouse, then releasing the button has no effect
-(the region simply remains highlighted).
+If you highlight a region by holding down the left button and moving the mouse,
+then releasing the button has no effect (the region simply remains highlighted).
 This region may then be operated on from the
 .keyword &cmdline
 .ct , using different
@@ -1275,12 +1270,10 @@ You can search a file for a string in either a forwards or backwards
 direction.
 By using the
 .keyword &cmdmode
-key '/', you are prompted for a string to
-search for in the forwards direction.
+key '/', you are prompted for a string to search for in the forwards direction.
 By using the
 .keyword &cmdmode
-key '?', you are prompted for a string to search for in the backwards
-direction.
+key '?', you are prompted for a string to search for in the backwards direction.
 .np
 When the string is found, your cursor is moved to the first character
 of the string, and the string is highlighted.
@@ -1383,8 +1376,7 @@ d/text - delete up to the word "text"
 .millust end
 .np
 These commands can be preceded by an optional repeat count.
-This repeat count specifies the number of times that the command
-will be executed.
+This repeat count specifies the number of times that the command will be executed.
 If the repeat count is not specified, the command is executed once.
 For example:
 .millust begin
@@ -1434,9 +1426,8 @@ through
 in
 .keyword &cmdmode
 .period
-When you do this, a message appears showing you which buffer
-has been selected, how many lines/characters are in the buffer, and the first
-line of the buffer.
+When you do this, a message appears showing you which buffer has been selected,
+how many lines/characters are in the buffer, and the first line of the buffer.
 .np
 There are also 26 named buffers, 'a' through 'z'.
 The contents of these buffers is constant over the life of your editing session.
@@ -1654,8 +1645,7 @@ If you are changing characters on a line, the characters will be highlighted.
 If you press the
 .param ESC
 key, the change will be cancelled.
-Once you type a character, the characters will be deleted and you will
-enter
+Once you type a character, the characters will be deleted and you will enter
 .keyword &tinsmode
 .period
 .np
@@ -1747,8 +1737,7 @@ This is more new text.
 .section 'Undo and Redo'
 .* ******************************************************************
 .np
-&edvi has an unlimited undo capacity (constrained only by memory and
-disk space).
+&edvi has an unlimited undo capacity (constrained only by memory and disk space).
 Every change that you make to a file is remembered, and can be undone
 in the reverse order that you made the changes.
 .np
@@ -1891,8 +1880,8 @@ You will see the message:
 Memorize Mode ended
 .millust end
 .np
-Once you have memorized a key sequence, you can re-execute
-it by pressing dot ('.').
+Once you have memorized a key sequence, you can re-execute it by pressing dot
+('.').
 This will cause &edvi to behave as if all the keys you memorized were
 being typed by you again.
 .np

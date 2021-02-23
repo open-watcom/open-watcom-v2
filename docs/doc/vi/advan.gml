@@ -95,8 +95,7 @@ in the previous chapter
 .period
 Enter the
 .keyword &cmdline
-command (remember to press colon (':') to bring up the
-command window):
+command (remember to press colon (':') to bring up the command window):
 .millust begin
 :1,$s/This/This This/
 .millust end
@@ -177,8 +176,7 @@ in the previous chapter
 .period
 Enter the
 .keyword &cmdline
-command (remember to press colon (':') to bring up the
-command window):
+command (remember to press colon (':') to bring up the command window):
 .millust begin
 :g/This/delete
 .millust end
@@ -294,14 +292,12 @@ The selection window appears as follows:
 .section 'Mapping Keys'
 .* ******************************************************************
 .np
-A powerful feature in &edname is the ability to change the meaning of
-any key in
+A powerful feature in &edname is the ability to change the meaning of any key in
 .keyword &cmdmode
 or
 .keyword &tinsmode
 .period
-Using this feature, you can configure the editor any way which suits your
-needs.
+Using this feature, you can configure the editor any way which suits your needs.
 .np
 The
 .keyword &cmdline
@@ -330,8 +326,7 @@ to typing the characters in
 .np
 In the
 .keyref map
-command, specifying the exclamation point ('!') causes the map to be
-for
+command, specifying the exclamation point ('!') causes the map to be for
 .keyword &tinsmode
 .ct , rather than
 .keyword &cmdmode
