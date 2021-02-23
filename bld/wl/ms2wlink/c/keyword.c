@@ -275,6 +275,8 @@ static void ProcSegments( const char *arg );
 static void ProcStack( const char *arg );
 static void ProcTiny( const char *arg );
 static void ProcWarnFixup( const char *arg );
+static void ProcXLX( const char *arg );
+static void ProcXPE( const char *arg );
 
 
 static  switch_entry        OptionsTable[] = {
@@ -318,6 +320,8 @@ static  switch_entry        OptionsTable[] = {
     "stack",                    ProcStack,              2,
     "tiny",                     ProcTiny,               1,
     "warnfixup",                ProcWarnFixup,          1,
+    "xlx",                      ProcXLX,                3,
+    "xpe",                      ProcXPE,                3,
     NULL
 };
 
@@ -1558,6 +1562,24 @@ static void ProcWarnFixup( const char *arg )
     /* unused parameters */ (void)arg;
 
     NotSupported( "warnfixup" );
+}
+
+static void ProcXLX( const char *arg )
+/************************************/
+{
+    /* unused parameters */ (void)arg;
+
+    // eXtended option -- LX format
+    FmtType = FMT_OS2V2;
+}
+
+static void ProcXPE( const char *arg )
+/************************************/
+{
+    /* unused parameters */ (void)arg;
+
+    // eXtended option -- PE format
+    FmtType = FMT_NT;
 }
 
 void ProcessOption( const char *opt )
