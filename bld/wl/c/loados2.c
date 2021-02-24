@@ -866,7 +866,7 @@ void ChkOS2Exports( void )
                 if( FmtData.type & MK_OS2_FLAT ) {
                     exp->addr.off -= group->grp_addr.off;
                     if( (group->segflags & SEG_LEVEL_MASK) == SEG_LEVEL_2 ) {
-                        exp->isiopl = TRUE; // Conforming or not doesn't matter!
+                        exp->isiopl = true; // Conforming or not doesn't matter!
                         if( exp->addr.off > 65535 ) {
                             // Call gates are 16-bit only
                             LnkMsg( LOC+ERR+MSG_BAD_TARG_OFF, "a", &exp->addr );
@@ -877,9 +877,6 @@ void ChkOS2Exports( void )
                 }
                 if( group->segflags & SEG_MOVABLE ) {
                     exp->ismovable = true;
-                }
-                if( group->segflags & SEG_MOVABLE ) {
-                    exp->ismovable = TRUE;
                 }
             }
         }
