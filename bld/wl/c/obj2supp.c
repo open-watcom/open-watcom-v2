@@ -1250,8 +1250,8 @@ static void MakeBase( fix_relo_data *fix )
 
 #ifdef _OS2
 static unsigned ChkOS2IntEntry( group_entry *grp, segdata *seg,
-                                frame_spec *tthread, fix_data *fix )
-/******************************************************************/
+                                frame_spec *tthread, fix_relo_data *fix )
+/***********************************************************************/
 {
     unsigned    int_ordinal = 0;    // 0 = no crazy stuff
 
@@ -1375,7 +1375,7 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
 
         fixptr = breloc->item.os2f.buff;
         freedll = false;
-        int_ordinat = 0;
+        int_ordinal = 0;
         dll = NULL;
         if( fix->type & FIX_REL ) {
             fixtype = OSF_32BIT_SELF_REL;
@@ -1444,7 +1444,7 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
                 target.off += fix->value;
             }
             flags = OSF_INTERNAL_REF;
-            if( targ.seg > 0xFF ) {
+            if( target.seg > 0xFF ) {
                 flags |= OSF_OBJMOD_16BITS;
                 PUT_U16( fixptr, target.seg );
                 fixptr += 1;
