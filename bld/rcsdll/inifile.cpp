@@ -52,69 +52,79 @@
 #include "clibext.h"
 
 
+#define RCS_CFG     "rcs.cfg"
+#define RCS_SECTION "rcs settings"
+#define RCS_KEY     "rcs settings"
+#define RCS_DEFAULT "generic"
+
 #if defined( __OS2__ )
 
     // just use the os/2 user .ini file
-    int MyGetProfileString( const char *dir, const char *filename, const char *section,
-                            const char *key, const char *def, char *buffer, int len ) {
-        dir = dir; filename = filename;
+    int MyGetProfileString( const char *dir, char *buffer, int len )
+    {
+        (void)dir;
   #ifdef _M_I86
-        return( (unsigned)PrfQueryProfileString( HINI_USERPROFILE, (char *)section, (char *)key, (char *)def, (void *)buffer, (unsigned)len ) );
+        return( (unsigned)PrfQueryProfileString( HINI_USERPROFILE, RCS_SECTION, RCS_KEY, RCS_DEFAULT, (void *)buffer, (unsigned)len ) );
   #else
-        return( PrfQueryProfileString( HINI_USERPROFILE, section, key, def, (void *)buffer, len ) );
+        return( PrfQueryProfileString( HINI_USERPROFILE, RCS_SECTION, RCS_KEY, RCS_DEFAULT, (void *)buffer, len ) );
   #endif
     }
-    int MyWriteProfileString( const char *dir, const char *filename, const char *section,
-                              const char *key, const char *string ) {
-        dir = dir; filename = filename;
+    int MyWriteProfileString( const char *dir, const char *string )
+    {
+        (void)dir;
   #ifdef _M_I86
-        return( PrfWriteProfileString( HINI_USERPROFILE, (char *)section, (char *)key, (char *)string ) );
+        return( PrfWriteProfileString( HINI_USERPROFILE, RCS_SECTION, RCS_KEY, (char *)string ) );
   #else
-        return( PrfWriteProfileString( HINI_USERPROFILE, section, key, string ) );
+        return( PrfWriteProfileString( HINI_USERPROFILE, RCS_SECTION, RCS_KEY, string ) );
   #endif
     }
 
 #elif defined( __WINDOWS__ ) || defined( __NT__ )
 
-    int MyGetProfileString( const char *dir, const char *filename, const char *section,
-                            const char *key, const char *def, char *buffer, int len )
+    int MyGetProfileString( const char *dir, char *buffer, int len )
     {
-        dir =dir; // ignored in this model
-        return(GetPrivateProfileString(section,key,def,buffer,len,filename));
+        (void)dir;
+        return( GetPrivateProfileString( RCS_SECTION, RCS_KEY, RCS_DEFAULT, buffer, len, RCS_CFG ) );
     }
-    int MyWriteProfileString( const char *dir, const char *filename, const char *section,
-                              const char *key, const char *string )
+    int MyWriteProfileString( const char *dir, const char *string )
     {
-        dir =dir; // ignored in this model
-        return(WritePrivateProfileString(section,key,string,filename));
+        (void)dir;
+        return( WritePrivateProfileString( RCS_SECTION, RCS_KEY, string, RCS_CFG ) );
     }
 
-#elif defined( __UNIX__ )
+#else
 
-    int MyGetProfileString( const char *dir, const char *filename, const char *section,
-                            const char *key, const char *def, char *buffer, int len )
+  #if defined( __UNIX__ )
+    #define REL_RCS_CFG     "/.wvi/" RCS_CFG
+    #define ABS_RCS_CFG     "/usr/watcom/wvi/" RCS_CFG
+  #elif defined( __DOS__ )
+
+    #define REL_RCS_CFG     "\\binw\\" RCS_CFG
+    #define ABS_RCS_CFG     "c:\\" RCS_CFG
+  #endif
+
+    int MyGetProfileString( char *dir, char *buffer, int len )
     {
         char path[_MAX_PATH];
         FILE *fp;
 
-        /* unused parameters */ (void)section; (void)key;
-
+  #if defined( __UNIX__ )
         if( dir == NULL ) {
             dir = getenv( "HOME" );
-            if( dir == NULL ) dir = ".";
+            if( dir == NULL ) {
+                dir = ".";
+            }
         }
-
-        strcpy( path, dir );
-        strcat( path, "/.wvi/" );
-        strcat( path, filename );
+  #endif
+        strncpy( path, dir, _MAX_PATH - sizeof( REL_RCS_CFG ) );
+        path[_MAX_PATH - sizeof( REL_RCS_CFG )] = '\0';
+        strcat( path, REL_RCS_CFG );
 
         fp = fopen( path, "r" );
-        if( !fp ) {
-            strcpy( path, "/usr/watcom/wvi/" );
-            strcat( path, filename );
-            fp = fopen( path, "r" );
-            if( !fp ) {
-                strncpy( buffer, def, len );
+        if( fp == NULL ) {
+            fp = fopen( ABS_RCS_CFG, "r" );
+            if( fp == NULL ) {
+                strncpy( buffer, RCS_DEFAULT, len );
                 return( 0 );
             }
         }
@@ -123,83 +133,29 @@
         return( 1 );
     }
 
-    int MyWriteProfileString( const char *dir, const char *filename, const char *section,
-                              const char *key, const char *string )
+    int MyWriteProfileString( char *dir, char *string )
     {
         char path[_MAX_PATH];
         FILE *fp;
 
-        /* unused parameters */ (void)section; (void)key;
-
+  #if defined( __UNIX__ )
         if( dir == NULL ) {
             dir = getenv( "HOME" );
-            if( dir == NULL ) dir = ".";
-        }
-
-        strcpy( path, dir );
-        strcat( path, "/.wvi/" );
-        strcat( path, filename );
-
-        fp = fopen( path, "w" );
-        if( !fp ) {
-            strcpy( path, "/usr/watcom/wvi/" );
-            strcat( path, filename );
-            fp = fopen( path, "w" );
-            if( !fp ) return( 0 );
-        }
-        fputs( string, fp );
-        fclose( fp );
-        return( 1 );
-    }
-
-#elif defined( __DOS__ )
-
-    int MyGetProfileString( const char *dir, const char *filename, const char *section,
-                            const char *key, const char *def, char *buffer, int len )
-    {
-        char path[_MAX_PATH];
-        FILE *fp;
-
-        section=section;
-        key=key;
-
-        sprintf( path, dir );
-        strcat( path, "\\binw\\" );
-        strcat( path, filename );
-
-        fp = fopen( path, "r" );
-        if( !fp ) {
-            sprintf( path, "c:\\" );
-            strcat( path, filename );
-            fp = fopen( path, "r" );
-            if( !fp ) {
-                strncpy( buffer, def, len );
-                return( 0 );
+            if( dir == NULL ) {
+                dir = ".";
             }
         }
-        fgets( buffer, len, fp );
-        fclose( fp );
-        return( 1 );
-    }
-
-    int MyWriteProfileString( const char *dir, const char *filename, const char *section,
-                              const char *key, const char *string )
-    {
-        char path[_MAX_PATH];
-        FILE *fp;
-        section=section;
-        key=key;
-
-        sprintf( path, dir );
-        strcat( path, "\\binw\\" );
-        strcat( path, filename );
+  #endif
+        strncpy( path, dir, _MAX_PATH - sizeof( REL_RCS_CFG ) );
+        path[_MAX_PATH - sizeof( REL_RCS_CFG )] = '\0';
+        strcat( path, REL_RCS_CFG );
 
         fp = fopen( path, "w" );
-        if( !fp ) {
-            sprintf( path, "c:\\" );
-            strcat( path, filename );
-            fp = fopen( path, "w" );
-            if( !fp ) return( 0 );
+        if( fp == NULL ) {
+            fp = fopen( ABS_RCS_CFG, "w" );
+            if( fp == NULL ) {
+                return( 0 );
+            }
         }
         fputs( string, fp );
         fclose( fp );

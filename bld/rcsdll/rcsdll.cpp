@@ -175,7 +175,7 @@ int RCSAPI RCSSetSystem( rcsdata data, rcstype rcs_type )
         return( false );
     if( rcs_type > RCS_TYPE_LAST )
         return( false );
-    MyWriteProfileString( d->getCfgDir(), RCS_CFG, RCS_SECTION, RCS_KEY, rcs_type_strings[rcs_type] );
+    MyWriteProfileString( d->getCfgDir(), rcs_type_strings[rcs_type] );
     return( true );
 
 }
@@ -188,7 +188,7 @@ rcstype RCSAPI RCSQuerySystem( rcsdata data )
     userData *d = (userData*)data;
     if( d == NULL )
         return( NO_RCS );
-    MyGetProfileString( d->getCfgDir(), RCS_CFG, RCS_SECTION, RCS_KEY, RCS_DEFAULT, buffer, MAX_RCS_STRING_LEN );
+    MyGetProfileString( d->getCfgDir(), buffer, MAX_RCS_STRING_LEN );
     for( i = RCS_TYPE_FIRST; i <= RCS_TYPE_LAST; i = (rcstype)( i + 1 ) ) {
         if( strnicmp( buffer, rcs_type_strings[i], strlen( rcs_type_strings[i] ) ) == 0 ) {
             return( i );

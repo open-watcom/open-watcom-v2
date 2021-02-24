@@ -32,11 +32,6 @@
 #include "rcsapi.h"
 
 
-#define RCS_CFG     "rcs.cfg"
-#define RCS_SECTION "rcs settings"
-#define RCS_KEY     "rcs settings"
-#define RCS_DEFAULT "generic"
-
 #define BUFLEN      512
 
 #define MAX_RCS_STRING_LEN 10 // including nullchar
@@ -216,4 +211,3 @@ private:
     rcsstring                   cfgDir;
     int                         pause;
 };
-
