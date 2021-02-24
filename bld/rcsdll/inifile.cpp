@@ -103,7 +103,7 @@
     #define ABS_RCS_CFG     "c:\\" RCS_CFG
   #endif
 
-    int MyGetProfileString( char *dir, char *buffer, int len )
+    int MyGetProfileString( const char *dir, char *buffer, int len )
     {
         char path[_MAX_PATH];
         FILE *fp;
@@ -133,7 +133,7 @@
         return( 1 );
     }
 
-    int MyWriteProfileString( char *dir, char *string )
+    int MyWriteProfileString( const char *dir, const char *string )
     {
         char path[_MAX_PATH];
         FILE *fp;
