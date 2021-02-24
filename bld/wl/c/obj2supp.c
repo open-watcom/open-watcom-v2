@@ -1501,7 +1501,7 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
             }
             fixptr += 1;
             if( fix->additive ) {
-                flags |= OSF_ADDITIVE;
+                flags |= OSF_ADD_FIX;
                 switch( fix->type & FIX_OFFSET_MASK ) {
                 case FIX_OFFSET_8:
                     PUT_U8( fix->data, 0 );
@@ -1514,7 +1514,7 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
                     break;
                 }
                 if( fix->value > 0x7fff ) {
-                    flags |= OSF_ADDITIVE32;
+                    flags |= OSF_ADD_FIX_32;
                     PUT_U32( fixptr, fix->value );
                     fixptr += 2;
                 } else {

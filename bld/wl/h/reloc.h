@@ -81,8 +81,6 @@
 #define OSF_FIXUP_TO_ALIAS      0x10
 #define OSF_SOURCE_MASK         0x0f
 #define OSF_TARGET_MASK         0x03
-#define OSF_ADDITIVE            0x04
-#define OSF_ADDITIVE32          0x20
 #define OSF_OBJMOD_16BITS       0x40
 #define OSF_TARGOFF_32BITS      0x10
 #define OSF_IMPORD_8BITS        0x80
