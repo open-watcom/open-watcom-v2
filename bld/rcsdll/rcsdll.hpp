@@ -190,7 +190,7 @@ extern gitSystem Git;
 class userData {
 public:
     userData( rcshwnd win, rcsstring cfg ) :
-        window(win),batcher(NULL),msgBox(NULL),currentSystem(NULL),cfgDir(cfg),pause(0) {};
+        window(win),batcher(NULL),batch_cookie(NULL),msgBox(NULL),msg_cookie(NULL),currentSystem(NULL),cfgDir(cfg),pause(0) {};
     int regBatcher( BatchCallback *fp, void *c )
         { batcher = fp; batch_cookie=c; return( 1 ); };
     int regMessager( MessageBoxCallback *fp, void *c )
@@ -198,7 +198,7 @@ public:
     int setSystem( rcstype rcs_type );
     rcsstring getCfgDir() { return( cfgDir ); };
     rcsSystem *getSystem() { return( currentSystem ); };
-    void setPause( int on ) { if( on ) { pause=1; } else { pause = 1; } };
+    void setPause( int on ) { if( on ) { pause=1; } else { pause = 0; } };
     int getPause() { return( pause ); };
 
     rcshwnd                     window;
