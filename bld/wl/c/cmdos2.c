@@ -120,7 +120,8 @@ static entry_export *ProcWlibDLLImportEntry( void )
         }
     }
     exp = AllocExport( symname.name, symname.len );
-    exp->isanonymous = ( (CmdFlags & CF_ANON_EXPORT) != 0 );
+    if( CmdFlags & CF_ANON_EXPORT )
+        exp->isanonymous = true;
     if( internal.name != NULL ) {
         exp->sym = SymOp( ST_REFERENCE_SYM, internal.name, internal.len );
     } else {
@@ -547,7 +548,8 @@ static bool getexport( void )
     unsigned_32     val32;
 
     exp = AllocExport( Token.this, Token.len );
-    exp->isanonymous = ( (CmdFlags & CF_ANON_EXPORT) != 0 );
+    if( CmdFlags & CF_ANON_EXPORT )
+        exp->isanonymous = true;
     if( GetToken( SEP_PERIOD, TOK_INCLUDE_DOT ) ) {
         if( getatol( &val32 ) != ST_IS_ORDINAL ) {
             LnkMsg( LOC+LINE+ERR + MSG_EXPORT_ORD_INVALID, NULL );
