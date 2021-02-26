@@ -389,6 +389,9 @@ Specifies an include path.
 This include path is searched before the directories specified in the
 .ev INCLUDE
 environment variable.  This option affects pass one only.
+.np
+Note: to be host platform independent the form like &sw.i="../h"
+(quoted path and forward slash separator) is recommended.
 .*
 .point &sw.k
 Disables the segment sorting feature (load optimization).
