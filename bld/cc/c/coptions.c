@@ -134,6 +134,7 @@ static struct
 } SwData;
 
 // local variables
+static bool     debug_optimization_change = false;
 static int      character_encoding = 0;
 static unsigned unicode_CP = 0;
 
@@ -949,7 +950,8 @@ static void Set_AI( void )          { CompFlags.no_check_inits = true; }
 static void Set_AQ( void )          { CompFlags.no_check_qualifiers = true; }
 static void Set_D0( void )
 {
-    GenSwitches &= ~(DBG_NUMBERS | DBG_TYPES | DBG_LOCALS | NO_OPTIMIZATION);
+    debug_optimization_change = false;
+    GenSwitches &= ~(DBG_NUMBERS | DBG_TYPES | DBG_LOCALS);
     CompFlags.debug_info_some = false;
     CompFlags.no_debug_type_names = false;
     EnsureEndOfSwitch();
@@ -966,8 +968,8 @@ static void Set_D1( void )
 }
 static void Set_D2( void )
 {
-    GenSwitches |= DBG_NUMBERS | DBG_TYPES | DBG_LOCALS | NO_OPTIMIZATION;
-    CompFlags.inline_functions = false;
+    debug_optimization_change = true;
+    GenSwitches |= DBG_NUMBERS | DBG_TYPES | DBG_LOCALS;
     if( *OptScanPtr == '~' ) {
         ++OptScanPtr;
         CompFlags.no_debug_type_names = true;
@@ -2249,6 +2251,14 @@ static void Define_Memory_Model( void )
 #endif
 }
 
+static void SetDebug( void )
+{
+    if( debug_optimization_change ) {
+        GenSwitches |= NO_OPTIMIZATION;
+        CompFlags.inline_functions = false;
+    }
+}
+
 void GenCOptions( char **cmdline )
 {
     memset( &SwData,0, sizeof( SwData ) ); //re-useable
@@ -2289,6 +2299,7 @@ void GenCOptions( char **cmdline )
     }
     CBanner();          /* print banner if -zq not specified */
     GblPackAmount = PackAmount;
+    SetDebug();
     SetTargSystem();
     SetGenSwitches();
     SetCharacterEncoding();
