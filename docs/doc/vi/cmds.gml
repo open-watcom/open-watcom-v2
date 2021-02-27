@@ -427,8 +427,7 @@ Display the current working directory
 .begfunc CHANGE
 .syntx &lt.line_range&gt. Change
 .begdescr
-Deletes the line range &range
-.ct , and replaces the range with inputted source lines.
+Deletes the line range &range., and replaces the range with inputted source lines.
 The input of text is terminated when a line with nothing on it but
 a dot ('.') is entered.
 .exmode

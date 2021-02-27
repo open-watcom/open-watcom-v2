@@ -146,7 +146,7 @@ same as ".587" or ".587p"
 same as ".687" or ".687p"
 .note i=<directory>
 add directory to list of include directories
-.np
+.notebreak
 Note: to be host platform independent the form like i="../h"
 (quoted path and forward slash separator) is recommended.
 .note j or s

@@ -126,6 +126,9 @@ set object file name
 display options summary
 .note i=<directory>
 add directory to list of include directories
+.notebreak
+Note: to be host platform independent the form like i="../h"
+(quoted path and forward slash separator) is recommended.
 .note o{e,c}
 object file format (ELF,COFF)
 .note q or zq

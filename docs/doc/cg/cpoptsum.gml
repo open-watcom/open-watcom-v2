@@ -517,9 +517,6 @@ set debug output format (&company, Dwarf, Codeview)
 .note i=<directory>
 :CMT. .ix 'options' 'i'
 add directory to list of include directories
-.np
-Note: to be host platform independent the form like i="../h"
-(quoted path and forward slash separator) is recommended.
 :optref refid='SWi'.
 .*
 .note j

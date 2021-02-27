@@ -3160,7 +3160,7 @@ The specified paths are added to the list of directories in which the
 compiler will search for "include" files.
 See the section entitled :HDREF refid='wccinc'. for information on
 directory searching.
-.np
+.pc
 Note: to be host platform independent the form like i="../h"
 (quoted path and forward slash separator) is recommended.
 .do end
