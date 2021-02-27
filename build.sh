@@ -29,8 +29,8 @@ if [ "$OWTOOLS" = "WATCOM" ]; then
 else
     case `uname` in
         FreeBSD)
-            output_redirect make -f ../posmake clean
-            output_redirect make -f ../posmake TARGETDEF=-D__BSD__
+            output_redirect gmake -f ../posmake clean
+            output_redirect gmake -f ../posmake TARGETDEF=-D__BSD__
             ;;
         Darwin)
             output_redirect make -f ../posmake clean
