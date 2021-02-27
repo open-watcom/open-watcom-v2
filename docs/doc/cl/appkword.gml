@@ -330,8 +330,8 @@ It may be used in place of
 The
 .kw &kwsaveregs.
 keyword may be used with functions.
-It is provided for compatibility with Microsoft C, and has no effect
-in &wcboth..
+It is provided for compatibility with Microsoft C, and is used
+to save and restore all segment registers in &wcboth..
 &wcboth. provide the predefined macro
 .mkw _saveregs
 for convenience and compatibility with the Microsoft C compiler.

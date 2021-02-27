@@ -1747,7 +1747,7 @@ keyword.
 &product recognizes the
 .kwm __saveregs
 keyword which is an attribute used by C/C++ compilers to describe a
-function that must save and restore all registers.
+function that must save and restore all segment registers.
 .np
 &product predefines the macro
 .kwm _saveregs
