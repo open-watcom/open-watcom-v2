@@ -1,7 +1,7 @@
 #!/bin/sh
 
 if [ -z "$OWROOT" ]; then
-    source ./setvars.sh
+    . ./setvars.sh
 fi
 if [ ! -f $OWBINDIR/$OWOBJDIR/builder ]; then
     echo Cannot find builder - did you run build.sh?
