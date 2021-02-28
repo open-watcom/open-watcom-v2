@@ -33,6 +33,7 @@
 #include "bool.h"
 
 #define ALLOC       WndAlloc
+#define FREE        WndFree
 #define CASEIGNORE  SrchIgnoreCase
 #define MAGICFLAG   false
 #define MAGICSTR    SrchIgnoreMagic

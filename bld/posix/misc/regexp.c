@@ -67,6 +67,9 @@
 #include <string.h>
 #include <ctype.h>
 #include "regexp.h"
+#if !defined( ALLOC ) || !defined( FREE )
+#include <stdlib.h>
+#endif
 
 
 /* IMPORTANT: must have ^$\\ FIRST */
@@ -105,7 +108,10 @@ char    *MagicString = "()";
 
 #if !defined( ALLOC )
 #define ALLOC           malloc
-#include <stdlib.h>
+#endif
+
+#if !defined( FREE )
+#define FREE            free
 #endif
 
 #ifdef STANDALONE_RX
@@ -349,6 +355,7 @@ regexp *RegComp( const char *instr )
     regcode = (reg_node *)r->program;
     regc( MAGIC );
     if( reg( 0, &flags ) == NULL ) {
+        FREE( r );
         return( NULL );
     }
 

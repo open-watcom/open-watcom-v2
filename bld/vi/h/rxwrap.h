@@ -35,6 +35,7 @@
 #define MAGICSTR        EditVars.Majick
 #define REALTABS        EditFlags.RealTabs
 #define ALLOC           MemAlloc
+#define FREE            MemFree
 #define WANT_EXCLAMATION
 
 extern vi_rc            RegExpError;
