@@ -151,7 +151,7 @@ struct dirent;
 
 vi_rc   MyGetFileSize( const char *, long * );
 void    FormatFileEntry( direct_ent *file, char *res );
-bool    IsDirectory( char *name );
+bool    IsDirectory( const char *name );
 void    GetFileInfo( direct_ent *tmp, struct dirent *dire, const char *path );
 
 /* dotmode.c */
@@ -701,7 +701,7 @@ void    AddFcbsToSavebuf( fcb_list *, bool );
 vi_rc   SwitchSavebuf( void );
 vi_rc   DoSavebufNumber( void );
 vi_rc   SetSavebufNumber( const char * );
-vi_rc   GetSavebufString( char ** );
+vi_rc   GetSavebufString( const char ** );
 bool    IsEmptySavebuf( char ch );
 void    FiniSavebufs( void );
 

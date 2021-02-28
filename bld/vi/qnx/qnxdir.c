@@ -73,7 +73,7 @@ int MyGetFileSize( const char *inname, long *size )
 /*
  * IsDirectory - check if a specified path is a directory
  */
-bool IsDirectory( char *name )
+bool IsDirectory( const char *name )
 {
     struct stat sb;
 

@@ -473,7 +473,7 @@ void FiniKeyMaps( void )
 vi_rc ExecuteBuffer( void )
 {
     vi_rc       rc;
-    char        *data;
+    const char  *data;
     key_map     scr;
 
     rc = ModificationTest();

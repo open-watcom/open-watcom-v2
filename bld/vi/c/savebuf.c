@@ -258,7 +258,7 @@ vi_rc InsertSavebufAfter2( void )
 /*
  * GetSavebufString - get a string made up of stuff in a savebuf
  */
-vi_rc GetSavebufString( char **data )
+vi_rc GetSavebufString( const char **data )
 {
 #ifdef __WIN__
     savebuf     clip;
@@ -316,7 +316,7 @@ vi_rc GetSavebufString( char **data )
     if( len > MAX_STR * 4 ) {
         rc = ERR_SAVEBUF_TOO_BIG;
     } else {
-        p = *data = MemAlloc( len );
+        *data = p = MemAlloc( len );
         switch( tmp->type ) {
         case SAVEBUF_LINE:
             strcpy( p, tmp->u.data );
