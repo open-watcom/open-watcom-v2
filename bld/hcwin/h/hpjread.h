@@ -60,15 +60,15 @@
 
 class HPJScanner
 {
-    InFile  *_input;
+    InFile          *_input;
 
-    char    *_curLine;
-    int     _lineSize;
-    int     _lineNum;
+    char            *_curLine;
+    int             _lineSize;
+    int             _lineNum;
 
     // Some buffering is needed for the "tokLine" function.
-    int     _bufPos;
-    char    _bufChar;
+    int             _bufPos;
+    char            _bufChar;
 
     // Assignment of HPJScanner's is not allowed.
     HPJScanner( HPJScanner const & ) {};
@@ -113,15 +113,15 @@ class HPJReader
     HFSDirectory    *_dir;      // The directory to send info to.
     Pointers        *_theFiles; // Other components of the .HLP file.
 
-    StrNode *_root;     // The main search path.
-    StrNode *_rtfFiles; // List of rtf files to compile.
+    StrNode         *_root;     // The main search path.
+    StrNode         *_rtfFiles; // List of rtf files to compile.
 
-    char    *_homeDir;  // The home directory (used when searching)
+    char            *_homeDir;  // The home directory (used when searching)
 
-    bool    _oldPhrases;    // Flag -- Use old phrase table?
+    bool            _oldPhrases;    // Flag -- Use old phrase table?
 
-    Baggage     **_bagFiles;    // List of baggage files.
-    int         _numBagFiles;   // number of baggage files specified.
+    Baggage         **_bagFiles;    // List of baggage files.
+    int             _numBagFiles;   // number of baggage files specified.
 
     int     skipSection();      // Skip a section of the file.
     int     handleBaggage();    // Read the [Baggage] section.

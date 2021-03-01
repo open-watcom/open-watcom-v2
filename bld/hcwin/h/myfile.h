@@ -54,17 +54,17 @@
 class File
 {
     static const uint_8 _isOpen;
-    uint_8      _flags;
+    uint_8          _flags;
 
     // Assignment of File's is not allowed.
     File( File const & ) {};
     File &  operator=( File const & ) { return *this; };
 
 protected:
-    FILE    *_fp;
-    bool    _badFile;
-    char    *_fullName;     // Path + name
-    char    *_shortName;        // Name as passed to the object.
+    FILE            *_fp;
+    bool            _badFile;
+    char            *_fullName;     // Path + name
+    char            *_shortName;        // Name as passed to the object.
 
     File( char const filename[], uint_8 type=0x09 );
     File();
