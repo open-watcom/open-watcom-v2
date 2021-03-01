@@ -701,7 +701,7 @@ void    AddFcbsToSavebuf( fcb_list *, bool );
 vi_rc   SwitchSavebuf( void );
 vi_rc   DoSavebufNumber( void );
 vi_rc   SetSavebufNumber( const char * );
-vi_rc   GetSavebufString( const char ** );
+vi_rc   GetSavebufString( char ** );
 bool    IsEmptySavebuf( char ch );
 void    FiniSavebufs( void );
 

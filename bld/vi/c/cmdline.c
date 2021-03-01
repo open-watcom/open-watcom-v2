@@ -324,10 +324,9 @@ vi_rc RunCommandLine( const char *cmdl )
             key_map     scr;
 
             rc = AddKeyMap( &scr, data );
-            if( rc != ERR_NO_ERR ) {
-                break;
+            if( rc == ERR_NO_ERR ) {
+                rc = RunKeyMap( &scr, 1L );
             }
-            rc = RunKeyMap( &scr, 1L );
             MemFree( scr.data );
         }
         break;

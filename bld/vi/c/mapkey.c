@@ -473,7 +473,7 @@ void FiniKeyMaps( void )
 vi_rc ExecuteBuffer( void )
 {
     vi_rc       rc;
-    const char  *data;
+    char        *data;
     key_map     scr;
 
     rc = ModificationTest();
@@ -481,15 +481,14 @@ vi_rc ExecuteBuffer( void )
         return( rc );
     }
     rc = GetSavebufString( &data );
-    if( rc != ERR_NO_ERR ) {
-        return( rc );
+    if( rc == ERR_NO_ERR ) {
+        rc = AddKeyMap( &scr, data );
+        MemFree( data );
+        if( rc == ERR_NO_ERR ) {
+            rc = RunKeyMap( &scr, 1L );
+        }
+        MemFree( scr.data );
     }
-    rc = AddKeyMap( &scr, data );
-    if( rc != ERR_NO_ERR ) {
-        return( rc );
-    }
-    rc = RunKeyMap( &scr, 1L );
-    MemFree( scr.data );
     return( rc );
 
 } /* ExecuteBuffer */

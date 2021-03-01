@@ -78,6 +78,7 @@ b_file  *Openf( const char *f, const char *mode, f_attrs attrs )
         return( NULL );
     }
     if( stat( f, &info ) == -1 ) {
+        fclose( fp );
         FSetSysErr( NULL );
         return( NULL );
     }

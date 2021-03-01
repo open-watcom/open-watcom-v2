@@ -258,7 +258,7 @@ vi_rc InsertSavebufAfter2( void )
 /*
  * GetSavebufString - get a string made up of stuff in a savebuf
  */
-vi_rc GetSavebufString( const char **data )
+vi_rc GetSavebufString( char **data )
 {
 #ifdef __WIN__
     savebuf     clip;
@@ -287,9 +287,10 @@ vi_rc GetSavebufString( const char **data )
             return( rc );
         }
         tmp = &clip;
-    } else
-#endif
+    } else if( SavebufNumber >= MAX_SAVEBUFS ) {
+#else
     if( SavebufNumber >= MAX_SAVEBUFS ) {
+#endif
         tmp = &SpecialSavebufs[SavebufNumber - MAX_SAVEBUFS];
     } else {
         tmp = &Savebufs[SavebufNumber];
@@ -304,7 +305,7 @@ vi_rc GetSavebufString( const char **data )
     case SAVEBUF_NOP:
         return( ERR_EMPTY_SAVEBUF );
     case SAVEBUF_LINE:
-        len = strlen( tmp->u.data );
+        len = strlen( tmp->u.data ) + 1;
         break;
     case SAVEBUF_FCBS:
         for( cfcb = tmp->u.fcbs.head; cfcb != NULL; cfcb = cfcb->next ) {
@@ -312,10 +313,10 @@ vi_rc GetSavebufString( const char **data )
         }
         break;
     }
-    rc = ERR_NO_ERR;
     if( len > MAX_STR * 4 ) {
         rc = ERR_SAVEBUF_TOO_BIG;
     } else {
+        rc = ERR_NO_ERR;
         *data = p = MemAlloc( len );
         switch( tmp->type ) {
         case SAVEBUF_LINE:
