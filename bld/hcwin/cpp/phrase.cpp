@@ -51,18 +51,18 @@ struct Edge;    // Forward declaration.
 
 struct Phrase
 {
-    char        *_str;
-    unsigned    _len;
-    unsigned    _bufLen;
+    char            *_str;
+    unsigned        _len;
+    unsigned        _bufLen;
 
-    int         _numUses;
-    Edge        *_firstEdge;
+    int             _numUses;
+    Edge            *_firstEdge;
 
-    Phrase      *_next;
+    Phrase          *_next;
 
-    int         _val;
+    int             _val;
 
-    static Pool *_pool;
+    static Pool     *_pool;
     static void initPool() { _pool = new Pool( sizeof( Phrase ) , PTBL_SIZE ); };
     static void freePool() { delete _pool; };
 
@@ -142,10 +142,10 @@ int Phrase::operator>( Phrase const &p )
 
 struct P_String
 {
-    char        *_str;
-    unsigned    _len;
-    unsigned    _index;
-    P_String    *_next;
+    char            *_str;
+    unsigned        _len;
+    unsigned        _index;
+    P_String        *_next;
 
     P_String( Phrase const &p );
     ~P_String();
