@@ -142,17 +142,17 @@ int Phrase::operator>( Phrase const &p )
 
 struct P_String
 {
-    char            *_str;
+    Buffer<char>    _str;
     unsigned        _len;
     unsigned        _index;
     P_String        *_next;
 
     P_String( Phrase const &p );
-    ~P_String();
+    ~P_String() {};
 
 private:
     // Assignment of P_Strings is not permitted.
-    P_String( P_String const & ) {};
+    P_String( P_String const & ) : _str( 0 ) {};
     P_String &  operator=( P_String const & ) { return *this; };
 };
 
@@ -160,19 +160,11 @@ private:
 //  P_String::P_String  --Constructor.
 
 P_String::P_String( Phrase const &p )
-    : _next( NULL )
+    : _next( NULL ), _str( 0 )
 {
     _len = p._len;
-    _str = new char[_len];
+    _str.resize( _len );
     memcpy( _str, p._str, _len );
-}
-
-
-//  P_String::~P_String --Destructor.
-
-P_String::~P_String()
-{
-    delete[] _str;
 }
 
 
