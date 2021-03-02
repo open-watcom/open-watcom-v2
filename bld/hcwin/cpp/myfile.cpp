@@ -45,12 +45,13 @@ MYFILE:  Special purpose file handling
 const uint_8 File::_isOpen = 0x10;
 
 File::File( char const filename[], uint_8 type )
+ : _shortName( 0 )
 // Open the file and record the name.
 {
     char    mode[3] = "rb";
     size_t  length = strlen( filename ) + 1;
 
-    _shortName = new char[length];
+    _shortName.resize( length );
     memcpy( _shortName, filename, length );
 
     if( type & WRITE ) {
@@ -76,7 +77,7 @@ File::File()
       _fp( NULL ),
       _badFile( true ),
       _fullName( NULL ),
-      _shortName( NULL )
+      _shortName( 0 )
 {
     // empty
 }
@@ -87,11 +88,7 @@ bool File::open( char const filename[], uint_8 type )
     char mode[3] = "rb";
     size_t length = strlen( filename ) + 1;
 
-    if( _shortName != NULL ) {
-        _shortName = (char *)renew( _shortName, length );
-    } else {
-        _shortName = new char[length];
-    }
+    _shortName.resize( length );
     memcpy( _shortName, filename, length );
 
     if( type & WRITE ) {
@@ -126,8 +123,6 @@ File::~File()
 {
     if( _fullName )
         delete[] _fullName;
-    if( _shortName )
-        delete[] _shortName;
     if( _fp ) {
         fclose( _fp );
     }

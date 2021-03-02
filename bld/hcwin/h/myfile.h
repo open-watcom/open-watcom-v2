@@ -57,14 +57,14 @@ class File
     uint_8          _flags;
 
     // Assignment of File's is not allowed.
-    File( File const & ) {};
+    File( File const & ) : _shortName( 0 ) {};
     File &  operator=( File const & ) { return *this; };
 
 protected:
     FILE            *_fp;
     bool            _badFile;
     char            *_fullName;     // Path + name
-    char            *_shortName;        // Name as passed to the object.
+    Buffer<char>    _shortName;     // Name as passed to the object.
 
     File( char const filename[], uint_8 type=0x09 );
     File();
@@ -77,7 +77,7 @@ public:
 
     // Access functions.
     bool    bad() const { return _badFile; };
-    char const *name() const { return (char const*) _shortName; };
+    char const *name() { return (char const*)_shortName; };
 
     bool    open( char const filename[], uint_8 type=READ|BIN );
     bool    open();         // Re-open the previous file.
