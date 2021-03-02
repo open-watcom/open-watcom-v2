@@ -72,7 +72,6 @@ vi_rc ReadDataFile( const char *file, char **buffer, bool (*fn_alloc)(int), bool
     }
     dcnt = atoi( ptr );
     hasvals = fn_alloc( dcnt );
-    buffdata = NULL;
 
     /*
      * read all tokens
@@ -80,17 +79,18 @@ vi_rc ReadDataFile( const char *file, char **buffer, bool (*fn_alloc)(int), bool
      * create list of tokens separated by '\0'
      * list is terminated by two '\0' characters
      */
+    buffdata = NULL;
     size = 0;
     for( i = 0; i < dcnt; i++ ) {
         if( (ptr = SpecialFgets( buff, sizeof( buff ) - 1, &gf )) == NULL ) {
-            SpecialFclose( &gf );
-            return( ERR_INVALID_DATA_FILE );
+            /* error */
+            break;
         }
         if( hasvals ) {
             ptr = GetNextWord1( ptr, token );
             if( *token == '\0' ) {
-                SpecialFclose( &gf );
-                return( ERR_INVALID_DATA_FILE );
+                /* error */
+                break;
             }
         } else {
             strcpy( token, ptr );
@@ -107,13 +107,18 @@ vi_rc ReadDataFile( const char *file, char **buffer, bool (*fn_alloc)(int), bool
         if( hasvals ) {
             ptr = GetNextWord1( ptr, token );
             if( *token == '\0' ) {
-                SpecialFclose( &gf );
-                return( ERR_INVALID_DATA_FILE );
+                /* error */
+                break;
             }
             fn_save( i, token );
         }
     }
     SpecialFclose( &gf );
+    if( i < dcnt ) {
+        if( buffdata != NULL )
+            MemFree( buffdata );
+        return( ERR_INVALID_DATA_FILE );
+    }
     *buffer = buffdata;
     return( ERR_NO_ERR );
 

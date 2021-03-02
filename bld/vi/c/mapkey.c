@@ -66,11 +66,9 @@ static vi_rc readKeyData( void )
 #else
     rc = ReadDataFile( "keys.dat", &CharTokens, key_alloc, key_save, true );
 #endif
-    if( rc != ERR_NO_ERR ) {
-        return( rc );
-    }
-    keysRead = true;
-    return( ERR_NO_ERR );
+    if( rc == ERR_NO_ERR )
+        keysRead = true;
+    return( rc );
 
 } /* readKeyData */
 

@@ -253,8 +253,7 @@ void LangInit( lang_t newLanguage )
         rc = ReadDataFile( fname[newLanguage], &buff, lang_alloc, lang_save, EditFlags.BoundData );
         if( rc != ERR_NO_ERR ) {
             if( rc == ERR_FILE_NOT_FOUND ) {
-                ErrorBox( GetErrorMsg( ERR_SPECIFIC_FILE_NOT_FOUND ),
-                          fname[newLanguage] );
+                ErrorBox( GetErrorMsg( ERR_SPECIFIC_FILE_NOT_FOUND ), fname[newLanguage] );
             } else {
                 ErrorBox( GetErrorMsg( rc ) );
             }

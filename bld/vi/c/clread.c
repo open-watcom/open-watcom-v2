@@ -45,7 +45,7 @@ vi_rc ReadAFile( linenum afterwhich, const char *name )
     long        bytecnt = 0;
     linenum     lnecnt = 0;
     status_type lastst;
-    char        *fn = MemAlloc( FILENAME_MAX );
+    char        *fn;
     vi_rc       rc;
 
     /*
@@ -55,6 +55,7 @@ vi_rc ReadAFile( linenum afterwhich, const char *name )
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
+    fn = MemAlloc( FILENAME_MAX );
     GetNextWord1( name, fn );
     if( *fn == '\0' || IsDirectory( fn ) ) {
         if( *fn != '\0' ) {
@@ -63,16 +64,13 @@ vi_rc ReadAFile( linenum afterwhich, const char *name )
             dir = CurrentDirectory;
         }
         if( EditFlags.ExMode ) {
+            MemFree( fn );
             return( ERR_INVALID_IN_EX_MODE );
         }
         rc = SelectFileOpen( dir, &fn, "*", false );
-        if( rc != ERR_NO_ERR ) {
+        if( rc != ERR_NO_ERR || fn[0] == '\0' ) {
             MemFree( fn );
             return( rc );
-        }
-        if( fn[0] == '\0' ) {
-            MemFree( fn );
-            return( ERR_NO_ERR );
         }
     }
 
