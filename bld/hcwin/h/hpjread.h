@@ -62,7 +62,7 @@ class HPJScanner
 {
     InFile          *_input;
 
-    char            *_curLine;
+    Buffer<char>    _curLine;
     int             _lineSize;
     int             _lineNum;
 
@@ -71,12 +71,12 @@ class HPJScanner
     char            _bufChar;
 
     // Assignment of HPJScanner's is not allowed.
-    HPJScanner( HPJScanner const & ) {};
+    HPJScanner( HPJScanner const & ) : _curLine( 0 ) {};
     HPJScanner &    operator=( HPJScanner const & ) { return *this; };
 
 public:
     HPJScanner( InFile *src );
-    ~HPJScanner();
+    ~HPJScanner() {};
 
     // Functions to access the raw data.
     int     lineNum() { return _lineNum; };
@@ -87,6 +87,8 @@ public:
     char    *getArg( int start_pos );   // Read an argument.
     char    *tokLine();         // Tokenize a line.
     char    *endTok();
+
+    void    chkLineSize( int size );
 
     bool    open( char const filename[] );
     void    close() { _input->close(); };

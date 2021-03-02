@@ -85,28 +85,26 @@ static char const   SendComment[]   = "*/";
 
 
 
+// Check line size.
+
+void HPJScanner::chkLineSize( int size )
+{
+    if( size == _lineSize ) {
+        _lineSize += LINE_BLOCK;
+        _curLine.resize( _lineSize );
+    }
+}
+
 //  C-tor and D-tor for class HPJScanner
 
 HPJScanner::HPJScanner( InFile *src )
-    : _input( src )
+    : _input( src ), _lineSize( 0 ), _curLine( 0 )
 {
     _lineNum = 0;
     if( !_input->bad() ) {
-        _curLine = new char[LINE_BLOCK];
-        _lineSize = LINE_BLOCK;
-    } else {
-        _curLine = NULL;
+        chkLineSize( _lineSize );
     }
 }
-
-HPJScanner::~HPJScanner()
-{
-    if( _curLine != NULL ) {
-        delete[] _curLine;
-    }
-}
-
-
 
 //  HPJScanner::open    --Initialize the parser on a given filename.
 
@@ -114,8 +112,8 @@ bool HPJScanner::open( char const filename[] )
 {
     bool result = _input->open( filename );
     if( !result ) {
-        if( _curLine == NULL ) {
-            _curLine = new char[120];   // Overflow possibility
+        if( _lineSize == 0 ) {
+            chkLineSize( _lineSize );
         }
     }
     return result;
@@ -146,12 +144,7 @@ int HPJScanner::getLine()
             if( !isspace( current ) ) {
                 has_text = true;
             }
-
-            if( cur_len == _lineSize ) {
-                _lineSize += LINE_BLOCK;
-                _curLine = (char *)renew( _curLine, _lineSize );
-            }
-
+            chkLineSize( cur_len );
             _curLine[cur_len++] = (char)current;
         }
         if( current == ';' && cur_len == 0 ) {
@@ -163,10 +156,7 @@ int HPJScanner::getLine()
             }
         }
         if( current != EOF || cur_len > 0 ) {
-            if( cur_len == _lineSize ) {
-                _lineSize += LINE_BLOCK;
-                _curLine = (char *)renew( _curLine, _lineSize );
-            }
+            chkLineSize( cur_len );
             _curLine[cur_len++] = '\0';
         } else {
             break;
@@ -183,7 +173,6 @@ int HPJScanner::getLine()
     }
     return cur_len;
 }
-
 
 //  HPJScanner::getArg  --Read a "= <string>" argument from the .HPJ file.
 
