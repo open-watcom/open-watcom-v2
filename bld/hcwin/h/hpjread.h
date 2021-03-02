@@ -83,12 +83,12 @@ public:
     char    &operator[]( int i ) { return _curLine[i]; };
     operator char *() { return _curLine; };
 
-    int     getLine();          // Get a new line.
+    int     getLine();                  // Get a new line.
     char    *getArg( int start_pos );   // Read an argument.
-    char    *tokLine();         // Tokenize a line.
+    char    *tokLine();                 // Tokenize a line.
     char    *endTok();
 
-    void    chkLineSize( int size );
+    void    chkLineSize( int size );    // Check line size.
 
     bool    open( char const filename[] );
     void    close() { _input->close(); };
