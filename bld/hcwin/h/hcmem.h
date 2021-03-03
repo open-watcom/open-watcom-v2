@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -102,6 +103,7 @@ public:
 template<class T> class Buffer
 {
     T       *_data;
+    size_t  _len;
 
     // Assignment of Buffer's is not allowed. (I could do it,
     // but I don't need to and it would involve storing size information).
@@ -112,6 +114,7 @@ public:
     Buffer( size_t size );
     ~Buffer();
 
+    size_t len() { return _len; };
     operator T *() { return _data; };
     T &operator[]( size_t index ) { return _data[index]; };
     void *resize( size_t size );
@@ -120,6 +123,7 @@ public:
 template<class T>
 inline Buffer<T>::Buffer( size_t size )
 {
+    _len = size;
     if( size == 0 ) {
         _data = NULL;
     } else {
@@ -136,6 +140,7 @@ inline Buffer<T>::~Buffer()
 template<class T>
 void *Buffer<T>::resize( size_t size )
 {
+    _len = size;
     if( size == 0 ) {
         if( _data )
             delete[] _data;

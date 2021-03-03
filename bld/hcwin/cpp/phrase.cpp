@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,6 +40,7 @@
 #define HASH_SIZE   691
 #define PTBL_SIZE   1720
 #define MAX_DATA_SIZE   0xFFFF
+#define STR_BLOCK   80
 
 
 struct Edge;    // Forward declaration.
@@ -51,9 +52,8 @@ struct Edge;    // Forward declaration.
 
 struct Phrase
 {
-    char            *_str;
+    Buffer<char>    _str;
     unsigned        _len;
-    unsigned        _bufLen;
 
     int             _numUses;
     Edge            *_firstEdge;
@@ -70,60 +70,65 @@ struct Phrase
     void operator delete( void *p, size_t ) { _pool->release( p ); };
 
     Phrase();
-    Phrase( Phrase const &p );
-    ~Phrase();
+    Phrase( Phrase &p );
+    ~Phrase() {};
 
-    Phrase &    operator=( Phrase const &p );
+    Phrase &    operator=( Phrase &p );
     int         operator>( Phrase const &p );
+
+    void        chkBufSize( int new_size=0 );
 };
 
 Pool *Phrase::_pool = NULL;
 
 
+// Check line size.
+
+void Phrase::chkBufSize( int new_size )
+{
+    if( new_size ) {
+    } else if( _len < _str.len() ) {
+        return;
+    } else {
+        new_size = 2 * _str.len();
+    }
+    _str.resize( new_size );
+}
+
 //  Phrase::Phrase  --default constructor.
 
 Phrase::Phrase()
-    : _bufLen( 80 )     // Arbitrary large value
+    : _str( STR_BLOCK )     // Arbitrary large value
 {
-    _str = new char[_bufLen];
+    _len = 0;
 }
 
 
 //  Phrase::Phrase  --copy constructor.
 
-Phrase::Phrase( Phrase const &p )
+Phrase::Phrase( Phrase &p )
     : _numUses( 1 ),
       _firstEdge( NULL ),
-      _next( NULL )
+      _next( NULL ),
+      _str( p._len )
 {
-    _bufLen = p._len;
     _len = p._len;
-    _str = new char[_len];
-    memcpy( _str, p._str, _len * sizeof( char ) );
+    memcpy( _str, p._str, _len );
 }
 
 
 //  Phrase::operator=   --Assignment operator.
 
-Phrase & Phrase::operator=( Phrase const &p )
+Phrase & Phrase::operator=( Phrase &p )
 {
-    _bufLen = p._len;
     _len = p._len;
-    _str = (char *)renew( _str, _len * sizeof( char ) );
-    memcpy( _str, p._str, _len * sizeof( char ) );
+    _str.resize( _len );
+    memcpy( _str, p._str, _len );
     _numUses = 1;
     _firstEdge = NULL;
     _next = NULL;
 
     return *this;
-}
-
-
-//  Phrase::~Phrase --destructor.
-
-Phrase::~Phrase()
-{
-    delete[] _str;
 }
 
 
@@ -143,11 +148,10 @@ int Phrase::operator>( Phrase const &p )
 struct P_String
 {
     Buffer<char>    _str;
-    unsigned        _len;
     unsigned        _index;
     P_String        *_next;
 
-    P_String( Phrase const &p );
+    P_String( Phrase &p );
     ~P_String() {};
 
 private:
@@ -159,12 +163,10 @@ private:
 
 //  P_String::P_String  --Constructor.
 
-P_String::P_String( Phrase const &p )
-    : _next( NULL ), _str( 0 )
+P_String::P_String( Phrase &p )
+    : _next( NULL ), _str( p._len )
 {
-    _len = p._len;
-    _str.resize( _len );
-    memcpy( _str, p._str, _len );
+    memcpy( _str, p._str, p._len );
 }
 
 
@@ -644,8 +646,8 @@ uint_32 HFPhrases::size()
 
     for( i = 0; i < _numPhrases; i++ ) {
         string = _result[i];
-        _phSize += string->_len;
-        _size += sizeof( uint_16 ) + reader.compress( string->_str, string->_len );
+        _phSize += string->_str.len();
+        _size += sizeof( uint_16 ) + reader.compress( string->_str, string->_str.len() );
     }
 
     return _size;
@@ -667,7 +669,7 @@ int HFPhrases::dump( OutFile *dest )
     uint_16 curr_size = (uint_16)( ( _numPhrases + 1 ) * sizeof( uint_16 ) );
     for( i = 0; i < _numPhrases; i++ ) {
         dest->write( curr_size );
-        curr_size = (uint_16)( curr_size + _result[i]->_len );
+        curr_size = (uint_16)( curr_size + _result[i]->_str.len() );
     }
     dest->write( curr_size );
 
@@ -677,7 +679,7 @@ int HFPhrases::dump( OutFile *dest )
 
     for( i = 0; i < _numPhrases; i++ ) {
         string = _result[i];
-        reader.compress( string->_str, string->_len );
+        reader.compress( string->_str, string->_str.len() );
     }
     reader.flush();
 
@@ -829,10 +831,7 @@ void HFPhrases::readPhrases()
                 } else if( !found_text && !isspace( *end ) ) {
                     found_text = true;
                 }
-                if( phr._len == phr._bufLen ) {
-                    phr._str = (char *)renew( phr._str, 2 * phr._bufLen );
-                    phr._bufLen *= 2;
-                }
+                phr.chkBufSize();
                 phr._str[phr._len++] = *end++;
             }
 
@@ -905,11 +904,8 @@ void HFPhrases::readPhrases()
                     getnext = false;
                 } else {
                     // Set phr to (next + lookahead).
-                    phr._len = next->_len + lookahead->_len + 1;
-                    if( phr._bufLen < phr._len ) {
-                        phr._bufLen = phr._len;
-                        phr._str = (char *)renew( phr._str, phr._len );
-                    }
+                    phr.chkBufSize( next->_len + lookahead->_len + 1 );
+                    phr._len = phr._str.len();
                     memcpy( phr._str, next->_str, next->_len );
                     phr._str[next->_len] = ' ';
                     memcpy( phr._str + next->_len + 1, lookahead->_str, lookahead->_len );
@@ -1017,7 +1013,7 @@ void HFPhrases::createQueue( char const *path )
     for( i = 0; (current = _newPtable->next()) != NULL; i++ ) {
         _result[i] = new P_String( *current );
 
-        ph_file.write( _result[i]->_str, _result[i]->_len );
+        ph_file.write( _result[i]->_str, _result[i]->_str.len() );
         ph_file.write( (uint_8)'\r' );
         ph_file.write( (uint_8)'\n' );
 
@@ -1074,10 +1070,7 @@ int HFPhrases::oldTable( char const *path )
                 current._len = 0;
             }
         } else {
-            if( current._len == current._bufLen ) {
-                current._str = (char *)renew( current._str, 2 * current._bufLen );
-                current._bufLen *= 2;
-            }
+            current.chkBufSize();
             current._str[current._len++] = (char)c;
         }
     }
@@ -1107,8 +1100,8 @@ void HFPhrases::replace( char * dst, char const *src, unsigned & len )
 
             best = NULL;
             for( current = _hptable[hvalue]; current != NULL; current = current->_next ) {
-                if( current->_len <= len - read_pos && memcmp( current->_str, src + read_pos, current->_len ) == 0 ) {
-                    if( best == NULL || best->_len < current->_len ) {
+                if( current->_str.len() <= len - read_pos && memcmp( current->_str, src + read_pos, current->_str.len() ) == 0 ) {
+                    if( best == NULL || best->_str.len() < current->_str.len() ) {
                         best = current;
                     }
                 }
@@ -1132,7 +1125,7 @@ void HFPhrases::replace( char * dst, char const *src, unsigned & len )
                 // See "phrases.doc".
                 char c = (char)( (best->_index & 0x7f) << 1 );
                 dst[write_pos++] = (char)( (( best->_index >> 7 ) & 0xF) + 1 );
-                read_pos += best->_len;
+                read_pos += best->_str.len();
                 if( src[read_pos] == ' ' ) {
                     c |= 0x1;
                     read_pos++;
