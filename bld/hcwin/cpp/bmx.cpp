@@ -439,7 +439,8 @@ void HFBitmaps::note( char const name[] )
         return;
     }
     bmp->reset();
-    bmp->read( &magic );
+    if( bmp->read( &magic ) == 0 )
+        throw ImageNotSupported();  // EXCEPTION
     switch( magic ) {
     case BITMAP_MAGIC:
     case SHG1_MAGIC:
