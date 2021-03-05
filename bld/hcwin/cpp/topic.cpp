@@ -172,6 +172,11 @@ class TopicHeader
 #define TEXT_HEADER_SIZE    9
 class TextHeader
 {
+    struct Tabs {
+        uint_16     pos;
+        uint_8      flag;
+    };
+
     uint_32 _size;
     size_t  _parAttrSize;
     uint_16 _headerSize;
@@ -179,9 +184,8 @@ class TextHeader
     uint_8  _numColumns;
     uint_32 _flags;
 
-    Buffer<uint_16> _tabStops;
-    Buffer<uint_8>  _tabFlags;
-    size_t          _numStops, _maxStops;
+    Buffer<Tabs>        _tabs;
+    size_t              _numStops;
 
     uint_32 _border;
     uint_16 _spacing[6];
@@ -209,6 +213,7 @@ class TextHeader
     void        chgAttr( unsigned index, FontFlags type, uint_32 val, char const str[], int length );
     uint_32     attrData( unsigned index );
     void        reset();
+    void        chkTabsLen( size_t cur_len );
 
     friend class HFTopic;
 };
@@ -314,10 +319,8 @@ TextHeader::TextHeader()
     : _size( TEXT_HEADER_SIZE ),
       _parAttrSize( 0 ),
       _flags( 0 ),
-      _tabStops( TSTOP_BLOCKS ),
-      _tabFlags( TSTOP_BLOCKS ),
+      _tabs( TSTOP_BLOCKS ),
       _numStops( 0 ),
-      _maxStops( TSTOP_BLOCKS ),
       _attribs( TEXT_ATTR_MAX ),
       _numAttribs( 0 ),
       _maxAttribs( TEXT_ATTR_MAX )
@@ -331,6 +334,12 @@ TextHeader::~TextHeader()
     reset();
 }
 
+void TextHeader::chkTabsLen( size_t cur_len )
+{
+    if( cur_len && cur_len == _tabs.len() ) {
+        _tabs.resize( cur_len + TSTOP_BLOCKS );
+    }
+}
 
 //  TextHeader::reset   --Clear the text attributes.
 
@@ -398,19 +407,13 @@ int TextHeader::setTab( int val, uint_8 flag )
             trueval |= 0x8000;
         }
     }
-
-    if( _numStops == 0 ) {
-        _parAttrSize += 1;
-    } else if( _numStops == _maxStops ) {
-        _maxStops += TSTOP_BLOCKS;
-        _tabStops.resize( _maxStops );
-        _tabFlags.resize( _maxStops );
-    }
-    _tabStops[_numStops] = trueval;
-    _tabFlags[_numStops] = flag;
-    if( ++_numStops == 0x40 ) {
+    if( _numStops == 0 || _numStops == ( 0x40 - 1 ) ) {
         _parAttrSize += 1;
     }
+    chkTabsLen( _numStops );
+    _tabs[_numStops].pos = trueval;
+    _tabs[_numStops].flag = flag;
+    _numStops++;
     _flags |= _parBits[TOP_TAB_STOPS];
     return( 1 );
 }
@@ -454,19 +457,13 @@ int TextHeader::setPar( ParFlags type, int val )
                 trueval |= 0x1;
                 _parAttrSize += 2;
             }
-
-            if( _numStops == 0 ) {
-                _parAttrSize += 1;
-            } else if( _numStops == _maxStops ) {
-                _maxStops += TSTOP_BLOCKS;
-                _tabStops.resize( _maxStops );
-                _tabFlags.resize( _maxStops );
-            }
-            _tabStops[_numStops] = trueval;
-            _tabFlags[_numStops] = 0x0;
-            if( ++_numStops == 0x40 ) {
+            if( _numStops == 0 || _numStops == ( 0x40 - 1 ) ) {
                 _parAttrSize += 1;
             }
+            chkTabsLen( _numStops );
+            _tabs[_numStops].pos = trueval;
+            _tabs[_numStops].flag = 0x0;
+            _numStops++;
         } else if( type < TOP_TAB_STOPS ) {
             if( already_set ) {
                 if( _spacing[type] & 0x1 ) {
@@ -509,10 +506,10 @@ void TextHeader::unsetPar( ParFlags type )
     if( type == TOP_TAB_STOPS ) {
         _parAttrSize -= _numStops;
         for( size_t i = 0; i < _numStops; ++i ) {
-            if( _tabStops[i] & 0x1 ) {
+            if( _tabs[i].pos & 0x1 ) {
                 _parAttrSize -= 1;
             }
-            if( _tabFlags[i] != 0 ) {
+            if( _tabs[i].flag != 0 ) {
                 _parAttrSize -= 1;
             }
         }
@@ -720,16 +717,16 @@ void TextHeader::dumpTo( TopicLink *dest )
             location += sizeof( uint_16 );
         }
         for( i = 0; i < _numStops; i++ ) {
-            if( _tabStops[i] & 0x1 ) {
-                *(uint_16 *)location = _tabStops[i];
+            if( _tabs[i].pos & 0x1 ) {
+                *(uint_16 *)location = _tabs[i].pos;
                 location += sizeof( uint_16 );
-                if( _tabStops[i] & 0x8000 ) {
-                    *location++ = _tabFlags[i];
+                if( _tabs[i].pos & 0x8000 ) {
+                    *location++ = _tabs[i].flag;
                 }
             } else {
-                *location++ = (uint_8)_tabStops[i];
-                if( _tabStops[i] & 0x80 ) {
-                    *location++ = _tabFlags[i];
+                *location++ = (uint_8)_tabs[i].pos;
+                if( _tabs[i].pos & 0x80 ) {
+                    *location++ = _tabs[i].flag;
                 }
             }
         }
