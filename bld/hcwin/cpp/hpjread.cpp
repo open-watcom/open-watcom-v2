@@ -89,9 +89,8 @@ static char const   SendComment[]   = "*/";
 
 void HPJScanner::chkLineSize( int size )
 {
-    if( size == _lineSize ) {
-        _lineSize += LINE_BLOCK;
-        _curLine.resize( _lineSize );
+    if( size == _curLine.len() ) {
+        _curLine.resize( size + LINE_BLOCK );
     }
 }
 

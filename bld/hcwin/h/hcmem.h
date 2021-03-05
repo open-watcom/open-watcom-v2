@@ -118,29 +118,30 @@ public:
     operator T *() { return _data; };
     T &operator[]( size_t index ) { return _data[index]; };
     void *resize( size_t size );
+    void *resizeNull( size_t size );
 };
 
 template<class T>
 inline Buffer<T>::Buffer( size_t size )
 {
-    _len = size;
     if( size == 0 ) {
         _data = NULL;
     } else {
         _data = new T[size];
     }
+    _len = size;
 }
 
 template<class T>
 inline Buffer<T>::~Buffer()
 {
     delete[] _data;
+    _len = 0;
 }
 
 template<class T>
 void *Buffer<T>::resize( size_t size )
 {
-    _len = size;
     if( size == 0 ) {
         if( _data )
             delete[] _data;
@@ -148,6 +149,24 @@ void *Buffer<T>::resize( size_t size )
     } else {
         _data = (T*)renew( _data, size * sizeof( T ) );
     }
+    _len = size;
+    return _data;
+}
+
+template<class T>
+void *Buffer<T>::resizeNull( size_t size )
+{
+    if( size == 0 ) {
+        if( _data )
+            delete[] _data;
+        _data = NULL;
+    } else {
+        _data = (T*)renew( _data, size * sizeof( T ) );
+        if( _len < size ) {
+            memset( _data + _len, 0, ( size - _len ) * sizeof( T ) );
+        }
+    }
+    _len = size;
     return _data;
 }
 
