@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -87,7 +87,7 @@ static char const   SendComment[]   = "*/";
 
 // Check line size.
 
-void HPJScanner::chkLineSize( int size )
+void HPJScanner::chkLineSize( size_t size )
 {
     if( size == _curLine.len() ) {
         _curLine.resize( size + LINE_BLOCK );
@@ -97,7 +97,7 @@ void HPJScanner::chkLineSize( int size )
 //  C-tor and D-tor for class HPJScanner
 
 HPJScanner::HPJScanner( InFile *src )
-    : _input( src ), _lineSize( 0 ), _curLine( 0 )
+    : _input( src ), _curLine( 0 ), _lineSize( 0 )
 {
     _lineNum = 0;
     if( !_input->bad() ) {
@@ -122,11 +122,11 @@ bool HPJScanner::open( char const filename[] )
 //  HPJScanner::getLine --Read a single line of text into _curLine.
 //                         Returns the line length (0 in case of failure).
 
-int HPJScanner::getLine()
+size_t HPJScanner::getLine()
 {
     int     current;
     bool    has_text;
-    int     cur_len=0;
+    size_t  cur_len=0;
 
     // Loop until we've identified a single line.
     while( cur_len == 0 ) {
@@ -175,7 +175,7 @@ int HPJScanner::getLine()
 
 //  HPJScanner::getArg  --Read a "= <string>" argument from the .HPJ file.
 
-char *HPJScanner::getArg( int start_pos )
+char *HPJScanner::getArg( size_t start_pos )
 {
     char    *arg;
 
@@ -205,7 +205,7 @@ char *HPJScanner::getArg( int start_pos )
 
 char *HPJScanner::tokLine()
 {
-    int i,j;
+    size_t i,j;
     _curLine[_bufPos] = _bufChar;
 
     // Find the beginning of the token.

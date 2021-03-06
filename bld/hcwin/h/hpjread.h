@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,11 +63,11 @@ class HPJScanner
     InFile          *_input;
 
     Buffer<char>    _curLine;
-    int             _lineSize;
+    size_t          _lineSize;
     int             _lineNum;
 
     // Some buffering is needed for the "tokLine" function.
-    int             _bufPos;
+    size_t          _bufPos;
     char            _bufChar;
 
     // Assignment of HPJScanner's is not allowed.
@@ -79,20 +79,20 @@ public:
     ~HPJScanner() {};
 
     // Functions to access the raw data.
-    int     lineNum() { return _lineNum; };
-    char    &operator[]( int i ) { return _curLine[i]; };
+    int             lineNum() { return _lineNum; };
+    char            &operator[]( size_t i ) { return _curLine[i]; };
     operator char *() { return _curLine; };
 
-    int     getLine();                  // Get a new line.
-    char    *getArg( int start_pos );   // Read an argument.
-    char    *tokLine();                 // Tokenize a line.
-    char    *endTok();
+    size_t          getLine();                      // Get a new line.
+    char            *getArg( size_t start_pos );    // Read an argument.
+    char            *tokLine();                     // Tokenize a line.
+    char            *endTok();
 
-    void    chkLineSize( int size );    // Check line size.
+    void            chkLineSize( size_t size );     // Check line size.
 
-    bool    open( char const filename[] );
-    void    close() { _input->close(); };
-    char const  *name() const { return _input->name(); };
+    bool            open( char const filename[] );
+    void            close() { _input->close(); };
+    char const      *name() const { return _input->name(); };
 };
 
 

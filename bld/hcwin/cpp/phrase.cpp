@@ -107,10 +107,10 @@ Phrase::Phrase()
 //  Phrase::Phrase  --copy constructor.
 
 Phrase::Phrase( Phrase &p )
-    : _numUses( 1 ),
+    : _str( p._len ),
+      _numUses( 1 ),
       _firstEdge( NULL ),
-      _next( NULL ),
-      _str( p._len )
+      _next( NULL )
 {
     _len = p._len;
     memcpy( _str, p._str, _len );
@@ -164,7 +164,7 @@ private:
 //  P_String::P_String  --Constructor.
 
 P_String::P_String( Phrase &p )
-    : _next( NULL ), _str( p._len )
+    : _str( p._len ), _next( NULL )
 {
     memcpy( _str, p._str, p._len );
 }
@@ -591,8 +591,8 @@ void PTable::prune()
 HFPhrases::HFPhrases( HFSDirectory * d_file, bool (*firstf)(InFile *), bool (*nextf)(InFile *) )
     : _oldPtable( NULL ),
       _newPtable( NULL ),
-      _result( NULL ),
-      _hptable( NULL ),
+      _result( 0 ),
+      _hptable( 0 ),
       _numPhrases( 0 ),
       _size( 0 ),
       _nextf( nextf ),
@@ -612,14 +612,8 @@ HFPhrases::~HFPhrases()
         delete _oldPtable;
     if( _newPtable )
         delete _newPtable;
-    if( _result ) {
-        for( unsigned i = 0; i < _resultSize ; i++ ) {
-            delete _result[i];
-        }
-        delete[] _result;
-    }
-    if( _hptable ) {
-        delete[] _hptable;
+    for( unsigned i = 0; i < _resultSize ; i++ ) {
+        delete _result[i];
     }
 }
 
@@ -632,7 +626,7 @@ uint_32 HFPhrases::size()
         return _size;
     }
 
-    if( _result == NULL ) {
+    if( _result.len() == 0 ) {
         createQueue( "phrases.ph" );
     }
 
@@ -970,15 +964,15 @@ void HFPhrases::readPhrases()
 
 void HFPhrases::initHashPTable()
 {
-    uint_32 hvalue;
+    uint_32     hvalue;
     P_String    *curr_str;
 
-    if( _hptable == NULL ) {
-        _hptable = new P_String *[HASH_SIZE];
+    if( _hptable.len() == 0 ) {
+        _hptable.resize( HASH_SIZE );
     }
     memset( _hptable, 0, HASH_SIZE * sizeof( P_String * ) );
 
-    for( unsigned i = 0; i < _resultSize; i++ ) {
+    for( size_t i = 0; i < _resultSize; i++ ) {
         curr_str = _result[i];
         memcpy( &hvalue, curr_str->_str, PH_MIN_LEN );
         hvalue &= 0xFFFFFF;
@@ -997,12 +991,12 @@ void HFPhrases::initHashPTable()
 void HFPhrases::createQueue( char const *path )
 {
     Phrase      *current;
-    unsigned    i;
+    size_t      i;
 
     _newPtable->prune();
 
-    _resultSize = _newPtable->size();
-    _result = new P_String *[_resultSize];
+    _result.resize( _newPtable->size() );
+    _resultSize = _result.len();
 
     _newPtable->start();
 
@@ -1042,12 +1036,11 @@ int HFPhrases::oldTable( char const *path )
     }
 
     Phrase      current;
-    unsigned    ptable_size = PTBL_SIZE;
 //    int         done = 0;
     int         c = '\0';
     unsigned    totalsize;  // Size of the phrase data loaded.
 
-    _result = new P_String *[ptable_size];
+    _result.resize( PTBL_SIZE );
     _resultSize = 0;
     current._len = 0;
     totalsize = 2;  // Size of first 2-byte phrase index.
@@ -1060,9 +1053,8 @@ int HFPhrases::oldTable( char const *path )
                     break;
                 }
 
-                if( _resultSize == ptable_size ) {
-                    _result = (P_String **)renew( _result, 2 * ptable_size * sizeof( Phrase * ) );
-                    ptable_size *= 2;
+                if( _resultSize == _result.len() ) {
+                    _result.resize( 2 * _resultSize );
                 }
                 _result[_resultSize] = new P_String( current );
                 _result[_resultSize]->_index = _resultSize;
@@ -1086,12 +1078,12 @@ int HFPhrases::oldTable( char const *path )
 //  HFPhrases::replace  --Go through a block of text and replace
 //            common phrases where they appear.
 
-void HFPhrases::replace( char * dst, char const *src, unsigned & len )
+void HFPhrases::replace( char * dst, char const *src, size_t & len )
 {
     uint_32     hvalue = 0;
     P_String    *current, *best;
-    unsigned    read_pos = 0;
-    unsigned    write_pos = 0;
+    size_t      read_pos = 0;
+    size_t      write_pos = 0;
 
     if( len > 2 ) {
         while( read_pos < len - 2 ) {

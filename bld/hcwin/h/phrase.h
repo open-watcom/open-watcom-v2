@@ -56,8 +56,8 @@ class HFPhrases : public Dumpable
     PTable              *_oldPtable;
     PTable              *_newPtable;
 
-    P_String            **_result;
-    P_String            **_hptable;
+    Buffer<P_String *>  _result;
+    Buffer<P_String *>  _hptable;
     unsigned            _resultSize;
 
     uint_16             _numPhrases;
@@ -73,7 +73,7 @@ class HFPhrases : public Dumpable
     void                initHashPTable();
 
     // Assignment of HFPhrases is not allowed.
-    HFPhrases( HFPhrases const & ) {};
+    HFPhrases( HFPhrases const & ) : _result( 0 ), _hptable( 0 ) {};
     HFPhrases & operator=( HFPhrases const & ) { return *this; };
 
     void                removeScanner();
@@ -91,7 +91,7 @@ public:
     void                createQueue( char const *path );
     int                 oldTable( char const *path );
 
-    void                replace( char *dst, char const *src, unsigned &len );
+    void                replace( char *dst, char const *src, size_t &len );
 };
 
 #endif

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1340,12 +1341,12 @@ void HFTopic::newNode( bool is_new_topic )
 
 void HFTopic::addText( char const source[], bool use_phr )
 {
-    unsigned    length;
+    size_t  length;
 
     if( source[0] == '\0' ) {
         length = 1;
     } else {
-        length = (unsigned)strlen( source );
+        length = strlen( source );
     }
     if( length + _curText->_size > _curText->_maxSize ) {
         _curText->_maxSize = ( length + _curText->_size ) / TEXT_BLOCK_SIZE + 1;
