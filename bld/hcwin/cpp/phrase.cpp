@@ -76,7 +76,7 @@ struct Phrase
     Phrase &    operator=( Phrase &p );
     int         operator>( Phrase const &p );
 
-    void        chkBufSize( int new_size=0 );
+    void        chkBufSize( unsigned new_len=0 );
 };
 
 Pool *Phrase::_pool = NULL;
@@ -84,23 +84,23 @@ Pool *Phrase::_pool = NULL;
 
 // Check line size.
 
-void Phrase::chkBufSize( int new_size )
+void Phrase::chkBufSize( unsigned new_len )
 {
-    if( new_size ) {
+    if( new_len ) {
     } else if( _len < _str.len() ) {
         return;
     } else {
-        new_size = 2 * _str.len();
+        new_len = 2 * _str.len();
     }
-    _str.resize( new_size );
+    _str.resize( new_len );
 }
 
 //  Phrase::Phrase  --default constructor.
 
 Phrase::Phrase()
-    : _str( STR_BLOCK )     // Arbitrary large value
+    : _str( STR_BLOCK ),    // Arbitrary large value
+      _len( 0 )
 {
-    _len = 0;
 }
 
 
@@ -108,11 +108,11 @@ Phrase::Phrase()
 
 Phrase::Phrase( Phrase &p )
     : _str( p._len ),
+      _len( p._len ),
       _numUses( 1 ),
       _firstEdge( NULL ),
       _next( NULL )
 {
-    _len = p._len;
     memcpy( _str, p._str, _len );
 }
 
@@ -201,7 +201,7 @@ class PTable
     bool        _initialized;
 
     // Helper function for heapsort-ing.
-    void    heapify( unsigned start );
+    void        heapify( unsigned start );
 
     // Assignment of PTable's is not permitted, so it's private.
     PTable( PTable const & ) {};
@@ -274,11 +274,11 @@ PTable::~PTable()
 
 Phrase *PTable::match( char * &start )
 {
-    unsigned    length;
+    size_t      length;
     uint_32     h_val;
     Phrase      *result;
 
-    length = (unsigned)strlen( start );
+    length = strlen( start );
     if( length == 0 ) {
         return NULL;
     }
