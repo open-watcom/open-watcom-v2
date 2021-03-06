@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,45 +53,45 @@ struct P_String;
 
 class HFPhrases : public Dumpable
 {
-    PTable      *_oldPtable;
-    PTable      *_newPtable;
+    PTable              *_oldPtable;
+    PTable              *_newPtable;
 
-    P_String    **_result;
-    P_String    **_hptable;
-    unsigned    _resultSize;
+    P_String            **_result;
+    P_String            **_hptable;
+    unsigned            _resultSize;
 
-    uint_16     _numPhrases;
-    uint_32     _phSize;
-    uint_32     _size;
+    uint_16             _numPhrases;
+    uint_32             _phSize;
+    uint_32             _size;
 
-    bool        (*_nextf)( InFile * );
-    bool        (*_firstf)( InFile * );
+    bool                (*_nextf)( InFile * );
+    bool                (*_firstf)( InFile * );
 
-    Scanner     *_scanner;
-    void        startInput( InFile * );
-    char        *nextInput( InFile * );
-    void        initHashPTable();
+    Scanner             *_scanner;
+    void                startInput( InFile * );
+    char                *nextInput( InFile * );
+    void                initHashPTable();
 
     // Assignment of HFPhrases is not allowed.
     HFPhrases( HFPhrases const & ) {};
     HFPhrases & operator=( HFPhrases const & ) { return *this; };
 
-    void        removeScanner();
+    void                removeScanner();
 
 public:
     HFPhrases( HFSDirectory *d_file, bool (*firstf)(InFile *), bool (*nextf)(InFile *) );
     ~HFPhrases();
 
     // Overrides of the "Dumpable" virtual functions.
-    uint_32     size();
-    int         dump( OutFile * dest );
+    uint_32             size();
+    int                 dump( OutFile * dest );
 
     // Functions of the phrase handler.
-    void        readPhrases();
-    void        createQueue( char const *path );
-    int         oldTable( char const *path );
+    void                readPhrases();
+    void                createQueue( char const *path );
+    int                 oldTable( char const *path );
 
-    void        replace( char *dst, char const *src, unsigned &len );
+    void                replace( char *dst, char const *src, unsigned &len );
 };
 
 #endif
