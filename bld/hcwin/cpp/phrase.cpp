@@ -202,6 +202,9 @@ class PTable
     // Helper function for heapsort-ing.
     void                heapify( unsigned start );
 
+    // Helper function for hashing.
+    size_t              getHash( const char *str, size_t len );
+
     // Assignment of PTable's is not permitted, so it's private.
     PTable( PTable const & ) : _hptable( 0 ), _phrases( 0 ) {};
     PTable &    operator=( PTable const & ) { return *this; };
@@ -261,14 +264,24 @@ PTable::~PTable()
 }
 
 
-//  PTable::match   --Find the best match for a character string.
-
 #define PH_MIN_LEN  3
+
+size_t PTable::getHash( const char *str, size_t len )
+{
+    uint_32 h_val = 0;
+
+    if( len > PH_MIN_LEN )
+        len = PH_MIN_LEN;
+    memcpy( &h_val, str, len );
+    return( h_val );
+}
+
+//  PTable::match   --Find the best match for a character string.
 
 Phrase *PTable::match( char * &start )
 {
     size_t      length;
-    uint_32     h_val;
+    size_t      h_val;
     Phrase      *result;
 
     length = strlen( start );
@@ -280,9 +293,8 @@ Phrase *PTable::match( char * &start )
 
     if( length >= PH_MIN_LEN ) {
         // First, try to find a match based on the first three characters.
-        h_val = 0;
-        memcpy( &h_val, start, PH_MIN_LEN );
-        for( result = _hptable[h_val % HASH_SIZE]; result != NULL; result = result->_next ) {
+        h_val = getHash( start, length );
+        for( result = _hptable[h_val]; result != NULL; result = result->_next ) {
             if( result->_len <= length ) {
                 break;
             }
@@ -307,9 +319,8 @@ Phrase *PTable::match( char * &start )
                 }
             }
         }
-        h_val = 0;
-        memcpy( &h_val, start, length );
-        for( result = _hptable[h_val % HASH_SIZE]; result != NULL; result = result->_next ) {
+        h_val = getHash( start, length );
+        for( result = _hptable[h_val]; result != NULL; result = result->_next ) {
             if( result->_len <= length ) {
                 break;
             }
@@ -345,19 +356,13 @@ Phrase *PTable::match( char * &start )
 
 Phrase *PTable::find( Phrase *other )
 {
-    uint_32     h_val;
+    size_t      h_val;
     Phrase      *result;
     unsigned    len = other->_len;
     char        *str = other->_str;
 
-    h_val = 0;
-    if( len < PH_MIN_LEN ) {
-        memcpy( &h_val, str, len );
-    } else {
-        memcpy( &h_val, str, PH_MIN_LEN );
-    }
-
-    for( result = _hptable[h_val % HASH_SIZE]; result != NULL; result = result->_next ) {
+    h_val = getHash( str, len );
+    for( result = _hptable[h_val]; result != NULL; result = result->_next ) {
         if( result->_len <= len ) {
             break;
         }
@@ -401,16 +406,13 @@ int &PTable::follows( Phrase *first, Phrase *second )
 void PTable::insert( Phrase *p )
 {
     Phrase  *current, *temp;
-    uint_32 h_val = 0;
-    if( p->_len < PH_MIN_LEN ) {
-        memcpy( &h_val, p->_str, p->_len );
-    } else {
-        memcpy( &h_val, p->_str, PH_MIN_LEN );
-    }
+    size_t  h_val;
+    size_t  len = p->_len;
 
+    h_val = getHash( p->_str, len );
     temp = NULL;
-    for( current = _hptable[h_val % HASH_SIZE]; current != NULL; current = current->_next ) {
-        if( current->_len <= p->_len )
+    for( current = _hptable[h_val]; current != NULL; current = current->_next ) {
+        if( current->_len <= len )
             break;
         temp = current;
     }
@@ -418,7 +420,7 @@ void PTable::insert( Phrase *p )
     if( temp != NULL ) {
         temp->_next = p;
     } else {
-        _hptable[h_val % HASH_SIZE] = p;
+        _hptable[h_val] = p;
     }
 
     if( _size == _phrases.len() ) {
