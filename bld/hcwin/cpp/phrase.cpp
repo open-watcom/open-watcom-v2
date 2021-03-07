@@ -273,7 +273,7 @@ size_t PTable::getHash( const char *str, size_t len )
     if( len > PH_MIN_LEN )
         len = PH_MIN_LEN;
     memcpy( &h_val, str, len );
-    return( h_val );
+    return( h_val % HASH_SIZE );
 }
 
 //  PTable::match   --Find the best match for a character string.
