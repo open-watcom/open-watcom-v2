@@ -35,12 +35,12 @@
 #include "phrase.h"
 #include "compress.h"
 
-#define NEW_USAGE   "Usage: phrase filename"
+#define NEW_USAGE       "Usage: phrase filename"
 
-#define HASH_SIZE   691
-#define PTBL_SIZE   1720
+#define HASH_SIZE       691
+#define PTBL_SIZE       1720
 #define MAX_DATA_SIZE   0xFFFF
-#define STR_BLOCK   80
+#define STR_BLOCK       80
 
 
 struct Edge;    // Forward declaration.
@@ -189,62 +189,57 @@ struct Edge
 
 class PTable
 {
-    Pool        *_edges;
+    Pool                *_edges;
 
-    Phrase      **_phrases;
-    unsigned    _size;
-    unsigned    _maxSize;
+    Buffer<Phrase *>    _hptable;
 
-    Phrase      **_hptable;
+    Buffer<Phrase *>    _phrases;
+    unsigned            _size;
 
-    unsigned    _iterPos;
-    bool        _initialized;
+    unsigned            _iterPos;
+    bool                _initialized;
 
     // Helper function for heapsort-ing.
-    void        heapify( unsigned start );
+    void                heapify( unsigned start );
 
     // Assignment of PTable's is not permitted, so it's private.
-    PTable( PTable const & ) {};
+    PTable( PTable const & ) : _hptable( 0 ), _phrases( 0 ) {};
     PTable &    operator=( PTable const & ) { return *this; };
 
 public:
     PTable();
     ~PTable();
 
-    Phrase      *match( char * &start );
-    Phrase      *find( Phrase *other );
-    int         &follows( Phrase *first, Phrase *second );
+    Phrase              *match( char * &start );
+    Phrase              *find( Phrase *other );
+    int                 &follows( Phrase *first, Phrase *second );
 
-    void        insert( Phrase *p );
+    void                insert( Phrase *p );
 
     //  Access function.
-    unsigned    size() { return _size; };
+    unsigned            size() { return _size; };
 
     // Iter functions.
-    void        start();
-    Phrase      *next();
+    void                start();
+    Phrase              *next();
 
-    void        clear();
-    void        prune();
+    void                clear();
+    void                prune();
 };
 
 
 //  PTable::PTable  --Constructor.
 
 PTable::PTable()
-    : _size( 0 ),
-      _maxSize( PTBL_SIZE ),
+    : _hptable( 0 ),
+      _phrases( 0 ),
+      _size( 0 ),
       _initialized( false )
 {
     _edges = new Pool( sizeof( Edge ) );
 
-    _phrases = new Phrase *[_maxSize];
-    // Set all of _phrases to NULL.
-    memset( _phrases, 0, _maxSize * sizeof( Phrase * ) );
-
-    _hptable = new Phrase *[HASH_SIZE];
-    // Set all of _phrases to NULL.
-    memset( _hptable, 0, HASH_SIZE * sizeof( Phrase * ) );
+    _phrases.resizeNull( PTBL_SIZE );
+    _hptable.resizeNull( HASH_SIZE );
 }
 
 
@@ -253,17 +248,15 @@ PTable::PTable()
 PTable::~PTable()
 {
     // Delete any phrases remaining in the Pool.
-    if( _phrases ) {
-        for( unsigned i = 0; i < _size; i++ ) {
-            delete _phrases[i];
-        }
-        delete[] _phrases;
+    for( size_t i = 0; i < _size; i++ ) {
+        delete _phrases[i];
     }
-
-    if( _edges )
+    _size = _hptable.len();
+    for( size_t i = 0; i < _size; i++ ) {
+        delete _hptable[i];
+    }
+    if( _edges ) {
         delete _edges;
-    if( _hptable ) {
-        delete[] _hptable;
     }
 }
 
@@ -428,11 +421,8 @@ void PTable::insert( Phrase *p )
         _hptable[h_val % HASH_SIZE] = p;
     }
 
-    if( _size == _maxSize ) {
-        _phrases = (Phrase **)renew( _phrases, 2 * _maxSize * sizeof( Phrase * ) );
-        // Set the new part of _phrases to NULL.
-        memset( _phrases + _maxSize, 0, _maxSize * sizeof( Phrase * ) );
-        _maxSize *= 2;
+    if( _size == _phrases.len() ) {
+        _phrases.resizeNull( 2 * _size );
     }
     _phrases[_size++] = p;
 }
@@ -524,8 +514,8 @@ void PTable::prune()
     // Toss out memory we no longer need.
     delete _edges;
     _edges = NULL;
-    delete[] _hptable;
-    _hptable = NULL;
+
+    _hptable.resize( 0 );
 
     // Heapsort the Phrases to get the top (PTBL_SIZE) Phrases.
     old_size = _size;
@@ -574,14 +564,13 @@ void PTable::prune()
     for( i = 0; i < _size; i++ ) {
         delete _phrases[i];
     }
-    while( _size < old_size ) {
-        if( _phrases[_size]->_val > 4 )
+    for( ; i < old_size; i++ ) {
+        if( _phrases[i]->_val > 4 )
             break;
-        delete _phrases[_size];
-        _size++;
+        delete _phrases[i];
     }
-    memmove( _phrases, _phrases + _size, ( old_size - _size ) * sizeof( Phrase * ) );
-    _size = old_size - _size;
+    _size = old_size - i;
+    memmove( _phrases, _phrases + i, _size * sizeof( Phrase * ) );
 }
 
 
