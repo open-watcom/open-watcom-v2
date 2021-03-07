@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -104,15 +105,15 @@ public:
 //         window information.
 //
 
-#define HLP_SYS_TYPE    10
-#define HLP_SYS_NAME    9
-#define HLP_SYS_CAP 51
+#define HLP_SYS_TYPE    9
+#define HLP_SYS_NAME    8
+#define HLP_SYS_CAP     50
 class SystemWin : public SystemRec
 {
     uint_16 _winFlags;
-    char    _type[HLP_SYS_TYPE];
-    char    _name[HLP_SYS_NAME];
-    char    _caption[HLP_SYS_CAP];
+    char    _type[HLP_SYS_TYPE + 1];
+    char    _name[HLP_SYS_NAME + 1];
+    char    _caption[HLP_SYS_CAP + 1];
     uint_16 _position[4];
     uint_16 _maximize;
     uint_32 _rgbMain;

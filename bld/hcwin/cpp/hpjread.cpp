@@ -179,12 +179,10 @@ char *HPJScanner::getArg( size_t start_pos )
 {
     char    *arg;
 
+    arg = _curLine + start_pos;
     // Eat whitespace.
-    for( arg = _curLine + start_pos; *arg != '\0'; arg++ ) {
-        if( !isspace( *arg ) ) {
-            break;
-        }
-    }
+    while( isspace( *arg ) )
+        arg++;
 
     // The next character had better be an '='.
     if( *arg++ != '=' ) {
@@ -192,10 +190,9 @@ char *HPJScanner::getArg( size_t start_pos )
         return NULL;
     }
 
-    // Eat whitespace again.
-    while( isspace( *arg ) && *arg != '\0' ) {
+    // Eat whitespace.
+    while( isspace( *arg ) )
         arg++;
-    }
 
     return arg;
 }
@@ -208,16 +205,20 @@ char *HPJScanner::tokLine()
     size_t i,j;
     _curLine[_bufPos] = _bufChar;
 
-    // Find the beginning of the token.
-    for( i=_bufPos; _curLine[i] != '\0' && isspace( _curLine[i] ); ++i) {
-    }   // empty
+    i = _bufPos;
+    // Eat whitespace.
+    while( isspace( _curLine[i] ) )
+        i++;
 
     if( _curLine[i] == '\0' )
         return NULL;
 
     // Find the end of the token.
-    for( j=i; _curLine[j] != '\0' && !isspace( _curLine[j] ); ++j) {
-    }   // empty
+    for( j = i; _curLine[j] != '\0'; ++j ) {
+        if( isspace( _curLine[j] ) ) {
+            break;
+        }
+    }
 
     _bufPos = j;
     _bufChar = _curLine[j];
@@ -483,7 +484,7 @@ int HPJReader::handleOptions()
             break;
 
         // Read in the name of the option.
-        for( i=0; i<MAX_OPTION_LEN; i++ ) {
+        for( i = 0; i < MAX_OPTION_LEN; i++ ) {
             if( isspace( _scanner[i] ) || _scanner[i] == '=' )
                 break;
             option[i] = (char)toupper( _scanner[i] );
@@ -643,13 +644,12 @@ int HPJReader::handleBitmaps()
     int i;
     for( ;; ) {
         result = _scanner.getLine();
-        if( !result || _scanner[0] == '[' )
+        if( result == 0 || _scanner[0] == '[' )
             break;
-        for( i=0; _scanner[i] != '\0'; i++ ) {
-            if( !isspace( _scanner[i] ) ) {
-                break;
-            }
-        }
+        i = 0;
+        // Eat whitespace.
+        while( isspace( _scanner[i] ) )
+            i++;
         if( _scanner[i] == '\0' )
             continue;
         try{
@@ -685,8 +685,8 @@ int HPJReader::handleWindows()
     bool    bad_param;
     int     red, green, blue;
     uint_16 wflags;
-    char    name[HLP_SYS_NAME];
-    char    caption[HLP_SYS_CAP];
+    char    name[HLP_SYS_NAME + 1];
+    char    caption[HLP_SYS_CAP + 1];
     uint_16 x = 0;
     uint_16 y = 0;
     uint_16 width = 0;
@@ -698,11 +698,13 @@ int HPJReader::handleWindows()
         if( _scanner[0] == '[' )
             break;
 
-        limit = HLP_SYS_NAME-1;
-        if( limit > result-1 ) {
-            limit = result-1;
+        limit = HLP_SYS_NAME;
+        if( limit > result - 1 ) {
+            limit = result - 1;
         }
-        for( i=0; i<limit && !isspace(_scanner[i]) && _scanner[i] != '=' ; i++ ) {
+        for( i = 0; i < limit; i++ ) {
+            if( isspace( _scanner[i] ) || _scanner[i] == '=' )
+                break;
             name[i] = _scanner[i];
         }
         if( i == result - 1 ) {
@@ -712,7 +714,7 @@ int HPJReader::handleWindows()
             HCWarning( HPJ_LONGWINNAME, _scanner.lineNum(), _scanner.name() );
         }
         name[i] = '\0';
-        while( i<result-1 && !isspace(_scanner[i]) ) {
+        while( i < result - 1 && !isspace( _scanner[i] ) ) {
             i++;
         }
 
@@ -731,7 +733,7 @@ int HPJReader::handleWindows()
             if( *arg == '"' ) {
                 arg++;
             }
-            while( i<HLP_SYS_CAP-1 && *arg != '\0' && *arg != '"' ) {
+            while( i < HLP_SYS_CAP && *arg != '\0' && *arg != '"' ) {
                 caption[i++] = *arg++;
             }
             caption[i] = '\0';
@@ -741,7 +743,7 @@ int HPJReader::handleWindows()
         bad_param = false;
         arg = nextWinParam();
         if( *arg != '\0' ) {
-            x = (uint_16) strtol( arg, NULL, 0 );
+            x = (uint_16)strtol( arg, NULL, 0 );
             if( x > PARAM_MAX ) {
                 bad_param = true;
             } else {
@@ -750,7 +752,7 @@ int HPJReader::handleWindows()
         }
         arg = nextWinParam();
         if( *arg != '\0' ) {
-            y = (uint_16) strtol( arg, NULL, 0 );
+            y = (uint_16)strtol( arg, NULL, 0 );
             if( y > PARAM_MAX ) {
                 bad_param = true;
             } else {
@@ -759,7 +761,7 @@ int HPJReader::handleWindows()
         }
         arg = nextWinParam();
         if( *arg != '\0' ) {
-            width = (uint_16) strtol( arg, NULL, 0 );
+            width = (uint_16)strtol( arg, NULL, 0 );
             if( width > PARAM_MAX ) {
                 bad_param = true;
             } else {
@@ -768,7 +770,7 @@ int HPJReader::handleWindows()
         }
         arg = nextWinParam();
         if( *arg != '\0' ) {
-            height = (uint_16) strtol( arg, NULL, 0 );
+            height = (uint_16)strtol( arg, NULL, 0 );
             if( height > PARAM_MAX ) {
                 bad_param = true;
             } else {
@@ -782,7 +784,7 @@ int HPJReader::handleWindows()
 
         arg = nextWinParam();
         if( *arg != '\0' ) {
-            use_max_flag = (uint_16) strtol( arg, NULL, 0 );
+            use_max_flag = (uint_16)strtol( arg, NULL, 0 );
             wflags |= VALID_MAX;
         }
 
@@ -818,7 +820,7 @@ int HPJReader::handleWindows()
             HCWarning( HPJ_WINBADCOLOR, _scanner.lineNum(), _scanner.name() );
             continue;
         } else {
-            rgb_main = (uint_32) (red + (green<<8) + (blue<<16));
+            rgb_main = (uint_32)(red + ( green << 8 ) + ( blue << 16 ));
         }
 
         red = green = blue = 0;
@@ -853,7 +855,7 @@ int HPJReader::handleWindows()
             HCWarning( HPJ_WINBADCOLOR, _scanner.lineNum(), _scanner.name() );
             continue;
         } else {
-            rgb_nonscroll = (uint_32) (red + (green<<8) + (blue<<16));
+            rgb_nonscroll = (uint_32)(red + ( green << 8 ) + ( blue << 16 ));
         }
 
         arg = nextWinParam();
@@ -883,9 +885,9 @@ char *HPJReader::nextWinParam()
     char * newbuf;
 
     if( *result != '\0' ) {
-        while( isspace( *result ) ) {
+        // Eat whitespace.
+        while( isspace( *result ) )
             result++;
-        }
         newbuf = result;
         if( *newbuf == '"' ) {
             while( *newbuf != ',' && *newbuf != '\0' ) {
@@ -898,6 +900,7 @@ char *HPJReader::nextWinParam()
                 }
                 newbuf++;
             }
+            // Eat whitespace.
             while( isspace( *result ) ) {
                 result++;
             }
@@ -975,10 +978,10 @@ void HPJReader::includeMapFile( char *str )
     char seek_char;
     char *name;
 
+    // Eat whitespace.
+    while( isspace( *str ) )
+        str++;
     // Get the filename.
-    while( *str != '\0' && isspace( *str ) ) {
-        ++str;
-    }
     switch( *str++ ) {
     case '"':
         seek_char = '"';
@@ -991,9 +994,10 @@ void HPJReader::includeMapFile( char *str )
         return;
     }
 
-    name = str;
-    while( *str != '\0' && *str != seek_char ) {
-        ++str;
+    for( name = str; *str != '\0'; str++ ) {
+        if( *str == seek_char ) {
+            break;
+        }
     }
     if( str == name ) {
         HCWarning( HPJ_BADINCLUDE, _scanner.lineNum(), _scanner.name() );
@@ -1058,11 +1062,10 @@ void HPJReader::includeMapFile( char *str )
             if( !is_good_str ) {
                 HCWarning( CON_BAD, token, input.lineNum(), input.name() );
             } else {
-                hash_value = Hash(token);
+                hash_value = Hash( token );
                 token = input.tokLine();
                 if( token == NULL ) {
-                    HCWarning( CON_NONUM, token, input.lineNum(),
-                               input.name() );
+                    HCWarning( CON_NONUM, token, input.lineNum(), input.name() );
                 } else {
                     con_num = atol( token );
                     _theFiles->_mapFile->addMapRec( con_num, hash_value );

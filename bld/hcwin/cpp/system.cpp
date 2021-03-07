@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -115,14 +116,17 @@ SystemWin::SystemWin( uint_16 wflgs,
       _rgbMain(main_col), _rgbNonScroll(back_col)
 {
     _flag = HFSystem::SYS_WINDOW;
-    _size = 90; // HLP_SYS_TYPE + HLP_SYS_NAME + HLP_SYS_CAP + 20
+    _size = 90; // HLP_SYS_TYPE + 1 + HLP_SYS_NAME + 1 + HLP_SYS_CAP + 1 + 20
     _position[0] = x;
     _position[1] = y;
     _position[2] = w;
     _position[3] = h;
-    memcpy( _type, type, HLP_SYS_TYPE );
-    memcpy( _name, name, HLP_SYS_NAME );
-    memcpy( _caption, cap, HLP_SYS_CAP  );
+    strncpy( _type, type, HLP_SYS_TYPE );
+    _type[HLP_SYS_TYPE] = '\0';
+    strncpy( _name, name, HLP_SYS_NAME );
+    _type[HLP_SYS_NAME] = '\0';
+    strncpy( _caption, cap, HLP_SYS_CAP  );
+    _type[HLP_SYS_CAP] = '\0';
 }
 
 
@@ -133,9 +137,9 @@ int SystemWin::dump( OutFile * dest )
     dest->write( _flag );
     dest->write( _size );
     dest->write( _winFlags );
-    dest->write( _type, HLP_SYS_TYPE );
-    dest->write( _name, HLP_SYS_NAME );
-    dest->write( _caption, HLP_SYS_CAP );
+    dest->write( _type, HLP_SYS_TYPE + 1 );
+    dest->write( _name, HLP_SYS_NAME + 1 );
+    dest->write( _caption, HLP_SYS_CAP + 1 );
     dest->write( _position, 4, sizeof( uint_16 ) );
     dest->write( _maximize );
     dest->write( _rgbMain );
