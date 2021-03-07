@@ -42,8 +42,9 @@
 //
 #define MYFILE_H
 
-#include <watcom.h>
 #include <stdio.h>
+#include <string.h>
+#include "watcom.h"
 #include "hcmem.h"
 
 
@@ -111,6 +112,10 @@ public:
 
     size_t write( const void *buf, size_t nelems, size_t el_size=1 )
         { return fwrite( buf, el_size, nelems, _fp ); };
+
+    size_t write( const char *d )
+        { return fwrite( d, strlen( d ) + 1, 1, _fp ); };
+
 };
 
 

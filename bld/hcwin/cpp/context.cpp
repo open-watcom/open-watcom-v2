@@ -234,7 +234,6 @@ void HFContext::recordContext( char const str[] )
         return;
 
     FutureHash  *current;
-    size_t  length = strlen( str ) + 1;
 
     // Check to see if this topic has already been referenced.
     for( current = _head; current != NULL; current = current->_next ) {
@@ -248,8 +247,8 @@ void HFContext::recordContext( char const str[] )
 
     // If this topic has not been referenced or defined before,
     // add it to the list of references.
-    FutureHash  *newnode = new FutureHash( length );
-    memcpy( newnode->_string, str, length );
+    FutureHash  *newnode = new FutureHash( strlen( str ) + 1 );
+    strcpy( newnode->_string, str );
     if( current == NULL ) {
         newnode->_prev = _tail;
         _tail = newnode;

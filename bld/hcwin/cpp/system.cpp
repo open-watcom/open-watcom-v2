@@ -56,7 +56,7 @@ SystemText::SystemText( uint_16 flg, const char *txt )
     }
 
     _text = new char[_size];
-    memcpy( _text, txt, _size - 1 );
+    strncpy( _text, txt, _size - 1 );
     _text[_size - 1] = '\0';
 }
 

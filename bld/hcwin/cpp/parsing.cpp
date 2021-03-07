@@ -1075,9 +1075,9 @@ void RTFparser::handleHidden( bool IsHotLink )
 
             hash_value = Hash( pstorage );
 
-            length = (uint_16) (strlen( pfile )+2);
+            length = (uint_16)( strlen( pfile ) + 2 );
             if( pwindow != NULL ) {
-                length = (uint_16) (length + strlen( pwindow ) + 1 );
+                length = (uint_16)( length + strlen( pwindow ) + 1 );
             }
 
             if( pwindow != NULL && *pwindow != '\0' ) {
@@ -1102,7 +1102,7 @@ void RTFparser::handleHidden( bool IsHotLink )
             }
         } else {
             hash_value = 0;
-            length = (uint_16) (strlen( pstorage )+1);
+            length = (uint_16)( strlen( pstorage ) + 1 );
         }
 
         FontFlags   link_t;

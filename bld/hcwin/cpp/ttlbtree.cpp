@@ -117,9 +117,8 @@ int TTLKey::dump( OutFile * dest )
 TTLRec::TTLRec( uint_32 off, char const string[] )
     : TTLKey( off )
 {
-    size_t len = strlen( string ) + 1;
-    _title = new char[len];
-    memcpy( _title, string, len );
+    _title = new char[strlen( string ) + 1];
+    strcpy( _title, string );
 }
 
 
@@ -144,7 +143,7 @@ uint_32 TTLRec::size()
 int TTLRec::dump( OutFile * dest )
 {
     dest->write( _offset );
-    dest->write( _title, strlen( _title ) + 1 );
+    dest->write( _title );
     return 1;
 }
 

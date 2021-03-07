@@ -118,8 +118,7 @@ inline KWoffset::KWoffset( uint_32 off )
 
 KWKey::KWKey( char const kword[] )
 {
-    size_t len = strlen( kword ) + 1;
-    _keyword = new char[len];
+    _keyword = new char[strlen( kword ) + 1];
     strcpy( _keyword, kword );
 }
 
@@ -176,7 +175,7 @@ bool KWKey::lessThan( BtreeData * other )
 
 uint_32 KWKey::size()
 {
-    return (uint_32) strlen( _keyword )+1;
+    return (uint_32)( strlen( _keyword ) + 1 );
 }
 
 
@@ -184,7 +183,7 @@ uint_32 KWKey::size()
 
 int KWKey::dump( OutFile * dest )
 {
-    dest->write( _keyword, strlen( _keyword ) + 1 );
+    dest->write( _keyword );
     return 1;
 }
 
@@ -225,8 +224,7 @@ uint_32 KWRec::size()
 
 int KWRec::dump( OutFile * dest )
 {
-    size_t len = strlen( _keyword ) + 1;
-    dest->write( _keyword, len );
+    dest->write( _keyword );
     dest->write( _count );
     dest->write( _dataOffset );
     return 1;

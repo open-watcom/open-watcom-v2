@@ -1049,9 +1049,8 @@ void HFTopic::addBrowse( char const str[] )
         HCWarning( TOP_TWOBROWSE, _browseStr, str );
         delete[] _browseStr;
     }
-    size_t length = strlen( str ) + 1;
-    _browseStr = new char[length];
-    memcpy( _browseStr, str, length );
+    _browseStr = new char[strlen( str ) + 1];
+    strcpy( _browseStr, str );
     _browseOffset = _curCharOffset;
 }
 
