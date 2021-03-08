@@ -97,7 +97,7 @@ The memory could not be locked when requested
 Access was denied for the specified
 .arg fd
 file descriptor
-.term .ENODEV
+.term ENODEV
 Memory mapping is unavailable for the requested device
 .endterm
 .error end
