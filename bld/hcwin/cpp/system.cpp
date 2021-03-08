@@ -124,9 +124,9 @@ SystemWin::SystemWin( uint_16 wflgs,
     strncpy( _type, type, HLP_SYS_TYPE );
     _type[HLP_SYS_TYPE] = '\0';
     strncpy( _name, name, HLP_SYS_NAME );
-    _type[HLP_SYS_NAME] = '\0';
+    _name[HLP_SYS_NAME] = '\0';
     strncpy( _caption, cap, HLP_SYS_CAP  );
-    _type[HLP_SYS_CAP] = '\0';
+    _caption[HLP_SYS_CAP] = '\0';
 }
 
 
