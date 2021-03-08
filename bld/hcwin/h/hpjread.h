@@ -125,14 +125,14 @@ class HPJReader
     Baggage         **_bagFiles;    // List of baggage files.
     int             _numBagFiles;   // number of baggage files specified.
 
-    int     skipSection();      // Skip a section of the file.
-    int     handleBaggage();    // Read the [Baggage] section.
-    int     handleOptions();    // Read the [Options] section.
-    int     handleConfig();     // Read the [Config] section.
-    int     handleFiles();      // Read the [Files] section.
-    int     handleMap();        // Read the [Map] section.
-    int     handleBitmaps();    // Read the [Bitmaps] section.
-    int     handleWindows();    // Read the [Windows] section.
+    size_t  skipSection();      // Skip a section of the file.
+    size_t  handleBaggage();    // Read the [Baggage] section.
+    size_t  handleOptions();    // Read the [Options] section.
+    size_t  handleConfig();     // Read the [Config] section.
+    size_t  handleFiles();      // Read the [Files] section.
+    size_t  handleMap();        // Read the [Map] section.
+    size_t  handleBitmaps();    // Read the [Bitmaps] section.
+    size_t  handleWindows();    // Read the [Windows] section.
 
     char    *_winParamBuf;
     char    *nextWinParam();    // Helper function for handleWindows().

@@ -340,9 +340,11 @@ void HPJReader::parseFile()
 {
     HCStartFile( _scanner.name() );
 
-    int     length = _scanner.getLine();    // Get the first line.
+    size_t  length;
     char    section[15];
-    int     i;
+    size_t  i;
+
+    length = _scanner.getLine();    // Get the first line.
     while( length != 0 ) {
         // The first line had better be the beginning of a section.
         if( _scanner[0] != '[' ) {
@@ -445,9 +447,9 @@ void HPJReader::parseFile()
 
 //  HPJReader::skipSection --Jump to the next section header.
 
-int HPJReader::skipSection()
+size_t HPJReader::skipSection()
 {
-    int result;
+    size_t result;
     do {
         result = _scanner.getLine();
     } while( result != 0 && _scanner[0] != '[' );
@@ -457,13 +459,13 @@ int HPJReader::skipSection()
 
 //  HPJReader::handleBaggage --Create baggage files.
 
-int HPJReader::handleBaggage()
+size_t HPJReader::handleBaggage()
 {
-    int result = 0;
+    size_t result = 0;
 
     while( _numBagFiles < NB_FILES ) {
         result = _scanner.getLine();
-        if( !result )
+        if( result == 0 )
             break;
         if( _scanner[0] == '[' )
             break;
@@ -477,15 +479,15 @@ int HPJReader::handleBaggage()
 
 #define MAX_OPTION_LEN  12
 
-int HPJReader::handleOptions()
+size_t HPJReader::handleOptions()
 {
-    int result;
+    size_t  result;
     char    option[MAX_OPTION_LEN + 1];
     char    *arg;
     int     i;
     for( ;; ) {
         result = _scanner.getLine();
-        if( !result || _scanner[0] == '[' )
+        if( result == 0 || _scanner[0] == '[' )
             break;
 
         // Read in the name of the option.
@@ -594,12 +596,12 @@ int HPJReader::handleOptions()
 //  HPJReader::handleConfig --Parse the [CONFIG] section (where macros
 //                             are kept).
 
-int HPJReader::handleConfig()
+size_t HPJReader::handleConfig()
 {
-    int result;
+    size_t result;
     for( ;; ) {
         result = _scanner.getLine();
-        if( !result || _scanner[0] == '[' )
+        if( result == 0 || _scanner[0] == '[' )
             break;
         _sysFile->addRecord( new SystemText( HFSystem::SYS_MACRO, _scanner ) );
     }
@@ -609,10 +611,10 @@ int HPJReader::handleConfig()
 
 //  HPJReader::handleFiles --Parse the [FILES] section.
 
-int HPJReader::handleFiles()
+size_t HPJReader::handleFiles()
 {
-    int result;
-    int i;
+    size_t result;
+    size_t i;
     StrNode *current = _rtfFiles;
     StrNode *temp;
     if( current != NULL ) {
@@ -622,7 +624,7 @@ int HPJReader::handleFiles()
     }
     for( ;; ) {
         result = _scanner.getLine();
-        if( !result || _scanner[0] == '[' )
+        if( result == 0 || _scanner[0] == '[' )
             break;
         for( i = 0; _scanner[i] != '\0'; ++i ) {
             if( isspace( _scanner[i] ) ) {
@@ -646,10 +648,10 @@ int HPJReader::handleFiles()
 
 //  HPJReader::handleBitmaps    --Parse the [BITMAPS] section.
 
-int HPJReader::handleBitmaps()
+size_t HPJReader::handleBitmaps()
 {
-    int result;
-    int i;
+    size_t result;
+    size_t i;
     for( ;; ) {
         result = _scanner.getLine();
         if( result == 0 || _scanner[0] == '[' )
@@ -685,10 +687,10 @@ int HPJReader::handleBitmaps()
 
 #define PARAM_MAX       1023
 
-int HPJReader::handleWindows()
+size_t HPJReader::handleWindows()
 {
-    int     result;
-    int     i, limit;
+    size_t  result;
+    size_t  i, limit;
     char    *arg;
     bool    bad_param;
     int     red, green, blue;
@@ -925,17 +927,17 @@ char *HPJReader::nextWinParam()
 
 //  HPJReader::handleMap --Parse the [MAP] section.
 
-int HPJReader::handleMap()
+size_t HPJReader::handleMap()
 {
-    int     result;
+    size_t  result;
     char    *token;
     uint_32 hash_value;
     int     con_num;
     bool    is_good_string;
-    int     i;
+    size_t  i;
     for( ;; ) {
         result = _scanner.getLine();
-        if( !result || _scanner[0] == '[' )
+        if( result == 0 || _scanner[0] == '[' )
             break;
         token = _scanner.tokLine();
         if( token == NULL )
