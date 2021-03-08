@@ -331,8 +331,10 @@ HFBitmaps::HFBitmaps( HFSDirectory *d_file ) : _dfile(d_file)
     _usedFiles = NULL;
 
     _startDir = new char[_MAX_PATH];
-    getcwd( _startDir, _MAX_PATH );
-
+    if( getcwd( _startDir, _MAX_PATH ) == NULL ) {
+        _startDir[0] = '.';
+        _startDir[1] = '\0';
+    }
     _numImages = 0;
 }
 
@@ -398,8 +400,15 @@ void HFBitmaps::addToPath( char const path[] )
         memcpy( temp->_name, arg, j );
         temp->_name[j] = '\0';
         temp->_next = NULL;
-        if( chdir( temp->_name ) == 0 ) {
-            chdir( _startDir );
+        if( chdir( temp->_name ) ) {
+            HCWarning( HPJ_BADDIR, temp->_name );
+            delete[] temp->_name;
+            delete temp;
+        } else if( chdir( _startDir ) ) {
+            HCWarning( HPJ_BADDIR, _startDir );
+            delete[] temp->_name;
+            delete temp;
+        } else {
             if( current == NULL ) {
                 _root = temp;
                 current = _root;
@@ -407,10 +416,6 @@ void HFBitmaps::addToPath( char const path[] )
                 current->_next = temp;
                 current = current->_next;
             }
-        } else {
-            HCWarning( HPJ_BADDIR, temp->_name );
-            delete[] temp->_name;
-            delete temp;
         }
         arg += j;
         if( arg[0] != '\0' ) {
@@ -430,9 +435,12 @@ void HFBitmaps::note( char const name[] )
 
     InFile  *bmp = new InFile( name, true );
     for( curdir = _root; bmp->bad() && curdir != NULL; curdir = curdir->_next ) {
-        chdir( curdir->_name );
+        if( chdir( curdir->_name ) )
+            continue;
         bmp->open( name );
-        chdir( _startDir );
+        if( chdir( _startDir ) ) {
+            HCWarning( HPJ_BADDIR, _startDir );
+        }
     }
     if( bmp->bad() ) {
         HCWarning( FILE_ERR, name );
@@ -525,9 +533,12 @@ uint_16 HFBitmaps::use( char const name[] )
         // Now we have to search for the file.
         bmp = new InFile( name, true );
         for( curdir = _root; bmp->bad() && curdir != NULL; curdir = curdir->_next ) {
-            chdir( curdir->_name );
+            if( chdir( curdir->_name ) )
+                continue;
             bmp->open( name, true );
-            chdir( _startDir );
+            if( chdir( _startDir ) ) {
+                HCWarning( HPJ_BADDIR, _startDir );
+            }
         }
 
         if( bmp->bad() ) {

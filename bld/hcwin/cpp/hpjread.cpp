@@ -255,8 +255,9 @@ HPJReader::HPJReader( HFSDirectory * d_file, Pointers *other_files,
     _rtfFiles = NULL;
     _root = NULL;
     _homeDir = new char[_MAX_PATH];
-    getcwd( _homeDir, _MAX_PATH );
-    if( input->bad() ) {
+    if( getcwd( _homeDir, _MAX_PATH ) == NULL ) {
+        _bagFiles = NULL;
+    } else if( input->bad() ) {
         _bagFiles = NULL;
     } else {
         _bagFiles = new Baggage*[NB_FILES];
@@ -317,9 +318,11 @@ bool HPJReader::nextFile( InFile *input )
             }
         } else {
             for( curdir = _firstDir; curdir != NULL; curdir = curdir->_next ) {
-                chdir( curdir->_name );
+                if( chdir( curdir->_name ) )
+                    continue;
                 input->open( filename );
-                chdir( _startDir );
+                if( chdir( _startDir ) )
+                    HCWarning( HPJ_BADDIR, _startDir );
                 if( !input->bad() ) {
                     return true;
                 }
@@ -419,9 +422,11 @@ void HPJReader::parseFile()
             source.open( curfile->_name );
         } else {
             for( StrNode *curdir = _root; curdir != NULL; curdir = curdir->_next ) {
-                chdir( curdir->_name );
+                if(chdir( curdir->_name ) )
+                    continue;
                 source.open( curfile->_name );
-                chdir( _homeDir );
+                if( chdir( _homeDir ) )
+                    HCWarning( HPJ_BADDIR, _homeDir );
                 if( !source.bad() ) {
                     break;
                 }
@@ -557,8 +562,15 @@ int HPJReader::handleOptions()
                     memcpy( temp->_name, arg, j );
                     temp->_name[j] = '\0';
                     temp->_next = NULL;
-                    if( chdir( temp->_name ) == 0 ) {
-                        chdir( _homeDir );
+                    if( chdir( temp->_name ) ) {
+                        HCWarning( HPJ_BADDIR, temp->_name );
+                        delete[] temp->_name;
+                        delete temp;
+                    } else if( chdir( _homeDir ) ) {
+                        HCWarning( HPJ_BADDIR, _homeDir );
+                        delete[] temp->_name;
+                        delete temp;
+                    } else {
                         if( current == NULL ) {
                             _root = temp;
                             current = _root;
@@ -566,10 +578,6 @@ int HPJReader::handleOptions()
                             current->_next = temp;
                             current = current->_next;
                         }
-                    } else {
-                        HCWarning( HPJ_BADDIR, temp->_name );
-                        delete[] temp->_name;
-                        delete temp;
                     }
                     arg += j;
                     if( arg[0] != '\0' ) {
@@ -1012,9 +1020,11 @@ void HPJReader::includeMapFile( char *str )
         source.open( name );
     } else {
         for( current = _root; current != NULL; current = current->_next ) {
-            chdir( current->_name );
+            if( chdir( current->_name ) )
+                continue;
             source.open( name );
-            chdir( _homeDir );
+            if( chdir( _homeDir ) )
+                HCWarning( HPJ_BADDIR, _homeDir );
             if( !source.bad() ) {
                 break;
             }
