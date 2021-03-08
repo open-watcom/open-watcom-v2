@@ -230,7 +230,6 @@ class TextHolder
 {
     uint_32         _size;
     uint_32         _uncompSize;
-    uint_32         _maxSize;
     Buffer<char>    _text;
 
     // Formatting changes are signalled by 0x00 bytes in the text;
@@ -238,7 +237,6 @@ class TextHolder
 
     Buffer<uint_16> _zeroes;
     size_t          _numZeroes;
-    size_t          _maxZeroes;
 
     TextHolder();
 
@@ -803,11 +801,9 @@ void TextHeader::dumpTo( TopicLink *dest )
 TextHolder::TextHolder()
     : _size( 0 ),
       _uncompSize( 0 ),
-      _maxSize( TEXT_BLOCK_SIZE ),
-      _text( TEXT_BLOCK_SIZE + 1 ),
+      _text( TEXT_BLOCK_SIZE ),
       _zeroes( TEXT_ZERO_SIZE ),
-      _numZeroes( 0 ),
-      _maxZeroes( TEXT_ZERO_SIZE )
+      _numZeroes( 0 )
 {
     // empty
 }
@@ -1341,28 +1337,28 @@ void HFTopic::newNode( bool is_new_topic )
 void HFTopic::addText( char const source[], bool use_phr )
 {
     size_t  length;
+    size_t  len_full;
 
     if( source[0] == '\0' ) {
         length = 1;
     } else {
         length = strlen( source );
     }
-    if( length + _curText->_size > _curText->_maxSize ) {
-        _curText->_maxSize = ( length + _curText->_size ) / TEXT_BLOCK_SIZE + 1;
-        _curText->_maxSize *= TEXT_BLOCK_SIZE;
-        _curText->_text.resize( _curText->_maxSize );
+    len_full = length + _curText->_size;
+    if( len_full >= _curText->_text.len() ) {
+        _curText->_text.resize( ( len_full / TEXT_BLOCK_SIZE + 1 ) * TEXT_BLOCK_SIZE );
     }
 
     _curText->_uncompSize += length;
 
     // Use phrase replacement, if appropriate.
     if( use_phr && _useCompress ) {
-        _phFile->replace( _curText->_text+_curText->_size, source, length );
+        _phFile->replace( _curText->_text + _curText->_size, source, length );
     } else {
         memcpy( _curText->_text + _curText->_size, source, length );
     }
 
-    if( length + _curText->_size > COMP_PAGE_SIZE ) {
+    if( len_full > COMP_PAGE_SIZE ) {
         HCError( TOP_TOOLARGE );
     }
     _curText->_size += length;
@@ -1378,13 +1374,11 @@ void HFTopic::addZero( size_t index )
     if( _curText->_size == COMP_PAGE_SIZE ) {
         HCError( TOP_TOOLARGE );
     }
-    if( _curText->_numZeroes == _curText->_maxZeroes ) {
-        _curText->_maxZeroes += TEXT_ZERO_SIZE;
-        _curText->_zeroes.resize( _curText->_maxZeroes );
+    if( _curText->_numZeroes == _curText->_zeroes.len() ) {
+        _curText->_zeroes.resize( _curText->_numZeroes + TEXT_ZERO_SIZE );
     }
-    if( _curText->_size == _curText->_maxSize ) {
-        _curText->_maxSize += TEXT_BLOCK_SIZE;
-        _curText->_text.resize( _curText->_maxSize );
+    if( _curText->_size == _curText->_text.len() ) {
+        _curText->_text.resize( _curText->_size + TEXT_BLOCK_SIZE );
     }
     if( index < _curText->_numZeroes ) {
         zero_pos = _curText->_zeroes[index] + 1;
