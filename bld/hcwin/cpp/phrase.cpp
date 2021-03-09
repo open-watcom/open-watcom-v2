@@ -389,7 +389,7 @@ int &PTable::follows( Phrase *first, Phrase *second )
 
     for( current = first->_firstEdge; current != NULL; current = current->_next ) {
         if( current->_dest == second ) {
-            return current->_val;
+            return( current->_val );
         }
     }
     current = (Edge *)_edges->get();
@@ -397,7 +397,7 @@ int &PTable::follows( Phrase *first, Phrase *second )
     current->_val = 0;
     current->_next = first->_firstEdge;
     first->_firstEdge = current;
-    return current->_val;
+    return( current->_val );
 }
 
 

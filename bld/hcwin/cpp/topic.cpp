@@ -36,7 +36,9 @@
 #include "clibext.h"
 
 
-#define COMP_PAGE_SIZE 4096
+#define ROUND_UP(x,b)   (((x)/(b) + 1)*(b))
+
+#define COMP_PAGE_SIZE  4096
 
 #define NULLVAL32       ((uint_32)-1L)
 
@@ -195,7 +197,6 @@ class TextHeader
 
     Buffer<TextAttr>    _attribs;
     unsigned            _numAttribs;
-    unsigned            _maxAttribs;
 
     static const uint_8 _attrBits[];
     static const int    _attrSizes[];
@@ -209,6 +210,7 @@ class TextHeader
     int         setPar( ParFlags type, int val );
     void        unsetPar( ParFlags type );
     void        clearPar();
+    void        setAttr( unsigned index, FontFlags type, uint_32 val, char const str[], int length );
     unsigned    addAttr( FontFlags type, uint_32 val, char const str[], int length );
     unsigned    appendAttr( unsigned index, FontFlags type, uint_32 val, char const str[], int length );
     void        chgAttr( unsigned index, FontFlags type, uint_32 val, char const str[], int length );
@@ -321,8 +323,7 @@ TextHeader::TextHeader()
       _tabs( TSTOP_BLOCKS ),
       _numStops( 0 ),
       _attribs( TEXT_ATTR_MAX ),
-      _numAttribs( 0 ),
-      _maxAttribs( TEXT_ATTR_MAX )
+      _numAttribs( 0 )
 {
     // empty
 }
@@ -551,30 +552,36 @@ const int TextHeader::_attrSizes[] = {  3, 1, 1, 1, 9, 9, 9, 1, 3, 3,
 };
 
 
+//  TextHeader::setAttr   --Set a text attribute.
+
+void TextHeader::setAttr( unsigned index, FontFlags type, uint_32 val,
+                           char const str[], int length )
+{
+    _attribs[index]._type = type;
+    _attribs[index]._data = val;
+    if( length > 0 ) {
+        _attribs[index]._stringDat = new char[length];
+        memcpy( _attribs[index]._stringDat, str, length );
+    } else {
+        _attribs[index]._stringDat = NULL;
+    }
+    _attribs[index]._size = _attrSizes[type];
+    if( type == TOP_MACRO_LINK || type == TOP_MACRO_INVIS ||
+        ( type >= TOP_POPUP_FILE && type <= TOP_JUMP_FILE_INVIS ) ) {
+        _attribs[index]._size += length;
+    }
+    _size += _attribs[index]._size;
+}
+
+
 //  TextHeader::addAttr --Add a text attribute.
 
 unsigned TextHeader::addAttr( FontFlags type, uint_32 val, char const str[], int length )
 {
     unsigned result = _numAttribs;
-    if( _numAttribs == _maxAttribs ) {
-        _maxAttribs += TEXT_ATTR_MAX;
-        _attribs.resize( _maxAttribs );
-    }
-    _attribs[_numAttribs]._type = type;
-    _attribs[_numAttribs]._data = val;
-    if( length > 0 ) {
-        _attribs[_numAttribs]._stringDat = new char[length];
-        memcpy( _attribs[_numAttribs]._stringDat, str, length );
-    } else {
-        _attribs[_numAttribs]._stringDat = NULL;
-    }
-
-    _attribs[_numAttribs]._size = _attrSizes[type];
-    if( type == TOP_MACRO_LINK || type == TOP_MACRO_INVIS ||
-        ( type >= TOP_POPUP_FILE && type <= TOP_JUMP_FILE_INVIS ) ) {
-        _attribs[_numAttribs]._size += length;
-    }
-    _size += _attribs[_numAttribs]._size;
+    if( _numAttribs == _attribs.len() )
+        _attribs.resize( _numAttribs + TEXT_ATTR_MAX );
+    setAttr( _numAttribs, type, val, str, length );
     ++_numAttribs;
 
     return( result );
@@ -592,30 +599,13 @@ unsigned TextHeader::appendAttr( unsigned index, FontFlags type, uint_32 val,
 
     unsigned result = index + 1;
 
-    if( _numAttribs == _maxAttribs ) {
-        _maxAttribs += TEXT_ATTR_MAX;
-        _attribs.resize( _maxAttribs );
-    }
-
+    if( _numAttribs == _attribs.len() )
+        _attribs.resize( _numAttribs + TEXT_ATTR_MAX );
     if( result < _numAttribs ) {
         memmove( &_attribs[result + 1], &_attribs[result],
              ( _numAttribs - result ) * sizeof( TextAttr ) );
     }
-    _attribs[result]._type = type;
-    _attribs[result]._data = val;
-    if( length > 0 ) {
-        _attribs[result]._stringDat = new char[length];
-        memcpy( _attribs[result]._stringDat, str, length );
-    } else {
-        _attribs[result]._stringDat = NULL;
-    }
-
-    _attribs[result]._size = _attrSizes[type];
-    if( type == TOP_MACRO_LINK || type == TOP_MACRO_INVIS ||
-        ( type >= TOP_POPUP_FILE && type <= TOP_JUMP_FILE_INVIS ) ) {
-        _attribs[result]._size += length;
-    }
-    _size += _attribs[result]._size;
+    setAttr( result, type, val, str, length );
     ++_numAttribs;
 
     return( result );
@@ -632,25 +622,10 @@ void TextHeader::chgAttr( unsigned index, FontFlags type, uint_32 val,
     }
 
     _size -= _attribs[index]._size;
-    _attribs[index]._type = type;
-    _attribs[index]._data = val;
     if( _attribs[index]._stringDat != NULL ) {
         delete _attribs[index]._stringDat;
     }
-    if( length > 0 ) {
-        _attribs[index]._stringDat = new char[length];
-        memcpy( _attribs[index]._stringDat, str, length );
-    } else {
-        _attribs[index]._stringDat = NULL;
-    }
-
-    _attribs[index]._size = _attrSizes[type];
-    if( type == TOP_MACRO_LINK || type == TOP_MACRO_INVIS ||
-        ( type >= TOP_POPUP_FILE && type <= TOP_JUMP_FILE_INVIS ) ) {
-        _attribs[index]._size += length;
-    }
-
-    _size += _attribs[index]._size;
+    setAttr( index, type, val, str, length );
 }
 
 
@@ -1346,7 +1321,7 @@ void HFTopic::addText( char const source[], bool use_phr )
     }
     len_full = length + _curText->_size;
     if( len_full >= _curText->_text.len() ) {
-        _curText->_text.resize( ( len_full / TEXT_BLOCK_SIZE + 1 ) * TEXT_BLOCK_SIZE );
+        _curText->_text.resize( ROUND_UP( len_full, TEXT_BLOCK_SIZE ) );
     }
 
     _curText->_uncompSize += length;

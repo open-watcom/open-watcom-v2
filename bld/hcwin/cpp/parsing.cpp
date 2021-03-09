@@ -36,6 +36,8 @@
 #include <ctype.h>
 
 
+#define ROUND_UP(x,b)   (((x)/(b) + 1)*(b))
+
 //  Generate the list of supported RTF commands.
 enum com_nums {
     #define _COMMAND( n, s ) n
@@ -84,7 +86,7 @@ static int FindCommand( char const string[] )
 //                where other important objects are.
 
 RTFparser::RTFparser( Pointers *p, InFile *src )
-    : _storage( BLOCK_SIZE )
+    : _storage( BLOCK_SIZE ), _storSize( 0 )
 {
     _topFile = p->_topFile;
     _fontFile = p->_fontFile;
@@ -99,9 +101,6 @@ RTFparser::RTFparser( Pointers *p, InFile *src )
     strcpy( _fname, src->name() );
 
     _nestLevel = 0;
-
-    _storSize = 0;
-    _maxStor = BLOCK_SIZE;
 
     _tabType = TAB_LEFT;
 }
@@ -830,17 +829,14 @@ void RTFparser::handleFootnote( char Fchar )
             break;
 
         if( _current->_type == TOK_TEXT ) {
-            if( _storSize + _current->_value + 1 >= _maxStor ) {
-                _maxStor = (_storSize+_current->_value+1) / BLOCK_SIZE + 1;
-                _maxStor *= BLOCK_SIZE;
-                _storage.resize( _maxStor );
+            if( _storSize + _current->_value + 1 >= _storage.len() ) {
+                _storage.resize( ROUND_UP( _storSize + _current->_value + 1, BLOCK_SIZE ) );
             }
-            memcpy( _storage+_storSize, _current->_text, _current->_value );
+            memcpy( _storage + _storSize, _current->_text, _current->_value );
             _storSize += _current->_value;
         } else if( _current->_type == TOK_SPEC_CHAR ) {
-            if( _storSize + 2 >= _maxStor ) {
-                _maxStor += BLOCK_SIZE;
-                _storage.resize( _maxStor );
+            if( _storSize + 2 >= _storage.len() ) {
+                _storage.resize( ROUND_UP( _storSize + 2, BLOCK_SIZE ) );
             }
             _storage[_storSize++] = (char)_current->_value;
         }
@@ -886,7 +882,7 @@ void RTFparser::handleFootnote( char Fchar )
     case '$':   // Title string.
         start = skipSpaces( start );
         if( *start != '\0' ) {
-            end = _storage+_storSize;
+            end = _storage + _storSize;
             --end;
             while( end > start && isspace( *end ) ) {
                 --end;
@@ -929,7 +925,7 @@ void RTFparser::handleFootnote( char Fchar )
     case '+':   // Browse sequence identifiers.
         start = skipSpaces( start );
         if( *start != '\0' ) {
-            end = _storage+_storSize;
+            end = _storage + _storSize;
             --end;
             while( end > start && isspace( *end ) ) {
             --end;
@@ -949,7 +945,7 @@ void RTFparser::handleFootnote( char Fchar )
         start = skipSpaces( start );
         if( *start != '\0' ) {
             char    terminator = '\0';
-            end = _storage+_storSize;
+            end = _storage + _storSize;
             --end;
             while( end > start && isspace( *end ) ) {
                 --end;
@@ -1012,19 +1008,16 @@ void RTFparser::handleHidden( bool IsHotLink )
             break;
 
         case TOK_TEXT:
-            if( _storSize+_current->_value+1 >= _maxStor ) {
-                _maxStor = (_storSize+_current->_value+1) / BLOCK_SIZE + 1;
-                _maxStor *= BLOCK_SIZE;
-                _storage.resize( _maxStor );
+            if( _storSize + _current->_value + 1 >= _storage.len() ) {
+                _storage.resize( ROUND_UP( _storSize + _current->_value + 1, BLOCK_SIZE ) );
             }
-            memcpy( _storage+_storSize, _current->_text, _current->_value );
+            memcpy( _storage + _storSize, _current->_text, _current->_value );
             _storSize += _current->_value;
             break;
 
         case TOK_SPEC_CHAR:
-            if( _storSize+2 >= _maxStor ) {
-                _maxStor += BLOCK_SIZE;
-                _storage.resize( _maxStor );
+            if( _storSize + 2 >= _storage.len() ) {
+                _storage.resize( ROUND_UP( _storSize + 2, BLOCK_SIZE ) );
             }
             _storage[_storSize++] = (char)_current->_value;
             break;
