@@ -252,7 +252,9 @@ static void PushInclude( const char *name )
     if( sysChdir( dir_name ) != 0 ) {
         Fatal( "Could not chdir to '%s': %s\n", dir_name, strerror( errno ) );
     }
-    getcwd( IncludeStk->cwd, sizeof( IncludeStk->cwd ) );
+    if( getcwd( IncludeStk->cwd, sizeof( IncludeStk->cwd ) ) == NULL ) {
+        Fatal( "Could not get current working directory: %s\n", strerror( errno ) );
+    }
 }
 
 static bool PopInclude( void )
@@ -266,7 +268,8 @@ static bool PopInclude( void )
     if( IncludeStk == NULL ) {
         return( false );
     }
-    chdir( IncludeStk->cwd );
+    if( chdir( IncludeStk->cwd ) )
+        Fatal( "Could not chdir to '%s': %s\n", IncludeStk->cwd, strerror( errno ) );
     return( true );
 }
 

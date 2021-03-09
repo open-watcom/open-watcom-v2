@@ -237,7 +237,7 @@ static char *mygets( char *buf, int max_len_buf, FILE *fp )
     static int  last_lang = MKINF_LANG_NULL;
     size_t      got;
     size_t      len;
-    int         max_len = SECTION_BUF_SIZE;
+    size_t      max_len = SECTION_BUF_SIZE;
 
     /* unused parameters */ (void)max_len_buf;
 
@@ -246,7 +246,7 @@ static char *mygets( char *buf, int max_len_buf, FILE *fp )
     /* concatenate multiple lines into lines_buffer if \\ character on the end of line */
     p = lines_buffer;
     for( ;; ) {
-        if( fgets( p, max_len, fp ) == NULL ) {
+        if( fgets( p, (int)max_len, fp ) == NULL ) {
             if( feof( fp ) ) {
                 if( p != lines_buffer ) {
                     p[0] = '\0';
