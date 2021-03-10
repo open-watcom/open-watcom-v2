@@ -149,20 +149,11 @@ int TTLRec::dump( OutFile * dest )
 }
 
 
-char const HFTtlbtree::_titleMagic[Btree::_magNumSize] = {
-    0x3B, 0x29, 0x02, 0x00, 0x00,
-    0x08, 0x4C, 0x7A, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00
-};
-
-
 //  HFTtlbtree::HFTtlbtree
 
 HFTtlbtree::HFTtlbtree( HFSDirectory * d_file )
 {
-    _titles = new Btree( _titleMagic );
+    _titles = new Btree( false, "Lz" );
     d_file->addFile( this, "|TTLBTREE" );
 }
 

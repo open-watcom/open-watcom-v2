@@ -91,7 +91,8 @@ class Btree : public Dumpable
     uint_16 _numSplits; // Number of page splits.
     uint_32 _size;      // Total size of the structure.
     uint_32 _maxSize;   // Page size.
-    char const  *_magic;    // The 'magic' number for the btree.
+    char const  *_format;    // The 'magic' number for the btree.
+    uint_16 _flags;
 
     // Some recursive functions to act on the tree.
     void    labelPages( BtreePage *start );
@@ -107,7 +108,7 @@ class Btree : public Dumpable
 public:
     enum { _magNumSize = 22 };  // Size of a "magic number".
 
-    Btree( char const *magnum, uint_32 max_size = 2048L );
+    Btree( bool type, char const *format );
     ~Btree();
 
     void        insert( BtreeData *newdata );

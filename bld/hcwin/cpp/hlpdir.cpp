@@ -121,19 +121,10 @@ int HFSnode::dump( OutFile * dest )
 }
 
 
-char const HFSDirectory::_dirMagic[Btree::_magNumSize] = {
-    0x3B, 0x29, 0x02, 0x04, 0x00,
-    0x04, 0x7A, 0x34, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00
-};
-
-
 //  HFSDirectory::HFSDirectory
 
 HFSDirectory::HFSDirectory( char const filename[] )
-    : _output( filename ), _files( _dirMagic, HFSPAGE_SIZE )
+    : _output( filename ), _files( true, "z4" )
 {
     // empty
 }

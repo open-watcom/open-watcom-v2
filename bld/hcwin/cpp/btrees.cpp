@@ -350,16 +350,21 @@ bool BtreePage::needSplit( uint_32 size )
 
 //  Btree::Btree
 
-Btree::Btree( char const *magnum, uint_32 max_size )
+Btree::Btree( bool dir, char const *format )
         : _numLevels( 1 ),
           _totalEntries( 0 ),
           _numPages( 0 ),
           _numSplits( 0 ),
           _size( 0 ),
-          _maxSize( max_size ),
-          _magic( magnum )
+          _maxSize( 0x0800 ),
+          _flags( 0x0002 ),
+          _format( format )
 {
-    _root = new BtreePage( max_size, NULL );
+    if( dir ) {
+        _flags |= 0x0400;
+        _maxSize = 0x0400;
+    }
+    _root = new BtreePage( _maxSize, NULL );
 }
 
 
@@ -451,13 +456,18 @@ uint_32 Btree::size()
 
 int Btree::dump( OutFile *dest )
 {
+    char        format[16];
     uint_16     header[6] = {
         0x0000, _numSplits, _root->_thisPage,
         0xFFFF, _numPages, _numLevels
     };
 
+    strncpy( format, _format, sizeof( format ) );
     // Write the magic number and header information.
-    dest->write( _magic, _magNumSize );
+    dest->write( (uint_16)0x293B );
+    dest->write( (uint_16)_flags );
+    dest->write( (uint_16)_maxSize );
+    dest->write( format, 16 );
     dest->write( header, 6, sizeof( uint_16 ) );
     dest->write( _totalEntries );
 

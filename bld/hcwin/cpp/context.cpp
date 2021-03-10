@@ -134,24 +134,13 @@ int ContextRec::dump( OutFile * dest )
 }
 
 
-// The 'magic number' for the |CONTEXT btree.
-
-char const HFContext::_conMagic[Btree::_magNumSize] = {
-    0x3B, 0x29, 0x02, 0x00, 0x00,
-    0x08, 0x4C, 0x34, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00
-};
-
-
 //  HFContext::HFContext
 
 HFContext::HFContext( HFSDirectory * d_file )
     : _head( NULL ),
       _tail( NULL )
 {
-    _data = new Btree( _conMagic );
+    _data = new Btree( false, "L4" );
     d_file->addFile( this, "|CONTEXT" );
 }
 

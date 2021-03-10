@@ -264,20 +264,11 @@ void KWRec::addOffset( uint_32 new_off )
 }
 
 
-char const HFKwbtree::_keyMagic[Btree::_magNumSize] = {
-    0x3B, 0x29, 0x02, 0x00, 0x00,
-    0x08, 0x69, 0x32, 0x34, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00
-};
-
-
 //  HFKwbtree::HFKwbtree
 
 HFKwbtree::HFKwbtree( HFSDirectory * d_file )
 {
-    _words = new Btree( _keyMagic );
+    _words = new Btree( false, "i24" );
     _dataFile = new HFKwdata( d_file, this );
     _mapFile = new HFKwmap( d_file, this );
     _haveSetOffsets = false;
