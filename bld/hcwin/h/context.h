@@ -50,7 +50,6 @@ class HFContext : public Dumpable
     Btree   *_data;
     FutureHash  *_head;
     FutureHash  *_tail;
-    static char const   _conMagic[];
 
     // Assignment of HFContext's is not permitted.
     HFContext( HFContext const & ) {};

@@ -285,12 +285,12 @@ int HFSystem::dump( OutFile *dest )
     }
 
     // Write the |SYSTEM header to output.
-    static const uint_16    magic[3] = { 0x036C, 0x0015, 0x0001 };
-    dest->write( magic, 3, sizeof( uint_16 ) );
+    dest->write( (uint_16)0x036C );
+    dest->write( (uint_16)0x0015 );
+    dest->write( (uint_16)0x0001 );
 
     // Write the "time of creation" for the help file.
-    uint_32 cur_time = (uint_32)time( NULL );
-    dest->write( cur_time );
+    dest->write( (uint_32)time( NULL ) );
 
     // Write out the compression level.
     dest->write( _compLevel );

@@ -49,7 +49,6 @@
 class HFTtlbtree : public Dumpable
 {
     Btree       *_titles;
-    static char const   _titleMagic[];
 
     // Assignment of HFTtlbtree's is not permitted.
     HFTtlbtree( HFTtlbtree const & ) {};

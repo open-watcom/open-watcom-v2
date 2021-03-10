@@ -52,7 +52,6 @@ class HFSDirectory
 {
     OutFile     _output;
     Btree       _files;
-    static char const   _dirMagic[];
 
 public:
     HFSDirectory( char const filename[] );
