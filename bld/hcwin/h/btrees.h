@@ -107,7 +107,7 @@ class Btree : public Dumpable
     Btree & operator=( Btree const & ) { return *this; };
 
 public:
-    Btree( bool type, char const *format );
+    Btree( bool dir, char const *format );
     ~Btree();
 
     void        insert( BtreeData *newdata );

@@ -356,13 +356,16 @@ Btree::Btree( bool dir, char const *format )
           _numPages( 0 ),
           _numSplits( 0 ),
           _size( 0 ),
-          _maxSize( 0x0800 ),
-          _flags( 0x0002 ),
           _format( format )
 {
     if( dir ) {
-        _flags |= 0x0400;
-        _maxSize = 0x0400;
+        // directory internal file b-tree
+        _flags = 0x0402;
+        _maxSize = 0x0400;  // 1k
+    } else {
+        // other internal files b-tree
+        _flags = 0x0002;
+        _maxSize = 0x0800;  // 2k
     }
     _root = new BtreePage( _maxSize, NULL );
 }
