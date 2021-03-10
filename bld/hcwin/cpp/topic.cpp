@@ -120,13 +120,14 @@ struct PageHeader
 #define GENERIC_NODE_SIZE   21
 class GenericNode
 {
+    static const size_t _size = GENERIC_NODE_SIZE;
+
     uint_32 _topicSize;
     uint_32 _dataSize;
     uint_32 _prevNode;
     uint_32 _nextNode;
     uint_32 _dataOffset;
     uint_8  _recordType;
-    uint_32 _size;
     TopicLink   *_myLink;
 
     GenericNode( uint_32 prev );
@@ -145,6 +146,8 @@ class GenericNode
 #define TOPIC_HEADER_SIZE   28
 class TopicHeader
 {
+    static const size_t _size = TOPIC_HEADER_SIZE;
+
     uint_32 _totalSize;
     uint_32 _nextBrowse;
     uint_32 _prevBrowse;
@@ -152,7 +155,6 @@ class TopicHeader
     uint_32 _startNonScroll;
     uint_32 _startScroll;
     uint_32 _nextTopic;
-    uint_32 _size;
     TopicLink   *_myLink;
 
     TopicHeader( uint_32 tnum );
@@ -260,15 +262,14 @@ TopicLink::TopicLink( uint_32 s ) : _size( s ), _isFirstLink(false), _myData( s 
 //  GenericNode::GenericNode
 
 GenericNode::GenericNode( uint_32 prev )
-    : _topicSize( GENERIC_NODE_SIZE ),
+    : _topicSize( 0 ),
       _dataSize( 0 ),
+      _dataOffset( 0 ),
       _prevNode( prev ),
-      _nextNode( NULLVAL32 ),
-      _size( GENERIC_NODE_SIZE )
+      _nextNode( NULLVAL32 )
 {
     // empty
 }
-
 
 //  GenericNode::DumpTo --Convert the node to it's binary form.
 
@@ -276,7 +277,7 @@ void GenericNode::dumpTo( TopicLink *dest )
 {
     char    *location = dest->_myData;
 
-    if( GENERIC_NODE_SIZE > dest->_myData.len() )
+    if( dest->_myData.len() < _size )
         HCError( BOUND_ERR );
     *(uint_32 *)location = _topicSize;
     location += sizeof( uint_32 );
@@ -289,7 +290,7 @@ void GenericNode::dumpTo( TopicLink *dest )
     *(uint_32 *)location = _dataOffset;
     location += sizeof( uint_32 );
     *location = _recordType;
-    dest->_size = GENERIC_NODE_SIZE;
+    dest->_size = _size;
 }
 
 
@@ -302,12 +303,10 @@ TopicHeader::TopicHeader( uint_32 tnum )
       _topicNum( tnum ),
       _startNonScroll( NULLVAL32 ),
       _startScroll( NULLVAL32 ),
-      _nextTopic( NULLVAL32 ),
-      _size( TOPIC_HEADER_SIZE )
+      _nextTopic( NULLVAL32 )
 {
     // empty
 }
-
 
 //  TopicHeader::DumpTo --Convert the node to it's binary form.
 
@@ -315,7 +314,7 @@ void TopicHeader::dumpTo( TopicLink *dest )
 {
     char    *location = dest->_myData;
 
-    if( TOPIC_HEADER_SIZE > dest->_myData.len() )
+    if( dest->_myData.len() < _size )
         HCError( BOUND_ERR );
     *(uint_32 *)location = _totalSize;
     location += sizeof( uint_32 );
@@ -330,7 +329,7 @@ void TopicHeader::dumpTo( TopicLink *dest )
     *(uint_32 *)location = _startScroll;
     location += sizeof( uint_32 );
     *(uint_32 *)location = _nextTopic;
-    dest->_size = TOPIC_HEADER_SIZE;
+    dest->_size = _size;
 }
 
 
@@ -679,6 +678,8 @@ void TextHeader::dumpTo( TopicLink *dest )
     char        *location = dest->_myData;
     size_t      i;
 
+    if( _size > dest->_myData.len() )
+        HCError( BOUND_ERR );
     *(uint_16 *)location = (uint_16)( ( 2 * _headerSize ) | 0x8000 );
     location += sizeof( uint_16 );
     if( _textSize < INT_SMALL_LIMIT ) {
@@ -819,6 +820,8 @@ TextHolder::TextHolder()
 void TextHolder::dumpTo( TopicLink *dest )
 {
     if( _size > 0 ) {
+        if( _size > dest->_myData.len() )
+            HCError( BOUND_ERR );
         memcpy( dest->_myData, _text, _size );
     }
     dest->_size = _size;
