@@ -457,10 +457,6 @@ uint_32 Btree::size()
 int Btree::dump( OutFile *dest )
 {
     char        format[16];
-    uint_16     header[6] = {
-        0x0000, _numSplits, _root->_thisPage,
-        0xFFFF, _numPages, _numLevels
-    };
 
     strncpy( format, _format, sizeof( format ) );
     // Write the magic number and header information.
@@ -468,8 +464,13 @@ int Btree::dump( OutFile *dest )
     dest->write( (uint_16)_flags );
     dest->write( (uint_16)_maxSize );
     dest->write( format, 16 );
-    dest->write( header, 6, sizeof( uint_16 ) );
-    dest->write( _totalEntries );
+    dest->write( (uint_16)0 );
+    dest->write( (uint_16)_numSplits );
+    dest->write( (uint_16)_root->_thisPage );
+    dest->write( (uint_16)-1 );
+    dest->write( (uint_16)_numPages );
+    dest->write( (uint_16)_numLevels );
+    dest->write( (uint_32)_totalEntries );
 
     // Dump all of the pages recursively.
     dumpPage( dest, _root );
