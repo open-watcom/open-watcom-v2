@@ -285,13 +285,14 @@ int HFSystem::dump( OutFile *dest )
     }
 
     // Write the |SYSTEM header to output.
+    // Write the magic.
     dest->write( (uint_16)0x036C );
+    // Write the format minor version HC31 Windows 3.1 help file.
     dest->write( (uint_16)0x0015 );
+    // Write the format major version.
     dest->write( (uint_16)0x0001 );
-
     // Write the "time of creation" for the help file.
     dest->write( (uint_32)time( NULL ) );
-
     // Write out the compression level.
     dest->write( _compLevel );
 
