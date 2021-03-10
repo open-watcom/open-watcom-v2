@@ -210,10 +210,10 @@ class TextHeader
     int         setPar( ParFlags type, int val );
     void        unsetPar( ParFlags type );
     void        clearPar();
-    void        setAttr( unsigned index, FontFlags type, uint_32 val, char const str[], int length );
-    unsigned    addAttr( FontFlags type, uint_32 val, char const str[], int length );
-    unsigned    appendAttr( unsigned index, FontFlags type, uint_32 val, char const str[], int length );
-    void        chgAttr( unsigned index, FontFlags type, uint_32 val, char const str[], int length );
+    void        setAttr( unsigned index, FontFlags type, uint_32 val, char const str[], uint_16 length );
+    unsigned    addAttr( FontFlags type, uint_32 val, char const str[], uint_16 length );
+    unsigned    appendAttr( unsigned index, FontFlags type, uint_32 val, char const str[], uint_16 length );
+    void        chgAttr( unsigned index, FontFlags type, uint_32 val, char const str[], uint_16 length );
     uint_32     attrData( unsigned index );
     void        reset();
     void        chkTabsLen( size_t cur_len );
@@ -274,8 +274,22 @@ GenericNode::GenericNode( uint_32 prev )
 
 void GenericNode::dumpTo( TopicLink *dest )
 {
-    memcpy( dest->_myData, this, GENERIC_NODE_SIZE );   // EXTREME unsafeness!
-    dest->_size = _size;
+    char    *location = dest->_myData;
+
+    if( GENERIC_NODE_SIZE > dest->_myData.len() )
+        HCError( BOUND_ERR );
+    *(uint_32 *)location = _topicSize;
+    location += sizeof( uint_32 );
+    *(uint_32 *)location = _dataSize;
+    location += sizeof( uint_32 );
+    *(uint_32 *)location = _prevNode;
+    location += sizeof( uint_32 );
+    *(uint_32 *)location = _nextNode;
+    location += sizeof( uint_32 );
+    *(uint_32 *)location = _dataOffset;
+    location += sizeof( uint_32 );
+    *location = _recordType;
+    dest->_size = GENERIC_NODE_SIZE;
 }
 
 
@@ -299,8 +313,24 @@ TopicHeader::TopicHeader( uint_32 tnum )
 
 void TopicHeader::dumpTo( TopicLink *dest )
 {
-    memcpy( dest->_myData, this, TOPIC_HEADER_SIZE );   // EXTREME unsafeness!
-    dest->_size = _size;
+    char    *location = dest->_myData;
+
+    if( TOPIC_HEADER_SIZE > dest->_myData.len() )
+        HCError( BOUND_ERR );
+    *(uint_32 *)location = _totalSize;
+    location += sizeof( uint_32 );
+    *(uint_32 *)location = _nextBrowse;
+    location += sizeof( uint_32 );
+    *(uint_32 *)location = _prevBrowse;
+    location += sizeof( uint_32 );
+    *(uint_32 *)location = _topicNum;
+    location += sizeof( uint_32 );
+    *(uint_32 *)location = _startNonScroll;
+    location += sizeof( uint_32 );
+    *(uint_32 *)location = _startScroll;
+    location += sizeof( uint_32 );
+    *(uint_32 *)location = _nextTopic;
+    dest->_size = TOPIC_HEADER_SIZE;
 }
 
 
@@ -555,7 +585,7 @@ const int TextHeader::_attrSizes[] = {  3, 1, 1, 1, 9, 9, 9, 1, 3, 3,
 //  TextHeader::setAttr   --Set a text attribute.
 
 void TextHeader::setAttr( unsigned index, FontFlags type, uint_32 val,
-                           char const str[], int length )
+                           char const str[], uint_16 length )
 {
     _attribs[index]._type = type;
     _attribs[index]._data = val;
@@ -576,7 +606,7 @@ void TextHeader::setAttr( unsigned index, FontFlags type, uint_32 val,
 
 //  TextHeader::addAttr --Add a text attribute.
 
-unsigned TextHeader::addAttr( FontFlags type, uint_32 val, char const str[], int length )
+unsigned TextHeader::addAttr( FontFlags type, uint_32 val, char const str[], uint_16 length )
 {
     unsigned result = _numAttribs;
     if( _numAttribs == _attribs.len() )
@@ -591,7 +621,7 @@ unsigned TextHeader::addAttr( FontFlags type, uint_32 val, char const str[], int
 //  TextHeader::appendAttr   --Append a text attribute after a given one.
 
 unsigned TextHeader::appendAttr( unsigned index, FontFlags type, uint_32 val,
-                 char const str[], int length )
+                 char const str[], uint_16 length )
 {
     if( index >= _numAttribs ) {
         HCError( HLP_ATTR );
@@ -615,7 +645,7 @@ unsigned TextHeader::appendAttr( unsigned index, FontFlags type, uint_32 val,
 //  TextHeader::chgAttr   --Modify a text attribute.
 
 void TextHeader::chgAttr( unsigned index, FontFlags type, uint_32 val,
-                           char const str[], int length )
+                           char const str[], uint_16 length )
 {
     if( index >= _numAttribs ) {
         HCError( HLP_ATTR );
