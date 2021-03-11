@@ -51,6 +51,7 @@ void main()
     /*
         now terminate and keep resident
         the non-transient portion
+        Note: following calculation only works in .COM files
     */
     _dos_keep( 0, (FP_OFF( transient ) + 15) >> 4 );
   }
