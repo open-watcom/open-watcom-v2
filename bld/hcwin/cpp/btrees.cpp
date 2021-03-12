@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -461,11 +462,11 @@ int Btree::dump( OutFile *dest )
     char        format[16];
 
     strncpy( format, _format, sizeof( format ) );
-    // Write the magic number and header information.
+    // Write the b-tree header information.
     dest->write( (uint_16)0x293B );
     dest->write( (uint_16)_flags );
     dest->write( (uint_16)_pageSize );
-    dest->write( format, 16 );
+    dest->write( format, sizeof( format ) );
     dest->write( (uint_16)0 );
     dest->write( (uint_16)_numSplits );
     dest->write( (uint_16)_root->_thisPage );

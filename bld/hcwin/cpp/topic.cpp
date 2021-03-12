@@ -49,9 +49,9 @@
 struct TextAttr
 {
     FontFlags   _type;
-    uint_32 _data;
-    unsigned _size;
-    char    *_stringDat;
+    uint_32     _data;
+    unsigned    _size;
+    char        *_stringDat;
 };
 
 
@@ -77,9 +77,9 @@ struct TopicLink
 
 struct StringNode
 {
-    char    *_string;
+    char        *_string;
     TopicLink   *_me;
-    uint_32 _charOffset;
+    uint_32     _charOffset;
     StringNode  *_next, *_prev;
 
     // Handy access functions used by HFTopic::dumpBrowse().
@@ -97,7 +97,7 @@ struct StringNode
 struct PageHeader
 {
     PageHeader  *_next;
-    uint_32 _pageNums[3];
+    uint_32     _pageNums[3];
 
     // Some mnemonic access functions for accessing _pageNums.
     uint_32 &   lastNode() { return( *_pageNums ); };
@@ -122,12 +122,12 @@ class GenericNode
 {
     static const size_t _size = GENERIC_NODE_SIZE;
 
-    uint_32 _topicSize;
-    uint_32 _dataSize;
-    uint_32 _prevNode;
-    uint_32 _nextNode;
-    uint_32 _dataOffset;
-    uint_8  _recordType;
+    uint_32     _topicSize;
+    uint_32     _dataSize;
+    uint_32     _prevNode;
+    uint_32     _nextNode;
+    uint_32     _dataOffset;
+    uint_8      _recordType;
     TopicLink   *_myLink;
 
     GenericNode( uint_32 prev );
