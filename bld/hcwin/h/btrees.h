@@ -84,6 +84,8 @@ public:
 //  Btree       --The tree class.
 //
 
+#define BTREE_HEADER_SIZE   38
+
 class Btree : public Dumpable
 {
     uint_16     _numLevels;     // Number of levels.
@@ -91,7 +93,7 @@ class Btree : public Dumpable
     uint_16     _numPages;      // Number of pages.
     uint_16     _numSplits;     // Number of page splits.
     uint_32     _size;          // Total size of the structure.
-    uint_32     _maxSize;       // Page size.
+    uint_32     _pageSize;      // Page size.
     char const  *_format;       // The format string for the btree.
     uint_16     _flags;         // The flags for the btree.
 
