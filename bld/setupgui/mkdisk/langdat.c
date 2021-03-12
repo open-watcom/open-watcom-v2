@@ -818,13 +818,13 @@ static void ProcessCtlFile( const char *name )
     }
 }
 
-static bool SearchUpDirs( const char *name, char *result )
+static bool SearchUpDirs( const char *name, char *result, size_t max_len )
 {
     pgroup2     pg;
     char        *end;
     FILE        *fp;
 
-    _fullpath( result, name, _MAX_PATH );
+    _fullpath( result, name, max_len );
     for( ;; ) {
         fp = fopen( result, "r" );
         if( fp != NULL ) {
@@ -869,7 +869,7 @@ int main( int argc, char *argv[] )
         p = getenv( DEFCTLENV );
         if( p == NULL )
             p = DEFCTLNAME;
-        if( !SearchUpDirs( p, Line ) ) {
+        if( !SearchUpDirs( p, Line, sizeof( Line ) ) ) {
             _searchenv( p, "PATH", Line );
             if( Line[0] == '\0' ) {
                 MClose();
