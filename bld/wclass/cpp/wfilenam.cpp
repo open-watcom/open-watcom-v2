@@ -276,7 +276,11 @@ void WEXPORT WFileName::absoluteTo( const char* f )
                     break;
                 }
             }
-            s.dir[k] = '\0';
+            if( k == 0 && s.dir[0] == PATHSEP_CHAR ) {
+                s.dir[1] = '\0';
+            } else {
+                s.dir[k] = '\0';
+            }
         }
         addSepToEnd( s.dir, PATHSEP_CHAR );
         strcat( s.dir, &x.dir[i] );
