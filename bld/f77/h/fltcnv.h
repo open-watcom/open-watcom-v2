@@ -32,27 +32,12 @@
 
 #include "target.h"
 
-#define FOUND_SIGN      0x01
-#define LEFT_DIGITS     0x02
-#define DECIMAL         0x04
-#define RIGHT_DIGITS    0x08
-#define EXPONENT        0x10
-#define BAD_EXPONENT    0x20
-#define DOUBLE          0x40
-#define LONGDOUBLE      0x80
 
 #define _SIGN           0
 #define _DECIMAL        (_SIGN+1)
 #define _DIGITS         (_DECIMAL+1)
 #define _EXPONENT       (_DIGITS+CONVERSION_DIGITS)
 #define _STRING_SIZE    (_EXPONENT+MAX_INT_SIZE)
-
-#define _CanonSign( canon )     (&((canon)->string[_SIGN]))
-#define _CanonDecimal( canon )  (&((canon)->string[_DECIMAL]))
-#define _CanonDigits( canon )   (&((canon)->string[_DIGITS]))
-#define _CanonExponent( canon ) (&((canon)->string[_EXPONENT]))
-
-#define _CanonNumber( canon )   ((canon)->string)
 
 typedef struct canon_form {
     int         exp;
