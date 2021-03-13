@@ -150,11 +150,7 @@ void Substitute( const char *msg, char *buffer, va_list args )
             msg = buffer + width;
         }
         if( subs_len < width ) {
-            if( chr == 's' ) {
-                memset( buffer, ' ', width - subs_len );
-            } else {
-                memset( buffer, '0', width - subs_len );
-            }
+            memset( buffer, ( chr == 's' ) ? ' ' : '0', width - subs_len );
             buffer += width - subs_len;
         }
         memcpy( buffer, subs_ptr, subs_len );
