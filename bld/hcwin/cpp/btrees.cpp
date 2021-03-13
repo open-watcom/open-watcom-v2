@@ -463,7 +463,7 @@ int Btree::dump( OutFile *dest )
 
     strncpy( format, _format, sizeof( format ) );
     // Write the b-tree header information.
-    dest->write( (uint_16)0x293B );
+    dest->write( (uint_16)0x293B ); // magic
     dest->write( (uint_16)_flags );
     dest->write( (uint_16)_pageSize );
     dest->write( format, sizeof( format ) );
