@@ -64,7 +64,11 @@ static void removeSepFromEnd( char *dir, char pathsep )
 {
     size_t len;
 
-    if( dir[0] != '\0' ) {
+#ifndef __UNIX__
+    if( dir[0] != '\0' && dir[1] == ':' )
+        dir += 2;
+#endif
+    if( dir[0] != '\0' && dir[1] != '\0' ) {
         len = strlen( dir ) - 1;
         if( dir[len] == pathsep ) {
             dir[len] = '\0';
@@ -76,7 +80,11 @@ static void addSepToEnd( char *dir, char pathsep )
 {
     size_t len;
 
-    if( dir[0] != '\0' ) {
+#ifndef __UNIX__
+    if( dir[0] != '\0' && dir[1] == ':' )
+        dir += 2;
+#endif
+    if( dir[0] != '\0' && ( dir[0] != '\\' || dir[1] != '\0' ) ) {
         len = strlen( dir );
         if( dir[len - 1] != pathsep ) {
             dir[len++] = pathsep;
