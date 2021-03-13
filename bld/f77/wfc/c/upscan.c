@@ -1123,6 +1123,7 @@ static  void    InlineCnvt( void ) {
                 func_type = FT_XCOMPLEX;
                 break;
             }
+            /* fall through */
         case IF_DCMPLX:
         case IF_QCMPLX:
             if( RecNextOpr( OPR_COM ) ) {
