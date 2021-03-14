@@ -29,22 +29,17 @@
 ****************************************************************************/
 
 
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #if defined( __OS2__ )
-    #include <stdlib.h>
-    #include <string.h>
     #define INCL_WINSHELLDATA
     #include <os2.h>
 #elif defined( __WINDOWS__ ) || defined( __NT__ )
     #include <windows.h>
 #elif defined( __UNIX__ )
-    #include <stdio.h>
-    #include <string.h>
-    #include <stdlib.h>
     #include "watcom.h"
 #elif defined( __DOS__ )
-    #include <stdio.h>
-    #include <string.h>
-    #include <stdlib.h>
 #else
     #error UNSUPPORTED OS
 #endif
@@ -57,109 +52,110 @@
 #define RCS_KEY     "rcs settings"
 #define RCS_DEFAULT "generic"
 
+#if defined( __UNIX__ )
+    #define REL_RCS_CFG     "/.wvi/" RCS_CFG
+    #define ABS_RCS_CFG     "/usr/watcom/wvi/" RCS_CFG
+#elif defined( __DOS__ )
+    #define REL_RCS_CFG     "\\binw\\" RCS_CFG
+    #define ABS_RCS_CFG     "c:\\" RCS_CFG
+#endif
+
 #if defined( __OS2__ )
 
     // just use the os/2 user .ini file
-    int MyGetProfileString( const char *dir, char *buffer, int len )
-    {
-        (void)dir;
+int MyGetProfileString( const char *dir, char *buffer, int len )
+{
+    (void)dir;
   #ifdef _M_I86
-        return( (unsigned)PrfQueryProfileString( HINI_USERPROFILE, RCS_SECTION, RCS_KEY, RCS_DEFAULT, (void *)buffer, (unsigned)len ) );
+    return( (unsigned)PrfQueryProfileString( HINI_USERPROFILE, RCS_SECTION, RCS_KEY, RCS_DEFAULT, (void *)buffer, (unsigned)len ) );
   #else
-        return( PrfQueryProfileString( HINI_USERPROFILE, RCS_SECTION, RCS_KEY, RCS_DEFAULT, (void *)buffer, len ) );
+    return( PrfQueryProfileString( HINI_USERPROFILE, RCS_SECTION, RCS_KEY, RCS_DEFAULT, (void *)buffer, len ) );
   #endif
-    }
-    int MyWriteProfileString( const char *dir, const char *string )
-    {
-        (void)dir;
+}
+
+int MyWriteProfileString( const char *dir, const char *string )
+{
+    (void)dir;
   #ifdef _M_I86
-        return( PrfWriteProfileString( HINI_USERPROFILE, RCS_SECTION, RCS_KEY, (char *)string ) );
+    return( PrfWriteProfileString( HINI_USERPROFILE, RCS_SECTION, RCS_KEY, (char *)string ) );
   #else
-        return( PrfWriteProfileString( HINI_USERPROFILE, RCS_SECTION, RCS_KEY, string ) );
+    return( PrfWriteProfileString( HINI_USERPROFILE, RCS_SECTION, RCS_KEY, string ) );
   #endif
-    }
+}
 
 #elif defined( __WINDOWS__ ) || defined( __NT__ )
 
-    int MyGetProfileString( const char *dir, char *buffer, int len )
-    {
-        (void)dir;
-        return( GetPrivateProfileString( RCS_SECTION, RCS_KEY, RCS_DEFAULT, buffer, len, RCS_CFG ) );
-    }
-    int MyWriteProfileString( const char *dir, const char *string )
-    {
-        (void)dir;
-        return( WritePrivateProfileString( RCS_SECTION, RCS_KEY, string, RCS_CFG ) );
-    }
+int MyGetProfileString( const char *dir, char *buffer, int len )
+{
+    (void)dir;
+    return( GetPrivateProfileString( RCS_SECTION, RCS_KEY, RCS_DEFAULT, buffer, len, RCS_CFG ) );
+}
+
+int MyWriteProfileString( const char *dir, const char *string )
+{
+    (void)dir;
+    return( WritePrivateProfileString( RCS_SECTION, RCS_KEY, string, RCS_CFG ) );
+}
 
 #else
 
-  #if defined( __UNIX__ )
-    #define REL_RCS_CFG     "/.wvi/" RCS_CFG
-    #define ABS_RCS_CFG     "/usr/watcom/wvi/" RCS_CFG
-  #elif defined( __DOS__ )
-
-    #define REL_RCS_CFG     "\\binw\\" RCS_CFG
-    #define ABS_RCS_CFG     "c:\\" RCS_CFG
-  #endif
-
-    int MyGetProfileString( const char *dir, char *buffer, int len )
-    {
-        char path[_MAX_PATH];
-        FILE *fp;
+int MyGetProfileString( const char *dir, char *buffer, int len )
+{
+    char path[_MAX_PATH];
+    FILE *fp;
 
   #if defined( __UNIX__ )
+    if( dir == NULL ) {
+        dir = getenv( "HOME" );
         if( dir == NULL ) {
-            dir = getenv( "HOME" );
-            if( dir == NULL ) {
-                dir = ".";
-            }
+            dir = ".";
         }
-  #endif
-        strncpy( path, dir, _MAX_PATH - sizeof( REL_RCS_CFG ) );
-        path[_MAX_PATH - sizeof( REL_RCS_CFG )] = '\0';
-        strcat( path, REL_RCS_CFG );
-
-        fp = fopen( path, "r" );
-        if( fp == NULL ) {
-            fp = fopen( ABS_RCS_CFG, "r" );
-            if( fp == NULL ) {
-                strncpy( buffer, RCS_DEFAULT, len );
-                return( 0 );
-            }
-        }
-        fgets( buffer, len, fp );
-        fclose( fp );
-        return( 1 );
     }
+  #endif
+    strncpy( path, dir, _MAX_PATH - sizeof( REL_RCS_CFG ) );
+    path[_MAX_PATH - sizeof( REL_RCS_CFG )] = '\0';
+    strcat( path, REL_RCS_CFG );
 
-    int MyWriteProfileString( const char *dir, const char *string )
-    {
-        char path[_MAX_PATH];
-        FILE *fp;
+    fp = fopen( path, "r" );
+    if( fp == NULL ) {
+        fp = fopen( ABS_RCS_CFG, "r" );
+        if( fp == NULL ) {
+            strncpy( buffer, RCS_DEFAULT, len );
+            return( 0 );
+        }
+    }
+    fgets( buffer, len, fp );
+    fclose( fp );
+    return( 1 );
+}
+
+int MyWriteProfileString( const char *dir, const char *string )
+{
+    char path[_MAX_PATH];
+    FILE *fp;
 
   #if defined( __UNIX__ )
+    if( dir == NULL ) {
+        dir = getenv( "HOME" );
         if( dir == NULL ) {
-            dir = getenv( "HOME" );
-            if( dir == NULL ) {
-                dir = ".";
-            }
+            dir = ".";
         }
-  #endif
-        strncpy( path, dir, _MAX_PATH - sizeof( REL_RCS_CFG ) );
-        path[_MAX_PATH - sizeof( REL_RCS_CFG )] = '\0';
-        strcat( path, REL_RCS_CFG );
-
-        fp = fopen( path, "w" );
-        if( fp == NULL ) {
-            fp = fopen( ABS_RCS_CFG, "w" );
-            if( fp == NULL ) {
-                return( 0 );
-            }
-        }
-        fputs( string, fp );
-        fclose( fp );
-        return( 1 );
     }
+  #endif
+    strncpy( path, dir, _MAX_PATH - sizeof( REL_RCS_CFG ) );
+    path[_MAX_PATH - sizeof( REL_RCS_CFG )] = '\0';
+    strcat( path, REL_RCS_CFG );
+
+    fp = fopen( path, "w" );
+    if( fp == NULL ) {
+        fp = fopen( ABS_RCS_CFG, "w" );
+        if( fp == NULL ) {
+            return( 0 );
+        }
+    }
+    fputs( string, fp );
+    fclose( fp );
+    return( 1 );
+}
 
 #endif
