@@ -279,7 +279,7 @@ void WEXPORT WFileName::absoluteTo( const char* f )
             ;
         removeSepFromEnd( s.dir, PATHSEP_CHAR );
         k = strlen( s.dir );
-        for( j = 0; j < i; j += 3 ) {
+        for( j = 0; k > 0 && j < i; j += 3 ) {
             for( ; k > 0; k-- ) {
                 if( s.dir[k] == PATHSEP_CHAR ) {
                     break;
