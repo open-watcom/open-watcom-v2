@@ -609,6 +609,7 @@ char *IdentifyObject( file_list *list, unsigned long *loc, unsigned long *size )
     if( !IsORL( list, *loc ) ) {
         if( IsOMF( list, *loc ) ) {
             ObjFormat |= FMT_OMF;
+            _LnkFree( name );
             name = GetOMFName( list, loc );
             if( list->flags & STAT_AR_LIB ) {
                 *loc = ar_loc;          /* Restore the location. */
