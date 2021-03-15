@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -153,7 +154,7 @@ void LocationTrunc( location_list *ll, unsigned bits )
         (i).bit_start = BITIDX( (i).bit_start );            \
     }
 
-static dip_status DoLocAssign( location_list *dst, location_list *src,
+static dip_status DoLocAssign( location_list *dst, const location_list *src,
                         unsigned long len, bool sign_extend )
 {
     byte                tmp[TEMP_SIZE + 1];
@@ -352,7 +353,7 @@ static dip_status DoLocAssign( location_list *dst, location_list *src,
     return( DS_OK );
 }
 
-dip_status LocationAssign( location_list *dst, location_list *src,
+dip_status LocationAssign( location_list *dst, const location_list *src,
                         unsigned long len, bool sign_extend )
 {
     dip_status  ds;

@@ -214,7 +214,7 @@ dip_status DIPCLIENTRY( ItemLocation )( location_context *lc, context_item ci,
 }
 
 dip_status DIPCLIENTRY( AssignLocation )( location_list *dst,
-                        location_list *src, unsigned long size )
+                        const location_list *src, unsigned long size )
 {
     return( LocationAssign( dst, src, size, false ) );
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -186,7 +187,7 @@ dip_status DCItemLocation( location_context *lc, context_item ci, location_list 
     return( DIPClient->ItemLocation( lc, ci, ll ) );
 }
 
-dip_status DCAssignLocation( location_list *dst, location_list *src, unsigned long len )
+dip_status DCAssignLocation( location_list *dst, const location_list *src, unsigned long len )
 {
     return( DIPClient->AssignLocation( dst, src, len ) );
 }
