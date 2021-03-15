@@ -248,9 +248,11 @@ static  dw_handle   MKBckVar( back_handle bck, int off, dw_handle tipe )
     obj = DWVariable( Client, tipe, dw_loc, 0, dw_segloc, "__bck", 0, 0 );
 
     DWLocTrash( Client, dw_loc );
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
     if( dw_segloc != NULL ){
         DWLocTrash( Client, dw_segloc );
     }
+#endif
     return( obj );
 }
 

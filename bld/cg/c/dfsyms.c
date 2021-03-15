@@ -1046,6 +1046,7 @@ void    DFProEnd( dbg_rtn *rtn, offset lc )
         }
         DWPubname( Client, obj, name );
     }
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
     if( dw_retloc != NULL ) {
         DWLocTrash( Client, dw_retloc );
     }
@@ -1055,6 +1056,7 @@ void    DFProEnd( dbg_rtn *rtn, offset lc )
     if( dw_segloc != NULL ) {
         DWLocTrash( Client, dw_segloc );
     }
+#endif
     for( parm = rtn->parms; parm != NULL; parm = next ) {
         next = parm->link;
         if( parm->sym != NULL ) {
