@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -293,12 +293,12 @@ regexp *RegComp( const char *instr )
     const char  *exp;
     char        buff[MAX_STR*2];
     int         flags;
-    bool        ignmag;
     unsigned    j;
     size_t      i, k, len;
+#ifdef WANT_EXCLAMATION
+    bool        ignmag;
 
     ignmag = false;
-#ifdef WANT_EXCLAMATION
     if( instr[0] == '!' ) {
         instr++;
         ignmag = true;
@@ -308,7 +308,11 @@ regexp *RegComp( const char *instr )
     /*
      * flip roles of magic chars
      */
-    if( !ignmag && ( !MAGICFLAG && MAGICSTR != NULL ) ) {
+#ifdef WANT_EXCLAMATION
+    if( !ignmag && !MAGICFLAG && MAGICSTR != NULL ) {
+#else
+    if( !MAGICFLAG && MAGICSTR != NULL ) {
+#endif
         j = 0;
         k = strlen( instr );
         for( i = 0; i < k; i++ ) {

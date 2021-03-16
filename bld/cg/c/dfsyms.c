@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -799,9 +799,11 @@ void    DFGenStatic( cg_sym_handle sym, dbg_loc loc )
     if( dw_loc != NULL ) {
         DWLocTrash( Client, dw_loc );
     }
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
     if( dw_segloc != NULL ) {
         DWLocTrash( Client, dw_segloc );
     }
+#endif
 }
 
 void    DFTypedef( const char *nm, dbg_type tipe )
