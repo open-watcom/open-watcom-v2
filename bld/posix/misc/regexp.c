@@ -295,45 +295,41 @@ regexp *RegComp( const char *instr )
     int         flags;
     unsigned    j;
     size_t      i, k, len;
-#ifdef WANT_EXCLAMATION
-    bool        ignmag;
 
-    ignmag = false;
+#ifdef WANT_EXCLAMATION
     if( instr[0] == '!' ) {
         instr++;
-        ignmag = true;
-    }
-#endif
-
-    /*
-     * flip roles of magic chars
-     */
-#ifdef WANT_EXCLAMATION
-    if( !ignmag && !MAGICFLAG && MAGICSTR != NULL ) {
-#else
-    if( !MAGICFLAG && MAGICSTR != NULL ) {
-#endif
-        j = 0;
-        k = strlen( instr );
-        for( i = 0; i < k; i++ ) {
-            if( instr[i] == '\\' ) {
-                if( strchr( MAGICSTR, instr[i + 1] ) == NULL ) {
-                    buff[j++] = '\\';
-                }
-                i++;
-            } else {
-                if( strchr( MAGICSTR, instr[i] ) != NULL ) {
-                    buff[j++] = '\\';
-                }
-            }
-            buff[j++] = instr[i];
-
-        }
-        buff[j] = 0;
-        exp = buff;
-    } else {
         exp = instr;
+    } else {
+#endif
+        /*
+         * flip roles of magic chars
+         */
+        if( !MAGICFLAG && MAGICSTR != NULL ) {
+            j = 0;
+            k = strlen( instr );
+            for( i = 0; i < k; i++ ) {
+                if( instr[i] == '\\' ) {
+                    if( strchr( MAGICSTR, instr[i + 1] ) == NULL ) {
+                        buff[j++] = '\\';
+                    }
+                    i++;
+                } else {
+                    if( strchr( MAGICSTR, instr[i] ) != NULL ) {
+                        buff[j++] = '\\';
+                    }
+                }
+                buff[j++] = instr[i];
+
+            }
+            buff[j] = 0;
+            exp = buff;
+        } else {
+            exp = instr;
+        }
+#ifdef WANT_EXCLAMATION
     }
+#endif
 
     regError( ERR_NO_ERR );
     if( exp == NULL ) {
