@@ -479,16 +479,12 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
         if( tab->mode == -1 ) {
 #if defined( VERSION2 )
             if( ( mode > 0x105 ) && ( mode < 0x120 ) ) {
-                dev_ptr=tab->dev;
+                dev_ptr = tab->dev;
                 break;
-            } else {
-                _ErrorStatus = _GRINVALIDPARAMETER;
-                return( 0 );
             }
-#else
+#endif
             _ErrorStatus = _GRINVALIDPARAMETER;
             return( 0 );
-#endif
         } else if( tab->mode == mode ) {
             dev_ptr = tab->dev;
             break;
@@ -505,8 +501,8 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
         _FiniDevice();
     }
     _CurrState->deviceptr = dev_ptr;
-    if( !_InitDevice( mode ) ) {       // if invalid mode
-        _CurrState->deviceptr = prev_dev;      // restore previous
+    if( !_InitDevice( mode ) ) {            // if invalid mode
+        _CurrState->deviceptr = prev_dev;   // restore previous
         if( prev_dev != NULL ) {
             _InitDevice( prev_mode );
         }
@@ -517,7 +513,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
         if( IsTextMode ) {
             _CursState = _GCURSORON;
         } else {
-            _CursState = _GCURSOROFF;     /* cursor off in graphics mode  */
+            _CursState = _GCURSOROFF;       /* cursor off in graphics mode  */
         }
         _GrCursor = _CursState;
         if( req_mode == _DEFAULTMODE ) {
