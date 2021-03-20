@@ -640,7 +640,11 @@ void ib_trans_line( char *line_buf, section_def *section )
             }
             trans_add_char_wrap( '\n', section );
             break;
-        } else if( ch == WHP_HLINK || ch == WHP_DFN || ch == WHP_FLINK ) {
+        }
+        switch( ch ) {
+        case WHP_HLINK:
+        case WHP_DFN:
+        case WHP_FLINK:
             Curr_ctx->empty = false;
             if( ch == WHP_FLINK ) {
                 file_name = strchr( ptr + 1, ch );
@@ -707,7 +711,8 @@ void ib_trans_line( char *line_buf, section_def *section )
                 trans_add_str( file_name, section );
             }
             trans_add_char( IB_TEMP_HLINK , section );
-        } else if( ch == WHP_LIST_ITEM ) {
+            break;
+        case WHP_LIST_ITEM:
             if( Curr_list->type != LIST_TYPE_SIMPLE ) {
                 buf[0] = '\0';
                 if( Curr_list->type == LIST_TYPE_UNORDERED ) {
@@ -725,15 +730,18 @@ void ib_trans_line( char *line_buf, section_def *section )
             }
             Eat_blanks = true;
             ptr = skip_blanks( ptr + 1 );
-        } else if( ch == WHP_DLIST_DESC ) {
+            break;
+        case WHP_DLIST_DESC:
             ptr = skip_blanks( ptr + 1 );
-        } else if( ch == WHP_DLIST_TERM ) {
+            break;
+        case WHP_DLIST_TERM:
             /* definition list term */
             trans_add_str( STR_BOLD_ON, section );
             Line_postfix = LPOSTFIX_TERM;
             ptr = skip_blanks( ptr + 1 );
             Eat_blanks = true;
-        } else if( ch == WHP_CTX_KW ) {
+            break;
+        case WHP_CTX_KW:
             end = strchr( ptr + 1, WHP_CTX_KW );
             len = end - ptr - 1;
             memcpy( buf, ptr + 1, len );
@@ -746,13 +754,16 @@ void ib_trans_line( char *line_buf, section_def *section )
                    This should fix that */
                 ++ptr;
             }
-        } else if( ch == WHP_PAR_RESET ) {
+            break;
+        case WHP_PAR_RESET:
             // we ignore paragraph resets
             ++ptr;
-        } else if( ch == WHP_BMP ) {
+            break;
+        case WHP_BMP:
             // we ignore bitmaps
             ptr = strchr( ptr + 3, WHP_BMP ) + 1;
-        } else if( ch == WHP_FONTSTYLE_START ) {
+            break;
+        case WHP_FONTSTYLE_START:
             ++ptr;
             end = strchr( ptr, WHP_FONTSTYLE_START );
             for( ; ptr != end; ++ptr ) {
@@ -770,14 +781,17 @@ void ib_trans_line( char *line_buf, section_def *section )
                 }
             }
             ++ptr;
-        } else if( ch == WHP_FONTSTYLE_END ) {
+            break;
+        case WHP_FONTSTYLE_END:
             // reset style (bold off, underline off)
             trans_add_str( Reset_Style, section );
             ++ptr;
-        } else if( ch == WHP_FONTTYPE ) {
+            break;
+        case WHP_FONTTYPE:
             // we basically ignore font type changes
             ptr = strchr( strchr( ptr + 1 , WHP_FONTTYPE ) + 1, WHP_FONTTYPE ) + 1;
-        } else {
+            break;
+        default:
             ++ptr;
             if( !Eat_blanks || ch != ' ' ) {
                 Curr_ctx->empty = false;
@@ -794,6 +808,7 @@ void ib_trans_line( char *line_buf, section_def *section )
                 }
                 Eat_blanks = false;
             }
+            break;
         }
     }
 }

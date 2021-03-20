@@ -425,7 +425,10 @@ void rtf_trans_line( char *line_buf, section_def *section )
             }
             trans_add_char( '\n', section );
             break;
-        } else if( ch == WHP_HLINK || ch == WHP_DFN ) {
+        }
+        switch( ch ) {
+        case WHP_HLINK:
+        case WHP_DFN:
             Curr_ctx->empty = false;
             ctx_name = strchr( ptr + 1, ch );
             if( ctx_name == NULL ) {
@@ -458,7 +461,8 @@ void rtf_trans_line( char *line_buf, section_def *section )
                 trans_add_str( "}", section );
             }
             ptr = ctx_text + strlen( ctx_text ) + 1;
-        } else if( ch == WHP_FLINK ) {
+            break;
+        case WHP_FLINK:
             Curr_ctx->empty = false;
             file_name = strchr( ptr + 1, ch );
             if( file_name == NULL ) {
@@ -488,7 +492,8 @@ void rtf_trans_line( char *line_buf, section_def *section )
             trans_add_str( Reset_font_str, section );
             trans_add_str( "}", section );
             ptr = ctx_text + strlen( ctx_text ) + 1;
-        } else if( ch == WHP_LIST_ITEM ) {
+            break;
+        case WHP_LIST_ITEM:
             if( Curr_list->type != LIST_TYPE_SIMPLE ) {
                 if( Curr_list->type == LIST_TYPE_UNORDERED ) {
                     sprintf( buf, "\\fi-%d\\f1 \\'b7\\f2\\tab ", INDENT_INC );
@@ -502,17 +507,20 @@ void rtf_trans_line( char *line_buf, section_def *section )
             }
             ptr = skip_blanks( ptr + 1 );
             Eat_blanks = true;
-        } else if( ch == WHP_DLIST_DESC ) {
+            break;
+        case WHP_DLIST_DESC:
             /* we don't have to do anything with this for RTF. Ignore it */
             ptr = skip_blanks( ptr + 1 );
-        } else if( ch == WHP_DLIST_TERM ) {
+            break;
+        case WHP_DLIST_TERM:
             /* definition list term */
             sprintf( buf, "\\f2\\fi-%d \\b ", INDENT_INC );
             trans_add_str( buf, section );
             Line_postfix = LPOSTFIX_TERM;
             ptr = skip_blanks( ptr + 1 );
             Eat_blanks = true;
-        } else if( ch == WHP_CTX_KW ) {
+            break;
+        case WHP_CTX_KW:
             end = strchr( ptr + 1, WHP_CTX_KW );
             len = end - ptr - 1;
             memcpy( buf, ptr + 1, len );
@@ -525,10 +533,12 @@ void rtf_trans_line( char *line_buf, section_def *section )
                    This should fix that */
                 ++ptr;
             }
-        } else if( ch == WHP_PAR_RESET ) {
+            break;
+        case WHP_PAR_RESET:
             Line_prefix |= LPREFIX_PAR_RESET;
             ++ptr;
-        } else if( ch == WHP_BMP ) {
+            break;
+        case WHP_BMP:
             Curr_ctx->empty = false;
             ++ptr;
             ch = *ptr;
@@ -557,7 +567,8 @@ void rtf_trans_line( char *line_buf, section_def *section )
             }
             trans_add_str( buf, section );
             ptr = end + 1;
-        } else if( ch == WHP_FONTSTYLE_START ) {
+            break;
+        case WHP_FONTSTYLE_START:
             ++ptr;
             end = strchr( ptr, WHP_FONTSTYLE_START );
             for( ; ptr != end; ++ptr ) {
@@ -577,10 +588,12 @@ void rtf_trans_line( char *line_buf, section_def *section )
                 }
             }
             ++ptr;
-        } else if( ch == WHP_FONTSTYLE_END ) {
+            break;
+        case WHP_FONTSTYLE_END:
             trans_add_str( "\\b0 \\i0 \\ul0 \\ulw0 ", section );
             ++ptr;
-        } else if( ch == WHP_FONTTYPE ) {
+            break;
+        case WHP_FONTTYPE:
             ++ptr;
             end = strchr( ptr, WHP_FONTTYPE );
             *end = '\0';
@@ -600,7 +613,8 @@ void rtf_trans_line( char *line_buf, section_def *section )
             sprintf( buf, "\\fs%d ", atoi( ptr ) * 2 );
             trans_add_str( buf, section );
             ptr = end + 1;
-        } else {
+            break;
+        default:
             ++ptr;
             if( !Eat_blanks || ch != ' ' ) {
                 Curr_ctx->empty = false;
@@ -613,6 +627,7 @@ void rtf_trans_line( char *line_buf, section_def *section )
                 }
                 Eat_blanks = false;
             }
+            break;
         }
     }
 }
