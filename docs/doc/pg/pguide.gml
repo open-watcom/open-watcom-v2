@@ -9,7 +9,6 @@
 .do end
 :INCLUDE file='FMTMACRO'.
 :INCLUDE file='GMLMACS'.
-:CMT. :INCLUDE file='HTMLMACS'.
 :INCLUDE file='BANTOP'.
 :INCLUDE file='XDEFS'.
 :set symbol="lang"       value="C/C++".

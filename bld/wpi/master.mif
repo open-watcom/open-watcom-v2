@@ -4,6 +4,8 @@ proj_name = wpi
 wpi_autodepends = .AUTODEPEND
 !endif
 
+wpi_nofpu = 1
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif

@@ -2540,9 +2540,6 @@ gml_objs = &
 ../doc/gml/help.gml      &
 ../doc/gml/help.opt      &
 ../doc/gml/helplay.gml   &
-../doc/gml/html.opt      &
-../doc/gml/htmllay.gml   &
-../doc/gml/htmlmacs.gml  &
 ../doc/gml/light2.eps    &
 ../doc/gml/ltning.eps    &
 ../doc/gml/lytchg.gml    &
@@ -2589,7 +2586,7 @@ gml_objs = &
 
 # whelp sub-directory
 whelp_incs = ../doc/whelp
-whelp_objs =		   &
+whelp_objs =               &
 ../doc/whelp/whelp.gml     &
 ../doc/whelp/whelplay.gml  &
 ../doc/whelp/wnohelp.gml   &

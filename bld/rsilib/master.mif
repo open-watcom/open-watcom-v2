@@ -2,7 +2,7 @@ proj_name = rsilib
 
 rsilib_autodepends = .autodepend
 
-fpu_flags_dos_i86 = -fpc
+rsilib_nofpu = 1
 
 !include cproj.mif
 !include defrule.mif

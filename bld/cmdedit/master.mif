@@ -2,13 +2,12 @@ proj_name = cmdedit
 
 cmdedit_autodepends = .AUTODEPEND
 
+cmdedit_nofpu = 1
+
 # ignore default compilers optimization options
 cmdedit_nooptimization = 1
 
 suppress_bd = 1
-
-fpu_flags_dos_i86 = -fpc
-fpu_flags_os2_i86 = -fpc
 
 memory_model_i86 = s
 

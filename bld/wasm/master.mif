@@ -4,16 +4,11 @@ proj_name = wasm
 wasm_autodepends = .AUTODEPEND
 !endif
 
+wasm_nofpu = 1
+
 wasm_trmem = 1
 
 #wasm_dos_extender = causeway
-
-fpu_flags_dos_i86 = -fpc
-fpu_flags_dos_386 = -fpc
-fpu_flags_linux_386 = -fpc
-fpu_flags_nt_386 = -fpc
-fpu_flags_os2_386 = -fpc
-fpu_flags_qnx_386 = -fpc
 
 !include cproj.mif
 !include defrule.mif

@@ -8,6 +8,8 @@ additional_clean = $(crwatpro_sp)
 
 graph_autodepends = .AUTODEPEND
 
+graph_nofpu = 1
+
 graph_distrib_lib = 1
 
 suppress_zc = 1
@@ -23,14 +25,6 @@ memory_model_386 = s
 
 suffix_register = r
 suffix_stack = s
-
-fpu_flags_dos_i86 = -fpc
-fpu_flags_dos_386 = -fpc
-fpu_flags_qnx_i86 = -fpc
-fpu_flags_qnx_386 = -fpc
-fpu_flags_os2_i86 = -fpc
-fpu_flags_os2_386 = -fpc
-fpu_flags_win_i86 = -fpc
 
 !include cproj.mif
 !include defrule.mif

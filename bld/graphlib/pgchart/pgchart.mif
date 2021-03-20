@@ -10,6 +10,7 @@ crwatpro_sp = crwatpro.sp
 additional_clean = $(crwatpro_sp)
 
 pgchart_autodepends = .AUTODEPEND
+pgchart_nofpu = 1
 pgchart_distrib_lib = 1
 
 suppress_zc = 1
@@ -24,14 +25,6 @@ memory_model_386 = f
 !else ifeq host_os win
 memory_model_i86 = l
 !endif
-
-fpu_flags_dos_i86 = -fpc
-fpu_flags_dos_386 = -fpc
-fpu_flags_os2_i86 = -fpc
-fpu_flags_os2_386 = -fpc
-fpu_flags_qnx_i86 = -fpc
-fpu_flags_qnx_386 = -fpc
-fpu_flags_win_i86 = -fpc
 
 !include cproj.mif
 !include defrule.mif
