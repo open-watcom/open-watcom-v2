@@ -187,22 +187,19 @@ from the structure.  The following routines handle the WPI_INST data type:
 .begnote $setptnt 3
 .note _wpi_setwpiinst( hab, mod_handle, &wpi_instance )
 .np
-Use this function to initialize a WPI_INST.  For Windows set hab to the
-instance and set mod_handle to NULL.
-.np
+Use this function to initialize a WPI_INST.
+For Windows set hab to the instance and set mod_handle to NULL.
 .note _wpi_issameinst( inst1, inst2 )
 .np
 This compares the two instances and returns whether or not they are the same.
-.np
 .note _wpi_setmodhandle( name, inst )
 .np
-This sets the module handle only, of a WPI_INST.  This function does nothing
-in Windows.
-.np
+This sets the module handle only, of a WPI_INST.
+This function does nothing in Windows.
 .note _wpi_setanchorblock( hwnd, inst )
 .np
-This sets the anchor block only, of a WPI_INST given a window handle.  For
-Windows, this sets the instance.
+This sets the anchor block only, of a WPI_INST given a window handle.
+For Windows, this sets the instance.
 .endnote
 .*
 .section Coordinates and Rectangles
@@ -251,39 +248,33 @@ defined as WPI_RECTDIM:
 .begnote $setptnt 3
 .note _wpi_setrectvalues(&r, left, top, right, bottom)
 .np
-In Windows this simply sets the values of the fields.  In PM this will
-set top to yBottom and bottom to yTop.  This function can be useful when you
-have Windows code which subtracts bottom from top to get window heights.
-.np
+In Windows this simply sets the values of the fields.
+In PM this will set top to yBottom and bottom to yTop.
+This function can be useful when you have Windows code which subtracts bottom
+from top to get window heights.
 .note _wpi_setwrectvalues(&r, left, top, right, bottom)
 .np
 This will set the values of the relative fields in both Windows and PM
 (ie no switching is performed between top and bottom).
-.np
 .note _wpi_getrectvalues(r, &left, &top, &right, &bottom)
 .np
 This will retrieve the values of the rectangle structure in Windows as
 expected and will assign the value of yBottom to top and yTop to bottom.
 Again, this is because of the difference in the coordinate systems.
-.np
 .note _wpi_getwrectvalues(r, &left, &top, &right, &bottom)
 .np
 This will retrieve the values of the fields in both Windows and PM as
 expected (ie no switching is performed between top and bottom).
-.np
 .endnote
 Because some developers may wish to work strictly with the int data type,
 the following equivalent functions have been created which do the same as
 the above routines, but accept as parameters int instead of WPI_RECTDIM:
-.np
-_wpi_setintrectvalues(&r, left, top, right, bottom)
-.np
-_wpi_setintwrectvalues(&r, left, top, right, bottom)
-.np
-_wpi_getintrectvalues(r, &left, &top, &right, &bottom)
-.np
-_wpi_getintwrectvalues(r, &left, &top, &right, &bottom)
-.np
+.begnote $setptnt 3
+.note _wpi_setintrectvalues(&r, left, top, right, bottom)
+.note _wpi_setintwrectvalues(&r, left, top, right, bottom)
+.note _wpi_getintrectvalues(r, &left, &top, &right, &bottom)
+.note _wpi_getintwrectvalues(r, &left, &top, &right, &bottom)
+.endnote
 Using these macros will at first be annoying; however the need to have a
 WPI_RECT lies in the fact that many macros will require a Windows RECT for
 the Windows API and a PM RECTL for the equivalent PM API.  Hence, there
@@ -311,77 +302,73 @@ coordinates:
 .note _wpi_getwidthrect( r )
 .np
 This will return the width of the rectangle.
-.np
 .note _wpi_getheightrect( r )
 .np
 This will return the height of the rectangle.
-.np
 .note _wpi_cvth_y( y, height )
 .np
 This will convert the value of y for a window in Windows coordinates to PM
-coordinates. Height is the height of the window and the new value is returned.
-.np
+coordinates.
+Height is the height of the window and the new value is returned.
 .note _wpi_cvth_pt( &pt, height )
 .np
 This converts the y value of a WPI_POINT in a window from Windows coordinates
-to PM coordinates. Height is the height of the window.
-.np
+to PM coordinates.
+Height is the height of the window.
 .note _wpi_cvth_rect(&rect, height)
 .np
 This converts the top and bottom values of a WPI_RECT from Windows coordinates
-to PM coordinates. Height is the height of the window and is assumed to be a
-LONG.
-.np
+to PM coordinates.
+Height is the height of the window and is assumed to be a LONG.
 .note _wpi_cvth_wanchor( y, window_cy, parent_cy )
 .np
-This converts an anchor point (y) from Windows to PM coordinates.  The anchor
-point is the coordinates at which a window is displayed on the desk top (top
-left for Windows and bottom left for PM).  All values are assumed to be LONG.
-.np
+This converts an anchor point (y) from Windows to PM coordinates.
+The anchor point is the coordinates at which a window is displayed on the desk
+top (top left for Windows and bottom left for PM).
+All values are assumed to be LONG.
 .note _wpi_cvts_y( y )
 .np
 This converts a value relative to the desktop in Windows coordinates to that
-of PM.  The new value is returned (ie. same as _wpi_cvth_y except it is
-relative to the desktop).
-.np
+of PM.
+The new value is returned (ie. same as _wpi_cvth_y except it is relative to
+the desktop).
 .note _wpi_cvts_pt( &pt )
 .np
 Same as _wpi_cvth_pt except that the point is assumed to be relative to the
 screen (desk top window).
-.np
 .note _wpi_cvts_rect( &rect )
 .np
 Same as _wpi_cvth_rect except that the values are assumed to be relative to
 the screen (desk top window).
-.np
 .note _wpi_cvts_wanchor( y, window_cy )
 .np
 Same as _wpi_cvth_wanchor except the anchor point is assumed to be relative
-to the screen (desk top window).  Values are expected to be LONG.
-.np
+to the screen (desk top window).
+Values are expected to be LONG.
 .note _wpi_cvtc_y( hwnd, y )
 .np
 Same as _wpi_cvth_y except the routine only takes the window handle (it
-calculates the window height).  The new value is returned and y is expected
-to be LONG.
-.np
+calculates the window height).
+The new value is returned and y is expected to be LONG.
 .note _wpi_cvtc_rect( hwnd, &rect )
 .np
 Same as _wpi_cvth_rect except the routine calculates the window height itself.
-.np
 .endnote
 The _wpi_cvt* macros are used for converting coordinates between the two
-target systems.  For PM, calling the macros once will convert the y values
-passed in from Windows coordinates to the equivalent PM coordinates.  In
-some instances, coordinates may be stored differently for the different
+target systems.
+For PM, calling the macros once will convert the y values passed in from
+Windows coordinates to the equivalent PM coordinates.
+In some instances, coordinates may be stored differently for the different
 platforms (for example when the coordinates are established by a detection
-of a WM_MOUSEMOVE).  Be sure the _wpi_cvt* routines are only used when the
-values will be in Windows coordinates.  For example, drawing a rectangle
-according to the coordinates determined from a WM_MOUSEMOVE would not
-warrant a _wpi_cvt* call.  For Windows, these macros do not alter the y
-values.  The _wpi_cvt*_wanchor macros can be used to place a window on the
-desktop.  The point passed in can be in Windows coordinates and the macro
-will convert the point to PM coordinates.
+of a WM_MOUSEMOVE).
+Be sure the _wpi_cvt* routines are only used when the values will be in
+Windows coordinates.
+For example, drawing a rectangle according to the coordinates determined from
+a WM_MOUSEMOVE would not warrant a _wpi_cvt* call.
+For Windows, these macros do not alter the y values.
+The _wpi_cvt*_wanchor macros can be used to place a window on the desktop.
+The point passed in can be in Windows coordinates and the macro will convert
+the point to PM coordinates.
 .*
 .section Presentation Spaces and Device Contexts
 .*
@@ -408,26 +395,24 @@ device contexts:
 .note _wpi_getpres( hwnd )
 .np
 This returns the presentation space associated with the window handle.
-For Windows this is simply GetDC.  hwnd can be HWND_DESKTOP (which is the
-same as NULL).
-.np
+For Windows this is simply GetDC.
+hwnd can be HWND_DESKTOP (which is the same as NULL).
 .note _wpi_releasepres( hwnd, pres )
 .np
 This releases the presentation space associated with the given window.
 In Windows this is a ReleaseDC.
-.np
 .note _wpi_createcompatiblepres( pres, hab, &hdc )
 .np
 For PM this macro creates and returns a presentation space that is
-compatible with the one given.  It also creates a device context which is
-required when deleting the presentation space.  For normal drawing, the hdc
-is not used.  For Windows this simply performs a CreateCompatibleDC.
-.np
+compatible with the one given.
+It also creates a device context which is required when deleting the
+presentation space.
+For normal drawing, the hdc is not used.
+For Windows this simply performs a CreateCompatibleDC.
 .note _wpi_deletecompatiblepres( mempres, hdc )
 .np
 This function deletes the presentation space and for PM, the device
 context handle.
-.np
 .endnote
 Creating a compatible presentation space handle may appear a little confusing.
 First, recall that the Windows steps to creating a compatible presentation
@@ -572,23 +557,19 @@ WPI also has the following routines:
 .note _wpi_selectpen( pres, hpen )
 .np
 This routine selects the pen associated with hpen into the presentation space.
-Space for the old pen is allocated and returned from the function.  The old
-pen can be global if necessary.
-.np
+Space for the old pen is allocated and returned from the function.
+The old pen can be global if necessary.
 .note _wpi_getoldpen( pres, holdpen )
 .np
 This routine sets the presentation space attributes for the old pen and frees
 the memory associated with the old pen.
-.np
 .note _wpi_selectbrush( pres, hbrush )
 .np
 This routine is the same as _wpi_selectpen except for brushes.
-.np
 .note _wpi_getoldbrush( pres, holdbrush )
 .np
 This routine sets the presentation space attributes for the old brush and
 frees the memory associeated with the old brush.
-.np
 .endnote
 The difference between _wpi_selectobject and _wpi_selectpen cannot be
 over-emphasized!  The points to consider when using _wpi_selectobject are:
@@ -648,54 +629,47 @@ pens and brushes:
 .note _wpi_createpen( type, width, colour )
 .np
 In Windows, this creates a pen with the specified pen style (PS_*), width
-and colour.  In PM this  allocates space for the object structure and sets
-the type, width and foreground colour for the pen.  The pen is returned by
-the function.
-.np
+and colour.
+In PM this  allocates space for the object structure and sets the type,
+width and foreground colour for the pen.
+The pen is returned by the function.
 .note _wpi_createnullpen( )
 .np
-Creates and returns a NULL pen (ie. invisible pen).  Windows version simply
-gets the NULL stock pen.
-.np
+Creates and returns a NULL pen (ie. invisible pen).
+Windows version simply gets the NULL stock pen.
 .note _wpi_createnullbrush( )
 .np
-Creates and returns a NULL brush.  Windows version simply gets the NULL
-stock brush.
-.np
+Creates and returns a NULL brush.
+Windows version simply gets the NULL stock brush.
 .note _wpi_createsolidbrush( colour )
 .np
-In Windows this returns a solid brush with colour colour.  In PM this
-allocates space for the object structure and sets the foreground colour for
-the brush.
-.np
+In Windows this returns a solid brush with colour colour.
+In PM this allocates space for the object structure and sets the foreground
+colour for the brush.
 .note _wpi_createpatternbrush( bitmap )
 .np
 Returns a pattern brush using bitmap as the pattern.
-.np
 .note _wpi_deletepen( pen )
 .np
-In Windows this deletes the pen object.  In PM this frees the memory
-associated with pen.
-.np
+In Windows this deletes the pen object.
+In PM this frees the memory associated with pen.
 .note _wpi_deletebrush( brush )
 .np
-In Windows this deletes the brush object.  In PM this frees the memory
-associated with brush.
-.np
+In Windows this deletes the brush object.
+In PM this frees the memory associated with brush.
 .note _wpi_deletenullpen( pen )
 .np
-For PM this deletes the NULL pen.  This does nothing in Windows.
-.np
+For PM this deletes the NULL pen.
+This does nothing in Windows.
 .note _wpi_deletenullbrush( brush )
 .np
-For PM this deletes the NULL brush.  This does nothing in Windows.
-.np
+For PM this deletes the NULL brush.
+This does nothing in Windows.
 .note _wpi_selectobject( pres, hobject )
 .np
 This routine selects a pen, brush or bitmap into the presentation space.
 The PM version performs an alloca to allocate space for the old object which
 is returned.
-.np
 .endnote
 There may be more functions than are presented here.  If the desired routine
 does not appear in this list, search for it in wpi_os2.h and if it does not
@@ -805,44 +779,36 @@ The following WPI routines handle bitmaps:
 .np
 This routine returns a bitmap compatible with the given presentation space
 (HDC for Windows) and having the specified dimensions.
-.np
 .note _wpi_createbitmap( width, height, planes, bitcount, &bits )
 .np
-This routine returns a bitmap with the attributes given in the parameter
-list.  Like Windows, if bits is NULL then the bitmap is left uninitialized.
-.np
+This routine returns a bitmap with the attributes given in the parameter list.
+Like Windows, if bits is NULL then the bitmap is left uninitialized.
 .note _wpi_deletebitmap(bmp)
 .np
-Deletes the given bitmap.  The bitmap must have been created by a WPI
-function.
-.np
+Deletes the given bitmap.
+The bitmap must have been created by a WPI function.
 .note _wpi_getbitmapbits( hbitmap, size, &bits )
 .np
-Performs the same action as the Windows GetBitmapBits.  The bitmap must be
-created by a WPI routine.
-.np
+Performs the same action as the Windows GetBitmapBits.
+The bitmap must be created by a WPI routine.
 .note _wpi_setbitmapbits( hbitmap, size, &bits )
 .np
-Performs the same action as the Windows SetBitmapBits.  The bitmap must be
-created by a WPI routine.
-.np
+Performs the same action as the Windows SetBitmapBits.
+The bitmap must be created by a WPI routine.
 .note _wpi_selectobject( hpres, hobj )
 .np
 This will select the bitmap (or pen or brush) into the presentation space.
-For PM, the old bitmap gets space allocated for it and is returned.  It
-will be freed when the routine is exited.
-.np
+For PM, the old bitmap gets space allocated for it and is returned.
+It will be freed when the routine is exited.
 .note _wpi_selectbitmap( hpres, hbitmap )
 .np
-This will select the bitmap into the presentation space.  In PM, space is
-allocated for the old bitmap handle (which is return) and will not be freed
-until a call to _wpi_getoldbitmap.
-.np
+This will select the bitmap into the presentation space.
+In PM, space is allocated for the old bitmap handle (which is return) and
+will not be freed until a call to _wpi_getoldbitmap.
 .note _wpi_getoldbitmap( hpres, holdbitmap )
 .np
-This will select the old bitmap into the presentation space.  For PM this
-frees the memory associated with the old bitmap.
-.np
+This will select the old bitmap into the presentation space.
+For PM this frees the memory associated with the old bitmap.
 .endnote
 This again, is merely a subset of the bitmap functions available in WPI—many
 other Windows APIs have been converted to WPI.  If the desired function
@@ -889,15 +855,16 @@ information:
 .begnote $setptnt 3
 .note _wpi_getbitmapparms(hbitmap, &cx, &cy, &planes, &bitcount, &bitspixel)
 .np
-Takes the bitmap handle and returns the information about the bitmap.  NULL
-can be passed to any parameters not desired.  The bitspixel parameter will
-always be set to 0 in PM because that information is not available under PM.
-.np
+Takes the bitmap handle and returns the information about the bitmap.
+NULL can be passed to any parameters not desired.
+The bitspixel parameter will always be set to 0 in PM because that information
+is not available under PM.
 .note _wpi_getbitmapstruct(hbitmap, &bitmap_info)
 .np
 This routine fills the bitmap_info structure (should be type WPI_BITMAP)
-according to the attributes of the given bitmap handle.  This routine may
-be usefull when a structure is needed to pass to another WPI routine.
+according to the attributes of the given bitmap handle.
+This routine may be usefull when a structure is needed to pass to another WPI
+routine.
 .endnote
 .*
 .section Using WPI to Draw
@@ -913,56 +880,51 @@ routines:
 .note _wpi_moveto(pres, &pt)
 .np
 Moves to the point on pres indicated by pt.
-.np
 .note _wpi_lineto(pres, &pt)
 .np
 Draws a line from the current position to the indicated point.
-.np
 .note _wpi_setpixel(pres, x, y, colour)
 .np
 Performs the same as the Windows SetPixel routine.
-.np
 .note _wpi_getpixel(pres, x, y)
 .np
 Performs the same as the Windows GetPixel.
-.np
 .note _wpi_rectangle(pres, left, top, right, bottom)
 .np
-Draws a rectangle.  Note that top is both top in Windows and PM (ie not
-bottom in PM).  Hence _wpi_cvt* macros may prove useful before using
-this macro.
-.np
+Draws a rectangle.
+Note that top is both top in Windows and PM (ie not bottom in PM).
+Hence _wpi_cvt* macros may prove useful before using this macro.
 .note _wpi_ellipse(pres, left, top, right, bottom)
 .np
-Draws an ellipse inside the box implied by the dimensions.  Note again that
-top < bottom for Windows and top > bottom for PM is assumed.
-.np
+Draws an ellipse inside the box implied by the dimensions.
+Note again that top < bottom for Windows and top > bottom for PM is assumed.
 .note _wpi_arc(pres, x1, y1, x2, y2, x3, y3, x4, y4)
 .np
 Draws an arc (as it does in Windows) defined by the given points.
-.np
 .note _wpi_bitblt(dest, x1, y1, cx, cy, src, x2, y2, rop)
 .np
-Identical to Windows BitBlt.  PM version assumes (x1, y1) is actually the
-bottom left corner of the area and uses Windows predefined ROP codes.
-.np
+Identical to Windows BitBlt.
+PM version assumes (x1, y1) is actually the bottom left corner of the area and
+uses Windows predefined ROP codes.
 .note _wpi_patblt(dest, x1, y1, cx, cy, rop)
 .np
-Identical to Windows PatBlt.  Same comments as _wpi_bitblt.
-.np
+Identical to Windows PatBlt.
+Same comments as _wpi_bitblt.
 .note _wpi_stretchblt(dest, x1, y1, cx1, cy1, src, x2, y2, cx2, cy2, rop)
 .np
-Identical to Windows StretchBlt.  Same comments as _wpi_bitblt.
-.np
+Identical to Windows StretchBlt.
+Same comments as _wpi_bitblt.
 .endnote
-Note the difference in the first two routines listed.  They take a WPI_POINT
-instead of x and y values.  It should also be emphasized that the rectangle
-and ellipse macros for PM expect top > bottom.  This is important because of
-the way PM draws these images.  Windows draws up to but not including the
-right and bottom coordinates.  PM actually includes the right and bottom
-coordinates.  WPI attempts to handle this difference and in so doing,
-requires that top actually be the top.  Note the difference between the
-Windows code and converted code in this example:
+Note the difference in the first two routines listed.
+They take a WPI_POINT instead of x and y values.
+It should also be emphasized that the rectangle and ellipse macros for PM
+expect top > bottom.
+This is important because of the way PM draws these images.
+Windows draws up to but not including the right and bottom coordinates.
+PM actually includes the right and bottom coordinates.
+WPI attempts to handle this difference and in so doing, requires that top
+actually be the top.
+Note the difference between the Windows code and converted code in this example:
 .np
 Windows Code:
 .np
@@ -1026,30 +988,25 @@ following macros can be used:
 .note _wpi_createfont(pres, &wlfont, &hfont)
 .np
 For Windows this is the same as CreateFontIndirect with wlfont as the logfont.
-The font handle is returned in hfont.  For PM this creates a font from the
-specifed WPI_LOGFONT and returns the font handle (the value:  1) in hfont.
+The font handle is returned in hfont.
+For PM this creates a font from the specifed WPI_LOGFONT and returns the font
+handle (the value:  1) in hfont.
 The font can only be used in the given presentation space.
-.np
 .note _wpi_getdeffm(wlfont)
 .np
 Sets the WPI_LOGFONT to its default values.
-.np
 .note _wpi_deletefont(hfont)
 .np
 Deletes the font for Windows and resets the font identifier for PM.
-.np
 .note _wpi_getsystemfont()
 .np
 Returns the system font for Windows and the default font identifier for PM.
-.np
 .note _wpi_selectfont(pres, hfont, &oldfont)
 .np
 Selects the given font into the given presentation space.
-.np
 .note _wpi_getoldfont(pres, oldfont)
 .np
 Selects the old font into the given presentation space.
-.np
 .endnote
 In addition to these macros, there are macros to set the font to italics,
 bold, strikeout, and more.  Moreover, macros exist to set the font height,
@@ -1065,21 +1022,19 @@ purpose of the WPI_FONT data type.  The following macros handle WPI_FONTs:
 .begnote $setptnt 3
 .note _wpi_createwpifont(&wlfont, wfont)
 .np
-Creates a WPI_FONT.  For Windows, this is the same as a normal font creation.
-.np
+Creates a WPI_FONT.
+For Windows, this is the same as a normal font creation.
 .note _wpi_selectwpifont(pres, wfont)
 .np
-Windows version selects the font into the DC.  PM allocates memory for the
-old font and sets the font of the given pres to be that of wfont.
-.np
+Windows version selects the font into the DC.
+PM allocates memory for the old font and sets the font of the given pres
+to be that of wfont.
 .note _wpi_getoldwpifont(pres, oldfont)
 .np
 Restores the font of pres to be the old font and frees the old font memory.
-.np
 .note _wpi_deletewpifont(wfont)
 .np
 Deletes the font associated with wfont.
-.np
 .endnote
 A WPI_FONT for PM is actually a pointer.  The creation macro allocates space
 for the structure on the PM platform and the deletion frees the space.
@@ -1433,25 +1388,21 @@ old attribute fields (MIA_).  The following routines handle menu operations:
 .begnote $setptnt 3
 .note _wpi_getmenu( hwnd )
 .np
-This returns the handle of the menu.  Note that for PM, hwnd must be a frame
-window handle.
-.np
+This returns the handle of the menu.
+Note that for PM, hwnd must be a frame window handle.
 .note _wpi_getcurrentsysmenu( hwnd )
 .np
 Returns the current system menu for the given frame window handle.
-.np
 .note _wpi_checkmenuitem( hmenu, id, fchecked, fby_pos )
 .np
-This checks a menu item identified by id.  The fchecked variable should be
-either TRUE or FALSE (whether the item should be checked or unchecked) and
-by_pos indicates whether the id indicates the position (TRUE) or the actual
-identifier.
-.np
+This checks a menu item identified by id.
+The fchecked variable should be either TRUE or FALSE (whether the item should
+be checked or unchecked) and by_pos indicates whether the id indicates the
+position (TRUE) or the actual identifier.
 .note _wpi_enablemenuitem( hmenu, id, fenabled, fby_pos )
 .np
 Similar to _wpi_checkmenuitem except it indicates whether the item should
 be enabled (TRUE) or grayed (FALSE).
-.np
 .endnote
 Once again, this is only a subset of the available menu functions.
 .*
