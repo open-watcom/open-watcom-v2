@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -265,6 +266,7 @@ void ipf_trans_line( char *line_buf, section_def *section )
     case WHP_DLIST_START:
     case WHP_OLIST_START:
     case WHP_SLIST_START:
+        NewList( ptr, 0 );
         switch( ch ) {
         case WHP_OLIST_START:
             trans_add_str( ":ol", section );
@@ -314,6 +316,7 @@ void ipf_trans_line( char *line_buf, section_def *section )
             break;
         }
         Blank_line_sfx = false;
+        PopList();
         return;
     case WHP_LIST_ITEM:
     case WHP_DLIST_TERM:
@@ -436,10 +439,12 @@ void ipf_trans_line( char *line_buf, section_def *section )
             break;
         case WHP_LIST_ITEM:
             /* list item */
+            Curr_list->number++;
             line_len += trans_add_str( ":li.", section );
             ptr = skip_blanks( ptr + 1 );
             break;
         case WHP_DLIST_DESC:
+            Curr_list->number++;
             trans_add_str( ":dd.", section );
             ptr = skip_blanks( ptr + 1 );
             break;

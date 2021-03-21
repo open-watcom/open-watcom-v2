@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,38 +55,11 @@ typedef enum {
     LPOSTFIX_TERM,
 } line_postfix;
 
-typedef enum {
-    LIST_SPACE_COMPACT,
-    LIST_SPACE_STANDARD,
-} list_space;
-
-typedef enum {
-    LIST_TYPE_NONE,
-    LIST_TYPE_UNORDERED,
-    LIST_TYPE_ORDERED,
-    LIST_TYPE_SIMPLE,
-    LIST_TYPE_DEFN
-} list_type;
-
-typedef struct {
-    list_type           type;
-    int                 number;
-    int                 prev_indent;
-    list_space          compact;
-} list_def;
-
 static line_prefix      Line_prefix = LPREFIX_NONE;
 static line_postfix     Line_postfix = LPOSTFIX_NONE;
 
 static char             Reset_font_str[] = "\\plain\\f2\\fs20";
 static char             Rtf_ctl_prefix[] = "{\\footnote \\pard\\plain \\sl240 \\fs20 ";
-
-
-static list_def         Lists[MAX_LISTS] = {
-    { LIST_TYPE_NONE,   0,      0,  LIST_SPACE_COMPACT }            // list base
-};
-static int              List_level = 0;
-static list_def         *Curr_list = &Lists[0];
 
 static bool             Blank_line = false;
 static int              Curr_indent = 0;
@@ -175,52 +149,6 @@ static size_t trans_add_char_rtf( char ch, section_def *section )
     return( trans_add_str( buf, section ) );
 }
 
-static void new_list( const char *ptr )
-/*************************************/
-{
-    list_type   type;
-
-    ++List_level;
-    if( List_level == MAX_LISTS ) {
-        error( ERR_MAX_LISTS );
-    }
-    Curr_list = &Lists[List_level];
-    switch( ptr[0] ) {
-    case WHP_LIST_START:
-        type = LIST_TYPE_UNORDERED;
-        break;
-    case WHP_DLIST_START:
-        type = LIST_TYPE_DEFN;
-        break;
-    case WHP_OLIST_START:
-        type = LIST_TYPE_ORDERED;
-        break;
-    case WHP_SLIST_START:
-        type = LIST_TYPE_SIMPLE;
-        break;
-    default:
-        type = LIST_TYPE_NONE;
-        break;
-    }
-    Curr_list->type = type;
-    Curr_list->number = 1;
-    Curr_list->prev_indent = Curr_indent;
-    Curr_list->compact = LIST_SPACE_STANDARD;
-    if( ptr[1] == WHP_LIST_COMPACT ) {
-        Curr_list->compact = LIST_SPACE_COMPACT;
-    } else {
-        Curr_list->compact = LIST_SPACE_STANDARD;
-    }
-}
-
-static void pop_list( void )
-/**************************/
-{
-    Curr_indent = Curr_list->prev_indent;
-    --List_level;
-    Curr_list = &Lists[List_level];
-}
-
 static void add_tabxmp( char *tab_line, section_def *section )
 /************************************************************/
 {
@@ -286,7 +214,7 @@ void rtf_trans_line( char *line_buf, section_def *section )
     ch = *ptr;
     indent = 0;
 
-    if( Blank_line && ( ch != WHP_LIST_ITEM || Curr_list->compact != LIST_SPACE_COMPACT ) ) {
+    if( Blank_line && ( ch != WHP_LIST_ITEM || !Curr_list->compact ) ) {
         Blank_line = false;
     }
     switch( ch ) {
@@ -327,7 +255,7 @@ void rtf_trans_line( char *line_buf, section_def *section )
             }
             break;
         }
-        new_list( ptr );
+        NewList( ptr, Curr_indent );
         Curr_indent += indent;
         if( ch != WHP_SLIST_START || indent != 0 ) {
             Line_prefix |= LPREFIX_S_LIST;
@@ -351,7 +279,7 @@ void rtf_trans_line( char *line_buf, section_def *section )
         if( ch != WHP_SLIST_END || Curr_list->prev_indent != Curr_indent ) {
             Line_prefix |= LPREFIX_E_LIST;
         }
-        pop_list();
+        Curr_indent = PopList();
         return;
     case WHP_DLIST_DESC:
         if( *skip_blanks( ptr + 1 ) == '\0' ) {
@@ -494,13 +422,13 @@ void rtf_trans_line( char *line_buf, section_def *section )
             ptr = ctx_text + strlen( ctx_text ) + 1;
             break;
         case WHP_LIST_ITEM:
+            Curr_list->number++;
             if( Curr_list->type != LIST_TYPE_SIMPLE ) {
                 if( Curr_list->type == LIST_TYPE_UNORDERED ) {
                     sprintf( buf, "\\fi-%d\\f1 \\'b7\\f2\\tab ", INDENT_INC );
                 } else if( Curr_list->type == LIST_TYPE_ORDERED ) {
                     /* ordered list type */
                     sprintf( buf, "\\f2\\fi-%d\\b %d.\\plain\\f2\\fs20\\tab ", INDENT_INC, Curr_list->number );
-                    ++Curr_list->number;
                 }
                 trans_add_str( buf, section );
                 Line_prefix |= LPREFIX_FIX_FI;
@@ -510,6 +438,7 @@ void rtf_trans_line( char *line_buf, section_def *section )
             break;
         case WHP_DLIST_DESC:
             /* we don't have to do anything with this for RTF. Ignore it */
+            Curr_list->number++;
             ptr = skip_blanks( ptr + 1 );
             break;
         case WHP_DLIST_TERM:

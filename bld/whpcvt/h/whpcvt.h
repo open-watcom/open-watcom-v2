@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,6 +44,8 @@
 
 /* for testing */
 //#define static
+
+#define MAX_LISTS               20
 
 #define _min( a, b )            ( a > b ) b ? a
 #define _max( a, b )            ( a > b ) a ? b
@@ -116,16 +118,22 @@
 #define NUM_TAB_STOPS           15  // for RTF only
 
 /**** Error constants ****/
+#define ERROR_DEFS() \
+    ERROR_DEF( ERR_NO_TOPIC,    "Expecting topic definition, or topic section" ) \
+    ERROR_DEF( ERR_CTX_EXISTS,  "Context topic already exists" ) \
+    ERROR_DEF( ERR_NO_TITLE,    "A defined context topic must have a title" ) \
+    ERROR_DEF( ERR_NO_MEMORY,   "Out of memory" ) \
+    ERROR_DEF( ERR_BAD_LINK_DFN, "Bad cross-reference (hyperlink) or definition" ) \
+    ERROR_DEF( ERR_MAX_LISTS,   "Maximum of 20 nested numbered lists allowed" ) \
+    ERROR_DEF( ERR_UNBAL_LIST,  "Unbalanced list start/end" ) \
+    ERROR_DEF( ERR_UNDEF_LINK,  "Cross-reference (hyperlink) to undefined topic" ) \
+    ERROR_DEF( ERR_EMPTY_LINK,  "Cross-reference (hyperlink) to an empty topic (use -lk option)" ) \
+    ERROR_DEF( ERR_BAD_ARGS,    "Invalid number of parameters." )
+
 enum {
-    ERR_NO_TOPIC,
-    ERR_CTX_EXISTS,
-    ERR_NO_TITLE,
-    ERR_NO_MEMORY,
-    ERR_BAD_LINK_DFN,
-    ERR_MAX_LISTS,
-    ERR_UNDEF_LINK,
-    ERR_EMPTY_LINK,
-    ERR_BAD_ARGS
+    #define ERROR_DEF(a,b)  a,
+    ERROR_DEFS()
+    #undef ERROR_DEF
 };
 
 
@@ -134,6 +142,14 @@ enum {
     TITLE_FMT_LINE,
     TITLE_FMT_NOLINE
 };
+
+typedef enum {
+    LIST_TYPE_NONE,
+    LIST_TYPE_UNORDERED,
+    LIST_TYPE_ORDERED,
+    LIST_TYPE_SIMPLE,
+    LIST_TYPE_DEFN
+} list_type;
 
 /**** Typedefs for converter ****/
 
@@ -195,6 +211,13 @@ typedef struct link_def {
     int                 line_num;
 } link_def;
 
+typedef struct {
+    list_type           type;
+    int                 number;
+    int                 prev_indent;
+    bool                compact;
+} list_def;
+
 /**** Globals ****/
 #ifndef WHPCVT_GBL
 #define WHPCVT_GBL  extern
@@ -246,6 +269,8 @@ extern const char       Fonttype_symbol[];
 extern const char       Fonttype_helv[];
 extern const char       Fonttype_courier[];
 
+extern list_def         *Curr_list;
+
 WHPCVT_GBL bool         Ipf_or_Html_Real_font;
 WHPCVT_GBL char         *Ipf_or_Html_title;
 
@@ -273,6 +298,8 @@ extern void         add_link( const char *link_name );
 extern ctx_def      *find_ctx( const char *ctx_name );
 extern char         *whole_keyword_line( char *ptr );
 extern bool         is_special_topic( ctx_def *ctx, bool dump_popup );
+extern void         NewList( const char *ptr, int indent );
+extern int          PopList( void );
 
 extern void         rtf_init_whp( void );
 extern void         rtf_trans_line( char *line_buf, section_def *section );

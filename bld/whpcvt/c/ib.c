@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -91,37 +91,11 @@ typedef enum {
 // Some stuff for tab examples:
 #define MAX_TABS                100     // up to 100 tab stops
 
-typedef enum {
-    LIST_SPACE_COMPACT,
-    LIST_SPACE_STANDARD,
-} list_space;
-
-typedef enum {
-    LIST_TYPE_NONE,
-    LIST_TYPE_UNORDERED,
-    LIST_TYPE_ORDERED,
-    LIST_TYPE_SIMPLE,
-    LIST_TYPE_DEFN
-} list_type;
-
-typedef struct {
-    list_type           type;
-    int                 number;
-    int                 prev_indent;
-    list_space          compact;
-} list_def;
-
 static unsigned         Tab_list[MAX_TABS];
 static int              tabs_num = 0;
 
 // turns off bold and underline
 static char Reset_Style[] = STR_BOLD_OFF STR_UNDERLINE_OFF;
-
-static list_def         Lists[MAX_LISTS] = {
-    { LIST_TYPE_NONE,   0,      0,  LIST_SPACE_COMPACT },       // list base
-};
-static int              List_level = 0;
-static list_def         *Curr_list = &Lists[0];
 
 static bool             Blank_line = false;
 static int              Curr_indent = 0;
@@ -396,51 +370,6 @@ static size_t trans_add_str_wrap( const char *str, section_def *section )
     return( len );
 }
 
-static void new_list( const char *ptr )
-/*************************************/
-{
-    list_type   type;
-
-    ++List_level;
-    if( List_level == MAX_LISTS ) {
-        error( ERR_MAX_LISTS );
-    }
-    Curr_list = &Lists[List_level];
-    switch( ptr[0] ) {
-    case WHP_LIST_START:
-        type = LIST_TYPE_UNORDERED;
-        break;
-    case WHP_DLIST_START:
-        type = LIST_TYPE_DEFN;
-        break;
-    case WHP_OLIST_START:
-        type = LIST_TYPE_ORDERED;
-        break;
-    case WHP_SLIST_START:
-        type = LIST_TYPE_SIMPLE;
-        break;
-    default:
-        type = LIST_TYPE_NONE;
-        break;
-    }
-    Curr_list->type = type;
-    Curr_list->number = 1;
-    Curr_list->prev_indent = Curr_indent;
-    if( ptr[1] == WHP_LIST_COMPACT ) {
-        Curr_list->compact = LIST_SPACE_COMPACT;
-    } else {
-        Curr_list->compact = LIST_SPACE_STANDARD;
-    }
-}
-
-static void pop_list( void )
-/**************************/
-{
-    Curr_indent = Curr_list->prev_indent;
-    --List_level;
-    Curr_list = &Lists[List_level];
-}
-
 static void read_tabs( char *tab_line )
 /*************************************/
 {
@@ -519,7 +448,7 @@ void ib_trans_line( char *line_buf, section_def *section )
     Cursor_X = 0;
     R_Chars = 0;
 
-    if( Blank_line && ( ch != WHP_LIST_ITEM || Curr_list->compact != LIST_SPACE_COMPACT ) ) {
+    if( Blank_line && ( ch != WHP_LIST_ITEM || !Curr_list->compact ) ) {
         Blank_line = false;
     }
     switch( ch ) {
@@ -564,7 +493,7 @@ void ib_trans_line( char *line_buf, section_def *section )
                 indent = 0;
             }
         }
-        new_list( ptr );
+        NewList( ptr, Curr_indent );
         Curr_indent += indent;
         if( ch == WHP_DLIST_START ) {
             if( ptr[1] == WHP_LIST_COMPACT )
@@ -582,7 +511,7 @@ void ib_trans_line( char *line_buf, section_def *section )
     case WHP_DLIST_END:
     case WHP_OLIST_END:
     case WHP_SLIST_END:
-        pop_list();
+        Curr_indent = PopList();
         return;
     case WHP_DLIST_TERM:
         Curr_indent -= Text_Indent;
@@ -713,6 +642,7 @@ void ib_trans_line( char *line_buf, section_def *section )
             trans_add_char( IB_TEMP_HLINK , section );
             break;
         case WHP_LIST_ITEM:
+            Curr_list->number++;
             if( Curr_list->type != LIST_TYPE_SIMPLE ) {
                 buf[0] = '\0';
                 if( Curr_list->type == LIST_TYPE_UNORDERED ) {
@@ -724,7 +654,6 @@ void ib_trans_line( char *line_buf, section_def *section )
                 } else if( Curr_list->type == LIST_TYPE_ORDERED ) {
                     /* ordered list type */
                     sprintf( buf, "%*d. ", Text_Indent - 2, Curr_list->number );
-                    ++Curr_list->number;
                 }
                 trans_add_str_wrap( buf, section );
             }
@@ -732,6 +661,7 @@ void ib_trans_line( char *line_buf, section_def *section )
             ptr = skip_blanks( ptr + 1 );
             break;
         case WHP_DLIST_DESC:
+            Curr_list->number++;
             ptr = skip_blanks( ptr + 1 );
             break;
         case WHP_DLIST_TERM:

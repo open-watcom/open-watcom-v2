@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -271,6 +271,7 @@ void html_trans_line( char *line_buf, section_def *section )
     case WHP_LIST_START:
     case WHP_DLIST_START:
     case WHP_SLIST_START:
+        NewList( ptr, 0 );
         switch( ch ) {
         case WHP_OLIST_START:
             trans_add_str( "<ol", section );
@@ -285,21 +286,8 @@ void html_trans_line( char *line_buf, section_def *section )
             trans_add_str( "<ul style=\"list-style-type:none;\"", section );
             break;
         }
-//        if( ptr[1] == WHP_LIST_COMPACT )
-//            trans_add_str( " compact", section );
         trans_add_str_nl( ">", section );
         Blank_line_pfx = false;
-        if( ch == WHP_DLIST_START ) {
-            if( ptr[1] == WHP_LIST_COMPACT )
-                ptr++;
-            ptr = skip_blanks( ptr + 1 );
-            if( *ptr != '\0' ) {
-                /* due to a weakness in GML, the definition term must be
-                   allowed on the same line as the definition tag. So
-                   if its there, continue */
-                break;
-            }
-        }
         return;
     case WHP_OLIST_END:
     case WHP_LIST_END:
@@ -318,6 +306,7 @@ void html_trans_line( char *line_buf, section_def *section )
             break;
         }
         Blank_line_sfx = false;
+        PopList();
         return;
     case WHP_LIST_ITEM:
     case WHP_DLIST_TERM:
@@ -447,10 +436,12 @@ void html_trans_line( char *line_buf, section_def *section )
             break;
         case WHP_LIST_ITEM:
             /* list item */
+            Curr_list->number++;
             line_len += trans_add_str( "<li>", section );
             ptr = skip_blanks( ptr + 1 );
             break;
         case WHP_DLIST_DESC:
+            Curr_list->number++;
             trans_add_str( "<dd>", section );
             ptr = skip_blanks( ptr + 1 );
             break;
