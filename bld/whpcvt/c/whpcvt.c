@@ -1933,8 +1933,8 @@ void NewList( const char *ptr, int indent )
     if( List_level + 1 == MAX_LISTS ) {
         error( ERR_MAX_LISTS );
     }
-    Curr_list = &Lists[List_level];
     List_level++;
+    Curr_list = &Lists[List_level];
     switch( ptr[0] ) {
     case WHP_LIST_START:
         type = LIST_TYPE_UNORDERED;

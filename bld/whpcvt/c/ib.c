@@ -276,7 +276,7 @@ static size_t trans_add_char_wrap( char ch, section_def *section )
 
     // if this assertion fails then the wrapping code will break. Hopefully
     // this cannot happen...
-    assert( Cursor_X <= MY_MARGIN );
+//    assert( Cursor_X <= MY_MARGIN );
 
     // if we need to wrap...
     if( Cursor_X == MY_MARGIN ) {
