@@ -34,8 +34,6 @@
 #include "clibext.h"
 
 
-#define MAX_LISTS       20
-
 #define RTF_CHAR_SIZE   180
 
 #define RTF_TRANS_LEN   50

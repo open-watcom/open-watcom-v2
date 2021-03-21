@@ -36,8 +36,6 @@
 #include "clibext.h"
 
 
-#define MAX_LISTS       20
-
 typedef enum {
     LPOSTFIX_NONE,
     LPOSTFIX_TERM,
