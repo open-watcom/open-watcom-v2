@@ -320,6 +320,7 @@ void ipf_trans_line( char *line_buf, section_def *section )
         return;
     case WHP_LIST_ITEM:
     case WHP_DLIST_TERM:
+    case WHP_DLIST_DESC:
         /* eat blank lines before list items and terms */
         Blank_line_pfx = false;
         break;
@@ -367,10 +368,18 @@ void ipf_trans_line( char *line_buf, section_def *section )
 
     Blank_line_sfx = true;
 
-    ch = *ptr;
-    if( ch != WHP_LIST_ITEM && ch != WHP_DLIST_TERM && ch != WHP_DLIST_DESC && !Tab_xmp ) {
-        /* a .br in front of li and dt would generate extra spaces */
-        line_len += trans_add_str_nl( ".br", section );
+    if( !Tab_xmp ) {
+        ch = *ptr;
+        switch( ch ) {
+        case WHP_LIST_ITEM:
+        case WHP_DLIST_TERM:
+        case WHP_DLIST_DESC:
+            break;
+        default:
+            /* a .br in front of li and dt would generate extra spaces */
+            line_len += trans_add_str_nl( ".br", section );
+            break;
+        }
     }
 
     term_fix = false;
@@ -447,6 +456,7 @@ void ipf_trans_line( char *line_buf, section_def *section )
             Curr_list->number++;
             trans_add_str( ":dd.", section );
             ptr = skip_blanks( ptr + 1 );
+            Blank_line_sfx = false;
             break;
         case WHP_DLIST_TERM:
             /* definition list term */
