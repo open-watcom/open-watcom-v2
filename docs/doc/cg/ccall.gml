@@ -76,7 +76,9 @@
 .ix 'calling conventions'
 .*
 .if &e'&dohelp eq 0 .do begin
+.*
 .section Introduction
+.*
 .do end
 .el .do begin
 .   .if '&machine' eq '8086' .do begin
