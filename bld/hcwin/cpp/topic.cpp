@@ -387,17 +387,9 @@ void TextHeader::reset()
 
 //  The bitfields corresponding to paragraph attributes.
 const uint_32 TextHeader::_parBits[] = {
-    0x00020000,
-    0x00040000,
-    0x00080000,
-    0x00100000,
-    0x00200000,
-    0x00400000,
-    0x01000000,
-    0x02000000,
-    0x04000000,
-    0x08000000,
-    0x10000000
+    #define PAR_FLAGS_DEF(num,bits) bits,
+    PAR_FLAGS_DEFS()
+    #undef PAR_FLAGS_DEF
 };
 
 
@@ -571,13 +563,16 @@ void TextHeader::clearPar()
 
 // The flag values corresponding to text attributes.
 const uint_8 TextHeader::_attrBits[] = {
-    0x80, 0x81, 0x82, 0x83, 0x86, 0x87, 0x88, 0x89, 0xC8, 0xCC,
-    0xE2, 0xE3, 0xE6, 0xE7, 0xEA, 0xEB, 0xEE, 0xEF, 0xFF
+    #define FONT_FLAGS_DEF(num,bits,sizes) bits,
+    FONT_FLAGS_DEFS()
+    #undef FONT_FLAGS_DEF
 };
 
 // used to calculate the size of a text attribute.
-const int TextHeader::_attrSizes[] = {  3, 1, 1, 1, 9, 9, 9, 1, 3, 3,
-                    5, 5, 5, 5, 7, 7, 7, 7, 1
+const int TextHeader::_attrSizes[] = {
+    #define FONT_FLAGS_DEF(num,bits,sizes) sizes,
+    FONT_FLAGS_DEFS()
+    #undef FONT_FLAGS_DEF
 };
 
 

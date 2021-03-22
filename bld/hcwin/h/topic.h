@@ -60,46 +60,56 @@ enum
 //  FontFlags   --Special text changes.
 //
 
-enum FontFlags
-{
-    TOP_FONT_CHANGE     = 0,
-    TOP_NEW_LINE        ,
-    TOP_NEW_PAR         ,
-    TOP_HTAB            ,
-    TOP_CENT_BITMAP     ,
-    TOP_LEFT_BITMAP     ,
-    TOP_RIGHT_BITMAP    ,
-    TOP_END_LINK        ,
-    TOP_MACRO_LINK      ,
-    TOP_MACRO_INVIS     ,
-    TOP_POPUP_LINK      ,
-    TOP_JUMP_LINK       ,
-    TOP_POPUP_INVIS     ,
-    TOP_JUMP_INVIS      ,
-    TOP_POPUP_FILE      ,
-    TOP_JUMP_FILE       ,
-    TOP_POPUP_FILE_INVIS,
-    TOP_JUMP_FILE_INVIS ,
-    TOP_END
+#define FONT_FLAGS_DEFS() \
+    FONT_FLAGS_DEF( TOP_FONT_CHANGE,      0x80, 3 ) \
+    FONT_FLAGS_DEF( TOP_NEW_LINE,         0x81, 1 ) \
+    FONT_FLAGS_DEF( TOP_NEW_PAR,          0x82, 1 ) \
+    FONT_FLAGS_DEF( TOP_HTAB,             0x83, 1 ) \
+    FONT_FLAGS_DEF( TOP_CENT_BITMAP,      0x86, 9 ) \
+    FONT_FLAGS_DEF( TOP_LEFT_BITMAP,      0x87, 9 ) \
+    FONT_FLAGS_DEF( TOP_RIGHT_BITMAP,     0x88, 9 ) \
+    FONT_FLAGS_DEF( TOP_END_LINK,         0x89, 1 ) \
+    FONT_FLAGS_DEF( TOP_MACRO_LINK,       0xC8, 3 ) \
+    FONT_FLAGS_DEF( TOP_MACRO_INVIS,      0xCC, 3 ) \
+    FONT_FLAGS_DEF( TOP_POPUP_LINK,       0xE2, 5 ) \
+    FONT_FLAGS_DEF( TOP_JUMP_LINK,        0xE3, 5 ) \
+    FONT_FLAGS_DEF( TOP_POPUP_INVIS,      0xE6, 5 ) \
+    FONT_FLAGS_DEF( TOP_JUMP_INVIS,       0xE7, 5 ) \
+    FONT_FLAGS_DEF( TOP_POPUP_FILE,       0xEA, 7 ) \
+    FONT_FLAGS_DEF( TOP_JUMP_FILE,        0xEB, 7 ) \
+    FONT_FLAGS_DEF( TOP_POPUP_FILE_INVIS, 0xEE, 7 ) \
+    FONT_FLAGS_DEF( TOP_JUMP_FILE_INVIS,  0xEF, 7 ) \
+    FONT_FLAGS_DEF( TOP_END,              0xFF, 1 )
+
+enum FontFlags {
+    #define FONT_FLAGS_DEF(num,bits,sizes) num,
+    FONT_FLAGS_DEFS()
+    #undef FONT_FLAGS_DEF
 };
 
 
 //
 //  ParFlags    --Paragraph attribute flags.
 //
+//  The bitfields corresponding to paragraph attributes.
+
+#define PAR_FLAGS_DEFS() \
+    PAR_FLAGS_DEF( TOP_SPACE_BEFORE, 0x00020000 ) \
+    PAR_FLAGS_DEF( TOP_SPACE_AFTER,  0x00040000 ) \
+    PAR_FLAGS_DEF( TOP_LINE_SPACE,   0x00080000 ) \
+    PAR_FLAGS_DEF( TOP_LEFT_INDENT,  0x00100000 ) \
+    PAR_FLAGS_DEF( TOP_RIGHT_INDENT, 0x00200000 ) \
+    PAR_FLAGS_DEF( TOP_FIRST_INDENT, 0x00400000 ) \
+    PAR_FLAGS_DEF( TOP_BORDER,       0x01000000 ) \
+    PAR_FLAGS_DEF( TOP_TAB_STOPS,    0x02000000 ) \
+    PAR_FLAGS_DEF( TOP_RIGHT_JUST,   0x04000000 ) \
+    PAR_FLAGS_DEF( TOP_CENTRE_JUST,  0x08000000 ) \
+    PAR_FLAGS_DEF( TOP_NO_LINE_WRAP, 0x10000000 )
 
 enum ParFlags {
-    TOP_SPACE_BEFORE    = 0,
-    TOP_SPACE_AFTER     ,
-    TOP_LINE_SPACE      ,
-    TOP_LEFT_INDENT     ,
-    TOP_RIGHT_INDENT    ,
-    TOP_FIRST_INDENT    ,
-    TOP_BORDER          ,
-    TOP_TAB_STOPS       ,
-    TOP_RIGHT_JUST      ,
-    TOP_CENTRE_JUST     ,
-    TOP_NO_LINE_WRAP
+    #define PAR_FLAGS_DEF(num,bits) num,
+    PAR_FLAGS_DEFS()
+    #undef PAR_FLAGS_DEF
 };
 
 
