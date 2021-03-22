@@ -310,6 +310,7 @@ void html_trans_line( char *line_buf, section_def *section )
         return;
     case WHP_LIST_ITEM:
     case WHP_DLIST_TERM:
+    case WHP_DLIST_DESC:
         /* eat blank lines before list items and terms */
         Blank_line_pfx = false;
         break;
@@ -444,10 +445,15 @@ void html_trans_line( char *line_buf, section_def *section )
             Curr_list->number++;
             trans_add_str( "<dd>", section );
             ptr = skip_blanks( ptr + 1 );
+            Blank_line_sfx = false;
             break;
         case WHP_DLIST_TERM:
             /* definition list term */
-            line_len += trans_add_str( "<dt>", section );
+            if( Curr_list->number ) {
+                line_len += trans_add_str( "<dt><br>", section );
+            } else {
+                line_len += trans_add_str( "<dt>", section );
+            }
             term_fix = true;
             ptr = skip_blanks( ptr + 1 );
             Blank_line_sfx = false;
