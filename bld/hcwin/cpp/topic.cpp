@@ -253,7 +253,7 @@ class TextHolder
 
 //  TopicLink::TopicLink
 
-TopicLink::TopicLink( uint_32 s ) : _size( 0 ), _isFirstLink( false ), _myData( s )
+TopicLink::TopicLink( uint_32 s ) : _size( s ), _isFirstLink( false ), _myData( s )
 {
     // empty
 }
