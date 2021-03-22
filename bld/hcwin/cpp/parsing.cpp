@@ -561,8 +561,6 @@ void RTFparser::handleCommand()
 
 //  RTFparser::Go   --The parser "main loop".
 
-#define NOT_A_BITMAP ((FontFlags) 0)
-
 #define HARD_SPACE  '\xA0'
 
 void RTFparser::Go()
@@ -1159,7 +1157,7 @@ void RTFparser::handleHidden( bool IsHotLink )
         }
         _topFile->addAttr( TOP_END_LINK );
 
-        if( _linkType != MACRO && ( link_t<TOP_POPUP_FILE || *pfile==TO_WINDOW ) ) {
+        if( _linkType != MACRO && ( link_t < TOP_POPUP_FILE || *pfile == TO_WINDOW ) ) {
             *pfile = '\0';
             _hashFile->recordContext( pstorage );
         }
@@ -1169,7 +1167,7 @@ void RTFparser::handleHidden( bool IsHotLink )
             _curFont = result;
             int attr = _topFile->addAttr( TOP_FONT_CHANGE, _curFont );
             attribs = _fontFile->getAttribs( _curFont );
-            if( attribs & (FNT_UNDERLINE | FNT_STRIKEOUT | FNT_DBL_UNDER ) ) {
+            if( attribs & (FNT_UNDERLINE | FNT_STRIKEOUT | FNT_DBL_UNDER) ) {
                 _hotlinkStart = attr;
             }
         }

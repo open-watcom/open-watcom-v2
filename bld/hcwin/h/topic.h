@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,12 +49,11 @@
 
 // Types of records in the TOPIC file.
 
-enum
-{
+typedef enum {
     TOP_HEADER  = 0x02,         // topic header data
     TOP_TEXT    = 0x20,         // text header data
     TOP_TABLE   = 0x23          // table header data, not implemented yet
-};
+} RecordType;
 
 
 //
@@ -81,11 +81,12 @@ enum
     FONT_FLAGS_DEF( TOP_JUMP_FILE_INVIS,  0xEF, 7 ) \
     FONT_FLAGS_DEF( TOP_END,              0xFF, 1 )
 
-enum FontFlags {
+typedef enum {
     #define FONT_FLAGS_DEF(num,bits,sizes) num,
     FONT_FLAGS_DEFS()
     #undef FONT_FLAGS_DEF
-};
+    NOT_A_BITMAP
+} FontFlags;
 
 
 //
@@ -106,22 +107,22 @@ enum FontFlags {
     PAR_FLAGS_DEF( TOP_CENTRE_JUST,  0x08000000 ) \
     PAR_FLAGS_DEF( TOP_NO_LINE_WRAP, 0x10000000 )
 
-enum ParFlags {
+typedef enum {
     #define PAR_FLAGS_DEF(num,bits) num,
     PAR_FLAGS_DEFS()
     #undef PAR_FLAGS_DEF
-};
+} ParFlags;
 
 
 //
 //  TabTypes    --Tab stop flags
 //
 
-enum TabTypes {
+typedef enum {
     TAB_LEFT    = 0x00,
     TAB_RIGHT   = 0x02,
     TAB_CENTER  = 0x04
-};
+} TabTypes;
 
 
 // Various forward declarations.
@@ -200,7 +201,7 @@ public:
     void        newNode( bool is_new_topic = false );
 
     // Function to change paragraph attributes.
-    int         setTab( int val, TabTypes flags = TAB_LEFT );
+    int         setTab( int val, TabTypes type = TAB_LEFT );
     int         setPar( ParFlags type, int val=0 );
     void        unsetPar( ParFlags type );
     void        clearPar();

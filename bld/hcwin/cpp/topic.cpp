@@ -127,7 +127,7 @@ class GenericNode
     uint_32     _prevNode;
     uint_32     _nextNode;
     uint_32     _dataOffset;
-    uint_8      _recordType;
+    RecordType  _recordType;
     TopicLink   *_myLink;
 
     GenericNode( uint_32 prev );
@@ -179,7 +179,7 @@ class TextHeader
 {
     struct Tabs {
         uint_16     pos;
-        uint_8      flag;
+        TabTypes    type;
     };
 
     uint_32 _size;
@@ -193,7 +193,7 @@ class TextHeader
     size_t              _numStops;
 
     uint_32 _border;
-    uint_16 _spacing[6];
+    uint_16 _spacing[TOP_TAB_STOPS];
 
     static const uint_32 _parBits[];
 
@@ -208,7 +208,7 @@ class TextHeader
 
     // Functions to manipulate paragraph attributes (tabs, indents, ...)
     void        dumpTo( TopicLink *dest );
-    int         setTab( int val, uint_8 flags );
+    int         setTab( int val, TabTypes type );
     int         setPar( ParFlags type, int val );
     void        unsetPar( ParFlags type );
     void        clearPar();
@@ -399,7 +399,7 @@ const uint_32 TextHeader::_parBits[] = {
 #define INT_LARGE_LIMIT 0x4000
 #define BORDER_BYTE_SIZE 3
 
-int TextHeader::setTab( int val, uint_8 flag )
+int TextHeader::setTab( int val, TabTypes type )
 {
     uint_16 trueval;
 
@@ -420,7 +420,7 @@ int TextHeader::setTab( int val, uint_8 flag )
         trueval |= 0x1;
         _parAttrSize += 2;
     }
-    if( flag != 0x0 ) {
+    if( type != TAB_LEFT ) {
         _parAttrSize += 1;
         if( trueval < INT_SMALL_LIMIT ) {
             trueval |= 0x80;
@@ -433,7 +433,7 @@ int TextHeader::setTab( int val, uint_8 flag )
     }
     chkTabsLen( _numStops );
     _tabs[_numStops].pos = trueval;
-    _tabs[_numStops].flag = flag;
+    _tabs[_numStops].type = type;
     _numStops++;
     _flags |= _parBits[TOP_TAB_STOPS];
     return( 1 );
@@ -444,7 +444,6 @@ int TextHeader::setTab( int val, uint_8 flag )
 
 int TextHeader::setPar( ParFlags type, int val )
 {
-    int already_set = _flags & _parBits[type];
     int sign = 0;
     uint_16 trueval = 0;
 
@@ -483,10 +482,10 @@ int TextHeader::setPar( ParFlags type, int val )
             }
             chkTabsLen( _numStops );
             _tabs[_numStops].pos = trueval;
-            _tabs[_numStops].flag = 0x0;
+            _tabs[_numStops].type = TAB_LEFT;
             _numStops++;
         } else if( type < TOP_TAB_STOPS ) {
-            if( already_set ) {
+            if( _flags & _parBits[type] ) {
                 if( _spacing[type] & 0x1 ) {
                     _parAttrSize -= 2;
                 } else {
@@ -520,33 +519,32 @@ int TextHeader::setPar( ParFlags type, int val )
 
 void TextHeader::unsetPar( ParFlags type )
 {
-    int already_set = _flags & _parBits[type];
-    if( !already_set )
-        return;
-    _flags ^= _parBits[type];
-    if( type == TOP_TAB_STOPS ) {
-        _parAttrSize -= _numStops;
-        for( size_t i = 0; i < _numStops; ++i ) {
-            if( _tabs[i].pos & 0x1 ) {
+    if( _flags & _parBits[type] ) {
+        _flags ^= _parBits[type];
+        if( type == TOP_TAB_STOPS ) {
+            _parAttrSize -= _numStops;
+            for( size_t i = 0; i < _numStops; ++i ) {
+                if( _tabs[i].pos & 0x1 ) {
+                    _parAttrSize -= 1;
+                }
+                if( _tabs[i].type != TAB_LEFT ) {
+                    _parAttrSize -= 1;
+                }
+            }
+            if( _numStops >= 0x40 ) {
+                _parAttrSize -= 2;
+            } else if( _numStops > 0 ) {
                 _parAttrSize -= 1;
             }
-            if( _tabs[i].flag != 0 ) {
+            _numStops = 0;
+        } else if( type == TOP_BORDER ) {
+            _parAttrSize -= BORDER_BYTE_SIZE;
+        } else if( type < TOP_TAB_STOPS ) {
+            if( _spacing[type] & 0x1 ) {
+                _parAttrSize -= 2;
+            } else {
                 _parAttrSize -= 1;
             }
-        }
-        if( _numStops >= 0x40 ) {
-            _parAttrSize -= 2;
-        } else if( _numStops > 0 ) {
-            _parAttrSize -= 1;
-        }
-        _numStops = 0;
-    } else if( type == TOP_BORDER ) {
-        _parAttrSize -= BORDER_BYTE_SIZE;
-    } else if( type < TOP_TAB_STOPS ) {
-        if( _spacing[type] & 0x1 ) {
-            _parAttrSize -= 2;
-        } else {
-            _parAttrSize -= 1;
         }
     }
 }
@@ -689,13 +687,13 @@ void TextHeader::dumpTo( TopicLink *dest )
     location += sizeof( uint_32 );
 
     // Print out the paragraph attributes.
-    for( i=0; i < TOP_BORDER; i++ ) {
-        if( _flags & _parBits[i] ) {
-            if( _spacing[i] & 0x1 ) {
-                *(uint_16 *)location = _spacing[i];
+    for( ParFlags type = TOP_SPACE_BEFORE; type < TOP_BORDER; type = (ParFlags)( type + 1 ) ) {
+        if( _flags & _parBits[type] ) {
+            if( _spacing[type] & 0x1 ) {
+                *(uint_16 *)location = _spacing[type];
                 location += sizeof( uint_16 );
             } else {
-                *location++ = (uint_8)_spacing[i];
+                *location++ = (uint_8)_spacing[type];
             }
         }
     }
@@ -721,12 +719,12 @@ void TextHeader::dumpTo( TopicLink *dest )
                 *(uint_16 *)location = _tabs[i].pos;
                 location += sizeof( uint_16 );
                 if( _tabs[i].pos & 0x8000 ) {
-                    *location++ = _tabs[i].flag;
+                    *location++ = _tabs[i].type;
                 }
             } else {
                 *location++ = (uint_8)_tabs[i].pos;
                 if( _tabs[i].pos & 0x80 ) {
-                    *location++ = _tabs[i].flag;
+                    *location++ = _tabs[i].type;
                 }
             }
         }
@@ -1612,9 +1610,9 @@ uint_32 HFTopic::attrData( unsigned index )
     return( _curPar->attrData( index ) );
 }
 
-int HFTopic::setTab( int val, TabTypes flag )
+int HFTopic::setTab( int val, TabTypes type )
 {
-    return( _curPar->setTab( val, (uint_8)flag ) );
+    return( _curPar->setTab( val, type ) );
 }
 
 int HFTopic::setPar( ParFlags type, int val )
