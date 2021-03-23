@@ -65,6 +65,7 @@ libs =           &
     ctl3dv2.lib  &
     ddeml.lib    &
     lzexpand.lib &
+    mmsystem.lib &
     ole2.lib     &
     ole2disp.lib &
     ole2nls.lib  &
