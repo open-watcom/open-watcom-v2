@@ -31,7 +31,9 @@
 .chap The &makname Utility
 .*
 .if &e'&dohelp eq 0 .do begin
+.*
 .section Introduction
+.*
 .do end
 .*
 .np
@@ -1015,6 +1017,7 @@ The update sequence is similar to the previous example.
 .*
 .section Command Lists
 .*
+.np
 A command list is a sequence of one or more commands.
 Each command is preceded by one or more spaces or tabs.
 Command lists may also be used to construct inline files "on the fly".
@@ -1064,6 +1067,7 @@ with the file after usage. The default is "nokeep" which zaps it.
 .*
 .section Final Commands (.AFTER)
 .*
+.np
 .ix '&makcmdup directives' '.AFTER'
 .ix 'AFTER' '&makcmdup directive'
 The
@@ -1075,6 +1079,7 @@ for a full description of its use.
 .*
 .section Ignoring Dependent Timestamps (.ALWAYS)
 .*
+.np
 .ix '&makcmdup directives' '.ALWAYS'
 .ix 'ALWAYS' '&makcmdup directive'
 The
@@ -1132,6 +1137,7 @@ information into a resource file that can be used by &maksname..
 .*
 .section Initial Commands (.BEFORE)
 .*
+.np
 .ix '&makcmdup directives' '.BEFORE'
 .ix 'BEFORE' '&makcmdup directive'
 The
@@ -1143,6 +1149,7 @@ for a full description of its use.
 .*
 .section Disable Implicit Rules (.BLOCK)
 .*
+.np
 .ix '&makcmdup directives' '.BLOCK'
 .ix 'BLOCK' '&makcmdup directive'
 The
@@ -1155,6 +1162,7 @@ for a full description of its use.
 .*
 .section Ignoring Errors (.CONTINUE)
 .*
+.np
 .ix '&makcmdup directives' '.CONTINUE'
 .ix 'CONTINUE' '&makcmdup directive'
 The
@@ -1186,6 +1194,7 @@ Without the directive, good is not built.
 .*
 .section Default Command List (.DEFAULT)
 .*
+.np
 .ix '&makcmdup directives' '.DEFAULT'
 .ix 'DEFAULT' '&makcmdup directive'
 The
@@ -1248,6 +1257,7 @@ then &maksname will attempt to delete "BALANCE.LST".
 .*
 .section Error Action (.ERROR)
 .*
+.np
 .ix '&makcmdup directives' '.ERROR'
 .ix 'ERROR' '&makcmdup directive'
 The
@@ -1270,6 +1280,7 @@ all : .symbolic
 .*
 .section Ignoring Target Timestamp (.EXISTSONLY)
 .*
+.np
 .ix '&makcmdup directives' '.EXISTSONLY'
 .ix 'EXISTSONLY' '&makcmdup directive'
 The
@@ -1289,6 +1300,7 @@ If absent, this file creates foo; if present, this file does nothing.
 .*
 .section Specifying Explicitly Updated Targets (.EXPLICIT)
 .*
+.np
 .ix '&makcmdup directives' '.EXPLICIT'
 .ix 'EXPLICIT' '&makcmdup directive'
 The
@@ -1315,6 +1327,7 @@ despite the fact that it is the first one listed.
 .*
 .section *refid=extensions Defining Recognized File Extensions (.EXTENSIONS)
 .*
+.np
 .ix '&makcmdup directives' '.EXTENSIONS'
 .ix 'EXTENSIONS' '&makcmdup directive'
 The
@@ -1401,6 +1414,7 @@ Note the implicit connection beween the two files.
 .*
 .section Approximate Timestamp Matching (.FUZZY)
 .*
+.np
 .ix '&makcmdup directives' '.FUZZY'
 .ix 'FUZZY' '&makcmdup directive'
 The
@@ -1531,6 +1545,7 @@ directive.
 .*
 .section Minimising Target Timestamp (.JUST_ENOUGH)
 .*
+.np
 .ix '&makcmdup directives' '.JUST_ENOUGH'
 .ix 'JUST_ENOUGH' '&makcmdup directive'
 The
@@ -1556,6 +1571,7 @@ corresponding to when hello.exe was built.
 .*
 .section Updating Targets Multiple Times (.MULTIPLE)
 .*
+.np
 .ix '&makcmdup directives' '.MULTIPLE'
 .ix 'MULTIPLE' '&makcmdup directive'
 The
@@ -1613,6 +1629,7 @@ discover that "target" doesn't exist, and recreate it.
 .*
 .section Ignoring Target Timestamp (.NOCHECK)
 .*
+.np
 .ix '&makcmdup directives' '.NOCHECK'
 .ix 'NOCHECK' '&makcmdup directive'
 The
@@ -1624,6 +1641,7 @@ for a full description of its use.
 .*
 .section Cache Search Path (.OPTIMIZE)
 .*
+.np
 .ix '&makcmdup directives' '.OPTIMIZE'
 .ix 'OPTIMIZE' '&makcmdup directive'
 The
@@ -1687,6 +1705,7 @@ the program "DOREPORT" is executing.
 .*
 .section Name Command Sequence (.PROCEDURE)
 .*
+.np
 .ix '&makcmdup directives' '.PROCEDURE'
 .ix 'PROCEDURE' '&makcmdup directive'
 The
@@ -1706,6 +1725,7 @@ proc: .procedure
 .*
 .section Re-Checking Target Timestamp (.RECHECK)
 .*
+.np
 .ix '&makcmdup directives' '.RECHECK'
 .ix 'RECHECK' '&makcmdup directive'
 Make will re-check the target's timestamp, rather than assuming it was updated
@@ -1786,6 +1806,7 @@ Methods for making makefiles more succinct will be discussed.
 .*
 .section Defining Recognized File Extensions (.SUFFIXES)
 .*
+.np
 .ix '&makcmdup directives' '.SUFFIXES'
 .ix 'SUFFIXES' '&makcmdup directive'
 The
