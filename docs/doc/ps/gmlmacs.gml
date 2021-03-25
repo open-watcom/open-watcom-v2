@@ -348,8 +348,8 @@
 :DDHD.description:
 .do end
 .el .do begin
-:ZDT.:SF font=2.where:eSF.
-:ZDD.:SF font=2.description:eSF.
+:ZDTHD.:SF font=2.where:eSF.
+:ZDDHD.:SF font=2.description:eSF.
 .do end
 .dm synote end
 .*
@@ -537,8 +537,8 @@ is described :HDREF refid='&*refid'.
 :DDHD.~b
 .do end
 .el .do begin
-:ZDT.:SF font=2.&*:eSF.
-:ZDD.~b
+:ZDTHD.:SF font=2.&*:eSF.
+:ZDDHD.~b
 .do end
 .do end
 .dm initstep end
