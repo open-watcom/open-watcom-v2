@@ -1,4 +1,5 @@
 .section *refid='hdref' hdref
+.*
 .ix 'hdref'
 .ix 'Links' 'header'
 .ix 'Generated text' 'header reference'

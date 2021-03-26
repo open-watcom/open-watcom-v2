@@ -1,9 +1,10 @@
 .chap *refid=fformat Format
 .*
 .if &e'&dohelp eq 0 .do begin
-.section Introduction
-.do end
 .*
+.section Introduction
+.*
+.do end
 .np
 A
 .us format

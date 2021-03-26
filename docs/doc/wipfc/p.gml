@@ -1,4 +1,5 @@
 .section *refid='p' p
+.*
 .ix 'p'
 .ix 'Block' 'p'
 .ix 'Paragraph'

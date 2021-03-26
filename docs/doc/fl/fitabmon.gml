@@ -82,6 +82,7 @@ In this case, the result of ATAN2 is of type REAL.
 &dagref. (&dagger.).
 .*
 .cp 18
+.*
 .section Type Conversion: Conversion to integer
 .*
 .begnote $setptnt 12
@@ -118,6 +119,7 @@ I&arrow.IDINT(D)
 .endnote
 .*
 .cp 18
+.*
 .section Type Conversion: Conversion to real
 .*
 .begnote $setptnt 12
@@ -148,6 +150,7 @@ R&arrow.SNGL(D)
 .endnote
 .*
 .cp 18
+.*
 .section Type Conversion: Conversion to double precision
 .*
 .begnote $setptnt 12
@@ -176,6 +179,7 @@ D&arrow.DFLOAT(I) &dagger.
 .endnote
 .*
 .cp 18
+.*
 .section Type Conversion: Conversion to complex
 .*
 .begnote $setptnt 12
@@ -196,6 +200,7 @@ C&arrow.CMPLX(Z) &dagger.
 .endnote
 .*
 .cp 18
+.*
 .section Type Conversion: Conversion to double complex
 .*
 .begnote $setptnt 12
@@ -216,6 +221,7 @@ Z&arrow.DCMPLX(Z)
 .endnote
 .*
 .cp 18
+.*
 .section Type Conversion: Character conversion to integer
 .*
 .begnote $setptnt 12
@@ -229,6 +235,7 @@ I&arrow.ICHAR(CH)
 .endnote
 .*
 .cp 18
+.*
 .section Type Conversion: Conversion to character
 .*
 .begnote $setptnt 12
@@ -242,6 +249,7 @@ CH&arrow.CHAR(I)
 .endnote
 .*
 .cp 18
+.*
 .section Truncation
 .*
 .begnote $setptnt 12
@@ -265,6 +273,7 @@ D&arrow.DINT(D)
 .endnote
 .*
 .cp 18
+.*
 .section Nearest Whole Number
 .*
 .begnote $setptnt 12
@@ -289,6 +298,7 @@ D&arrow.DNINT(D)
 .endnote
 .*
 .cp 18
+.*
 .section Nearest Integer
 .*
 .begnote $setptnt 12
@@ -313,6 +323,7 @@ I&arrow.IDNINT(D)
 .endnote
 .*
 .cp 18
+.*
 .section Absolute Value
 .*
 .begnote $setptnt 12
@@ -366,6 +377,7 @@ D&arrow.CDABS(Z)
 .endnote
 .*
 .cp 18
+.*
 .section Remainder
 .*
 .begnote $setptnt 12
@@ -407,6 +419,7 @@ value of a2 is 0.
 .endnote
 .*
 .cp 18
+.*
 .section Transfer of Sign
 .*
 .begnote $setptnt 12
@@ -448,6 +461,7 @@ If the value of a1 is 0, the result is 0 which has no sign.
 .endnote
 .*
 .cp 18
+.*
 .section Positive Difference
 .*
 .begnote $setptnt 12
@@ -487,6 +501,7 @@ D&arrow.DDIM(D,D)
 .endnote
 .*
 .cp 18
+.*
 .section Double Precision Product
 .*
 .begnote $setptnt 12
@@ -500,6 +515,7 @@ D&arrow.DPROD(R,R)
 .endnote
 .*
 .cp 18
+.*
 .section Choosing Largest Value
 .*
 .begnote $setptnt 12
@@ -544,6 +560,7 @@ I&arrow.MAX1(R,...)
 .endnote
 .*
 .cp 18
+.*
 .section Choosing Smallest Value
 .*
 .begnote $setptnt 12
@@ -588,6 +605,7 @@ I&arrow.MIN1(R,...)
 .endnote
 .*
 .cp 18
+.*
 .section Length
 .*
 .begnote $setptnt 12
@@ -603,6 +621,7 @@ The argument to the LEN function need not be defined.
 .endnote
 .*
 .cp 18
+.*
 .section Length Without Trailing Blanks
 .*
 .begnote $setptnt 12
@@ -616,6 +635,7 @@ I&arrow.LENTRIM(CH)
 .endnote
 .*
 .cp 18
+.*
 .section Index of a Substring
 .*
 .begnote $setptnt 12
@@ -638,6 +658,7 @@ If y is not contained in x, zero is returned.
 .endnote
 .*
 .cp 18
+.*
 .section Imaginary Part of Complex Number
 .*
 .begnote $setptnt 12
@@ -663,6 +684,7 @@ D&arrow.DIMAG(Z) &dagger.
 .endnote
 .*
 .cp 18
+.*
 .section Conjugate of a Complex Number
 .*
 .begnote $setptnt 12
@@ -688,6 +710,7 @@ Z&arrow.DCONJG(Z) &dagger.
 .endnote
 .*
 .cp 18
+.*
 .section Square Root
 .*
 .begnote $setptnt 12
@@ -726,6 +749,7 @@ When the real part of the result is 0, the imaginary part is >= 0.
 .endnote
 .*
 .cp 18
+.*
 .section Exponential
 .*
 .begnote $setptnt 12
@@ -761,6 +785,7 @@ Z&arrow.CDEXP(Z) &dagger.
 .endnote
 .*
 .cp 18
+.*
 .section Natural Logarithm
 .*
 .begnote $setptnt 12
@@ -808,6 +833,7 @@ argument is < 0 and the imaginary part of the argument = 0.
 .endnote
 .*
 .cp 18
+.*
 .section Common Logarithm
 .*
 .begnote $setptnt 12
@@ -832,6 +858,7 @@ D&arrow.DLOG10(D)
 .endnote
 .*
 .cp 18
+.*
 .section Sine
 .*
 .begnote $setptnt 12
@@ -869,6 +896,7 @@ Z&arrow.CDSIN(Z) &dagger.
 .endnote
 .*
 .cp 18
+.*
 .section Cosine
 .*
 .begnote $setptnt 12
@@ -906,6 +934,7 @@ Z&arrow.CDCOS(Z) &dagger.
 .endnote
 .*
 .cp 18
+.*
 .section Tangent
 .*
 .begnote $setptnt 12
@@ -929,6 +958,7 @@ D&arrow.DTAN(D)
 .endnote
 .*
 .cp 18
+.*
 .section Cotangent
 .*
 .begnote $setptnt 12
@@ -954,6 +984,7 @@ D&arrow.DCOTAN(D) &dagger.
 .endnote
 .*
 .cp 18
+.*
 .section Arcsine
 .*
 .begnote $setptnt 12
@@ -978,6 +1009,7 @@ The result is such that -&pi./2 <= result <= &pi./2.
 .endnote
 .*
 .cp 18
+.*
 .section Arccosine
 .*
 .begnote $setptnt 12
@@ -1002,6 +1034,7 @@ The result is such that 0 <= result <= &pi..
 .endnote
 .*
 .cp 18
+.*
 .section Arctangent
 .*
 .begnote $setptnt 12
@@ -1049,6 +1082,7 @@ The result of ATAN2 and DATAN2 is such that -&pi. < result <= &pi..
 .endnote
 .*
 .cp 18
+.*
 .section Hyperbolic Sine
 .*
 .begnote $setptnt 12
@@ -1070,6 +1104,7 @@ D&arrow.DSINH(D)
 .endnote
 .*
 .cp 18
+.*
 .section Hyperbolic Cosine
 .*
 .begnote $setptnt 12
@@ -1091,6 +1126,7 @@ D&arrow.DCOSH(D)
 .endnote
 .*
 .cp 18
+.*
 .section Hyperbolic Tangent
 .*
 .begnote $setptnt 12
@@ -1112,6 +1148,7 @@ D&arrow.DTANH(D)
 .endnote
 .*
 .cp 18
+.*
 .section Gamma Function
 .*
 .begnote $setptnt 12
@@ -1133,6 +1170,7 @@ D&arrow.DGAMMA(D)
 .endnote
 .*
 .cp 18
+.*
 .section Natural Log of Gamma Function
 .*
 .begnote $setptnt 12
@@ -1158,6 +1196,7 @@ D&arrow.DLGAMA(D)
 .endnote
 .*
 .cp 18
+.*
 .section Error Function
 .*
 .begnote $setptnt 12
@@ -1179,6 +1218,7 @@ D&arrow.DERF(D)
 .endnote
 .*
 .cp 18
+.*
 .section Complement of Error Function
 .*
 .begnote $setptnt 12
@@ -1200,6 +1240,7 @@ D&arrow.DERFC(D)
 .endnote
 .*
 .cp 18
+.*
 .section Lexically Greater Than or Equal
 .*
 .begnote $setptnt 12
@@ -1215,6 +1256,7 @@ L&arrow.LGE(CH,CH)
 .endnote
 .*
 .cp 18
+.*
 .section Lexically Greater Than
 .*
 .begnote $setptnt 12
@@ -1230,6 +1272,7 @@ L&arrow.LGT(CH,CH)
 .endnote
 .*
 .cp 18
+.*
 .section Lexically Less Than or Equal
 .*
 .begnote $setptnt 12
@@ -1245,6 +1288,7 @@ L&arrow.LLE(CH,CH)
 .endnote
 .*
 .cp 18
+.*
 .section Lexically Less Than
 .*
 .begnote $setptnt 12
@@ -1260,6 +1304,7 @@ L&arrow.LLT(CH,CH)
 .endnote
 .*
 .cp 18
+.*
 .section Binary Pattern Processing Functions: Boolean AND
 .*
 .begnote $setptnt 12
@@ -1288,6 +1333,7 @@ I2&arrow.I2AND(I2,I2)
 .endnote
 .*
 .cp 18
+.*
 .section Binary Pattern Processing Functions: Boolean Inclusive OR
 .*
 .begnote $setptnt 12
@@ -1316,6 +1362,7 @@ I2&arrow.I2OR(I2,I2)
 .endnote
 .*
 .cp 18
+.*
 .section Binary Pattern Processing Functions: Boolean Exclusive OR
 .*
 .begnote $setptnt 12
@@ -1344,6 +1391,7 @@ I2&arrow.I2EOR(I2,I2)
 .endnote
 .*
 .cp 18
+.*
 .section Binary Pattern Processing Functions: Boolean Complement
 .*
 .begnote $setptnt 12
@@ -1372,6 +1420,7 @@ I2&arrow.I2NOT(I2)
 .endnote
 .*
 .cp 18
+.*
 .section Binary Pattern Processing Functions: Logical Shift
 .*
 .begnote $setptnt 12
@@ -1427,6 +1476,7 @@ I2&arrow.I2SHFT(I2,I2)
 .endnote
 .*
 .cp 18
+.*
 .section Binary Pattern Processing Functions: Arithmetic Shift
 .*
 .begnote $setptnt 12
@@ -1456,6 +1506,7 @@ I2&arrow.I2SHA(I2,I2)
 .endnote
 .*
 .cp 18
+.*
 .section Binary Pattern Processing Functions: Circular Shift
 .*
 .begnote $setptnt 12
@@ -1485,6 +1536,7 @@ I2&arrow.I2SHC(I2,I2)
 .endnote
 .*
 .cp 18
+.*
 .section Binary Pattern Processing Functions: Bit Testing
 .*
 .begnote $setptnt 12
@@ -1513,6 +1565,7 @@ L&arrow.I2BTEST(I2,I2)
 .endnote
 .*
 .cp 18
+.*
 .section Binary Pattern Processing Functions: Set Bit
 .*
 .begnote $setptnt 12
@@ -1539,6 +1592,7 @@ I2&arrow.I2BSET(I2,I2)
 .endnote
 .*
 .cp 18
+.*
 .section Binary Pattern Processing Functions: Clear Bit
 .*
 .begnote $setptnt 12
@@ -1565,6 +1619,7 @@ I2&arrow.I2BCLR(I2,I2)
 .endnote
 .*
 .cp 18
+.*
 .section Binary Pattern Processing Functions: Change Bit
 .*
 .begnote $setptnt 12
@@ -1591,6 +1646,7 @@ I2&arrow.I2BCHNG(I2,I2)
 .endnote
 .*
 .cp 18
+.*
 .section Binary Pattern Processing Functions: Arithmetic Shifts
 .*
 .begnote $setptnt 12
@@ -1644,6 +1700,7 @@ I2&arrow.I2RSHIFT(I2,I2)
 .endnote
 .*
 .cp 18
+.*
 .section Allocated Array
 .*
 .begnote $setptnt 12
@@ -1657,6 +1714,7 @@ L&arrow.ALLOCATED(A)
 .endnote
 .*
 .cp 18
+.*
 .section Memory Location
 .*
 .begnote $setptnt 12
@@ -1670,6 +1728,7 @@ I&arrow.LOC(A)
 .endnote
 .*
 .cp 18
+.*
 .section Size of Variable or Structure
 .*
 .begnote $setptnt 12
@@ -1695,6 +1754,7 @@ array has size 0.
 .endnote
 .*
 .cp 18
+.*
 .section Volatile Reference
 .*
 .begnote $setptnt 12

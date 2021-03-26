@@ -44,9 +44,10 @@
 .chap *refid=wasaxp The &wasname.
 .*
 .if &e'&dohelp eq 0 .do begin
-.section Introduction
-.do end
 .*
+.section Introduction
+.*
+.do end
 .np
 .ix 'assembler'
 This chapter describes the &wasname..
@@ -888,6 +889,7 @@ directive.
 .beglevel
 .*
 .section Load Address (lda)
+.*
 .syntax
     lda &opnd8
 .esyntax
@@ -902,7 +904,9 @@ lda     $a0,l^`L$0`($a0)
 .exam end
 .edescrp
 .category Memory Integer Load/Store Instruction
+.*
 .section Load Address High (ldah)
+.*
 .syntax
     ldah $d_reg, offset($b_reg)
 .esyntax
@@ -915,7 +919,9 @@ lda     $a0,l^`L$0`($a0)
 .exam end
 .edescrp
 .category Memory Integer Load/Store Instruction
+.*
 .section Load F_floating (ldf)
+.*
 .syntax
     ldf &opnd8
 .esyntax
@@ -925,7 +931,9 @@ specified register.
 The datum must be longword aligned.
 .edescrp
 .category Memory Format Floating-Point Instruction
+.*
 .section Load G_floating (Load D_floating) (ldg)
+.*
 .syntax
     ldg &opnd8
 .esyntax
@@ -935,7 +943,9 @@ memory into the specified register.
 The datum must be quadword aligned.
 .edescrp
 .category Memory Format Floating-Point Instruction
+.*
 .section Load Sign Extended Longword (ldl)
+.*
 .syntax
     ldl &opnd8
 .esyntax
@@ -944,7 +954,9 @@ The specified longword is loaded from memory, sign-extended and placed
 into the specified register.
 .edescrp
 .category Memory Integer Load/Store Instruction
+.*
 .section Load Sign Extended Longword Locked (ldl_l)
+.*
 .syntax
     ldl_l &opnd8
 .esyntax
@@ -975,7 +987,9 @@ no_store:
 .exam end
 .edescrp
 .category Memory Integer Load/Store Instruction
+.*
 .section Load Quadword (ldq)
+.*
 .syntax
     ldq &opnd8
 .esyntax
@@ -984,7 +998,9 @@ The specified quadword is loaded from memory and placed into the
 specified register.
 .edescrp
 .category Memory Integer Load/Store Instruction
+.*
 .section Load Quadword Locked (ldq_l)
+.*
 .syntax
     ldq_l &opnd8
 .esyntax
@@ -1015,7 +1031,9 @@ no_store:
 .exam end
 .edescrp
 .category Memory Integer Load/Store Instruction
+.*
 .section Load Quadword Unaligned (ldq_u)
+.*
 .syntax
     ldq_u &opnd8
 .esyntax
@@ -1026,7 +1044,9 @@ The memory address that is computed is truncated to a multiple of 8
 (i.e., the 3 bottom bits of the effective address are cleared).
 .edescrp
 .category Memory Integer Load/Store Instruction
+.*
 .section Load S_floating (Load Longword) (lds)
+.*
 .syntax
     lds &opnd8
 .esyntax
@@ -1041,7 +1061,9 @@ Longword integers in floating registers are stored in bits
 <63:62,58:29>, with bits <61:59> ignored and zeros in bits <28:0>.
 .endnote
 .category Memory Format Floating-Point Instruction
+.*
 .section Load T_floating (Load Quadword) (ldt)
+.*
 .syntax
     ldt &opnd8
 .esyntax
@@ -1051,7 +1073,9 @@ from memory into the specified register.
 The datum must be quadword aligned.
 .edescrp
 .category Memory Format Floating-Point Instruction
+.*
 .section Store F_floating (stf)
+.*
 .syntax
     stf &opnd9
 .esyntax
@@ -1060,7 +1084,9 @@ The 4-byte F_floating datum in the specified register is stored into
 memory. The location must be longword aligned.
 .edescrp
 .category Memory Format Floating-Point Instruction
+.*
 .section Store G_floating (Store D_floating) (stg)
+.*
 .syntax
     stg &opnd9
 .esyntax
@@ -1070,7 +1096,9 @@ is stored into memory.
 The location must be quadword aligned.
 .edescrp
 .category Memory Format Floating-Point Instruction
+.*
 .section Store Longword (stl)
+.*
 .syntax
     stl &opnd9
 .esyntax
@@ -1080,7 +1108,9 @@ If the data is not naturally aligned, an alignment exception is
 generated.
 .edescrp
 .category Memory Integer Load/Store Instruction
+.*
 .section Store Longword Conditional (stl_c)
+.*
 .syntax
     stl_c &opnd9
 .esyntax
@@ -1112,7 +1142,9 @@ no_store:
 .exam end
 .edescrp
 .category Memory Integer Load/Store Instruction
+.*
 .section Store Quadword (stq)
+.*
 .syntax
     stq &opnd9
 .esyntax
@@ -1122,7 +1154,9 @@ If the data is not naturally aligned, an alignment exception is
 generated.
 .edescrp
 .category Memory Integer Load/Store Instruction
+.*
 .section Store Quadword Conditional (stq_c)
+.*
 .syntax
     stq_c &opnd9
 .esyntax
@@ -1154,7 +1188,9 @@ no_store:
 .exam end
 .edescrp
 .category Memory Integer Load/Store Instruction
+.*
 .section Store Quadword Unaligned (stq_u)
+.*
 .syntax
     stq_u &opnd9
 .esyntax
@@ -1164,7 +1200,9 @@ The memory address that is computed is truncated to a multiple of 8
 (i.e., the 3 bottom bits of the effective address are cleared).
 .edescrp
 .category Memory Integer Load/Store Instruction
+.*
 .section Store S_floating (Store Longword) (sts)
+.*
 .syntax
     sts &opnd9
 .esyntax
@@ -1174,7 +1212,9 @@ register is stored into memory.
 The location must be longword aligned.
 .edescrp
 .category Memory Format Floating-Point Instruction
+.*
 .section Store T_floating (Store Quadword) (stt)
+.*
 .syntax
     stt &opnd9
 .esyntax
@@ -1184,7 +1224,9 @@ register is stored into memory.
 The location must be quadword aligned.
 .edescrp
 .category Memory Format Floating-Point Instruction
+.*
 .section Prefetch Data (fetch)
+.*
 .syntax
     fetch address
 .esyntax
@@ -1197,7 +1239,9 @@ of the memory hierarchy, in anticipation of subsequent Load or Store
 instructions that access the data.
 .edescrp
 .category Memory Format Instruction with Function Code
+.*
 .section Prefetch Data, Modify Intent (fetch_m)
+.*
 .syntax
     fetch_m address
 .esyntax
@@ -1214,7 +1258,9 @@ it gives the additional hint that modifications (stores) to some or
 all of the data block are anticipated.
 .edescrp
 .category Memory Format Instruction with Function Code
+.*
 .section Memory Barrier (mb)
+.*
 .syntax
     mb
 .esyntax
@@ -1226,7 +1272,9 @@ physical locations are allowed to complete out of order on the issuing
 processor as observed by other processors.
 .edescrp
 .category Memory Format Instruction with Function Code
+.*
 .section Write Memory Barrier (wmb)
+.*
 .syntax
     wmb
 .esyntax
@@ -1236,7 +1284,9 @@ access memory before any store instructions issued after the wmb
 instruction.
 .edescrp
 .category Memory Format Instruction with Function Code
+.*
 .section Read and Clear
+.*
 .syntax
     rc  Ra.wq
 .esyntax
@@ -1244,38 +1294,47 @@ instruction.
 
 .edescrp
 .category Memory Format Instruction with Function Code
+.*
 .section Read Process Cycle Counter (rpcc)
+.*
 .syntax
     rpcc address
 .esyntax
 .descrp
 .edescrp
 .category Memory Format Instruction with Function Code
+.*
 .section Read and Set
+.*
 .syntax
     rs
 .esyntax
 .descrp
 .edescrp
 .category Memory Format Instruction with Function Code
+.*
 .section Trap Barrier (trapb)
+.*
 .syntax
     trapb
 .esyntax
 .descrp
 .edescrp
 .category Memory Format Instruction with Function Code
+.*
 .section Exception Barrier (excb)
+.*
 .syntax
     excb
 .esyntax
 .descrp
 .edescrp
 .category Memory Format Instruction with Function Code
-
+.*
 :CMT.  Memory Branch Instructions
-
+.*
 .section Jump (jmp)
+.*
 .syntax
     jmp     $d_reg, ($s_reg), jhint
     jmp     $d_reg, ($s_reg)
@@ -1288,7 +1347,9 @@ instruction.
 .descrp
 .edescrp
 .category Memory Branch Instruction
+.*
 .section Jump to Subroutine (jsr)
+.*
 .syntax
     jsr     $d_reg, ($s_reg), jhint
     jsr     $d_reg, ($s_reg)
@@ -1301,7 +1362,9 @@ instruction.
 .descrp
 .edescrp
 .category Memory Branch Instruction
+.*
 .section Jump to Subroutine Return (jsr_coroutine)
+.*
 .syntax
     jsr_coroutine   $d_reg, ($s_reg), rhint
     jsr_coroutine   $d_reg, ($s_reg)
@@ -1314,7 +1377,9 @@ instruction.
 .descrp
 .edescrp
 .category Memory Branch Instruction
+.*
 .section Return from Subroutine (ret)
+.*
 .syntax
     ret     $d_reg, ($s_reg), rhint
     ret     $d_reg, ($s_reg)
@@ -1327,125 +1392,157 @@ instruction.
 .descrp
 .edescrp
 .category Memory Branch Instruction
-
+.*
 :CMT.  Branch Format Instructions
-
+.*
 .section Branch (br)
+.*
 .syntax
     br $s_reg, label
 .esyntax
 .descrp
 .edescrp
 .category Branch Format Instruction
+.*
 .section Branch Equal to Zero (fbeq)
+.*
 .syntax
     fbeq $s_reg, label
 .esyntax
 .descrp
 .edescrp
 .category Branch Format Instruction
+.*
 .section Branch Less Than Zero (fblt)
+.*
 .syntax
     fblt $s_reg, label
 .esyntax
 .descrp
 .edescrp
 .category Branch Format Instruction
+.*
 .section Branch Less Than or Equal to Zero (fble)
+.*
 .syntax
     fble $s_reg, label
 .esyntax
 .descrp
 .edescrp
 .category Branch Format Instruction
+.*
 .section Branch to Subroutine (bsr)
+.*
 .syntax
     bsr $d_reg, label
 .esyntax
 .descrp
 .edescrp
 .category Branch Format Instruction
+.*
 .section Branch Not Equal to Zero (fbne)
+.*
 .syntax
     fbne $s_reg, label
 .esyntax
 .descrp
 .edescrp
 .category Branch Format Instruction
+.*
 .section Branch Greater Than or Equal to Zero (fbge)
+.*
 .syntax
     fbge $s_reg, label
 .esyntax
 .descrp
 .edescrp
 .category Branch Format Instruction
+.*
 .section Branch Greater Than Zero (fbgt)
+.*
 .syntax
     fbgt $s_reg, label
 .esyntax
 .descrp
 .edescrp
 .category Branch Format Instruction
+.*
 .section Branch if Low Bit is Clear (blbc)
+.*
 .syntax
     blbc $s_reg, label
 .esyntax
 .descrp
 .edescrp
 .category Branch Format Instruction
+.*
 .section Branch if Equal to Zero (beq)
+.*
 .syntax
     beq $s_reg, label
 .esyntax
 .descrp
 .edescrp
 .category Branch Format Instruction
+.*
 .section Branch if Less Than Zero (blt)
+.*
 .syntax
     blt $s_reg, label
 .esyntax
 .descrp
 .edescrp
 .category Branch Format Instruction
+.*
 .section Branch if Less Than or Equal to Zero (ble)
+.*
 .syntax
     ble $s_reg, label
 .esyntax
 .descrp
 .edescrp
 .category Branch Format Instruction
+.*
 .section Branch if Low Bit is Set (blbs)
+.*
 .syntax
     blbs $s_reg, label
 .esyntax
 .descrp
 .edescrp
 .category Branch Format Instruction
+.*
 .section Branch if Not Equal to Zero (bne)
+.*
 .syntax
     bne $s_reg, label
 .esyntax
 .descrp
 .edescrp
 .category Branch Format Instruction
+.*
 .section Branch if Greater Than or Equal to Zero (bge)
+.*
 .syntax
     bge $s_reg, label
 .esyntax
 .descrp
 .edescrp
 .category Branch Format Instruction
+.*
 .section Branch if Greater Than Zero (bgt)
+.*
 .syntax
     bgt $s_reg, label
 .esyntax
 .descrp
 .edescrp
 .category Branch Format Instruction
-
+.*
 :CMT.  Operate Format Instruction
-
+.*
 .section Add Longword (without overflow) (addl)
+.*
 .syntax
     addl    &opnd1
     addl    &opnd2
@@ -1455,7 +1552,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Add Quadword (without overflow) (addq)
+.*
 .syntax
     addq    &opnd1
     addq    &opnd2
@@ -1465,7 +1564,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Compare Byte (cmpbge)
+.*
 .syntax
     cmpbge  &opnd1
     cmpbge  &opnd2
@@ -1475,7 +1576,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Compare Signed Quadword Equal (cmpeq)
+.*
 .syntax
     cmpeq   &opnd1
     cmpeq   &opnd2
@@ -1485,7 +1588,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Compare Signed Quadword Less Than or Equal (cmple)
+.*
 .syntax
     cmple   &opnd1
     cmple   &opnd2
@@ -1495,7 +1600,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Compare Signed Quadword Less Than (cmplt)
+.*
 .syntax
     cmplt   &opnd1
     cmplt   &opnd2
@@ -1505,7 +1612,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Compare Unsigned Quadword Less Than or Equal (cmpule)
+.*
 .syntax
     cmpule  &opnd1
     cmpule  &opnd2
@@ -1515,7 +1624,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Compare Unsigned Quadword Less Than (cmpult)
+.*
 .syntax
     cmpult  &opnd1
     cmpult  &opnd2
@@ -1525,7 +1636,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Subtract Longword (without overflow) (subl)
+.*
 .syntax
     subl    &opnd1
     subl    &opnd2
@@ -1535,7 +1648,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Subtract Quadword (without overflow) (subq)
+.*
 .syntax
     subq    &opnd1
     subq    &opnd2
@@ -1545,7 +1660,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Scaled Longword Add by 4 (s4addl)
+.*
 .syntax
     s4addl  &opnd1
     s4addl  &opnd2
@@ -1555,7 +1672,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Scaled Quadword Add by 4 (s4addq)
+.*
 .syntax
     s4addq  &opnd1
     s4addq  &opnd2
@@ -1565,7 +1684,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Scaled Longword Subtract by 4 (s4subl)
+.*
 .syntax
     s4subl  &opnd1
     s4subl  &opnd2
@@ -1575,7 +1696,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Scaled Quadword Subtract by 4 (s4subq)
+.*
 .syntax
     s4subq  &opnd1
     s4subq  &opnd2
@@ -1585,7 +1708,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Scaled Longword Add by 8 (s8addl)
+.*
 .syntax
     s8addl  &opnd1
     s8addl  &opnd2
@@ -1595,7 +1720,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Scaled Quadword Add by 8 (s8addq)
+.*
 .syntax
     s8addq  &opnd1
     s8addq  &opnd2
@@ -1605,7 +1732,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Scaled Longword Subtract by 8 (s8subl)
+.*
 .syntax
     s8subl  &opnd1
     s8subl  &opnd2
@@ -1615,7 +1744,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Scaled Quadword Subtract by 8 (s8subq)
+.*
 .syntax
     s8subq  &opnd1
     s8subq  &opnd2
@@ -1625,7 +1756,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Logical Product (AND) (and)
+.*
 .syntax
     and     &opnd5
     and     &opnd6
@@ -1638,7 +1771,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Logical Product with Complement (ANDNOT) (bic)
+.*
 .syntax
     bic     &opnd5
     bic     &opnd6
@@ -1651,7 +1786,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Logical Sum (OR) (bis)
+.*
 .syntax
     bis     &opnd5
     bis     &opnd6
@@ -1664,7 +1801,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Move if Equal to Zero (cmoveq)
+.*
 .syntax
     cmoveq  &opnd1
     cmoveq  &opnd2
@@ -1674,7 +1813,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Move if Low Bit Clear (cmovlbc)
+.*
 .syntax
     cmovlbc &opnd1
     cmovlbc &opnd2
@@ -1684,7 +1825,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Move if Low Bit Set (cmovlbs)
+.*
 .syntax
     cmovlbs &opnd1
     cmovlbs &opnd2
@@ -1694,7 +1837,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Move if Greater Than or Equal to Zero (cmovge)
+.*
 .syntax
     cmovge  &opnd1
     cmovge  &opnd2
@@ -1704,7 +1849,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Move if Greater Than Zero (cmovgt)
+.*
 .syntax
     cmovgt  &opnd1
     cmovgt  &opnd2
@@ -1714,7 +1861,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Move if Less Than or Equal to Zero (cmovle)
+.*
 .syntax
     cmovle  &opnd1
     cmovle  &opnd2
@@ -1724,7 +1873,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Move if Less Than Zero (cmovlt)
+.*
 .syntax
     cmovlt  &opnd1
     cmovlt  &opnd2
@@ -1734,7 +1885,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Move if Not Equal to Zero (cmovne)
+.*
 .syntax
     cmovne  &opnd1
     cmovne  &opnd2
@@ -1744,7 +1897,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Logical Equivalence (XORNOT) (eqv)
+.*
 .syntax
     eqv     &opnd5
     eqv     &opnd6
@@ -1757,7 +1912,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Logical Sum with Complement (ORNOT) (ornot)
+.*
 .syntax
     ornot   &opnd5
     ornot   &opnd6
@@ -1770,7 +1927,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Logical Difference (XOR) (xor)
+.*
 .syntax
     xor     &opnd5
     xor     &opnd6
@@ -1783,7 +1942,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Extract Byte Low (extbl)
+.*
 .syntax
     extbl   &opnd1
     extbl   &opnd2
@@ -1793,7 +1954,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Extract Longword High (extlh)
+.*
 .syntax
     extlh   &opnd1
     extlh   &opnd2
@@ -1803,7 +1966,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Extract Longword Low (extll)
+.*
 .syntax
     extll   &opnd1
     extll   &opnd2
@@ -1813,7 +1978,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Extract Quadword High (extqh)
+.*
 .syntax
     extqh   &opnd1
     extqh   &opnd2
@@ -1823,7 +1990,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Extract Quadword Low (extql)
+.*
 .syntax
     extql   &opnd1
     extql   &opnd2
@@ -1833,7 +2002,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Extract Word High (extwh)
+.*
 .syntax
     extwh   &opnd1
     extwh   &opnd2
@@ -1843,7 +2014,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Extract Word Low (extwl)
+.*
 .syntax
     extwl   &opnd1
     extwl   &opnd2
@@ -1853,7 +2026,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Insert Byte Low (insbl)
+.*
 .syntax
     insbl   &opnd1
     insbl   &opnd2
@@ -1863,7 +2038,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Insert Longword High (inslh)
+.*
 .syntax
     inslh   &opnd1
     inslh   &opnd2
@@ -1873,7 +2050,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Insert Longword Low (insll)
+.*
 .syntax
     insll   &opnd1
     insll   &opnd2
@@ -1883,7 +2062,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Insert Quadword High (insqh)
+.*
 .syntax
     insqh   &opnd1
     insqh   &opnd2
@@ -1893,7 +2074,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Insert Quadword Low (insql)
+.*
 .syntax
     insql   &opnd1
     insql   &opnd2
@@ -1903,7 +2086,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Insert Word High (inswh)
+.*
 .syntax
     inswh   &opnd1
     inswh   &opnd2
@@ -1913,7 +2098,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Insert Word Low (inswl)
+.*
 .syntax
     inswl   &opnd1
     inswl   &opnd2
@@ -1923,7 +2110,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Mask Byte Low (mskbl)
+.*
 .syntax
     mskbl   &opnd1
     mskbl   &opnd2
@@ -1933,7 +2122,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Mask Longword High (msklh)
+.*
 .syntax
     msklh   &opnd1
     msklh   &opnd2
@@ -1943,7 +2134,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Mask Longword Low (mskll)
+.*
 .syntax
     mskll   &opnd1
     mskll   &opnd2
@@ -1953,7 +2146,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Mask Quadword High (mskqh)
+.*
 .syntax
     mskqh   &opnd1
     mskqh   &opnd2
@@ -1963,7 +2158,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Mask Quadword Low (mskql)
+.*
 .syntax
     mskql   &opnd1
     mskql   &opnd2
@@ -1973,7 +2170,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Mask Word High (mskwh)
+.*
 .syntax
     mskwh   &opnd1
     mskwh   &opnd2
@@ -1983,7 +2182,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Mask Word Low (mskwl)
+.*
 .syntax
     mskwl   &opnd1
     mskwl   &opnd2
@@ -1993,7 +2194,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Shift Left Logical (sll)
+.*
 .syntax
     sll     &opnd5
     sll     &opnd6
@@ -2006,7 +2209,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Shift Right Arithmetic (sra)
+.*
 .syntax
     sra     &opnd5
     sra     &opnd6
@@ -2019,7 +2224,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Shift Right Logical (srl)
+.*
 .syntax
     srl     &opnd5
     srl     &opnd6
@@ -2032,7 +2239,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Zero Bytes (zap)
+.*
 .syntax
     zap     &opnd1
     zap     &opnd2
@@ -2042,7 +2251,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Zero Bytes NOT (zapnot)
+.*
 .syntax
     zapnot  &opnd1
     zapnot  &opnd2
@@ -2052,7 +2263,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Multiply Longword (without overflow) (mull)
+.*
 .syntax
     mull    &opnd1
     mull    &opnd2
@@ -2062,7 +2275,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Multiply Quadword (without overflow) (mulq)
+.*
 .syntax
     mulq    &opnd1
     mulq    &opnd2
@@ -2072,7 +2287,9 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
+.*
 .section Unsigned Quadword Multiply High (umulh)
+.*
 .syntax
     umulh   &opnd1
     umulh   &opnd2
@@ -2082,10 +2299,11 @@ instruction.
 .descrp
 .edescrp
 .category Operate Format Instruction
-
+.*
 :CMT. Floating-Point Operate Format Instruction - Data Type Independent
-
+.*
 .section Copy Sign (cpys)
+.*
 .syntax
     cpys    &opnd1
     cpys    &opnd2
@@ -2093,7 +2311,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - Data Type Independent
+.*
 .section Copy Sign and Exponent (cpyse)
+.*
 .syntax
     cpyse   &opnd1
     cpyse   &opnd2
@@ -2101,7 +2321,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - Data Type Independent
+.*
 .section Copy Sign Negate (cpysn)
+.*
 .syntax
     cpysn   &opnd1
     cpysn   &opnd2
@@ -2109,7 +2331,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - Data Type Independent
+.*
 .section Convert Longword to Quadword (cvtlq)
+.*
 .syntax
     cvtlq   &opnd5
     cvtlq   &opnd6
@@ -2117,7 +2341,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - Data Type Independent
+.*
 .section Convert Quadword to Longword (cvtql)
+.*
 .syntax
     cvtql   &opnd5
     cvtql   &opnd6
@@ -2125,7 +2351,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - Data Type Independent
+.*
 .section Move if Equal to Zero (fcmoveq)
+.*
 .syntax
     fcmoveq     &opnd1
     fcmoveq     &opnd2
@@ -2133,7 +2361,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - Data Type Independent
+.*
 .section Move if Greater Than or Equal to Zero (fcmovge)
+.*
 .syntax
     fcmovge     &opnd1
     fcmovge     &opnd2
@@ -2141,7 +2371,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - Data Type Independent
+.*
 .section Move if Greater Than Zero (fcmovgt)
+.*
 .syntax
     fcmovgt     &opnd1
     fcmovgt     &opnd2
@@ -2149,7 +2381,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - Data Type Independent
+.*
 .section Move if Less Than or Equal to Zero (fcmovle)
+.*
 .syntax
     fcmovle     &opnd1
     fcmovle     &opnd2
@@ -2157,7 +2391,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - Data Type Independent
+.*
 .section Move If Less Than Zero (fcmovlt)
+.*
 .syntax
     fcmovlt     &opnd1
     fcmovlt     &opnd2
@@ -2165,7 +2401,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - Data Type Independent
+.*
 .section Move if Not Equal to Zero (fcmovne)
+.*
 .syntax
     fcmovne     &opnd1
     fcmovne     &opnd2
@@ -2173,24 +2411,29 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - Data Type Independent
+.*
 .section Move from FP Control Register (mf_fpcr)
+.*
 .syntax
     mf_fpcr     $d_reg
 .esyntax
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - Data Type Independent
+.*
 .section Move to FP Control Register (mt_fpcr)
+.*
 .syntax
     mt_fpcr     $d_reg
 .esyntax
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - Data Type Independent
-
+.*
 :CMT. Floating-Point Operate Format Instruction - IEEE
-
+.*
 .section Add S_floating (adds)
+.*
 .syntax
     adds    &opnd1
     adds    &opnd2
@@ -2199,7 +2442,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - IEEE
+.*
 .section Add T_floating (addt)
+.*
 .syntax
     addt    &opnd1
     addt    &opnd2
@@ -2208,7 +2453,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - IEEE
+.*
 .section Compare T_floating Equal (cmpteq)
+.*
 .syntax
     cmpteq  &opnd1
     cmpteq  &opnd2
@@ -2217,7 +2464,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - IEEE
+.*
 .section Compare T_floating Less Than (cmptlt)
+.*
 .syntax
     cmptlt  &opnd1
     cmptlt  &opnd2
@@ -2226,7 +2475,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - IEEE
+.*
 .section Compare T_floating Less Than or Equal (cmptle)
+.*
 .syntax
     cmptle  &opnd1
     cmptle  &opnd2
@@ -2235,7 +2486,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - IEEE
+.*
 .section Compare T_floating Unordered (cmptun)
+.*
 .syntax
     cmptun  &opnd1
     cmptun  &opnd2
@@ -2244,7 +2497,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - IEEE
+.*
 .section Convert Quadword to S_floating (cvtqs)
+.*
 .syntax
     cvtqs   &opnd5
     cvtqs   &opnd6
@@ -2253,7 +2508,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - IEEE
+.*
 .section Convert Quadword to T_floating (cvtqt)
+.*
 .syntax
     cvtqt   &opnd5
     cvtqt   &opnd6
@@ -2262,7 +2519,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - IEEE
+.*
 .section Convert T_floating to S_floating (cvtts)
+.*
 .syntax
     cvtts   &opnd5
     cvtts   &opnd6
@@ -2271,7 +2530,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - IEEE
+.*
 .section Divide S_floating (divs)
+.*
 .syntax
     divs    &opnd1
     divs    &opnd2
@@ -2280,7 +2541,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - IEEE
+.*
 .section Divide T_floating (divt)
+.*
 .syntax
     divt    &opnd1
     divt    &opnd2
@@ -2289,7 +2552,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - IEEE
+.*
 .section Multiply S_floating (muls)
+.*
 .syntax
     muls    &opnd1
     muls    &opnd2
@@ -2298,7 +2563,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - IEEE
+.*
 .section Multiply T_floating (mult)
+.*
 .syntax
     mult    &opnd1
     mult    &opnd2
@@ -2307,7 +2574,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - IEEE
+.*
 .section Subtract S_floating (subs)
+.*
 .syntax
     subs    &opnd1
     subs    &opnd2
@@ -2316,7 +2585,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - IEEE
+.*
 .section Subtract T_floating (subt)
+.*
 .syntax
     subt    &opnd1
     subt    &opnd2
@@ -2325,7 +2596,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - IEEE
+.*
 .section Convert T_floating to Quadword (cvttq)
+.*
 .syntax
     cvttq   &opnd5
     cvttq   &opnd6
@@ -2334,10 +2607,11 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - IEEE
-
+.*
 :CMT. Floating-Point Operate Format Instruction - VAX
-
+.*
 .section Add F_floating (addf)
+.*
 .syntax
     addf    &opnd1
     addf    &opnd2
@@ -2346,7 +2620,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - VAX
+.*
 .section Convert D_floating to G_floating (cvtdg)
+.*
 .syntax
     cvtdg   &opnd5
     cvtdg   &opnd6
@@ -2355,7 +2631,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - VAX
+.*
 .section Add G_floating (addg)
+.*
 .syntax
     addg    &opnd1
     addg    &opnd2
@@ -2364,7 +2642,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - VAX
+.*
 .section Compare G_floating Equal (cmpgeq)
+.*
 .syntax
     cmpgeq  &opnd1
     cmpgeq  &opnd2
@@ -2373,7 +2653,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - VAX
+.*
 .section Compare G_floating Less Than (cmpglt)
+.*
 .syntax
     cmpglt  &opnd1
     cmpglt  &opnd2
@@ -2382,7 +2664,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - VAX
+.*
 .section Compare G_floating Less Than or Equal (cmpgle)
+.*
 .syntax
     cmpgle  &opnd1
     cmpgle  &opnd2
@@ -2391,7 +2675,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - VAX
+.*
 .section Convert G_floating to F_floating (cvtgf)
+.*
 .syntax
     cvtgf   &opnd5
     cvtgf   &opnd6
@@ -2400,7 +2686,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - VAX
+.*
 .section Convert G_floating to D_floating (cvtgd)
+.*
 .syntax
     cvtgd   &opnd5
     cvtgd   &opnd6
@@ -2409,7 +2697,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - VAX
+.*
 .section Convert Quadword to F_floating (cvtqf)
+.*
 .syntax
     cvtqf   &opnd5
     cvtqf   &opnd6
@@ -2418,7 +2708,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - VAX
+.*
 .section Convert Quadword to G_floating (cvtqg)
+.*
 .syntax
     cvtqg   &opnd5
     cvtqg   &opnd6
@@ -2427,7 +2719,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - VAX
+.*
 .section Divide F_floating (divf)
+.*
 .syntax
     divf    &opnd1
     divf    &opnd2
@@ -2436,7 +2730,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - VAX
+.*
 .section Divide G_floating (divg)
+.*
 .syntax
     divg    &opnd1
     divg    &opnd2
@@ -2445,7 +2741,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - VAX
+.*
 .section Multiply F_floating (mulf)
+.*
 .syntax
     mulf    &opnd1
     mulf    &opnd2
@@ -2454,7 +2752,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - VAX
+.*
 .section Multiply G_floating (mulg)
+.*
 .syntax
     mulg    &opnd1
     mulg    &opnd2
@@ -2463,7 +2763,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - VAX
+.*
 .section Subtract F_floating (subf)
+.*
 .syntax
     subf    &opnd1
     subf    &opnd2
@@ -2472,7 +2774,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - VAX
+.*
 .section Subtract G_floating (subg)
+.*
 .syntax
     subg    &opnd1
     subg    &opnd2
@@ -2481,7 +2785,9 @@ instruction.
 .descrp
 .edescrp
 .category Floating-Point Operate Format Instruction - VAX
+.*
 .section Convert G_floating to Quadword (cvtgq)
+.*
 .syntax
     cvtgq   &opnd5
     cvtgq   &opnd6
@@ -2494,6 +2800,7 @@ instruction.
 :CMT. PALcode
 .*
 .section Call Privileged Architecture Library (call_pal)
+.*
 .syntax
     call_pal    palcode
 .esyntax
@@ -2505,27 +2812,34 @@ instruction.
 :CMT. nop and fnop are in directiv.c since they don't require much parsing
 .*
 .section Clear (clr)
+.*
 .syntax
     clr     $d_reg
 .esyntax
 .descrp
 .edescrp
 .category Stylized Code Forms
+.*
 .section Floating Clear (fclr)
+.*
 .syntax
     fclr    $d_reg
 .esyntax
 .descrp
 .edescrp
 .category Stylized Code Forms
+.*
 .section Floating Move (fmov)
+.*
 .syntax
     fmov    &opnd5
 .esyntax
 .descrp
 .edescrp
 .category Stylized Code Forms
+.*
 .section Negate Longword (without overflow) (negl)
+.*
 .syntax
     negl    &opnd5
     negl    &opnd6
@@ -2534,7 +2848,9 @@ instruction.
 .descrp
 .edescrp
 .category Stylized Code Forms
+.*
 .section Negate Quadword (without overflow) (negq)
+.*
 .syntax
     negq    &opnd5
     negq    &opnd6
@@ -2543,7 +2859,9 @@ instruction.
 .descrp
 .edescrp
 .category Stylized Code Forms
+.*
 .section Negate F_floating (negf)
+.*
 .syntax
     negf    &opnd5
     negf    &opnd6
@@ -2551,7 +2869,9 @@ instruction.
 .descrp
 .edescrp
 .category Stylized Code Forms
+.*
 .section Negate G_floating (negg)
+.*
 .syntax
     negg    &opnd5
     negg    &opnd6
@@ -2559,7 +2879,9 @@ instruction.
 .descrp
 .edescrp
 .category Stylized Code Forms
+.*
 .section Negate S_floating (negs)
+.*
 .syntax
     negs    &opnd5
     negs    &opnd6
@@ -2567,7 +2889,9 @@ instruction.
 .descrp
 .edescrp
 .category Stylized Code Forms
+.*
 .section Negate T_floating (negt)
+.*
 .syntax
     negt    &opnd5
     negt    &opnd6
@@ -2575,7 +2899,9 @@ instruction.
 .descrp
 .edescrp
 .category Stylized Code Forms
+.*
 .section Floating Negate (fneg)
+.*
 .syntax
     fneg    &opnd5
     fneg    &opnd6
@@ -2583,7 +2909,9 @@ instruction.
 .descrp
 .edescrp
 .category Stylized Code Forms
+.*
 .section Floating Negate F_floating (fnegf)
+.*
 .syntax
     fnegf   &opnd5
     fnegf   &opnd6
@@ -2591,7 +2919,9 @@ instruction.
 .descrp
 .edescrp
 .category Stylized Code Forms
+.*
 .section Floating Negate G_floating (fnegg)
+.*
 .syntax
     fnegg   &opnd5
     fnegg   &opnd6
@@ -2599,7 +2929,9 @@ instruction.
 .descrp
 .edescrp
 .category Stylized Code Forms
+.*
 .section Floating Negate S_floating (fnegs)
+.*
 .syntax
     fnegs   &opnd5
     fnegs   &opnd6
@@ -2607,7 +2939,9 @@ instruction.
 .descrp
 .edescrp
 .category Stylized Code Forms
+.*
 .section Floating Negate T_floating (fnegt)
+.*
 .syntax
     fnegt   &opnd5
     fnegt   &opnd6
@@ -2615,7 +2949,9 @@ instruction.
 .descrp
 .edescrp
 .category Stylized Code Forms
+.*
 .section Logical Complement (NOT) (not)
+.*
 .syntax
     not     &opnd5
     not     &opnd6
@@ -2628,28 +2964,36 @@ instruction.
 .descrp
 .edescrp
 .category Stylized Code Forms
+.*
 .section Logical Sum (OR) (or)
+.*
 .syntax
     Synonym for BIS
 .esyntax
 .descrp
 .edescrp
 .category Stylized Code Forms
+.*
 .section Logical Product with Complement (ANDNOT) (andnot)
+.*
 .syntax
     Synonym for BIC
 .esyntax
 .descrp
 .edescrp
 .category Stylized Code Forms
+.*
 .section Logical Equivalence (XORNOT) (xornot)
+.*
 .syntax
     Synonym for EQV
 .esyntax
 .descrp
 .edescrp
 .category Stylized Code Forms
+.*
 .section Floating Absolute Value (fabs)
+.*
 .syntax
     fabs    &opnd5
     fabs    &opnd6
@@ -2657,7 +3001,9 @@ instruction.
 .descrp
 .edescrp
 .category Stylized Code Forms
+.*
 .section Sign-Extension Longword (sextl)
+.*
 .syntax
     sextl   &opnd5
     sextl   &opnd6
@@ -2670,6 +3016,7 @@ instruction.
 :CMT. The following pseudo-instructions might emit multiple real instructions
 .*
 .section Move (mov)
+.*
 .syntax
     mov     &opnd5
     mov     val_immed, d_reg
@@ -2681,6 +3028,7 @@ instruction.
 :CMT. abs pseudo ins (opcode & funccode are from subl/v, subq/v)
 .*
 .section Absolute Value Longword (absl)
+.*
 .syntax
     absl    &opnd5
     absl    &opnd6
@@ -2689,7 +3037,9 @@ instruction.
 .descrp
 .edescrp
 .category Pseudo Instruction
+.*
 .section Absolute Value Quadword (absq)
+.*
 .syntax
     absq    &opnd5
     absq    &opnd6
@@ -2707,55 +3057,70 @@ instruction.
 :CMT. Load instructions that emit more than one instruction
 .*
 .section Load Byte (ldb)
+.*
 .syntax
     ldb     &opnd8
 .esyntax
 .descrp
 .edescrp
 .category unimplemented Pseudo Instruction
+.*
 .section Load Byte Unsigned (ldbu)
+.*
 .syntax
     ldbu    &opnd8
 .esyntax
 .descrp
 .edescrp
 .category unimplemented Pseudo Instruction
+.*
 .section Load Word (ldw)
+.*
 .syntax
     ldw     &opnd8
 .esyntax
 .descrp
 .edescrp
 .category unimplemented Pseudo Instruction
+.*
 .section Load Word Unsigned (ldwu)
+.*
 .syntax
     ldwu    &opnd8
 .esyntax
 .descrp
 .edescrp
 .category unimplemented Pseudo Instruction
+.*
 .section Unaligned Load Word (uldw)
+.*
 .syntax
     uldw    &opnd8
 .esyntax
 .descrp
 .edescrp
 .category unimplemented Pseudo Instruction
+.*
 .section Unaligned Load Word Unsigned (uldwu)
+.*
 .syntax
     uldwu   &opnd8
 .esyntax
 .descrp
 .edescrp
 .category unimplemented Pseudo Instruction
+.*
 .section Unaligned Load Longword (uldl)
+.*
 .syntax
     uldl    &opnd8
 .esyntax
 .descrp
 .edescrp
 .category unimplemented Pseudo Instruction
+.*
 .section Unaligned Load Quadword (uldq)
+.*
 .syntax
     uldq    &opnd8
 .esyntax
@@ -2766,34 +3131,43 @@ instruction.
 :CMT. Store instructions that emit more than one instruction
 .*
 .section Store Byte (stb)
+.*
 .syntax
     stb     &opnd9
 .esyntax
 .descrp
 .edescrp
 .category unimplemented Pseudo Instruction
+.*
 .section Store Word (stw)
+.*
 .syntax
     stw     &opnd9
 .esyntax
 .descrp
 .edescrp
 .category unimplemented Pseudo Instruction
+.*
 .section Unaligned Store Word (ustw)
+.*
 .syntax
     ustw    &opnd9
 .esyntax
 .descrp
 .edescrp
 .category unimplemented Pseudo Instruction
+.*
 .section Unaligned Store Longword (ustl)
+.*
 .syntax
     ustl    &opnd9
 .esyntax
 .descrp
 .edescrp
 .category unimplemented Pseudo Instruction
+.*
 .section Unaligned Store Quadword (ustq)
+.*
 .syntax
     ustq    &opnd9
 .esyntax
@@ -2805,7 +3179,9 @@ instruction.
 :CMT. hardward level.
 .*
 :CMT. (MS asaxp does this by generating bsr to some _div function elsewhere)
+.*
 .section Divide Longword (divl)
+.*
 .syntax
     divl    &opnd1
     divl    &opnd2
@@ -2816,7 +3192,9 @@ instruction.
 .descrp
 .edescrp
 .category unimplemented Pseudo Instruction
+.*
 .section Divide Longword Unsigned (divlu)
+.*
 .syntax
     divlu   &opnd1
     divlu   &opnd2
@@ -2826,7 +3204,9 @@ instruction.
 .descrp
 .edescrp
 .category unimplemented Pseudo Instruction
+.*
 .section Divide Quadword (divq)
+.*
 .syntax
     divq    &opnd1
     divq    &opnd2
@@ -2836,7 +3216,9 @@ instruction.
 .descrp
 .edescrp
 .category unimplemented Pseudo Instruction
+.*
 .section Divide Quadword Unsigned (divqu)
+.*
 .syntax
     divqu   &opnd1
     divqu   &opnd2
@@ -2846,7 +3228,9 @@ instruction.
 .descrp
 .edescrp
 .category unimplemented Pseudo Instruction
+.*
 .section Longword Remainder (reml)
+.*
 .syntax
     reml    &opnd1
     reml    &opnd2
@@ -2856,7 +3240,9 @@ instruction.
 .descrp
 .edescrp
 .category unimplemented Pseudo Instruction
+.*
 .section Longword Remainder Unsigned (remlu)
+.*
 .syntax
     remlu   &opnd1
     remlu   &opnd2
@@ -2866,7 +3252,9 @@ instruction.
 .descrp
 .edescrp
 .category unimplemented Pseudo Instruction
+.*
 .section Quadword Remainder (remq)
+.*
 .syntax
     remq    &opnd1
     remq    &opnd2
@@ -2876,7 +3264,9 @@ instruction.
 .descrp
 .edescrp
 .category unimplemented Pseudo Instruction
+.*
 .section Quadword Remainder Unsigned (remqu)
+.*
 .syntax
     remqu   &opnd1
     remqu   &opnd2

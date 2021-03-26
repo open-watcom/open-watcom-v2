@@ -1,9 +1,10 @@
 .chap *refid=wasm The &asmname.
 .*
 .if &e'&dohelp eq 0 .do begin
-.section Introduction
-.do end
 .*
+.section Introduction
+.*
+.do end
 .np
 .ix 'assembler'
 This chapter describes the &asmname..
@@ -303,8 +304,11 @@ pushcontext    .radix         record         .repeat
 .np
 There are a few specific features in &asmname.
 .np
+.*
 .beglevel
+.*
 .section Naming convention
+.*
 .millust begin
                  Procedure   Variable
 Convention         Name        Name
@@ -327,7 +331,9 @@ In STDCALL procedures name 'nn' is overall parametrs size in bytes.
 STDCALL symbols mangling is suppressed by -zzo command line option (WASM backward compatible).
 .endnote
 .np
+.*
 .section &company "C" name mangler
+.*
 .millust begin
 Command line     Procedure   Variable
   option           Name        Name
@@ -337,7 +343,9 @@ Command line     Procedure   Variable
 3,4,5,6 with s      '*'        '*'
 .millust end
 .np
+.*
 .section Calling convention
+.*
 .millust begin
                       Parameters    Parameters   Cleanup caller
 Convention   Vararg    passed by       order         stack

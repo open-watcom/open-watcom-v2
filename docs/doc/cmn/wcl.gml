@@ -11,7 +11,6 @@ Source files are either compiled or assembled based on file extension;
 object files and libraries are simply included in the link phase.
 Options can be passed on to both the compiler and linker.
 .*
-.*
 .section &wclcmdup16/&wclcmdup32 Command Line Format
 .*
 .np

@@ -48,9 +48,9 @@ register int   y          = x * MaxRecLen;
 .millust end
 .*
 .section Initialization of Arrays
+.*
 .ix 'array' 'initialization'
 .ix 'initialization' 'array'
-.*
 .pp
 For arrays of
 characters
@@ -208,9 +208,9 @@ int Identity[3][3] = { 1, 0, 0,
 .millust end
 .*
 .section Initialization of Structures
+.*
 .ix 'initialization' 'struct'
 .ix 'struct' 'initialization'
-.*
 .pp
 Structures
 may be initialized in a manner similar to arrays.
@@ -252,9 +252,9 @@ initializes a sub-member, until no more sub-members are found, in which
 case the next member of the outer structure is initialized.
 .*
 .section Initialization of Unions
+.*
 .ix 'initialization' 'union'
 .ix 'union' 'initialization'
-.*
 .pp
 Initializations of unions is the same as for structures, except that
 only the first member of the union may be initialized,
@@ -360,8 +360,8 @@ then the initialization could only set the first three characters.
 :CMT. list could have been omitted, but were included for clarity.
 .*
 .section Uninitialized Objects
-.ix 'uninitialized objects'
 .*
+.ix 'uninitialized objects'
 .pp
 An object with
 .us static

@@ -50,16 +50,15 @@ Alternatively, you can do the above and then redefine
 for any projects which are not under the
 .id dev_dir
 .period
-
+.*
 .section Project Names
 .*
 .np
 .ix 'names'
-
 Each project must be given a unique name, which should also be a valid
 directory name under FAT file systems (8.3 convention).
 .np
-
+.*
 .section Makefiles
 .*
 .np
@@ -131,8 +130,7 @@ When referring to other projects, a makefile should use the
 .id X_dir
 macro, where X is the name of the project.
 .endnote
-
-
+.*
 .section Requirements To Build
 .*
 .np
@@ -216,7 +214,7 @@ a batchfile in that bin which echoes a message to that effect (to alert
 people to the fact that you've just made their life difficult).
 More general tools (yacc, re2c) that are likely to be used by several
 projects should be copied up into the build/bin directory.
-
+.*
 .section The Runtime DLL Libraries
 .*
 .np
@@ -225,8 +223,7 @@ If you set
 .id $(proj_name)_rtdll
 = 1, the -br switch should be thrown for you automatically, providing the
 target os supports it.
-
-
+.*
 .section Memory Trackers
 .*
 .np
@@ -243,8 +240,7 @@ is set to 1, and disable it otherwise.
 .np
 The source to the memory tracker can be found in
 .us bld\trmem.
-
-
+.*
 .section The Clean Target
 .*
 .np
@@ -265,8 +261,7 @@ every part of a project can be built from scratch, ensuring that there
 will be no nasty surprises when stuff breaks for people after a clean
 install just because you had a generated file hanging around and never
 discovered that it can no longer be made.
-
-
+.*
 .section Pmake Support
 .*
 .np
@@ -338,8 +333,7 @@ whatnot installed and/or cannot run some or all of the platform specific
 tools required during builds. And this situation is the norm rather than
 exception &mdash only dedicated build servers usually have all necessary
 files in place.
-
-
+.*
 .section Misc Conventions
 .*
 .np
@@ -382,7 +376,7 @@ host_os    = nt
 host_cpu   = axp
 target_cpu = 386
 .millust end
-
+.*
 .section DLLs and Windowed Apps
 .*
 .np
@@ -397,7 +391,7 @@ as normal, and then, if creating a windowed app, set
 = 1. If creating a DLL, set
 .id sys_dll
 = 1. Delightfully simple.
-
+.*
 .section Include Paths
 .*
 .np
@@ -445,7 +439,7 @@ means that all include paths must be prepended with a -I switch, for example:
 .millust begin
 inc_dirs_sys_nt    = -I$(lang_root)\h\nt
 .millust end
-
+.*
 .section Executive Summary
 .*
 .np
@@ -516,9 +510,9 @@ host_cpu = y
 .np
 That's it! The only downside is that sticking to these guidelines will make
 everyone's life less exciting.
-
-
+.*
 .chap Technical Notes
+.*
 .section 32-bit Windows run-time DLLs
 .*
 .np
@@ -555,7 +549,7 @@ traversing the build tree, deciding which projects to build for what platforms,
 logging the results to a file, and copying the finished software into the
 release tree (rel), making fully automated builds a possibility. If nothing
 goes wrong that is.
-
+.*
 .section Builder
 .*
 .np
@@ -597,7 +591,7 @@ Common commands:
 .note builder clean
 &mdash erase object files, executables, etc. so you can build from scratch
 .endnote
-
+.*
 .section Pmake
 .*
 .np
@@ -692,7 +686,7 @@ occasionally have this problem doesn't mean we have to as well!
 Passing the automated tests can never completely guarantee that everything
 works perfectly as designed, but it does let you sleep easier at night,
 comfortable in the knowledge that there aren't any really major problems.
-
+.*
 .section Running the tests
 .*
 .np

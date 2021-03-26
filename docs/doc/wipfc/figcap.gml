@@ -1,4 +1,5 @@
 .section *refid='figcap' figcap
+.*
 .ix 'figcap'
 .ix 'Figures' 'caption'
 .ix 'Block' 'figcap'

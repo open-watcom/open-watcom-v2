@@ -1,4 +1,5 @@
 .section *refid='fn' fn
+.*
 .ix 'fn'
 .ix 'Block' 'fn'
 .ix 'Footnote'

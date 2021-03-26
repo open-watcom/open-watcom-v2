@@ -1,4 +1,5 @@
 .section *refid='parml' parml
+.*
 .ix 'parml'
 .ix 'Parameter list'
 .ix 'Lists' 'parameter'
@@ -28,6 +29,7 @@ Do not add blank lines between each term/description pair.
 .beglevel
 .*
 .section *refid='pt' pt
+.*
 .ix 'pt'
 .ix 'Lists' 'parameter term'
 .ix 'Parameter list' 'term'
@@ -40,6 +42,7 @@ The parameter to be described. Multiple pt tags (synonyms) may described by a si
 .tag end
 .*
 .section *refid='pd' pd
+.*
 .ix 'pd'
 .ix 'Lists' 'parameter description'
 .ix 'Parameter list' 'description'

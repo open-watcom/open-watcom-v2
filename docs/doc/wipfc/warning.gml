@@ -1,4 +1,5 @@
 .section *refid='warning' warning
+.*
 .ix 'warning'
 .ix 'Block' 'warning'
 .ix 'Generated text' 'warning'

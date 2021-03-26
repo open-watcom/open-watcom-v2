@@ -1,9 +1,10 @@
 .chap *refid=fassmnt Assignment Statements
 .*
 .if &e'&dohelp eq 0 .do begin
-.section Introduction
-.do end
 .*
+.section Introduction
+.*
+.do end
 .np
 Assignment statements are used to define entities.
 There are four different types of assignment.

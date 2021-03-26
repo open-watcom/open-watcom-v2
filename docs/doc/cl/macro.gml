@@ -212,8 +212,8 @@ The argument substitution capabilities of
 the C preprocessor are very powerful, but
 can be tricky. The following sections illustrate the capabilities,
 and try to shed light on the problems that might be encountered.
-.beglevel
 .*
+.beglevel
 .section Converting An Argument to a String
 .*
 .pp
@@ -938,7 +938,6 @@ nor the identifier
 .*
 .ix 'macro' 'predefined'
 .ix 'predefined macro'
-.*
 .pp
 ..im sysmacro
 .*

@@ -1,4 +1,5 @@
 .section *refid='li' li
+.*
 .ix 'li'
 .ix 'List item'
 .ix 'Lists' 'item'

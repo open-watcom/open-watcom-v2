@@ -1,4 +1,5 @@
 .section *refid='link' link
+.*
 .ix 'link'
 .ix 'Links' 'text'
 .ix 'In-line' 'link'

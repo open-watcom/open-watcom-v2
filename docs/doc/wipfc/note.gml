@@ -1,4 +1,5 @@
 .section *refid='note' note
+.*
 .ix 'note'
 .ix 'Block' 'note'
 .ix 'Generated text' 'note'

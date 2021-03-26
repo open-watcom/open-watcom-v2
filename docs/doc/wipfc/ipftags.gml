@@ -19,14 +19,15 @@ Formatting tags that can appear anywhere, but are usually in-line.
 .endpoint
 .*
 .section Text
-.ix 'text'
 .*
+.ix 'text'
 .np
 Text consists of words, whitespace, punctuation, and entity references (symbols).
 .*
 .beglevel
 .*
 .section Words
+.*
 .ix 'words'
 .ix 'Text' 'words'
 .np
@@ -35,9 +36,9 @@ depends upon the current locale. For the default locale (en_US, code page 850), 
 case ASCII letters are allowed (A-Z, a-z). Other letters can be included via entity references.
 .*
 .section Whitespace
+.*
 .ix 'whitespace'
 .ix 'Text' 'whitespace'
-.*
 .np
 Whitespace consists of spaces, tabs, and new-line characters. Usually, single whitespace characters
 are not significant, but multiple whitespace characters are. Tab characters are not expanded, so count
@@ -48,6 +49,7 @@ characters will cause line breaks and the text will be shown as you have formatt
 is monospaced, spaces as well as new-lines will be significant.
 .*
 .section Punctuation
+.*
 .ix 'punctuation'
 .ix 'Text' 'punctuation'
 .np
@@ -60,11 +62,11 @@ period ('.') ends both tags and entity references. If you need to use such const
 punctuation character with an entity reference ('&amp.colon.', '&amp.amp.', and '&amp.per.').
 .*
 .section Entity References (Symbols)
+.*
 .ix 'symbols'
 .ix 'Entity references'
 .ix 'Text' 'symbols'
 .ix 'Text' 'entity references'
-.*
 .np
 Entities are symbolic references to single characters. During processing of the source file, valid
 entity references are removed and the matching single character is substituted. This allows you to
@@ -80,8 +82,8 @@ are case sensitive: &amp.Alpha. and &amp.alpha. are two different things.
 .endlevel
 .*
 .section Tag Syntax
-.ix 'Tags' 'syntax'
 .*
+.ix 'Tags' 'syntax'
 .np
 All tags begin with a colon (':') and end with a period ('.'). In addition, many tags have
 flags or attribute=value pairs that appear inside the tag between the tag name and the end-of-tag
@@ -89,8 +91,8 @@ delimiter ('.'). If you forget the end-of-tag delimiter, the numerous warnings t
 will be sure to let you know.
 .*
 .section Tag Attributes
-.ix 'Tags' 'attributes'
 .*
+.ix 'Tags' 'attributes'
 .np
 A tag may have one or more
 .keyword attributes.
@@ -144,16 +146,16 @@ are supported, and each has a keyword:
 :ESL.
 .*
 .section End Tags
-.ix 'Tags' 'ending'
 .*
+.ix 'Tags' 'ending'
 .np
 Some tags require matching end tags to form an enclosing block of code. The end tag has the same
 name as the tag prefixed with the letter 'e'. For example, if "tag" had an end tag, it
 would be "etag".
 .*
 .section Nesting Tags
-.ix 'Tags' 'nesting'
 .*
+.ix 'Tags' 'nesting'
 .np
 Most tags can be arbitrarily nested within other tags. However, some tags can
 .em only
@@ -165,8 +167,8 @@ try to include a tag where it doesn't belong, &ipfcmd will issue a warning, the 
 and the result will not be what you hoped for!
 .*
 .section Tags Requiring Text
-.ix 'Tags' 'and text'
 .*
+.ix 'Tags' 'and text'
 .np
 Some tags (for example, heading tags) have text associated with them. This text can appear either
 immediately after the end-of-tag delimiter ('.') or on the next line. Note, however, that in this
@@ -174,6 +176,7 @@ case the end-of-tag delimiter must be immediately followed by a new-line charact
 of whitespace is allowed.
 .*
 .section *refid=units Units of Measure
+.*
 .np
 Several tags have attributes that are measurements of one sort or another (window origin and extent,
 for example). Dimensional measurements can be one of three types:

@@ -1,4 +1,5 @@
 .section *refid='i1' i1
+.*
 .ix 'i1'
 .ix 'Indexing' 'primary entry'
 .ix 'Block' 'i1'

@@ -1,4 +1,5 @@
 .section *refid='hn' h1 - h6
+.*
 .ix 'h1'
 .ix 'h2'
 .ix 'h3'

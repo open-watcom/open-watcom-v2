@@ -223,6 +223,7 @@ directive, and the error is not readily apparent, the error may actually
 be caused by something in the included file.
 .*
 .keep begin
+.*
 .section Extra Semi-colon in Macros
 .*
 .pp

@@ -1,4 +1,5 @@
 .section *refid='hpn' hp1 - hp9
+.*
 .ix 'hp1'
 .ix 'hp2'
 .ix 'hp3'

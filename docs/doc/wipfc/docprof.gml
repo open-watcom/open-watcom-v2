@@ -1,4 +1,5 @@
 .section *refid='docprof' docprof
+.*
 .ix 'docprof'
 .ix 'Document header' 'docprof'
 .tag begin

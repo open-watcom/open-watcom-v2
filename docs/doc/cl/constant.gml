@@ -398,7 +398,6 @@ $0.        $0E0         $double
 .*
 .ix 'constant' 'character'
 .ix 'character constant'
-.*
 .pp
 A character constant is usually one character enclosed in single-quotes,
 and indicates a constant whose value

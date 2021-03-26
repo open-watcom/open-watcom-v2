@@ -266,6 +266,7 @@ is the same as the symbolic name
 .period
 .*
 .keep 12
+.*
 .section Significance of Lower Case Characters (Extension)
 .*
 .np

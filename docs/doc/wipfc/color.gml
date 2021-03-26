@@ -1,4 +1,5 @@
 .section *refid='color' color
+.*
 .ix 'color'
 .ix 'Formatting' 'color'
 .tag begin

@@ -1,5 +1,5 @@
 .chap Programming Style
-
+.*
 .ix 'style'
 Programming style is, unfortunately, a religious matter. Many holy wars
 have been fought over it with no clear result (because the losing side
@@ -25,8 +25,7 @@ even a mortal sin. In fact, you might have a very good reason not to
 stick to the guidelines, and we always prefer common sense to fixed
 rules. However breaking the guidelines with no good reason is bad for
 your karma. Don't do it!
-
-
+.*
 .section Source file structure
 .*
 .np
@@ -69,8 +68,7 @@ will tell you if you change the definition but not the header file. If you
 use ad-hoc
 .kw extern
 declarations, you better make sure they're in sync with the actual definitions.
-
-
+.*
 .section Help the compiler and it will help you
 .*
 .np

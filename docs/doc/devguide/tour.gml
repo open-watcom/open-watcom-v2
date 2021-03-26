@@ -1,5 +1,5 @@
 .chap Project Overview
-
+.*
 This document serves as an introduction and a guide for developers of
 the Open Watcom compilers and tools. It is not particularly useful for
 the users (who are also developers) of Open Watcom compilers &mdash
@@ -9,7 +9,7 @@ C Language Reference and other user oriented books.
 It should not be assumed that this book is in any way final or the
 ultimate reference. Readers are encouraged to add, change and modify this
 document to better reflect evolution of the Open Watcom project.
-
+.*
 .section History
 .*
 .np
@@ -85,8 +85,7 @@ The process of opening the source was longer than originally anticipated
 (all software related projects tend to work out this way for some
 inexplicable reason) but in the first half of 2002, the source was finally
 made available under the Sybase Open Watcom Public License version 1.0.
-
-
+.*
 .section Guided Tour
 .*
 .np
@@ -146,8 +145,7 @@ mirrors the
 .us WATCOM
 directory of a typical Open Watcom installation.
 .endnote
-
-
+.*
 .section The bld directory
 .*
 .np
@@ -357,14 +355,13 @@ contain specific documentation pertaining to them, usually located
 in a directory called 'doc' or somesuch. For the most
 part, the truly uptodate and comprehensive documentation is the
 source code.
-
-
+.*
 .chap First Steps
-
+.*
 This chapter briefly describes the prerequisite steps necessary
 to build and/or contribute to the Open Watcom project &mdash how
 to get the source code and how to set up the build environment.
-
+.*
 .section Connecting up
 .*
 .np
@@ -393,7 +390,7 @@ information can be found on the Open Watcom web site. If you followed
 the instructions correctly, no servers are down and no other unpredictable
 (or maybe predictable) things happened, you will have brought your source
 tree to the latest revision (aka tip or head revision).
-
+.*
 .section Gearing up for Building
 .*
 .np

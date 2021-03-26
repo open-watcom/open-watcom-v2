@@ -1,9 +1,10 @@
 .chap *refid=vidrem Remote Debugging
 .*
 .if &e'&dohelp eq 0 .do begin
-.section Overview
-.do end
 .*
+.section Overview
+.*
+.do end
 .np
 .ix 'remote debugging'
 .ix 'debugging' 'remote'

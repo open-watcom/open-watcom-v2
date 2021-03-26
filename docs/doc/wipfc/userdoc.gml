@@ -1,4 +1,5 @@
 .section *refid='userdoc' userdoc
+.*
 .ix userdoc
 .tag begin
 .tdesc

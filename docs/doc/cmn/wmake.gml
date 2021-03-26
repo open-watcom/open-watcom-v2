@@ -35,7 +35,6 @@
 .section Introduction
 .*
 .do end
-.*
 .np
 .ix '&makname' '&makcmdup'
 .ix 'make' '&makcmdup'

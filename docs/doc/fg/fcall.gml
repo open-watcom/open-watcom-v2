@@ -10,9 +10,10 @@
 .chap *refid=&calref. &calttl.
 .*
 .if &e'&dohelp eq 0 .do begin
-.section Introduction
-.do end
 .*
+.section Introduction
+.*
+.do end
 .el .do begin
 .   .if '&machine' eq '8086' .do begin
 .   .   .helppref 16-bit:

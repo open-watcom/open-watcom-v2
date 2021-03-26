@@ -10,9 +10,10 @@
 .chap *refid=mdl386 32-bit Memory Models
 .*
 .if &e'&dohelp eq 0 .do begin
-.section Introduction
-.do end
 .*
+.section Introduction
+.*
+.do end
 .np
 .ix 'memory models' '32-bit'
 This chapter describes the various 32-bit memory models supported by

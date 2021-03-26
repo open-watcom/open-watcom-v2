@@ -289,7 +289,6 @@ requests that the debugger omit all debugging information when loading
 an executable image.
 .bi This option is useful if the debugger detects and
 .bi tries to load debugging information which is not valid.
-
 .note /DIp=dipname
 .ix 'options' 'DIp'
 .ix 'DIp option'
@@ -297,7 +296,6 @@ used to load a non-default Debug Information Processor (DIP).  This option
 is generally not needed since the debugger loads all DIPs that it finds
 by default.
 .refalso wndimg
-
 .endnote
 .*
 .section *refid=dwopt DOS and Windows Options
@@ -310,7 +308,6 @@ Refer to the sections called :HDREF refid='dosopt'. and
 :HDREF refid='winopt'. for more switches relating to these
 environments.
 .begnote $break
-
 .note /Monochrome
 .ix 'options' 'Monochrome'
 .ix 'Monochrome option'
@@ -320,7 +317,6 @@ output device, leaving the Color display for the application to use.
 Use this option in conjunction with the
 .sy Two
 option described below.
-
 .note /Color, /Colour
 .ix 'options' 'Color'
 .ix 'Color option'
@@ -332,7 +328,6 @@ output device.
 This option is used in conjunction with the
 .sy Two
 option described below.
-
 .note /Ega43
 .ix 'display' 'changing lines'
 .ix 'screen' 'number of lines'
@@ -341,7 +336,6 @@ option described below.
 .ix 'EGA lines'
 When an Enhanced Graphics Adapter (EGA) is present, 43 lines of
 output are displayed by a character mode debugger.
-
 .note /Vga50
 .ix 'display' 'changing lines'
 .ix 'screen' 'number of lines'
@@ -350,7 +344,6 @@ output are displayed by a character mode debugger.
 .ix 'VGA lines'
 When a Video Graphics Array (VGA) is present, 50 lines of output
 are displayed by a character mode debugger.
-
 .note /Overwrite
 .ix 'options' 'Overwrite'
 .ix 'Overwrite option'
@@ -359,7 +352,6 @@ In this mode, the application and the debugger are forced to share the
 same display area.
 .np
 .bi Do not use this option if you wish to debug a DOS graphics-mode application.
-
 .note /Two
 .ix 'options' 'Two'
 .ix 'Two option'
@@ -372,7 +364,6 @@ If the monitor type is specified then the monitor corresponding to that
 type is used for the debugger's screen.
 .bi This option may be used when debugging a DOS graphics-mode application on
 .bi the same machine and a second monitor is available.
-
 .endnote
 .*
 .section *refid=dosopt DOS Specific Options
@@ -381,7 +372,6 @@ type is used for the debugger's screen.
 Use the following switches for the DOS debuggers. For more DOS options,
 refer to the section called :HDREF refid='dwopt'..
 .begnote $break
-
 .note /Page
 .ix 'options' 'Page'
 .ix 'Page option'
@@ -396,7 +386,6 @@ option results in faster switching between the application and debugger
 screens and makes use of the extra screen memory available with the
 adapter.  This is the default display option.
 .bi Do not use this option if you wish to debug a DOS graphics-mode application.
-
 .note /Swap
 .ix 'options' 'Swap'
 .ix 'Swap option'
@@ -469,7 +458,6 @@ displaying dialogs and window frames.
 .bi Use this option when trying to debug in
 .bi an environment where character remapping is not available.
 Windowed DOS boxes under OS/2 do not support character re-mapping.
-
 .note /NOGraphicsmouse
 .ix 'options' 'NOGraphicsmouse'
 .ix 'NOGraphicsmouse option'
@@ -478,7 +466,6 @@ cursor look like an arrow instead of a block.
 .bi Use this option
 .bi if the mouse cursor appears as 4 line drawing characters
 .bi instead of an arrow.
-
 .endnote
 .*
 .section *refid=winopt Windows Specific Options
@@ -488,7 +475,6 @@ Use the following switches for the Windows character-mode debugger.
 Refer to the section called :HDREF refid='dwopt'. for more Windows
 options.
 .begnote $break
-
 .note /Fastswap
 .ix 'options' 'Fastswap'
 .ix 'Fastswap option'
@@ -499,7 +485,6 @@ guaranteed to work for all video adapters.  This option applies to
 Windows 3.x only.  By default, the Windows 3.x version of the
 debugger uses a more conservative (and slower) method that works
 with all video adapters.
-
 .endnote
 .*
 .section *refid=linuxopt Linux Options

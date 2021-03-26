@@ -1,9 +1,10 @@
 .chap The Touch Utility
 .*
 .if &e'&dohelp eq 0 .do begin
-.section Introduction
-.do end
 .*
+.section Introduction
+.*
+.do end
 .np
 .ix 'Touch'
 .ix 'make' 'Touch'

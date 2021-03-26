@@ -1,9 +1,10 @@
 .chap The &company Image Editor
 .*
 .if &e'&dohelp eq 0 .do begin
-.section Introduction to the Image Editor
-.do end
 .*
+.section Introduction to the Image Editor
+.*
+.do end
 .np
 If you want to design visual resources such as bitmaps, icons, or
 cursors and add sizzle to your application's interface, the image

@@ -6,6 +6,7 @@
 This section acts as a reference, describing how &ipfcmd implements each tag.
 .*
 .section Overview
+.*
 .np
 Tags are the heart of IPF markup and come in four flavors:
 .autopoint
@@ -151,6 +152,7 @@ euserdoc
 .millust end
 .*
 .section Reference
+.*
 .np
 The &ipfname follows the behavior of the IBM OS/2 Help Compiler as documented in the "ipfref.inf"
 help file. This means that the behavior of the two compilers is very similar but not identical, since the

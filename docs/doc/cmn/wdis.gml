@@ -1,9 +1,10 @@
 .chap *refid=wdisasm The Object File Disassembler
 .*
 .if &e'&dohelp eq 0 .do begin
-.section Introduction
-.do end
 .*
+.section Introduction
+.*
+.do end
 .np
 .ix 'disassembler'
 This chapter describes the &disname..

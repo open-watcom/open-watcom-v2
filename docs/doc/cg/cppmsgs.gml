@@ -91,7 +91,9 @@ Margaret A. Ellis and Bjarne Stroustrup and published by
 Addison-Wesley (ISBN 0-201-51459-1).
 .*
 .if &e'&dohelp eq 0 .do begin
+.*
 .section Diagnostic Messages
+.*
 .begnote
 .do end
 .ti set `

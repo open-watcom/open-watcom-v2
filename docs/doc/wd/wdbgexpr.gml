@@ -1,9 +1,10 @@
 .chap *refid=videxpr &dbgname Expression Handling
 .*
 .if &e'&dohelp eq 0 .do begin
-.section Introduction
-.do end
 .*
+.section Introduction
+.*
+.do end
 .ix 'expressions' 'handling of'
 .np
 The &dbgname is capable of handling a wide variety of expressions.
@@ -723,6 +724,7 @@ The following sections describe the operators presented above.
 .beglevel
 .*
 .keep
+.*
 .section Assignment Operators for the C Grammar
 .*
 .begnote
@@ -884,6 +886,7 @@ the value on the right.
 .endnote
 .*
 .keep
+.*
 .section Unary Arithmetic Operators for the C Grammar
 .*
 .begnote

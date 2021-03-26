@@ -1,4 +1,5 @@
 .section *refid='ctrldef' ctrldef
+.*
 .ix 'ctrldef'
 .ix 'Document header' 'ctrldef'
 .tag begin

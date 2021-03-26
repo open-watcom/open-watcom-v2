@@ -1,9 +1,10 @@
 .chap *refid=fio Input/Output
 .*
 .if &e'&dohelp eq 0 .do begin
-.section Introduction
-.do end
 .*
+.section Introduction
+.*
+.do end
 .np
 FORTRAN 77 provides a means of communicating information or
 .us data

@@ -45,7 +45,6 @@ Refer to the &lnkname Guide for details.
 .eremark
 .np
 .*
-.*
 .section The &e2bname. Utility Command Line
 .*
 .np
@@ -164,7 +163,6 @@ as if it were to be loaded at 0xE000:0x0000. The result will be written to
 .np
 The above command line may serve as an example of creating a 128 KByte BIOS
 image for the PC-AT architecture.
-.*
 .*
 .section &e2bcmdu. Messages
 .*

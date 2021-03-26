@@ -1,4 +1,5 @@
 .section *refid='lines' lines
+.*
 .ix 'lines'
 .ix 'Block' 'lines'
 .tag begin

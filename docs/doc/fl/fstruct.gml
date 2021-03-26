@@ -1,9 +1,10 @@
 .chap *refid=fstruct Program Structure Control Statements
 .*
 .if &e'&dohelp eq 0 .do begin
-.section Introduction
-.do end
 .*
+.section Introduction
+.*
+.do end
 .np
 The use of structured programming statements has been found to
 encourage better programming and design practices among beginners, and
@@ -160,6 +161,7 @@ will be printed and control will pass to the statement following the
 statement.
 .*
 .keep 19
+.*
 .section ELSE IF
 .*
 .np
@@ -350,6 +352,7 @@ Control will pass to the statement following the
 statement.
 .*
 .keep 10
+.*
 .section DO - END DO
 .*
 .mext begin
@@ -459,6 +462,7 @@ the intent is much clearer.
 .exam end
 .*
 .keep 10
+.*
 .section DO WHILE - END DO
 .*
 .mext begin
@@ -569,6 +573,7 @@ the intent is much clearer.
 .exam end
 .*
 .keep 10
+.*
 .section LOOP - END LOOP
 .*
 .mext begin
@@ -620,6 +625,7 @@ The
 statement is discussed in more detail in a later section.
 .*
 .keep 10
+.*
 .section WHILE - END WHILE
 .*
 .mext begin
@@ -691,6 +697,7 @@ corresponding to the initial value of variable
 and working backwards down the array to element 1.
 .*
 .keep 10
+.*
 .section WHILE - Executable-statement
 .*
 .mext begin
@@ -721,6 +728,7 @@ This is repeated until the logical expression, when evaluated, is
 false; control then passes to the next statement.
 .*
 .keep 10
+.*
 .section UNTIL
 .*
 .mext begin
@@ -776,6 +784,7 @@ is greater than 10.0.
 .exam end
 .*
 .keep 17
+.*
 .section SELECT - END SELECT
 .*
 .mext begin
@@ -1179,6 +1188,7 @@ will be printed
 .endpoint
 .*
 .keep 10
+.*
 .section EXECUTE and REMOTE BLOCK
 .*
 .mext begin
@@ -1301,6 +1311,7 @@ Attempts to execute REMOTE-blocks recursively are detected as errors
 at execution time.
 .*
 .keep 18
+.*
 .section GUESS-ADMIT-END GUESS
 .*
 .mext begin
@@ -1457,6 +1468,7 @@ construct wherein the data values are known beforehand (as could be
 illustrated using the previous example).
 .*
 .keep 10
+.*
 .section QUIT
 .*
 .mext begin
@@ -1586,6 +1598,7 @@ statement after the
 statement.
 .*
 .keep 10
+.*
 .section EXIT
 .*
 .mext begin
@@ -1705,6 +1718,7 @@ statement after the
 statement.
 .*
 .keep 10
+.*
 .section CYCLE
 .*
 .mext begin
@@ -1804,6 +1818,7 @@ statement that follows the
 statement.
 .*
 .keep 10
+.*
 .section AT END
 .*
 .mext begin

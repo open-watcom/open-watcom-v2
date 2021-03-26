@@ -106,12 +106,15 @@ What constitutes an interactive device (5.1.2.3).
 For &wcboth., the keyboard and the video display are considered
 interactive devices.
 .endbigterms
-.*
 ..if &e'&dohelp eq 0 ..do begin
+.*
 .section Identifiers
+.*
 ..do end
 ..el .do begin
+.*
 .section Behaviour Concerning Identifiers
+.*
 ..do end
 .*
 .bigterms
@@ -802,12 +805,15 @@ structure or union type (6.5.4).
 .pp
 Limited only by available memory.
 .endbigterms
-.*
 ..if &e'&dohelp eq 0 ..do begin
+.*
 .section Statements
+.*
 ..do end
 ..el .do begin
+.*
 .section Behaviour Concerning Statements
+.*
 ..do end
 .*
 .bigterms

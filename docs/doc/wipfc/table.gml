@@ -1,4 +1,5 @@
 .section *refid='table' table
+.*
 .ix 'table'
 .ix 'Block' 'table'
 .tag begin
@@ -22,6 +23,7 @@ is 'box'.
 .beglevel
 .*
 .section *refid='row' row
+.*
 .ix 'row'
 .ix 'Block' 'row'
 .ix 'Table' 'row'
@@ -34,6 +36,7 @@ the table tag, a warning is generated.
 .tag end
 .*
 .section *refid='c' c
+.*
 .ix 'c'
 .ix 'Block' 'c'
 .ix 'Table' 'column'

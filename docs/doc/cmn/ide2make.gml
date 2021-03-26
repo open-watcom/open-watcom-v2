@@ -1,9 +1,10 @@
 .chap The IDE2MAKE Utility
 .*
 .if &e'&dohelp eq 0 .do begin
-.section Introduction
-.do end
 .*
+.section Introduction
+.*
+.do end
 .np
 .ix 'IDE' 'make'
 This chapter describes the &id2mkname utility.

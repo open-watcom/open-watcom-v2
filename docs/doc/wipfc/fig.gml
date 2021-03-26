@@ -1,4 +1,5 @@
 .section *refid='fig' fig
+.*
 .ix 'fig'
 .ix 'Figures' 'text'
 .tag begin

@@ -1,4 +1,5 @@
 .section *refid='icmd' icmd
+.*
 .ix 'icmd'
 .ix 'Indexing' 'commands'
 .ix 'Block' 'icmd'

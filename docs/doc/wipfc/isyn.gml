@@ -1,4 +1,5 @@
 .section *refid='isyn' isyn
+.*
 .ix 'isyn'
 .ix 'Indexing' 'synonyms'
 .ix 'Block' 'isyn'

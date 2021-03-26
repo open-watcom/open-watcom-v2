@@ -225,6 +225,7 @@ code generation
 .endbull
 .*
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
+.*
 .section Using Pragmas to Specify Options
 .*
 .np
@@ -932,9 +933,6 @@ double test( double x )
     return( sin( x ) );
 }
 .millust end
-
-
-
 .*
 .section The INCLUDE_ALIAS Pragma
 .*
@@ -1951,10 +1949,14 @@ made.
 .do end
 .*
 .if '&machine' eq '80386' .do begin
+.*
 .section Predefined "__watcall" Alias (register calling convention)
+.*
 .do end
 .el .do begin
+.*
 .section Predefined "__watcall" Alias
+.*
 .do end
 .*
 .millust begin
@@ -1991,6 +1993,7 @@ All registers must be preserved by the called routine.
 .endnote
 .*
 .if '&machine' eq '80386' .do begin
+.*
 .section Predefined "__watcall" Alias (stack calling convention)
 .*
 .millust begin
@@ -3488,10 +3491,14 @@ unchanged.
 .endnote
 .*
 .if '&lang' eq 'FORTRAN 77' .do begin
+.*
 .section Returning Structures and Complex Numbers
+.*
 .do end
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
+.*
 .section Returning Structures
+.*
 .do end
 .*
 .np
@@ -3744,10 +3751,14 @@ In this case, &cmpname generates a "jmp" instruction instead of a
 .period
 .*
 .if '&lang' eq 'FORTRAN 77' .do begin
+.*
 .section Describing How &ufunctions Use Variables in Common
+.*
 .do end
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
+.*
 .section Describing How &ufunctions Use Memory
+.*
 .do end
 .*
 .np

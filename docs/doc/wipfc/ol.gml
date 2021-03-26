@@ -1,4 +1,5 @@
 .section *refid='ol' ol
+.*
 .ix 'ol'
 .ix 'Ordered list'
 .ix 'Lists' 'ordered'

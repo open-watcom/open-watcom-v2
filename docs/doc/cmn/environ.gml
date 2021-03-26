@@ -17,7 +17,9 @@ This appendix summarizes their use with a particular component of the
 package.
 .************************************************************************
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
+.*
 .section FORCE
+.*
 .np
 The
 .ev FORCE
@@ -57,7 +59,9 @@ option.
 .do end
 .************************************************************************
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
+.*
 .section INCLUDE
+.*
 .np
 The
 .ev INCLUDE
@@ -83,7 +87,9 @@ string in that you can specify one or more directories separated by
 .do end
 .************************************************************************
 .if '&lang' eq 'FORTRAN 77' .do begin
+.*
 .section FINCLUDE
+.*
 .np
 The
 .ev FINCLUDE
@@ -109,7 +115,9 @@ string in that you can specify one or more directories separated by
 .************************************************************************
 .* LFN
 .if '&target' ne 'QNX' .do begin
+.*
 .section LFN
+.*
 .np
 The
 .ev LFN
@@ -134,6 +142,7 @@ To undefine the environment variable, enter the command:
 .************************************************************************
 .* LIB
 .section &libvarup
+.*
 .np
 The use of the
 .ev &pathvarup
@@ -161,7 +170,9 @@ be linked for DOS Extender systems, Microsoft Windows and QNX.
 .do end
 .************************************************************************
 .if '&target' ne 'QNX' .do begin
+.*
 .section LIBDOS
+.*
 .np
 The use of the
 .ev &pathvarup
@@ -194,7 +205,9 @@ The default installation directory for the &prod16 math libraries is
 .do end
 .************************************************************************
 .if '&target' ne 'QNX' .do begin
+.*
 .section LIBWIN
+.*
 .np
 The use of the
 .ev &pathvarup
@@ -232,7 +245,9 @@ The default installation directory for the &prod16 math libraries is
 .do end
 .************************************************************************
 .if '&target' ne 'QNX' .do begin
+.*
 .section LIBOS2
+.*
 .np
 The use of the
 .ev &pathvarup
@@ -273,7 +288,9 @@ The default installation directory for the &prod16 math libraries is
 .do end
 .************************************************************************
 .if '&target' ne 'QNX' .do begin
+.*
 .section LIBPHAR
+.*
 .np
 The use of the
 .ev &pathvarup
@@ -316,7 +333,9 @@ The default installation directory for the &prod32 math libraries is
 .do end
 .************************************************************************
 .if '&target' ne 'QNX' .do begin
+.*
 .section NO87
+.*
 .np
 The
 .ev NO87
@@ -356,7 +375,9 @@ To undefine the environment variable, enter the command:
 .millust end
 .do end
 .************************************************************************
+.*
 .section PATH
+.*
 .np
 The
 .ev PATH
@@ -448,7 +469,9 @@ described manner.
 .endpoint
 .************************************************************************
 .if '&target' ne 'QNX' .do begin
+.*
 .section TMP
+.*
 .np
 The
 .ev TMP
@@ -485,7 +508,9 @@ The &product compiler and &lnkname will create its temporary files in
 .do end
 .************************************************************************
 .if '&target' eq 'QNX' .do begin
+.*
 .section TMPDIR
+.*
 .np
 The
 .ev TMPDIR
@@ -515,7 +540,9 @@ The &product compiler and &lnkname will create its temporary files in
 .fi &dr4.&pc.tmp.
 .do end
 .************************************************************************
+.*
 .section &pathvarup
+.*
 .np
 .ix 'library path'
 In order for the &lnkname to locate the &prod16 and &prod32 library
@@ -547,7 +574,9 @@ The default directory for &prod16 and &prod32 files is "&pathnamup".
 .el .do begin
 .sr envvar='wcc'
 .do end
+.*
 .section WCC
+.*
 .np
 The
 .ev WCC
@@ -586,7 +615,9 @@ command is used.
 .el .do begin
 .sr envvar='wcc386'
 .do end
+.*
 .section WCC386
+.*
 .np
 The
 .ev WCC386
@@ -619,7 +650,9 @@ command is used.
 .do end
 .************************************************************************
 .if '&target' ne 'QNX' .do begin
+.*
 .section WCL
+.*
 .np
 The
 .ev WCL
@@ -646,7 +679,9 @@ default each time the &wclcmdup16 command is used.
 .do end
 .************************************************************************
 .if '&target' ne 'QNX' .do begin
+.*
 .section WCL386
+.*
 .np
 The
 .ev WCL386
@@ -672,11 +707,15 @@ environment variable has been defined, those options listed become the
 default each time the &wclcmdup32 command is used.
 .do end
 .************************************************************************
+.*
 .section WCGMEMORY
+.*
 .np
 :INCLUDE file='WCGMEM'.
 .************************************************************************
+.*
 .section &dbgvarup
+.*
 .np
 The
 .ev &dbgvarup
@@ -711,7 +750,9 @@ environment variable has been defined, those options listed become the
 default each time the &dbgcmdup command is used.
 .************************************************************************
 .if '&target' ne 'QNX' .do begin
+.*
 .section &dbgvarup.W
+.*
 .np
 The
 .ev &dbgvarup.W
@@ -740,7 +781,9 @@ default each time the &dbgcmdup.W command is used.
 .do end
 .************************************************************************
 .if '&target' eq 'QNX' .do begin
+.*
 .section &dbgvarup._PATH
+.*
 .np
 The
 .ev &dbgvarup._PATH
@@ -780,6 +823,7 @@ environment variable string.
 .if '&lang' eq 'FORTRAN 77' .do begin
 .* WFC
 .section &cvarup16
+.*
 .np
 The
 .ev &cvarup16
@@ -807,6 +851,7 @@ default each time the &ccmdup16 command is used.
 .if '&lang' eq 'FORTRAN 77' .do begin
 .* WFC386
 .section &cvarup32
+.*
 .np
 The
 .ev &cvarup32
@@ -832,7 +877,9 @@ default each time the &ccmdup32 command is used.
 .do end
 .************************************************************************
 .if '&lang' eq 'FORTRAN 77' .do begin
+.*
 .section WFL
+.*
 .np
 The
 .ev WFL
@@ -857,7 +904,9 @@ default each time the WFL command is used.
 .do end
 .************************************************************************
 .if '&lang' eq 'FORTRAN 77' .do begin
+.*
 .section WFL386
+.*
 .np
 The
 .ev WFL386
@@ -883,7 +932,9 @@ default each time the WFL386 command is used.
 .do end
 .************************************************************************
 .if '&target' ne 'QNX' .do begin
+.*
 .section WLANG
+.*
 .np
 .ix 'language'
 .ix 'diagnostic messages' 'language'
@@ -921,7 +972,9 @@ environment variable should not be required.
 .el .do begin
 .sr envvar='wpp'
 .do end
+.*
 .section WPP
+.*
 .np
 The
 .ev WPP
@@ -960,7 +1013,9 @@ command is used.
 .el .do begin
 .sr envvar='wpp386'
 .do end
+.*
 .section WPP386
+.*
 .np
 The
 .ev WPP386

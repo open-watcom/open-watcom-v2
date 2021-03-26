@@ -33,9 +33,9 @@ The rules of type conversions are fully discussed in
 the following sections.
 .*
 .section Integral Promotion
+.*
 .ix 'integral promotion'
 .ix 'promotion' 'integer'
-.*
 .begnote
 .note Rule:
 A
@@ -114,10 +114,10 @@ These promotions are called the
 .us integral promotions.
 .*
 .section Signed and Unsigned Integer Conversion
+.*
 .ix 'conversion' 'signed integer'
 .ix 'conversion' 'unsigned integer'
 .ix 'integer' 'conversion'
-.*
 .begnote
 .note Rule:
 .ix 'conversion' 'unsigned integer'
@@ -303,9 +303,9 @@ portion of the larger type.
 .shade end
 .*
 .section Floating-Point to Integer Conversion
+.*
 .ix 'conversion' 'float to integer'
 .ix 'float' 'conversion to integer'
-.*
 .begnote
 .note Rule:
 When a floating-point type is converted to integer, the fractional
@@ -320,9 +320,9 @@ Refer to
 the section "Integer Types" for details on the range of integers.
 .*
 .section &inttoflt.
+.*
 .ix 'integer' 'conversion to float'
 .ix 'conversion' 'integer to float'
-.*
 .begnote
 .note Rule:
 When the value of an integer type is converted to a floating-point type,

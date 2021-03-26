@@ -1,4 +1,5 @@
 .section *refid='artwork' artwork
+.*
 .ix 'artwork'
 .ix 'In-line' 'artwork'
 .ix 'Figures' 'images'

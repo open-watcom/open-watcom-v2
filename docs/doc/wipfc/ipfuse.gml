@@ -45,6 +45,7 @@ character after the delimiter is actually significant. Flag names are not case-s
 .beglevel
 .*
 .section Switches
+.*
 .ix 'inf switch'
 .ix 'quiet switch'
 .ix 'suppress-search switch'
@@ -75,6 +76,7 @@ a file 'output-name.log' where 'output-name' is the base name of the help file b
 .endnote
 .*
 .section Options
+.*
 .np
 The options give additional information to the &ipfname. Each option is immediately followed by the information
 to be passed into &ipfcmd..
@@ -82,6 +84,7 @@ to be passed into &ipfcmd..
 .beglevel
 .*
 .section localization
+.*
 .ix 'localization option'
 .ix 'Command line option' 'localization'
 .ix 'Option' 'localization'
@@ -97,6 +100,7 @@ file (en_US.nls in this case). You can create your own locales from the sample f
 need to create a corresponding entity file containing the definitions of :HDREF refid='ipfsym'..
 .*
 .section output-name
+.*
 .ix 'output-name option'
 .ix 'Command line option' 'output-name'
 .ix 'Option' 'output-name'
@@ -111,6 +115,7 @@ will cause &ipfcmd to generate an output file (either inf or hlp depending on th
 name of 'MyHelp'
 .*
 .section warning-level
+.*
 .ix 'warning-level option'
 .ix 'Command line option' 'warning-level'
 .ix 'Option' 'warning-level'

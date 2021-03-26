@@ -10,9 +10,10 @@
 .chap *refid=mdl86 16-bit Memory Models
 .*
 .if &e'&dohelp eq 0 .do begin
-.section Introduction
-.do end
 .*
+.section Introduction
+.*
+.do end
 .np
 .ix 'memory models' '16-bit'
 This chapter describes the various 16-bit memory models supported by

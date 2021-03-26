@@ -191,9 +191,9 @@ then based on the result selects from a set of statements. These
 statements are then executed.
 .*
 .section The if Statement
+.*
 .ix 'if statement'
 .ix 'statement' 'if'
-.*
 .pp
 .cillust begin
 .mono if(
@@ -300,9 +300,9 @@ However, jumping into a block is poor
 programming practice, since it makes the program difficult to follow.
 .*
 .section The switch Statement
+.*
 .ix 'switch statement'
 .ix 'statement' 'switch'
-.*
 .cillust begin
 .mono switch(
 expression
@@ -699,9 +699,9 @@ and
 .beglevel
 .*
 .section The goto Statement
+.*
 .ix 'goto statement'
 .ix 'statement' 'goto'
-.*
 .cillust begin
 .mono goto
 identifier:MSEMI.
@@ -727,9 +727,9 @@ statement be used, at most, to jump
 blocks, never into them.
 .*
 .section The continue Statement
+.*
 .ix 'continue statement'
 .ix 'statement' 'continue'
-.*
 .millust begin
 continue;
 .millust end
@@ -767,9 +767,9 @@ statement, which is often an increment or decrement, is then
 executed before control is returned to the top of the loop.
 .*
 .section The break Statement
+.*
 .ix 'break statement'
 .ix 'statement' 'break'
-.*
 .millust begin
 break;
 .millust end
@@ -808,9 +808,9 @@ statement may be used to terminate more than one loop or
 .period
 .*
 .section The return Statement
+.*
 .ix 'return statement'
 .ix 'statement' 'return'
-.*
 .cillust begin
 .monoon
 &SYSRB.&SYSRB.&SYSRB.&SYSRB.return:MSEMI.

@@ -1,9 +1,10 @@
 .chap *refid=fcond &product Compiler Directives
 .*
 .if &e'&dohelp eq 0 .do begin
-.section Introduction
-.do end
 .*
+.section Introduction
+.*
+.do end
 .np
 .ix 'conditional compilation'
 A number of compiler directives are available that allow, for example,

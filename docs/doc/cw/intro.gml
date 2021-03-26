@@ -236,6 +236,7 @@ and
 .beglevel
 .*
 .section TEMP and TMP Environment Variables
+.*
 .np
 The
 .ev TEMP
@@ -278,6 +279,7 @@ at startup, then the DOS extender VMM is disabled, no swap file is
 created, and virtual memory is not available to the application.
 .*
 .section CAUSEWAY Environment Variable
+.*
 .np
 The
 .ev CAUSEWAY

@@ -1,9 +1,10 @@
 .chap *refid=farrays Arrays
 .*
 .if &e'&dohelp eq 0 .do begin
-.section Introduction
-.do end
 .*
+.section Introduction
+.*
+.do end
 .np
 An array is a non-empty collection of data.
 Arrays allow a convenient way of manipulating large quantities of data.

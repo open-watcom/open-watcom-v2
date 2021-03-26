@@ -1,4 +1,5 @@
 .section *refid='artlink' artlink
+.*
 .ix 'artlink'
 .ix 'In-line' 'artlink'
 .ix 'Links' 'images'

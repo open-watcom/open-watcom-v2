@@ -55,6 +55,7 @@ In this case, the result of ATAN2 is of type REAL.
 a dagger (&dagger).
 .*
 .cp 15
+.*
 .section Type Conversion
 .*
 .ix 'generic function' 'INT'
@@ -174,6 +175,7 @@ a dagger (&dagger).
 .im finote5b
 .*
 .cp 15
+.*
 .section Truncation
 .*
 .ix 'generic function' 'AINT'
@@ -192,6 +194,7 @@ a dagger (&dagger).
 .im finote1
 .*
 .cp 15
+.*
 .section Nearest Whole Number
 .*
 .ix 'generic function' 'ANINT'
@@ -209,6 +212,7 @@ a dagger (&dagger).
 .box off
 .*
 .cp 15
+.*
 .section Nearest Integer
 .*
 .ix 'generic function' 'NINT'
@@ -226,6 +230,7 @@ a dagger (&dagger).
 .box off
 .*
 .cp 20
+.*
 .section Absolute Value
 .*
 .ix 'generic function' 'ABS'
@@ -256,6 +261,7 @@ a dagger (&dagger).
 .im finote6
 .*
 .cp 15
+.*
 .section Remainder
 .*
 .ix 'generic function' 'MOD'
@@ -280,6 +286,7 @@ a dagger (&dagger).
 The value of MOD, AMOD and DMOD is undefined if the value of a2 is 0.
 .*
 .cp 15
+.*
 .section Transfer of Sign
 .*
 .ix 'generic function' 'SIGN'
@@ -303,6 +310,7 @@ The value of MOD, AMOD and DMOD is undefined if the value of a2 is 0.
 If the value of a1 is 0, the result is 0 which has no sign.
 .*
 .cp 15
+.*
 .section Positive Difference
 .*
 .ix 'generic function' 'DIM'
@@ -324,6 +332,7 @@ If the value of a1 is 0, the result is 0 which has no sign.
 .box off
 .*
 .cp 10
+.*
 .section Double Precision Product
 .*
 .ix 'intrinsic function' 'DPROD'
@@ -335,6 +344,7 @@ If the value of a1 is 0, the result is 0 which has no sign.
 .box off
 .*
 .cp 15
+.*
 .section Choosing Largest Value
 .*
 .ix 'generic function' 'MAX'
@@ -362,6 +372,7 @@ If the value of a1 is 0, the result is 0 which has no sign.
 .box off
 .*
 .cp 15
+.*
 .section Choosing Smallest Value
 .*
 .ix 'generic function' 'MIN'
@@ -389,6 +400,7 @@ If the value of a1 is 0, the result is 0 which has no sign.
 .box off
 .*
 .cp 10
+.*
 .section Length
 .*
 .ix 'intrinsic function' 'LEN'
@@ -403,6 +415,7 @@ If the value of a1 is 0, the result is 0 which has no sign.
 The argument to the LEN function need not be defined.
 .*
 .cp 10
+.*
 .section Length Without Trailing Blanks
 .*
 .ix 'intrinsic function' 'LENTRIM'
@@ -416,6 +429,7 @@ The argument to the LEN function need not be defined.
 .bxt off
 .*
 .cp 10
+.*
 .section Index of a Substring
 .*
 .ix 'intrinsic function' 'INDEX'
@@ -433,6 +447,7 @@ The position of the first such substring is returned.
 If y is not contained in x, zero is returned.
 .*
 .cp 15
+.*
 .section Imaginary Part of Complex Number
 .*
 .ix 'generic function' 'IMAG'
@@ -451,6 +466,7 @@ If y is not contained in x, zero is returned.
 .im finote6
 .*
 .cp 15
+.*
 .section Conjugate of a Complex Number
 .*
 .ix 'generic function' 'CONJG'
@@ -469,6 +485,7 @@ If y is not contained in x, zero is returned.
 .im finote6
 .*
 .cp 15
+.*
 .section Square Root
 .*
 .ix 'generic function' 'SQRT'
@@ -498,6 +515,7 @@ real part >= 0.
 When the real part of the result is 0, the imaginary part is >= 0.
 .*
 .cp 15
+.*
 .section Exponential
 .*
 .ix 'generic function' 'EXP'
@@ -524,6 +542,7 @@ When the real part of the result is 0, the imaginary part is >= 0.
 .im finote8
 .*
 .cp 15
+.*
 .section Natural Logarithm
 .*
 .ix 'generic function' 'LOG'
@@ -559,6 +578,7 @@ argument is < 0 and the imaginary part of the argument = 0.
 .im finote8
 .*
 .cp 15
+.*
 .section Common Logarithm
 .*
 .ix 'generic function' 'LOG10'
@@ -576,6 +596,7 @@ argument is < 0 and the imaginary part of the argument = 0.
 .box off
 .*
 .cp 20
+.*
 .section Sine
 .*
 .ix 'generic function' 'SIN'
@@ -603,6 +624,7 @@ argument is < 0 and the imaginary part of the argument = 0.
 .im finote8
 .*
 .cp 20
+.*
 .section Cosine
 .*
 .ix 'generic function' 'COS'
@@ -630,6 +652,7 @@ argument is < 0 and the imaginary part of the argument = 0.
 .im finote8
 .*
 .cp 15
+.*
 .section Tangent
 .*
 .ix 'generic function' 'TAN'
@@ -648,6 +671,7 @@ argument is < 0 and the imaginary part of the argument = 0.
 .im finote7
 .*
 .cp 15
+.*
 .section Cotangent
 .*
 .ix 'generic function' 'COTAN'
@@ -666,6 +690,7 @@ argument is < 0 and the imaginary part of the argument = 0.
 .im finote7
 .*
 .cp 15
+.*
 .section Arcsine
 .*
 .ix 'generic function' 'ASIN'
@@ -686,6 +711,7 @@ The absolute value of the argument of ASIN and DASIN must be <= 1.
 The result is such that -&pi./2 <= result <= &pi./2.
 .*
 .cp 15
+.*
 .section Arccosine
 .*
 .ix 'generic function' 'ACOS'
@@ -706,6 +732,7 @@ The absolute value of the argument of ACOS and DACOS must be <= 1.
 The result is such that 0 <= result <= &pi..
 .*
 .cp 15
+.*
 .section Arctangent
 .*
 .ix 'generic function' 'ATAN'
@@ -743,6 +770,7 @@ The arguments must not both be 0.
 The result of ATAN2 and DATAN2 is such that -&pi. < result <= &pi..
 .*
 .cp 15
+.*
 .section Hyperbolic Sine
 .*
 .ix 'generic function' 'SINH'
@@ -760,6 +788,7 @@ The result of ATAN2 and DATAN2 is such that -&pi. < result <= &pi..
 .box off
 .*
 .cp 15
+.*
 .section Hyperbolic Cosine
 .*
 .ix 'generic function' 'COSH'
@@ -777,6 +806,7 @@ The result of ATAN2 and DATAN2 is such that -&pi. < result <= &pi..
 .box off
 .*
 .cp 15
+.*
 .section Hyperbolic Tangent
 .*
 .ix 'generic function' 'TANH'
@@ -794,6 +824,7 @@ The result of ATAN2 and DATAN2 is such that -&pi. < result <= &pi..
 .box off
 .*
 .cp 15
+.*
 .section Gamma Function
 .*
 .ix 'generic function' 'GAMMA'
@@ -811,6 +842,7 @@ The result of ATAN2 and DATAN2 is such that -&pi. < result <= &pi..
 .bxt off
 .*
 .cp 15
+.*
 .section Natural Log of Gamma Function
 .*
 .ix 'generic function' 'GAMMA'
@@ -829,6 +861,7 @@ The result of ATAN2 and DATAN2 is such that -&pi. < result <= &pi..
 .bxt off
 .*
 .cp 15
+.*
 .section Error Function
 .*
 .ix 'generic function' 'ERF'
@@ -846,6 +879,7 @@ The result of ATAN2 and DATAN2 is such that -&pi. < result <= &pi..
 .bxt off
 .*
 .cp 15
+.*
 .section Complement of Error Function
 .*
 .ix 'generic function' 'ERFC'
@@ -863,6 +897,7 @@ The result of ATAN2 and DATAN2 is such that -&pi. < result <= &pi..
 .bxt off
 .*
 .cp 9
+.*
 .section Lexically Greater Than or Equal
 .*
 .ix 'intrinsic function' 'LGE'
@@ -875,6 +910,7 @@ The result of ATAN2 and DATAN2 is such that -&pi. < result <= &pi..
 .im finote9
 .*
 .cp 9
+.*
 .section Lexically Greater Than
 .*
 .ix 'intrinsic function' 'LGT'
@@ -887,6 +923,7 @@ The result of ATAN2 and DATAN2 is such that -&pi. < result <= &pi..
 .im finote9
 .*
 .cp 9
+.*
 .section Lexically Less Than or Equal
 .*
 .ix 'intrinsic function' 'LLE'
@@ -899,6 +936,7 @@ The result of ATAN2 and DATAN2 is such that -&pi. < result <= &pi..
 .im finote9
 .*
 .cp 9
+.*
 .section Lexically Less Than
 .*
 .ix 'intrinsic function' 'LLT'
@@ -911,6 +949,7 @@ The result of ATAN2 and DATAN2 is such that -&pi. < result <= &pi..
 .im finote9
 .*
 .cp 17
+.*
 .section Binary Pattern Processing Functions: Boolean Operations
 .*
 .ix 'intrinsic function' 'IAND'
@@ -934,6 +973,7 @@ The result of ATAN2 and DATAN2 is such that -&pi. < result <= &pi..
 .bxt off
 .*
 .cp 15
+.*
 .section Binary Pattern Processing Functions: Shift Operations
 .*
 .ix 'intrinsic function' 'ISHL'
@@ -957,6 +997,7 @@ The result of ATAN2 and DATAN2 is such that -&pi. < result <= &pi..
 .im finote10
 .*
 .cp 15
+.*
 .section Binary Pattern Processing Functions: Bit Testing
 .*
 .ix 'intrinsic function' 'BTEST'
@@ -973,6 +1014,7 @@ The result of ATAN2 and DATAN2 is such that -&pi. < result <= &pi..
 .bxt off
 .*
 .cp 10
+.*
 .section Binary Pattern Processing Functions: Set Bit
 .*
 .ix 'intrinsic function' 'IBSET'
@@ -986,6 +1028,7 @@ The result of ATAN2 and DATAN2 is such that -&pi. < result <= &pi..
 .bxt off
 .*
 .cp 10
+.*
 .section Binary Pattern Processing Functions: Clear Bit
 .*
 .ix 'intrinsic function' 'IBCLR'
@@ -999,6 +1042,7 @@ The result of ATAN2 and DATAN2 is such that -&pi. < result <= &pi..
 .bxt off
 .*
 .cp 10
+.*
 .section Binary Pattern Processing Functions: Change Bit
 .*
 .ix 'intrinsic function' 'IBCHNG'
@@ -1012,6 +1056,7 @@ The result of ATAN2 and DATAN2 is such that -&pi. < result <= &pi..
 .bxt off
 .*
 .cp 10
+.*
 .section Allocated Array
 .*
 .ix 'intrinsic function' 'ALLOCATED'
@@ -1023,6 +1068,7 @@ The result of ATAN2 and DATAN2 is such that -&pi. < result <= &pi..
 .bxt off
 .*
 .cp 10
+.*
 .section Memory Location
 .*
 .ix 'intrinsic function' 'LOC'
@@ -1036,6 +1082,7 @@ The result of ATAN2 and DATAN2 is such that -&pi. < result <= &pi..
 .bxt off
 .*
 .cp 10
+.*
 .section Size of Variable or Structure
 .*
 .ix 'intrinsic function' 'ISIZEOF'
@@ -1061,6 +1108,7 @@ An assumed-size CHARACTER variable, assumed-size array, or allocatable
 array has size 0.
 .*
 .cp 15
+.*
 .section Volatile Reference
 .*
 .ix 'intrinsic function' 'VOLATILE'

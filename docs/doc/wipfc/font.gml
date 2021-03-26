@@ -1,4 +1,5 @@
 .section *refid='font' font
+.*
 .ix 'font'
 .ix 'Formatting' 'font'
 .tag begin

@@ -1,4 +1,5 @@
 .section *refid='pbutton' pbutton
+.*
 .ix 'pbutton'
 .ix 'Document header' 'pbutton'
 .tag begin

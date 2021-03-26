@@ -1,4 +1,5 @@
 .section *refid='title' title
+.*
 .ix 'title'
 .ix 'Document header' 'title'
 .tag begin

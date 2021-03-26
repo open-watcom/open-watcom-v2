@@ -1,4 +1,5 @@
 .section *refid='ddf' ddf
+.*
 .ix 'ddf'
 .ix 'Dynamic data formatting'
 .tag begin

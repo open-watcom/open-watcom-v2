@@ -11,7 +11,6 @@ Source files are either compiled or assembled based on file extension;
 object files and libraries are simply included in the link phase.
 Options can be passed on to both the compiler and linker.
 .*
-.*
 .section owcc Command Line Format
 .*
 .np
@@ -65,7 +64,6 @@ or to directives for the &product wlink utility, accordingly.
 A summary of options is displayed on the screen by running the compiler
 driver like this: "owcc -?".  If run without any arguments the compiler driver just
 displays its name and hints towards the "-?" option.
-
 .*
 .section owcc Options Summary
 .*

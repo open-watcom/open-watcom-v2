@@ -1,4 +1,5 @@
 .section *refid='rm' rm
+.*
 .ix 'rm'
 .ix 'Formatting' 'rm'
 .ix 'Margin' 'right'

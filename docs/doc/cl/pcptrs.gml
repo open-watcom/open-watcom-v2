@@ -1,4 +1,5 @@
 .keep begin
+.*
 .section &ptr86.
 .*
 .pp

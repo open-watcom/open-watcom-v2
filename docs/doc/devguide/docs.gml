@@ -17,8 +17,7 @@ There's one other link going in the other direction: certain documentation
 files live with their respective projects and not in the documents tree.
 This is especially true for error message documentation for the compilers
 and tools.
-
-
+.*
 .section Setting up
 .*
 .np
@@ -49,8 +48,7 @@ taken care of automatically by using
 Note that to produce Windows and/or OS/2 online documentation, you will need
 the appropriate SDKs and Toolkits containing the platform specific online
 help compilers.
-
-
+.*
 .section Building PostScript Documentation
 .*
 .ix 'PostScript'
@@ -93,7 +91,6 @@ The output file is of type
 You should be able to send this file to any PostScript printer or view
 it in GhostScript or convert it to PDF or do whatever it is you do with
 PostScript files.
-
 .*
 .section Building Online Help Documentation
 .*

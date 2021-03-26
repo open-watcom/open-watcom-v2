@@ -1,4 +1,5 @@
 .section *refid='hide' hide
+.*
 .ix 'hide'
 .ix 'Formatting' 'hide'
 .tag begin

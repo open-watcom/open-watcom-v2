@@ -1,4 +1,5 @@
 .section *refid='ul' ul
+.*
 .ix 'ul'
 .ix 'Unordered list'
 .ix 'Lists' 'unordered'
