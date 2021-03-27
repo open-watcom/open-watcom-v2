@@ -323,6 +323,7 @@ The supported proc_revision WEITEK values are:
 .np
 The following example sets the processor revision information to
 indicate a 386 with 387 and Weitek 3167.
+.np
 :XMP.
 proc_revision proc;
 
@@ -332,6 +333,7 @@ SET_WTK( proc, WTK_3167 );
 :eXMP.
 .np
 The return value structure is defined as follows:
+.np
 :XMP.
 typedef union   cg_init_info {
   struct {
@@ -620,6 +622,7 @@ Subsequent calls to FEBack should return the same back_handle.
 This mechanism is used so that the back end does not have to do symbol
 table searches.
 For example:
+.np
 :XMP.
 back_handle FEBack( SYMPOINTER sym )
 {
@@ -1618,6 +1621,7 @@ The lexical level of the target label.
 The select routines are used as follows.
 CGSelOther should always be used even if there is no otherwise/default
 case.
+.np
 :XMP.
 end_label = BENewLabel();
 
@@ -1888,6 +1892,7 @@ The address of the bit field.
 To reference field2 in the following C structure for a little endian target,
 use start=4, len=5, and type=TY_INT_2. For a big endian target, start=7.
 .endnote
+.np
 :XMP.
 typedef struct {
     short field1 : 4;
@@ -2514,6 +2519,7 @@ aux_handle - given a cg_sym_handle, return an aux_handle.
 .note ( aux_handle, CALL_BYTES )
 byte_seq * - A pointer to bytes to be generated instead of a call,
 or NULL if a call is to be generated.
+.np
 :XMP.
 typedef struct byte_seq {
     char    length;
@@ -3134,26 +3140,31 @@ This routine has been superceded by the use of location expressions.
 .section dbg_loc DBLocInit( void )
 .*
 .ix DBLocInit
+.np
 create an initial empty location expression
 .*
 .section dbg_loc DBLocSym( dbg_loc loc, cg_sym_handle sym )
 .*
 .ix DBLocSym
+.np
 push the address of 'sym' on to the expression stack
 .*
 .section dbg_loc DBLocTemp( dbg_loc loc, temp_handle tmp )
 .*
 .ix DBLocTemp
+.np
 push the address of 'tmp' on to the expression stack
 .*
 .section dbg_loc DBLocConst( dbg_loc loc, unsigned_32 val )
 .*
 .ix DBLocConst
+.np
 push the constant 'val' on to the expression stack
 .*
 .section dbg_loc DBLocOp( dbg_loc loc, dbg_loc_op op, unsigned other )
 .*
 .ix DBLocOp
+.np
 perform the following list of operations on the expression stack
 .begnote
 .notehd1 Operation
@@ -3188,11 +3199,13 @@ pop off (throw away) the top stack entry.
 .section void DBLocFini( dbg_loc loc )
 .*
 .ix DBLocFini
+.np
 the given location expression will not be used anymore.
 .*
 .section unsigned DBSrcFile( char *fname )
 .*
 .ix DBSrcFile
+.np
 add the file name into the list of source files for positon info,
 return handle to this name
 :NOTE.
@@ -3202,6 +3215,7 @@ automaticaly during initialization.
 .section void DBSrcCue( unsigned fno, unsigned line, unsigned col )
 .*
 .ix DBSrcCue
+.np
 add source position info for the appropriate source file
 .*
 .chap Registers
@@ -3230,6 +3244,7 @@ The following are used for static initialization.
 :ZLI.HW_D( c1 )
 :ZLI.HW_NotD( c1 )
 :ZeSL.
+.np
 :XMP.
 hw_reg_set regs[] = {
     /* the EAX register */
@@ -3275,6 +3290,7 @@ Turn off all registers except :HP2.b:eHP2. in :HP2.dst:eHP2..
 .np
 The following example selects the low order 16 bits of any register.
 that has a low part.
+.np
 :XMP.
 hw_reg_set low16( hw_reg_set reg )
 {
@@ -3302,6 +3318,7 @@ All possible registers.
 .endnote
 .np
 The following example yields the set of all valid machine registers.
+.np
 :XMP.
 hw_reg_set reg;
 
@@ -3319,6 +3336,7 @@ I come from a multiple language background and will always be
 hopelessly confused.
 .np
 The NEXT_IMPORT/NEXT_IMPORT_S/NEXT_LIBRARY are used as follows.
+.np
 :XMP.
 handle = NULL;
 for( ;; ) {
@@ -3330,6 +3348,7 @@ for( ;; ) {
 :eXMP.
 .np
 The FREE_SEGMENT request is used as follows.
+.np
 :XMP.
 segment = 0;
 for( ;; ) {
@@ -3744,7 +3763,8 @@ The following registers are defined for the 370 target.
 If you want to use vc.dbg command, make sure you have a tmp directory in
 root of used filesystem (see bld/cg/dumpio.c for details).
 .np
-Note: make a s:\tmp to facilitate debugging in s:\brad :) Yeah, it's a cheap
+:NOTE.
+Make a s:\tmp to facilitate debugging in s:\brad :) Yeah, it's a cheap
 and sleazy hack...
 .np
 If you need to dump something and don't know the routine to call,
