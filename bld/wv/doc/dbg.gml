@@ -35,7 +35,9 @@ local symbol information.
 For the &company C compiler, line number information
 is provided when the "/d1" switch is used and all three classes are provided
 when the "/d2" switch is used.
+.*
 .section Version number and source language identification
+.*
 .np
 Since there may be different versions of the type and local symbol
 information, and there may be multiple front-ends a special OMF COMENT record
@@ -62,13 +64,17 @@ If the debugging comment record is not present, the local and type segments
 (described later) are not in WATCOM format and should be omitted from the
 resulting executable file's debugging information.
 The current major version is one, and the current minor version is three.
+.*
 .section Line number information
+.*
 .np
 Line number information is provided by standard Intel OMF LINNUM records.
 A kludge has been added that allows for line numbers to refer to more
 than one source file. See the section on the "Special Line Number Table"
 in the executable structures portion of the document for more details.
+.*
 .section Location information
+.*
 .np
 A type or symbol definition may contain a location field. This field is of
 variable length and identifies the memory (or register) location of the
@@ -202,7 +208,9 @@ the return area and passing a pointer to it as a parameter in the specified
 registers.
 RALLOC means that the called routine allocated the area and returns
 a pointer to it in the given registers.
+.*
 .section Typing information
+.*
 .np
 The &company Debugger typing information is contained in a special segment in the
 object file. The segment name is "$$TYPES" and the segment class is
@@ -240,7 +248,9 @@ type definition (there are eight of these). The low order nibble is used
 to qualify the general type class and uniquely identify the definition
 type.
 .beglevel
+.*
 .section TYPE_NAME (value 0x1?)
+.*
 .np
 This definition is used to give names to types. There are three
 sub-classes.
@@ -300,7 +310,9 @@ the begining of the segment as possible.
 :P.
 EOF marks the end of the typing information for the module and the
 begining of the special line number table.
+.*
 .section ARRAY (value 0x2?)
+.*
 .np
 This definition is used to define an array type. There are 6 sub-classes.
 :XMP.
@@ -328,7 +340,9 @@ This field gives the number of elements in the array.
 :P.
 The DESC_INDEX_386 is the same as DESC_INDEX except that a 48-bit far pointer
 is used to locate the structure in memory.
+.*
 .section SUBRANGE (value 0x3?)
+.*
 .np
 This definition is used to define a subrange type. There are 3
 sub-classes.
@@ -343,7 +357,9 @@ interpreted as containing unsigned quantities, otherwise they contain
 integers. However, the decision to use the byte, word, or long form of
 the definition is always made considering the high and low bounds as
 signed numbers.
+.*
 .section POINTER (value 0x4?)
+.*
 .np
 This definition is used to define a pointer type. There are 10
 sub-classes.
@@ -379,8 +395,9 @@ on the stack before the location expression is evaluated (needed for
 self-based pointers).
 If the :F.base_locator:eF. field is not present, the debugger will use
 the default near segment and a zero offset.
-
+.*
 .section ENUMERATED (value 0x5?)
+.*
 .np
 This definition is used to define an enumerated type. There are 4
 sub-classes.
@@ -405,7 +422,9 @@ determining type index values.
 :P.
 The LIST record and its associated CONST_* records must all be contained
 in the same $$TYPES segment.
+.*
 .section STRUCTURE (value 0x6?)
+.*
 .np
 This definition is used to define a structure type. There are 10
 sub-classes.
@@ -480,7 +499,9 @@ the records should be sorted by descending offsets and bit positions.
 :P.
 The LIST record and it's associated field descriptions must all be contained
 in the same $$TYPES segment.
+.*
 .section PROCEDURE (value 0x7?)
+.*
 .np
 This definition is used to define a procedure type. There are 4
 sub-classes.
@@ -500,7 +521,9 @@ In this case the remaining parameter types are continued in the record
 immediately following, which will always be of type EXT_PARMS. The EXT_PARMS
 record must be contained in the same $$TYPES segment as the preceeding
 procedure record.
+.*
 .section CHARACTER_BLOCK (value 0x8?)
+.*
 .np
 Items of type CHARACTER_BLOCK are length delimited strings. There are 4
 sub-classes.
@@ -525,7 +548,9 @@ is given by a 48-bit far pointer.
 The CHAR_IND_LOC form is the same as CHAR_IND except that the address of
 the length is given by a location expression.
 .endlevel
+.*
 .section Local symbol information
+.*
 .np
 The &company Debugger local symbol information is contained in a special segment in the
 object file. The segment name is "$$SYMBOLS" and the segment class is
@@ -550,7 +575,9 @@ Symbol definitions are used to provide the &company Debugger with the location a
 scoping of source language local symbols. There are two general classes
 of symbol definition, one for variables and one for code.
 .beglevel
+.*
 .section VARIABLE (value 0x1?)
+.*
 .np
 This definition is used to define the location of a data symbol.
 There are 4 sub-classes.
@@ -571,7 +598,9 @@ LOCAL defines a symbol that is local to a code block or procedure. The
 defining block is the first one previous to this definition. Local symbols
 only "exist" for the purpose of the &company Debugger lookups when the program is
 executing in a block which defines the symbol.
+.*
 .section CODE (value 0x2?)
+.*
 .np
 This definition is used to define an object in the code. There are 6
 sub-classes.
@@ -667,7 +696,9 @@ location definitions are assumed to be sorted in order of increasing
 end offsets (start offset + size). This ensures that the first scope that
 the debugger encounters in a traversal of the symbolic information is the
 closest enclosing scope.
+.*
 .section NEW_BASE (value 0x3?)
+.*
 .np
 :XMP.
 ADD_PREV_SEG (value 0x30) seg_increment_word
@@ -736,7 +767,9 @@ relative to the start of the information,
 the start of a section of information,
 or the start of a class of the information. In other words, the information
 is not sensitive to its location in the executable file.
+.*
 .section Master debug header
+.*
 .np
 The master debug header allows the &company Debugger to verify the fact that there is
 debugging information, to locate the other sections and to verify that
@@ -820,18 +853,24 @@ to find the start of the next section, and process that as well. This
 continues until all the debug sections have been processed. the debugger knows
 there are no more debug sections to process when the indicated start
 of a section is the same as the start of the master header.
+.*
 .section Source language table
+.*
 .np
 The source language table is merely the collection of unique source languages
 used in the program. The strings are extracted from the special debug comment
 records in the object files and placed in this section one after another
 with zero bytes separating them.
+.*
 .section Segment address table
+.*
 .np
 The segment address table is an array of all the unique segment numbers used
 by the executable. Essentially, any segment value that would appear in the
 map file will be represented in the table.
+.*
 .section Section debug information
+.*
 .np
 Each :F.section debug info:eF. contains the following:
 :XMP
@@ -861,7 +900,9 @@ however there is a limit of 65536 modules per section and there are some
 restrictions on how the address info class may be laid out. These restrictions
 are described in the section explaining the address info class.
 .beglevel
+.*
 .section Section debug header
+.*
 .np
 The section header class allows the debugger to determine the size of the section
 information and the location of the permanently loaded classes.
@@ -893,21 +934,27 @@ as valid:
 :PC.
 The :F.section_id:eF. field contains the overlay number for this section.
 This is zero for the root.
+.*
 .section Local symbols class
+.*
 .np
 The local symbols segments are processed normally by the linker, except that
 the data in the segments is placed in this section, no relocation entries are
 output for any fixups in the data and fields in the module structure are
 intialized to point to the beginning and size of each object file's contribution
 to the section.
+.*
 .section Types class
+.*
 .np
 The type segments are processed normally by the linker, except that
 the data in the segments is placed in this section, no relocation entries are
 output for any fixups in the data and fields in the module structure are
 intialized to point to the beginning and size of each object file's contribution
 to the section.
+.*
 .section Line numbers class
+.*
 .np
 The LINNUM records for each object file are collected and placed in this
 class using an array of arrays. The top level array is the following structure:
@@ -970,7 +1017,9 @@ appropriate segment is found.
 :LI. Binary search the array of line_info's until the proper one is located.
 :eOL.
 .beglevel
+.*
 .section Special Line Number Table
+.*
 .np
 The OMF line number record does not allow for more than one source file
 to be referenced in an object file. This kludge gets around the restriction.
@@ -1022,7 +1071,9 @@ fname =  file_name_table[ fname_index ]
 The code offset and segment are found in the :F.line_info:eF and
 :F.line_segment:eF structures as usual.
 .endlevel
+.*
 .section Module information class
+.*
 .np
 The module information class is built from the linker's list of object
 files that it processes to build the executable file, which are either
@@ -1112,7 +1163,9 @@ the next entry in the demand link table and repeats the above process. This
 continues until all the entries for that particular class of the module
 (identified by the :F.num_entries:eF. field in the mod_info structure)
 have been examined, or the information is located.
+.*
 .section Global symbols class
+.*
 .np
 All PUBDEF records processed by the linker create entries in this class.
 The fields in the structure are:
@@ -1154,7 +1207,9 @@ producer is unable to determine whether the symbol is a code or data item.
 The final field, :F.name:eF. is a variable length array, with the first
 character indicating the length of the name, and the remaining characters
 being the actual name of the symbol.
+.*
 .section Address information class
+.*
 .np
 The address information class allows the debugger, given a memory address, to
 determine the module which defines that memory address. The linker builds
