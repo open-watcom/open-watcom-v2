@@ -191,6 +191,49 @@
 .do end
 .dm enddescr end
 
+.dm begxmpls begin
+.if &e'&dohelp eq 0 .do begin
+.   :DL termhi=0 break.
+.   :DT.Example(s):
+.   :DD.
+.do end
+.el .do begin
+.   :ZDL termhi=0 break.
+.   :ZDT.Example(s):
+.   :ZDD.
+.do end
+.dm begxmpls end
+
+.dm endxmpls begin
+.if &e'&dohelp eq 0 .do begin
+.   :eDL.
+.do end
+.el .do begin
+.   :ZeDL.
+.do end
+.dm endxmpls end
+
+.dm begx11 begin
+.if &e'&dohelp eq 0 .do begin
+.   :SL.
+.   :LIHD.&*.
+.do end
+.el .do begin
+.   :ZSL.
+.   :ZLIHD.&*.
+.do end
+.np
+.dm begx11 end
+
+.dm endx11 begin
+.if &e'&dohelp eq 0 .do begin
+.   :eSL.
+.do end
+.el .do begin
+.   :ZeSL.
+.do end
+.dm endx11 end
+
 .dm xmplsect begin
 .if '&*1.' eq 'begin' .do begin
 .   .if &e'&dohelp eq 0 .do begin
