@@ -125,25 +125,25 @@ keywords.
 
 For example, the color tag specifies the foreground and/or background color for text. Only certain colors
 are supported, and each has a keyword:
-:SL.
-:LI.default
-:LI.blue
-:LI.red
-:LI.pink
-:LI.green
-:LI.cyan
-:LI.yellow
-:LI.neutral
-:LI.brown
-:LI.darkgray
-:LI.darkblue
-:LI.darkred
-:LI.darkpink
-:LI.darkgreen
-:LI.darkcyan
-:LI.black
-:LI.palegray
-:ESL.
+:ZSL.
+:ZLI.default
+:ZLI.blue
+:ZLI.red
+:ZLI.pink
+:ZLI.green
+:ZLI.cyan
+:ZLI.yellow
+:ZLI.neutral
+:ZLI.brown
+:ZLI.darkgray
+:ZLI.darkblue
+:ZLI.darkred
+:ZLI.darkpink
+:ZLI.darkgreen
+:ZLI.darkcyan
+:ZLI.black
+:ZLI.palegray
+:ZESL.
 .*
 .section End Tags
 .*
