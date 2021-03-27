@@ -280,13 +280,13 @@
 :set symbol="NTEop2" value="compact".
 .do end
 .if '&*1' eq '$setptnt' .do begin
-:set symbol="NTEop3" value="tsize=&*2".
+:set symbol="NTEop3" value="tsize='&*2'".
 .do end
 .if '&*2' eq '$setptnt' .do begin
-:set symbol="NTEop3" value="tsize=&*3".
+:set symbol="NTEop3" value="tsize='&*3'".
 .do end
 .if '&*3' eq '$setptnt' .do begin
-:set symbol="NTEop3" value="tsize=&*4".
+:set symbol="NTEop3" value="tsize='&*4'".
 .do end
 .if &e'&dohelp eq 0 .do begin
 :DL &NTEnhi. &NTEop1. &NTEop2. &NTEop3..
