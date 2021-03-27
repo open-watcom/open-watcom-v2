@@ -330,16 +330,6 @@ Whenever &parm1 is typed as a word during
 .keyref unabbrev
 is used to remove the abbreviation.
 .enddescr
-.*
-.begxmpls
-.begx11 abbrev wh while(
-Whenever
-.endx11
-.begx11 test1 1 2 3
-test text
-.endx11
-.endxmpls
-.*
 .xmplsect begin
 .begxmpl abbrev wh while(
 Whenever
