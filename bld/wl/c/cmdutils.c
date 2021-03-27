@@ -725,6 +725,7 @@ static void StartNewFile( void )
         envstring = GetEnvString( fname );
         if( envstring != NULL ) {
             NewCommandSource( fname, envstring, ENVIRONMENT );
+            _LnkFree( fname );
         } else {
             LnkMsg( LOC+LINE+ERR+MSG_CANT_OPEN_NO_REASON, "s", fname );
             _LnkFree( fname );
@@ -733,8 +734,8 @@ static void StartNewFile( void )
     } else {
         SetCommandFile( file, fname );
         DEBUG(( DBG_OLD, "processing command file %s", fname ));
+        _LnkFree( fname );
     }
-    _LnkFree( fname );
 }
 
 static void BackupParser( void )
