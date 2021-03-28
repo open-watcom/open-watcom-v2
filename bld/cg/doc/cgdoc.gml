@@ -331,7 +331,7 @@ SET_CPU( proc, CPU_386 );
 SET_FPU( proc, FPU_387 );
 SET_WTK( proc, WTK_3167 );
 :eXMP.
-.np
+.pc
 The return value structure is defined as follows:
 .np
 :XMP.
@@ -632,7 +632,7 @@ back_handle FEBack( SYMPOINTER sym )
     return( sym->back );
 }
 :eXMP.
-.np
+.pc
 It is the responsibility of the front end to free each back_handle,
 via BEFreeBack, when it frees the corresponding cg_sym_handle entry.
 .np
@@ -3253,7 +3253,7 @@ hw_reg_set regs[] = {
     HW_NotD_2( HW_EDX, HW_EBX )
 };
 :eXMP.
-.np
+.pc
 The following are to build registers dynamically.
 .begnote $break $setptnt 2i
 .notehd1 Macro
@@ -3306,7 +3306,7 @@ hw_reg_set low16( hw_reg_set reg )
     }
 }
 :eXMP.
-.np
+.pc
 The following register constants are defined for all targets.
 .begnote
 .note HW_EMPTY
@@ -3346,7 +3346,7 @@ for( ;; ) {
     do_something( FEAuxInfo( handle, IMPORT_NAME ) );
 }
 :eXMP.
-.np
+.pc
 The FREE_SEGMENT request is used as follows.
 .np
 :XMP.
@@ -3359,7 +3359,7 @@ for( ;; ) {
     this_is_my_memory_now( MK_FP( segment, 0 ), segment_size );
 }
 :eXMP.
-.np
+.pc
 The main line in Pascal is defined to be lexical level 1.
 Add 1 for each nested subroutine level.
 C style routines are defined to be lexical level 0.
