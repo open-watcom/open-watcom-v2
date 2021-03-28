@@ -2,14 +2,14 @@
 This document describes the object and executable file structures
 used by the &company Debugger to provide symbolic information about a program.
 This information is subject to change.
-:P
+.np
 Note that version 4.0 of the &company debugger supports the DWARF and
 CodeView symbolic debugging information formats in addition to the format
 described in this document. For the purposes of discussion, this format
 will be known as the "WATCOM" format. DWARF is now the primary format used
 by &company compilers. Support for generating the WATCOM format will probably
 remain but is only useful for debugging DOS overlays.
-:P.
+.np
 Before reading this document you should understand the Intel 8086 Object
 Module Format (OMF). This format is described in the Intel document
 :CIT.
@@ -18,12 +18,12 @@ Module Format (OMF). This format is described in the Intel document
 and also the October 1985 issue of
 :CIT.
 PC Tech Journal:eCIT..
-:P.
+.np
 Responsibility for the Intel/Microsoft OMF specification has been taken over
 by the Tools Interface Standards (TIS) Committee. The TIS standards
 (including the OMF spec) may be obtained by phoning the Intel literature
 center at 1-800-548-4725 and asking for order number 241597.
-:P.
+.np
 This document is for the &company Debugger version 4.0 (or above.)
 .chap Object file structures
 The compiler is responsible for placing extra information into
@@ -31,7 +31,7 @@ the object file in order to provide symbolic information for the &company Debugg
 are three classes of information, each of which may be present or absent
 from the file individually. These classes are line number, type and
 local symbol information.
-:P.
+.np
 For the &company C compiler, line number information
 is provided when the "/d1" switch is used and all three classes are provided
 when the "/d2" switch is used.
@@ -42,14 +42,14 @@ when the "/d2" switch is used.
 Since there may be different versions of the type and local symbol
 information, and there may be multiple front-ends a special OMF COMENT record
 is placed in the object file. It has the following form:
-:XMP.
+.millust begin
 comment_class = 0xfe
 'D'
 major_version_number (char)
 minor_version_number (char)
 source_language (string)
-:eXMP.
-:PC.
+.millust end
+.pc
 The :F.comment_class:eF. of 0xfe indicates a linker directive comment.
 The character 'D' informs the linker that this record is providing debugging
 information. The :F.major_version_number:eF. is changed whenever there
@@ -59,7 +59,7 @@ increments by one whenever a change is made to those classes that is
 upwardly compatible with previous versions. The :F.source_language:eF. field
 is a string which determines what language that the file was compiled
 from.
-:P
+.np
 If the debugging comment record is not present, the local and type segments
 (described later) are not in WATCOM format and should be omitted from the
 resulting executable file's debugging information.
@@ -90,7 +90,7 @@ of a single entry field.
 The top nibble of the first byte in each entry
 is a general location class while the low nibble specifies
 the sub-class.
-:XMP.
+.millust begin
 BP_OFFSET   (value 0x1?)
     BYTE    (value 0x10) offset_byte
     WORD    (value 0x11) offset_word
@@ -139,11 +139,11 @@ Here is the list of register numbers:
 20-ST0, 21-ST1, 22-ST2, 23-ST3, 24-ST4, 25-ST5, 26-ST6, 27-ST7
 28-EAX, 29-EBX, 30-ECX, 31-EDX, 32-ESI, 33-EDI, 34-EBP, 35-ESP
 36-FS,  37-GS
-:eXMP.
-:PC.
+.millust end
+.pc
 CONST pushes a single constant value onto the expression stack. INT_1 and
 INT_2 constant values are sign-extended to four bytes before being pushed.
-:P.
+.np
 The OPERATOR class performs a variety of operations on the expression
 stack.
 :DL.
@@ -181,16 +181,16 @@ the result.
 :DT.NOP
 :DD.Perform no operation.
 :eDL.
-:P.
+.np
 REG and MULTI_REG push the 'lvalue' of the register. If they are the
 only entry then the symbol exists in the specified register. To access
 the value of the register, you must indirect it.
-:P.
+.np
 BP_OFFSET locations are for variables on the stack. The values given
 are offsets from the BP register for 286 programs and from the EBP register
 for 386 programs. A BP_OFFSET could also be expressed with the following
 series of operations:
-:XMP.
+.millust begin
 MULTI_REG(1) SS
 IND_2
 MULTI_REG(1) EBP
@@ -198,8 +198,8 @@ IND_4
 MK_FP
 INT_1 offset_byte
 ADD
-:eXMP.
-:P.
+.millust end
+.pc
 The IND_REG location type is used for structured return values.
 The register or register pair is used to point at the memory location
 where the structure is returned.
@@ -241,7 +241,7 @@ index one. Character strings representing names are always placed at the
 end of a definition so that their length can be calculated by subtracting
 the name's start point from the length of the record. They are not
 preceded by a length byte or followed by a zero byte.
-:P
+.np
 The first byte identifies the kind of the type definition that follows.
 The top nibble of the byte is used to indicate the general class of the
 type definition (there are eight of these). The low order nibble is used
@@ -254,20 +254,20 @@ type.
 .np
 This definition is used to give names to types. There are three
 sub-classes.
-:XMP.
+.millust begin
 SCALAR    (value 0x10) scalar_type_byte, name
 SCOPE     (value 0x11) name
 NAME      (value 0x12) scope_index, type_index, name
 CUE_TABLE (value 0x13) table_offset_dword
 EOF       (value 0x14)
-:eXMP.
-:P.
+.millust end
+.pc
 SCALAR is used to give a name to a basic scalar type. It can also be
 used to give a type index to a scalar type without a name by specifying
 the null name. The :F.scalar_type_byte:eF. informs the &company Debugger what sort of
 scalar item
 is being given a name. It has the following form:
-:XMP.
+.millust begin
 BIT: 7 6 5 4 3 2 1 0
      | |   | |     |
      | |   | +-----+--- size in bytes - 1
@@ -277,37 +277,37 @@ BIT: 7 6 5 4 3 2 1 0
      |                        (011 - void (size=0))
      |                        (100 - complex)
      +----------------- unused
-:eXMP.
-:PC.
+.millust end
+.pc
 To create an unnamed scalar type, for use in other definitions, just
 use a zero length name.
 :NOTE.
 BASIC would have been a better name for this, since complex is not a
 scalar type, but the name was chosen before complex support was added.
-:P.
+.np
 SCOPE is used to restrict the scope of other type names. A restricted
 scope type name must be preceded by its appropriate scope name in order
 for the &company Debugger to recognize it as a type name. This is useful for declaring
 C structure, union, and enum tag names. You declare SCOPE names of "struct",
 "union", and "enum" and then place the appropriate value in the
 :F.scope_index:eF. field of the NAME record when declaring the tag.
-:P.
+.np
 NAME gives an arbitrary type a name. The field, :F.scope_index:eF., is
 either zero, which indicates an unrestricted type name, or is the type
 index of a SCOPE definition, which means that the type name must be preceded
 by the given scope name in order to be recognized.
-:P.
+.np
 The next two records are kludges to allow OMF line numbers to refer to
 more than one source file.
 See the section of on the "Special Line Number Table"
 in the executable structure for more details.
-:P.
+.np
 CUE_TABLE is followed by :F.table_offset_dword:eF. which gives the offset
 in bytes from the begining of the typing information for a module to the
 special line number table. If this record is present, it must be in
 the first $$TYPES segment for the module and preferably as close to
 the begining of the segment as possible.
-:P.
+.np
 EOF marks the end of the typing information for the module and the
 begining of the special line number table.
 .*
@@ -315,7 +315,7 @@ begining of the special line number table.
 .*
 .np
 This definition is used to define an array type. There are 6 sub-classes.
-:XMP.
+.millust begin
 BYTE_INDEX     (value 0x20) high_bound_byte, base_type_index
 WORD_INDEX     (value 0x21) high_bound_word, base_type_index
 LONG_INDEX     (value 0x22) high_bound_dword, base_type_index
@@ -324,20 +324,20 @@ DESC_INDEX     (value 0x24) scalar_type_byte, scalar_type_byte,
                                 bounds_32_pointer, base_type_index
 DESC_INDEX_386 (value 0x25) scalar_type_byte, scalar_type_byte,
                                 bounds_48_pointer, base_type_index
-:eXMP.
-:P.
+.millust end
+.pc
 BYTE_INDEX, WORD_INDEX, LONG_INDEX are all used to describe a restricted
 form of array. If one of these forms is used then the index type is an
 integer with the low bound of the array being zero and the high
 bound being whatever is specified.
-:P.
+.np
 The DESC_INDEX form is used when the array bounds are not known at
 compile time. The :F.bounds_32_pointer:eF. is a far pointer to a structure
 in memory. The type and size of the first field is given by the first
 :F.scalar_type_byte:eF. and indicates the lower bound for the index. The
 second field's type and size is given by the second :F.scalar_type_byte:eF. .
 This field gives the number of elements in the array.
-:P.
+.np
 The DESC_INDEX_386 is the same as DESC_INDEX except that a 48-bit far pointer
 is used to locate the structure in memory.
 .*
@@ -346,12 +346,12 @@ is used to locate the structure in memory.
 .np
 This definition is used to define a subrange type. There are 3
 sub-classes.
-:XMP.
+.millust begin
 BYTE_RANGE (value 0x30) lo_bnd_byte, hi_bnd_byte, base_type_index
 WORD_RANGE (value 0x31) lo_bnd_word, hi_bnd_word, base_type_index
 LONG_RANGE (value 0x32) lo_bnd_dword, hi_bnd_dword, base_type_index
-:eXMP.
-:P.
+.millust end
+.pc
 If the base type is unsigned then the low and high bounds should be
 interpreted as containing unsigned quantities, otherwise they contain
 integers. However, the decision to use the byte, word, or long form of
@@ -363,7 +363,7 @@ signed numbers.
 .np
 This definition is used to define a pointer type. There are 10
 sub-classes.
-:XMP.
+.millust begin
 NEAR            (value 0x40) base_type_index [,base_locator]
 FAR             (value 0x41) base_type_index
 HUGE            (value 0x42) base_type_index
@@ -374,8 +374,8 @@ NEAR386         (value 0x46) base_type_index [,base_locator]
 FAR386          (value 0x47) base_type_index
 NEAR386_DEFREF  (value 0x48) base_type_index [,base_locator]
 FAR386_DEREF    (value 0x49) base_type_index
-:eXMP.
-:P.
+.millust end
+.pc
 When a symbol is one of the *_DEREF types, the &company Debugger will automatically
 dereference the pointer. This "hidden" indirection may be used to define
 reference parameter types, or other indirectly located symbols. The *_DEREF
@@ -401,25 +401,25 @@ the default near segment and a zero offset.
 .np
 This definition is used to define an enumerated type. There are 4
 sub-classes.
-:XMP.
+.millust begin
 LIST       (value 0x50) #consts_word, scalar_type_byte
 CONST_BYTE (value 0x51) value_byte, name
 CONST_WORD (value 0x52) value_word, name
 CONST_LONG (value 0x53) value_dword, name
-:eXMP.
-:P.
+.millust end
+.pc
 LIST is used to inform the &company Debugger of the number of constants in the enumerated
 type and the scalar type used to store them in memory. It will be
 followed immediately by all the constant definitions for the enumerated
 type. See TYPE_NAME for a description of the :F.scalar_type_byte:eF..
-:P.
+.np
 CONST_BYTE, CONST_WORD, and CONST_LONG define the individual constant
 values for an enumerated type. The type of the constant is provided by
 the preceeding LIST definition. The decision to use the byte, word, or
 long form of the definition is made always by considering the value as
 a signed number. The CONST_* definition records are not counted when
 determining type index values.
-:P.
+.np
 The LIST record and its associated CONST_* records must all be contained
 in the same $$TYPES segment.
 .*
@@ -428,7 +428,7 @@ in the same $$TYPES segment.
 .np
 This definition is used to define a structure type. There are 10
 sub-classes.
-:XMP.
+.millust begin
 LIST       (value 0x60) #fields_word [,size_dword]
 FIELD_BYTE (value 0x61) offset_byte, type_index, name
 FIELD_WORD (value 0x62) offset_word, type_index, name
@@ -443,22 +443,22 @@ FIELD_CLASS (v    0x67) attrib_byte, field_locator, type_index, name
 BIT_CLASS  (value 0x68) attrib_byte, field_locator, start_bit_byte,
                             bit_size_byte, type_index, name
 INHERIT_CLASS (v  0x69) adjust_locator, ancestor_type_index
-:eXMP.
-:P.
+.millust end
+.pc
 LIST is used to introduce a structure definition. It is followed
 immediately by all the field definitions that make up the structure.
 The optional :F.size_dword:eF. gives the size of the structure in bytes.
 If it is not present, the debugger calculates the size of the structure
 based on field offsets and sizes.
-:P.
+.np
 FIELD_BYTE, FIELD_WORD, FIELD_LONG, and FIELD_CLASS define a single field
 entry in a structure defintion.
-:P.
+.np
 BIT_BYTE, BIT_WORD, BIT_LONG, and BIT_CLASS define a bit field in a structure.
 :The FIELD_CLASS and BIT_CLASS records are used for defining fields in a
 C++ class. The :F.attrib_byte:eF. contain a set of bits describing attributes
 of the field:
-:XMP.
+.millust begin
 BIT: 7 6 5 4 3 2 1 0
      |     | | | | |
      |     | | | | +--- internal
@@ -466,37 +466,37 @@ BIT: 7 6 5 4 3 2 1 0
      |     | | +------- protected
      |     | +--------- private
      +-----+----------- unused
-:eXMP.
-:PC.
+.millust end
+.pc
 An internal field is one that is generated for compiler support. It is
 not normally displayed to the user. The other bits have their usual C++
 meanings.
-:P.
+.np
 The :F.field_locator:eF. is a location expression describing how to
 calculate the field address. Before begining to evaluate the expression,
 the debugger will implicitly push the base address of the class instance
 onto the stack. The following is an example of the location expression used
 to calculate an ordinary field at offset 10 from the start of the class:
-:XMP.
+.millust begin
 INT_1   10
 ADD
-:eXMP.
-:P.
+.millust end
+.pc
 The INHERIT_CLASS record indicates that a particular class should inherit
 all the fields specified by :F.ancestor_type_index:eF.. This field must
 point at either a STRUCTURE LIST record or a TYPE NAME that eventually
 resolves to a STRUCTURE LIST. The :F.adjust_locator:eF. is a location
 expression that tells the debugger how to adjust the field offset expressions
 in the inherited class to their proper values for a class of this instance.
-:P.
+.np
 The FIELD_*, BIT_*, and INHERIT_CLASS records are not counted when
 determining type index values.
-:P.
+.np
 A C union, or Pascal variant record is described by having a number of fields
 all beginning at the same offset. The &company Debugger will display the fields in the
 reverse order that the records define them. This means that ordinarily,
 the records should be sorted by descending offsets and bit positions.
-:P.
+.np
 The LIST record and it's associated field descriptions must all be contained
 in the same $$TYPES segment.
 .*
@@ -505,14 +505,14 @@ in the same $$TYPES segment.
 .np
 This definition is used to define a procedure type. There are 4
 sub-classes.
-:XMP.
+.millust begin
 NEAR      (value 0x70) ret_type_index, #parms_byte {,parm_type_index}
 FAR       (value 0x71) ret_type_index, #parms_byte {,parm_type_index}
 NEAR386   (value 0x72) ret_type_index, #parms_byte {,parm_type_index}
 FAR386    (value 0x73) ret_type_index, #parms_byte {,parm_type_index}
 EXT_PARMS (value 0x74) {,parm_type_index}
-:eXMP.
-:P.
+.millust end
+.pc
 The EXT_PARMS sub-class is used when there are too many parameter
 types to fit into one PROCEDURE record. This condition can be recognized
 when the #parms_byte indicates there are more parameter types than
@@ -527,15 +527,15 @@ procedure record.
 .np
 Items of type CHARACTER_BLOCK are length delimited strings. There are 4
 sub-classes.
-:XMP.
+.millust begin
 CHAR_BYTE    (value 0x80) length_byte
 CHAR_WORD    (value 0x81) length_word
 CHAR_LONG    (value 0x82) length_dword
 CHAR_IND     (value 0x83) scalar_type_byte, length_32_pointer
 CHAR_IND_386 (value 0x84) scalar_type_byte, length_48_pointer
 CHAR_IND_LOC (value 0x85) scalar_type_byte, address_locator
-:eXMP.
-:PC.
+.millust end
+.pc
 The CHAR_BYTE, CHAR_WORD, and CHAR_LONG forms are used when the length
 of the character string is known at compile time. Even though the length
 given is an unsigned quantity, the decision on which form to use is made
@@ -565,12 +565,12 @@ Character strings representing names are always placed at the
 end of a definition so that their length can be calculated by subtracting
 the name's start point from the length of the record. They are not
 preceded by a length byte or followed by a zero byte.
-:P
+.np
 The first byte identifies the kind of the symbol definition that follows.
 The top nibble of the byte is used to indicate the general class of the
 symbol definition. The low order nibble is used
 to qualify the general definition class.
-:P.
+.np
 Symbol definitions are used to provide the &company Debugger with the location and
 scoping of source language local symbols. There are two general classes
 of symbol definition, one for variables and one for code.
@@ -581,19 +581,19 @@ of symbol definition, one for variables and one for code.
 .np
 This definition is used to define the location of a data symbol.
 There are 4 sub-classes.
-:XMP.
+.millust begin
 MODULE     (value 0x10) memory_location_32_pointer, type_index, name
 LOCAL      (value 0x11) address_locator, type_index, name
 MODULE386  (value 0x12) memory_location_48_pointer, type_index, name
 MODULE_LOC (value 0x13) address_locator, type_index, name
-:eXMP.
-:P.
+.millust end
+.pc
 MODULE defines either an exported, domestic, or imported
 variable in the module.
 It is not necessary to generate symbol information for an imported variable
 since the &company Debugger will look for local symbol information in the module which defines
 the variable if required.
-:P.
+.np
 LOCAL defines a symbol that is local to a code block or procedure. The
 defining block is the first one previous to this definition. Local symbols
 only "exist" for the purpose of the &company Debugger lookups when the program is
@@ -604,7 +604,7 @@ executing in a block which defines the symbol.
 .np
 This definition is used to define an object in the code. There are 6
 sub-classes.
-:XMP.
+.millust begin
 BLOCK        (value 0x20) start_offset_word, size_word,
                             parent_block_offset
 NEAR_RTN     (value 0x21) <BLOCK>, pro_size_byte, epi_size_byte,
@@ -627,14 +627,14 @@ FAR_RTN_386  (value 0x25) <BLOCK_386>, pro_size_byte, epi_size_byte,
                             {,parm_location}, name
 MEMBER_SCOPE (value 0x26) parent_block_offset, class_type_index
                             [obj_ptr_type_byte, object_loc]
-:eXMP.
-:P.
+.millust end
+.pc
 BLOCK is used to indicate a block of code that contains local symbol
 definitions. The field :F.parent_block_offset:eF. is used to tell the &company Debugger
 the next
 block to search for a symbol definition if it is not found in this block.
 The field is set to zero if there is no parent block.
-:P
+.np
 NEAR_RTN and FAR_RTN are used to specify a routine definition.
 Notice that the first part
 is identical to a code block definition. The :F.ret_addr_offset_word:eF.
@@ -644,7 +644,7 @@ offset from BP (or EBP) that the return address is located on the stack. The
 for those parms which
 are passed in registers. The remainder of the parms are assumed to be
 passed on the stack.
-:P.
+.np
 The MEMBER_SCOPE record is used for C++ member functions. It introduces
 a scope where the the debugger looks up the fields of the class identified
 by :F.class_type_index:eF. as if they were normal symbols. If the
@@ -671,13 +671,13 @@ routine is expecting. I.e.:
 If the portions following the :F.class_type_index:eF. are
 absent from the record, the routine is a static member function and only
 has access to static data members.
-:P.
+.np
 To use this record, the member function's :F.parent_block_offset:eF. is
 pointed at the MEMBER_SCOPE record, and the MEMBER_SCOPE's
 :F.parent_block_offset:eF field is pointed at what the member function
 would normally be pointing at. In effect, a new block scope has been
 introduced.
-:P.
+.np
 The *_386 versions of the records are identical to  their 286
 counterparts excepts that the :F.start_offset:eF., :F.size:eF., and
 :F.ret_addr_offset:eF. fields have been widened to 32 bits.
@@ -685,12 +685,12 @@ counterparts excepts that the :F.start_offset:eF., :F.size:eF., and
 There should be a better mapping of parm number to parm location. There
 is no provision for Pascal calling conventions (reversed parm order) or
 other strangeness.
-:P
+.np
 The BLOCK definition contains a :F.start_offset_word:eF. (or
 :F.start_offset_dword:eF. in a BLOCK_386). This is the offset
 from a given memory location provided by NEW_BASE entries and indicates the
 address of the start of executable code for the block.
-:P.
+.np
 All the code
 location definitions are assumed to be sorted in order of increasing
 end offsets (start offset + size). This ensures that the first scope that
@@ -699,13 +699,12 @@ closest enclosing scope.
 .*
 .section NEW_BASE (value 0x3?)
 .*
-.np
-:XMP.
+.millust begin
 ADD_PREV_SEG (value 0x30) seg_increment_word
 SET_BASE     (value 0x31) memory_location_32_pointer
 SET_BASE386  (value 0x32) memory_location_48_pointer
-:eXMP.
-:P.
+.millust end
+.pc
 For ADD_PREV_SEG,
 the specified amount is added to the segment value of the code start address
 of the module. The code start offset is reset to zero. All BLOCK
@@ -722,9 +721,9 @@ real mode. It is included for backwards compatiblity only.
 The linker is responsible for processing the debugging information contained
 in the object files and some of its internal structures and appending
 them to the executable file.
-:P.
+.np
 After linking, the executable file looks like this:
-:XMP.
+.millust begin
 +-----------------------+
 |                       |
 |        EXE file       |
@@ -746,8 +745,8 @@ After linking, the executable file looks like this:
 +-----------------------+
 |  master debug header  |
 +=======================+<--- end of file
-:eXMP.
-:PC.
+.millust end
+.pc
 The section marked as "EXE file" is the normal executable file.
 All debugging information is appended to the end of the file, after any
 overlay sections or other information.
@@ -775,7 +774,7 @@ The master debug header allows the &company Debugger to verify the fact that the
 debugging information, to locate the other sections and to verify that
 it is capable of handling the version of debugging information.
 The master header structure is as follows:
-:XMP.
+.millust begin
 struct master_dbg_header {
     unsigned_16 signature;
     unsigned_8  exe_major_ver;
@@ -786,8 +785,8 @@ struct master_dbg_header {
     unsigned_16 segment_size;
     unsigned_32 debug_size;
 };
-:eXMP.
-:PC.
+.millust end
+.pc
 The :F.signature:eF. word contains the value 0x8386.
 This is the first indication to the &company Debugger that there is debugging information
 present.
@@ -808,7 +807,7 @@ the following must be true:
 :LI. FILE exe debug info major version == debugger exe debug info major version
 :LI. FILE exe debug info minor version <= debugger exe debug info minor version
 :eOL.
-:P.
+.np
 The :F.obj_major_ver:eF. field contains the major version number of the
 object file debugging information structures (internal format of the
 types and local symbol information).
@@ -827,14 +826,15 @@ the following must be true:
 :LI. FILE obj debug info major version == debugger obj debug info major version
 :LI. FILE obj debug info minor version <= debugger obj debug info minor version
 :eOL.
-:PC. These two fields are filled in by the linker by extracting the
+.pc
+These two fields are filled in by the linker by extracting the
 version information from special debug comment record in the processed object
 files. If two object files in the link contain different major version
 numbers, the linker should report an error or warning and not process the
 type or local symbol information for the 'incorrect' file. The minor
 version number placed in the master header should be the maximum of
 all the minor version numbers extracted from the object files.
-:P.
+.np
 The :F.lang_size:eF. field contains the size of the source language table
 at the beginning of the debug information.
 The :F.segment_size:eF. field informs the debugger of the size, in bytes, of the
@@ -873,7 +873,7 @@ map file will be represented in the table.
 .*
 .np
 Each :F.section debug info:eF. contains the following:
-:XMP
+.millust begin
 +-----------------------+
 |    section header     |
 +-----------------------+
@@ -889,8 +889,8 @@ Each :F.section debug info:eF. contains the following:
 +-----------------------+
 |     address info      |
 +-----------------------+
-:eXMP.
-:PC.
+.millust end
+.pc
 The local symbols, types and line numbers classes are demand loaded by
 the debugger as it requires pieces of the classes for various modules.
 The module info, global symbols, and address info classes are permanently
@@ -907,7 +907,7 @@ are described in the section explaining the address info class.
 The section header class allows the debugger to determine the size of the section
 information and the location of the permanently loaded classes.
 The header structure is as follows:
-:XMP.
+.millust begin
 struct section_dbg_header {
     unsigned_32 mod_offset;
     unsigned_32 gbl_offset;
@@ -915,8 +915,8 @@ struct section_dbg_header {
     unsigned_32 section_size;
     unsigned_16 section_id;
 };
-:eXMP.
-:PC.
+.millust end
+.pc
 The :F.mod_offset:eF., :F.gbl_offset:eF., and :F.addr_offset:eF.
 fields are offsets, from the beginning of the section debug header
 to the module info,
@@ -931,7 +931,7 @@ as valid:
 :LI. gbl_offset < addr_offset
 :LI. addr_offset < section_size
 :eOL.
-:PC.
+.pc
 The :F.section_id:eF. field contains the overlay number for this section.
 This is zero for the root.
 .*
@@ -958,14 +958,14 @@ to the section.
 .np
 The LINNUM records for each object file are collected and placed in this
 class using an array of arrays. The top level array is the following structure:
-:XMP.
+.millust begin
 struct line_segment {
     unsigned_32     segment;
     unsigned_16     num;
     line_info       line[1];
 }
-:eXMP.
-:PC.
+.millust end
+.pc
 The :F.segment:eF. field contains a offset, from the start of the
 address info class,
 to an addr_info structure (see the address info class description).
@@ -973,13 +973,13 @@ This provides
 the segment value for the array of line_info's following. The next field,
 :F.num:eF., provides the number of line_info's in the array. The :F.line:eF.
 is a variable size array containing the following structure:
-:XMP.
+.millust begin
 struct line_info {
     unsigned_16  line_number;
     unsigned_32  code_offset;
 };
-:eXMP.
-:PC.
+.millust end
+.pc
 The :F.line_number:eF. contains the source line number whose offset
 is being defined. If the top bit of the line number is on, this line number
 refers to an entry in the special line number table. See the
@@ -1001,12 +1001,12 @@ The module structure for the
 object file contains fields which indicate the start and size of the
 line_segment array
 within the class.
-:P.
+.np
 Each line_segment structure may not exceed 60K, however the total amount
 of line information for a module may exceed 60K with multiple line_segment
 structures and multiple entries in the demand link table (described in the
 module information section).
-:P.
+.np
 To obtain a line number from an address, the debugger performs the following steps
 :OL.
 :LI.Given an address, the defining module is found from the address information
@@ -1028,7 +1028,7 @@ entry in the special line number table. The debugger then searches the
 typing information for the module for a :F.CUE_TABLE:eF. record. If it
 finds one, it uses the offset given to find the begining of the table
 in the typing information. The table looks like this:
-:XMP.
+.millust begin
 /* cue entry table */
 unsigned_16 cue_count
 
@@ -1048,26 +1048,26 @@ struct {
 
 /* file name table */
 A list of zero terminated source file names
-:eXMP.
-:P.
+.millust end
+.pc
 To find the correct cue entry given the value in a :F.line_number:eF., search
 the :F.cue_entry:eF. table for the cue which satisfies the following:
-:XMP.
+.millust begin
 cue_entry[entry].cue <= (line_number & 0x7fff) < cue_entry[entry+1].cue
-:eXMP.
-:PC.
+.millust end
+.pc
 Once you have the cue entry, you can extract the true line number by:
-:XMP.
+.millust begin
 line = cue_entry[entry].line + (line_number & 0x7fff)
                - cue_entry[entry].cue;
-:eXMP.
-:PC.
+.millust end
+.pc
 The file name is found by:
-:XMP.
+.millust begin
 fname_index = file_name_index_table[ cue_entry[entry].fno ]
 fname =  file_name_table[ fname_index ]
-:eXMP.
-:PC.
+.millust end
+.pc
 The code offset and segment are found in the :F.line_info:eF and
 :F.line_segment:eF structures as usual.
 .endlevel
@@ -1082,7 +1082,7 @@ All the modules are implicitly given an index number by their order in
 the class. These index numbers start at zero and are used by other classes
 to identify individual modules.
 The module structure contains the following fields:
-:XMP.
+.millust begin
 struct mod_info {
     unsigned_16 language;
     demand_info locals;
@@ -1090,8 +1090,8 @@ struct mod_info {
     demand_info lines;
     unsigned_8  name[1];
 };
-:eXMP.
-:PC.
+.millust end
+.pc
 The :F.language:eF. field contains an offset, from the start of the source
 language table to the string of the source language for this module.
 The :F.name:eF. field is a variable length array of characters
@@ -1105,20 +1105,20 @@ file specification as its "module name". The remaining fields,
 type which define the location and size of this module's demand
 loaded information
 from those classes. The structure contains these fields:
-:XMP.
+.millust begin
 struct demand_info {
     unsigned_32 offset;
     unsigned_16 num_entries;
 };
-:eXMP.
-:PC.
+.millust end
+.pc
 The :F.offset:eF. field contains the offset from the beginning of the
 debugging information section to first entry in the demand link table
 containing the information for that particular demand load class. The
 :F.num_entries:eF. field gives the number of contiguous entries in the
 demand link table that are present for the module's demand load information
 of that particular class.
-:P.
+.np
 The demand link table consists of an array of unsigned_32 offsets, which
 are relative from the debugging information section, to the individual
 demand info class data blocks. The array is in ascending order of offsets
@@ -1129,7 +1129,7 @@ end of the table whose offset points to the end of the final demand load
 data block so that the debugger always has a 'next' link entry to calculate
 size of a data block with. The size of each individual block may not exceed
 60K. A picture may be useful here to show how all the pieces fit together:
-:XMP.
+.millust begin
 module info
 class
 +--------+
@@ -1152,8 +1152,8 @@ class
                         ...              ...
                     |        |        |      |
                     +--------+        +------+
-:eXMP.
-:PC.
+.millust end
+.pc
 When the debugger wishes to look something up in a demand load class for
 a module. It uses the offset in the mod_info structure to locate the
 array entry in the demand link table which has the offset for the first
@@ -1169,15 +1169,15 @@ have been examined, or the information is located.
 .np
 All PUBDEF records processed by the linker create entries in this class.
 The fields in the structure are:
-:XMP.
+.millust begin
 struct gbl_info {
     addr48_ptr      addr;
     unsigned_16     mod_index;
     unsigned_8      kind;
     unsigned_8      name[1];
 };
-:eXMP.
-:PC.
+.millust end
+.pc
 The :F.addr:eF. field contains the location in memory associated with
 this symbol. The value placed in this field is the same that the linker
 places in the map file (i.e. unrelocated, as if the executable loads
@@ -1187,14 +1187,15 @@ The  :F.mod_index:eF. field is an index which identifies the
 module which defines the symbol (i.e. contained the [L]PUBDEF record).
 The :F.kind:eF. gives rudimentary typing information for the symbol. It
 consists of the following set of bits:
-:XMP.
+.millust begin
 BIT: 7 6 5 4 3 2 1 0
      |       | | | |
      |       | | | +--- STATIC symbol
      |       | | +----- DATA symbol
      |       | +------- CODE symbol
      +-------+--------- unused
-:eXMP.
+.millust end
+.pc
 Bit zero is 1 if the global was defined by a
 LPUBDEF record and 0 if it was defined by a PUBDEF record. LPUBDEF
 symbols are generated by the code generator for static symbols, so this
@@ -1216,14 +1217,14 @@ determine the module which defines that memory address. The linker builds
 this class from the SEGDEF and GRPDEF records in the object files that
 it processes.
 The class consists of an array of structures with the following fields:
-:XMP.
+.millust begin
 struct seg_info {
     addr48_ptr      addr;
     unsigned_16     num;
     addr_info       sects[1];
 };
-:eXMP.
-:PC.
+.millust end
+.pc
 The :F.addr:eF. field identifies the start of a segment in memory.
 This field contains the unrelocated value of the segment starting address
 (i.e. as if the executable had been loaded at 0:0).
@@ -1239,13 +1240,13 @@ moved. If the segment does not belong to NonSect, the top bit of the
 :F.num:eF. field is zero.
 The :F.sects:eF. field is a variable size
 array of structures. This addr_info structure contains the following fields:
-:XMP.
+.millust begin
 struct addr_info {
     unsigned_32     size;
     unsigned_16     mod_index;
 };
-:eXMP.
-:PC.
+.millust end
+.pc
 The :F.mod_index:eF. field indicates the module in the module information
 class which defines this piece of the segment.
 The :F.size:eF. field identifies how large a piece of the segment specified
@@ -1253,12 +1254,12 @@ by the seg_info structure belongs to the module. The starting address
 of the segment piece is given by adding all the previous size fields in the
 :F.sects:eF. array to
 the original starting address in the seg_info structure.
-:P.
+.np
 The size of a seg_info structure may not exceed 60K. If a single physical
 segment would have more :F.sects:eF. than would fit into this restriction
 (:F.num:eF. greater than 10238), it should be split into two separate
 seg_info structures.
-:P
+.np
 To identify the module that defines a location in memory, the debugger does the
 following:
 :OL.

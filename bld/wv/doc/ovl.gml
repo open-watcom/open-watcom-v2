@@ -5,7 +5,7 @@ be able to inform &company Debugger when a new overlay section is loaded.
 :P.
 When &company Debugger loads a DOS program, it looks at the initial CS:IP value for the
 following structure:
-:XMP.
+.millust begin
 struct ovl_header {
     unsigned_8  short_jmp_opcode;       /* == 0xeb */
     signed_8    short_jmp_displacment;
@@ -13,7 +13,7 @@ struct ovl_header {
     void        (far *hook)();
     unsigned_16 handler_offset;
 };
-:eXMP.
+.millust end
 :PC.
 &company Debugger checks to make sure that the first instruction is a short jump (opcode
 0xeb) and that the word following that instruction contains the value 0x2112.
@@ -24,7 +24,9 @@ that is invoked with a far call whenever a change in the overlay state occurs.
 The initial CS value and the contents of the :F.handler_offset:eF. field gives
 the far address of the overlay manager routine responsible for handling
 debugger requests.
+.*
 .section The Hook Routine
+.*
 .np
 After the routine addresses have been exchanged, &company Debugger starts the program
 executing, to allow the overlay manager to initialize. After the manager has
@@ -48,7 +50,9 @@ current overlay manager also loads all of the ancestors of a section (See
 the WLINK documentation in the Users' Guide for a description of what an
 ancestor is). To find out what sections are really in memory the debugger
 should invoke the handler routine with a GET_OVERLAY_STATE request.
+.*
 .section The Handler Routine
+.*
 .np
 The handler routine is responsible for processing requests from the debugger
 pertaining to overlays. It is invoked by the debugger by performing a far
@@ -65,10 +69,10 @@ first portion of this block is a bit vector, with each bit representing an
 overlay section. If the bit is a one, then the overlay section is currently
 in memory. If the bit is a zero then the overlay section is not in memory.
 To convert from a section number to a bit position use the following formulas:
-:XMP.
+.millust begin
 byte_offset = (section_number - 1) / 8;
 bit_number  = (section_number - 1) % 8;
-:eXMP.
+.millust end
 :PC.
 Following the bit vector is information that the manager uses to restore the
 overlay stack.
@@ -77,34 +81,38 @@ The second structure used is an overlay address. This consists of a far
 pointer followed by a 16-bit section number.
 :P.
 The following requests are recognized by the debug handler routine.
+.*
 .beglevel
+.*
 .section GET_STATE_SIZE
-.np
-:XMP.
+.*
+.millust begin
 Inputs:                         Outputs:
 AX = request number (0)         AX = size of overlay state
-:eXMP.
+.millust end
 :P
 This request returns the number of bytes required for an overlay state.
+.*
 .section GET_OVERLAY_STATE
-.np
-:XMP.
+.*
+.millust begin
 Inputs:                         Outputs:
 AX = request number (1)         AX = 1
 CX:BX = far pointer to memory
         to store overlay state
-:eXMP.
+.millust end
 :P.
 This request copies the overlay state into the memory pointed at by
 the CX:BX registers. A one is always returned in AX.
+.*
 .section SET_OVERLAY_STATE
-.np
-:XMP.
+.*
+.millust begin
 Inputs:                         Outputs:
 AX = request number (2)         AX = 1
 CX:BX = far pointer to memory
         to load overlay state
-:eXMP.
+.millust end
 :P.
 This request takes a previously obtained overlay state and causes the overlay
 manager to return itself to that overlay configuration. A one is always
@@ -117,14 +125,15 @@ do this, zero out a block of memory the size of an overlay state, and then
 turn on the appropriate section number in the bit vector, then make a
 SET_OVERLAY_STATE request. Remember that not only that section will be loaded,
 but all of its ancestor sections as well.
+.*
 .section TRANSLATE_VECTOR_ADDR
-.np
-:XMP.
+.*
+.millust begin
 Inputs:                         Outputs:
 AX = request number (3)         AX = 1 if addr was translated,
 CX:BX = far pointer to               0 otherwise
         overlay address
-:eXMP.
+.millust end
 :P.
 This request checks to see if the far pointer portion of the overlay address
 pointed at by CX:BX is actually an overlay vector. If the address is a vector
@@ -133,14 +142,15 @@ the vector is for, and the section number portion is filled in with the section
 number the of routine. A one is returned in AX in this case. If the address
 is not an overlay vector, then the overlay address is untouched and an zero
 is returned in AX.
+.*
 .section TRANSLATE_RETURN_ADDR
-.np
-:XMP.
+.*
+.millust begin
 Inputs:                         Outputs:
 AX = request number (4)         AX = 1 if addr was translated,
 CX:BX = far pointer to               0 otherwise
         overlay address
-:eXMP.
+.millust end
 :P.
 In order
 to handle parallel overlay calls, the overlay manager replaces the true return
@@ -159,16 +169,17 @@ to be found (zero is the top entry of the overlay stack). The true return
 address and section number then replaces the contents of the overlay address
 and a one is returned in AX. If the address is not the parallel return code,
 then the overlay address is left untouched and a zero is returned in AX.
+.*
 .section GET_OVL_TBL_ADDR
-.np
-:XMP.
+.*
+.millust begin
 Inputs:                         Outputs:
 AX = request number (5)         AX = 0
 CX:BX = far pointer to variable
         of type far pointer to
         be filled in with
         overlay table address
-:eXMP.
+.millust end
 :P.
 This request fills in the far pointer pointed at by CX:BX with the address
 of the overlay table so that a
@@ -179,14 +190,15 @@ the sample file. Since the overlay table is always in the root, the profiler
 can then find the overlay table and from that, find the other sections. It
 should be noted that the format of the overlay table may change,
 so this call should be avoided if at all possible.
+.*
 .section GET_MOVED_SECTION
-.np
-:XMP.
+.*
+.millust begin
 Inputs:                         Outputs:
 AX = request number (6)         AX = 1 if the section exists
 CX:BX = far pointer to               0 otherwise
         overlay address
-:eXMP.
+.millust end
 :P.
 With the dynamic overlay manager, sections may be loaded, or moved, to
 positions other than where the linker originally placed them. The debugger
@@ -203,7 +215,7 @@ request will return a one in AX. If there are no sections numbers larger
 than the one being passed in that have moved, a zero is returned.
 :P.
 Here is some example debugger code:
-:XMP.
+.millust begin
 void CheckMovedSections()
 {
     overlay_address     addr;
@@ -213,15 +225,16 @@ void CheckMovedSections()
         HandleMovedSection( addr.sect_id, addr.segment );
     }
 }
-:eXMP.
+.millust end
+.*
 .section GET_SECTION_DATA
-.np
-:XMP.
+.*
+.millust begin
 Inputs:                         Outputs:
 AX = request number (7)         AX = 1 if the section exists
 CX:BX = far pointer to               0 otherwise
         overlay address
-:eXMP.
+.millust end
 :P.
 This request returns information on the current location of a section
 while it is in memory (or where it would be if it was loaded). The
@@ -233,10 +246,12 @@ the location that the section is in memory, or where it would currently
 go if it was loaded at that time. It also fills in the section number
 portion of the address with the size of the section in paragraphs.
 .endlevel
+.*
 .section Overlay Table Structure
+.*
 .np
 The pointer returned by the GET_OVL_TBL_ADDR request has the following format:
-:XMP
+.millust begin
 typedef struct ovl_table {
     unsigned_8      major;
     unsigned_8      minor;
@@ -245,7 +260,7 @@ typedef struct ovl_table {
     unsigned_16     ovl_size;
     ovltab_entry    entries[ 1 ];
 } ovl_table;
-:eXMP.
+.millust end
 :P. The fields :F.major:eF. and :F.minor:eF. field contain version numbers for
 the overlay table structure. If an upwardly compatible change in the structures
 is made, the minor number will be incremented. If a non-upwardly compatible
@@ -265,7 +280,7 @@ The final field, :F.entries:eF., is
 a variable sized array containing one entry for each overlay section in the
 program (e.g. the tenth element in the array describes overlay section 10.)
 Each entry has the following form:
-:XMP.
+.millust begin
 typedef struct ovltab_entry {
     unsigned_16         flags_anc;
     unsigned_16         relocs;
@@ -275,7 +290,7 @@ typedef struct ovltab_entry {
     unsigned_16         fname;
     unsigned_32         disk_addr;
 } ovltab_entry;
-:eXMP.
+.millust end
 :P.
 The top bit of the :F.flag_anc:eF. field contains an indicator, while the
 program is running, of whether the overlay section is in memory (value one)
