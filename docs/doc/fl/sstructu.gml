@@ -6,7 +6,7 @@
 .synote 10
 .mnote typename
 is the name for a new, compound variable, data type.
-.endnote
+.esynote
 .np
 The
 .kw STRUCTURE

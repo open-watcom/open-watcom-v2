@@ -16,7 +16,7 @@ statement are supported by &product..
 is a format identifier.
 .mnote olist
 is an optional output list.
-.endnote
+.esynote
 .*
 .section Extended PRINT Statement
 .*
@@ -26,7 +26,7 @@ is an optional output list.
 .synote 7
 .mnote olist
 is an output list.
-.endnote
+.esynote
 .*
 .section Description of PRINT Statement
 .*

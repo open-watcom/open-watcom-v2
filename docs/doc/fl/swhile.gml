@@ -8,7 +8,7 @@
 is a logical expression or integer arithmetic expression, in which
 case the result of the integer expression is compared for inequality
 to the integer value 0.
-.endnote
+.esynote
 .np
 The block
 .kw WHILE
@@ -69,7 +69,7 @@ is an executable statement.
 Only certain executable statements are allowed.
 See the section entitled :HDREF refid='stmtcls'. at the
 beginning of this chapter for a list of allowed statements.
-.endnote
+.esynote
 .np
 This form of the
 .kw WHILE

@@ -6,7 +6,7 @@
 .synote 5
 .mnote pgm
 is the symbolic name of the main program.
-.endnote
+.esynote
 .np
 A
 .kw PROGRAM

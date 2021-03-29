@@ -24,7 +24,7 @@ integers or characters greater than or equal to the value of the
 expression preceding the colon and less than or equal to the value of
 the expression following the colon.
 .endpoint
-.endnote
+.esynote
 .np
 The
 .kw CASE

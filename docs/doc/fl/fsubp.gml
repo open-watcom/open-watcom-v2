@@ -86,7 +86,7 @@ is the name of the statement function.
 is a statement function dummy argument.
 .mnote e
 is an expression.
-.endnote
+.esynote
 .pc
 The expression
 .id e
@@ -937,7 +937,7 @@ statement in a subroutine subprogram is:
 .synote
 .mnote e
 is an integer expression.
-.endnote
+.esynote
 .pc
 If the expression
 .id e

@@ -14,7 +14,7 @@ is a list of rewind specifiers separated by commas:
 IOSTAT = ios
 ERR = s
 .millust end
-.endnote
+.esynote
 .np
 Execution of a
 .kw REWIND

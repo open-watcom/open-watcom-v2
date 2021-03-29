@@ -37,7 +37,7 @@ PRECISION, COMPLEX
 .xt or double precision complex (COMPLEX*16).
 .mnote e
 is an arithmetic expression.
-.endnote
+.esynote
 .np
 The following are examples of arithmetic assignment statements.
 .millust begin
@@ -113,7 +113,7 @@ is
 is a variable name or array element name of type LOGICAL.
 .mnote e
 is a logical expression.
-.endnote
+.esynote
 .np
 The following are examples of logical assignment statements.
 .millust begin
@@ -150,7 +150,7 @@ is
 is a statement label.
 .mnote i
 is the name of an integer variable.
-.endnote
+.esynote
 .np
 The following is an example of a statement label assignment statement.
 .millust ASSIGN 10 TO I
@@ -222,7 +222,7 @@ is a character variable name, character array element, or character
 substring.
 .mnote e
 is a character expression.
-.endnote
+.esynote
 .np
 The following are examples of character assignment statements.
 .millust begin
@@ -319,7 +319,7 @@ A logical expression.
 .note
 A character expression.
 .endnote
-.endnote
+.esynote
 .np
 The extended assignment statement is equivalent to the following
 individual statements.

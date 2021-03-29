@@ -14,7 +14,7 @@ statement to be used.
 The
 .kw FORMAT
 statement must be labelled.
-.endnote
+.esynote
 .exam begin
       REAL X
       X = 234.43

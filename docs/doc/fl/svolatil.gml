@@ -6,7 +6,7 @@
 .synote
 .mnote a
 is a variable name or an array name.
-.endnote
+.esynote
 .np
 The
 .kw VOLATILE

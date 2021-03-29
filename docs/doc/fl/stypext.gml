@@ -39,7 +39,7 @@ expression enclosed in parentheses whose value is
 .el .if '&typstmt' eq 'COMPLEX' .do begin
 8 or 16.
 .do end
-.endnote
+.esynote
 .np
 This form of the
 .kw &typstmt

@@ -6,7 +6,7 @@
 .synote 7
 .mnote nlist
 is a list of at least two names, each name separated by a comma.
-.endnote
+.esynote
 .np
 The names appearing in
 .id nlist

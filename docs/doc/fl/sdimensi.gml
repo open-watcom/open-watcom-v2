@@ -10,7 +10,7 @@ is the name of the array.
 defines the dimension of the array and the range of its subscripts.
 See the chapter entitled :HDREF refid='farrays'. for more information
 on dimensioning arrays.
-.endnote
+.esynote
 .np
 Each name
 .id a

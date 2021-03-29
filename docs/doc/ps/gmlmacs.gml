@@ -532,6 +532,11 @@ is described :HDREF refid='&*refid'.
 .cp &tmplvl
 :DL tsize=3 termhi=2 break.
 .if '&*1' ne '' .do begin
+.   .stephdr &*.
+.do end
+.dm initstep end
+.*
+.dm stephdr begin
 .if &e'&dohelp eq 0 .do begin
 :DTHD.&*
 :DDHD.~b
@@ -540,8 +545,7 @@ is described :HDREF refid='&*refid'.
 :ZDTHD.:SF font=2.&*:eSF.
 :ZDDHD.~b
 .do end
-.do end
-.dm initstep end
+.dm stephdr end
 .*
 .dm step begin
 .sr stplvl=&stplvl.+1

@@ -14,7 +14,7 @@ is a list of endfile specifiers separated by commas:
 IOSTAT = ios
 ERR = s
 .millust end
-.endnote
+.esynote
 .np
 Execution of an
 .kw ENDFILE

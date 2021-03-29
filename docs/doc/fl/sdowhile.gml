@@ -17,7 +17,7 @@ case the result of the integer expression is compared for inequality
 to the integer value 0.
 .mnote block-label
 is an optional block label.
-.endnote
+.esynote
 .np
 The
 .kw DO WHILE

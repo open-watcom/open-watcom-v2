@@ -15,7 +15,7 @@ ERR = s
 .millust end
 .mnote olist
 is an output list.
-.endnote
+.esynote
 .np
 The
 .kw WRITE

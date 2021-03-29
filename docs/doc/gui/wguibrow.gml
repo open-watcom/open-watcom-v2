@@ -328,7 +328,7 @@ This closes the
 .us Open Browser Database File
 dialog.
 .begnote
-.mnote Note:
+.note Note:
 You can have only one database file open at a time.
 If you open a second database file, the &br discards the first and
 displays information for the second.
@@ -861,9 +861,9 @@ Click on
 .us OK
 to close the dialog and update the display.
 .begnote
-.mnote Note:
+.note Note:
 This disables the selected root nodes only for the active view window.
-.endstep
+.endnote
 .*
 .section Enabling Root Nodes
 .*
@@ -903,9 +903,9 @@ Click on
 .us OK
 to close the dialog and update the display.
 .begnote
-.mnote Note:
+.note Note:
 This enables the selected root nodes only for the active view window.
-.endstep
+.endnote
 .*
 .endlevel
 .*
@@ -1751,7 +1751,7 @@ to accept the member filter query.
 This closes the dialog and returns you to the active window.
 .endstep
 .begnote
-.mnote Note:
+.note Note:
 The Default button on the Member Filter dialog resets the query
 to the default settings.
 .endnote
@@ -2057,7 +2057,7 @@ menu without first saving the options, the &br prompts you to save the
 options to a file.
 Refer to the section entitled :HDREF refid='brquit'. for more
 information.
-.endstep
+.endnote
 .begpoint $break
 .point Save Options
 Selecting

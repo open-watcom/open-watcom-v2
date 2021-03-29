@@ -15,15 +15,12 @@
 .   .el .do begin
 .   .   .begnote $setptnt &*
 .   .do end
-.   .if &e'&dohelp eq 0 .do begin
-.   :DTHD.where:
-.   :DDHD.~b
-.   .do end
-.   .el .do begin
-.   :ZDTHD.where:
-.   :ZDDHD.~b
-.   .do end
+.   .notehdr where:
 .dm synote end
+.*
+.dm esynote begin
+.   .endnote
+.dm esynote end
 .*
 .dm mnote begin
 .   .note &*

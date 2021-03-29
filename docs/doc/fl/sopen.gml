@@ -33,7 +33,7 @@ specifiers are also supported.
     SHARE = shr
 .millust end
 .xt end
-.endnote
+.esynote
 .np
 The
 .kw OPEN

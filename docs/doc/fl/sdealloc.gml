@@ -9,7 +9,7 @@ is a list of allocatable array names separated by commas.
 .mnote ierr
 is an integer variable that returns the status of the attempted
 deallocation.
-.endnote
+.esynote
 .np
 Allocatable arrays may be dynamically allocated and deallocated at
 execution time.

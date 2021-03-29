@@ -49,7 +49,7 @@ A positive integer constant expression enclosed in parentheses.
 An asterisk in parentheses,
 .mono (*).
 .endnote
-.endnote
+.esynote
 .cp 9
 .exam begin
       PRINT *, TMAX3( -1.0, 12.0, 5.0 )
@@ -117,7 +117,7 @@ An asterisk in parentheses,
 For valid values of
 .id len,
 refer to the appropriate type declaration statement.
-.endnote
+.esynote
 .np
 This form of the
 .kw FUNCTION

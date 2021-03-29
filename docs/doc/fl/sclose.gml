@@ -12,7 +12,7 @@ IOSTAT = ios
 ERR = s
 STATUS = sta
 .millust end
-.endnote
+.esynote
 .np
 A
 .kw CLOSE

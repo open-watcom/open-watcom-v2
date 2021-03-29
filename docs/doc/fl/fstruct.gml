@@ -710,7 +710,7 @@ Only certain executable statements are are allowed.
 See the section entitled :HDREF refid='stmtcls'. in the chapter
 entitled :HDREF refid='fstats' page=no. for a list of allowable
 statements.
-.endnote
+.esynote
 .np
 This control statement is another form of the WHILE construct.
 .keep 5
@@ -819,7 +819,7 @@ integers or characters greater than or equal to the value of the
 expression preceding the colon and less than or equal to the value of
 the expression following the colon.
 .endpoint
-.endnote
+.esynote
 .np
 The
 .kw SELECT
@@ -1203,7 +1203,7 @@ will be printed
 .synote 5
 .mnote name
 is a valid FORTRAN symbolic name.
-.endnote
+.esynote
 .np
 The
 .kw EXECUTE

@@ -8,7 +8,7 @@
 is a logical expression or integer arithmetic expression, in which
 case the result of the integer expression is compared for inequality
 to the integer value 0.
-.endnote
+.esynote
 .np
 The
 .kw UNTIL

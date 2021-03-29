@@ -9,7 +9,7 @@ is an optional symbolic name of the block data subprogram
 and must not be the name of an external procedure, main program,
 common block, other block data subprogram, or any local name
 in the block data subprogram.
-.endnote
+.esynote
 .np
 The
 .kw BLOCK DATA

@@ -13,7 +13,7 @@ functions.
 .xt off
 .mnote a
 is an actual argument.
-.endnote
+.esynote
 .np
 The
 .kw CALL

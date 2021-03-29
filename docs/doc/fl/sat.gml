@@ -12,7 +12,7 @@
 is an executable statement other than an
 .kw AT END
 statement.
-.endnote
+.esynote
 .np
 The
 .kw AT END

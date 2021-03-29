@@ -31,7 +31,7 @@ where
 is a character expression whose value when trailing blanks are
 removed is the name of a file being inquired about.
 The file need not exist or be connected to a unit.
-.endnote
+.esynote
 .exam begin
       LOGICAL EX, OD
       INTEGER NUM
@@ -72,7 +72,7 @@ If the optional
 .kw UNIT=
 specifier is omitted then the
 specifier must be the first item in the list of specifiers.
-.endnote
+.esynote
 .exam begin
       LOGICAL EX, OD
       CHARACTER*30 FN

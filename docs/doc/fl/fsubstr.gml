@@ -39,7 +39,7 @@ substring.
 .mnote e2
 is an integer expression identifying the rightmost character of the
 substring.
-.endnote
+.esynote
 .np
 .id e1
 and

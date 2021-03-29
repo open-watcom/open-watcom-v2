@@ -37,7 +37,7 @@ is the statement label used by an I/O statement to identify the
 statement.
 .mnote fs
 is a format specification which will be described later.
-.endnote
+.esynote
 .exam begin
       REAL X
       X = 234.43
@@ -133,7 +133,7 @@ is a format specification with a nonempty list
 is a positive unsigned integer constant called a
 .us repeat specification.
 .ix 'format' 'repeat specification'
-.endnote
+.esynote
 .np
 The comma separating the items of
 .id flist
@@ -235,7 +235,7 @@ are positive unsigned integer constants.
 and
 .id m
 are unsigned integer constants.
-.endnote
+.esynote
 .*
 .section Nonrepeatable Edit Descriptors
 .*
@@ -322,7 +322,7 @@ are positive unsigned integer constants.
 .np
 .id k
 is an optionally signed integer constant.
-.endnote
+.esynote
 .np
 .xt begin
 &product allows edit descriptors to be specified using lower case
@@ -1038,7 +1038,7 @@ are the
 most significant digits of the value after rounding.
 .mnote exp
 is a decimal exponent.
-.endnote
+.esynote
 .np
 The form of the exponent is as follows.
 .autopoint
@@ -1256,7 +1256,7 @@ editing and
 for
 .id Gw.dEe
 editing.
-.endnote
+.esynote
 .exam begin
       PRINT '(1H<,G12.6,1H>,1H<,G12.4E4,1H>)', .5, .5
       END
@@ -1631,7 +1631,7 @@ A null value.
 is an unsigned, nonzero integer constant.
 .mnote c
 is a constant.
-.endnote
+.esynote
 .pc
 The
 .id r*c

@@ -637,7 +637,7 @@ is as follows.
 is a relational operator.
 .mnote e1, e2
 are both arithmetic expressions or both character expressions.
-.endnote
+.esynote
 .*
 .beglevel
 .*

@@ -8,7 +8,7 @@
 is a common block name.
 .mnote nlist
 is a list of names each separated by a comma.
-.endnote
+.esynote
 .np
 If
 .id cb

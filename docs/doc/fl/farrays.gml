@@ -47,7 +47,7 @@ is:
 is the symbolic name of the array
 .mnote d
 is a dimension declarator.
-.endnote
+.esynote
 .np
 The number of dimensions of the array is determined by the number
 of dimension declarators appearing in the array declarator.
@@ -74,7 +74,7 @@ has the following form:
 is the lower dimension bound.
 .mnote hi
 is the upper dimension bound.
-.endnote
+.esynote
 .np
 The lower and upper dimension bounds must be integer expressions and
 the upper dimension bound must be greater than or equal to the lower
@@ -144,7 +144,7 @@ is the array name.
 is a subscript.
 .mnote s
 is a subscript expression.
-.endnote
+.esynote
 .np
 Each
 .us subscript expression

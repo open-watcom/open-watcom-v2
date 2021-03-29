@@ -910,9 +910,13 @@
 .dm initstep begin
 :P.<dl>
 .if '&*1' ne '' .do begin
-:P.<dt>&*<dd>
+.   .stephdr &*.
 .do end
 .dm initstep end
+.*
+.dm stephdr begin
+:P.<dt>&*<dd>
+.dm stephdr end
 .*
 .dm step begin
 .sr stplvl=&stplvl.+1

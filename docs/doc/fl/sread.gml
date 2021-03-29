@@ -27,7 +27,7 @@ END = s
 is a format identifier.
 .mnote ilist
 is an optional input list.
-.endnote
+.esynote
 .*
 .section Extended READ Statement
 .*
@@ -37,7 +37,7 @@ is an optional input list.
 .synote 8
 .mnote ilist
 is an input list.
-.endnote
+.esynote
 .*
 .section Description of READ Statement
 .*
