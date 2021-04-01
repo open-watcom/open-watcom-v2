@@ -48,18 +48,18 @@ WBIND file_spec [-d] [-n] [-q] [-s supervisor] [-R rc_options]
 The square brackets [ ] denote items which are optional.
 .begnote $break $setptnt 15
 .ix 'WBIND'
-.mnote WBIND
+.note WBIND
 is the name of the &company Bind utility.
-.mnote file_spec
+.note file_spec
 is the name of the 32-bit Windows EXE to bind.
-.mnote -d
+.note -d
 requests that a 32-bit DLL be built.
-.mnote -n
+.note -n
 indicates that the resource compiler is NOT to be invoked.
-.mnote -q
+.note -q
 requests that WBIND run in quiet mode
 (no informational messages are displayed).
-.mnote -s supervisor
+.note -s supervisor
 specifies the path and name of the Windows supervisor to be bound with
 the application.
 If not specified, a search of the paths listed in the
@@ -70,7 +70,7 @@ If this search is not successful and the
 environment variable is defined, the
 .fi %&pathvarup.%\BINW
 directory is searched.
-.mnote -R rc_options
+.note -R rc_options
 .ix 'resource compiler'
 all options after -R are passed to the resource compiler.
 .endnote

@@ -15,7 +15,7 @@ observe how memory is being used
 view the contents of memory
 .endbull
 .begnote
-.mnote Note:
+.note Note:
 Under Windows NT, the Heap Walker monitors only the memory used by
 16-bit Windows applications.
 .endnote
@@ -1233,7 +1233,7 @@ the approximate amounts of memory you have allocated using an Allocation
 function. You should use this information only when using an Allocation
 function.
 .begnote
-.mnote Important:
+.note Important:
 Do not use the Allocation functions under the Windows Debug Kernel as
 they can make your system unstable.
 .endnote

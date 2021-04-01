@@ -76,7 +76,7 @@ Once you have discovered heavily executed portions of your
 program, you might want to rewrite then using a faster algorithm
 or fine tune your implementation of the current algorithms.
 .begnote
-.mnote Note
+.note Note
 You must compile and link the program with debugging information.
 Use at least the
 .us; d1
@@ -103,17 +103,17 @@ The sampler's command line syntax is shown below.
 &smpcmdup. [options] program [arguments]
 .embigbox
 .begnote
-.mnote &smpcmdup.
+.note &smpcmdup.
 is one of several versions of the sampler.
 See the section entitled :HDREF refid='smpos'. for a description of
 how to run the sampler under various environments.
-.mnote options
+.note options
 is a list of valid sampler options, each preceded by a slash
 ("/") or a dash ("&minus.").
 Options may be specified in any order.
-.mnote program
+.note program
 is the name of the program to be sampled.
-.mnote arguments
+.note arguments
 is the set of arguments passed to the program.
 The program behaves just as if it were executed directly from the
 command line.  If you normally run your program using:

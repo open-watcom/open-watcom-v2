@@ -534,7 +534,7 @@ If there are any dialog resources in the file, the Select Dialog
 appears listing the names of all the dialog resources that exist in
 that resource file.
 .begnote
-.mnote Note:
+.note Note:
 If the file does not contain any dialog resources, the main screen
 appears with an empty edit window and dialog for you to add controls
 and modify.
@@ -877,7 +877,7 @@ ordering up to that point and proceed.
 :cmt.resource from an executable in a library or in.... (This is wrong. When would
 :cmt.you want to save from Dialog menu?)...choose save from the Dialog menu.
 :cmt..begnote
-:cmt..mnote Warning:
+:cmt..note Warning:
 :cmt.If you choose to save from the dialog menu you will only be saving the
 :cmt.current dialog and not any of the other resources in the .RES, .EXE, or .DLL
 :cmt.file. If you save the dialog under the same name as the .RES, .EXE, or .DLL

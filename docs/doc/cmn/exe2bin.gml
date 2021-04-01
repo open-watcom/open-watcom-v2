@@ -172,21 +172,21 @@ by more verbose descriptions and some possible causes.
 .*
 .begnote $break
 .*
-.mnote Error opening %s for reading.
+.note Error opening %s for reading.
 The input executable file could not be opened for reading.
 .np
 Check that the input file exists and &e2bcmd. has read permissions.
 .*
-.mnote Error opening %s for writing.
+.note Error opening %s for writing.
 The output binary file could not be opened for writing.
 .np
 Make sure the media is not write protected, has enough free space to hold the
 output file, and &e2bcmd. has write permissions.
 .*
-.mnote Error allocating file I/O buffer.
+.note Error allocating file I/O buffer.
 There is not enough free memory to allocate a file buffer.
 .*
-.mnote Error reading while copying data.
+.note Error reading while copying data.
 An error occured while reading the binary part of the input file.
 .np
 This is most likely due to a corrupted executable header. Run &e2bcmd. with the
@@ -194,44 +194,44 @@ This is most likely due to a corrupted executable header. Run &e2bcmd. with the
 must be at least ("Number of pages" - 1) * 512 + "Size mod 512". Omit
 decrementing the number of pages if "Size mod 512" happens to equal zero.
 .*
-.mnote Error writing while copying data.
+.note Error writing while copying data.
 The output binary file can not be written to.
 .np
 Make sure the media has enough free space to hold the output file and is not
 removed while writing to it.
 .*
-.mnote Error. %s has no valid executable header.
+.note Error. %s has no valid executable header.
 The signature (the first two bytes of the input file) does not match "MZ".
 .np
 &e2bcmd. can only use valid DOS executable files as input.
 .*
-.mnote Error allocating/reading reloc-table.
+.note Error allocating/reading reloc-table.
 There is either not enough free memory to allocate a buffer for the relocations
 (each relocation takes about 4 bytes) or there was an error while reading
 from the input file.
 .*
-.mnote Error. Option "-l=<seg>" mandatory (there are relocations).
+.note Error. Option "-l=<seg>" mandatory (there are relocations).
 The executable file contains relocations. Therefore, &e2bcmd. needs to know the
 segment the binary output file is supposed to reside at.
 .np
 Either provide a segment as an argument to the &sw.l option or rewrite your
 executable file to not contain any relocations.
 .*
-.mnote Error: Binary part exceeds 64 KBytes.
+.note Error: Binary part exceeds 64 KBytes.
 The binary part of the input file is larger than 64 KBytes.
 .np
 The restriction applies because the &sw.x option was not specified.
 Check if the extended behaviour is suitable or rewrite the program to shorten
 the binary part.
 .*
-.mnote Error: Stack segment defined.
+.note Error: Stack segment defined.
 The header defines an initial stack, i.e. ss:sp != 0x0000:0x0000.
 .np
 The restriction applies because the &sw.x option was not specified.
 Check if the extended behaviour is suitable or rewrite the program to not have
 a segment of class "stack".
 .*
-.mnote Error: CS:IP neither 0x0000:0x0000 nor 0x0000:0x0100.
+.note Error: CS:IP neither 0x0000:0x0000 nor 0x0000:0x0100.
 The header defines an initial cs:ip not matching any of the two values.
 .np
 The restriction applies because the &sw.x option was not specified.
@@ -240,7 +240,7 @@ different entry point (cf. &lnkname.
 .mono "option start"
 ).
 .*
-.mnote Error: com-file must not have relocations.
+.note Error: com-file must not have relocations.
 Although the binary part is <= 64 KByte in length, there is no stack defined
 and the cs:ip is 0x0000:0x0100, i.e. &e2bcmd. assumes you try to generate a
 ".COM" executable, there are relocations in the input file.

@@ -35,25 +35,25 @@ The formal &product command line syntax is shown below.
 .np
 The square brackets [ ] denote items which are optional.
 .begnote
-.mnote &ccmdup16
+.note &ccmdup16
 is the name of the 16-bit &cmpname compiler.
-.mnote &ccmdup32
+.note &ccmdup32
 is the name of the 32-bit &cmpname compiler.
-.mnote d:
+.note d:
 is an optional drive specification such as "A:", "B:", etc.
 If not specified, the default drive is assumed.
-.mnote path
+.note path
 is an optional path specification such as
 .fi \PROGRAMS\SRC\.
 If not specified, the current directory is assumed.
-.mnote filename
+.note filename
 is the file name of the file to be compiled.
-.mnote ext
+.note ext
 is the file extension of the file to be compiled.
 If omitted, a file extension of "&langsuffup" is assumed.
 If the period "." is specified but not the extension, the file is
 assumed to have no file extension.
-.mnote options
+.note options
 is a list of valid &cmpname options, each preceded by a slash ("/") or
 a dash ("&minus.").
 Certain options can include a "no" prefix to disable an option.

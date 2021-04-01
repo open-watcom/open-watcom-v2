@@ -345,7 +345,7 @@
 .begnote
 .if &e'&dohelp eq 0 .do begin
 :DTHD.where
-:DDHD.description:
+:DDHD.description
 .do end
 .el .do begin
 :ZDTHD.:SF font=2.where:eSF.

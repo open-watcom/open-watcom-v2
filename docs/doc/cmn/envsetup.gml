@@ -67,7 +67,7 @@ environment variables should be defined before using &cmpname and the
 &lnkname. on their own.
 .do end
 .begnote
-.mnote PATH
+.note PATH
 In order for
 .if '&target' eq 'QNX' .do begin
 QNX
@@ -137,7 +137,7 @@ called :FNAME.&pathnam.&pc.binp:eFNAME. and
 .exam end
 .do end
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
-.mnote &incvarup.
+.note &incvarup.
 In order for &cmpname to locate the &product. header files such as
 :FNAME.stdio.h:eFNAME., the
 .ev &incvarup.
@@ -166,7 +166,7 @@ environment string is like the
 string in that you can specify one or more directories separated by
 &psword.s ("&ps.").
 .do end
-.mnote &pathvarup.
+.note &pathvarup.
 In order for the &lnkname. to locate the &product. library files, the
 .ev &pathvarup.
 environment variable should be defined to be the directory
