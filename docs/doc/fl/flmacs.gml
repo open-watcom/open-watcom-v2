@@ -154,7 +154,7 @@
 .   .if &'length(&*7.) ne 0 .sr *t5=1+&*7
 .   .if &'length(&*8.) ne 0 .sr *t6=1+&*8
 .   .if &'length(&*9.) ne 0 .sr *t7=1+&*9
-.   .if &'length(&*10) ne 0 .sr *t8=1+&*10
+.   .if &'length(&*10.) ne 0 .sr *t8=1+&*10
 .   .cp &*tmplvl
 .   .se $$bextrb=&*2
 .   .se $$bextre=&*3
