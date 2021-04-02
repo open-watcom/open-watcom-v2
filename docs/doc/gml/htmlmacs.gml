@@ -276,11 +276,6 @@
 :set symbol="NTEop3" value="tsize=&*4".
 .do end
 :P.<dl>
-.if '&NTEop1' eq '' and '&NTEop2' eq '' and '&NTEop3' eq '' .do begin
-.if '&*1' ne '' .do begin
-:P.<dt>&*<dd>
-.do end
-.do end
 :set symbol="NTEpr2" value="&NTEpr1".
 :set symbol="NTEpr1" value="&NTEset".
 :set symbol="NTEset" value="dl".
@@ -296,6 +291,10 @@
 .dm notehd2 begin
 :P.<dd><b>&*</b>
 .dm notehd2 end
+.*
+.dm notehdr begin
+:P.<dt>&*<dd>
+.dm notehdr end
 .*
 .dm endnote begin
 .if '&NTEset' eq 'ol' .endOL

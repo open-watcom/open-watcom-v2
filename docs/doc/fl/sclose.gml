@@ -18,7 +18,8 @@ A
 .kw CLOSE
 statement is used to terminate the connection of a file to
 the specified unit.
-.begnote Close Specifiers
+.begnote
+.notehd Close Specifiers
 .setptnt 0 8
 .mnote [UNIT =] u
 .br

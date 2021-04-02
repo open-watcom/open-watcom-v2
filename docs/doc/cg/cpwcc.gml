@@ -2106,7 +2106,8 @@ void main()
     }
 }
 .exam end
-.begnote Restrictions
+.begnote
+.notehd Restrictions
 .note switch
 An
 .kwm __int64

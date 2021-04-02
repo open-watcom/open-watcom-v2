@@ -34,7 +34,8 @@ Do not insert a space between
 .ev DOS4G
 and the equal sign.
 A space to the right of the equal sign is optional.
-.begnote Options:
+.begnote
+.notehd Options:
 .note QUIET
 .ix 'DOS4G' 'QUIET option'
 .ix 'QUIET'

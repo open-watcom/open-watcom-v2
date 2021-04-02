@@ -41,7 +41,8 @@ statement may be used to connect an existing file to a unit,
 create a file that is preconnected, create a file and connect
 it to a unit, or change certain specifications of a connection
 between a file and a unit.
-.begnote Open Specifiers
+.begnote
+.notehd Open Specifiers
 .cp 6
 .mnote [UNIT =] u
 .br

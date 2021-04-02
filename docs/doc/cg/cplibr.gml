@@ -126,7 +126,8 @@ We have selected a simple naming convention for the libraries that are
 provided with &product..
 Letters are affixed to the file name to indicate the particular
 strategy with which the modules in the library have been compiled.
-.begnote 16-bit only
+.begnote
+.notehd 16-bit only
 .ix 'C libraries' 'small'
 .ix 'small model' 'libraries'
 .mnote S
@@ -161,7 +162,8 @@ denotes a version of the &product libraries which may be used when
 creating an OS/2 Dynamic Link Library.
 .do end
 .endnote
-.begnote 32-bit only
+.begnote
+.notehd 32-bit only
 .ix '&lang libraries' 'flat'
 .ix 'flat model' 'libraries'
 .ix '&lang libraries' 'small'

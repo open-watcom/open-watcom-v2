@@ -263,8 +263,7 @@ first and the most significant byte last.
  31    30-23           22-0
 .millust end
 .begnote
-.notehd1 Notes
-.notehd2 ~b
+.notehdr Notes
 .note S
 S = Sign bit (0=positive, 1=negative)
 .note Exponent
@@ -347,8 +346,7 @@ first and the most significant byte last.
  63    62-52                   51-0
 .millust end
 .begnote
-.notehd1 Notes:
-.notehd2 ~b
+.notehdr Notes:
 .note S
 S = Sign bit (0=positive, 1=negative)
 .note Exponent

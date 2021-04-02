@@ -491,7 +491,8 @@ EXTERNC void dll_entry_2( void )
 .do end
 .code end
 .if '&targetos' eq 'Windows NT' .do begin
-.begnote Arguments:
+.begnote
+.notehd Arguments:
 .*
 .note hinstDLL
 .*
@@ -688,7 +689,8 @@ with any value other than
 32-bit OS/2 DLLs can include a
 .kw LibMain
 entry point when you are using the &product run-time libraries.
-.begnote Arguments:
+.begnote
+.notehd Arguments:
 .*
 .note hmod
 .*
