@@ -23,7 +23,7 @@ positioned at the beginning of the preceding record.
 If the preceding record is an endfile record then the file is
 positioned at the beginning of the endfile record.
 .begnote
-.notehd Backspace Specifiers
+.notehdr Backspace Specifiers
 .setptnt 0 8
 .mnote [UNIT =] u
 .br

@@ -28,7 +28,7 @@ have been written.
 Thus, only those records before the endfile record may be read during
 subsequent direct access connections to the file.
 .begnote
-.notehd Endfile Specifiers
+.notehdr Endfile Specifiers
 .setptnt 0 8
 .mnote [UNIT =] u
 .br

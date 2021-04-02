@@ -21,7 +21,7 @@ Execution of a
 statement causes the file connected to the specified unit to be
 positioned at the beginning (or before the first record) of the file.
 .begnote
-.notehd Rewind Specifiers
+.notehdr Rewind Specifiers
 .setptnt 0 8
 .mnote [UNIT =] u
 .br

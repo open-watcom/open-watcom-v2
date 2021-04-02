@@ -127,7 +127,7 @@ provided with &product..
 Letters are affixed to the file name to indicate the particular
 strategy with which the modules in the library have been compiled.
 .begnote
-.notehd 16-bit only
+.notehdr 16-bit only
 .ix 'C libraries' 'small'
 .ix 'small model' 'libraries'
 .mnote S
@@ -163,7 +163,7 @@ creating an OS/2 Dynamic Link Library.
 .do end
 .endnote
 .begnote
-.notehd 32-bit only
+.notehdr 32-bit only
 .ix '&lang libraries' 'flat'
 .ix 'flat model' 'libraries'
 .ix '&lang libraries' 'small'

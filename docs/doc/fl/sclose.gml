@@ -19,7 +19,7 @@ A
 statement is used to terminate the connection of a file to
 the specified unit.
 .begnote
-.notehd Close Specifiers
+.notehdr Close Specifiers
 .setptnt 0 8
 .mnote [UNIT =] u
 .br

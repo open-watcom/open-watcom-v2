@@ -35,7 +35,7 @@ Do not insert a space between
 and the equal sign.
 A space to the right of the equal sign is optional.
 .begnote
-.notehd Options:
+.notehdr Options:
 .note QUIET
 .ix 'DOS4G' 'QUIET option'
 .ix 'QUIET'

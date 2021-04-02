@@ -492,7 +492,7 @@ EXTERNC void dll_entry_2( void )
 .code end
 .if '&targetos' eq 'Windows NT' .do begin
 .begnote
-.notehd Arguments:
+.notehdr Arguments:
 .*
 .note hinstDLL
 .*
@@ -690,7 +690,7 @@ with any value other than
 .kw LibMain
 entry point when you are using the &product run-time libraries.
 .begnote
-.notehd Arguments:
+.notehdr Arguments:
 .*
 .note hmod
 .*

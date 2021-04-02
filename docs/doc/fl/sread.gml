@@ -50,7 +50,7 @@ As shown above, &product supports three forms of the
 .kw READ
 statement.
 .begnote
-.notehd Control Information List and Format Identifier
+.notehdr Control Information List and Format Identifier
 .setptnt 0 8
 .cp 5
 .mnote [UNIT =] u

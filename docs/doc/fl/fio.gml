@@ -233,7 +233,7 @@ In addition, the
 statements may refer to files that do not exist (and in so doing, may
 very well cause the file to be created).
 .begnote
-.notehd Properties of External Files
+.notehdr Properties of External Files
 .ix 'external file' 'properties'
 .note Name
 .ix 'external file' 'name'
@@ -350,7 +350,7 @@ can contain only one record but an internal file that is a character
 array can contain several records (as many as there are elements in the
 array).
 .begnote
-.notehd Properties of Internal Files
+.notehdr Properties of Internal Files
 .ix 'internal file' 'properties'
 .note Records
 .ix 'internal file' 'records'

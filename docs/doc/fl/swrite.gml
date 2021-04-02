@@ -22,7 +22,7 @@ The
 statement is used to transfer data from the executing FORTRAN program
 to an external device or file.
 .begnote
-.notehd Control Information List
+.notehdr Control Information List
 .setptnt 0 8
 .mnote [UNIT =] u
 .br

@@ -42,7 +42,7 @@ create a file that is preconnected, create a file and connect
 it to a unit, or change certain specifications of a connection
 between a file and a unit.
 .begnote
-.notehd Open Specifiers
+.notehdr Open Specifiers
 .cp 6
 .mnote [UNIT =] u
 .br

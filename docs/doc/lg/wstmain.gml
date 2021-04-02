@@ -10,7 +10,7 @@ The &stripname command line syntax is:
 &stripcmdup [options] input_file [output_file] [info_file]
 .embigbox
 .begnote
-.notehd where:
+.notehdr where:
 .note []
 The square brackets denote items which are optional.
 .note options

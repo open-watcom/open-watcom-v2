@@ -295,7 +295,7 @@ The information provided by RMINFO includes:
 :CMT. VCPI discipline.
 .*
 .begnote
-.notehd Machine and Environment:
+.notehdr Machine and Environment:
 .note Processor:
 processor type, coprocessor present/not present
 .note Machine type:
@@ -333,7 +333,7 @@ VCPI discipline.
 .endnote
 .*
 .begnote
-.notehd Switching Functions:
+.notehdr Switching Functions:
 .note A20 switching:
 .note To PM switch:
 reset catch:
@@ -355,7 +355,7 @@ reset uncatch:
 .endnote
 .*
 .begnote
-.notehd Memory Interfaces:
+.notehdr Memory Interfaces:
 .note (VCPI remapping in effect)
 .note DPMI may provide: xxxxxK returnable
 .note VCPI may provide: xxxxxK returnable
