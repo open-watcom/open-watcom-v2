@@ -756,7 +756,8 @@ ordering up to that point and proceed.
 :cmt.application, you must create the appropriate controls for your dialog. The
 :cmt.following list helps you decide when to use one control and when to use
 :cmt.another:
-:cmt..begpoint $break Choosing Options
+:cmt..begpoint $break
+:cmt..pointhdr Choosing Options
 :cmt..point If only one option
 :cmt.Use a push button
 :cmt..point If between two exclusive options

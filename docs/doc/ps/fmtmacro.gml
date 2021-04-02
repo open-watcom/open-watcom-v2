@@ -307,18 +307,6 @@
 .el .do begin
 :ZDL &NTEnhi. &NTEop1. &NTEop2. &NTEop3..
 .do end
-.if '&NTEop1' eq '' and '&NTEop2' eq '' and '&NTEop3' eq '' .do begin
-.if '&*1' ne '' .do begin
-.if &e'&dohelp eq 0 .do begin
-:DTHD.&*
-:DDHD.~b
-.do end
-.el .do begin
-:ZDTHD.:SF font=2.&*:eSF.
-:ZDDHD.~b
-.do end
-.do end
-.do end
 :set symbol="NTEpr2" value="&NTEpr1".
 :set symbol="NTEpr1" value="&NTEset".
 :set symbol="NTEset" value="dln".
@@ -387,6 +375,17 @@
 :ZDDHD.~b
 .do end
 .dm notehdr end
+.*
+.dm pointhdr begin
+.if &e'&dohelp eq 0 .do begin
+:DTHD.&*
+:DDHD.~b
+.do end
+.el .do begin
+:ZDTHD.:SF font=2.&*:eSF.
+:ZDDHD.~b
+.do end
+.dm pointhdr end
 .*
 .dm endnote begin
 .if '&NTEset' eq 'olp' .do begin

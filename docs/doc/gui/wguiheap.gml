@@ -701,7 +701,8 @@ upper left hand corner of the dialog.
 .ix 'Heap Walker' 'Objects menu'
 The items in the Object menu enable you to operate on the individual
 objects on the global heap.
-.begpoint The Object Menu
+.begpoint
+.pointhdr The Object Menu
 .point Show
 View the data stored in an object.
 .point Get Selector
