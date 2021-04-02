@@ -449,7 +449,7 @@ Prototype in
 .   .listnew Classification:
 .   .if &__clx. gt 1 and '&all' ne '&grfun' .do begin
 .   .   .sr *i=1
-.   .   .pe &__clx.-1;.sr *i=&*i.+1;.if '&__cltxt(&*i.).' ne '' or &__clatr(&*i.). ge 2 .sr *extr=1
+.   .   .pe &__clx.-1;.sr *i=&*i.+1;.if &'length(&__cltxt(&*i.).) ne 0 or &__clatr(&*i.). ge 2 .sr *extr=1
 .   .   .if '&__class.' eq 'ISO' or '&__class.' eq 'POSIX' .do begin
 .   .   .   .sr *i=1
 .   .   .   .pe &__clx.-1;.sr *i=&*i.+1;.if '&__clnam(&*i.,1:1).' eq '_' .sr *extr=1

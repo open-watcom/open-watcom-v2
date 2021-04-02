@@ -67,13 +67,13 @@
 .do end
 .if &e'&dohelp eq 0 .do begin
 :IH1 print='&*iwrd.'.&*iwrd2.
-.   .if '&*2' eq '' .do begin
+.   .if &'length(&*2.) eq 0 .do begin
 .   .   .:I1 &ixmajor..&*iwrd2.
 .   .do end
 .   .el .do begin
 .   .   .ix2 &*2
 .   .do end
-.   .if '&*3' ne '' .do begin
+.   .if &'length(&*3.) ne 0 .do begin
 .   .   .:I3.&*3
 .   .do end
 .do end
@@ -234,7 +234,7 @@
 .dm monooff end
 .*
 .dm autonote begin
-.if '&*' ne '' .do begin
+.if &'length(&*.) ne 0 .do begin
 .   .sr tmplvl=&WDWlvl-3
 .   .cp &tmplvl
 .   :P.:HP1.&*:eHP1.
@@ -251,7 +251,7 @@
 .dm autonote end
 .*
 .dm autopoint begin
-.if '&*' ne '' .do begin
+.if &'length(&*.) ne 0 .do begin
 .   .sr tmplvl=&WDWlvl-3
 .   .cp &tmplvl
 .   :P.:HP1.&*:eHP1.
@@ -424,7 +424,7 @@
 .dm point end
 .*
 .dm noteOL begin
-.if '&*' ne '' .ty ***ERROR*** argument specified with autonote/autopoint list item
+.if &'length(&*.) ne 0 .ty ***ERROR*** argument specified with autonote/autopoint list item
 .if &e'&dohelp eq 0 .do begin
 :LI.
 .do end
@@ -498,7 +498,7 @@
 .el .if '&*' eq 'end' .do begin
 .   .sr keeplvl=0
 .do end
-.el .if '&*' eq '' .do begin
+.el .if &'length(&*.) eq 0 .do begin
 .   .cp &WDWlvl
 .do end
 .el .do begin
@@ -522,7 +522,7 @@
 .dm chap begin
 .se *secttl$=&*
 .se *reftx=""
-.if '&*refid.' ne '' .do begin
+.if &'length(&*refid.) ne 0 .do begin
 .   .se *secttl$=&'substr(&*,&'pos(&*refid.,&*)+&'length(&*refid.)+1)
 .   .se *reftx="id='&*refid.'"
 .do end
@@ -581,7 +581,7 @@
 .dm section begin
 .se *secttl$=&*
 .se *reftx=""
-.if '&*refid.' ne '' .do begin
+.if &'length(&*refid.) ne 0 .do begin
 .   .se *secttl$=&'substr(&*,&'pos(&*refid.,&*)+&'length(&*refid.)+1)
 .   .se *reftx="id='&*refid.'"
 .do end
@@ -698,7 +698,7 @@
 .   .do end
 .do end
 .sr cnt_lvl=&SCTlvl
-.if '&*ctx.' ne '' .do begin
+.if &'length(&*ctx.) ne 0 .do begin
 .   .sr cnt_pfx=''
 .   .sr cnt_ctx=&*ctx.
 .   .sr cnt_ttl=&'substr(&*,&'pos(&*ctx.,&*)+&'length(&*ctx.)+1)

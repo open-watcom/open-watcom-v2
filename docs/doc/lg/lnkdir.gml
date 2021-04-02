@@ -44,7 +44,7 @@
 .do end
 .sr *$$ban=&'upper(&*1)
 .sr suppsys='All'
-.if '&*$$sys' ne '' .do begin
+.if &'length(&*$$sys.) ne 0 .do begin
 .sr *$$ban=&*$$ban. (&'substr(&*$$sys.,3))
 .sr suppsys=&'substr(&*$$sys.,3)
 .do end

@@ -113,7 +113,7 @@
 
 :cmt. **** :FIG ****
 .dm zfig begin
-.if '&*id.' eq '' .do begin
+.if &'length(&*id.) eq 0 .do begin
 .   :fig.&*
 .do end
 .el .do begin
@@ -164,7 +164,7 @@
 :cmt. bother trying to fix this for that bug because its been
 :cmt. tried extensively! (djp).
 .dm zli begin
-.if '&stlst.' eq '' .do begin
+.if &'length(&stlst.) eq 0 .do begin
 .   :li.
 .do end
 .el .do begin
@@ -287,7 +287,7 @@
 
 :cmt. **** .HELPHD ****
 .dm helphd begin
-.if '&*ctx' eq '' .do begin
+.if &'length(&*ctx.) eq 0 .do begin
 .   .defhelp &'translate(`&*`,`&trto.`,`&trfrom.`) `&*` `&hdtxt`
 .do end
 .el .do begin
@@ -312,7 +312,7 @@
 :cmt. **** :H0 ****
 .dm ZH0 begin
 .se title=`&hdpfx.&*.`
-.if '&*id.' eq '' .do begin
+.if &'length(&*id.) eq 0 .do begin
 .   :H0.&title.
 .do end
 .el .do begin
@@ -469,7 +469,7 @@
 
 :cmt. **** :I1 ****
 .dm ZI1 begin
-.if '&*id.' eq '' .do begin
+.if &'length(&*id.) eq 0 .do begin
 :I1.&*.
 .do end
 .el .do begin
@@ -548,7 +548,7 @@
 
 :cmt. **** :HLINK ****
 .dm hlink begin
-.if '&*hd' ne '' .do begin
+.if &'length(&*hd.) ne 0 .do begin
 .se ctx=&'translate(`&*hd.`,`&trto.`,`&trfrom.`)
 .do end
 .el .do begin
@@ -586,7 +586,7 @@
 
 :cmt. **** :HDFN ****
 .dm hdfn begin
-.if '&*hd' ne '' .do begin
+.if &'length(&*hd.) ne 0 .do begin
 .   .se ctx=&'translate(`&*hd.`,`&trto.`,`&trfrom.`)
 .do end
 .el .do begin

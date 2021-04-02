@@ -79,15 +79,15 @@
 .*
 .dm figure begin
 .se *figttl=&*
-.if '&*depth.' eq '' or '&*depth.' eq '1.xx' .do begin
+.if &'length(&*depth.) eq 0 or '&*depth.' eq '1.xx' .do begin
 .   .ty *** Missing picture file '&*figttl.'
 .   .me
 .do end
-.if '&*scale.' eq '' .do begin
+.if &'length(&*scale.) eq 0 .do begin
 .   .se *scale=100
 .do end
 :FIG place=inline frame=none.
-.if '&*file.' ne '' .do begin
+.if &'length(&*file.) ne 0 .do begin
 .   .if &e'&dohelp ne 0 .do begin
 :HBMP '&*file..bmp' c
 .   .do end
@@ -106,12 +106,12 @@
 :cmt. .dm pict begin
 :cmt. :FIG place=inline frame=none.
 :cmt. :cmt. .in +&INDlvl.
-:cmt. .if '&*depth' eq '' .do begin
+:cmt. .if &'length(&*depth.) eq 0 .do begin
 :cmt. :cmt. :GRAPHIC depth='2.73i' file='&*file..ps'.
 :cmt. :cmt. :GRAPHIC depth='2.70i' file='&*file..ps'.
 :cmt. :GRAPHIC depth='2.65i' file='&*file..ps'.
 :cmt. .do end
-:cmt. .if '&*depth' ne '' .do begin
+:cmt. .if &'length(&*depth.) ne 0 .do begin
 :cmt. :GRAPHIC depth='&*depth' file='&*file..ps'.
 :cmt. .do end
 :cmt. :FIGCAP.&*text
@@ -148,7 +148,7 @@
 :P.
 .ce;.us *** &*file..bmp GOES HERE ***
 :P.
-.if '&*text' ne '' .do begin
+.if &'length(&*text.) ne 0 .do begin
 .   .us &*text.
 .do end
 :eFIG.
@@ -156,13 +156,13 @@
 .*
 .dm imposts begin
 :FIG place=inline frame=none.
-.if '&*xoff' ne '' .do begin
+.if &'length(&*xoff.) ne 0 .do begin
 .   .:GRAPHIC depth='&*depth.' xoff='&*xoff.' file='&*file..eps'.
 .do end
 .el .do begin
 .   .:GRAPHIC depth='&*depth.' file='&*file..eps'.
 .do end
-.if '&*text' ne '' .do begin
+.if &'length(&*text.) ne 0 .do begin
 .   .:FIGCAP.&*text.
 .do end
 :eFIG.
@@ -308,7 +308,7 @@
 .gt optlist add optlist
 .*
 .dm opt begin
-.if '&*refid.' ne '' .do begin
+.if &'length(&*refid.) ne 0 .do begin
 .section *refid=&*refid. &*name.&*
 .do end
 .el .do begin
@@ -406,7 +406,7 @@
 .*
 .dm exam begin
 .  .if '&*1' eq 'begin' .do begin
-.  .  .if '&*2' ne '' .do begin
+.  .  .if &'length(&*2.) ne 0 .do begin
 .  .  .  .se *tmplvl=3+&*2
 .  .  .  .cp &*tmplvl
 .  .  .do end
@@ -430,7 +430,7 @@
 .*
 .dm tinyexam begin
 .  .if '&*1' eq 'begin' .do begin
-.  .  .if '&*2' ne '' .do begin
+.  .  .if &'length(&*2.) ne 0 .do begin
 .  .  .  .cp &*2
 .  .  .do end
 .  .  .el .do begin
@@ -469,7 +469,7 @@
 .sr tmplvl=&WDWlvl.-3
 .cp &tmplvl
 :ZDL tsize=3 termhi=2 break.
-.if '&*1' ne '' .do begin
+.if &'length(&*1.) ne 0 .do begin
 .   .stephdr &*.
 .do end
 .dm initstep end
@@ -522,7 +522,7 @@ or
 .*
 .dm helppref begin
 .if &e'&dohelp ne 0 .do begin
-.if '&*' ne '' .do begin
+.if &'length(&*.) ne 0 .do begin
 :helppfx pfx='&* '.
 .   .if '&dotarget' eq 'os2' .do begin
 .   .   .se pfx$='&* *'

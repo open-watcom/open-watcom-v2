@@ -204,7 +204,7 @@
 .dm monooff end
 .*
 .dm autonote begin
-.if '&*' ne '' .do begin
+.if &'length(&*.) ne 0 .do begin
 .  .sr tmplvl=&WDWlvl-3
 .  :P.<p><i>&*</i>
 .do end
@@ -215,7 +215,7 @@
 .dm autonote end
 .*
 .dm autopoint begin
-.if '&*' ne '' .do begin
+.if &'length(&*.) ne 0 .do begin
 .  :P.<p><i>&*</i>
 .do end
 :P.<ol>
@@ -384,7 +384,7 @@
 .se *reftx=""
 .se *reftxb=""
 .se *reftxe=""
-.if '&*refid.' ne '' .do begin
+.if &'length(&*refid.) ne 0 .do begin
 .  .se *secttl$=&'substr(&*,&'pos(&*refid.,&*)+&'length(&*refid.)+1)
 .  .se *reftx="id='&*refid.'"
 .  .se *reftxb='<a name="&*refid.">'
@@ -430,7 +430,7 @@
 .se *reftx=""
 .se *reftxb=""
 .se *reftxe=""
-.if '&*refid.' ne '' .do begin
+.if &'length(&*refid.) ne 0 .do begin
 .   .se *secttl$=&'substr(&*,&'pos(&*refid.,&*)+&'length(&*refid.)+1)
 .   .se *reftxb='<a name="&*refid.">'
 .   .se *reftxe='</a>'
@@ -602,7 +602,7 @@
 .*
 .dm figure begin
 .se *figttl=&*
-.if '&*depth.' eq '' or '&*depth.' eq '1.xx' .do begin
+.if &'length(&*depth.) eq 0 or '&*depth.' eq '1.xx' .do begin
 .   .ty *** Missing picture file '&*figttl.'
 .   .me
 .do end
@@ -767,7 +767,7 @@
 .gt optlist add optlist
 .*
 .dm opt begin
-.if '&*refid.' ne '' .do begin
+.if &'length(&*refid.) ne 0 .do begin
 .section *refid=&*refid. &*name.&*
 .do end
 .el .do begin
@@ -907,7 +907,7 @@
 .*
 .dm initstep begin
 :P.<dl>
-.if '&*1' ne '' .do begin
+.if &'length(&*1.) ne 0 .do begin
 .   .stephdr &*.
 .do end
 .dm initstep end
@@ -953,7 +953,7 @@ or
 .*
 .dm helppref begin
 .if &e'&dohelp ne 0 .do begin
-.if '&*' ne '' .do begin
+.if &'length(&*.) ne 0 .do begin
 :helppfx pfx='&* '.
 .se pfx$='&* '
 .do end

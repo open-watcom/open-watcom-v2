@@ -91,15 +91,15 @@
 .*
 .dm figure begin
 .se *figttl=&*
-.if '&*depth.' eq '' or '&*depth.' eq '1.xx' .do begin
+.if &'length(&*depth.) eq 0 or '&*depth.' eq '1.xx' .do begin
 .   .ty *** Missing picture file '&*figttl.'
 .   .me
 .do end
-.if '&*scale.' eq '' .do begin
+.if &'length(&*scale.) eq 0 .do begin
 .   .se *scale=100
 .do end
 :FIG place=inline frame=none.
-.if '&*file.' ne '' .do begin
+.if &'length(&*file.) ne 0 .do begin
 .   .if &e'&dohelp ne 0 .do begin
 :HBMP '&*file..bmp' c
 .   .do end
@@ -118,12 +118,12 @@
 .dm pict begin
 :FIG place=inline frame=none.
 :cmt. .in +&INDlvl.
-.if '&*depth' eq '' .do begin
+.if &'length(&*depth.) eq 0 .do begin
 :cmt. :GRAPHIC depth='2.73i' file='&*file..ps'.
 :cmt. :GRAPHIC depth='2.70i' file='&*file..ps'.
 :GRAPHIC depth='2.65i' file='&*file..ps'.
 .do end
-.if '&*depth' ne '' .do begin
+.if &'length(&*depth.) ne 0 .do begin
 :GRAPHIC depth='&*depth' file='&*file..ps'.
 .do end
 :FIGCAP.&*text
@@ -160,7 +160,7 @@
 :P.
 .ce;.us *** &*file..bmp GOES HERE ***
 :P.
-.if '&*text' ne '' .do begin
+.if &'length(&*text.) ne 0 .do begin
 .   .us &*text.
 .do end
 :eFIG.
@@ -168,13 +168,13 @@
 .*
 .dm imposts begin
 :FIG place=inline frame=none.
-.if '&*xoff' ne '' .do begin
+.if &'length(&*xoff.) ne 0 .do begin
 .   .:GRAPHIC depth='&*depth.' xoff='&*xoff.' file='&*file..eps'.
 .do end
 .el .do begin
 .   .:GRAPHIC depth='&*depth.' file='&*file..eps'.
 .do end
-.if '&*text' ne '' .do begin
+.if &'length(&*text.) ne 0 .do begin
 .   .:FIGCAP.&*text.
 .do end
 :eFIG.
@@ -185,7 +185,7 @@
 :HDREF refid='&*refid.' page=no.&*
 .do end
 .el .do begin
-.   .if '&*page.' eq '' .do begin
+.   .if &'length(&*page.) eq 0 .do begin
 :HDREF refid='&*refid.'.&*
 .   .do end
 .   .el .do begin
@@ -371,7 +371,7 @@
 .gt optlist add optlist
 .*
 .dm opt begin
-.if '&*refid.' ne '' .do begin
+.if &'length(&*refid.) ne 0 .do begin
 .section *refid=&*refid. &*name.&*
 .do end
 .el .do begin
@@ -468,7 +468,7 @@ is described :HDREF refid='&*refid'.
 .*
 .dm exam begin
 .  .if '&*1' eq 'begin' .do begin
-.  .  .if '&*2' ne '' .do begin
+.  .  .if &'length(&*2.) ne 0 .do begin
 .  .  .  .se *tmplvl=3+&*2
 .  .  .  .cp &*tmplvl
 .  .  .do end
@@ -492,7 +492,7 @@ is described :HDREF refid='&*refid'.
 .*
 .dm tinyexam begin
 .  .if '&*1' eq 'begin' .do begin
-.  .  .if '&*2' ne '' .do begin
+.  .  .if &'length(&*2.) ne 0 .do begin
 .  .  .  .cp &*2
 .  .  .do end
 .  .  .el .do begin
@@ -531,7 +531,7 @@ is described :HDREF refid='&*refid'.
 .sr tmplvl=&WDWlvl.-3
 .cp &tmplvl
 :DL tsize=3 termhi=2 break.
-.if '&*1' ne '' .do begin
+.if &'length(&*1.) ne 0 .do begin
 .   .stephdr &*.
 .do end
 .dm initstep end
@@ -584,7 +584,7 @@ or
 .*
 .dm helppref begin
 .if &e'&dohelp ne 0 .do begin
-.if '&*' ne '' .do begin
+.if &'length(&*.) ne 0 .do begin
 :helppfx pfx='&* '.
 .   .if '&dotarget' eq 'os2' .do begin
 .   .   .se pfx$='&* *'

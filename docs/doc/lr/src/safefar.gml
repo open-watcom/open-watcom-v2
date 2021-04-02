@@ -2,7 +2,7 @@
 .np
 The
 .sr __f=&ffunc
-.if '&__f.' eq '' .sr __f=&fmfunc
+.if &'length(&__f.) eq 0 .sr __f=&fmfunc
 &__f.
 function is a data model independent form of the &functiong.
 function that accepts far pointer arguments.

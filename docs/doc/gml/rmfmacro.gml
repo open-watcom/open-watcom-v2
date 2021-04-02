@@ -7,7 +7,7 @@
 .dm begflist end
 .*
 .dm disklist begin
-.if '&*' ne '' .do begin
+.if &'length(&*.) ne 0 .do begin
 .cp 5
 :P.:HP1.&*:eHP1.
 .do end

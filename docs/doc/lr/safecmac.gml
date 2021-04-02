@@ -40,7 +40,7 @@ See xxx for a list of available functions.
 .dm safehint end
 .*
 .dm safealt begin
-.if '&*' ne '' .do begin
+.if &'length(&*.) ne 0 .do begin
 .   .sr funcsafe=&*
 .do end
 .el .do begin

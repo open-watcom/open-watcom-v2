@@ -9,7 +9,7 @@
 .dm statemnt end
 .*
 .dm synote begin
-.   .if '&*' eq '' .do begin
+.   .if &'length(&*.) eq 0 .do begin
 .   .   .begnote $setptnt 4
 .   .do end
 .   .el .do begin
@@ -39,7 +39,7 @@
 .*
 .dm exam begin
 .  .if '&*1' eq 'begin' .do begin
-.  .  .if '&*2' ne '' .do begin
+.  .  .if &'length(&*2.) ne 0 .do begin
 .  .  .  .cp &*2
 .  .  .do end
 .  .  .el .do begin
@@ -104,15 +104,15 @@
 .dm box begin
 .se *tmplvl=&WDWlvl-3
 .if '&*1' eq 'on' .do begin
-.   .if '&*2' ne '' .sr *t0=1+&*2
-.   .if '&*3' ne '' .sr *t1=1+&*3
-.   .if '&*4' ne '' .sr *t2=1+&*4
-.   .if '&*5' ne '' .sr *t3=1+&*5
-.   .if '&*6' ne '' .sr *t4=1+&*6
-.   .if '&*7' ne '' .sr *t5=1+&*7
-.   .if '&*8' ne '' .sr *t6=1+&*8
-.   .if '&*9' ne '' .sr *t7=1+&*9
-.   .if '&*10' ne '' .sr *t8=1+&*10
+.   .if &'length(&*2.) ne 0 .sr *t0=1+&*2
+.   .if &'length(&*3.) ne 0 .sr *t1=1+&*3
+.   .if &'length(&*4.) ne 0 .sr *t2=1+&*4
+.   .if &'length(&*5.) ne 0 .sr *t3=1+&*5
+.   .if &'length(&*6.) ne 0 .sr *t4=1+&*6
+.   .if &'length(&*7.) ne 0 .sr *t5=1+&*7
+.   .if &'length(&*8.) ne 0 .sr *t6=1+&*8
+.   .if &'length(&*9.) ne 0 .sr *t7=1+&*9
+.   .if &'length(&*10.) ne 0 .sr *t8=1+&*10
 :cmt..   .cp &*tmplvl
 .   .xtnada
 .   .in 0
@@ -146,15 +146,15 @@
 .dm bxt begin
 .se *tmplvl=&WDWlvl-3
 .if '&*1' eq 'on' .do begin
-.   .if '&*2' ne '' .sr *t0=1+&*2
-.   .if '&*3' ne '' .sr *t1=1+&*3
-.   .if '&*4' ne '' .sr *t2=1+&*4
-.   .if '&*5' ne '' .sr *t3=1+&*5
-.   .if '&*6' ne '' .sr *t4=1+&*6
-.   .if '&*7' ne '' .sr *t5=1+&*7
-.   .if '&*8' ne '' .sr *t6=1+&*8
-.   .if '&*9' ne '' .sr *t7=1+&*9
-.   .if '&*10' ne '' .sr *t8=1+&*10
+.   .if &'length(&*2.) ne 0 .sr *t0=1+&*2
+.   .if &'length(&*3.) ne 0 .sr *t1=1+&*3
+.   .if &'length(&*4.) ne 0 .sr *t2=1+&*4
+.   .if &'length(&*5.) ne 0 .sr *t3=1+&*5
+.   .if &'length(&*6.) ne 0 .sr *t4=1+&*6
+.   .if &'length(&*7.) ne 0 .sr *t5=1+&*7
+.   .if &'length(&*8.) ne 0 .sr *t6=1+&*8
+.   .if &'length(&*9.) ne 0 .sr *t7=1+&*9
+.   .if &'length(&*10) ne 0 .sr *t8=1+&*10
 .   .cp &*tmplvl
 .   .se $$bextrb=&*2
 .   .se $$bextre=&*3

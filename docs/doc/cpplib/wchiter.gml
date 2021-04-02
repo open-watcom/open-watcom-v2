@@ -6,7 +6,7 @@ the hash, the current iterator position is undefined.
 .*
 .se *cl_cl2='&clfnm_cl2.&tmplat.'
 :CMT.========================================================================
-.if '&clfnm_cl1.' eq '' .th .do begin
+.if &'length(&clfnm_cl1.) eq 0 .th .do begin
 :CLFNM.&clfnm_cl2.&tmplat.
 :LIBF fmt='hdr'.&clfnm_cl2.&tmplat.
 .do end
@@ -16,7 +16,7 @@ the hash, the current iterator position is undefined.
 .do end
 :HFILE.wchiter.h
 :CLSS.
-.if '&clfnm_cl1.' eq '' .th .do begin
+.if &'length(&clfnm_cl1.) eq 0 .th .do begin
 The &cls. is the templated class used to create iterator objects for
 .mno &clobj_cl2.&tmplat.
 objects.
@@ -29,7 +29,7 @@ and
 objects.
 .do end
 In the description of each member function, the text
-.if '&clfnm_cl1.' ne '' .th .do begin
+.if &'length(&clfnm_cl1.) ne 0 .th .do begin
 :MONO.Type
 is used to indicate the hash element type specified as the template parameter.
 .do end
@@ -59,14 +59,14 @@ The following member functions are declared in the public interface:
 :MFCD cd_idx='c' .&clfnm_cl2.();
 :MFCD cd_idx='c' .&clfnm_cl2.( const &clobj_cl2.&tmplat. & );
 :MFCD cd_idx='d' .~~&clfnm_cl2.();
-.if '&clfnm_cl1.' ne '' .th .do begin
+.if &'length(&clfnm_cl1.) ne 0 .th .do begin
 :MFCD cd_idx='c' .&clfnm_cl1.();
 :MFCD cd_idx='c' .&clfnm_cl1.( const &clobj_cl1.&tmplat. & );
 :MFCD cd_idx='d' .~~&clfnm_cl1.();
 :MFN index='container'      .const &clobj_cl1.&tmplat. *container() const;
 .do end
 :MFN index='container'      .const &clobj_cl2.&tmplat. *container() const;
-.if '&clfnm_cl1.' ne '' .th .do begin
+.if &'length(&clfnm_cl1.) ne 0 .th .do begin
 .if '&lpref.' eq 'Val' .th .do begin
 :MFN index='current'        .Type current() const;
 .do end
@@ -74,7 +74,7 @@ The following member functions are declared in the public interface:
 :MFN index='current'        .Type *current() const;
 .do end
 .do end
-.if '&clfnm_cl1.' eq '' .th .do begin
+.if &'length(&clfnm_cl1.) eq 0 .th .do begin
 .if '&lpref.' eq 'Val' .th .do begin
 :MFN index='key'            .Key key();
 .do end
@@ -83,14 +83,14 @@ The following member functions are declared in the public interface:
 .do end
 .do end
 :MFN index='reset'          .void reset();
-.if '&clfnm_cl1.' eq '' .th .do begin
+.if &'length(&clfnm_cl1.) eq 0 .th .do begin
 :MFN index='reset'          .void reset( &clobj_cl2.&tmplat. & );
 .do end
 .el .do begin
 :MFN index='reset'          .void &clfnm_cl2.&tmplat.::reset( &clobj_cl2.&tmplat. & );
 :MFN index='reset'          .void &clfnm_cl1.&tmplat.::reset( &clobj_cl1.&tmplat. & );
 .do end
-.if '&clfnm_cl1.' eq '' .th .do begin
+.if &'length(&clfnm_cl1.) eq 0 .th .do begin
 .if '&lpref.' eq 'Val' .th .do begin
 :MFN index='value'          .Value value();
 .do end
@@ -126,7 +126,7 @@ The &fn. creates an initialized
 hash iterator object.
 :SALSO.
 :SAL typ='fun'.~~&clfnm_cl2.
-.if '&clfnm_cl1.' ne '' .th .do begin
+.if &'length(&clfnm_cl1.) ne 0 .th .do begin
 :SAL typ='fun'.&clfnm_cl1.
 .do end
 :SAL typ='fun'.reset
@@ -182,13 +182,13 @@ The
 hash iterator object is destroyed.
 :SALSO.
 :SAL typ='fun'.&clfnm_cl2.
-.if '&clfnm_cl1.' ne '' .th .do begin
+.if &'length(&clfnm_cl1.) ne 0 .th .do begin
 :SAL typ='fun'.&clfnm_cl1.
 .do end
 :eSALSO.
 :eLIBF.
 
-.if '&clfnm_cl1.' ne '' .th .do begin
+.if &'length(&clfnm_cl1.) ne 0 .th .do begin
 :CMT.========================================================================
 :LIBF cltype='&clfnm_cl1.&tmplat.' fmt='ctor' prot='public'.&clfnm_cl1.
 :SNPL.
@@ -282,7 +282,7 @@ hash iterator object is destroyed.
 :SNPL.
 :SNPFLF          .#include <wchiter.h>
 :SNPFLF          .public:
-.if '&clfnm_cl1.' eq '' .th .do begin
+.if &'length(&clfnm_cl1.) eq 0 .th .do begin
 :SNPF index='container'.&clobj_cl2.&tmplat. *container() const;
 .do end
 .el .do begin
@@ -301,7 +301,7 @@ A pointer to the hash object associated with the iterator is returned,
 or NULL(0) if the iterator has not been initialized with a hash.
 :SALSO.
 :SAL typ='fun'.&clfnm_cl2.
-.if '&clfnm_cl1.' ne '' .th .do begin
+.if &'length(&clfnm_cl1.) ne 0 .th .do begin
 :SAL typ='fun'.&clfnm_cl1.
 .do end
 :SAL typ='fun'.reset
@@ -309,7 +309,7 @@ or NULL(0) if the iterator has not been initialized with a hash.
 :eSALSO.
 :eLIBF.
 
-.if '&clfnm_cl1.' ne '' .th .do begin
+.if &'length(&clfnm_cl1.) ne 0 .th .do begin
 .if &lpref. eq Val .th .do begin
 .se lret='Type '
 .do end
@@ -357,7 +357,7 @@ NULL(0) is returned.
 :eLIBF.
 .do end
 
-.if '&clfnm_cl1.' eq '' .th .do begin
+.if &'length(&clfnm_cl1.) eq 0 .th .do begin
 .if &lpref. eq Val .th .do begin
 .se lret='Key '
 .do end
@@ -481,7 +481,7 @@ The &fn. returns a non-zero value if the iterator is positioned on a
 hash item.
 Zero(0) is returned when the iterator is incremented past the end of the hash.
 :SALSO.
-.if '&clfnm_cl1.' ne '' .th .do begin
+.if &'length(&clfnm_cl1.) ne 0 .th .do begin
 :SAL typ='fun'.current
 .do end
 :SAL typ='fun'.operator~b()
@@ -503,7 +503,7 @@ before the first element in the associated hash.
 The iterator is positioned before the first hash element.
 :SALSO.
 :SAL typ='fun'.&clfnm_cl2.
-.if '&clfnm_cl1.' ne '' .th .do begin
+.if &'length(&clfnm_cl1.) ne 0 .th .do begin
 :SAL typ='fun'.&clfnm_cl1.
 .do end
 :SAL typ='fun'.container
@@ -514,7 +514,7 @@ The iterator is positioned before the first hash element.
 :SNPL.
 :SNPFLF          .#include <wchiter.h>
 :SNPFLF          .public:
-.if '&clfnm_cl1.' eq '' .th .do begin
+.if &'length(&clfnm_cl1.) eq 0 .th .do begin
 :SNPF index='reset'    .void reset( &clobj_cl2.&tmplat. & );
 .do end
 .el .do begin
@@ -529,14 +529,14 @@ The iterator is positioned before the first element in the hash.
 The iterator is positioned before the first element of the specified hash.
 :SALSO.
 :SAL typ='fun'.&clfnm_cl2.
-.if '&clfnm_cl1.' ne '' .th .do begin
+.if &'length(&clfnm_cl1.) ne 0 .th .do begin
 :SAL typ='fun'.&clfnm_cl1.
 .do end
 :SAL typ='fun'.container
 :eSALSO.
 :eLIBF.
 
-.if '&clfnm_cl1.' eq '' .th .do begin
+.if &'length(&clfnm_cl1.) eq 0 .th .do begin
 .if &lpref. eq Val .th .do begin
 .se lret='Value '
 .do end
