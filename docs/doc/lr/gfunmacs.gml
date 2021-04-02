@@ -21,17 +21,12 @@ The following &routines are defined:
 :DD.
 .   .do end
 .   .el .do begin
-.   .   .if '&*' ne '&*ent.' .do begin
-.   .   .   .sr *text1='&* (see '
-.   .   .   .sr *text2=&*ent.
-.   .   .   .sr *text3=')'
+.   .   .if &'compare(&*., &*ent.) eq 0 .do begin
+:ZDT.:QREF str='&*.'.
 .   .   .do end
 .   .   .el .do begin
-.   .   .   .sr *text1=''
-.   .   .   .sr *text2=&*
-.   .   .   .sr *text3=''
+:ZDT.&*. (see :QREF str='&*ent.'.)
 .   .   .do end
-:ZDT.&*text1.:QREF str='&*text2.'.&*text3.
 :ZDD.
 .   .do end
 .do end

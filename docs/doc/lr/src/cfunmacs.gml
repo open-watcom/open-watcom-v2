@@ -31,20 +31,15 @@ The following functions are defined:
 :DD.&*dsc.
 .   .do end
 .   .el .do begin
-.   .   .if '&*fun.' ne '&*ent.' .do begin
-.   .   .   .sr *text1='&*fun. (see '
-.   .   .   .sr *text2=&*ent.
-.   .   .   .sr *text3=')'
-.   .   .do end
-.   .   .el .do begin
-.   .   .   .sr *text1=''
-.   .   .   .sr *text2=&*fun.
-.   .   .   .sr *text3=''
-.   .   .do end
-.   .   .if '_&*fun.' eq '&*ent.' .do begin
+.   .   .if &'compare('_&*fun.', &*ent.) eq 0 .do begin
 .   .   .   .ty ***WARNING*** check order of &*fun., &*ent.
 .   .   .do end
-:ZDT.&*text1.:QREF str='&*text2.'.&*text3.
+.   .   .if &'compare(&*fun., &*ent.) eq 0 .do begin
+:ZDT.:QREF str='&*fun.'.
+.   .   .do end
+.   .   .el .do begin
+:ZDT.&*fun. (see :QREF str='&*ent.'.)
+.   .   .do end
 :ZDD.&*dsc.
 .   .do end
 .do end
