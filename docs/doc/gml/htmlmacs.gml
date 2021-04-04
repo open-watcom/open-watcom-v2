@@ -755,8 +755,8 @@
 .dm synote begin
 .begnote
 :P.
-<dt>where:
-<dd>description:
+<dt>where
+<dd>description
 ..br
 .dm synote end
 .*
