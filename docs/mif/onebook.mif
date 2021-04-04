@@ -28,7 +28,11 @@ wgml_sysfile_02=sysusr02.gml
 wgml_sysfile_03=sysusr03.gml
 !endif
 
-cop_files = mono01.cop ps.cop psdrv.cop whelp.cop whelpdrv.cop
+!ifeq wgml_target ps
+cop_files = mono01.cop ps.cop psdrv.cop
+!else
+cop_files = mono01.cop whelp.cop whelpdrv.cop
+!endif
 
 # If 'verbose' is set to 1, wgml displays warnings and statistics.
 # The default is a quiet build.
@@ -52,6 +56,9 @@ company=Open Watcom
 
 wgml_optfile=wgmlopts.tmp
 whpcvt_optfile=whpcopts.tmp
+!ifeq wgml_target ps
+gml_lib=.;../gml/syslib
+!endif
 wine_hc_batch=winehc.bat
 
 #
@@ -226,7 +233,7 @@ $(hbook).rtf $(hbook).gh $(hbook).hh : $(cop_files) $(book_objs) $(proj_objs)
 .EXTENSIONS: .ihp .ib
 
 $(hbook).ihp : $(hbook).ib
-    $(hcdos) -h 25 -w 80 $(hbook).ib $(hbook).ihp
+    $(hcdos) -v -h 25 -w 80 $(hbook).ib $(hbook).ihp
 
 $(hbook).ib $(hbook).gh : $(cop_files) $(book_objs) $(proj_objs)
     @%make compile_gml_to_xxx
@@ -246,7 +253,7 @@ $(hbook).ib $(hbook).gh : $(cop_files) $(book_objs) $(proj_objs)
 ####################################################
 !else ifeq dotarget htmlhelp
 
-.EXTENSIONS: .chm 
+.EXTENSIONS: .chm
 
 $(hbook).chm : $(hbook).htm $(hbook).gh
     @if not exist $(hbook) mkdir $(hbook)
@@ -262,7 +269,7 @@ $(hbook).chm : $(hbook).htm $(hbook).gh
 !ifneq hc_chmcmd
     cd $(hbook)
     -$(hc_chmcmd) --no-html-scan $(hbook).hhp
-!ifeq bld_os linux    
+!ifeq bld_os linux
     -chmod +rw $(hbook).chm
 !endif
     cd ..
@@ -339,7 +346,7 @@ $(hbook).ipf $(hbook).gh : $(cop_files) $(book_objs) $(proj_objs)
 
 .EXTENSIONS: .ps .bmp
 
-$(hbook).ps : $(book_objs) $(book_objs_ps) $(proj_objs)
+$(hbook).ps : $(cop_files) $(book_objs) $(book_objs_ps) $(proj_objs)
     $(noecho)set OWGMLINC=.;tmp;$(ps_incs);$(book_incs);$(whelp_incs);$(gml_incs)
     %make prepare_wgml_opts
 !ifeq verbose 0
@@ -474,6 +481,9 @@ prepare_wgml_opts : .PROCEDURE
 #-------------------------------------------------------
 # set up environment variables used by wgml utility
 #-------------------------------------------------------
+!ifeq wgml_target ps
+    $(noecho)set GMLLIB=$(gml_lib:/=\)
+!endif
     $(noecho)set GMLINC=$(%OWGMLINC:/=\)
     @%make prepare_wgml_tmp_batch
 
