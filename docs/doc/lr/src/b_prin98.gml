@@ -17,8 +17,8 @@ The values for service are:
 It initializes the status area and the controller.
 Bit 0 of the return value indicates the following:.
 .begnote $compact
-.termhd1 Value
-.termhd2 Meaning
+.notehd1 Value
+.notehd2 Meaning
 .note 1
 Enabled to output data
 .note 0
@@ -30,8 +30,8 @@ It outputs one byte of data from the area pointed to by the argument
 .period
 Bit 0 of the return value indicates the following:.
 .begnote $compact
-.termhd1 Value
-.termhd2 Meaning
+.notehd1 Value
+.notehd2 Meaning
 .note 1
 Date output complete, enabled to output more data.
 .note 0
@@ -40,8 +40,8 @@ Data is not output.
 .np
 Bit 1 of the return value indicates the following:.
 .begnote $compact
-.termhd1 Value
-.termhd2 Meaning
+.notehd1 Value
+.notehd2 Meaning
 .note 1
 Time-out, the data is not output.
 .note 0
@@ -56,8 +56,8 @@ the number of characters which are not output if an error occurs.
 It gets the status information of the printer.
 Bit 0 of the return value indicates the following:.
 .begnote $compact
-.termhd1 Value
-.termhd2 Meaning
+.notehd1 Value
+.notehd2 Meaning
 .note 1
 Enabled for data output
 .note 0

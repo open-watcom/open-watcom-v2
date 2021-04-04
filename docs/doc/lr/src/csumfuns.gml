@@ -33,8 +33,8 @@ The first column contains the name of the function or variable which
 is not supported by the system(s) named in the second column.
 Variables are marked "(var)".
 .begnote $compact $setptnt 25
-.termhd1 Function / Variable
-.termhd2 Unsupported System
+.notehd1 Function / Variable
+.notehd2 Unsupported System
 .note bdos
 OS/2 (all)
 .note _beginthread

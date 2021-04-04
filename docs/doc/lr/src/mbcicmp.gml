@@ -26,8 +26,8 @@ are mapped to lowercase for the purposes of doing the comparison.
 .return begin
 The function returns the following values.
 .begnote
-.termhd1 Value
-.termhd2 Meaning
+.notehd1 Value
+.notehd2 Meaning
 .note < 0
 multibyte character at
 .arg s1

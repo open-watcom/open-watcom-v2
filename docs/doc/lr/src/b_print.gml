@@ -38,8 +38,8 @@ The
 .id &funcb.
 function returns a printer status byte defined as follows:
 .begnote $compact
-.termhd1 Bit
-.termhd2 Meaning
+.notehd1 Bit
+.notehd2 Meaning
 .setptnt 0 14
 .sr ptntelmt = 0
 .note bit 0 (0x01)

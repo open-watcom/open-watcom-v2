@@ -104,8 +104,8 @@ chdir c:&pc.mydir
 .pc
 Then, the following path specifications are:
 .begpoint $setptnt 15 $compact
-.termhd1 Relative Path
-.termhd2 Absolute Path
+.pointhd1 Relative Path
+.pointhd2 Absolute Path
 .point a:xxx&pc.y
 a:&pc.apps&pc.payroll&pc.xxx&pc.y
 .point c:zzzzz
@@ -195,8 +195,8 @@ is the name of the file.
 .np
 Suppose that the current working directories are as follows:
 .begpoint $setptnt 8 $compact
-.termhd1 Drive
-.termhd2 Directory
+.pointhd1 Drive
+.pointhd2 Directory
 .point A:
 &pc.payroll
 .point B:
@@ -210,8 +210,8 @@ and that the default disk drive is
 Then, the following file designations will result in the indicated
 file references:
 .begpoint $setptnt 18 $compact
-.termhd1 Designation
-.termhd2 Actual File
+.pointhd1 Designation
+.pointhd2 Actual File
 .point pgm.c
 C:&pc.SOURCE&pc.C&pc.PGM.C
 .point &pc.basic.dat

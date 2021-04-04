@@ -82,8 +82,8 @@ function returns status information in the high-order byte when
 is _DISK_STATUS, _DISK_READ, _DISK_WRITE, or _DISK_VERIFY.
 The possible values are:
 .begnote $compact
-.termhd1 Value
-.termhd2 Meaning
+.notehd1 Value
+.notehd2 Meaning
 .sr ptntelmt = 0
 .note 0x00
 Operation successful

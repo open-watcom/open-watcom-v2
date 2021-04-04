@@ -104,8 +104,8 @@ When the
 service is requested the controller information returned is as
 follows:
 .begnote $compact $setptnt 12
-.termhd1 Bit
-.termhd2 Meaning
+.notehd1 Bit
+.notehd2 Meaning
 .note bit 0
 Send status (1=Ready / 0=Busy)
 .note bit 1
@@ -128,8 +128,8 @@ When the
 .kw _COM_STATUS
 service is requested the system port information is as follows:
 .begnote $compact $setptnt 12
-.termhd1 Bit
-.termhd2 Meaning
+.notehd1 Bit
+.notehd2 Meaning
 .note bits 0-4
 Not used
 .note bit 5

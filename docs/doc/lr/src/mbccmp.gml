@@ -35,8 +35,8 @@ functions return
 .do end
 the following values.
 .begnote
-.termhd1 Value
-.termhd2 Meaning
+.notehd1 Value
+.notehd2 Meaning
 .note < 0
 multibyte character at
 .arg s1

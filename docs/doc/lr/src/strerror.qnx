@@ -1,6 +1,6 @@
 .begpoint $compact $setptnt 8
-.termhd1 Error
-.termhd2 Message
+.pointhd1 Error
+.pointhd2 Message
 .point 0
 "No error"
 .point 1

@@ -26,8 +26,8 @@ The argument
 .arg mode
 points to a string beginning with one of the following sequences:
 .begnote
-.termhd1 Mode
-.termhd2 Meaning
+.notehd1 Mode
+.notehd2 Meaning
 .note "r"
 .if '&machsys' eq 'QNX' .do begin
 open file for reading

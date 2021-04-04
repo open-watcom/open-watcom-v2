@@ -29,8 +29,8 @@ argument to
 .id &funcb.
 is a string that specifies an I/O mode for the pipe.
 .begnote
-.termhd1 Mode
-.termhd2 Meaning
+.notehd1 Mode
+.notehd2 Meaning
 .note "r"
 The calling process will read from the standard output of the child
 process using the stream pointer returned by

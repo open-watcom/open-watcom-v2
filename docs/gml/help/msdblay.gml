@@ -14,7 +14,7 @@
 
 .dm h4 begin
 .pa
-.if '&*id' eq '' .do begin
+.if &'length(&*id.) eq 0 .do begin
 :h4.&*
 .do end
 .el .do begin

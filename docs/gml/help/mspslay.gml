@@ -21,7 +21,7 @@
 .pa odd
 :set symbol='baneven'      value=''.
 .in 0
-.if '&*id' eq '' .do begin
+.if &'length(&*id.) eq 0 .do begin
 :h0.&*
 .do end
 .el .do begin
@@ -38,7 +38,7 @@
 .pa odd
 :set symbol='banodd'      value=''.
 .in 0
-.if '&*id' eq '' .do begin
+.if &'length(&*id.) eq 0 .do begin
 :h1.&*
 .do end
 .el .do begin

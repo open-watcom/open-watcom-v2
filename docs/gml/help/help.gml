@@ -67,7 +67,7 @@ the figure in the Users Guide
 
 .dm H0 begin
 :set symbol='hlptxt' value='&'translate(&*,'_',' ')'
-.if '&*id.' eq '' .do begin
+.if &'length(&*id.) eq 0 .do begin
     :H0.::::&hlptxt.
 .do end
 .el .do begin
@@ -79,7 +79,7 @@ the figure in the Users Guide
 
 .dm H1 begin
 :set symbol='hlptxt' value='&'translate(&*,'_',' ')'
-.if '&*id.' eq '' .do begin
+.if &'length(&*id.) eq 0 .do begin
     :H1.::::&hlptxt.
 .do end
 .el .do begin
@@ -92,7 +92,7 @@ the figure in the Users Guide
 
 .dm H2 begin
 :set symbol='hlptxt' value='&'translate(&*,'_',' ')'
-.if '&*id.' eq '' .do begin
+.if &'length(&*id.) eq 0 .do begin
     :H2.::::&hlptxt.
 .do end
 .el .do begin
@@ -105,7 +105,7 @@ the figure in the Users Guide
 
 .dm H3 begin
 :set symbol='hlptxt' value='&'translate(&*,'_',' ')'
-.if '&*id.' eq '' .do begin
+.if &'length(&*id.) eq 0 .do begin
     :H3.::::&hlptxt.
 .do end
 .el .do begin
@@ -118,7 +118,7 @@ the figure in the Users Guide
 
 .dm H4 begin
 :set symbol='hlptxt' value='&'translate(&*,'_',' ')'
-.if '&*id.' eq '' .do begin
+.if &'length(&*id.) eq 0 .do begin
     :H4.::::&hlptxt.
 .do end
 .el .do begin

@@ -50,8 +50,8 @@ is not a NULL pointer, the
 .id &funcb.
 function returns:
 .begnote $setptnt 6
-.termhd1 Value
-.termhd2 Meaning
+.notehd1 Value
+.notehd2 Meaning
 .note 0
 if
 .arg s

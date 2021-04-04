@@ -26,8 +26,8 @@ The low-order byte of
 .arg errcode
 can be one of the following values:
 .begnote $compact
-.termhd1 Value
-.termhd2 Meaning
+.notehd1 Value
+.notehd2 Meaning
 .note 0x00
 Attempt to write to a write-protected disk
 .note 0x01
@@ -70,8 +70,8 @@ argument will be 0 and the
 .arg deverror
 argument will indicate the following:
 .begnote $compact
-.termhd1 Bit
-.termhd2 Meaning
+.notehd1 Bit
+.notehd2 Meaning
 .note bit 15
 0 indicates disk error
 .note bit 14
@@ -85,8 +85,8 @@ not used
 .note bit 9,10
 location of error
 .begnote $compact
-.termhd1 Value
-.termhd2 Meaning
+.notehd1 Value
+.notehd2 Meaning
 .note 00
 MS-DOS
 .note 01
@@ -118,8 +118,8 @@ the following values or calling
 .kw _hardresume
 with one of the following values:
 .begnote $setptnt 22
-.termhd1 Value
-.termhd2 Meaning
+.notehd1 Value
+.notehd2 Meaning
 .note _HARDERR_IGNORE
 Ignore the error
 .note _HARDERR_RETRY

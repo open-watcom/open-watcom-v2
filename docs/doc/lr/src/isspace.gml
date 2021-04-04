@@ -17,8 +17,8 @@ The
 .id &funcb.
 function tests for the following white-space characters:
 .begpoint $compact $setptnt 12
-.termhd1 Constant
-.termhd2 Character
+.pointhd1 Constant
+.pointhd2 Character
 .point ' '
 space
 .point '\f'

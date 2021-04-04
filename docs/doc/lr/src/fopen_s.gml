@@ -48,8 +48,8 @@ The
 string shall be as described for fopen, with the addition that modes starting
 with the character 'w' or 'a' may be preceded by the character 'u', see below:
 .begnote
-.termhd1 Mode
-.termhd2 Meaning
+.notehd1 Mode
+.notehd2 Meaning
 .note "uw"
 truncate to zero length or create text file for writing, default permissions
 .note "ua"

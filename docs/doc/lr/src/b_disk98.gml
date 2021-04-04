@@ -150,8 +150,8 @@ argument.
 The meaning of the status or result information is described below.
 The possible values are:
 .begnote $compact
-.termhd1 Value
-.termhd2 Status information or result status information
+.notehd1 Value
+.notehd2 Status information or result status information
 .sr ptntelmt = 0
 .note 0x00
 Normal end/Ready status

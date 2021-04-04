@@ -57,8 +57,8 @@ is not a null pointer, the
 function returns the first of the
 following that applies:
 .begnote
-.termhd1 Value
-.termhd2 Meaning
+.notehd1 Value
+.notehd2 Meaning
 .note 0
 if the next
 .arg n

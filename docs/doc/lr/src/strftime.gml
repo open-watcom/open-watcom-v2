@@ -60,8 +60,8 @@ No more than
 characters are placed in the array.
 The format directives %D, %h, %n, %r, %t, and %T are from POSIX.
 .begnote
-.termhd1 Directive
-.termhd2 Meaning
+.notehd1 Directive
+.notehd2 Meaning
 .note %a
 locale's abbreviated weekday name
 .note %A
