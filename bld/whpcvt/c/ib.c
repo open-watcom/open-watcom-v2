@@ -97,6 +97,7 @@ static char Reset_Style[] = STR_BOLD_OFF STR_UNDERLINE_OFF;
 
 static bool             Blank_line = false;
 static int              Curr_indent = 0;
+static bool             list_indent = false;
 static bool             Eat_blanks = false;
 
 // The following are for word-wrapping and indentation support
@@ -111,6 +112,13 @@ static line_postfix     Line_postfix = LPOSTFIX_NONE;
 
 static char             IB_Hyperlink_L;
 static char             IB_Hyperlink_R;
+
+static int currentIndent( void )
+{
+    if( list_indent )
+        return( Curr_indent + Text_Indent );
+    return( Curr_indent );
+}
 
 // this function will change all of the spaces in a string into non-breaking
 // spaces (character 0xFF ). It's currently only used for the labels on
@@ -218,7 +226,7 @@ static size_t trans_add_char_wrap( char ch, section_def *section )
     #define MY_MARGIN ( Right_Margin + 1 - ( Box_Mode ? 2 : 0 ) )
 
     // find out the real indentation
-    indent = ( Curr_indent < 0 ) ? 0 : Curr_indent;
+    indent = currentIndent();
 
     // add character
     if( ch == '\n' ) {
@@ -418,7 +426,7 @@ static void draw_line( section_def *section )
 {
     int     i;
 
-    for( i = 0; i < Right_Margin - Curr_indent - 2; i++ ) {
+    for( i = 0; i < Right_Margin - currentIndent() - 2; i++ ) {
         trans_add_char( BOX_HBAR, section );
     }
 }
@@ -460,7 +468,7 @@ void ib_trans_line( char *line_buf, section_def *section )
         return;
     case WHP_BOX_ON:     // Box-mode start
         // indent properly
-        for( ctr = 0; ctr < Curr_indent; ctr++ ) {
+        for( ctr = 0; ctr < currentIndent(); ctr++ ) {
             trans_add_char( ' ', section );
         }
         // draw the top line of the box
@@ -471,7 +479,7 @@ void ib_trans_line( char *line_buf, section_def *section )
         Box_Mode = true;
         return;
     case WHP_BOX_OFF:    // Box-mode end
-        for( ctr = 0; ctr < Curr_indent; ctr++ ) {
+        for( ctr = 0; ctr < currentIndent(); ctr++ ) {
             trans_add_char( ' ', section );
         }
         trans_add_char( BOX_CORNER_BOTOM_LEFT, section );
@@ -484,6 +492,8 @@ void ib_trans_line( char *line_buf, section_def *section )
     case WHP_DLIST_START:
     case WHP_OLIST_START:
     case WHP_SLIST_START:
+        NewList( ptr, Curr_indent, list_indent );
+#if 0
         indent = Text_Indent;
         if( ch == WHP_SLIST_START ) {
             /* nested simple lists, with no pre-indent. Force an indent */
@@ -491,8 +501,10 @@ void ib_trans_line( char *line_buf, section_def *section )
                 indent = 0;
             }
         }
-        NewList( ptr, Curr_indent );
-        Curr_indent += indent;
+#endif
+        if( list_indent )
+            Curr_indent += Text_Indent;
+        list_indent = false;
         if( ch == WHP_DLIST_START ) {
             if( ptr[1] == WHP_LIST_COMPACT )
                 ptr++;
@@ -509,13 +521,15 @@ void ib_trans_line( char *line_buf, section_def *section )
     case WHP_DLIST_END:
     case WHP_OLIST_END:
     case WHP_SLIST_END:
-        Curr_indent = PopList();
+        Curr_indent = Curr_list->prev_indent;
+        list_indent = Curr_list->list_indent;
+        PopList();
         return;
     case WHP_DLIST_TERM:
-        Curr_indent -= Text_Indent;
+        list_indent = false;
         break;
     case WHP_DLIST_DESC:
-        Curr_indent += Text_Indent;
+        list_indent = true;
         if( *skip_blanks( ptr + 1 ) == '\0' ) {
             /* no description on this line. Ignore it so that no
                blank line gets generated */
@@ -543,7 +557,7 @@ void ib_trans_line( char *line_buf, section_def *section )
     // indent properly if the first char is not white-space
     if( _is_nonblank( ch ) ) {
         ctr = ( ch == WHP_LIST_ITEM && !Box_Mode && Curr_list->type != LIST_TYPE_SIMPLE ) ? Text_Indent : 0;
-        for( ; ctr < Curr_indent; ctr++ ) {
+        for( ; ctr < currentIndent(); ctr++ ) {
             trans_add_char_wrap( ' ', section );
         }
 
@@ -613,7 +627,7 @@ void ib_trans_line( char *line_buf, section_def *section )
             // We don't want links to break as IB doesn't like this...
             spaces_to_nobreak( ctx_text );
 
-            indent = ( Curr_indent < 0 ) ? 0 : Curr_indent;
+            indent = currentIndent();
             // find out the maximum allowed length for hyper-link text:
             ctr = Right_Margin - indent - ( ( Hyperlink_Braces ) ? 2 : 0 );
 
@@ -726,9 +740,8 @@ void ib_trans_line( char *line_buf, section_def *section )
                 if( Tab_xmp && ch == Tab_xmp_char ) {
                     size_t  ch_len;
 
-                    indent = ( Curr_indent < 0 ) ? 0 : Curr_indent;
                     // find out how close we are to "col 0" for the current indent
-                    ch_len = Cursor_X - indent - ( Box_Mode ? 2 : 0 );
+                    ch_len = Cursor_X - currentIndent() - ( Box_Mode ? 2 : 0 );
                     tab_align( ch_len, section );
                     ptr = skip_blanks( ptr );
                 } else {

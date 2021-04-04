@@ -266,7 +266,7 @@ void ipf_trans_line( char *line_buf, section_def *section )
     case WHP_DLIST_START:
     case WHP_OLIST_START:
     case WHP_SLIST_START:
-        NewList( ptr, 0 );
+        NewList( ptr, 0, false );
         switch( ch ) {
         case WHP_OLIST_START:
             trans_add_str( ":ol", section );

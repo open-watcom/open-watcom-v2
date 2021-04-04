@@ -215,6 +215,7 @@ typedef struct {
     list_type           type;
     int                 number;
     int                 prev_indent;
+    bool                list_indent;
     bool                compact;
 } list_def;
 
@@ -298,8 +299,8 @@ extern void         add_link( const char *link_name );
 extern ctx_def      *find_ctx( const char *ctx_name );
 extern char         *whole_keyword_line( char *ptr );
 extern bool         is_special_topic( ctx_def *ctx, bool dump_popup );
-extern void         NewList( const char *ptr, int indent );
-extern int          PopList( void );
+extern void         NewList( const char *ptr, int indent, bool list_indent );
+extern void         PopList( void );
 
 extern void         rtf_init_whp( void );
 extern void         rtf_trans_line( char *line_buf, section_def *section );

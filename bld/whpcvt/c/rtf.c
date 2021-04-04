@@ -253,7 +253,7 @@ void rtf_trans_line( char *line_buf, section_def *section )
             }
             break;
         }
-        NewList( ptr, Curr_indent );
+        NewList( ptr, Curr_indent, false );
         Curr_indent += indent;
         if( ch != WHP_SLIST_START || indent != 0 ) {
             Line_prefix |= LPREFIX_S_LIST;
@@ -277,7 +277,8 @@ void rtf_trans_line( char *line_buf, section_def *section )
         if( ch != WHP_SLIST_END || Curr_list->prev_indent != Curr_indent ) {
             Line_prefix |= LPREFIX_E_LIST;
         }
-        Curr_indent = PopList();
+        Curr_indent = Curr_list->prev_indent;
+        PopList();
         return;
     case WHP_DLIST_DESC:
         if( *skip_blanks( ptr + 1 ) == '\0' ) {

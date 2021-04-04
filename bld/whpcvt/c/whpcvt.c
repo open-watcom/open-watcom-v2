@@ -136,7 +136,7 @@ const char Fonttype_helv[] = "helv";
 const char Fonttype_courier[] = "courier";
 
 static list_def Lists[MAX_LISTS] = {
-    { LIST_TYPE_NONE,   0,  0,  false },    // list base
+    { LIST_TYPE_NONE,   0,  0,  false,  false },    // list base
 };
 
 list_def        *Curr_list = &Lists[0];
@@ -1925,8 +1925,8 @@ static void check_links( void )
     }
 }
 
-void NewList( const char *ptr, int indent )
-/*****************************************/
+void NewList( const char *ptr, int indent, bool list_indent )
+/***********************************************************/
 {
     list_type   type;
 
@@ -1955,21 +1955,18 @@ void NewList( const char *ptr, int indent )
     Curr_list->type = type;
     Curr_list->number = 0;
     Curr_list->prev_indent = indent;
+    Curr_list->list_indent = list_indent;
     Curr_list->compact = ( ptr[1] == WHP_LIST_COMPACT );
 }
 
-int PopList( void )
-/*****************/
+void PopList( void )
+/******************/
 {
-    int indent;
-
     if( List_level == 0 ) {
         error( ERR_UNBAL_LIST );
     }
-    indent = Curr_list->prev_indent;
     List_level--;
     Curr_list = &Lists[List_level];
-    return( indent );
 }
 
 static void init_whp( void )
