@@ -537,14 +537,14 @@
 .   :ZDL termhi=0.
 .   :ZDT.Syntax:
 .   .if &'length(&short.) ne 0 .th .do begin
-.       :zDD.&cmd_long. &cmd_short.
+.       :ZDD.&cmd_long. &cmd_short.
 .   .do end
 .   .el .do begin
 .   .   .if &'length(&parm.) ne 0 .th .do begin
-.           :zDD.&cmd_long. &cmd_parm.
+.           :ZDD.&cmd_long. &cmd_parm.
 .   .   .do end
 .   .   .el .do begin
-.           :zDD.&cmd_long.
+.           :ZDD.&cmd_long.
 .   .   .do end
 .   .do end
 .   :ZeDL
