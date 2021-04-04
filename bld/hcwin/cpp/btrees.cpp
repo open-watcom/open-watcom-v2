@@ -179,7 +179,7 @@ int BtreePage::dump( OutFile *dest )
     // Spit out the page header.
     dest->write( (uint_8)0 );
     dest->write( (uint_8)0 );
-    dest->write( _numEntries );
+    dest->write( (uint_16)_numEntries );
     amount_left -= TREEPAGE_HEADER_SIZE;
 
     // If this a leaf node, print the indices of the previous
@@ -270,8 +270,8 @@ int BtreePage::split()
         if( current->bnext() != NULL ) {
             current->bnext()->bprev( NULL );
         }
-        sibling->_numEntries = (uint_16) (_numEntries-cur_num-1);
-        sibling->_size = _size-cur_size-current->size();
+        sibling->_numEntries = (uint_16)( _numEntries - cur_num - 1 );
+        sibling->_size = _size - cur_size - current->size();
     } else {
         sibling->_entries = current;
         if( current->bprev() != NULL ) {
@@ -280,13 +280,13 @@ int BtreePage::split()
             _entries = NULL;
         }
         current->bprev( NULL );
-        sibling->_numEntries = (uint_16) (_numEntries-cur_num);
-        sibling->_size = _size-cur_size;
+        sibling->_numEntries = (uint_16)( _numEntries - cur_num );
+        sibling->_size = _size - cur_size;
     }
 
     // Record the fact that we've lost data.
     _numEntries = cur_num;
-    _size = cur_size + TREEPAGE_HEADER_SIZE + sizeof(uint_16);
+    _size = cur_size + TREEPAGE_HEADER_SIZE + sizeof( uint_16 );
     if( _firstChild == NULL ) {
         _size += sizeof( uint_16 );
     }

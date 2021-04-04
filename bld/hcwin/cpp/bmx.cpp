@@ -209,7 +209,7 @@ int Bitmap::dump( OutFile *dest )
     _bitsPerPix *= 2;
     if( _bitsPerPix >= 2*MIN_16BIT ) {
         _bitsPerPix += 1;
-        dest->write( _bitsPerPix );
+        dest->write( (uint_16)_bitsPerPix );
     } else {
         dest->write( (uint_8)_bitsPerPix );
     }
@@ -217,7 +217,7 @@ int Bitmap::dump( OutFile *dest )
     _width *= 2;
     if( _width >= 2*MIN_32BIT ) {
         _width += 1;
-        dest->write( _width );
+        dest->write( (uint_32)_width );
     } else {
         dest->write( (uint_16)_width );
     }
@@ -225,7 +225,7 @@ int Bitmap::dump( OutFile *dest )
     _height *= 2;
     if( _height >= 2*MIN_32BIT ) {
         _height += 1;
-        dest->write( _height );
+        dest->write( (uint_32)_height );
     } else {
         dest->write( (uint_16)_height );
     }
@@ -233,7 +233,7 @@ int Bitmap::dump( OutFile *dest )
     _colsUsed *= 2;
     if( _colsUsed >= 2*MIN_32BIT ) {
         _colsUsed += 1;
-        dest->write( _colsUsed );
+        dest->write( (uint_32)_colsUsed );
     } else {
         dest->write( (uint_16)_colsUsed );
     }
@@ -244,13 +244,13 @@ int Bitmap::dump( OutFile *dest )
     _pixSize *= 2;
     if( _pixSize >= 2 * MIN_32BIT ) {
         _pixSize += 1;
-        dest->write( _pixSize );
+        dest->write( (uint_32)_pixSize );
     } else {
         dest->write( (uint_16)_pixSize );
     }
 
     dest->write( (uint_16)0 );
-    dest->write( _objOffset );
+    dest->write( (uint_32)_objOffset );
     dest->write( (uint_32)0 );
 
     // now write the colour table and pixel data.
