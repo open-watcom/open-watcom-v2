@@ -145,7 +145,6 @@ later. However, any &compname can produce the appropriate format of
 data for browsing by the Windows hosted browser.  Future versions are planned
 for all environments that these compilers support.
 .*
-.*
 .section &brname Command Line Format
 .*
 .np
@@ -200,8 +199,8 @@ description of loading manually generated modules into the browser session.
 :figcap.&brname Startup Screen
 :efig.
 .*
-.*
 .beglevel
+.*
 .section Standalone Mode
 .*
 .np
@@ -287,6 +286,7 @@ facilitate arbitrary browse paths and quick reference, while co-existing
 with an integrated development environment.
 .*
 .beglevel
+.*
 .section Popup Children Windows
 .*
 .np
@@ -413,6 +413,7 @@ The next section describes the characteristics that all symbol detail views
 have in common; that is followed by descriptions of the extended detail views.
 .*
 .beglevel
+.*
 .section Basic Detail View
 .*
 .np
@@ -456,6 +457,7 @@ the meaning of the list box.
 Additionally, all symbol detail views share the following features:
 .*
 .beglevel
+.*
 .section Title Bar
 .*
 .np
@@ -558,6 +560,7 @@ Function Detail Views add two new detail controls to the basic Symbol Detail
 View:
 .*
 .beglevel
+.*
 .section Locals Checkbox
 .*
 .np
@@ -602,6 +605,7 @@ restricted cases of the class construct.
 Class Detail Views add two new detail controls to the basic Symbol Detail View:
 .*
 .beglevel
+.*
 .section Data Members
 .*
 .np
@@ -780,6 +784,7 @@ function' are replaced with 'derivation', 'base class', and 'derived class',
 this same description may be applied to a class inheritance tree.
 .*
 .beglevel
+.*
 .section Text Format Graph Display
 .*
 .np
@@ -887,6 +892,7 @@ creates a Detail View of the node
 If a node is doubleClicked, a Detail View for the node will appear.
 .*
 .endlevel
+.*
 .section Menu Versus Editor Interaction
 .*
 .np
@@ -933,6 +939,7 @@ The contents of the menu bar are described in the following
 sections.
 .*
 .beglevel
+.*
 .section File
 .*
 .np
@@ -946,6 +953,7 @@ files, as well as providing for exit from the application.
 :efig.
 .*
 .beglevel
+.*
 .section Open
 .*
 .np
@@ -1124,6 +1132,7 @@ Regardless of entry point, all symbol query dialogs contain the following
 elements:
 .*
 .beglevel
+.*
 .section Filter Edit Line
 .*
 .np
@@ -1231,7 +1240,6 @@ Detail Views).
 .*
 .endlevel
 .*
-.*
 .section Diagrams
 .*
 .np
@@ -1244,6 +1252,7 @@ Currently, the only diagram supported is the project-wide inheritance tree.
 :efig.
 .*
 .beglevel
+.*
 .section Inheritance
 .*
 .np
@@ -1254,6 +1263,7 @@ grow out from the left edge, and the focal node is a hidden logical 'base of
 all bases'.  Initially, the whole inheritance tree is displayed.
 .*
 .section Call Tree
+.*
 .np
 (not supported)
 This menu item generates a project wide call graph, in the graphical
@@ -1274,6 +1284,7 @@ Options allows modification to certain preference settings on a session wide
 basis.
 .*
 .beglevel
+.*
 .section Call Graph Format
 .*
 .np
@@ -1301,7 +1312,6 @@ hypertext format.  (FIXME - this could use more meat.)
 :efig.
 .*
 .endlevel
-.*
 .*
 .section The Editor Interface
 .*
