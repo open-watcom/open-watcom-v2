@@ -288,11 +288,19 @@
 .dm notehd2 end
 .*
 .dm notehdr begin
-:P.<dt>&*<dd>
+:P.<dt><b>&*</b><dd>
 .dm notehdr end
 .*
+.dm pointhd1 begin
+:P.<dt><b>&*</b>
+.dm pointhd1 end
+.*
+.dm pointhd2 begin
+:P.<dd><b>&*</b>
+.dm pointhd2 end
+.*
 .dm pointhdr begin
-:P.<dt>&*<dd>
+:P.<dt><b>&*</b><dd>
 .dm pointhdr end
 .*
 .dm endnote begin

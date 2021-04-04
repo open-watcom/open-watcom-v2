@@ -363,6 +363,24 @@
 .do end
 .dm notehdr end
 .*
+.dm pointhd1 begin
+.if &e'&dohelp eq 0 .do begin
+:DTHD.&*
+.do end
+.el .do begin
+:ZDTHD.&*
+.do end
+.dm pointhd1 end
+.*
+.dm pointhd2 begin
+.if &e'&dohelp eq 0 .do begin
+:DDHD.&*
+.do end
+.el .do begin
+:ZDDHD.&*
+.do end
+.dm pointhd2 end
+.*
 .dm pointhdr begin
 .if &e'&dohelp eq 0 .do begin
 :DTHD.&*
