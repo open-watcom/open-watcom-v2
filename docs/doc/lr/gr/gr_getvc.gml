@@ -23,27 +23,27 @@ The structure contains the following fields (all are
 .id &short
 fields):
 .begterm 15
-.note numxpixels
+.termnx numxpixels
 number of pixels in x-axis
-.note numypixels
+.termnx numypixels
 number of pixels in y-axis
-.note numtextcols
+.termnx numtextcols
 number of text columns
-.note numtextrows
+.termnx numtextrows
 number of text rows
-.note numcolors
+.termnx numcolors
 number of actual colors
-.note bitsperpixel
+.termnx bitsperpixel
 number of bits in a pixel value
-.note numvideopages
+.termnx numvideopages
 number of video pages
-.note mode
+.termnx mode
 current video mode
-.note adapter
+.termnx adapter
 adapter type
-.note monitor
+.termnx monitor
 monitor type
-.note memory
+.termnx memory
 number of kilobytes (1024 characters) of video memory
 .endterm
 .keep begin

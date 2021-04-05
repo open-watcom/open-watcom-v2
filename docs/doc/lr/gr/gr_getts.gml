@@ -25,21 +25,21 @@ The structure contains the following fields (all are
 .id &short
 fields):
 .begterm 15
-.note basevectorx
+.termnx basevectorx
 x-component of the current base vector
-.note basevectory
+.termnx basevectory
 y-component of the current base vector
-.note path
+.termnx path
 current text path
-.note height
+.termnx height
 current text height (in pixels)
-.note width
+.termnx width
 current text width (in pixels)
-.note spacing
+.termnx spacing
 current text spacing (in pixels)
-.note horizalign
+.termnx horizalign
 horizontal component of the current text alignment
-.note vertalign
+.termnx vertalign
 vertical component of the current text alignment
 .endterm
 .desc end
