@@ -1917,6 +1917,7 @@ objs_lr2 = &
 ../doc/lr/src/strtoul.gml &
 ../doc/lr/src/strtoull.gml &
 ../doc/lr/src/strtoumx.gml &
+../doc/lr/src/structms.gml &
 ../doc/lr/src/structtm.gml &
 ../doc/lr/src/strupr.gml &
 ../doc/lr/src/strxfrm.gml &
