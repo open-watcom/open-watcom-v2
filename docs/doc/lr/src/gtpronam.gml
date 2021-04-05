@@ -14,11 +14,7 @@ routine will query the local database only.
 .np
 The structure returned is defined as:
 .blkcode begin
-struct protoent {
-    char    *p_name;        /* official protocol name */
-    char    **p_aliases;    /* alias list */
-    int     p_proto;        /* protocol number */
-};
+.im strucpro
 .blkcode end
 .np
 The pointer returned by

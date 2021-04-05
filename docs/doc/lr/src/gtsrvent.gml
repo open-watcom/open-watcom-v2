@@ -14,12 +14,7 @@ database.  The routine will query the local database only.
 .np
 The structure returned is defined as:
 .blkcode begin
-struct servent {
-    char    *s_name;        /* official service name */
-    char    **s_aliases;    /* alias list */
-    int     s_port;         /* port number */
-    char    *s_proto;       /* protocol to use */
-};
+.im strucsrv
 .blkcode end
 .np
 The pointer returned by

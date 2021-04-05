@@ -21,19 +21,7 @@ this will always return the first entry in the database.
 .np
 The structure returned is defined as:
 .blkcode begin
-struct hostent {
-    char        *h_name;       /* host official name */
-    char        **h_aliases;   /* host alternate names, up to 16,
-                                * terminated by a NULL pointer
-                                */
-    int         h_addrtype;    /* address type */
-    int         h_length;      /* address length in bytes */
-    char **     **h_addr_list; /* array of pointers to network
-                                * addresses in network byte
-                                * order, terminated by a NULL
-                                * pointer
-                                */
-};
+.im struchst
 .blkcode end
 .np
 In the current Open Watcom implementation, this routine will only
