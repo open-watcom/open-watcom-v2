@@ -9,7 +9,7 @@
 .sr $$msgcntr=-1
 .sr $$msggrp=&$$msggrp.+1
 .sr $$msgpfx=&*-
-.if &* eq MS .do begin
+.if &'compare(&'strip(&*.),'MS') eq 0 .do begin
 .   .sr $$grphide=1
 .do end
 .dm msggrp end
@@ -17,10 +17,12 @@
 .*
 :cmt. :eMSGGRP. XX
 .dm emsggrp begin
-.sr $$grphide=0
-.if &e'&dohelp eq 0 .do begin
-.   .endnote
+.if &$$grphide eq 0 .do begin
+.   .if &e'&dohelp eq 0 .do begin
+.   .   .endnote
+.   .do end
 .do end
+.sr $$grphide=0
 .sr $$msgcntr=-1
 .sr $$msgpfx=''
 .dm emsggrp end
