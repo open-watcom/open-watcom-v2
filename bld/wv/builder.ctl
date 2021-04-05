@@ -47,6 +47,7 @@ set PROJDIR=<CWD>
     <CCCMD> win/wini86/wv.sym       <OWRELROOT>/binw/wdc.sym
     <CCCMD> win/wini86.gui/wv.exe   <OWRELROOT>/binw/wdw.exe
     <CCCMD> win/wini86.gui/wv.sym   <OWRELROOT>/binw/wdw.sym
+    <CCCMD> win/wd.pif              <OWRELROOT>/binw/
     <CCCMD> rdos/rdos386/wv.exe     <OWRELROOT>/rdos/wd.exe
     <CCCMD> rdos/rdos386/wv.sym     <OWRELROOT>/rdos/wd.sym
     <CCCMD> os2/os2386/wv.exe       <OWRELROOT>/binp/wd.exe

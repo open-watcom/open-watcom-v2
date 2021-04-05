@@ -38,6 +38,8 @@ type="s" usr="cwhelp.cfg"        old="bin"
 #type="e" usr="plshelp.exp"       old="bin"       desc="Debugger help file for Phar Lap"
 #type="e" usr="pedhelp.exp"       old="bin"
 type="e" usr="rsihelp.exp"       old="bin"       desc="Debugger help file for DOS/4GW"
+[ DEFAULT dir="binw" cond="winhost" where="c jc f77 jf77" ]
+type="s" usr="wsrv.pif"
 
 # Windows 3.x
 [ DEFAULT type="d" dir="binw" cond="winhost" where="c f77 jc jf77" ]

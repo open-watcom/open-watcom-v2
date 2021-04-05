@@ -19,8 +19,6 @@ set PROJDIR=<CWD>
 
     <CCCMD> wini86/ide.exe  <OWRELROOT>/binw/
     <CCCMD> wini86/ide.sym  <OWRELROOT>/binw/
-    <CCCMD> win/wsrv.pif    <OWRELROOT>/binw/
-    <CCCMD> win/wd.pif      <OWRELROOT>/binw/
     <CCCMD> os2386/ide.exe  <OWRELROOT>/binp/
     <CCCMD> os2386/ide.sym  <OWRELROOT>/binp/
     <CCCMD> nt386/ide.exe   <OWRELROOT>/binnt/

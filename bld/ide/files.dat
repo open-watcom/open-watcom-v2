@@ -3,8 +3,6 @@
 #
 [ DEFAULT dir="binw" cond="winhost" where="c jc f77 jf77" ]
 type="e" usr="ide.exe"
-type="s" usr="wsrv.pif"
-type="s" usr="wd.pif"
 [ DEFAULT dir="binw" cond="doshost winhost |" where="c jc f77 jf77" ]
 type="e" usr="ide2make.exe"
 type="s" usr="ide.cfg"
