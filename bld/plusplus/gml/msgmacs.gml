@@ -69,24 +69,24 @@
 .se *ttl="&'strip(&*)"
 .if &'compare(&*ttl.,'filler') ne 0 .do begin
 .   .if &e'&dohelp eq 0 .do begin
-.   .	.keep
-.   .	.note &$$msgpfx.&$$msgnumb
-.   .	.us &*
-.   .	.np
+.   .   .keep
+.   .   .note &$$msgpfx.&$$msgnumb
+.   .   .us &*
+.   .   .np
 .   .do end
 .   .el .do begin
 :ZH2.&$$msgpfx.&$$msgnumb. &*ttl.
-.   .	.cntents &$$msgpfx.&$$msgnumb. &*ttl.
-.   .	.pu 1 .ixsect &$$msgpfx.&$$msgnumb. &*ttl.
+.   .   .cntents &$$msgpfx.&$$msgnumb. &*ttl.
+.   .   .pu 1 .ixsect &$$msgpfx.&$$msgnumb. &*ttl.
 :ZI1.&*ttl.
-.   .	.pu 1 .ixline `&*ttl.`
-.   .	.sr *ctxn=&$$msgcntr.+1
-.   .	.if '&dotarget' eq 'os2' .do begin
-.   .	.   .sr *ctxn=&$$msgcntr.+20000
-.   .	.do end
-.   .	.ctxstr &$$msgpfx.&$$msgnumb. &*ttl.
-.   .	.pu 2 #define HLP_&'upper(&ctx_str.) &*ctxn
-.   .	.np
+.   .   .pu 1 .ixline `&*ttl.`
+.   .   .sr *ctxn=&$$msgcntr.+1
+.   .   .if '&dotarget' eq 'os2' .do begin
+.   .   .   .sr *ctxn=&$$msgcntr.+1+20000
+.   .   .do end
+.   .   .ctxstr &$$msgpfx.&$$msgnumb. &*ttl.
+.   .   .pu 2 #define HLP_&'upper(&ctx_str.) &*ctxn
+.   .   .np
 .   .do end
 .do end
 .cw ;
