@@ -233,7 +233,7 @@ $(hbook).rtf $(hbook).gh $(hbook).hh : $(cop_files) $(book_objs) $(proj_objs)
 .EXTENSIONS: .ihp .ib
 
 $(hbook).ihp : $(hbook).ib
-    $(hcdos) -v -h 25 -w 80 $(hbook).ib $(hbook).ihp
+    $(hcdos) -h 25 -w 80 $(hbook).ib $(hbook).ihp
 
 $(hbook).ib $(hbook).gh : $(cop_files) $(book_objs) $(proj_objs)
     @%make compile_gml_to_xxx
