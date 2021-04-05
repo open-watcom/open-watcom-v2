@@ -6,7 +6,7 @@
 .*
 .dm fdbeg begin
 The following functions are defined:
-:ZDL compact termhi=1 tsize=14.
+:ZDL compact termhi=1 tsize='14'.
 .dm fdbeg end
 .*
 .dm fd begin

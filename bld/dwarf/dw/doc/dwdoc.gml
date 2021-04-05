@@ -181,7 +181,7 @@ typedef struct {
 :DDHD.Description
 :DT.language
 :DD.Language used.
-:DL tsize=24.
+:DL tsize='24'.
 :DTHD.Constant
 :DDHD.Language
 :DT.DWLANG_C
@@ -193,7 +193,7 @@ typedef struct {
 :eDL.
 :DT.compile_options
 :DD.Compilation option, which is a combination of bits:
-:DL tsize=20.
+:DL tsize='20'.
 :DTHD.Bit
 :DDHD.Description
 :DT.DW_CM_BROWSER
@@ -319,7 +319,7 @@ So the line number of the first line of an included file is one.
 :DT.info
 :DD.The information about the line, which is established by the
 combination of the following bits:
-:DL tsize=20.
+:DL tsize='20'.
 :DTHD.Bit
 :DDHD.Description
 :DT.DW_LN_DEFAULT
@@ -412,7 +412,7 @@ of :hp2.sym:ehp2. on the stack.
 
 :H2.void DWENTRY DWLocOp0( dw_client cli, dw_loc_id loc, dw_loc_op op );
 :p.Performs one of the operations listed below.
-:DL tsize=24 break.
+:DL tsize='24' break.
 :DTHD.Operation
 :DDHD.Description
 :DT.DW_LOC_ABS
@@ -500,7 +500,7 @@ EXCLUSIVE-OR operation on them, and pushes the result.
 
 :H2.void DWENTRY DWLocOp( dw_client cli, dw_loc_id loc, dw_loc_op op, ... );
 :p.Performs one of the following operations:
-:DL tsize=24 break.
+:DL tsize='24' break.
 :DTHD.Operation
 :DDHD.Description
 :DT.DW_LOC_BRA
@@ -634,7 +634,7 @@ type handles).
 :HP2.base_type:eHP2. is the base type to be modified with the modifier
 :HP2.modifier:eHP2..
 The available modifiers are:
-:DL tsize=20.
+:DL tsize='20'.
 :DTHD.Modifier Constant
 :DDHD.Description
 :DT.DW_MOD_CONSTANT
@@ -1120,7 +1120,7 @@ entry that declares/defines the :hp2.name:ehp2..
 :H0.Required Client Routines
 :p.The debugging information has several sections indicated by the
 following enumerated type:
-:DL tsize=22.
+:DL tsize='22'.
 :DTHD.Constant
 :DDHD.Description
 :DT.DW_DEBUG_INFO

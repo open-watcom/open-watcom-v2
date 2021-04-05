@@ -301,7 +301,7 @@
 .dm optlist begin
 .sr OLDlvl=&SCTlvl.
 .sr SCTlvl=3
-:cmt. :ZDL termhi=3 tsize=10.
+:cmt. :ZDL termhi=3 tsize='10'.
 :cmt. :ZDT.Option:
 :cmt. :ZDD.Description:
 .dm optlist end
@@ -468,7 +468,7 @@
 .dm initstep begin
 .sr tmplvl=&WDWlvl.-3
 .cp &tmplvl
-:ZDL tsize=3 termhi=2 break.
+:ZDL tsize='3' termhi=2 break.
 .if &'length(&*1.) ne 0 .do begin
 .   .stephdr &*.
 .do end

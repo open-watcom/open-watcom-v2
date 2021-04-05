@@ -4,10 +4,10 @@
 .dm fdbeg begin
 The following &routines are defined:
 .if &e'&dohelp eq 0 .do begin
-:DL compact termhi=1 tsize=20 break.
+:DL compact termhi=1 tsize='20' break.
 .do end
 .el .do begin
-:ZDL compact termhi=1 tsize=20 break.
+:ZDL compact termhi=1 tsize='20' break.
 .do end
 .dm fdbeg end
 .*

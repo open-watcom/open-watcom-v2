@@ -1,6 +1,6 @@
 .dm begflist begin
 .cp 3
-:DL termhi=2 tsize=10 break compact.
+:DL termhi=2 tsize='10' break compact.
 :set symbol="NTEpr2" value="&NTEpr1".
 :set symbol="NTEpr1" value="&NTEset".
 :set symbol="NTEset" value="dl".

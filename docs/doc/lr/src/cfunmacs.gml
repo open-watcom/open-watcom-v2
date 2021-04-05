@@ -7,10 +7,10 @@
 .dm fdbeg begin
 The following functions are defined:
 .if &e'&dohelp eq 0 .do begin
-:DL compact termhi=1 tsize=14.
+:DL compact termhi=1 tsize='14'.
 .do end
 .el .do begin
-:ZDL compact termhi=1 tsize=14.
+:ZDL compact termhi=1 tsize='14'.
 .do end
 .dm fdbeg end
 .*

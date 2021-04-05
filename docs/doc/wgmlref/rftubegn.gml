@@ -96,7 +96,7 @@ is used to invoke the &WGML. processor.
 The command line option :HP2.DEVICE:eHP2.
 selects the type of device
 for which the document is being processed.
-:DL tsize=15 compact.
+:DL tsize='15' compact.
 :DT.&ibmvm.
 :DD.WGML EX1 ( DEVICE TERM
 :DT.&decvax.

@@ -364,7 +364,7 @@
 .dm optlist begin
 .sr OLDlvl=&SCTlvl.
 .sr SCTlvl=4
-:cmt. :DL termhi=3 tsize=10.
+:cmt. :DL termhi=3 tsize='10'.
 :cmt. :DTHD.Option:
 :cmt. :DDHD.Description:
 .dm optlist end
@@ -530,7 +530,7 @@ is described :HDREF refid='&*refid'.
 .dm initstep begin
 .sr tmplvl=&WDWlvl.-3
 .cp &tmplvl
-:DL tsize=3 termhi=2 break.
+:DL tsize='3' termhi=2 break.
 .if &'length(&*1.) ne 0 .do begin
 .   .stephdr &*.
 .do end
