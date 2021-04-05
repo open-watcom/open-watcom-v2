@@ -35,12 +35,12 @@ structure pointed to by
 .period
 .millust begin
 struct _finddata_t {
-  unsigned  attrib;
-  time_t    time_create;  /* -1 for FAT file systems */
-  time_t    time_access;  /* -1 for FAT file systems */
-  time_t    time_write;
-  _fsize_t  size;
-  char      name[_MAX_PATH];
+    unsigned    attrib;
+    time_t      time_create;     /* -1 for FAT file systems */
+    time_t      time_access;     /* -1 for FAT file systems */
+    time_t      time_write;
+    _fsize_t    size;
+    char        name[_MAX_PATH];
 };
 .millust end
 .np
@@ -68,24 +68,24 @@ structure pointed to by
 .period
 .millust begin
 struct _finddatai64_t {
-  unsigned  attrib;
-  time_t    time_create;  /* -1 for FAT file systems */
-  time_t    time_access;  /* -1 for FAT file systems */
-  time_t    time_write;
-  __int64   size;         /* 64-bit size info */
-  char      name[_MAX_PATH];
+    unsigned    attrib;
+    time_t      time_create;     /* -1 for FAT file systems */
+    time_t      time_access;     /* -1 for FAT file systems */
+    time_t      time_write;
+    __int64     size;            /* 64-bit size info        */
+    char        name[_MAX_PATH];
 };
 .millust end
 .im widefun1
 .if &'length(&wfunc.) ne 0 .do begin
 .millust begin
 struct _wfinddata_t {
-  unsigned  attrib;
-  time_t    time_create;  /* -1 for FAT file systems */
-  time_t    time_access;  /* -1 for FAT file systems */
-  time_t    time_write;
-  _fsize_t  size;
-  wchar_t   name[_MAX_PATH];
+    unsigned    attrib;
+    time_t      time_create;     /* -1 for FAT file systems */
+    time_t      time_access;     /* -1 for FAT file systems */
+    time_t      time_write;
+    _fsize_t    size;
+    wchar_t     name[_MAX_PATH];
 };
 .millust end
 .np
@@ -100,12 +100,12 @@ function in that it returns a 64-bit file
 size.
 .millust begin
 struct _wfinddatai64_t {
-  unsigned  attrib;
-  time_t    time_create;  /* -1 for FAT file systems */
-  time_t    time_access;  /* -1 for FAT file systems */
-  time_t    time_write;
-  __int64   size;         /* 64-bit size info */
-  wchar_t   name[_MAX_PATH];
+    unsigned    attrib;
+    time_t      time_create;     /* -1 for FAT file systems */
+    time_t      time_access;     /* -1 for FAT file systems */
+    time_t      time_write;
+    __int64     size;            /* 64-bit size info        */
+    wchar_t     name[_MAX_PATH];
 };
 .millust end
 .do end

@@ -23,7 +23,7 @@ int _wutime( const wchar_t *path,
 .do end
 
 struct utimbuf {
-    time_t   actime;    /* access time */
+    time_t   actime;    /* access time       */
     time_t   modtime;   /* modification time */
 };
 .synop end

@@ -32,7 +32,7 @@ function returns no value.
 .exmp break
 struct list_entry {
     struct list_entry *next;
-    int    data;
+    int               data;
 };
 volatile struct list_entry *ListHead = NULL;
 volatile struct list_entry *ListTail = NULL;

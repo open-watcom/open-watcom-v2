@@ -3,17 +3,17 @@
 #include <bios.h>
 unsigned short _bios_disk( unsigned service,
                            struct diskinfo_t *diskinfo );
-struct  diskinfo_t {        /* disk parameters     */
-        unsigned command;   /* command             */
-        unsigned drive;     /* drive number        */
-        unsigned head;      /* head number         */
-        unsigned cylinder;  /* cylinder number     */
-        unsigned data_len;  /* data length         */
-        unsigned sector_len;/* sector length       */
-        unsigned sector;    /* start sector number */
-        unsigned nsectors;  /* number of sectors   */
-        void _far *buffer;  /* data buffer         */
-        void _far *result;  /* result buffer       */
+struct  diskinfo_t {      /* disk parameters     */
+    unsigned  command;    /* command             */
+    unsigned  drive;      /* drive number        */
+    unsigned  head;       /* head number         */
+    unsigned  cylinder;   /* cylinder number     */
+    unsigned  data_len;   /* data length         */
+    unsigned  sector_len; /* sector length       */
+    unsigned  sector;     /* start sector number */
+    unsigned  nsectors;   /* number of sectors   */
+    void _far *buffer;    /* data buffer         */
+    void _far *result;    /* result buffer       */
 };
 .ixfunc2 '&BiosFunc' &funcb
 .synop end

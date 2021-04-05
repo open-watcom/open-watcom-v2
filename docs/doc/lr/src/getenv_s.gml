@@ -4,7 +4,7 @@
 #include <stdlib.h>
 errno_t getenv_s( size_t * restrict len,
                   char * restrict value,
-		  rsize_t maxsize,
+                  rsize_t maxsize,
                   const char * restrict name );
 .synop end
 .*

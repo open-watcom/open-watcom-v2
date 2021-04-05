@@ -4,11 +4,7 @@
 #include <time.h>
 int sched_rr_get_interval(pid_t pid, struct timespec *ts);
 
-struct timespec {
-    time_t tv_sec;
-    long tv_nsec;
-};
-
+.im structms
 .synop end
 .desc begin
 The

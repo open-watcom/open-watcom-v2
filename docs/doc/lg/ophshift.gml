@@ -28,7 +28,7 @@ The
 .sy n
 value and its semantics match the analogous variable used by the
 compiler for computing addresses in the huge memory model.
-.np	
+.np
 The default value of
 .sy n
 is 12, representing the 4-bit shift used in conventional x86 CPUs.

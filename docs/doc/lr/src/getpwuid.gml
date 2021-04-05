@@ -13,13 +13,13 @@ not found or an error occurs, a null pointer will be returned.
 The structure returned is defined as:
 .blkcode begin
 struct passwd {
-    char        *pw_name;       /* user's login name */
-    char        *pw_passwd;     /* user's password   */
-    uid_t       pw_uid;         /* user ID number    */
-    gid_t       pw_gid;         /* group ID number   */
-    char        *pw_gecos;      /* real name         */
-    char        *pw_dir;        /* home directory    */
-    char        *pw_shell;      /* initial program   */
+    char    *pw_name;       /* user's login name */
+    char    *pw_passwd;     /* user's password   */
+    uid_t   pw_uid;         /* user ID number    */
+    gid_t   pw_gid;         /* group ID number   */
+    char    *pw_gecos;      /* real name         */
+    char    *pw_dir;        /* home directory    */
+    char    *pw_shell;      /* initial program   */
 };
 .blkcode end
 .np

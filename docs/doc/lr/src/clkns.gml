@@ -5,11 +5,7 @@ int clock_nanosleep(clockid_t clockid, int flags,
                     const struct timespec *request,
                     struct timespec *remains);
 
-struct timespec {
-    time_t tv_sec;
-    long tv_nsec;
-};
-
+.im structms
 .synop end
 .desc begin
 The

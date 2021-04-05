@@ -4,7 +4,7 @@
 div_t div( int numer, int denom );
 
 typedef struct {
-    int quot;     /* quotient */
+    int quot;     /* quotient  */
     int rem;      /* remainder */
 } div_t;
 .synop end

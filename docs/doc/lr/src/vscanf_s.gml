@@ -100,8 +100,8 @@ void main( void )
 .exmp break
     find( "%s %s %d %d",
             weekday, sizeof( weekday ),
-	    month, sizeof( month ),
-	    &day, &year );
+            month, sizeof( month ),
+            &day, &year );
     printf_s( "\n%s, %s %d, %d\n",
             weekday, month, day, year );
 }

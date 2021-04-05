@@ -45,10 +45,10 @@ clean : .procedure
 !ifeq dotarget htmlhelp
  @for %f in ($(books)) do @if exist %f rm -rf %f
 !endif
- 
+
 # useful to delete all windows .gid files created during testing
  @if exist *.gid @attrib -h *.gid
  @if exist *.gid rm -f *.gid
- 
+
 # delete generated DOS Emulator batch files
  @if exist *.bat rm -f *.bat

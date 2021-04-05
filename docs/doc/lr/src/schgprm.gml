@@ -6,7 +6,6 @@ int sched_getparam(pid_t pid, struct sched_param *sp);
 struct sched_param {
     int sched_priority;
 };
-
 .synop end
 .desc begin
 The

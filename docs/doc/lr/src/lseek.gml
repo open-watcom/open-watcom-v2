@@ -228,8 +228,7 @@ void main( void )
     if( &fd != -1 ) {
 .exmp break
         /* read a piece of the text */
-        size_read =
-	    read_record( &fd, 1, 80, buffer );
+        size_read = read_record( &fd, 1, 80, buffer );
 .exmp break
         /* test for error */
         if( size_read == -1 ) {

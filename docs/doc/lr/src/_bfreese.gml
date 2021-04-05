@@ -35,7 +35,7 @@ function returns 0 if successful and -1 if an error occurred.
 
 struct list {
     struct list __based(__self) *next;
-    int         value;
+    int                         value;
 };
 .exmp break
 void main()

@@ -50,8 +50,8 @@ declaration.
 #include <stdio.h>
 
 struct student_data {
-    int  student_id;
-    unsigned char marks[10];
+    int             student_id;
+    unsigned char   marks[10];
 };
 .exmp break
 size_t read_data( FILE *fp, struct student_data *p )

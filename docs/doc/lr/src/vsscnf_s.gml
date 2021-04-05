@@ -5,14 +5,14 @@
 #include <stdio.h>
 int vsscanf_s( const char * restrict s,
                const char * restrict format,
-	       va_list arg );
+               va_list arg );
 .ixfunc2 '&StrIo' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <stdarg.h>
 #include <wchar.h>
 int vswscanf_s( const wchar_t * restrict s,
                 const wchar_t * restrict format,
-		va_list arg );
+                va_list arg );
 .ixfunc2 '&StrIo' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
@@ -109,8 +109,8 @@ void main( void )
     sfind( "Friday August 0013 2004",
             "%s %s %d %d",
              weekday, sizeof( weekday ),
-	     month, sizeof( month ),
-	     &day, &year );
+             month, sizeof( month ),
+             &day, &year );
     printf_s( "\n%s, %s %d, %d\n",
             weekday, month, day, year );
 }

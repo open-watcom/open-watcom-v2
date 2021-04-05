@@ -4,10 +4,10 @@
 int ftime( struct timeb *timeptr );
 
 struct timeb {
- time_t time;  /* time in seconds since Jan 1, 1970 UTC */
- unsigned short millitm; /* milliseconds */
- short timezone; /* difference in minutes from UTC */
- short dstflag;  /* nonzero if in daylight savings time */
+    time_t         time;     /* time in seconds since Jan 1, 1970 UTC */
+    unsigned short millitm;  /* milliseconds                          */
+    short          timezone; /* difference in minutes from UTC        */
+    short          dstflag;  /* nonzero if in daylight savings time   */
 };
 .ixfunc2 '&TimeFunc' &funcb
 .synop end

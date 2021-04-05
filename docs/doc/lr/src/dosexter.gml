@@ -4,10 +4,10 @@
 int dosexterr( struct DOSERROR *err_info );
 
 struct _DOSERROR {
-        int exterror;   /* contents of AX register */
-        char errclass;  /* contents of BH register */
-        char action;    /* contents of BL register */
-        char locus;     /* contents of CH register */
+    int     exterror; /* contents of AX register */
+    char    errclass; /* contents of BH register */
+    char    action;   /* contents of BL register */
+    char    locus;    /* contents of CH register */
 };
 .ixfunc2 '&Errs' &funcb
 .synop end

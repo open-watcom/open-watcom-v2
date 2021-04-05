@@ -35,7 +35,7 @@ raised. Otherwise, it returns a nonzero value.
 .exmp break
 void main( void )
 {
-	feraiseexcept( FE_DIVBYZERO );
+    feraiseexcept( FE_DIVBYZERO );
 }
 .exmp end
 .class ISO C99

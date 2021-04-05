@@ -4,7 +4,7 @@
 double cabs( struct complex value );
 
 struct _complex {
-    double  x;  /* real part */
+    double  x;  /* real part      */
     double  y;  /* imaginary part */
 };
 .ixfunc2 '&Math' &funcb

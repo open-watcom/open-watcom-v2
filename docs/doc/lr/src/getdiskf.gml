@@ -4,10 +4,10 @@
 unsigned _getdiskfree( unsigned drive,
                         struct diskfree_t *diskspace );
 struct diskfree_t {
-        unsigned short total_clusters;
-        unsigned short avail_clusters;
-        unsigned short sectors_per_cluster;
-        unsigned short bytes_per_sector;
+    unsigned short  total_clusters;
+    unsigned short  avail_clusters;
+    unsigned short  sectors_per_cluster;
+    unsigned short  bytes_per_sector;
 };
 .ixfunc2 '&DosFunc' &funcb
 .synop end

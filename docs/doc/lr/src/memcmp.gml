@@ -17,7 +17,7 @@ int _fmemcmp( const void __far *s1,
 #include <wchar.h>
 int wmemcmp( const wchar_t *s1,
              const wchar_t *s2,
-	     size_t length );
+             size_t length );
 .ixfunc2 '&Compare' &wfunc
 .do end
 .synop end

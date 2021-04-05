@@ -4,7 +4,7 @@
 imaxdiv_t imaxdiv( intmax_t numer, intmax_t denom );
 
 typedef struct {
-    intmax_t    quot;  /* quotient */
+    intmax_t    quot;  /* quotient  */
     intmax_t    rem;   /* remainder */
 } imaxdiv_t;
 .synop end

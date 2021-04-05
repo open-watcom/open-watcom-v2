@@ -3,17 +3,17 @@
 #include <stdarg.h>
 #include <stdio.h>
 int _vsnprintf( char *buf,
-		size_t count,
-		const char *format,
-		va_list arg );
+                size_t count,
+                const char *format,
+                va_list arg );
 .ixfunc2 '&String' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <stdarg.h>
 #include <wchar.h>
 int _vsnwprintf( wchar_t *buf,
-		size_t count,
-		const wchar_t *format,
-		va_list arg );
+                size_t count,
+                const wchar_t *format,
+                va_list arg );
 .ixfunc2 '&String' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end

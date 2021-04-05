@@ -3,11 +3,7 @@
 #include <time.h>
 int clock_settime(clockid_t clockid, const struct timespec *ts);
 
-struct timespec {
-    time_t tv_sec;
-    long tv_nsec;
-};
-
+.im structms
 .synop end
 .desc begin
 The

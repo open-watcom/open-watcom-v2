@@ -63,7 +63,7 @@ void main( void )
 {
     printf( "infinity %s a normal number\n",
         fpclassify( INFINITY ) == FP_NORMAL ?
-	"is" : "is not" );
+        "is" : "is not" );
 }
 .exmp output
 infinity is not a normal number

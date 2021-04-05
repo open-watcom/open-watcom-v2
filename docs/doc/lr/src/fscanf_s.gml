@@ -111,8 +111,8 @@ void main( void )
     if( in_data != NULL ) {
         fscanf_s( in_data, "%s %s %d %d",
                 weekday, sizeof( weekday ),
-		month, sizeof( month ),
-		&day, &year );
+                month, sizeof( month ),
+                &day, &year );
         printf_s( "Weekday=%s Month=%s Day=%d Year=%d\n",
                 weekday, month, day, year );
         fclose( in_data );

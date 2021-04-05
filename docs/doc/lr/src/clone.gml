@@ -5,7 +5,6 @@
 pid_t  clone( int (*fn)(void *), void *child_stack,
               int flags, void *args, ... );
             /* pid_t *ppid, void *tls, pid_t *ctid */
-
 .synop end
 .desc begin
 The

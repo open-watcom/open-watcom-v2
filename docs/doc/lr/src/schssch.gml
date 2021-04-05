@@ -7,7 +7,6 @@ int sched_setscheduler(pid_t pid, int policy,
 struct sched_param {
     int sched_priority;
 };
-
 .synop end
 .desc begin
 The

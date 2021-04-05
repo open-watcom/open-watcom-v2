@@ -4,7 +4,7 @@
 ldiv_t ldiv( long int numer, long int denom );
 
 typedef struct {
-    long int quot;     /* quotient */
+    long int quot;     /* quotient  */
     long int rem;      /* remainder */
 } ldiv_t;
 .synop end

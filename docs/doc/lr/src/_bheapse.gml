@@ -62,7 +62,7 @@ is returned if the segment could not be allocated.
 
 struct list {
     struct list __based(__self) *next;
-    int         value;
+    int                         value;
 };
 .exmp break
 void main()

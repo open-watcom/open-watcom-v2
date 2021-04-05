@@ -20,8 +20,8 @@ int _fheapwalk( struct _heapinfo *entry );
 int _nheapwalk( struct _heapinfo *entry );
 
 struct _heapinfo {
-    void __far *_pentry;   /* heap pointer */
-    size_t     _size;      /* heap entry size */
+    void __far *_pentry;   /* heap pointer             */
+    size_t     _size;      /* heap entry size          */
     int        _useflag;   /* heap entry 'in-use' flag */
 };
 #define _USEDENTRY      0

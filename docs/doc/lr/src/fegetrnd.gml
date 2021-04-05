@@ -37,7 +37,7 @@ void main( void )
     int mode;
     mode = fegetround();
     if ( mode == FE_TONEAREST )
-	    printf( "Nearest\n" );
+        printf( "Nearest\n" );
     else if ( mode == FE_DOWNWARD )
         printf( "Down\n" );
     else if ( mode == FE_TOWARDZERO )

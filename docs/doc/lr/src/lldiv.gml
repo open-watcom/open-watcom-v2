@@ -5,7 +5,7 @@ lldiv_t lldiv( long long int numer,
                long long int denom );
 
 typedef struct {
-    long long int quot; /* quotient */
+    long long int quot; /* quotient  */
     long long int rem;  /* remainder */
 } lldiv_t;
 .synop end

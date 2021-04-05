@@ -2,14 +2,14 @@
 .synop begin
 #include <stdio.h>
 int _snprintf( char *buf,
-	       size_t count,
-	       const char *format, ... );
+               size_t count,
+               const char *format, ... );
 .ixfunc2 '&String' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
 int _snwprintf( wchar_t *buf,
-		size_t count,
-		const wchar_t *format, ... );
+                size_t count,
+                const wchar_t *format, ... );
 .ixfunc2 '&String' &wfunc
 .ixfunc2 '&Wide &wfunc
 .do end

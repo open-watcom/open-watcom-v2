@@ -4,10 +4,10 @@
 void _dos_gettime( struct dostime_t *time );
 
 struct dostime_t {
-        unsigned char hour;     /* 0-23 */
-        unsigned char minute;   /* 0-59 */
-        unsigned char second;   /* 0-59 */
-        unsigned char hsecond;  /* 1/100 second; 0-99 */
+    unsigned char   hour;     /* 0-23               */
+    unsigned char   minute;   /* 0-59               */
+    unsigned char   second;   /* 0-59               */
+    unsigned char   hsecond;  /* 1/100 second; 0-99 */
 };
 .ixfunc2 '&DosFunc' &funcb
 .synop end

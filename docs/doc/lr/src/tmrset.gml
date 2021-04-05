@@ -5,10 +5,7 @@ int timer_settime(timer_t timerid, int flags,
                   struct itimerspec *new_value,
                   struct itimerspec *old_value );
 
-struct timespec {
-    time_t tv_sec;
-    long tv_nsec;
-};
+.im structms
 
 struct itimerspec {
     struct timespec it_interval;
@@ -16,7 +13,7 @@ struct itimerspec {
     int             notify_type;
     int             timer_type;
     long            data;
-
+};
 .synop end
 .desc begin
 The
