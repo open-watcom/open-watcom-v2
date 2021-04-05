@@ -8,5 +8,5 @@ struct  tm {
   int tm_year;  /* years since 1900                   */
   int tm_wday;  /* days since Sunday        -- [0,6]  */
   int tm_yday;  /* days since January 1     -- [0,365]*/
-  int tm_isdst; /* Daylight Savings Time flag */
+  int tm_isdst; /* Daylight Savings Time flag         */
 };
