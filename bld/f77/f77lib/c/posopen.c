@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -86,7 +86,7 @@ void    SetIOBufferSize( uint buff_size )
     IOBufferSize = buff_size;
 }
 
-b_file  *_AllocFile( int h, f_attrs attrs, long int fpos )
+b_file  *_AllocFile( int h, f_attrs attrs, long fpos )
 // Allocate file structure.
 {
     b_file      *io;
@@ -139,7 +139,7 @@ b_file  *Openf( const char *f, f_attrs attrs )
 // Open a file.
 {
     int         retc;
-    long int    fpos;
+    long        fpos;
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     int         share;
 

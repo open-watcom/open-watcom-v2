@@ -30,7 +30,7 @@ static void readTOCEntry( FILE *in, FILE *out, uint32_t offset, size_t count1, s
     uint16_t cellIndex;
     char text[ 256 ];
     wchar_t wtext[ WSTRING_MAX_LEN ];
-    //long int nextPos = ftell(in);
+    //long nextPos = ftell(in);
     fread( &toc, sizeof(TocEntry), 1, in );
     fprintf( out, "  TOC Entry #%u at offset %8.8x (%lu)\n", count1, offset, offset );
     fprintf( out, "    TocEntry.size:        %2.2x (%u)\n", toc.size, toc.size );

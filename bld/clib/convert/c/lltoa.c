@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -191,7 +191,7 @@ unsigned long long __ulldiv( unsigned long long, uint_stk_ptr );
 #endif
 
 _WCRTLINK CHAR_TYPE *__F_NAME(ulltoa,_ulltow)(
-        unsigned long long int value,
+        unsigned long long value,
         CHAR_TYPE *buffer,
         int radix )
 {
@@ -220,7 +220,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(ulltoa,_ulltow)(
 
 
 _WCRTLINK CHAR_TYPE *__F_NAME(lltoa,_lltow)(
-        long long int value,
+        long long value,
         CHAR_TYPE *buffer,
         int radix )
 {

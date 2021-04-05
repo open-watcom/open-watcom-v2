@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -89,10 +89,10 @@ typedef struct testfile {
     char    filename[ L_tmpnam ];
 } TestFile;
 
-unsigned long int   tests = 0;         /* total number of tests */
-unsigned long int   warnings = 0;      /* warnings to not skip further tests */
-unsigned long int   failures = 0;      /* failures skip the test section */
-FILE                *con;              /* console device */
+unsigned long   tests = 0;         /* total number of tests */
+unsigned long   warnings = 0;      /* warnings to not skip further tests */
+unsigned long   failures = 0;      /* failures skip the test section */
+FILE            *con;              /* console device */
 
 /***********************************/
 /* Generic TestFile based routines */

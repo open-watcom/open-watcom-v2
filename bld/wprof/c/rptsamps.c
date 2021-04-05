@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -130,8 +130,8 @@ STATIC void dumpSampleInfo( void )
     remap_data          *remap;
     ovl_entry           *ovl_entry;
     unsigned            image_index;
-    unsigned long int   count;
-    unsigned long int   index;
+    unsigned long       count;
+    unsigned long       index;
     thread_data         *thd;
     address             *samp;
     massgd_sample_addr  *massgd;

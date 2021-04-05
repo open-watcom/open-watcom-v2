@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -219,7 +219,7 @@ static VTAB             tabFilter;
 static ui_event         curEvent;
 static ui_event         (*eventMapFn)( ui_event );
 
-static int              CheckHelpBlock( FILE *fp, const char *topic, char *buffer, long int start );
+static int              CheckHelpBlock( FILE *fp, const char *topic, char *buffer, long start );
 static void             replacetopic( const char *word );
 static ScanCBfunc       scanCallBack;
 
@@ -240,9 +240,9 @@ static void addSearchButton( bool add )
  */
 static char *helpGetString( char *buf, size_t size, FILE *fp )
 {
-    long int            pos;
-    size_t              bytesread;
-    size_t              cnt;
+    long            pos;
+    size_t          bytesread;
+    size_t          cnt;
 
     pos = HelpTell( fp );
     bytesread = HelpRead( fp, buf, size - 1 );
@@ -264,8 +264,8 @@ static char *helpGetString( char *buf, size_t size, FILE *fp )
  */
 static int OpenTopicInFile( help_file_info *fileinfo, const char *topic, char *buffer )
 {
-    long int            start_offset;     /* - starting offset in HELP file        */
-    long int            size_left;        /* - size left to search                 */
+    long                start_offset;     /* - starting offset in HELP file        */
+    long                size_left;        /* - size left to search                 */
     int                 next_posn;        /* - contains indicator for next pos'n   */
     unsigned long       topic_pos;
 
@@ -336,7 +336,7 @@ static char *scanTopic( char *buf, char **theend )
 /*
  * CheckHelpBlock - see if a topic is in the 2nd half of a block
  */
-static int CheckHelpBlock( FILE *fp, const char *topic, char *buffer, long int start )
+static int CheckHelpBlock( FILE *fp, const char *topic, char *buffer, long start )
 {
     int         retn;
     char        *ftopic;

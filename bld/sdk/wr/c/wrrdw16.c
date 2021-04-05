@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -104,7 +105,7 @@ bool WRLoadResourceFromWin16EXE( WRInfo *info )
     return( ok );
 }
 
-long int WRReadWin16ExeHeader( FILE *fp, os2_exe_header *header )
+long WRReadWin16ExeHeader( FILE *fp, os2_exe_header *header )
 {
     bool        old_pos;
     uint_16     offset;
@@ -179,7 +180,7 @@ bool WRWin16HeaderHasResourceTable( os2_exe_header *header )
 bool WRLoadWResDirFromWin16EXE( FILE *fp, WResDir *dir )
 {
     os2_exe_header  win_header;
-    long int        offset;
+    long            offset;
     uint_16         align_shift;
     uint_32         name_offset;
     WResTypeNode    *type_node;

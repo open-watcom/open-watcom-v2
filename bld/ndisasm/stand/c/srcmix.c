@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -135,7 +135,7 @@ static orl_linnum SortLineNums( orl_linnum old_lines, orl_table_index inumlines 
 
 static char *getNextLine( void )
 {
-    long int len, pos;
+    long len, pos;
     char *buff;
     int c;
 

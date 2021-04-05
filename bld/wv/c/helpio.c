@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,7 @@
 
 static const seek_method    stream_seek_method[] = { DIO_SEEK_ORG, DIO_SEEK_CUR, DIO_SEEK_END };
 
-HELPIO long int HelpFileLen( FILE *fp )
+HELPIO long HelpFileLen( FILE *fp )
 {
     unsigned long   old;
     long            len;
@@ -55,12 +55,12 @@ HELPIO size_t HelpRead( FILE *fp, void *buf, size_t len )
     return( ReadStream( FP2POSIX( fp ), buf, len ) );
 }
 
-HELPIO long int HelpSeek( FILE *fp, long int offset, HelpSeekType where ) {
+HELPIO long HelpSeek( FILE *fp, long offset, HelpSeekType where ) {
 
     return( SeekStream( FP2POSIX( fp ), offset, stream_seek_method[where] ) );
 }
 
-HELPIO long int HelpTell( FILE *fp )
+HELPIO long HelpTell( FILE *fp )
 {
     return( SeekStream( FP2POSIX( fp ), 0, DIO_SEEK_CUR ) );
 }

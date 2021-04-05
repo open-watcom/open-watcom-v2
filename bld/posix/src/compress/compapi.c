@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -91,8 +91,8 @@
 #include "compress.h" /* contains the rest of the include file declarations */
 
 static int offset;
-static long int in_count ;         /* length of input */
-static long int bytes_out;         /* length of compressed output */
+static long in_count ;         /* length of input */
+static long bytes_out;         /* length of compressed output */
 
 static CODE prefxcode, nextfree;
 static CODE highcode;
@@ -294,7 +294,7 @@ int alloc_tables(CODE maxcode, HASH hashsize)
 /* DjG, sets it up and returns true to compress and false to not compress */
 int cl_block( void )
 {
-    long int    rat;
+    long    rat;
 
     checkpoint = in_count + CHECK_GAP;
 #ifndef NDEBUG

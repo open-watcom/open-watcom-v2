@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,7 +62,7 @@ int WRAPI WRGetLastError( void )
 
 bool WRAPI WRReadEntireFile( const char *fname, BYTE **data, size_t *size )
 {
-    long int    s;
+    long        s;
     bool        ok;
     FILE        *fh;
     size_t      len;

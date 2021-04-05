@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -91,8 +92,8 @@ int floatcmp( void const *_a, void const *_b )
 
 int longintcmp( void const *_a, void const *_b )
 {
-    unsigned long int *a = (unsigned long int *)_a;
-    unsigned long int *b = (unsigned long int *)_b;
+    unsigned long *a = (unsigned long *)_a;
+    unsigned long *b = (unsigned long *)_b;
 
     if( (*a) == (*b) ) {
         return 0;
@@ -142,7 +143,7 @@ int test_bsearch( void )
 /**********************/
 {
     int i;
-    unsigned long int list[ LIST_SIZE ], cur;
+    unsigned long list[ LIST_SIZE ], cur;
 
     /* prevent overflows in test data */
     #if !( LIST_SIZE < 4000 )
@@ -159,7 +160,7 @@ int test_bsearch( void )
         cur = list[i];
         VERIFY( list[i] == i*i );
         VERIFY( bsearch( &cur, list, LIST_SIZE,
-            sizeof( unsigned long int), longintcmp ) == &list[i] );
+            sizeof( unsigned long ), longintcmp ) == &list[i] );
     }
 
     return 1;
@@ -170,7 +171,7 @@ int test_lfind_lsearch( void )
 {
     int i;
     unsigned num;
-    unsigned long int list[ LIST_SIZE + 1 ], cur;
+    unsigned long list[ LIST_SIZE + 1 ], cur;
 
     srand( 0 );
 
@@ -185,24 +186,24 @@ int test_lfind_lsearch( void )
         cur = list[i];
         /* test bsearch */
 
-        VERIFY( (unsigned long int*)(lfind( &cur, list, &num,
-            sizeof( unsigned long int ), longintcmp )) == (&list[i]) );
+        VERIFY( (unsigned long *)(lfind( &cur, list, &num,
+            sizeof( unsigned long ), longintcmp )) == (&list[i]) );
 
         /* test lsearch */
 
-        VERIFY( (unsigned long int *)lsearch( &cur, list, &num,
-            sizeof( unsigned long int ), longintcmp ) == (void *)(&list[i]) );
+        VERIFY( (unsigned long *)lsearch( &cur, list, &num,
+            sizeof( unsigned long ), longintcmp ) == (void *)(&list[i]) );
     }
 
     cur = 2000000001;
 
     /* test of bsearch */
     EXPECT( lfind( &cur, list, &num,
-        sizeof( unsigned long int ), longintcmp ) == NULL );
+        sizeof( unsigned long ), longintcmp ) == NULL );
 
         /* test of lsearch */
     EXPECT( lsearch( &cur, list, &num,
-        sizeof( unsigned long int ), longintcmp ) == &list[ LIST_SIZE ] );
+        sizeof( unsigned long ), longintcmp ) == &list[ LIST_SIZE ] );
 
     EXPECT( num == (LIST_SIZE + 1) );
     return 1;

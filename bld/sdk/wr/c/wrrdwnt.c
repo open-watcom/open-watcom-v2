@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -97,7 +98,7 @@ bool WRLoadResourceFromWinNTEXE( WRInfo *info )
     return( ok );
 }
 
-long int WRReadWinNTExeHeader( FILE *fp, exe_pe_header *header )
+long WRReadWinNTExeHeader( FILE *fp, exe_pe_header *header )
 {
     bool        old_pos;
     uint_16     offset;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,7 @@
 #include "linuxsys.h"
 
 
-_WCRTLINK int ioctl( int __fd, unsigned long int __request, ... )
+_WCRTLINK int ioctl( int __fd, unsigned long __request, ... )
 {
     u_long      argp;
     va_list     args;

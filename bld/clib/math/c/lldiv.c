@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,8 +34,8 @@
 #include <stdlib.h>
 
 
-_WCRTLINK lldiv_t lldiv( long long int numer, long long int denom )
-/*****************************************************************/
+_WCRTLINK lldiv_t lldiv( long long numer, long long denom )
+/*********************************************************/
 {
     lldiv_t     result;
 

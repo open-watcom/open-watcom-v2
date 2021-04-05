@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,9 +59,9 @@ void    FSeekRec( b_file *io, unsigned_32 rec, uint recsize )
     }
 }
 
-long int        CurrFileOffset( b_file *io )
+long        CurrFileOffset( b_file *io )
 {
-    long int    offs;
+    long    offs;
 
     offs = io->phys_offset + io->b_curs;
     if( io->attrs & READ_AHEAD ) {
@@ -71,12 +71,12 @@ long int        CurrFileOffset( b_file *io )
 }
 
 
-int     SysSeek( b_file *io, long int new_offset, int seek_mode )
+int     SysSeek( b_file *io, long new_offset, int seek_mode )
 {
-    long int    curr_offset;
-    long int    new_page;
-    long int    page_offset;
-    size_t      bytes_read;
+    long    curr_offset;
+    long    new_page;
+    long    page_offset;
+    size_t  bytes_read;
 
     curr_offset = CurrFileOffset( io );
     if( seek_mode == SEEK_CUR ) {
@@ -180,7 +180,7 @@ void    FSeekAbs( b_file *io, unsigned_32 offset )
 }
 #endif
 
-long int        FGetFilePos( b_file *io )
+long        FGetFilePos( b_file *io )
 {
     return( CurrFileOffset( io ) );
 }

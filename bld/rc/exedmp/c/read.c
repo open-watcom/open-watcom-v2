@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,28 +55,28 @@ pe_va getDirNameRva( ResDirEntry *dir )
     return( dir->dir.id_name & PE_RESOURCE_MASK );
 }
 
-long int getDirNameAbs( ResDirEntry *dir, ExeFile *exeFile )
-/***********************************************************/
+long getDirNameAbs( ResDirEntry *dir, ExeFile *exeFile )
+/******************************************************/
 {
     return( exeFile->resObj.physical_offset +
             getDirNameRva( dir ) );
 }
 
-long int getDirChildAbs( ResDirEntry *dir, ExeFile *exeFile )
-/************************************************************/
+long getDirChildAbs( ResDirEntry *dir, ExeFile *exeFile )
+/*******************************************************/
 {
     return( exeFile->resObj.physical_offset +
             ( dir->dir.entry_rva & PE_RESOURCE_MASK ) );
 }
 
-long int getResDataRva( ResDataEntry *data, ExeFile *exeFile )
-/*************************************************************/
+long getResDataRva( ResDataEntry *data, ExeFile *exeFile )
+/********************************************************/
 {
     return( data->entry.data_rva - exeFile->resObj.rva );
 }
 
-long int getResDataAbs( ResDataEntry *data, ExeFile *exeFile )
-/*************************************************************/
+long getResDataAbs( ResDataEntry *data, ExeFile *exeFile )
+/********************************************************/
 {
     return( exeFile->resObj.physical_offset +
             getResDataRva( data, exeFile ) );
@@ -97,7 +98,7 @@ bool openExeFile( ExeFile *exeFile, Parameters *param )
 bool readExeHeaders( ExeFile *exeFile )
 /**************************************/
 {
-    long int     prevPos;
+    long     prevPos;
 
     prevPos = ftell( exeFile->file );
     if( fseek( exeFile->file, 0L, SEEK_SET ) ) {
@@ -149,7 +150,7 @@ bool readExeHeaders( ExeFile *exeFile )
 bool findResourceObject( ExeFile *exeFile )
 /******************************************/
 {
-    long int    prevPos;
+    long        prevPos;
     int         i;
 
     prevPos = ftell( exeFile->file );
@@ -180,12 +181,12 @@ bool findResourceObject( ExeFile *exeFile )
     return( false );
 }
 
-bool loadTableEntry( ResTableEntry *table, ExeFile *exeFile, long int addr )
-/***************************************************************************/
+bool loadTableEntry( ResTableEntry *table, ExeFile *exeFile, long addr )
+/**********************************************************************/
 {
-    long int    prevPos;
-    int         i;
-    int         entriesCount;
+    long    prevPos;
+    int     i;
+    int     entriesCount;
 
     table->header.num_name_entries = 0;
     table->header.num_id_entries = 0;
@@ -230,7 +231,7 @@ bool loadTableEntry( ResTableEntry *table, ExeFile *exeFile, long int addr )
 bool loadDirEntry( ResDirEntry *dir, ExeFile *exeFile )
 /******************************************************/
 {
-    long int            prevPos;
+    long            prevPos;
 
     dir->table = NULL;
     dir->data = NULL;
@@ -304,10 +305,10 @@ bool loadDirEntry( ResDirEntry *dir, ExeFile *exeFile )
     }
 }
 
-bool loadDataEntry( ResDataEntry *data, ExeFile *exeFile, long int addr )
-/************************************************************************/
+bool loadDataEntry( ResDataEntry *data, ExeFile *exeFile, long addr )
+/*******************************************************************/
 {
-    long int prevPos;
+    long prevPos;
 
     prevPos = ftell( exeFile->file );
     if( fseek( exeFile->file,

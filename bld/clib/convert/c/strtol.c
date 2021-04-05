@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -86,16 +86,16 @@ static int radix_value( CHAR_TYPE c )
 }
 
 
-static unsigned long int _stol( const CHAR_TYPE *nptr, CHAR_TYPE **endptr, int base, bool who )
+static unsigned long _stol( const CHAR_TYPE *nptr, CHAR_TYPE **endptr, int base, bool who )
 {
-    const CHAR_TYPE         *p;
-    const CHAR_TYPE         *startp;
-    int                     digit;
-    unsigned long int       value;
-    unsigned long int       prev_value;
-    bool                    minus;
-    bool                    overflow;   /*overflow is used as a flag so it does not
-                                         *need to be of type CHAR_TYPE */
+    const CHAR_TYPE     *p;
+    const CHAR_TYPE     *startp;
+    int                 digit;
+    unsigned long       value;
+    unsigned long       prev_value;
+    bool                minus;
+    bool                overflow;   /* overflow is used as a flag so it does not
+                                     * need to be of type CHAR_TYPE */
 
     if( endptr != NULL )
         *endptr = (CHAR_TYPE *)nptr;
@@ -171,13 +171,13 @@ static unsigned long int _stol( const CHAR_TYPE *nptr, CHAR_TYPE **endptr, int b
 }
 
 
-_WCRTLINK unsigned long int __F_NAME(strtoul,wcstoul)( const CHAR_TYPE *nptr, CHAR_TYPE **endptr, int base )
+_WCRTLINK unsigned long __F_NAME(strtoul,wcstoul)( const CHAR_TYPE *nptr, CHAR_TYPE **endptr, int base )
 {
     return( _stol( nptr, endptr, base, false ) );
 }
 
 
-_WCRTLINK long int __F_NAME(strtol,wcstol)( const CHAR_TYPE *nptr, CHAR_TYPE **endptr, int base )
+_WCRTLINK long __F_NAME(strtol,wcstol)( const CHAR_TYPE *nptr, CHAR_TYPE **endptr, int base )
 {
     return( _stol( nptr, endptr, base, true ) );
 }
