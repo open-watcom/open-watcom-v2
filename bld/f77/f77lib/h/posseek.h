@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +31,7 @@
 
 
 extern void         FSeekRec( file_handle fp, unsigned_32 rec, uint recsize );
-extern long int     CurrFileOffset( file_handle fp );
-extern int          SysSeek( file_handle fp, long int new_offset, int seek_mode );
-extern long int     FGetFilePos( file_handle fp );
+extern long         CurrFileOffset( file_handle fp );
+extern int          SysSeek( file_handle fp, long new_offset, int seek_mode );
+extern long         FGetFilePos( file_handle fp );
 extern void         FRewind( file_handle fp );

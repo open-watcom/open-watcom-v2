@@ -94,10 +94,10 @@ struct sockaddr_in {
 
 #define IP_LOOPBACKNET          127
 
-_WCRTLINK extern unsigned long int htonl(unsigned long int __hostlong);
-_WCRTLINK extern unsigned short int htons(unsigned short int __hostshort);
-_WCRTLINK extern unsigned long int ntohl(unsigned long int __netlong);
-_WCRTLINK extern unsigned short int ntohs(unsigned short int __netshort);
+_WCRTLINK extern unsigned long htonl(unsigned long __hostlong);
+_WCRTLINK extern unsigned short htons(unsigned short __hostshort);
+_WCRTLINK extern unsigned long ntohl(unsigned long __netlong);
+_WCRTLINK extern unsigned short ntohs(unsigned short __netshort);
 
 :segment LINUX
 :include poppack.sp

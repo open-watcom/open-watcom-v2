@@ -154,7 +154,7 @@ typedef int                     HFILE;
 
 :include pshpack1.sp
 
-typedef signed short int SHORT;
+typedef signed short SHORT;
 
 /* Fixed file information */
 typedef struct tagVS_FIXEDFILEINFO {

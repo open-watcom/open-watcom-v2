@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -205,7 +206,7 @@
 //#include "sj81_84.h"
 //====================
 // note that U-3004 and U4edd are both mapped into SJIS-8157
-static const unsigned short int SJIS_81_84_UNICODE_TABLE[] = {
+static const unsigned short SJIS_81_84_UNICODE_TABLE[] = {
 /*0x8140,*/ 0x3000,
 /*0x8141,*/ 0x3001,
 /*0x8142,*/ 0x3002,
@@ -904,7 +905,7 @@ static const unsigned short int SJIS_81_84_UNICODE_TABLE[] = {
 //#include "sj87.h"
 //=================
 // note that U-3004 and U4edd are both mapped into SJIS-8157
-static const unsigned short int SJIS_87_UNICODE_TABLE[] = {
+static const unsigned short SJIS_87_UNICODE_TABLE[] = {
 /*0x8740,*/ 0x2460,
 /*0x8741,*/ 0x2461,
 /*0x8742,*/ 0x2462,
@@ -1005,7 +1006,7 @@ static const unsigned short int SJIS_87_UNICODE_TABLE[] = {
 };
 //#include "sj88_9f.h"
 //====================
-static const unsigned short int SJIS_88_9F_UNICODE_TABLE[] = {
+static const unsigned short SJIS_88_9F_UNICODE_TABLE[] = {
 /*0x889F,*/ 0x4E9C,
 /*0x88A0,*/ 0x5516,
 /*0x88A1,*/ 0x5A03,
@@ -5450,7 +5451,7 @@ static const unsigned short int SJIS_88_9F_UNICODE_TABLE[] = {
 };
 //#include "sje0_ea.h"
 //====================
-static const unsigned short int SJIS_E0_EA_UNICODE_TABLE[] = {
+static const unsigned short SJIS_E0_EA_UNICODE_TABLE[] = {
 /*0xE040,*/ 0x6F3E,
 /*0xE041,*/ 0x6F13,
 /*0xE042,*/ 0x6EF7,

@@ -57,30 +57,30 @@ typedef void (TRdosCallback)(void *param, char ch);
 typedef struct ThreadEntryPoint
 {
     long long Offset;
-    short int Sel;
+    short Sel;
 } ThreadEntryPoint;
 
 typedef struct ThreadState
 {
-     short int ID;
+     short ID;
      char Name[32];
      unsigned long MsbTime;
      unsigned long LsbTime;
      char List[32];
      long Offset;
-     short int Sel;
+     short Sel;
 } ThreadState;
 
 typedef struct ThreadActionState
 {
-     short int ID;
+     short ID;
      char Name[32];
      unsigned long MsbTime;
      unsigned long LsbTime;
      char List[32];
      char Action[32];
      struct ThreadEntryPoint Pos;
-     short int UserCount;
+     short UserCount;
      struct ThreadEntryPoint UserCall[64];
 } ThreadActionState;
 
@@ -97,22 +97,22 @@ typedef struct Tss
     long ebp;
     long esi;
     long edi;
-    short int es;
-    short int cs;
-    short int ss;
-    short int ds;
-    short int fs;
-    short int gs;
-    short int ldt;
+    short es;
+    short cs;
+    short ss;
+    short ds;
+    short fs;
+    short gs;
+    short ldt;
     long dr[4];
     long dr7;
     long MathControl;
     long MathStatus;
     long MathTag;
     long MathEip;
-    short int MathCs;
+    short MathCs;
     long MathDataOffs;
-    short int MathDataSel;
+    short MathDataSel;
     real_math st[8];
     char WcSpace[16];
 } Tss;
@@ -214,7 +214,7 @@ int RDOSAPI RdosTestGate(char *par);
 
 void RDOSAPI RdosLoad32();
 
-short int RDOSAPI RdosSwapShort(short int val);
+short RDOSAPI RdosSwapShort(short val);
 long RDOSAPI RdosSwapLong(long val);
 
 int RDOSAPI RdosGetCharSize(const char *str);
@@ -275,8 +275,8 @@ void RDOSAPI RdosSetFilledStyle(int handle);
 int RDOSAPI RdosAnsiToUtf8(const char *AnsiStr, char *Utf8Str, int BufferSize);
 int RDOSAPI RdosUtf8ToAnsi(const char *Utf8Str, char *AnsiStr, int BufferSize);
 
-int RDOSAPI RdosAnsiToUtf16(const char *AnsiStr, short int *Utf16Str, int BufferSize);
-int RDOSAPI RdosUtf16ToAnsi(const short int *Utf16Str, char *AnsiStr, int BufferSize);
+int RDOSAPI RdosAnsiToUtf16(const char *AnsiStr, short *Utf16Str, int BufferSize);
+int RDOSAPI RdosUtf16ToAnsi(const short *Utf16Str, char *AnsiStr, int BufferSize);
 
 int RDOSAPI RdosOpenFont(int id, int height);
 void RDOSAPI RdosCloseFont(int font);
@@ -536,18 +536,18 @@ long long RDOSAPI RdosGetModuleSize(int ID);
 int RDOSAPI RdosGetProcessCount();
 int RDOSAPI RdosGetProcessInfo(int Index, int *ID, char *NameBuf, int NameSize);
 int RDOSAPI RdosIsProcessRunning(int pid);
-int RDOSAPI RdosGetProcessThreads(int pid, unsigned short int *IdArr, int MaxThreads);
+int RDOSAPI RdosGetProcessThreads(int pid, unsigned short *IdArr, int MaxThreads);
 
 int RDOSAPI RdosGetProgramCount();
 int RDOSAPI RdosGetProgramInfo(int Index, int *ID, char *NameBuf, int NameSize);
-int RDOSAPI RdosGetProgramModules(int Index, unsigned short int *IdArr, int MaxModules);
-int RDOSAPI RdosGetProgramProcesses(int Index, unsigned short int *IdArr, int MaxProcesses);
-int RDOSAPI RdosGetProcessModules(int Index, unsigned short int *IdArr, int MaxModules);
+int RDOSAPI RdosGetProgramModules(int Index, unsigned short *IdArr, int MaxModules);
+int RDOSAPI RdosGetProgramProcesses(int Index, unsigned short *IdArr, int MaxProcesses);
+int RDOSAPI RdosGetProcessModules(int Index, unsigned short *IdArr, int MaxModules);
 int RDOSAPI RdosGetProcessModuleUsage(int Index, int ID);
 
 int RDOSAPI RdosGetImageHeader(int Adapter, int Entry, TRdosObjectHeader *Header);
 int RDOSAPI RdosGetImageData(int Adapter, int Entry, void *Buf);
-int RDOSAPI RdosGetDeviceInfo(int CodeSel, char *Name, unsigned int *CodeSize, unsigned short int *DataSel, unsigned int *DataSize);
+int RDOSAPI RdosGetDeviceInfo(int CodeSel, char *Name, unsigned int *CodeSize, unsigned short *DataSel, unsigned int *DataSize);
 
 int RDOSAPI RdosGetSelectorInfo(int CodeSel, int *Limit, int *Bitness);
 
@@ -676,10 +676,10 @@ void RDOSAPI RdosAddWaitForUdpListen(int Handle, int ConHandle, int ID);
 int RDOSAPI RdosCreateTcpSocket(void);
 int RDOSAPI RdosCreateUdpSocket(void);
 int RDOSAPI RdosIsIpv4Socket(int handle);
-int RDOSAPI RdosConnectIpv4Socket(int handle, long ip, short int port);
-int RDOSAPI RdosBindIpv4Socket(int handle, short int port);
+int RDOSAPI RdosConnectIpv4Socket(int handle, long ip, short port);
+int RDOSAPI RdosBindIpv4Socket(int handle, short port);
 int RDOSAPI RdosListenSocket(int handle, int maxconn);
-int RDOSAPI RdosAcceptIpv4Socket(int handle, long *ip, short int *port);
+int RDOSAPI RdosAcceptIpv4Socket(int handle, long *ip, short *port);
 
 int RDOSAPI RdosOpenTcpConnection(int RemoteIp, int LocalPort, int RemotePort, int Timeout, int BufferSize);
 int RDOSAPI RdosWaitForTcpConnection(int Handle, long Timeout);
@@ -740,7 +740,7 @@ void RDOSAPI RdosGetConsoleCursorPosition(int *Row, int *Col);
 void RDOSAPI RdosSetConsoleCursorPosition(int Row, int Col);
 void RDOSAPI RdosWriteChar(char ch);
 void RDOSAPI RdosWriteSizeString(const char *Buf, int Size);
-void RDOSAPI RdosWriteAttributeString(int Row, int Col, const short int *Buf, int Size);
+void RDOSAPI RdosWriteAttributeString(int Row, int Col, const short *Buf, int Size);
 void RDOSAPI RdosWriteString(const char *Buf);
 
 int RDOSAPI RdosPing(long Node, long Timeout);
@@ -773,9 +773,9 @@ int RDOSAPI RdosGetDriveDiscParam(int DriveNr, int *DiscNr, long *StartSector, l
 int RDOSAPI RdosCreateFileDrive(int Drive, long Size, const char *FsName, const char *FileName);
 int RDOSAPI RdosOpenFileDrive(int Drive, const char *FileName);
 
-int RDOSAPI RdosCreateCrc(unsigned short int CrcPoly);
+int RDOSAPI RdosCreateCrc(unsigned short CrcPoly);
 void RDOSAPI RdosCloseCrc(int Handle);
-unsigned short int RDOSAPI RdosCalcCrc(int Handle, unsigned short int CrcVal, const char *Buf, int Size);
+unsigned short RDOSAPI RdosCalcCrc(int Handle, unsigned short CrcVal, const char *Buf, int Size);
 unsigned int RDOSAPI RdosCalcCrc32(unsigned int CrcVal, const char *Buf, int Size);
 
 #ifdef __RDOS__     // these are only available in user-mode

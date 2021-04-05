@@ -269,7 +269,7 @@ typedef chtype  attr_t;         /* ...must be at least as wide as chtype */
 typedef unsigned long wchar_t;
 #endif /* _WCHAR_T */
 #ifndef _WINT_T
-typedef long int wint_t;
+typedef long wint_t;
 #endif /* _WINT_T */
 
 #define CCHARW_MAX      5

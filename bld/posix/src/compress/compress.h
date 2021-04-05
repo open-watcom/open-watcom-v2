@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -743,7 +744,7 @@ bool quiet = !VERBOSE;  /* don't tell me about compression */
  */
 int block_compress = BLOCK_MASK;
 #ifdef COMP40
-long int ratio = 0L;
+long ratio = 0L;
 long checkpoint = CHECK_GAP;
 #endif
 
@@ -790,7 +791,7 @@ extern bool zcat_flg;
 extern bool quiet;
 extern int block_compress;
 #ifdef COMP40
-extern long int ratio;
+extern long ratio;
 extern long checkpoint;
 #endif
 extern bool force;

@@ -329,7 +329,7 @@ _WCRTLINK extern int        fputs( const char *__s, FILE *__fp );
 _WCRTLINK extern size_t     fread( void *__ptr, size_t __size, size_t __n, FILE *__fp );
 _WCRTLINK extern FILE       *freopen( const char *__filename, const char *__mode, FILE *__fp );
 _WCRTLINK extern int        fscanf( FILE*__fp, const char *__format, ... );
-_WCRTLINK extern int        fseek( FILE *__fp, long int __offset, int __whence );
+_WCRTLINK extern int        fseek( FILE *__fp, long __offset, int __whence );
 _WCRTLINK extern int        fsetpos( FILE *__fp, const fpos_t *__pos );
 _WCRTLINK extern long       ftell( FILE *__fp );
 _WCRTLINK extern size_t     fwrite( const void *__ptr, size_t __size, size_t __n, FILE *__fp );
@@ -410,7 +410,7 @@ _WCRTLINK extern int        wscanf( const wchar_t *, ... );
 
 /* These names are not part of C89 or C99. */
 
-_WCRTLINK extern int        _fseeki64( __w_FILE *__fp, long long int __offset, int __whence );
+_WCRTLINK extern int        _fseeki64( __w_FILE *__fp, long long __offset, int __whence );
 _WCRTLINK extern long long  _ftelli64( __w_FILE *__fp );
 
 :segment LINUX

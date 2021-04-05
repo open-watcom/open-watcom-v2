@@ -163,16 +163,16 @@
  */
 
 typedef struct flock {
-    short int   l_type;
-    short int   l_whence;
+    short       l_type;
+    short       l_whence;
     off_t       l_start;
     off_t       l_len;
     long        l_sysid;
     pid_t       l_pid;
 #ifdef _M_I86
-    short int   l_pid_pad;
+    short       l_pid_pad;
 #endif
-    short int   zero[3];
+    short       zero[3];
 } flock_t;
 
 :elsesegment DOS | RDOS

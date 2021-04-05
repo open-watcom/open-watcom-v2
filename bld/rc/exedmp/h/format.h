@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,11 +52,11 @@ void printDosHeader( ExeFile *exeFile, Parameters *param );
 void printPeHeader( ExeFile *exeFile, Parameters *param );
 void printResObject( ExeFile *exeFile, Parameters *param );
 void printTableContents( ResTableEntry *table, ExeFile *exeFile,
-                         Parameters *param, long int addr, int depth );
+                         Parameters *param, long addr, int depth );
 void printDirContents( ResDirEntry *dir, ExeFile *exeFile,
-                       Parameters  *param, long int addr, int depth );
+                       Parameters  *param, long addr, int depth );
 void printDataContents( ResDataEntry *data, ExeFile *exeFile,
-                        Parameters   *param, long int addr );
-void printHexHeader( long int addr, size_t length, ExeFile *exeFile );
+                        Parameters   *param, long addr );
+void printHexHeader( long addr, size_t length, ExeFile *exeFile );
 
 #endif

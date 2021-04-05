@@ -340,8 +340,8 @@ namespace std {
 #endif
 
 _WMRTLINK extern double wcstod( const wchar_t *__nptr, wchar_t **__endptr );
-_WCRTLINK extern long int wcstol( const wchar_t *, wchar_t **, int );
-_WCRTLINK extern unsigned long int wcstoul( const wchar_t *, wchar_t **, int );
+_WCRTLINK extern long   wcstol( const wchar_t *, wchar_t **, int );
+_WCRTLINK extern unsigned long wcstoul( const wchar_t *, wchar_t **, int );
 
 #ifdef __cplusplus
 } // namespace std

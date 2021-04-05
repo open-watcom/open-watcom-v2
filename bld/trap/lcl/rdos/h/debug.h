@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,12 +67,12 @@ struct TDebugThread
     char *ThreadName;
     char *ThreadList;
     int ListOffset;
-    short int ListSel;
+    short ListSel;
 
     int ThreadID;
     unsigned int FsLinear;
     long Eip;
-    short int Cs;
+    short Cs;
 
     long Cr3;
     long Eflags;
@@ -96,9 +97,9 @@ struct TDebugThread
     long MathStatus;
     long MathTag;
     long MathEip;
-    short int MathCs;
+    short MathCs;
     long MathDataOffs;
-    short int MathDataSel;
+    short MathDataSel;
     real_math St[8];
 
     struct TDebugThread *Next;
@@ -135,8 +136,8 @@ struct TDebugModule
     unsigned int ImageBase;
         unsigned int ImageSize;
         unsigned int ObjectRva;
-        unsigned short int CodeSel;
-        unsigned short int DataSel;
+        unsigned short CodeSel;
+        unsigned short DataSel;
         unsigned int DataSize;
 
     int FNew;

@@ -125,7 +125,7 @@ struct sigaction {
 struct _sigaction {
     void        (__SIG_FAR _WCCALLBACK *sa_handler)(int);
     sigset_t    sa_mask;
-    short int   sa_flags;
+    short       sa_flags;
 };
 
 union sigval {

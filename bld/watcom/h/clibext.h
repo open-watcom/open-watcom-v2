@@ -147,15 +147,15 @@ typedef struct find_t {
     char            name[NAME_MAX+1];   /* null-terminated filename   */
 } find_t;
 typedef struct dirent {
-    char                d_dta[21];          /* disk transfer area */
-    char                d_attr;             /* file's attribute */
-    unsigned short int  d_time;             /* file's time */
-    unsigned short int  d_date;             /* file's date */
-    long                d_size;             /* file's size */
-    char                d_name[NAME_MAX+1]; /* file's name */
-    unsigned short      d_ino;              /* serial number (not used) */
-    char                d_first;            /* flag for 1st time */
-    char                *d_openpath;        /* path specified to opendir */
+    char            d_dta[21];          /* disk transfer area */
+    char            d_attr;             /* file's attribute */
+    unsigned short  d_time;             /* file's time */
+    unsigned short  d_date;             /* file's date */
+    long            d_size;             /* file's size */
+    char            d_name[NAME_MAX+1]; /* file's name */
+    unsigned short  d_ino;              /* serial number (not used) */
+    char            d_first;            /* flag for 1st time */
+    char            *d_openpath;        /* path specified to opendir */
 } dirent;
 typedef struct dirent   DIR;
 
@@ -174,8 +174,8 @@ typedef int     mode_t;
 
 extern char   *itoa( int value, char *buf, int radix );
 extern char   *utoa( unsigned int value, char *buf, int radix );
-extern char   *ltoa( long int value, char *buf, int radix );
-extern char   *ultoa( unsigned long int value, char *buf, int radix );
+extern char   *ltoa( long value, char *buf, int radix );
+extern char   *ultoa( unsigned long value, char *buf, int radix );
 extern void   _makepath( char *path, const char *drive, const char *dir, const char *fname, const char *ext );
 extern char   *_fullpath( char *buf, const char *path, size_t size );
 extern char   *strlwr( char *string );
