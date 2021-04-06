@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -144,7 +144,7 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
     ATTR                attr;
     ATTR                hotattr;
     char                ctrlbuf[CTRL_BUF_LEN + 1];
-    unsigned            ctrlbuf_len;
+    size_t              ctrlbuf_len;
     a_check             *check = NULL;
     a_radio             *radio = NULL;
     a_list              *list;

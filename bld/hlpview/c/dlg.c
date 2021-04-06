@@ -163,7 +163,7 @@ static void fillListBox( const char *name )
 static void copyLBLinetoEditCtl( unsigned index )
 {
     char        *lb_item;
-    unsigned    len;
+    size_t      len;
 
     lb_item = uimalloc( MAX_EDIT_LINE_LEN );
     GetListBoxItem( &listData, index, lb_item, MAX_EDIT_LINE_LEN );
@@ -178,7 +178,7 @@ static void copyLBLinetoEditCtl( unsigned index )
 void HelpDialogCallBack( a_dialog *info )
 {
     char                buf[_MAX_PATH];
-    unsigned            len;
+    size_t              len;
 
     if( info != curHelpDialog )
         return;

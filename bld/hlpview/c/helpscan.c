@@ -38,6 +38,7 @@
 #include "helpchar.h"
 #include "helpmem.h"
 
+
 static  unsigned char   specialChars[] = {
     HELP_ESCAPE,
     GOOFY_HYPERLINK,

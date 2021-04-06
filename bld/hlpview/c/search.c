@@ -97,7 +97,7 @@ static void loadNextPage( HelpHdl hdl, const char *name )
 static char *doFindEntry( const char *name, unsigned *entry_num )
 {
     unsigned            i;
-    unsigned            len;
+    size_t              len;
     PageIndexEntry      *entry;
     int                 cmpret;
 
@@ -279,7 +279,7 @@ HelpHdl InitHelpSearch( FILE *fp )
             HelpMemFree( hdl );
             hdl = NULL;
         } else {
-            HelpSeek( fp, -sizeof( uint_16 ), SEEK_CUR ); // no str_size in header
+            HelpSeek( fp, -(long)sizeof( uint_16 ), SEEK_CUR ); // no str_size in header
             hdl->def_topic = HelpDupStr( DEFAULTTOPIC );
             hdl->desc_str = NULL;
             hdl->header.str_size = 0;   // no str_size in old header format
