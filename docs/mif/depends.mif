@@ -2542,9 +2542,6 @@ gml_objs = &
 ../doc/gml/fmtmacro.gml  &
 ../doc/gml/gmlack.gml    &
 ../doc/gml/gmlmacs.gml   &
-../doc/gml/help.gml      &
-../doc/gml/help.opt      &
-../doc/gml/helplay.gml   &
 ../doc/gml/light2.eps    &
 ../doc/gml/ltning.eps    &
 ../doc/gml/lytchg.gml    &
@@ -2557,7 +2554,6 @@ gml_objs = &
 ../doc/gml/nb7x9psn.opt  &
 ../doc/gml/nbhlp.opt     &
 ../doc/gml/nbhlplay.gml  &
-../doc/gml/nbhlpos2.opt  &
 ../doc/gml/nblay.gml     &
 ../doc/gml/nbps.opt      &
 ../doc/gml/nbpsshad.opt  &
@@ -2597,16 +2593,12 @@ whelp_objs =               &
 ../doc/whelp/wnohelp.gml   &
 ../doc/whelp/whelp.opt
 
-# gml/whelp sub-directory
-gml_whelp_incs = ../gml/whelp
-gml_whelp_objs =           &
-../gml/whelp/mono01.cop    &
-../gml/whelp/whelp.cop     &
-../gml/whelp/whelpdrv.cop  &
+# gml/syslib sub-directory
+gml_syslib_incs = ../gml/syslib
+gml_syslib_objs =           &
 ../gml/syslib/mono01.fon   &
-../gml/whelp/whelp.pcd     &
-../gml/whelp/whelpdrv.pcd  &
-../gml/whelp/makefile
+../gml/syslib/whelp.pcd     &
+../gml/syslib/whelpdrv.pcd
 
 # ps sub-directory
 ps_incs = ../doc/ps
