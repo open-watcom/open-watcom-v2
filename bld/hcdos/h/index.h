@@ -25,47 +25,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Help index functions prototypes.
 *
 ****************************************************************************/
 
 
-#ifndef _SEARCH_H_INCLUDED_
-#define _SEARCH_H_INCLUDED_
-
-#include "stdui.h"
-#include "helpidx.h"
-#include "helpio.h"
-#include "uidialog.h"
-
-typedef struct HelpHdl {
-    FILE        *fp;
-    HelpHeader  header;
-    uint_16     *itemindex;
-    char        *def_topic;
-    char        *desc_str;
-} *HelpHdl;
-
-typedef struct {
-    HelpHdl             hdl;
-    unsigned            page;
-    unsigned            entry;
-    unsigned long       offset;
-} HelpSrchInfo;
-
-extern char             *HelpFindNext( HelpSrchInfo *info );
-extern unsigned         HelpFindFirst( HelpHdl hdl, const char *name, HelpSrchInfo *info );
-extern HelpHdl          InitHelpSearch( FILE *fp );
-extern void             FiniHelpSearch( HelpHdl hdl );
-extern char             *HelpFindPrev( HelpSrchInfo *info );
-extern unsigned long    HelpGetOffset( HelpSrchInfo cursor );
-extern unsigned long    HelpFindTopicOffset( HelpHdl hdl, const char *topic );
-extern char             *HelpGetIndexedTopic( HelpHdl hdl, unsigned index );
-extern char             *GetDefTopic( HelpHdl hdl );
-extern char             *GetDescrip( HelpHdl hdl );
-
-extern char             *HelpSearch( HelpHdl hdl );
-extern void             HelpDialogCallBack( a_dialog *info );
-extern void             SearchDlgFini( void );
-#endif
+extern unsigned long    CalcIndexSize( char **str, bool gen_str );
+extern int              WriteIndex( FILE *fout, char **str, bool gen_str );

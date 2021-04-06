@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,13 +33,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "wio.h"
-#include "watcom.h"
 #include "bool.h"
 #include "hcdos.h"
 #include "helpidx.h"
+#include "index.h"
+
 
 #define STR_CNT 2
+
 static int      dataPageCnt;
 static int      indexPageCnt;
 static int      topicCnt;
@@ -156,7 +158,7 @@ static unsigned countPageEntries( unsigned page )
 }
 
 
-static int writeOneDataPage( int fout, unsigned pagenum )
+static int writeOneDataPage( FILE *fout, unsigned pagenum )
 {
     char                *page;
     HelpPageHeader      *pagehdr;
@@ -186,17 +188,17 @@ static int writeOneDataPage( int fout, unsigned pagenum )
         curnode = curnode->next;
         index++;
     }
-    write( fout, page, HLP_PAGE_SIZE );
+    fwrite( page, HLP_PAGE_SIZE, 1, fout );
     free( page );
     return( 0 );
 }
 
 
-static int writeDataPages( int fout )
+static int writeDataPages( FILE *fout )
 {
     unsigned            i;
 
-    for( i=0; i < dataPageCnt; i++ ) {
+    for( i = 0; i < dataPageCnt; i++ ) {
         writeOneDataPage( fout, i + indexPageCnt );
     }
     return( 1 );
@@ -287,7 +289,7 @@ static void generateIndexLevel( void **pages, unsigned curbase,
 }
 
 
-static int writeIndexPages( int fout )
+static int writeIndexPages( FILE *fout )
 {
     unsigned            prev_level;
     unsigned            cur_level;
@@ -309,20 +311,23 @@ static int writeIndexPages( int fout )
          cur_level = pagesInNextLevel( prev_level );
          curbase -= cur_level;
          generateIndexLevel( pages, curbase, cur_level, prevbase, prev_level );
-         if( cur_level == 1 ) break;
+         if( cur_level == 1 )
+            break;
          prev_level = cur_level;
          prevbase = curbase;
      }
      for( i = 0; i < indexPageCnt; i++ ) {
-         write( fout, pages[i], HLP_PAGE_SIZE );
-         if( pages[i] != NULL ) free( pages[i] );
+         fwrite( pages[i], HLP_PAGE_SIZE, 1, fout );
+         if( pages[i] != NULL ) {
+             free( pages[i] );
+         }
      }
      free( pages );
      return( 0 );
 }
 
 
-static int writePageItemNumIndex( int fout )
+static int writePageItemNumIndex( FILE *fout )
 {
     uint_16     *index;
     uint_16     indexsize;
@@ -332,15 +337,15 @@ static int writePageItemNumIndex( int fout )
     index = malloc( indexsize );
     index[0] = 0; //countPageEntries( indexPageCnt );
     for( i=1; i < dataPageCnt; i++ ) {
-        index[i] = index[ i-1 ] + countPageEntries( indexPageCnt + i - 1 );
+        index[i] = index[i - 1] + countPageEntries( indexPageCnt + i - 1 );
     }
-    write( fout, index, indexsize );
+    fwrite( index, indexsize, 1, fout );
     free( index );
     return( 0 );
 }
 
 
-static int writeHeader( int fout, int blocksize )
+static int writeHeader( FILE *fout, int blocksize )
 {
     HelpHeader          header;
 
@@ -353,12 +358,12 @@ static int writeHeader( int fout, int blocksize )
     header.datapagecnt = dataPageCnt;
     header.topiccnt = topicCnt;
     header.str_size = blocksize;
-    write( fout, &header, sizeof( HelpHeader ) );
+    fwrite( &header, sizeof( HelpHeader ), 1, fout );
     return( 0 );
 }
 
 
-static int writeOldHeader( int fout )
+static int writeOldHeader( FILE *fout )
 {
     OldHeader           header;
 
@@ -370,11 +375,11 @@ static int writeOldHeader( int fout )
     header.indexpagecnt = indexPageCnt;
     header.datapagecnt = dataPageCnt;
     header.topiccnt = topicCnt;
-    write( fout, &header, sizeof( OldHeader ) );
+    fwrite( &header, sizeof( OldHeader ), 1, fout );
     return( 0 );
 }
 
-static void writeStrings( int fout, char **str )
+static void writeStrings( FILE *fout, char **str )
 {
     unsigned    i;
     uint_16     tmp[STR_CNT + 1];
@@ -387,19 +392,19 @@ static void writeStrings( int fout, char **str )
             tmp[i + 1] = 0;
         }
     }
-    write( fout, &tmp, sizeof( uint_16 ) * ( STR_CNT + 1 ) );
+    fwrite( &tmp, sizeof( uint_16 ) * ( STR_CNT + 1 ), 1, fout );
     for( i = 0; i < STR_CNT; i++ ) {
         if( str[i] != NULL ) {
-            write( fout, str[i], tmp[i + 1] );
+            fwrite( str[i], tmp[i + 1], 1, fout );
         }
     }
 }
 
-int WriteIndex( int fout, char **str, bool gen_str )
+int WriteIndex( FILE *fout, char **str, bool gen_str )
 {
     int         blocksize;
 
-    lseek( fout, 0, SEEK_SET );
+    fseek( fout, 0, SEEK_SET );
     if( gen_str ) {
         blocksize = calcStringBlockSize( str );
         writeHeader( fout, blocksize );

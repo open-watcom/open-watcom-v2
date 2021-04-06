@@ -35,11 +35,9 @@
 #include <string.h>
 #include <stdio.h>
 #include <limits.h>
-#include "watcom.h"
-#include "stdui.h"
+#include "help.h"
 #include "helpmem.h"
 #include "uibox.h"
-#include "help.h"
 #include "hlpuicvr.h"
 #include "hlputkys.h"
 #include "uidialog.h"
@@ -48,10 +46,18 @@
 #include "helpscan.h"
 #include "msgbox.h"
 #include "uigchar.h"
+#include "helpchar.h"
 #include "pathgrp2.h"
 
 #include "clibext.h"
 
+
+#define EV_HELP         EV_F1
+
+enum {
+    E_UP = EV_FIRST_UNUSED,
+    E_DOWN
+};
 
 // In normal QNX text files, the record separator is just a LF.
 // However, with the new help file format containing both binary and

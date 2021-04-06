@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,17 +35,14 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
-#include "wio.h"
-#include "watcom.h"
 #include "bool.h"
-#include "stdui.h"
-#include "help.h"
+#include "helpchar.h"
 #include "cmdswtch.h"
 #include "hcdos.h"
 #include "helpidx.h"
-#include "helpchar.h"
 #include "helpmem.h"
 #include "helpscan.h"
+#include "index.h"
 #include "pathgrp2.h"
 
 #include "clibext.h"
@@ -158,9 +155,8 @@ static void lineLenCB( HelpTokenType type, Info *info, void *_len )
         *len += 2;
     /* fall through */
     case TK_GOOFY_LINK:
-        block = &( info->u.link.block1 );
-        while( block != NULL ) {
-            for( i=0; i < block->cnt; i++ ) {
+        for( block = &( info->u.link.block1 ); block != NULL; block = block->next ) {
+            for( i = 0; i < block->cnt; i++ ) {
                 info = (Info *)&( block->info[i] );
                 switch( info->u.text.type ) {
                 case TT_PLAIN:
@@ -171,7 +167,6 @@ static void lineLenCB( HelpTokenType type, Info *info, void *_len )
                     break;
                 }
             }
-            block = block->next;
         }
         break;
     }
@@ -461,7 +456,7 @@ static void check_buffer( a_helpnode *h, char *buffer )
     nameBufLen = 0;
 }
 
-static bool pass2( FILE *fin, int fout, char **helpstr )
+static bool pass2( FILE *fin, FILE *fout, char **helpstr )
 {
     char            buffer[ BUFFER_SIZE ];
     a_helpnode      *h;
@@ -470,7 +465,7 @@ static bool pass2( FILE *fin, int fout, char **helpstr )
     printf( "Pass Two:\n" );
     if( GenIndex ) {
         indexlen = CalcIndexSize( helpstr, GenStrings );
-        lseek( fout, indexlen, SEEK_SET );
+        fseek( fout, indexlen, SEEK_SET );
     }
     for( h = HelpNodes; h != NULL; h = h->next ) {
         if( Verbose ) {
@@ -509,16 +504,16 @@ static bool pass2( FILE *fin, int fout, char **helpstr )
         sprintf( buffer, "::::\"%s\" %d %d %d %d %d\r\n",
                  h->name, h->maxrow, h->maxcol, h->row, h->col, h->lines );
         if( GenIndex ) {
-            h->fpos = tell( fout );
+            h->fpos = ftell( fout );
         }
-        write( fout, buffer, strlen( buffer ) );
+        fwrite( buffer, strlen( buffer ), 1, fout );
 
         while( !feof( fin ) ) {
             fgetstring( buffer, sizeof( buffer ), fin );
             if( memcmp( buffer, "::::", 4 ) == 0 )
                 break;
             check_buffer( h, buffer );
-            write( fout, buffer, strlen( buffer ) );
+            fwrite( buffer, strlen( buffer ), 1, fout );
         }
     }
     return( true );
@@ -529,7 +524,7 @@ int main( int argc, char **argv )
     char        **nargv;
     char        **sargv;
     FILE        *fin;
-    int         fout;
+    FILE        *fout;
     char        *helpstr[2];
     bool        f_swtch;
 
@@ -627,8 +622,8 @@ int main( int argc, char **argv )
         return( -1 );
     }
 
-    fout = open( argv[2], O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, PMODE_RW );
-    if( fout == -1 ) {
+    fout = fopen( argv[2], "wb" );
+    if( fout == NULL ) {
         PrintError( "Unable to open '%s' for output\n", argv[2] );
         return( -1 );
     }
@@ -637,11 +632,11 @@ int main( int argc, char **argv )
     pass2( fin, fout, helpstr );
 
     fclose( fin );
-    close( fout );
+    fclose( fout );
     if( GenIndex ) {
-        fout = open( argv[2], O_WRONLY | O_BINARY );
+        fout = fopen( argv[2], "wb" );
         WriteIndex( fout, helpstr, GenStrings );
-        close( fout );
+        fclose( fout );
     }
     FiniError();
     HelpMemFree( helpstr[0] );

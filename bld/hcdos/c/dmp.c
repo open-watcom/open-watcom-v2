@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,15 +32,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
 #include <string.h>
-#include "index.h"
+#include "bool.h"
+#include "helpidx.h"
 
-char    Buffer[HLP_PAGE_SIZE];
 
+static char     Buffer[HLP_PAGE_SIZE];
 
-void PrintHeader( HelpHeader *header )
+static void PrintHeader( HelpHeader *header )
 {
     printf( "HELP HEADER\n" );
     printf( "    signature 1            %08lX\n", header->sig[0] );
@@ -57,7 +57,7 @@ void PrintHeader( HelpHeader *header )
 }
 
 
-void PrintStrings( char *buf )
+static void PrintStrings( char *buf )
 {
     uint_16     str_cnt;
     uint_16     *len;
@@ -77,7 +77,7 @@ void PrintStrings( char *buf )
 }
 
 
-void PrintItemIndex( HelpHeader *header  )
+static void PrintItemIndex( HelpHeader *header  )
 {
     unsigned            i;
     uint_16             *ptr;
@@ -91,7 +91,7 @@ void PrintItemIndex( HelpHeader *header  )
 }
 
 
-void PrintDataPage( unsigned cnt )
+static void PrintDataPage( unsigned cnt )
 {
     PageIndexEntry      *entry;
     char                *strings;
@@ -109,7 +109,7 @@ void PrintDataPage( unsigned cnt )
 }
 
 
-void PrintIndexPage( unsigned cnt )
+static void PrintIndexPage( unsigned cnt )
 {
     HelpIndexEntry      *entry;
     unsigned            i;
@@ -122,7 +122,7 @@ void PrintIndexPage( unsigned cnt )
 }
 
 
-void PrintPage( void )
+static void PrintPage( void )
 {
     HelpPageHeader      *header;
 
@@ -143,7 +143,7 @@ void PrintPage( void )
 
 void main( int argc, char *argv[] )
 {
-    int         fp;
+    FILE        *fp;
     HelpHeader  header;
     unsigned    i;
 
@@ -151,19 +151,19 @@ void main( int argc, char *argv[] )
         printf( "Usage: helpdump <help file name>\n" );
         return;
     }
-    fp = open( argv[1], O_RDONLY | O_BINARY );
-    if( fp == -1 ) {
+    fp = fopen( argv[1], "rb" );
+    if( fp == NULL ) {
         printf( "Unable to open %s\n", argv[1] );
         return;
     }
-    read( fp, &header, sizeof( HelpHeader ) );
+    fread( &header, sizeof( HelpHeader ), 1, fp );
     PrintHeader( &header );
-    read( fp, Buffer, header.str_size );
+    fread( Buffer, header.str_size, 1, fp );
     PrintStrings( Buffer );
-    read( fp, Buffer, header.datapagecnt * sizeof( uint_16 ) );
+    fread( Buffer, header.datapagecnt * sizeof( uint_16 ), 1, fp );
     PrintItemIndex( &header );
     for( i = 0; i < header.indexpagecnt + header.datapagecnt; i++ ) {
-        read( fp, Buffer, HLP_PAGE_SIZE );
+        fread( Buffer, HLP_PAGE_SIZE, 1, fp );
         PrintPage();
     }
 }

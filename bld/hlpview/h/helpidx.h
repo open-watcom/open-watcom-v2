@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,9 @@
 
 #ifndef __INDEX_H_INCLUDED__
 #define __INDEX_H_INCLUDED__
+
+#include "watcom.h"
+
 
 /* FILE format
  *
@@ -123,8 +127,5 @@ typedef struct {
 } PageIndexEntry;
 
 #include "poppck.h"
-
-unsigned long CalcIndexSize( char **str, bool gen_str );
-int WriteIndex( int fout, char *str[2], bool gen_str );
 
 #endif
