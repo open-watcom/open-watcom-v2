@@ -696,7 +696,7 @@ void DisplayRegion( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt, int mouse
     if( imgstart_pt.x > tmpe )
         imgstart_pt.x = tmpe;
     imgend_pt.x = tmps;
-    if( imgend_pt.x > tmpe )
+    if( imgend_pt.x < tmpe )
         imgend_pt.x = tmpe;
     imgend_pt.x++;
 
