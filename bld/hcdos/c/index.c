@@ -36,7 +36,7 @@
 #include "watcom.h"
 #include "bool.h"
 #include "sorthelp.h"
-#include "index.h"
+#include "helpidx.h"
 
 #define STR_CNT 2
 static int      dataPageCnt;

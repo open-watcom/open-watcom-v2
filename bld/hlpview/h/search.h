@@ -33,7 +33,8 @@
 
 #ifndef _SEARCH_H_INCLUDED_
 #define _SEARCH_H_INCLUDED_
-#include "index.h"
+
+#include "helpidx.h"
 #include "helpio.h"
 #include "stdui.h"
 #include "uidialog.h"

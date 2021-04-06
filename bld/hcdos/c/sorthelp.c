@@ -42,7 +42,7 @@
 #include "help.h"
 #include "cmdswtch.h"
 #include "sorthelp.h"
-#include "index.h"
+#include "helpidx.h"
 #include "helpchar.h"
 #include "helpmem.h"
 #include "helpscan.h"

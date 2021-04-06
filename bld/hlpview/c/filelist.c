@@ -43,7 +43,7 @@
 #include "help.h"
 #include "helpmem.h"
 #include "helpio.h"
-#include "index.h"
+#include "helpidx.h"
 #include "search.h"
 #include "filelist.h"
 #include "pathgrp2.h"

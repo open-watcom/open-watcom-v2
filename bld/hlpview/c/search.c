@@ -34,7 +34,7 @@
 #include <string.h>
 #include "watcom.h"
 #include "bool.h"
-#include "index.h"
+#include "helpidx.h"
 #include "helpmem.h"
 #include "helpio.h"
 #include "search.h"
