@@ -352,7 +352,7 @@
 :DTHD.&*
 .do end
 .el .do begin
-:ZDTHD.:SF font=2.&*:eSF.
+:ZDTHD2.&*.
 .do end
 .dm notehd1 end
 .*
@@ -361,7 +361,7 @@
 :DDHD.&*
 .do end
 .el .do begin
-:ZDDHD.:SF font=2.&*:eSF.
+:ZDDHD2.&*.
 .do end
 .dm notehd2 end
 .*
@@ -371,8 +371,8 @@
 :DDHD.~b
 .do end
 .el .do begin
-:ZDTHD.:SF font=2.&*:eSF.
-:ZDDHD.~b
+:ZDTHD2.&*.
+:ZDDHD2.~b
 .do end
 .dm notehdr end
 .*
@@ -381,7 +381,7 @@
 :DTHD.&*
 .do end
 .el .do begin
-:ZDTHD.:SF font=2.&*:eSF.
+:ZDTHD2.&*.
 .do end
 .dm pointhd1 end
 .*
@@ -390,7 +390,7 @@
 :DDHD.&*
 .do end
 .el .do begin
-:ZDDHD.:SF font=2.&*:eSF.
+:ZDDHD2.&*.
 .do end
 .dm pointhd2 end
 .*
@@ -400,8 +400,8 @@
 :DDHD.~b
 .do end
 .el .do begin
-:ZDTHD.:SF font=2.&*:eSF.
-:ZDDHD.~b
+:ZDTHD2.&*.
+:ZDDHD2.~b
 .do end
 .dm pointhdr end
 .*

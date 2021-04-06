@@ -20,8 +20,8 @@
 .   .   :DDHD.~b
 .   .do end
 .   .el .do begin
-.   .   :ZDTHD.where:
-.   .   :ZDDHD.~b
+.   .   :ZDTHD3.where:
+.   .   :ZDDHD3.~b
 .   .do end
 .dm synote end
 .*

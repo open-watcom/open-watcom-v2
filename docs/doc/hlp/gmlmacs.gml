@@ -285,8 +285,8 @@
 :DDHD.description
 .do end
 .el .do begin
-:ZDTHD.where
-:ZDDHD.:SF font=2.description:eSF.
+:ZDTHD3.where
+:ZDDHD3.description
 .do end
 .dm synote end
 .*
@@ -480,31 +480,27 @@
 :DDHD.~b
 .do end
 .el .do begin
-:ZDTHD.&*
-:ZDDHD.~b
+:ZDTHD3.&*
+:ZDDHD3.~b
 .do end
 .dm stephdr end
 .*
 .dm step begin
 .sr stplvl=&stplvl.+1
 .if &stplvl. eq 0 .do begin
-:ZDT.~b
+:ZDT2.~b
 .do end
 .el .do begin
-:ZDT.(&stplvl.)
+:ZDT2.(&stplvl.)
 .do end
-:ZDD.
-:SF font=2.&*
-:eSF.
+:ZDD2.&*.
 .dm step end
 .*
 .dm orstep begin
 .np
 or
-:ZDT.~b
-:ZDD.
-:SF font=2.&*
-:eSF.
+:ZDT2.~b
+:ZDD2.&*.
 .dm orstep end
 .*
 .dm result begin
