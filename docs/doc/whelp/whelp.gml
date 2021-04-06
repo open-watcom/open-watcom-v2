@@ -261,7 +261,7 @@
 .dm zdd3 begin
 :p.&rsddesc.:SF font=3.&*.:eSF.
 .dm zdd3 end
-.gt zdd3 add zdd2
+.gt zdd3 add zdd3
 
 :cmt. **** :DT ****
 .dm zdt begin
