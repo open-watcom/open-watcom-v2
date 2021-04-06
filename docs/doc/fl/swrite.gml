@@ -24,7 +24,7 @@ to an external device or file.
 .begnote
 .notehdr Control Information List
 .setptnt 0 8
-.mnote [UNIT =] u
+.note [UNIT =] u
 .br
 .id u
 is an
@@ -46,7 +46,7 @@ If the optional
 .kw UNIT=
 specifier is omitted then the unit specifier must be the first item in
 the list of specifiers.
-.mnote [FMT =] f
+.note [FMT =] f
 .br
 .id f
 is a
@@ -103,20 +103,20 @@ specifier is omitted then the format specifier must be the second item
 in the list of specifiers and
 .kw UNIT=
 must not be specified for the first item in the list.
-.mnote REC = rn
+.note REC = rn
 .br
 .id rn
 is an integer expression whose value must be positive.
 It is the number of the record to be written when a file is
 connected for direct access.
-.mnote IOSTAT = ios
+.note IOSTAT = ios
 .br
 is an input/output status specifier.
 The integer variable or integer array element
 .id ios
 is defined with zero if no error condition occurs or a positive
 integer value if an error condition occurs.
-.mnote ERR = s
+.note ERR = s
 .br
 is an error specifier and
 .id s

@@ -21,9 +21,9 @@ The &asmname command line syntax is the following.
 .np
 The square brackets [ ] denote items which are optional.
 .begnote
-.mnote &asmcmd
+.note &asmcmd
 is the name of the &asmname..
-.mnote asm_file
+.note asm_file
 is the filename specification of the assembler source file to be
 assembled.
 A default filename extension of ".a" is assumed when no extension is
@@ -37,7 +37,7 @@ File Specification              Extension
 /home/john.doe/foo.bar          .bar
 /home/john.doe/foo.goo.bar      .bar
 .exam end
-.mnote options
+.note options
 is a list of valid &asmname options, each preceded by a dash
 ("&minus.").
 Options may be specified in any order.
@@ -50,22 +50,22 @@ Options may be specified in any order.
 .np
 The square brackets [ ] denote items which are optional.
 .begnote
-.mnote &asmcmdup
+.note &asmcmdup
 is the name of the &asmname..
-.mnote d:
+.note d:
 is an optional drive specification such as "A:", "B:", etc.
 If not specified, the default drive is assumed.
-.mnote path
+.note path
 is an optional path specification such as "\PROGRAMS\ASM\".
 If not specified, the current directory is assumed.
-.mnote filename
+.note filename
 is the file name of the assembler source file to be assembled.
-.mnote ext
+.note ext
 is the file extension of the assembler source file to be assembled.
 If omitted, a file extension of "&axt" is assumed.
 If the period "." is specified but not the extension, the file is
 assumed to have no file extension.
-.mnote options
+.note options
 is a list of valid options, each preceded by a slash
 ("/") or a dash ("&minus.").
 Options may be specified in any order.

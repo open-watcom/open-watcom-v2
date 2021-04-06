@@ -53,7 +53,7 @@ statement.
 .notehdr Control Information List and Format Identifier
 .setptnt 0 8
 .cp 5
-.mnote [UNIT =] u
+.note [UNIT =] u
 .br
 .id u
 is an
@@ -76,7 +76,7 @@ If the optional
 specifier is omitted then the unit specifier must be the first item in
 the list of specifiers.
 .cp 5
-.mnote [FMT =] f
+.note [FMT =] f
 .br
 .id f
 is a
@@ -152,14 +152,14 @@ in the list of specifiers and
 .kw UNIT=
 must not be specified for the first item in the list.
 .cp 5
-.mnote REC = rn
+.note REC = rn
 .br
 .id rn
 is an integer expression whose value must be positive.
 It is the number of the record to be read when a file is
 connected for direct access.
 .cp 5
-.mnote IOSTAT = ios
+.note IOSTAT = ios
 .br
 is an input/output status specifier.
 The integer variable or integer array element
@@ -167,7 +167,7 @@ The integer variable or integer array element
 is defined with zero if no error occurs, a positive integer value if
 an error occurs, or a negative integer value if an end-of-file occurs.
 .cp 5
-.mnote ERR = s
+.note ERR = s
 .br
 is an error specifier and
 .id s
@@ -176,7 +176,7 @@ When an error occurs, execution is transferred to the statement
 labelled by
 .id s.
 .cp 5
-.mnote END = s
+.note END = s
 .br
 is an end-of-file specifier and
 .id s

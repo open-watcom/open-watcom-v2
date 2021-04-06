@@ -130,34 +130,34 @@ strategy with which the modules in the library have been compiled.
 .notehdr 16-bit only
 .ix 'C libraries' 'small'
 .ix 'small model' 'libraries'
-.mnote S
+.note S
 denotes a version of the &product libraries which have been compiled
 for the "small" memory model (small code, small data).
 .ix 'C libraries' 'medium'
 .ix 'medium model' 'libraries'
-.mnote M
+.note M
 denotes a version of the &product libraries which have been compiled
 for the "medium" memory model (big code, small data).
 .ix 'C libraries' 'compact'
 .ix 'compact model' 'libraries'
-.mnote C
+.note C
 denotes a version of the &product libraries which have been compiled
 for the "compact" memory model (small code, big data).
 .ix 'C libraries' 'large'
 .ix 'large model' 'libraries'
-.mnote L
+.note L
 denotes a version of the &product libraries which have been compiled
 for the "large" memory model (big code, big data).
 .ix 'C libraries' 'huge'
 .ix 'huge model' 'libraries'
-.mnote H
+.note H
 denotes a version of the &product libraries which have been compiled
 for the "huge" memory model (big code, huge data).
 .if '&target' ne 'QNX' .do begin
-.mnote MT
+.note MT
 denotes a version of the &product libraries which may be used with
 OS/2 multi-threaded applications.
-.mnote DL
+.note DL
 denotes a version of the &product libraries which may be used when
 creating an OS/2 Dynamic Link Library.
 .do end
@@ -168,11 +168,11 @@ creating an OS/2 Dynamic Link Library.
 .ix 'flat model' 'libraries'
 .ix '&lang libraries' 'small'
 .ix 'small model' 'libraries'
-.mnote 3R
+.note 3R
 denotes a version of the &product libraries that will be used by
 programs which have been compiled for the "flat/small" memory models
 using the "3r", "4r", "5r" or "6r" option.
-.mnote 3S
+.note 3S
 denotes a version of the &product libraries that will be used by
 programs which have been compiled for the "flat/small" memory models
 using the "3s", "4s", "5s" or "6s" option.

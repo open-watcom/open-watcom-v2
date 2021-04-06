@@ -861,7 +861,7 @@ However, response will vary with the distances involved.
 In order to identify files on either the local or remote machine, two
 special prefixes are supported.
 .begnote
-.mnote @L
+.note @L
 .ix 'local file specifier prefix' '@L'
 .ix '@L'
 The "@L" prefix is used to indicate that the file resides on the local
@@ -879,7 +879,7 @@ assumed.
 @LD:\CMDS
 @LD:\CMDS\DATA.TMP
 .exam end
-.mnote @R
+.note @R
 .ix 'remote file specifier prefix' '@R'
 .ix '@R'
 The "@R" prefix is used to indicate that the file resides on the remote

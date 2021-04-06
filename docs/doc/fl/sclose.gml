@@ -21,7 +21,7 @@ the specified unit.
 .begnote
 .notehdr Close Specifiers
 .setptnt 0 8
-.mnote [UNIT =] u
+.note [UNIT =] u
 .br
 .id u
 is an
@@ -32,14 +32,14 @@ If the optional
 .kw UNIT=
 specifier is omitted then the specifier must be the first item in the
 list of specifiers.
-.mnote IOSTAT = ios
+.note IOSTAT = ios
 .br
 is an input/output status specifier.
 The integer variable or integer array element
 .id ios
 is defined with zero if no error condition occurs or a positive
 integer value if an error condition occurs.
-.mnote ERR = s
+.note ERR = s
 .br
 is an error specifier and
 .id s
@@ -47,7 +47,7 @@ is a statement label.
 When an error occurs, execution is transferred to the statement
 labelled by
 .id s.
-.mnote STATUS = sta
+.note STATUS = sta
 .br
 is a status specifier and
 .id sta
@@ -58,7 +58,7 @@ or
 .mono 'DELETE'.
 .begnote
 .setptnt 0 10
-.mnote KEEP
+.note KEEP
 .mono 'KEEP'
 may not be specified for a file whose status is
 .mono 'SCRATCH'
@@ -78,7 +78,7 @@ is assumed, unless the file status is
 in which case
 .mono 'DELETE'
 is assumed.
-.mnote DELETE
+.note DELETE
 If
 .mono 'DELETE'
 is specified, the file will not exist after execution of the

@@ -1033,7 +1033,7 @@ menu and select the
 .us New Source...
 item.
 .begnote
-.mnote Note:
+.note Note:
 You can do this either by choosing from the menu bar or by positioning
 the mouse over the file list area and clicking the right mouse button.
 The &vip displays a pop-up menu from which you can choose the desired

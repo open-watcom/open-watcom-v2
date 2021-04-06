@@ -576,22 +576,22 @@ under consideration to discover which specifiers are allowed and
 what they mean.
 .begnote $setptnt 16
 .ix 'UNIT='
-.mnote [UNIT =] u
+.note [UNIT =] u
 the unit specifier
 .ix 'FMT='
-.mnote [FMT =] f
+.note [FMT =] f
 the format specifier
 .ix 'REC='
-.mnote REC = rn
+.note REC = rn
 the record specifier
 .ix 'IOSTAT='
-.mnote IOSTAT = ios
+.note IOSTAT = ios
 the input/output status specifier
 .ix 'ERR='
-.mnote ERR = s
+.note ERR = s
 the error specifier
 .ix 'END='
-.mnote END = s
+.note END = s
 the end-of-file specifier
 .endnote
 .np
@@ -608,7 +608,7 @@ We shall look at these specifiers in more detail.
 The form of a unit specifier in an input/output statement is:
 .begnote
 .ix 'UNIT='
-.mnote [UNIT =] u
+.note [UNIT =] u
 .id u
 is an
 .us external unit identifier
@@ -648,7 +648,7 @@ item in the list of specifiers.
 The form of a format specifier in an input/output statement is:
 .begnote
 .ix 'FMT='
-.mnote [FMT =] f
+.note [FMT =] f
 .id f
 is a
 .us format identifier.
@@ -717,7 +717,7 @@ must not be specified for the first item in the list.
 The form of a record specifier in an input/output statement is:
 .begnote
 .ix 'REC='
-.mnote REC = rn
+.note REC = rn
 .id rn
 is an integer expression whose value must be positive.
 It is the number of the record to be read when a file is
@@ -737,7 +737,7 @@ The form of an input/output status specifier in an input/output
 statement is:
 .begnote
 .ix 'IOSTAT='
-.mnote IOSTAT = ios
+.note IOSTAT = ios
 .id ios
 is an integer variable or integer array element.
 It is defined with zero if no error occurs, a positive integer value
@@ -774,7 +774,7 @@ IO-03  ENDFILE statement requires sequential access mode
 The form of an error specifier in an input/output statement is:
 .begnote
 .ix 'ERR='
-.mnote ERR = s
+.note ERR = s
 .id s
 is a statement label.
 When an error occurs, execution is transferred to the statement
@@ -797,7 +797,7 @@ terminated.
 The form of an end-of-file specifier in an input/output statement is:
 .begnote
 .ix 'END='
-.mnote END = s
+.note END = s
 .id s
 is a statement label.
 When an end-of-file condition occurs, execution is transferred to
