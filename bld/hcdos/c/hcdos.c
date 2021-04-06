@@ -35,6 +35,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
+#include <limits.h>
 #include "bool.h"
 #include "helpchar.h"
 #include "cmdswtch.h"
