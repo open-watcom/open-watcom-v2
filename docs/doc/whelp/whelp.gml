@@ -226,6 +226,16 @@
 .gt dl add zdl
 .gt zdl add zdl
 
+:cmt. *** DL init with the first DT ***
+.dm zdlinit begin
+.sk 1
+.if '&dfnst.' eq 'first' .do begin
+&rslstds.
+.   :pb.
+.   .se dfnst=''
+.do end
+.dm zdlinit end
+
 :cmt. **** :EDL ****
 .dm zedl begin
 :pb.&rslstde.
@@ -243,12 +253,7 @@
 
 :cmt. **** :DT ****
 .dm zdt begin
-.sk 1
-.if '&dfnst.' eq 'first' .do begin
-&rslstds.
-.   :pb.
-.   .se dfnst=''
-.do end
+.zdlinit
 &rslstdt.&*.
 .dm zdt end
 .gt dt add zdt
