@@ -813,6 +813,7 @@ the open files when you close the current file.
 The File Specific Options dialog contains settings that control your file
 including tabs, tags, line numbers, and default file extensions.
 .figure *depth='3.20' *scale=63 *file='vi11' The File Specific Options Dialog
+.np
 The settings are divided into five categories:
 .begbull $compact
 .bull

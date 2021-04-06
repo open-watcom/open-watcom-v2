@@ -176,6 +176,7 @@ This opens the
 dialog where you enter the name of the Browser database file you are
 creating.
 .figure *depth='1.32' *scale=56 *file='brow1' Use the New Browser File dialog to create a new Browser database file.
+.np
 .step Type the name and path
 of the new Browser database file.
 .orstep Click on the
@@ -219,6 +220,7 @@ module file is enabled.
 .step Continue with steps 4 and 5
 until you have added all desired module files to the component list.
 .figure *depth='2.32' *scale=52 *file='brow2' The Modules dialog displays the selected module files.
+.np
 .step Click on
 .us OK
 on the
@@ -1696,6 +1698,7 @@ This opens the
 dialog where you specify the information you want
 to appear in detail views for classes.
 .figure *depth='2.30' *scale=52 *file='brow17' Use the Member Filters dialog to select the information to appear in detail views for classes.
+.np
 .step Choose the inheritance level
 from the
 .us Inherited Members

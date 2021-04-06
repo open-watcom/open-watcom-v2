@@ -600,6 +600,7 @@ Old Name
 New Name
 .endbull
 .figure *depth='1.31' *scale=72 *file='acc9' In the Rename Resource dialog, you enter the new name of the accelerator table.
+.np
 .step Enter the desired accelerator table name
 in the New Name field.
 .step Click on OK
@@ -659,6 +660,7 @@ Afterwards, a Save Accelerator Table dialog appears where you specify
 the resource file to which you want to save the current accelerator
 table.
 .figure *depth='2.24' *scale=66 *file='acc11' On the Save Accelerator Table dialog, specify the resource file to which you want to save the accelerator table.
+.np
 .begnote
 .note Important:
 If the resource file to which you are saving the accelerator table already
@@ -736,6 +738,7 @@ of the &company Accelerator Editor window.
 The Memory Options dialog opens displaying either the current or
 default memory options.
 .figure *depth='1.89' *scale=67 *file='acc13' On the Memory Options dialog, you change the memory options for the accelerator table.
+.np
 .step Select the required flags
 in the Memory Options and Load Options sections of the dialog by
 clicking on the check box beside the field. Following is a description
