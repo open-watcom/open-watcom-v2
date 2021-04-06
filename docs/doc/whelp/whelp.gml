@@ -251,6 +251,18 @@
 .gt dd add zdd
 .gt zdd add zdd
 
+:cmt. **** :ZDD2 ****
+.dm zdd2 begin
+:p.&rsddesc.:SF font=2.&*.:eSF.
+.dm zdd2 end
+.gt zdd2 add zdd2
+
+:cmt. **** :ZDD3 ****
+.dm zdd3 begin
+:p.&rsddesc.:SF font=3.&*.:eSF.
+.dm zdd3 end
+.gt zdd3 add zdd2
+
 :cmt. **** :DT ****
 .dm zdt begin
 .zdlinit
@@ -259,19 +271,31 @@
 .gt dt add zdt
 .gt zdt add zdt
 
+:cmt. **** :ZDT2 ****
+.dm zdt2 begin
+.zdlinit
+&rslstdt.:SF font=2.&*.:eSF.
+.dm zdt2 end
+.gt zdt2 add zdt2
+
+:cmt. **** :ZDT3 ****
+.dm zdt3 begin
+.zdlinit
+&rslstdt.:SF font=3.&*.:eSF.
+.dm zdt3 end
+.gt zdt3 add zdt3
+
 :cmt. **** :DTHD ****
-.dm zdthd begin
-:ZDT.:SF font=3.&*.:eSF.
-.dm zdthd end
-.gt dthd add zdthd cont
-.gt zdthd add zdthd cont
+.gt dthd add zdt3 cont
+.gt zdthd add zdt3 cont
+.gt zdthd2 add zdt2 cont
+.gt zdthd3 add zdt3 cont
 
 :cmt. **** :DDHD ****
-.dm zddhd begin
-:ZDD.:SF font=3.&*.:eSF.
-.dm zddhd end
-.gt ddhd add zddhd cont
-.gt zddhd add zddhd cont
+.gt ddhd add zdd3 cont
+.gt zddhd add zdd3 cont
+.gt zddhd2 add zdd2 cont
+.gt zddhd3 add zdd3 cont
 
 :cmt. **** :HDREF ****
 .dm zhdref begin
