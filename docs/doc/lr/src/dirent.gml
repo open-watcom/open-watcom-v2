@@ -56,14 +56,14 @@ as appropriate.
 #endif
 
 struct dirent {
-    char               d_dta[21];            /* disk transfer area */
-    char               d_attr;               /* file's attribute   */
-    unsigned short int d_time;               /* file's time        */
-    unsigned short int d_date;               /* file's date        */
-    long               d_size;               /* file's size        */
-    char               d_name[NAME_MAX + 1]; /* file's name        */
-    unsigned short     d_ino;                /* serial number      */
-    char               d_first;              /* flag for 1st time  */
+    char            d_dta[21];          /* disk transfer area */
+    char            d_attr;             /* file's attribute   */
+    unsigned short  d_time;             /* file's time        */
+    unsigned short  d_date;             /* file's date        */
+    long            d_size;             /* file's size        */
+    char            d_name[NAME_MAX+1]; /* file's name        */
+    unsigned short  d_ino;              /* serial number      */
+    char            d_first;            /* flag for 1st time  */
 };
 .blkcode end
 .np
