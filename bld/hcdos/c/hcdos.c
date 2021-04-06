@@ -41,7 +41,7 @@
 #include "stdui.h"
 #include "help.h"
 #include "cmdswtch.h"
-#include "sorthelp.h"
+#include "hcdos.h"
 #include "helpidx.h"
 #include "helpchar.h"
 #include "helpmem.h"

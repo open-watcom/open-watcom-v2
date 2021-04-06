@@ -35,7 +35,7 @@
 #include "wio.h"
 #include "watcom.h"
 #include "bool.h"
-#include "sorthelp.h"
+#include "hcdos.h"
 #include "helpidx.h"
 
 #define STR_CNT 2

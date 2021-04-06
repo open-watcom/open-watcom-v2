@@ -30,7 +30,7 @@ extra_c_flags_trmemcvr = $(trmem_cover_cflags)
 # Note: dmp.c can be built into a separate utility.
 
 exetarg_objs = &
-    sorthelp.obj &
+    hcdos.obj &
     index.obj &
     helpscan.obj &
     helpmem.obj &
