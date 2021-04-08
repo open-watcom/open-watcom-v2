@@ -36,40 +36,9 @@
 
 #include "trpall.h"
 
-extern trap_retval ReqConnect(void);
-extern trap_retval ReqDisconnect(void);
-extern trap_retval ReqSuspend(void);
-extern trap_retval ReqResume(void);
-extern trap_retval ReqGet_supplementary_service(void);
-extern trap_retval ReqPerform_supplementary_service(void);
-extern trap_retval ReqGet_sys_config(void);
-extern trap_retval ReqMap_addr(void);
-extern trap_retval ReqChecksum_mem(void);
-extern trap_retval ReqRead_mem(void);
-extern trap_retval ReqWrite_mem(void);
-extern trap_retval ReqRead_io(void);
-extern trap_retval ReqWrite_io(void);
-extern trap_retval ReqProg_go(void);
-extern trap_retval ReqProg_step(void);
-extern trap_retval ReqProg_load(void);
-extern trap_retval ReqProg_kill(void);
-extern trap_retval ReqSet_watch(void);
-extern trap_retval ReqClear_watch(void);
-extern trap_retval ReqSet_break(void);
-extern trap_retval ReqClear_break(void);
-extern trap_retval ReqGet_next_alias(void);
-extern trap_retval ReqSet_user_screen(void);
-extern trap_retval ReqSet_debug_screen(void);
-extern trap_retval ReqRead_user_keyboard(void);
-extern trap_retval ReqGet_lib_name(void);
-extern trap_retval ReqGet_err_text(void);
-extern trap_retval ReqGet_message_text(void);
-extern trap_retval ReqRedirect_stdin(void);
-extern trap_retval ReqRedirect_stdout(void);
-extern trap_retval ReqSplit_cmd(void);
-extern trap_retval ReqRead_regs(void);
-extern trap_retval ReqWrite_regs(void);
-extern trap_retval ReqMachine_data(void);
+#define pick(num,dumb,std)  extern trap_retval Req ## std ## (void);
+#include "_trpreq.h"
+#undef pick
 
 #ifdef WANT_FILE_INFO
 extern trap_retval ReqFileInfo_getdate(void);

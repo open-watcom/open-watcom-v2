@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,40 +45,9 @@
 #endif
 
 static trap_retval (* const CoreRequests[])(void) = {
-    ReqConnect,
-    ReqDisconnect,
-    ReqSuspend,
-    ReqResume,
-    ReqGet_supplementary_service,
-    ReqPerform_supplementary_service,
-    ReqGet_sys_config,
-    ReqMap_addr,
-    ReqChecksum_mem,
-    ReqRead_mem,
-    ReqWrite_mem,
-    ReqRead_io,
-    ReqWrite_io,
-    ReqProg_go,
-    ReqProg_step,
-    ReqProg_load,
-    ReqProg_kill,
-    ReqSet_watch,
-    ReqClear_watch,
-    ReqSet_break,
-    ReqClear_break,
-    ReqGet_next_alias,
-    ReqSet_user_screen,
-    ReqSet_debug_screen,
-    ReqRead_user_keyboard,
-    ReqGet_lib_name,
-    ReqGet_err_text,
-    ReqGet_message_text,
-    ReqRedirect_stdin,
-    ReqRedirect_stdout,
-    ReqSplit_cmd,
-    ReqRead_regs,
-    ReqWrite_regs,
-    ReqMachine_data,
+    #define pick(num,dumb,std)  Req ## std,
+    #include "_trpreq.h"
+    #undef pick
 };
 
 trap_retval ReqConnect( void )

@@ -165,40 +165,9 @@ static trap_retval ReqSplit_cmd( void )
 }
 
 static trap_retval (* const _dumbRequests[])( void ) = {
-    ReqConnect,
-    ReqSimpleStub, // ReqDisconnect,
-    ReqSimpleStub, // ReqSuspend,
-    ReqSimpleStub, // ReqResume,
-    ReqGet_supplementary_service,
-    ReqSimpleStub, // ReqPerform_supplementary_service,
-    ReqSimpleStub, // ReqGet_sys_config,
-    ReqMap_addr,
-    ReqChecksum_mem,
-    ReqSimpleStub, // ReqRead_mem,
-    ReqSimpleStub, // ReqWrite_mem,
-    ReqSimpleStub, // ReqRead_io,
-    ReqSimpleStub, // ReqWrite_io,
-    ReqSimpleStub, // ReqProg_go,
-    ReqSimpleStub, // ReqProg_step,
-    ReqProg_load,
-    ReqProg_kill,
-    ReqSet_watch,
-    ReqSimpleStub, // ReqClear_watch,
-    ReqSet_break,
-    ReqSimpleStub, // ReqClear_break,
-    ReqGet_next_alias,
-    ReqSimpleStub, // ReqSet_user_screen,
-    ReqSimpleStub, // ReqSet_debug_screen,
-    ReqRead_user_keyboard,
-    ReqGet_lib_name,
-    ReqSimpleStub, // ReqGet_err_text,
-    ReqSimpleStub, // ReqGet_message_text,
-    ReqRedirect_stdin,
-    ReqRedirect_stdout,
-    ReqSplit_cmd,
-    ReqSimpleStub, // ReqRead_regs,
-    ReqSimpleStub, // ReqWrite_regs,
-    ReqSimpleStub, // ReqMachine_data,
+    #define pick(num,dumb,std)  Req ## dumb,
+    #include "_trpreq.h"
+    #undef pick
 };
 
 
