@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,25 +34,30 @@
 
 #include "trptypes.h"
 
-#include "pushpck1.h"
-
 #define FILE_SUPP_NAME          "Files"
 
-typedef unsigned_64     trap_fhandle; /* file handle */
+//#define REQ_FILE_DEF(sym,func)
+#define REQ_FILE_DEFS() \
+    REQ_FILE_DEF( GET_CONFIG,         get_config ) \
+    REQ_FILE_DEF( OPEN,               open ) \
+    REQ_FILE_DEF( SEEK,               seek ) \
+    REQ_FILE_DEF( READ,               read ) \
+    REQ_FILE_DEF( WRITE,              write ) \
+    REQ_FILE_DEF( WRITE_CONSOLE,      write_console ) \
+    REQ_FILE_DEF( CLOSE,              close ) \
+    REQ_FILE_DEF( ERASE,              erase ) \
+    REQ_FILE_DEF( STRING_TO_FULLPATH, string_to_fullpath ) \
+    REQ_FILE_DEF( RUN_CMD,            run_cmd )
 
 enum {
-    REQ_FILE_GET_CONFIG,        /* 00 */
-    REQ_FILE_OPEN,              /* 01 */
-    REQ_FILE_SEEK,              /* 02 */
-    REQ_FILE_READ,              /* 03 */
-    REQ_FILE_WRITE,             /* 04 */
-    REQ_FILE_WRITE_CONSOLE,     /* 05 */
-    REQ_FILE_CLOSE,             /* 06 */
-    REQ_FILE_ERASE,             /* 07 */
-    REQ_FILE_STRING_TO_FULLPATH,/* 08 */
-    REQ_FILE_RUN_CMD            /* 09 */
+    #define REQ_FILE_DEF(sym,func)   REQ_FILE_ ## sym,
+    REQ_FILE_DEFS()
+    #undef REQ_FILE_DEF
 };
 
+#include "pushpck1.h"
+
+typedef unsigned_64     trap_fhandle; /* file handle */
 
 /*======================= REQ_FILE_GET_CONFIG ================*/
 

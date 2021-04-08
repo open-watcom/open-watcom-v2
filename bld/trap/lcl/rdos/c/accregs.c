@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,7 @@
 #include "madregs.h"
 #include "debug.h"
 
-trap_retval ReqRead_regs( void )
+trap_retval Req_Read_regs( void )
 {
     mad_registers           _WCUNALIGNED *mr;
     struct TDebug           *obj;
@@ -82,7 +83,7 @@ trap_retval ReqRead_regs( void )
     return( sizeof( mr->x86 ) );
 }
 
-trap_retval ReqWrite_regs( void )
+trap_retval Req_Write_regs( void )
 {
     mad_registers           _WCUNALIGNED *mr;
     struct TDebug           *obj;

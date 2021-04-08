@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,25 +34,30 @@
 
 #include "trptypes.h"
 
-#include "pushpck1.h"
-
 #define THREAD_SUPP_NAME                "Threads"
 
-typedef unsigned_32     trap_thandle; /* thread handle */
+//#define REQ_THREAD_DEF(sym,func)
+#define REQ_THREAD_DEFS() \
+    REQ_THREAD_DEF( GET_NEXT,  get_next ) \
+    REQ_THREAD_DEF( SET,       set ) \
+    REQ_THREAD_DEF( FREEZE,    freeze ) \
+    REQ_THREAD_DEF( THAW,      thaw ) \
+    REQ_THREAD_DEF( GET_EXTRA, get_extra )
+
+enum {
+    #define REQ_THREAD_DEF(sym,func)   REQ_THREAD_ ## sym,
+    REQ_THREAD_DEFS()
+    #undef REQ_THREAD_DEF
+};
+
 enum {
     THREAD_THAWED,
     THREAD_FROZEN
 };
 
+#include "pushpck1.h"
 
-enum {
-    REQ_THREAD_GET_NEXT,        /* 00 */
-    REQ_THREAD_SET,             /* 01 */
-    REQ_THREAD_FREEZE,          /* 02 */
-    REQ_THREAD_THAW,            /* 03 */
-    REQ_THREAD_GET_EXTRA        /* 04 */
-};
-
+typedef unsigned_32     trap_thandle; /* thread handle */
 
 typedef struct {
     supp_prefix         supp;

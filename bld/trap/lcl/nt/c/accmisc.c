@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -114,7 +114,7 @@ bool FindPData( addr_off off, axp_pdata *pdata )
 }
 #endif
 
-trap_retval ReqMachine_data( void )
+trap_retval Req_Machine_data( void )
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;
@@ -158,11 +158,11 @@ trap_retval ReqMachine_data( void )
 #elif defined( MD_ppc )
     return( sizeof( *ret ) );
 #else
-    #error ReqMachine_data not configured
+    #error Req_Machine_data not configured
 #endif
 }
 
-trap_retval ReqGet_sys_config( void )
+trap_retval Req_Get_sys_config( void )
 {
     get_sys_config_ret  *ret;
     SYSTEM_INFO         info;
@@ -229,12 +229,12 @@ trap_retval ReqGet_sys_config( void )
     ret->sys.fpu = 0;
     ret->sys.arch = DIG_ARCH_PPC;
 #else
-    #error ReqGet_sys_config not configured
+    #error Req_Get_sys_config not configured
 #endif
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqGet_message_text( void )
+trap_retval Req_Get_message_text( void )
 {
     get_message_text_ret    *ret;
     char                    *err_txt;
@@ -347,7 +347,7 @@ trap_retval ReqGet_message_text( void )
     return( sizeof( *ret ) + strlen( err_txt ) + 1 );
 }
 
-trap_retval ReqGet_next_alias( void )
+trap_retval Req_Get_next_alias( void )
 {
     get_next_alias_ret  *ret;
 
@@ -391,7 +391,7 @@ void AddMessagePrefix( char *buff, int len )
     strcpy( MsgPrefix, buff );
 }
 
-trap_retval ReqGet_err_text( void )
+trap_retval Req_Get_err_text( void )
 {
     get_err_text_req    *acc;
     char                *err_txt;
@@ -514,7 +514,7 @@ unsigned long FindProgFile( const char *pgm, char *buffer, const char *ext_list 
     return( rc );
 }
 
-trap_retval ReqSplit_cmd( void )
+trap_retval Req_Split_cmd( void )
 {
     char            *cmd;
     char            *start;
@@ -555,12 +555,12 @@ trap_retval ReqSplit_cmd( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqRead_io( void )
+trap_retval Req_Read_io( void )
 {
     return( 0 );
 }
 
-trap_retval ReqWrite_io( void )
+trap_retval Req_Write_io( void )
 {
     write_io_ret    *ret;
 
@@ -569,12 +569,12 @@ trap_retval ReqWrite_io( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqSet_user_screen( void )
+trap_retval Req_Set_user_screen( void )
 {
     return( 0 );
 }
 
-trap_retval ReqSet_debug_screen( void )
+trap_retval Req_Set_debug_screen( void )
 {
     ProcessQueuedRepaints();
     return( 0 );

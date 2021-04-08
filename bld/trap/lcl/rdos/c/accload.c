@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +46,7 @@
 /*
  * AccLoadProg - create a new process for debugging
  */
-trap_retval ReqProg_load( void )
+trap_retval Req_Prog_load( void )
 {
     char            *parm;
     prog_load_req   *acc;
@@ -120,7 +120,7 @@ trap_retval ReqProg_load( void )
 
 }
 
-trap_retval ReqProg_kill( void )
+trap_retval Req_Prog_kill( void )
 {
     prog_kill_ret   *ret;
 

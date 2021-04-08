@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,7 +67,7 @@ trap_retval ReqFile_get_config( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqRead_user_keyboard( void )
+trap_retval Req_Read_user_keyboard( void )
 {
     read_user_keyboard_req  *acc;
     read_user_keyboard_ret  *ret;

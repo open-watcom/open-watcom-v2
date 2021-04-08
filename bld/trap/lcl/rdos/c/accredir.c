@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,12 +34,12 @@
 #include <stdlib.h>
 #include "stdrdos.h"
 
-trap_retval ReqRedirect_stdin( void )
+trap_retval Req_Redirect_stdin( void )
 {
     return( 0 );
 }
 
-trap_retval ReqRedirect_stdout( void )
+trap_retval Req_Redirect_stdout( void )
 {
     redirect_stdout_ret *ret;
 

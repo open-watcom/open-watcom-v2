@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -251,12 +251,12 @@ trap_retval ReqFile_erase( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqSet_user_screen( void )
+trap_retval Req_Set_user_screen( void )
 {
     return( 0 );
 }
 
-trap_retval ReqSet_debug_screen( void )
+trap_retval Req_Set_debug_screen( void )
 {
     return( 0 );
 }
@@ -315,7 +315,7 @@ unsigned FindFilePath( int exe, const char *name, char *result )
     return( 0 );
 }
 
-trap_retval ReqRead_user_keyboard( void )
+trap_retval Req_Read_user_keyboard( void )
 {
     read_user_keyboard_req      *acc;
     read_user_keyboard_ret      *ret;
@@ -326,7 +326,7 @@ trap_retval ReqRead_user_keyboard( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqSplit_cmd( void )
+trap_retval Req_Split_cmd( void )
 {
     char                *cmd;
     char                *start;
@@ -357,7 +357,7 @@ trap_retval ReqSplit_cmd( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqGet_next_alias( void )
+trap_retval Req_Get_next_alias( void )
 {
     get_next_alias_req  *acc;
     get_next_alias_ret  *ret;

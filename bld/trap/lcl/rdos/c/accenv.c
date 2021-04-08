@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,7 @@
 #include "stdrdos.h"
 #include "rdos.h"
 
-trap_retval ReqEnv_setvar( void )
+trap_retval ReqEnv_set_var( void )
 {
     env_set_var_req *req;
     env_set_var_ret *ret;
@@ -59,14 +60,14 @@ trap_retval ReqEnv_setvar( void )
     RdosDeleteEnvVar( handle, var );
 
     if( value )
-        RdosAddEnvVar( handle, var, value );   
+        RdosAddEnvVar( handle, var, value );
 
     RdosCloseEnv( handle );
 
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqEnv_getvar( void )
+trap_retval ReqEnv_get_var( void )
 {
     env_get_var_req *req;
     env_get_var_ret *ret;
@@ -87,6 +88,6 @@ trap_retval ReqEnv_getvar( void )
         ret->err = MSG_NOT_FOUND;
         return( sizeof( *ret ) );
     }
-    
+
     return( sizeof( *ret ) + strlen( value ) + 1 );
 }

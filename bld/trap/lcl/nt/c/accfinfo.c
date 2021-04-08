@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,7 @@
 
 #include "stdnt.h"
 
-trap_retval ReqFileInfo_getdate( void )
+trap_retval ReqFileInfo_get_date( void )
 {
     file_info_get_date_req  *req;
     file_info_get_date_ret  *ret;
@@ -57,7 +57,7 @@ trap_retval ReqFileInfo_getdate( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqFileInfo_setdate( void )
+trap_retval ReqFileInfo_set_date( void )
 {
     file_info_set_date_req  *req;
     file_info_set_date_ret  *ret;

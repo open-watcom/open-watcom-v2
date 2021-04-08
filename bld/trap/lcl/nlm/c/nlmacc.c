@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -816,7 +816,7 @@ void BigKludge( msb *m )
     };
 #endif
 
-trap_retval ReqGet_sys_config( void )
+trap_retval Req_Get_sys_config( void )
 {
     get_sys_config_ret  *ret;
 
@@ -831,7 +831,7 @@ trap_retval ReqGet_sys_config( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqMap_addr( void )
+trap_retval Req_Map_addr( void )
 {
     map_addr_req        *acc;
     map_addr_ret        *ret;
@@ -887,7 +887,7 @@ trap_retval ReqMap_addr( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqMachine_data( void )
+trap_retval Req_Machine_data( void )
 {
     machine_data_ret    *ret;
     unsigned_8          *data;
@@ -946,7 +946,7 @@ static unsigned short ReadWrite( int (*rtn)(addr48_ptr *, unsigned long, void *)
 }
 
 
-trap_retval ReqChecksum_mem( void )
+trap_retval Req_Checksum_mem( void )
 {
     trap_elen           len;
     addr48_ptr          addr;
@@ -978,7 +978,7 @@ trap_retval ReqChecksum_mem( void )
 }
 
 
-trap_retval ReqRead_mem( void )
+trap_retval Req_Read_mem( void )
 {
     addr48_ptr          addr;
     read_mem_req        *acc;
@@ -992,7 +992,7 @@ trap_retval ReqRead_mem( void )
     return( len );
 }
 
-trap_retval ReqWrite_mem( void )
+trap_retval Req_Write_mem( void )
 {
     addr48_ptr          addr;
     write_mem_req       *acc;
@@ -1011,7 +1011,7 @@ trap_retval ReqWrite_mem( void )
 }
 
 
-trap_retval ReqRead_io( void )
+trap_retval Req_Read_io( void )
 {
     read_io_req     *acc;
     void            *data;
@@ -1029,7 +1029,7 @@ trap_retval ReqRead_io( void )
 }
 
 
-trap_retval ReqWrite_io( void )
+trap_retval Req_Write_io( void )
 {
     write_io_req    *acc;
     write_io_ret    *ret;
@@ -1051,7 +1051,7 @@ trap_retval ReqWrite_io( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqRead_regs( void )
+trap_retval Req_Read_regs( void )
 {
     mad_registers       *mr;
 
@@ -1064,7 +1064,7 @@ trap_retval ReqRead_regs( void )
     return( sizeof( mr->x86 ) );
 }
 
-trap_retval ReqWrite_regs( void )
+trap_retval Req_Write_regs( void )
 {
     mad_registers       *mr;
 
@@ -1245,7 +1245,7 @@ static void LoadHelper( void )
 
 static char    helper_stack[8192]; /* We may return before thread dies! */
 
-trap_retval ReqProg_load( void )
+trap_retval Req_Prog_load( void )
 {
     prog_load_ret       *ret;
     struct LoadDefinitionStructure *ld;
@@ -1285,7 +1285,7 @@ trap_retval ReqProg_load( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqProg_kill( void )
+trap_retval Req_Prog_kill( void )
 {
     msb         *m;
     prog_kill_ret       *ret;
@@ -1388,7 +1388,7 @@ static trap_conditions Execute( msb *which )
     }
 }
 
-trap_retval ReqSet_watch( void )
+trap_retval Req_Set_watch( void )
 {
     dword           l;
     set_watch_req   *acc;
@@ -1432,13 +1432,13 @@ trap_retval ReqSet_watch( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqClear_watch( void )
+trap_retval Req_Clear_watch( void )
 {
     WatchCount = 0;
     return( 0 );
 }
 
-trap_retval ReqSet_break( void )
+trap_retval Req_Set_break( void )
 {
     set_break_req   *acc;
     set_break_ret   *ret;
@@ -1457,7 +1457,7 @@ trap_retval ReqSet_break( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqClear_break( void )
+trap_retval Req_Clear_break( void )
 {
     clear_break_req     *acc;
     opcode_type         brk_opcode;
@@ -1590,17 +1590,17 @@ leave:
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqProg_go( void )
+trap_retval Req_Prog_go( void )
 {
     return( ProgRun( FALSE ) );
 }
 
-trap_retval ReqProg_step( void )
+trap_retval Req_Prog_step( void )
 {
     return( ProgRun( TRUE ) );
 }
 
-trap_retval ReqGet_next_alias( void )
+trap_retval Req_Get_next_alias( void )
 {
     get_next_alias_ret  *ret;
 
@@ -1739,7 +1739,7 @@ trap_retval ReqThread_get_extra( void )
     return( strlen( name ) + 1 );
 }
 
-trap_retval ReqGet_err_text( void )
+trap_retval Req_Get_err_text( void )
 {
     char        *err;
 
@@ -1749,7 +1749,7 @@ trap_retval ReqGet_err_text( void )
     return( strlen( err ) + 1 );
 }
 
-trap_retval ReqGet_message_text( void )
+trap_retval Req_Get_message_text( void )
 {
     get_message_text_ret        *ret;
     char                        *err_txt;
@@ -1783,7 +1783,7 @@ static LoadedListHandle GetLoadedListHandle( struct LoadDefinitionStructure *ld 
 }
 #endif
 
-trap_retval ReqGet_lib_name( void )
+trap_retval Req_Get_lib_name( void )
 {
     int                 len;
     get_lib_name_req    *acc;
@@ -1824,7 +1824,7 @@ trap_retval ReqGet_lib_name( void )
     }
 }
 
-trap_retval ReqRedirect_stdin( void )
+trap_retval Req_Redirect_stdin( void )
 {
     redirect_stdin_ret  *ret;
 
@@ -1833,7 +1833,7 @@ trap_retval ReqRedirect_stdin( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqRedirect_stdout( void )
+trap_retval Req_Redirect_stdout( void )
 {
     redirect_stdout_ret *ret;
 
@@ -1843,21 +1843,21 @@ trap_retval ReqRedirect_stdout( void )
 }
 
 
-trap_retval ReqSet_user_screen( void )
+trap_retval Req_Set_user_screen( void )
 {
     /* NOT IMPLEMENTED */
     return( 0 );
 }
 
 
-trap_retval ReqSet_debug_screen( void )
+trap_retval Req_Set_debug_screen( void )
 {
     /* NOT IMPLEMENTED */
     return( 0 );
 }
 
 
-trap_retval ReqRead_user_keyboard( void )
+trap_retval Req_Read_user_keyboard( void )
 {
     /* NOT IMPLEMENTED */
     read_user_keyboard_ret      *ret;
@@ -1867,7 +1867,7 @@ trap_retval ReqRead_user_keyboard( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqSplit_cmd( void )
+trap_retval Req_Split_cmd( void )
 {
     char             *cmd;
     char             *start;

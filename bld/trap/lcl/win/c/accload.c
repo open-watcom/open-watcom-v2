@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -97,7 +97,7 @@ typedef struct
  *      - Trace one instruction. This leaves you at the first instruction
  *        of the 32-bit code
  */
-trap_retval ReqProg_load( void )
+trap_retval Req_Prog_load( void )
 {
     char                exe_name[_MAX_PATH];
     pgroup2             pg;
@@ -299,7 +299,7 @@ trap_retval ReqProg_load( void )
 }
 
 /*
- * ReqProg_kill
+ * Req_Prog_kill
  *
  * If it was a task that we attached to (WasStarted), all we do is
  * forgive the last interrupt, and then exit
@@ -315,7 +315,7 @@ trap_retval ReqProg_load( void )
  * second pause - to allow Windows to get on with the unloading of the module,
  * if it is going to.  Ack.
  */
-trap_retval ReqProg_kill( void )
+trap_retval Req_Prog_kill( void )
 {
     prog_kill_ret       *ret;
 

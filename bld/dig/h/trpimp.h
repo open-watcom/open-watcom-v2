@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,95 +36,62 @@
 
 #include "trpall.h"
 
-#define pick(num,dumb,std)  extern trap_retval Req ## std ## (void);
+#define pick(sym,dumbfunc,stdfunc)          extern trap_retval Req_ ## stdfunc ## (void);
 #include "_trpreq.h"
 #undef pick
 
 #ifdef WANT_FILE_INFO
-extern trap_retval ReqFileInfo_getdate(void);
-extern trap_retval ReqFileInfo_setdate(void);
+    #define REQ_FILE_INFO_DEF(sym,func)     extern trap_retval ReqFileInfo_ ## func ## (void);
+    REQ_FILE_INFO_DEFS()
+    #undef REQ_FILE_INFO_DEF
 #endif
 
 #ifdef WANT_ENV
-extern trap_retval ReqEnv_getvar(void);
-extern trap_retval ReqEnv_setvar(void);
+    #define REQ_ENV_DEF(sym,func)           extern trap_retval ReqEnv_ ## func ## (void);
+    REQ_ENV_DEFS()
+    #undef REQ_ENV_DEF
 #endif
 
 #ifdef WANT_ASYNC
-extern trap_retval ReqAsync_go(void);
-extern trap_retval ReqAsync_step(void);
-extern trap_retval ReqAsync_poll(void);
-extern trap_retval ReqAsync_stop(void);
-extern trap_retval ReqAsync_add_break(void);
-extern trap_retval ReqAsync_remove_break(void);
+    #define REQ_ASYNC_DEF(sym,func)         extern trap_retval ReqAsync_ ## func ## (void);
+    REQ_ASYNC_DEFS()
+    #undef REQ_ASYNC_DEF
 #endif
 
 #ifdef WANT_FILE
-extern trap_retval ReqFile_get_config(void);
-extern trap_retval ReqFile_open(void);
-extern trap_retval ReqFile_seek(void);
-extern trap_retval ReqFile_read(void);
-extern trap_retval ReqFile_write(void);
-extern trap_retval ReqFile_write_console(void);
-extern trap_retval ReqFile_close(void);
-extern trap_retval ReqFile_erase(void);
-extern trap_retval ReqFile_string_to_fullpath(void);
-extern trap_retval ReqFile_run_cmd(void);
+    #define REQ_FILE_DEF(sym,func)          extern trap_retval ReqFile_ ## func ## (void);
+    REQ_FILE_DEFS()
+    #undef REQ_FILE_DEF
 #endif
 
 #ifdef WANT_OVL
-extern trap_retval ReqOvl_state_size(void);
-extern trap_retval ReqOvl_get_data(void);
-extern trap_retval ReqOvl_read_state(void);
-extern trap_retval ReqOvl_write_state(void);
-extern trap_retval ReqOvl_trans_vect_addr(void);
-extern trap_retval ReqOvl_trans_ret_addr(void);
-extern trap_retval ReqOvl_get_remap_entry(void);
+    #define REQ_OVL_DEF(sym,func)           extern trap_retval ReqOvl_ ## func ## (void);
+    REQ_OVL_DEFS()
+    #undef REQ_OVL_DEF
 #endif
 
 #ifdef WANT_THREAD
-extern trap_retval ReqThread_get_next(void);
-extern trap_retval ReqThread_set(void);
-extern trap_retval ReqThread_freeze(void);
-extern trap_retval ReqThread_thaw(void);
-extern trap_retval ReqThread_get_extra(void);
+    #define REQ_THREAD_DEF(sym,func)        extern trap_retval ReqThread_ ## func ## (void);
+    REQ_THREAD_DEFS()
+    #undef REQ_THREAD_DEF
 #endif
 
 #ifdef WANT_RUN_THREAD
-extern trap_retval ReqRunThread_info(void);
-extern trap_retval ReqRunThread_get_next(void);
-extern trap_retval ReqRunThread_get_runtime(void);
-extern trap_retval ReqRunThread_poll(void);
-extern trap_retval ReqRunThread_set(void);
-extern trap_retval ReqRunThread_get_name(void);
-extern trap_retval ReqRunThread_stop(void);
-extern trap_retval ReqRunThread_signal_stop(void);
+    #define REQ_RUN_THREAD_DEF(sym,func)    extern trap_retval ReqRunThread_ ## func ## (void);
+    REQ_RUN_THREAD_DEFS()
+    #undef REQ_RUN_THREAD_DEF
 #endif
 
 #ifdef WANT_RFX
-extern trap_retval ReqRfx_rename(void);
-extern trap_retval ReqRfx_mkdir(void);
-extern trap_retval ReqRfx_rmdir(void);
-extern trap_retval ReqRfx_setdrive(void);
-extern trap_retval ReqRfx_getdrive(void);
-extern trap_retval ReqRfx_setcwd(void);
-extern trap_retval ReqRfx_getcwd(void);
-extern trap_retval ReqRfx_setdatetime(void);
-extern trap_retval ReqRfx_getdatetime(void);
-extern trap_retval ReqRfx_getfreespace(void);
-extern trap_retval ReqRfx_setfileattr(void);
-extern trap_retval ReqRfx_getfileattr(void);
-extern trap_retval ReqRfx_nametocanonical(void);
-extern trap_retval ReqRfx_findfirst(void);
-extern trap_retval ReqRfx_findnext(void);
-extern trap_retval ReqRfx_findclose(void);
+    #define REQ_RFX_DEF(sym,func)           extern trap_retval ReqRfx_ ## func ## (void);
+    REQ_RFX_DEFS()
+    #undef REQ_RFX_DEF
 #endif
 
 #ifdef WANT_CAPABILITIES
-extern trap_retval ReqCapabilities_get_8b_bp(void);
-extern trap_retval ReqCapabilities_set_8b_bp(void);
-extern trap_retval ReqCapabilities_get_exact_bp(void);
-extern trap_retval ReqCapabilities_set_exact_bp(void);
+    #define REQ_CAPABILITIES_DEF(sym,func)  extern trap_retval ReqCapabilities_ ## func ## (void);
+    REQ_CAPABILITIES_DEFS()
+    #undef REQ_CAPABILITIES_DEF
 #endif
 
 #endif

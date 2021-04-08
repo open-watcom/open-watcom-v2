@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,19 +36,24 @@
 #include "trptypes.h"
 #include <time.h>
 
-#include "pushpck1.h"
-
 #define ASYNC_SUPP_NAME "Asynch"
 
+//#define REQ_ASYNC_DEF(sym,func)
+#define REQ_ASYNC_DEFS() \
+    REQ_ASYNC_DEF( GO,           go ) \
+    REQ_ASYNC_DEF( STEP,         step ) \
+    REQ_ASYNC_DEF( POLL,         poll ) \
+    REQ_ASYNC_DEF( STOP,         stop ) \
+    REQ_ASYNC_DEF( ADD_BREAK,    add_break ) \
+    REQ_ASYNC_DEF( REMOVE_BREAK, remove_break )
+
 enum {
-    REQ_ASYNC_GO,               /* 00 */
-    REQ_ASYNC_STEP,             /* 01 */
-    REQ_ASYNC_POLL,             /* 02 */
-    REQ_ASYNC_STOP,             /* 03 */
-    REQ_ASYNC_ADD_BREAK,        /* 04 */
-    REQ_ASYNC_REMOVE_BREAK,     /* 05 */
+    #define REQ_ASYNC_DEF(sym,func)     REQ_ASYNC_ ## sym,
+    REQ_ASYNC_DEFS()
+    #undef REQ_ASYNC_DEF
 };
 
+#include "pushpck1.h"
 
 /*=================== REQ_ASYNC_GO ===================*/
 

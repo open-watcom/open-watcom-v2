@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,7 +71,7 @@ DWORD WriteMem( WORD sel, DWORD off, LPVOID buff, DWORD size )
 
 } /* WriteMem */
 
-trap_retval ReqRead_mem( void )
+trap_retval Req_Read_mem( void )
 {
     read_mem_req        *acc;
     LPVOID              data;
@@ -84,7 +84,7 @@ trap_retval ReqRead_mem( void )
     return( len );
 }
 
-trap_retval ReqWrite_mem( void )
+trap_retval Req_Write_mem( void )
 {
     trap_elen           len;
     LPVOID              data;
@@ -100,7 +100,7 @@ trap_retval ReqWrite_mem( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqChecksum_mem( void )
+trap_retval Req_Checksum_mem( void )
 {
     DWORD               offset;
     trap_elen           length;

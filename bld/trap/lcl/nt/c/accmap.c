@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -529,7 +529,7 @@ static void force16SegmentLoad( thread_info *ti, WORD sel )
 #endif
 #endif
 
-trap_retval ReqMap_addr( void )
+trap_retval Req_Map_addr( void )
 {
     int             i;
     HANDLE          handle;
@@ -647,7 +647,7 @@ trap_retval ReqMap_addr( void )
 /*
  * AccGetLibName - get lib name of current module
  */
-trap_retval ReqGet_lib_name( void )
+trap_retval Req_Get_lib_name( void )
 {
     get_lib_name_req    *acc;
     get_lib_name_ret    *ret;

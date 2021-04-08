@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,106 +40,73 @@ typedef trap_retval service_func( void );
 
 #if defined(WANT_FILE_INFO)
 static service_func * const FileInfoRequests[] = {
-    ReqFileInfo_getdate,
-    ReqFileInfo_setdate,
+    #define REQ_FILE_INFO_DEF(sym,func)     ReqFileInfo_ ## func,
+    REQ_FILE_INFO_DEFS()
+    #undef REQ_FILE_INFO_DEF
 };
 #endif
 
 #if defined(WANT_ENV)
 static service_func * const EnvRequests[] = {
-    ReqEnv_getvar,
-    ReqEnv_setvar,
+    #define REQ_ENV_DEF(sym,func)           ReqEnv_ ## func,
+    REQ_ENV_DEFS()
+    #undef REQ_ENV_DEF
 };
 #endif
 
 #if defined(WANT_FILE)
 static service_func * const FileRequests[] = {
-    ReqFile_get_config,
-    ReqFile_open,
-    ReqFile_seek,
-    ReqFile_read,
-    ReqFile_write,
-    ReqFile_write_console,
-    ReqFile_close,
-    ReqFile_erase,
-    ReqFile_string_to_fullpath,
-    ReqFile_run_cmd,
+    #define REQ_FILE_DEF(sym,func)          ReqFile_ ## func,
+    REQ_FILE_DEFS()
+    #undef REQ_FILE_DEF
 };
 #endif
 
 #if defined(WANT_OVL)
 static service_func * const OvlRequests[] = {
-    ReqOvl_state_size,
-    ReqOvl_get_data,
-    ReqOvl_read_state,
-    ReqOvl_write_state,
-    ReqOvl_trans_vect_addr,
-    ReqOvl_trans_ret_addr,
-    ReqOvl_get_remap_entry,
+    #define REQ_OVL_DEF(sym,func)           ReqOvl_ ## func,
+    REQ_OVL_DEFS()
+    #undef REQ_OVL_DEF
 };
 #endif
 
 #if defined(WANT_THREAD)
 static service_func * const ThreadRequests[] = {
-    ReqThread_get_next,
-    ReqThread_set,
-    ReqThread_freeze,
-    ReqThread_thaw,
-    ReqThread_get_extra,
+    #define REQ_THREAD_DEF(sym,func)        ReqThread_ ## func,
+    REQ_THREAD_DEFS()
+    #undef REQ_THREAD_DEF
 };
 #endif
 
 #if defined(WANT_RUN_THREAD)
 static service_func * const RunThreadRequests[] = {
-    ReqRunThread_info,
-    ReqRunThread_get_next,
-    ReqRunThread_get_runtime,
-    ReqRunThread_poll,
-    ReqRunThread_set,
-    ReqRunThread_get_name,
-    ReqRunThread_stop,
-    ReqRunThread_signal_stop,
+    #define REQ_RUN_THREAD_DEF(sym,func)    ReqRunThread_ ## func,
+    REQ_RUN_THREAD_DEFS()
+    #undef REQ_RUN_THREAD_DEF
 };
 #endif
 
 #if defined(WANT_RFX)
 static service_func * const RFXRequests[] = {
-    ReqRfx_rename,
-    ReqRfx_mkdir,
-    ReqRfx_rmdir,
-    ReqRfx_setdrive,
-    ReqRfx_getdrive,
-    ReqRfx_setcwd,
-    ReqRfx_getcwd,
-    ReqRfx_setdatetime,
-    ReqRfx_getdatetime,
-    ReqRfx_getfreespace,
-    ReqRfx_setfileattr,
-    ReqRfx_getfileattr,
-    ReqRfx_nametocanonical,
-    ReqRfx_findfirst,
-    ReqRfx_findnext,
-    ReqRfx_findclose,
+    #define REQ_RFX_DEF(sym,func)           ReqRfx_ ## func,
+    REQ_RFX_DEFS()
+    #undef REQ_RFX_DEF
 };
 #endif
 
 #if defined(WANT_CAPABILITIES)
 static service_func * const CapabilitiesRequests[] = {
-    ReqCapabilities_get_8b_bp,
-    ReqCapabilities_set_8b_bp,
-    ReqCapabilities_get_exact_bp,
-    ReqCapabilities_set_exact_bp,
+    #define REQ_CAPABILITIES_DEF(sym,func)  ReqCapabilities_ ## func,
+    REQ_CAPABILITIES_DEFS()
+    #undef REQ_CAPABILITIES_DEF
 };
 #endif
 
 #if defined(WANT_ASYNC)
 static service_func * const AsyncRequests[] = {
-    ReqAsync_go,
-    ReqAsync_step,
-    ReqAsync_poll,
-    ReqAsync_stop,
-    ReqAsync_add_break,
-    ReqAsync_remove_break,
+    #define REQ_ASYNC_DEF(sym,func)         ReqAsync_ ## func,
+    REQ_ASYNC_DEFS()
+    #undef REQ_ASYNC_DEF
 };
 #endif
 
@@ -179,7 +146,7 @@ static const service_entry  Services[] = {
     { NULL,                 NULL }
 };
 
-trap_retval ReqGet_supplementary_service(void)
+trap_retval Req_Get_supplementary_service(void)
 {
     char                                *name;
     get_supplementary_service_ret       *out;
@@ -198,7 +165,7 @@ trap_retval ReqGet_supplementary_service(void)
     return( sizeof( *out ) );
 }
 
-trap_retval ReqPerform_supplementary_service( void )
+trap_retval Req_Perform_supplementary_service( void )
 {
     access_req      *sup_req;
     trap_shandle    *id;

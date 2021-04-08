@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,26 +38,32 @@
 
 #define RFX_SUPP_NAME           "RFX"
 
-#define RFX_NAME_MAX            259
+//#define REQ_RFX_DEF(sym,func)
+#define REQ_RFX_DEFS() \
+    REQ_RFX_DEF( RENAME,          rename ) \
+    REQ_RFX_DEF( MKDIR,           mkdir ) \
+    REQ_RFX_DEF( RMDIR,           rmdir ) \
+    REQ_RFX_DEF( SETDRIVE,        setdrive ) \
+    REQ_RFX_DEF( GETDRIVE,        getdrive ) \
+    REQ_RFX_DEF( SETCWD,          setcwd ) \
+    REQ_RFX_DEF( GETCWD,          getcwd ) \
+    REQ_RFX_DEF( SETDATETIME,     setdatetime ) \
+    REQ_RFX_DEF( GETDATETIME,     getdatetime ) \
+    REQ_RFX_DEF( GETFREESPACE,    getfreespace ) \
+    REQ_RFX_DEF( SETFILEATTR,     setfileattr ) \
+    REQ_RFX_DEF( GETFILEATTR,     getfileattr ) \
+    REQ_RFX_DEF( NAMETOCANONICAL, nametocanonical ) \
+    REQ_RFX_DEF( FINDFIRST,       findfirst ) \
+    REQ_RFX_DEF( FINDNEXT,        findnext ) \
+    REQ_RFX_DEF( FINDCLOSE,       findclose )
 
 enum {
-    REQ_RFX_RENAME,             /* 00 */
-    REQ_RFX_MKDIR,              /* 01 */
-    REQ_RFX_RMDIR,              /* 02 */
-    REQ_RFX_SETDRIVE,           /* 03 */
-    REQ_RFX_GETDRIVE,           /* 04 */
-    REQ_RFX_SETCWD,             /* 05 */
-    REQ_RFX_GETCWD,             /* 06 */
-    REQ_RFX_SETDATETIME,        /* 07 */
-    REQ_RFX_GETDATETIME,        /* 08 */
-    REQ_RFX_GETFREESPACE,       /* 09 */
-    REQ_RFX_SETFILEATTR,        /* 10 */
-    REQ_RFX_GETFILEATTR,        /* 11 */
-    REQ_RFX_NAMETOCANONICAL,    /* 12 */
-    REQ_RFX_FINDFIRST,          /* 13 */
-    REQ_RFX_FINDNEXT,           /* 14 */
-    REQ_RFX_FINDCLOSE           /* 15 */
+    #define REQ_RFX_DEF(sym,func)   REQ_RFX_ ## sym,
+    REQ_RFX_DEFS()
+    #undef REQ_RFX_DEF
 };
+
+#define RFX_NAME_MAX            259
 
 #include "pushpck1.h"
 

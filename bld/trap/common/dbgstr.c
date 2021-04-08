@@ -36,7 +36,7 @@
 #define XSTR(x)    # x
 
 char *DBG_ReqStrings[] = {
-    #define pick(num,dumb,std)  XSTR( REQ_ ## num ),
+    #define pick(sym,dumbfunc,stdfunc)  XSTR( REQ_ ## sym ),
     #include "_trpreq.h"
     #undef pick
 };

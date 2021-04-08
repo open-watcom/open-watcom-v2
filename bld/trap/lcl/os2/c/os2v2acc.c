@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -571,7 +571,7 @@ void DoWritePgmScrn( char *buff, USHORT len )
     BreakPointParm( 0 );
 }
 
-trap_retval ReqGet_sys_config( void )
+trap_retval Req_Get_sys_config( void )
 {
     USHORT        version;
     USHORT        shift;
@@ -606,7 +606,7 @@ trap_retval ReqGet_sys_config( void )
 }
 
 
-trap_retval ReqMap_addr( void )
+trap_retval Req_Map_addr( void )
 {
     USHORT              seg;
     ULONG               flags;
@@ -664,7 +664,7 @@ trap_retval ReqMap_addr( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqMachine_data( void )
+trap_retval Req_Machine_data( void )
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;
@@ -680,7 +680,7 @@ trap_retval ReqMachine_data( void )
     return( sizeof( *ret ) + sizeof( *data ) );
 }
 
-trap_retval ReqChecksum_mem( void )
+trap_retval Req_Checksum_mem( void )
 {
     ULONG         offset;
     USHORT        length;
@@ -716,7 +716,7 @@ trap_retval ReqChecksum_mem( void )
 }
 
 
-trap_retval ReqRead_mem( void )
+trap_retval Req_Read_mem( void )
 {
     read_mem_req        *acc;
     void                *ret;
@@ -729,7 +729,7 @@ trap_retval ReqRead_mem( void )
 }
 
 
-trap_retval ReqWrite_mem( void )
+trap_retval Req_Write_mem( void )
 {
     write_mem_req       *acc;
     write_mem_ret       *ret;
@@ -795,7 +795,7 @@ static void WriteCPU( struct x86_cpu *r )
     lastEIP = Buff.EIP;
 }
 
-trap_retval ReqRead_regs( void )
+trap_retval Req_Read_regs( void )
 {
     mad_registers       *mr;
 
@@ -814,7 +814,7 @@ trap_retval ReqRead_regs( void )
     return( sizeof( mr->x86 ) );
 }
 
-trap_retval ReqWrite_regs( void )
+trap_retval Req_Write_regs( void )
 {
     mad_registers       *mr;
 
@@ -832,7 +832,7 @@ trap_retval ReqWrite_regs( void )
     return( 0 );
 }
 
-trap_retval ReqGet_lib_name( void )
+trap_retval Req_Get_lib_name( void )
 {
     get_lib_name_req    *acc;
     get_lib_name_ret    *ret;
@@ -979,7 +979,7 @@ void DebugSession( void )
         DosSelectSession( 0, 0 );
 }
 
-trap_retval ReqProg_load( void )
+trap_retval Req_Prog_load( void )
 {
     NEWSTARTDATA        start;
     char                *parms;
@@ -1093,7 +1093,7 @@ trap_retval ReqProg_load( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqProg_kill( void )
+trap_retval Req_Prog_kill( void )
 {
     prog_kill_ret       *ret;
 
@@ -1118,7 +1118,7 @@ trap_retval ReqProg_kill( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqSet_break( void )
+trap_retval Req_Set_break( void )
 {
     opcode_type         brk_opcode;
     set_break_req       *acc;
@@ -1133,7 +1133,7 @@ trap_retval ReqSet_break( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqClear_break( void )
+trap_retval Req_Clear_break( void )
 {
     clear_break_req     *acc;
     opcode_type         brk_opcode;
@@ -1144,7 +1144,7 @@ trap_retval ReqClear_break( void )
     return( 0 );
 }
 
-trap_retval ReqSet_watch( void )
+trap_retval Req_Set_watch( void )
 {
     set_watch_req       *acc;
     set_watch_ret       *ret;
@@ -1170,7 +1170,7 @@ trap_retval ReqSet_watch( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqClear_watch( void )
+trap_retval Req_Clear_watch( void )
 {
     clear_watch_req     *acc;
     watch            *dst;
@@ -1366,7 +1366,7 @@ static unsigned progRun( bool step )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqProg_go( void )
+trap_retval Req_Prog_go( void )
 {
     unsigned    rc;
 
@@ -1376,7 +1376,7 @@ trap_retval ReqProg_go( void )
     return( rc );
 }
 
-trap_retval ReqProg_step( void )
+trap_retval Req_Prog_step( void )
 {
     unsigned    rc;
 
@@ -1500,7 +1500,7 @@ trap_retval ReqThread_thaw( void )
     return( DoThread( DBG_C_Resume ) );
 }
 
-trap_retval ReqGet_message_text( void )
+trap_retval Req_Get_message_text( void )
 {
     get_message_text_ret        *ret;
     char                        *err_txt;
@@ -1517,7 +1517,7 @@ trap_retval ReqGet_message_text( void )
     return( sizeof( *ret ) + strlen( err_txt ) + 1 );
 }
 
-trap_retval ReqGet_next_alias( void )
+trap_retval Req_Get_next_alias( void )
 {
     get_next_alias_req  *acc;
     get_next_alias_ret  *ret;

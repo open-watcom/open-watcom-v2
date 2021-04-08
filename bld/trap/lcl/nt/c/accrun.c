@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -719,12 +719,12 @@ static trap_elen runProg( bool single_step )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqProg_go( void )
+trap_retval Req_Prog_go( void )
 {
     return( runProg( FALSE ) );
 }
 
-trap_retval ReqProg_step( void )
+trap_retval Req_Prog_step( void )
 {
     return( runProg( TRUE ) );
 }

@@ -41,7 +41,7 @@
 #endif
 
 enum {
-    #define pick(num,dumb,std)  REQ_ ## num,
+    #define pick(sym,dumbfunc,stdfunc)  REQ_ ## sym,
     #include "_trpreq.h"
     #undef pick
     REQ__LAST                           // for debug trap/server

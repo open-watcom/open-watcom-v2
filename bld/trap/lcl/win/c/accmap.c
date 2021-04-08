@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -149,7 +149,7 @@ void AddModuleLoaded( HANDLE mod, BOOL is_dll )
 /*
  * AccGetLibName - get lib name of current module
  */
-trap_retval ReqGet_lib_name( void )
+trap_retval Req_Get_lib_name( void )
 {
     MODULEENTRY         me;
     get_lib_name_req    *acc;
@@ -266,7 +266,7 @@ static BOOL horkyFindSegment( int module, WORD segment )
 } /* horkyFindSegment */
 
 /*
- * ReqMap_addr
+ * Req_Map_addr
  *
  * Access request to map a segment number to a selector.
  * Possibilites:
@@ -281,7 +281,7 @@ static BOOL horkyFindSegment( int module, WORD segment )
  *     horkyFindSegment.  Once horkyFindSegment is done, GlobalEntryModule
  *     will give the right answer, and we return the value we obtain from it.
  */
-trap_retval ReqMap_addr( void )
+trap_retval Req_Map_addr( void )
 {
     GLOBALENTRY ge;
     LPVOID      ptr;
@@ -344,13 +344,13 @@ trap_retval ReqMap_addr( void )
 }
 
 /*
- * ReqGet_next_alias
+ * Req_Get_next_alias
  *
  * Get next alias, for 32-bit extender apps only
  * We maintain a list of all apps that are 32-bit, and return the
  * aliases for each of them.
  */
-trap_retval ReqGet_next_alias( void )
+trap_retval Req_Get_next_alias( void )
 {
     get_next_alias_req  *acc;
     get_next_alias_ret  *ret;

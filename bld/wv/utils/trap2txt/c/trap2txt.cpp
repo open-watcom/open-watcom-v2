@@ -85,14 +85,14 @@ int handle_REQ_MACHINE_DATA_REPLY( unsigned char * pkt, unsigned short len );
 typedef int ( *RQ_HANDLER )( unsigned char * pkt, unsigned short len );
 
 RQ_HANDLER MyHandlers[] = {
-    #define pick(num,dumb,std)  handle_REQ_ ## num,
+    #define pick(sym,dumbfunc,stdfunc)  handle_REQ_ ## sym,
     #include "_trpreq.h"
     #undef pick
     NULL
 };
 
 RQ_HANDLER MyReplyHandlers[] = {
-    #define pick(num,dumb,std)  handle_REQ_ ## num ## _REPLY,
+    #define pick(sym,dumbfunc,stdfunc)  handle_REQ_ ## sym ## _REPLY,
     #include "_trpreq.h"
     #undef pick
     NULL

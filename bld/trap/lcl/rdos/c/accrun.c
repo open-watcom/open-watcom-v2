@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,7 @@
 #include "stdrdos.h"
 #include "debug.h"
 
-trap_retval ReqProg_go( void )
+trap_retval Req_Prog_go( void )
 {
     struct TDebug           *obj;
     struct TDebugThread     *thread = 0;
@@ -75,7 +76,7 @@ trap_retval ReqProg_go( void )
                 ret->conditions |= COND_WATCH;
 
             if( HasFaultOccurred( thread ) )
-                ret->conditions |= COND_EXCEPTION;                
+                ret->conditions |= COND_EXCEPTION;
         }
     } else
         ret->conditions |= COND_TERMINATE;
@@ -90,7 +91,7 @@ trap_retval ReqProg_go( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqProg_step( void )
+trap_retval Req_Prog_step( void )
 {
     struct TDebug           *obj;
     struct TDebugThread     *thread = 0;
@@ -129,7 +130,7 @@ trap_retval ReqProg_step( void )
                 ret->conditions |= COND_TRACE;
 
             if( HasFaultOccurred( thread ) )
-                ret->conditions |= COND_EXCEPTION;                
+                ret->conditions |= COND_EXCEPTION;
         }
     } else
         ret->conditions |= COND_TERMINATE;

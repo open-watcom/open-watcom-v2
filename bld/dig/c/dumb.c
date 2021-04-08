@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +40,7 @@ mx_entry_p  Out_Mx_Ptr;
 
 #define OUTPTR( type, name ) type *name = Out_Mx_Ptr->ptr;
 
-static trap_retval ReqConnect( void )
+static trap_retval Req_Connect( void )
 {
     OUTPTR( connect_ret, ret );
 
@@ -47,12 +48,12 @@ static trap_retval ReqConnect( void )
     return( sizeof( *ret ) );
 }
 
-static trap_retval ReqSimpleStub( void )
+static trap_retval Req_SimpleStub( void )
 {
     return( 0 );
 }
 
-static trap_retval ReqGet_supplementary_service( void )
+static trap_retval Req_Get_supplementary_service( void )
 {
     OUTPTR( get_supplementary_service_ret, ret );
 
@@ -61,7 +62,7 @@ static trap_retval ReqGet_supplementary_service( void )
     return( sizeof( *ret ) );
 }
 
-static trap_retval ReqMap_addr( void )
+static trap_retval Req_Map_addr( void )
 {
     OUTPTR( map_addr_ret, ret );
 
@@ -72,7 +73,7 @@ static trap_retval ReqMap_addr( void )
     return( sizeof( *ret ) );
 }
 
-static trap_retval ReqChecksum_mem( void )
+static trap_retval Req_Checksum_mem( void )
 {
     OUTPTR( checksum_mem_ret, ret );
 
@@ -80,7 +81,7 @@ static trap_retval ReqChecksum_mem( void )
     return( sizeof( *ret ) );
 }
 
-static trap_retval ReqProg_load( void )
+static trap_retval Req_Prog_load( void )
 {
     OUTPTR( prog_load_ret, ret );
 
@@ -88,7 +89,7 @@ static trap_retval ReqProg_load( void )
     return( sizeof( *ret ) );
 }
 
-static trap_retval ReqProg_kill( void )
+static trap_retval Req_Prog_kill( void )
 {
     OUTPTR( prog_kill_ret, ret );
 
@@ -96,7 +97,7 @@ static trap_retval ReqProg_kill( void )
     return( sizeof( *ret ) );
 }
 
-static trap_retval ReqSet_watch( void )
+static trap_retval Req_Set_watch( void )
 {
     OUTPTR( set_watch_ret, ret );
 
@@ -105,7 +106,7 @@ static trap_retval ReqSet_watch( void )
     return( sizeof( *ret ) );
 }
 
-static trap_retval ReqSet_break( void )
+static trap_retval Req_Set_break( void )
 {
     OUTPTR( set_break_ret, ret );
 
@@ -113,7 +114,7 @@ static trap_retval ReqSet_break( void )
     return( sizeof( *ret ) );
 }
 
-static trap_retval ReqGet_next_alias( void )
+static trap_retval Req_Get_next_alias( void )
 {
     OUTPTR( get_next_alias_ret, ret );
 
@@ -122,7 +123,7 @@ static trap_retval ReqGet_next_alias( void )
     return( sizeof( *ret ) );
 }
 
-static trap_retval ReqRead_user_keyboard( void )
+static trap_retval Req_Read_user_keyboard( void )
 {
     OUTPTR( read_user_keyboard_ret, ret );
 
@@ -130,7 +131,7 @@ static trap_retval ReqRead_user_keyboard( void )
     return( sizeof( *ret ) );
 }
 
-static trap_retval ReqGet_lib_name( void )
+static trap_retval Req_Get_lib_name( void )
 {
     OUTPTR( get_lib_name_ret, ret );
 
@@ -138,7 +139,7 @@ static trap_retval ReqGet_lib_name( void )
     return( sizeof( *ret ) );
 }
 
-static trap_retval ReqRedirect_stdin( void  )
+static trap_retval Req_Redirect_stdin( void  )
 {
     OUTPTR( redirect_stdin_ret, ret );
 
@@ -146,7 +147,7 @@ static trap_retval ReqRedirect_stdin( void  )
     return( sizeof( *ret ) );
 }
 
-static trap_retval ReqRedirect_stdout( void  )
+static trap_retval Req_Redirect_stdout( void  )
 {
     OUTPTR( redirect_stdout_ret, ret );
 
@@ -155,7 +156,7 @@ static trap_retval ReqRedirect_stdout( void  )
 }
 
 
-static trap_retval ReqSplit_cmd( void )
+static trap_retval Req_Split_cmd( void )
 {
     OUTPTR( split_cmd_ret, ret );
 
@@ -165,7 +166,7 @@ static trap_retval ReqSplit_cmd( void )
 }
 
 static trap_retval (* const _dumbRequests[])( void ) = {
-    #define pick(num,dumb,std)  Req ## dumb,
+    #define pick(sym,dumbfunc,stdfunc)  Req_ ## dumbfunc,
     #include "_trpreq.h"
     #undef pick
 };

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,12 +76,12 @@ scrtype         Screen;
 
 static const ULONG      local_seek_method[] = { FILE_BEGIN, FILE_CURRENT, FILE_END };
 
-trap_retval ReqRead_io( void )
+trap_retval Req_Read_io( void )
 {
     return( 0 );
 }
 
-trap_retval ReqWrite_io( void )
+trap_retval Req_Write_io( void )
 {
     write_io_ret        *ret;
 
@@ -241,14 +241,14 @@ trap_retval ReqThread_get_extra( void )
     return( 1 );
 }
 
-trap_retval ReqSet_user_screen( void )
+trap_retval Req_Set_user_screen( void )
 {
     AppSession();
     Screen = USER_SCREEN;
     return( 0 );
 }
 
-trap_retval ReqSet_debug_screen( void )
+trap_retval Req_Set_debug_screen( void )
 {
     DebugSession();
     Screen = DEBUG_SCREEN;
@@ -258,13 +258,13 @@ trap_retval ReqSet_debug_screen( void )
 void RestoreScreen( void )
 {
     if( Screen == USER_SCREEN ) {
-        ReqSet_user_screen();
+        Req_Set_user_screen();
     } else {
-        ReqSet_debug_screen();
+        Req_Set_debug_screen();
     }
 }
 
-trap_retval ReqRead_user_keyboard( void )
+trap_retval Req_Read_user_keyboard( void )
 {
     HMONITOR    mon;
     struct {
@@ -334,7 +334,7 @@ trap_retval ReqRead_user_keyboard( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqGet_err_text( void )
+trap_retval Req_Get_err_text( void )
 {
     static char *DosErrMsgs[] = {
         #define pick(a,b)   b,
@@ -445,12 +445,12 @@ static trap_elen Redirect( bool input )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqRedirect_stdin( void )
+trap_retval Req_Redirect_stdin( void )
 {
     return( Redirect( TRUE ) );
 }
 
-trap_retval ReqRedirect_stdout( void )
+trap_retval Req_Redirect_stdout( void )
 {
     return( Redirect( FALSE ) );
 }
@@ -658,7 +658,7 @@ trap_retval ReqFile_string_to_fullpath( void )
     return( sizeof( *ret ) + strlen( fullname ) + 1 );
 }
 
-trap_retval ReqSplit_cmd( void )
+trap_retval Req_Split_cmd( void )
 {
     char            *cmd;
     char            *start;

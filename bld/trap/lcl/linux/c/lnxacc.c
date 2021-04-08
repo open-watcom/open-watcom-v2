@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,7 +71,7 @@ static Elf32_Dyn        *dbg_dyn;       /* VA of debuggee's dynamic section (if 
 static opcode_type      saved_opcode;
 
 
-trap_retval ReqChecksum_mem( void )
+trap_retval Req_Checksum_mem( void )
 {
     char                buf[256];
     addr_off            offv;
@@ -105,7 +105,7 @@ trap_retval ReqChecksum_mem( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqRead_mem( void )
+trap_retval Req_Read_mem( void )
 {
     read_mem_req    *acc;
     trap_elen       len;
@@ -118,7 +118,7 @@ trap_retval ReqRead_mem( void )
     return( len );
 }
 
-trap_retval ReqWrite_mem( void )
+trap_retval Req_Write_mem( void )
 {
     write_mem_req   *acc;
     write_mem_ret   *ret;
@@ -189,7 +189,7 @@ static int GetExeNameFromPid( pid_t pid, char *buffer, int max_len )
     return( len );
 }
 
-trap_retval ReqProg_load( void )
+trap_retval Req_Prog_load( void )
 {
     const char                  **args;
     char                        *parms;
@@ -328,7 +328,7 @@ fail:
     return( 0 );
 }
 
-trap_retval ReqProg_kill( void )
+trap_retval Req_Prog_kill( void )
 {
     prog_kill_ret   *ret;
 
@@ -352,7 +352,7 @@ trap_retval ReqProg_kill( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqSet_break( void )
+trap_retval Req_Set_break( void )
 {
     set_break_req   *acc;
     set_break_ret   *ret;
@@ -374,7 +374,7 @@ trap_retval ReqSet_break( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqClear_break( void )
+trap_retval Req_Clear_break( void )
 {
     clear_break_req *acc;
     opcode_type     brk_opcode;
@@ -597,17 +597,17 @@ static trap_elen ProgRun( int step )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqProg_step( void )
+trap_retval Req_Prog_step( void )
 {
     return( ProgRun( true ) );
 }
 
-trap_retval ReqProg_go( void )
+trap_retval Req_Prog_go( void )
 {
     return( ProgRun( false ) );
 }
 
-trap_retval ReqRedirect_stdin( void  )
+trap_retval Req_Redirect_stdin( void  )
 {
     redirect_stdin_ret *ret;
 
@@ -616,7 +616,7 @@ trap_retval ReqRedirect_stdin( void  )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqRedirect_stdout( void  )
+trap_retval Req_Redirect_stdout( void  )
 {
     redirect_stdout_ret *ret;
 
@@ -658,7 +658,7 @@ trap_retval ReqFile_string_to_fullpath( void )
     return( sizeof( *ret ) + len + 1 );
 }
 
-trap_retval ReqGet_message_text( void )
+trap_retval Req_Get_message_text( void )
 {
     get_message_text_ret    *ret;
     char                    *err_txt;
