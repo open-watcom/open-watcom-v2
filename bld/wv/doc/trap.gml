@@ -128,7 +128,10 @@ main executable will be one module, and on systems which support DLLs or
 shared libraries, each library will be identified by a unique module handle.
 .endnote
 .endlevel
+.*
+.*
 .chap The Request Interface
+.*
 Next follow detailed description of interface elements.
 .*
 .section Request Structure
@@ -300,6 +303,7 @@ debuggee's address space to the :F.buffer:eF. variable. If less than 30
 bytes is transfered, an error message is printed out.
 .endlevel
 .*
+.*
 .section TrapFini
 .*
 .np
@@ -313,7 +317,10 @@ void TRAPENTRY TrapFini( void );
 After calling :F.TrapFini:eF., it is illegal to call :F.TrapRequest:eF.
 without calling :F.TrapInit:eF. again.
 .endlevel
+.*
+.*
 .chap The Requests
+.*
 This section descibes the individual requests, their parameters, and
 their return values. A line of dashes indicates where an :F.mx_entry:eF. is
 allowed (but not required) to start.
@@ -1288,6 +1295,7 @@ unspecified
 The return message content is specific to the MAD in use.
 .endlevel
 .*
+.*
 .section File I/O requests
 .*
 .np
@@ -1609,6 +1617,7 @@ If error has occurred when executing the command, the :F.err:eF. field
 will return the error code number.
 .endlevel
 .*
+.*
 .section Overlay requests
 .*
 .np
@@ -1840,6 +1849,7 @@ The remapped address will be returned in the :F.ovl_addr:eF. field.
 The input address will be unchanged if the address has not been remapped.
 .endlevel
 .*
+.*
 .section Thread requests
 .*
 .np
@@ -1978,6 +1988,7 @@ string          extra
 .pp
 The extra information of the thread will be returned in :F.extra:eF. field.
 .endlevel
+.*
 .*
 .section RFX requests
 .*
@@ -2368,8 +2379,377 @@ system error code will be returned.
 .endlevel
 .*
 .*
+.section Environment requests
+.*
+.np
+This section describes requests that deal with Environment on the
+target (debuggee) machine.
+These requests are actually performed by the
+core request REQ_PERFORM_SUPPLEMENTARY_SERVICE and appropriate service ID.
+The following descriptions do not show that "prefix" to the
+request messages.
+.np
+The service name to be used in the REQ_GET_SUPPLEMENTARY_SERVICE is
+"Environment".
+.*
+.beglevel
+.*
+.section REQ_ENV_GET_VAR
+.*
+.np
+Request to retreive Environment variable from the remote system.
+.np
+Request message:
+.millust begin
+access_req      req
+------------------------
+string          name
+.millust end
+.np
+Return message:
+.millust begin
+trap_error      err
+string          value;
+.millust end
+.pp
+The
+:F.value:eF. contains the value for :F.name:eF. Environment variable
+from the remote system.
+.*
+.section REQ_ENV_SET_VAR
+.*
+.np
+Request to set Environment variable on the remote system.
+.np
+Request message:
+.millust begin
+access_req      req
+------------------------
+string          name
+string          value;
+.millust end
+.np
+Return message:
+.millust begin
+trap_error      err
+.millust end
+.pp
+The
+:F.value:eF. contains the new value for Environment variable :F.name:eF.
+on the remote system.
+.endlevel
+.*
+.*
+.section File Info requests
+.*
+.np
+.beglevel
+.*
+.section REQ_FILE_INFO_GET_DATE
+.*
+.np
+Request message:
+.millust begin
+access_req      req
+.millust end
+.np
+Return message:
+.millust begin
+trap_error      err
+.millust end
+.pp
+.*
+.section REQ_FILE_INFO_SET_DATE
+.*
+.np
+Request message:
+.millust begin
+access_req      req
+.millust end
+.np
+Return message:
+.millust begin
+trap_error      err
+.millust end
+.pp
+.endlevel
+.*
+.*
+.section Asynchronous Debugging requests
+.*
+.np
+.beglevel
+.*
+.section REQ_ASYNC_GO
+.*
+.np
+Request message:
+.millust begin
+access_req      req
+.millust end
+.np
+Return message:
+.millust begin
+trap_error      err
+.millust end
+.pp
+.*
+.section REQ_ASYNC_STEP
+.*
+.np
+Request message:
+.millust begin
+access_req      req
+.millust end
+.np
+Return message:
+.millust begin
+trap_error      err
+.millust end
+.pp
+.*
+.section REQ_ASYNC_POLL
+.*
+.np
+Request message:
+.millust begin
+access_req      req
+.millust end
+.np
+Return message:
+.millust begin
+trap_error      err
+.millust end
+.pp
+.*
+.section REQ_ASYNC_STOP
+.*
+.np
+Request message:
+.millust begin
+access_req      req
+.millust end
+.np
+Return message:
+.millust begin
+trap_error      err
+.millust end
+.pp
+.*
+.section REQ_ASYNC_ADD_BREAK
+.*
+.np
+Request message:
+.millust begin
+access_req      req
+.millust end
+.np
+Return message:
+.millust begin
+trap_error      err
+.millust end
+.pp
+.*
+.section REQ_ASYNC_REMOVE_BREAK
+.*
+.np
+Request message:
+.millust begin
+access_req      req
+.millust end
+.np
+Return message:
+.millust begin
+trap_error      err
+.millust end
+.pp
+.endlevel
+.*
+.*
+.section Non-blocking Thread requests
+.*
+.np
+.beglevel
+.*
+.section REQ_RUN_THREAD_INFO
+.*
+.np
+Request message:
+.millust begin
+access_req      req
+.millust end
+.np
+Return message:
+.millust begin
+trap_error      err
+.millust end
+.pp
+.*
+.section REQ_RUN_THREAD_GET_NEXT
+.*
+.np
+Request message:
+.millust begin
+access_req      req
+.millust end
+.np
+Return message:
+.millust begin
+trap_error      err
+.millust end
+.pp
+.*
+.section REQ_RUN_THREAD_GET_RUNTIME
+.*
+.np
+Request message:
+.millust begin
+access_req      req
+.millust end
+.np
+Return message:
+.millust begin
+trap_error      err
+.millust end
+.pp
+.*
+.section REQ_RUN_THREAD_POLL
+.*
+.np
+Request message:
+.millust begin
+access_req      req
+.millust end
+.np
+Return message:
+.millust begin
+trap_error      err
+.millust end
+.pp
+.*
+.section REQ_RUN_THREAD_SET
+.*
+.np
+Request message:
+.millust begin
+access_req      req
+.millust end
+.np
+Return message:
+.millust begin
+trap_error      err
+.millust end
+.pp
+.*
+.section REQ_RUN_THREAD_GET_NAME
+.*
+.np
+Request message:
+.millust begin
+access_req      req
+.millust end
+.np
+Return message:
+.millust begin
+trap_error      err
+.millust end
+.pp
+.*
+.section REQ_RUN_THREAD_STOP
+.*
+.np
+Request message:
+.millust begin
+access_req      req
+.millust end
+.np
+Return message:
+.millust begin
+trap_error      err
+.millust end
+.pp
+.*
+.section REQ_RUN_THREAD_SIGNAL_STOP
+.*
+.np
+Request message:
+.millust begin
+access_req      req
+.millust end
+.np
+Return message:
+.millust begin
+trap_error      err
+.millust end
+.pp
+.endlevel
+.*
+.*
+.section Capabilities requests
+.*
+.np
+.beglevel
+.*
+.section REQ_CAPABILITIES_GET_8B_BP
+.*
+.np
+Request message:
+.millust begin
+access_req      req
+.millust end
+.np
+Return message:
+.millust begin
+trap_error      err
+.millust end
+.pp
+.*
+.section REQ_CAPABILITIES_SET_8B_BP
+.*
+.np
+Request message:
+.millust begin
+access_req      req
+.millust end
+.np
+Return message:
+.millust begin
+trap_error      err
+.millust end
+.pp
+.*
+.section REQ_CAPABILITIES_GET_EXACT_BP
+.*
+.np
+Request message:
+.millust begin
+access_req      req
+.millust end
+.np
+Return message:
+.millust begin
+trap_error      err
+.millust end
+.pp
+.*
+.section REQ_CAPABILITIES_SET_EXACT_BP
+.*
+.np
+Request message:
+.millust begin
+access_req      req
+.millust end
+.np
+Return message:
+.millust begin
+trap_error      err
+.millust end
+.pp
+.endlevel
+.*
 .*
 .chap System Dependent Aspects
+.*
 Every environment has a different method of loading the code for the trap
 file and locating the TrapInit, TrapRequest, and TrapFini routines. This
 section descibes how the &company debugger performs these operations for
