@@ -129,7 +129,7 @@ static break_point __far * findBrkEntry( void )
     return( &brkList[old_num] );
 }
 
-trap_retval Req_Set_break( void )
+trap_retval TRAP_CORE( Set_break )( void )
 {
     opcode_type         brk_opcode;
     set_break_req       *acc;
@@ -154,7 +154,7 @@ trap_retval Req_Set_break( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval Req_Clear_break( void )
+trap_retval TRAP_CORE( Clear_break )( void )
 {
     opcode_type         brk_opcode;
     int                 i;
@@ -276,7 +276,7 @@ BOOL CheckWatchPoints( void )
     return( FALSE );
 } /* CheckWatchPoints */
 
-trap_retval Req_Set_watch( void )
+trap_retval TRAP_CORE( Set_watch )( void )
 {
     set_watch_req       *acc;
     set_watch_ret       *ret;
@@ -319,7 +319,7 @@ trap_retval Req_Set_watch( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval Req_Clear_watch( void )
+trap_retval TRAP_CORE( Clear_watch )( void )
 {
     clear_watch_req     *acc;
     watch_point         *dst;

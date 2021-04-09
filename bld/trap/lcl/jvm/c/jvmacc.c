@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -288,8 +288,8 @@ void HandleExit(void)
     TheBigSleep();
 }
 
-trap_retval ReqGet_sys_config( void )
-/********************************/
+trap_retval TRAP_CORE( Get_sys_config )( void )
+/*********************************************/
 {
     get_sys_config_ret  *ret;
 
@@ -304,8 +304,8 @@ trap_retval ReqGet_sys_config( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqMap_addr( void )
-/********************/
+trap_retval TRAP_CORE( Map_addr )( void )
+/***************************************/
 {
     map_addr_req        *acc;
     map_addr_ret        *ret;
@@ -329,8 +329,8 @@ trap_retval ReqMap_addr( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqMachine_data( void )
-/************************/
+trap_retval TRAP_CORE( Machine_data )( void )
+/*******************************************/
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;
@@ -343,8 +343,8 @@ trap_retval ReqMachine_data( void )
 }
 
 
-trap_retval ReqChecksum_mem( void )
-/************************/
+trap_retval TRAP_CORE( Checksum_mem )( void )
+/*******************************************/
 {
     DWORD               offset;
     WORD                length,value;
@@ -471,8 +471,8 @@ static void LineAddrLookup( mad_jvm_findline_ret *info )
     info->ret = SR_CLOSEST;
 }
 
-trap_retval ReqRead_mem( void )
-/********************/
+trap_retval TRAP_CORE( Read_mem )( void )
+/***************************************/
 {
     read_mem_req        *acc;
     char                *data;
@@ -508,8 +508,8 @@ trap_retval ReqRead_mem( void )
     }
 }
 
-trap_retval ReqWrite_mem( void )
-/***************************/
+trap_retval TRAP_CORE( Write_mem )( void )
+/****************************************/
 {
     DWORD               offset;
     DWORD               length,len;
@@ -540,16 +540,16 @@ trap_retval ReqWrite_mem( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqRead_io( void )
-/*******************/
+trap_retval TRAP_CORE( Read_io )( void )
+/**************************************/
 {
     // never called
     return( 0 );
 }
 
 
-trap_retval ReqWrite_io( void )
-/********************/
+trap_retval TRAP_CORE( Write_io )( void )
+/***************************************/
 {
     write_io_ret        *ret;
 
@@ -580,8 +580,8 @@ static void GetRegs( unsigned_32 *pc,
     if( frame ) *frame = (unsigned_32)ee->current_frame;
 }
 
-trap_retval ReqRead_regs( void )
-/***************************/
+trap_retval TRAP_CORE( Read_regs )( void )
+/****************************************/
 {
     mad_registers       _WCUNALIGNED *mr;
 
@@ -591,8 +591,8 @@ trap_retval ReqRead_regs( void )
     return( sizeof( mr->jvm ) );
 }
 
-trap_retval ReqWrite_regs( void )
-/****************************/
+trap_retval TRAP_CORE( Write_regs )( void )
+/*****************************************/
 {
     mad_registers       _WCUNALIGNED *mr;
 
@@ -839,8 +839,8 @@ stack_item *LoadCallBack( stack_item *p, ExecEnv *ee )
     return( p );
 }
 
-trap_retval ReqProg_load( void )
-/*********************/
+trap_retval TRAP_CORE( Prog_load )( void )
+/****************************************/
 {
     prog_load_ret       *ret;
 
@@ -856,8 +856,8 @@ trap_retval ReqProg_load( void )
     return( sizeof( prog_load_ret ) );
 }
 
-trap_retval ReqProg_kill( void )
-/*********************/
+trap_retval TRAP_CORE( Prog_kill )( void )
+/****************************************/
 {
     prog_kill_ret       *ret;
 
@@ -868,22 +868,22 @@ trap_retval ReqProg_kill( void )
 }
 
 
-trap_retval ReqSet_watch( void )
-/*********************/
+trap_retval TRAP_CORE( Set_watch )( void )
+/****************************************/
 {
     // nyi
     return( 0 );
 }
 
-trap_retval ReqClear_watch( void )
-/***********************/
+trap_retval TRAP_CORE( Clear_watch )( void )
+/******************************************/
 {
     // nyi
     return( 0 );
 }
 
-trap_retval ReqSet_break( void )
-/*********************/
+trap_retval TRAP_CORE( Set_break )( void )
+/****************************************/
 {
     set_break_req       *acc;
     set_break_ret       *ret;
@@ -904,8 +904,8 @@ trap_retval ReqSet_break( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqClear_break( void )
-/***********************/
+trap_retval TRAP_CORE( Clear_break )( void )
+/******************************************/
 {
     char                        ch;
     clear_break_req             *acc;
@@ -966,34 +966,34 @@ static unsigned runProg( bool single_step )
     return( sizeof( *ret ) );
 } /* runProg */
 
-trap_retval ReqProg_go( void )
-/****************************/
+trap_retval TRAP_CORE( Prog_go )( void )
+/**************************************/
 {
     return( runProg( FALSE ) );
 }
 
-trap_retval ReqProg_step( void )
-/******************************/
+trap_retval TRAP_CORE( Prog_step )( void )
+/****************************************/
 {
     return( runProg( TRUE ) );
 }
 
-trap_retval ReqRedirect_stdin( void )
-/***********************************/
+trap_retval TRAP_CORE( Redirect_stdin )( void )
+/*********************************************/
 {
     // never called
     return( 0 );
 }
 
-trap_retval ReqRedirect_stdout( void )
-/************************************/
+trap_retval TRAP_CORE( Redirect_stdout )( void )
+/**********************************************/
 {
     // never called
     return( 0 );
 }
 
-trap_retval ReqGet_next_alias( void )
-/***********************************/
+trap_retval TRAP_CORE( Get_next_alias )( void )
+/*********************************************/
 {
     get_next_alias_ret  *ret;
 
@@ -1003,16 +1003,16 @@ trap_retval ReqGet_next_alias( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqGet_err_text( void )
-/*********************************/
+trap_retval TRAP_CORE( Get_err_text )( void )
+/*******************************************/
 {
 
     // never called
     return( 0 );
 }
 
-trap_retval ReqGet_lib_name( void )
-/*********************************/
+trap_retval TRAP_CORE( Get_lib_name )( void )
+/*******************************************/
 {
     get_lib_name_req    *acc;
     get_lib_name_ret    *ret;
@@ -1058,8 +1058,8 @@ trap_retval ReqGet_lib_name( void )
     return( sizeof( *ret ) + strlen( name ) + 1 );
 }
 
-trap_retval ReqGet_message_text( void )
-/*************************************/
+trap_retval TRAP_CORE( Get_message_text )( void )
+/***********************************************/
 {
 #if 0
     // we only need to implement this if we return COND_MESSAGE
@@ -1076,8 +1076,8 @@ trap_retval ReqGet_message_text( void )
 #endif
 }
 
-trap_retval ReqThread_get_next( void )
-/***************************/
+trap_retval TRAP_THREAD( get_next )( void )
+/*****************************************/
 {
     thread_get_next_req *acc;
     thread_get_next_ret *ret;
@@ -1101,8 +1101,8 @@ trap_retval ReqThread_get_next( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqThread_set( void )
-/**********************/
+trap_retval TRAP_THREAD( set )( void )
+/************************************/
 {
     thread_set_req      *acc;
     thread_set_ret      *ret;
@@ -1122,8 +1122,8 @@ trap_retval ReqThread_set( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqThread_freeze( void )
-/*************************/
+trap_retval TRAP_THREAD( freeze )( void )
+/***************************************/
 {
     thread_freeze_req   *acc;
     thread_freeze_ret   *ret;
@@ -1136,8 +1136,8 @@ trap_retval ReqThread_freeze( void )
 }
 
 
-trap_retval ReqThread_thaw( void )
-/***********************/
+trap_retval TRAP_THREAD( thaw )( void )
+/*************************************/
 {
     thread_thaw_req     *acc;
     thread_thaw_ret     *ret;
@@ -1149,8 +1149,8 @@ trap_retval ReqThread_thaw( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqThread_get_extra( void )
-/****************************/
+trap_retval TRAP_THREAD( get_extra )( void )
+/******************************************/
 {
     thread_get_extra_req        *acc;
     char                        *name;
@@ -1193,23 +1193,23 @@ trap_retval ReqThread_get_extra( void )
     return( strlen( name ) + 1 );
 }
 
-trap_retval ReqFile_get_config( void )
-/***************************/
-{
-    // never called
-    return( 0 );
-}
-
-trap_retval ReqFile_string_to_fullpath( void )
+trap_retval TRAP_FILE( get_config )( void )
 /*****************************************/
 {
     // never called
     return( 0 );
 }
 
+trap_retval TRAP_FILE( string_to_fullpath )( void )
+/*************************************************/
+{
+    // never called
+    return( 0 );
+}
+
 static ClassClass *CbOpened;
-trap_retval ReqFile_open( void )
-/***************************/
+trap_retval TRAP_FILE( open )( void )
+/***********************************/
 {
     file_open_req       *acc;
     file_open_ret       *ret;
@@ -1237,22 +1237,22 @@ trap_retval ReqFile_open( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqFile_seek( void )
-/***************************/
+trap_retval TRAP_FILE( seek )( void )
+/***********************************/
 {
     // never called
     return( 0 );
 }
 
-trap_retval ReqFile_write( void )
-/****************************/
-{
-    // never called
-    return( 0 );
-}
-
-trap_retval ReqFile_write_console( void )
+trap_retval TRAP_FILE( write )( void )
 /************************************/
+{
+    // never called
+    return( 0 );
+}
+
+trap_retval TRAP_FILE( write_console )( void )
+/********************************************/
 {
     // never called
     return( 0 );
@@ -1262,8 +1262,8 @@ trap_retval ReqFile_write_console( void )
 #define PREFIX_SIZE (sizeof(PREFIX)-1)
 #define LENGTH (PREFIX_SIZE+sizeof(void*))
 
-trap_retval ReqFile_read( void )
-/***************************/
+trap_retval TRAP_FILE( read )( void )
+/***********************************/
 {
     file_read_req       *acc;
     file_read_ret       *ret;
@@ -1284,23 +1284,23 @@ trap_retval ReqFile_read( void )
     return( sizeof( *ret ) + bytes );
 }
 
-trap_retval ReqFile_close( void )
-/****************************/
+trap_retval TRAP_FILE( close )( void )
+/************************************/
 {
     // never called
     return( 0 );
 }
 
-trap_retval ReqFile_erase( void )
-/****************************/
+trap_retval TRAP_FILE( erase )( void )
+/************************************/
 {
     // never called
     return( 0 );
 
 }
 
-trap_retval ReqFile_run_cmd( void )
-/******************************/
+trap_retval TRAP_FILE( run_cmd )( void )
+/**************************************/
 {
     // never called
     return( 0 );

@@ -34,7 +34,8 @@
 
 #include "trptypes.h"
 
-#define FILE_SUPP_NAME          "Files"
+#define FILE_SUPP_NAME      Files
+#define TRAP_FILE(s)        TRAP_SYM( FILE_SUPP_NAME, s )
 
 //#define REQ_FILE_DEF(sym,func)
 #define REQ_FILE_DEFS() \

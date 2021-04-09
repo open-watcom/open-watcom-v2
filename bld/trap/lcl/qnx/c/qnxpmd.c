@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -120,7 +120,7 @@ static void OutNum( unsigned i )
 #endif
 
 
-trap_retval ReqGet_sys_config( void )
+trap_retval TRAP_CORE( Get_sys_config )( void )
 {
     struct  _osinfo     info;
     get_sys_config_ret  *ret;
@@ -244,7 +244,7 @@ static addr48_ptr GetSLibTable( bool is_32 )
     return( slib );
 }
 
-trap_retval ReqMap_addr( void )
+trap_retval TRAP_CORE( Map_addr )( void )
 {
     map_addr_req        *acc;
     map_addr_ret        *ret;
@@ -294,7 +294,7 @@ trap_retval ReqMap_addr( void )
 }
 
 
-trap_retval ReqChecksum_mem( void )
+trap_retval TRAP_CORE( Checksum_mem )( void )
 {
     checksum_mem_ret    *ret;
 
@@ -334,7 +334,7 @@ static unsigned ReadGDT( read_mem_req *acc, unsigned len, void *ret )
     return( len );
 }
 
-trap_retval ReqRead_mem( void )
+trap_retval TRAP_CORE( Read_mem )( void )
 {
     read_mem_req        *acc;
     void                *ret;
@@ -367,7 +367,7 @@ trap_retval ReqRead_mem( void )
 }
 
 
-trap_retval ReqWrite_mem( void )
+trap_retval TRAP_CORE( Write_mem )( void )
 {
     write_mem_ret       *ret;
 
@@ -377,13 +377,13 @@ trap_retval ReqWrite_mem( void )
 }
 
 
-trap_retval ReqRead_io( void )
+trap_retval TRAP_CORE( Read_io )( void )
 {
     return( 0 );
 }
 
 
-trap_retval ReqWrite_io( void )
+trap_retval TRAP_CORE( Write_io )( void )
 {
     write_io_ret        *ret;
 
@@ -424,7 +424,7 @@ static void ReadFPU( struct x86_fpu *r )
     }
 }
 
-trap_retval ReqRead_regs( void )
+trap_retval TRAP_CORE( Read_regs )( void )
 {
     mad_registers       *mr;
 
@@ -435,7 +435,7 @@ trap_retval ReqRead_regs( void )
     return( sizeof( mr->x86 ) );
 }
 
-trap_retval ReqWrite_regs( void )
+trap_retval TRAP_CORE( Write_regs )( void )
 {
     return( 0 );
 }
@@ -501,7 +501,7 @@ static void ReadSegData( void )
     }
 }
 
-trap_retval ReqProg_load( void )
+trap_retval TRAP_CORE( Prog_load )( void )
 {
     prog_load_req       *acc;
     prog_load_ret       *ret;
@@ -568,7 +568,7 @@ trap_retval ReqProg_load( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqProg_kill( void )
+trap_retval TRAP_CORE( Prog_kill )( void )
 {
     prog_kill_ret       *ret;
 
@@ -584,7 +584,7 @@ trap_retval ReqProg_kill( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqSet_break( void )
+trap_retval TRAP_CORE( Set_break )( void )
 {
     set_break_ret       *ret;
 
@@ -593,12 +593,12 @@ trap_retval ReqSet_break( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqClear_break( void )
+trap_retval TRAP_CORE( Clear_break )( void )
 {
     return( 0 );
 }
 
-trap_retval ReqSet_watch( void )
+trap_retval TRAP_CORE( Set_watch )( void )
 {
     set_watch_ret       *ret;
 
@@ -608,13 +608,13 @@ trap_retval ReqSet_watch( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqClear_watch( void )
+trap_retval TRAP_CORE( Clear_watch )( void )
 {
     return( 0 );
 }
 
 
-trap_retval ReqProg_go( void )
+trap_retval TRAP_CORE( Prog_go )( void )
 {
     prog_go_ret *ret;
 
@@ -623,13 +623,13 @@ trap_retval ReqProg_go( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqProg_step( void )
+trap_retval TRAP_CORE( Prog_step )( void )
 {
-    return( ReqProg_go() );
+    return( TRAP_CORE( Prog_go )() );
 }
 
 
-trap_retval ReqGet_message_text( void )
+trap_retval TRAP_CORE( Get_message_text )( void )
 {
     get_message_text_ret        *ret;
     char                        *err_txt;
@@ -641,7 +641,7 @@ trap_retval ReqGet_message_text( void )
     return( sizeof( *ret ) + 1 );
 }
 
-trap_retval ReqRedirect_stdin( void )
+trap_retval TRAP_CORE( Redirect_stdin )( void )
 {
     redirect_stdin_ret  *ret;
 
@@ -650,12 +650,12 @@ trap_retval ReqRedirect_stdin( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqRedirect_stdout( void )
+trap_retval TRAP_CORE( Redirect_stdout )( void )
 {
-    return( ReqRedirect_stdin() );
+    return( TRAP_CORE( Redirect_stdin )() );
 }
 
-trap_retval ReqFile_string_to_fullpath( void )
+trap_retval TRAP_FILE( string_to_fullpath )( void )
 {
     struct  stat                chk;
     unsigned_16                 len;
@@ -723,7 +723,7 @@ static bool AddrIs32( addr_seg seg )
     return( is_32 );
 }
 
-trap_retval ReqMachine_data( void )
+trap_retval TRAP_CORE( Machine_data )( void )
 {
     machine_data_req    *acc;
     machine_data_ret    *ret;
@@ -741,7 +741,7 @@ trap_retval ReqMachine_data( void )
     return( sizeof( *ret ) + sizeof( *data ) );
 }
 
-trap_retval ReqGet_lib_name( void )
+trap_retval TRAP_CORE( Get_lib_name )( void )
 {
     get_lib_name_req    *acc;
     get_lib_name_ret    *ret;
@@ -783,7 +783,7 @@ trap_retval ReqGet_lib_name( void )
     return( sizeof( *ret ) + strlen( name ) + 1 );
 }
 
-trap_retval ReqThread_get_next( void )
+trap_retval TRAP_THREAD( get_next )( void )
 {
     thread_get_next_req *req;
     thread_get_next_ret *ret;
@@ -799,7 +799,7 @@ trap_retval ReqThread_get_next( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqThread_set( void )
+trap_retval TRAP_THREAD( set )( void )
 {
     thread_set_ret      *ret;
 
@@ -809,7 +809,7 @@ trap_retval ReqThread_set( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqThread_freeze( void )
+trap_retval TRAP_THREAD( freeze )( void )
 {
     thread_freeze_ret   *ret;
 
@@ -818,7 +818,7 @@ trap_retval ReqThread_freeze( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqThread_thaw( void )
+trap_retval TRAP_THREAD( thaw )( void )
 {
     thread_thaw_ret     *ret;
 
@@ -827,7 +827,7 @@ trap_retval ReqThread_thaw( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqThread_get_extra( void )
+trap_retval TRAP_THREAD( get_extra )( void )
 {
     char                    *ret;
 

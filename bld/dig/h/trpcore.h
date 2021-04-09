@@ -40,6 +40,8 @@
 #include <_comdef.h>
 #endif
 
+#define TRAP_CORE(a)    TRAP_SYM( Core, a )
+
 enum {
     #define pick(sym,dumbfunc,stdfunc)  REQ_ ## sym,
     #include "_trpreq.h"

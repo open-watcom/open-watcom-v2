@@ -37,22 +37,22 @@
         These routines are never passed up to the protect mode helpers
 */
 
-trap_retval Req_Set_user_screen( void )
+trap_retval TRAP_CORE( Set_user_screen )( void )
 {
     return( 0 );
 }
 
-trap_retval Req_Set_debug_screen( void )
+trap_retval TRAP_CORE( Set_debug_screen )( void )
 {
     return( 0 );
 }
 
-trap_retval Req_Read_user_keyboard( void )
+trap_retval TRAP_CORE( Read_user_keyboard )( void )
 {
     return( 0 );
 }
 
-trap_retval Req_Split_cmd( void )
+trap_retval TRAP_CORE( Split_cmd )( void )
 {
     return( 0 );
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +46,7 @@
 
 static const int        local_seek_method[] = { SEEK_SET, SEEK_CUR, SEEK_END };
 
-trap_retval ReqFile_get_config( void )
+trap_retval TRAP_FILE( get_config )( void )
 {
     file_get_config_ret *ret;
 
@@ -60,7 +60,7 @@ trap_retval ReqFile_get_config( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqFile_open( void )
+trap_retval TRAP_FILE( open )( void )
 {
     file_open_req       *acc;
     file_open_ret       *ret;
@@ -96,7 +96,7 @@ trap_retval ReqFile_open( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqFile_seek( void )
+trap_retval TRAP_FILE( seek )( void )
 {
     file_seek_req       *acc;
     file_seek_ret       *ret;
@@ -117,7 +117,7 @@ trap_retval ReqFile_seek( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqFile_read( void )
+trap_retval TRAP_FILE( read )( void )
 {
     trap_elen           total;
     trap_elen           len;
@@ -186,7 +186,7 @@ static trap_elen DoWrite( int hdl, unsigned_8 *ptr, trap_elen len )
     return( total );
 }
 
-trap_retval ReqFile_write( void )
+trap_retval TRAP_FILE( write )( void )
 {
     file_write_req      *acc;
     file_write_ret      *ret;
@@ -201,7 +201,7 @@ trap_retval ReqFile_write( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqFile_write_console( void )
+trap_retval TRAP_FILE( write_console )( void )
 {
     file_write_console_ret      *ret;
 
@@ -213,7 +213,7 @@ trap_retval ReqFile_write_console( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqFile_close( void )
+trap_retval TRAP_FILE( close )( void )
 {
     file_close_req      *acc;
     file_close_ret      *ret;
@@ -231,7 +231,7 @@ trap_retval ReqFile_close( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqFile_erase( void )
+trap_retval TRAP_FILE( erase )( void )
 {
     file_erase_ret      *ret;
 
@@ -246,7 +246,7 @@ trap_retval ReqFile_erase( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqFile_run_cmd( void )
+trap_retval TRAP_FILE( run_cmd )( void )
 {
     char                buff[256];
     const char          *argv[4];

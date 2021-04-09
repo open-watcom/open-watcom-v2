@@ -36,7 +36,8 @@
 #include "trpfile.h"
 
 
-#define RFX_SUPP_NAME           "RFX"
+#define RFX_SUPP_NAME       Rfx
+#define TRAP_RFX(s)         TRAP_SYM( RFX_SUPP_NAME, s )
 
 //#define REQ_RFX_DEF(sym,func)
 #define REQ_RFX_DEFS() \

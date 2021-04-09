@@ -816,7 +816,7 @@ void BigKludge( msb *m )
     };
 #endif
 
-trap_retval Req_Get_sys_config( void )
+trap_retval TRAP_CORE( Get_sys_config )( void )
 {
     get_sys_config_ret  *ret;
 
@@ -831,7 +831,7 @@ trap_retval Req_Get_sys_config( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval Req_Map_addr( void )
+trap_retval TRAP_CORE( Map_addr )( void )
 {
     map_addr_req        *acc;
     map_addr_ret        *ret;
@@ -887,7 +887,7 @@ trap_retval Req_Map_addr( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval Req_Machine_data( void )
+trap_retval TRAP_CORE( Machine_data )( void )
 {
     machine_data_ret    *ret;
     unsigned_8          *data;
@@ -946,7 +946,7 @@ static unsigned short ReadWrite( int (*rtn)(addr48_ptr *, unsigned long, void *)
 }
 
 
-trap_retval Req_Checksum_mem( void )
+trap_retval TRAP_CORE( Checksum_mem )( void )
 {
     trap_elen           len;
     addr48_ptr          addr;
@@ -978,7 +978,7 @@ trap_retval Req_Checksum_mem( void )
 }
 
 
-trap_retval Req_Read_mem( void )
+trap_retval TRAP_CORE( Read_mem )( void )
 {
     addr48_ptr          addr;
     read_mem_req        *acc;
@@ -992,7 +992,7 @@ trap_retval Req_Read_mem( void )
     return( len );
 }
 
-trap_retval Req_Write_mem( void )
+trap_retval TRAP_CORE( Write_mem )( void )
 {
     addr48_ptr          addr;
     write_mem_req       *acc;
@@ -1011,7 +1011,7 @@ trap_retval Req_Write_mem( void )
 }
 
 
-trap_retval Req_Read_io( void )
+trap_retval TRAP_CORE( Read_io )( void )
 {
     read_io_req     *acc;
     void            *data;
@@ -1029,7 +1029,7 @@ trap_retval Req_Read_io( void )
 }
 
 
-trap_retval Req_Write_io( void )
+trap_retval TRAP_CORE( Write_io )( void )
 {
     write_io_req    *acc;
     write_io_ret    *ret;
@@ -1051,7 +1051,7 @@ trap_retval Req_Write_io( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval Req_Read_regs( void )
+trap_retval TRAP_CORE( Read_regs )( void )
 {
     mad_registers       *mr;
 
@@ -1064,7 +1064,7 @@ trap_retval Req_Read_regs( void )
     return( sizeof( mr->x86 ) );
 }
 
-trap_retval Req_Write_regs( void )
+trap_retval TRAP_CORE( Write_regs )( void )
 {
     mad_registers       *mr;
 
@@ -1245,7 +1245,7 @@ static void LoadHelper( void )
 
 static char    helper_stack[8192]; /* We may return before thread dies! */
 
-trap_retval Req_Prog_load( void )
+trap_retval TRAP_CORE( Prog_load )( void )
 {
     prog_load_ret       *ret;
     struct LoadDefinitionStructure *ld;
@@ -1285,7 +1285,7 @@ trap_retval Req_Prog_load( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval Req_Prog_kill( void )
+trap_retval TRAP_CORE( Prog_kill )( void )
 {
     msb         *m;
     prog_kill_ret       *ret;
@@ -1388,7 +1388,7 @@ static trap_conditions Execute( msb *which )
     }
 }
 
-trap_retval Req_Set_watch( void )
+trap_retval TRAP_CORE( Set_watch )( void )
 {
     dword           l;
     set_watch_req   *acc;
@@ -1432,13 +1432,13 @@ trap_retval Req_Set_watch( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval Req_Clear_watch( void )
+trap_retval TRAP_CORE( Clear_watch )( void )
 {
     WatchCount = 0;
     return( 0 );
 }
 
-trap_retval Req_Set_break( void )
+trap_retval TRAP_CORE( Set_break )( void )
 {
     set_break_req   *acc;
     set_break_ret   *ret;
@@ -1457,7 +1457,7 @@ trap_retval Req_Set_break( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval Req_Clear_break( void )
+trap_retval TRAP_CORE( Clear_break )( void )
 {
     clear_break_req     *acc;
     opcode_type         brk_opcode;
@@ -1590,17 +1590,17 @@ leave:
     return( sizeof( *ret ) );
 }
 
-trap_retval Req_Prog_go( void )
+trap_retval TRAP_CORE( Prog_go )( void )
 {
     return( ProgRun( FALSE ) );
 }
 
-trap_retval Req_Prog_step( void )
+trap_retval TRAP_CORE( Prog_step )( void )
 {
     return( ProgRun( TRUE ) );
 }
 
-trap_retval Req_Get_next_alias( void )
+trap_retval TRAP_CORE( Get_next_alias )( void )
 {
     get_next_alias_ret  *ret;
 
@@ -1625,7 +1625,7 @@ static msb *LocateTid( dword tid )
 }
 
 
-trap_retval ReqThread_get_next( void )
+trap_retval TRAP_THREAD( get_next )( void )
 {
     msb             *m;
     thread_get_next_req *acc;
@@ -1650,7 +1650,7 @@ trap_retval ReqThread_get_next( void )
 }
 
 
-trap_retval ReqThread_set( void )
+trap_retval TRAP_THREAD( set )( void )
 {
     msb             *m;
     thread_set_req  *acc;
@@ -1677,7 +1677,7 @@ trap_retval ReqThread_set( void )
 }
 
 
-trap_retval ReqThread_freeze( void )
+trap_retval TRAP_THREAD( freeze )( void )
 {
     msb                 *m;
     thread_freeze_req   *acc;
@@ -1697,7 +1697,7 @@ trap_retval ReqThread_freeze( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqThread_thaw( void )
+trap_retval TRAP_THREAD( thaw )( void )
 {
     msb                 *m;
     thread_thaw_req     *acc;
@@ -1718,7 +1718,7 @@ trap_retval ReqThread_thaw( void )
 }
 
 
-trap_retval ReqThread_get_extra( void )
+trap_retval TRAP_THREAD( get_extra )( void )
 {
     msb                     *m;
     char                    *name;
@@ -1739,7 +1739,7 @@ trap_retval ReqThread_get_extra( void )
     return( strlen( name ) + 1 );
 }
 
-trap_retval Req_Get_err_text( void )
+trap_retval TRAP_CORE( Get_err_text )( void )
 {
     char        *err;
 
@@ -1749,7 +1749,7 @@ trap_retval Req_Get_err_text( void )
     return( strlen( err ) + 1 );
 }
 
-trap_retval Req_Get_message_text( void )
+trap_retval TRAP_CORE( Get_message_text )( void )
 {
     get_message_text_ret        *ret;
     char                        *err_txt;
@@ -1783,7 +1783,7 @@ static LoadedListHandle GetLoadedListHandle( struct LoadDefinitionStructure *ld 
 }
 #endif
 
-trap_retval Req_Get_lib_name( void )
+trap_retval TRAP_CORE( Get_lib_name )( void )
 {
     int                 len;
     get_lib_name_req    *acc;
@@ -1824,7 +1824,7 @@ trap_retval Req_Get_lib_name( void )
     }
 }
 
-trap_retval Req_Redirect_stdin( void )
+trap_retval TRAP_CORE( Redirect_stdin )( void )
 {
     redirect_stdin_ret  *ret;
 
@@ -1833,7 +1833,7 @@ trap_retval Req_Redirect_stdin( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval Req_Redirect_stdout( void )
+trap_retval TRAP_CORE( Redirect_stdout )( void )
 {
     redirect_stdout_ret *ret;
 
@@ -1843,21 +1843,21 @@ trap_retval Req_Redirect_stdout( void )
 }
 
 
-trap_retval Req_Set_user_screen( void )
+trap_retval TRAP_CORE( Set_user_screen )( void )
 {
     /* NOT IMPLEMENTED */
     return( 0 );
 }
 
 
-trap_retval Req_Set_debug_screen( void )
+trap_retval TRAP_CORE( Set_debug_screen )( void )
 {
     /* NOT IMPLEMENTED */
     return( 0 );
 }
 
 
-trap_retval Req_Read_user_keyboard( void )
+trap_retval TRAP_CORE( Read_user_keyboard )( void )
 {
     /* NOT IMPLEMENTED */
     read_user_keyboard_ret      *ret;
@@ -1867,7 +1867,7 @@ trap_retval Req_Read_user_keyboard( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval Req_Split_cmd( void )
+trap_retval TRAP_CORE( Split_cmd )( void )
 {
     char             *cmd;
     char             *start;

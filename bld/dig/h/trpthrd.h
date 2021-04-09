@@ -34,7 +34,8 @@
 
 #include "trptypes.h"
 
-#define THREAD_SUPP_NAME                "Threads"
+#define THREAD_SUPP_NAME    Threads
+#define TRAP_THREAD(s)      TRAP_SYM( THREAD_SUPP_NAME, s )
 
 //#define REQ_THREAD_DEF(sym,func)
 #define REQ_THREAD_DEFS() \

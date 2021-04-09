@@ -102,7 +102,7 @@ static trap_elen DoAccess( void )
 }
 
 
-trap_retval Req_Get_sys_config( void )
+trap_retval TRAP_CORE( Get_sys_config )( void )
 {
     get_sys_config_ret  *ret;
 
@@ -120,7 +120,7 @@ trap_retval Req_Get_sys_config( void )
     return( DoAccess() );
 }
 
-trap_retval Req_Get_err_text( void )
+trap_retval TRAP_CORE( Get_err_text )( void )
 {
     static char *DosErrMsgs[] = {
         #define pick(a,b)   b,
@@ -147,7 +147,7 @@ trap_retval Req_Get_err_text( void )
     return( DoAccess() );
 }
 
-trap_retval Req_Map_addr( void )
+trap_retval TRAP_CORE( Map_addr )( void )
 {
     map_addr_req        *acc;
     map_addr_ret        *ret;
@@ -163,7 +163,7 @@ trap_retval Req_Map_addr( void )
     return( DoAccess() );
 }
 
-trap_retval Req_Read_io( void )
+trap_retval TRAP_CORE( Read_io )( void )
 {
     if( !TaskLoaded ) {
         return( 0 );
@@ -171,7 +171,7 @@ trap_retval Req_Read_io( void )
     return( DoAccess() );
 }
 
-trap_retval Req_Write_io( void )
+trap_retval TRAP_CORE( Write_io )( void )
 {
     write_io_ret        *ret;
 
@@ -183,7 +183,7 @@ trap_retval Req_Write_io( void )
     return( DoAccess() );
 }
 
-trap_retval Req_Read_regs( void )
+trap_retval TRAP_CORE( Read_regs )( void )
 {
     mad_registers       *mr;
 
@@ -196,7 +196,7 @@ trap_retval Req_Read_regs( void )
 }
 
 
-trap_retval Req_Checksum_mem( void )
+trap_retval TRAP_CORE( Checksum_mem )( void )
 {
     checksum_mem_ret    *ret;
 
@@ -208,7 +208,7 @@ trap_retval Req_Checksum_mem( void )
     return( DoAccess() );
 }
 
-trap_retval Req_Get_next_alias( void )
+trap_retval TRAP_CORE( Get_next_alias )( void )
 {
     get_next_alias_ret  *ret;
 
@@ -221,7 +221,7 @@ trap_retval Req_Get_next_alias( void )
     return( DoAccess() );
 }
 
-trap_retval Req_Prog_go( void )
+trap_retval TRAP_CORE( Prog_go )( void )
 {
     prog_go_ret     *ret;
     trap_elen       len;
@@ -238,7 +238,7 @@ trap_retval Req_Prog_go( void )
     return( len );
 }
 
-trap_retval Req_Machine_data( void )
+trap_retval TRAP_CORE( Machine_data )( void )
 {
     machine_data_ret    *ret;
     unsigned_8          *data;
@@ -254,7 +254,7 @@ trap_retval Req_Machine_data( void )
     return( DoAccess() );
 }
 
-trap_retval Req_Get_lib_name( void )
+trap_retval TRAP_CORE( Get_lib_name )( void )
 {
     get_lib_name_ret    *ret;
 
@@ -266,7 +266,7 @@ trap_retval Req_Get_lib_name( void )
     return( DoAccess() );
 }
 
-trap_retval Req_Read_mem( void )
+trap_retval TRAP_CORE( Read_mem )( void )
 {
     if( !TaskLoaded ) {
         return( 0 );
@@ -274,7 +274,7 @@ trap_retval Req_Read_mem( void )
     return( DoAccess() );
 }
 
-trap_retval Req_Write_mem( void )
+trap_retval TRAP_CORE( Write_mem )( void )
 {
     write_mem_ret       *ret;
 
@@ -286,7 +286,7 @@ trap_retval Req_Write_mem( void )
     return( DoAccess() );
 }
 
-trap_retval Req_Prog_load( void )
+trap_retval TRAP_CORE( Prog_load )( void )
 {
     char                buffer[160];
     char                *src;
@@ -390,7 +390,7 @@ trap_retval Req_Prog_load( void )
     return( len );
 }
 
-trap_retval Req_Prog_kill( void )
+trap_retval TRAP_CORE( Prog_kill )( void )
 {
     trap_elen       len;
     prog_kill_ret   *ret;
@@ -407,49 +407,49 @@ trap_retval Req_Prog_kill( void )
     return( len );
 }
 
-trap_retval Req_Write_regs( void )
+trap_retval TRAP_CORE( Write_regs )( void )
 {
     return( DoAccess() );
 }
 
-trap_retval Req_Set_watch( void )
+trap_retval TRAP_CORE( Set_watch )( void )
 {
     return( DoAccess() );
 }
 
-trap_retval Req_Clear_watch( void )
+trap_retval TRAP_CORE( Clear_watch )( void )
 {
     return( DoAccess() );
 }
 
-trap_retval Req_Set_break( void )
+trap_retval TRAP_CORE( Set_break )( void )
 {
     return( DoAccess() );
 }
 
-trap_retval Req_Clear_break( void )
+trap_retval TRAP_CORE( Clear_break )( void )
 {
     return( DoAccess() );
 }
 
-trap_retval Req_Get_message_text( void )
+trap_retval TRAP_CORE( Get_message_text )( void )
 {
     return( DoAccess() );
 }
 
-trap_retval Req_Redirect_stdin( void )
+trap_retval TRAP_CORE( Redirect_stdin )( void )
 {
     return( DoAccess() );
 }
 
-trap_retval Req_Redirect_stdout( void )
+trap_retval TRAP_CORE( Redirect_stdout )( void )
 {
     return( DoAccess() );
 }
 
-trap_retval Req_Prog_step( void )
+trap_retval TRAP_CORE( Prog_step )( void )
 {
-    return( Req_Prog_go() );
+    return( TRAP_CORE( Prog_go )() );
 }
 
 trap_version TRAPENTRY TrapInit( const char *parms, char *error, bool remote )

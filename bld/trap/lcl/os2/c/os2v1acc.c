@@ -334,7 +334,7 @@ HFILE TaskDupFile( HFILE old, HFILE new )
     return( TaskExecute( (excfn)DoDupFile ) );
 }
 
-trap_retval Req_Get_sys_config( void )
+trap_retval TRAP_CORE( Get_sys_config )( void )
 {
     get_sys_config_ret *ret;
 
@@ -382,7 +382,7 @@ trap_retval Req_Get_sys_config( void )
 }
 
 
-trap_retval Req_Map_addr( void )
+trap_retval TRAP_CORE( Map_addr )( void )
 {
     map_addr_req *acc;
     map_addr_ret *ret;
@@ -410,7 +410,7 @@ trap_retval Req_Map_addr( void )
 }
 
 
-trap_retval Req_Machine_data( void )
+trap_retval TRAP_CORE( Machine_data )( void )
 {
     machine_data_ret    *ret;
     unsigned_8          *data;
@@ -424,7 +424,7 @@ trap_retval Req_Machine_data( void )
 }
 
 
-trap_retval Req_Checksum_mem( void )
+trap_retval TRAP_CORE( Checksum_mem )( void )
 {
     USHORT              offset;
     USHORT              length;
@@ -459,7 +459,7 @@ trap_retval Req_Checksum_mem( void )
 }
 
 
-trap_retval Req_Read_mem( void )
+trap_retval TRAP_CORE( Read_mem )( void )
 {
     read_mem_req        *acc;
     unsigned            len;
@@ -470,7 +470,7 @@ trap_retval Req_Read_mem( void )
 }
 
 
-trap_retval Req_Write_mem( void )
+trap_retval TRAP_CORE( Write_mem )( void )
 {
     write_mem_req       *acc;
     write_mem_ret       *ret;
@@ -521,7 +521,7 @@ static void WriteCPU( struct x86_cpu *r )
     Buff.u.r.SS = r->ss;
 }
 
-trap_retval Req_Read_regs( void )
+trap_retval TRAP_CORE( Read_regs )( void )
 {
     mad_registers       *mr;
     TID                 save;
@@ -546,7 +546,7 @@ trap_retval Req_Read_regs( void )
     return( sizeof( mr->x86 ) );
 }
 
-trap_retval Req_Write_regs( void )
+trap_retval TRAP_CORE( Write_regs )( void )
 {
     mad_registers       *mr;
     TID                 save;
@@ -747,7 +747,7 @@ void DebugSession( void )
     DosSelectSession( 0, 0 );
 }
 
-trap_retval Req_Prog_load( void )
+trap_retval TRAP_CORE( Prog_load )( void )
 {
     NEWSTARTDATA        start;
     char                *parms;
@@ -854,7 +854,7 @@ trap_retval Req_Prog_load( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval Req_Prog_kill( void )
+trap_retval TRAP_CORE( Prog_kill )( void )
 {
     prog_kill_ret       *ret;
 
@@ -873,7 +873,7 @@ trap_retval Req_Prog_kill( void )
 }
 
 
-trap_retval Req_Set_break( void )
+trap_retval TRAP_CORE( Set_break )( void )
 {
     opcode_type         brk_opcode;
     set_break_req       *acc;
@@ -889,7 +889,7 @@ trap_retval Req_Set_break( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval Req_Clear_break( void )
+trap_retval TRAP_CORE( Clear_break )( void )
 {
     clear_break_req     *bp;
     opcode_type         brk_opcode;
@@ -900,7 +900,7 @@ trap_retval Req_Clear_break( void )
     return( 0 );
 }
 
-trap_retval Req_Set_watch( void )
+trap_retval TRAP_CORE( Set_watch )( void )
 {
     set_watch_req       *wp;
     set_watch_ret       *wr;
@@ -921,7 +921,7 @@ trap_retval Req_Set_watch( void )
     return( sizeof( *wr ) );
 }
 
-trap_retval Req_Clear_watch( void )
+trap_retval TRAP_CORE( Clear_watch )( void )
 {
     clear_watch_req     *wp;
     watch_point         *dst;
@@ -1060,17 +1060,17 @@ leave:
     return( sizeof( *ret ) );
 }
 
-trap_retval Req_Prog_go( void )
+trap_retval TRAP_CORE( Prog_go )( void )
 {
     return( ProgRun( FALSE ) );
 }
 
-trap_retval Req_Prog_step( void )
+trap_retval TRAP_CORE( Prog_step )( void )
 {
     return( ProgRun( TRUE ) );
 }
 
-trap_retval ReqFile_write_console( void )
+trap_retval TRAP_FILE( write_console )( void )
 {
     USHORT       len;
     USHORT       written_len;
@@ -1129,7 +1129,7 @@ static int ValidThread( TID thread )
     return( Buff.cmd == PT_RET_SUCCESS );
 }
 
-trap_retval ReqThread_get_next( void )
+trap_retval TRAP_THREAD( get_next )( void )
 {
     thread_get_next_req *acc;
     thread_get_next_ret *ret;
@@ -1157,7 +1157,7 @@ trap_retval ReqThread_get_next( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqThread_set( void )
+trap_retval TRAP_THREAD( set )( void )
 {
     thread_set_req      *acc;
     thread_set_ret      *ret;
@@ -1195,19 +1195,19 @@ static unsigned DoThread( trace_codes code )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqThread_freeze( void )
+trap_retval TRAP_THREAD( freeze )( void )
 {
     return( DoThread( PT_CMD_FREEZE ) );
 }
 
-trap_retval ReqThread_thaw( void )
+trap_retval TRAP_THREAD( thaw )( void )
 {
     return( DoThread( PT_CMD_RESUME ) );
 }
 
 
 
-trap_retval Req_Get_lib_name( void )
+trap_retval TRAP_CORE( Get_lib_name )( void )
 {
     get_lib_name_req    *acc;
     get_lib_name_ret    *ret;
@@ -1232,7 +1232,7 @@ trap_retval Req_Get_lib_name( void )
     return( sizeof( *ret ) + strlen( name ) + 1 );
 }
 
-trap_retval Req_Get_message_text( void )
+trap_retval TRAP_CORE( Get_message_text )( void )
 {
     static const char * const ExceptionMsgs[] = {
         #define pick(a,b) b,
@@ -1256,7 +1256,7 @@ trap_retval Req_Get_message_text( void )
     return( sizeof( *ret ) + strlen( err_txt ) + 1 );
 }
 
-trap_retval Req_Get_next_alias( void )
+trap_retval TRAP_CORE( Get_next_alias )( void )
 {
     get_next_alias_ret  *ret;
 

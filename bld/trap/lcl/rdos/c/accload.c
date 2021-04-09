@@ -46,7 +46,7 @@
 /*
  * AccLoadProg - create a new process for debugging
  */
-trap_retval Req_Prog_load( void )
+trap_retval TRAP_CORE( Prog_load )( void )
 {
     char            *parm;
     prog_load_req   *acc;
@@ -120,7 +120,7 @@ trap_retval Req_Prog_load( void )
 
 }
 
-trap_retval Req_Prog_kill( void )
+trap_retval TRAP_CORE( Prog_kill )( void )
 {
     prog_kill_ret   *ret;
 

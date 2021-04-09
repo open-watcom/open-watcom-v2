@@ -172,7 +172,7 @@ DWORD WriteMem( WORD seg, ULONG_PTR base, LPVOID buff, DWORD size )
 
 }
 
-trap_retval Req_Read_mem( void )
+trap_retval TRAP_CORE( Read_mem )( void )
 {
     WORD            seg;
     ULONG_PTR       offset;
@@ -195,7 +195,7 @@ trap_retval Req_Read_mem( void )
     return( length );
 }
 
-trap_retval Req_Write_mem( void )
+trap_retval TRAP_CORE( Write_mem )( void )
 {
     WORD            seg;
     ULONG_PTR       offset;
@@ -221,7 +221,7 @@ trap_retval Req_Write_mem( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval Req_Checksum_mem( void )
+trap_retval TRAP_CORE( Checksum_mem )( void )
 {
     ULONG_PTR           offset;
     WORD                length;

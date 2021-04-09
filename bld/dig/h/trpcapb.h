@@ -35,7 +35,8 @@
 #include "trptypes.h"
 #include <time.h>
 
-#define CAPABILITIES_SUPP_NAME  "Capabilities"
+#define CAPABILITIES_SUPP_NAME  Capabilities
+#define TRAP_CAPABILITIES(s)    TRAP_SYM( CAPABILITIES_SUPP_NAME, s )
 
 //#define REQ_CAPABILITIES_DEF(sym,func)
 #define REQ_CAPABILITIES_DEFS() \

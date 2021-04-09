@@ -35,7 +35,8 @@
 #include "trptypes.h"
 #include <time.h>
 
-#define FILE_INFO_SUPP_NAME     "FileInfo"
+#define FILE_INFO_SUPP_NAME     FileInfo
+#define TRAP_FILE_INFO(s)       TRAP_SYM( FILE_INFO_SUPP_NAME, s )
 
 //#define REQ_FILE_INFO_DEF(sym,func)
 #define REQ_FILE_INFO_DEFS() \

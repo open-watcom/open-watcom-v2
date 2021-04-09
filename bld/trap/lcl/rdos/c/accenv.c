@@ -38,7 +38,7 @@
 #include "stdrdos.h"
 #include "rdos.h"
 
-trap_retval ReqEnv_set_var( void )
+trap_retval TRAP_ENV( set_var )( void )
 {
     env_set_var_req *req;
     env_set_var_ret *ret;
@@ -67,7 +67,7 @@ trap_retval ReqEnv_set_var( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqEnv_get_var( void )
+trap_retval TRAP_ENV( get_var )( void )
 {
     env_get_var_req *req;
     env_get_var_ret *ret;

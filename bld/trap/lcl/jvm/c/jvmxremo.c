@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -86,7 +86,7 @@ trap_retval DoAccess( void )
 }
 
 
-trap_retval ReqGet_sys_config( void )
+trap_retval TRAP_CORE( Get_sys_config )( void )
 {
     get_sys_config_ret  *ret;
 
@@ -126,7 +126,7 @@ static char *Errors[] = {
     #undef pick
 };
 
-trap_retval ReqGet_err_text( void )
+trap_retval TRAP_CORE( Get_err_text )( void )
 {
 
     get_err_text_req    *acc;
@@ -151,7 +151,7 @@ trap_retval ReqGet_err_text( void )
     return( strlen( err_txt ) + 1 );
 }
 
-trap_retval ReqMap_addr( void )
+trap_retval TRAP_CORE( Map_addr )( void )
 {
     map_addr_req        *acc;
     map_addr_ret        *ret;
@@ -167,7 +167,7 @@ trap_retval ReqMap_addr( void )
     return( DoAccess() );
 }
 
-trap_retval ReqRead_io( void )
+trap_retval TRAP_CORE( Read_io )( void )
 {
     if( !TaskLoaded ) {
         return( 0 );
@@ -175,7 +175,7 @@ trap_retval ReqRead_io( void )
     return( DoAccess() );
 }
 
-trap_retval ReqWrite_io( void )
+trap_retval TRAP_CORE( Write_io )( void )
 {
     write_io_ret        *ret;
 
@@ -187,7 +187,7 @@ trap_retval ReqWrite_io( void )
     return( DoAccess() );
 }
 
-trap_retval ReqRead_regs( void )
+trap_retval TRAP_CORE( Read_regs )( void )
 {
 
     if( !TaskLoaded ) {
@@ -200,7 +200,7 @@ trap_retval ReqRead_regs( void )
 }
 
 
-trap_retval ReqChecksum_mem( void )
+trap_retval TRAP_CORE( Checksum_mem )( void )
 {
     checksum_mem_ret    *ret;
 
@@ -212,7 +212,7 @@ trap_retval ReqChecksum_mem( void )
     return( DoAccess() );
 }
 
-trap_retval ReqGet_next_alias( void )
+trap_retval TRAP_CORE( Get_next_alias )( void )
 {
     get_next_alias_ret  *ret;
 
@@ -225,7 +225,7 @@ trap_retval ReqGet_next_alias( void )
     return( DoAccess() );
 }
 
-trap_retval ReqProg_go( void )
+trap_retval TRAP_CORE( Prog_go )( void )
 {
     prog_go_ret     *ret;
     trap_elen       len;
@@ -239,7 +239,7 @@ trap_retval ReqProg_go( void )
     return( len );
 }
 
-trap_retval ReqMachine_data( void )
+trap_retval TRAP_CORE( Machine_data )( void )
 {
     machine_data_ret    *ret;
 
@@ -252,7 +252,7 @@ trap_retval ReqMachine_data( void )
     return( DoAccess() );
 }
 
-trap_retval ReqGet_lib_name( void )
+trap_retval TRAP_CORE( Get_lib_name )( void )
 {
     get_lib_name_ret    *ret;
 
@@ -265,13 +265,13 @@ trap_retval ReqGet_lib_name( void )
     return( DoAccess() );
 }
 
-trap_retval ReqRead_mem( void )
+trap_retval TRAP_CORE( Read_mem )( void )
 {
     if( !TaskLoaded ) return( 0 );
     return( DoAccess() );
 }
 
-trap_retval ReqWrite_mem( void )
+trap_retval TRAP_CORE( Write_mem )( void )
 {
     write_mem_ret       *ret;
 
@@ -283,7 +283,7 @@ trap_retval ReqWrite_mem( void )
     return( DoAccess() );
 }
 
-trap_retval ReqProg_load( void )
+trap_retval TRAP_CORE( Prog_load )( void )
 {
     char                buffer[160];
     char                *src;
@@ -344,7 +344,7 @@ trap_retval ReqProg_load( void )
     }
 }
 
-trap_retval ReqProg_kill( void )
+trap_retval TRAP_CORE( Prog_kill )( void )
 {
     prog_kill_ret       *ret;
 
@@ -358,70 +358,70 @@ trap_retval ReqProg_kill( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqWrite_regs( void )
+trap_retval TRAP_CORE( Write_regs )( void )
 {
     if( !TaskLoaded ) return( 0 );
     return( DoAccess() );
 }
 
-trap_retval ReqSet_watch( void )
+trap_retval TRAP_CORE( Set_watch )( void )
 {
     if( !TaskLoaded ) return( 0 );
     return( DoAccess() );
 }
 
-trap_retval ReqClear_watch( void )
+trap_retval TRAP_CORE( Clear_watch )( void )
 {
     if( !TaskLoaded ) return( 0 );
     return( DoAccess() );
 }
 
-trap_retval ReqSet_break( void )
+trap_retval TRAP_CORE( Set_break )( void )
 {
     if( !TaskLoaded ) return( 0 );
     return( DoAccess() );
 }
 
-trap_retval ReqClear_break( void )
+trap_retval TRAP_CORE( Clear_break )( void )
 {
     if( !TaskLoaded ) return( 0 );
     return( DoAccess() );
 }
 
-trap_retval ReqGet_message_text( void )
+trap_retval TRAP_CORE( Get_message_text )( void )
 {
     if( !TaskLoaded ) return( 0 );
     return( DoAccess() );
 }
 
-trap_retval ReqRedirect_stdin( void )
+trap_retval TRAP_CORE( Redirect_stdin )( void )
 {
     if( !TaskLoaded ) return( 0 );
     return( DoAccess() );
 }
 
-trap_retval ReqRedirect_stdout( void )
+trap_retval TRAP_CORE( Redirect_stdout )( void )
 {
     if( !TaskLoaded ) return( 0 );
     return( DoAccess() );
 }
 
-trap_retval ReqProg_step( void )
+trap_retval TRAP_CORE( Prog_step )( void )
 {
-    return( ReqProg_go() );
+    return( TRAP_CORE( Prog_go )() );
 }
 
-trap_retval ReqSet_user_screen( void )
+trap_retval TRAP_CORE( Set_user_screen )( void )
 {
     return( 0 );
 }
 
-trap_retval ReqSet_debug_screen( void )
+trap_retval TRAP_CORE( Set_debug_screen )( void )
 {
     return( 0 );
 }
 
-trap_retval ReqThread_get_next( void )
+trap_retval TRAP_THREAD( get_next )( void )
 {
     if( !TaskLoaded ) {
         thread_get_next_ret *ret;
@@ -432,41 +432,34 @@ trap_retval ReqThread_get_next( void )
     return( DoAccess() );
 }
 
-trap_retval ReqThread_set( void )
+trap_retval TRAP_THREAD( set )( void )
 {
     if( !TaskLoaded ) return( 0 );
     return( DoAccess() );
 }
 
-trap_retval ReqThread_freeze( void )
+trap_retval TRAP_THREAD( freeze )( void )
 {
     if( !TaskLoaded ) return( 0 );
     return( DoAccess() );
 }
 
-trap_retval ReqThread_thaw( void )
+trap_retval TRAP_THREAD( thaw )( void )
 {
     if( !TaskLoaded ) return( 0 );
     return( DoAccess() );
 }
 
-trap_retval ReqThread_get_extra( void )
+trap_retval TRAP_THREAD( get_extra )( void )
 {
     if( !TaskLoaded ) return( 0 );
     return( DoAccess() );
 }
 
 static trap_retval (* const FileRequests[])(void) = {
-    ReqFile_get_config,
-    ReqFile_open,
-    ReqFile_seek,
-    ReqFile_read,
-    ReqFile_write,
-    ReqFile_write_console,
-    ReqFile_close,
-    ReqFile_erase,
-    ReqFile_string_to_fullpath,
-    ReqFile_run_cmd,
+    #define REQ_FILE_DEF(sym,func)      TRAP_FILE( func ),
+    REQ_FILE_DEFS()
+    #undef REQ_FILE_DEF
 };
 
 typedef struct {
@@ -474,7 +467,7 @@ typedef struct {
     const void *vectors;
 } service_entry;
 
-trap_retval ReqGet_supplementary_service( void )
+trap_retval TRAP_CORE( Get_supplementary_service )( void )
 {
     char                                *name;
     get_supplementary_service_ret       *out;
@@ -486,13 +479,13 @@ trap_retval ReqGet_supplementary_service( void )
     out = GetOutPtr( 0 );
     out->err = 0;
     out->id = 0;
-    if( stricmp( FILE_SUPP_NAME, name ) == 0 ) {
+    if( stricmp( QUOTED( FILE_SUPP_NAME ), name ) == 0 ) {
         out->id = (unsigned_32)FileRequests;
     }
     return( sizeof( *out ) );
 }
 
-trap_retval ReqPerform_supplementary_service( void )
+trap_retval TRAP_CORE( Perform_supplementary_service )( void )
 {
     unsigned    (* const * _WCUNALIGNED *vectors)(void);
     access_req  *sup_req;
@@ -505,7 +498,7 @@ trap_retval ReqPerform_supplementary_service( void )
     return( (*vectors)[*sup_req]() );
 }
 
-trap_retval ReqSplit_cmd( void )
+trap_retval TRAP_CORE( Split_cmd )( void )
 {
     char                *cmd;
     char                *start;

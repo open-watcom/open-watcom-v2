@@ -37,7 +37,7 @@
 #include "realmod.h"
 
 
-trap_retval Req_Read_user_keyboard( void )
+trap_retval TRAP_CORE( Read_user_keyboard )( void )
 {
     read_user_keyboard_req      *acc;
     read_user_keyboard_ret      *ret;
@@ -61,12 +61,12 @@ trap_retval Req_Read_user_keyboard( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval Req_Set_user_screen( void )
+trap_retval TRAP_CORE( Set_user_screen )( void )
 {
     return( 0 );
 }
 
-trap_retval Req_Set_debug_screen( void )
+trap_retval TRAP_CORE( Set_debug_screen )( void )
 {
     return( 0 );
 }

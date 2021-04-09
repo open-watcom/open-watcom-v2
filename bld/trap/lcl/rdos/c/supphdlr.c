@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,7 @@
 #include <stdlib.h>
 #include "stdrdos.h"
 
-trap_retval ReqCapabilities_get_8b_bp( void )
+trap_retval TRAP_CAPABILITIES( get_8b_bp )( void )
 {
     capabilities_get_8b_bp_req  *req;
     capabilities_get_8b_bp_ret  *ret;
@@ -46,7 +47,7 @@ trap_retval ReqCapabilities_get_8b_bp( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqCapabilities_set_8b_bp( void )
+trap_retval TRAP_CAPABILITIES( set_8b_bp )( void )
 {
     capabilities_set_8b_bp_req  *req;
     capabilities_set_8b_bp_ret  *ret;
@@ -59,7 +60,7 @@ trap_retval ReqCapabilities_set_8b_bp( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqCapabilities_get_exact_bp( void )
+trap_retval TRAP_CAPABILITIES( get_exact_bp )( void )
 {
     capabilities_get_exact_bp_req  *req;
     capabilities_get_exact_bp_ret  *ret;
@@ -72,7 +73,7 @@ trap_retval ReqCapabilities_get_exact_bp( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqCapabilities_set_exact_bp( void )
+trap_retval TRAP_CAPABILITIES( set_exact_bp )( void )
 {
     capabilities_set_exact_bp_req  *req;
     capabilities_set_exact_bp_ret  *ret;

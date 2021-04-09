@@ -36,7 +36,7 @@
 #include "stdrdos.h"
 #include "debug.h"
 
-trap_retval Req_Set_break( void )
+trap_retval TRAP_CORE( Set_break )( void )
 {
     set_break_req   *acc;
     set_break_ret   *ret;
@@ -60,7 +60,7 @@ trap_retval Req_Set_break( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval Req_Clear_break( void )
+trap_retval TRAP_CORE( Clear_break )( void )
 {
     clear_break_req *acc;
     struct TDebug   *obj;
@@ -75,7 +75,7 @@ trap_retval Req_Clear_break( void )
     return( 0 );
 }
 
-trap_retval Req_Set_watch( void )
+trap_retval TRAP_CORE( Set_watch )( void )
 {
     set_watch_req   *acc;
     set_watch_ret   *ret;
@@ -102,7 +102,7 @@ trap_retval Req_Set_watch( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval Req_Clear_watch( void )
+trap_retval TRAP_CORE( Clear_watch )( void )
 {
     clear_watch_req *acc;
     struct TDebug   *obj;

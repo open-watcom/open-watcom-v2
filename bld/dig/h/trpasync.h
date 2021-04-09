@@ -36,7 +36,8 @@
 #include "trptypes.h"
 #include <time.h>
 
-#define ASYNC_SUPP_NAME "Asynch"
+#define ASYNC_SUPP_NAME     Asynch
+#define TRAP_ASYNC(s)       TRAP_SYM( ASYNC_SUPP_NAME, s )
 
 //#define REQ_ASYNC_DEF(sym,func)
 #define REQ_ASYNC_DEFS() \

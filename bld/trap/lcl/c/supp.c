@@ -40,7 +40,7 @@ typedef trap_retval service_func( void );
 
 #if defined(WANT_FILE_INFO)
 static service_func * const FileInfoRequests[] = {
-    #define REQ_FILE_INFO_DEF(sym,func)     ReqFileInfo_ ## func,
+    #define REQ_FILE_INFO_DEF(sym,func)     TRAP_FILE_INFO( func ),
     REQ_FILE_INFO_DEFS()
     #undef REQ_FILE_INFO_DEF
 };
@@ -48,7 +48,7 @@ static service_func * const FileInfoRequests[] = {
 
 #if defined(WANT_ENV)
 static service_func * const EnvRequests[] = {
-    #define REQ_ENV_DEF(sym,func)           ReqEnv_ ## func,
+    #define REQ_ENV_DEF(sym,func)           TRAP_ENV( func ),
     REQ_ENV_DEFS()
     #undef REQ_ENV_DEF
 };
@@ -56,7 +56,7 @@ static service_func * const EnvRequests[] = {
 
 #if defined(WANT_FILE)
 static service_func * const FileRequests[] = {
-    #define REQ_FILE_DEF(sym,func)          ReqFile_ ## func,
+    #define REQ_FILE_DEF(sym,func)          TRAP_FILE( func ),
     REQ_FILE_DEFS()
     #undef REQ_FILE_DEF
 };
@@ -64,7 +64,7 @@ static service_func * const FileRequests[] = {
 
 #if defined(WANT_OVL)
 static service_func * const OvlRequests[] = {
-    #define REQ_OVL_DEF(sym,func)           ReqOvl_ ## func,
+    #define REQ_OVL_DEF(sym,func)           TRAP_OVERLAY( func ),
     REQ_OVL_DEFS()
     #undef REQ_OVL_DEF
 };
@@ -72,7 +72,7 @@ static service_func * const OvlRequests[] = {
 
 #if defined(WANT_THREAD)
 static service_func * const ThreadRequests[] = {
-    #define REQ_THREAD_DEF(sym,func)        ReqThread_ ## func,
+    #define REQ_THREAD_DEF(sym,func)        TRAP_THREAD( func ),
     REQ_THREAD_DEFS()
     #undef REQ_THREAD_DEF
 };
@@ -80,7 +80,7 @@ static service_func * const ThreadRequests[] = {
 
 #if defined(WANT_RUN_THREAD)
 static service_func * const RunThreadRequests[] = {
-    #define REQ_RUN_THREAD_DEF(sym,func)    ReqRunThread_ ## func,
+    #define REQ_RUN_THREAD_DEF(sym,func)    TRAP_RUN_THREAD( func ),
     REQ_RUN_THREAD_DEFS()
     #undef REQ_RUN_THREAD_DEF
 };
@@ -88,7 +88,7 @@ static service_func * const RunThreadRequests[] = {
 
 #if defined(WANT_RFX)
 static service_func * const RFXRequests[] = {
-    #define REQ_RFX_DEF(sym,func)           ReqRfx_ ## func,
+    #define REQ_RFX_DEF(sym,func)           TRAP_RFX( func ),
     REQ_RFX_DEFS()
     #undef REQ_RFX_DEF
 };
@@ -96,7 +96,7 @@ static service_func * const RFXRequests[] = {
 
 #if defined(WANT_CAPABILITIES)
 static service_func * const CapabilitiesRequests[] = {
-    #define REQ_CAPABILITIES_DEF(sym,func)  ReqCapabilities_ ## func,
+    #define REQ_CAPABILITIES_DEF(sym,func)  TRAP_CAPABILITIES( func ),
     REQ_CAPABILITIES_DEFS()
     #undef REQ_CAPABILITIES_DEF
 };
@@ -104,7 +104,7 @@ static service_func * const CapabilitiesRequests[] = {
 
 #if defined(WANT_ASYNC)
 static service_func * const AsyncRequests[] = {
-    #define REQ_ASYNC_DEF(sym,func)         ReqAsync_ ## func,
+    #define REQ_ASYNC_DEF(sym,func)         TRAP_ASYNC( func ),
     REQ_ASYNC_DEFS()
     #undef REQ_ASYNC_DEF
 };
@@ -117,36 +117,36 @@ typedef struct {
 
 static const service_entry  Services[] = {
 #if defined(WANT_FILE_INFO)
-    { FILE_INFO_SUPP_NAME,  FileInfoRequests },
+    { QUOTED( FILE_INFO_SUPP_NAME ),  FileInfoRequests },
 #endif
 #if defined(WANT_ENV)
-    { ENV_SUPP_NAME,        EnvRequests },
+    { QUOTED( ENV_SUPP_NAME ),        EnvRequests },
 #endif
 #if defined(WANT_FILE)
-    { FILE_SUPP_NAME,       FileRequests },
+    { QUOTED( FILE_SUPP_NAME ),       FileRequests },
 #endif
 #if defined(WANT_OVL)
-    { OVERLAY_SUPP_NAME,    OvlRequests  },
+    { QUOTED( OVERLAY_SUPP_NAME ),    OvlRequests  },
 #endif
 #if defined(WANT_THREAD)
-    { THREAD_SUPP_NAME,     ThreadRequests },
+    { QUOTED( THREAD_SUPP_NAME ),     ThreadRequests },
 #endif
 #if defined(WANT_RUN_THREAD)
-    { RUN_THREAD_SUPP_NAME, RunThreadRequests },
+    { QUOTED( RUN_THREAD_SUPP_NAME ), RunThreadRequests },
 #endif
 #if defined(WANT_RFX)
-    { RFX_SUPP_NAME,        RFXRequests },
+    { QUOTED( RFX_SUPP_NAME ),        RFXRequests },
 #endif
 #if defined(WANT_CAPABILITIES)
-    { CAPABILITIES_SUPP_NAME, CapabilitiesRequests },
+    { QUOTED( CAPABILITIES_SUPP_NAME ), CapabilitiesRequests },
 #endif
 #if defined(WANT_ASYNC)
-    { ASYNC_SUPP_NAME,      AsyncRequests },
+    { QUOTED( ASYNC_SUPP_NAME ),      AsyncRequests },
 #endif
     { NULL,                 NULL }
 };
 
-trap_retval Req_Get_supplementary_service(void)
+trap_retval TRAP_CORE( Get_supplementary_service )(void)
 {
     char                                *name;
     get_supplementary_service_ret       *out;
@@ -165,7 +165,7 @@ trap_retval Req_Get_supplementary_service(void)
     return( sizeof( *out ) );
 }
 
-trap_retval Req_Perform_supplementary_service( void )
+trap_retval TRAP_CORE( Perform_supplementary_service )( void )
 {
     access_req      *sup_req;
     trap_shandle    *id;

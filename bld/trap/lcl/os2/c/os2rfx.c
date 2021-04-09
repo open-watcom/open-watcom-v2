@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +49,7 @@
 #define IsDotDot(p)     ((p)[0] == '.' && (p)[1] == '.' && (p)[2] == '\0')
 #define IsPathSep(p)    ((p)[0] == '\\' || (p)[0] == '/')
 
-trap_retval ReqRfx_rename( void )
+trap_retval TRAP_RFX( rename )( void )
 {
     char                    *old_name;
     char                    *new_name;
@@ -63,7 +63,7 @@ trap_retval ReqRfx_rename( void )
 }
 
 
-trap_retval ReqRfx_mkdir( void )
+trap_retval TRAP_RFX( mkdir )( void )
 {
     char                    *name;
     rfx_mkdir_ret           *ret;
@@ -75,7 +75,7 @@ trap_retval ReqRfx_mkdir( void )
 }
 
 
-trap_retval ReqRfx_rmdir( void )
+trap_retval TRAP_RFX( rmdir )( void )
 {
     char                    *name;
     rfx_rmdir_ret           *ret;
@@ -87,7 +87,7 @@ trap_retval ReqRfx_rmdir( void )
 }
 
 
-trap_retval ReqRfx_setdrive( void )
+trap_retval TRAP_RFX( setdrive )( void )
 {
     rfx_setdrive_req        *acc;
     rfx_setdrive_ret        *ret;
@@ -99,7 +99,7 @@ trap_retval ReqRfx_setdrive( void )
 }
 
 
-trap_retval ReqRfx_getdrive( void )
+trap_retval TRAP_RFX( getdrive )( void )
 {
     USHORT                  drive;
     ULONG                   map;
@@ -115,7 +115,7 @@ trap_retval ReqRfx_getdrive( void )
 }
 
 
-trap_retval ReqRfx_setcwd( void )
+trap_retval TRAP_RFX( setcwd )( void )
 {
     char                    *name;
     rfx_setcwd_ret          *ret;
@@ -127,7 +127,7 @@ trap_retval ReqRfx_setcwd( void )
 }
 
 
-trap_retval ReqRfx_getfileattr( void )
+trap_retval TRAP_RFX( getfileattr )( void )
 {
     USHORT                  attrib;
     USHORT                  rc;
@@ -142,7 +142,7 @@ trap_retval ReqRfx_getfileattr( void )
 }
 
 
-trap_retval ReqRfx_setfileattr( void )
+trap_retval TRAP_RFX( setfileattr )( void )
 {
     char                    *name;
     rfx_setfileattr_req     *acc;
@@ -156,7 +156,7 @@ trap_retval ReqRfx_setfileattr( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqRfx_getfreespace( void )
+trap_retval TRAP_RFX( getfreespace )( void )
 {
     FSALLOCATE              info;
     rfx_getfreespace_req    *acc;
@@ -210,7 +210,7 @@ static void mylocaltime( unsigned long date_time, unsigned *time, unsigned *date
     *date = (year << 9) | (month << 5) | day;
 }
 
-trap_retval ReqRfx_setdatetime( void )
+trap_retval TRAP_RFX( setdatetime )( void )
 {
     FILESTATUS              info;
     unsigned                time;
@@ -258,7 +258,7 @@ static unsigned long mymktime( unsigned time, unsigned date )
     return( NM_SEC_1970_1980 + day * 86400 + hour * 3600 + min * 60 + sec );
 }
 
-trap_retval ReqRfx_getdatetime( void )
+trap_retval TRAP_RFX( getdatetime )( void )
 {
     rfx_getdatetime_req     *acc;
     rfx_getdatetime_ret     *ret;
@@ -271,7 +271,7 @@ trap_retval ReqRfx_getdatetime( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqRfx_getcwd( void )
+trap_retval TRAP_RFX( getcwd )( void )
 {
     USHORT                  len;
     rfx_getcwd_req          *acc;
@@ -300,7 +300,7 @@ static void makeDTARFX( rfx_find FAR *info, FILEFINDBUF *findbuf, HDIR h )
 #endif
 }
 
-trap_retval ReqRfx_findfirst( void )
+trap_retval TRAP_RFX( findfirst )( void )
 {
     FILEFINDBUF             findbuf;
     USHORT                  rc;
@@ -323,7 +323,7 @@ trap_retval ReqRfx_findfirst( void )
     return( sizeof( *ret ) + offsetof( rfx_find, name ) + strlen( info->name ) + 1 );
 }
 
-trap_retval ReqRfx_findnext( void )
+trap_retval TRAP_RFX( findnext )( void )
 {
     FILEFINDBUF             findbuf;
     USHORT                  rc;
@@ -350,7 +350,7 @@ trap_retval ReqRfx_findnext( void )
     return( sizeof( *ret ) + offsetof( rfx_find, name ) + strlen( info->name ) + 1 );
 }
 
-trap_retval ReqRfx_findclose( void )
+trap_retval TRAP_RFX( findclose )( void )
 {
     rfx_findclose_ret       *ret;
     HDIR                    h;
@@ -366,7 +366,7 @@ trap_retval ReqRfx_findclose( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqRfx_nametocanonical( void )
+trap_retval TRAP_RFX( nametocanonical )( void )
 {
     rfx_nametocanonical_ret     *ret;
     char                        *name;

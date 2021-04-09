@@ -79,12 +79,12 @@ scrtype         Screen;
 
 static const USHORT     local_seek_method[] = { FILE_BEGIN, FILE_CURRENT, FILE_END };
 
-trap_retval Req_Read_io( void )
+trap_retval TRAP_CORE( Read_io )( void )
 {
     return( 0 );
 }
 
-trap_retval Req_Write_io( void )
+trap_retval TRAP_CORE( Write_io )( void )
 {
     write_io_ret        *ret;
 
@@ -93,7 +93,7 @@ trap_retval Req_Write_io( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqFile_get_config( void )
+trap_retval TRAP_FILE( get_config )( void )
 {
     file_get_config_ret *ret;
 
@@ -142,7 +142,7 @@ long OpenFile( char *name, USHORT mode, int flags )
 #define WRITEONLY   1
 #define READWRITE   2
 
-trap_retval ReqFile_open( void )
+trap_retval TRAP_FILE( open )( void )
 {
     file_open_req       *acc;
     file_open_ret       *ret;
@@ -170,7 +170,7 @@ trap_retval ReqFile_open( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqFile_seek( void )
+trap_retval TRAP_FILE( seek )( void )
 {
     file_seek_req       *acc;
     file_seek_ret       *ret;
@@ -182,7 +182,7 @@ trap_retval ReqFile_seek( void )
 }
 
 
-trap_retval ReqFile_read( void )
+trap_retval TRAP_FILE( read )( void )
 {
     USHORT       read_len;
     file_read_req       *acc;
@@ -196,7 +196,7 @@ trap_retval ReqFile_read( void )
     return( sizeof( *ret ) + read_len );
 }
 
-trap_retval ReqFile_write( void )
+trap_retval TRAP_FILE( write )( void )
 {
     USHORT       len;
     USHORT       written_len;
@@ -213,7 +213,7 @@ trap_retval ReqFile_write( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqFile_close( void )
+trap_retval TRAP_FILE( close )( void )
 {
     file_close_req      *acc;
     file_close_ret      *ret;
@@ -224,7 +224,7 @@ trap_retval ReqFile_close( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqFile_erase( void )
+trap_retval TRAP_FILE( erase )( void )
 {
     file_erase_ret      *ret;
 
@@ -233,7 +233,7 @@ trap_retval ReqFile_erase( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqThread_get_extra( void )
+trap_retval TRAP_THREAD( get_extra )( void )
 {
     char *ch;
 
@@ -242,14 +242,14 @@ trap_retval ReqThread_get_extra( void )
     return( 1 );
 }
 
-trap_retval Req_Set_user_screen( void )
+trap_retval TRAP_CORE( Set_user_screen )( void )
 {
     AppSession();
     Screen = USER_SCREEN;
     return( 0 );
 }
 
-trap_retval Req_Set_debug_screen( void )
+trap_retval TRAP_CORE( Set_debug_screen )( void )
 {
     DebugSession();
     Screen = DEBUG_SCREEN;
@@ -259,13 +259,13 @@ trap_retval Req_Set_debug_screen( void )
 void RestoreScreen( void )
 {
     if( Screen == USER_SCREEN ) {
-        Req_Set_user_screen();
+        TRAP_CORE( Set_user_screen )();
     } else {
-        Req_Set_debug_screen();
+        TRAP_CORE( Set_debug_screen )();
     }
 }
 
-trap_retval Req_Read_user_keyboard( void )
+trap_retval TRAP_CORE( Read_user_keyboard )( void )
 {
     HMONITOR    mon;
     struct {
@@ -330,7 +330,7 @@ trap_retval Req_Read_user_keyboard( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval Req_Get_err_text( void )
+trap_retval TRAP_CORE( Get_err_text )( void )
 {
     static char *DosErrMsgs[] = {
         #define pick(a,b)   b,
@@ -435,12 +435,12 @@ static unsigned Redirect( bool input )
     return( sizeof( *ret ) );
 }
 
-trap_retval Req_Redirect_stdin( void )
+trap_retval TRAP_CORE( Redirect_stdin )( void )
 {
     return( Redirect( TRUE ) );
 }
 
-trap_retval Req_Redirect_stdout( void )
+trap_retval TRAP_CORE( Redirect_stdout )( void )
 {
     return( Redirect( FALSE ) );
 }
@@ -471,7 +471,7 @@ char *StrCopy( const char *src, char *dst )
     return( strlen( dst ) + dst );
 }
 
-trap_retval ReqFile_run_cmd( void )
+trap_retval TRAP_FILE( run_cmd )( void )
 {
     char *dst;
     char *src;
@@ -623,7 +623,7 @@ unsigned long FindProgFile( const char *pgm, char *buffer, const char *ext_list 
     return( rc );
 }
 
-trap_retval ReqFile_string_to_fullpath( void )
+trap_retval TRAP_FILE( string_to_fullpath )( void )
 {
     const char                  *ext_list;
     char                        *name;
@@ -647,7 +647,7 @@ trap_retval ReqFile_string_to_fullpath( void )
     return( sizeof( *ret ) + strlen( fullname )  + 1 );
 }
 
-trap_retval Req_Split_cmd( void )
+trap_retval TRAP_CORE( Split_cmd )( void )
 {
     char            *cmd;
     char            *start;

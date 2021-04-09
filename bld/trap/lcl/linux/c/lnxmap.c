@@ -233,7 +233,7 @@ int DelOneLib( struct link_map *first_lmap )
  * linear 0x08048100), for shared libs this will typically add the offset
  * from zero (link time VA) to actual load base.
  */
-trap_retval Req_Map_addr( void )
+trap_retval TRAP_CORE( Map_addr )( void )
 {
     map_addr_req    *acc;
     map_addr_ret    *ret;
@@ -304,7 +304,7 @@ trap_retval Req_Map_addr( void )
 /*
  * AccGetLibName - get lib name of current module
  */
-trap_retval Req_Get_lib_name( void )
+trap_retval TRAP_CORE( Get_lib_name )( void )
 {
     get_lib_name_req    *acc;
     get_lib_name_ret    *ret;

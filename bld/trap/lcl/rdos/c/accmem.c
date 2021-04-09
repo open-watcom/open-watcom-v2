@@ -36,7 +36,7 @@
 #include "debug.h"
 
 
-trap_retval Req_Read_mem( void )
+trap_retval TRAP_CORE( Read_mem )( void )
 {
     void                *data;
     read_mem_req        *acc;
@@ -56,7 +56,7 @@ trap_retval Req_Read_mem( void )
         return( 0 );
 }
 
-trap_retval Req_Write_mem( void )
+trap_retval TRAP_CORE( Write_mem )( void )
 {
     void                *data;
     int                 len;
@@ -82,7 +82,7 @@ trap_retval Req_Write_mem( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval Req_Checksum_mem( void )
+trap_retval TRAP_CORE( Checksum_mem )( void )
 {
     long                offset;
     int                 segment;

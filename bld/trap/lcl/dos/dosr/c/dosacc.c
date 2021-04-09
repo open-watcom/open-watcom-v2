@@ -222,7 +222,7 @@ char *hex( unsigned long num )
     #define hex( n )
 #endif
 
-trap_retval Req_Get_sys_config( void )
+trap_retval TRAP_CORE( Get_sys_config )( void )
 {
     get_sys_config_ret  *ret;
 
@@ -248,7 +248,7 @@ trap_retval Req_Get_sys_config( void )
 }
 
 
-trap_retval Req_Map_addr( void )
+trap_retval TRAP_CORE( Map_addr )( void )
 {
     word            seg;
     int             count;
@@ -283,7 +283,7 @@ trap_retval Req_Map_addr( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval Req_Machine_data( void )
+trap_retval TRAP_CORE( Machine_data )( void )
 {
     machine_data_ret    *ret;
     unsigned_8          *data;
@@ -296,7 +296,7 @@ trap_retval Req_Machine_data( void )
     return( sizeof( *ret ) + sizeof( *data ) );
 }
 
-trap_retval Req_Checksum_mem( void )
+trap_retval TRAP_CORE( Checksum_mem )( void )
 {
     unsigned_8          __far *ptr;
     unsigned long       sum = 0;
@@ -325,7 +325,7 @@ static bool IsInterrupt( addr48_ptr addr, unsigned length )
 }
 
 
-trap_retval Req_Read_mem( void )
+trap_retval TRAP_CORE( Read_mem )( void )
 {
     bool            int_tbl;
     read_mem_req    *acc;
@@ -350,7 +350,7 @@ trap_retval Req_Read_mem( void )
 }
 
 
-trap_retval Req_Write_mem( void )
+trap_retval TRAP_CORE( Write_mem )( void )
 {
     bool            int_tbl;
     write_mem_req   *acc;
@@ -379,7 +379,7 @@ trap_retval Req_Write_mem( void )
 }
 
 
-trap_retval Req_Read_io( void )
+trap_retval TRAP_CORE( Read_io )( void )
 {
     read_io_req     *acc;
     void            *data;
@@ -403,7 +403,7 @@ trap_retval Req_Read_io( void )
 }
 
 
-trap_retval Req_Write_io( void )
+trap_retval TRAP_CORE( Write_io )( void )
 {
     write_io_req        *acc;
     write_io_ret        *ret;
@@ -429,7 +429,7 @@ trap_retval Req_Write_io( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval Req_Read_regs( void )
+trap_retval TRAP_CORE( Read_regs )( void )
 {
     mad_registers       *mr;
 
@@ -445,7 +445,7 @@ trap_retval Req_Read_regs( void )
     return( sizeof( mr->x86 ) );
 }
 
-trap_retval Req_Write_regs( void )
+trap_retval TRAP_CORE( Write_regs )( void )
 {
     mad_registers       *mr;
 
@@ -482,7 +482,7 @@ static EXE_TYPE CheckEXEType( tiny_handle_t handle )
     return( EXE_UNKNOWN );
 }
 
-trap_retval Req_Prog_load( void )
+trap_retval TRAP_CORE( Prog_load )( void )
 {
     addr_seg        psp;
     pblock          parmblock;
@@ -639,7 +639,7 @@ trap_retval Req_Prog_load( void )
 }
 
 
-trap_retval Req_Prog_kill( void )
+trap_retval TRAP_CORE( Prog_kill )( void )
 {
     prog_kill_ret       *ret;
 
@@ -661,7 +661,7 @@ out( "done AccKillProg\r\n" );
 }
 
 
-trap_retval Req_Set_watch( void )
+trap_retval TRAP_CORE( Set_watch )( void )
 {
     watch_point         *curr;
     set_watch_req       *wp;
@@ -697,13 +697,13 @@ trap_retval Req_Set_watch( void )
     return( sizeof( *wr ) );
 }
 
-trap_retval Req_Clear_watch( void )
+trap_retval TRAP_CORE( Clear_watch )( void )
 {
     WatchCount = 0;
     return( 0 );
 }
 
-trap_retval Req_Set_break( void )
+trap_retval TRAP_CORE( Set_break )( void )
 {
     opcode_type     __far *loc_brk_opcode;
     set_break_req   *acc;
@@ -723,7 +723,7 @@ trap_retval Req_Set_break( void )
 }
 
 
-trap_retval Req_Clear_break( void )
+trap_retval TRAP_CORE( Clear_break )( void )
 {
     clear_break_req     *bp;
 
@@ -902,17 +902,17 @@ static trap_elen ProgRun( bool step )
     return( sizeof( *ret ) );
 }
 
-trap_retval Req_Prog_go( void )
+trap_retval TRAP_CORE( Prog_go )( void )
 {
     return( ProgRun( false ) );
 }
 
-trap_retval Req_Prog_step( void )
+trap_retval TRAP_CORE( Prog_step )( void )
 {
     return( ProgRun( true ) );
 }
 
-trap_retval Req_Get_next_alias( void )
+trap_retval TRAP_CORE( Get_next_alias )( void )
 {
     get_next_alias_ret  *ret;
 
@@ -922,7 +922,7 @@ trap_retval Req_Get_next_alias( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval Req_Get_lib_name( void )
+trap_retval TRAP_CORE( Get_lib_name )( void )
 {
     get_lib_name_ret    *ret;
 
@@ -931,7 +931,7 @@ trap_retval Req_Get_lib_name( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval Req_Get_err_text( void )
+trap_retval TRAP_CORE( Get_err_text )( void )
 {
     static const char *const DosErrMsgs[] = {
         #define pick( a, b )    b,
@@ -952,7 +952,7 @@ trap_retval Req_Get_err_text( void )
     return( strlen( err_txt ) + 1 );
 }
 
-trap_retval Req_Get_message_text( void )
+trap_retval TRAP_CORE( Get_message_text )( void )
 {
     static const char * const ExceptionMsgs[] = {
         #define pick(a,b) b,

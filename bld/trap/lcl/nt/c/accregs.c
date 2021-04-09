@@ -179,7 +179,7 @@ static void WriteCPU( struct x86_cpu *r, MYCONTEXT *con )
 #endif
 #endif
 
-trap_retval Req_Read_regs( void )
+trap_retval TRAP_CORE( Read_regs )( void )
 {
     MYCONTEXT       con;
     mad_registers   _WCUNALIGNED *mr;
@@ -197,7 +197,7 @@ trap_retval Req_Read_regs( void )
 #elif defined( MD_ppc )
     memset( mr, 0, sizeof( mr->ppc ) );
 #else
-    #error Req_Read_regs not configured
+    #error TRAP_CORE( Read_regs ) not configured
 #endif
     if( DebugeePid ) {
         ti = FindThread( DebugeeTid );
@@ -257,7 +257,7 @@ trap_retval Req_Read_regs( void )
         mr->ppc.xer = con.Xer;
         mr->ppc.fpscr = *( unsigned_32 * ) & con.Fpscr; //NYI: is this right?
 #else
-        #error Req_Read_regs not configured
+        #error TRAP_CORE( Read_regs ) not configured
 #endif
     }
 #if defined( MD_x86 )
@@ -270,11 +270,11 @@ trap_retval Req_Read_regs( void )
 #elif defined( MD_ppc )
     return( sizeof( mr->ppc ) );
 #else
-    #error Req_Read_regs not configured
+    #error TRAP_CORE( Read_regs ) not configured
 #endif
 }
 
-trap_retval Req_Write_regs( void )
+trap_retval TRAP_CORE( Write_regs )( void )
 {
     MYCONTEXT       con;
     thread_info     *ti;
@@ -340,7 +340,7 @@ trap_retval Req_Write_regs( void )
     con.Xer = mr->ppc.xer;
     *( unsigned_32 * ) & con.Fpscr = mr->ppc.fpscr; //NYI: is this right?
 #else
-    #error Req_Write_regs not configured
+    #error TRAP_CORE( Write_regs ) not configured
 #endif
     MySetThreadContext( ti, &con );
     return( 0 );

@@ -529,7 +529,7 @@ static void force16SegmentLoad( thread_info *ti, WORD sel )
 #endif
 #endif
 
-trap_retval Req_Map_addr( void )
+trap_retval TRAP_CORE( Map_addr )( void )
 {
     int             i;
     HANDLE          handle;
@@ -647,7 +647,7 @@ trap_retval Req_Map_addr( void )
 /*
  * AccGetLibName - get lib name of current module
  */
-trap_retval Req_Get_lib_name( void )
+trap_retval TRAP_CORE( Get_lib_name )( void )
 {
     get_lib_name_req    *acc;
     get_lib_name_ret    *ret;

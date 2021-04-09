@@ -191,13 +191,13 @@ static trap_elen runProg( bool single_step )
     return( sizeof( *ret ) );
 } /* runProg */
 
-trap_retval Req_Prog_go( void )
+trap_retval TRAP_CORE( Prog_go )( void )
 {
     Out(( OUT_RUN, "ReqProg_go" ));
     return( runProg( FALSE ) );
 }
 
-trap_retval Req_Prog_step( void )
+trap_retval TRAP_CORE( Prog_step )( void )
 {
     Out(( OUT_RUN, "ReqProg_step" ));
     return( runProg( TRUE ) );

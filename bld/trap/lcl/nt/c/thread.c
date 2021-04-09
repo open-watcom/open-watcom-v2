@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -108,7 +109,7 @@ void RemoveAllThreads( void )
     ProcessInfo.thread_list = NULL;
 }
 
-trap_retval ReqThread_freeze( void )
+trap_retval TRAP_THREAD( freeze )( void )
 {
     thread_freeze_req   *acc;
     thread_freeze_ret   *ret;
@@ -141,7 +142,7 @@ trap_retval ReqThread_freeze( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqThread_thaw( void )
+trap_retval TRAP_THREAD( thaw )( void )
 {
     thread_thaw_req *acc;
     thread_thaw_ret *ret;
@@ -168,7 +169,7 @@ trap_retval ReqThread_thaw( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqThread_set( void )
+trap_retval TRAP_THREAD( set )( void )
 {
     thread_set_req  *acc;
     thread_set_ret  *ret;
@@ -190,7 +191,7 @@ trap_retval ReqThread_set( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqThread_get_next( void )
+trap_retval TRAP_THREAD( get_next )( void )
 {
     static thread_info  *ti;
     thread_get_next_req *acc;
@@ -240,7 +241,7 @@ trap_retval ReqThread_get_next( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqThread_get_extra( void )
+trap_retval TRAP_THREAD( get_extra )( void )
 {
     thread_get_extra_req    *acc;
     char                    *name;

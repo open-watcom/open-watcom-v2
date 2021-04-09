@@ -45,12 +45,12 @@
 #endif
 
 static trap_retval (* const CoreRequests[])(void) = {
-    #define pick(sym,dumbfunc,stdfunc)  Req_ ## stdfunc,
+    #define pick(sym,dumbfunc,stdfunc)  TRAP_CORE( stdfunc ),
     #include "_trpreq.h"
     #undef pick
 };
 
-trap_retval Req_Connect( void )
+trap_retval TRAP_CORE( Connect )( void )
 {
     connect_ret *ret;
     char        *err;
@@ -72,7 +72,7 @@ trap_retval Req_Connect( void )
     return( sizeof( *ret ) + strlen( err ) + 1 );
 }
 
-trap_retval Req_Disconnect( void )
+trap_retval TRAP_CORE( Disconnect )( void )
 {
 #if defined( DOSX )
     RemoteDisco();
@@ -82,12 +82,12 @@ trap_retval Req_Disconnect( void )
     return( 0 );
 }
 
-trap_retval Req_Suspend( void )
+trap_retval TRAP_CORE( Suspend )( void )
 {
     return( 0 );
 }
 
-trap_retval Req_Resume( void )
+trap_retval TRAP_CORE( Resume )( void )
 {
     return( 0 );
 }

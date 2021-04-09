@@ -97,7 +97,7 @@ typedef struct
  *      - Trace one instruction. This leaves you at the first instruction
  *        of the 32-bit code
  */
-trap_retval Req_Prog_load( void )
+trap_retval TRAP_CORE( Prog_load )( void )
 {
     char                exe_name[_MAX_PATH];
     pgroup2             pg;
@@ -299,7 +299,7 @@ trap_retval Req_Prog_load( void )
 }
 
 /*
- * Req_Prog_kill
+ * TRAP_CORE( Prog_kill )
  *
  * If it was a task that we attached to (WasStarted), all we do is
  * forgive the last interrupt, and then exit
@@ -315,7 +315,7 @@ trap_retval Req_Prog_load( void )
  * second pause - to allow Windows to get on with the unloading of the module,
  * if it is going to.  Ack.
  */
-trap_retval Req_Prog_kill( void )
+trap_retval TRAP_CORE( Prog_kill )( void )
 {
     prog_kill_ret       *ret;
 

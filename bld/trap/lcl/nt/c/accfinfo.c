@@ -32,7 +32,7 @@
 
 #include "stdnt.h"
 
-trap_retval ReqFileInfo_get_date( void )
+trap_retval TRAP_FILE_INFO( get_date )( void )
 {
     file_info_get_date_req  *req;
     file_info_get_date_ret  *ret;
@@ -57,7 +57,7 @@ trap_retval ReqFileInfo_get_date( void )
     return( sizeof( *ret ) );
 }
 
-trap_retval ReqFileInfo_set_date( void )
+trap_retval TRAP_FILE_INFO( set_date )( void )
 {
     file_info_set_date_req  *req;
     file_info_set_date_ret  *ret;

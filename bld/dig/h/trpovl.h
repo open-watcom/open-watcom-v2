@@ -34,7 +34,8 @@
 
 #include "trptypes.h"
 
-#define OVERLAY_SUPP_NAME               "Overlays"
+#define OVERLAY_SUPP_NAME       Overlays
+#define TRAP_OVERLAY(s)         TRAP_SYM( OVERLAY_SUPP_NAME, s )
 
 //#define REQ_OVL_DEF(sym,func)
 #define REQ_OVL_DEFS() \

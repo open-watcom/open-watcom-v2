@@ -130,12 +130,12 @@ static trap_retval Redirect( bool input )
     return( sizeof( *ret ) );
 }
 
-trap_retval Req_Redirect_stdin( void )
+trap_retval TRAP_CORE( Redirect_stdin )( void )
 {
     return( Redirect( true ) );
 }
 
-trap_retval Req_Redirect_stdout( void )
+trap_retval TRAP_CORE( Redirect_stdout )( void )
 {
     return( Redirect( false ) );
 }

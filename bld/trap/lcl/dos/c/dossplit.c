@@ -34,7 +34,7 @@
 #include "trpimp.h"
 #include "trpcomm.h"
 
-trap_retval Req_Split_cmd( void )
+trap_retval TRAP_CORE( Split_cmd )( void )
 {
     char            *cmd;
     char            *start;

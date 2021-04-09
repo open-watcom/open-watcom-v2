@@ -36,11 +36,13 @@
 #include "trpld.h"
 
 
+#define TRAP_DUMB(a)        TRAP_SYM( Dumb, a )
+
 mx_entry_p  Out_Mx_Ptr;
 
 #define OUTPTR( type, name ) type *name = Out_Mx_Ptr->ptr;
 
-static trap_retval Req_Connect( void )
+static trap_retval TRAP_DUMB( Connect )( void )
 {
     OUTPTR( connect_ret, ret );
 
@@ -48,12 +50,12 @@ static trap_retval Req_Connect( void )
     return( sizeof( *ret ) );
 }
 
-static trap_retval Req_SimpleStub( void )
+static trap_retval TRAP_DUMB( EmptyStub )( void )
 {
     return( 0 );
 }
 
-static trap_retval Req_Get_supplementary_service( void )
+static trap_retval TRAP_DUMB( Get_supplementary_service )( void )
 {
     OUTPTR( get_supplementary_service_ret, ret );
 
@@ -62,7 +64,7 @@ static trap_retval Req_Get_supplementary_service( void )
     return( sizeof( *ret ) );
 }
 
-static trap_retval Req_Map_addr( void )
+static trap_retval TRAP_DUMB( Map_addr )( void )
 {
     OUTPTR( map_addr_ret, ret );
 
@@ -73,7 +75,7 @@ static trap_retval Req_Map_addr( void )
     return( sizeof( *ret ) );
 }
 
-static trap_retval Req_Checksum_mem( void )
+static trap_retval TRAP_DUMB( Checksum_mem )( void )
 {
     OUTPTR( checksum_mem_ret, ret );
 
@@ -81,7 +83,7 @@ static trap_retval Req_Checksum_mem( void )
     return( sizeof( *ret ) );
 }
 
-static trap_retval Req_Prog_load( void )
+static trap_retval TRAP_DUMB( Prog_load )( void )
 {
     OUTPTR( prog_load_ret, ret );
 
@@ -89,7 +91,7 @@ static trap_retval Req_Prog_load( void )
     return( sizeof( *ret ) );
 }
 
-static trap_retval Req_Prog_kill( void )
+static trap_retval TRAP_DUMB( Prog_kill )( void )
 {
     OUTPTR( prog_kill_ret, ret );
 
@@ -97,7 +99,7 @@ static trap_retval Req_Prog_kill( void )
     return( sizeof( *ret ) );
 }
 
-static trap_retval Req_Set_watch( void )
+static trap_retval TRAP_DUMB( Set_watch )( void )
 {
     OUTPTR( set_watch_ret, ret );
 
@@ -106,7 +108,7 @@ static trap_retval Req_Set_watch( void )
     return( sizeof( *ret ) );
 }
 
-static trap_retval Req_Set_break( void )
+static trap_retval TRAP_DUMB( Set_break )( void )
 {
     OUTPTR( set_break_ret, ret );
 
@@ -114,7 +116,7 @@ static trap_retval Req_Set_break( void )
     return( sizeof( *ret ) );
 }
 
-static trap_retval Req_Get_next_alias( void )
+static trap_retval TRAP_DUMB( Get_next_alias )( void )
 {
     OUTPTR( get_next_alias_ret, ret );
 
@@ -123,7 +125,7 @@ static trap_retval Req_Get_next_alias( void )
     return( sizeof( *ret ) );
 }
 
-static trap_retval Req_Read_user_keyboard( void )
+static trap_retval TRAP_DUMB( Read_user_keyboard )( void )
 {
     OUTPTR( read_user_keyboard_ret, ret );
 
@@ -131,7 +133,7 @@ static trap_retval Req_Read_user_keyboard( void )
     return( sizeof( *ret ) );
 }
 
-static trap_retval Req_Get_lib_name( void )
+static trap_retval TRAP_DUMB( Get_lib_name )( void )
 {
     OUTPTR( get_lib_name_ret, ret );
 
@@ -139,7 +141,7 @@ static trap_retval Req_Get_lib_name( void )
     return( sizeof( *ret ) );
 }
 
-static trap_retval Req_Redirect_stdin( void  )
+static trap_retval TRAP_DUMB( Redirect_stdin )( void  )
 {
     OUTPTR( redirect_stdin_ret, ret );
 
@@ -147,7 +149,7 @@ static trap_retval Req_Redirect_stdin( void  )
     return( sizeof( *ret ) );
 }
 
-static trap_retval Req_Redirect_stdout( void  )
+static trap_retval TRAP_DUMB( Redirect_stdout )( void  )
 {
     OUTPTR( redirect_stdout_ret, ret );
 
@@ -156,7 +158,7 @@ static trap_retval Req_Redirect_stdout( void  )
 }
 
 
-static trap_retval Req_Split_cmd( void )
+static trap_retval TRAP_DUMB( Split_cmd )( void )
 {
     OUTPTR( split_cmd_ret, ret );
 
@@ -166,7 +168,7 @@ static trap_retval Req_Split_cmd( void )
 }
 
 static trap_retval (* const _dumbRequests[])( void ) = {
-    #define pick(sym,dumbfunc,stdfunc)  Req_ ## dumbfunc,
+    #define pick(sym,dumbfunc,stdfunc)  TRAP_DUMB( dumbfunc ),
     #include "_trpreq.h"
     #undef pick
 };

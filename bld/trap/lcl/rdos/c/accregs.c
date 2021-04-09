@@ -37,7 +37,7 @@
 #include "madregs.h"
 #include "debug.h"
 
-trap_retval Req_Read_regs( void )
+trap_retval TRAP_CORE( Read_regs )( void )
 {
     mad_registers           _WCUNALIGNED *mr;
     struct TDebug           *obj;
@@ -83,7 +83,7 @@ trap_retval Req_Read_regs( void )
     return( sizeof( mr->x86 ) );
 }
 
-trap_retval Req_Write_regs( void )
+trap_retval TRAP_CORE( Write_regs )( void )
 {
     mad_registers           _WCUNALIGNED *mr;
     struct TDebug           *obj;

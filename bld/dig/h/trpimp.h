@@ -36,60 +36,60 @@
 
 #include "trpall.h"
 
-#define pick(sym,dumbfunc,stdfunc)          extern trap_retval Req_ ## stdfunc ## (void);
+#define pick(sym,dumbfunc,stdfunc)          extern trap_retval TRAP_CORE( stdfunc ) (void);
 #include "_trpreq.h"
 #undef pick
 
 #ifdef WANT_FILE_INFO
-    #define REQ_FILE_INFO_DEF(sym,func)     extern trap_retval ReqFileInfo_ ## func ## (void);
+    #define REQ_FILE_INFO_DEF(sym,func)     extern trap_retval TRAP_FILE_INFO( func ) (void);
     REQ_FILE_INFO_DEFS()
     #undef REQ_FILE_INFO_DEF
 #endif
 
 #ifdef WANT_ENV
-    #define REQ_ENV_DEF(sym,func)           extern trap_retval ReqEnv_ ## func ## (void);
+    #define REQ_ENV_DEF(sym,func)           extern trap_retval TRAP_ENV( func ) (void);
     REQ_ENV_DEFS()
     #undef REQ_ENV_DEF
 #endif
 
 #ifdef WANT_ASYNC
-    #define REQ_ASYNC_DEF(sym,func)         extern trap_retval ReqAsync_ ## func ## (void);
+    #define REQ_ASYNC_DEF(sym,func)         extern trap_retval TRAP_ASYNC( func ) (void);
     REQ_ASYNC_DEFS()
     #undef REQ_ASYNC_DEF
 #endif
 
 #ifdef WANT_FILE
-    #define REQ_FILE_DEF(sym,func)          extern trap_retval ReqFile_ ## func ## (void);
+    #define REQ_FILE_DEF(sym,func)          extern trap_retval TRAP_FILE( func ) (void);
     REQ_FILE_DEFS()
     #undef REQ_FILE_DEF
 #endif
 
 #ifdef WANT_OVL
-    #define REQ_OVL_DEF(sym,func)           extern trap_retval ReqOvl_ ## func ## (void);
+    #define REQ_OVL_DEF(sym,func)           extern trap_retval TRAP_OVERLAY( func ) (void);
     REQ_OVL_DEFS()
     #undef REQ_OVL_DEF
 #endif
 
 #ifdef WANT_THREAD
-    #define REQ_THREAD_DEF(sym,func)        extern trap_retval ReqThread_ ## func ## (void);
+    #define REQ_THREAD_DEF(sym,func)        extern trap_retval TRAP_THREAD( func ) (void);
     REQ_THREAD_DEFS()
     #undef REQ_THREAD_DEF
 #endif
 
 #ifdef WANT_RUN_THREAD
-    #define REQ_RUN_THREAD_DEF(sym,func)    extern trap_retval ReqRunThread_ ## func ## (void);
+    #define REQ_RUN_THREAD_DEF(sym,func)    extern trap_retval TRAP_RUN_THREAD( func ) (void);
     REQ_RUN_THREAD_DEFS()
     #undef REQ_RUN_THREAD_DEF
 #endif
 
 #ifdef WANT_RFX
-    #define REQ_RFX_DEF(sym,func)           extern trap_retval ReqRfx_ ## func ## (void);
+    #define REQ_RFX_DEF(sym,func)           extern trap_retval TRAP_RFX( func ) (void);
     REQ_RFX_DEFS()
     #undef REQ_RFX_DEF
 #endif
 
 #ifdef WANT_CAPABILITIES
-    #define REQ_CAPABILITIES_DEF(sym,func)  extern trap_retval ReqCapabilities_ ## func ## (void);
+    #define REQ_CAPABILITIES_DEF(sym,func)  extern trap_retval TRAP_CAPABILITIES( func ) (void);
     REQ_CAPABILITIES_DEFS()
     #undef REQ_CAPABILITIES_DEF
 #endif
