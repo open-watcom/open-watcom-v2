@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -114,7 +115,7 @@ static void HScrollRestore( void )
 
 typedef struct supported_video_mode {
     short           mode;
-    gr_device _FARD *dev;
+    gr_device _FARD *dev_ptr;
 } SUPP_MODE;
 
 
@@ -479,14 +480,14 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
         if( tab->mode == -1 ) {
 #if defined( VERSION2 )
             if( ( mode > 0x105 ) && ( mode < 0x120 ) ) {
-                dev_ptr = tab->dev;
+                dev_ptr = tab->dev_ptr;
                 break;
             }
 #endif
             _ErrorStatus = _GRINVALIDPARAMETER;
             return( 0 );
         } else if( tab->mode == mode ) {
-            dev_ptr = tab->dev;
+            dev_ptr = tab->dev_ptr;
             break;
         }
     }

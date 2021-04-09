@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -464,10 +464,10 @@ void CALLBACK DrawPt( int xpos, int ypos, WPI_PARAM2 lparam )
         height = (short)pointSize.y;
     } else if( !gridvisible && toolType == IMGED_BRUSH ) {
         area_x = 0;
-        if( xpos > brushsize )
+        if( xpos > brushsize / 2 )
             area_x = ( xpos - brushsize / 2 ) * pointSize.x;
         area_y = 0;
-        if( ypos > brushsize )
+        if( ypos > brushsize / 2 )
             area_y = ( ypos - brushsize / 2 ) * pointSize.y;
         width = (short)(brushsize * pointSize.x);
         height = (short)(brushsize * pointSize.y);
@@ -486,11 +486,11 @@ void CALLBACK DrawPt( int xpos, int ypos, WPI_PARAM2 lparam )
         height = (short)(pointSize.y - 1);
     } else {
         area_x = 0;
-        if( xpos > brushsize )
+        if( xpos > brushsize / 2 )
             area_x = ( xpos - brushsize / 2 ) * pointSize.x;
         ++area_x;
         area_y = 0;
-        if( ypos > brushsize )
+        if( ypos > brushsize / 2 )
             area_y = ( ypos - brushsize / 2 ) * pointSize.y;
         ++area_y;
         width = (short)(pointSize.x - 1);

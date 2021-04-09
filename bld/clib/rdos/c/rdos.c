@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -206,16 +206,16 @@ int RdosReadDir( int Handle, int EntryNr, int MaxNameSize, char *PathName, long 
 
 int RdosReadResource( int handle, int ID, char *Buf, int Size )
 {
-    unsigned short int *RcPtr = 0;
+    unsigned short *RcPtr = 0;
     int RcSize;
     int ok;
     int i;
     int len = 0;
-    unsigned short int *src;
+    unsigned short *src;
     char *dst;
     unsigned int unicode;
-    unsigned short int low;
-    unsigned short int high;
+    unsigned short low;
+    unsigned short high;
 
     if( handle == 0 ) {
         __asm {

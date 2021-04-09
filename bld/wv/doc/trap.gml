@@ -1999,7 +1999,7 @@ core request REQ_PERFORM_SUPPLEMENTARY_SERVICE and appropriate service ID.
 The following descriptions do not show that "prefix" to the request messages.
 .np
 The service name to be used in the REQ_GET_SUPPLEMENTARY_SERVICE is
-"RFX".
+"Rfx".
 .beglevel
 .*
 .section REQ_RFX_RENAME
