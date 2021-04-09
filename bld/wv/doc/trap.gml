@@ -1,4 +1,9 @@
+.if &'compare(&book.,'wddoc') eq 0 .do begin
 .chap *refid=Introd1 Trap File Interface
+.do end
+.el .do begin
+.chap *refid=Introd1 Introduction
+.do end
 .*
 The &company debugger consists of a number of separate pieces of code. The
 main executable, WD.EXE (wd on UNIX systems), provides a debugging `engine'
@@ -12,19 +17,19 @@ a result structure to the debugger. The debugger and trap files also use
 Machine Architecture Description (MAD) files which abstract the CPU
 architecture.
 This design has the following benefits:
-.np
-.np
+.autonote
+.note
 OS debugging interfaces tend to be wildly varying in how they are accessed.
 By moving all the OS specific interface code into the trap file and having
 a defined interface to access it, porting the debugger becomes much easier.
-.np
+.note
 By abstracting the machine architecture specifics through MAD files, it
 becomes possible to use one debugger for several target CPU architectures
 (such as x86 and Alpha AXP). Unlike most other debuggers, the &company
 debugger is not tied to a single host/target combination and if appropriate
 trap and MAD files are available, the debugger running on any host can
 remotely debug any target.
-.np
+.note
 The trap file does not have to actually perform the operation. Instead
 it could send the request out to a remote server by a communication link
 such as a serial line or LAN. The remote server can retrieve the request,
@@ -33,6 +38,7 @@ via the link. This enables the debugger to debug applications
 in cases where there are memory constraints or other considerations which
 prevent the debugger proper from running on the remote system (such as
 Novell Netware 386).
+.endnote
 .np
 This document describes the interface initially used by version 4.0 of the
 WATCOM debugger (shipped with the 10.0 C/C++ and FORTRAN releases). It has
@@ -151,7 +157,7 @@ typedef struct {
     unsigned        len;
 } mx_entry;
 .millust end
-.np
+.pp
 The :F.ptr:eF. is pointing to a block of data for that message entry.
 The :F.len:eF. field gives the length of that block.
 One array of :F.mx_entry:eF.'s describes the request message. The second array
@@ -178,12 +184,13 @@ prototyped in :F.trpimp.h:eF..
 This function initializes the environment for proper operation of
 :F.TrapRequest:eF..
 .millust begin
-trap_version TRAPENTRY TrapInit( char       *parm,
-                                 char       *error,
-                                 unsigned_8 remote
+trap_version TRAPENTRY TrapInit(
+    char       *parm,
+    char       *error,
+    unsigned_8 remote
 );
 .millust end
-:PC.
+.pp
 The :F.parm:eF. is a string that the user passes to the trap file. Its
 interpretation is completely up to the trap file. In the case of the
 &company debugger,
@@ -207,7 +214,7 @@ typedef struct {
     unsigned_8  remote;
 } trap_version;
 .millust end
-:PC.
+.pp
 The :F.major:eF. field contains the major version number of the trap file while
 the :F.minor:eF. field tells the minor version number of the trap file.
 :F.Major:eF. is changed whenever there is a modification made to the trap file
@@ -227,13 +234,14 @@ Failure to do so may result in unpredictable operation of :F.TrapRequest:eF..
 All requests between the server and the remote trap file are handled by
 TrapRequest.
 .millust begin
-unsigned TRAPENTRY TrapRequest( unsigned num_in_mx,
-                                mx_entry *mx_in,
-                                unsigned num_out_mx,
-                                mx_entry *mx_out
+unsigned TRAPENTRY TrapRequest(
+    unsigned num_in_mx,
+    mx_entry *mx_in,
+    unsigned num_out_mx,
+    mx_entry *mx_out
 );
 .millust end
-:PC.
+.pp
 The :F.mx_in:eF. points to an array of request mx_entry's.
 The :F.num_in_mx:eF.
 field contains the number of elements of the array. Similarly,
@@ -286,7 +294,7 @@ if( mem_blk_length != sizeof( buffer ) ) {
     printf( "OK\n" );
 }
 .millust end
-:PC.
+.pp
 The program will print "OK" if it has transferred 30 bytes of data from the
 debuggee's address space to the :F.buffer:eF. variable. If less than 30
 bytes is transfered, an error message is printed out.
@@ -301,7 +309,7 @@ after finishing all access requests.
 .millust begin
 void TRAPENTRY TrapFini( void );
 .millust end
-:PC.
+.pp
 After calling :F.TrapFini:eF., it is illegal to call :F.TrapRequest:eF.
 without calling :F.TrapInit:eF. again.
 .endlevel
@@ -326,7 +334,7 @@ Note that structures suitable for individual requests are declared in
 .*
 .beglevel
 .*
-.section REQ_CONNECT (0)
+.section REQ_CONNECT
 .*
 .np
 Request to connect to the remote machine. This must be the first request made.
@@ -338,7 +346,7 @@ unsigned_8      major;   <-+- struct trap_version
 unsigned_8      minor;     |
 unsigned_8      remote;  <-+
 .millust end
-:PC.
+.pp
 The :F.req:eF. field contains the request.
 The :F.trap_version:eF.
 structure tells the version of the program making the request. The :F.major:eF.
@@ -358,7 +366,7 @@ unsigned_16 max_msg_size
 ----------------------------
 string      err_msg
 .millust end
-:PC.
+.pp
 If error has occurred, the :F.err_msg:eF. field will returns the error
 message string. If there is no error, :F.error_msg:eF. returns a null character
 and the field
@@ -370,7 +378,7 @@ to transmit or receive must be broken up into multiple requests.
 The minimum acceptable value for this
 field is 256.
 .*
-.section REQ_DISCONNECT (1)
+.section REQ_DISCONNECT
 .*
 .np
 Request to terminate the link between the local and remote machine.
@@ -380,7 +388,7 @@ Request message:
 .millust begin
 access_req      req
 .millust end
-:PC.
+.pp
 The :F.req:eF. field contains the request.
 .np
 Return message:
@@ -388,7 +396,7 @@ Return message:
 NONE
 .millust end
 .*
-.section REQ_SUSPEND (2)
+.section REQ_SUSPEND
 .*
 .np
 Request to suspend the link between the server and the remote trap file.
@@ -404,7 +412,7 @@ Request message:
 .millust begin
 access_req      req
 .millust end
-:PC.
+.pp
 The :F.req:eF. field contains the request.
 .np
 Return message:
@@ -412,7 +420,7 @@ Return message:
 NONE
 .millust end
 .*
-.section REQ_RESUME (3)
+.section REQ_RESUME
 .*
 .np
 Request to resume the link between the server and the remote trap file.
@@ -422,7 +430,7 @@ Request message:
 .millust begin
 access_req      req
 .millust end
-:PC.
+.pp
 The :F.req:eF. field contains the request.
 .np
 Return message:
@@ -430,7 +438,7 @@ Return message:
 NONE
 .millust end
 .*
-.section REQ_GET_SUPPLEMENTARY_SERVICE (4)
+.section REQ_GET_SUPPLEMENTARY_SERVICE
 .*
 .np
 Request to obtain a supplementary service id.
@@ -441,7 +449,7 @@ access_req  req
 ------------------------
 string      service_name
 .millust end
-:PC.
+.pp
 The :F.req:eF. field contains the request. The :F.service_name:eF field
 contains a string identifying the supplementary service. This string is
 case insensitive.
@@ -451,7 +459,7 @@ Return message:
 trap_error      err;
 trap_shandle    id;
 .millust end
-:PC.
+.pp
 The :F.err:eF. field is non-zero if something went wrong in obtaining
 or initializing the service.
 :F.Id:eF. is the identifier for a particular supplementary service.
@@ -464,7 +472,7 @@ added to the debugger and one to be added to the trap file. The two
 pieces could communicate with each other via the supplementary services
 mechanism.
 .*
-.section REQ_PERFORM_SUPPLEMENTARY_SERVICE (5)
+.section REQ_PERFORM_SUPPLEMENTARY_SERVICE
 .*
 .np
 Request to perform a supplementary service.
@@ -476,7 +484,7 @@ unsigned_32 service_id
 ------------------------
 unspecified
 .millust end
-:PC.
+.pp
 The :F.req:eF. field contains the request. The :F.service_id:eF field
 indicates which service is being requested. The remainder of the request
 is specified by the individual supplementary service provider.
@@ -485,11 +493,11 @@ Return message:
 .millust begin
 unspecified
 .millust end
-:PC.
+.pp
 The return message is specified by the individual supplementary service
 provider.
 .*
-.section REQ_GET_SYS_CONFIG (6)
+.section REQ_GET_SYS_CONFIG
 .*
 .np
 Request to get system information from the remote machine.
@@ -498,7 +506,7 @@ Request message:
 .millust begin
 access_req      req
 .millust end
-:PC.
+.pp
 The :F.req:eF. field contains the request.
 .np
 Return message:
@@ -511,7 +519,7 @@ unsigned_8  os;
 unsigned_8  huge_shift;
 mad_handle  mad;
 .millust end
-:PC.
+.pp
 The :F.mad:eF. field specifies the MAD (Machine Architecture Description) in use
 and determines how the other fields will be interpreted. Currently the following
 MADs are used:
@@ -524,7 +532,7 @@ MAD_MIPS - MIPS Architecture
 MAD_MSJ  - Java Virtual Machine (Microsoft)
 MAD_JVM  - Java Virtual Machine (Sun)
 .millust end
-:PC.
+.pp
 The :F.cpu:eF. fields returns the type of the remote CPU. The size of that field
 is unsigned_8. Possible CPU types for MAD_X86 are:
 .millust begin
@@ -539,9 +547,10 @@ bits 0-3
    X86_P4  = 15  - Pentium 4
 bit  4           - MMX registers
 bit  5           - XMM registers
-bits 6,7         - unused
+bits 6           - unused
+bits 7           - unused
 .millust end
-:PC.
+.pp
 The :F.fpu:eF. fields tells the type of FPU. The size of the field is unsigned_8.
 FPU types for MAD_X86 include:
 .millust begin
@@ -555,7 +564,7 @@ X86_587 =  5     - Pentium integrated FPU
 X86_587 =  6     - Pentium Pro/II/III integrated FPU
 X86_P47 =  15    - Pentium 4 integrated FPU
 .millust end
-:PC.
+.pp
 The :F.osmajor:eF. and :F.osminor:eF. contains the major and minor version
 number for the operating system of the remote machine. The type of operating
 system can be found in
@@ -575,16 +584,17 @@ OS_NT        = 10   - Win32
 OS_AUTOCAD   = 11   - ADS/ADI development (obsolete)
 OS_NEUTRINO  = 12   - QNX 6.x
 OS_LINUX     = 13   - Linux
-OS_FREEBSD   = 14   - Free BSD
+OS_FREEBSD   = 14   - FreeBSD
+OS_WIN64     = 15   - Windows 64-bit
 .millust end
-:PC.
+.pp
 The :F.huge_shift:eF. field is used to determine the shift needed for huge
 arithmetic in that system. It stores the number of left shifts required in order
 to calculate the next segment correctly. It is 12 for real mode programs. The
 value in a protect mode environment must be obtained from the OS of the debuggee
 machine. This field is only relevant for 16-bit segmented architectures.
 .*
-.section REQ_MAP_ADDR (7)
+.section REQ_MAP_ADDR
 .*
 .np
 Request to map the input address to the actual address of the remote machine.
@@ -599,7 +609,7 @@ access_req      req;
 addr48_ptr      in_addr;
 trap_mhandle    mod_handle;
 .millust end
-:PC.
+.pp
 The :F.req:eF. field contains the request. The :F.in_addr:eF. tells the address
 to map. The :F.mod_handle:eF. field identifies the module which the address is
 from. The value from this field is obtained by REQ_PROG_LOAD or
@@ -609,7 +619,7 @@ field.
 MAP_FLAT_CODE_SELECTOR  = -1
 MAP_FLAT_DATA_SELECTOR  = -2
 .millust end
-:PC.
+.pp
 When the :F.in_addr.segment:eF. equals one of these values, the debugger
 does not have a map segment value and is requesting that the trap file
 performs the mapping as if the given offset was in the flat address space.
@@ -620,7 +630,7 @@ addr48_ptr      out_addr
 addr48_off      lo_bound;
 addr48_off      hi_bound;
 .millust end
-:PC.
+.pp
 The mapped address is returned in :F.out_addr:eF.. Note that in addition
 to the segment portion being modified, the offset of the portion of the
 address may be adjusted as well if the loader performs offset relocations
@@ -632,7 +642,7 @@ valid range identified by the return of that previous request, it can
 perform the mapping itself and not bother sending the request to the trap
 file.
 .*
-.section REQ_CHECKSUM_MEM (8)
+.section REQ_CHECKSUM_MEM
 .*
 .np
 Request to calculate the checksum for a block of memory in the debuggee's
@@ -649,7 +659,7 @@ access_req      req;
 addr48_ptr      in_addr;
 unsigned_16     len;
 .millust end
-:PC.
+.pp
 The :F.req:eF. field stores the request. The :F.in_addr:eF. contains the
 starting address and the :F.len:eF. field tells how large the block of memory is.
 .np
@@ -657,10 +667,10 @@ Return message:
 .millust begin
 unsigned_32     result
 .millust end
-:PC.
+.pp
 The checksum will be returned in :F.result:eF..
 .*
-.section REQ_READ_MEM (9)
+.section REQ_READ_MEM
 .*
 .np
 Request to read a block of memory.
@@ -671,7 +681,7 @@ access_req      req;
 addr48_ptr      mem_addr;
 unsigned_16     len;
 .millust end
-:PC.
+.pp
 The :F.mem_addr:eF. contains the address of the memory block to read from the
 remote machine. The length of the block is determined by :F.len:eF.. The
 memory data will be copied to output message.
@@ -680,13 +690,13 @@ Return message:
 .millust begin
 bytes       data
 .millust end
-:PC.
+.pp
 The :F.data:eF. field stores the memory block read in. The length of this memory
 block is given by the return value from TrapRequest. If error has occurred in reading
 memory, the length of the data returns will not be equal to the number of bytes
 requested.
 .*
-.section REQ_WRITE_MEM (10)
+.section REQ_WRITE_MEM
 .*
 .np
 Request to write a block of memory.
@@ -698,7 +708,7 @@ addr48_ptr      mem_addr
 ------------------------
 bytes           data
 .millust end
-:PC.
+.pp
 The :F.data:eF. field stores the memory data to be transferred. The data will be
 stored in the debuggee's address space starting at the address in the
 :F.mem_addr:eF. field.
@@ -707,12 +717,12 @@ Return message:
 .millust begin
 unsigned_16 len
 .millust end
-:PC.
+.pp
 The :F.len:eF. field tells the length of memory block actually written to the
 debuggee machine. If error has occurred in writing the memory, the length
 returned will not be equal to the number of bytes requested.
 .*
-.section REQ_READ_IO (11)
+.section REQ_READ_IO
 .*
 .np
 Request to read data from I/O address space of the debuggee.
@@ -723,7 +733,7 @@ access_req      req
 unsigned_32     IO_offset
 unsigned_8      len
 .millust end
-:PC.
+.pp
 The :F.IO_offset:eF. contains the I/O address of the debuggee machine. The length
 of the block is determined by :F.len:eF.. It must be 1, 2 or 4 bytes. The
 data will be copied from :F.IO_offset:eF. to the return message.
@@ -732,13 +742,13 @@ Return message:
 .millust begin
 bytes       data
 .millust end
-:PC.
+.pp
 The :F.data:eF. field stores the memory block read in. The length of this memory
 block is given by the return value from TrapRequest. If an error has occurred in
 reading, the length returned will not be equal to the number of bytes
 requested.
 .*
-.section REQ_WRITE_IO (12)
+.section REQ_WRITE_IO
 .*
 .np
 Request to write data to the I/O address space of the debuggee.
@@ -750,7 +760,7 @@ unsigned_32     IO_offset
 -------------------------
 bytes           data
 .millust end
-:PC.
+.pp
 The :F.IO_offset:eF. contains the I/O address of the debuggee machine.
 The data stored in :F.data:eF. field will be copied to :F.IO_offset:eF. on
 the debuggee machine.
@@ -759,12 +769,12 @@ Return message:
 .millust begin
 unsigned_8  len
 .millust end
-:PC.
+.pp
 The :F.len:eF. field tells the number of bytes actually written out. If an error
 has occurred in writing, the length returned will not be equal
 to the number of bytes requested.
 .*
-.section REQ_PROG_GO (13)/REQ_PROG_STEP (14)
+.section REQ_PROG_GO/REQ_PROG_STEP
 .*
 .np
 Requests to execute the debuggee. REQ_PROG_GO causes the debuggee to
@@ -783,7 +793,7 @@ Request message:
 .millust begin
 access_req      req
 .millust end
-:PC.
+.pp
 The request is in :F.req:eF. field.
 .np
 Return message:
@@ -792,7 +802,7 @@ addr48_ptr      stack_pointer
 addr48_ptr      program_counter
 unsigned_16     conditions
 .millust end
-:PC.
+.pp
 The :F.stack_pointer:eF. and :F.program_counter:eF. fields store the latest
 values of SS:ESP and CS:EIP (or their non-x86 equivalents) respectively.
 The :F.conditions:eF. informs the debugger what conditions have changed since
@@ -813,14 +823,14 @@ Bit 11  : COND_EXCEPTION        - Machine exception
 Bit 12  : COND_MESSAGE          - Message to be displayed
 Bit 13  : COND_STOP             - Debuggee wants to stop
 Bit 14  : COND_RUNNING          - Debuggee is running
-Bit 15  :  not used
+Bit 15  : not used
 .millust end
 When a bit is off, the debugger avoids having to make additional requests
 to determine the new state of the debuggee. If the trap file is not sure
 that a particular item has changed, or if it is expensive to find out, it
 should just turn the bit on.
 .*
-.section REQ_PROG_LOAD (15)
+.section REQ_PROG_LOAD
 .*
 .np
 Request to load a program.
@@ -832,7 +842,7 @@ unsigned_8      true_argv
 -------------------------
 bytes           argv
 .millust end
-:PC.
+.pp
 The :F.true_argv:eF. field indicates whether the argument consists of a
 single string, or a true C-style argument vector. This field is set to
 be one for a true argument vector and zero otherwise.
@@ -849,7 +859,7 @@ trap_phandle    task_id
 trap_mhandle    mod_handle
 unsigned_8      flags
 .millust end
-:PC.
+.pp
 The :F.err:eF. field returns the error code while loading the program.
 The :F.task_id:eF. shows the task (process) ID for the program loaded.
 The :F.mod_handle:eF. is the system module identification for the executable
@@ -863,10 +873,11 @@ Bit 2   : LD_FLAG_IS_STARTED        - Program already started
 Bit 3   : LD_FLAG_IGNORE_SEGMENTS   - Ignore segments (flat)
 Bit 4   : LD_FLAG_HAVE_RUNTIME_DLLS - DLL load breaks supported
 Bit 5   : LD_FLAG_DISPLAY_DAMAGED   - Debugger must repaint screen
-Bit 6,7 : not used
+Bit 6   : not used
+Bit 7   : not used
 .millust end
 .*
-.section REQ_PROG_KILL (16)
+.section REQ_PROG_KILL
 .*
 .np
 Request to kill the program.
@@ -876,7 +887,7 @@ Request message:
 access_req      req
 trap_phandle    task_id
 .millust end
-:PC.
+.pp
 The :F.req:eF. field contains the request. The :F.task_id:eF. field (obtained
 from REQ_PROG_LOAD) identifies the program to be killed.
 .np
@@ -884,11 +895,11 @@ Return message:
 .millust begin
 trap_error      err
 .millust end
-:PC.
+.pp
 The :F.err:eF. field returns the error code of the OS kill program
 operation.
 .*
-.section REQ_SET_WATCH (17)
+.section REQ_SET_WATCH
 .*
 .np
 Request to set a watchpoint at the address given.
@@ -899,7 +910,7 @@ access_req      req
 addr48_ptr      watch_addr
 unsigned_8      size
 .millust end
-:PC.
+.pp
 The address of the watchpoint is given by the :F.watch_addr:eF. field. The
 :F.size:eF. field gives the number of bytes to be watched.
 .np
@@ -915,7 +926,7 @@ placed into execution. The top bit of the field is set to one if a debug
 register is being used for the watchpoint, and zero if the watchpoint is
 being done by software.
 .*
-.section REQ_CLEAR_WATCH (18)
+.section REQ_CLEAR_WATCH
 .*
 .np
 Request to clear a watchpoint at the address given. The trap file may
@@ -927,7 +938,7 @@ access_req      req
 addr48_ptr      watch_addr
 unsigned_8      size
 .millust end
-:PC.
+.pp
 The address of the watch point is given by the :F.watch_addr:eF. field. The
 :F.size:eF. field gives the size of the watch point.
 .np
@@ -936,7 +947,7 @@ Return message:
 NONE
 .millust end
 .*
-.section REQ_SET_BREAK (19)
+.section REQ_SET_BREAK
 .*
 .np
 Request to set a breakpoint at the address given.
@@ -946,18 +957,18 @@ Request message:
 access_req      req
 addr48_ptr      break_addr
 .millust end
-:PC.
+.pp
 The address of the break point is given by the :F.break_addr:eF. field.
 .np
 Return message:
 .millust begin
 unsigned_32     old
 .millust end
-:PC.
+.pp
 The :F.old:eF. field returns the original byte(s) at the address
 :F.break_addr:eF..
 .*
-.section REQ_CLEAR_BREAK (20)
+.section REQ_CLEAR_BREAK
 .*
 .np
 Request to clear a breakpoint at the address given. The trap file may
@@ -969,7 +980,7 @@ access_req      req
 addr48_ptr      break_addr
 unsigned_32     old
 .millust end
-:PC.
+.pp
 The address of the break point is given by the :F.break_addr:eF. field. The
 :F.old:eF. field holds the old instruction returned from the REQ_SET_BREAK
 request.
@@ -979,7 +990,7 @@ Return message:
 NONE
 .millust end
 .*
-.section REQ_GET_NEXT_ALIAS (21)
+.section REQ_GET_NEXT_ALIAS
 .*
 .np
 Request to get alias information for a segment. In some protect mode
@@ -993,7 +1004,7 @@ Request message:
 access_req      req
 unsigned_16     seg
 .millust end
-:PC.
+.pp
 The :F.seg:eF. field contains the segment. To get the first alias, put zero
 in this field.
 .np
@@ -1002,13 +1013,13 @@ Return message:
 unsigned_16     seg
 unsigned_16     alias
 .millust end
-:PC.
+.pp
 The :F.seg:eF. field contains the next segment where an alias appears. If this field
 returns zero, it implies no more aliases can be found. The :F.alias:eF. field
 returns the alias of the input segment. Zero indicates a previously set alias
 should be deleted.
 .*
-.section REQ_SET_USER_SCREEN (22)
+.section REQ_SET_USER_SCREEN
 .*
 .np
 Request to make the debuggee's screen visible.
@@ -1023,7 +1034,7 @@ Return message:
 NONE
 .millust end
 .*
-.section REQ_SET_DEBUG_SCREEN (23)
+.section REQ_SET_DEBUG_SCREEN
 .*
 .np
 Request to make the debugger's screen visible.
@@ -1038,7 +1049,7 @@ Return message:
 NONE
 .millust end
 .*
-.section REQ_READ_USER_KEYBOARD (24)
+.section REQ_READ_USER_KEYBOARD
 .*
 .np
 Request to read the remote keyboard input.
@@ -1048,7 +1059,7 @@ Request message:
 access_req      req
 unsigned_16     wait
 .millust end
-:PC.
+.pp
 The request will be time out if it waits longer than the period specifies in the
 :F.wait:eF. field. The waiting period is measured in seconds. A value of zero
 means to wait forever.
@@ -1057,10 +1068,10 @@ Return message:
 .millust begin
 unsigned_8      key
 .millust end
-:PC.
+.pp
 The :F.key:eF. field returns the input character from remote machine.
 .*
-.section REQ_GET_LIB_NAME (25)
+.section REQ_GET_LIB_NAME
 .*
 .np
 Request to get the name of a newly loaded library (DLL).
@@ -1070,7 +1081,7 @@ Request message:
 access_req      req
 trap_mhandle    mod_handle
 .millust end
-:PC.
+.pp
 The :F.mod_handle:eF. field contains the library handle. It should be zero
 to get the name of the first DLL or the value from the :F.mod_handle:eF.
 of a previous request.
@@ -1081,7 +1092,7 @@ trap_mhandle    mod_handle
 ---------------------------
 string          name
 .millust end
-:PC.
+.pp
 The :F.mod_handle:eF. field contains the library handle. It contains zero if
 there are no more DLL names to be returned. The name of the library will be returned in
 :F.name:eF. field. If the :F.name:eF. field is an empty string (consists
@@ -1090,7 +1101,7 @@ by the given handle has been unloaded, and the debugger should remove
 any symbolic information for the image. It is an error to attempt to remove
 a handle that has not been loaded in a previous REQ_GET_LIB_NAME request.
 .*
-.section REQ_GET_ERR_TEXT (26)
+.section REQ_GET_ERR_TEXT
 .*
 .np
 Request to get the error message text for an error code.
@@ -1100,7 +1111,7 @@ Request message:
 access_req      req
 trap_error      err
 .millust end
-:PC.
+.pp
 The :F.err:eF. field contains the error code number of the error text
 requested.
 .np
@@ -1108,10 +1119,10 @@ Return message:
 .millust begin
 string          error_msg
 .millust end
-:PC.
+.pp
 The error message text will be returned in :F.error_msg:eF. field.
 .*
-.section REQ_GET_MESSAGE_TEXT (27)
+.section REQ_GET_MESSAGE_TEXT
 .*
 .np
 Request to retrieve generic message text. After a REQ_PROG_LOAD, REQ_PROG_GO
@@ -1132,7 +1143,7 @@ unsigned_8      flags
 ---------------------
 string          msg
 .millust end
-:PC.
+.pp
 The message text will be returned in the :F.msg:eF. field.
 The :F.flags:eF. contains a number of bits which control the next action
 of the debugger. They are:
@@ -1141,9 +1152,12 @@ Bit 0       : MSG_NEWLINE
 Bit 1       : MSG_MORE
 Bit 2       : MSG_WARNING
 Bit 3       : MSG_ERROR
-Bit 4 - 7   : not used
+Bit 4       : not used
+Bit 5       : not used
+Bit 6       : not used
+Bit 7       : not used
 .millust end
-:PC.
+.pp
 The MSG_NEWLINE bit indicates that the debugger should scroll its display
 to a new line after displaying the message.
 The MSG_MORE bit indicates that there is another line of output to come
@@ -1152,7 +1166,7 @@ MSG_WARNING indicates that the message is a warning level message while
 MSG_ERROR is an error level message. If neither of these bits are on, the
 message is merely informational.
 .*
-.section REQ_REDIRECT_STDIN (28)/REQ_REDIRECT_STDOUT (29)
+.section REQ_REDIRECT_STDIN/REQ_REDIRECT_STDOUT
 .*
 .np
 Request to redirect the standard input (REQ_REDIRECT_STDIN) or
@@ -1164,7 +1178,7 @@ access_req      req
 ------------------------
 string          name
 .millust end
-:PC.
+.pp
 The file name to be redirected
 to/from is given by the :F.name:eF. field.
 .np
@@ -1172,11 +1186,11 @@ Return message:
 .millust begin
 trap_error      err
 .millust end
-:PC.
+.pp
 When an error has occurred, the :F.err:eF. field contains an error code
 indicating the type of error that has been detected.
 .*
-.section REQ_SPLIT_CMD (30)
+.section REQ_SPLIT_CMD
 .*
 .np
 Request to split the command line into the command name and
@@ -1188,7 +1202,7 @@ access_req      req
 ------------------------
 string          cmd
 .millust end
-:PC.
+.pp
 The :F.cmd:eF.
 field contains the command. Command can be a single command line or an array
 of command strings.
@@ -1198,12 +1212,12 @@ Return message:
 unsigned_16     cmd_end
 unsigned_16     parm_start
 .millust end
-:PC.
+.pp
 The :F.cmd_end:eF. field tells the position in command line where the command
 name ends. The :F.parm_start:eF. field stores the position where the
 program arguments begin.
 .*
-.section REQ_READ_REGS (31)
+.section REQ_READ_REGS
 .*
 .np
 Request to read CPU register contents. The data returned depends on
@@ -1213,17 +1227,17 @@ Request message:
 .millust begin
 access_req      req
 .millust end
-:PC.
+.pp
 .np
 Return message:
 .millust begin
 unspecified
 .millust end
-:PC.
+.pp
 The return message content is specific to the MAD in use and will contain
 a :F.mad_registers:eF. union (defined in :F.madtypes.h:eF.).
 .*
-.section REQ_WRITE_REGS (32)
+.section REQ_WRITE_REGS
 .*
 .np
 Request to write CPU register contents. The data is target architecture
@@ -1235,7 +1249,7 @@ access_req      req
 -------------------
 unspecified
 .millust end
-:PC.
+.pp
 The message content is specific to the MAD in use and will contain a
 :F.mad_registers:eF. union.
 .np
@@ -1243,9 +1257,9 @@ Return message:
 .millust begin
 NONE
 .millust end
-:PC.
+.pp
 .*
-.section REQ_MACHINE_DATA (33)
+.section REQ_MACHINE_DATA
 .*
 .np
 Request to retrieve machine specific data.
@@ -1258,7 +1272,7 @@ addr48_ptr      addr;
 -----------------------------
 unspecified
 .millust end
-:PC.
+.pp
 The :F.info_type:eF. field specifies what kind of information should be
 returned and :F.addr:eF. determines the address for which the information
 is requested. The remainder of the message is MAD specific.
@@ -1270,7 +1284,7 @@ addr48_off      cache_end;
 -----------------------------
 unspecified
 .millust end
-:PC.
+.pp
 The return message content is specific to the MAD in use.
 .endlevel
 .*
@@ -1298,7 +1312,7 @@ This is an :F.unsigned_64:eF. which holds a debuggee file handle.
 .*
 .beglevel
 .*
-.section REQ_FILE_GET_CONFIG (0)
+.section REQ_FILE_GET_CONFIG
 .*
 .np
 Request to retreive characteristics of the remote file system.
@@ -1314,7 +1328,7 @@ char            ext_separator;
 char            path_separator[3];
 char            newline[2];
 .millust end
-:PC.
+.pp
 The
 :F.ext_separator:eF. contains the separator for file name extensions. The possible
 path separators can be found in array :F.path_separator:eF.. The first one is the
@@ -1325,7 +1339,7 @@ The new line control
 characters are stored in array :F.newline:eF.. If the operating system uses only
 a single character for newline, put a zero in the second element.
 .*
-.section REQ_FILE_OPEN (1)
+.section REQ_FILE_OPEN
 .*
 .np
 Request to create/open a file.
@@ -1337,7 +1351,7 @@ unsigned_8          mode
 ------------------------
 string              name
 .millust end
-:PC.
+.pp
 The name of the file to be opened is given by :F.name:eF..
 The :F.mode:eF. field stores the access mode of the
 file. The following bits are defined:
@@ -1346,9 +1360,12 @@ Bit 0      :  TF_READ
 Bit 1      :  TF_WRITE
 Bit 2      :  TF_CREATE
 Bit 3      :  TF_EXEC
-Bit 4 - 7  :  not used
+Bit 4      :  not used
+Bit 5      :  not used
+Bit 6      :  not used
+Bit 7      :  not used
 .millust end
-:PC.
+.pp
 For read/write mode, turn both :F.TF_READ:eF. and :F.TF_WRITE:eF. bits on.
 The :F.TF_EXEC:eF. bit should only be used together with :F.TF_CREATE:eF. and
 indicates that the created file needs executable permission (if relevant on
@@ -1359,12 +1376,12 @@ Return message:
 trap_error      err
 trap_fhandle    handle
 .millust end
-:PC.
+.pp
 If successful, the :F.handle:eF. returns a handle for the file. When an error
 has occurred, the :F.err:eF. field contains a value indicating the type
 of error that has been detected.
 .*
-.section REQ_FILE_SEEK (2)
+.section REQ_FILE_SEEK
 .*
 .np
 Request to seek to a particular file position.
@@ -1376,7 +1393,7 @@ trap_fhandle    handle
 unsigned_8      mode
 unsigned_32     pos
 .millust end
-:PC.
+.pp
 The handle of the file is given by the :F.handle:eF. field. The :F.mode:eF.
 field stores the seek mode. There are three seek modes:
 .millust begin
@@ -1384,7 +1401,7 @@ TF_SEEK_ORG = 0  - Relative to the start of file
 TF_SEEK_CUR = 1  - Relative to the current file position
 TF_SEEK_END = 2  - Rrelative to the end of file
 .millust end
-:PC.
+.pp
 The position to seek to is in the :F.pos:eF. field.
 .np
 Return message:
@@ -1392,12 +1409,12 @@ Return message:
 trap_error      err
 unsigned_32     pos
 .millust end
-:PC.
+.pp
 If an error has occurred, the :F.err:eF. field contains a value indicating
 the type of error that has been detected. The :F.pos:eF. field returns the current
 position of the file.
 .*
-.section REQ_FILE_READ (3)
+.section REQ_FILE_READ
 .*
 .np
 Request to read a block of data from a file.
@@ -1408,7 +1425,7 @@ access_req          req
 trap_fhandle        handle
 unsigned_16         len
 .millust end
-:PC.
+.pp
 The handle of the file is given by the :F.handle:eF. field. The :F.len:eF.
 field stores the number of bytes to be transmitted.
 .np
@@ -1418,7 +1435,7 @@ trap_error          err
 --------------------------
 bytes               data
 .millust end
-:PC.
+.pp
 If successful, the :F.data:eF. returns the block of data.
 The length of returned data is given by the return value of TrapRequest
 minus 4 (to account for the size of :F.err:eF.).
@@ -1428,7 +1445,7 @@ value will be less than the number of bytes requested. When an error has
 occurred, the :F.err:eF. field contains a value indicating the type of
 error that has been detected.
 .*
-.section REQ_FILE_WRITE (4)
+.section REQ_FILE_WRITE
 .*
 .np
 Request to write a block of data to a file.
@@ -1440,7 +1457,7 @@ trap_fhandle    handle
 ------------------------
 bytes           data
 .millust end
-:PC.
+.pp
 The handle of the file is given by the :F.handle:eF. field. The data is given in
 :F.data:eF. field.
 .np
@@ -1449,12 +1466,12 @@ Return message:
 trap_error      err
 unsigned_16     len
 .millust end
-:PC.
+.pp
 If there is no error, :F.len:eF. will equal to that in the :F.data_len:eF.
 field. When an error has occurred, the :F.err:eF. field contains a value
 indicating the type of error that has been detected.
 .*
-.section REQ_FILE_WRITE_CONSOLE (5)
+.section REQ_FILE_WRITE_CONSOLE
 .*
 .np
 Request to write a block of data to the debuggee's screen.
@@ -1465,7 +1482,7 @@ access_req      req
 ------------------------
 bytes           data
 .millust end
-:PC.
+.pp
 The data is given in :F.data:eF. field.
 .np
 Return message:
@@ -1473,12 +1490,12 @@ Return message:
 trap_error      err
 unsigned_16     len
 .millust end
-:PC.
+.pp
 If there is no error, :F.len:eF. will equal to the :F.data_len:eF.
 field. When an error has occurred, the :F.err:eF. field contains a value
 indicating the type of error that has been detected.
 .*
-.section REQ_FILE_CLOSE (6)
+.section REQ_FILE_CLOSE
 .*
 .np
 Request to close a file.
@@ -1488,18 +1505,18 @@ Request message:
 access_req      req
 trap_fhandle    handle
 .millust end
-:PC.
+.pp
 The handle of the file is given by the :F.handle:eF. field.
 .np
 Return message:
 .millust begin
 trap_error      err
 .millust end
-:PC.
+.pp
 When an error has occurred, the :F.err:eF. field contains a value
 indicating the type of error that has been detected.
 .*
-.section REQ_FILE_ERASE (7)
+.section REQ_FILE_ERASE
 .*
 .np
 Request to erase a file.
@@ -1510,7 +1527,7 @@ access_req      req
 -------------------------
 string          file_name
 .millust end
-:PC.
+.pp
 The :F.file_name:eF
 field contains the file name to be deleted.
 .np
@@ -1518,11 +1535,11 @@ Return message:
 .millust begin
 trap_error  err
 .millust end
-:PC.
+.pp
 If error has occurred when erasing the file, the :F.err:eF. field will
 return the error code number.
 .*
-.section REQ_FILE_STRING_TO_FULLPATH (8)
+.section REQ_FILE_STRING_TO_FULLPATH
 .*
 .np
 Request to convert a file name to its full path name.
@@ -1534,7 +1551,7 @@ unsigned_8      file_type
 -------------------------
 string          file_name
 .millust end
-:PC.
+.pp
 The :F.file_type:eF. field indicates the type of the input file.
 File types can be:
 .millust begin
@@ -1543,7 +1560,7 @@ TF_FILE_DBG  =  1
 TF_FILE_PRS  =  2
 TF_FILE_HLP  =  3
 .millust end
-:PC.
+.pp
 This is
 so the trap file can search different paths for the different types
 of files. For example, under QNX, the PATH environment variable is searched
@@ -1558,13 +1575,13 @@ trap_error      err
 --------------------------
 string          path_name
 .millust end
-:PC.
+.pp
 If no error occurs the :F.err:eF. field returns a zero and the full path name
 will be stored in the :F.path_name:eF. field. When an error has occurred, the
 :F.err:eF. field contains an error code indicating the type of error
 that has been detected.
 .*
-.section REQ_FILE_RUN_CMD (9)
+.section REQ_FILE_RUN_CMD
 .*
 .np
 Request to run a command on the target (debuggee's) system.
@@ -1576,7 +1593,7 @@ unsigned_16     chk_size
 ------------------------
 string          cmd
 .millust end
-:PC.
+.pp
 The :F.chk_size:eF. field gives the check size in kilobytes. This field
 is only useful in the DOS implementation. It contains the value of
 the /CHECKSIZE debugger command line option and represents the amount of
@@ -1587,7 +1604,7 @@ Return message:
 .millust begin
 trap_error      err
 .millust end
-:PC.
+.pp
 If error has occurred when executing the command, the :F.err:eF. field
 will return the error code number.
 .endlevel
@@ -1640,7 +1657,7 @@ field stores the address section number.
 .*
 .beglevel
 .*
-.section REQ_OVL_STATE_SIZE (0)
+.section REQ_OVL_STATE_SIZE
 .*
 .np
 Request to return the size of the overlay state information in bytes of the
@@ -1654,19 +1671,19 @@ Request message:
 .millust begin
 access_req      req
 .millust end
-:PC.
+.pp
 The :F.req:eF. field contains the request.
 .np
 Return message:
 .millust begin
 unsigned_16     size
 .millust end
-:PC.
+.pp
 The :F.size:eF. field returns the size in bytes. A value of zero indicates
 no overlays are present in the debuggee and none of the other requests
 dealing with overlays will ever be called.
 .*
-.section REQ_OVL_GET_DATA (1)
+.section REQ_OVL_GET_DATA
 .*
 .np
 Request to get the address and size of an overlay section.
@@ -1688,14 +1705,14 @@ Return message:
 unsigned_16     segment
 unsigned_32     size
 .millust end
-:PC.
+.pp
 The :F.segment:eF. field contains the segment value where the overlay
 section is loaded (or would be loaded if it was brought into memory).
 The :F.size:eF. field gives the size, in bytes, of the overlay section.
 If there is no section for the given id, the :F.segment:eF. field will be
 zero.
 .*
-.section REQ_OVL_READ_STATE (2)
+.section REQ_OVL_READ_STATE
 .*
 .np
 Request to read the overlay table state.
@@ -1715,10 +1732,10 @@ Return message:
 .millust begin
 bytes           data
 .millust end
-:PC.
+.pp
 The :F.data:eF. field contains the overlay state information requested.
 .*
-.section REQ_OVL_WRITE_STATE (3)
+.section REQ_OVL_WRITE_STATE
 .*
 .np
 Request to write the overlay table state.
@@ -1733,7 +1750,7 @@ access_req      req
 --------------------
 bytes           data
 .millust end
-:PC.
+.pp
 The :F.data:eF. field contains the overlay state information to be restored.
 .np
 Return message:
@@ -1741,7 +1758,7 @@ Return message:
 NONE
 .millust end
 .*
-.section REQ_OVL_TRANS_VECT_ADDR (4)
+.section REQ_OVL_TRANS_VECT_ADDR
 .*
 .np
 Request to check if the input overlay address is actually an overlay
@@ -1756,7 +1773,7 @@ Request message:
 access_req      req
 ovl_address     ovl_addr
 .millust end
-:PC.
+.pp
 The :F.mach:eF. field is the machine address. The :F.sect_id:eF.
 field stores the number of entries down in the overlay stack.
 .np
@@ -1764,12 +1781,12 @@ Return message:
 .millust begin
 ovl_address     ovl_addr
 .millust end
-:PC.
+.pp
 The translated address will be returned in the :F.ovl_addr:eF. field.
 If the address is not an overlay vector, then the input address will be
 returned and the :F.sect_id:eF. field will be zero.
 .*
-.section REQ_OVL_TRANS_RET_ADDR (5)
+.section REQ_OVL_TRANS_RET_ADDR
 .*
 .np
 Request to check if the address is the overlay manager parallel return
@@ -1789,13 +1806,13 @@ Return message:
 .millust begin
 ovl_address     ovl_addr
 .millust end
-:PC.
+.pp
 The translated address will be returned in the :F.ovl_addr:eF. field.
 If the address is not an parallel return code, then the input address will be
 returned and the :F.sect_id:eF. field in the structure :F.ovl_addr:eF. will
 be zero.
 .*
-.section REQ_OVL_GET_REMAP_ENTRY (6)
+.section REQ_OVL_GET_REMAP_ENTRY
 .*
 .np
 Request to check if the overlay address needs to be remapped.
@@ -1809,7 +1826,7 @@ Request message:
 access_req      req
 ovl_address     ovl_addr
 .millust end
-:PC.
+.pp
 The :F.ovl_addr:eF. field contains the overlay address.
 .np
 Return message:
@@ -1817,7 +1834,7 @@ Return message:
 unsigned_8      remapped
 ovl_address     ovl_addr
 .millust end
-:PC.
+.pp
 If the address gets remapped the :F.remapped:eF. field will return one.
 The remapped address will be returned in the :F.ovl_addr:eF. field.
 The input address will be unchanged if the address has not been remapped.
@@ -1845,7 +1862,7 @@ This is an :F.unsigned_32:eF. which holds a thread handle.
 .*
 .beglevel
 .*
-.section REQ_THREAD_GET_NEXT (0)
+.section REQ_THREAD_GET_NEXT
 .*
 .np
 Request to get next thread.
@@ -1855,7 +1872,7 @@ Request message:
 access_req      req
 trap_thandle    thread
 .millust end
-:PC.
+.pp
 The :F.thread:eF. contains the either a zero to get information on the
 first thread, or the value of the :F.thread:eF. field in the
 return message of a previous request.
@@ -1865,7 +1882,7 @@ Return message:
 trap_thandle    thread
 unsigned_8      state
 .millust end
-:PC.
+.pp
 The :F.thread:eF. field returns the thread ID. There are no more threads in
 the list, it will contain zero.
 The :F.state:eF. field can have two values:
@@ -1874,7 +1891,7 @@ THREAD_THAWED = 0
 THREAD_FROZEN = 1
 .millust end
 .*
-.section REQ_THREAD_SET (1)
+.section REQ_THREAD_SET
 .*
 .np
 Request to set a given thread ID to be the current thread.
@@ -1884,7 +1901,7 @@ Request message:
 access_req      req
 trap_thandle    thread
 .millust end
-:PC.
+.pp
 The :F.thread:eF. contains the thread number to set. If it's zero, do not
 attempt to set the thread, just return the current thread ID.
 .np
@@ -1893,11 +1910,11 @@ Return message:
 trap_error      error
 trap_thandle    old_thread
 .millust end
-:PC.
+.pp
 The :F.old_thread:eF. field returns the previous thread ID. If the set fails, the
 :F.err:eF. field will be non-zero.
 .*
-.section REQ_THREAD_FREEZE (2)
+.section REQ_THREAD_FREEZE
 .*
 .np
 Request to freeze a thread so that it will not be run next time when executing
@@ -1908,7 +1925,7 @@ Request message:
 access_req      req
 trap_thandle    thread
 .millust end
-:PC.
+.pp
 The :F.thread:eF. contains the thread number to freeze.
 .np
 Return message:
@@ -1917,7 +1934,7 @@ trap_error      err
 .millust end
 If the thread cannot be frozen, the :F.err:eF. field returns non-zero value.
 .*
-.section REQ_THREAD_THAW (3)
+.section REQ_THREAD_THAW
 .*
 .np
 Request to allow a thread to run next time when executing the program.
@@ -1927,7 +1944,7 @@ Request message:
 access_req      req
 trap_thandle    thread
 .millust end
-:PC.
+.pp
 The :F.thread:eF. contains the thread number to thaw.
 .np
 Return message:
@@ -1936,7 +1953,7 @@ trap_error      err
 .millust end
 If the thread cannot be thawed, the :F.err:eF. field returns non zero value.
 .*
-.section REQ_THREAD_GET_EXTRA (4)
+.section REQ_THREAD_GET_EXTRA
 .*
 .np
 Request to get extra information about a thread. This is arbitrary textual
@@ -1949,7 +1966,7 @@ Request message:
 access_req      req
 unsigned_32     thread
 .millust end
-:PC.
+.pp
 The :F.thread:eF. field contains the thread ID. A zero value means to get the
 title string for the thread extra information. This is displayed at the
 top of the thread window.
@@ -1958,7 +1975,7 @@ Return message:
 .millust begin
 string          extra
 .millust end
-:PC.
+.pp
 The extra information of the thread will be returned in :F.extra:eF. field.
 .endlevel
 .*
@@ -1974,7 +1991,7 @@ The service name to be used in the REQ_GET_SUPPLEMENTARY_SERVICE is
 "RFX".
 .beglevel
 .*
-.section REQ_RFX_RENAME (0)
+.section REQ_RFX_RENAME
 .*
 .np
 Request to rename a file on the debuggee's system.
@@ -1987,7 +2004,7 @@ string          from_name
 -------------------------
 string          to_name
 .millust end
-:PC.
+.pp
 The file whose name is indicated by the field :F.from_name:eF. will be renamed
 to the name given by the field :F.to_name:eF.
 .np
@@ -1995,11 +2012,11 @@ Return message:
 .millust begin
 trap_error      err
 .millust end
-:PC.
+.pp
 If error has occurred, the :F.err:eF. field will return the error code
 number.
 .*
-.section REQ_RFX_MKDIR (1)
+.section REQ_RFX_MKDIR
 .*
 .np
 Request to create a directory on the target (debuggee) system.
@@ -2010,18 +2027,18 @@ access_req      req
 ------------------------
 string          dir_name
 .millust end
-:PC.
+.pp
 The :F.dir_name:eF field contains the name of the directory to be created.
 .np
 Return message:
 .millust begin
 trap_error      err
 .millust end
-:PC.
+.pp
 If error has occurred when creating the directory, the :F.err:eF. field
 will return the error code number.
 .*
-.section REQ_RFX_RMDIR (2)
+.section REQ_RFX_RMDIR
 .*
 .np
 Request to remove a directory on the target system.
@@ -2032,18 +2049,18 @@ access_req      req
 ------------------------
 string          dir_name
 .millust end
-:PC.
+.pp
 The :F.dir_name:eF field contains the name of the directory to be removed.
 .np
 Return message:
 .millust begin
 trap_error      err
 .millust end
-:PC.
+.pp
 If error has occurred, the :F.err:eF. field will return the error code
 number.
 .*
-.section REQ_RFX_SETDRIVE (3)
+.section REQ_RFX_SETDRIVE
 .*
 .np
 Request to set the current drive on the target system.
@@ -2053,7 +2070,7 @@ Request message:
 access_req      req
 unsigned_8      drive
 .millust end
-:PC.
+.pp
 The :F.drive:eF field contains the drive number to be set on the target system
 (0=A,1=B,...).
 .np
@@ -2061,11 +2078,11 @@ Return message:
 .millust begin
 trap_error      err
 .millust end
-:PC.
+.pp
 If error has occurred, the :F.err:eF. field will return the error code
 number.
 .*
-.section REQ_RFX_GETDRIVE (4)
+.section REQ_RFX_GETDRIVE
 .*
 .np
 Request to get the current drive on the target system.
@@ -2074,18 +2091,18 @@ Request message:
 .millust begin
 access_req      req
 .millust end
-:PC.
+.pp
 The :F.req:eF. field contains the request.
 .np
 Return message:
 .millust begin
 unsigned_8      drive
 .millust end
-:PC.
+.pp
 The :F.drive:eF field returns the current drive number on the target system
 (0=A,1=B,...).
 .*
-.section REQ_RFX_SETCWD (5)
+.section REQ_RFX_SETCWD
 .*
 .np
 Request to set a directory on the target system.
@@ -2096,18 +2113,18 @@ access_req      req
 ------------------------
 string          dir_name
 .millust end
-:PC.
+.pp
 The :F.dir_name:eF field contains the name of the directory to be set.
 .np
 Return message:
 .millust begin
 trap_error      err
 .millust end
-:PC.
+.pp
 If error has occurred, the :F.err:eF. field will return the error code
 number.
 .*
-.section REQ_RFX_GETCWD (6)
+.section REQ_RFX_GETCWD
 .*
 .np
 Request to get the current directory name on the target system.
@@ -2117,7 +2134,7 @@ Request message:
 access_req      req
 unsigned_8      drive
 .millust end
-:PC.
+.pp
 The :F.drive:eF field contains the target drive number
 (0=current drive,1=A,2=B,...).
 .np
@@ -2127,11 +2144,11 @@ trap_error      err
 --------------------------
 string          dir_name
 .millust end
-:PC.
+.pp
 The :F.dir_name:eF field contains the name of the directory to be set.
 If error has occurred, the :F.err:eF. field will return the error code number.
 .*
-.section REQ_RFX_SETDATETIME (7)
+.section REQ_RFX_SETDATETIME
 .*
 .np
 Request to set a file's date and time information on the target system.
@@ -2142,7 +2159,7 @@ access_req      req
 trap_fhandle    handle
 time_t          time
 .millust end
-:PC.
+.pp
 The :F.handle:eF. contains the file handle. The :F.time:eF. field follows
 the UNIX time format. The :F.time:eF. represents the time since January 1, 1970
 (UTC).
@@ -2152,7 +2169,7 @@ Return message:
 NONE
 .millust end
 .*
-.section REQ_RFX_GETDATETIME (8)
+.section REQ_RFX_GETDATETIME
 .*
 .np
 Request to get the date and time information for a file on the target system.
@@ -2162,18 +2179,18 @@ Request message:
 access_req      req
 trap_fhandle    handle
 .millust end
-:PC.
+.pp
 The :F.handle:eF. contains the file handle.
 .np
 Return message:
 .millust begin
 time_t          time
 .millust end
-:PC.
+.pp
 The :F.time:eF. field follows the UNIX time format. The :F.time:eF.
 represents the time since January 1, 1970 (UTC).
 .*
-.section REQ_RFX_GETFREESPACE (9)
+.section REQ_RFX_GETFREESPACE
 .*
 .np
 Request to get the amount of free space left on the drive.
@@ -2183,7 +2200,7 @@ Request message:
 access_req      req
 unsigned_8      drive
 .millust end
-:PC.
+.pp
 The :F.drive:eF field contains the target drive number
 (0=current drive,1=A,2=B,...).
 .np
@@ -2191,10 +2208,10 @@ Return message:
 .millust begin
 unsigned_32     size
 .millust end
-:PC.
+.pp
 The :F.size:eF. field returns the number of bytes left on the drive.
 .*
-.section REQ_RFX_SETFILEATTR (10)
+.section REQ_RFX_SETFILEATTR
 .*
 .np
 Request to set the file attribute of a file.
@@ -2206,7 +2223,7 @@ unsigned_32     attribute
 -------------------------
 string          name
 .millust end
-:PC.
+.pp
 The :F.name:eF field contains the name whose attributes are to be set.
 The :F.attribute:eF. field contains the
 new attributes of the file.
@@ -2215,11 +2232,11 @@ Return message:
 .millust begin
 trap_error      err
 .millust end
-:PC.
+.pp
 If error has occurred, the :F.err:eF. field will return the error code
 number.
 .*
-.section REQ_RFX_GETFILEATTR (11)
+.section REQ_RFX_GETFILEATTR
 .*
 .np
 Request to get the file attribute of a file.
@@ -2230,17 +2247,17 @@ access_req      req
 --------------------
 string          name
 .millust end
-:PC.
+.pp
 The :F.name:eF field contains the name to be checked.
 .np
 Return message:
 .millust begin
 unsigned_32     attribute
 .millust end
-:PC.
+.pp
 The :F.attribute:eF. field returns the attribute of the file.
 .*
-.section REQ_RFX_NAMETOCANONICAL (12)
+.section REQ_RFX_NAMETOCANONICAL
 .*
 .np
 Request to convert a file name to its canonical form.
@@ -2251,7 +2268,7 @@ access_req      req
 -------------------------
 string          file_name
 .millust end
-:PC.
+.pp
 The :F.file_name:eF
 field contains the file name to be converted.
 .np
@@ -2261,13 +2278,13 @@ trap_error      err
 --------------------------
 string          path_name
 .millust end
-:PC.
+.pp
 If there is no error, the :F.err:eF. field returns a zero and the full path name
 will be stored in the :F.path_name:eF. field. When an error has occurred, the
 :F.err:eF. field contains an error code indicating the type of error
 that has been detected.
 .*
-.section REQ_RFX_FINDFIRST (13)
+.section REQ_RFX_FINDFIRST
 .*
 .np
 Request to find the first file in a directory.
@@ -2279,7 +2296,7 @@ unsigned_8      attrib
 ----------------------
 string          name
 .millust end
-:PC.
+.pp
 The :F.name:eF. field contains the name of the directory and the :F.attrib:eF. field
 contains the attribute of the files to list in the directory.
 .np
@@ -2289,7 +2306,7 @@ trap_error      err
 -----------------------
 rfx_find        info
 .millust end
-:PC.
+.pp
 If found, the :F.err:eF. field will be zero. The location and
 information of about the first file will be in the structure :F.info.:eF. Definition
 of the structure :F.rfx_find:eF. is as follows:
@@ -2304,7 +2321,7 @@ typedef struct rfx_find {
 } rfx_find;
 .millust end
 .*
-.section REQ_RFX_FINDNEXT (14)
+.section REQ_RFX_FINDNEXT
 .*
 .np
 Request to find the next file in the directory. This request should be used only after
@@ -2316,7 +2333,7 @@ access_req      req
 --------------------
 rfx_find        info
 .millust end
-:PC.
+.pp
 The :F.req:eF. field contains the request. The :F.info:eF. field contains
 the rfx_find structure returned from the previous REQ_FIND_NEXT or REQ_FIND_FIRST.
 .np
@@ -2326,10 +2343,10 @@ trap_error      err
 -----------------------
 rfx_find        info
 .millust end
-:PC.
+.pp
 The :F.info:eF. field is the same as in REQ_FIND_FIRST.
 .*
-.section REQ_RFX_FINDCLOSE (15)
+.section REQ_RFX_FINDCLOSE
 .*
 .np
 Request to end the directory search operation.
@@ -2338,14 +2355,14 @@ Request message:
 .millust begin
 access_req      req
 .millust end
-:PC.
+.pp
 The :F.req:eF. field contains the request.
 .np
 Return message:
 .millust begin
 trap_error      err
 .millust end
-:PC.
+.pp
 If successful, the :F.err:eF. field will be zero, otherwise the
 system error code will be returned.
 .endlevel
@@ -2375,7 +2392,7 @@ typedef struct {
     unsigned_16     fini_off;
 } trap_header;
 .millust end
-:PC.
+.pp
 If the first 2 bytes contain the value 0xDEAF, the file is considered to
 be a valid trap file and the :F.init_off:eF., :F.acc_off:eF., and
 :F.fini_off:eF. fields are used to obtain the offsets of the TrapInit,
@@ -2468,7 +2485,7 @@ typedef struct {
     unsigned_16     fini_off;
 } trap_header;
 .millust end
-:PC.
+.pp
 If the first 2 bytes contain the value 0xDEAF, the file is considered to
 be a valid trap file and the :F.init_off:eF., :F.acc_off:eF., and
 :F.fini_off:eF. fields are used to obtain the offsets of the TrapInit,

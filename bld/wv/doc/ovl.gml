@@ -1,8 +1,10 @@
+.*
 .chap Overlay manager interface
+.*
 For &company Debugger to be able to debug overlays, it must be able to make requests
 of the overlay manager for certain operations. The overlay manager must also
 be able to inform &company Debugger when a new overlay section is loaded.
-:P.
+.np
 When &company Debugger loads a DOS program, it looks at the initial CS:IP value for the
 following structure:
 .millust begin
@@ -14,11 +16,11 @@ struct ovl_header {
     unsigned_16 handler_offset;
 };
 .millust end
-:PC.
+.pp
 &company Debugger checks to make sure that the first instruction is a short jump (opcode
 0xeb) and that the word following that instruction contains the value 0x2112.
 If this occurs, &company Debugger assumes that it is debugging an overlaid application.
-:P.
+.np
 &company Debugger then fills in the :F.hook:eF. field with the far address of a routine
 that is invoked with a far call whenever a change in the overlay state occurs.
 The initial CS value and the contents of the :F.handler_offset:eF. field gives
@@ -34,7 +36,7 @@ finished its initialization, it performs a far call to the debugger hook
 routine, with the return address on the stack being the "real" starting
 address of the program being debugged. All register contents (including flags)
 should be preserved by the hook routine.
-:P.
+.np
 After initialization, the debugger hook routine is invoked with a far call
 every time a new overlay section is loaded into memory. In this case the
 AX register contains the section number that was just loaded. The DL register
@@ -59,7 +61,7 @@ pertaining to overlays. It is invoked by the debugger by performing a far
 call with a request number in the AX register. The AX register is used
 to return the result or return status of the request. The CX and BX registers
 are used for some requests to pass a far pointer to memory.
-:P.
+.np
 There are two structures that the handler routines deals with. The first
 is called an  overlay state.
 An overlay state consists of a block of memory
@@ -73,13 +75,13 @@ To convert from a section number to a bit position use the following formulas:
 byte_offset = (section_number - 1) / 8;
 bit_number  = (section_number - 1) % 8;
 .millust end
-:PC.
+.pp
 Following the bit vector is information that the manager uses to restore the
 overlay stack.
-:P.
+.np
 The second structure used is an overlay address. This consists of a far
 pointer followed by a 16-bit section number.
-:P.
+.np
 The following requests are recognized by the debug handler routine.
 .*
 .beglevel
@@ -101,7 +103,7 @@ AX = request number (1)         AX = 1
 CX:BX = far pointer to memory
         to store overlay state
 .millust end
-:P.
+.np
 This request copies the overlay state into the memory pointed at by
 the CX:BX registers. A one is always returned in AX.
 .*
@@ -113,7 +115,7 @@ AX = request number (2)         AX = 1
 CX:BX = far pointer to memory
         to load overlay state
 .millust end
-:P.
+.np
 This request takes a previously obtained overlay state and causes the overlay
 manager to return itself to that overlay configuration. A one is always
 returned in AX. The overlay manager will not explicitly unload a section
@@ -134,7 +136,7 @@ AX = request number (3)         AX = 1 if addr was translated,
 CX:BX = far pointer to               0 otherwise
         overlay address
 .millust end
-:P.
+.np
 This request checks to see if the far pointer portion of the overlay address
 pointed at by CX:BX is actually an overlay vector. If the address is a vector
 then the vector address is replaced by the true address of the routine that
@@ -151,7 +153,7 @@ AX = request number (4)         AX = 1 if addr was translated,
 CX:BX = far pointer to               0 otherwise
         overlay address
 .millust end
-:P.
+.np
 In order
 to handle parallel overlay calls, the overlay manager replaces the true return
 address on the stack with that of some special code (the parallel return code).
@@ -159,7 +161,7 @@ It then takes the original return address and section number an places them
 on the overlay stack. When a routine returns to the overlay manager, it
 pops the top entry of the overlay stack, makes sure that the original overlay
 section is loaded, and returns to the original return address.
-:P.
+.np
 This function performs much the same function as TRANSLATE_VECTOR_ADDR,
 except that rather than checking for a vector address, it checks to see
 if the address is that of the overlay manager parallel return code. If it is
@@ -180,7 +182,7 @@ CX:BX = far pointer to variable
         be filled in with
         overlay table address
 .millust end
-:P.
+.np
 This request fills in the far pointer pointed at by CX:BX with the address
 of the overlay table so that a
 profiler can find out where sections are located in the executable, or
@@ -199,7 +201,7 @@ AX = request number (6)         AX = 1 if the section exists
 CX:BX = far pointer to               0 otherwise
         overlay address
 .millust end
-:P.
+.np
 With the dynamic overlay manager, sections may be loaded, or moved, to
 positions other than where the linker originally placed them. The debugger
 must be informed of the new positions so that it can update the locations
@@ -213,7 +215,7 @@ in the overlay address with the section number that has moved and its new
 segment address. The offset portion of the overlay address is unused. The
 request will return a one in AX. If there are no sections numbers larger
 than the one being passed in that have moved, a zero is returned.
-:P.
+.np
 Here is some example debugger code:
 .millust begin
 void CheckMovedSections()
@@ -235,7 +237,7 @@ AX = request number (7)         AX = 1 if the section exists
 CX:BX = far pointer to               0 otherwise
         overlay address
 .millust end
-:P.
+.np
 This request returns information on the current location of a section
 while it is in memory (or where it would be if it was loaded). The
 section number portion of the overlay address is filled in with the
@@ -261,7 +263,8 @@ typedef struct ovl_table {
     ovltab_entry    entries[ 1 ];
 } ovl_table;
 .millust end
-:P. The fields :F.major:eF. and :F.minor:eF. field contain version numbers for
+.np
+The fields :F.major:eF. and :F.minor:eF. field contain version numbers for
 the overlay table structure. If an upwardly compatible change in the structures
 is made, the minor number will be incremented. If a non-upwardly compatible
 change to the structures is made, the major field will be incremented.
@@ -291,7 +294,7 @@ typedef struct ovltab_entry {
     unsigned_32         disk_addr;
 } ovltab_entry;
 .millust end
-:P.
+.np
 The top bit of the :F.flag_anc:eF. field contains an indicator, while the
 program is running, of whether the overlay section is in memory (value one)
 or must be loaded from disk (value zero). The next highest bit is filled in
@@ -314,7 +317,7 @@ is 3.0. or greater). The :F.disk_addr:eF. field gives
 the starting offset the overlay data in the overlay file.
 The segment relocation
 items immediately follow the data.
-:P.
+.np
 The end of the :F.entries:eF. array is indicated when an element's
 :F.flags_anc:eF.
 field contains the value 0xffff. The remaining fields in that element contain

@@ -2482,13 +2482,13 @@ dlgsrch.ps &
 dlgwopt.ps &
 
 # trap sub-directory
-incs_trap = ../doc/trap
+incs_trap = ../../bld/wv/doc
 objs_trap = &
-../doc/trap/wtrap.gml &
-../doc/trap/trap.gml &
-#../doc/trap/ovl.gml &
-#../doc/trap/extra.gml &
-#../doc/trap/dbg.gml &
+../../bld/wv/doc/wtrap.gml &
+../../bld/wv/doc/trap.gml &
+#../../bld/wv/doc/ovl.gml &
+#../../bld/wv/doc/extra.gml &
+#../../bld/wv/doc/dbg.gml &
 
 # win386 sub-directory
 incs_win386 = ../doc/win386
