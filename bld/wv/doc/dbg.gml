@@ -1,4 +1,6 @@
+.*
 .chap Debugging Information Format
+.*
 This document describes the object and executable file structures
 used by the &company Debugger to provide symbolic information about a program.
 This information is subject to change.
@@ -12,12 +14,10 @@ remain but is only useful for debugging DOS overlays.
 .np
 Before reading this document you should understand the Intel 8086 Object
 Module Format (OMF). This format is described in the Intel document
-:CIT.
-8086 Relocatable Object Module Formats
-:eCIT.
+.book 8086 Relocatable Object Module Formats
 and also the October 1985 issue of
-:CIT.
-PC Tech Journal:eCIT..
+.book PC Tech Journal
+.period
 .np
 Responsibility for the Intel/Microsoft OMF specification has been taken over
 by the Tools Interface Standards (TIS) Committee. The TIS standards
@@ -25,7 +25,9 @@ by the Tools Interface Standards (TIS) Committee. The TIS standards
 center at 1-800-548-4725 and asking for order number 241597.
 .np
 This document is for the &company Debugger version 4.0 (or above.)
+.*
 .chap Object file structures
+.*
 The compiler is responsible for placing extra information into
 the object file in order to provide symbolic information for the &company Debugger. There
 are three classes of information, each of which may be present or absent
@@ -50,14 +52,20 @@ minor_version_number (char)
 source_language (string)
 .millust end
 .pc
-The :F.comment_class:eF. of 0xfe indicates a linker directive comment.
+The
+.id comment_class
+of 0xfe indicates a linker directive comment.
 The character 'D' informs the linker that this record is providing debugging
-information. The :F.major_version_number:eF. is changed whenever there
+information. The
+.id major_version_number
+is changed whenever there
 is a modification made to the types or local symbol classes that is not
-upwardly compatible with previous versions. The :F.minor_version_number:eF.
+upwardly compatible with previous versions. The
+.id minor_version_number
 increments by one whenever a change is made to those classes that is
-upwardly compatible with previous versions. The :F.source_language:eF. field
-is a string which determines what language that the file was compiled
+upwardly compatible with previous versions. The
+.id source_language
+field is a string which determines what language that the file was compiled
 from.
 .np
 If the debugging comment record is not present, the local and type segments
@@ -146,41 +154,43 @@ INT_2 constant values are sign-extended to four bytes before being pushed.
 .np
 The OPERATOR class performs a variety of operations on the expression
 stack.
-:DL.
-:DT.IND_2
-:DD.Pick up two bytes at the location specified by the top entry of the
+.begnote
+.note IND_2
+Pick up two bytes at the location specified by the top entry of the
 stack, sign-extend to four bytes and replace top of stack with the result.
-:DT.IND_4
-:DD.Replace the top of stack with the contents of the four bytes at the
+.note IND_4
+Replace the top of stack with the contents of the four bytes at the
 location specified by the top of stack.
-:DT.IND_ADDR286
-:DD.Replace the top of stack with the contents of the four bytes, treated
+.note IND_ADDR286
+Replace the top of stack with the contents of the four bytes, treated
 as a far pointer, at the location specified by the top of stack.
-:DT.IND_ADDR386
-:DD.Replace the top of stack with the contents of the six bytes, treated
+.note IND_ADDR386
+Replace the top of stack with the contents of the six bytes, treated
 as a far pointer, at the location specified by the top of stack.
-:DT.ZEB
-:DD.Zero extend the top of stack from a byte to a dword (clear the high
+.note ZEB
+Zero extend the top of stack from a byte to a dword (clear the high
 three bytes).
-:DT.ZEW
-:DD.Zero extend the top of stack from a word to a dword.
-:DT.MK_FP
-:DD.Remove the top two entries from the stack, use the top of stack as
+.note ZEW
+Zero extend the top of stack from a word to a dword.
+.note MK_FP
+Remove the top two entries from the stack, use the top of stack as
 an offset and the next element as a segment to form a far pointer and
 push that back onto the stack.
-:DT.POP
-:DD.Remove the top entry from the stack.
-:DT.XCHG
-:DD.Exchange the top of stack with the entry specified by :F.stack_byte:eF..
+.note POP
+Remove the top entry from the stack.
+.note XCHG
+Exchange the top of stack with the entry specified by
+.id stack_byte
+.period
 "XCHG 1" would exchange the top of stack with the next highest entry.
-:DT.ADD
-:DD.Remove the top two entries from the stack, add them together and push
+.note ADD
+Remove the top two entries from the stack, add them together and push
 the result.
-:DT.DUP
-:DD.Duplicate the value at the top of the stack.
-:DT.NOP
-:DD.Perform no operation.
-:eDL.
+.note DUP
+Duplicate the value at the top of the stack.
+.note NOP
+Perform no operation.
+.endnote
 .np
 REG and MULTI_REG push the 'lvalue' of the register. If they are the
 only entry then the symbol exists in the specified register. To access
@@ -264,7 +274,9 @@ EOF       (value 0x14)
 .pc
 SCALAR is used to give a name to a basic scalar type. It can also be
 used to give a type index to a scalar type without a name by specifying
-the null name. The :F.scalar_type_byte:eF. informs the &company Debugger what sort of
+the null name. The
+.id scalar_type_byte
+informs the &company Debugger what sort of
 scalar item
 is being given a name. It has the following form:
 .millust begin
@@ -290,9 +302,12 @@ scope type name must be preceded by its appropriate scope name in order
 for the &company Debugger to recognize it as a type name. This is useful for declaring
 C structure, union, and enum tag names. You declare SCOPE names of "struct",
 "union", and "enum" and then place the appropriate value in the
-:F.scope_index:eF. field of the NAME record when declaring the tag.
+.id scope_index
+field of the NAME record when declaring the tag.
 .np
-NAME gives an arbitrary type a name. The field, :F.scope_index:eF., is
+NAME gives an arbitrary type a name. The field,
+.id scope_index
+, is
 either zero, which indicates an unrestricted type name, or is the type
 index of a SCOPE definition, which means that the type name must be preceded
 by the given scope name in order to be recognized.
@@ -302,8 +317,9 @@ more than one source file.
 See the section of on the "Special Line Number Table"
 in the executable structure for more details.
 .np
-CUE_TABLE is followed by :F.table_offset_dword:eF. which gives the offset
-in bytes from the begining of the typing information for a module to the
+CUE_TABLE is followed by
+.id table_offset_dword
+which gives the offset in bytes from the begining of the typing information for a module to the
 special line number table. If this record is present, it must be in
 the first $$TYPES segment for the module and preferably as close to
 the begining of the segment as possible.
@@ -332,10 +348,14 @@ integer with the low bound of the array being zero and the high
 bound being whatever is specified.
 .np
 The DESC_INDEX form is used when the array bounds are not known at
-compile time. The :F.bounds_32_pointer:eF. is a far pointer to a structure
-in memory. The type and size of the first field is given by the first
-:F.scalar_type_byte:eF. and indicates the lower bound for the index. The
-second field's type and size is given by the second :F.scalar_type_byte:eF. .
+compile time. The
+.id bounds_32_pointer
+is a far pointer to a structure in memory. The type and size of the first field is given by the first
+.id scalar_type_byte
+and indicates the lower bound for the index. The
+second field's type and size is given by the second
+.id scalar_type_byte
+.period
 This field gives the number of elements in the array.
 .np
 The DESC_INDEX_386 is the same as DESC_INDEX except that a 48-bit far pointer
@@ -381,11 +401,14 @@ dereference the pointer. This "hidden" indirection may be used to define
 reference parameter types, or other indirectly located symbols. The *_DEREF
 types have now been superceeded by location expressions. They should no
 longer be generated. The NEAR* pointer types all have an optional
-:F.base_locator:eF. field. The debugger can tell if this field is present
+.id base_locator
+field. The debugger can tell if this field is present
 by examining the length of the debug type entry at the begining of the
 record and seeing if there are additional bytes after the
-:F.base_type_index:eF. field. If there are more bytes, the
-:F.base_locator:eF. is a location expression whose result is an address,
+.id base_type_index
+field. If there are more bytes, the
+.id base_locator
+is a location expression whose result is an address,
 the value of which is the base selector and offset value
 when indirecting through the pointer (based pointers). The contents of
 the based pointer variable are added to result of the location expression
@@ -393,7 +416,9 @@ to form the true resulting address after an indirection.
 The address of the pointer variable being indirected through is pushed
 on the stack before the location expression is evaluated (needed for
 self-based pointers).
-If the :F.base_locator:eF. field is not present, the debugger will use
+If the
+.id base_locator
+field is not present, the debugger will use
 the default near segment and a zero offset.
 .*
 .section ENUMERATED (value 0x5?)
@@ -411,7 +436,9 @@ CONST_LONG (value 0x53) value_dword, name
 LIST is used to inform the &company Debugger of the number of constants in the enumerated
 type and the scalar type used to store them in memory. It will be
 followed immediately by all the constant definitions for the enumerated
-type. See TYPE_NAME for a description of the :F.scalar_type_byte:eF..
+type. See TYPE_NAME for a description of the
+.id scalar_type_byte
+.period
 .np
 CONST_BYTE, CONST_WORD, and CONST_LONG define the individual constant
 values for an enumerated type. The type of the constant is provided by
@@ -447,7 +474,9 @@ INHERIT_CLASS (v  0x69) adjust_locator, ancestor_type_index
 .pc
 LIST is used to introduce a structure definition. It is followed
 immediately by all the field definitions that make up the structure.
-The optional :F.size_dword:eF. gives the size of the structure in bytes.
+The optional
+.id size_dword
+gives the size of the structure in bytes.
 If it is not present, the debugger calculates the size of the structure
 based on field offsets and sizes.
 .np
@@ -456,8 +485,9 @@ entry in a structure defintion.
 .np
 BIT_BYTE, BIT_WORD, BIT_LONG, and BIT_CLASS define a bit field in a structure.
 :The FIELD_CLASS and BIT_CLASS records are used for defining fields in a
-C++ class. The :F.attrib_byte:eF. contain a set of bits describing attributes
-of the field:
+C++ class. The
+.id attrib_byte
+contain a set of bits describing attributes of the field:
 .millust begin
 BIT: 7 6 5 4 3 2 1 0
      |     | | | | |
@@ -472,21 +502,26 @@ An internal field is one that is generated for compiler support. It is
 not normally displayed to the user. The other bits have their usual C++
 meanings.
 .np
-The :F.field_locator:eF. is a location expression describing how to
-calculate the field address. Before begining to evaluate the expression,
-the debugger will implicitly push the base address of the class instance
-onto the stack. The following is an example of the location expression used
-to calculate an ordinary field at offset 10 from the start of the class:
+The
+.id field_locator
+is a location expression describing how to calculate the field address.
+Before begining to evaluate the expression, the debugger will implicitly push
+the base address of the class instance onto the stack.
+The following is an example of the location expression used to calculate an
+ordinary field at offset 10 from the start of the class:
 .millust begin
 INT_1   10
 ADD
 .millust end
 .pc
 The INHERIT_CLASS record indicates that a particular class should inherit
-all the fields specified by :F.ancestor_type_index:eF.. This field must
-point at either a STRUCTURE LIST record or a TYPE NAME that eventually
-resolves to a STRUCTURE LIST. The :F.adjust_locator:eF. is a location
-expression that tells the debugger how to adjust the field offset expressions
+all the fields specified by
+.id ancestor_type_index
+.period
+This field must point at either a STRUCTURE LIST record or a TYPE NAME that eventually
+resolves to a STRUCTURE LIST. The
+.id adjust_locator
+is a location expression that tells the debugger how to adjust the field offset expressions
 in the inherited class to their proper values for a class of this instance.
 .np
 The FIELD_*, BIT_*, and INHERIT_CLASS records are not counted when
@@ -540,10 +575,13 @@ The CHAR_BYTE, CHAR_WORD, and CHAR_LONG forms are used when the length
 of the character string is known at compile time. Even though the length
 given is an unsigned quantity, the decision on which form to use is made
 by considering the value to be signed. The CHAR_IND form is used when the
-length of the string is determined at run time. The :F.length_32_pointer:eF.
+length of the string is determined at run time. The
+.id length_32_pointer
 gives the far address of a location containing the length of the string. The
-size of this location is given by the :F.scalar_type_byte:eF.. The
-CHAR_IND_386 form is the same as CHAR_IND except that the location of the length
+size of this location is given by the
+.id scalar_type_byte
+.period
+The CHAR_IND_386 form is the same as CHAR_IND except that the location of the length
 is given by a 48-bit far pointer.
 The CHAR_IND_LOC form is the same as CHAR_IND except that the address of
 the length is given by a location expression.
@@ -630,64 +668,83 @@ MEMBER_SCOPE (value 0x26) parent_block_offset, class_type_index
 .millust end
 .pc
 BLOCK is used to indicate a block of code that contains local symbol
-definitions. The field :F.parent_block_offset:eF. is used to tell the &company Debugger
+definitions. The field
+.id parent_block_offset
+is used to tell the &company Debugger
 the next
 block to search for a symbol definition if it is not found in this block.
 The field is set to zero if there is no parent block.
 .np
 NEAR_RTN and FAR_RTN are used to specify a routine definition.
 Notice that the first part
-is identical to a code block definition. The :F.ret_addr_offset_word:eF.
-is the
-offset from BP (or EBP) that the return address is located on the stack. The
-:F.#parms_byte:eF. and :F.parm_location:eF.'s following are only
-for those parms which
-are passed in registers. The remainder of the parms are assumed to be
-passed on the stack.
+is identical to a code block definition. The
+.id ret_addr_offset_word
+is the offset from BP (or EBP) that the return address is located on the stack. The
+.id #parms_byte
+and
+.id parm_location
+following are only for those parms which are passed in registers.
+The remainder of the parms are assumed to be passed on the stack.
 .np
 The MEMBER_SCOPE record is used for C++ member functions. It introduces
 a scope where the the debugger looks up the fields of the class identified
-by :F.class_type_index:eF. as if they were normal symbols. If the
-:F.obj_ptr_type_byte:eF. and
-:F.object_loc:eF. location expression portions of the record are present,
+by
+.id class_type_index
+as if they were normal symbols. If the
+.id obj_ptr_type_byte
+and
+.id object_loc
+location expression portions of the record are present,
 it indicates that the function has a C++ "this" pointer, and all fields of
 the class structure are accessable. The location expression evaluates
 to the address of the object that the member function is manipulating.
-The :F.obj_ptr_type_byte:eF. contains a value from the low order nibble
+The
+.id obj_ptr_type_byte
+contains a value from the low order nibble
 of a POINTER type record. It indicates the type of `this' pointer the
 routine is expecting. I.e.:
-:DL.
-:DTHD.Value
-:DDHD.Definition
-:DT.0
-:DD.16-bit near pointer
-:DT.1
-:DD.16-bit far pointer
-:DT.6
-:DD.32-bit near pointer
-:DT.7
-:DD.32-bit far pointer
-:eDL.
-If the portions following the :F.class_type_index:eF. are
-absent from the record, the routine is a static member function and only
+.begnote
+.notehd1 Value
+.notehd2 Definition
+.note 0
+16-bit near pointer
+.note 1
+16-bit far pointer
+.note 6
+32-bit near pointer
+.note 7
+32-bit far pointer
+.endnote
+If the portions following the
+.id class_type_index
+are absent from the record, the routine is a static member function and only
 has access to static data members.
 .np
-To use this record, the member function's :F.parent_block_offset:eF. is
-pointed at the MEMBER_SCOPE record, and the MEMBER_SCOPE's
-:F.parent_block_offset:eF field is pointed at what the member function
-would normally be pointing at. In effect, a new block scope has been
-introduced.
+To use this record, the member function's
+.id parent_block_offset
+is pointed at the MEMBER_SCOPE record, and the MEMBER_SCOPE's
+.id parent_block_offset
+field is pointed at what the member function would normally be pointing at.
+In effect, a new block scope has been introduced.
 .np
 The *_386 versions of the records are identical to  their 286
-counterparts excepts that the :F.start_offset:eF., :F.size:eF., and
-:F.ret_addr_offset:eF. fields have been widened to 32 bits.
+counterparts excepts that the
+.id start_offset
+,
+.id size
+, and
+.id ret_addr_offset
+fields have been widened to 32 bits.
 :NOTE.
 There should be a better mapping of parm number to parm location. There
 is no provision for Pascal calling conventions (reversed parm order) or
 other strangeness.
 .np
-The BLOCK definition contains a :F.start_offset_word:eF. (or
-:F.start_offset_dword:eF. in a BLOCK_386). This is the offset
+The BLOCK definition contains a
+.id start_offset_word
+(or
+.id start_offset_dword
+in a BLOCK_386). This is the offset
 from a given memory location provided by NEW_BASE entries and indicates the
 address of the start of executable code for the block.
 .np
@@ -717,7 +774,9 @@ memory location that is given by the record.
 Avoid the use of the ADD_PREV_SEG record. Its operation is only valid in
 real mode. It is included for backwards compatiblity only.
 .endlevel
+.*
 .chap Executable file structures
+.*
 The linker is responsible for processing the debugging information contained
 in the object files and some of its internal structures and appending
 them to the executable file.
@@ -750,16 +809,24 @@ After linking, the executable file looks like this:
 The section marked as "EXE file" is the normal executable file.
 All debugging information is appended to the end of the file, after any
 overlay sections or other information.
-The :F.master debug header:eF. begins at a fixed offset from the end of
+The
+.id master debug header
+begins at a fixed offset from the end of
 the file, and provides the location of the remainder of the debug information.
-The :F.source language table:eF. contains the source languages used by
+The
+.id source language table
+contains the source languages used by
 the program.
-The :F.section debug info:eF. is repeated once for the
-root and each overlay section defined in the executable. It contains all the
-debugging information for all object modules defined in the root or a particular
-overlay section.
-The :F.section debug info:eF. is further divided into a number of
-debugging information classes, these will be explained later.
+The
+.id section debug info
+is repeated once for the root and each overlay section defined in
+the executable.
+It contains all the debugging information for all object modules defined in
+the root or a particular overlay section.
+The
+.id section debug info
+is further divided into a number of debugging information classes, these will
+be explained later.
 All offsets in the debugging information that refer to other information
 items are
 relative to the start of the information,
@@ -787,45 +854,55 @@ struct master_dbg_header {
 };
 .millust end
 .pc
-The :F.signature:eF. word contains the value 0x8386.
+The
+.id signature
+word contains the value 0x8386.
 This is the first indication to the &company Debugger that there is debugging information
 present.
-The :F.exe_major_ver:eF. field contains the major version number of the
-executable file debugging information structures.
-The major version number will change
-whenever there is a modification to these structures that is not upwardly
-compatible with the previous version. The current major version number is
-three.
-The :F.exe_minor_ver:eF. field contains the minor version number of the
-executable file debugging information structures.
-The minor version number increments by
-one whenever there is a change to the structures which is upwardly compatible
+The
+.id exe_major_ver
+field contains the major version number of the executable file debugging
+information structures.
+The major version number will change whenever there is a modification to these
+structures that is not upwardly compatible with the previous version.
+The current major version number is three.
+The
+.id exe_minor_ver
+field contains the minor version number of the executable file debugging information structures.
+The minor version number increments by one whenever there is a change to the structures which is upwardly compatible
 with the previous version. The current minor version number is zero.
 This means that in order for the &company Debugger to process the debugging information
 the following must be true:
-:OL.
-:LI. FILE exe debug info major version == debugger exe debug info major version
-:LI. FILE exe debug info minor version <= debugger exe debug info minor version
-:eOL.
+.autonote
+.note
+FILE exe debug info major version == debugger exe debug info major version
+.note
+FILE exe debug info minor version <= debugger exe debug info minor version
+.endnote
 .np
-The :F.obj_major_ver:eF. field contains the major version number of the
-object file debugging information structures (internal format of the
-types and local symbol information).
-The major version number will change
-whenever there is a modification to these structures that is not upwardly
-compatible with the previous version. The current major version number is
-one.
-The :F.obj_minor_ver:eF. field contains the minor version number of the
-object file debugging information structures.
-The minor version number increments by
-one whenever there is a change to the structures which is upwardly compatible
-compatible with the previous version. The current minor version number is three.
+The
+.id obj_major_ver
+field contains the major version number of the object file debugging
+information structures (internal format of the types and local symbol
+information).
+The major version number will change whenever there is a modification to these
+structures that is not upwardly compatible with the previous version.
+The current major version number is one.
+The
+.id obj_minor_ver
+field contains the minor version number of the object file debugging
+information structures.
+The minor version number increments by one whenever there is a change to the
+structures which is upwardly compatible compatible with the previous version.
+The current minor version number is three.
 This means that in order for the debugger to process the debugging information
 the following must be true:
-:OL.
-:LI. FILE obj debug info major version == debugger obj debug info major version
-:LI. FILE obj debug info minor version <= debugger obj debug info minor version
-:eOL.
+.autonote
+.note
+FILE obj debug info major version == debugger obj debug info major version
+.note
+FILE obj debug info minor version <= debugger obj debug info minor version
+.endnote
 .pc
 These two fields are filled in by the linker by extracting the
 version information from special debug comment record in the processed object
@@ -835,14 +912,19 @@ type or local symbol information for the 'incorrect' file. The minor
 version number placed in the master header should be the maximum of
 all the minor version numbers extracted from the object files.
 .np
-The :F.lang_size:eF. field contains the size of the source language table
-at the beginning of the debug information.
-The :F.segment_size:eF. field informs the debugger of the size, in bytes, of the
-segment address table.
-The field, :F.debug_size:eF.,
-gives the total size of the debugging information, including the size
+The
+.id lang_size
+field contains the size of the source language table at the beginning of
+the debug information.
+The
+.id segment_size
+field informs the debugger of the size, in bytes, of the segment address table.
+The field,
+.id debug_size
+, gives the total size of the debugging information, including the size
 of the master header itself. This allows the debugger to calculate the start
-of the debugging information by subtracting the value of the :F.debug_size:eF.
+of the debugging information by subtracting the value of the
+.id debug_size
 field from the location of the end of file.
 This gives the start of the source language and segment address tables,
 whose sizes are
@@ -872,7 +954,9 @@ map file will be represented in the table.
 .section Section debug information
 .*
 .np
-Each :F.section debug info:eF. contains the following:
+Each
+.id section debug info
+contains the following:
 .millust begin
 +-----------------------+
 |    section header     |
@@ -917,22 +1001,33 @@ struct section_dbg_header {
 };
 .millust end
 .pc
-The :F.mod_offset:eF., :F.gbl_offset:eF., and :F.addr_offset:eF.
+The
+.id mod_offset
+,
+.id gbl_offset
+, and
+.id addr_offset
 fields are offsets, from the beginning of the section debug header
 to the module info,
 global symbol, and address info classes of debugging information.
-The :F.section_size:eF. field is the size of the debugging information
-for the section, including the section header.
-The following
-conditions must hold true for the debugger to recognize the debugging information
-as valid:
-:OL.
-:LI. mod_offset < gbl_offset
-:LI. gbl_offset < addr_offset
-:LI. addr_offset < section_size
-:eOL.
+The
+.id section_size
+field is the size of the debugging information for the section, including
+the section header.
+The following conditions must hold true for the debugger to recognize
+the debugging information as valid:
+.autonote
+.note
+mod_offset < gbl_offset
+.note
+gbl_offset < addr_offset
+.note
+addr_offset < section_size
+.endnote
 .pc
-The :F.section_id:eF. field contains the overlay number for this section.
+The
+.id section_id
+field contains the overlay number for this section.
 This is zero for the root.
 .*
 .section Local symbols class
@@ -966,12 +1061,15 @@ struct line_segment {
 }
 .millust end
 .pc
-The :F.segment:eF. field contains a offset, from the start of the
-address info class,
+The
+.id segment
+field contains a offset, from the start of the address info class,
 to an addr_info structure (see the address info class description).
-This provides
-the segment value for the array of line_info's following. The next field,
-:F.num:eF., provides the number of line_info's in the array. The :F.line:eF.
+This provides the segment value for the array of line_info's following.
+The next field,
+.id num
+, provides the number of line_info's in the array. The
+.id line
 is a variable size array containing the following structure:
 .millust begin
 struct line_info {
@@ -980,27 +1078,35 @@ struct line_info {
 };
 .millust end
 .pc
-The :F.line_number:eF. contains the source line number whose offset
-is being defined. If the top bit of the line number is on, this line number
-refers to an entry in the special line number table. See the
-"Special Line Number Table" section for more details.
-The :F.code_offset:eF. field contains the offset from the
-begining of the module for the first instruction associated with the line
-number.
-To get the true code address for the instruction you must add :F.code_offset:eF.
-to the address given by the :F.segment:eF. field in the line_segment
-structure.
-All the instructions
-up to the next element's :F.code_offset:eF., or the end of the
-object file's code for that segment if
-there is no next :F.code_offset:eF. are considered to be part of the
-:F.line_number:eF. source line. Within each line_segment structure
-the line_info array is assumed to be sorted
-in order of ascending :F.code_offset:eF.'s.
-The module structure for the
-object file contains fields which indicate the start and size of the
-line_segment array
-within the class.
+The
+.id line_number
+contains the source line number whose offset is being defined.
+If the top bit of the line number is on, this line number refers to an entry
+in the special line number table.
+See the "Special Line Number Table" section for more details.
+The
+.id code_offset
+field contains the offset from the begining of the module for the first
+instruction associated with the line number.
+To get the true code address for the instruction you must add
+.id code_offset
+to the address given by the
+.id segment
+field in the line_segment structure.
+All the instructions up to the next element's
+.id code_offset
+, or the end of the object file's code for that segment if
+there is no next
+.id code_offset
+are considered to be part of the
+.id line_number
+source line.
+Within each line_segment structure the line_info array is assumed to be sorted
+in order of ascending
+.id code_offset
+.period
+The module structure for the object file contains fields which indicate
+the start and size of the line_segment array within the class.
 .np
 Each line_segment structure may not exceed 60K, however the total amount
 of line information for a module may exceed 60K with multiple line_segment
@@ -1008,14 +1114,17 @@ structures and multiple entries in the demand link table (described in the
 module information section).
 .np
 To obtain a line number from an address, the debugger performs the following steps
-:OL.
-:LI.Given an address, the defining module is found from the address information
+.autonote
+.note
+Given an address, the defining module is found from the address information
 class. This allows the debugger to find and load the line number information for
 that module, if it is not already loaded.
-:LI. Walk down the array of line_segment structures until one with the
+.note
+Walk down the array of line_segment structures until one with the
 appropriate segment is found.
-:LI. Binary search the array of line_info's until the proper one is located.
-:eOL.
+.note
+Binary search the array of line_info's until the proper one is located.
+.endnote
 .beglevel
 .*
 .section Special Line Number Table
@@ -1023,10 +1132,13 @@ appropriate segment is found.
 .np
 The OMF line number record does not allow for more than one source file
 to be referenced in an object file. This kludge gets around the restriction.
-If the top bit is on in :F.line_number:eF. than that field refers to an
-entry in the special line number table. The debugger then searches the
-typing information for the module for a :F.CUE_TABLE:eF. record. If it
-finds one, it uses the offset given to find the begining of the table
+If the top bit is on in
+.id line_number
+than that field refers to an entry in the special line number table.
+The debugger then searches the typing information for the module for a
+.id CUE_TABLE
+record.
+If it finds one, it uses the offset given to find the begining of the table
 in the typing information. The table looks like this:
 .millust begin
 /* cue entry table */
@@ -1050,8 +1162,11 @@ struct {
 A list of zero terminated source file names
 .millust end
 .pc
-To find the correct cue entry given the value in a :F.line_number:eF., search
-the :F.cue_entry:eF. table for the cue which satisfies the following:
+To find the correct cue entry given the value in a
+.id line_number
+, search the
+.id cue_entry
+table for the cue which satisfies the following:
 .millust begin
 cue_entry[entry].cue <= (line_number & 0x7fff) < cue_entry[entry+1].cue
 .millust end
@@ -1068,8 +1183,11 @@ fname_index = file_name_index_table[ cue_entry[entry].fno ]
 fname =  file_name_table[ fname_index ]
 .millust end
 .pc
-The code offset and segment are found in the :F.line_info:eF and
-:F.line_segment:eF structures as usual.
+The code offset and segment are found in the
+.id line_info
+and
+.id line_segment
+structures as usual.
 .endlevel
 .*
 .section Module information class
@@ -1092,19 +1210,27 @@ struct mod_info {
 };
 .millust end
 .pc
-The :F.language:eF. field contains an offset, from the start of the source
-language table to the string of the source language for this module.
-The :F.name:eF. field is a variable length array of characters
-with the first element of the array being the length of the name. The remaining
-characters identify the source file the compiler used to generate the object
-file (e.g. "C:\DEV\WV\C\DBGMAIN.C"). The source file name is obtained from
-the THEADR record of the object file.
+The
+.id language
+field contains an offset, from the start of the source language table to
+the string of the source language for this module.
+The
+.id name
+field is a variable length array of characters with the first element of the
+array being the length of the name.
+The remaining characters identify the source file the compiler used to generate
+the object file (e.g. "C:\DEV\WV\C\DBGMAIN.C").
+The source file name is obtained from the THEADR record of the object file.
 the debugger uses the file name part of the
 file specification as its "module name". The remaining fields,
-:F.locals:eF., :F.types:eF., and :F.lines:eF. are a structure
-type which define the location and size of this module's demand
-loaded information
-from those classes. The structure contains these fields:
+.id locals
+,
+.id types
+, and
+.id lines
+are a structure type which define the location and size of this module's demand
+loaded information from those classes.
+The structure contains these fields:
 .millust begin
 struct demand_info {
     unsigned_32 offset;
@@ -1112,12 +1238,15 @@ struct demand_info {
 };
 .millust end
 .pc
-The :F.offset:eF. field contains the offset from the beginning of the
-debugging information section to first entry in the demand link table
-containing the information for that particular demand load class. The
-:F.num_entries:eF. field gives the number of contiguous entries in the
-demand link table that are present for the module's demand load information
-of that particular class.
+The
+.id offset
+field contains the offset from the beginning of the debugging information
+section to first entry in the demand link table containing the information
+for that particular demand load class.
+The
+.id num_entries
+field gives the number of contiguous entries in the demand link table that are
+present for the module's demand load information of that particular class.
 .np
 The demand link table consists of an array of unsigned_32 offsets, which
 are relative from the debugging information section, to the individual
@@ -1161,8 +1290,10 @@ info data block. It then loads the first block and searches it for the
 information. If the information is not present in that block, it moves to
 the next entry in the demand link table and repeats the above process. This
 continues until all the entries for that particular class of the module
-(identified by the :F.num_entries:eF. field in the mod_info structure)
-have been examined, or the information is located.
+(identified by the
+.id num_entries
+field in the mod_info structure) have been examined, or the information
+is located.
 .*
 .section Global symbols class
 .*
@@ -1178,15 +1309,20 @@ struct gbl_info {
 };
 .millust end
 .pc
-The :F.addr:eF. field contains the location in memory associated with
-this symbol. The value placed in this field is the same that the linker
-places in the map file (i.e. unrelocated, as if the executable loads
-at location 0:0). The field contains a 48 bit value
-(32 bit offset followed by a 16 bit segment).
-The  :F.mod_index:eF. field is an index which identifies the
-module which defines the symbol (i.e. contained the [L]PUBDEF record).
-The :F.kind:eF. gives rudimentary typing information for the symbol. It
-consists of the following set of bits:
+The
+.id addr
+field contains the location in memory associated with this symbol.
+The value placed in this field is the same that the linker places in the map
+file (i.e. unrelocated, as if the executable loads at location 0:0).
+The field contains a 48 bit value (32 bit offset followed by a 16 bit segment).
+The
+.id mod_index
+field is an index which identifies the module which defines the symbol
+(i.e. contained the [L]PUBDEF record).
+The
+.id kind
+gives rudimentary typing information for the symbol.
+It consists of the following set of bits:
 .millust begin
 BIT: 7 6 5 4 3 2 1 0
      |       | | | |
@@ -1205,9 +1341,10 @@ Bit one is 1 if the producer of the information is able to determine that
 the symbol is a data symbol. Bit two is one if the producer is able to
 determine that the symbol is a code symbol. Both bits may be zero if the
 producer is unable to determine whether the symbol is a code or data item.
-The final field, :F.name:eF. is a variable length array, with the first
-character indicating the length of the name, and the remaining characters
-being the actual name of the symbol.
+The final field,
+.id name
+is a variable length array, with the first character indicating the length of
+the name, and the remaining characters being the actual name of the symbol.
 .*
 .section Address information class
 .*
@@ -1225,21 +1362,28 @@ struct seg_info {
 };
 .millust end
 .pc
-The :F.addr:eF. field identifies the start of a segment in memory.
+The
+.id addr
+field identifies the start of a segment in memory.
 This field contains the unrelocated value of the segment starting address
 (i.e. as if the executable had been loaded at 0:0).
-The the low order 15 bits of the next field, :F.num:eF. tells
-how many of the :F.sects:eF. entries
-there are in the structure.
+The the low order 15 bits of the next field,
+.id num
+tells how many of the
+.id sects
+entries there are in the structure.
 The top bit of the field is a one when the segment belongs to "NonSect".
 "NonSect" is the overlay section which holds all program data that is not
 in the root or an overlay section. Typically this consists of DGROUP and
 FAR_DATA segments. NonSect always is located at the highest address
 of all sections. It is preloaded by the overlay manager and is never
 moved. If the segment does not belong to NonSect, the top bit of the
-:F.num:eF. field is zero.
-The :F.sects:eF. field is a variable size
-array of structures. This addr_info structure contains the following fields:
+.id num
+field is zero.
+The
+.id sects
+field is a variable size array of structures.
+This addr_info structure contains the following fields:
 .millust begin
 struct addr_info {
     unsigned_32     size;
@@ -1247,33 +1391,45 @@ struct addr_info {
 };
 .millust end
 .pc
-The :F.mod_index:eF. field indicates the module in the module information
-class which defines this piece of the segment.
-The :F.size:eF. field identifies how large a piece of the segment specified
-by the seg_info structure belongs to the module. The starting address
-of the segment piece is given by adding all the previous size fields in the
-:F.sects:eF. array to
-the original starting address in the seg_info structure.
+The
+.id mod_index
+field indicates the module in the module information class which defines
+this piece of the segment.
+The
+.id size
+field identifies how large a piece of the segment specified by the seg_info
+structure belongs to the module.
+The starting address of the segment piece is given by adding all the previous
+size fields in the
+.id sects
+array to the original starting address in the seg_info structure.
 .np
 The size of a seg_info structure may not exceed 60K. If a single physical
-segment would have more :F.sects:eF. than would fit into this restriction
-(:F.num:eF. greater than 10238), it should be split into two separate
-seg_info structures.
+segment would have more
+.id sects
+than would fit into this restriction (
+.id num
+greater than 10238), it should be split into two separate seg_info structures.
 .np
 To identify the module that defines a location in memory, the debugger does the
 following:
-:OL.
-:LI. Walk down the array of seg_info structures until one is found with
+.autonote
+.note
+Walk down the array of seg_info structures until one is found with
 the same segment address as the location that is being identified. If
 no such seg_info is found, or the starting offset of the
 segment is greater than the offset of the memory location,
 then there is no defining module.
-:LI. Walk down the array of addr_info's in the seg_info structure until
+.note
+Walk down the array of addr_info's in the seg_info structure until
 an entry is found whose starting offset is less than or equal to the memory
 location offset and whose ending offset is greater than the memory location
 offset. If there is no such entry, there is no defining module.
-:LI. Otherwise, the :F.mod_offset:eF. field of the addr_info entry
-is added to the beginning of the module information class, which gives
-a pointer to the module structure that defines the memory location.
-:eOL.
+.note
+Otherwise, the
+.id mod_offset
+field of the addr_info entry is added to the beginning of the module
+information class, which gives a pointer to the module structure that defines
+the memory location.
+.endnote
 .endlevel
