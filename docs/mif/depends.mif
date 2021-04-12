@@ -2621,7 +2621,9 @@ objs_cgdoc = &
 # dwdoc sub-directory
 incs_dwdoc = ../../bld/dwarf/dw/doc
 objs_dwdoc = &
-../../bld/dwarf/dw/doc/dwdoc.gml
+../../bld/dwarf/dw/doc/dwdoc.gml &
+../../bld/dwarf/dw/doc/dwarfw.gml &
+../../bld/dwarf/dw/doc/extra.gml
 
 # wddoc sub-directory
 incs_wddoc = ../../bld/wv/doc

@@ -1,82 +1,47 @@
-:set symbol="headtxt0$" value="The DWARF writing library".
-:set symbol="headtxt1$" value="The DWARF writing library".
-:set symbol="headtext$" value="The DWARF writing library".
-:PSC proc='rita'.
-**RTA**wgmlstd.rta
-:ePSC.
-:LAYOUT.
-:HEADING
-threshold = 3
-:PAGE
-        top_margin = '.3i'
-        left_margin = '1.25i'
-        right_margin = '7.25i'
-        depth = '8.5i'
-:DEFAULT
-        justify = no
-:WIDOW
-        threshold = 5
-:FIG
-        font = 4
-:XMP
-        pre_skip = 1
-        font = 4
-:H1
-        pre_top_skip = 2
-        post_skip = 1
-        number_form = none
-        page_eject = no
-:H2
-        pre_top_skip = 1
-        pre_skip = 0
-        post_skip = 1
-        font = 2
-        number_form = none
-:H3
-        pre_top_skip = 1
-        pre_skip = 0
-        post_skip = 1
-        font = 1
-        number_font = 3
-        number_form = none
-:DT
-        font = 0
-:DD
-        line_left = '1.5i'
-        font = 0
-:DDHD
-        font = 3
-:INDEX
-        columns = 2
-:TOC
-        toc_levels = 2
-:APPENDIX
-        columns = 2
-:SL
-        left_indent = '0.3i'
-        skip = 0
-:OL
-        left_indent = '0.3i'
-        align = '0.3i'
-:UL
-        left_indent = '0.3i'
-        skip = 0
-        align = 1
-:DL
-        left_indent = '0.25i'
-        skip = 0
-        align = '1i'
-:eLAYOUT
+:INCLUDE file='LYTCHG'.
+.if &e'&dohelp eq 0 .do begin
+:INCLUDE file='WNOHELP'.
+.do end
+.el .do begin
+:INCLUDE file='WHELP'.
+.do end
+:INCLUDE file='FMTMACRO'.
+:INCLUDE file='GMLMACS'.
+:INCLUDE file='XDEFS'.
+:INCLUDE file='DEFS'.
+:INCLUDE file='EXTRA'.
+.*
 :GDOC.
+.*
+.if &e'&dohelp eq 0 .do begin
 :FRONTM.
 :TITLEP.
 :TITLE.SPECIFICATION FOR THE DWARF WRITING LIBRARY
 :TITLE.Draft #6
+:AUTHOR.Originally written by WATCOM International Corp.
+:AUTHOR.Revised by Open Watcom contributors
 :DATE.
 :eTITLEP.
+:TOC.
+.pa odd
+.do end
+.*
 :BODY.
-
+.*
+.if &e'&dohelp ne 0 .do begin
+:exhelp
+:include file='&book..idx'
+:include file='&book..tbl'
+:include file='&book..kw'
+.do end
+.*
 :include file='dwarfw'
-
+.*
+.if &e'&dohelp eq 0 .do begin
 :BACKM.
+.cd set 2
+:INDEX.
+.do end
+.cd set 1
+.cntents end_of_book
 :eGDOC.
