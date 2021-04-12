@@ -2,7 +2,7 @@
 ( dev whelp
 ( lay whelplay.gml
 ( font 0 mono01
-( font 1 mono01 bold
+( font 1 mono01 italic
 ( font 2 mono01 bold
 ( font 3 mono01 ibold
 ( font 4 mono01 xmp
