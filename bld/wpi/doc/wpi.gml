@@ -31,7 +31,7 @@ Windows code.
 WPI is a combination of macros and library routines.  The WPI project is
 in ./bld/wpi and contains subdirectories for source code, header files, and
 libraries.  The header file wpi.h includes the type header file wpitypes.h
-and either wpi_win.h or wpi_os2.h — depending on the platform for which
+and either wpi_win.h or wpi_os2.h depending on the platform for which
 you wish to compile.  The header files wpi_os2.h and wpi_win.h contain the
 macros and prototypes for functions which correspond to Windows API calls
 when compiling under the Windows platform and PM API calls when compiling
@@ -810,9 +810,9 @@ will not be freed until a call to _wpi_getoldbitmap.
 This will select the old bitmap into the presentation space.
 For PM this frees the memory associated with the old bitmap.
 .endnote
-This again, is merely a subset of the bitmap functions available in WPI—many
-other Windows APIs have been converted to WPI.  If the desired function
-is not present in this list then search wpi_os2.h.
+This again, is merely a subset of the bitmap functions available in WPI.
+Many other Windows APIs have been converted to WPI.
+If the desired function is not present in this list then search wpi_os2.h.
 .np
 Mention should be made here of how monochrome bitmaps are converted to
 colour bitmaps.  The user should read the section on BitBlt (Windows) and
