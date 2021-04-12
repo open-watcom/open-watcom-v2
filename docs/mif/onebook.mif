@@ -540,7 +540,7 @@ prepare_wgml_opts : .PROCEDURE
     @%append $(wgml_optfile) ( passes 3
 !else ifeq hbook wd
     @%append $(wgml_optfile) ( passes 3
-!else ifeq hbook trap
+!else ifeq hbook wddoc
     @%append $(wgml_optfile) ( passes 3
 !else ifeq hbook lguide
     @%append $(wgml_optfile) ( passes 3

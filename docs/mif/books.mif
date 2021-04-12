@@ -46,17 +46,16 @@
 !inject resmnu           html  htmlhelp  nt                win
 !inject resstr           html  htmlhelp  nt                win
 !inject spy              html  htmlhelp  nt                win
-!inject trap                                      pdf  ps      wikihtml wikipdf
 !inject vi          dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
 !inject wasaxp
 !inject wbrw             html  htmlhelp  nt  os2           win
 !inject wccerrs     dos  html  htmlhelp  nt  os2           win wikihtml wikipdf
 !inject wd          dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
-!inject wddoc                                                  wikihtml wikipdf
+!inject wddoc                                     pdf  ps      wikihtml wikipdf
 !inject wfcerrs     dos  html  htmlhelp  nt  os2           win wikihtml wikipdf
 !inject wjcerrs
 !inject wlnkerrs         html  htmlhelp  nt                win
-!inject wpidoc
+!inject wpidoc                                    pdf  ps      wikihtml wikipdf
 !inject wpperrs     dos  html  htmlhelp  nt  os2           win wikihtml wikipdf
 !inject wprof       dos  html  htmlhelp  nt  os2           win
 !inject wrcerrs          html  htmlhelp  nt                win
@@ -513,16 +512,6 @@ book_src=wdbg
 book_multi_chapter=1
 !define book_os2_help
 
-!else ifeq hbook trap
-# wd
-book_title=$(company) $(bld_ver_str) Trap Developers Guide
-book_objs=$(objs_trap)
-book_objs_ps=$(objs_trap_ps)
-book_incs=$(incs_trap)
-book_src=wtrap
-book_multi_chapter=1
-!define book_os2_help
-
 !else ifeq hbook wfcerrs
 # wfcerrs
 book_title=$(company) $(bld_ver_str) FORTRAN 77 Diagnostic Messages
@@ -601,10 +590,11 @@ book_src=dwdoc
 
 !else ifeq hbook wddoc
 # wddoc
-book_title=$(company) $(bld_ver_str) Debugger
+book_title=$(company) $(bld_ver_str) Debugger Developers Guide
 book_objs=$(objs_wddoc)
 book_incs=$(incs_wddoc)
 book_src=wddoc
+book_multi_chapter=1
 
 !else ifeq hbook vi
 # vi
@@ -639,7 +629,7 @@ book_multi_chapter=1
 
 !else ifeq hbook wpidoc
 # wpidoc
-book_title=$(company) $(bld_ver_str) WATCOM Programming Interface
+book_title=$(company) $(bld_ver_str) WATCOM Windows Programming Interface (WPI)
 book_objs=$(objs_wpidoc)
 book_incs=$(incs_wpidoc)
 book_src=wpidoc

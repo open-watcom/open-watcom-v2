@@ -2481,15 +2481,6 @@ dlgopt.ps &
 dlgsrch.ps &
 dlgwopt.ps &
 
-# trap sub-directory
-incs_trap = ../../bld/wv/doc
-objs_trap = &
-../../bld/wv/doc/wtrap.gml &
-../../bld/wv/doc/trap.gml &
-#../../bld/wv/doc/ovl.gml &
-#../../bld/wv/doc/extra.gml &
-#../../bld/wv/doc/dbg.gml &
-
 # win386 sub-directory
 incs_win386 = ../doc/win386
 objs_win386 = &
@@ -2638,7 +2629,9 @@ objs_wddoc = &
 ../../bld/wv/doc/dbg.gml &
 ../../bld/wv/doc/ovl.gml &
 ../../bld/wv/doc/trap.gml &
-../../bld/wv/doc/wddoc.gml
+../../bld/wv/doc/wtrap.gml &
+../../bld/wv/doc/wddoc.gml &
+../../bld/wv/doc/extra.gml
 
 # vi sub-directory
 bmroot_vi = ../doc/vi/snaps
