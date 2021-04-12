@@ -1,9 +1,9 @@
-.chap WATCOM Programming Interface (WPI)
+.chap WATCOM Windows Programming Interface (WPI)
 .*
 .np
 Paul Fast, December 23, 1993
 .np
-WATCOM Programming Interface (WPI) is a developers tool to aid in porting
+WATCOM Windows Programming Interface (WPI) is a developers tool to aid in porting
 applications from Microsoft Windows to IBM Presentation Manager (PM).
 The goal in the creation of WPI (pronounced wippee) is to supply programmers
 with a set of macros and library routines which allow them to quickly convert

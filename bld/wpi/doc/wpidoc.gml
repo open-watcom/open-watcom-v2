@@ -27,7 +27,7 @@
 .if &e'&dohelp eq 0 .do begin
 :FRONTM.
 :TITLEP.
-:TITLE.WATCOM Programming Interface (WPI)
+:TITLE.WATCOM Windows Programming Interface (WPI)
 :AUTHOR.Originally written by WATCOM International Corp.
 :AUTHOR.Revised by Open Watcom contributors
 :eTITLEP.
@@ -44,7 +44,7 @@
 :include file='&book..kw'
 .do end
 .*
-.sepsect WATCOM Programming Interface (WPI)
+.sepsect WATCOM Windows Programming Interface (WPI)
 .*
 :include file='wpi'
 .*
