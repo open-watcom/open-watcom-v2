@@ -1,6 +1,6 @@
 :H2.OL
 :XMP.
-Format&gml. &gml.OL \(compact\).
+Format&gml. &gml.OL [compact].
 :eXMP.
 :I1.ordered list
 :I2 refid='gtol' pg=major.gtol

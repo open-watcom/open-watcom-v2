@@ -6,4 +6,4 @@ Format&gml. &gml.DOCNUM.<text line>
 :P.
 This document number tag appears in the title page specification,
 and specifies the number associated with the document.
-The default text "Document Number\b" is generated before the text line.
+The default text "Document Number~b" is generated before the text line.

@@ -99,7 +99,7 @@ A file designation may be any valid filename recognized
 by the &ibmpc. system.
 In general, a file designation looks like:
 :XMP.
-drive:\\path\\filename.ext
+drive:\path\filename.ext
 :eXMP.
 :DL.
 :DT.drive:
@@ -115,7 +115,7 @@ drive:\\path\\filename.ext
     :DT.C:
     :DD.disk drive C
     :eDL.
-:DT.\\path\\
+:DT.\path\
 :I3 refid='filedes'.path
 :DD.If the :HP1.path:eHP1. specification is omitted,
     the current directory is used.
@@ -123,9 +123,9 @@ drive:\\path\\filename.ext
     in sub-directories of the disk.
     Some examples of path specifications are:
     :XMP.
- \\top\\
- \\gml\\data\\
- ..\\tests\\
+ \top\
+ \gml\data\
+ ..\tests\
     :eXMP.
     :PC.
     Your &ibmpc. manual can tell you more about directories:
@@ -211,13 +211,13 @@ DATA.FIL
 :LI.The file specification below indicates that the file resides in the
     "RECORDS" directory of the "B" disk.
     :XMP.
-b:\\records\\bigmanual.gml
+b:\records\bigmanual.gml
     :eXMP.
     :PC.
     Note that the trailing "l" in the file name will be ignored.
     Thus the following designation is equivalent.
     :XMP.
-b:\\records\\bigmanua.gml
+b:\records\bigmanua.gml
     :eXMP.
 :LI.The file specification below refers to a second parallel printer.
     :XMP.

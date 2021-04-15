@@ -13,10 +13,10 @@ To stop document processing before WGML has completed formatting:
 .choose
 .mouse
 Move the &ptr. pointer to the &g_escape. area at the bottom left
-corner of the screen and &op.\.
+corner of the screen and &op..
 An error screen indicating that processing has been stopped will be displayed.
 Point to the &g_enter. area at the bottom right corner of the screen
-and &op.\.
+and &op..
 .keyboard
 Press the &g_escape. key.
 Alternatively, pressing the &key.Ctrl&ekey. and &key.Break&ekey. keys
@@ -63,7 +63,7 @@ After reading the message:
 .choose
 .mouse
 Move the &ptr. pointer to the &g_enter. area at the bottom right
-corner of the screen and &op.\.
+corner of the screen and &op..
 .keyboard
 Press the &g_enter. key.
 .echoose

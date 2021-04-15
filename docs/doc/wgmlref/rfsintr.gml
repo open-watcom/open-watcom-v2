@@ -30,7 +30,7 @@ Note that the bullet character in the output is the asterisk.
 The example output for this manual was produced with the
 terminal device, which does not have special characters.
 If the value ':HP2./*:eHP2.' is used within the text of this
-document, the character ':HP2.\*:eHP2.' is produced.
+document, the character ':HP2.~*:eHP2.' is produced.
 :P.
 Input translation is performed when text is separated
 into words.

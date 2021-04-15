@@ -1,4 +1,4 @@
-:H1 id='unprocs'.\b\bUnProcessed Script Control Words
+:H1 id='unprocs'.~b~bUnProcessed Script Control Words
 :XMP.
 &mono.
  bf       bs      df      du      eq

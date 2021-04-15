@@ -1,6 +1,6 @@
 :H2.TO
 :XMP.
-Format&gml. &gml.TO \(compact\).
+Format&gml. &gml.TO [compact].
          <recipient lines>
 :eXMP.
 :I2 refid='gtto'.gtto

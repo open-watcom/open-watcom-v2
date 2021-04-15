@@ -15,7 +15,7 @@ the &f3. key.
 You may also choose a new file from the list displayed on the screen.
 .choose
 .mouse
-Move the &ptr. pointer to the appropriate file name and &op.\.
+Move the &ptr. pointer to the appropriate file name and &op..
 If there are more source files than can be displayed at one time,
 &op. on the bar along the right side of the browser screen to
 view the other files.

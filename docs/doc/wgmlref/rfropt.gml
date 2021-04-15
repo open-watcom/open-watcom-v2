@@ -445,7 +445,7 @@ The blanks outside quotations, or if the value is not quoted, the
 blanks before the first and after
 the last nonblank character, are not
 considered part of the symbol value.
-For example, <,,>, <,\b\b\b,>,
+For example, <,,>, <,~b~b~b,>,
 <,end_of_record>, or empty records
 all specify empty symbol values.
 :P.

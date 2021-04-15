@@ -22,7 +22,7 @@ Only one of the buttons may be ON at any one time.
 .choose
 .mouse
 Move the &ptr. pointer to the :HP1.LETTER:eHP1. button in the
-:HP1.Format:eHP1. group and &op.\.
+:HP1.Format:eHP1. group and &op..
 .keyboard
 Press the &key.Tab&ekey. key twice.
 You will be positioned in the :HP1.Format:eHP1 group at the

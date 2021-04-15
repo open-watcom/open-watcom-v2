@@ -115,7 +115,7 @@ A file designation may be any valid filename recognized
 by the VMS Record Management Services (RMS).
 In general, a file designation looks like:
 :XMP.
-node::device:\(directory\)filename.type;version
+node::device:[directory]filename.type;version
 :eXMP.
 :DL.
 :DT.node::
@@ -157,7 +157,7 @@ node::device:\(directory\)filename.type;version
     :PC.
     The logical name can be 1 to 63 characters (letters A-Z, $,
     and/or numbers 0-9 only) in length.
-:DT.\(directory\)
+:DT.[directory]
 :DD.The file is located in the specified "directory".
 :I3 refid='filedes'.directory
     The default is the current directory; consequently it is often
@@ -169,12 +169,12 @@ node::device:\(directory\)filename.type;version
     A minus sign at the start of a directory specification indicates
     the parent directory of the current directory.
     The directory name, including any subdirectories, is enclosed by
-    square brackets (\(\)).
+    square brackets ([]).
     Some examples of directory names are:
     :XMP.
-\(USERFILES\)
-\(EXAMPLE.PROGRAMS\)
-\(-.reports\)
+[USERFILES]
+[EXAMPLE.PROGRAMS]
+[-.reports]
 :eXMP.
 :DT.filename
 :DD.The :HP1.filename:eHP1.
@@ -222,7 +222,7 @@ SAMPLE.DAT;1
 SAMPLE.DAT;2
 REPORT.GML;15
 TRIAL.;4
-\(LIBRARY\)WEDIT.EXE;1
+[LIBRARY]WEDIT.EXE;1
 :eXMP.
 :eDL.
 :P.
@@ -290,17 +290,17 @@ The following are some examples of a valid file specification.
     :XMP.
 data.gml
     :eXMP.
-:LI.If the current default directory is \(USERFILES\), the following
+:LI.If the current default directory is [USERFILES], the following
     file specification will refer to the file FILE1.REP in the
-    \(EXAMPLES\) directory:
+    [EXAMPLES] directory:
     :XMP.
-\(examples\)file1.rep
+[examples]file1.rep
     :eXMP.
 :LI.The file designation below indicates that the file resides on a
     logical device called "source" and in the directory called
     "document.text".
     Version number 5 of the file is specified:
     :XMP.
-source:\(document.text\)book.gml;5
+source:[document.text]book.gml;5
     :eXMP.
 :eOL.

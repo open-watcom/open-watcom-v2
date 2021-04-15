@@ -66,7 +66,7 @@ or
 
 or
 
-  .DM  name  /data line1/data line2/.../data linen\(/\)
+  .DM  name  /data line1/data line2/.../data linen[/]
 :eXMP.
 :P.
 The &key.define macro&ekey. control word is used to create or remove
@@ -78,7 +78,7 @@ the name of the macro.
 See :HDREF refid='prcrule'. for details on the processing rules of
 a source document.
 :P.
-The first form of the &mono.\.dm&emono. control word creates a macro.
+The first form of the &mono.~.dm&emono. control word creates a macro.
 The name of a macro may be one to eight characters in length.
 All macro data lines are saved without processing (including symbol
 substitution) until the define macro &mono.END&emono. is recognized.
@@ -88,9 +88,9 @@ the beginning of the physical input line in the document source.
 The &mono.DELETE&emono. macro option removes the specified macro name
 from the list of defined macros.
 :P.
-The last form of the &mono.\.dm&emono. control word creates a macro
+The last form of the &mono.~.dm&emono. control word creates a macro
 from the operand line.
-The first character of the operand (in this case the /\bcharacter) is
+The first character of the operand (in this case the /~bcharacter) is
 used to delimit individual lines in the macro definition.
 :H3 id='invmac'.Invoking Macros
 :P.
@@ -127,9 +127,9 @@ be invoked as follows:
 :eXMP.
 :PC.
 The first operand value defines the symbol &mono.&amp.file&emono. with
-the value &mono.example&emono.\.
+the value &mono.example&emono..
 The second operand value assigns &mono.2.5i&emono.
-to the local macro symbol &mono.&amp.*1&emono.\.
+to the local macro symbol &mono.&amp.*1&emono..
 See :HDREF refid='symsub'. for more information on symbols and symbol
 substitution.
 :INCLUDE file='rfscrgg'.

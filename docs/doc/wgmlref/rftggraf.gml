@@ -1,13 +1,13 @@
 :H2 id='gtgraph'.GRAPHIC
 :XMP.
 Format&gml. &gml.GRAPHIC file='file name'
-                 \(depth='vert-space-unit'\)
-                 \(width=page
+                 [depth='vert-space-unit']
+                 [width=page
                         column
-                        'hor-space-unit'\)
-                 \(scale=number\)
-                 \(xoff='hor-space-unit'\)
-                 \(yoff='vert-space-unit'\).
+                        'hor-space-unit']
+                 [scale=number]
+                 [xoff='hor-space-unit']
+                 [yoff='vert-space-unit'].
 :eXMP.
 :I2 refid='gtgrap' pg=major.gtgrap
 :P.

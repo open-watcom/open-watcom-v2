@@ -108,7 +108,7 @@
         depth='8.50i'
 :DEFAULT
         justify=no
-        input_esc='\'
+        input_esc='~'
 :cmt.        binding='0.25i'
 :TITLEP
         spacing=1

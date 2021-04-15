@@ -1,6 +1,6 @@
 :H2.INDEX
 :XMP.
-Format&gml. &gml.INDEX  \(ix=:HP1.n:eHP1.\).
+Format&gml. &gml.INDEX  [ix=:HP1.n:eHP1.].
         (:HP1.n:eHP1.=0 -> 8)
 :eXMP.
 :I2 refid='gtindex' pg=major.gtindex

@@ -1,7 +1,7 @@
 .cp 1.25i
 :H2.GA Control Word
 :XMP.
-  .GA  tagname | *   attname | *   \(options(A)\)  \(options(B)\)
+  .GA  tagname | *   attname | *   [options(A)]  [options(B)]
 
 where options(A) are:
 
@@ -13,9 +13,9 @@ where options(B) are:
 
         AUTOmatic   'string'
         LENgth      integer number
-        RANge       minvalue   maxvalue   \(default1  \(default2\)\)
-        VALue       'valname'  \(USE       'string'\)  \(DEFault\)
-        ANY         \('string'\)
+        RANge       minvalue   maxvalue   [default1  [default2]]
+        VALue       'valname'  [USE       'string']  [DEFault]
+        ANY         ['string']
         RESET       'valname' | 'string' | integer
 :eXMP.
 :P.
@@ -90,7 +90,7 @@ each of which must be specified by a separate .GA control word.
 .cp 1.25i
 :H2.GT Control Word
 :XMP.
-  .GT  tagname       ADD     macro-name   \(tag options\)
+  .GT  tagname       ADD     macro-name   [tag options]
 
 or
 

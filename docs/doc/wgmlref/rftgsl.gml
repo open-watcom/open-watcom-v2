@@ -1,6 +1,6 @@
 :H2.SL
 :xmp
-Format&gml. &gml.SL \(compact\).
+Format&gml. &gml.SL [compact].
 :exmp
 :I1.simple list
 :I2 refid='gtsl' pg=major.gtsl

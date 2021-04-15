@@ -1,8 +1,8 @@
 :H2.LIREF
 :XMP.
 Format&gml. &gml.LIREF refid='id-name'
-               \(page=yes
-                     no\).
+               [page=yes
+                     no].
 :eXMP.
 :I2 refid='gtliref' pg=major.gtliref
 :P.

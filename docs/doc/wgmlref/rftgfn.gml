@@ -1,6 +1,6 @@
 :H2.FN
 :xmp
-Format&gml. &gml.FN \(id='id-name'\).
+Format&gml. &gml.FN [id='id-name'].
             <paragraph elements>
             <basic document elements>
 :exmp

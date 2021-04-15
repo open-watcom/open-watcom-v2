@@ -1,6 +1,6 @@
 :H2.GDOC
 :XMP.
-Format&gml. &gml.GDOC \(sec='character string'\).
+Format&gml. &gml.GDOC [sec='character string'].
 :eXMP.
 :I2 refid='gtgdoc' pg=major.gtgdoc
 :P.

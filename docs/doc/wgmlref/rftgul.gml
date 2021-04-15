@@ -1,6 +1,6 @@
 :H2.UL
 :xmp
-Format&gml. &gml.UL \(compact\).
+Format&gml. &gml.UL [compact].
 :exmp
 :I1.unordered list
 :I2 refid='gtul' pg=major.gtul

@@ -19,7 +19,7 @@ The symbol screen is organized in a similar manner as the device screen
 discussed previously.
 Select the :HP1.Insert Symbol:eHP1. hotspot.
 Enter the text &mono.product&emono. and press the &key.Tab&ekey. key.
-Enter the text &mono.&WGML.&emono.\.
+Enter the text &mono.&WGML.&emono..
 The screen should appear as follows:
 .screen 'frsymed' 'Define a symbol value'
 :P.
@@ -36,6 +36,6 @@ symbol names (&amp.value1., through to &amp.valuen.).
 (See :HDREF refid='mailmrg'. for more information.)
 :P.
 Press the &key.Tab&ekey. twice and
-enter the text &mono.customer&emono.\.
+enter the text &mono.customer&emono..
 The screen should appear as follows:
 .screen 'frsymva' 'Define a mail merge file'

@@ -156,7 +156,7 @@
 :cmt.   - includes copyright symbol, etc
 :cmt. ***************************************************************
 
-:set symbol='copyr'     value=';.sf20;.ct \C;.esf;.ct '.
+:set symbol='copyr'     value=';.sf20;.ct ~C;.esf;.ct '.
 
 
 :cmt. ***************************************************************
@@ -194,11 +194,11 @@
 :cmt.     pgup, etc
 :cmt. ***************************************************************
 
-:set symbol='crsup'     value=';.sf20;.ct \U;.esf;.ct '.
-:set symbol='crsdn'     value=';.sf20;.ct \D;.esf;.ct '.
-:set symbol='crslt'     value=';.sf20;.ct \L;.esf;.ct '.
-:set symbol='crsrt'     value=';.sf20;.ct \R;.esf;.ct '.
-:set symbol='bksp'      value=';.sf20;.ct \L;.esf;.ct '.
+:set symbol='crsup'     value=';.sf20;.ct ~U;.esf;.ct '.
+:set symbol='crsdn'     value=';.sf20;.ct ~D;.esf;.ct '.
+:set symbol='crslt'     value=';.sf20;.ct ~L;.esf;.ct '.
+:set symbol='crsrt'     value=';.sf20;.ct ~R;.esf;.ct '.
+:set symbol='bksp'      value=';.sf20;.ct ~L;.esf;.ct '.
 
 :set symbol='enter'     value=';.sf2;.ct Enter;.esf;.ct '.
 :set symbol='tab'       value=';.sf2;.ct Tab;.esf;.ct '.
