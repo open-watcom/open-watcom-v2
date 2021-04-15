@@ -561,6 +561,12 @@ prepare_wgml_opts : .PROCEDURE
     @%append $(wgml_optfile) ( cpinch 10
     @%append $(wgml_optfile) ( index
     @%append $(wgml_optfile) ( setsymbol book_ver $(bld_ver_str)
+#
+# book specific setting
+#
+!ifeq hbook wgmlref
+    @%append $(wgml_optfile) ( setsymbol wgmlref yes
+!endif
 !else
 #--------------------------------------
 # settings for on-line help processing
