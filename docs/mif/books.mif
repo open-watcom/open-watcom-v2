@@ -114,8 +114,8 @@ book_src=foo
 !else ifeq hbook c_readme
 # c_readme
 book_title=$(company) $(bld_ver_str) C/C++ Getting Started
-book_objs=$(objs_gs) $(objs_cg)
-book_objs_ps=$(objs_gs_ps)
+book_objs=$(objs_gs_readme) $(objs_cg)
+book_objs_ps=$(objs_gs_readme_ps)
 book_incs=$(incs_gs);$(incs_cg)
 book_bmroot=$(bmroot_gs)
 book_src=c_readme
@@ -124,7 +124,7 @@ book_multi_chapter=1
 !else ifeq hbook cbooks
 # cbooks
 book_title=$(company) $(bld_ver_str) C/C++ On-line Documentation
-book_objs=$(objs_gs)
+book_objs=$(objs_gs_books)
 book_incs=$(incs_gs)
 book_bmroot=$(bmroot_gs)
 book_src=cbooks
@@ -279,7 +279,7 @@ book_src=guitool
 !else ifeq hbook ebooks
 # ebooks
 book_title=$(company) $(bld_ver_str) Editor On-line Documentation
-book_objs=$(objs_gs)
+book_objs=$(objs_gs_books)
 book_incs=$(incs_gs)
 book_bmroot=$(bmroot_gs)
 book_src=ebooks
@@ -296,7 +296,8 @@ book_multi_chapter=1
 !else ifeq hbook f_readme
 # f_readme
 book_title=$(company) $(bld_ver_str) FORTRAN 77 Getting Started
-book_objs=$(objs_gs)
+book_objs=$(objs_gs_readme)
+book_objs_ps=$(objs_gs_readme_ps)
 book_incs=$(incs_gs)
 book_bmroot=$(bmroot_gs)
 book_src=f_readme
@@ -322,7 +323,7 @@ book_multi_chapter=1
 !else ifeq hbook fbooks
 # fbooks
 book_title=$(company) $(bld_ver_str) FORTRAN 77 On-line Documentation
-book_objs=$(objs_gs)
+book_objs=$(objs_gs_books)
 book_incs=$(incs_gs)
 book_bmroot=$(bmroot_gs)
 book_src=fbooks

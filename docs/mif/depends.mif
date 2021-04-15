@@ -481,20 +481,20 @@ objs_fl = &
 # gs sub-directory
 bmroot_gs = ../doc/gs
 incs_gs = ../doc/gs
-objs_gs = &
+objs_gs_readme = &
 ../doc/gs/bench.gml &
 ../doc/gs/c_readme.gml &
-../doc/gs/cbooks.bmp &
-../doc/gs/cbooks.cnt &
-../doc/gs/cbooks.gml &
 ../doc/gs/diffs.gml &
 ../doc/gs/docson.gml &
-../doc/gs/ebooks.cnt &
-../doc/gs/ebooks.gml &
 ../doc/gs/f_readme.gml &
-../doc/gs/fbooks.bmp &
-../doc/gs/fbooks.cnt &
-../doc/gs/fbooks.gml &
+../doc/gs/install.gml &
+../doc/gs/intro.gml &
+../doc/gs/lic.gml &
+../doc/gs/light2.bmp &
+../doc/gs/redist.gml &
+../doc/gs/tshoot.gml &
+../doc/gs/tutorial.gml &
+ &
 ../doc/gs/ide10c.bmp &
 ../doc/gs/ide11c.bmp &
 ../doc/gs/ide12c.bmp &
@@ -515,15 +515,17 @@ objs_gs = &
 ../doc/gs/ide8c.bmp &
 ../doc/gs/ide8f.bmp &
 ../doc/gs/ide9c.bmp &
-../doc/gs/ide9f.bmp &
-../doc/gs/install.gml &
-../doc/gs/intro.gml &
-../doc/gs/lic.gml &
-../doc/gs/light2.bmp &
-../doc/gs/redist.gml &
-../doc/gs/tshoot.gml &
-../doc/gs/tutorial.gml
-objs_gs_ps = &
+../doc/gs/ide9f.bmp
+objs_gs_books = &
+../doc/gs/cbooks.cnt &
+../doc/gs/cbooks.gml &
+../doc/gs/cbooks.bmp &
+../doc/gs/ebooks.cnt &
+../doc/gs/ebooks.gml &
+../doc/gs/fbooks.cnt &
+../doc/gs/fbooks.gml &
+../doc/gs/fbooks.bmp
+objs_gs_readme_ps = &
 ide10c.ps &
 ide11c.ps &
 ide12c.ps &
