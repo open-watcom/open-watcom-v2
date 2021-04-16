@@ -42,6 +42,10 @@
 .* 12   sans-serif 32pt
 .****************************************************************************/
 
+:set symbol="edname" value="Open Watcom Vi Editor".
+:set symbol="edvi" value="Vi".
+:set symbol="isbn" value="".
+.*
 .se cmdmode='command mode'
 .se tinsmode='text insertion mode'
 .se cmdline='command line'

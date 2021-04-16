@@ -45,10 +45,6 @@
 :INCLUDE file='DEFS'.
 :INCLUDE file='EXTRA'.
 .*
-:set symbol="edname" value="Open Watcom Vi Editor".
-:set symbol="edvi" value="Vi".
-:set symbol="isbn" value="".
-.*
 :GDOC.
 .*
 .if &e'&dohelp eq 0 .do begin
@@ -75,14 +71,14 @@
 .   :INCLUDE file='&book..idx'
 .   :INCLUDE file='&book..tbl'
 .   :INCLUDE file='&book..kw'
-.   .do end
+.do end
 :cmt. .if &e'&dohelp eq 0 .do begin
 .   .sepsect The &edname User's Guide
 .   :INCLUDE file='intro'.
 .   :INCLUDE file='basic'.
 .   :INCLUDE file='inter'.
 .   :INCLUDE file='advan'.
-:cmt. .   .do end
+:cmt. .do end
 .sepsect The &edname Reference
 :INCLUDE file='env'.
 :INCLUDE file='modes'.
@@ -102,7 +98,7 @@
 .   :BACKM.
 .   .cd set 2
 .   :INDEX.
-.   .do end
+.do end
 .cd set 1
 .cntents end_of_book
 :eGDOC.
