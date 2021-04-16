@@ -53,7 +53,7 @@ a list of available devices.
 .screen 'frdevav' 'Device browser'
 .choose
 .mouse
-Move the &ptr. pointer to the line with 'hplaserplus' and &op..
+Move the mouse pointer to the line with 'hplaserplus' and click.
 .keyboard
 Press the &crsdn. key eight times and press the &g_enter. key.
 .echoose
@@ -70,7 +70,7 @@ Press &g_enter. when asked about loading the defaults.
 The default fonts for the device will be loaded into the font display area.
 .choose
 .mouse
-Move the &ptr. pointer to the number area with a value of '1' and &op..
+Move the mouse pointer to the number area with a value of '1' and click.
 Select the :HP1.Font List:eHP1. hotspot.
 .keyboard
 Press the &key.Tab&ekey. three times followed by the &crsdn. key.
@@ -82,7 +82,7 @@ Select the :HP1.Font List:eHP1. hotspot.
 The fonts available for the current device are displayed in a font browser.
 .choose
 .mouse
-Move the &ptr. pointer to the line with 'helvetica' and &op..
+Move the mouse pointer to the line with 'helvetica' and click.
 .keyboard
 Press the &crsdn. key twelve times and press &g_enter..
 .echoose

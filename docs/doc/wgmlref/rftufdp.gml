@@ -11,7 +11,7 @@ At this point you can process the document with the selected options.
 .choose
 .mouse
 Point to the highlighted area near the bottom of the screen labeled
-'F7=Format and Print Document' and &op..
+'F7=Format and Print Document' and click.
 .keyboard
 Press the &key.F7&ekey. key.
 .echoose
@@ -62,8 +62,8 @@ Each menu name can be 'pulled down' to select from a number of
 menu item choices.
 .choose
 .mouse
-Point to the &menu.Control&emenu. menu and press the &ptr. &bt..
-&udr. the &ptr. to the &menu.Help&emenu. item and release the &bt..
+Point to the &menu.Control&emenu. menu and press the mouse button.
+Drag the mouse to the &menu.Help&emenu. item and release the button.
 Pressing the &g_escape. key will return you to the document screen.
 .keyboard
 While pressing the &key.Alt&ekey. key, pressing the &key.C&ekey. key

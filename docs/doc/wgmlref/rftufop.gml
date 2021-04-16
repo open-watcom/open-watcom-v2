@@ -21,8 +21,8 @@ Radio buttons are similar to check boxes, but appear in groups.
 Only one of the buttons may be ON at any one time.
 .choose
 .mouse
-Move the &ptr. pointer to the :HP1.LETTER:eHP1. button in the
-:HP1.Format:eHP1. group and &op..
+Move the mouse pointer to the :HP1.LETTER:eHP1. button in the
+:HP1.Format:eHP1. group and click.
 .keyboard
 Press the &key.Tab&ekey. key twice.
 You will be positioned in the :HP1.Format:eHP1 group at the
@@ -33,8 +33,8 @@ Press the &crsdn. key.
 This will select letter tag processing for your document.
 .choose
 .mouse
-Move the &ptr. pointer to the :HP1.Line mode:eHP1. check box
-in the :HP1.Screen:eHP1. group and &op..
+Move the mouse pointer to the :HP1.Line mode:eHP1. check box
+in the :HP1.Screen:eHP1. group and click.
 .keyboard
 Press the &key.Tab&ekey. key.
 You will be positioned in the :HP1.Screen:eHP1 group at the
