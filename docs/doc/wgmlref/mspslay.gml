@@ -685,5 +685,3 @@
         refplace=boteven
 :eBANNER
 :eLAYOUT
-:INCLUDE
-        file='wbsymbol'.

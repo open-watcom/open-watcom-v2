@@ -2746,7 +2746,7 @@ objs_wfc = &
 # wgmlref sub-directory
 incs_wgmlref = ../doc/wgmlref;../doc/wgmlref/screens
 objs_wgmlref = &
-../doc/wgmlref/rfman.gml &
+../doc/wgmlref/extra.gml &
 ../doc/wgmlref/mspslay.gml &
 ../doc/wgmlref/rfabst.gml &
 ../doc/wgmlref/rfdaddr.gml &

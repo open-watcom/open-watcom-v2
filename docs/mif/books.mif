@@ -62,7 +62,7 @@
 !inject zoom             html  htmlhelp  nt                win
 !inject cmix        dos                      os2           win                  # depends on zoom, etc.
 !inject fmix        dos                      os2           win                  # depends on zoom, etc.
-!inject wgmlref                                   pdf  ps               wikipdf
+!inject wgmlref                                   pdf  ps      wikihtml wikipdf
 !inject wipfc       dos  html  htmlhelp  nt  os2  pdf  ps  win wikihtml wikipdf
 
 #
