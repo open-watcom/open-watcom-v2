@@ -13,7 +13,7 @@ to return to the main document screen.
 Select &menu.Save current options&emenu. from the &menu.Options&emenu. menu.
 The name of the current option file is displayed in the file name
 area of a browser screen.
-Enter the name &mono.formletr.opt&emono..
+Enter the name &mono.formletr.opt&emono.~.
 The screen should appear as follows:
 .screen 'froptsv' 'Save the current options'
 :P.

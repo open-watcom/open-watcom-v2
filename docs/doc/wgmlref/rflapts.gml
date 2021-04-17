@@ -6,7 +6,7 @@
     it is multiplied by the current line spacing
     (see :HDREF refid='specver'. for more information).
     The resulting amount of space is skipped before the
-    &local.
+    &local..
     The pre-top-skip will be merged with the previous document entity's
     post-skip value.
     The specified space is still skipped at the beginning of a new page.

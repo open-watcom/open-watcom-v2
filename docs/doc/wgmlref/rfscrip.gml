@@ -127,9 +127,9 @@ be invoked as follows:
 :eXMP.
 :PC.
 The first operand value defines the symbol &mono.&amp.file&emono. with
-the value &mono.example&emono..
+the value &mono.example&emono.~.
 The second operand value assigns &mono.2.5i&emono.
-to the local macro symbol &mono.&amp.*1&emono..
+to the local macro symbol &mono.&amp.*1&emono.~.
 See :HDREF refid='symsub'. for more information on symbols and symbol
 substitution.
 :INCLUDE file='rfscrgg'.

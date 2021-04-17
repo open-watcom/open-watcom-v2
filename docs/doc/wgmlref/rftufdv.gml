@@ -33,7 +33,7 @@ device.
 If one or all of these fonts are not specified, the device defaults
 are implied.
 :P.
-Press the &key.Tab&ekey. key and enter &mono.doc.ps&emono..
+Press the &key.Tab&ekey. key and enter &mono.doc.ps&emono.~.
 The output file name will now be 'doc.ps' for all document files processed.
 Select &menu.Load device defaults&emenu. from the &menu.Device-Options&emenu.
 menu.
