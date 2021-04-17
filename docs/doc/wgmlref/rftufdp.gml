@@ -32,7 +32,7 @@ a &mono.PS&emono. file type.
 In the previous example, the disk file &mono.manual.ps&emono. would contain
 the formatted output.
 :P.
-Pressing the &f7. key causes the document to be formatted.
+Pressing the &key.F7&ekey. key causes the document to be formatted.
 If there are no errors, the resulting document file is printed.
 If the printing process seems to take a very long time,
 the most common reason is that a printer is not connected to your computer.

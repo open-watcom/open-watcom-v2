@@ -183,7 +183,7 @@ and is started with the :HP2.&gml.fontvalue:eHP2.
 :IH2 print='&gml.fontvalue tag'.fontvalue tag
 :I2.fontvalue tag
 tag.
-Device functions are then entered after the &gml.fontvalue tag, and
+Device functions are then entered after the :HP2.&gml.fontvalue:eHP2. tag, and
 may be specified on more than one line.
 &WGML. selects
 the fonts being used in the document.
@@ -638,7 +638,7 @@ with the :HP2.&gml.startvalue:eHP2.
 :IH1 print='&gml.startvalue tag'.startvalue tag
 :I1.startvalue tag
 tag.
-Device functions are then entered after the &gml.startvalue tag, and
+Device functions are then entered after the :HP2.startvalue:eHP2. tag, and
 may be specified on more than one line.
 The :HP2.&gml.estartvalue:eHP2.
 :IH1 print='&gml.estartvalue tag'.estartvalue tag
@@ -662,7 +662,7 @@ with the :HP2.&gml.endvalue:eHP2.
 :IH1 print='&gml.endvalue tag'.endvalue tag
 :I1.endvalue tag
 tag.
-Device functions are then entered after the &gml.endvalue tag, and
+Device functions are then entered after the :HP2.&gml.endvalue:eHP2. tag, and
 may be specified on more than one line.
 The :HP2.&gml.eendvalue:eHP2.
 :IH1 print='&gml.eendvalue tag'.eendvalue tag

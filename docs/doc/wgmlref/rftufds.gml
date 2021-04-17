@@ -11,7 +11,7 @@ The available files are shown in a list, with the file extension of 'gml'
 being used to selectively display the files in the directory.
 If your files have an extension other than 'gml', you may edit
 the file pattern to specify a different pattern (such as *.doc) by pressing
-the &f3. key.
+the &key.F3&ekey. key.
 You may also choose a new file from the list displayed on the screen.
 .choose
 .mouse
