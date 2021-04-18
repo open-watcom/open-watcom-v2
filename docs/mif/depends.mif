@@ -2744,6 +2744,7 @@ objs_wfc = &
 ../../bld/f77/wfc/gml/msgmacs.gml &
 
 # wgmlref sub-directory
+bmroot_wgmlref = ../doc/wgmlref/screens
 incs_wgmlref = ../doc/wgmlref;../doc/wgmlref/screens
 objs_wgmlref = &
 ../doc/wgmlref/extra.gml &
@@ -3107,6 +3108,46 @@ objs_wgmlref = &
 ../doc/wgmlref/rftut.gml &
 ../doc/wgmlref/rftuxmp.gml &
 ../doc/wgmlref/wbsymbol.gml
+objs_wgmlref_bmp = &
+$(bmroot_wgmlref)/frconf.bmp &
+$(bmroot_wgmlref)/frdev.bmp &
+$(bmroot_wgmlref)/frdeval.bmp &
+$(bmroot_wgmlref)/frdevav.bmp &
+$(bmroot_wgmlref)/frdevfa.bmp &
+$(bmroot_wgmlref)/frdevfn.bmp &
+$(bmroot_wgmlref)/frdevld.bmp &
+$(bmroot_wgmlref)/frdoc.bmp &
+$(bmroot_wgmlref)/frdocct.bmp &
+$(bmroot_wgmlref)/frdocpr.bmp &
+$(bmroot_wgmlref)/frdocse.bmp &
+$(bmroot_wgmlref)/frhelp.bmp &
+$(bmroot_wgmlref)/froptsv.bmp &
+$(bmroot_wgmlref)/frsymed.bmp &
+$(bmroot_wgmlref)/frsymva.bmp &
+$(bmroot_wgmlref)/rfopsel.bmp &
+$(bmroot_wgmlref)/rfopt.bmp &
+$(bmroot_wgmlref)/wgmlerr.bmp &
+$(bmroot_wgmlref)/wgmlmain.bmp
+objs_wgmlref_ps = &
+frconf.ps &
+frdev.ps &
+frdeval.ps &
+frdevav.ps &
+frdevfa.ps &
+frdevfn.ps &
+frdevld.ps &
+frdoc.ps &
+frdocct.ps &
+frdocpr.ps &
+frdocse.ps &
+frhelp.ps &
+froptsv.ps &
+frsymed.ps &
+frsymva.ps &
+rfopsel.ps &
+rfopt.ps &
+wgmlerr.ps &
+wgmlmain.ps
 
 # wipfc sub-directory
 bmroot_wipfc = ../doc/wipfc

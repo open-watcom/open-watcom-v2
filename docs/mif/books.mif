@@ -610,9 +610,10 @@ book_multi_chapter=1
 !else ifeq hbook wgmlref
 # wgmlref
 book_title=WGML Reference Manual
-book_objs=$(objs_wgmlref)
+book_objs=$(objs_wgmlref_bmp) $(objs_wgmlref)
 book_objs_ps=$(objs_wgmlref_ps)
 book_incs=$(incs_wgmlref)
+book_bmroot=$(bmroot_wgmlref)
 book_src=rfman
 book_multi_chapter=1
 

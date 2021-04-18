@@ -43,7 +43,12 @@
 
 .dm screen begin
 :FIG frame=none.
-:GRAPHIC file='&*1..ps' depth='2.5i'.
+.if &e'&dohelp ne 0 .do begin
+:HBMP '&*1..bmp' i
+.do end
+.el .do begin
+:GRAPHIC file='&*1..ps' depth='2.5i' scale=45.
+.do end
 :FIGCAP.&*2.
 :eFIG.
 .dm screen end
