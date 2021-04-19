@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,8 +57,8 @@ void intern checkmouse( MOUSESTAT *status, MOUSEORD *row, MOUSEORD *col, MOUSETI
         *row = state.y / MOUSE_SCALE;
     } else {
         _BIOSMouseGetMotionCounters( &state );
-        MickeyCol += (short int)state.x; /* delta of mickeys */
-        MickeyRow += (short int)state.y; /* delta of mickeys */
+        MickeyCol += (short)state.x; /* delta of mickeys */
+        MickeyRow += (short)state.y; /* delta of mickeys */
         if( MickeyRow < 0 ) {
             MickeyRow = 0;
             change = true;

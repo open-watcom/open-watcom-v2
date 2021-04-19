@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,7 +62,7 @@
     #define FALSE (1!=1)
 #endif
 
-extern void _Bin2String( short int _WCNEAR *, char _WCNEAR *, int );
+extern void _Bin2String( short _WCNEAR *, char _WCNEAR *, int );
 #if defined(__386__)
  #pragma aux _Bin2String "_*" __parm __routine [__eax] [__edx] [__ebx]
 #elif defined( _M_I86 )
@@ -72,7 +72,7 @@ extern void _Bin2String( short int _WCNEAR *, char _WCNEAR *, int );
 #endif
 
 union tsc {
-        short int       bigint[4];
+        short           bigint[4];
         __int64         i;
 };
 
@@ -164,13 +164,13 @@ enum {
 #define LONG_BUFF_LEN   (PROFILE_LONG_FORMAT_LEN+4)
 
 static char *FormatLong( void *pu, char *buff )
-/*************************************************/
+/*********************************************/
 {
     int                 i;
     char                *lastspace;
 
-    _Bin2String((short int _WCNEAR *)pu,(char _WCNEAR *)buff, PROFILE_LONG_FORMAT_LEN );
-    for( i = 0; buff[i+1] != '\0'; i++ ) {
+    _Bin2String((short _WCNEAR *)pu,(char _WCNEAR *)buff, PROFILE_LONG_FORMAT_LEN );
+    for( i = 0; buff[i + 1] != '\0'; i++ ) {
         if( buff[i] != '0' )
             break;
         buff[i] = ' ';
@@ -180,7 +180,7 @@ static char *FormatLong( void *pu, char *buff )
 }
 
 static void dumpOneCallThing( FILE *out, new_P5_timing_info *curr )
-/***********************************************/
+/*****************************************************************/
 {
     char                tickBuff[LONG_BUFF_LEN];
     char                countBuff[LONG_BUFF_LEN];

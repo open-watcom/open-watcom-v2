@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +41,7 @@ _WMRTLINK double ldexp( double value, int n )
     int     exp;
     union {
         double      x;
-        short int   a[4];
+        short       a[4];
     } u;
 
     u.x = value;

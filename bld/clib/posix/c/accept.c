@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,7 +55,7 @@ _WCRTLINK int accept(int s, struct sockaddr *addr, socklen_t *addrlen)
 #elif defined( __RDOS__ )
     struct sockaddr_in *in;
     long ip;
-    short int port;
+    short port;
 
     in = (struct sockaddr_in *)addr;
     if( RdosIsIpv4Socket( s ) ) {

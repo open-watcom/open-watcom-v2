@@ -32,7 +32,7 @@
 
 typedef union t32 {
         unsigned long   uWhole;
-        signed long     sWhole;
+        long            sWhole;
         struct { unsigned short lo, hi; } wd;
         struct { unsigned char b1, b2, b3, b4; } bite;
 } T32;

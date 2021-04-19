@@ -308,7 +308,7 @@ void NoShannonDecode( unsigned long textsize )
             getlen += 8;
             secondbuf = DecReadByte();
         }
-        if( (short int) getbuf < 0 ) {    // it is a copy command.
+        if( (short)getbuf < 0 ) {    // it is a copy command.
             j = (getbuf >> 9) & 0x3F;
             getlen -= 7;
             getbuf <<= 7;

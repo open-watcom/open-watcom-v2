@@ -181,8 +181,8 @@ void FormatPcode( char *buf )
 {
     unsigned int   len;
     unsigned int   i;
-    short int      value;
-    long  int      long_val;
+    short          value;
+    long           long_val;
     char          *p;
     uint_32        addr;
 

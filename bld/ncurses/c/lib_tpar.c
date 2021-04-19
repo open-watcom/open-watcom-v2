@@ -495,7 +495,7 @@ tparam_internal(const char *string, va_list ap)
         if (p_is_s[i] != 0) {
             p_is_s[i] = va_arg(ap, char *);
         } else {
-            param[i] = va_arg(ap, long int);
+            param[i] = va_arg(ap, long);
         }
     }
 

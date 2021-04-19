@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,9 +53,9 @@ extern void writeobj( int );
 
 void genobj( FILE *fp )
 {
-    short int *symbol, *target;
-    short int *p, *q, *r;
-    short int action;
+    short *symbol, *target;
+    short *p, *q, *r;
+    short action;
     set_size *mp;
     a_sym *sym;
     a_pro *pro;
@@ -73,10 +74,10 @@ void genobj( FILE *fp )
 
     emitins( JMP, TOKENTRY( startstate->sidx ) );
 
-    target = CALLOC( nsym, short int );
+    target = CALLOC( nsym, short );
     for( i = 0; i < nsym; ++i )
         target[i] = DEFAULT;
-    symbol = CALLOC( nsym, short int );
+    symbol = CALLOC( nsym, short );
     for( i = 0; i < nstate; ++i ) {
         x = statetab[i];
         q = symbol;
@@ -163,7 +164,7 @@ void genobj( FILE *fp )
 }
 
 static emitt( symbol, target, n, redun )
-  short int *symbol, *target, redun;
+  short *symbol, *target, redun;
   unsigned n;
 {
     unsigned i, j;
@@ -177,7 +178,7 @@ static emitt( symbol, target, n, redun )
 }
 
 static emitv( symbol, target, n )
-  short int *symbol, *target;
+  short *symbol, *target;
   unsigned n;
 {
     unsigned m;

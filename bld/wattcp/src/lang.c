@@ -305,7 +305,7 @@ static void yy_fatal_error YY_PROTO(( yyconst char msg[] ));
 
 #define YY_NUM_RULES 29
 #define YY_END_OF_BUFFER 30
-static yyconst short int yy_accept[67] =
+static yyconst short yy_accept[67] =
     {   0,
         0,    0,    0,    0,    0,    0,    0,    0,   30,    5,
         1,    3,    5,    4,    5,   21,   20,   21,    6,   21,
@@ -355,7 +355,7 @@ static yyconst int yy_meta[25] =
         1,    1,    1,    1
     } ;
 
-static yyconst short int yy_base[75] =
+static yyconst short yy_base[75] =
     {   0,
         0,    5,    9,   19,   13,   15,   29,   48,  112,  113,
        70,  113,   65,  113,   25,  113,  113,   64,  113,   69,
@@ -367,7 +367,7 @@ static yyconst short int yy_base[75] =
       107,  109,   18,   13
     } ;
 
-static yyconst short int yy_def[75] =
+static yyconst short yy_def[75] =
     {   0,
        67,   67,   68,   68,   69,   69,   70,   70,   66,   66,
        66,   66,   66,   66,   71,   66,   66,   66,   66,   66,
@@ -379,7 +379,7 @@ static yyconst short int yy_def[75] =
        66,   66,   66,   66
     } ;
 
-static yyconst short int yy_nxt[138] =
+static yyconst short yy_nxt[138] =
     {   0,
        66,   11,   12,   13,   14,   15,   11,   12,   13,   14,
        15,   17,   18,   19,   64,   22,   23,   22,   23,   60,
@@ -398,7 +398,7 @@ static yyconst short int yy_nxt[138] =
        66,   66,   66,   66,   66,   66,   66
     } ;
 
-static yyconst short int yy_chk[138] =
+static yyconst short yy_chk[138] =
     {   0,
         0,    1,    1,    1,    1,    1,    2,    2,    2,    2,
         2,    3,    3,    3,   74,    5,    5,    6,    6,   73,

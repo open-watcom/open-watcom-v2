@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1488,13 +1488,13 @@ static void WRSetAddSymInfo( HWND hDlg, WRAddSymInfo *info )
                                     info->table->next_default_value ) ) {
             value = info->table->next_default_value;
         }
-        WRSetEditWithSLONG( (signed long)value, 10, hDlg, IDB_ADDSYM_VAL );
+        WRSetEditWithSLONG( (long)value, 10, hDlg, IDB_ADDSYM_VAL );
     }
 }
 
 static bool WRGetAddSymInfo( HWND hDlg, WRAddSymInfo *info )
 {
-    signed long val;
+    long    val;
 
     if( info == NULL ) {
         return( false );
@@ -1523,7 +1523,7 @@ static bool WRGetAddSymInfo( HWND hDlg, WRAddSymInfo *info )
 static void WRSetAddSymOK( HWND hDlg )
 {
     char        *str;
-    signed long val;
+    long        val;
     bool        enable;
 
     enable = false;

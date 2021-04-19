@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -245,8 +246,8 @@ static short Map( short a, short b, short v1, short v2 )
  */
 
 {
-    signed long         p1;
-    signed long         p2;
+    long         p1;
+    long         p2;
 
     p1 = (long)a * v1;
     p2 = (long)b * v2;

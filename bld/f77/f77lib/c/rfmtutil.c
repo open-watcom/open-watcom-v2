@@ -850,7 +850,7 @@ static  int     Div10L( double val ) {
     int         retn;
 
        //  check for a NaN or Inf value
-    unsigned short * ui = (unsigned short *) & val;
+    unsigned short * ui = (unsigned short *)&val;
     if ( (ui [3] & 0x7FF0) == 0x7FF0 ) {    /* NaN or Inf */
         return( INT_MAX );
     }

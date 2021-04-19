@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -101,11 +101,11 @@ void intern physupdate( SAREA *area )
 {
     int i;
     int pos;
-    short int *bufptr = (short int *)UIData->screen.origin;
+    short *bufptr = (short *)UIData->screen.origin;
 
     for( i = 0; i < area->height; i++ ) {
         pos = UIData->width * (i + area->row) + area->col;
-        bufptr = (short int *)UIData->screen.origin + pos;
+        bufptr = (short *)UIData->screen.origin + pos;
         RdosWriteAttributeString( i + area->row, area->col, bufptr, area->width );
     }
 }
