@@ -493,8 +493,17 @@ objs_gs_readme = &
 ../doc/gs/light2.bmp &
 ../doc/gs/redist.gml &
 ../doc/gs/tshoot.gml &
-../doc/gs/tutorial.gml &
- &
+../doc/gs/tutorial.gml
+objs_gs_books = &
+../doc/gs/cbooks.cnt &
+../doc/gs/cbooks.gml &
+../doc/gs/cbooks.bmp &
+../doc/gs/ebooks.cnt &
+../doc/gs/ebooks.gml &
+../doc/gs/fbooks.cnt &
+../doc/gs/fbooks.gml &
+../doc/gs/fbooks.bmp
+objs_gs_readme_bmp = &
 ../doc/gs/ide10c.bmp &
 ../doc/gs/ide11c.bmp &
 ../doc/gs/ide12c.bmp &
@@ -516,15 +525,6 @@ objs_gs_readme = &
 ../doc/gs/ide8f.bmp &
 ../doc/gs/ide9c.bmp &
 ../doc/gs/ide9f.bmp
-objs_gs_books = &
-../doc/gs/cbooks.cnt &
-../doc/gs/cbooks.gml &
-../doc/gs/cbooks.bmp &
-../doc/gs/ebooks.cnt &
-../doc/gs/ebooks.gml &
-../doc/gs/fbooks.cnt &
-../doc/gs/fbooks.gml &
-../doc/gs/fbooks.bmp
 objs_gs_readme_ps = &
 ide10c.ps &
 ide11c.ps &
@@ -577,7 +577,8 @@ objs_gui = &
 ../doc/gui/wrc.gml &
 ../doc/gui/wrcerrs.gml &
 ../doc/gui/wrcmacs.gml &
-../doc/gui/wre.gml &
+../doc/gui/wre.gml
+objs_gui_bmp = &
 ../doc/gui/snaps/acc1.bmp &
 ../doc/gui/snaps/acc10.bmp &
 ../doc/gui/snaps/acc11.bmp &
@@ -2677,7 +2678,8 @@ objs_vi = &
 ../doc/vi/a_ctags.gml &
 ../doc/vi/a_symkey.gml &
 ../doc/vi/symkey.gml &
-../doc/vi/a_errcod.gml &
+../doc/vi/a_errcod.gml
+objs_vi_bmp=&
 $(bmroot_vi)/vi001.bmp &
 $(bmroot_vi)/vi003.bmp &
 $(bmroot_vi)/vi004.bmp &
@@ -3106,8 +3108,7 @@ objs_wgmlref = &
 ../doc/wgmlref/rftustrt.gml &
 ../doc/wgmlref/rftustru.gml &
 ../doc/wgmlref/rftut.gml &
-../doc/wgmlref/rftuxmp.gml &
-../doc/wgmlref/wbsymbol.gml
+../doc/wgmlref/rftuxmp.gml
 objs_wgmlref_bmp = &
 $(bmroot_wgmlref)/frconf.bmp &
 $(bmroot_wgmlref)/frdev.bmp &
