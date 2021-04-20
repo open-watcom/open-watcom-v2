@@ -68,7 +68,6 @@ to the :HP2.&gml.h1:eHP2. tag while in the appendix section.
 :DL.
 :SET symbol=local value='appendix heading'.
 :INCLUDE file='rflaina'.
-    appendix heading.
 :INCLUDE file='rflapts'.
 :INCLUDE file='rflapos'.
 If the appendix heading is not displayed, the post-skip is
@@ -1132,7 +1131,6 @@ Define the characteristics of a heading tag, where
 :SET symbol=loca1 value='headings'.
 :INCLUDE file='rflgroup'.
 :INCLUDE file='rflaina'.
-    heading.
 :INCLUDE file='rflapts'.
 :INCLUDE file='rflapos'.
 :INCLUDE file='rflapes'.
