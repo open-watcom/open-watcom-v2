@@ -114,10 +114,8 @@
 .*
 .if &e'&dohelp eq 0 .do begin
 :BACKM.
-.cd set 2
 :INDEX.
 .do end
 .*
-.cd set 1
 .cntents end_of_book
 :eGDOC.

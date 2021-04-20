@@ -69,7 +69,6 @@
 :include file='tshoot'
 .if &e'&dohelp eq 0 .do begin
 :BACKM.
-.cd set 2
 :INDEX.
 .do end
 .cntents end_of_book

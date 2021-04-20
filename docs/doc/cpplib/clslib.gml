@@ -122,7 +122,6 @@
 . :INCLUDE file='string_'
 .if &e'&dohelp eq 0 .do begin
 :BACKM.
-.cd set 2
 :INDEX.
 .do end
 :eGDOC.

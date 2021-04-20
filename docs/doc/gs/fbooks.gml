@@ -32,6 +32,5 @@
 .do end
 :INCLUDE file='COPYRITE'.
 .*
-.cd set 1
 .cntents end_of_book
 :eGDOC.
