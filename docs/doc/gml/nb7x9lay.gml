@@ -204,32 +204,32 @@
         pre_skip=2
         post_skip=1
         skip=2
-        indent=4
+        indent=2
 :TOCH1
         pre_skip=1
         post_skip=0
         skip=1
-        indent=4
+        indent=2
 :TOCH2
         pre_skip=0
         post_skip=0
         skip=0
-        indent=4
+        indent=2
 :TOCH3
         pre_skip=0
         post_skip=0
         skip=0
-        indent=4
+        indent=2
 :TOCH4
         pre_skip=0
         post_skip=0
         skip=0
-        indent=4
+        indent=2
 :TOCH5
         pre_skip=0
         post_skip=0
         skip=0
-        indent=4
+        indent=2
 :APPENDIX
         pre_top_skip=0
         pre_skip=0
