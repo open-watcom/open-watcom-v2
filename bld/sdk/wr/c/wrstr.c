@@ -186,31 +186,25 @@ bool WRAPI WRIsBlockEmpty( StringTableBlock *block )
 bool WRAPI WRMakeDataFromStringBlock( StringTableBlock *block, void **pdata,
                                          size_t *psize, bool is32bit )
 {
-    size_t  size;
-    void    *data;
-
     if( pdata != NULL && psize != NULL ) {
-        size = WRCalcStringBlockSize( block, is32bit );
-        if( size != 0 ) {
-            data = MemAlloc( size );
-            if( data != NULL ) {
-                if( WRInitDataFromBlock( block, data, size, is32bit ) ) {
+        *psize = WRCalcStringBlockSize( block, is32bit );
+        if( *psize != 0 ) {
+            *pdata = MemAlloc( *psize );
+            if( *pdata != NULL ) {
+                if( WRInitDataFromBlock( block, *pdata, *psize, is32bit ) ) {
                     return( true );
                 } else {
-                    MemFree( data );
-                    data = NULL;
-                    size = 0;
+                    MemFree( *pdata );
+                    *pdata = NULL;
+                    *psize = 0;
                 }
             } else {
-                size = 0;
+                *psize = 0;
             }
         } else {
-            data = NULL;
+            *pdata = NULL;
         }
-        *pdata = data;
-        *psize = size;
     }
-
     return( false );
 }
 
