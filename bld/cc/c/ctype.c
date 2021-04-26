@@ -61,7 +61,8 @@ TYPEPTR PtrTypeHash[TYP_LAST_ENTRY];
 TAGPTR  TagHash[ID_HASH_SIZE + 1];
 FIELDPTR FieldHash[ID_HASH_SIZE];
 
-enum {
+typedef enum {
+    M_NONE          = 0,
     M_CHAR          = 0x0001,
     M_INT           = 0x0002,
     M_SHORT         = 0x0004,
@@ -80,76 +81,75 @@ enum {
 #else
     M_INT32         = M_INT,
 #endif
-    M___LAST        = 0
-};
+} type_mask;
 
 #define TYP_PLAIN_INT   TYP_UFIELD
 
-signed char Valid_Types[] = {
-        -1,             //
-        TYP_PLAIN_CHAR, //                                          M_CHAR
-        TYP_PLAIN_INT,  //                                    M_INT
-        -1,             //                                    M_INT M_CHAR
-        TYP_SHORT,      //                            M_SHORT
-        -1,             //                            M_SHORT       M_CHAR
-        TYP_SHORT,      //                            M_SHORT M_INT
-        -1,             //                            M_SHORT M_INT M_CHAR
-        TYP_LONG,       //                     M_LONG
-        -1,             //                     M_LONG               M_CHAR
-        TYP_LONG,       //                     M_LONG         M_INT
-        -1,             //                     M_LONG         M_INT M_CHAR
-        -1,             //                     M_LONG M_SHORT
-        -1,             //                     M_LONG M_SHORT       M_CHAR
-        -1,             //                     M_LONG M_SHORT M_INT
-        -1,             //                     M_LONG M_SHORT M_INT M_CHAR
-        TYP_INT,        //            M_SIGNED
-        TYP_CHAR,       //            M_SIGNED                      M_CHAR
-        TYP_INT,        //            M_SIGNED                M_INT
-        -1,             //            M_SIGNED                M_INT M_CHAR
-        TYP_SHORT,      //            M_SIGNED        M_SHORT
-        -1,             //            M_SIGNED        M_SHORT       M_CHAR
-        TYP_SHORT,      //            M_SIGNED        M_SHORT M_INT
-        -1,             //            M_SIGNED        M_SHORT M_INT M_CHAR
-        TYP_LONG,       //            M_SIGNED M_LONG
-        -1,             //            M_SIGNED M_LONG               M_CHAR
-        TYP_LONG,       //            M_SIGNED M_LONG         M_INT
-        -1,             //            M_SIGNED M_LONG         M_INT M_CHAR
-        -1,             //            M_SIGNED M_LONG M_SHORT
-        -1,             //            M_SIGNED M_LONG M_SHORT       M_CHAR
-        -1,             //            M_SIGNED M_LONG M_SHORT M_INT
-        -1,             //            M_SIGNED M_LONG M_SHORT M_INT M_CHAR
-        TYP_UINT,       // M_UNSIGNED
-        TYP_UCHAR,      // M_UNSIGNED                               M_CHAR
-        TYP_UINT,       // M_UNSIGNED                         M_INT
-        -1,             // M_UNSIGNED                         M_INT M_CHAR
-        TYP_USHORT,     // M_UNSIGNED                 M_SHORT
-        -1,             // M_UNSIGNED                 M_SHORT       M_CHAR
-        TYP_USHORT,     // M_UNSIGNED                 M_SHORT M_INT
-        -1,             // M_UNSIGNED                 M_SHORT M_INT M_CHAR
-        TYP_ULONG,      // M_UNSIGNED          M_LONG
-        -1,             // M_UNSIGNED          M_LONG               M_CHAR
-        TYP_ULONG,      // M_UNSIGNED          M_LONG         M_INT
-        -1,             // M_UNSIGNED          M_LONG         M_INT M_CHAR
-        -1,             // M_UNSIGNED          M_LONG M_SHORT
-        -1,             // M_UNSIGNED          M_LONG M_SHORT       M_CHAR
-        -1,             // M_UNSIGNED          M_LONG M_SHORT M_INT
-        -1,             // M_UNSIGNED          M_LONG M_SHORT M_INT M_CHAR
-        -1,             // M_UNSIGNED M_SIGNED
-        -1,             // M_UNSIGNED M_SIGNED                      M_CHAR
-        -1,             // M_UNSIGNED M_SIGNED                M_INT
-        -1,             // M_UNSIGNED M_SIGNED                M_INT M_CHAR
-        -1,             // M_UNSIGNED M_SIGNED        M_SHORT
-        -1,             // M_UNSIGNED M_SIGNED        M_SHORT       M_CHAR
-        -1,             // M_UNSIGNED M_SIGNED        M_SHORT M_INT
-        -1,             // M_UNSIGNED M_SIGNED        M_SHORT M_INT M_CHAR
-        -1,             // M_UNSIGNED M_SIGNED M_LONG
-        -1,             // M_UNSIGNED M_SIGNED M_LONG               M_CHAR
-        -1,             // M_UNSIGNED M_SIGNED M_LONG         M_INT
-        -1,             // M_UNSIGNED M_SIGNED M_LONG         M_INT M_CHAR
-        -1,             // M_UNSIGNED M_SIGNED M_LONG M_SHORT
-        -1,             // M_UNSIGNED M_SIGNED M_LONG M_SHORT       M_CHAR
-        -1,             // M_UNSIGNED M_SIGNED M_LONG M_SHORT M_INT
-        -1,             // M_UNSIGNED M_SIGNED M_LONG M_SHORT M_INT M_CHAR
+DATA_TYPE Valid_Types[] = {
+    TYP_UNDEFINED,  //
+    TYP_PLAIN_CHAR, //                                          M_CHAR
+    TYP_PLAIN_INT,  //                                    M_INT
+    TYP_UNDEFINED,  //                                    M_INT M_CHAR
+    TYP_SHORT,      //                            M_SHORT
+    TYP_UNDEFINED,  //                            M_SHORT       M_CHAR
+    TYP_SHORT,      //                            M_SHORT M_INT
+    TYP_UNDEFINED,  //                            M_SHORT M_INT M_CHAR
+    TYP_LONG,       //                     M_LONG
+    TYP_UNDEFINED,  //                     M_LONG               M_CHAR
+    TYP_LONG,       //                     M_LONG         M_INT
+    TYP_UNDEFINED,  //                     M_LONG         M_INT M_CHAR
+    TYP_UNDEFINED,  //                     M_LONG M_SHORT
+    TYP_UNDEFINED,  //                     M_LONG M_SHORT       M_CHAR
+    TYP_UNDEFINED,  //                     M_LONG M_SHORT M_INT
+    TYP_UNDEFINED,  //                     M_LONG M_SHORT M_INT M_CHAR
+    TYP_INT,        //            M_SIGNED
+    TYP_CHAR,       //            M_SIGNED                      M_CHAR
+    TYP_INT,        //            M_SIGNED                M_INT
+    TYP_UNDEFINED,  //            M_SIGNED                M_INT M_CHAR
+    TYP_SHORT,      //            M_SIGNED        M_SHORT
+    TYP_UNDEFINED,  //            M_SIGNED        M_SHORT       M_CHAR
+    TYP_SHORT,      //            M_SIGNED        M_SHORT M_INT
+    TYP_UNDEFINED,  //            M_SIGNED        M_SHORT M_INT M_CHAR
+    TYP_LONG,       //            M_SIGNED M_LONG
+    TYP_UNDEFINED,  //            M_SIGNED M_LONG               M_CHAR
+    TYP_LONG,       //            M_SIGNED M_LONG         M_INT
+    TYP_UNDEFINED,  //            M_SIGNED M_LONG         M_INT M_CHAR
+    TYP_UNDEFINED,  //            M_SIGNED M_LONG M_SHORT
+    TYP_UNDEFINED,  //            M_SIGNED M_LONG M_SHORT       M_CHAR
+    TYP_UNDEFINED,  //            M_SIGNED M_LONG M_SHORT M_INT
+    TYP_UNDEFINED,  //            M_SIGNED M_LONG M_SHORT M_INT M_CHAR
+    TYP_UINT,       // M_UNSIGNED
+    TYP_UCHAR,      // M_UNSIGNED                               M_CHAR
+    TYP_UINT,       // M_UNSIGNED                         M_INT
+    TYP_UNDEFINED,  // M_UNSIGNED                         M_INT M_CHAR
+    TYP_USHORT,     // M_UNSIGNED                 M_SHORT
+    TYP_UNDEFINED,  // M_UNSIGNED                 M_SHORT       M_CHAR
+    TYP_USHORT,     // M_UNSIGNED                 M_SHORT M_INT
+    TYP_UNDEFINED,  // M_UNSIGNED                 M_SHORT M_INT M_CHAR
+    TYP_ULONG,      // M_UNSIGNED          M_LONG
+    TYP_UNDEFINED,  // M_UNSIGNED          M_LONG               M_CHAR
+    TYP_ULONG,      // M_UNSIGNED          M_LONG         M_INT
+    TYP_UNDEFINED,  // M_UNSIGNED          M_LONG         M_INT M_CHAR
+    TYP_UNDEFINED,  // M_UNSIGNED          M_LONG M_SHORT
+    TYP_UNDEFINED,  // M_UNSIGNED          M_LONG M_SHORT       M_CHAR
+    TYP_UNDEFINED,  // M_UNSIGNED          M_LONG M_SHORT M_INT
+    TYP_UNDEFINED,  // M_UNSIGNED          M_LONG M_SHORT M_INT M_CHAR
+    TYP_UNDEFINED,  // M_UNSIGNED M_SIGNED
+    TYP_UNDEFINED,  // M_UNSIGNED M_SIGNED                      M_CHAR
+    TYP_UNDEFINED,  // M_UNSIGNED M_SIGNED                M_INT
+    TYP_UNDEFINED,  // M_UNSIGNED M_SIGNED                M_INT M_CHAR
+    TYP_UNDEFINED,  // M_UNSIGNED M_SIGNED        M_SHORT
+    TYP_UNDEFINED,  // M_UNSIGNED M_SIGNED        M_SHORT       M_CHAR
+    TYP_UNDEFINED,  // M_UNSIGNED M_SIGNED        M_SHORT M_INT
+    TYP_UNDEFINED,  // M_UNSIGNED M_SIGNED        M_SHORT M_INT M_CHAR
+    TYP_UNDEFINED,  // M_UNSIGNED M_SIGNED M_LONG
+    TYP_UNDEFINED,  // M_UNSIGNED M_SIGNED M_LONG               M_CHAR
+    TYP_UNDEFINED,  // M_UNSIGNED M_SIGNED M_LONG         M_INT
+    TYP_UNDEFINED,  // M_UNSIGNED M_SIGNED M_LONG         M_INT M_CHAR
+    TYP_UNDEFINED,  // M_UNSIGNED M_SIGNED M_LONG M_SHORT
+    TYP_UNDEFINED,  // M_UNSIGNED M_SIGNED M_LONG M_SHORT       M_CHAR
+    TYP_UNDEFINED,  // M_UNSIGNED M_SIGNED M_LONG M_SHORT M_INT
+    TYP_UNDEFINED,  // M_UNSIGNED M_SIGNED M_LONG M_SHORT M_INT M_CHAR
 };
 
 void InitTypeHashTables( void )
@@ -326,7 +326,7 @@ type_modifiers TypeQualifier( void )
     return( flags );
 }
 
-static TYPEPTR GetScalarType( bool *plain_int, int bmask, type_modifiers flags )
+static TYPEPTR GetScalarType( bool *plain_int, type_mask bmask, type_modifiers flags )
 {
     DATA_TYPE   data_type;
     TYPEPTR     typ;
@@ -379,7 +379,7 @@ static TYPEPTR GetScalarType( bool *plain_int, int bmask, type_modifiers flags )
         }
     } else if( bmask == M_BOOL ) {
         data_type = TYP_BOOL;
-    } else if( bmask == 0 ) {
+    } else if( bmask == M_NONE ) {
         data_type = TYP_INT;
         *plain_int = true;
     } else {
@@ -415,8 +415,8 @@ static void AdvanceToken( void )
 static void DeclSpecifiers( bool *plain_int, decl_info *info )
 {
     TYPEPTR             typ;
-    int                 bmask;
-    int                 bit;
+    type_mask           bmask;
+    type_mask           bit;
     type_modifiers      flags;
     bool                packed;
     SYM_HANDLE          sym_handle;
@@ -432,14 +432,14 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
     info->decl = DECLSPEC_NONE;
     info->naked = false;
     info->segid = SEG_NULL;
-    bmask = 0;
+    bmask = M_NONE;
     flags = FLAG_NONE;
     packed = false;
     typ = NULL;
     specified_stg_class = SC_NONE;
     for(;;) {
         stg_class = SC_NONE;
-        bit = 0;
+        bit = M_NONE;
         switch( CurToken ) {
         case T_CHAR:
             bit = M_CHAR;
@@ -667,7 +667,7 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
             continue;
         case T_SAVED_ID:
         case T_ID:
-            if( typ != NULL || bmask != 0 )
+            if( typ != NULL || bmask != M_NONE )
                 goto got_specifier;
             /* lookup id in symbol table */
             /* if valid type identifier then OK */
@@ -742,11 +742,11 @@ got_specifier:
     if( typ != NULL ) {
         /* already have a type (TYP_STRUCT, TYP_UNION, TYP_ENUM) */
         /* or an ID that was a typedef name */
-        if( bmask != 0 ) {
+        if( bmask != M_NONE ) {
             CErr1( ERR_INV_TYPE );  // picked up an int
         }
     } else {
-        if( flags != FLAG_NONE || bmask != 0 ) {  // not just id hanging there
+        if( flags != FLAG_NONE || bmask != M_NONE ) {  // not just id hanging there
             typ = GetScalarType( plain_int, bmask, flags );
         }
     }
