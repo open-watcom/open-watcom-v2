@@ -490,13 +490,13 @@ void html_trans_line( char *line_buf, section_def *section )
                 sprintf( buf, "<img src=\"%s\">", ptr );
                 break;
             case 'l':
-                sprintf( buf, "<img src=\"%s\" align=top>", ptr );
+                sprintf( buf, "<img src=\"%s\" style=\"vertical-align:top\">", ptr );
                 break;
             case 'r':
-                sprintf( buf, "<img src=\"%s\" align=bottom>", ptr );
+                sprintf( buf, "<img src=\"%s\" style=\"vertical-align:bottom\">", ptr );
                 break;
             case 'c':
-                sprintf( buf, "<img src=\"%s\" align=middle>", ptr );
+                sprintf( buf, "<img src=\"%s\" style=\"vertical-align:middle\">", ptr );
                 break;
             default:
                 *buf = '\0';
