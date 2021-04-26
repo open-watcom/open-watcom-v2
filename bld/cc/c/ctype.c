@@ -76,81 +76,7 @@ typedef enum {
     M_COMPLEX       = 0x0400,
     M_IMAGINARY     = 0x0800,
     M_BOOL          = 0x1000,
-#if _CPU == 8086
-    M_INT32         = M_LONG,
-#else
-    M_INT32         = M_INT,
-#endif
 } type_mask;
-
-#define TYP_PLAIN_INT   TYP_UFIELD
-
-DATA_TYPE Valid_Types[] = {
-    TYP_UNDEFINED,  //
-    TYP_PLAIN_CHAR, //                                          M_CHAR
-    TYP_PLAIN_INT,  //                                    M_INT
-    TYP_UNDEFINED,  //                                    M_INT M_CHAR
-    TYP_SHORT,      //                            M_SHORT
-    TYP_UNDEFINED,  //                            M_SHORT       M_CHAR
-    TYP_SHORT,      //                            M_SHORT M_INT
-    TYP_UNDEFINED,  //                            M_SHORT M_INT M_CHAR
-    TYP_LONG,       //                     M_LONG
-    TYP_UNDEFINED,  //                     M_LONG               M_CHAR
-    TYP_LONG,       //                     M_LONG         M_INT
-    TYP_UNDEFINED,  //                     M_LONG         M_INT M_CHAR
-    TYP_UNDEFINED,  //                     M_LONG M_SHORT
-    TYP_UNDEFINED,  //                     M_LONG M_SHORT       M_CHAR
-    TYP_UNDEFINED,  //                     M_LONG M_SHORT M_INT
-    TYP_UNDEFINED,  //                     M_LONG M_SHORT M_INT M_CHAR
-    TYP_INT,        //            M_SIGNED
-    TYP_CHAR,       //            M_SIGNED                      M_CHAR
-    TYP_INT,        //            M_SIGNED                M_INT
-    TYP_UNDEFINED,  //            M_SIGNED                M_INT M_CHAR
-    TYP_SHORT,      //            M_SIGNED        M_SHORT
-    TYP_UNDEFINED,  //            M_SIGNED        M_SHORT       M_CHAR
-    TYP_SHORT,      //            M_SIGNED        M_SHORT M_INT
-    TYP_UNDEFINED,  //            M_SIGNED        M_SHORT M_INT M_CHAR
-    TYP_LONG,       //            M_SIGNED M_LONG
-    TYP_UNDEFINED,  //            M_SIGNED M_LONG               M_CHAR
-    TYP_LONG,       //            M_SIGNED M_LONG         M_INT
-    TYP_UNDEFINED,  //            M_SIGNED M_LONG         M_INT M_CHAR
-    TYP_UNDEFINED,  //            M_SIGNED M_LONG M_SHORT
-    TYP_UNDEFINED,  //            M_SIGNED M_LONG M_SHORT       M_CHAR
-    TYP_UNDEFINED,  //            M_SIGNED M_LONG M_SHORT M_INT
-    TYP_UNDEFINED,  //            M_SIGNED M_LONG M_SHORT M_INT M_CHAR
-    TYP_UINT,       // M_UNSIGNED
-    TYP_UCHAR,      // M_UNSIGNED                               M_CHAR
-    TYP_UINT,       // M_UNSIGNED                         M_INT
-    TYP_UNDEFINED,  // M_UNSIGNED                         M_INT M_CHAR
-    TYP_USHORT,     // M_UNSIGNED                 M_SHORT
-    TYP_UNDEFINED,  // M_UNSIGNED                 M_SHORT       M_CHAR
-    TYP_USHORT,     // M_UNSIGNED                 M_SHORT M_INT
-    TYP_UNDEFINED,  // M_UNSIGNED                 M_SHORT M_INT M_CHAR
-    TYP_ULONG,      // M_UNSIGNED          M_LONG
-    TYP_UNDEFINED,  // M_UNSIGNED          M_LONG               M_CHAR
-    TYP_ULONG,      // M_UNSIGNED          M_LONG         M_INT
-    TYP_UNDEFINED,  // M_UNSIGNED          M_LONG         M_INT M_CHAR
-    TYP_UNDEFINED,  // M_UNSIGNED          M_LONG M_SHORT
-    TYP_UNDEFINED,  // M_UNSIGNED          M_LONG M_SHORT       M_CHAR
-    TYP_UNDEFINED,  // M_UNSIGNED          M_LONG M_SHORT M_INT
-    TYP_UNDEFINED,  // M_UNSIGNED          M_LONG M_SHORT M_INT M_CHAR
-    TYP_UNDEFINED,  // M_UNSIGNED M_SIGNED
-    TYP_UNDEFINED,  // M_UNSIGNED M_SIGNED                      M_CHAR
-    TYP_UNDEFINED,  // M_UNSIGNED M_SIGNED                M_INT
-    TYP_UNDEFINED,  // M_UNSIGNED M_SIGNED                M_INT M_CHAR
-    TYP_UNDEFINED,  // M_UNSIGNED M_SIGNED        M_SHORT
-    TYP_UNDEFINED,  // M_UNSIGNED M_SIGNED        M_SHORT       M_CHAR
-    TYP_UNDEFINED,  // M_UNSIGNED M_SIGNED        M_SHORT M_INT
-    TYP_UNDEFINED,  // M_UNSIGNED M_SIGNED        M_SHORT M_INT M_CHAR
-    TYP_UNDEFINED,  // M_UNSIGNED M_SIGNED M_LONG
-    TYP_UNDEFINED,  // M_UNSIGNED M_SIGNED M_LONG               M_CHAR
-    TYP_UNDEFINED,  // M_UNSIGNED M_SIGNED M_LONG         M_INT
-    TYP_UNDEFINED,  // M_UNSIGNED M_SIGNED M_LONG         M_INT M_CHAR
-    TYP_UNDEFINED,  // M_UNSIGNED M_SIGNED M_LONG M_SHORT
-    TYP_UNDEFINED,  // M_UNSIGNED M_SIGNED M_LONG M_SHORT       M_CHAR
-    TYP_UNDEFINED,  // M_UNSIGNED M_SIGNED M_LONG M_SHORT M_INT
-    TYP_UNDEFINED,  // M_UNSIGNED M_SIGNED M_LONG M_SHORT M_INT M_CHAR
-};
 
 void InitTypeHashTables( void )
 {
@@ -331,67 +257,98 @@ static TYPEPTR GetScalarType( bool *plain_int, type_mask bmask, type_modifiers f
     DATA_TYPE   data_type;
     TYPEPTR     typ;
 
-    data_type = TYP_UNDEFINED;
-    if( bmask & M_LONG_LONG ) {
+    if( (bmask & M_INT) && (bmask & (M_LONG_LONG | M_LONG | M_SHORT) ) ) {
         bmask &= ~M_INT;
     }
-    if( bmask & (M_VOID | M_FLOAT | M_DOUBLE | M_LONG_LONG | M_COMPLEX | M_IMAGINARY) ) {
-        if( bmask == M_VOID ) {
-            data_type = TYP_VOID;
-        } else if( bmask == M_LONG_LONG ) {
-            data_type = TYP_LONG64;
-        } else if( bmask == (M_LONG_LONG | M_SIGNED) ) {
-            data_type = TYP_LONG64;
-        } else if( bmask == (M_LONG_LONG | M_UNSIGNED) ) {
-            data_type = TYP_ULONG64;
-        } else if( bmask == M_FLOAT ) {
-            data_type = TYP_FLOAT;
-        } else if( bmask == M_DOUBLE ) {
-            data_type = TYP_DOUBLE;
-        } else if( bmask == (M_LONG | M_DOUBLE) ) {
-            if( CompFlags.use_long_double ) {
-                data_type = TYP_LONG_DOUBLE;
-            } else {
-                data_type = TYP_DOUBLE;
-            }
-        } else if( bmask == (M_COMPLEX | M_FLOAT) ) {
-            data_type = TYP_FCOMPLEX;
-        } else if( bmask == (M_COMPLEX | M_DOUBLE) ) {
-            data_type = TYP_DCOMPLEX;
-        } else if( bmask == (M_COMPLEX | M_LONG | M_DOUBLE) ) {
-            if( CompFlags.use_long_double ) {
-                data_type = TYP_LDCOMPLEX;
-            } else {
-                data_type = TYP_DCOMPLEX;
-            }
-        } else if( bmask == (M_IMAGINARY | M_FLOAT) ) {
-            data_type = TYP_FIMAGINARY;
-        } else if( bmask == (M_IMAGINARY | M_DOUBLE) ) {
-            data_type = TYP_DIMAGINARY;
-        } else if( bmask == (M_IMAGINARY | M_LONG | M_DOUBLE) ) {
-            if( CompFlags.use_long_double ) {
-                data_type = TYP_LDIMAGINARY;
-            } else {
-                data_type = TYP_DIMAGINARY;
-            }
-        } else {
-            data_type = TYP_UNDEFINED;
-        }
-    } else if( bmask == M_BOOL ) {
-        data_type = TYP_BOOL;
-    } else if( bmask == M_NONE ) {
-        data_type = TYP_INT;
+    switch( bmask ) {
+    case M_CHAR:
+        data_type = TYP_PLAIN_CHAR;
+        break;
+    case M_SIGNED | M_CHAR:
+        data_type = TYP_CHAR;
+        break;
+    case M_UNSIGNED | M_CHAR:
+        data_type = TYP_UCHAR;
+        break;
+    case M_SHORT:
+    case M_SIGNED | M_SHORT:
+        data_type = TYP_SHORT;
+        break;
+    case M_UNSIGNED | M_SHORT:
+        data_type = TYP_USHORT;
+        break;
+    case M_NONE:
+    case M_INT:
         *plain_int = true;
-    } else {
-        data_type = Valid_Types[bmask];
-        if( data_type == TYP_PLAIN_INT ) {
-            data_type = TYP_INT;
-            *plain_int = true;
+        /* fall through */
+    case M_SIGNED:
+    case M_SIGNED | M_INT:
+        data_type = TYP_INT;
+        break;
+    case M_UNSIGNED:
+    case M_UNSIGNED | M_INT:
+        data_type = TYP_UINT;
+        break;
+    case M_LONG:
+    case M_SIGNED | M_LONG:
+        data_type = TYP_LONG;
+        break;
+    case M_UNSIGNED | M_LONG:
+        data_type = TYP_ULONG;
+        break;
+    case M_LONG_LONG:
+    case M_SIGNED | M_LONG_LONG:
+        data_type = TYP_LONG64;
+        break;
+    case M_UNSIGNED | M_LONG_LONG:
+        data_type = TYP_ULONG64;
+        break;
+    case M_BOOL:
+        data_type = TYP_BOOL;
+        break;
+    case M_VOID:
+        data_type = TYP_VOID;
+        break;
+    case M_FLOAT:
+        data_type = TYP_FLOAT;
+        break;
+    case M_LONG | M_DOUBLE:
+        if( CompFlags.use_long_double ) {
+            data_type = TYP_LONG_DOUBLE;
+            break;
         }
-    }
-    if( data_type == TYP_UNDEFINED ) {
+        /* fall through */
+    case M_DOUBLE:
+        data_type = TYP_DOUBLE;
+        break;
+    case M_COMPLEX | M_FLOAT:
+        data_type = TYP_FCOMPLEX;
+        break;
+    case M_COMPLEX | M_LONG | M_DOUBLE:
+        if( CompFlags.use_long_double ) {
+            data_type = TYP_LDCOMPLEX;
+            break;
+        }
+        /* fall through */
+    case M_COMPLEX | M_DOUBLE:
+        data_type = TYP_DCOMPLEX;
+        break;
+    case M_IMAGINARY | M_FLOAT:
+        data_type = TYP_FIMAGINARY;
+        break;
+    case M_IMAGINARY | M_LONG | M_DOUBLE:
+        if( CompFlags.use_long_double ) {
+            data_type = TYP_LDIMAGINARY;
+            break;
+        }
+        /* fall through */
+    case M_IMAGINARY | M_DOUBLE:
+        data_type = TYP_DIMAGINARY;
+        break;
+    default:
         CErr1( ERR_INV_TYPE );
         data_type = TYP_INT;
+        break;
     }
     typ = GetType( data_type );
     if( flags & FLAG_SEGMENT )
@@ -460,7 +417,11 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
             bit = M_SHORT;
             break;
         case T___INT32:
-            bit = M_INT32;
+#if _CPU == 8086
+            bit = M_LONG;
+#else
+            bit = M_INT;
+#endif
             break;
         case T___INT64:
             bit = M_LONG_LONG;
