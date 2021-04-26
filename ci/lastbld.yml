@@ -9,7 +9,6 @@ jobs:
       owscript:         $(owscript_lnx)
       owbuild.stage:    inst
       owtag:            Last-CI-build
-      #DECODE_PERCENTS:  true
     pool:
       vmImage:      $(owimage_lnx)
     steps:

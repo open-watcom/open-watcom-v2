@@ -12,7 +12,6 @@ jobs:
         owtools:        $(owtools_nt)
       owtag:            Current-build
       owsubtag:         Build
-      DECODE_PERCENTS:  true
     pool:
       ${{ if eq(parameters.arch, 'lnx') }}:
         vmImage: $(owimage_lnx)
