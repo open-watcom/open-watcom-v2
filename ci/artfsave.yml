@@ -9,7 +9,7 @@ steps:
         rootFolderOrFile: $(owroot)/${{ parameters.path }}
         includeRootFolder: false
         archiveType: 'tar'
-        tarCompression: 'none'
+        tarCompression: 'xz'
         archiveFile: $(Pipeline.Workspace)/$(owartifactfile)
         replaceExistingArchive: true
     - task: PublishPipelineArtifact@1

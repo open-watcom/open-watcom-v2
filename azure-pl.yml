@@ -22,7 +22,7 @@ variables:
   owscript_lnx:     ci/buildx.sh
   owscript_nt:      ci\buildx.cmd
   owscript_osx:     ci/buildx.sh
-  owartifactfile:   owartifact.tar
+  owartifactfile:   owartifact.tar.xz
   owciroot_lnx:     $(owroot)/ci
   owciroot_nt:      $(owroot)\ci
   owciroot_osx:     $(owroot)/ci
