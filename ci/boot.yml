@@ -41,11 +41,9 @@ jobs:
     - ${{ if in(parameters.arch, 'nt', 'lnx', 'osx') }}:
       - template: artfsave.yml
         parameters:
-          arch:       ${{ parameters.arch }}
           path:       build/$(owobjdir)
           artifname:  build-${{ parameters.arch }}
       - template: artfsave.yml
         parameters:
-          arch:       ${{ parameters.arch }}
           path:       bld/watcom/$(owobjdir)
           artifname:  bld-watcom-${{ parameters.arch }}

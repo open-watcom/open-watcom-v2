@@ -18,12 +18,10 @@ jobs:
     # consolidate binaries
     - template: artfload.yml
       parameters:
-        arch:       'lnx'
         path:       rel
         artifname:  rel-nt
     - template: artfload.yml
       parameters:
-        arch:       'lnx'
         path:       rel
         artifname:  rel-lnx
     # consolidate documentation

@@ -30,12 +30,10 @@ jobs:
         arch: ${{ parameters.arch }}
     - template: artfload.yml
       parameters:
-        arch:       ${{ parameters.arch }}
         path:       build/$(owobjdir)
         artifname:  build-${{ parameters.arch }}
     - template: artfload.yml
       parameters:
-        arch:       ${{ parameters.arch }}
         path:       bld/watcom/$(owobjdir)
         artifname:  bld-watcom-${{ parameters.arch }}
     - script: $(owscript)
@@ -43,11 +41,9 @@ jobs:
     - ${{ if in(parameters.arch, 'lnx', 'nt') }}:
       - template: artfsave.yml
         parameters:
-          arch:         ${{ parameters.arch }}
           path:         rel
           artifname:    rel-${{ parameters.arch }}
       - template: artfsave.yml
         parameters:
-          arch:         ${{ parameters.arch }}
           path:         bld/setupgui
           artifname:    bld-setupgui-${{ parameters.arch }}

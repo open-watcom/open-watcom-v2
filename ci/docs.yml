@@ -35,7 +35,6 @@ jobs:
     steps:
     - template: artfload.yml
       parameters:
-        arch:       ${{ parameters.arch }}
         path:       build/$(owobjdir)
         artifname:  build-${{ parameters.arch }}
     - script: $(owscript)

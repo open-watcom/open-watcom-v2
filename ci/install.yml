@@ -21,28 +21,23 @@ jobs:
     steps:
     - template: artfload.yml
       parameters:
-        arch:       ${{ parameters.arch }}
         path:       build/$(owobjdir)
         artifname:  build-${{ parameters.arch }}
     - template: artfload.yml
       parameters:
-        arch:       ${{ parameters.arch }}
         path:       bld/setupgui
         artifname:  bld-setupgui-nt
     - template: artfload.yml
       parameters:
-        arch:       ${{ parameters.arch }}
         path:       bld/setupgui
         artifname:  bld-setupgui-lnx
     # consolidate binaries
     - template: artfload.yml
       parameters:
-        arch:       ${{ parameters.arch }}
         path:       rel
         artifname:  rel-nt
     - template: artfload.yml
       parameters:
-        arch:       ${{ parameters.arch }}
         path:       rel
         artifname:  rel-lnx
     # consolidate documentation
@@ -85,6 +80,5 @@ jobs:
     # save all artifacts for distribution
     - template: artfsave.yml
       parameters:
-        arch:       ${{ parameters.arch }}
         path:       distrib/ow/bin
         artifname:  distrib-${{ parameters.arch }}

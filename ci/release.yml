@@ -23,17 +23,14 @@ jobs:
       persistCredentials: true
     - template: artfload.yml
       parameters:
-        arch:       ${{ parameters.arch }}
         path:       build/$(owobjdir)
         artifname:  build-${{ parameters.arch }}
     - template: artfload.yml
       parameters:
-        arch:       ${{ parameters.arch }}
         path:       distrib/ow/bin
         artifname:  distrib-nt
     - template: artfload.yml
       parameters:
-        arch:       ${{ parameters.arch }}
         path:       distrib/ow/bin
         artifname:  distrib-lnx
     - bash: echo "##vso[task.setvariable variable=owtagstamp;]`date +'%Y-%m-%d %H:%M:%S'`"

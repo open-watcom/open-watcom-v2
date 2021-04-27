@@ -27,12 +27,10 @@ jobs:
     steps:
     - template: artfload.yml
       parameters:
+        path:       rel
         ${{ if eq(parameters.arch, 'lnxow') }}:
-          arch:     lnx
           artifname: rel-lnx
         ${{ if eq(parameters.arch, 'ntow') }}:
-          arch:     nt
           artifname: rel-nt
-        path:       rel
     - script: $(owscript)
       displayName: "Test Bootstrap OW"
