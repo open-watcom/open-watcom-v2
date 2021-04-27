@@ -5,9 +5,6 @@ parameters:
 steps:
     - task: DownloadPipelineArtifact@2
       displayName: "Load Artifact rel-${{ parameters.doctype }}"
-      inputs: 
+      inputs:
         artifactName: "rel-${{ parameters.doctype }}"
-        ${{ if eq(parameters.arch, 'nt') }}:
-          downloadPath: $(owroot)\rel
-        ${{ if in(parameters.arch, 'lnx', 'osx') }}:
-          downloadPath: $(owroot)/rel
+        downloadPath: $(owroot)/rel
