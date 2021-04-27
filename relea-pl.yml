@@ -4,7 +4,7 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
-variables: 
+variables:
   owroot:           $(Build.SourcesDirectory)
   owobjdir:         binbuild
   owgitverbose:     -v
@@ -22,8 +22,7 @@ variables:
   owscript_lnx:     ci/buildx.sh
   owscript_nt:      ci\buildx.cmd
   owscript_osx:     ci/buildx.sh
-  owartifactfile:   owartifact.tar.gz
-  owartifactfile7z: owartifact.tar
+  owartifactfile:   owartifact.tar
   owciroot_lnx:     $(owroot)/ci
   owciroot_nt:      $(owroot)\ci
   owciroot_osx:     $(owroot)/ci
