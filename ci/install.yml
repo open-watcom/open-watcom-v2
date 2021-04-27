@@ -22,26 +22,17 @@ jobs:
     - template: artfload.yml
       parameters:
         arch:       ${{ parameters.arch }}
-        ${{ if eq(parameters.arch, 'nt') }}:
-          path:     build\$(owobjdir)
-        ${{ if in(parameters.arch, 'lnx', 'osx') }}:
-          path:     build/$(owobjdir)
+        path:       build/$(owobjdir)
         artifname:  build-${{ parameters.arch }}
     - template: artfload.yml
       parameters:
         arch:       ${{ parameters.arch }}
-        ${{ if eq(parameters.arch, 'nt') }}:
-          path:     bld\setupgui
-        ${{ if in(parameters.arch, 'lnx', 'osx') }}:
-          path:     bld/setupgui
+        path:       bld/setupgui
         artifname:  bld-setupgui-nt
     - template: artfload.yml
       parameters:
         arch:       ${{ parameters.arch }}
-        ${{ if eq(parameters.arch, 'nt') }}:
-          path:     bld\setupgui
-        ${{ if in(parameters.arch, 'lnx', 'osx') }}:
-          path:     bld/setupgui
+        path:       bld/setupgui
         artifname:  bld-setupgui-lnx
     # consolidate binaries
     - template: artfload.yml
@@ -93,10 +84,7 @@ jobs:
           replaceExistingArchive: true
     # save all artifacts for distribution
     - template: artfsave.yml
-      parameters: 
+      parameters:
         arch:       ${{ parameters.arch }}
-        ${{ if eq(parameters.arch, 'nt') }}:
-          path:     distrib\ow\bin
-        ${{ if in(parameters.arch, 'lnx', 'osx') }}:
-          path:     distrib/ow/bin
+        path:       distrib/ow/bin
         artifname:  distrib-${{ parameters.arch }}

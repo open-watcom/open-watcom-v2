@@ -21,8 +21,5 @@ jobs:
     - template: artfload.yml
       parameters:
         arch:       ${{ parameters.arch }}
-        ${{ if eq(parameters.arch, 'nt') }}:
-          path:     build\$(owobjdir)
-        ${{ if in(parameters.arch, 'lnx', 'osx') }}:
-          path:     build/$(owobjdir)
+        path:       build/$(owobjdir)
         artifname:  build-${{ parameters.arch }}

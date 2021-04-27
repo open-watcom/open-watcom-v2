@@ -24,26 +24,17 @@ jobs:
     - template: artfload.yml
       parameters:
         arch:       ${{ parameters.arch }}
-        ${{ if eq(parameters.arch, 'nt') }}:
-          path:     build\$(owobjdir)
-        ${{ if in(parameters.arch, 'lnx', 'osx') }}:
-          path:     build/$(owobjdir)
+        path:       build/$(owobjdir)
         artifname:  build-${{ parameters.arch }}
     - template: artfload.yml
       parameters:
         arch:       ${{ parameters.arch }}
-        ${{ if eq(parameters.arch, 'nt') }}:
-          path:     distrib\ow\bin
-        ${{ if in(parameters.arch, 'lnx', 'osx') }}:
-          path:     distrib/ow/bin
+        path:       distrib/ow/bin
         artifname:  distrib-nt
     - template: artfload.yml
       parameters:
         arch:       ${{ parameters.arch }}
-        ${{ if eq(parameters.arch, 'nt') }}:
-          path:     distrib\ow\bin
-        ${{ if in(parameters.arch, 'lnx', 'osx') }}:
-          path:     distrib/ow/bin
+        path:       distrib/ow/bin
         artifname:  distrib-lnx
     - bash: echo "##vso[task.setvariable variable=owtagstamp;]`date +'%Y-%m-%d %H:%M:%S'`"
       displayName: "Get current timestamp"

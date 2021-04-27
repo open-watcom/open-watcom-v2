@@ -38,19 +38,14 @@ jobs:
     steps:
     - script: $(owscript)
       displayName: "Bootstrap"
-    - template: artfsave.yml
-      parameters: 
-        arch:       ${{ parameters.arch }}
-        ${{ if eq(parameters.arch, 'nt') }}:
-          path:     build\$(owobjdir)
-        ${{ if in(parameters.arch, 'lnx', 'osx') }}:
-          path:     build/$(owobjdir)
-        artifname:  build-${{ parameters.arch }}
-    - template: artfsave.yml
-      parameters: 
-        arch:       ${{ parameters.arch }}
-        ${{ if eq(parameters.arch, 'nt') }}:
-          path:     bld\watcom\$(owobjdir)
-        ${{ if in(parameters.arch, 'lnx', 'osx') }}:
-          path:     bld/watcom/$(owobjdir)
-        artifname:  bld-watcom-${{ parameters.arch }}
+    - ${{ if in(parameters.arch, 'nt', 'lnx', 'osx') }}:
+      - template: artfsave.yml
+        parameters:
+          arch:       ${{ parameters.arch }}
+          path:       build/$(owobjdir)
+          artifname:  build-${{ parameters.arch }}
+      - template: artfsave.yml
+        parameters:
+          arch:       ${{ parameters.arch }}
+          path:       bld/watcom/$(owobjdir)
+          artifname:  bld-watcom-${{ parameters.arch }}

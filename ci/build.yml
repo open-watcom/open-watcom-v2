@@ -31,32 +31,23 @@ jobs:
     - template: artfload.yml
       parameters:
         arch:       ${{ parameters.arch }}
-        ${{ if eq(parameters.arch, 'nt') }}:
-          path:     build\$(owobjdir)
-        ${{ if in(parameters.arch, 'lnx', 'osx') }}:
-          path:     build/$(owobjdir)
+        path:       build/$(owobjdir)
         artifname:  build-${{ parameters.arch }}
     - template: artfload.yml
       parameters:
         arch:       ${{ parameters.arch }}
-        ${{ if eq(parameters.arch, 'nt') }}:
-          path:     bld\watcom\$(owobjdir)
-        ${{ if in(parameters.arch, 'lnx', 'osx') }}:
-          path:     bld/watcom/$(owobjdir)
+        path:       bld/watcom/$(owobjdir)
         artifname:  bld-watcom-${{ parameters.arch }}
     - script: $(owscript)
       displayName: "Build"
     - ${{ if in(parameters.arch, 'lnx', 'nt') }}:
       - template: artfsave.yml
-        parameters: 
+        parameters:
           arch:         ${{ parameters.arch }}
           path:         rel
           artifname:    rel-${{ parameters.arch }}
       - template: artfsave.yml
-        parameters: 
+        parameters:
           arch:         ${{ parameters.arch }}
-          ${{ if eq(parameters.arch, 'nt') }}:
-            path:       bld\setupgui
-          ${{ if in(parameters.arch, 'lnx', 'osx') }}:
-            path:       bld/setupgui
+          path:         bld/setupgui
           artifname:    bld-setupgui-${{ parameters.arch }}

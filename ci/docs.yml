@@ -36,18 +36,12 @@ jobs:
     - template: artfload.yml
       parameters:
         arch:       ${{ parameters.arch }}
-        ${{ if eq(parameters.arch, 'nt') }}:
-          path:     build\$(owobjdir)
-        ${{ if in(parameters.arch, 'lnx', 'osx') }}:
-          path:     build/$(owobjdir)
+        path:       build/$(owobjdir)
         artifname:  build-${{ parameters.arch }}
     - script: $(owscript)
       displayName: "Documentation Build"
     - task: PublishPipelineArtifact@1
       displayName: "Save Artifact rel-${{ parameters.doctype }}"
-      inputs: 
+      inputs:
         artifactName:   "rel-${{ parameters.doctype }}"
-        ${{ if eq(parameters.arch, 'nt') }}:
-          path:         $(owroot)\rel
-        ${{ if in(parameters.arch, 'lnx', 'osx') }}:
-          path:         $(owroot)/rel
+        path:           $(owroot)/rel
