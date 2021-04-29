@@ -8,7 +8,6 @@
 #
 
 gendev_cmdl_params = $[@
-gendev_subdir = \testlib
 
 !include wgmlcmd.mif
 

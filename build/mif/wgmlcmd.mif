@@ -27,6 +27,11 @@ wgml_tmp_batchfile = wgml.tmp
 dos_gendev_tmp_batch=gendevb.bat
 dos_wgml_tmp_batch=wgmlb.bat
 
+!ifeq proj_name docs
+gendev_subdir = \$(dotarget)
+!else
+gendev_subdir = \testlib
+!endif
 wgml_subdir = \docs\$(dotarget)
 
 !ifdef __UNIX__
@@ -133,12 +138,10 @@ prepare_gendev_tmp_batch : .PROCEDURE .EXPLICIT
 #-------------------------------------------------------
 # DOSEMU version
 #-------------------------------------------------------
-    @set GENDEV_PARAMS=$(gendev_cmdl_params)
-    @set GENDEV_PARAMS=$(%GENDEV_PARAMS:/=\)
     @%create $(gendev_tmp_batchfile)
     @%append $(gendev_tmp_batchfile) lredir w: linux\fs$(docs_dir)
     @%append $(gendev_tmp_batchfile) $(noecho)set GMLINC=$(%GMLINC)
-    @%append $(gendev_tmp_batchfile) w:\gml\dos\gendev.exe $(%GENDEV_PARAMS)
+    @%append $(gendev_tmp_batchfile) w:\gml\dos\gendev.exe $(gendev_cmdl_params:/=\)
 !ifndef %WGMLDEBUG
     @%append $(gendev_tmp_batchfile) exitemu
 !endif
@@ -152,14 +155,12 @@ prepare_gendev_tmp_batch : .PROCEDURE .EXPLICIT
     $(noecho)set SDL_AUDIODRIVER=disk
     $(noecho)set SDL_DISKAUDIOFILE=NUL
 !endif
-    @set GENDEV_PARAMS=$(gendev_cmdl_params)
-    @set GENDEV_PARAMS=$(%GENDEV_PARAMS:/=\)
     @%create $(dos_gendev_tmp_batch)
     @%append $(dos_gendev_tmp_batch) mount d $(docs_dir)
     @%append $(dos_gendev_tmp_batch) c:
     @%append $(dos_gendev_tmp_batch) cd $(gendev_subdir)
     @%append $(dos_gendev_tmp_batch) $(noecho)set GMLINC=$(%GMLINC)
-    @%append $(dos_gendev_tmp_batch) d:\gml\dos\gendev.exe $(%GENDEV_PARAMS)
+    @%append $(dos_gendev_tmp_batch) d:\gml\dos\gendev.exe $(gendev_cmdl_params:/=\)
 !ifndef %WGMLDEBUG
     @%append $(dos_gendev_tmp_batch) exit
 !endif

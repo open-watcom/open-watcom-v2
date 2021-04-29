@@ -10,8 +10,6 @@ to_os_path=/=\
 !include ../mif/books.mif
 
 wgml_cmdl_params = $(book_src) ( file $(wgml_optfile)
-
-gendev_subdir = \$(dotarget)
 gendev_cmdl_params = $[@
 
 !include wgmlcmd.mif
