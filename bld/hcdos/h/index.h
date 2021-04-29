@@ -30,5 +30,5 @@
 ****************************************************************************/
 
 
-extern unsigned long    CalcIndexSize( char **str, bool gen_str );
-extern int              WriteIndex( FILE *fout, char **str, bool gen_str );
+extern unsigned long    CalcIndexSize( const char **str, bool gen_str );
+extern int              WriteIndex( FILE *fout, const char **str, bool gen_str );

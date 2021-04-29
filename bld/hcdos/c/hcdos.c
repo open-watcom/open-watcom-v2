@@ -154,7 +154,7 @@ static void lineLenCB( HelpTokenType type, Info *info, void *_len )
         break;
     case TK_PLAIN_LINK:
         *len += 2;
-    /* fall through */
+        /* fall through */
     case TK_GOOFY_LINK:
         for( block = &( info->u.link.block1 ); block != NULL; block = block->next ) {
             for( i = 0; i < block->cnt; i++ ) {
@@ -173,7 +173,7 @@ static void lineLenCB( HelpTokenType type, Info *info, void *_len )
     }
 }
 
-static int line_len( char *str )
+static unsigned line_len( char *str )
 {
     unsigned    len;
     bool        newfile;
@@ -188,8 +188,8 @@ static int line_len( char *str )
 
 static char *find_str( char *buf )
 {
-    int     len;
-    char    *str;
+    unsigned    len;
+    char        *str;
 
     while( *buf != '"' ) {
         if( *buf == HELP_ESCAPE )
@@ -208,53 +208,55 @@ static char *find_str( char *buf )
     return( str );
 }
 
-static void fgetstring( char *buffer, int max_len, FILE *f )
+static void fgetstring( char *buffer, unsigned max_len, FILE *f )
 {
-    int         curr;
-    int         offset;
+    unsigned    curr;
+    unsigned    offset;
     int         ch;
 
-    max_len--;
-    curr = 0;
-    offset = 0;
-    for( ;; ) {
-        ch = fgetc( f );
-        switch( ch ) {
-        case EOF:
-        case '\n':
-            *buffer++ = '\r';       /* ignore trailing spaces */
-            *buffer++ = '\n';
-            *buffer = '\0';
-            return;
-        case ' ':
-            ++ offset;
-            break;
-        case '\t':
-            offset = (offset + 8) & (-8);
-            break;
-        default:
-            while( ++curr <= offset ) {
-                *buffer++ = ' ';
+    if( max_len > 0 ) {
+        max_len--;
+        curr = 0;
+        offset = 0;
+        for( ;; ) {
+            ch = fgetc( f );
+            switch( ch ) {
+            case EOF:
+            case '\n':
+                *buffer++ = '\n';
+                *buffer = '\0';
+                return;
+            case ' ':
+                offset++;
+                break;
+            case '\t':
+                offset = (offset + 8) & (-8);
+                break;
+            default:
+                while( ++curr <= offset ) {
+                    *buffer++ = ' ';
+                }
+                *buffer++ = ch;
+                offset++;
             }
-            *buffer++ = ch;
-            ++offset;
-        }
-        if( offset >= max_len ) {
-            *buffer = '\0';
-            for( ;; ) {
-                ch = fgetc( f );
-                if( ch == EOF || ch == '\n' )
-                    break;
+            if( offset >= max_len ) {
+                *buffer = '\0';
+                for( ;; ) {
+                    ch = fgetc( f );
+                    if( ch == EOF || ch == '\n' ) {
+                        break;
+                    }
+                }
+                break;
             }
-            return;
         }
     }
 }
 
-static bool pass1( FILE *fin, char **helpstr )
+static bool pass1( FILE *fin, const char **helpstr )
 {
-    char            buffer[ BUFFER_SIZE ];
-    int             buflen;
+    char            buffer[BUFFER_SIZE];
+    unsigned        buflen;
     long            fpos;
     a_helpnode      *h;
     a_helpnode      **hn;
@@ -263,21 +265,14 @@ static bool pass1( FILE *fin, char **helpstr )
     char            *namebuff;
     unsigned        namebuff_len;
     int             count;
-    int             len;
-    unsigned        topic_len;
-    unsigned        desc_len;
-
-    namebuff = NULL;
-    namebuff_len = 0;
-    topic_len = strlen( DEFTOPIC );
-    desc_len = strlen( DESCRIPTION );
+    unsigned        len;
 
     printf( "Pass One:\n" );
     fpos = 0;
     while( !feof( fin ) ) {
         fpos = ftell( fin );
         fgetstring( buffer, sizeof( buffer ), fin );
-        if( memcmp( buffer, DEFTOPIC, topic_len ) == 0 ) {
+        if( memcmp( buffer, DEFTOPIC, sizeof( DEFTOPIC ) - 1 ) == 0 ) {
             if( helpstr[0] != NULL ) {
                 PrintError( "more than one DEFTOPIC found\n" );
             } else {
@@ -285,12 +280,13 @@ static bool pass1( FILE *fin, char **helpstr )
                     PrintError( "DEFTOPIC string ignored with this format.\n" );
                 }
                 if( GenStrings ) {
-                    ptr = find_str( &buffer[topic_len] );
-                    helpstr[0] = HelpMemAlloc( strlen( ptr ) + 1 );
-                    strcpy( helpstr[0], ptr);
+                    ptr = find_str( buffer + sizeof( DEFTOPIC ) - 1 );
+                    namebuff = HelpMemAlloc( strlen( ptr ) + 1 );
+                    strcpy( namebuff, ptr);
+                    helpstr[0] = namebuff;
                 }
             }
-        } else if( memcmp( buffer, DESCRIPTION, desc_len ) == 0 ) {
+        } else if( memcmp( buffer, DESCRIPTION, sizeof( DESCRIPTION ) - 1 ) == 0 ) {
             if( helpstr[1] != NULL ) {
                 PrintError( "more than one DESCRIPTION found\n" );
             } else {
@@ -298,20 +294,26 @@ static bool pass1( FILE *fin, char **helpstr )
                     PrintError( "DESCRIPTION string ignored with this format.\n" );
                 }
                 if( GenStrings ) {
-                    ptr = find_str( &buffer[desc_len] );
-                    helpstr[1] = HelpMemAlloc( strlen( ptr ) + 1 );
-                    strcpy( helpstr[1], ptr );
+                    ptr = find_str( buffer + sizeof( DESCRIPTION ) - 1 );
+                    namebuff = HelpMemAlloc( strlen( ptr ) + 1 );
+                    strcpy( namebuff, ptr);
+                    helpstr[1] = namebuff;
                 }
             }
-        } else if( memcmp( buffer, "::::", 4 ) == 0 )
+        } else if( memcmp( buffer, "::::", 4 ) == 0 ) {
             break;
+        }
     }
+
+    namebuff = NULL;
+    namebuff_len = 0;
+
     while( !feof( fin ) ) {
         h = (a_helpnode *)HelpMemAlloc( sizeof( a_helpnode ) );
         h->fpos = fpos;
         buflen = strlen( buffer );
-        if( buffer[ buflen-1 ] == '\n' ) {
-            buffer[ buflen-1 ] = '\0';
+        if( buffer[buflen - 1] == '\n' ) {
+            buffer[buflen - 1] = '\0';
         }
         h->maxrow = 0;
         h->maxcol = 0;
@@ -320,7 +322,7 @@ static bool pass1( FILE *fin, char **helpstr )
         h->lines = -1;
         ptr = &buffer[4];
         if( *ptr == '"' ) {
-            ptr ++;
+            ptr++;
             while( *ptr != '\0' && *ptr != '"' ) {
                 if( *ptr == HELP_ESCAPE )
                     ptr++;
@@ -334,12 +336,13 @@ static bool pass1( FILE *fin, char **helpstr )
             }
             memcpy( namebuff, &buffer[5], len );
             namebuff[len] = '\0';
-            if( *ptr == '"' )
-                ++ptr;
+            if( *ptr == '"' ) {
+                ptr++;
+            }
         } else {
-            for( ; *ptr != '\0'  &&  !isspace(*ptr); ++ptr )
+            for( ; *ptr != '\0' && !isspace( *ptr ); ptr++ )
                 ;
-            while( *ptr != '\0'  &&  !isspace(*ptr) ) {
+            while( *ptr != '\0' && !isspace( *ptr ) ) {
                 if( *ptr == HELP_ESCAPE )
                     ptr++;
                 ptr++;
@@ -354,12 +357,12 @@ static bool pass1( FILE *fin, char **helpstr )
             namebuff[len] = '\0';
         }
         while( isspace( *ptr ) )
-            ++ptr;
+            ptr++;
         if( *ptr != '\0' ) {
             count = sscanf( ptr, "%d %d %d %d %d",
                     &h->maxrow, &h->maxcol, &h->row, &h->col,
                     &h->lines );
-            if( count != 2  && count != 4  &&  count != 5 ) {
+            if( count != 2 && count != 4 && count != 5 ) {
                 PrintError( "invalid help topic line '%s'\n", buffer );
             }
         }
@@ -401,7 +404,7 @@ static bool pass1( FILE *fin, char **helpstr )
                     || strnicmp( buffer, ":t", 2 ) == 0  ) {
             } else {
                 buflen = line_len( buffer );
-                if( buflen - 1 > h->maxcol ){
+                if( h->maxcol < buflen - 1 ) {
                     h->maxcol = buflen - 1;
                 }
                 h->lines += 1;
@@ -422,8 +425,9 @@ static void lookup_name( a_helpnode *h, char *name )
         cmp = stricmp( name, hptr->name );
         if( cmp < 0 )
             break;
-        if( cmp == 0 )
+        if( cmp == 0 ) {
             return;
+        }
     }
     PrintError( "Unknown help topic '%s' found in '%s'\n", name, h->name );
 }
@@ -442,7 +446,7 @@ static void checkBufCB( HelpTokenType type, Info *info, void *_node )
             nameBufLen = info->u.link.topic_len + 1;
         }
         memcpy( nameBuf, info->u.link.topic, info->u.link.topic_len );
-        nameBuf[ info->u.link.topic_len ] = '\0';
+        nameBuf[info->u.link.topic_len] = '\0';
         if( info->u.link.hfname_len == 0 ) {
             lookup_name( node, nameBuf );
         }
@@ -457,9 +461,9 @@ static void check_buffer( a_helpnode *h, char *buffer )
     nameBufLen = 0;
 }
 
-static bool pass2( FILE *fin, FILE *fout, char **helpstr )
+static bool pass2( FILE *fin, FILE *fout, const char **helpstr )
 {
-    char            buffer[ BUFFER_SIZE ];
+    char            buffer[BUFFER_SIZE];
     a_helpnode      *h;
     unsigned long   indexlen;
 
@@ -526,13 +530,11 @@ int main( int argc, char **argv )
     char        **sargv;
     FILE        *fin;
     FILE        *fout;
-    char        *helpstr[2];
+    const char  *helpstr[2];
     bool        f_swtch;
 
     f_swtch = false;
-    helpstr[0] = NULL;
-    helpstr[1] = NULL;
-    for( argc=1, sargv=nargv=argv+1; *sargv; ++sargv ) {
+    for( argc=1, sargv=nargv=argv+1; *sargv; sargv++ ) {
         if( ! _IsCmdSwitch( *sargv ) ) {
             *nargv++ = *sargv;
             argc++;
@@ -629,6 +631,9 @@ int main( int argc, char **argv )
         return( -1 );
     }
 
+    helpstr[0] = NULL;
+    helpstr[1] = NULL;
+
     pass1( fin, helpstr );
     pass2( fin, fout, helpstr );
 
@@ -640,7 +645,7 @@ int main( int argc, char **argv )
         fclose( fout );
     }
     FiniError();
-    HelpMemFree( helpstr[0] );
-    HelpMemFree( helpstr[1] );
+    HelpMemFree( (void *)helpstr[0] );
+    HelpMemFree( (void *)helpstr[1] );
     return( 0 );
 }
