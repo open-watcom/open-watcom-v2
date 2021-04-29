@@ -723,7 +723,7 @@ STATIC char *ProcessToken( int depth, MTOKEN_T end1, MTOKEN_T end2, MTOKEN_T t )
         }
 
         if( IsMacroName( p ) ) {
-            p2 =  WrnGetMacroValue( p );
+            p2 = WrnGetMacroValue( p );
             FreeSafe( p );
             return( p2 );
         }
@@ -738,7 +738,7 @@ STATIC char *ProcessToken( int depth, MTOKEN_T end1, MTOKEN_T end2, MTOKEN_T t )
         if( !Glob.compat_nmake && !Glob.compat_posix ) {
             p = deMacroText( depth + 1, end1, MAC_CLOSE );
             if( IsMacroName( p ) ) {
-                p2 =  WrnGetMacroValue( p );
+                p2 = WrnGetMacroValue( p );
                 FreeSafe( p );
                 return( p2 );
             }
