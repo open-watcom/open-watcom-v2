@@ -39,7 +39,7 @@
 
 static char     Buffer[HLP_PAGE_SIZE];
 
-static void PrintHeader( HelpHeader *header )
+static void PrintHeader( const HelpHeader *header )
 {
     printf( "HELP HEADER\n" );
     printf( "    signature 1            %08lX\n", header->sig[0] );
@@ -57,32 +57,32 @@ static void PrintHeader( HelpHeader *header )
 }
 
 
-static void PrintStrings( char *buf )
+static void PrintStrings( const char *buf )
 {
-    uint_16     str_cnt;
-    uint_16     *len;
-    uint_16     i;
+    uint_16         str_cnt;
+    const uint_16   *str_len;
+    uint_16         i;
 
     str_cnt = *(uint_16 *)buf;
     buf += sizeof( uint_16 );
-    len = (uint_16 *)buf;
+    str_len = (uint_16 *)buf;
     buf += str_cnt * sizeof( uint_16 );
     printf( "DEFAULT HELP TOPIC AND DESCRIPTION:\n" );
     for( i = 0; i < str_cnt; i++ ) {
-        if( *len != 0 ) {
+        if( *str_len != 0 ) {
             printf( "    %s\n", buf );
         }
-        buf += *len++;
+        buf += *str_len++;
     }
 }
 
 
-static void PrintItemIndex( HelpHeader *header  )
+static void PrintItemIndex( const HelpHeader *header  )
 {
     unsigned            i;
-    uint_16             *ptr;
+    const uint_16       *ptr;
 
-    ptr = (uint_16 *) Buffer;
+    ptr = (uint_16 *)Buffer;
     printf( "HELP ITEM INDEX\n" );
     for( i = 0; i < header->datapagecnt; i++ ) {
         printf( "    data page %3d    item index %d\n",
@@ -93,9 +93,9 @@ static void PrintItemIndex( HelpHeader *header  )
 
 static void PrintDataPage( unsigned cnt )
 {
-    PageIndexEntry      *entry;
-    char                *strings;
-    unsigned            i;
+    const PageIndexEntry    *entry;
+    const char              *strings;
+    unsigned                i;
 
     entry = (PageIndexEntry *)(Buffer + sizeof( HelpPageHeader ) );
     strings = Buffer + sizeof( HelpPageHeader ) +
@@ -111,8 +111,8 @@ static void PrintDataPage( unsigned cnt )
 
 static void PrintIndexPage( unsigned cnt )
 {
-    HelpIndexEntry      *entry;
-    unsigned            i;
+    const HelpIndexEntry    *entry;
+    unsigned                i;
 
     entry = (HelpIndexEntry *)(Buffer + sizeof( HelpPageHeader ));
     for( i = 0; i < cnt; i++ ) {
@@ -124,7 +124,7 @@ static void PrintIndexPage( unsigned cnt )
 
 static void PrintPage( void )
 {
-    HelpPageHeader      *header;
+    const HelpPageHeader    *header;
 
     header = (HelpPageHeader *)Buffer;
     printf( "***************************************************************\n" );

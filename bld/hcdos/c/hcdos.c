@@ -37,20 +37,17 @@
 #include <stdarg.h>
 #include <limits.h>
 #include "bool.h"
-#include "helpchar.h"
 #include "cmdswtch.h"
 #include "hcdos.h"
 #include "helpidx.h"
 #include "helpmem.h"
 #include "helpscan.h"
 #include "index.h"
+#include "wibhelp.h"
 #include "pathgrp2.h"
 
 #include "clibext.h"
 
-
-#define DEFTOPIC        "DEFTOPIC::::"
-#define DESCRIPTION     "DESCRIPTION::::"
 
 a_helpnode          *HelpNodes;
 
@@ -192,14 +189,14 @@ static char *find_str( char *buf )
     char        *str;
 
     while( *buf != '"' ) {
-        if( *buf == HELP_ESCAPE )
+        if( *buf == IB_ESCAPE )
             buf++;
         buf++;
     }
     buf++;
     str = buf;
     while( *buf != '"' && *buf != '\0' ) {
-        if( *buf == HELP_ESCAPE )
+        if( *buf == IB_ESCAPE )
             buf++;
         buf++;
     }
@@ -271,7 +268,7 @@ static bool pass1( FILE *fin, const char **helpstr )
     while( !feof( fin ) ) {
         fpos = ftell( fin );
         fgetstring( buffer, sizeof( buffer ), fin );
-        if( memcmp( buffer, DEFTOPIC, sizeof( DEFTOPIC ) - 1 ) == 0 ) {
+        if( IS_IB_DEFAULT_TOPIC( buffer ) ) {
             if( helpstr[0] != NULL ) {
                 PrintError( "more than one DEFTOPIC found\n" );
             } else {
@@ -279,13 +276,13 @@ static bool pass1( FILE *fin, const char **helpstr )
                     PrintError( "DEFTOPIC string ignored with this format.\n" );
                 }
                 if( GenStrings ) {
-                    ptr = find_str( buffer + sizeof( DEFTOPIC ) - 1 );
+                    ptr = find_str( buffer + IB_DEFAULT_TOPIC_SIZE );
                     namebuff = HelpMemAlloc( strlen( ptr ) + 1 );
-                    strcpy( namebuff, ptr);
+                    strcpy( namebuff, ptr );
                     helpstr[0] = namebuff;
                 }
             }
-        } else if( memcmp( buffer, DESCRIPTION, sizeof( DESCRIPTION ) - 1 ) == 0 ) {
+        } else if( IS_IB_DESCRIPTION( buffer ) ) {
             if( helpstr[1] != NULL ) {
                 PrintError( "more than one DESCRIPTION found\n" );
             } else {
@@ -293,13 +290,13 @@ static bool pass1( FILE *fin, const char **helpstr )
                     PrintError( "DESCRIPTION string ignored with this format.\n" );
                 }
                 if( GenStrings ) {
-                    ptr = find_str( buffer + sizeof( DESCRIPTION ) - 1 );
+                    ptr = find_str( buffer + IB_DESCRIPTION_SIZE );
                     namebuff = HelpMemAlloc( strlen( ptr ) + 1 );
                     strcpy( namebuff, ptr );
                     helpstr[1] = namebuff;
                 }
             }
-        } else if( memcmp( buffer, "::::", 4 ) == 0 ) {
+        } else if( IS_IB_TOPIC_NAME( buffer ) ) {
             break;
         }
     }
@@ -319,21 +316,21 @@ static bool pass1( FILE *fin, const char **helpstr )
         h->row = -1;
         h->col = -1;
         h->lines = -1;
-        ptr = &buffer[4];
+        ptr = buffer + IB_TOPIC_NAME_SIZE;
         if( *ptr == '"' ) {
             ptr++;
             while( *ptr != '\0' && *ptr != '"' ) {
-                if( *ptr == HELP_ESCAPE )
+                if( *ptr == IB_ESCAPE )
                     ptr++;
                 ptr++;
             }
-            len = ptr - &buffer[5];
+            len = ptr - ( buffer + IB_TOPIC_NAME_SIZE + 1 );
             if( namebuff_len <= len ) {
                 HelpMemFree( namebuff );
                 namebuff = HelpMemAlloc( len + 1 );
                 namebuff_len = len + 1;
             }
-            memcpy( namebuff, &buffer[5], len );
+            memcpy( namebuff, buffer + IB_TOPIC_NAME_SIZE + 1, len );
             namebuff[len] = '\0';
             if( *ptr == '"' ) {
                 ptr++;
@@ -342,17 +339,17 @@ static bool pass1( FILE *fin, const char **helpstr )
             for( ; *ptr != '\0' && !isspace( *ptr ); ptr++ )
                 ;
             while( *ptr != '\0' && !isspace( *ptr ) ) {
-                if( *ptr == HELP_ESCAPE )
+                if( *ptr == IB_ESCAPE )
                     ptr++;
                 ptr++;
             }
-            len = ptr - &buffer[4];
+            len = ptr - ( buffer + IB_TOPIC_NAME_SIZE );
             if( namebuff_len <= len ) {
                 HelpMemFree( namebuff );
                 namebuff = HelpMemAlloc( len + 1 );
                 namebuff_len = len + 1;
             }
-            memcpy( namebuff, &buffer[4], len );
+            memcpy( namebuff, buffer + IB_TOPIC_NAME_SIZE, len );
             namebuff[len] = '\0';
         }
         while( isspace( *ptr ) )
@@ -393,13 +390,11 @@ static bool pass1( FILE *fin, const char **helpstr )
         while( !feof( fin ) ) {
             fpos = ftell( fin );
             fgetstring( buffer, sizeof( buffer ), fin );
-            if( memcmp( buffer, "::::", 4 ) == 0 )
+            if( IS_IB_TOPIC_NAME( buffer ) ) {
                 break;
-            if( strnicmp( buffer, ":eh", 3 ) == 0
-                || strnicmp( buffer, ":et", 3 ) == 0 ) {
+            } else if( IS_IB_HEADER_END( buffer ) || IS_IB_TRAILER_END( buffer ) ) {
                 h->lines = 0;
-            } else if( strnicmp( buffer, ":h", 2 ) == 0
-                    || strnicmp( buffer, ":t", 2 ) == 0  ) {
+            } else if( IS_IB_HEADER_BEG( buffer ) || IS_IB_TRAILER_BEG( buffer ) ) {
             } else {
                 buflen = line_len( buffer );
                 if( h->maxcol < buflen - 1 ) {
@@ -414,12 +409,12 @@ static bool pass1( FILE *fin, const char **helpstr )
     return( true );
 }
 
-static void lookup_name( a_helpnode *h, char *name )
+static void lookup_name( a_helpnode *h, const char *name )
 {
     a_helpnode      *hptr;
     int             cmp;
 
-    for( hptr = HelpNodes; hptr != NULL; hptr=hptr->next ) {
+    for( hptr = HelpNodes; hptr != NULL; hptr = hptr->next ) {
         cmp = stricmp( name, hptr->name );
         if( cmp < 0 )
             break;
@@ -484,7 +479,7 @@ static bool pass2( FILE *fin, FILE *fout, const char **helpstr )
         fseek( fin, h->fpos, SEEK_SET );
         fgetstring( buffer, sizeof( buffer ), fin );
         h->maxcol += 1;
-        h->maxcol = (h->maxcol / 2) * 2;
+        h->maxcol = ( h->maxcol / 2 ) * 2;
         if( h->maxcol > MaxCol ) {
             PrintError( "%s %d %d image too wide\n",
                      h->name, h->maxrow, h->maxcol );
@@ -504,7 +499,7 @@ static bool pass2( FILE *fin, FILE *fout, const char **helpstr )
         if( Width ) {
             h->maxcol = Width;
         }
-        sprintf( buffer, "::::\"%s\" %d %d %d %d %d\r\n",
+        sprintf( buffer, IB_TOPIC_NAME "\"%s\" %d %d %d %d %d\n",
                  h->name, h->maxrow, h->maxcol, h->row, h->col, h->lines );
         if( GenIndex ) {
             h->fpos = ftell( fout );
@@ -513,7 +508,7 @@ static bool pass2( FILE *fin, FILE *fout, const char **helpstr )
 
         while( !feof( fin ) ) {
             fgetstring( buffer, sizeof( buffer ), fin );
-            if( memcmp( buffer, "::::", 4 ) == 0 )
+            if( IS_IB_TOPIC_NAME( buffer ) )
                 break;
             check_buffer( h, buffer );
             fwrite( buffer, strlen( buffer ), 1, fout );
@@ -530,6 +525,8 @@ int main( int argc, char **argv )
     FILE        *fout;
     const char  *helpstr[2];
     bool        f_swtch;
+
+    HelpMemOpen();
 
     f_swtch = false;
     argc = 1;
@@ -550,7 +547,7 @@ int main( int argc, char **argv )
                 break;
             case 'v':
                 Verbose = true;
-            break;
+                break;
             case 'c':
                 if( (*sargv)[2] != '\0' ) {
                     MaxCol = atoi( &(*sargv)[2] );
@@ -605,7 +602,7 @@ int main( int argc, char **argv )
                 break;
             default:
                 Usage();
-            break;
+                break;
             }
         }
     }
@@ -647,5 +644,9 @@ int main( int argc, char **argv )
     FiniError();
     HelpMemFree( (void *)helpstr[0] );
     HelpMemFree( (void *)helpstr[1] );
+
+    HelpMemPrtList();
+    HelpMemClose();
+
     return( 0 );
 }

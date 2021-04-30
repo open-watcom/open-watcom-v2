@@ -46,7 +46,7 @@
 #include "helpscan.h"
 #include "msgbox.h"
 #include "uigchar.h"
-#include "helpchar.h"
+#include "wibhelp.h"
 #include "pathgrp2.h"
 
 #include "clibext.h"
@@ -316,12 +316,12 @@ static char *scanTopic( char *buf, char **theend )
     char        *topic;
     char        *end;
 
-    if( memcmp( buf, "::::", 4 ) != 0 )
+    if( !IS_IB_TOPIC_NAME( buf ) )
         return( NULL );
     if( buf[4] == '"' ) {
         topic = buf + 5;
         for( end = topic; *end != '"' && *end != '\0'; ++end ) {
-            if( *end == HELP_ESCAPE ) {
+            if( *end == IB_ESCAPE ) {
                 end++;
             }
         }
@@ -356,7 +356,7 @@ static int CheckHelpBlock( FILE *fp, const char *topic, char *buffer, long start
             retn = -1;
             break;
         }
-    } while( memcmp( buffer, "::::", 4 ) != 0 );
+    } while( !IS_IB_TOPIC_NAME( buffer ) );
     if( retn == 0 ) {
         ftopic = scanTopic( buffer, &end );
         len = end - ftopic;
@@ -761,12 +761,12 @@ static void scanCallBack( HelpTokenType type, Info *info, void *_myinfo )
     case TK_TEXT:
         switch( info->u.text.type ) {
         case TT_LEFT_ARROW:
-            myinfo->buf[0] = REAL_LEFT_ARROW;
+            myinfo->buf[0] = PC_arrowleft;
             myinfo->buf++;
             myinfo->pos++;
             break;
         case TT_RIGHT_ARROW:
-            myinfo->buf[0] = REAL_RIGHT_ARROW;
+            myinfo->buf[0] = PC_arrowright;
             myinfo->buf++;
             myinfo->pos++;
             break;
@@ -793,8 +793,8 @@ static void scanCallBack( HelpTokenType type, Info *info, void *_myinfo )
         break;
     case TK_PLAIN_LINK:
         myinfo->buf[0] = '<';
-        myinfo->buf ++;
-        myinfo->pos ++;
+        myinfo->buf++;
+        myinfo->pos++;
         goofy = false;
         /* fall through */
     case TK_GOOFY_LINK:
@@ -823,8 +823,8 @@ static void scanCallBack( HelpTokenType type, Info *info, void *_myinfo )
                 case TT_ESC_SEQ:
                     memcpy( myinfo->buf, info->u.text.str, info->u.text.len );
                     myinfo->buf += info->u.text.len;
-                    myinfo->pos ++;
-                    ht->area.width ++;
+                    myinfo->pos++;
+                    ht->area.width++;
                     break;
                 case TT_PLAIN:
                     memcpy( myinfo->buf, info->u.text.str, info->u.text.len );
@@ -844,8 +844,8 @@ static void scanCallBack( HelpTokenType type, Info *info, void *_myinfo )
         add_field( ht, myinfo->changecurr );
         if( !goofy ) {
             myinfo->buf[0] = '>';
-            myinfo->buf ++;
-            myinfo->pos ++;
+            myinfo->buf++;
+            myinfo->pos++;
         }
         break;
     }
@@ -883,7 +883,7 @@ static void helpSet( char *str, char *helpname, unsigned buflen )
         srcptr = str;
         dstptr = helpname;
         while( *srcptr != '\0' ) {
-            if( *srcptr == HELP_ESCAPE )
+            if( *srcptr == IB_ESCAPE )
                 srcptr++;
             *dstptr = *srcptr;
             srcptr++;
@@ -941,31 +941,31 @@ static void putline( char *buffer, int line )
     i = 0;
     while( buffer[i] && helpScreen.cursor_col < helpScreen.area.width ) {
         start = i;
-        while( buffer[i] && buffer[i] != HELP_ESCAPE &&
+        while( buffer[i] && buffer[i] != IB_ESCAPE &&
                helpScreen.cursor_col + i - start <= helpScreen.area.width ) {
-            if( (unsigned char)buffer[i] == 0xFF )
-                buffer[i] = 0x20;
+            if( buffer[i] == IB_SPACE_NOBREAK )
+                buffer[i] = ' ';
             ++i;
         }
         if( i - start > 0 ) {
             uivtextput( &helpScreen, line, helpScreen.cursor_col, currentAttr, &buffer[start], i - start );
         }
         helpScreen.cursor_col += i - start;
-        if( buffer[i] == HELP_ESCAPE ) {
+        if( buffer[i] == IB_ESCAPE ) {
             switch( buffer[i+1] ) {
-            case H_UNDERLINE:
+            case IB_UNDERLINE_ON:
                 currentColour |= C_ULINE;
                 ++i;
                 break;
-            case H_UNDERLINE_END:
+            case IB_UNDERLINE_OFF:
                 currentColour &= ~C_ULINE;
                 ++i;
                 break;
-            case H_BOLD:
+            case IB_BOLD_ON:
                 currentColour |= C_BOLD;
                 ++i;
                 break;
-            case H_BOLD_END:
+            case IB_BOLD_OFF:
                 currentColour &= ~C_BOLD;
                 ++i;
                 break;
@@ -1016,7 +1016,7 @@ static void seek_line( int line )
             save_line( i, HelpTell( helpfile_fp ) );
             if( i == line )
                 break;
-            if( !mygetline() || strnicmp( helpInBuf, "::::", 4 ) == 0 ) {
+            if( !mygetline() || IS_IB_TOPIC_NAME( helpInBuf ) ) {
                 maxLine = i;
                 break;
             }
@@ -1040,12 +1040,12 @@ static void handleFooter( int *startline, SAREA *use, SAREA *line )
     int         start;
 
     start = *startline;
-    if( strnicmp( helpInBuf, ":t", 2 ) == 0 ) {
+    if( IS_IB_TRAILER_BEG( helpInBuf ) ) {
         ++start;        /* leave room for line */
         for( ;; ) {
             if( !mygetline() )
                 break;
-            if( strnicmp( helpInBuf, ":et", 3 ) == 0 )
+            if( IS_IB_TRAILER_END( helpInBuf ) )
                 break;
             processLine( helpInBuf, helpOutBuf, start, false );
             putline( helpOutBuf, start );
@@ -1068,14 +1068,14 @@ static void handleHeader( int *start, SAREA *line )
 {
     int         cur;
 
-    if( strnicmp( helpInBuf, ":h", 2 ) == 0 ) {
+    if( IS_IB_HEADER_BEG( helpInBuf ) ) {
         cur = 0;
         for( ;; ) {
             if( !mygetline() )
                 break;
-            if( strnicmp( helpInBuf, ":t", 2 ) == 0 )
+            if( IS_IB_TRAILER_BEG( helpInBuf ) )
                 break;
-            if( strnicmp( helpInBuf, ":eh", 3 ) == 0 )
+            if( IS_IB_HEADER_END( helpInBuf ) )
                 break;
             processLine( helpInBuf, helpOutBuf, cur, false );
             putline( helpOutBuf, cur );
@@ -1085,7 +1085,7 @@ static void handleHeader( int *start, SAREA *line )
         uivfill( &helpScreen, *line, AT( ATTR_NORMAL ), UiGChar[UI_SBOX_HORIZ_LINE] );
         cur++;
         topPos = HelpTell( helpfile_fp );
-        if( strnicmp( helpInBuf, ":eh", 3 ) == 0 ) {
+        if( IS_IB_HEADER_END( helpInBuf ) ) {
             mygetline();
         }
         *start = cur;
@@ -1135,7 +1135,7 @@ static int scrollHelp( SAREA *use, int lastline, bool changecurr )
     seek_line( start );
     for( ;; ++start ) {
         save_line( start, HelpTell( helpfile_fp ) );
-        if( !mygetline() || strncmp( helpInBuf, "::::", 4 ) == 0  ) {
+        if( !mygetline() || IS_IB_TOPIC_NAME( helpInBuf )  ) {
             maxLine = start;
             break;
         }
@@ -1305,16 +1305,16 @@ static char *fixHelpTopic( char *topic )
         if( *ptr == '<' || *ptr == '>' || *ptr == '"' || *ptr == '{' || *ptr == '}' ) {
             cnt++;
         }
-        cnt ++;
-        ptr ++;
+        cnt++;
+        ptr++;
     }
     ret = HelpMemAlloc( cnt + 1 );
     retptr = ret;
     ptr = topic;
     while( *ptr != '\0' ) {
         if( *ptr == '<' || *ptr == '>' || *ptr == '"' || *ptr == '{' || *ptr == '}' ) {
-            *retptr = HELP_ESCAPE;
-            retptr ++;
+            *retptr = IB_ESCAPE;
+            retptr++;
             *retptr = *ptr;
         } else {
             *retptr = *ptr;

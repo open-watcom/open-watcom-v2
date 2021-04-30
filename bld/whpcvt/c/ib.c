@@ -32,6 +32,7 @@
 #include "whpcvt.h"
 #include <stdio.h>
 #include <assert.h>
+#include "wibhelp.h"
 
 #include "clibext.h"
 
@@ -40,10 +41,6 @@ typedef enum {
     LPOSTFIX_NONE,
     LPOSTFIX_TERM,
 } line_postfix;
-
-// We use the escape char a lot...
-#define STR_ESCAPE              "\x1B"
-#define IB_ESCAPE               (char)'\x1B'
 
 // these are for the map_char_ib function
 typedef enum {
@@ -55,14 +52,6 @@ typedef enum {
 // internal hyperlink symbol. Gets filtered out at output time
 #define IB_TEMP_HLINK           (char)'\x7F'
 
-// this symbol separates the hyper-link label and topic.
-#define IB_HLINK                (char)'\xE0'
-#define IB_HLINK_BREAK          (char)'\xE8'
-#define IB_BRACE_L_CHAR         (char)'<'
-#define IB_BRACE_R_CHAR         (char)'>'
-
-#define IB_SPACE_NOBREAK        (char)'\xFF'  // 255
-
 // Some characters we use for graphics
 #define IB_BULLET               (char)'\x07'
 #define BOX_VBAR                (char)'\xB3'
@@ -71,12 +60,6 @@ typedef enum {
 #define BOX_CORNER_TOP_RIGHT    (char)'\xBF'
 #define BOX_CORNER_BOTOM_LEFT   (char)'\xC0'
 #define BOX_CORNER_BOTOM_RIGHT  (char)'\xD9'
-
-// InfoBench style codes
-#define STR_BOLD_ON             STR_ESCAPE "b"
-#define STR_UNDERLINE_ON        STR_ESCAPE "u"
-#define STR_BOLD_OFF            STR_ESCAPE "p"
-#define STR_UNDERLINE_OFF       STR_ESCAPE "w"
 
 // labels for speacial header buttons
 #define HB_UP                   " Up "
@@ -91,9 +74,6 @@ typedef enum {
 
 static unsigned         Tab_list[MAX_TABS];
 static int              tabs_num = 0;
-
-// turns off bold and underline
-static char Reset_Style[] = STR_BOLD_OFF STR_UNDERLINE_OFF;
 
 static bool             Blank_line = false;
 static int              Curr_indent = 0;
@@ -577,7 +557,7 @@ void ib_trans_line( char *line_buf, section_def *section )
             // this just shuts off bolding after a def. list term
             if( Line_postfix == LPOSTFIX_TERM ) {
                 Line_postfix = LPOSTFIX_NONE;
-                trans_add_str( STR_BOLD_OFF, section );
+                trans_add_str( IB_BOLD_OFF_STR, section );
             }
             trans_add_char_wrap( '\n', section );
             break;
@@ -678,7 +658,7 @@ void ib_trans_line( char *line_buf, section_def *section )
             break;
         case WHP_DLIST_TERM:
             /* definition list term */
-            trans_add_str( STR_BOLD_ON, section );
+            trans_add_str( IB_BOLD_ON_STR, section );
             Line_postfix = LPOSTFIX_TERM;
             ptr = skip_blanks( ptr + 1 );
             Eat_blanks = true;
@@ -713,12 +693,12 @@ void ib_trans_line( char *line_buf, section_def *section )
                 // bold and italic map to bold
                 case 'b':
                 case 'i':
-                    trans_add_str( STR_BOLD_ON, section );
+                    trans_add_str( IB_BOLD_ON_STR, section );
                     break;
                 // underline and underscore map to underline
                 case 'u':
                 case 's':
-                    trans_add_str( STR_UNDERLINE_ON, section );
+                    trans_add_str( IB_UNDERLINE_ON_STR, section );
                     break;
                 }
             }
@@ -726,7 +706,7 @@ void ib_trans_line( char *line_buf, section_def *section )
             break;
         case WHP_FONTSTYLE_END:
             // reset style (bold off, underline off)
-            trans_add_str( Reset_Style, section );
+            trans_add_str( IB_BOLD_OFF_STR IB_UNDERLINE_OFF_STR, section );
             ++ptr;
             break;
         case WHP_FONTTYPE:
@@ -835,7 +815,7 @@ static void fake_hlink( FILE *file, char *label )
     if( Hyperlink_Braces ) {
         whp_fprintf( file, "<<" );
     }
-    whp_fprintf( file, "%s%s%s", STR_BOLD_ON, label, STR_BOLD_OFF );
+    whp_fprintf( file, "%s%s%s", IB_BOLD_ON_STR, label, IB_BOLD_OFF_STR );
     if( Hyperlink_Braces ) {
         whp_fprintf( file, ">>" );
     }
@@ -850,7 +830,7 @@ static void output_ctx_hdr( ctx_def *ctx )
     ctx_def             *next;      // for >> button
 
     // output topic name
-    whp_fprintf( Out_file, "::::\"" );
+    whp_fprintf( Out_file, IB_TOPIC_NAME "\"" );
     str_out_ib( Out_file, ctx->title );
     whp_fprintf( Out_file, "\" 0 0\n" );
 
@@ -862,7 +842,7 @@ static void output_ctx_hdr( ctx_def *ctx )
         || Header_File != NULL && Header_File[0] != '\0' ) {
 
         //beginning of header
-        whp_fprintf( Out_file, ":h\n" );
+        whp_fprintf( Out_file, IB_HEADER_BEG "\n" );
 
         if( Do_tc_button ) {
             if( stricmp( ctx->ctx_name, "table_of_contents" ) != 0 ) {
@@ -952,13 +932,13 @@ static void output_ctx_hdr( ctx_def *ctx )
         ib_append_line( Out_file, Header_File );
 
         // end of header
-        whp_fprintf( Out_file, "\n:eh\n" );
+        whp_fprintf( Out_file, "\n" IB_HEADER_END "\n" );
     }
     // append user footer file
     if( Footer_File != NULL && Footer_File[0] != '\0' ) {
-        whp_fprintf( Out_file, ":f\n" );
+        whp_fprintf( Out_file, IB_TRAILER_BEG "\n" );
         ib_append_line( Out_file, Footer_File );
-        whp_fprintf( Out_file, "\n:ef\n" );
+        whp_fprintf( Out_file, "\n" IB_TRAILER_END "\n" );
     }
 }
 
@@ -1092,11 +1072,11 @@ void ib_output_file( void )
     ctx_def         *ctx;
 
     if( IB_def_topic != NULL ) {
-        fprintf( Out_file, "DEFTOPIC::::\"%s\"\n", IB_def_topic );
+        fprintf( Out_file, IB_DEFAULT_TOPIC "\"%s\"\n", IB_def_topic );
         free( IB_def_topic );
     }
     if( IB_help_desc != NULL ) {
-        fprintf( Out_file, "DESCRIPTION::::\"%s\"\n", IB_help_desc );
+        fprintf( Out_file, IB_DESCRIPTION "\"%s\"\n", IB_help_desc );
         free( IB_help_desc );
     }
     for( ctx = Ctx_list; ctx != NULL; ctx = ctx->next ) {
@@ -1113,7 +1093,7 @@ void ib_init_whp( void )
     IB_Hyperlink_L = IB_HLINK;
     IB_Hyperlink_R = IB_HLINK;
     if( Hyperlink_Braces ) {
-        IB_Hyperlink_L = IB_BRACE_L_CHAR;
-        IB_Hyperlink_R = IB_BRACE_R_CHAR;
+        IB_Hyperlink_L = IB_PLAIN_LINK_BEG;
+        IB_Hyperlink_R = IB_PLAIN_LINK_END;
     }
 }

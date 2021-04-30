@@ -72,11 +72,7 @@ HELPIO long HelpTell( FILE *fp )
 
 HELPIO FILE *HelpOpen( const char *path )
 {
-#ifdef __UNIX__
-    return( fopen( path, "r" ) );
-#else
     return( fopen( path, "rb" ) );
-#endif
 }
 
 HELPIO int HelpClose( FILE *fp )

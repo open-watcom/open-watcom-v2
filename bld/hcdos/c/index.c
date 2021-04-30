@@ -148,9 +148,8 @@ static unsigned countPageEntries( unsigned pagenum )
     a_helpnode          *curnode;
 
     cnt = 0;
-    for( curnode = findFirstPage( pagenum ); curnode != NULL && curnode->data_page + indexPageCnt == pagenum; curnode = curnode->next ) {
+    for( curnode = findFirstPage( pagenum ); curnode != NULL && curnode->data_page + indexPageCnt == pagenum; curnode = curnode->next )
         cnt++;
-    }
     return( cnt );
 }
 
@@ -209,9 +208,8 @@ static char *getIndexString( void **pages, unsigned pagenum, bool datalevel )
 
     if( datalevel ) {
         name = NULL;
-        for( curnode = findFirstPage( pagenum ); curnode != NULL && curnode->data_page + indexPageCnt == pagenum; curnode = curnode->next ) {
+        for( curnode = findFirstPage( pagenum ); curnode != NULL && curnode->data_page + indexPageCnt == pagenum; curnode = curnode->next )
             name = curnode->name;
-        }
         return( name );
     } else {
         header = pages[pagenum];

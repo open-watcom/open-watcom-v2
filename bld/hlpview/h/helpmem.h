@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,7 @@
 
 extern HELPMEM void     HelpMemOpen( void );
 extern HELPMEM void     HelpMemClose( void );
+extern HELPMEM void     HelpMemPrtList( void );
 extern HELPMEM void     *HelpMemAlloc( size_t size );
 extern HELPMEM void     *HelpMemRealloc( void *ptr, size_t size );
 extern HELPMEM void     HelpMemFree( void *ptr );

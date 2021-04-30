@@ -79,7 +79,7 @@ static void loadNextPage( HelpHdl hdl, const char *name )
     entry = pageIndex;
     for( i = 0; i < pageHeader->num_entries; i++ ) {
         if( strnicmp( entry->start, name, INDEX_LEN - 1 ) >= 0 ) {
-            entry ++;
+            entry++;
             break;
         }
         entry++;
@@ -220,7 +220,7 @@ unsigned HelpFindFirst( HelpHdl hdl, const char *name, HelpSrchInfo *info )
 
 char *HelpGetIndexedTopic( HelpHdl hdl, unsigned index )
 {
-    int                 i;
+    unsigned            i;
     PageIndexEntry      *entry;
 
     if( hdl == NULL || index >= hdl->header.topiccnt )

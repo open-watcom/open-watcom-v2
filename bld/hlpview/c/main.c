@@ -172,6 +172,7 @@ int main( int argc, char *argv[] )
         }
         freeSrchList();
     }
+    HelpMemPrtList();
     HelpMemClose();
     return( rc );
 }

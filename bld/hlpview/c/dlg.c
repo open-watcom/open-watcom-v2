@@ -34,10 +34,10 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "helpmem.h"
-#include "helpchar.h"
 #include "search.h"
 #include "uivedit.h"
 #include "uiledit.h"
+#include "wibhelp.h"
 
 #include "clibext.h"
 
@@ -130,8 +130,8 @@ static bool GetListBoxItem( const void *data_handle, unsigned item, char *buf, u
                 if( buflen == 1 ) {
                     break;
                 }
-                if( *name == HELP_ESCAPE ) {
-                    name ++;
+                if( *name == IB_ESCAPE ) {
+                    name++;
                     continue;
                 }
                 *buf = *name;
