@@ -847,10 +847,8 @@ static void output_ctx_hdr( ctx_def *ctx )
         if( Do_tc_button ) {
             if( stricmp( ctx->ctx_name, "table_of_contents" ) != 0 ) {
                 whp_fprintf( Out_file,
-                                "%c" HB_CONTENTS "%cTable of Contents%c ",
-                                IB_Hyperlink_L,
-                                IB_HLINK_BREAK,
-                                IB_Hyperlink_R );
+                                "%c" HB_CONTENTS IB_HLINK_BREAK_STR "Table of Contents%c ",
+                                IB_Hyperlink_L, IB_Hyperlink_R );
             } else {
                 fake_hlink( Out_file, HB_CONTENTS );
             }
@@ -859,10 +857,8 @@ static void output_ctx_hdr( ctx_def *ctx )
         if( Do_kw_button ) {
             if( stricmp( ctx->ctx_name, "keyword_search" ) != 0 ) {
                 whp_fprintf( Out_file,
-                                "%c" HB_KEYWORDS "%cKeyword Search%c ",
-                                IB_Hyperlink_L,
-                                IB_HLINK_BREAK,
-                                IB_Hyperlink_R );
+                                "%c" HB_KEYWORDS IB_HLINK_BREAK_STR "Keyword Search%c ",
+                                IB_Hyperlink_L, IB_Hyperlink_R );
             } else {
                 fake_hlink( Out_file, HB_KEYWORDS );
             }
@@ -873,7 +869,7 @@ static void output_ctx_hdr( ctx_def *ctx )
 
             // << browse button
             if( prev != ctx ) {
-                whp_fprintf( Out_file, "%c" HB_PREV "%c", IB_Hyperlink_L, IB_HLINK_BREAK );
+                whp_fprintf( Out_file, "%c" HB_PREV IB_HLINK_BREAK_STR, IB_Hyperlink_L );
                 str_out_ib( Out_file, prev->title );
                 whp_fprintf( Out_file, "%c ", IB_Hyperlink_R );
             } else {
@@ -882,7 +878,7 @@ static void output_ctx_hdr( ctx_def *ctx )
 
             // >> browse button (relies on the find_browse_pair above)
             if( next != ctx ) {
-                whp_fprintf( Out_file, "%c" HB_NEXT "%c", IB_Hyperlink_L, IB_HLINK_BREAK );
+                whp_fprintf( Out_file, "%c" HB_NEXT IB_HLINK_BREAK_STR, IB_Hyperlink_L );
                 str_out_ib( Out_file, next->title );
                 whp_fprintf( Out_file, "%c ", IB_Hyperlink_R );
             } else {
@@ -893,10 +889,8 @@ static void output_ctx_hdr( ctx_def *ctx )
         if( Do_idx_button ) {
             if( stricmp( ctx->ctx_name, "index_of_topics" ) != 0 ) {
                 whp_fprintf( Out_file,
-                                "%c" HB_INDEX "%cIndex of Topics%c ",
-                                IB_Hyperlink_L,
-                                IB_HLINK_BREAK,
-                                IB_Hyperlink_R );
+                                "%c" HB_INDEX IB_HLINK_BREAK_STR "Index of Topics%c ",
+                                IB_Hyperlink_L, IB_Hyperlink_R );
             } else {
                 fake_hlink( Out_file, HB_INDEX );
             }
@@ -921,7 +915,7 @@ static void output_ctx_hdr( ctx_def *ctx )
 
             // spit out up button stuff
             if( temp_ctx != NULL ) {
-                whp_fprintf( Out_file, "%c" HB_UP "%c", IB_Hyperlink_L, IB_HLINK_BREAK );
+                whp_fprintf( Out_file, "%c" HB_UP IB_HLINK_BREAK_STR, IB_Hyperlink_L );
                 str_out_ib( Out_file, temp_ctx->title );
                 whp_fprintf( Out_file, "%c ", IB_Hyperlink_R );
             } else {
@@ -1038,7 +1032,7 @@ static void output_section_ib( section_def *section )
                         }
                     }
                     *(p + len) = '\0';
-                    whp_fprintf( Out_file, "%c%s", IB_HLINK_BREAK, file );
+                    whp_fprintf( Out_file, IB_HLINK_BREAK_STR "%s", file );
                 }
                 whp_fwrite( &IB_Hyperlink_R, 1, 1, Out_file );
             }

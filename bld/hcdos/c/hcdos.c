@@ -489,9 +489,7 @@ static bool pass2( FILE *fin, FILE *fout, const char **helpstr )
             h->maxcol = MaxCol;
         }
         if( h->maxrow > MaxRow ) {
-            if( h->maxrow > MaxRow ) {
-                h->maxrow = MaxRow;
-            }
+            h->maxrow = MaxRow;
         }
         if( Height ) {
             h->maxrow = Height;

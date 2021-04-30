@@ -61,6 +61,8 @@
 #define IB_PLAIN_LINK_BEG       (char)'<'
 #define IB_PLAIN_LINK_END       (char)'>'
 
+#define IB_HLINK_BREAK_STR      "\xE8"
+
 // undocumented symbols
 #define IB_RIGHT_ARROW          (char)'\xAF'
 #define IB_LEFT_ARROW           (char)'\xAE'
