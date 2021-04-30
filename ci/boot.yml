@@ -15,35 +15,22 @@ jobs:
       ${{ if eq(parameters.arch, 'osx') }}:
         owtools:      $(owtools_osx)
         owscript:     $(owscript_osx)
-      ${{ if eq(parameters.arch, 'lnxow') }}:
-        owtools:      $(owtools_lnxow)
-        owscript:     $(owscript_lnx)
-        watcom:       $(owciroot_lnx)/ow
-        include:      $(watcom)/lh
-        watcom.path:  $(watcom)/binl
-      ${{ if eq(parameters.arch, 'ntow') }}:
-        owtools:      $(owtools_ntow)
-        owscript:     $(owscript_nt)
-        watcom:       $(owciroot_nt)\ow
-        include:      $(watcom)\h;$(watcom)\h\nt
-        watcom.path:  $(watcom)\binnt
       owbuild.stage:    boot
     pool:
-      ${{ if in(parameters.arch, 'lnx', 'lnxow') }}:
+      ${{ if eq(parameters.arch, 'lnx') }}:
         vmImage: $(owimage_lnx)
-      ${{ if in(parameters.arch, 'nt', 'ntow') }}:
+      ${{ if eq(parameters.arch, 'nt') }}:
         vmImage: $(owimage_nt)
       ${{ if eq(parameters.arch, 'osx') }}:
         vmImage: $(owimage_osx)
     steps:
     - script: $(owscript)
       displayName: "Bootstrap"
-    - ${{ if in(parameters.arch, 'nt', 'lnx', 'osx') }}:
-      - template: artfsave.yml
-        parameters:
-          path:       build/$(owobjdir)
-          artifname:  build-${{ parameters.arch }}
-      - template: artfsave.yml
-        parameters:
-          path:       bld/watcom/$(owobjdir)
-          artifname:  bld-watcom-${{ parameters.arch }}
+    - template: artfsave.yml
+      parameters:
+        path:       build/$(owobjdir)
+        artifname:  build-${{ parameters.arch }}
+    - template: artfsave.yml
+      parameters:
+        path:       bld/watcom/$(owobjdir)
+        artifname:  bld-watcom-${{ parameters.arch }}

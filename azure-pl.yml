@@ -12,13 +12,9 @@ variables:
   owimage_lnx:      'ubuntu-20.04'
   owimage_nt:       'vs2017-win2016'
   owimage_osx:      'macOS-latest'
-  owimage_lnxow:    'ubuntu-20.04'
-  owimage_ntow:     'vs2017-win2016'
   owtools_lnx:      GCC
   owtools_nt:       VISUALC
   owtools_osx:      CLANG
-  owtools_lnxow:    WATCOM
-  owtools_ntow:     WATCOM
   owscript_lnx:     ci/buildx.sh
   owscript_nt:      ci\buildx.cmd
   owscript_osx:     ci/buildx.sh
@@ -61,9 +57,9 @@ stages:
     dependsOn:
       - start
     jobs:
-      - template: ci/boot.yml
+      - template: ci/bootow.yml
         parameters:
-          arch:     lnxow
+          arch:     lnx
           title:    Bootstrap Linux OW
   - stage: bootlnx
     displayName: "Bootstrap Linux"
@@ -88,9 +84,9 @@ stages:
     dependsOn:
       - start
     jobs:
-      - template: ci/boot.yml
+      - template: ci/bootow.yml
         parameters:
-          arch:     ntow
+          arch:     nt
           title:    Bootstrap Windows OW
   - stage: bootnt
     displayName: "Bootstrap Windows"
@@ -161,7 +157,7 @@ stages:
     jobs:
       - template: ci/testboot.yml
         parameters:
-          arch:     lnxow
+          arch:     lnx
           title:    Test Bootstrap Linux OW
   - stage: testsnt
     displayName: "Tests Windows"
@@ -179,7 +175,7 @@ stages:
     jobs:
       - template: ci/testboot.yml
         parameters:
-          arch:     ntow
+          arch:     nt
           title:    Test Bootstrap Windows OW
   - stage: lastbuild
     displayName: "Last CI build"

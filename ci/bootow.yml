@@ -3,17 +3,17 @@ parameters:
   title:    ''
 
 jobs:
-  - job: testboot${{ parameters.arch }}
+  - job: boot${{ parameters.arch }}ow
     displayName: "${{ parameters.title }}"
     variables:
       ${{ if eq(parameters.arch, 'lnx') }}:
         owscript:     $(owscript_lnx)
-        watcom:       $(owroot)/rel
+        watcom:       $(owciroot_lnx)/ow
         include:      $(watcom)/lh
         watcom.path:  $(watcom)/binl
       ${{ if eq(parameters.arch, 'nt') }}:
         owscript:     $(owscript_nt)
-        watcom:       $(owroot)\rel
+        watcom:       $(owciroot_nt)\ow
         include:      $(watcom)\h;$(watcom)\h\nt
         watcom.path:  $(watcom)\binnt
       owtools:        WATCOM
@@ -24,9 +24,5 @@ jobs:
       ${{ if eq(parameters.arch, 'nt') }}:
         vmImage: $(owimage_nt)
     steps:
-    - template: artfload.yml
-      parameters:
-        path:       rel
-        artifname:  rel-${{ parameters.arch }}
     - script: $(owscript)
-      displayName: "Test Bootstrap OW"
+      displayName: "Bootstrap OW"
