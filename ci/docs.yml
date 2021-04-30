@@ -39,8 +39,7 @@ jobs:
         artifname:  build-${{ parameters.arch }}
     - script: $(owscript)
       displayName: "Documentation Build"
-    - task: PublishPipelineArtifact@1
-      displayName: "Save Artifact rel-${{ parameters.doctype }}"
-      inputs:
-        artifactName:   "rel-${{ parameters.doctype }}"
-        path:           $(owroot)/rel
+    - template: artfsave.yml
+      parameters:
+        path:       rel
+        artifname:  rel-${{ parameters.doctype }}
