@@ -813,13 +813,10 @@ static void fake_hlink( FILE *file, char *label )
 /***********************************************/
 {
     if( Hyperlink_Braces ) {
-        whp_fprintf( file, "<<" );
+        whp_fprintf( file, "<<" IB_BOLD_ON_STR "%s" IB_BOLD_OFF_STR ">> ", label );
+    } else {
+        whp_fprintf( file, IB_BOLD_ON_STR "%s" IB_BOLD_OFF_STR " ", label );
     }
-    whp_fprintf( file, "%s%s%s", IB_BOLD_ON_STR, label, IB_BOLD_OFF_STR );
-    if( Hyperlink_Braces ) {
-        whp_fprintf( file, ">>" );
-    }
-    whp_fprintf( file, " " );
 }
 
 static void output_ctx_hdr( ctx_def *ctx )
