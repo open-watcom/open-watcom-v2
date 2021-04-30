@@ -214,42 +214,40 @@ static void fgetstring( char *buffer, unsigned max_len, FILE *f )
     unsigned    offset;
     int         ch;
 
-    if( max_len > 0 ) {
-        max_len--;
-        curr = 0;
-        offset = 0;
-        for( ;; ) {
-            ch = fgetc( f );
-            switch( ch ) {
-            case EOF:
-            case '\n':
-                *buffer++ = '\r';       /* ignore trailing spaces */
-                *buffer++ = '\n';
-                *buffer = '\0';
-                return;
-            case ' ':
-                offset++;
-                break;
-            case '\t':
-                offset = (offset + 8) & (-8);
-                break;
-            default:
-                while( ++curr <= offset ) {
-                    *buffer++ = ' ';
-                }
-                *buffer++ = ch;
-                offset++;
+    max_len--;  /* reserve space for terminator */
+    curr = 0;
+    offset = 0;
+    for( ;; ) {
+        ch = fgetc( f );
+        switch( ch ) {
+        case EOF:
+        case '\n':
+            *buffer++ = '\r';       /* ignore trailing spaces */
+            *buffer++ = '\n';
+            *buffer = '\0';
+            return;
+        case ' ':
+            offset++;
+            break;
+        case '\t':
+            offset = ( offset + 8 ) & (-8);
+            break;
+        default:
+            while( ++curr <= offset ) {
+                *buffer++ = ' ';
             }
-            if( offset >= max_len ) {
-                *buffer = '\0';
-                for( ;; ) {
-                    ch = fgetc( f );
-                    if( ch == EOF || ch == '\n' ) {
-                        break;
-                    }
+            *buffer++ = ch;
+            offset++;
+        }
+        if( offset >= max_len ) {
+            *buffer = '\0';
+            for( ;; ) {
+                ch = fgetc( f );
+                if( ch == EOF || ch == '\n' ) {
+                    break;
                 }
-                break;
             }
+            break;
         }
     }
 }
@@ -297,7 +295,7 @@ static bool pass1( FILE *fin, const char **helpstr )
                 if( GenStrings ) {
                     ptr = find_str( buffer + sizeof( DESCRIPTION ) - 1 );
                     namebuff = HelpMemAlloc( strlen( ptr ) + 1 );
-                    strcpy( namebuff, ptr);
+                    strcpy( namebuff, ptr );
                     helpstr[1] = namebuff;
                 }
             }
@@ -361,8 +359,7 @@ static bool pass1( FILE *fin, const char **helpstr )
             ptr++;
         if( *ptr != '\0' ) {
             count = sscanf( ptr, "%d %d %d %d %d",
-                    &h->maxrow, &h->maxcol, &h->row, &h->col,
-                    &h->lines );
+                    &h->maxrow, &h->maxcol, &h->row, &h->col, &h->lines );
             if( count != 2 && count != 4 && count != 5 ) {
                 PrintError( "invalid help topic line '%s'\n", buffer );
             }
@@ -371,7 +368,7 @@ static bool pass1( FILE *fin, const char **helpstr )
         if( Verbose ) {
             printf( "   %s\n", h->name );
         }
-        for( hn=&HelpNodes; *hn != NULL; hn=&(*hn)->next ) {
+        for( hn = &HelpNodes; *hn != NULL; hn = &(*hn)->next ) {
             cmp = stricmp( h->name, (*hn)->name );
             if( cmp == 0 ) {
                 PrintError( "Duplicate Help Topic '%s'\n", h->name );
@@ -477,10 +474,10 @@ static bool pass2( FILE *fin, FILE *fout, const char **helpstr )
         if( Verbose ) {
             printf( "   %s %d %d", h->name, h->maxrow, h->maxcol );
             if( h->row != -1 ) {
-                printf( "%d %d", h->row, h->col );
+                printf( " %d %d", h->row, h->col );
             }
             if( h->lines != -1 ) {
-                printf( "%d", h->lines );
+                printf( " %d", h->lines );
             }
             printf( "\n" );
         }
@@ -493,7 +490,7 @@ static bool pass2( FILE *fin, FILE *fout, const char **helpstr )
                      h->name, h->maxrow, h->maxcol );
             h->maxcol = MaxCol;
         }
-        if( h->maxcol > MaxCol-10 ) {
+        if( h->maxcol > MaxCol - 10 ) {
             h->maxcol = MaxCol;
         }
         if( h->maxrow > MaxRow ) {
@@ -535,7 +532,9 @@ int main( int argc, char **argv )
     bool        f_swtch;
 
     f_swtch = false;
-    for( argc=1, sargv=nargv=argv+1; *sargv; sargv++ ) {
+    argc = 1;
+    nargv = argv + 1;
+    for( sargv = nargv; *sargv; sargv++ ) {
         if( ! _IsCmdSwitch( *sargv ) ) {
             *nargv++ = *sargv;
             argc++;

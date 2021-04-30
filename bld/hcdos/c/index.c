@@ -136,11 +136,8 @@ static a_helpnode *findFirstPage( unsigned pagenum )
 {
     a_helpnode          *curnode;
 
-    for( curnode = HelpNodes; curnode != NULL; curnode = curnode->next ) {
-        if( curnode->data_page + indexPageCnt == pagenum ) {
-            break;
-        }
-    }
+    for( curnode = HelpNodes; curnode != NULL && curnode->data_page + indexPageCnt != pagenum; curnode = curnode->next )
+        ;
     return( curnode );
 }
 
