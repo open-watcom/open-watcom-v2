@@ -640,7 +640,7 @@ int main( int argc, char **argv )
     fclose( fin );
     fclose( fout );
     if( GenIndex ) {
-        fout = fopen( argv[2], "wb" );
+        fout = fopen( argv[2], "r+b" );
         WriteIndex( fout, helpstr, GenStrings );
         fclose( fout );
     }
