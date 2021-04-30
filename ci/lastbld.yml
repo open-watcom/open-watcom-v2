@@ -40,7 +40,7 @@ jobs:
     - template: artfload.yml
       parameters:
         path:       rel
-        artifname:  rel-docose
+        artifname:  rel-docos2
     - template: artfload.yml
       parameters:
         path:       rel
