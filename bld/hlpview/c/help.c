@@ -161,7 +161,7 @@ static ui_event keyShift[] = {
     EV_INSERT,
     EV_DELETE,
     EV_MOUSE_DCLICK,
-    __rend__
+    __end__
 };
 
 static ui_event helpEventList[] = {
