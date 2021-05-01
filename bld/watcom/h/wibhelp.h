@@ -53,6 +53,8 @@
 // Escape symbol
 #define IB_ESCAPE               (char)'\x1B'
 
+// Some special characters we use
+#define IB_BULLET               (char)'\x07'
 #define IB_SPACE_NOBREAK        (char)'\xFF'
 
 // this symbol separates the hyper-link label and topic.

@@ -53,7 +53,6 @@ typedef enum {
 #define IB_TEMP_HLINK           (char)'\x7F'
 
 // Some characters we use for graphics
-#define IB_BULLET               (char)'\x07'
 #define BOX_VBAR                (char)'\xB3'
 #define BOX_HBAR                (char)'\xC4'  // 196
 #define BOX_CORNER_TOP_LEFT     (char)'\xDA'
@@ -62,12 +61,12 @@ typedef enum {
 #define BOX_CORNER_BOTOM_RIGHT  (char)'\xD9'
 
 // labels for speacial header buttons
-#define HB_UP                   " Up "
-#define HB_PREV                 " <<<< "
-#define HB_NEXT                 " >>>> "
-#define HB_CONTENTS             " Contents "
-#define HB_INDEX                " Index "
-#define HB_KEYWORDS             " Keywords "
+#define HBUTTON_UP              " Up "
+#define HBUTTON_PREV            " <<<< "
+#define HBUTTON_NEXT            " >>>> "
+#define HBUTTON_CONTENTS        " Contents "
+#define HBUTTON_INDEX           " Index "
+#define HBUTTON_KEYWORDS        " Keywords "
 
 // Some stuff for tab examples:
 #define MAX_TABS                100     // up to 100 tab stops
@@ -819,6 +818,20 @@ static void fake_hlink( FILE *file, char *label )
     }
 }
 
+static void output_button1( FILE *file, const char *button, const char *label )
+/****************************************************************************/
+{
+    whp_fprintf( Out_file, "%c%s" IB_HLINK_BREAK_STR "%s%c ", IB_Hyperlink_L, button, label, IB_Hyperlink_R );
+}
+
+static void output_button2( FILE *file, const char *button, const char *label )
+/****************************************************************************/
+{
+    whp_fprintf( Out_file, "%c%s" IB_HLINK_BREAK_STR, IB_Hyperlink_L, button );
+    str_out_ib( Out_file, title );
+    whp_fprintf( Out_file, "%c ", IB_Hyperlink_R );
+}
+
 static void output_ctx_hdr( ctx_def *ctx )
 /****************************************/
 {
@@ -843,21 +856,17 @@ static void output_ctx_hdr( ctx_def *ctx )
 
         if( Do_tc_button ) {
             if( stricmp( ctx->ctx_name, "table_of_contents" ) != 0 ) {
-                whp_fprintf( Out_file,
-                                "%c" HB_CONTENTS IB_HLINK_BREAK_STR "Table of Contents%c ",
-                                IB_Hyperlink_L, IB_Hyperlink_R );
+                output_button1( Out_file, HBUTTON_CONTENTS, "Table of Contents" );
             } else {
-                fake_hlink( Out_file, HB_CONTENTS );
+                fake_hlink( Out_file, HBUTTON_CONTENTS );
             }
         }
 
         if( Do_kw_button ) {
             if( stricmp( ctx->ctx_name, "keyword_search" ) != 0 ) {
-                whp_fprintf( Out_file,
-                                "%c" HB_KEYWORDS IB_HLINK_BREAK_STR "Keyword Search%c ",
-                                IB_Hyperlink_L, IB_Hyperlink_R );
+                output_button1( Out_file, HBUTTON_KEYWORDS, "Keyword Search" );
             } else {
-                fake_hlink( Out_file, HB_KEYWORDS );
+                fake_hlink( Out_file, HBUTTON_KEYWORDS );
             }
         }
 
@@ -866,30 +875,24 @@ static void output_ctx_hdr( ctx_def *ctx )
 
             // << browse button
             if( prev != ctx ) {
-                whp_fprintf( Out_file, "%c" HB_PREV IB_HLINK_BREAK_STR, IB_Hyperlink_L );
-                str_out_ib( Out_file, prev->title );
-                whp_fprintf( Out_file, "%c ", IB_Hyperlink_R );
+                output_button2( Out_file, HBUTTON_PREV, prev->title );
             } else {
-                fake_hlink( Out_file, HB_PREV );
+                fake_hlink( Out_file, HBUTTON_PREV );
             }
 
             // >> browse button (relies on the find_browse_pair above)
             if( next != ctx ) {
-                whp_fprintf( Out_file, "%c" HB_NEXT IB_HLINK_BREAK_STR, IB_Hyperlink_L );
-                str_out_ib( Out_file, next->title );
-                whp_fprintf( Out_file, "%c ", IB_Hyperlink_R );
+                output_button2( Out_file, HBUTTON_NEXT, next->title );
             } else {
-                fake_hlink( Out_file, HB_NEXT );
+                fake_hlink( Out_file, HBUTTON_NEXT );
             }
         }
 
         if( Do_idx_button ) {
             if( stricmp( ctx->ctx_name, "index_of_topics" ) != 0 ) {
-                whp_fprintf( Out_file,
-                                "%c" HB_INDEX IB_HLINK_BREAK_STR "Index of Topics%c ",
-                                IB_Hyperlink_L, IB_Hyperlink_R );
+                output_button1( Out_file, HBUTTON_INDEX, "Index of Topics" );
             } else {
-                fake_hlink( Out_file, HB_INDEX );
+                fake_hlink( Out_file, HBUTTON_INDEX );
             }
         }
 
@@ -912,11 +915,9 @@ static void output_ctx_hdr( ctx_def *ctx )
 
             // spit out up button stuff
             if( temp_ctx != NULL ) {
-                whp_fprintf( Out_file, "%c" HB_UP IB_HLINK_BREAK_STR, IB_Hyperlink_L );
-                str_out_ib( Out_file, temp_ctx->title );
-                whp_fprintf( Out_file, "%c ", IB_Hyperlink_R );
+                output_button2( Out_file, HBUTTON_UP, temp_ctx->title );
             } else {
-                fake_hlink( Out_file, HB_UP );
+                fake_hlink( Out_file, HBUTTON_UP );
             }
         }
         // append user header file
