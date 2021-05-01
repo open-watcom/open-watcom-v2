@@ -44,8 +44,8 @@ static char     specialChars[] = {
     IB_HLINK,
     IB_RIGHT_ARROW,
     IB_LEFT_ARROW,
-    '<',
-    '>',
+    IB_PLAIN_LINK_BEG,
+    IB_PLAIN_LINK_END,
     '{',
     '}',
     '\0'
@@ -55,8 +55,8 @@ static char     specialHyperChars[] = {
     IB_ESCAPE,
     IB_HLINK,
     IB_HLINK_BREAK,
-    '<',
-    '>',
+    IB_PLAIN_LINK_BEG,
+    IB_PLAIN_LINK_END,
     '{',
     '}',
     '\0'
@@ -84,7 +84,7 @@ static unsigned scanHyperLink( char *line, HelpTokenType *hlink_type, HyperLinkI
         endchar = IB_HLINK;
     } else {
         *hlink_type = TK_PLAIN_LINK;
-        endchar = '>';
+        endchar = IB_PLAIN_LINK_END;
     }
     hfname = NULL;
     ++cur;
@@ -104,10 +104,10 @@ static unsigned scanHyperLink( char *line, HelpTokenType *hlink_type, HyperLinkI
             cur += 2;
             cnt++;
             break;
+        case IB_PLAIN_LINK_BEG:
+        case IB_PLAIN_LINK_END:
         case '{':
-        case '>':
         case '}':
-        case '<':
             if( cur[0] == cur[1] ) {
                 cur[0] = IB_ESCAPE;
                 continue;               // let the IB_ESCAPE case handle this
@@ -203,20 +203,16 @@ bool ScanLine( char *line, ScanCBfunc *cb, void *info )
             }
             cb( TK_TEXT, &tinfo, info );
             break;
+        case IB_PLAIN_LINK_BEG:
+        case IB_PLAIN_LINK_END:
         case '{':
-        case '>':
         case '}':
             if( cur[0] == cur[1] ) {
                 cur[0] = IB_ESCAPE;
-                continue;               // let the IB_ESCAPE case handle
-                                        // this
+                continue;               // let the IB_ESCAPE case handle this
             }
-            break;
-        case '<':
-            if( cur[1] == '<' ) {
-                cur[0] = IB_ESCAPE;
-                continue;               // let the IB_ESCAPE case handle
-                                        // this
+            if( *cur != IB_PLAIN_LINK_BEG ) {
+                break;
             }
             /* fall through */
         case IB_HLINK:

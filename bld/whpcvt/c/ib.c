@@ -76,9 +76,6 @@ static bool             Box_Mode = false;
 
 static line_postfix     Line_postfix = LPOSTFIX_NONE;
 
-static char             IB_Hyperlink_L;
-static char             IB_Hyperlink_R;
-
 static int currentIndent( void )
 {
     if( list_indent )
@@ -777,15 +774,27 @@ static void fake_hlink( char *label )
 static void output_button1( const char *button, const char *label )
 /*****************************************************************/
 {
-    whp_fprintf( Out_file, "%c%s" IB_HLINK_BREAK_STR "%s%c ", IB_Hyperlink_L, button, label, IB_Hyperlink_R );
+    if( Hyperlink_Braces ) {
+        whp_fprintf( Out_file, IB_PLAIN_LINK_BEG_STR "%s" IB_HLINK_BREAK_STR "%s" IB_PLAIN_LINK_END_STR " ", button, label );
+    } else {
+        whp_fprintf( Out_file, IB_HLINK_STR "%s" IB_HLINK_BREAK_STR "%s" IB_HLINK_STR " ", button, label );
+    }
 }
 
 static void output_button2( const char *button, const char *label )
 /*****************************************************************/
 {
-    whp_fprintf( Out_file, "%c%s" IB_HLINK_BREAK_STR, IB_Hyperlink_L, button );
+    if( Hyperlink_Braces ) {
+        whp_fprintf( Out_file, IB_PLAIN_LINK_BEG_STR "%s" IB_HLINK_BREAK_STR, button );
+    } else {
+        whp_fprintf( Out_file, IB_HLINK_STR "%s" IB_HLINK_BREAK_STR, button );
+    }
     str_out_ib( label );
-    whp_fprintf( Out_file, "%c ", IB_Hyperlink_R );
+    if( Hyperlink_Braces ) {
+        whp_fprintf( Out_file, IB_PLAIN_LINK_END_STR " " );
+    } else {
+        whp_fprintf( Out_file, IB_HLINK_STR " " );
+    }
 }
 
 static void output_ctx_hdr( ctx_def *ctx )
@@ -969,7 +978,11 @@ static void output_section_ib( section_def *section )
                 whp_fwrite( Out_file, label, 1, label_len - 1 );
             } else {
                 // now we start writing the hyper-link
-                whp_fwrite( Out_file, &IB_Hyperlink_L, 1, 1 );
+                if( Hyperlink_Braces ) {
+                    whp_fprintf( Out_file, IB_PLAIN_LINK_BEG_STR );
+                } else {
+                    whp_fprintf( Out_file, IB_HLINK_STR );
+                }
                 whp_fwrite( Out_file, label, 1, label_len );
                 if( ctx != NULL ) {
                     str_out_ib( ctx->title );
@@ -988,7 +1001,11 @@ static void output_section_ib( section_def *section )
                     *(p + len) = '\0';
                     whp_fprintf( Out_file, IB_HLINK_BREAK_STR "%s", file );
                 }
-                whp_fwrite( Out_file, &IB_Hyperlink_R, 1, 1 );
+                if( Hyperlink_Braces ) {
+                    whp_fprintf( Out_file, IB_PLAIN_LINK_END_STR );
+                } else {
+                    whp_fprintf( Out_file, IB_HLINK_STR );
+                }
             }
 
             // adjust the len and ctr counters appropriately
@@ -1038,10 +1055,4 @@ void ib_output_file( void )
 
 void ib_init_whp( void )
 {
-    IB_Hyperlink_L = IB_HLINK;
-    IB_Hyperlink_R = IB_HLINK;
-    if( Hyperlink_Braces ) {
-        IB_Hyperlink_L = IB_PLAIN_LINK_BEG;
-        IB_Hyperlink_R = IB_PLAIN_LINK_END;
-    }
 }

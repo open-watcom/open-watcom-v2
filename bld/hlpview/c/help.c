@@ -880,7 +880,7 @@ static void helpSet( char *str, char *helpname, unsigned buflen )
             dstptr++;
             buflen--;
             if( buflen == 0 ) {
-                dstptr --;
+                dstptr--;
                 *dstptr = '\0';
                 break;
             }

@@ -52,6 +52,7 @@
 
 // Escape symbol
 #define IB_ESCAPE               (char)'\x1B'
+#define IB_ESCAPE_STR           "\x1B"
 
 // Some special characters we use
 #define IB_BULLET               (char)'\x07'
@@ -63,7 +64,10 @@
 #define IB_PLAIN_LINK_BEG       (char)'<'
 #define IB_PLAIN_LINK_END       (char)'>'
 
+#define IB_HLINK_STR            "\xE0"
 #define IB_HLINK_BREAK_STR      "\xE8"
+#define IB_PLAIN_LINK_BEG_STR   "<"
+#define IB_PLAIN_LINK_END_STR   ">"
 
 // undocumented symbols
 #define IB_RIGHT_ARROW          (char)'\xAF'

@@ -84,7 +84,7 @@ static void loadNextPage( HelpHdl hdl, const char *name )
         }
         entry++;
     }
-    entry --;   /* if we've read through the entire list load the last page */
+    entry--;    /* if we've read through the entire list load the last page */
     loadPage( hdl, entry->nextpage );
 }
 
