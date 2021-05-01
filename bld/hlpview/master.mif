@@ -2,6 +2,8 @@ proj_name = whelp
 
 whelp_autodepends = .AUTODEPEND
 
+whelp_dos_extender = causeway
+
 whelp_trmem = 1
 
 !include cproj.mif

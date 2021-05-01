@@ -751,12 +751,10 @@ static void clearline( void )
 static void scanCallBack( HelpTokenType type, Info *info, void *_myinfo )
 {
     TextInfoBlock       *block;
-    bool                goofy;
-    unsigned            cnt;
+    unsigned            i;
     a_field             *ht;
     ScanInfo            *myinfo = _myinfo;
 
-    goofy = true;
     switch( type ) {
     case TK_TEXT:
         switch( info->u.text.type ) {
@@ -795,30 +793,25 @@ static void scanCallBack( HelpTokenType type, Info *info, void *_myinfo )
         myinfo->buf[0] = '<';
         myinfo->buf++;
         myinfo->pos++;
-        goofy = false;
         /* fall through */
     case TK_GOOFY_LINK:
-        block = &( info->u.link.block1 );
-        cnt = 0;
-        ht = HelpMemAlloc( sizeof( a_field ) + info->u.link.topic_len
-                           + info->u.link.hfname_len );
+        ht = HelpMemAlloc( sizeof( a_field ) + info->u.link.topic_len + info->u.link.hfname_len );
         ht->area.width = 0;
         ht->area.row = myinfo->line;
         ht->area.height = 1;
         ht->area.col = myinfo->pos;
         memcpy( ht->keyword, info->u.link.topic, info->u.link.topic_len );
         if( info->u.link.hfname_len != 0 ) {
-            memcpy( ht->keyword + info->u.link.topic_len, info->u.link.hfname,
-                    info->u.link.hfname_len );
+            memcpy( ht->keyword + info->u.link.topic_len, info->u.link.hfname, info->u.link.hfname_len );
             ht->keyword[info->u.link.topic_len + info->u.link.hfname_len] = '\0';
         } else {
             ht->keyword[info->u.link.topic_len] = '\0';
         }
         ht->key1_len = info->u.link.topic_len;
         ht->key2_len = info->u.link.hfname_len;
-        while( block != NULL ) {
-            while( cnt < block->cnt ) {
-                info = (Info *)&( block->info[cnt] );
+        for( block = &( info->u.link.block1 ); block != NULL; block = block->next ) {
+            for( i = 0; i < block->cnt; i++ ) {
+                info = (Info *)&( block->info[i] );
                 switch( info->u.text.type ) {
                 case TT_ESC_SEQ:
                     memcpy( myinfo->buf, info->u.text.str, info->u.text.len );
@@ -833,16 +826,13 @@ static void scanCallBack( HelpTokenType type, Info *info, void *_myinfo )
                     ht->area.width += info->u.text.len;
                     break;
                 }
-                cnt++;
             }
-            block = block->next;
-            cnt = 0;
         }
         if( ht->area.col + ht->area.width > helpScreen.area.width ) {
             ht->area.width = helpScreen.area.width - ht->area.col;
         }
         add_field( ht, myinfo->changecurr );
-        if( !goofy ) {
+        if( type == TK_PLAIN_LINK ) {
             myinfo->buf[0] = '>';
             myinfo->buf++;
             myinfo->pos++;
@@ -1292,35 +1282,27 @@ static int findhelp( VTAB *tab )
  * fixHelpTopic - escape any special characters in topics that comes from
  *                      the outside world
  */
-static char *fixHelpTopic( char *topic )
+static char *fixHelpTopic( const char *topic )
 {
-    char        *ptr;
+    const char  *ptr;
     char        *retptr;
     unsigned    cnt;
     char        *ret;
+    char        c;
 
-    ptr = topic;
     cnt = 0;
-    while( *ptr != '\0' ) {
-        if( *ptr == '<' || *ptr == '>' || *ptr == '"' || *ptr == '{' || *ptr == '}' ) {
+    for( ptr = topic; (c = *ptr) != '\0'; ptr++ ) {
+        if( c == '<' || c == '>' || c == '"' || c == '{' || c == '}' ) {
             cnt++;
         }
         cnt++;
-        ptr++;
     }
-    ret = HelpMemAlloc( cnt + 1 );
-    retptr = ret;
-    ptr = topic;
-    while( *ptr != '\0' ) {
-        if( *ptr == '<' || *ptr == '>' || *ptr == '"' || *ptr == '{' || *ptr == '}' ) {
-            *retptr = IB_ESCAPE;
-            retptr++;
-            *retptr = *ptr;
-        } else {
-            *retptr = *ptr;
+    retptr = ret = HelpMemAlloc( cnt + 1 );
+    for( ptr = topic; (c = *ptr) != '\0'; ptr++ ) {
+        if( c == '<' || c == '>' || c == '"' || c == '{' || c == '}' ) {
+            *retptr++ = IB_ESCAPE;
         }
-        retptr++;
-        ptr++;
+        *retptr++ = c;
     }
     *retptr = '\0';
     return( ret );

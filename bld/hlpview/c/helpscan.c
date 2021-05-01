@@ -62,8 +62,7 @@ static char     specialHyperChars[] = {
     '\0'
 };
 
-static unsigned scanHyperLink( char *line, HelpTokenType *type,
-                               HyperLinkInfo *info )
+static unsigned scanHyperLink( char *line, HelpTokenType *hlink_type, HyperLinkInfo *info )
 {
     char                endchar;
     char                *cur;
@@ -81,10 +80,10 @@ static unsigned scanHyperLink( char *line, HelpTokenType *type,
     chktopic = false;
     chkhfname = false;
     if( *cur == IB_HLINK ) {
-        *type = TK_GOOFY_LINK;
+        *hlink_type = TK_GOOFY_LINK;
         endchar = IB_HLINK;
     } else {
-        *type = TK_PLAIN_LINK;
+        *hlink_type = TK_PLAIN_LINK;
         endchar = '>';
     }
     hfname = NULL;
@@ -177,7 +176,7 @@ bool ScanLine( char *line, ScanCBfunc *cb, void *info )
 {
     char                *cur;
     Info                tinfo;
-    HelpTokenType       type;
+    HelpTokenType       hlink_type;
     bool                newfile;
 
     cur = line;
@@ -221,11 +220,11 @@ bool ScanLine( char *line, ScanCBfunc *cb, void *info )
             }
             /* fall through */
         case IB_HLINK:
-            cur += scanHyperLink( cur, &type, &tinfo.u.link );
+            cur += scanHyperLink( cur, &hlink_type, &tinfo.u.link );
             if( tinfo.u.link.hfname_len != 0 ) {
                 newfile = true;
             }
-            cb( type, &tinfo, info );
+            cb( hlink_type, &tinfo, info );
             if( tinfo.u.link.block1.next != NULL ) {
                 freeHyperlinkInfo( tinfo.u.link.block1.next );
             }
