@@ -621,7 +621,7 @@ static void output_ctx_sections( ctx_def *ctx )
 
     for( section = ctx->section_list; section != NULL; section = section->next ) {
         if( section->section_size > 0 ) {
-            whp_fwrite( section->section_text, 1, section->section_size, Out_file );
+            whp_fwrite( Out_file, section->section_text, 1, section->section_size );
         }
     }
 }

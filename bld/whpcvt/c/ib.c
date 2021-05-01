@@ -171,8 +171,8 @@ static size_t trans_add_char_ib( char ch, section_def *section )
 /* This function will do proper escaping or character substitution for
  * characters special to InfoBench and send them to the output stream.
  */
-static void str_out_ib( FILE *f, const char *str )
-/************************************************/
+static void str_out_ib( const char *str )
+/***************************************/
 {
     map_char_type   map_type;
 
@@ -182,9 +182,9 @@ static void str_out_ib( FILE *f, const char *str )
             if( map_type == MAP_REMOVE )
                 continue;
             if( map_type == MAP_ESCAPE ) {
-                whp_fprintf( f, "%c", IB_ESCAPE );
+                whp_fprintf( Out_file, "%c", IB_ESCAPE );
             }
-            whp_fwrite( str, 1, 1, f );
+            whp_fwrite( Out_file, str, 1, 1 );
         }
     }
 }
@@ -785,8 +785,8 @@ static void find_browse_pair( ctx_def *ctx, ctx_def **prev, ctx_def **next )
     return;
 }
 
-static void ib_append_line( FILE *outfile, char *infnam )
-/*******************************************************/
+static void ib_append_line( char *infnam )
+/****************************************/
 {
     FILE            *infile;
     int             inchar;
@@ -801,34 +801,34 @@ static void ib_append_line( FILE *outfile, char *infnam )
                     break;
                 }
 
-                whp_fprintf( outfile, "%c", inchar );
+                whp_fprintf( Out_file, "%c", inchar );
             }
             fclose( infile );
         }
     }
 }
 
-static void fake_hlink( FILE *file, char *label )
-/***********************************************/
+static void fake_hlink( char *label )
+/***********************************/
 {
     if( Hyperlink_Braces ) {
-        whp_fprintf( file, "<<" IB_BOLD_ON_STR "%s" IB_BOLD_OFF_STR ">> ", label );
+        whp_fprintf( Out_file, "<<" IB_BOLD_ON_STR "%s" IB_BOLD_OFF_STR ">> ", label );
     } else {
-        whp_fprintf( file, IB_BOLD_ON_STR "%s" IB_BOLD_OFF_STR " ", label );
+        whp_fprintf( Out_file, IB_BOLD_ON_STR "%s" IB_BOLD_OFF_STR " ", label );
     }
 }
 
-static void output_button1( FILE *file, const char *button, const char *label )
-/****************************************************************************/
+static void output_button1( const char *button, const char *label )
+/*****************************************************************/
 {
     whp_fprintf( Out_file, "%c%s" IB_HLINK_BREAK_STR "%s%c ", IB_Hyperlink_L, button, label, IB_Hyperlink_R );
 }
 
-static void output_button2( FILE *file, const char *button, const char *label )
-/****************************************************************************/
+static void output_button2( const char *button, const char *label )
+/*****************************************************************/
 {
     whp_fprintf( Out_file, "%c%s" IB_HLINK_BREAK_STR, IB_Hyperlink_L, button );
-    str_out_ib( Out_file, label );
+    str_out_ib( label );
     whp_fprintf( Out_file, "%c ", IB_Hyperlink_R );
 }
 
@@ -841,7 +841,7 @@ static void output_ctx_hdr( ctx_def *ctx )
 
     // output topic name
     whp_fprintf( Out_file, IB_TOPIC_NAME "\"" );
-    str_out_ib( Out_file, ctx->title );
+    str_out_ib( ctx->title );
     whp_fprintf( Out_file, "\" 0 0\n" );
 
     // Header stuff:
@@ -856,17 +856,17 @@ static void output_ctx_hdr( ctx_def *ctx )
 
         if( Do_tc_button ) {
             if( stricmp( ctx->ctx_name, "table_of_contents" ) != 0 ) {
-                output_button1( Out_file, HBUTTON_CONTENTS, "Table of Contents" );
+                output_button1( HBUTTON_CONTENTS, "Table of Contents" );
             } else {
-                fake_hlink( Out_file, HBUTTON_CONTENTS );
+                fake_hlink( HBUTTON_CONTENTS );
             }
         }
 
         if( Do_kw_button ) {
             if( stricmp( ctx->ctx_name, "keyword_search" ) != 0 ) {
-                output_button1( Out_file, HBUTTON_KEYWORDS, "Keyword Search" );
+                output_button1( HBUTTON_KEYWORDS, "Keyword Search" );
             } else {
-                fake_hlink( Out_file, HBUTTON_KEYWORDS );
+                fake_hlink( HBUTTON_KEYWORDS );
             }
         }
 
@@ -875,24 +875,24 @@ static void output_ctx_hdr( ctx_def *ctx )
 
             // << browse button
             if( prev != ctx ) {
-                output_button2( Out_file, HBUTTON_PREV, prev->title );
+                output_button2( HBUTTON_PREV, prev->title );
             } else {
-                fake_hlink( Out_file, HBUTTON_PREV );
+                fake_hlink( HBUTTON_PREV );
             }
 
             // >> browse button (relies on the find_browse_pair above)
             if( next != ctx ) {
-                output_button2( Out_file, HBUTTON_NEXT, next->title );
+                output_button2( HBUTTON_NEXT, next->title );
             } else {
-                fake_hlink( Out_file, HBUTTON_NEXT );
+                fake_hlink( HBUTTON_NEXT );
             }
         }
 
         if( Do_idx_button ) {
             if( stricmp( ctx->ctx_name, "index_of_topics" ) != 0 ) {
-                output_button1( Out_file, HBUTTON_INDEX, "Index of Topics" );
+                output_button1( HBUTTON_INDEX, "Index of Topics" );
             } else {
-                fake_hlink( Out_file, HBUTTON_INDEX );
+                fake_hlink( HBUTTON_INDEX );
             }
         }
 
@@ -915,13 +915,13 @@ static void output_ctx_hdr( ctx_def *ctx )
 
             // spit out up button stuff
             if( temp_ctx != NULL ) {
-                output_button2( Out_file, HBUTTON_UP, temp_ctx->title );
+                output_button2( HBUTTON_UP, temp_ctx->title );
             } else {
-                fake_hlink( Out_file, HBUTTON_UP );
+                fake_hlink( HBUTTON_UP );
             }
         }
         // append user header file
-        ib_append_line( Out_file, Header_File );
+        ib_append_line( Header_File );
 
         // end of header
         whp_fprintf( Out_file, "\n" IB_HEADER_END "\n" );
@@ -929,7 +929,7 @@ static void output_ctx_hdr( ctx_def *ctx )
     // append user footer file
     if( Footer_File != NULL && Footer_File[0] != '\0' ) {
         whp_fprintf( Out_file, IB_TRAILER_BEG "\n" );
-        ib_append_line( Out_file, Footer_File );
+        ib_append_line( Footer_File );
         whp_fprintf( Out_file, "\n" IB_TRAILER_END "\n" );
     }
 }
@@ -963,7 +963,7 @@ static void output_section_ib( section_def *section )
             len++;
         } else {
             // write out the block of text we've got so far
-            whp_fwrite( p, 1, len, Out_file );
+            whp_fwrite( Out_file, p, 1, len );
             p += len + 1;
 
             // grab the line number
@@ -1010,15 +1010,15 @@ static void output_section_ib( section_def *section )
             if( ctx == NULL && ch != IB_HLINK_BREAK ) {
                 warning_msg( "Link to nonexistent context", line );
                 printf( "For topic=%s\n", topic );
-                whp_fwrite( label, 1, label_len - 1, Out_file );
+                whp_fwrite( Out_file, label, 1, label_len - 1 );
             } else {
                 // now we start writing the hyper-link
-                whp_fwrite( &IB_Hyperlink_L, 1, 1, Out_file );
-                whp_fwrite( label, 1, label_len, Out_file );
+                whp_fwrite( Out_file, &IB_Hyperlink_L, 1, 1 );
+                whp_fwrite( Out_file, label, 1, label_len );
                 if( ctx != NULL ) {
-                    str_out_ib( Out_file, ctx->title );
+                    str_out_ib( ctx->title );
                 } else {
-                    str_out_ib( Out_file, topic );
+                    str_out_ib( topic );
                 }
                 if( ch == IB_HLINK_BREAK ) {
                     /* file link. Get the file name */
@@ -1032,7 +1032,7 @@ static void output_section_ib( section_def *section )
                     *(p + len) = '\0';
                     whp_fprintf( Out_file, IB_HLINK_BREAK_STR "%s", file );
                 }
-                whp_fwrite( &IB_Hyperlink_R, 1, 1, Out_file );
+                whp_fwrite( Out_file, &IB_Hyperlink_R, 1, 1 );
             }
 
             // adjust the len and ctr counters appropriately
@@ -1042,7 +1042,7 @@ static void output_section_ib( section_def *section )
     }
     // output whatever's left
     if( p < end ) {
-        whp_fwrite( p, 1, end - p, Out_file );
+        whp_fwrite( Out_file, p, 1, end - p );
     }
 }
 

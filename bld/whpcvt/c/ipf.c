@@ -662,7 +662,7 @@ static void output_ctx_hdr( ctx_def *ctx )
             key = keylist->key;
             ptr = key->keyword;
             if( !key->duplicate ) {
-                fputs( ":i1.", Out_file );
+                whp_fprintf( Out_file, ":i1." );
             } else {
                 if( key->defined_ctx == ctx ) {
                     /* this is the first instance. :i1 and :i2 */
@@ -679,8 +679,7 @@ static void output_ctx_hdr( ctx_def *ctx )
                 fprintf( Out_file, ":i2 refid=%d.", key->id );
                 ptr = ctx->title;
             }
-            fputs( translate_str_ipf( ptr ), Out_file );
-            fputc( '\n', Out_file );
+            whp_fprintf( Out_file, "%s\n", translate_str_ipf( ptr ) );
         }
     }
     if( Ipf_or_Html_Real_font ) {
@@ -704,7 +703,7 @@ static void output_ctx_sections( ctx_def *ctx )
 
     for( section = ctx->section_list; section != NULL; section = section->next ) {
         if( section->section_size > 0 ) {
-            whp_fwrite( section->section_text, 1, section->section_size, Out_file );
+            whp_fwrite( Out_file, section->section_text, 1, section->section_size );
         }
     }
 }

@@ -392,8 +392,8 @@ static void check_brace( const char *str, size_t len )
     }
 }
 
-void whp_fprintf( FILE *file, const char *fmt, ... )
-/**************************************************/
+void whp_fprintf( FILE *fp, const char *fmt, ... )
+/************************************************/
 {
     va_list             arglist;
 
@@ -405,16 +405,16 @@ void whp_fprintf( FILE *file, const char *fmt, ... )
         va_start( arglist, fmt );
         vsprintf( Chk_buf, fmt, arglist );
         check_brace( Chk_buf, strlen( Chk_buf ) );
-        fputs( Chk_buf, file );
+        fputs( Chk_buf, fp );
         va_end( arglist );
     }
 }
 
-void whp_fwrite( const char *buf, size_t el_size, size_t num_el, FILE *f )
-/************************************************************************/
+void whp_fwrite( FILE *fp, const char *buf, size_t el_size, size_t num_el )
+/*************************************************************************/
 {
     check_brace( buf, el_size * num_el );
-    fwrite( buf, el_size, num_el, f );
+    fwrite( buf, el_size, num_el, fp );
 }
 
 static char *normalize_fname( char *file, const char *name, const char *fext )
