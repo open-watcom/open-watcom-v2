@@ -126,14 +126,14 @@ enum {
 
 /* global variables */
 
-char        *Help_File = NULL;
-char        *Header_File = NULL;
-char        *Footer_File = NULL;
+char            *Help_File = NULL;
+char            *Header_File = NULL;
+char            *Footer_File = NULL;
 
-const char Fonttype_roman[] = "roman";
-const char Fonttype_symbol[] = "symbol";
-const char Fonttype_helv[] = "helv";
-const char Fonttype_courier[] = "courier";
+const char      Fonttype_roman[] = "roman";
+const char      Fonttype_symbol[] = "symbol";
+const char      Fonttype_helv[] = "helv";
+const char      Fonttype_courier[] = "courier";
 
 static list_def Lists[MAX_LISTS] = {
     { LIST_TYPE_NONE,   0,  0,  false,  false },    // list base
@@ -275,6 +275,9 @@ static int          Keyword_id = 1;
 
 static int          List_level = 0;
 
+static tab_size     tabs_list[MAX_TABS];
+static int          tabs_num = 0;
+
 static void print_help( void )
 /****************************/
 {
@@ -390,6 +393,51 @@ static void check_brace( const char *str, size_t len )
             prev_ch = ch;
         }
     }
+}
+
+void Tabs_read( char *ptr )
+/*************************/
+{
+    tab_size    tabcol;
+    char        *end;
+
+    tabs_num = 0;
+    tabcol = 0;
+    ptr = skip_blanks( ptr );
+    while( *ptr != '\0' ) {
+        if( *ptr == '+' ) {
+            tabcol += strtol( ptr + 1, &end, 10 );
+        } else {
+            tabcol = strtol( ptr, &end, 10 );
+        }
+        tabs_list[tabs_num++] = tabcol;
+        ptr = skip_blanks( end );
+    }
+}
+
+tab_size Tabs_align( tab_size ch_len )
+/************************************/
+{
+    int         i;
+    tab_size    len;
+
+    // find the tab we should use
+    len = 1;
+    for( i = 0; i < tabs_num; i++ ) {
+        if( tabs_list[i] > ch_len ) {
+            len = tabs_list[i] - ch_len;
+            break;
+        }
+    }
+    return( len );
+}
+
+tab_size Tabs_get( int pos )
+/**************************/
+{
+    if( tabs_num > 0 && pos < tabs_num )
+        return( tabs_list[pos] );
+    return( TAB_UNDEF );
 }
 
 void whp_fprintf( FILE *fp, const char *fmt, ... )
@@ -577,7 +625,7 @@ static int process_args( int argc, char *argv[] )
                 break;
             case ARG_RM:
                 start_arg++;
-                if( start_arg < argc && (i = atoi( argv[start_arg] )) >= 0 ) {
+                if( start_arg < argc && (i = strtol( argv[start_arg], NULL, 10 )) >= 0 ) {
                     Right_Margin = i;
                 } else {
                     error_err( ERR_BAD_ARGS );
@@ -585,7 +633,7 @@ static int process_args( int argc, char *argv[] )
                 break;
             case ARG_TAB:
                 start_arg++;
-                if( start_arg < argc && (i = atoi( argv[start_arg] )) >= 0 ) {
+                if( start_arg < argc && (i = strtol( argv[start_arg], NULL, 10 )) >= 0 ) {
                     Text_Indent = i;
                 } else {
                     error_err( ERR_BAD_ARGS );
@@ -1313,7 +1361,7 @@ static ctx_def *define_ctx( void )
 
     Delim[0] = WHP_CTX_DEF;
     ptr = strtok( Line_buf + 1, Delim );
-    head_level = atoi( ptr );
+    head_level = strtol( ptr, NULL, 10 );
     ctx_name = strtok( NULL, Delim );
 
     title_fmt = TITLE_FMT_DEFAULT;
@@ -1402,7 +1450,7 @@ static bool read_ctx_topic( void )
     if( order_str == NULL ) {
         return( read_topic_text( ctx, true, 0 ) );
     } else {
-        return( read_topic_text( ctx, false, atoi( order_str ) ) );
+        return( read_topic_text( ctx, false, strtol( order_str, NULL, 10 ) ) );
     }
 }
 
@@ -1867,7 +1915,7 @@ static void read_ctx_ids( void )
                 if( stricmp( ptr + strlen( HELP_PREFIX ), ctx->ctx_name ) == 0 ) {
                     ptr = strtok( NULL, Delim );
                     if( ptr != NULL ) {
-                        ctx->ctx_id = atoi( ptr );
+                        ctx->ctx_id = strtol( ptr, NULL, 10 );
                     }
                     break;
                 }

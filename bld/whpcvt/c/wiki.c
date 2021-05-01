@@ -45,8 +45,6 @@
 
 #define WIKI_TRANS_LEN          50
 
-#define MAX_TABS                100     // up to 100 tab stops
-
 static int          Curr_head_level = 0;
 static int          Curr_head_skip = 0;
 
@@ -80,9 +78,6 @@ static bool         Blank_line_sfx = true;
 
 static char         *Trans_str = NULL;
 static size_t       Trans_len = 0;
-
-static unsigned     Tab_list[MAX_TABS];
-static int          tabs_num = 0;
 
 static void draw_line( section_def *section )
 /*******************************************/
@@ -174,41 +169,15 @@ static size_t trans_add_str_wiki( const char *str, section_def *section )
     return( len );
 }
 
-static void read_tabs( char *tab_line )
-/*************************************/
+static tab_size tab_align( tab_size ch_len, section_def *section )
+/****************************************************************/
 {
-    char        *ptr;
-    unsigned    tabcol;
-
-    Tab_xmp_char = *tab_line;
-    tabs_num = 0;
-    tabcol = 0;
-    for( ptr = strtok( tab_line + 1, " " ); ptr != NULL; ptr = strtok( NULL, " " ) ) {
-        if( *ptr == '+' ) {
-            tabcol += atoi( ptr + 1 );
-        } else {
-            tabcol = atoi( ptr );
-        }
-        Tab_list[tabs_num++] = tabcol;
-    }
-}
-
-static size_t tab_align( size_t ch_len, section_def *section )
-/************************************************************/
-{
-    int         i;
-    size_t      len;
-    size_t      j;
+    tab_size    i;
+    tab_size    len;
 
     // find the tab we should use
-    len = 1;
-    for( i = 0; i < tabs_num; i++ ) {
-        if( Tab_list[i] > ch_len ) {
-            len = Tab_list[i] - ch_len;
-            break;
-        }
-    }
-    for( j = len; j > 0; j-- ) {
+    len = Tabs_align( ch_len );
+    for( i = len; i > 0; i-- ) {
         trans_add_str_wiki( WIKI_SPACE, section );
     }
     return( len );
@@ -243,12 +212,14 @@ void wiki_trans_line( char *line_buf, section_def *section )
 
     switch( ch ) {
     case WHP_TABXMP:
-        if( *skip_blanks( ptr + 1 ) == '\0' ) {
+        ptr = skip_blanks( ptr + 1 );
+        if( *ptr == '\0' ) {
             Tab_xmp = false;
             trans_add_str_nl( "</pre>", section );
             Blank_line_sfx = false;     // remove following blanks
         } else {
-            read_tabs( ptr + 1 );
+            Tab_xmp_char = *ptr++;
+            Tabs_read( ptr );
             trans_add_str_nl( "<pre>", section );
             Tab_xmp = true;
             Blank_line_pfx = false;     // remove preceding blanks

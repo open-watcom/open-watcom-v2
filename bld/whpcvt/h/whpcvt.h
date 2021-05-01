@@ -47,6 +47,10 @@
 
 #define MAX_LISTS               20
 
+#define MAX_TABS                100     // up to 100 tab stops
+
+#define TAB_UNDEF               ((tab_size)-1)
+
 #define _min( a, b )            ( a > b ) b ? a
 #define _max( a, b )            ( a > b ) a ? b
 #define _new( ptr, size )       ( ptr = check_alloc( sizeof( *(ptr) ) * (size) ) )
@@ -219,6 +223,8 @@ typedef struct {
     bool                compact;
 } list_def;
 
+typedef unsigned        tab_size;
+
 /**** Globals ****/
 #ifndef WHPCVT_GBL
 #define WHPCVT_GBL  extern
@@ -279,12 +285,14 @@ WHPCVT_GBL bool         Hyperlink_Braces;
 WHPCVT_GBL char         *IB_def_topic;
 WHPCVT_GBL char         *IB_help_desc;
 
-
 /**** externed functions ****/
 extern void         error( int err );
 extern void         warning_msg( const char *msg, int line_num );
 extern void         *check_alloc( size_t size );
 extern void         *check_realloc( void *ptr, size_t size );
+extern void         Tabs_read( char *tab_line );
+extern tab_size     Tabs_align( tab_size ch_len );
+extern tab_size     Tabs_get( int pos );
 extern void         whp_fprintf( FILE *fp, const char *fmt, ... );
 extern void         whp_fwrite( FILE *fp, const char *buf, size_t el_size, size_t num_el );
 extern bool         read_line( void );

@@ -147,23 +147,16 @@ static size_t trans_add_char_rtf( char ch, section_def *section )
     return( trans_add_str( buf, section ) );
 }
 
-static void add_tabxmp( char *tab_line, section_def *section )
-/************************************************************/
+static void add_tabxmp( section_def *section )
+/********************************************/
 {
-    char                *ptr;
-    char                buf[50];
-    int                 tabcol;
+    char            buf[50];
+    tab_size        tabcol;
+    int             i;
 
     trans_add_str( "\\pard ", section );
-    Tab_xmp_char = *tab_line;
-    ptr = strtok( tab_line + 1, " " );
-    for( tabcol = 0 ; ptr != NULL; ptr = strtok( NULL, " " ) ) {
-        if( *ptr == '+' ) {
-            tabcol += atoi( ptr + 1 );
-        } else {
-            tabcol = atoi( ptr );
-        }
-        sprintf( buf, "\\tx%d ", RTF_CHAR_SIZE * tabcol );
+    for( i = 0; (tabcol = Tabs_get( i )) != TAB_UNDEF; i++ ) {
+        sprintf( buf, "\\tx%u ", RTF_CHAR_SIZE * tabcol );
         trans_add_str( buf, section );
     }
     trans_add_char( '\n', section );
@@ -217,11 +210,14 @@ void rtf_trans_line( char *line_buf, section_def *section )
     }
     switch( ch ) {
     case WHP_TABXMP:
-        if( *skip_blanks( ptr + 1 ) == '\0' ) {
+        ptr = skip_blanks( ptr + 1 );
+        if( *ptr == '\0' ) {
             Line_prefix |= LPREFIX_PAR_RESET;
             Tab_xmp = false;
         } else {
-            add_tabxmp( ptr + 1, section );
+            Tab_xmp_char = *ptr++;
+            Tabs_read( ptr );
+            add_tabxmp( section );
             Tab_xmp = true;
         }
         return;
@@ -538,7 +534,7 @@ void rtf_trans_line( char *line_buf, section_def *section )
             ptr = end + 1;
             end = strchr( ptr, WHP_FONTTYPE );
             *end = '\0';
-            sprintf( buf, "\\fs%d ", atoi( ptr ) * 2 );
+            sprintf( buf, "\\fs%d ", strtol( ptr, NULL, 10 ) * 2 );
             trans_add_str( buf, section );
             ptr = end + 1;
             break;

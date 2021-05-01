@@ -50,7 +50,7 @@ typedef enum {
 } map_char_type;
 
 // internal hyperlink symbol. Gets filtered out at output time
-#define IB_TEMP_HLINK           (char)'\x7F'
+#define TEMP_HLINK_BREAK        (char)'\x7F'
 
 // Some characters we use for graphics
 #define BOX_VBAR                (char)'\xB3'
@@ -67,12 +67,6 @@ typedef enum {
 #define HBUTTON_CONTENTS        " Contents "
 #define HBUTTON_INDEX           " Index "
 #define HBUTTON_KEYWORDS        " Keywords "
-
-// Some stuff for tab examples:
-#define MAX_TABS                100     // up to 100 tab stops
-
-static unsigned         Tab_list[MAX_TABS];
-static int              tabs_num = 0;
 
 static bool             Blank_line = false;
 static int              Curr_indent = 0;
@@ -355,41 +349,15 @@ static size_t trans_add_str_wrap( const char *str, section_def *section )
     return( len );
 }
 
-static void read_tabs( char *tab_line )
-/*************************************/
+static tab_size tab_align( tab_size ch_len, section_def *section )
+/****************************************************************/
 {
-    char        *ptr;
-    unsigned    tabcol;
-
-    Tab_xmp_char = *tab_line;
-    tabs_num = 0;
-    tabcol = 0;
-    for( ptr = strtok( tab_line + 1, " " ); ptr != NULL; ptr = strtok( NULL, " " ) ) {
-        if( *ptr == '+' ) {
-            tabcol += atoi( ptr + 1 );
-        } else {
-            tabcol = atoi( ptr );
-        }
-        Tab_list[tabs_num++] = tabcol;
-    }
-}
-
-static size_t tab_align( size_t ch_len, section_def *section )
-/************************************************************/
-{
-    int         i;
-    size_t      len;
-    size_t      j;
+    tab_size    i;
+    tab_size    len;
 
     // find the tab we should use
-    len = 1;
-    for( i = 0; i < tabs_num; i++ ) {
-        if( Tab_list[i] > ch_len ) {
-            len = Tab_list[i] - ch_len;
-            break;
-        }
-    }
-    for( j = len; j > 0; j-- ) {
+    len = Tabs_align( ch_len );
+    for( i = len; i > 0; i-- ) {
         trans_add_char_wrap( ' ', section );
     }
     return( len );
@@ -438,10 +406,12 @@ void ib_trans_line( char *line_buf, section_def *section )
     }
     switch( ch ) {
     case WHP_TABXMP:     // Tabbed-example
-        if( *skip_blanks( ptr + 1 ) == '\0' ) {
+        ptr = skip_blanks( ptr + 1 );
+        if( *ptr == '\0' ) {
             Tab_xmp = false;
         } else {
-            read_tabs( ptr + 1 );
+            Tab_xmp_char = *ptr++;
+            Tabs_read( ptr );
             Tab_xmp = true;
         }
         return;
@@ -597,11 +567,10 @@ void ib_trans_line( char *line_buf, section_def *section )
             ptr = ctx_text + strlen( ctx_text ) + 1;
 
             // Definition pop-up's are converted to hyper-links in InfoBench
-            trans_add_char( IB_TEMP_HLINK , section );
-
+            trans_add_char( TEMP_HLINK_BREAK, section );
             // Add line number to hyperlink so we can give meaningful errors
             trans_add_str( itoa( Line_num, buf, 10 ), section );
-            trans_add_char( IB_TEMP_HLINK, section );
+            trans_add_char( TEMP_HLINK_BREAK, section );
 
             // We don't want links to break as IB doesn't like this...
             spaces_to_nobreak( ctx_text );
@@ -630,7 +599,7 @@ void ib_trans_line( char *line_buf, section_def *section )
                 trans_add_char( IB_HLINK_BREAK, section );
                 trans_add_str( file_name, section );
             }
-            trans_add_char( IB_TEMP_HLINK , section );
+            trans_add_char( TEMP_HLINK_BREAK, section );
             break;
         case WHP_LIST_ITEM:
             Curr_list->number++;
@@ -959,7 +928,7 @@ static void output_section_ib( section_def *section )
     len = 0;
     while( p + len < end ) {
         // stop when we hit a hyper-link
-        if( *(p + len) != IB_TEMP_HLINK ) {
+        if( *(p + len) != TEMP_HLINK_BREAK ) {
             len++;
         } else {
             // write out the block of text we've got so far
@@ -968,12 +937,12 @@ static void output_section_ib( section_def *section )
 
             // grab the line number
             for( len = 0; ; ++len ) {
-                if( *(p + len) == IB_TEMP_HLINK ) {
+                if( *(p + len) == TEMP_HLINK_BREAK ) {
                     break;
                 }
             }
             p[len] = '\0';
-            line = atoi( p );
+            line = strtol( p, NULL, 10 );
             p += len + 1;
 
             // find the length of the link label (what the user sees)
@@ -997,7 +966,7 @@ static void output_section_ib( section_def *section )
             // find the length of the link context
             for( len = 0; ; ++len ) {
                 ch = *(p + len);
-                if( ch == IB_TEMP_HLINK || ch == IB_HLINK_BREAK ) {
+                if( ch == TEMP_HLINK_BREAK || ch == IB_HLINK_BREAK ) {
                     break;
                 }
             }
@@ -1025,7 +994,7 @@ static void output_section_ib( section_def *section )
                     file = p + len + 1;
                     for( ;; ) {
                         ++len;
-                        if( *(p + len) == IB_TEMP_HLINK ) {
+                        if( *(p + len) == TEMP_HLINK_BREAK ) {
                             break;
                         }
                     }
