@@ -828,7 +828,7 @@ static void output_button2( FILE *file, const char *button, const char *label )
 /****************************************************************************/
 {
     whp_fprintf( Out_file, "%c%s" IB_HLINK_BREAK_STR, IB_Hyperlink_L, button );
-    str_out_ib( Out_file, title );
+    str_out_ib( Out_file, label );
     whp_fprintf( Out_file, "%c ", IB_Hyperlink_R );
 }
 
