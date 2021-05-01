@@ -1064,11 +1064,11 @@ void ib_output_file( void )
     ctx_def         *ctx;
 
     if( IB_def_topic != NULL ) {
-        fprintf( Out_file, IB_DEFAULT_TOPIC "\"%s\"\n", IB_def_topic );
+        whp_fprintf( Out_file, IB_DEFAULT_TOPIC "\"%s\"\n", IB_def_topic );
         free( IB_def_topic );
     }
     if( IB_help_desc != NULL ) {
-        fprintf( Out_file, IB_DESCRIPTION "\"%s\"\n", IB_help_desc );
+        whp_fprintf( Out_file, IB_DESCRIPTION "\"%s\"\n", IB_help_desc );
         free( IB_help_desc );
     }
     for( ctx = Ctx_list; ctx != NULL; ctx = ctx->next ) {

@@ -666,7 +666,7 @@ static void output_ctx_hdr( ctx_def *ctx )
             } else {
                 if( key->defined_ctx == ctx ) {
                     /* this is the first instance. :i1 and :i2 */
-                    fprintf( Out_file, ":i1 id=%d.%s\n",
+                    whp_fprintf( Out_file, ":i1 id=%d.%s\n",
                                     key->id, translate_str_ipf( ptr ) );
                 }
 
@@ -676,7 +676,7 @@ static void output_ctx_hdr( ctx_def *ctx )
                        Skip it! */
                     continue;
                 }
-                fprintf( Out_file, ":i2 refid=%d.", key->id );
+                whp_fprintf( Out_file, ":i2 refid=%d.", key->id );
                 ptr = ctx->title;
             }
             whp_fprintf( Out_file, "%s\n", translate_str_ipf( ptr ) );
