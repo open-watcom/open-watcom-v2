@@ -42,13 +42,6 @@ typedef enum {
     LPOSTFIX_TERM,
 } line_postfix;
 
-// these are for the map_char_ib function
-typedef enum {
-    MAP_NONE,
-    MAP_REMOVE,
-    MAP_ESCAPE
-} map_char_type;
-
 // internal hyperlink symbol. Gets filtered out at output time
 #define TEMP_HLINK_BREAK        (char)'\x7F'
 
@@ -109,15 +102,12 @@ static void spaces_to_nobreak( char *str )
     }
 }
 
-/* This function will return MAP_REMOVE if the character is not allowed in
- * InfoBench, null if the character is okay. Any other values are prefixes
- * used to escape the character.
+/* This function will return converted character to output buffer.
+ * Return length of converted character for InfoBench.
  */
-static map_char_type map_char_ib( char ch )
-/*****************************************/
+static int out_char_ib( char *out, char ch )
+/*********************************************/
 {
-    map_char_type   map_type;
-
     switch( ch ) {
     // The following characters should be preceded by an ESC character
     // Some could also be preceded by themselves, but this leads to
@@ -127,20 +117,19 @@ static map_char_type map_char_ib( char ch )
     case '<':
     case '>':
     case '"':
-        map_type = MAP_ESCAPE;
-        break;
+        *out++ = IB_ESCAPE;
+        *out = ch;
+        return( 2 );
     // The following characters are special to InfoBench, and there is no
     // way to represent them with the current grammar
     case IB_HLINK:
     case IB_HLINK_BREAK:
     case IB_ESCAPE:
-        map_type = MAP_REMOVE;
-        break;
+        return( 0 );
     default:
-        map_type = MAP_NONE;
-        break;
+        *out = ch;
+        return( 1 );
     }
-    return( map_type );
 }
 
 /* This function will do proper escaping or character substitution for
@@ -149,16 +138,16 @@ static map_char_type map_char_ib( char ch )
 static size_t trans_add_char_ib( char ch, section_def *section )
 /**************************************************************/
 {
-    size_t          len = 0;
-    map_char_type   map_type;
+    int         len;
+    char        buffer[3];
 
-    map_type = map_char_ib( ch );
-    if( map_type == MAP_REMOVE ) {
-        return( 0 );
-    } else if( map_type == MAP_ESCAPE ) {
-        len += trans_add_char( IB_ESCAPE, section );
+    len = out_char_ib( buffer, ch );
+    if( len > 0 ) {
+        trans_add_char( buffer[0], section );
+        if( len > 1 ) {
+            trans_add_char( buffer[1], section );
+        }
     }
-    len += trans_add_char( ch, section );
     return( len );
 }
 
@@ -168,17 +157,15 @@ static size_t trans_add_char_ib( char ch, section_def *section )
 static void str_out_ib( const char *str )
 /***************************************/
 {
-    map_char_type   map_type;
+    int         len;
+    char        buffer[3];
 
     if( str != NULL ) {
-        for( ; *str != '\0'; ++str ) {
-            map_type = map_char_ib( *str );
-            if( map_type == MAP_REMOVE )
-                continue;
-            if( map_type == MAP_ESCAPE ) {
-                whp_fprintf( Out_file, "%c", IB_ESCAPE );
+        for( ; *str != '\0'; str++ ) {
+            len = out_char_ib( buffer, *str );
+            if( len > 0 ) {
+                whp_fwrite( Out_file, buffer, 1, len );
             }
-            whp_fwrite( Out_file, str, 1, 1 );
         }
     }
 }
