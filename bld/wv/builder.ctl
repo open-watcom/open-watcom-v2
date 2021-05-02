@@ -34,13 +34,6 @@ set PROJDIR=<CWD>
     <CCCMD> dbg/ntx64/*.dbg         <OWRELROOT>/binnt64/
     <CCCMD> ssl/ntx64/*.prs         <OWRELROOT>/binnt64/
 
-    <CCCMD> rfx/dosi86/rfx.exe      <OWRELROOT>/binw/
-    <CCCMD> rfx/dosi86/rfx.sym      <OWRELROOT>/binw/
-    <CCCMD> rfx/os2386/rfx.exe      <OWRELROOT>/binp/
-    <CCCMD> rfx/os2386/rfx.sym      <OWRELROOT>/binp/
-    <CCCMD> rfx/nt386/rfx.exe       <OWRELROOT>/binnt/
-    <CCCMD> rfx/nt386/rfx.sym       <OWRELROOT>/binnt/
-
     <CCCMD> dsx/dos386/wv.exe       <OWRELROOT>/binw/wd.exe
     <CCCMD> dsx/dos386/wv.sym       <OWRELROOT>/binw/wd.sym
     <CCCMD> win/wini86/wv.exe       <OWRELROOT>/binw/wdc.exe
@@ -72,6 +65,16 @@ set PROJDIR=<CWD>
     <CCCMD> nt/ntx64/wv.exe         <OWRELROOT>/binnt64/wd.exe
     <CCCMD> nt/ntx64.gui/wv.exe     <OWRELROOT>/binnt64/wdw.exe
     <CCCMD> linux/linuxx64/wv.exe   <OWRELROOT>/binl64/wd
+
+    <CCCMD> rfx/dosi86/rfx.exe      <OWRELROOT>/binw/
+    <CCCMD> rfx/dosi86/rfx.sym      <OWRELROOT>/binw/
+    <CCCMD> rfx/os2386/rfx.exe      <OWRELROOT>/binp/
+    <CCCMD> rfx/os2386/rfx.sym      <OWRELROOT>/binp/
+    <CCCMD> rfx/nt386/rfx.exe       <OWRELROOT>/binnt/
+    <CCCMD> rfx/nt386/rfx.sym       <OWRELROOT>/binnt/
+
+    <CCCMD> rfx/ntx64/rfx.exe       <OWRELROOT>/binnt64/
+    <CCCMD> rfx/ntx64/rfx.sym       <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
 
