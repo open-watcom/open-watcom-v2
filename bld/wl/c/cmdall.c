@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1070,7 +1070,7 @@ static bool AddSymTrace( void )
 {
     symbol      *sym;
 
-    sym = SymOp( ST_REFERENCE_SYM, Token.this, Token.len );
+    sym = SymOp( ST_CREATE, Token.this, Token.len );
     sym->info |= SYM_TRACE;
     return( true );
 }
