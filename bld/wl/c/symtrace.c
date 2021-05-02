@@ -39,7 +39,6 @@
 #include "overlays.h"
 #include "symtrace.h"
 
-static trace_info       *CurrTrace;
 
 trace_info       *TraceList;
 
@@ -49,17 +48,18 @@ void ResetSymTrace( void )
     TraceList = NULL;
 }
 
-static void CheckFileTrace( section *sect )
-/******************************************/
+static void CheckFileTrace( section *sect, void *_info )
+/******************************************************/
 {
     file_list       *list;
+    trace_info      *info = (trace_info *)_info;
 
-    if( CurrTrace->found )
+    if( info->found )
         return;
     for( list = sect->files; list != NULL; list = list->next_file ) {
-        if( FNAMECMPSTR( list->infile->name.u.ptr, CurrTrace->u.name ) == 0 ) {
-            CurrTrace->found = true;
-            _LnkFree( CurrTrace->u.name );
+        if( FNAMECMPSTR( list->infile->name.u.ptr, info->u.name ) == 0 ) {
+            info->found = true;
+            _LnkFree( info->u.name );
             list->flags |= STAT_TRACE_SYMS;
             return;
         }
@@ -67,7 +67,7 @@ static void CheckFileTrace( section *sect )
 }
 
 void CheckTraces( void )
-/*****************************/
+/**********************/
 // first check for .obj files being traced, then check libraries
 {
     trace_info      *info;
@@ -79,8 +79,7 @@ void CheckTraces( void )
     for( info = TraceList; info != NULL; info = next ) {
         next = info->next;
         if( info->member == NULL ) {
-            CurrTrace = info;
-            WalkAllSects( CheckFileTrace );
+            ParmWalkAllSects( CheckFileTrace, info );
             if( !info->found ) {
                 LnkMsg( WRN+MSG_TRACE_OBJ_NOT_FOUND, "s", info->u.name );
                 _LnkFree( info->u.name );
@@ -103,7 +102,7 @@ void CheckTraces( void )
 }
 
 void CheckLibTrace( file_list *lib )
-/******************************************/
+/**********************************/
 {
     trace_info      *info;
 
@@ -120,7 +119,7 @@ void CheckLibTrace( file_list *lib )
 }
 
 bool FindLibTrace( mod_entry *mod )
-/****************************************/
+/*********************************/
 {
     trace_info **   prev;
     trace_info      *info;
@@ -141,7 +140,7 @@ bool FindLibTrace( mod_entry *mod )
 }
 
 void PrintBadTraces( void )
-/********************************/
+/*************************/
 {
     trace_info      *info;
 
@@ -156,7 +155,7 @@ void PrintBadTraces( void )
 }
 
 void CleanTraces( void )
-/*****************************/
+/**********************/
 {
     trace_info *next;
 
