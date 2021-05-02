@@ -32,8 +32,8 @@ set PROJDIR=<CWD>
     <CCCMD> bind/dosi86/edbind.exe    <OWRELROOT>/binw/edbind.exe
     <CCCMD> wini86/vi.exe             <OWRELROOT>/binw/viw.exe
     <CCCMD> wini86/vi.sym             <OWRELROOT>/binw/viw.sym
-    <CCCMD> win386/vi.exe             <OWRELROOT>/binw/viwp.exe
-    <CCCMD> win386/vi.sym             <OWRELROOT>/binw/viwp.sym
+    <CCCMD> win386/vi.exe             <OWRELROOT>/binw/viw32.exe
+    <CCCMD> win386/vi.sym             <OWRELROOT>/binw/viw32.sym
     <CCCMD> nt386/vi.exe              <OWRELROOT>/binnt/vi.exe
     <CCCMD> nt386/vi.sym              <OWRELROOT>/binnt/vi.sym
     <CCCMD> nt386.win/vi.exe          <OWRELROOT>/binnt/viw.exe
