@@ -867,7 +867,7 @@ static int read_char( void )
 #endif
     if( c == EOF )
         return( c );
-    if( (char)c == WHP_SPACE_NOBREAK )
+    if( c == (unsigned char)WHP_SPACE_NOBREAK )
         return( ' ' );  // convert special blanks to regular blanks
     return( c );
 }

@@ -534,7 +534,7 @@ void rtf_trans_line( char *line_buf, section_def *section )
             ptr = end + 1;
             end = strchr( ptr, WHP_FONTTYPE );
             *end = '\0';
-            sprintf( buf, "\\fs%d ", strtol( ptr, NULL, 10 ) * 2 );
+            sprintf( buf, "\\fs%d ", (int)( strtol( ptr, NULL, 10 ) * 2 ) );
             trans_add_str( buf, section );
             ptr = end + 1;
             break;
