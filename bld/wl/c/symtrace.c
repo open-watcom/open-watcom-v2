@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +49,22 @@ void ResetSymTrace( void )
     TraceList = NULL;
 }
 
-static void CheckFileTrace( section * );
+static void CheckFileTrace( section *sect )
+/******************************************/
+{
+    file_list       *list;
+
+    if( CurrTrace->found )
+        return;
+    for( list = sect->files; list != NULL; list = list->next_file ) {
+        if( FNAMECMPSTR( list->infile->name.u.ptr, CurrTrace->u.name ) == 0 ) {
+            CurrTrace->found = true;
+            _LnkFree( CurrTrace->u.name );
+            list->flags |= STAT_TRACE_SYMS;
+            return;
+        }
+    }
+}
 
 void CheckTraces( void )
 /*****************************/
@@ -84,23 +100,6 @@ void CheckTraces( void )
         } /* if */
     } /* for */
     *prev = NULL;
-}
-
-static void CheckFileTrace( section *sect )
-/******************************************/
-{
-    file_list       *list;
-
-    if( CurrTrace->found )
-        return;
-    for( list = sect->files; list != NULL; list = list->next_file ) {
-        if( FNAMECMPSTR( list->infile->name.u.ptr, CurrTrace->u.name ) == 0 ) {
-            CurrTrace->found = true;
-            _LnkFree( CurrTrace->u.name );
-            list->flags |= STAT_TRACE_SYMS;
-            return;
-        }
-    }
 }
 
 void CheckLibTrace( file_list *lib )
