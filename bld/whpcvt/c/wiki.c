@@ -49,28 +49,28 @@ static int          Curr_head_level = 0;
 static int          Curr_head_skip = 0;
 
 static char         *Font_match[] = {
-    "",                     // 0: PLAIN
-    "<b>",                  // 1: BOLD
-    "<i>",                  // 2: ITALIC
-    "<b><i>",               // 3: BOLD + ITALIC
-    "<u>",                  // 4: UNDERLINE
-    "<b><u>",               // 5: BOLD + UNDERLINE
-    "<i><u>",               // 6: ITALIC + UNDERLINE
-    "<i><u><b>",            // 7: ITALIC + BOLD + UNDERLINE
+    "",             // 0: PLAIN
+    "<b>",          // 1: BOLD
+    "<i>",          // 2: ITALIC
+    "<b><i>",       // 3: BOLD + ITALIC
+    "<u>",          // 4: UNDERLINE
+    "<b><u>",       // 5: BOLD + UNDERLINE
+    "<i><u>",       // 6: ITALIC + UNDERLINE
+    "<i><u><b>",    // 7: ITALIC + BOLD + UNDERLINE
 };
 
 static char         *Font_end[] = {
-    "",                     // 0: PLAIN
-    "</b>",                 // 1: BOLD
-    "</i>",                 // 2: ITALIC
-    "</i></b>",             // 3: BOLD + ITALIC
-    "</u>",                 // 4: UNDERLINE
-    "</u></b>",             // 5: BOLD + UNDERLINE
-    "</u></i>",             // 6: ITALIC + UNDERLINE
-    "</b></u></i>",         // 7: ITALIC + BOLD + UNDERLINE
+    "",             // 0: PLAIN
+    "</b>",         // 1: BOLD
+    "</i>",         // 2: ITALIC
+    "</i></b>",     // 3: BOLD + ITALIC
+    "</u>",         // 4: UNDERLINE
+    "</u></b>",     // 5: BOLD + UNDERLINE
+    "</u></i>",     // 6: ITALIC + UNDERLINE
+    "</b></u></i>", // 7: ITALIC + BOLD + UNDERLINE
 };
 
-static int          Font_list[100];      // up to 100 nested fonts
+static int          Font_list[100];         // up to 100 nested fonts
 static int          Font_list_curr = 0;
 
 static bool         Blank_line_pfx = false;
@@ -126,7 +126,7 @@ static char *translate_str_wiki( const char *str )
     char            *ptr;
 
     len = 1;
-    for( t_str = str; *t_str != '\0'; ++t_str ) {
+    for( t_str = str; *t_str != '\0'; t_str++ ) {
         len += translate_char_wiki( t_str[0], t_str[1], buf );
     }
     if( len > Trans_len ) {
@@ -137,7 +137,7 @@ static char *translate_str_wiki( const char *str )
         Trans_len = len;
     }
     ptr = Trans_str;
-    for( t_str = str; *t_str != '\0'; ++t_str ) {
+    for( t_str = str; *t_str != '\0'; t_str++ ) {
         len = translate_char_wiki( t_str[0], t_str[1], buf );
         strcpy( ptr, buf );
         ptr += len;
@@ -159,12 +159,11 @@ static size_t trans_add_char_wiki( char ch, char next_ch, section_def *section )
 static size_t trans_add_str_wiki( const char *str, section_def *section )
 /***********************************************************************/
 {
-    size_t          len;
-    const char      *ptr;
+    size_t      len;
 
     len = 0;
-    for( ptr = str; *ptr != '\0'; ++ptr ) {
-        len += trans_add_char_wiki( ptr[0], ptr[1], section );
+    for( ; *str != '\0'; str++ ) {
+        len += trans_add_char_wiki( str[0], str[1], section );
     }
     return( len );
 }
@@ -269,14 +268,14 @@ void wiki_trans_line( char *line_buf, section_def *section )
             }
         }
         return;
-    case WHP_SLIST_END:
     case WHP_OLIST_END:
     case WHP_LIST_END:
     case WHP_DLIST_END:
+    case WHP_SLIST_END:
         switch( ch ) {
-        case WHP_SLIST_END:
         case WHP_OLIST_END:
         case WHP_LIST_END:
+        case WHP_SLIST_END:
         case WHP_DLIST_END:
             trans_add_str_nl( "", section );
             break;
@@ -330,10 +329,19 @@ void wiki_trans_line( char *line_buf, section_def *section )
        But, this rule only applies if a blank line immediately
        follows the tag, so its reset here regardless */
 #if 0
-   if( *ptr != WHP_LIST_ITEM && *ptr != WHP_DLIST_TERM && *ptr != WHP_DLIST_DESC && !Tab_xmp ) {
-        /* a .br in front of li and dt would generate extra spaces */
-        if( !done_blank ) {
-           line_len += trans_add_str( "<P>", section );
+    if( !Tab_xmp ) {
+        ch = *ptr;
+        switch( ch ) {
+        case WHP_LIST_ITEM:
+        case WHP_DLIST_TERM:
+        case WHP_DLIST_DESC:
+            break;
+        default:
+            /* a .br in front of li and dt would generate extra spaces */
+            if( !done_blank ) {
+                line_len += trans_add_str( "<P>", section );
+            }
+            break;
         }
     }
 #endif
@@ -350,56 +358,40 @@ void wiki_trans_line( char *line_buf, section_def *section )
             break;
         }
         switch( ch ) {
+        case WHP_FLINK:
+            ptr++;
+            file_name = ptr;
+            ptr = strchr( file_name, WHP_FLINK );
+            if( ptr == NULL ) {
+                error( ERR_BAD_LINK_DFN );
+            }
+            *ptr = '\0';
+            /* fall through */
         case WHP_HLINK:
         case WHP_DFN:
             Curr_ctx->empty = false;
             /* there are no popups in IPF, so treat them as links */
-            ctx_name = ptr + 1;
-            ptr = strchr( ptr + 1, ch );
+            ptr++;
+            ctx_name = ptr;
+            ptr = strchr( ctx_name, ch );
             if( ptr == NULL ) {
                 error( ERR_BAD_LINK_DFN );
             }
-            *ptr = '\0';
-            ctx_text = ptr + 1;
-            ptr = strchr( ctx_text + 1, ch );
+            *ptr++ = '\0';
+            ctx_text = ptr;
+            ptr = strchr( ctx_text, ch );
             if( ptr == NULL ) {
                 error( ERR_BAD_LINK_DFN );
             }
-            *ptr = '\0';
-            add_link( ctx_name );
+            *ptr++ = '\0';
+            if( ch != WHP_FLINK ) {
+                add_link( ctx_name );
+            }
             sprintf( buf, "<A HREF=\"#%s\">", ctx_name );
             line_len += trans_add_str( buf, section );
             line_len += trans_add_str_wiki( ctx_text, section );
             ch_len += strlen( ctx_text );
             line_len += trans_add_str( "</A>", section );
-            ++ptr;
-            break;
-        case WHP_FLINK:
-            Curr_ctx->empty = false;
-            file_name = strchr( ptr + 1, ch );
-            if( file_name == NULL ) {
-                error( ERR_BAD_LINK_DFN );
-            }
-            ctx_name = strchr( file_name + 1, ch );
-            if( ctx_name == NULL ) {
-                error( ERR_BAD_LINK_DFN );
-            }
-            ctx_text = strchr( ctx_name + 1, ch );
-            if( ctx_text == NULL ) {
-                error( ERR_BAD_LINK_DFN );
-            }
-            *ctx_text = '\0';
-            ctx_text = ctx_name + 1;
-            *ctx_name = '\0';
-            ctx_name = file_name + 1;
-            *file_name = '\0';
-            file_name = ptr + 1;
-            sprintf( buf, "<A HREF=\"#%s\">", ctx_name );
-            line_len += trans_add_str( buf, section );
-            line_len += trans_add_str_wiki( ctx_text, section );
-            ch_len += strlen( ctx_text );
-            line_len += trans_add_str( "</A>", section );
-            ptr = ctx_text + strlen( ctx_text ) + 1;
             break;
         case WHP_LIST_ITEM:
             /* list item */
@@ -420,56 +412,57 @@ void wiki_trans_line( char *line_buf, section_def *section )
             Blank_line_sfx = false;
             break;
         case WHP_CTX_KW:
-            end = strchr( ptr + 1, WHP_CTX_KW );
-            memcpy( buf, ptr + 1, end - ptr - 1 );
-            buf[end - ptr - 1] = '\0';
+            ptr++;
+            end = strchr( ptr, WHP_CTX_KW );
+            len = end - ptr;
+            memcpy( buf, ptr, len );
+            buf[len] = '\0';
             add_ctx_keyword( Curr_ctx, buf );
             ptr = end + 1;
             if( *ptr == ' ' ) {
                 /* kludge fix cuz of GML: GML thinks that keywords
                    are real words, so it puts a space after them.
                    This should fix that */
-                ++ptr;
+                ptr++;
             }
             break;
         case WHP_PAR_RESET:
             /* this can be ignored for IPF */
-            ++ptr;
+            ptr++;
             break;
         case WHP_BMP:
             Curr_ctx->empty = false;
-            ++ptr;
+            ptr++;
             ch = *ptr;
-            ptr += 2;
-            end = strchr( ptr, WHP_BMP );
-            *end = '\0';
+            file_name = ptr + 2;
+            ptr = strchr( file_name, WHP_BMP );
+            *ptr++ = '\0';
             // convert filenames to lower case
-            strlwr( ptr );
+            strlwr( file_name );
             switch( ch ) {
             case 'i':
-                sprintf( buf, "<IMG SRC=\"%s\">", ptr );
+                sprintf( buf, "<IMG SRC=\"%s\">", file_name );
                 break;
             case 'l':
-                sprintf( buf, "<IMG SRC=\"%s\" ALIGN=TOP>", ptr );
+                sprintf( buf, "<IMG SRC=\"%s\" ALIGN=TOP>", file_name );
                 break;
             case 'r':
-                sprintf( buf, "<IMG SRC=\"%s\" ALIGN=BOTTOM>", ptr );
+                sprintf( buf, "<IMG SRC=\"%s\" ALIGN=BOTTOM>", file_name );
                 break;
             case 'c':
-                sprintf( buf, "<IMG SRC=\"%s\" ALIGN=MIDDLE>", ptr );
+                sprintf( buf, "<IMG SRC=\"%s\" ALIGN=MIDDLE>", file_name );
                 break;
             default:
                 *buf = '\0';
                 break;
             }
             line_len += trans_add_str( buf, section );
-            ptr = end + 1;
             break;
         case WHP_FONTSTYLE_START:
-            ++ptr;
+            ptr++;
             end = strchr( ptr, WHP_FONTSTYLE_START );
             font_idx = 0;
-            for( ; ptr != end; ++ptr ) {
+            for( ; ptr != end; ptr++ ) {
                 switch( *ptr ) {
                 case 'b':
                     font_idx |= FONT_STYLE_BOLD;
@@ -485,32 +478,29 @@ void wiki_trans_line( char *line_buf, section_def *section )
             }
             line_len += trans_add_str( Font_match[font_idx], section );
             Font_list[Font_list_curr] = font_idx;
-            ++Font_list_curr;
-            ++ptr;
+            Font_list_curr++;
+            ptr++;
             break;
         case WHP_FONTSTYLE_END:
-            --Font_list_curr;
+            Font_list_curr--;
             line_len += trans_add_str( Font_end[Font_list[Font_list_curr]], section );
-            ++ptr;
+            ptr++;
             break;
         case WHP_FONTTYPE:
-            ++ptr;
+            ptr++;
             end = strchr( ptr, WHP_FONTTYPE );
-            *end = '\0';
-
+            *end++ = '\0';
             if( stricmp( ptr, Fonttype_courier ) == 0 ) {
-               strcpy( buf, "<tt>" );
+                strcpy( buf, "<tt>" );
             } else {
-               /* default system font */
-               strcpy( buf, "</tt>" );
+                /* default system font */
+                strcpy( buf, "</tt>" );
             }
-            ptr = end + 1;
-            end = strchr( ptr, WHP_FONTTYPE );
+            ptr = strchr( end, WHP_FONTTYPE ) + 1;
             line_len += trans_add_str( buf, section );
-            ptr = end + 1;
             break;
         default:
-            ++ptr;
+            ptr++;
             Curr_ctx->empty = false;
             if( Tab_xmp && ch == Tab_xmp_char ) {
                 len = tab_align( ch_len, section );
@@ -524,12 +514,12 @@ void wiki_trans_line( char *line_buf, section_def *section )
                 trans_add_char( '\n', section );
                 if( *ptr == ' ' ) {
                     line_len += trans_add_str( WIKI_SPACE, section );
-                    ++ch_len;
+                    ch_len++;
                     ptr++;
                 }
             } else {
                 line_len += trans_add_char_wiki( ch, *ptr, section );
-                ++ch_len;
+                ch_len++;
             }
             break;
         }
@@ -571,12 +561,12 @@ static void output_ctx_hdr( ctx_def *ctx )
 
     whp_fprintf( Out_file, "\n" );
 
-    for( i = 0; i < head_level; ++i )
+    for( i = 0; i < head_level; i++ )
         whp_fprintf( Out_file, "=" );
 
     whp_fprintf( Out_file, "%s", translate_str_wiki( ctx->title ) );
 
-    for( i = 0; i < head_level; ++i )
+    for( i = 0; i < head_level; i++ )
         whp_fprintf( Out_file, "=" );
 
     whp_fprintf( Out_file, "\n" );

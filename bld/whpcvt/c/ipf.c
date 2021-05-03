@@ -84,7 +84,7 @@ static void draw_line( section_def *section )
     int         i;
 
     trans_add_str_nl( ":cgraphic.", section );
-    for( i = BOX_LINE_SIZE; i > 0; --i ) {
+    for( i = BOX_LINE_SIZE; i > 0; i-- ) {
         trans_add_char( BOX_HBAR, section );
     }
     trans_add_str_nl( "\n:ecgraphic.", section );
@@ -123,7 +123,7 @@ static char *translate_str_ipf( const char *str )
     char                *ptr;
 
     len = 1;
-    for( t_str = str; *t_str != '\0'; ++t_str ) {
+    for( t_str = str; *t_str != '\0'; t_str++ ) {
         len += translate_char_ipf( *t_str, buf );
     }
     if( len > Trans_len ) {
@@ -134,7 +134,7 @@ static char *translate_str_ipf( const char *str )
         Trans_len = len;
     }
     ptr = Trans_str;
-    for( t_str = str; *t_str != '\0'; ++t_str ) {
+    for( t_str = str; *t_str != '\0'; t_str++ ) {
         len = translate_char_ipf( *t_str, buf );
         strcpy( ptr, buf );
         ptr += len;
@@ -159,7 +159,7 @@ static size_t trans_add_str_ipf( const char *str, section_def *section )
     size_t      len;
 
     len = 0;
-    for( ; *str != '\0'; ++str ) {
+    for( ; *str != '\0'; str++ ) {
         len += trans_add_char_ipf( *str, section );
     }
     return( len );
@@ -365,57 +365,43 @@ void ipf_trans_line( char *line_buf, section_def *section )
             break;
         }
         switch( ch ) {
+        case WHP_FLINK:
+            ptr++;
+            file_name = ptr;
+            ptr = strchr( file_name, WHP_FLINK );
+            if( ptr == NULL ) {
+                error( ERR_BAD_LINK_DFN );
+            }
+            *ptr = '\0';
+            /* fall through */
         case WHP_HLINK:
         case WHP_DFN:
             Curr_ctx->empty = false;
             /* there are no popups in IPF, so treat them as links */
-            ctx_name = ptr + 1;
-            ptr = strchr( ptr + 1, ch );
+            ptr++;
+            ctx_name = ptr;
+            ptr = strchr( ctx_name, ch );
             if( ptr == NULL ) {
                 error( ERR_BAD_LINK_DFN );
             }
-            *ptr = '\0';
-            ctx_text = ptr + 1;
-            ptr = strchr( ctx_text + 1, ch );
+            *ptr++ = '\0';
+            ctx_text = ptr;
+            ptr = strchr( ctx_text, ch );
             if( ptr == NULL ) {
                 error( ERR_BAD_LINK_DFN );
             }
-            *ptr = '\0';
-            add_link( ctx_name );
-            sprintf( buf, ":link reftype=hd refid=%s.", ctx_name );
-            line_len += trans_add_str( buf, section );
-            line_len += trans_add_str_ipf( ctx_text, section );
-            ch_len += strlen( ctx_text );
-            line_len += trans_add_str( ":elink.", section );
-            ++ptr;
-            break;
-        case WHP_FLINK:
-            Curr_ctx->empty = false;
-            file_name = strchr( ptr + 1, ch );
-            if( file_name == NULL ) {
-                error( ERR_BAD_LINK_DFN );
-            }
-            ctx_name = strchr( file_name + 1, ch );
-            if( ctx_name == NULL ) {
-                error( ERR_BAD_LINK_DFN );
-            }
-            ctx_text = strchr( ctx_name + 1, ch );
-            if( ctx_text == NULL ) {
-                error( ERR_BAD_LINK_DFN );
-            }
-            *ctx_text = '\0';
-            ctx_text = ctx_name + 1;
-            *ctx_name = '\0';
-            ctx_name = file_name + 1;
-            *file_name = '\0';
-            file_name = ptr + 1;
-            sprintf( buf, ":link reftype=launch object='view.exe' "
+            *ptr++ = '\0';
+            if( ch == WHP_FLINK ) {
+                sprintf( buf, ":link reftype=launch object='view.exe' "
                           "data='%s %s'.", file_name, ctx_name );
+            } else {
+                add_link( ctx_name );
+                sprintf( buf, ":link reftype=hd refid=%s.", ctx_name );
+            }
             line_len += trans_add_str( buf, section );
             line_len += trans_add_str_ipf( ctx_text, section );
             ch_len += strlen( ctx_text );
             line_len += trans_add_str( ":elink.", section );
-            ptr = ctx_text + strlen( ctx_text ) + 1;
             break;
         case WHP_LIST_ITEM:
             /* list item */
@@ -442,9 +428,10 @@ void ipf_trans_line( char *line_buf, section_def *section )
             }
             break;
         case WHP_CTX_KW:
-            end = strchr( ptr + 1, WHP_CTX_KW );
-            len = end - ptr - 1;
-            memcpy( buf, ptr + 1, len );
+            ptr++;
+            end = strchr( ptr, WHP_CTX_KW );
+            len = end - ptr;
+            memcpy( buf, ptr, len );
             buf[len] = '\0';
             add_ctx_keyword( Curr_ctx, buf );
             ptr = end + 1;
@@ -452,45 +439,44 @@ void ipf_trans_line( char *line_buf, section_def *section )
                 /* kludge fix cuz of GML: GML thinks that keywords are
                    are real words, so it puts a space after them.
                    This should fix that */
-                ++ptr;
+                ptr++;
             }
             break;
         case WHP_PAR_RESET:
             /* this can be ignored for IPF */
-            ++ptr;
+            ptr++;
             break;
         case WHP_BMP:
             Curr_ctx->empty = false;
-            ++ptr;
+            ptr++;
             ch = *ptr;
-            ptr += 2;
-            end = strchr( ptr, WHP_BMP );
-            *end = '\0';
+            file_name = ptr + 2;
+            ptr = strchr( file_name, WHP_BMP );
+            *ptr++ = '\0';
             switch( ch ) {
             case 'i':
-                sprintf( buf, ":artwork runin name='%s'.", ptr );
+                sprintf( buf, ":artwork runin name='%s'.", file_name );
                 break;
             case 'l':
-                sprintf( buf, ":artwork align=left name='%s'.", ptr );
+                sprintf( buf, ":artwork align=left name='%s'.", file_name );
                 break;
             case 'r':
-                sprintf( buf, ":artwork align=right name='%s'.", ptr );
+                sprintf( buf, ":artwork align=right name='%s'.", file_name );
                 break;
             case 'c':
-                sprintf( buf, ":artwork align=center name='%s'.", ptr );
+                sprintf( buf, ":artwork align=center name='%s'.", file_name );
                 break;
             default:
                 *buf = '\0';
                 break;
             }
             line_len += trans_add_str( buf, section );
-            ptr = end + 1;
             break;
         case WHP_FONTSTYLE_START:
-            ++ptr;
+            ptr++;
             end = strchr( ptr, WHP_FONTSTYLE_START );
             font_idx = 0;
-            for( ; ptr != end; ++ptr ) {
+            for( ; ptr != end; ptr++ ) {
                 switch( *ptr ) {
                 case 'b':
                     font_idx |= FONT_STYLE_BOLD;
@@ -506,20 +492,19 @@ void ipf_trans_line( char *line_buf, section_def *section )
             }
             line_len += trans_add_str( Font_match[font_idx], section );
             Font_list[Font_list_curr] = font_idx;
-            ++Font_list_curr;
-            ++ptr;
+            Font_list_curr++;
+            ptr++;
             break;
         case WHP_FONTSTYLE_END:
-            --Font_list_curr;
+            Font_list_curr--;
             line_len += trans_add_str( Font_end[Font_list[Font_list_curr]], section );
-            ++ptr;
+            ptr++;
             break;
         case WHP_FONTTYPE:
-            ++ptr;
+            ptr++;
             end = strchr( ptr, WHP_FONTTYPE );
-            *end = '\0';
+            *end++ = '\0';
             strcpy( buf, ":font facename=" );
-
             if( Ipf_or_Html_Real_font ) {
                 /* This code supports fonts in the expected
                    manor, but not in the usual IPF way. In IPF, font switching
@@ -535,10 +520,9 @@ void ipf_trans_line( char *line_buf, section_def *section )
                     strcat( buf, "Courier" );
                 }
                 line_len += trans_add_str( buf, section );
-                ptr = end + 1;
-                end = strchr( ptr, WHP_FONTTYPE );
-                *end = '\0';
-                sprintf( buf, " size=%dx10.", (int)strtol( ptr, NULL, 10 ) );
+                ptr = strchr( end, WHP_FONTTYPE );
+                *ptr++ = '\0';
+                sprintf( buf, " size=%dx10.", (int)strtol( end, NULL, 10 ) );
             } else {
                 /* this code turns all font changes to the default system
                    font, except for Courier. This is the normal IPF way */
@@ -550,15 +534,12 @@ void ipf_trans_line( char *line_buf, section_def *section )
                     /* default system font */
                     strcat( buf, " size=0x0." );
                 }
-                ptr = end + 1;
-                end = strchr( ptr, WHP_FONTTYPE );
+                ptr = strchr( end, WHP_FONTTYPE ) + 1;
             }
-
             line_len += trans_add_str( buf, section );
-            ptr = end + 1;
             break;
         default:
-            ++ptr;
+            ptr++;
             Curr_ctx->empty = false;
             if( Tab_xmp && ch == Tab_xmp_char ) {
                 len = tab_align( ch_len, section );
@@ -567,7 +548,7 @@ void ipf_trans_line( char *line_buf, section_def *section )
                 ptr = skip_blanks( ptr );
             } else {
                 line_len += trans_add_char_ipf( ch, section );
-                ++ch_len;
+                ch_len++;
             }
             if( line_len > 120 && ch == ' ' && !Tab_xmp ) {
                 /* break onto the next line */

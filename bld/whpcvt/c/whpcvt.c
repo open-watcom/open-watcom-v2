@@ -283,7 +283,7 @@ static void print_help( void )
 {
     const char      **p;
 
-    for( p = Help_info; *p != NULL; ++p ) {
+    for( p = Help_info; *p != NULL; p++ ) {
         printf( "%s\n", *p );
     }
 }
@@ -383,12 +383,12 @@ static void check_brace( const char *str, size_t len )
 
     if( Brace_check && Output_type == OUT_RTF ) {
         prev_ch = ' ';
-        for( ptr = str; len-- > 0; ++ptr ) {
+        for( ptr = str; len-- > 0; ptr++ ) {
             ch = *ptr;
             if( ch == '{' && prev_ch != '\\' ) {
-                ++Brace_count;
+                Brace_count++;
             } else if( ch == '}' && prev_ch != '\\' ) {
-                --Brace_count;
+                Brace_count--;
             }
             prev_ch = ch;
         }
@@ -504,13 +504,13 @@ static int process_args( int argc, char *argv[] )
     int                 i;
     int                 start_arg;
 
-    for( start_arg = 0; start_arg < argc; ++start_arg ) {
+    for( start_arg = 0; start_arg < argc; start_arg++ ) {
 #ifdef __UNIX__
         if( argv[start_arg][0] == '-' ) {
 #else
         if( argv[start_arg][0] == '-' || argv[start_arg][0] == '/' ) {
 #endif
-            for( i = 0; Args[i] != NULL; ++i ) {
+            for( i = 0; Args[i] != NULL; i++ ) {
                 if( stricmp( Args[i], &argv[start_arg][1] ) == 0 ) {
                     break;
                 }
@@ -668,7 +668,7 @@ static int process_args( int argc, char *argv[] )
                 Do_idx_button = true;
                 break;
             case ARG_TL:
-                ++start_arg;
+                start_arg++;
                 if( start_arg < argc ) {
                     _new( Ipf_or_Html_title, strlen( argv[start_arg] ) + 1 );
                     strcpy( Ipf_or_Html_title, argv[start_arg] );
@@ -680,7 +680,7 @@ static int process_args( int argc, char *argv[] )
                 Title_case = TITLE_CASE_MIXED;
                 break;
             case ARG_DT:
-                ++start_arg;
+                start_arg++;
                 if( start_arg < argc ) {
                     _new( IB_def_topic, strlen( argv[start_arg] ) + 1 );
                     strcpy( IB_def_topic, argv[start_arg] );
@@ -689,7 +689,7 @@ static int process_args( int argc, char *argv[] )
                 }
                 break;
             case ARG_DS:
-                ++start_arg;
+                start_arg++;
                 if( start_arg < argc ) {
                     _new( IB_help_desc, strlen( argv[start_arg] ) + 1 );
                     strcpy( IB_help_desc, argv[start_arg] );
@@ -698,7 +698,7 @@ static int process_args( int argc, char *argv[] )
                 }
                 break;
             case ARG_OF:
-                ++start_arg;
+                start_arg++;
                 if( start_arg < argc ) {
                     Options_File = normalize_fname( Options_File, argv[start_arg], NULL );
                 } else {
@@ -816,7 +816,7 @@ static int valid_args( int argc, char *argv[] )
             if( opt_file == NULL ) {
                 return( -1 );
             }
-            for( argc = 0 ;; ++argc ) {
+            for( argc = 0 ;; argc++ ) {
                 if( fgets( line, sizeof( line ), opt_file ) == NULL ) {
                     break;
                 }
@@ -828,7 +828,7 @@ static int valid_args( int argc, char *argv[] )
             Options_File = NULL;
 
             _new( argv, argc );
-            for( argc = 0;; ++argc ) {
+            for( argc = 0;; argc++ ) {
                 if( fgets( line, sizeof( line ), opt_file ) == NULL ) {
                     break;
                 }
@@ -839,7 +839,7 @@ static int valid_args( int argc, char *argv[] )
             }
             fclose( opt_file );
             ret = process_args( argc, argv );
-            for( i = 0 ; i < argc; ++i ) {
+            for( i = 0 ; i < argc; i++ ) {
                 free( argv[i] );
             }
             free( argv );
@@ -883,14 +883,14 @@ bool read_line( void )
 
     eat_blank = false;
     for( ;; ) {
-        ++Line_num;
+        Line_num++;
         len = 0;
-        for( buf = Line_buf;; ++buf ) {
+        for( buf = Line_buf;; buf++ ) {
             c = read_char();
             if( c == EOF ) {
                 return( false );
             }
-            ++len;
+            len++;
             if( len > Line_buf_size ) {
                 Line_buf_size += BUF_GROW;
                 Line_buf = _realloc( Line_buf, Line_buf_size );
@@ -957,7 +957,7 @@ char *whole_keyword_line( char *ptr )
             /* kludge fix cuz of GML: GML thinks that keywords are
                are real words, so it puts a space after them.
                This should fix that */
-            ++ptr;
+            ptr++;
         }
     }
 
@@ -982,7 +982,7 @@ size_t trans_add_str( const char *str, section_def *section )
     size_t      len;
 
     len = 0;
-    for( ; *str != '\0'; ++str ) {
+    for( ; *str != '\0'; str++ ) {
         len += trans_add_char( *str, section );
     }
 
@@ -1049,7 +1049,7 @@ static void add_key_ctx( keyword_def *key, ctx_def *ctx )
         key->ctx_list_size = 0;
     }
 
-    ++key->ctx_list_size;
+    key->ctx_list_size++;
     if( key->ctx_list_size > key->ctx_list_alloc ) {
         key->ctx_list_alloc += 16;      // grow by a reasonable amount
         _renew( key->ctx_list, key->ctx_list_alloc );
@@ -1076,7 +1076,7 @@ void add_ctx_keyword( ctx_def *ctx, const char *keyword )
             strcpy( key->keyword, keyword );
             key->next = Keyword_list;
             key->id = Keyword_id;
-            ++Keyword_id;
+            Keyword_id++;
             Keyword_list = key;
 
             key->ctx_list = NULL;
@@ -1290,7 +1290,7 @@ static void add_ctx( ctx_def *ctx, const char *title, char *keywords, const char
     }
     if( keywords != NULL && ctx->keylist == NULL && *skip_blanks( keywords ) != '\0' ) {
         for( ptr = keywords;; ) {
-            for( end = ptr; *end != ',' && *end != ';' && *end != '\0'; ++end );
+            for( end = ptr; *end != ',' && *end != ';' && *end != '\0'; end++ );
             ch = *end;
             *end = '\0';
             if( !find_keyword( ctx, ptr ) ) {
@@ -1367,10 +1367,10 @@ static ctx_def *define_ctx( void )
     title_fmt = TITLE_FMT_DEFAULT;
     if( *ctx_name == WHP_TOPIC_LN ) {
         title_fmt = TITLE_FMT_LINE;
-        ++ctx_name;
+        ctx_name++;
     } else if( *ctx_name == WHP_TOPIC_NOLN ) {
         title_fmt = TITLE_FMT_NOLINE;
-        ++ctx_name;
+        ctx_name++;
     }
     ctx = find_ctx( ctx_name );
     old_ctx = ctx;
@@ -1379,9 +1379,9 @@ static ctx_def *define_ctx( void )
             printf( "topic already exists: %s\n", ctx_name );
             warning( ERR_CTX_EXISTS );
         }
-        for( i = 0; i < strlen( ctx_name ); ++i ) {
+        for( i = 0; i < strlen( ctx_name ); i++ ) {
             o_ch = ctx_name[i];
-            for( ch = 'A'; ch < 'Z'; ++ch ) {
+            for( ch = 'A'; ch < 'Z'; ch++ ) {
                 ctx_name[i] = ch;
                 if( find_ctx( ctx_name ) == NULL ) {
                     break;
@@ -1502,7 +1502,7 @@ static void set_browse_numbers( void )
         order = 1;
         for( b_ctx = browse->ctx_list; b_ctx != NULL; b_ctx = b_ctx->next ) {
             b_ctx->ctx->browse_num = order;
-            ++order;
+            order++;
         }
     }
 }
@@ -1635,7 +1635,7 @@ static void compress_kw( keyword_def *kw )
 
     if( Remove_empty ) {
         o_size = kw->ctx_list_size;
-        for( o_idx = 0; o_idx < o_size; ++o_idx ) {
+        for( o_idx = 0; o_idx < o_size; o_idx++ ) {
             if( !kw->ctx_list[o_idx]->empty ) {
                 kw->ctx_list[n_idx] = kw->ctx_list[o_idx];
                 n_idx++;
@@ -1814,12 +1814,12 @@ static void output_contents_file( void )
             continue;
         }
         if( ctx->head_level > level ) {
-            for( i = level + 1; i <= ctx->head_level; ++i ) {
+            for( i = level + 1; i <= ctx->head_level; i++ ) {
                 whp_fprintf( Contents_file, ":pb.%c%c\n", WHP_SLIST_START, WHP_LIST_COMPACT );
             }
             level = ctx->head_level;
         } else if( ctx->head_level < level ) {
-            for( i = ctx->head_level + 1; i <=level; ++i ) {
+            for( i = ctx->head_level + 1; i <=level; i++ ) {
                 whp_fprintf( Contents_file, ":pb.%c\n", WHP_SLIST_END );
             }
             level = ctx->head_level;
@@ -1842,7 +1842,7 @@ static void output_contents_file( void )
         }
         whp_fprintf( Contents_file, "\n" );
     }
-    for( i = -1; i < level; ++i ) {
+    for( i = -1; i < level; i++ ) {
         whp_fprintf( Contents_file, ":pb.%c\n", WHP_SLIST_END );
     }
 
@@ -1939,7 +1939,7 @@ static void set_ctx_ids( void )
 
     for( ctx = Ctx_list; ctx != NULL; ctx = ctx->next ) {
         if( ctx->ctx_id == -1 ) {
-            ++ctx_id;
+            ctx_id++;
             ctx->ctx_id = ctx_id;
         }
     }
@@ -2099,7 +2099,7 @@ int main( int argc, char *argv[] )
 
         /* This program can be a memory pig, so, to avoid fragmentation,
            do some big allocs to block out the space */
-        for( size = 10; size > 0; --size ) {
+        for( size = 10; size > 0; size-- ) {
             start_alloc = malloc( size * 1000 * 1024 );
             if( start_alloc != NULL ) {
                 free( start_alloc );

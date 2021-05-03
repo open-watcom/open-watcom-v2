@@ -91,7 +91,7 @@ static void spaces_to_nobreak( char *str )
 /****************************************/
 {
     if( str != NULL ) {
-        for( ; *str != '\0'; ++str ) {
+        for( ; *str != '\0'; str++ ) {
             if( *str == ' ' ) {
                 *str = IB_SPACE_NOBREAK;
             }
@@ -103,7 +103,7 @@ static void spaces_to_nobreak( char *str )
  * Return length of converted character for InfoBench.
  */
 static int out_char_ib( char *out, char ch )
-/*********************************************/
+/******************************************/
 {
     switch( ch ) {
     // The following characters should be preceded by an ESC character
@@ -327,7 +327,7 @@ static size_t trans_add_str_wrap( const char *str, section_def *section )
 {
     size_t      len = 0;
 
-    for( ; *str != '\0'; ++str ) {
+    for( ; *str != '\0'; str++ ) {
         len += trans_add_char_wrap( *str, section );
     }
     return( len );
@@ -484,7 +484,7 @@ void ib_trans_line( char *line_buf, section_def *section )
 
     // remove '\n' on the end
     if( Blank_line ) {
-        --section->section_size;
+        section->section_size--;
     }
 
     // indent properly if the first char is not white-space
@@ -516,39 +516,34 @@ void ib_trans_line( char *line_buf, section_def *section )
             break;
         }
         switch( ch ) {
+        case WHP_FLINK:
+            ptr++;
+            file_name = ptr;
+            ptr = strchr( file_name, WHP_FLINK );
+            if( ptr == NULL ) {
+                error( ERR_BAD_LINK_DFN );
+            }
+            *ptr = '\0';
+            /* fall through */
         case WHP_HLINK:
         case WHP_DFN:
-        case WHP_FLINK:
             Curr_ctx->empty = false;
-            if( ch == WHP_FLINK ) {
-                file_name = strchr( ptr + 1, ch );
-                if( file_name == NULL ) {
-                    error( ERR_BAD_LINK_DFN );
-                }
-                *file_name = '\0';
-            } else {
-                file_name = ptr;
-            }
-            ctx_name = strchr( file_name + 1, ch );
-            if( ctx_name == NULL ) {
+            ptr++;
+            ctx_name = ptr;
+            ptr = strchr( ctx_name, ch );
+            if( ptr == NULL ) {
                 error( ERR_BAD_LINK_DFN );
             }
-            *ctx_name = '\0';
-
-            ctx_text = strchr( ctx_name + 1, ch );
-            if( ctx_text == NULL ) {
+            *ptr++ = '\0';
+            ctx_text = ptr;
+            ptr = strchr( ctx_name, ch );
+            if( ptr == NULL ) {
                 error( ERR_BAD_LINK_DFN );
             }
-            *ctx_text = '\0';
-
-            ctx_text = ctx_name + 1;
-            ctx_name = file_name + 1;
-            file_name = ptr + 1;
+            *ptr++ = '\0';
             if( ch != WHP_FLINK ) {
                 add_link( ctx_name );
             }
-
-            ptr = ctx_text + strlen( ctx_text ) + 1;
 
             // Definition pop-up's are converted to hyper-links in InfoBench
             trans_add_char( TEMP_HLINK_BREAK, section );
@@ -626,21 +621,21 @@ void ib_trans_line( char *line_buf, section_def *section )
                 /* kludge fix cuz of GML: GML thinks that keywords are
                    are real words, so it puts a space after them.
                    This should fix that */
-                ++ptr;
+                ptr++;
             }
             break;
         case WHP_PAR_RESET:
             // we ignore paragraph resets
-            ++ptr;
+            ptr++;
             break;
         case WHP_BMP:
             // we ignore bitmaps
             ptr = strchr( ptr + 3, WHP_BMP ) + 1;
             break;
         case WHP_FONTSTYLE_START:
-            ++ptr;
+            ptr++;
             end = strchr( ptr, WHP_FONTSTYLE_START );
-            for( ; ptr != end; ++ptr ) {
+            for( ; ptr != end; ptr++ ) {
                 switch( *ptr ) {
                 // bold and italic map to bold
                 case 'b':
@@ -654,19 +649,19 @@ void ib_trans_line( char *line_buf, section_def *section )
                     break;
                 }
             }
-            ++ptr;
+            ptr++;
             break;
         case WHP_FONTSTYLE_END:
             // reset style (bold off, underline off)
             trans_add_str( IB_BOLD_OFF_STR IB_UNDERLINE_OFF_STR, section );
-            ++ptr;
+            ptr++;
             break;
         case WHP_FONTTYPE:
             // we basically ignore font type changes
             ptr = strchr( strchr( ptr + 1 , WHP_FONTTYPE ) + 1, WHP_FONTTYPE ) + 1;
             break;
         default:
-            ++ptr;
+            ptr++;
             if( !Eat_blanks || ch != ' ' ) {
                 Curr_ctx->empty = false;
                 if( Tab_xmp && ch == Tab_xmp_char ) {
@@ -932,7 +927,7 @@ static void output_section_ib( section_def *section )
             p += len + 1;
 
             // grab the line number
-            for( len = 0; ; ++len ) {
+            for( len = 0; ; len++ ) {
                 if( *(p + len) == TEMP_HLINK_BREAK ) {
                     break;
                 }
@@ -942,7 +937,7 @@ static void output_section_ib( section_def *section )
             p += len + 1;
 
             // find the length of the link label (what the user sees)
-            for( len = 0; ; ++len ) {
+            for( len = 0; ; len++ ) {
                 if( *(p + len) == IB_HLINK_BREAK ) {
                     break;
                 }
@@ -960,7 +955,7 @@ static void output_section_ib( section_def *section )
             p += len + 1;
 
             // find the length of the link context
-            for( len = 0; ; ++len ) {
+            for( len = 0; ; len++ ) {
                 ch = *(p + len);
                 if( ch == TEMP_HLINK_BREAK || ch == IB_HLINK_BREAK ) {
                     break;
@@ -993,7 +988,7 @@ static void output_section_ib( section_def *section )
                     /* file link. Get the file name */
                     file = p + len + 1;
                     for( ;; ) {
-                        ++len;
+                        len++;
                         if( *(p + len) == TEMP_HLINK_BREAK ) {
                             break;
                         }
