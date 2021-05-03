@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,8 +74,7 @@ static offset BumpUp( offset ptr, offset size )
 {
     ptr += size;
     if( CurrentSeg != NULL && (CurrentSeg->info & USE_32) == 0 && (FmtData.type & MK_RAW) == 0 && ptr > 0x10000 ) {
-        LnkMsg( ERR+MSG_SEG_TOO_BIG, "sl", CurrentSeg->segname,
-                (unsigned long)(ptr-0x10000) );
+        LnkMsg( ERR+MSG_SEG_TOO_BIG, "sl", CurrentSeg->segname, (unsigned long)( ptr - 0x10000 ) );
     }
     return( ptr );
 }
