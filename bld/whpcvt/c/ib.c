@@ -536,7 +536,7 @@ void ib_trans_line( char *line_buf, section_def *section )
             }
             *ptr++ = '\0';
             ctx_text = ptr;
-            ptr = strchr( ctx_name, ch );
+            ptr = strchr( ctx_text, ch );
             if( ptr == NULL ) {
                 error( ERR_BAD_LINK_DFN );
             }
