@@ -1077,7 +1077,7 @@ If it is issued, please report this problem.
 .errnote 1103 library module %s(%s) not found for tracing
 .np
 A "SYMTRACE" or "MODTRACE" directive contained an object module
-(namely module %s1 in library %s2 ) that could not be found.
+(namely module %s2 in library %s1 ) that could not be found.
 .if &e'&optdoc ne 0 .do begin
 .np
 This message should not be issued for a &powerpp Win32 executable.
