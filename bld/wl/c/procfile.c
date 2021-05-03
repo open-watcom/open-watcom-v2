@@ -692,11 +692,8 @@ void ResolveUndefined( void )
             }
         }
         for( sym = HeadSym; sym != NULL; sym = sym->link ) {
-            if( ( (sym->info & SYM_DEFINED) == 0
-                  && ( (sym->info & SYM_REFERENCED) || (sym->info & SYM_TRACE) == 0 )
-                  && !IS_SYM_WEAK_REF( sym )
-                || (FmtData.type & MK_NOVELL)
-                  && IS_SYM_IMPORTED( sym )
+            if( ( (sym->info & SYM_DEFINED) == 0 && !IS_SYM_WEAK_REF( sym )
+                || (FmtData.type & MK_NOVELL) && IS_SYM_IMPORTED( sym )
                   && (sym->info & (SYM_REFERENCED | SYM_LOCAL_REF)) )
               && (sym->info & SYM_IS_ALTDEF) == 0 ) {
                 LibFind( sym->name.u.ptr, (sym->info & SYM_CHECKED) != 0 );

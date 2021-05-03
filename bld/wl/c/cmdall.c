@@ -1068,10 +1068,7 @@ static bool ProcImpFile( void )
 static bool AddSymTrace( void )
 /*****************************/
 {
-    symbol      *sym;
-
-    sym = SymOp( ST_CREATE, Token.this, Token.len );
-    sym->info |= SYM_TRACE;
+    AddTraceListSym( tostring() );
     return( true );
 }
 
@@ -1087,15 +1084,9 @@ static bool AddModTrace( void )
 {
     char            *membname;
     char            *fname;
-    trace_info      *info;
 
     fname = GetFileName( &membname, false );
-    _ChkAlloc( info, sizeof( trace_info ) );
-    info->u.name = fname;
-    info->member = membname;
-    info->found = false;        // used for matching libraries
-    info->next = TraceList;
-    TraceList = info;
+    AddTraceListMod( fname, membname );
     return( true );
 }
 

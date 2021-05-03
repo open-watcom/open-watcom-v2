@@ -40,11 +40,28 @@
 #include "symtrace.h"
 
 
-trace_info       *TraceList;
+typedef struct trace_info {
+    struct trace_info       *next;
+    union {
+        char                *name;
+        file_list           *lib;
+    } u;
+    char                    *member;
+    bool                    found;
+} trace_info;
+
+typedef struct sym_trace_info {
+    struct sym_trace_info   *next;
+    char                    *name;
+} sym_trace_info;
+
+static trace_info       *TraceList;
+static sym_trace_info   *TraceListSym;
 
 void ResetSymTrace( void )
 /************************/
 {
+    TraceListSym = NULL;
     TraceList = NULL;
 }
 
@@ -64,6 +81,19 @@ static void CheckFileTrace( section *sect, void *_info )
             return;
         }
     }
+}
+
+void AddTraceListMod( char *fname, char *membname )
+/*************************************************/
+{
+    trace_info      *info;
+
+    _ChkAlloc( info, sizeof( trace_info ) );
+    info->u.name = fname;
+    info->member = membname;
+    info->found = false;        // used for matching libraries
+    info->next = TraceList;
+    TraceList = info;
 }
 
 void CheckTraces( void )
@@ -139,11 +169,45 @@ bool FindLibTrace( mod_entry *mod )
     return( false );
 }
 
+void AddTraceListSym( char *symname )
+/***********************************/
+{
+    sym_trace_info  *info;
+
+    _ChkAlloc( info, sizeof( sym_trace_info ) );
+    info->name = symname;
+    info->next = TraceListSym;
+    TraceListSym = info;
+}
+
+bool FindSymTrace( const char *symname )
+/**************************************/
+{
+    sym_trace_info  *info;
+    sym_trace_info  **prev;
+
+    prev = &TraceListSym;
+    for( info = TraceListSym; info != NULL; info = info->next ) {
+        if( strcmp( info->name, symname ) == 0 ) {
+            *prev = info->next;
+            _LnkFree( info->name );
+            _LnkFree( info );
+            return( true );
+        }
+        prev = &(info->next);
+    }
+    return( false );
+}
+
 void PrintBadTraces( void )
 /*************************/
 {
+    sym_trace_info  *sym_info;
     trace_info      *info;
 
+    for( sym_info = TraceListSym; sym_info != NULL; sym_info = sym_info->next ) {
+        LnkMsg( WRN+MSG_TRACE_SYM_NOT_FOUND, "s", sym_info->name );
+    }
     for( info = TraceList; info != NULL; info = info->next ) {
         if( info->found ) {
             LnkMsg( WRN+MSG_TRACE_LIB_NOT_FOUND, "12", info->u.lib->infile->name.u.ptr, info->member );
@@ -157,8 +221,13 @@ void PrintBadTraces( void )
 void CleanTraces( void )
 /**********************/
 {
-    trace_info *next;
+    void    *next;
 
+    for( ; TraceListSym != NULL; TraceListSym = next ) {
+        next = TraceListSym->next;
+        _LnkFree( TraceListSym->name );
+        _LnkFree( TraceListSym );
+    }
     for( ; TraceList != NULL; TraceList = next ) {
         next = TraceList->next;
         if( !TraceList->found ) {

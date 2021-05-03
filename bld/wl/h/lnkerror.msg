@@ -343,3 +343,5 @@ pick(    MSG_DEFDATA_TOO_BIG,       "default data segment exceeds maximum size b
                     "default data segment exceeds maximum size by %l bytes" )
 pick(    MSG_IOPL_BYTES_ODD,        "IOPL bytes in EXPORT directive odd, ignoring low bit" ,
                     "IOPL bytes in EXPORT directive odd, ignoring low bit" )
+pick(    MSG_TRACE_SYM_NOT_FOUND,       "symbol %s not found for tracing" ,
+                    "symbol %s not found for tracing" )

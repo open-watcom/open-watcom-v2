@@ -1655,12 +1655,18 @@ Windows) exceeds the maximum allowed size. The default data segment includes
 the data segment plus default stack size plus default heap size. The total
 size must be 64K or less for OS/2 executables and 65,533 bytes or less for
 Windows executables.
+.*
 .errnote 1174 IOPL bytes in EXPORT directive odd, ignoring low bit
 .np
 The EXPORT directive accepts the number of IOPL bytes, but the OS/2
 executable formats, as well as the CPU, only work with the number of words.
 If the specified number of IOPL bytes is an odd number, the lowest bit will
 be ignored.
+.*
+.errnote 1175 symbol %s not found for tracing
+.np
+A "SYMTRACE" directive contained an symbol name (namely %s) that could not
+be found.
 .*
 .if &e'&dohelp eq 0 .do begin
 .endnote

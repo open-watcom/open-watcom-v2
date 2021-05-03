@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,6 +52,7 @@
 #include "permdata.h"
 #include "symtab.h"
 #include "symmem.h"
+#include "symtrace.h"
 
 #include "clibext.h"
 
@@ -1028,6 +1029,9 @@ static symbol *DoSymOp( sym_flags op, const char *symname, size_t length )
         } else {
             sym->hash = GlobalSymPtrs[hash];
             GlobalSymPtrs[hash] = sym;
+            if( FindSymTrace( symname ) ) {
+                sym->info |= SYM_TRACE;
+            }
         }
         DEBUG((DBG_OLD, "added symbol %s", symname_dbg ));
     }
