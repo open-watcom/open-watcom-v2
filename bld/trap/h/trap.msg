@@ -489,9 +489,15 @@ trappick( TRP_TCP_ip_address,
 trappick( TRP_PARSERV_Usage,
     "parserv [-Trap=trap_file[;trap_parm]] [-Once] [printer_number]",
     "jparserv [-Trap=trap_file[;trap_parm]] [-Once] [printer_number]" )
+#ifdef __QNX__
+trappick( TRP_SERSERV_Usage,
+    "serserv [-Trap=trap_file[;trap_parm]] [-Once] [[nid,]serial_port][.max_rate]",
+    "jserserv [-Trap=trap_file[;trap_parm]] [-Once] [[nid,]serial_port][.max_rate]" )
+#else
 trappick( TRP_SERSERV_Usage,
     "serserv [-Trap=trap_file[;trap_parm]] [-Once] [serial_port][.max_baud_rate]",
     "jserserv [-Trap=trap_file[;trap_parm]] [-Once] [serial_port][.max_baud_rate]" )
+#endif
 trappick( TRP_NETSERV_Usage,
     "netserv [-Trap=trap_file[;trap_parm]] [-Once] [server_name]",
     "jnetserv [-Trap=trap_file[;trap_parm]] [-Once] [server_name]" )
