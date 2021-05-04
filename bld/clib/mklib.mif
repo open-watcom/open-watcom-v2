@@ -1,5 +1,8 @@
 !include $(clib_dir)/master.mif
 
+!if exist(../../../deps.mif)
+!   include ../../../deps.mif
+!endif
 !include ../../../objects.mif
 
 .c   : ../../../c

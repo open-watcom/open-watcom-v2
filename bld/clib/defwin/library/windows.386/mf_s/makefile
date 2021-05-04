@@ -4,7 +4,5 @@ model=mf
 system=windows
 linkage=static
 convention=stack
-default_windowing=1
 
 !include $(clib_dir)/mklib.mif
-!include ../../../deps.mif

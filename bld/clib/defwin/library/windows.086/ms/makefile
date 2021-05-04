@@ -3,7 +3,5 @@ processor=086
 model=ms
 system=windows
 linkage=static
-default_windowing=1
 
 !include $(clib_dir)/mklib.mif
-!include ../../../deps.mif

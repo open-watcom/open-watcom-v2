@@ -5,4 +5,3 @@ system    = linux
 linkage   = static
 
 !include $(clib_dir)/mklib.mif
-!include ../../../deps.mif

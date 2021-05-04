@@ -9,4 +9,3 @@ mthreaded=1
 clib_release = 0
 
 !include $(clib_dir)/mklib.mif
-!include ../../../deps.mif
