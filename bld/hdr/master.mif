@@ -171,7 +171,6 @@ $($(system)_dirs): .EXPLICIT
 
 clean: .SYMBOLIC
     rm -f *.h *.hpp common.cnv
-    rm -f *.sp
     rm -f $(noext)
     rm -f $(additional_clean)
     rm -rf $(additional_clean_subdirs)
