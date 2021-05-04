@@ -3,7 +3,7 @@
 # Script to build the Open Watcom tools on Azure Pipelines
 # using the host platform's native C/C++ compiler.
 #
-# Expects 
+# Expects
 #   - POSIX tools
 #   - correct setup for all OW build environment variables
 #
@@ -59,19 +59,19 @@ build_proc()
 
     . $OWROOT/cmnvars.sh
 
+    export OWVERBOSE=1
+
     cd $OWSRCDIR
     case "$OWBUILD_STAGE" in
         "boot")
             bootutil_proc
             if [ $RC -eq 0 ]; then
                 cd $OWSRCDIR
-                export OWVERBOSE=1
                 builder boot
                 RC=$?
             fi
             ;;
         "build")
-            export OWVERBOSE=1
             builder rel
             RC=$?
             ;;
@@ -80,12 +80,10 @@ build_proc()
             RC=$?
             ;;
         "docs")
-            export OWVERBOSE=1
             builder docs $OWDOCTARGET
             RC=$?
             ;;
         "inst")
-            export OWVERBOSE=1
             builder install
             RC=$?
             ;;
