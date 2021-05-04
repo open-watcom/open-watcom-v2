@@ -38,6 +38,8 @@
 *.grc
 # generated .rh source file
 *.grh
+# generated .sp source file (wsplice)
+*.gsp
 *.i
 *.i0
 *.i1
