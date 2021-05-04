@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +44,7 @@
 #include "wclbproc.h"
 
 
-#ifndef __NT__
+#ifdef __WINDOWS__
 #pragma aux __init_default_win "*";
 char    __init_default_win;
 #endif
@@ -61,7 +61,7 @@ static void windowsFini( void );
 
 #if defined( __NT__ )
 
-_WCRTLINK int   __InitDefaultWin()
+_WCRTLINK int   __InitDefaultWin( void )
 {
     char        *str;
     HANDLE      inst;
