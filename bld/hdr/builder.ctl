@@ -18,14 +18,14 @@ set PROJDIR=<CWD>
     <CCCMD> dos/*                   <OWRELROOT>/h/
     <CCCMD> dos/sys/*               <OWRELROOT>/h/sys/
     rm -f <OWRELROOT>/h/makefile
-    rm -f <OWRELROOT>/h/crwatpro.sp
+    rm -f <OWRELROOT>/h/crwatpro.gsp
 
     <CCCMD> rdos/*                  <OWRELROOT>/rh/
     <CCCMD> rdos/sys/*              <OWRELROOT>/rh/sys/
     <CCCMD> rdos/arpa/*             <OWRELROOT>/rh/arpa/
     <CCCMD> rdos/netinet/*          <OWRELROOT>/rh/netinet/
     rm -f <OWRELROOT>/rh/makefile
-    rm -f <OWRELROOT>/rh/crwatpro.sp
+    rm -f <OWRELROOT>/rh/crwatpro.gsp
 
     <CCCMD> linux/*                 <OWRELROOT>/lh/
     <CCCMD> linux/arpa/*            <OWRELROOT>/lh/arpa/
@@ -37,12 +37,12 @@ set PROJDIR=<CWD>
     <CCCMD> linux/arch/mips/*       <OWRELROOT>/lh/arch/mips/
     <CCCMD> linux/arch/mips/sys/*   <OWRELROOT>/lh/arch/mips/sys/
     rm -f <OWRELROOT>/lh/makefile
-    rm -f <OWRELROOT>/lh/crwatpro.sp
+    rm -f <OWRELROOT>/lh/crwatpro.gsp
 
     <CCCMD> qnx/*                   <OWRELROOT>/qh/
     <CCCMD> qnx/sys/*               <OWRELROOT>/qh/sys/
     rm -f <OWRELROOT>/qh/makefile
-    rm -f <OWRELROOT>/qh/crwatpro.sp
+    rm -f <OWRELROOT>/qh/crwatpro.gsp
 
 [ BLOCK . . ]
 

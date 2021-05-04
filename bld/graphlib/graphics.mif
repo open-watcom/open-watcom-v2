@@ -2,9 +2,9 @@ proj_name = graph
 
 subdir_v2 = v2objs
 
-crwatpro_sp = crwatpro.sp
+crwatpro_gsp = crwatpro.gsp
 
-additional_clean = $(crwatpro_sp)
+additional_clean = $(crwatpro_gsp)
 
 graph_autodepends = .AUTODEPEND
 

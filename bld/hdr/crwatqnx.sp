@@ -1,4 +1,4 @@
-:include crwatpro.sp
+:include crwatpro.gsp
 :include crwatwat.sp
 :segment QNX
 :segment CPP_HDR

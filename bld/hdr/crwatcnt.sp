@@ -1,2 +1,2 @@
-:include crwatpro.sp
+:include crwatpro.gsp
 :include crwatepi.sp

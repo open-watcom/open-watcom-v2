@@ -1,6 +1,6 @@
 mh_dir          = $(incl_dir)
 readonly_sp     = $(hdr_dir)/readonly.sp
-crwatcnt_sp     = $(hdr_dir)/crwatcnt.sp $(crwatpro_sp) $(hdr_dir)/crwatepi.sp
+crwatcnt_sp     = $(hdr_dir)/crwatcnt.sp $(crwatpro_gsp) $(hdr_dir)/crwatepi.sp
 cplus           = $(hdr_dir)/cpluspro.sp $(hdr_dir)/cplusepi.sp
 owhdr           = $(crwatcnt_sp) $(readonly_sp)
 

@@ -35,13 +35,13 @@ linux_path = ../watcom
 qnx_path   = ../quantum;../watcom
 rdos_path  = ../watcom
 
-crwatpro_sp = crwatpro.sp
+crwatpro_gsp = crwatpro.gsp
 
-additional_clean = $(crwatpro_sp) $(noext) *.h *.hpp common.cnv
+additional_clean = $(crwatpro_gsp) $(noext) *.h *.hpp common.cnv
 additional_clean_subdirs = $($(system)_dirs)
 
 .EXTENSIONS
-.EXTENSIONS : . .h .hpp .cnv .sp .mh .mhp .sp1
+.EXTENSIONS : . .h .hpp .cnv .gsp .sp .mh .mhp
 
 all : $($(system)_dirs) $($(system)_files) .symbolic
     @%null
@@ -113,7 +113,7 @@ all : $($(system)_dirs) $($(system)_files) .symbolic
     @%make echo_wsplice
     $(wsplice) $(wsplice_opts)
 
-{$(hdr_dir)}.sp1.sp:
+{$(hdr_dir)}.sp.gsp:
     $(awk) -f $(hdr_dir)/cpyyear.awk -v CPYYEAR=$(curr_year) -v OUTFILE=$@ $[@
 
 #

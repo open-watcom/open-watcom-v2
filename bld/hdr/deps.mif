@@ -11,9 +11,9 @@ saferc    = ../saferpro.sp ../saferepi.sp ../errno_t.sp ../rsize_t.sp
 cplus     = ../cpluspro.sp ../cplusepi.sp
 ns_std    = ../nsstd.sp ../nsstdepi.sp
 
-crwat_sp    = ../crwat.sp $(crwatpro_sp) ../crwatwat.sp ../crwatepi.sp
-crwatcnt_sp = ../crwatcnt.sp $(crwatpro_sp) ../crwatepi.sp
-crwatqnx_sp = ../crwatqnx.sp $(crwatpro_sp) ../crwatwat.sp ../crwatepi.sp
+crwat_sp    = ../crwat.sp $(crwatpro_gsp) ../crwatwat.sp ../crwatepi.sp
+crwatcnt_sp = ../crwatcnt.sp $(crwatpro_gsp) ../crwatepi.sp
+crwatqnx_sp = ../crwatqnx.sp $(crwatpro_gsp) ../crwatwat.sp ../crwatepi.sp
 owhdr       = $(crwat_sp) ../readonly.sp ../owrtlink.sp
 owhdrcnt    = $(crwatcnt_sp) ../readonly.sp
 owhdrqnx    = $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp

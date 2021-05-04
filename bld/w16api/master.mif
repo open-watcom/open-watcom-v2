@@ -6,9 +6,9 @@ w16api_distrib_lib = 1
 !include cproj.mif
 !include defrule.mif
 
-crwatpro_sp = crwatpro.sp
+crwatpro_gsp = crwatpro.gsp
 
-additional_clean = $(crwatpro_sp) depends.dep
+additional_clean = $(crwatpro_gsp) depends.dep
 
 incl_dir = ../include
 
@@ -19,7 +19,7 @@ wsplice_extra_opts = -d"depends.dep"
 !endif
 wsplice_opts = $(wsplice_extra_opts) -i".." -i"$(hdr_dir)" -i"$(incl_dir)" $[@ $@
 
-.EXTENSIONS : .lbc .sp .def .mh .sp1
+.EXTENSIONS : .lbc .gsp .sp .def .mh
 
 headers =        &
     _win386.h    &
@@ -105,7 +105,7 @@ all : $(headers) $(libs) .SYMBOLIC
     @%make echo_wsplice
     $(wsplice) $(wsplice_opts)
 
-{$(hdr_dir)}.sp1.sp:
+{$(hdr_dir)}.sp.gsp:
     $(awk) -f $(hdr_dir)/cpyyear.awk -v CPYYEAR=$(curr_year) -v OUTFILE=$@ $[@
 
 $(libs):

@@ -13,9 +13,9 @@ hdr_cpu = $(host_cpu)
 !include cproj.mif
 !include defrule.mif
 
-crwatpro_sp = crwatpro.sp
+crwatpro_gsp = crwatpro.gsp
 
-additional_clean = $(crwatpro_sp) depends.dep
+additional_clean = $(crwatpro_gsp) depends.dep
 
 incl_dir_286 = ../../incl16
 incl_dir_386 = ../../incl32
@@ -27,7 +27,7 @@ wsplice_extra_opts = -d"depends.dep"
 !endif
 wsplice_opts = $(wsplice_extra_opts) -kIBMTOOLKIT -i"$(hdr_dir)" $[@ $@
 
-.EXTENSIONS : .sp .mh .sp1
+.EXTENSIONS : .gsp .sp .mh
 
 headers286 = &
     bse.h        &
@@ -195,7 +195,7 @@ all : $(dirs$(hdr_cpu)) $(headers$(hdr_cpu)) .SYMBOLIC
     @%make echo_wsplice
     $(wsplice) $(wsplice_opts)
 
-{$(hdr_dir)}.sp1.sp:
+{$(hdr_dir)}.sp.gsp:
     $(awk) -f $(hdr_dir)/cpyyear.awk -v CPYYEAR=$(curr_year) -v OUTFILE=$@ $[@
 
 !ifdef dirs$(hdr_cpu)
