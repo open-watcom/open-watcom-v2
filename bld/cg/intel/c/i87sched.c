@@ -846,14 +846,14 @@ static  void    FiniGlobalTemps( void ) {
 static  void    InitGlobalTemps( void ) {
 /*********************************/
 
-    temp_entry  *temp;
-    instruction *ins;
-    int         locn;
+    temp_entry      *temp;
+    instruction     *ins;
+    actual_st_locn  actual_locn;
 
-    locn = ACTUAL_0;
+    actual_locn = ACTUAL_0;
     for( temp = TempList; temp != NULL; temp = temp->next ) {
         if( temp->whole_block ) {
-            ++locn;
+            actual_locn++;
         }
     }
     for( temp = TempList; temp != NULL; temp = temp->next ) {
@@ -866,7 +866,7 @@ static  void    InitGlobalTemps( void ) {
             ins = ins->head.next;
             PrefFLDOp( ins, OP_MEM, temp->actual_op );
             ins->head.prev->ins_flags |= FP_INS_INTRODUCED;
-            temp->actual_locn = --locn;
+            temp->actual_locn = --actual_locn;
         }
     }
 }
@@ -890,17 +890,18 @@ static  void    XchForCall( instruction *ins, int i )
             *actual_0_owner = ACTUAL_0 + i;
         }
     }
-    XchForCall( ins, i-1 );
+    XchForCall( ins, i - 1 );
 }
 
 
 static  void    ReOrderForCall( instruction *ins ) {
 /**************************************************/
 
-    int         i,count;
+    int         i;
+    int         count;
 
     count = Count87Regs( ins->operands[CALL_OP_USED]->r.reg );
-    XchForCall( ins, count-1 );
+    XchForCall( ins, count - 1 );
     for( i = 0; i < count; ++i ) {
         PopStack( ins );
     }
@@ -1072,11 +1073,10 @@ void    FPPreSched( block *blk )
 void    FPPostSched( block *blk )
 /*******************************/
 {
-    fp_attr     attr;
-    instruction *ins;
-    instruction *next;
-    int         virtual;
-    temp_entry  *temp;
+    fp_attr         attr;
+    instruction     *ins;
+    instruction     *next;
+    temp_entry      *temp;
 
     CGFree( SeqCurDepth );
     CGFree( SeqMaxDepth );
@@ -1107,8 +1107,7 @@ void    FPPostSched( block *blk )
             } else if( attr & SETS_ST1 ) {
                 SetResultReg( ins, VIRTUAL_1 );
             } else if( attr & EXCHANGES ) {
-                virtual = FPRegNum( ins->result );
-                SetResultReg( ins, virtual );
+                SetResultReg( ins, FPRegNum( ins->result ) );
             }
             temp = LookupTempEntry( ins->operands[0] );
             if( temp != NULL ) {
