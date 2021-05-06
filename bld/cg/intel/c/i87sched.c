@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -184,33 +184,34 @@ static const opcode_entry    *RegAction( instruction *ins ) {
 }
 
 
-static  void    PopVirtualStack( instruction *ins ) {
-/*******************************************************/
+static  void    PopVirtualStack( instruction *ins )
+/*************************************************/
+{
+    virtual_st_locn     virtual_locn;
 
-    int         i;
-
-    for( i = VIRTUAL_0; i < VIRTUAL_NONE-1; ++i ) {
-        InsSTLoc( ins, i ) = InsSTLoc( ins, i+1 );
+    for( virtual_locn = VIRTUAL_0; virtual_locn < VIRTUAL_NONE - 1; virtual_locn++ ) {
+        InsSTLoc( ins, virtual_locn ) = InsSTLoc( ins, virtual_locn + 1 );
     }
-    InsSTLoc( ins, VIRTUAL_7 ) = VIRTUAL_NONE;
+    InsSTLoc( ins, VIRTUAL_7 ) = ACTUAL_NONE;
 }
 
 
-static  byte    *ActualStackOwner( int actual ) {
-/***********************************************/
-
-    int         i,j;
-    temp_entry  *temp;
+static  actual_st_locn  *ActualStackOwner( actual_st_locn actual_locn )
+/*********************************************************************/
+{
+    int                 i;
+    virtual_st_locn     virtual_locn;
+    temp_entry          *temp;
 
     for( i = 0; i < MaxSeq; ++i ) {
-        for( j = VIRTUAL_0; j < VIRTUAL_NONE; ++j ) {
-            if( RegSTLoc( i, j ) == actual ) {
-                return( &RegSTLoc( i, j ) );
+        for( virtual_locn = VIRTUAL_0; virtual_locn < VIRTUAL_NONE; virtual_locn++ ) {
+            if( RegSTLoc( i, virtual_locn ) == actual_locn ) {
+                return( &RegSTLoc( i, virtual_locn ) );
             }
         }
     }
     for( temp = TempList; temp != NULL; temp = temp->next ) {
-        if( temp->actual_locn == actual ) {
+        if( temp->actual_locn == actual_locn ) {
             return( &temp->actual_locn );
         }
     }
@@ -218,28 +219,28 @@ static  byte    *ActualStackOwner( int actual ) {
 }
 
 
-static  void    PrefixExchange( instruction *ins, int actual ) {
-/************************************************************/
-
-    if( actual != ACTUAL_0 ) {
-        PrefFXCH( ins, actual );
+static  void    PrefixExchange( instruction *ins, actual_st_locn actual_locn )
+/****************************************************************************/
+{
+    if( actual_locn != ACTUAL_0 ) {
+        PrefFXCH( ins, actual_locn );
     }
 }
 
 
-static  void    GetToTopOfStack( instruction *ins, int virtual_reg ) {
-/*************************************************************/
+static  void    GetToTopOfStack( instruction *ins, virtual_st_locn virtual_locn )
+/*******************************************************************************/
+{
+    actual_st_locn  actual_locn;
+    actual_st_locn  *actual_top_owner;
 
-    byte        actual_locn;
-    byte        *actual_top_owner;
-
-    actual_locn = InsSTLoc( ins, virtual_reg );
+    actual_locn = InsSTLoc( ins, virtual_locn );
     if( actual_locn == ACTUAL_0 )
         return;
     actual_top_owner = ActualStackOwner( ACTUAL_0 );
     if( actual_top_owner != NULL ) {
         PrefixExchange( ins, actual_locn );
-        InsSTLoc( ins, virtual_reg ) = ACTUAL_0;
+        InsSTLoc( ins, virtual_locn ) = ACTUAL_0;
         *actual_top_owner = actual_locn;
         return;
     }
@@ -247,9 +248,9 @@ static  void    GetToTopOfStack( instruction *ins, int virtual_reg ) {
 }
 
 
-static  fp_attr ResultToReg( instruction *ins, temp_entry *temp, fp_attr attr ){
-/******************************************************************************/
-
+static  fp_attr ResultToReg( instruction *ins, temp_entry *temp, fp_attr attr )
+/*****************************************************************************/
+{
     if( ins == temp->first && !temp->whole_block ) {
         DoNothing( ins );
         temp->actual_locn = InsSTLoc( ins, VIRTUAL_0 );
@@ -268,28 +269,29 @@ static  fp_attr ResultToReg( instruction *ins, temp_entry *temp, fp_attr attr ){
 }
 
 
-static  void    PushVirtualStack( instruction *ins ) {
-/****************************************************/
+static  void    PushVirtualStack( instruction *ins )
+/**************************************************/
+{
+    virtual_st_locn     virtual_locn;
 
-    int i;
-
-    for( i = VIRTUAL_NONE-1; i > VIRTUAL_0; --i ) {
-        InsSTLoc( ins, i ) = InsSTLoc( ins, i-1 );
+    for( virtual_locn = VIRTUAL_NONE - 1; virtual_locn > VIRTUAL_0; virtual_locn-- ) {
+        InsSTLoc( ins, virtual_locn ) = InsSTLoc( ins, virtual_locn - 1 );
     }
     InsSTLoc( ins, VIRTUAL_0 ) = ACTUAL_0;
 }
 
 
-static  void    DecrementAll( void ) {
-/************************/
-
-    int         i,j;
-    temp_entry  *temp;
+static  void    DecrementAll( void )
+/**********************************/
+{
+    int                 i;
+    virtual_st_locn     virtual_locn;
+    temp_entry          *temp;
 
     for( i = 0; i < MaxSeq; ++i ) {
-        for( j = VIRTUAL_0; j < VIRTUAL_NONE-1; ++j ) {
-            if( RegSTLoc( i, j ) != ACTUAL_NONE ) {
-                --RegSTLoc( i, j );
+        for( virtual_locn = VIRTUAL_0; virtual_locn < VIRTUAL_NONE - 1; virtual_locn++ ) {
+            if( RegSTLoc( i, virtual_locn ) != ACTUAL_NONE ) {
+                --RegSTLoc( i, virtual_locn );
             }
         }
     }
@@ -301,24 +303,25 @@ static  void    DecrementAll( void ) {
 }
 
 
-static  void    PopStack( instruction *ins ) {
+static  void    PopStack( instruction *ins )
 /******************************************/
-
+{
     PopVirtualStack( ins );
     DecrementAll();
 }
 
 
-static  void    IncrementAll( void ) {
-/*************************/
-
-    int         i,j;
-    temp_entry  *temp;
+static  void    IncrementAll( void )
+/**********************************/
+{
+    int                 i;
+    virtual_st_locn     virtual_locn;
+    temp_entry          *temp;
 
     for( i = 0; i < MaxSeq; ++i ) {
-        for( j = VIRTUAL_0; j < VIRTUAL_NONE-1; ++j ) {
-            if( RegSTLoc( i, j ) != ACTUAL_NONE ) {
-                ++RegSTLoc( i, j );
+        for( virtual_locn = VIRTUAL_0; virtual_locn < VIRTUAL_NONE - 1; virtual_locn++ ) {
+            if( RegSTLoc( i, virtual_locn ) != ACTUAL_NONE ) {
+                ++RegSTLoc( i, virtual_locn );
             }
         }
     }
@@ -330,17 +333,17 @@ static  void    IncrementAll( void ) {
 }
 
 
-static  void    PushStack( instruction *ins ) {
+static  void    PushStack( instruction *ins )
 /*******************************************/
-
+{
     IncrementAll();
     PushVirtualStack( ins );
 }
 
 
-static instruction *OpToReg( instruction *ins, temp_entry *temp, fp_attr attr ) {
+static instruction *OpToReg( instruction *ins, temp_entry *temp, fp_attr attr )
 /*****************************************************************************/
-
+{
     if( ins == temp->last && !temp->whole_block ) {
         switch( G( ins ) ) {
         case G_MFLD:
@@ -353,10 +356,10 @@ static instruction *OpToReg( instruction *ins, temp_entry *temp, fp_attr attr ) 
             ins->operands[0] = ST( ACTUAL_1 );
             ins->operands[1] = ST( 0 );
             if( temp->actual_locn != ACTUAL_1 ) {
-                byte    *actual_owner;
+                actual_st_locn  *actual_locn_owner;
 
-                actual_owner = ActualStackOwner( ACTUAL_1 );
-                *actual_owner = temp->actual_locn;
+                actual_locn_owner = ActualStackOwner( ACTUAL_1 );
+                *actual_locn_owner = temp->actual_locn;
                 PrefFXCH( ins, ACTUAL_1 );
                 PrefFXCH( ins, temp->actual_locn );
                 RevCond( ins );
@@ -412,17 +415,20 @@ static instruction *OpToReg( instruction *ins, temp_entry *temp, fp_attr attr ) 
 }
 
 
-static  void    SetResultReg( instruction *ins, int virtual_reg ) {
-/**********************************************************/
-
-    ins->result = ST( InsSTLoc( ins, virtual_reg ) );
+static  void    SetResultReg( instruction *ins, virtual_st_locn virtual_locn )
+/****************************************************************************/
+{
+    ins->result = ST( InsSTLoc( ins, virtual_locn ) );
     ins->operands[0] = ins->result;
 }
 
-static  instruction     *FComppKluge( instruction *ins ) {
-/********************************************************/
-    byte        actual_0,actual_1;
-    byte        *owner_0,*owner_1;
+static  instruction     *FComppKluge( instruction *ins )
+/******************************************************/
+{
+    actual_st_locn  actual_0;
+    actual_st_locn  actual_1;
+    actual_st_locn  *owner_0;
+    actual_st_locn  *owner_1;
 
     actual_0 = InsSTLoc( ins, VIRTUAL_0 );
     actual_1 = InsSTLoc( ins, VIRTUAL_1 );
@@ -460,10 +466,11 @@ static  instruction     *FComppKluge( instruction *ins ) {
     return( ins );
 }
 
-static  instruction     *GetST0andST1( instruction *ins ) {
-/*********************************************************/
-
-    byte        actual_0,actual_1;
+static  instruction     *GetST0andST1( instruction *ins )
+/*******************************************************/
+{
+    actual_st_locn  actual_0;
+    actual_st_locn  actual_1;
 
     actual_0 = InsSTLoc( ins, VIRTUAL_0 );
     actual_1 = InsSTLoc( ins, VIRTUAL_1 );
@@ -498,16 +505,17 @@ static  instruction     *GetST0andST1( instruction *ins ) {
 
 
 
-static  void    InitStackLocations( void ) {
-/**************************************/
-
-    temp_entry  *temp;
-    int         i,j;
+static  void    InitStackLocations( void )
+/****************************************/
+{
+    temp_entry          *temp;
+    int                 i;
+    virtual_st_locn     virtual_locn;
 
     STLocations = CGAlloc( MaxSeq * sizeof( *STLocations ) );
     for( i = 0; i < MaxSeq; ++i ) {
-        for( j = VIRTUAL_0; j < VIRTUAL_NONE; ++j ) {
-            RegSTLoc( i, j ) = ACTUAL_NONE;
+        for( virtual_locn = VIRTUAL_0; virtual_locn < VIRTUAL_NONE; virtual_locn++ ) {
+            RegSTLoc( i, virtual_locn ) = ACTUAL_NONE;
         }
     }
     for( temp = TempList; temp != NULL; temp = temp->next ) {
@@ -666,15 +674,15 @@ static void    FiniTempEntries( void )
 }
 
 
-static  bool    StackBetween( instruction *first, instruction *last, int inc ) {
-/******************************************************************************/
-
+static  bool    StackBetween( instruction *first, instruction *last, int inc )
+/****************************************************************************/
+{
     instruction *ins;
     bool        enough;
 
     enough = true;
     for( ins = first; ins != last; ins = ins->head.next ) {
-        if( ins->s.stk_depth >= (Max87Stk-1) || _OpIsCall( ins->head.opcode ) ) {
+        if( ins->s.stk_depth >= ( Max87Stk - 1 ) || _OpIsCall( ins->head.opcode ) ) {
             enough = false;
         }
         ins->s.stk_depth += inc;
@@ -864,11 +872,11 @@ static  void    InitGlobalTemps( void ) {
 }
 
 
-static  void    XchForCall( instruction *ins, int i ) {
-/*****************************************************/
-
-    byte        *actual_i_owner;
-    byte        *actual_0_owner;
+static  void    XchForCall( instruction *ins, int i )
+/***************************************************/
+{
+    actual_st_locn  *actual_i_owner;
+    actual_st_locn  *actual_0_owner;
 
     if( i <= 0 )
         return;
