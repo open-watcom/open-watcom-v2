@@ -47,6 +47,7 @@ void    DumpSeqs( void )
     int                 i;
     virtual_st_locn     virtual_locn;
     temp_entry          *temp;
+    actual_st_locn      actual_locn;
 
     if( STLocations ) {
         DumpLiteral( "seq: " );
@@ -60,11 +61,8 @@ void    DumpSeqs( void )
             DumpChar( (char)( virtual_locn + '0' ) );
             DumpLiteral( ": " );
             for( i = 0; i < MaxSeq; ++i ) {
-                if( RegSTLoc( i, virtual_locn ) == ACTUAL_NONE ) {
-                    DumpChar( 'X' );
-                } else {
-                    DumpChar( (char)( RegSTLoc( i, virtual_locn ) + '0' ) );
-                }
+                actual_locn = RegSTLoc( i, virtual_locn );
+                DumpChar( (actual_locn == ACTUAL_NONE) ? 'X' : (char)( actual_locn + '0' ) );
                 DumpChar( ' ' );
             }
             DumpNL();

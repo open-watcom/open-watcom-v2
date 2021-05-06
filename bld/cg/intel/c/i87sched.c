@@ -354,7 +354,7 @@ static instruction *OpToReg( instruction *ins, temp_entry *temp, fp_attr attr )
         case G_MCOMP:
             // if( temp->actual_locn != ACTUAL_1 ) _Zoiks( ZOIKS_076 );
             ins->operands[0] = ST( ACTUAL_1 );
-            ins->operands[1] = ST( 0 );
+            ins->operands[1] = ST( ACTUAL_0 );
             if( temp->actual_locn != ACTUAL_1 ) {
                 actual_st_locn  *actual_locn_owner;
 
@@ -377,7 +377,7 @@ static instruction *OpToReg( instruction *ins, temp_entry *temp, fp_attr attr )
             }
             ins->operands[0] = ST( temp->actual_locn );
             ins->result = ins->operands[0];
-            ins->operands[1] = ST( 0 );
+            ins->operands[1] = ST( ACTUAL_0 );
             InsSTLoc( ins, VIRTUAL_0 ) = temp->actual_locn;
             DecrementAll();
             break;
