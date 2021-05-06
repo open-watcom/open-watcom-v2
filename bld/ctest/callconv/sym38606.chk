@@ -352,7 +352,8 @@ _errors
 **** obj13.obj extdef ****
 printf_
 abort_
-IF@DSIN
+labs_
+sin_
 __FSI4
 __FDI4
 _cstart_
@@ -369,7 +370,8 @@ _errors
 **** obj23.obj extdef ****
 printf_
 abort_
-IF@DSIN
+labs_
+sin_
 __FSI4
 __FDI4
 _cstart_
@@ -386,7 +388,8 @@ _errors
 **** obj33.obj extdef ****
 printf_
 abort_
-IF@DSIN
+labs_
+sin_
 __FSI4
 __FDI4
 _cstart_
@@ -403,7 +406,8 @@ errors
 **** obj43.obj extdef ****
 printf_
 abort_
-IF@DSIN
+labs_
+sin_
 __FSI4
 __FDI4
 _cstart_
@@ -420,7 +424,8 @@ ERRORS
 **** obj53.obj extdef ****
 printf_
 abort_
-IF@DSIN
+labs_
+sin_
 __FSI4
 __FDI4
 _cstart_
@@ -437,7 +442,8 @@ errors
 **** obj63.obj extdef ****
 printf_
 abort_
-IF@DSIN
+labs_
+sin_
 __FSI4
 __FDI4
 _cstart_
@@ -454,7 +460,8 @@ ERRORS
 **** obj73.obj extdef ****
 printf_
 abort_
-IF@DSIN
+labs_
+sin_
 __FSI4
 __FDI4
 _cstart_
@@ -471,7 +478,8 @@ _errors
 **** obj83.obj extdef ****
 printf_
 abort_
-IF@DSIN
+labs_
+sin_
 __FSI4
 __FDI4
 _cstart_
@@ -488,7 +496,8 @@ _errors
 **** obj93.obj extdef ****
 printf_
 abort_
-IF@DSIN
+labs_
+sin_
 __FSI4
 __FDI4
 _cstart_
@@ -505,6 +514,8 @@ _errors
 **** obj14.obj extdef ****
 printf_
 abort_
+labs_
+sin_
 __CHP
 _cstart_
 _fltused_
@@ -521,6 +532,8 @@ _errors
 **** obj24.obj extdef ****
 printf_
 abort_
+labs_
+sin_
 __CHP
 _cstart_
 _fltused_
@@ -537,6 +550,8 @@ _errors
 **** obj34.obj extdef ****
 printf_
 abort_
+labs_
+sin_
 __CHP
 _cstart_
 _fltused_
@@ -553,6 +568,8 @@ errors
 **** obj44.obj extdef ****
 printf_
 abort_
+labs_
+sin_
 __CHP
 _cstart_
 _fltused_
@@ -569,6 +586,8 @@ ERRORS
 **** obj54.obj extdef ****
 printf_
 abort_
+labs_
+sin_
 __CHP
 _cstart_
 _fltused_
@@ -585,6 +604,8 @@ errors
 **** obj64.obj extdef ****
 printf_
 abort_
+labs_
+sin_
 __CHP
 _cstart_
 _fltused_
@@ -601,6 +622,8 @@ ERRORS
 **** obj74.obj extdef ****
 printf_
 abort_
+labs_
+sin_
 __CHP
 _cstart_
 _fltused_
@@ -617,6 +640,8 @@ _errors
 **** obj84.obj extdef ****
 printf_
 abort_
+labs_
+sin_
 __CHP
 _cstart_
 _fltused_
@@ -633,6 +658,8 @@ _errors
 **** obj94.obj extdef ****
 printf_
 abort_
+labs_
+sin_
 __CHP
 _cstart_
 _fltused_
@@ -991,7 +1018,8 @@ _errors
 **** obj1s3.obj extdef ****
 printf
 abort
-IF@DSIN
+labs
+sin
 __FSI4
 __FDI4
 _cstart_
@@ -1008,7 +1036,8 @@ _errors
 **** obj2s3.obj extdef ****
 printf
 abort
-IF@DSIN
+labs
+sin
 __FSI4
 __FDI4
 _cstart_
@@ -1025,7 +1054,8 @@ _errors
 **** obj3s3.obj extdef ****
 printf
 abort
-IF@DSIN
+labs
+sin
 __FSI4
 __FDI4
 _cstart_
@@ -1042,7 +1072,8 @@ errors
 **** obj4s3.obj extdef ****
 printf
 abort
-IF@DSIN
+labs
+sin
 __FSI4
 __FDI4
 _cstart_
@@ -1059,7 +1090,8 @@ ERRORS
 **** obj5s3.obj extdef ****
 printf
 abort
-IF@DSIN
+labs
+sin
 __FSI4
 __FDI4
 _cstart_
@@ -1076,7 +1108,8 @@ errors
 **** obj6s3.obj extdef ****
 printf
 abort
-IF@DSIN
+labs
+sin
 __FSI4
 __FDI4
 _cstart_
@@ -1093,7 +1126,8 @@ ERRORS
 **** obj7s3.obj extdef ****
 printf
 abort
-IF@DSIN
+labs
+sin
 __FSI4
 __FDI4
 _cstart_
@@ -1110,7 +1144,8 @@ errors
 **** obj8s3.obj extdef ****
 printf
 abort
-IF@DSIN
+labs
+sin
 __FSI4
 __FDI4
 _cstart_
@@ -1127,7 +1162,8 @@ errors
 **** obj9s3.obj extdef ****
 printf
 abort
-IF@DSIN
+labs
+sin
 __FSI4
 __FDI4
 _cstart_
@@ -1144,6 +1180,8 @@ _errors
 **** obj1s4.obj extdef ****
 printf
 abort
+labs
+sin
 __CHP
 _cstart_
 _fltused_
@@ -1160,6 +1198,8 @@ _errors
 **** obj2s4.obj extdef ****
 printf
 abort
+labs
+sin
 __CHP
 _cstart_
 _fltused_
@@ -1176,6 +1216,8 @@ _errors
 **** obj3s4.obj extdef ****
 printf
 abort
+labs
+sin
 __CHP
 _cstart_
 _fltused_
@@ -1192,6 +1234,8 @@ errors
 **** obj4s4.obj extdef ****
 printf
 abort
+labs
+sin
 __CHP
 _cstart_
 _fltused_
@@ -1208,6 +1252,8 @@ ERRORS
 **** obj5s4.obj extdef ****
 printf
 abort
+labs
+sin
 __CHP
 _cstart_
 _fltused_
@@ -1224,6 +1270,8 @@ errors
 **** obj6s4.obj extdef ****
 printf
 abort
+labs
+sin
 __CHP
 _cstart_
 _fltused_
@@ -1240,6 +1288,8 @@ ERRORS
 **** obj7s4.obj extdef ****
 printf
 abort
+labs
+sin
 __CHP
 _cstart_
 _fltused_
@@ -1256,6 +1306,8 @@ errors
 **** obj8s4.obj extdef ****
 printf
 abort
+labs
+sin
 __CHP
 _cstart_
 _fltused_
@@ -1272,6 +1324,8 @@ errors
 **** obj9s4.obj extdef ****
 printf
 abort
+labs
+sin
 __CHP
 _cstart_
 _fltused_
