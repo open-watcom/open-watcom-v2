@@ -78,14 +78,14 @@ static  byte        IEsc;           /* number of initial bytes that must be */
 
 static  hw_reg_set RegTab[] = {
 #define REGS 24
-        HW_D( HW_AL ),          HW_D( HW_AX ),          HW_D( HW_EAX ),
-        HW_D( HW_CL ),          HW_D( HW_CX ),          HW_D( HW_ECX ),
-        HW_D( HW_DL ),          HW_D( HW_DX ),          HW_D( HW_EDX ),
-        HW_D( HW_BL ),          HW_D( HW_BX ),          HW_D( HW_EBX ),
-        HW_D( HW_AH ),          HW_D( HW_SP ),          HW_D( HW_SP ),
-        HW_D( HW_CH ),          HW_D( HW_BP ),          HW_D( HW_BP ),
-        HW_D( HW_DH ),          HW_D( HW_SI ),          HW_D( HW_ESI ),
-        HW_D( HW_BH ),          HW_D( HW_DI ),          HW_D( HW_EDI )
+    HW_D( HW_AL ),      HW_D( HW_AX ),      HW_D( HW_EAX ),
+    HW_D( HW_CL ),      HW_D( HW_CX ),      HW_D( HW_ECX ),
+    HW_D( HW_DL ),      HW_D( HW_DX ),      HW_D( HW_EDX ),
+    HW_D( HW_BL ),      HW_D( HW_BX ),      HW_D( HW_EBX ),
+    HW_D( HW_AH ),      HW_D( HW_SP ),      HW_D( HW_SP ),
+    HW_D( HW_CH ),      HW_D( HW_BP ),      HW_D( HW_BP ),
+    HW_D( HW_DH ),      HW_D( HW_SI ),      HW_D( HW_ESI ),
+    HW_D( HW_BH ),      HW_D( HW_DI ),      HW_D( HW_EDI )
 };
 
 static  hw_reg_set SegTab[] = {

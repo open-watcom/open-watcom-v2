@@ -415,8 +415,8 @@ static instruction *OpToReg( instruction *ins, temp_entry *temp, fp_attr attr )
 }
 
 
-static  void    SetResultReg( instruction *ins, virtual_st_locn virtual_locn )
-/****************************************************************************/
+static  void    SetResultSTReg( instruction *ins, virtual_st_locn virtual_locn )
+/******************************************************************************/
 {
     ins->result = ST( InsSTLoc( ins, virtual_locn ) );
     ins->operands[0] = ins->result;
@@ -524,17 +524,17 @@ static  void    InitStackLocations( void )
 }
 
 
-static  void    FiniStackLocations( void ) {
-/**************************/
-
+static  void    FiniStackLocations( void )
+/****************************************/
+{
     CGFree( STLocations );
     STLocations = NULL;
 }
 
 
-static  temp_entry      *LookupTempEntry( name *op ) {
-/***********************************************/
-
+static  temp_entry  *LookupTempEntry( name *op )
+/**********************************************/
+{
     temp_entry  *temp;
 
     if( op == NULL )
@@ -550,9 +550,9 @@ static  temp_entry      *LookupTempEntry( name *op ) {
 }
 
 
-static  temp_entry      *AddTempEntry( name *op ) {
-/********************************************/
-
+static  temp_entry      *AddTempEntry( name *op )
+/***********************************************/
+{
     temp_entry  *temp;
 
     temp = LookupTempEntry( op );
@@ -579,10 +579,9 @@ static  temp_entry      *AddTempEntry( name *op ) {
 }
 
 
-static  void            DefUseTemp( name *op,
-                                    instruction *ins, bool defined ) {
+static  void    DefUseTemp( name *op, instruction *ins, bool defined )
 /********************************************************************/
-
+{
     temp_entry *temp;
 
     temp = AddTempEntry( op );
@@ -601,9 +600,9 @@ static  void            DefUseTemp( name *op,
 }
 
 
-static  void            KillTempEntry( name *op ) {
-/*************************************************/
-
+static  void            KillTempEntry( name *op )
+/***********************************************/
+{
     temp_entry  *temp;
 
     temp = AddTempEntry( op );
@@ -611,9 +610,9 @@ static  void            KillTempEntry( name *op ) {
 }
 
 
-static  void    CheckTemp( instruction *ins, name *op, bool defined ) {
-/*********************************************************************/
-
+static  void    CheckTemp( instruction *ins, name *op, bool defined )
+/*******************************************************************/
+{
     if( op->n.class == N_MEMORY ) {
         if( _IsntModel( RELAX_ALIAS ) ) {
             return;
@@ -631,16 +630,16 @@ static  void    CheckTemp( instruction *ins, name *op, bool defined ) {
 }
 
 
-static  bool Better( void *t1, void *t2 ) {
-/*****************************************************/
-
+static  bool Better( void *t1, void *t2 )
+/***************************************/
+{
     return( ((temp_entry *)t1)->savings > ((temp_entry *)t2)->savings );
 }
 
 
 
 static void    InitTempEntries( block *blk )
-/************************************************/
+/******************************************/
 {
     instruction *ins;
     opcnt       i;
@@ -727,9 +726,9 @@ static  bool    OKToCache( temp_entry *temp ) {
     return( _BLOCK( ins ) == Entry );
 }
 
-static  void    CacheTemps( block *blk ) {
-/****************************************/
-
+static  void    CacheTemps( block *blk )
+/**************************************/
+{
     temp_entry *temp, **owner;
     block_edge  *exit_edge = NULL;
 
@@ -823,9 +822,9 @@ static  void    CacheTemps( block *blk ) {
 }
 
 
-static  void    FiniGlobalTemps( void ) {
-/*********************************/
-
+static  void    FiniGlobalTemps( void )
+/*************************************/
+{
     temp_entry  *temp;
     instruction *ins;
 
@@ -843,9 +842,9 @@ static  void    FiniGlobalTemps( void ) {
 }
 
 
-static  void    InitGlobalTemps( void ) {
-/*********************************/
-
+static  void    InitGlobalTemps( void )
+/*************************************/
+{
     temp_entry      *temp;
     instruction     *ins;
     actual_st_locn  actual_locn;
@@ -894,9 +893,9 @@ static  void    XchForCall( instruction *ins, int i )
 }
 
 
-static  void    ReOrderForCall( instruction *ins ) {
-/**************************************************/
-
+static  void    ReOrderForCall( instruction *ins )
+/************************************************/
+{
     int         i;
     int         count;
 
@@ -973,7 +972,7 @@ void    FPCalcStk( instruction *ins, int *pdepth )
 /*********************************************************
 
     Set pdepth to the stack level before "ins" executes.  Also,
-    recalcualte the stk_entry, stk_exit. s.stk_depth
+    recalculate the stk_entry, stk_exit. s.stk_depth
     now means the maximum depth the stack attains during this
     instruction.
 */
@@ -1105,9 +1104,13 @@ void    FPPostSched( block *blk )
             if( temp != NULL ) {
                 attr = ResultToReg( ins, temp, attr );
             } else if( attr & SETS_ST1 ) {
-                SetResultReg( ins, VIRTUAL_1 );
+                SetResultSTReg( ins, VIRTUAL_1 );
             } else if( attr & EXCHANGES ) {
-                SetResultReg( ins, FPRegNum( ins->result ) );
+                /*
+                 * ??? what is in ins->result ???
+                 * ??? virtual or actual      ???
+                 */
+                SetResultSTReg( ins, (virtual_st_locn)FPRegNum( ins->result ) );
             }
             temp = LookupTempEntry( ins->operands[0] );
             if( temp != NULL ) {

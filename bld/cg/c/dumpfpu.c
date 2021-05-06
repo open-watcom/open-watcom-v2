@@ -52,7 +52,7 @@ void    DumpSeqs( void )
     if( STLocations ) {
         DumpLiteral( "seq: " );
         for( i = 0; i < MaxSeq; ++i ) {
-            DumpChar( (char)i + 'a' );
+            DumpChar( (char)( i + 'a' ) );
             DumpChar( ' ' );
         }
         DumpNL();
@@ -75,7 +75,7 @@ void    DumpSeqs( void )
         DumpOperand( temp->op );
         DumpNL();
         DumpLiteral( "Location: " );
-        DumpChar( temp->actual_locn == ACTUAL_NONE ? 'X': (char)( temp->actual_locn + '0' );
+        DumpChar( (temp->actual_locn == ACTUAL_NONE) ? 'X': (char)( temp->actual_locn + '0' ) );
         DumpLiteral( " Savings: " );
         DumpInt( temp->savings );
         if( temp->cached )
