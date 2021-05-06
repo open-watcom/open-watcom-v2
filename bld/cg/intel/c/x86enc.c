@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,8 +55,7 @@
 #include "object.h"
 #include "x86proc.h"
 #include "targetin.h"
-#include "x86obj.h"
-#include "i87data.h"
+#include "x87.h"
 #include "x86esc.h"
 #include "rgtbl.h"
 #include "split.h"
@@ -72,7 +71,6 @@
 template            Temp;           /* template for oc_entries */
 byte                Inst[INSSIZE];  /* template for instructions */
 byte                ILen;           /* length of object instruction */
-fp_patches          FPPatchType;
 
 static  byte        ICur;           /* cursor for writing into Inst */
 static  byte        IEsc;           /* number of initial bytes that must be */
@@ -92,32 +90,9 @@ static  hw_reg_set RegTab[] = {
 
 static  hw_reg_set SegTab[] = {
 #define SEGS 6
-        HW_D( HW_ES ),
-        HW_D( HW_CS ),
-        HW_D( HW_SS ),
-        HW_D( HW_DS ),
-        HW_D( HW_FS ),
-        HW_D( HW_GS )
-};
-
-static  fp_patches SegPatchTab[] = {
-        FPP_ES,
-        FPP_CS,
-        FPP_SS,
-        FPP_DS,
-        FPP_FS,
-        FPP_GS
-};
-
-hw_reg_set FPRegs[] = {
-        HW_D( HW_ST0 ),
-        HW_D( HW_ST1 ),
-        HW_D( HW_ST2 ),
-        HW_D( HW_ST3 ),
-        HW_D( HW_ST4 ),
-        HW_D( HW_ST5 ),
-        HW_D( HW_ST6 ),
-        HW_D( HW_ST7 )
+    #define _SR_(h,f)   HW_D( h ),
+    #include "x86sregs.h"
+    #undef _SR_
 };
 
 /* routines that maintain instruction buffers*/
@@ -129,7 +104,7 @@ void    Format( oc_class class )
     then dumped into the peephole optimizer.
 */
 {
-    FPPatchType = FPP_NONE;
+    SetFPPatchType( FPP_NONE );
     Temp.hdr.class = class;
     Temp.hdr.objlen = 0;
     Temp.hdr.reclen = offsetof( template, data );
@@ -169,26 +144,6 @@ void    AddToTemp( byte b )
     Temp.data[Temp.hdr.reclen++ - offsetof( template, data )] = b;
     Temp.hdr.objlen++;
 }
-
-void    InsertByte( byte b )
-/*************************************
-    Insert a byte into the beginning of Temp. It may not be ESC!
-*/
-{
-    int         i;
-    byte        *src;
-    byte        *dst;
-
-    i = Temp.hdr.reclen - offsetof( template, data );
-    dst = &Temp.data[i];
-    src = &Temp.data[i - 1];
-    for( ; i > 0; --i ) {
-        *dst-- = *src--;
-    }
-    Temp.data[0] = b;
-    Temp.hdr.reclen++;
-}
-
 
 void    EmitByte( byte b )
 /**************************
@@ -263,10 +218,7 @@ void    Finalize( void )
 */
 {
     EjectInst();
-    if( FPPatchType != FPP_NONE ) {
-        DoFunnyRef( FPPatchType );
-        FPPatchType = FPP_NONE;
-    }
+    FPPatchTypeRef();
     if( Temp.hdr.objlen != 0 ) {
         InputOC( (any_oc *)&Temp );
     }
@@ -306,7 +258,7 @@ static  void    LayInitial( instruction *ins, gentype gen ) {
 #if _TARGET & _TARG_IAPX86
         if( gen == G_FINIT || !_CPULevel( CPU_286 ) || _IsEmulation() ) {
             if( _IsEmulation() ) {
-                FPPatchType = FPP_NORMAL;
+                SetFPPatchType( FPP_NORMAL );
             }
             LayOpbyte( 0x9b );
             _Next;
@@ -502,19 +454,6 @@ static  bool    LayOpndSize( instruction *ins, gentype gen ) {
         return( false );
     }
 #endif
-}
-
-static  int     FPRegTrans( hw_reg_set reg ) {
-/********************************************/
-
-    int         i;
-    hw_reg_set  *table;
-
-    i = 0;
-    for( table = FPRegs; !HW_Equal( reg, *table ); table++ ) {
-        i++;
-    }
-    return( i );
 }
 
 static  void    LayST( name *op ) {
@@ -852,7 +791,7 @@ static  void    SetCC(void) {
     if( _IsEmulation() ) {
         _Emit;
         _Code;
-        FPPatchType = FPP_NORMAL;
+        SetFPPatchType( FPP_NORMAL );
     }
     if( _CPULevel( CPU_386 ) ) {
         if( _IsEmulation() ) {
@@ -1022,9 +961,7 @@ void    GenSeg( hw_reg_set regs )
     if( _IsEmulation() ) {
         for( i = 0; i < SEGS; ++i ) {
             if( HW_Equal( segreg, SegTab[i] ) ) {
-                if( FPPatchType != FPP_NONE ) {
-                    FPPatchType = SegPatchTab[i];
-                }
+                SetFPPatchSegm( i );
                 break;
             }
         }
@@ -1434,7 +1371,7 @@ void    GCondFwait( void )
 #if _TARGET & _TARG_IAPX86
     if( !_CPULevel( CPU_286 ) || _IsEmulation() ) {
         if( _IsEmulation() ) {
-            FPPatchType = FPP_NORMAL;
+            SetFPPatchType( FPP_NORMAL );
         }
         LayOpbyte( 0x9b );
         _Next;
@@ -1453,7 +1390,7 @@ void    GFwait( void )
     _Code;
     Used87 = true;
     if( _IsEmulation() ) {
-        FPPatchType = FPP_WAIT;
+        SetFPPatchType( FPP_WAIT );
         LayOpword( 0x9b90 );
     } else {
         LayOpbyte( 0x9b );
@@ -2293,7 +2230,7 @@ void    GenObjCode( instruction *ins ) {
         case G_FWAIT:
             Used87 = true;
             if( _IsEmulation() ) {
-                FPPatchType = FPP_WAIT;
+                SetFPPatchType( FPP_WAIT );
                 LayOpword( 0x9b90 );
             } else {
                 LayOpbyte( 0x9b );

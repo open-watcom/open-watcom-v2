@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -345,10 +345,7 @@ void    FPPushParms( pn parm, call_state *state )
                 parms = FPPushDelay( parm, state );
             }
         }
-        HW_CTurnOff( state->parm.used, HW_FLTS );
-        while( parms-- > 0 ) {
-            HW_TurnOn( state->parm.used, FPRegs[parms] );
-        }
+        SetFPParmsUsed( state, parms );
     }
 }
 

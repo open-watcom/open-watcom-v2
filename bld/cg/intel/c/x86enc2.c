@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,9 +51,8 @@
 #include "targetin.h"
 #include "targetdb.h"
 #include "opttell.h"
-#include "i87data.h"
+#include "x87.h"
 #include "x86esc.h"
-#include "x86obj.h"
 #include "rgtbl.h"
 #include "split.h"
 #include "namelist.h"
@@ -306,7 +305,7 @@ static  void    CodeSequence( const byte *p, byte_seq_len len )
                     }
                     p += 2;
                     if( _IsEmulation() ) {
-                        FPPatchType = type;
+                        SetFPPatchType( type );
                         Used87 = true;
                     }
                     break;

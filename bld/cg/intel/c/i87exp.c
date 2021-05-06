@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -263,14 +263,6 @@ int     FPRegNum( name *reg_name )
     if( HW_CEqual( tmp, HW_ST7 ) )
         return( 7 );
     return( -1 );
-}
-
-name    *ST( int num )
-/*******************************
-    return an N_REGISTER for ST(num)
-*/
-{
-    return( AllocRegName( FPRegs[num] ) );
 }
 
 instruction *PrefFLDOp( instruction *ins, operand_type op, name *opnd )
