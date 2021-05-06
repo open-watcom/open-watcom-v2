@@ -970,51 +970,82 @@ static  instruction     *ExpandFPIns( instruction *ins, operand_type op1,
     return( ins );
 }
 
-
-static  instruction     *DoExpand( instruction *ins ) {
-/******************************************************
-    Expand one instruction "ins" The bulk of this routine is
-    spent classifying the operands and result of the instruction, and if
-    they are an 8087 register, adjusting them to the real register
-    number to be used in the instruction.
+static operand_type CheckFPOp( instruction *ins, int i )
+/*******************************************************
+    The bulk of this routine is spent classifying the operands of
+    the instruction, and if they are an 8087 register, adjusting
+    them to the real register number to be used in the instruction.
 */
+{
+    int             reg_num;
+    operand_type    op_type;
 
-
-    opcnt               i;
-    int                 reg_num;
-    operand_type        op1_type;
-    operand_type        op2_type = OP_NONE;
-    result_type         res_type;
-
-    op1_type = OP_NONE;
-    for( i = OpcodeNumOperands( ins ); i-- > 0; ) {
-        op2_type = op1_type;
-        reg_num = FPRegNum( ins->operands[i] );
-        if( reg_num != -1 ) {
-            if( reg_num == 0 ) {
-                op1_type = OP_STK0;
-            } else {
-                op1_type = ins->stk_entry - reg_num;
-                ins->operands[i] = ST( ins->stk_entry - reg_num );
-            }
-        } else if( ins->operands[i]->n.class == N_CONSTANT ) {
-            op1_type = OP_CONS;
+    reg_num = FPRegNum( ins->operands[i] );
+    if( reg_num != -1 ) {
+        if( reg_num == 0 ) {
+            op_type = OP_STK0;
         } else {
-            op1_type = OP_MEM;
+            /* ??? op_type should be setup to OP_STK1/OP_STKI ??? */
+            op_type = ins->stk_entry - reg_num;
+            ins->operands[i] = ST( ins->stk_entry - reg_num );
         }
+    } else if( ins->operands[i]->n.class == N_CONSTANT ) {
+        op_type = OP_CONS;
+    } else {
+        op_type = OP_MEM;
     }
+    return( op_type );
+}
+
+static result_type CheckFPRes( instruction *ins )
+/*******************************************************
+    The bulk of this routine is spent classifying the result of
+    the instruction, and if it is an 8087 register, adjusting
+    them to the real register number to be used in the instruction.
+*/
+{
+    int             reg_num;
+    result_type     res_type;
+
     if( _OpIsCondition( ins->head.opcode ) ) {
         res_type = RES_NONE;
     } else {
         reg_num = FPRegNum( ins->result );
         res_type = RES_NONE;
         if( reg_num != -1 ) {
+            /* ??? res_type should be setup to RES_STK0/RES_STKI ??? */
             res_type = RES_STK0;
             ins->result = ST0;
         } else {
             res_type = RES_MEM;
         }
     }
+    return( res_type );
+}
+
+static  instruction     *DoExpand( instruction *ins )
+/******************************************************
+    Expand one instruction "ins" The bulk of this routine is
+    spent classifying the operands and result of the instruction, and if
+    they are an 8087 register, adjusting them to the real register
+    number to be used in the instruction.
+*/
+{
+    opcnt               i;
+    operand_type        op1_type;
+    operand_type        op2_type;
+    result_type         res_type;
+
+    op1_type = OP_NONE;
+    op2_type = OP_NONE;
+    i = OpcodeNumOperands( ins );
+    if( i > 0 ) {
+        op1_type = CheckFPOp( ins, 0 );
+        if( i > 1 ) {
+            op2_type = CheckFPOp( ins, 1 );
+        }
+    }
+    res_type = CheckFPRes( ins );
     return( ExpandFPIns( ins, op1_type, op2_type, res_type ) );
 }
 
