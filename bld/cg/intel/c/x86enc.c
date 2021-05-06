@@ -507,7 +507,7 @@ static  void    LayMF( name *op ) {
 static  void    DoP5RegisterDivide( instruction *ins ) {
 /******************************************************/
 
-    int                 i;
+    int                 st_reg;
     byte                reverse;
     byte                pop;
     byte                dest;
@@ -526,7 +526,7 @@ static  void    DoP5RegisterDivide( instruction *ins ) {
     oc.oc_jcond.cond = 4;
     oc.oc_jcond.handle = lbl;
     InputOC( &oc );
-    i = FPRegTrans( ins->operands[0]->r.reg );
+    st_reg = FPRegTrans( ins->operands[0]->r.reg );
     reverse = false;
     pop = false;
     dest = false;
@@ -554,7 +554,7 @@ static  void    DoP5RegisterDivide( instruction *ins ) {
         break;
     }
     ins_key = ( pop & 1 ) | ( ( reverse & 1 ) << 1 ) | ( ( dest & 1 ) << 2 );
-    ins_key |= ( i & 0x07 ) << 3;
+    ins_key |= st_reg << 3;
     // je ok
     _Code;
     _Next;

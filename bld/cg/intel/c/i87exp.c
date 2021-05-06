@@ -240,29 +240,11 @@ int     FPRegNum( name *reg_name )
 {
     hw_reg_set  tmp;
 
-    if( reg_name == NULL )
-        return( -1 );
-    if( reg_name->n.class != N_REGISTER )
+    if( reg_name == NULL || reg_name->n.class != N_REGISTER )
         return( -1 );
     tmp = reg_name->r.reg;
     HW_COnlyOn( tmp, HW_FLTS );
-    if( HW_CEqual( tmp, HW_ST0 ) )
-        return( 0 );
-    if( HW_CEqual( tmp, HW_ST1 ) )
-        return( 1 );
-    if( HW_CEqual( tmp, HW_ST2 ) )
-        return( 2 );
-    if( HW_CEqual( tmp, HW_ST3 ) )
-        return( 3 );
-    if( HW_CEqual( tmp, HW_ST4 ) )
-        return( 4 );
-    if( HW_CEqual( tmp, HW_ST5 ) )
-        return( 5 );
-    if( HW_CEqual( tmp, HW_ST6 ) )
-        return( 6 );
-    if( HW_CEqual( tmp, HW_ST7 ) )
-        return( 7 );
-    return( -1 );
+    return( FPRegTrans( tmp ) );
 }
 
 instruction *PrefFLDOp( instruction *ins, operand_type op, name *opnd )
