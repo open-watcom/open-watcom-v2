@@ -653,6 +653,7 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again )
             } else {
 
                 /* FLD X, FLD Y, FXCH ST(1) ==> FLD Y, FLD X */
+
                 third = Next87Ins( next );
                 if( third == next )
                     return( ret );
@@ -738,6 +739,7 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again )
                 if( FPRegNum( ins->result ) == FPRegNum( next->operands[0] ) ) {
 
                     /* FXCH ST(i), FopP ST(i),ST -> FopRP ST(i),ST */
+
                     FreeIns( ins );
                     ReverseFPGen( next );
                     *again = true;
