@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1687,7 +1687,7 @@ static  index_rec       *AskIndexRec( unsigned_16 sidx )
     return( rec );
 }
 
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
 #define _TargetInt _TargetShort
 #else
 #define _TargetInt _TargetBigInt
@@ -2222,7 +2222,7 @@ void    OutDLLExport( uint words, cg_sym_handle sym )
     obj->data.used = 0;
     OutShort( EXPORT_COMMENT, &obj->data );
     OutByte( 2, &obj->data );
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
     OutByte( words, &obj->data );
 #else
     // this should be 0 for everything except callgates to
@@ -2370,7 +2370,7 @@ static omf_fix_class getOMFFixClass( fix_class class )
     switch( F_CLASS( class ) ) {
     case F_BASE:
         return( OFC_BASE );
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
     case F_OFFSET:
         return( OFC_OFFSET );
     case F_BIG_OFFSET:

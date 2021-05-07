@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -250,7 +250,7 @@ instruction      *rHIGHLOWMOVE( instruction *ins )
     return( ins );
 }
 
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
     #define     LP              PT
     #define     MOV_SIZE        3
 #else

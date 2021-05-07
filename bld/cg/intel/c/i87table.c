@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +42,7 @@ const opcode_entry    Move87S[] = {
 /*           from  to    eq            verify          reg           gen             fu  */
 _OE( _UnPP(  R|M|U,R|M|U,EQ_R1 ),      V_NO,           RG_,          G_NO,           FU_NO ),
 _OE( _UnPP(  M,    M,    NONE  ),      V_SAME_LOCN,    RG_,          G_NO,           FU_NO ),
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
 _OE( _UnPP(  M,    M,    NONE  ),      V_SAME_TYPE,    RG_DOUBLE,    R_SPLITUNARY,   FU_NO ),
 _OE( _UnPP(  M|C,  R,    NONE  ),      V_NO,           RG_DOUBLE,    R_SPLITUNARY,   FU_NO ),
 _OE( _UnPP(  R,    M,    NONE  ),      V_NO,           RG_DOUBLE,    R_SPLITUNARY,   FU_NO ),
@@ -73,7 +74,7 @@ const opcode_entry    Move87D[] = {
 /*           from  to    eq            verify          reg           gen             fu  */
 _OE( _UnPP(  R|M|U,R|M|U,EQ_R1 ),      V_NO,           RG_,          G_NO,           FU_NO ),
 _OE( _UnPP(  M,    M,    NONE  ),      V_SAME_LOCN,    RG_,          G_NO,           FU_NO ),
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
 _OE( _UnPP(  M,    M,    NONE  ),      V_SAME_TYPE,    RG_,          R_SPLIT8,       FU_NO ),
 _OE( _UnPP(  M|C,  R,    NONE  ),      V_NO,           RG_8,         R_SPLIT8,       FU_NO ),
 _OE( _UnPP(  R,    M,    NONE  ),      V_NO,           RG_8,         R_SPLIT8,       FU_NO ),
@@ -134,7 +135,7 @@ _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN, 
 const opcode_entry    Push87S[] = {
 /*****************************/
 /*           from  to    eq            verify          reg           gen             fu  */
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
 _OE( _Un(    R|M|C,ANY,  NONE ),       V_NO,           RG_DBL_OR_PTR,R_SPLITUNARY,   FU_NO ),
 #else
 _OE( _UnPP(  R,    ANY,  NONE ),       V_NO,           RG_DBL,       G_WORDR1,       FU_FOP ),
@@ -148,7 +149,7 @@ _OE( _Un(    ANY,  ANY,  NONE ),       V_NO,           RG_,          G_UNKNOWN, 
 const opcode_entry    Push87D[] = {
 /*****************************/
 /*           from  to    eq            verify          reg           gen             fu  */
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
 _OE( _Un(    R|M|C,ANY,  NONE ),       V_NO,           RG_8,         R_SPLIT8,       FU_NO ),
 #else
 _OE( _Un(    R|M|C,ANY,  NONE ),       V_NO,           RG_8,         R_SPLITUNARY,   FU_NO ),

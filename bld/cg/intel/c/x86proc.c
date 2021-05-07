@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,7 +84,7 @@
 type_length StackDepth;
 
 hw_reg_set   PushRegs[] = {
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
 #define HW_STACK_CHECK HW_AX
     HW_D( HW_AX ),
     HW_D( HW_BX ),
@@ -327,7 +327,7 @@ static void DoStackCheck( void ) {
     }
 #endif
     if( NeedStackCheck() ) {
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
         if( HW_COvlap( CurrProc->state.parm.used, HW_AX ) ) {
             QuickSave( HW_STACK_CHECK, OP_PUSH );
         }
@@ -384,7 +384,7 @@ static  void    PrologHook( void )
         GenRegSub( HW_SP, size );
         CurrProc->targ.base_adjust += size;
     }
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
     DoRTCall( RT_PROHOOK, false );
 #else
 //    GenPushC( CurrProc->parms.size );
@@ -957,7 +957,7 @@ void    GenProlog( void )
                     if( CHEAP_FRAME ) {
                         GenCypWindowsProlog();
                     } else {
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
                         // Windows prologs zap AX, so warn idiot user if we
                         // generate one for a routine in which AX is live
                         // upon entry to routine, or unalterable.

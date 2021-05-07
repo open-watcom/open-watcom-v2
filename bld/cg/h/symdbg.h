@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,7 +73,7 @@
 #define IND_RALLOC_NEAR     0x02
 #define IND_RALLOC_FAR      0x03
 
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
     #define LOC_MEMORY      LOC_MEM_16
 #else
     #define LOC_MEMORY      LOC_MEM_32

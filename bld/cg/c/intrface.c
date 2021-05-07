@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -124,7 +124,7 @@ cg_init_info _CGAPI     BEInitCg( cg_switches switches,
 
     OptForSize = (byte)optsize;
     CGProcessorVersion = proc; /* so _CPULevel works */
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
     /* if it ain't a 386 or better, FS and GS aren't there */
     if( !_CPULevel( CPU_386 ) ) {
         switches &= ~(FLOATING_FS | FLOATING_GS);
@@ -156,7 +156,7 @@ cg_init_info _CGAPI     BEInitCg( cg_switches switches,
     } else {
         info.success = 1;
         info.version.is_large = true;
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
         info.version.target = II_TARG_8086;
 #elif _TARGET & _TARG_80386
         info.version.target = II_TARG_80386;

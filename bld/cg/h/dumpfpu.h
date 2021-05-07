@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#if ( _TARGET & ( _TARG_IAPX86 | _TARG_80386 ) )
+#if ( _TARGET & ( _TARG_8086 | _TARG_80386 ) )
 extern void     DumpSeqs( void );
 extern bool     DumpFPUIns87( instruction *ins );
 #endif

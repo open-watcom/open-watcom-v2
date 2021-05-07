@@ -183,7 +183,7 @@ static  instruction     *PushDelayed( instruction *ins, an addr, call_state *sta
     AddIns( ins );
     addr->format = NF_ADDR; /* so instruction doesn't get freed! */
     BGDone( addr );
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
     /* unused parameters */ (void)state;
 #else
     if( state->attr & ROUTINE_STACK_RESERVE ) {
@@ -472,7 +472,7 @@ static  void    MoveThrough( name *from, name *to, instruction *from_ins,
     PrefixIns( to_ins, new );
 }
 
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
     #define RL_MOVE_REG RL_WORD
 #else
     #define RL_MOVE_REG RL_DOUBLE
@@ -500,7 +500,7 @@ static  instruction    *To86Move( instruction *ins, instruction *next )
         break;
     }
     if( next->result->n.type_class == FS ) {
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
         if( OptForSize > 50 )
             return( ret );
         MoveThrough( LowPart( ins->operands[0], U2 ),
@@ -513,7 +513,7 @@ static  instruction    *To86Move( instruction *ins, instruction *next )
     } else {
         if( OptForSize > 50 )
             return( ret );
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
         MoveThrough( LowPart( LowPart( ins->operands[0], U4 ), U2 ),
                      LowPart( LowPart( next->result      , U4 ), U2 ),
                      ins, next, reg, U2 );

@@ -102,7 +102,7 @@ extern void             GenLeaSP( int offset );
 extern void             GFstp10( type_length where );
 extern void             GFld10( type_length where );
 
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
 extern void             Pow2Div286(instruction*);
 #else
 extern type_length      TmpLoc( name *base, name *op );

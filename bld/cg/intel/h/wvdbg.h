@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -189,7 +190,7 @@ enum {
 #define SET_BASE_286            0x01
 #define SET_BASE_386            0x02
 
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
         #define FORTRAN_TYPE    FORTRAN_TYPE_286
         #define POINTER_NEAR    POINTER_NEAR_286
         #define POINTER_FAR     POINTER_FAR_286

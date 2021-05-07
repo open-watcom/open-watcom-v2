@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -291,7 +291,7 @@ static  uint    MultiReg( register_name *reg )
     hw_reg_set  tmp;
 
     hw_reg = reg->reg;
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
     if( HW_CEqual( hw_reg, HW_ABCD ) ) {
         BuffByte( REG_DX );
         BuffByte( REG_CX );
@@ -300,7 +300,7 @@ static  uint    MultiReg( register_name *reg )
         return( 4 );
     }
 #endif
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
     hw_reg = Low32Reg( hw_reg );
 #elif _TARGET & _TARG_80386
     hw_reg = Low64Reg( hw_reg );

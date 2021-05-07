@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -248,7 +248,7 @@ static bool OkToSlide( instruction *ins, name *op )
     Is it OK to slide an INDEX_ADJUST instruction past an index name?
 */
 {
-#if  _TARGET & (_TARG_80386 | _TARG_IAPX86 )
+#if  _TARGET & (_TARG_80386 | _TARG_8086 )
     opcnt           i;
 #endif
 
@@ -260,7 +260,7 @@ static bool OkToSlide( instruction *ins, name *op )
         return( true );
     if( OptForSize >= 50 )
         return( false );
-#if  _TARGET & (_TARG_80386 | _TARG_IAPX86 )
+#if  _TARGET & (_TARG_80386 | _TARG_8086 )
     /* bad news to add a displacement on an instruction that also
        has a constant operand (takes an extra clock) */
     for( i = ins->num_operands; i-- > 0; ) {

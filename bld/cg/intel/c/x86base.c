@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +45,7 @@
 #define SHORT_RANGE     MAX_SHORT_NEG+MAX_SHORT_POS+1;
 #define SHORT_COST      3
 
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
     #define     SHORT_SAVINGS   1
     #define     LONG_COST       6
 #else

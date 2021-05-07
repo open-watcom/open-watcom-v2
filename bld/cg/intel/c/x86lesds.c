@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -131,7 +131,7 @@ static bool     OptMemMove( instruction *ins, instruction *next )
                 result_type_class = U2;
                 break;
             case 2:
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
                 if( ! _CPULevel( CPU_386 ) ) {
                     shift = 0;
                     result_type_class = 0;
@@ -173,7 +173,7 @@ static bool     OptMemMove( instruction *ins, instruction *next )
     return( false );
 }
 
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
 
 static bool isPushX2( instruction *ins )
 /**************************************/
@@ -348,7 +348,7 @@ void    OptSegs( void )
                         next = tmp;
                     }
                 }
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
                 /* The scoreboarder may split "and ax,imm" into
                    "xor ah,ah; and al,imm". This is sometimes useful
                    (ah can be eliminated for

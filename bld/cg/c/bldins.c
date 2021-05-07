@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -168,7 +168,7 @@ bool    NeedConvert( type_def *from, type_def *to )
         return( true );
     if( from->length != to->length )
         return( true );
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
     if( (to->attr & TYPE_POINTER) != (from->attr & TYPE_POINTER) && to->length != WORD_SIZE )
         return( true ); /* long <=> pointer */
 #endif

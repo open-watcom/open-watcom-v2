@@ -239,7 +239,7 @@ static void CLIReloc( dw_sectnum sect, dw_reloc_type reloc_type, ... )
         break;
     case DW_W_ARANGE_ADDR:
         DoLblReloc( ARange, 0 );
-#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_8086 | _TARG_80386 )
         if( _IsntTargetModel( FLAT_MODEL ) ) {
             DoSegLblReloc( ARange );
         }
@@ -400,7 +400,7 @@ static int InitCU( dw_cu_info *cu )
     tipe_addr = TypeAddress( TY_NEAR_POINTER );
     cu->offset_size = tipe_addr->length;
     cu->segment_size = 0;
-#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_8086 | _TARG_80386 )
     if( _IsntTargetModel( FLAT_MODEL ) ) {
         cu->segment_size = 2;
     }
@@ -490,7 +490,7 @@ void    DFBegCCU( segment_id code_segid, dw_sym_handle dbg_pch )
         cu.flags = false;
 #else
         old_segid = SetOP( code_segid );
-    #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+    #if _TARGET & ( _TARG_8086 | _TARG_80386 )
         if( _IsTargetModel( FLAT_MODEL ) ) {
             bck = MakeLabel();
             OutLabel( bck->lbl );
@@ -645,7 +645,7 @@ void    DFObjLineInitDbgInfo( void )
 #ifdef DWARF_CU_REC_NO_PCLO_PCHI
         cu.flags = false;
 #else
-#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_8086 | _TARG_80386 )
         if( _IsTargetModel( FLAT_MODEL ) ) {
             cu.flags = true;
         } else {
@@ -733,7 +733,7 @@ void     DFLineNum( cue_state *state, offset lc )
         bck = MakeLabel();
         OutLabel( bck->lbl );
         DWLineAddr( Client, (dw_sym_handle)bck, lc );
-#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_8086 | _TARG_80386 )
         if( _IsntTargetModel( FLAT_MODEL ) ) {
             DWLineSeg( Client, (dw_sym_handle)bck );
         }
@@ -749,7 +749,7 @@ void     DFLineNum( cue_state *state, offset lc )
 }
 
 
-#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_8086 | _TARG_80386 )
 static  dw_loc_handle   SegLoc( cg_sym_handle sym )
 /*************************************************/
 {
@@ -782,7 +782,7 @@ void    DFGenStatic( cg_sym_handle sym, dbg_loc loc )
     }
     name = FEName( sym );
     dw_segloc = NULL;
-#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_8086 | _TARG_80386 )
     if( attr & FE_STATIC ) {
         if( _IsntTargetModel( FLAT_MODEL ) ) {
             dw_segloc = SegLoc( sym );
@@ -799,7 +799,7 @@ void    DFGenStatic( cg_sym_handle sym, dbg_loc loc )
     if( dw_loc != NULL ) {
         DWLocTrash( Client, dw_loc );
     }
-#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_8086 | _TARG_80386 )
     if( dw_segloc != NULL ) {
         DWLocTrash( Client, dw_segloc );
     }
@@ -844,7 +844,7 @@ static void    SymParm( cg_sym_handle sym, dw_loc_handle loc, dw_loc_handle entr
 /* Coming out of optimizer queue*/
 /**/
 
-#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_8086 | _TARG_80386 )
 static dw_loc_handle  RetLoc( uint_32 ret_offset )
 /**** make a loc for return address *************/
 {
@@ -940,7 +940,7 @@ static  void GenParmLoc( dbg_local *parm, dbg_local **locals )
     DWLocTrash( Client, dw_entry );
 }
 
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
 static int  DW_PTR_TYPE_FAR  = DW_PTR_TYPE_FAR16;
 #elif _TARGET & _TARG_80386
 static int  DW_PTR_TYPE_FAR  = DW_PTR_TYPE_FAR32;
@@ -994,7 +994,7 @@ void    DFProEnd( dbg_rtn *rtn, offset lc )
     sym = AskForLblSym( CurrProc->label );
     tipe = FEDbgRetType( sym );
     flags = 0;
-#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_8086 | _TARG_80386 )
     if( *(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & FAR_CALL ) {
         flags |= DW_PTR_TYPE_FAR;
     }
@@ -1021,7 +1021,7 @@ void    DFProEnd( dbg_rtn *rtn, offset lc )
         }
     }
     DBLocFini( rtn->obj_loc );
-#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_8086 | _TARG_80386 )
     dw_retloc = RetLoc( rtn->ret_offset );
     dw_frameloc = FrameLoc();
 #else
@@ -1029,7 +1029,7 @@ void    DFProEnd( dbg_rtn *rtn, offset lc )
     dw_frameloc = NULL;
 #endif
     dw_segloc = NULL;
-#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_8086 | _TARG_80386 )
     if( _IsntTargetModel( FLAT_MODEL ) ) {
         dw_segloc = SegLoc( sym );
     }
@@ -1048,7 +1048,7 @@ void    DFProEnd( dbg_rtn *rtn, offset lc )
         }
         DWPubname( Client, obj, name );
     }
-#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+#if _TARGET & ( _TARG_8086 | _TARG_80386 )
     if( dw_retloc != NULL ) {
         DWLocTrash( Client, dw_retloc );
     }

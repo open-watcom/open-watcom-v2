@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -117,7 +117,7 @@ static struct reg_map    HWRegValues[REG_MAP_SIZE] = {
    { HW_D( HW_DX ),  DW_REG_dx },
    { HW_D( HW_SI ),  DW_REG_si },
    { HW_D( HW_DI ),  DW_REG_di },
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
    { HW_D( HW_BP ),  DW_REG_bp },
    { HW_D( HW_SP ),  DW_REG_sp },
 #elif _TARGET & _TARG_80386
@@ -171,7 +171,7 @@ void   DFOutReg( dw_loc_id locid, name *reg )
     dw_regs     regnum;
 
     hw_reg = reg->r.reg;
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
     if( HW_CEqual( hw_reg, HW_ABCD ) ) {
         DWLocReg( Client, locid, DW_REG_dx );
         DWLocPiece( Client, locid, WD );
@@ -184,7 +184,7 @@ void   DFOutReg( dw_loc_id locid, name *reg )
         return;
     }
 #endif
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
     hw_low = Low32Reg( hw_reg );
 #elif _TARGET & _TARG_80386
     hw_low = Low64Reg( hw_reg );

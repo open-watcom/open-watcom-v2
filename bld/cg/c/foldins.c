@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,7 +59,7 @@ bool     IsTrickyPointerConv( instruction *ins )
     to be carefully converted with taking segments into account?
 */
 {
-#if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
+#if _TARGET & ( _TARG_80386 | _TARG_8086 )
     if( (ins->head.opcode == OP_CONVERT) && _IsPointer( ins->type_class ) ) {
         if( ins->base_type_class == U2 && TypeClassSize[ins->type_class] > WORD_SIZE ) {
             return( true );

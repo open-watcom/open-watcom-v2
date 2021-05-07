@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -267,7 +267,7 @@ void    DumpRegName( hw_reg_set regname )
             if( Check(&name,HW_LR) ) { DumpLiteral( "LR" ); continue; }
 #endif
 #endif
-#if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
+#if _TARGET & ( _TARG_80386 | _TARG_8086 )
             if( Check(&name,HW_EAX)) { DumpLiteral("EAX"); continue; }
             if( Check(&name,HW_AX) ) { DumpLiteral( "AX"); continue; }
             if( Check(&name,HW_AL) ) { DumpLiteral( "AL"); continue; }

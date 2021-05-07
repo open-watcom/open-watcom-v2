@@ -255,7 +255,7 @@ static  void    LayInitial( instruction *ins, gentype gen ) {
     index = index * table->width + gen - table->low_gen;
     if( table->flags & NEED_WAIT ) {
         Used87 = true;
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
         if( gen == G_FINIT || !_CPULevel( CPU_286 ) || _IsEmulation() ) {
             if( _IsEmulation() ) {
                 SetFPPatchType( FPP_NORMAL );
@@ -394,7 +394,7 @@ static  bool    LayOpndSize( instruction *ins, gentype gen ) {
     (Eg: MOV    AX,DX need it in a USE32 segment)
 */
 
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
     switch( ins->head.opcode ) {
     case OP_PUSH:
         if( ( gen == G_C1 || gen == G_M1 ) && ins->type_class == I4 ) {
@@ -563,7 +563,7 @@ static  void    DoP5RegisterDivide( instruction *ins ) {
     _Next;
     // mov #cons -> [e]ax
     LayOpbyte( 0xb8 );
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
     AddWData( ins_key, U2 );
 #else
     AddWData( ins_key, U4 );
@@ -596,7 +596,7 @@ static  void    DoP5MemoryDivide( instruction *ins ) {
     label_handle        lbl_2;
     name                *high;
     name                *low;
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
     name                *h;
     name                *l;
 #endif
@@ -621,7 +621,7 @@ static  void    DoP5MemoryDivide( instruction *ins ) {
     _Code;
     switch( ins->operands[0]->n.type_class ) {
     case FS:
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
         high = HighPart( ins->operands[0], U2 );
         low = LowPart( ins->operands[0], U2 );
         if( seg != NULL )
@@ -648,7 +648,7 @@ static  void    DoP5MemoryDivide( instruction *ins ) {
     case FD:
         high = HighPart( ins->operands[0], U4 );
         low = LowPart( ins->operands[0], U4 );
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
         h = HighPart( high, U2 );
         l = LowPart( high, U2 );
         if( seg != NULL )
@@ -741,7 +741,7 @@ static  void    DoP5Divide( instruction *ins ) {
             AddToTemp( 0x36 );
         }
     }
-#if ( _TARGET & _TARG_IAPX86 )
+#if ( _TARGET & _TARG_8086 )
     LayOpword( 0x06f6 );        // test byte ptr L1,1
 #else
     LayOpword( 0x05f6 );        // test byte ptr L1,1
@@ -976,7 +976,7 @@ type_class_def  OpndSize( hw_reg_set reg )
 {
     if( HW_COvlap( reg, HW_SEGS ) )
         return( U2 );
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
     if( _IsTargetModel( USE_32 ) )
         AddToTemp( M_OPND_SIZE );
     return( U2 );
@@ -1368,7 +1368,7 @@ void    GCondFwait( void )
 {
     _Code;
     Used87 = true;
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
     if( !_CPULevel( CPU_286 ) || _IsEmulation() ) {
         if( _IsEmulation() ) {
             SetFPPatchType( FPP_NORMAL );
@@ -1445,7 +1445,7 @@ void    GenTouchStack( bool sp_might_point_at_something )
     MOV         [esp],eax
 */
 {
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
     /* unused parameters */ (void)sp_might_point_at_something;
 #else
     if( sp_might_point_at_something || OptForSize == 100 ) {
@@ -2101,7 +2101,7 @@ void    GenObjCode( instruction *ins ) {
 #endif
             case U4:
             case I4:
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
                 LayOpbyte( M_CWD );
 #elif _TARGET & _TARG_80386
                 switch( ins->base_type_class ) {
@@ -2265,7 +2265,7 @@ void    GenObjCode( instruction *ins ) {
         case G_DIV2:
             By2Div( ins );
             break;
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
         case G_POW2DIV_286:
             Pow2Div286( ins );
             break;

@@ -36,7 +36,7 @@
 #include "dumpins.h"
 #include "dumpfpu.h"
 
-#if ( _TARGET & ( _TARG_IAPX86 | _TARG_80386 ) )
+#if ( _TARGET & ( _TARG_8086 | _TARG_80386 ) )
 
 #include "i87sched.h"
 #include "gen8087.h"
@@ -255,7 +255,7 @@ bool    DumpFPUIns87( instruction *ins )
 void    DumpFPUIns( instruction *ins )
 /************************************/
 {
-#if ( _TARGET & ( _TARG_IAPX86 | _TARG_80386 ) )
+#if ( _TARGET & ( _TARG_8086 | _TARG_80386 ) )
     (void)DumpFPUIns87( ins );
 #else
     /* unused parameters */ (void)ins;

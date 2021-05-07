@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +52,7 @@ extern  cg_init_info    BEInit(cg_switches switches, cg_target_switches tg_switc
     cg_init_info        info;
     info.version.is_large = true;
     info.version.revision = II_REVISION;
-#if _TARGET & _TARG_IAPX86
+#if _TARGET & _TARG_8086
     info.version.target = II_TARG_8086;
 #else
     info.version.target = II_TARG_80386;
