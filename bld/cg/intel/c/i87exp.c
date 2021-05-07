@@ -238,13 +238,11 @@ int     FPRegNum( name *reg_name )
     it isn't an 8087 register
 */
 {
-    hw_reg_set  tmp;
-
-    if( reg_name == NULL || reg_name->n.class != N_REGISTER )
+    if( reg_name == NULL
+      || reg_name->n.class != N_REGISTER
+      || !HW_COvlap( reg_name->r.reg, HW_FLTS ) )
         return( -1 );
-    tmp = reg_name->r.reg;
-    HW_COnlyOn( tmp, HW_FLTS );
-    return( FPRegTrans( tmp ) );
+    return( FPRegTrans( reg_name->r.reg ) );
 }
 
 instruction *PrefFLDOp( instruction *ins, operand_type op, name *opnd )
