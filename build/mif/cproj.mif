@@ -322,8 +322,11 @@ def_fpu_flags_nto_386   = -fpi
 def_fpu_flags_rdos_386    = -fpi
 def_fpu_flags_rdosdev_386 = -fpi
 
+nofpu_flags_i86 = -fpc
+nofpu_flags_386 = -fpc
+
 !ifdef $(proj_name)_nofpu
-fpu_flags = -fpc
+fpu_flags = $(nofpu_flags_$(host_cpu))
 !else ifdef fpu_flags_$(host_os)_$(host_cpu)
 fpu_flags = $(fpu_flags_$(host_os)_$(host_cpu))
 !else
