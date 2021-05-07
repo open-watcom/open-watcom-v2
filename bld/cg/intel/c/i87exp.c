@@ -324,12 +324,12 @@ instruction *SuffFSTPRes( instruction *ins, name *opnd, result_type res )
 }
 
 
-static  instruction     *SuffixFSTPRes( instruction *ins ) {
-/***********************************************************
+static  instruction     *SuffixFSTPRes( instruction *ins )
+/*********************************************************
     Suffix the floating point instruction "ins" with an FSTP instruction
     for its result (ins->result).
 */
-
+{
     instruction *new_ins;
     name        *opnd;
 
@@ -368,12 +368,12 @@ instruction     *PrefFXCH( instruction *ins, int i )
 }
 
 
-static  void    PrefixChop( instruction *ins ) {
-/***********************************************
+static  void    PrefixChop( instruction *ins )
+/*********************************************
     Prefix an instruction "ins" with an instruction that will truncate
     ST(0) to the nearest integer.
 */
-
+{
     instruction *new_ins;
 
     if( ins->head.opcode == OP_ROUND )
@@ -387,11 +387,12 @@ static  void    PrefixChop( instruction *ins ) {
 }
 
 #if _TARGET & _TARG_80386
-static    int     WantsChop( instruction *ins ) {
-/************************************************
+static    int     WantsChop( instruction *ins )
+/**********************************************
     Check whether instruction "ins" needs an instruction that will truncate
     ST(0) to the nearest integer.
 */
+{
     if( ins->head.opcode == OP_ROUND )
         return( false );
     if( _IsFloating( ins->result->n.type_class ) )
@@ -400,13 +401,12 @@ static    int     WantsChop( instruction *ins ) {
 }
 #endif
 
-static  instruction     *ExpUnary( instruction *ins,
-                                    operand_type src, result_type res,
-                                    const opcode_entry *table ) {
-/************************************************************************
+static instruction  *ExpUnary( instruction *ins, operand_type src,
+                            result_type res, const opcode_entry *table )
+/***********************************************************************
     Expand a unary instruction "ins" using classifications "src" and "res"
 */
-
+{
     instruction *unary;
 
     ins->u.gen_table = table;
@@ -423,14 +423,14 @@ static  instruction     *ExpUnary( instruction *ins,
 }
 
 
-static  instruction     *ExpCall( instruction *ins ) {
-/*****************************************************
+static  instruction     *ExpCall( instruction *ins )
+/***************************************************
     Expand a call instruction.  Its not really an 8087 instruction but
     we must take into account how many parameters it pops off the 8087
     stack and whether it returns a value on the 8087.  If that return
     value is ignored, we have to FSTP ST(0) to get rid of it.
 */
-
+{
     instruction *new_ins;
 
     new_ins = ins;
@@ -447,12 +447,12 @@ static  instruction     *ExpCall( instruction *ins ) {
 
 #define _Move( src, dst ) ( dst + src*RES_NONE )
 
-static  instruction     *ExpMove( instruction *ins,
-                                  operand_type src, result_type dst ) {
+static instruction  *ExpMove( instruction *ins, operand_type src,
+                                result_type dst )
 /**********************************************************************
     Expand a floating point move "ins" using classifications "src" and "dst".
 */
-
+{
     switch( _Move( src, dst ) ) {
     case _Move( OP_STK1, RES_STK0 ):
     case _Move( OP_STK1, RES_MEM ):
@@ -542,14 +542,14 @@ static  instruction     *ExpMove( instruction *ins,
 
 
 
-static  instruction     *ExpPush( instruction *ins, operand_type op ) {
-/***********************************************************************
+static  instruction     *ExpPush( instruction *ins, operand_type op )
+/********************************************************************
     expand a PUSH instruction.  On the 386 we generate FSTP 0[esp].  On
     the 8086..286 try MOV BP,SP  FSTP 0[bp].  If thats not possible,
     pick a register from SI,DI,BX and generate for PUSH reg, MOV reg,SP,
     FSTP ss:0[reg], POP reg.
 */
-
+{
     instruction         *new_ins;
     name                *sp;
     int                 size;
@@ -628,12 +628,12 @@ static  instruction     *ExpPush( instruction *ins, operand_type op ) {
 
 #define _OPS( op1, op2 ) ( op1 + op2*OP_NONE )
 
-static  void    ExpBinFunc( instruction *ins,
-                            operand_type op1, operand_type op2 ) {
-/****************************************************************
+static void ExpBinFunc( instruction *ins, operand_type op1, operand_type op2 )
+/*****************************************************************************
     Expand a floating point binary math instructon "ins", like pow,
     atan2, etc using classifications "op1" and "op2".
 */
+{
     switch( _OPS( op1, op2 ) ) {
     case _OPS( OP_STK1, OP_STK1 ):
     case _OPS( OP_MEM , OP_STK1 ):
@@ -672,9 +672,9 @@ static  void    ExpBinFunc( instruction *ins,
 }
 
 
-static  void    ExchangeOps( instruction *ins ) {
-/***********************************************/
-
+static  void    ExchangeOps( instruction *ins )
+/*********************************************/
+{
     name        *op1;
     name        *op2;
 
@@ -685,14 +685,13 @@ static  void    ExchangeOps( instruction *ins ) {
 }
 
 
-static  void    ExpBinary( instruction *ins,
-                           operand_type op1, operand_type op2 ) {
-/****************************************************************
+static void ExpBinary( instruction *ins, operand_type op1, operand_type op2 )
+/****************************************************************************
     Expand a floating point binary instructon "ins" using
     classifications "op1" and "op2".
 */
-
-  /* expand a binary floating point instruction. op1 is the implied locn.*/
+{
+    /* expand a binary floating point instruction. op1 is the implied locn.*/
 
     switch( _OPS( op1, op2 ) ) {
     case _OPS( OP_STK1, OP_STK1 ):
@@ -750,7 +749,7 @@ static  void    ExpBinary( instruction *ins,
 
 
 
-static  void    RevOtherCond( block *blk, instruction *ins ) {
+static  void    RevOtherCond( block *blk, instruction *ins )
 /*************************************************************
     Run through block "blk" and its successors, continuing until we hit
     an instruction that changes the condition codes, or uses a previous
@@ -758,7 +757,7 @@ static  void    RevOtherCond( block *blk, instruction *ins ) {
     previous codes, reverse it since we changed the compare instruction
     up in RevFPCond.
 */
-
+{
     block_num   i;
     block       *target;
 
@@ -785,8 +784,8 @@ static  void    RevOtherCond( block *blk, instruction *ins ) {
 }
 
 
-static  void    RevFPCond( instruction *ins ) {
-/**********************************************
+static  void    RevFPCond( instruction *ins )
+/********************************************
     Reverse the sense of a floating point comarison (condition).  For
     example, if we're trying to generate OP_COMPARE_GREATER  X, ST(0),
     we would use FCOM X, and then flip the the comparison to
@@ -795,21 +794,19 @@ static  void    RevFPCond( instruction *ins ) {
     flip any comparisons that rely on this comparison to set condition
     codes as well.
 */
-
+{
     _MarkBlkAllUnVisited();
     RevOtherCond( InsBlock( ins ), ins );
     RevCond( ins );
 }
 
 
-static  void    ExpCompare ( instruction *ins,
-                             operand_type op1, operand_type op2 ) {
-/******************************************************************
+static void ExpCompare( instruction *ins, operand_type op1, operand_type op2 )
+/*****************************************************************************
     Expand a floating point comparison using classifications "op1" and
     "op2".
 */
-
-
+{
     if( !_CPULevel( CPU_386 ) ) {
         if( FPStatWord == NULL && ( !_CPULevel(CPU_286) || _IsEmulation() ) ) {
             FPStatWord = AllocTemp( U2 );
@@ -873,15 +870,15 @@ static  void    ExpCompare ( instruction *ins,
 
 
 
-static  instruction     *ExpandFPIns( instruction *ins, operand_type op1,
-                                      operand_type op2, result_type res ) {
+static instruction *ExpandFPIns( instruction *ins, operand_type op1,
+                                      operand_type op2, result_type res )
 /**************************************************************************
     Using the operand/result classifications "op1", "op2", "res", turn
     "ins" into a real live 8087 instruction by deciding what to generate
     for it (setting gen_table).  Note that it may turn into multiple
     8087 instructions.
 */
-
+{
     if( !_Is87Ins( ins ) )
         return( ins );
     if( op2 != OP_NONE ) {
@@ -1049,14 +1046,14 @@ static  instruction     *DoExpand( instruction *ins )
     return( ExpandFPIns( ins, op1_type, op2_type, res_type ) );
 }
 
-static  void    Expand( void ) {
+static  void    Expand( void )
 /*******************************
     Run through the instruction stream expanding each
     instruction.  All 8087 instructions will have
         gen_table->generate == G_UNKNOWN.
 
 */
-
+{
     block       *blk;
     instruction *ins;
 

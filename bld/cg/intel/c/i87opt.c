@@ -94,13 +94,13 @@ void    FPParms( void )
     }
 }
 
-static  bool    CanPushImmed( pn parm, int *num_parms ) {
-/********************************************************
+static  bool    CanPushImmed( pn parm, int *num_parms )
+/******************************************************
     find out if we can "push" floating point parameters onto the 8087
     stack immediately as they are calculated, or if we must delay
     pushing until just before the call instruction.
 */
-
+{
     instruction *next;
     instruction *ins;
     an          addr;
@@ -130,21 +130,21 @@ static  bool    CanPushImmed( pn parm, int *num_parms ) {
 }
 
 
-static  void    Pushes( instruction *ins ) {
-/******************************************/
-
+static  void    Pushes( instruction *ins )
+/****************************************/
+{
     ins->stk_entry = 0;
     ins->stk_exit = 1;
 }
 
 
-static  int     FPPushImmed( pn parm ) {
-/***************************************
+static  int     FPPushImmed( pn parm )
+/*************************************
     Push the list of floating point parameters onto the 8087 stack,
     immediately following the definition of each parameter.  (Just set
     the result of each instruction to ST(0)).
 */
-
+{
     an          addr;
     int         parms;
 
@@ -168,12 +168,12 @@ static  int     FPPushImmed( pn parm ) {
     return( parms );
 }
 
-static  instruction     *PushDelayed( instruction *ins, an addr, call_state *state ) {
-/*************************************************************************************
+static  instruction     *PushDelayed( instruction *ins, an addr, call_state *state )
+/***********************************************************************************
     Put the parm "addr" into a temporary, and then add a "push" just
     before the call instruction.
 */
-
+{
     ins->result = BGNewTemp( addr->tipe );
     if( addr->flags & FL_ADDR_CROSSED_BLOCKS ) {
         ins->result->v.usage |= USE_IN_ANOTHER_BLOCK;
@@ -195,12 +195,12 @@ static  instruction     *PushDelayed( instruction *ins, an addr, call_state *sta
 
 
 
-static bool PushDelayedIfStackOperand( instruction *ins, pn parm, call_state *state ) {
-/**************************************************************************************
+static bool PushDelayedIfStackOperand( instruction *ins, pn parm, call_state *state )
+/************************************************************************************
     Delay the "push" of a floating point parameter if any of its
     operands are 8087 stack operands.
 */
-
+{
     opcnt       i;
     an          addr;
 
@@ -218,13 +218,13 @@ static bool PushDelayedIfStackOperand( instruction *ins, pn parm, call_state *st
 
 
 
-static bool PushDelayedIfRedefinition( instruction *ins, pn parm, call_state *state ) {
-/**************************************************************************************
+static bool PushDelayedIfRedefinition( instruction *ins, pn parm, call_state *state )
+/************************************************************************************
     Delay the "push" of a floating point parameter if any of its
     operands are  redefined between the calculation of the parm and the
     call.
 */
-
+{
     instruction *next;
     opcnt       i;
 
@@ -268,14 +268,14 @@ static  void    UseInOther( name *op )
     }
 }
 
-static  int     FPPushDelay( pn parm, call_state *state ) {
-/**********************************************************
+static  int     FPPushDelay( pn parm, call_state *state )
+/********************************************************
     For each parm, move it into a temp, and "push" the temp onto the
     8087 stack just before the call instruction.  If the calculation of
     the parm can be moved down just in front of the call, we do that,
     instead of using a temporary.
 */
-
+{
     instruction *ins;
     instruction *new_ins;
     an          addr;
@@ -356,10 +356,11 @@ _OE(                         PRESERVE, V_NO,           RG_,          G_FSINCOS, 
 
 #define _OTHER( x ) ( (x) == OP_SIN ? OP_COS : OP_SIN )
 
-static  bool    FSinCos( instruction *ins1 ) {
+static  bool    FSinCos( instruction *ins1 )
 /********************************************
     find the FSINCOS sequence
 */
+{
     instruction *ins2;
     instruction *ins3;
     instruction *ins4;
@@ -421,9 +422,9 @@ static  bool    FSinCos( instruction *ins1 ) {
     return( true );
 }
 
-static  instruction     *Next87Ins( instruction *ins ) {
-/******************************************************/
-
+static  instruction     *Next87Ins( instruction *ins )
+/****************************************************/
+{
     instruction *next;
 
     for( next = ins->head.next; next->head.opcode != OP_BLOCK; next = next->head.next ) {
@@ -434,10 +435,10 @@ static  instruction     *Next87Ins( instruction *ins ) {
     return( ins );
 }
 
-static  instruction     *BackUpAndFree( instruction *ins, instruction *junk1,
-                                        instruction *junk2 ) {
-/*************************************************************
-*/
+static instruction *BackUpAndFree( instruction *ins, instruction *junk1,
+                                        instruction *junk2 )
+/**********************************************************/
+{
     instruction *ret;
 
     ret = ins->head.prev;
@@ -450,20 +451,14 @@ static  instruction     *BackUpAndFree( instruction *ins, instruction *junk1,
     return( ret );
 }
 
-static  void    AdjustST( name **p, int adjust )
-/**********************************************/
-{
-    *p = ST( FPRegNum( *p ) + adjust );
-}
-
 static  void    MoveThrough( name *from, name *to, instruction *from_ins,
                              instruction *to_ins, name *reg,
-                             type_class_def type_class ) {
+                             type_class_def type_class )
 /****************************************************
     Move from "from" to "to" using register name "reg". Segments if
     any should be taken from "from_ins" and "to_ins".
 */
-
+{
     bool        dummy;
     instruction *new;
 
@@ -483,12 +478,12 @@ static  void    MoveThrough( name *from, name *to, instruction *from_ins,
     #define RL_MOVE_REG RL_DOUBLE
 #endif
 
-static  instruction    *To86Move( instruction *ins, instruction *next ) {
-/************************************************************************
+static  instruction    *To86Move( instruction *ins, instruction *next )
+/**********************************************************************
     Turn a move which uses the 8087 (FLD X, FSTP Y) into a move using
     the 8086 using an available 8086 register.
 */
-
+{
     hw_reg_set  *regs;
     name        *reg;
     instruction *ret;
@@ -542,10 +537,9 @@ static  instruction    *To86Move( instruction *ins, instruction *next ) {
 }
 
 
-static  bool    RedundantStore( instruction *ins ) {
-/***************************************************
-*/
-
+static  bool    RedundantStore( instruction *ins )
+/************************************************/
+{
     instruction         *next;
 
     for( next = ins->head.next; next->head.opcode != OP_BLOCK; next = next->head.next ) {
@@ -562,15 +556,16 @@ static  bool    RedundantStore( instruction *ins ) {
 }
 
 
-static  instruction    *Opt87Sequence( instruction *ins, bool *again ) {
-/************************************************************************
+static  instruction    *Opt87Sequence( instruction *ins, bool *again )
+/*********************************************************************
     Look for silly 8087 sequences and fix them up.
 */
-
+{
     instruction         *next;
     instruction         *third;
     instruction         *ret;
     type_class_def      type_class;
+    int                 st_reg;
 
     next = Next87Ins( ins );
     ret = ins->head.next;
@@ -593,10 +588,11 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again ) {
 
             /* FLD ST, FSTP ST(i) ===> FST ST(i-1) */
 
-            if( FPRegNum( next->result ) == 0 ) {
+            st_reg = FPRegNum( next->result );
+            if( st_reg == 0 ) {
                 ret = BackUpAndFree( ins, ins, next );
             } else {
-                AdjustST( &next->result, -1 );
+                next->result = ST( st_reg - 1 );
                 FreeIns( ins );
                 ret = next;
                 NoPop( next );
@@ -605,10 +601,12 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again ) {
         } else if( G( next ) == G_RNFBINP || G( next ) == G_RRFBINP ) {
 
             /* FLD ST, FopP ST(i),ST ==> Fop ST(i-1),ST */
-            if( FPRegNum( next->operands[0] ) == 0 ) {
+
+            st_reg = FPRegNum( next->operands[0] );
+            if( st_reg == 0 ) {
                 ret = BackUpAndFree( ins, ins, next );
             } else {
-                AdjustST( &next->operands[0], -1 );
+                next->operands[0] = ST( st_reg - 1 );
                 NoPopRBin( next );
                 FreeIns( ins );
                 ret = next;
@@ -627,7 +625,7 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again ) {
                     return( ret ); /* need convert! */
                 }
             }
-            if( ( FPRegNum( next->operands[0] ) == 1 ) ) {
+            if( FPRegNum( next->operands[0] ) == 1 ) {
 
                 /* FLD X, FxxP ST(1) ==> Fxx X */
 
@@ -665,10 +663,12 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again ) {
                         ins->head.prev->head.next = ins->head.next;
                         SuffixIns( next, ins );
                         if( G( ins ) == G_RFLD ) {
-                            AdjustST( &ins->operands[0], +1 );
+                            st_reg = FPRegNum( ins->operands[0] );
+                            ins->operands[0] = ST( st_reg + 1 );
                         }
                         if( G( next ) == G_RFLD ) {
-                            AdjustST( &next->operands[0], -1 );
+                            st_reg = FPRegNum( next->operands[0] );
+                            next->operands[0] = ST( st_reg - 1 );
                         }
                         ret = next;
                     } else {
@@ -770,7 +770,7 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again ) {
 }
 
 static void    Opt8087( void )
-/**************************
+/*****************************
     Look for silly 8087 sequences and change them into better ones.
 */
 {
