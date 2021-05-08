@@ -1525,7 +1525,7 @@ static bool ProcOffset( void )
 #endif
 #ifdef _RAW
     if( FmtData.type & MK_RAW ) {
-        ChkBase( _4KB );
+        ChkBase( 256 );
         return( true );
     }
 #endif
