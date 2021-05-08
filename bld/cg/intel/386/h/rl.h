@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,3 +62,5 @@ RL(     QuadReg,        RL_8,           EIGHT_BYTE,     2       ),
 
 RL(     ST0Reg,         RL_ST0,         FLOATING,       0       ),
 RL(     STIReg,         RL_STI,         FLOATING,       1       ),
+
+#define RL_MOVE     RL_DOUBLE

@@ -472,12 +472,6 @@ static  void    MoveThrough( name *from, name *to, instruction *from_ins,
     PrefixIns( to_ins, new );
 }
 
-#if _TARGET & _TARG_8086
-    #define RL_MOVE_REG RL_WORD
-#else
-    #define RL_MOVE_REG RL_DOUBLE
-#endif
-
 static  instruction    *To86Move( instruction *ins, instruction *next )
 /**********************************************************************
     Turn a move which uses the 8087 (FLD X, FSTP Y) into a move using
@@ -489,7 +483,7 @@ static  instruction    *To86Move( instruction *ins, instruction *next )
     instruction *ret;
 
     ret = ins->head.next;
-    for( regs = RegSets[RL_MOVE_REG]; ; ++regs ) {
+    for( regs = RegSets[RL_MOVE]; ; ++regs ) {
         if( HW_CEqual( *regs, HW_EMPTY ) )
             return( ret );
         if( HW_Ovlap( *regs, next->head.live.regs ) )
