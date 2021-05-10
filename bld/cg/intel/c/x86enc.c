@@ -981,7 +981,7 @@ type_class_def  OpndSize( hw_reg_set reg )
         AddToTemp( M_OPND_SIZE );
     return( U2 );
 #else
-    if( HW_COvlap( reg, HW_32_BP_SP ) ) {
+    if( HW_COvlap( reg, HW_32 ) ) {
         if( _IsntTargetModel( USE_32 ) )
             AddToTemp( M_OPND_SIZE );
         return( U4 );

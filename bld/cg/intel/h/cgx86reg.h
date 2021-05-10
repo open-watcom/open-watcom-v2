@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +34,7 @@
 #ifndef HWREG_INCLUDED
 #define HWREG_INCLUDED
 
+#define HW_NEED_64
 #include "cghwreg.h"
 
 /*       Target dependent set of hardware registers available */
@@ -67,11 +69,13 @@ HW_DEFINE_SIMPLE( HW_ECXH,   0x04000000U, 0x00000000U );
 HW_DEFINE_SIMPLE( HW_EDXH,   0x08000000U, 0x00000000U );
 HW_DEFINE_SIMPLE( HW_ESIH,   0x10000000U, 0x00000000U );
 HW_DEFINE_SIMPLE( HW_EDIH,   0x20000000U, 0x00000000U );
-HW_DEFINE_SIMPLE( HW_FS,     0x40000000U, 0x00000000U );
-HW_DEFINE_SIMPLE( HW_GS,     0x80000000U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_EBPH,   0x40000000U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_ESPH,   0x80000000U, 0x00000000U );
+HW_DEFINE_SIMPLE( HW_FS,     0x00000000U, 0x00000001U );
+HW_DEFINE_SIMPLE( HW_GS,     0x00000000U, 0x00000002U );
 
 HW_DEFINE_SIMPLE( HW_FULL,   0xffffffffU, 0xffffffffU );
-HW_DEFINE_SIMPLE( HW_UNUSED, 0x00000000U, 0xffffffffU );
+HW_DEFINE_SIMPLE( HW_UNUSED, 0x00000000U, 0xfffffffcU );
 HW_DEFINE_SIMPLE( HW_EMPTY,  0x00000000U, 0x00000000U );
 
 
@@ -89,6 +93,8 @@ HW_ECX_##x      = (HW_ECXH_##x+HW_CX_##x),                          \
 HW_EDX_##x      = (HW_EDXH_##x+HW_DX_##x),                          \
 HW_ESI_##x      = (HW_ESIH_##x+HW_SI_##x),                          \
 HW_EDI_##x      = (HW_EDIH_##x+HW_DI_##x),                          \
+HW_EBP_##x      = (HW_EBPH_##x+HW_BP_##x),                          \
+HW_ESP_##x      = (HW_ESPH_##x+HW_SP_##x),                          \
                                                                     \
 HW_ABCD_##x     = (HW_AX_##x+HW_BX_##x+HW_CX_##x+HW_DX_##x),        \
                                                                     \
@@ -103,7 +109,7 @@ HW_FLTS_##x     =                                                   \
 HW_FLTS_NOT_ST0_##x =                                               \
     (HW_ST1_##x+HW_ST2_##x+HW_ST3_##x+HW_ST4_##x+HW_ST5_##x+HW_ST6_##x+HW_ST7_##x), \
 HW_32_##x       =                                                   \
-    (HW_EAXH_##x+HW_EBXH_##x+HW_ECXH_##x+HW_EDXH_##x+HW_ESIH_##x+HW_EDIH_##x), \
+    (HW_EAXH_##x+HW_EBXH_##x+HW_ECXH_##x+HW_EDXH_##x+HW_ESIH_##x+HW_EDIH_##x+HW_EBPH_##x+HW_ESPH_##x), \
 HW_DX_AX_##x    = (HW_DX_##x+HW_AX_##x),                            \
 HW_CX_BX_##x    = (HW_CX_##x+HW_BX_##x),                            \
 HW_CX_DI_##x    = (HW_CX_##x+HW_DI_##x),                            \
@@ -128,7 +134,6 @@ HW_CS_EDI_##x   = (HW_CS_##x+HW_EDI_##x),                           \
 HW_FS_GS_##x    = (HW_FS_##x+HW_GS_##x),                            \
 HW_DS_GS_##x    = (HW_DS_##x+HW_GS_##x),                            \
 HW_ECX_EBX_##x  = (HW_ECX_##x+HW_EBX_##x),                          \
-HW_32_BP_SP_##x = (HW_32_##x+HW_BP_##x+HW_SP_##x),                  \
 HW_DS_ES_FS_GS_##x = (HW_DS_##x+HW_ES_##x+HW_FS_##x+HW_GS_##x),     \
 HW_DS_ES_SS_CS_##x = (HW_DS_##x+HW_ES_##x+HW_SS_##x+HW_CS_##x),     \
 HW_AL_BL_CL_DL_##x = (HW_AL_##x+HW_BL_##x+HW_CL_##x+HW_DL_##x),     \
@@ -161,7 +166,9 @@ HW_DEFINE_GLOBAL_CONST( HW_ES_BX );
 HW_DEFINE_GLOBAL_CONST( HW_FS );
 HW_DEFINE_GLOBAL_CONST( HW_GS );
 HW_DEFINE_GLOBAL_CONST( HW_CS );
+HW_DEFINE_GLOBAL_CONST( HW_ESP );
 HW_DEFINE_GLOBAL_CONST( HW_SP );
+HW_DEFINE_GLOBAL_CONST( HW_EBP );
 HW_DEFINE_GLOBAL_CONST( HW_BP );
 HW_DEFINE_GLOBAL_CONST( HW_EAX );
 HW_DEFINE_GLOBAL_CONST( HW_AX );
