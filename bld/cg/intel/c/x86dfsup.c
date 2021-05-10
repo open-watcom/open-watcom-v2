@@ -89,7 +89,7 @@ void    DFDefSegs( void )
 
 typedef enum {
     #define DW_REG( __n  )   DW_REG_##__n,
-    #include "dwreginf.h"
+    #include "dwregx86.h"
     DW_REG( MAX )
     #undef DW_REG
 } dw_regs;

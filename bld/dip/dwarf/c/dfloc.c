@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -146,7 +147,7 @@ void LocationTrunc( location_list *ll, unsigned bits )
 
 typedef enum {
     #define DW_REG( __n  )   DW_X86_##__n,
-    #include "dwreginf.h"
+    #include "dwregx86.h"
     DW_REG( MAX )
     #undef DW_REG
 }dw_X86_regs;
@@ -157,7 +158,7 @@ typedef struct {
     unsigned    len     : 7;
 } reg_entry;
 
-/* WARNING: Must be kept in sync with dwreginf.h included above */
+/* WARNING: Must be kept in sync with dwregx86.h included above */
 
 static reg_entry const CLRegX86[DW_X86_MAX] = {
     { CI_EAX, 0, 32 },       //eax
