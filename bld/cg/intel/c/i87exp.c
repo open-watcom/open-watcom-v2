@@ -223,7 +223,11 @@ bool    FPStackReg( name *reg_name )
 {
     int         reg_num;
 
-    reg_num = FPRegNum( reg_name );
+    if( reg_name == NULL
+      || reg_name->n.class != N_REGISTER
+      || !HW_COvlap( reg_name->r.reg, HW_FLTS ) )
+        return( false );
+    reg_num = FPRegTrans( reg_name->r.reg );
     if( reg_num == -1 )
         return( false );
     if( reg_num < Max87Stk )
