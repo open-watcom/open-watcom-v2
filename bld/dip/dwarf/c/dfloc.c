@@ -146,10 +146,10 @@ void LocationTrunc( location_list *ll, unsigned bits )
 }
 
 typedef enum {
-    #define DW_REG( __n  )   DW_X86_##__n,
+    #define DW_REG(name,ci,start,len) DW_X86_##name,
     #include "dwregx86.h"
-    DW_REG( MAX )
     #undef DW_REG
+    DW_X86_MAX
 }dw_X86_regs;
 
 typedef struct {
@@ -158,50 +158,10 @@ typedef struct {
     unsigned    len     : 7;
 } reg_entry;
 
-/* WARNING: Must be kept in sync with dwregx86.h included above */
-
 static reg_entry const CLRegX86[DW_X86_MAX] = {
-    { CI_EAX, 0, 32 },       //eax
-    { CI_ECX, 0, 32 },       //ecx
-    { CI_EDX, 0, 32 },       //edx
-    { CI_EBX, 0, 32 },       //ebx
-    { CI_ESP, 0, 32 },       //esp
-    { CI_EBP, 0, 32 },       //ebp
-    { CI_ESI, 0, 32 },       //esi
-    { CI_EDI, 0, 32 },       //edi
-    { CI_EIP, 0, 32 },       //eip
-    { CI_EFL, 0, 32 },       //eflags
-    { 0     , 0, 0 },        //trapno
-    { CI_ST0, 0, 80 },       //st0
-    { CI_ST1, 0, 80 },       //st1
-    { CI_ST2, 0, 80 },       //st2
-    { CI_ST3, 0, 80 },       //st3
-    { CI_ST4, 0, 80 },       //st4
-    { CI_ST5, 0, 80 },       //st5
-    { CI_ST6, 0, 80 },       //st6
-    { CI_ST7, 0, 80 },       //st7
-    { CI_EAX, 0, 8 },        //al
-    { CI_EAX, 8, 8 },        //ah
-    { CI_EBX, 0, 8 },        //bl
-    { CI_EBX, 8, 8 },        //bh
-    { CI_ECX, 0, 8 },        //cl
-    { CI_ECX, 8, 8 },        //ch
-    { CI_EDX, 0, 8 },        //dl
-    { CI_EDX, 8, 8 },        //dh
-    { CI_EAX, 0, 16 },       //ax
-    { CI_EBX, 0, 16 },       //bx
-    { CI_ECX, 0, 16 },       //cx
-    { CI_EDX, 0, 16 },       //dx
-    { CI_ESI, 0, 16 },       //si
-    { CI_EDI, 0, 16 },       //di
-    { CI_EBP, 0, 16 },       //bp
-    { CI_ESP, 0, 16 },       //sp
-    { CI_CS,  0, 16 },       //cs
-    { CI_SS,  0, 16 },       //ss
-    { CI_DS,  0, 16 },       //ds
-    { CI_ES,  0, 16 },       //es
-    { CI_FS,  0, 16 },       //fs
-    { CI_GS,  0, 16 },       //gs
+    #define DW_REG(name,ci,start,len) { ci, start, len },
+    #include "dwregx86.h"
+    #undef DW_REG
 };
 
 typedef enum {

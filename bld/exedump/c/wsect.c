@@ -329,9 +329,9 @@ static const_string_table OpName[] = {
 };
 
 static const_string_table RegName[] = {
-#define DW_REG( __n )    #__n,
-#include "dwregx86.h"
-#undef DW_REG
+    #define DW_REG(name,ci,start,len) #name,
+    #include "dwregx86.h"
+    #undef DW_REG
 };
 
 static unsigned_8 const *GetInt( unsigned_8 const *p, unsigned_32 *ret, unsigned_16 size )
