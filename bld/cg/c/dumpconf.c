@@ -288,8 +288,10 @@ void    DumpRegName( hw_reg_set regname )
             if( Check(&name,HW_DI) ) { DumpLiteral( "DI"); continue; }
             if( Check(&name,HW_ESI)) { DumpLiteral("ESI"); continue; }
             if( Check(&name,HW_SI) ) { DumpLiteral( "SI"); continue; }
-            if( Check(&name,HW_BP))  { DumpLiteral("EBP"); continue; }
-            if( Check(&name,HW_SP))  { DumpLiteral("ESP"); continue; }
+            if( Check(&name,HW_EBP)) { DumpLiteral("EBP"); continue; }
+            if( Check(&name,HW_BP))  { DumpLiteral( "BP"); continue; }
+            if( Check(&name,HW_ESP)) { DumpLiteral("ESP"); continue; }
+            if( Check(&name,HW_SP))  { DumpLiteral( "SP"); continue; }
             if( Check(&name,HW_GS) ) { DumpLiteral( "GS"); continue; }
             if( Check(&name,HW_FS) ) { DumpLiteral( "FS"); continue; }
             if( Check(&name,HW_ES) ) { DumpLiteral( "ES"); continue; }
