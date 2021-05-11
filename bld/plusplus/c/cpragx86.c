@@ -68,18 +68,18 @@ static void pragmasInit(        // INITIALIZATION FOR PRAGMAS
 
     PragmaAuxInfoInit( CompFlags.use_stdcall_at_number );
 
-#if _CPU == 386
+#if _CPU == 8086
+    HW_CTurnOff( asmRegsSaved, HW_ABCD );
+    HW_CTurnOff( asmRegsSaved, HW_SI );
+    HW_CTurnOff( asmRegsSaved, HW_DI );
+    HW_CTurnOff( asmRegsSaved, HW_ES );
+#else
     HW_CTurnOff( asmRegsSaved, HW_EAX );
     HW_CTurnOff( asmRegsSaved, HW_EBX );
     HW_CTurnOff( asmRegsSaved, HW_ECX );
     HW_CTurnOff( asmRegsSaved, HW_EDX );
     HW_CTurnOff( asmRegsSaved, HW_ESI );
     HW_CTurnOff( asmRegsSaved, HW_EDI );
-#else
-    HW_CTurnOff( asmRegsSaved, HW_ABCD );
-    HW_CTurnOff( asmRegsSaved, HW_SI );
-    HW_CTurnOff( asmRegsSaved, HW_DI );
-    HW_CTurnOff( asmRegsSaved, HW_ES );
 #endif
 
     SetAuxDefaultInfo();
@@ -900,7 +900,11 @@ void AsmSysUsesAuto( void )
        for the use of this pragma. This is done by saying the pragma
        modifies the [E]SP register. A kludge, but it works.
     */
+#if _CPU == 8086
     HW_CTurnOff( CurrInfo->save, HW_SP );
+#else
+    HW_CTurnOff( CurrInfo->save, HW_ESP );
+#endif
     ScopeASMUsesAuto();
 }
 
