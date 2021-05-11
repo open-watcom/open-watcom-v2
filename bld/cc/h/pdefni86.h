@@ -41,67 +41,48 @@ hw_reg_set DefaultVarParms[] = {
     HW_D( HW_EMPTY )
 };
 
-#define REGS_MAP \
-REG_PICK( "es",  0  ) \
-REG_PICK( "ds",  1  ) \
-REG_PICK( "cs",  2  ) \
-REG_PICK( "ss",  3  ) \
-REG_PICK( "ax",  4  ) \
-REG_PICK( "bx",  5  ) \
-REG_PICK( "cx",  6  ) \
-REG_PICK( "dx",  7  ) \
-REG_PICK( "al",  8  ) \
-REG_PICK( "bl",  9  ) \
-REG_PICK( "cl",  10 ) \
-REG_PICK( "dl",  11 ) \
-REG_PICK( "ah",  12 ) \
-REG_PICK( "bh",  13 ) \
-REG_PICK( "ch",  14 ) \
-REG_PICK( "dh",  15 ) \
-REG_PICK( "si",  16 ) \
-REG_PICK( "di",  17 ) \
-REG_PICK( "bp",  18 ) \
-REG_PICK( "sp",  19 ) \
-REG_PICK( "fs",  20 ) \
-REG_PICK( "gs",  21 )
+#define REG_DEFS \
+REG_PICK( ES, "es",  0  ) \
+REG_PICK( DS, "ds",  1  ) \
+REG_PICK( CS, "cs",  2  ) \
+REG_PICK( SS, "ss",  3  ) \
+REG_PICK( AX, "ax",  4  ) \
+REG_PICK( BX, "bx",  5  ) \
+REG_PICK( CX, "cx",  6  ) \
+REG_PICK( DX, "dx",  7  ) \
+REG_PICK( AL, "al",  8  ) \
+REG_PICK( BL, "bl",  9  ) \
+REG_PICK( CL, "cl",  10 ) \
+REG_PICK( DL, "dl",  11 ) \
+REG_PICK( AH, "ah",  12 ) \
+REG_PICK( BH, "bh",  13 ) \
+REG_PICK( CH, "ch",  14 ) \
+REG_PICK( DH, "dh",  15 ) \
+REG_PICK( SI, "si",  16 ) \
+REG_PICK( DI, "di",  17 ) \
+REG_PICK( BP, "bp",  18 ) \
+REG_PICK( SP, "sp",  19 ) \
+REG_PICK( FS, "fs",  20 ) \
+REG_PICK( GS, "gs",  21 )
 
 char Registers[] = {
-    #define REG_PICK(t,r) t "\0"
-    REGS_MAP
+    #define REG_PICK(c,t,r) t "\0"
+    REG_DEFS
     "\0"
     #undef REG_PICK
 };
 
 unsigned char RegMap[] = {
-    #define REG_PICK(t,r) r,
-    REGS_MAP
+    #define REG_PICK(c,t,r) r,
+    REG_DEFS
     #undef REG_PICK
 };
 
 
 hw_reg_set RegBits[] = {
-    HW_D( HW_ES ),
-    HW_D( HW_DS ),
-    HW_D( HW_CS ),
-    HW_D( HW_SS ),
-    HW_D( HW_AX ),
-    HW_D( HW_BX ),
-    HW_D( HW_CX ),
-    HW_D( HW_DX ),
-    HW_D( HW_AL ),
-    HW_D( HW_BL ),
-    HW_D( HW_CL ),
-    HW_D( HW_DL ),
-    HW_D( HW_AH ),
-    HW_D( HW_BH ),
-    HW_D( HW_CH ),
-    HW_D( HW_DH ),
-    HW_D( HW_SI ),
-    HW_D( HW_DI ),
-    HW_D( HW_BP ),
-    HW_D( HW_SP ),
-    HW_D( HW_FS ),
-    HW_D( HW_GS ),
+    #define REG_PICK(c,t,r) HW_D( HW_##c ),
+    REG_DEFS
+    #undef REG_PICK
 };
 
 /*      INLINE FUNCTIONS */
