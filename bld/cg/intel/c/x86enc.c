@@ -558,22 +558,14 @@ static  void    DoP5RegisterDivide( instruction *ins ) {
     // je ok
     _Code;
     _Next;
-    // push [e]ax
-    LayOpbyte( 0x50 );
+    LayOpbyte( 0x50 );                  // push [e]ax
     _Next;
-    // mov #cons -> [e]ax
-    LayOpbyte( 0xb8 );
-#if _TARGET & _TARG_8086
-    AddWData( ins_key, U2 );
-#else
-    AddWData( ins_key, U4 );
-#endif
+    LayOpbyte( 0xb8 );                  // mov #cons -> [e]ax
+    AddWData( ins_key, WD );
     _Emit;
-    // call __fdiv_fpr
-    DoRTCall( RT_FDIV_FPREG, false );
+    DoRTCall( RT_FDIV_FPREG, false );   // call __fdiv_fpr
     _Code;
-    // pop [e]ax
-    LayOpbyte( 0x58 );
+    LayOpbyte( 0x58 );                  // pop [e]ax
     _Emit;
     GenJumpLabel( lbl_2 );
     CodeLabel( lbl, 0 );
@@ -723,7 +715,7 @@ static  void    DoP5Divide( instruction *ins ) {
     bool        used_ds = false;
 
     _Code;
-    LayOpbyte( 0x9c );  /* pushf */
+    LayOpbyte( 0x9c );          /* pushf */
     _Emit;
 #if _TARGET & _TARG_80386
     StackDepth += WORD_SIZE;
@@ -731,8 +723,8 @@ static  void    DoP5Divide( instruction *ins ) {
     _Code;
     if( _IsTargetModel( FLOATING_DS ) ) {
         if( _IsTargetModel( FLOATING_SS ) ) {
-            LayOpbyte( 0x1e );  // push ds
-            AddByte( 0x50 );    // push ax
+            LayOpbyte( 0x1e );  /* push ds    */
+            AddByte( 0x50 );    /* push [e]ax */
             _Emit;
             GenLoadDS();
             _Code;
@@ -742,9 +734,9 @@ static  void    DoP5Divide( instruction *ins ) {
         }
     }
 #if ( _TARGET & _TARG_8086 )
-    LayOpword( 0x06f6 );        // test byte ptr L1,1
+    LayOpword( 0x06f6 );        /* test byte ptr L1,1 */
 #else
-    LayOpword( 0x05f6 );        // test byte ptr L1,1
+    LayOpword( 0x05f6 );        /* test byte ptr L1,1 */
 #endif
     ILen += WORD_SIZE;
     DoLblRef( RTLabel( RT_BUGLIST ), AskBackSeg(), 0, OFST );
@@ -752,8 +744,8 @@ static  void    DoP5Divide( instruction *ins ) {
     _Emit;
     if( used_ds ) {
         _Code;
-        LayOpbyte( 0x58 );      // pop ax
-        AddByte( 0x1f );        // pop ds
+        LayOpbyte( 0x58 );      /* pop [e]ax */
+        AddByte( 0x1f );        /* pop ds    */
         _Emit;
     }
     switch( G( ins ) ) {
@@ -774,7 +766,7 @@ static  void    DoP5Divide( instruction *ins ) {
         DoP5MemoryDivide( ins );
     }
     _Code;
-    LayOpbyte( 0x9d );  /* popf */
+    LayOpbyte( 0x9d );          /* popf */
     _Emit;
 #if _TARGET & _TARG_80386
     StackDepth -= WORD_SIZE;
@@ -795,36 +787,36 @@ static  void    SetCC(void) {
     }
     if( _CPULevel( CPU_386 ) ) {
         if( _IsEmulation() ) {
-            AddByte( 0x9b );            /*% FWAIT - needed for FIDRQQ to work*/
+            AddByte( 0x9b );        /*% FWAIT - needed for FIDRQQ to work */
         }
-        AddByte( 0xdf );            /*% FSTSW  AX*/
-        AddByte( 0xe0 );            /*% ..*/
+        AddByte( 0xdf );            /*% FSTSW  AX */
+        AddByte( 0xe0 );            /*% ..        */
     } else {
         if( !_CPULevel( CPU_386 ) ) {
-            AddByte( 0x9b );            /*% FWAIT*/
+            AddByte( 0x9b );        /*% FWAIT */
         }
         if( _CPULevel( CPU_286 ) && !_IsEmulation() ) {
-            AddByte( 0xdf );            /*% FSTSW  AX*/
-            AddByte( 0xe0 );            /*% ..*/
+            AddByte( 0xdf );        /*% FSTSW  AX */
+            AddByte( 0xe0 );        /*% ..        */
         } else {
-            _Next;                     /*%*/
-            LayOpword( 0x38dd );        /*% FSTSW  temp*/
-            LayModRM( FPStatWord );    /*%*/
+            _Next;                  /*%*/
+            LayOpword( 0x38dd );    /*% FSTSW  temp */
+            LayModRM( FPStatWord ); /*% ..          */
             if( _IsEmulation() ) {
-                _Emit;                 /*%*/
-                GFwait();              /*% FWAIT*/
-                _Code;                 /*%*/
+                _Emit;              /*%*/
+                GFwait();           /*% FWAIT */
+                _Code;              /*%*/
             } else {
-                AddByte( 0x9b );        /*% FWAIT*/
-                _Next;                 /*%*/
+                AddByte( 0x9b );    /*% FWAIT*/
+                _Next;              /*%*/
             }
-            LayOpword( 0x008a );        /*% MOV    AX,temp*/
-            LayReg( HW_AX );           /*%*/
-            LayW( U2 );                /*%*/
-            LayModRM( FPStatWord );    /*%*/
+            LayOpword( 0x008a );    /*% MOV    AX,temp */
+            LayReg( HW_AX );        /*% ..             */
+            LayW( U2 );             /*% ..             */
+            LayModRM( FPStatWord ); /*% ..             */
         }
     }
-    AddByte( 0x9e );                /*% SAHF*/
+    AddByte( 0x9e );                /*% SAHF */
 }
 
 
@@ -1538,19 +1530,22 @@ void    GenWindowsProlog( void )
 {
     _Code;
     if( _IsTargetModel( SMART_WINDOWS ) ) {
-        LayOpbyte( 0x8c ); AddByte( 0xd0 ); /*  mov     ax, ss  */
+        LayOpbyte( 0x8c );          /*  mov     ax, ss  */
+        AddByte( 0xd0 );            /*  ..              */
     } else {
-        LayOpbyte( 0x1e );              /*      push    ds      */
-        AddByte( 0x58 );                /*      pop     ax      */
-        AddByte( 0x90 );                /*      nop             */
+        LayOpbyte( 0x1e );          /*  push    ds      */
+        AddByte( 0x58 );            /*  pop     ax      */
+        AddByte( 0x90 );            /*  nop             */
     }
     if( !_CPULevel( CPU_386 ) ) {
-        AddByte( 0x45 );                /*      inc     bp      */
+        AddByte( 0x45 );            /*  inc     bp      */
     }
-    AddByte( 0x55 );                    /*      push    bp      */
-    AddByte( 0x89 ); AddByte( 0xe5 );   /*      mov     bp,sp   */
-    AddByte( 0x1e );                    /*      push    ds      */
-    AddByte( 0x8e ); AddByte( 0xd8 );   /*      mov     ds,ax   */
+    AddByte( 0x55 );                /*  push    bp      */
+    AddByte( 0x89 );                /*  mov     bp,sp   */
+    AddByte( 0xe5 );                /*  ..              */
+    AddByte( 0x1e );                /*  push    ds      */
+    AddByte( 0x8e );                /*  mov     ds,ax   */
+    AddByte( 0xd8 );                /*  ..              */
     _Emit;
 }
 
@@ -1561,10 +1556,11 @@ void    GenCypWindowsProlog( void )
 {
     _Code;
     if( !_CPULevel( CPU_386 ) ) {
-        LayOpbyte( 0x45 );              /*      inc     bp      */
+        LayOpbyte( 0x45 );          /*  inc     bp      */
     }
-    AddByte( 0x55 );                    /*      push    bp      */
-    AddByte( 0x89 ); AddByte( 0xe5 );   /*      mov     bp,sp   */
+    AddByte( 0x55 );                /*  push    bp      */
+    AddByte( 0x89 );                /*  mov     bp,sp   */
+    AddByte( 0xe5 );                /*  ..              */
     _Emit;
 }
 
@@ -1572,10 +1568,10 @@ void    GenWindowsEpilog( void )
 /******************************/
 {
     _Code;
-    LayOpbyte( 0x1f );                  /*      pop     ds      */
-    AddByte( 0x5d );                    /*      pop     bp      */
+    LayOpbyte( 0x1f );              /*  pop     ds      */
+    AddByte( 0x5d );                /*  pop     bp      */
     if( !_CPULevel( CPU_386 ) ) {
-        AddByte( 0x4d );                /*      dec     bp      */
+        AddByte( 0x4d );            /*  dec     bp      */
     }
     _Emit;
 }
@@ -1586,9 +1582,9 @@ void    GenCypWindowsEpilog( void )
 */
 {
     _Code;
-    LayOpbyte( 0x5d );                  /*      pop     bp      */
+    LayOpbyte( 0x5d );              /*  pop     bp      */
     if( !_CPULevel( CPU_386 ) ) {
-        AddByte( 0x4d );                /*      dec     bp      */
+        AddByte( 0x4d );            /*  dec     bp      */
     }
     _Emit;
 }
@@ -1598,30 +1594,30 @@ void    GenRdosdevProlog( void )
 /******************************/
 {
     _Code;
-    LayOpbyte( 0x1e );             /*      push    ds        */
+    LayOpbyte( 0x1e );              /*  push    ds        */
     _Emit;
 
     _Code;
-    LayOpbyte( 0x6 );              /*      push    es        */
+    LayOpbyte( 0x6 );               /*  push    es        */
     _Emit;
 
     _Code;
-    LayOpbyte( 0xf );              /*      push    fs        */
+    LayOpbyte( 0xf );               /*  push    fs        */
     AddByte( 0xa0 );
     _Emit;
 
     _Code;
-    LayOpbyte( 0xf );              /*      push    gs        */
+    LayOpbyte( 0xf );               /*  push    gs        */
     AddByte( 0xa8 );
     _Emit;
 
     _Code;
-    LayOpbyte( 0x68 );             /*      push    DGROUP    */
+    LayOpbyte( 0x68 );              /*  push    DGROUP    */
     ILen += WORD_SIZE;
     DoSegRef( AskBackSeg() );
     AddByte( 0x0 );
     AddByte( 0x0 );
-    AddByte( 0x1F );               /*      pop     ds        */
+    AddByte( 0x1F );                /*  pop     ds        */
     _Emit;
 }
 
@@ -1629,21 +1625,21 @@ void    GenRdosdevEpilog( void )
 /******************************/
 {
     _Code;
-    LayOpbyte( 0xf );              /*      pop     gs      */
+    LayOpbyte( 0xf );               /*  pop     gs      */
     AddByte( 0xa9 );
     _Emit;
 
     _Code;
-    LayOpbyte( 0xf );              /*      pop     fs      */
+    LayOpbyte( 0xf );               /*  pop     fs      */
     AddByte( 0xa1 );
     _Emit;
 
     _Code;
-    LayOpbyte( 0x7 );              /*      pop     es      */
+    LayOpbyte( 0x7 );               /*  pop     es      */
     _Emit;
 
     _Code;
-    LayOpbyte( 0x1f );             /*      pop     ds      */
+    LayOpbyte( 0x1f );              /*  pop     ds      */
     _Emit;
 }
 
@@ -1651,11 +1647,12 @@ void    GenLoadDS( void )
 /***********************/
 {
     _Code;
-    LayOpbyte( 0xb8 );                  /*      mov     [e]ax,DGROUP */
+    LayOpbyte( 0xb8 );              /*  mov     [e]ax,DGROUP */
     OpndSize( HW_xAX );
     ILen += WORD_SIZE;
     DoSegRef( AskBackSeg() );
-    AddByte( 0x8e ); AddByte( 0xd8 );   /*      mov     ds,[e]ax   */
+    AddByte( 0x8e );                /*  mov     ds,[e]ax   */
+    AddByte( 0xd8 );                /*  ..                 */
     _Emit;
 }
 
@@ -1675,45 +1672,45 @@ static  void    MathFunc( instruction *ins ) {
 
     switch( ins->head.opcode ) {
     case OP_EXP:
-        OutputFP( 0xE8D9 ); _Emit;      /*   FLD1    */
-        OutputFP( 0xEAD9 ); _Emit;      /*   FLDL2E    */
-        OutputFP( 0xCAD8 ); _Emit;      /*   FMUL ST,ST(2) */
-        OutputFP( 0xD2DD ); _Emit;      /*   FST  ST(2) */
-        OutputFP( 0xF8D9 ); _Emit;      /*   FPREM */
-        OutputFP( 0xF0D9 ); _Emit;      /*   F2XM1 */
-        OutputFP( 0xC1DE ); _Emit;      /*   FADDP ST(1),ST */
-        OutputFP( 0xFDD9 ); _Emit;      /*   FSCALE         */
-        OutputFP( 0xD9DD );             /*   FSTP ST(1)     */
+        OutputFP( 0xE8D9 ); _Emit;  /*   FLD1    */
+        OutputFP( 0xEAD9 ); _Emit;  /*   FLDL2E    */
+        OutputFP( 0xCAD8 ); _Emit;  /*   FMUL ST,ST(2) */
+        OutputFP( 0xD2DD ); _Emit;  /*   FST  ST(2) */
+        OutputFP( 0xF8D9 ); _Emit;  /*   FPREM */
+        OutputFP( 0xF0D9 ); _Emit;  /*   F2XM1 */
+        OutputFP( 0xC1DE ); _Emit;  /*   FADDP ST(1),ST */
+        OutputFP( 0xFDD9 ); _Emit;  /*   FSCALE         */
+        OutputFP( 0xD9DD );         /*   FSTP ST(1)     */
         break;
     case OP_LOG:
-        OutputFP( 0xEDD9 ); _Emit;      /*   FLDLN2    */
-        OutputFP( 0xC9D9 ); _Emit;      /*   FXCH    ST(1)    */
-        OutputFP( 0xF1D9 );             /*   FYL2X    */
+        OutputFP( 0xEDD9 ); _Emit;  /*   FLDLN2    */
+        OutputFP( 0xC9D9 ); _Emit;  /*   FXCH    ST(1)    */
+        OutputFP( 0xF1D9 );         /*   FYL2X    */
         break;
     case OP_LOG10:
-        OutputFP( 0xECD9 ); _Emit;      /*   FLDLG2    */
-        OutputFP( 0xC9D9 ); _Emit;      /*   FXCH    ST(1)    */
-        OutputFP( 0xF1D9 );             /*   FYL2X    */
+        OutputFP( 0xECD9 ); _Emit;  /*   FLDLG2    */
+        OutputFP( 0xC9D9 ); _Emit;  /*   FXCH    ST(1)    */
+        OutputFP( 0xF1D9 );         /*   FYL2X    */
         break;
     case OP_COS:
-        OutputFP( 0xffD9 );             /*   FCOS    */
+        OutputFP( 0xffD9 );         /*   FCOS    */
         break;
     case OP_SIN:
-        OutputFP( 0xfeD9 );             /*   FSIN    */
+        OutputFP( 0xfeD9 );         /*   FSIN    */
         break;
     case OP_TAN:
-        OutputFP( 0xF2D9 ); _Emit;      /*   FPTAN    */
-        OutputFP( 0xD8DD );             /*   FSTP    ST(0)    */
+        OutputFP( 0xF2D9 ); _Emit;  /*   FPTAN    */
+        OutputFP( 0xD8DD );         /*   FSTP    ST(0)    */
         break;
     case OP_ATAN:
-        OutputFP( 0xE8D9 ); _Emit;      /*   FLD1    */
-        OutputFP( 0xF3D9 );             /*   FPATAN    */
+        OutputFP( 0xE8D9 ); _Emit;  /*   FLD1    */
+        OutputFP( 0xF3D9 );         /*   FPATAN    */
         break;
     case OP_SQRT:
-        OutputFP( 0xFAD9 );             /*   FSQRT   */
+        OutputFP( 0xFAD9 );         /*   FSQRT   */
         break;
     case OP_FABS:
-        OutputFP( 0xE1D9 );             /*   FABS    */
+        OutputFP( 0xE1D9 );         /*   FABS    */
         break;
     default:
         break;
@@ -1762,31 +1759,25 @@ void    GenObjCode( instruction *ins ) {
         }
 
         if( gen == G_MFSTRND ) {
-            /*
-            68 3F 0C 00 00            push        0x00000c3f
-            D9 7C 24 02               fnstcw      word ptr 0x2[esp]
-            D9 2C 24                  fldcw       word ptr [esp]
-            */
-
             _Code;
-            AddByte(0x68);
-            AddByte(0x3f);
-            AddByte(0x0c);
-            AddByte(0x00);
-            AddByte(0x00);
+            AddByte(0x68);      /*  push        0x00000c3f  */
+            AddByte(0x3f);      /*  ..                      */
+            AddByte(0x0c);      /*  ..                      */
+            AddByte(0x00);      /*  ..                      */
+            AddByte(0x00);      /*  ..                      */
             _Emit;
 
             _Code;
-            AddByte(0xd9);
-            AddByte(0x7c);
-            AddByte(0x24);
-            AddByte(0x02);
+            AddByte(0xd9);      /*  fnstcw      word ptr 0x2[esp]   */
+            AddByte(0x7c);      /*  ..                              */
+            AddByte(0x24);      /*  ..                              */
+            AddByte(0x02);      /*  ..                              */
             _Emit;
 
             _Code;
-            AddByte(0xd9);
-            AddByte(0x2c);
-            AddByte(0x24);
+            AddByte(0xd9);      /*  fldcw       word ptr [esp]  */
+            AddByte(0x2c);      /*  ..                          */
+            AddByte(0x24);      /*  ..                          */
             _Emit;
         }
 
@@ -2076,7 +2067,7 @@ void    GenObjCode( instruction *ins ) {
                 c[1] = 0;
                 GenProfileData( c, &junk, &CurrProc->targ.routine_profile_data );
                 _Code;
-                LayOpword( 0xc5f7 ); // test ebp, offset L1
+                LayOpword( 0xc5f7 );    /* test ebp, offset L1  */
                 ILen += WORD_SIZE;
                 DoLblRef( lbl, segid, 0, OFST );
                 _Emit;
@@ -2122,7 +2113,7 @@ void    GenObjCode( instruction *ins ) {
                 } else {
                     LayOpbyte( M_CBW );
                     if( _IsntTargetModel( USE_32 ) ) {
-                        AddToTemp( M_OPND_SIZE );/*CWDE*/
+                        AddToTemp( M_OPND_SIZE ); /* CWDE */
                     }
                 }
 #endif
@@ -2186,22 +2177,18 @@ void    GenObjCode( instruction *ins ) {
             AdjustStackDepthDirect( -WORD_SIZE );
             _Emit;
 
-            /*
-            D9 6C 24 02               fldcw       word ptr 0x2[esp]
-            8D 64 24 04               lea         esp,0x4[esp]
-            */
             _Code;
-            AddByte(0xd9);
-            AddByte(0x6c);
-            AddByte(0x24);
-            AddByte(0x02);
+            AddByte(0xd9);      /*  fldcw       word ptr 0x2[esp]   */
+            AddByte(0x6c);      /*  ..                              */
+            AddByte(0x24);      /*  ..                              */
+            AddByte(0x02);      /*  ..                              */
             _Emit;
 
             _Code;
-            AddByte(0x8d);
-            AddByte(0x64);
-            AddByte(0x24);
-            AddByte(0x04);
+            AddByte(0x8d);      /*  lea         esp,0x4[esp]    */
+            AddByte(0x64);      /*  ..                          */
+            AddByte(0x24);      /*  ..                          */
+            AddByte(0x04);      /*  ..                          */
             break;
 
         case G_FCHS:
@@ -2239,7 +2226,7 @@ void    GenObjCode( instruction *ins ) {
         case G_FXCH:
             Used87 = true;
             GCondFwait();
-            LayOpword( 0xC8D9 ); /* fxch st(1) */
+            LayOpword( 0xC8D9 );    /* fxch st(1) */
             LayST( result );
             break;
         case G_MCOMP:
