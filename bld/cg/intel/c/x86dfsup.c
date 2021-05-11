@@ -117,13 +117,8 @@ static struct reg_map    HWRegValues[REG_MAP_SIZE] = {
    { HW_D( HW_DX ),  DW_REG_dx },
    { HW_D( HW_SI ),  DW_REG_si },
    { HW_D( HW_DI ),  DW_REG_di },
-#if _TARGET & _TARG_8086
    { HW_D( HW_BP ),  DW_REG_bp },
    { HW_D( HW_SP ),  DW_REG_sp },
-#elif _TARGET & _TARG_80386
-   { HW_D( HW_BP ),  DW_REG_ebp },
-   { HW_D( HW_SP ),  DW_REG_esp },
-#endif
    { HW_D( HW_CS ),  DW_REG_cs },
    { HW_D( HW_SS ),  DW_REG_ss },
    { HW_D( HW_DS ),  DW_REG_ds },
@@ -142,8 +137,8 @@ static struct reg_map    HWRegValues[REG_MAP_SIZE] = {
    { HW_D( HW_EDX ), DW_REG_edx },
    { HW_D( HW_ESI ), DW_REG_esi },
    { HW_D( HW_EDI ), DW_REG_edi },
-   { HW_D( HW_BP ),  DW_REG_bp },
-   { HW_D( HW_SP ),  DW_REG_sp },
+   { HW_D( HW_EBP ), DW_REG_ebp },
+   { HW_D( HW_ESP ), DW_REG_esp },
    { HW_D( HW_FS ),  DW_REG_fs },
    { HW_D( HW_GS ),  DW_REG_gs }
 };
