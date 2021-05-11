@@ -725,7 +725,7 @@ void    DFObjLineFiniDbgInfo( void )
 void     DFLineNum( cue_state *state, offset lc )
 /***********************************************/
 {
-    char *fname;
+    const char  *fname;
 
     if( NeedBaseSet() ) {
         back_handle bck;

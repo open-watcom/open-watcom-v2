@@ -55,9 +55,21 @@
 #include "cgprotos.h"
 
 
+typedef enum {
+    #define DW_REG(name,ci,start,len) DW_REG_##name,
+    #include "dwregx86.h"
+    #undef DW_REG
+    DW_REG_MAX
+} dw_regs;
+
 struct dbg_seg_names {
-    char        *seg_name;
-    char        *class_name;
+    const char      *seg_name;
+    const char      *class_name;
+};
+
+struct reg_map {
+    hw_reg_set reg;
+    dw_regs    dwarf;
 };
 
 static struct dbg_seg_names DwarfSegNames[DW_DEBUG_MAX] = {
@@ -70,35 +82,6 @@ static struct dbg_seg_names DwarfSegNames[DW_DEBUG_MAX] = {
     { ".debug_macinfo",     "DWARF" },
     { ".debug_str",         "DWARF" },
     { ".WATCOM_references", "DWARF" }
-};
-
-
-void    DFDefSegs( void )
-/***********************/
-{
-    if( _IsModel( DBG_LOCALS | DBG_TYPES ) ) {
-        dw_sectnum  i;
-
-        for( i = 0; i < DW_DEBUG_MAX; ++i ) {
-            DFSetSection( i, NULL, DbgSegDef( DwarfSegNames[i].seg_name, DwarfSegNames[i].class_name, SEG_COMB_NORMAL + SEG_USE_32 ) );
-        }
-    } else if( _IsModel( DBG_NUMBERS ) ) {
-        DFSetSection( DW_DEBUG_LINE, NULL, DbgSegDef( DwarfSegNames[DW_DEBUG_LINE].seg_name, DwarfSegNames[DW_DEBUG_LINE].class_name, SEG_COMB_NORMAL + SEG_USE_32 ) );
-    }
-}
-
-typedef enum {
-    #define DW_REG(name,ci,start,len) DW_REG_##name,
-    #include "dwregx86.h"
-    #undef DW_REG
-    DW_REG_MAX
-} dw_regs;
-
-/* lifted from dbsupp probably canbe merged */
-
-struct reg_map {
-    hw_reg_set reg;
-    dw_regs    dwarf;
 };
 
 static struct reg_map    HWRegValues[] = {
@@ -142,6 +125,21 @@ static struct reg_map    HWRegValues[] = {
    { HW_D( HW_GS ),  DW_REG_gs }
 };
 
+
+void    DFDefSegs( void )
+/***********************/
+{
+    if( _IsModel( DBG_LOCALS | DBG_TYPES ) ) {
+        dw_sectnum  i;
+
+        for( i = 0; i < DW_DEBUG_MAX; ++i ) {
+            DFSetSection( i, NULL, DbgSegDef( DwarfSegNames[i].seg_name, DwarfSegNames[i].class_name, SEG_COMB_NORMAL + SEG_USE_32 ) );
+        }
+    } else if( _IsModel( DBG_NUMBERS ) ) {
+        DFSetSection( DW_DEBUG_LINE, NULL, DbgSegDef( DwarfSegNames[DW_DEBUG_LINE].seg_name, DwarfSegNames[DW_DEBUG_LINE].class_name, SEG_COMB_NORMAL + SEG_USE_32 ) );
+    }
+}
+
 static dw_regs  DFRegMap( hw_reg_set hw_reg )
 /*******************************************/
 {
@@ -161,7 +159,7 @@ void   DFOutReg( dw_loc_id locid, name *reg )
 {
     hw_reg_set  hw_reg;
     hw_reg_set  hw_low;
-    dw_regs     regnum;
+    dw_regs     dw_reg;
 
     hw_reg = reg->r.reg;
 #if _TARGET & _TARG_8086
@@ -183,15 +181,15 @@ void   DFOutReg( dw_loc_id locid, name *reg )
     hw_low = Low64Reg( hw_reg );
 #endif
     if( HW_CEqual( hw_low, HW_EMPTY ) ) {
-        regnum = DFRegMap( hw_reg );
-        DWLocReg( Client, locid, regnum );
+        dw_reg = DFRegMap( hw_reg );
+        DWLocReg( Client, locid, dw_reg );
    } else {
-        regnum =  DFRegMap( hw_low );
-        DWLocReg( Client, locid, regnum );
+        dw_reg =  DFRegMap( hw_low );
+        DWLocReg( Client, locid, dw_reg );
         DWLocPiece( Client, locid, WD );
         HW_TurnOff( hw_reg, hw_low );
-        regnum = DFRegMap( hw_reg );
-        DWLocReg( Client, locid, regnum );
+        dw_reg = DFRegMap( hw_reg );
+        DWLocReg( Client, locid, dw_reg );
         DWLocPiece( Client, locid, WD );
     }
 }
@@ -199,30 +197,32 @@ void   DFOutReg( dw_loc_id locid, name *reg )
 void   DFOutRegInd( dw_loc_id locid, name *reg )
 /**********************************************/
 {
-    dw_regs     regnum;
+    dw_regs     dw_reg;
 
-    regnum = DFRegMap(  reg->r.reg );
-    DWLocOp( Client, locid, DW_LOC_breg, regnum, 0 );
+    dw_reg = DFRegMap(  reg->r.reg );
+    DWLocOp( Client, locid, DW_LOC_breg, dw_reg, 0 );
 }
 
 uint DFStkReg( void )
+/*******************/
 {
-    dw_regs    ret;
+    dw_regs    dw_reg;
     hw_reg_set stk;
 
     stk = StackReg();
-    ret = DFRegMap( stk );
-    return( ret );
+    dw_reg = DFRegMap( stk );
+    return( dw_reg );
 }
 
 uint DFDisplayReg( void )
+/***********************/
 {
-    dw_regs    ret;
+    dw_regs    dw_reg;
     hw_reg_set dsp;
 
     dsp = DisplayReg();
-    ret = DFRegMap( dsp );
-    return( ret );
+    dw_reg = DFRegMap( dsp );
+    return( dw_reg );
 }
 
 void DFAbbrevRef( void )

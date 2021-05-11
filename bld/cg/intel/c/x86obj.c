@@ -139,8 +139,8 @@ typedef struct virt_func_ref_list {
 
 typedef struct dbg_seg_info {
     segment_id  *segid;
-    char        *seg_name;
-    char        *class_name;
+    const char  *seg_name;
+    const char  *class_name;
 } dbg_seg_info;
 
 
@@ -185,13 +185,13 @@ static  omf_idx         NameIndex;
 static  lname_cache     *NameCache;
 static  lname_cache     *NameCacheDumped;
 
-static char *FPPatchName[] = {
+static const char *FPPatchName[] = {
     #define pick_fp(enum,name,alt_name,win,alt_win,others,alt_others) name,
     #include "fppatche.h"
     #undef pick_fp
 };
 
-static char *FPPatchAltName[] = {
+static const char *FPPatchAltName[] = {
     #define pick_fp(enum,name,alt_name,win,alt_win,others,alt_others) alt_name,
     #include "fppatche.h"
     #undef pick_fp
@@ -2640,7 +2640,7 @@ static  void    AddLineInfo( cg_linenum line, object *obj, offset lc )
                  DFLineNum( &info, lc );
             }
         } else if( _IsModel( DBG_CV ) ) {
-            char *fname;
+            const char  *fname;
 
             if( info.fno != CurrFNo ) {
                 fname = SrcFNoFind( info.fno );

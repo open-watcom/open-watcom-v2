@@ -118,8 +118,8 @@ uint    _CGAPI DBSrcFile( cchar_ptr fname )
     return( index );
 }
 
-char *SrcFNoFind( uint fno )
-/**************************/
+const char *SrcFNoFind( uint fno )
+/********************************/
 {
     uint        index;
     fname_lst   *curr;
@@ -342,7 +342,7 @@ void CueMap( cue_ctl *ctl, cue_state *base )
 void DmpCue( cue_idx cue  )
 {
     cue_state   state;
-    char        *fname;
+    const char  *fname;
 
     if( CueFind( cue,  &state ) ) {
         fname = SrcFNoFind( state.fno );
@@ -421,7 +421,7 @@ void _CGAPI     DBSrcCue( uint fno, uint line, uint col )
 {
     cue_idx     idx;
     bool        hasxcue;
-//  char       *fname;
+//    const char  *fname;
 
 #ifndef NDEBUG
     EchoAPI( "\nDBsrcCue( %i, %i, %i )\n", fno, line, col );

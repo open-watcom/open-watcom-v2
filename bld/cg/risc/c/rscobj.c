@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -523,7 +523,7 @@ void    OutFileStart( int line )
 /******************************/
 {
     cue_state           info;
-    char                *fname;
+    const char          *fname;
 
     if( _IsModel( DBG_DF ) || _IsModel( DBG_CV ) ){
         CueFind( line, &info );
@@ -579,7 +579,7 @@ void    OutLineNum( cg_linenum line, bool label_line )
                 DFLineNum( &info, lc );
             }
         } else if( _IsModel( DBG_CV ) ) {
-            char    *fname;
+            const char  *fname;
 
             if( info.fno != CurrFNo ) {
                 fname = SrcFNoFind( info.fno );
