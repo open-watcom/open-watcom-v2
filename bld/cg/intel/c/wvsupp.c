@@ -35,55 +35,32 @@
 #include "coderep.h"
 #include "procdef.h"
 #include "model.h"
-#include "zoiks.h"
-#include "cgaux.h"
-#include "types.h"
-#include "x86objd.h"
 #include "wvdbg.h"
-#include "objout.h"
 #include "targetdb.h"
 #include "regset.h"
 #include "rgtbl.h"
-#include "namelist.h"
-#include "x86data.h"
 #include "x86dbsup.h"
 #include "wvsupp.h"
-#include "feprotos.h"
 #include "cgprotos.h"
 
 
 static    hw_reg_set    HWRegValues[] = {
-    HW_D( HW_AL ),  HW_D( HW_AH ),  HW_D( HW_BL ),
-    HW_D( HW_BH ),  HW_D( HW_CL ),  HW_D( HW_CH ),
-    HW_D( HW_DL ),  HW_D( HW_DH ),
-    HW_D( HW_AX ),  HW_D( HW_BX ),  HW_D( HW_CX ),
-    HW_D( HW_DX ),  HW_D( HW_SI ),  HW_D( HW_DI ),
-    HW_D( HW_BP ),  HW_D( HW_SP ),
-    HW_D( HW_CS ),  HW_D( HW_SS ),  HW_D( HW_DS ),  HW_D( HW_ES ),
-    HW_D( HW_ST0 ), HW_D( HW_ST1 ), HW_D( HW_ST2 ),
-    HW_D( HW_ST3 ), HW_D( HW_ST4 ), HW_D( HW_ST5 ),
-    HW_D( HW_ST6 ), HW_D( HW_ST7 ),
-    HW_D( HW_EAX ), HW_D( HW_EBX ), HW_D( HW_ECX ),
-    HW_D( HW_EDX ), HW_D( HW_ESI ), HW_D( HW_EDI ),
-    HW_D( HW_BP ),  HW_D( HW_SP ),
-    HW_D( HW_FS ),  HW_D( HW_GS )
+    #define pick(name,ci,start,len)  HW_D( HW_##name ),
+    #include "watdbreg.h"
+    #undef pick
 };
 
-static  uint    RegNibble( hw_reg_set hw_reg )
-/********************************************/
+static int  RegIndex( hw_reg_set hw_reg )
+/***************************************/
 {
-    uint        ret;
+    int     i;
 
-    ret = REG_AL;
-    for(;;) {
-        if( HW_Equal( HWRegValues[ret], hw_reg ) )
-            break;
-        ++ret;
-        if( ret > REG_LAST ) {
-            break;
+    for( i = 0; i < sizeof( HWRegValues ) / sizeof( HWRegValues[0] ); i++ ) {
+        if( HW_Equal( HWRegValues[i], hw_reg ) ) {
+            return( i );
         }
     }
-    return( ret );
+    return( -1 );
 }
 
 
@@ -109,13 +86,13 @@ static  uint    MultiReg( register_name *reg )
     hw_reg = Low64Reg( hw_reg );
 #endif
     if( HW_CEqual( hw_reg, HW_EMPTY ) ) {
-        BuffByte( RegNibble( reg->reg ) );
+        BuffByte( RegIndex( reg->reg ) );
         return( 1 );
    } else {
-        BuffByte( RegNibble( hw_reg ) );
+        BuffByte( RegIndex( hw_reg ) );
         tmp = reg->reg;
         HW_TurnOff( tmp, hw_reg );
-        BuffByte( RegNibble( tmp ) );
+        BuffByte( RegIndex( tmp ) );
         return( 2 );
     }
 }
@@ -124,7 +101,7 @@ static  void    DoLocDump( dbg_loc loc )
 /**************************************/
 {
     int         offset;
-    uint        reg;
+    int         reg;
     uint        patch;
 
     if( loc->next != NULL ) {
@@ -163,11 +140,11 @@ static  void    DoLocDump( dbg_loc loc )
         }
         break;
     case LOC_REG:
-        reg = RegNibble( loc->u.be_sym->r.reg );
+        reg = RegIndex( loc->u.be_sym->r.reg );
         if( reg > 15 ) {
             patch = BuffLoc();
             BuffByte( 0 );
-            BuffPatch( LOC_MULTI_REG | (MultiReg( &loc->u.be_sym->r )-1), patch );
+            BuffPatch( LOC_MULTI_REG | ( MultiReg( &loc->u.be_sym->r ) - 1 ), patch );
         } else {
             BuffByte( LOC_REG | reg );
         }
@@ -178,8 +155,8 @@ static  void    DoLocDump( dbg_loc loc )
             //       suitable. For now, output a no location.
             BuffByte( 0 );
         } else {
-            reg = RegNibble( loc->u.be_sym->r.reg );
-            if( reg > REG_LAST ) {
+            reg = RegIndex( loc->u.be_sym->r.reg );
+            if( reg < 0 ) { /* register not found */
                 BuffByte( loc->class + 1 ); /* assumes ..._FAR is one greater*/
                 MultiReg( &loc->u.be_sym->r );
             } else {

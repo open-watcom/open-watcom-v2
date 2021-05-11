@@ -313,44 +313,9 @@ typedef struct {
 } reg_entry;
 
 static const reg_entry RegTable[] = {
-    { CI_EAX, 0, 8 },
-    { CI_EAX, 8, 8 },
-    { CI_EBX, 0, 8 },
-    { CI_EBX, 8, 8 },
-    { CI_ECX, 0, 8 },
-    { CI_ECX, 8, 8 },
-    { CI_EDX, 0, 8 },
-    { CI_EDX, 8, 8 },
-    { CI_EAX, 0, 16 },
-    { CI_EBX, 0, 16 },
-    { CI_ECX, 0, 16 },
-    { CI_EDX, 0, 16 },
-    { CI_ESI, 0, 16 },
-    { CI_EDI, 0, 16 },
-    { CI_EBP, 0, 16 },
-    { CI_ESP, 0, 16 },
-    { CI_CS,  0, 16 },
-    { CI_SS,  0, 16 },
-    { CI_DS,  0, 16 },
-    { CI_ES,  0, 16 },
-    { CI_ST0, 0, 80 },
-    { CI_ST1, 0, 80 },
-    { CI_ST2, 0, 80 },
-    { CI_ST3, 0, 80 },
-    { CI_ST4, 0, 80 },
-    { CI_ST5, 0, 80 },
-    { CI_ST6, 0, 80 },
-    { CI_ST7, 0, 80 },
-    { CI_EAX, 0, 32 },
-    { CI_EBX, 0, 32 },
-    { CI_ECX, 0, 32 },
-    { CI_EDX, 0, 32 },
-    { CI_ESI, 0, 32 },
-    { CI_EDI, 0, 32 },
-    { CI_EBP, 0, 32 },
-    { CI_ESP, 0, 32 },
-    { CI_FS,  0, 16 },
-    { CI_GS,  0, 16 },
+    #define pick(name,ci,start,len) { ci, start, len },
+    #include "watdbreg.h"
+    #undef pick
 };
 
 unsigned RegSize( unsigned idx )

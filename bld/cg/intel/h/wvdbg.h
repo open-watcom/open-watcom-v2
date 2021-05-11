@@ -35,45 +35,9 @@
 
 
 enum {
-        REG_AL,
-        REG_AH,
-        REG_BL,
-        REG_BH,
-        REG_CL,
-        REG_CH,
-        REG_DL,
-        REG_DH,
-        REG_AX,
-        REG_BX,
-        REG_CX,
-        REG_DX,
-        REG_SI,
-        REG_DI,
-        REG_BP,
-        REG_SP,
-        REG_CS,
-        REG_SS,
-        REG_DS,
-        REG_ES,
-        REG_ST0,
-        REG_ST1,
-        REG_ST2,
-        REG_ST3,
-        REG_ST4,
-        REG_ST5,
-        REG_ST6,
-        REG_ST7,
-        REG_EAX,
-        REG_EBX,
-        REG_ECX,
-        REG_EDX,
-        REG_ESI,
-        REG_EDI,
-        REG_EBP,
-        REG_ESP,
-        REG_FS,
-        REG_GS,
-        REG_LAST = REG_GS
+    #define pick(name,ci,start,len)  REG_##name,
+    #include "watdbreg.h"
+    #undef pick
 };
 
 /* % */
