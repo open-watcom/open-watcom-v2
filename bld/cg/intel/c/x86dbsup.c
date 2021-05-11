@@ -36,22 +36,15 @@
 #include "procdef.h"
 #include "model.h"
 #include "zoiks.h"
-#include "cgaux.h"
 #include "types.h"
 #include "x86objd.h"
-#include "wvdbg.h"
 #include "objout.h"
-#include "targetdb.h"
-#include "regset.h"
-#include "rgtbl.h"
-#include "namelist.h"
 #include "x86data.h"
 #include "x86dbsup.h"
-#include "feprotos.h"
-#include "cgprotos.h"
 
 
 static  temp_buff       *CurrBuff;
+
 
 void    BuffStart( temp_buff *temp, uint def )
 /********************************************/
@@ -61,7 +54,6 @@ void    BuffStart( temp_buff *temp, uint def )
     temp->index = 2;
     temp->fix_idx = 0;
 }
-
 
 
 void    BuffEnd( segment_id segid )

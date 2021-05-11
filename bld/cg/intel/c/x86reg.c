@@ -66,7 +66,7 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
     state->used = state->modify;     /* anything not saved is used*/
     tmp = state->used;
     HW_TurnOff( tmp, StackReg() );
-    HW_CTurnOff( tmp, HW_xBP );  // should be able to call routine which modifies BP
+    HW_CTurnOff( tmp, HW_xBP ); /* should be able to call routine which modifies [E]BP */
     if( HW_Ovlap( state->unalterable, tmp ) ) {
         FEMessage( MSG_BAD_SAVE, aux );
     }

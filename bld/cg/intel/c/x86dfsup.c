@@ -101,8 +101,7 @@ struct reg_map {
     dw_regs    dwarf;
 };
 
-#define REG_MAP_SIZE 38
-static struct reg_map    HWRegValues[REG_MAP_SIZE] = {
+static struct reg_map    HWRegValues[] = {
    { HW_D( HW_AL ),  DW_REG_al },
    { HW_D( HW_AH ),  DW_REG_ah },
    { HW_D( HW_BL ),  DW_REG_bl },
@@ -146,12 +145,11 @@ static struct reg_map    HWRegValues[REG_MAP_SIZE] = {
 static dw_regs  DFRegMap( hw_reg_set hw_reg )
 /*******************************************/
 {
-    struct reg_map   *map, *end;
+    int     i;
 
-    end =  &HWRegValues[REG_MAP_SIZE];
-    for( map = &HWRegValues[0]; map < end; ++map ) {
-        if( HW_Equal( map->reg, hw_reg ) ){
-            return( map->dwarf );
+    for( i = 0; i < sizeof( HWRegValues ) / sizeof( HWRegValues[0] ); i++ ) {
+        if( HW_Equal( HWRegValues[i].reg, hw_reg ) ) {
+            return( HWRegValues[i].dwarf );
         }
     }
     Zoiks( ZOIKS_085 );/* reg not found */
