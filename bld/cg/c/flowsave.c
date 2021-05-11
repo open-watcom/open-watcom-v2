@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -328,7 +328,7 @@ void FlowSave( hw_reg_set *preg )
         reg_info[curr_reg].save = NULL;
         reg_info[curr_reg].restore = NULL;
 #if _TARGET & _TARG_INTEL
-        if( HW_COvlap( *curr_push, HW_BP ) )
+        if( HW_COvlap( *curr_push, HW_xBP ) )
             continue;  // don't mess with BP - it's magical
 #endif
         GetRegUsage( &reg_info[curr_reg] );

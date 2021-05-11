@@ -253,7 +253,7 @@ an      BGCall( cn call, bool use_return, bool in_line )
         }
     }
     if( state->parm.offset != 0 && ( state->attr & ROUTINE_REMOVES_PARMS ) == 0 ) {
-        reg_name = AllocRegName( HW_SP );
+        reg_name = AllocRegName( HW_xSP );
         AddIns( MakeBinary( OP_ADD, reg_name,
                 AllocS32Const( state->parm.offset ), reg_name, WD ) );
     }

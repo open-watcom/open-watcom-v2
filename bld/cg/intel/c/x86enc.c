@@ -82,8 +82,8 @@ static  hw_reg_set RegTab[] = {
     HW_D( HW_CL ),      HW_D( HW_CX ),      HW_D( HW_ECX ),
     HW_D( HW_DL ),      HW_D( HW_DX ),      HW_D( HW_EDX ),
     HW_D( HW_BL ),      HW_D( HW_BX ),      HW_D( HW_EBX ),
-    HW_D( HW_AH ),      HW_D( HW_SP ),      HW_D( HW_SP ),
-    HW_D( HW_CH ),      HW_D( HW_BP ),      HW_D( HW_BP ),
+    HW_D( HW_AH ),      HW_D( HW_SP ),      HW_D( HW_ESP ),
+    HW_D( HW_CH ),      HW_D( HW_BP ),      HW_D( HW_EBP ),
     HW_D( HW_DH ),      HW_D( HW_SI ),      HW_D( HW_ESI ),
     HW_D( HW_BH ),      HW_D( HW_DI ),      HW_D( HW_EDI )
 };
@@ -938,7 +938,7 @@ void    GenSeg( hw_reg_set regs )
     HW_COnlyOn( segreg, HW_SEGS );
     if( HW_CEqual( segreg, HW_EMPTY ) )
         return;
-    if( HW_COvlap( regs, HW_BP ) ) {
+    if( HW_COvlap( regs, HW_xBP ) ) {
         if( HW_CEqual( segreg, HW_SS ) )
             return;
         if( HW_CEqual( segreg, HW_DS )
@@ -1435,7 +1435,7 @@ void    GenLeave( void )
 {
     _Code;
     LayOpbyte( 0xc9 );
-    OpndSize( HW_BP );
+    OpndSize( HW_xBP );
     _Emit;
 }
 
@@ -1449,12 +1449,12 @@ void    GenTouchStack( bool sp_might_point_at_something )
     /* unused parameters */ (void)sp_might_point_at_something;
 #else
     if( sp_might_point_at_something || OptForSize == 100 ) {
-        QuickSave( HW_EAX, OP_PUSH );
-        QuickSave( HW_EAX, OP_POP );
+        QuickSave( HW_xAX, OP_PUSH );
+        QuickSave( HW_xAX, OP_POP );
     } else {
         _Code;
         LayOpword( 0x0489 );
-        OpndSize( HW_SP );
+        OpndSize( HW_xSP );
         AddByte( 0x24 );
         _Emit;
     }
@@ -1469,7 +1469,7 @@ void    GenEnter( int size, int level )
 {
     _Code;
     LayOpbyte( 0xc8 );
-    OpndSize( HW_BP );
+    OpndSize( HW_xBP );
     AddWData( size, U2 );
     AddByte( level );
     _Emit;
@@ -1651,11 +1651,11 @@ void    GenLoadDS( void )
 /***********************/
 {
     _Code;
-    LayOpbyte( 0xb8 );                  /*      mov     ax,DGROUP */
-    OpndSize( HW_AX );
+    LayOpbyte( 0xb8 );                  /*      mov     [e]ax,DGROUP */
+    OpndSize( HW_xAX );
     ILen += WORD_SIZE;
     DoSegRef( AskBackSeg() );
-    AddByte( 0x8e ); AddByte( 0xd8 );   /*      mov     ds,ax   */
+    AddByte( 0x8e ); AddByte( 0xd8 );   /*      mov     ds,[e]ax   */
     _Emit;
 }
 
@@ -2007,9 +2007,9 @@ void    GenObjCode( instruction *ins ) {
                 if((left->n.class == N_TEMP) && TmpLoc(DeAlias(left),left) == 0) {
                     LayOpword( M_MOVRR | B_KEY_W );
                     if( BaseIsSP( left ) ) {
-                        LayReg( HW_SP );
+                        LayReg( HW_xSP );
                     } else {
-                        LayReg( HW_BP );
+                        LayReg( HW_xBP );
                     }
                     LayRMRegOp( result );
                 } else

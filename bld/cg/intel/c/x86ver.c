@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -138,14 +138,14 @@ bool    DoVerify( vertype kind, instruction *ins )
             return( true );
         break;
     case V_OP2HIGH_W_FFFF_REG:
-        if( op1->n.class == N_REGISTER && HW_Ovlap( op1->r.reg, HW_BP ) )
+        if( op1->n.class == N_REGISTER && HW_Ovlap( op1->r.reg, HW_xBP ) )
             break;
     case V_OP2HIGH_W_FFFF:
         if( op2->c.const_type == CONS_ABSOLUTE && (op2->c.lo.int_value & 0xffff0000) == 0xffff0000 )
             return( true );
         break;
     case V_OP2HIGH_W_ZERO_REG:
-        if( op1->n.class == N_REGISTER && HW_Ovlap( op1->r.reg, HW_BP ) )
+        if( op1->n.class == N_REGISTER && HW_Ovlap( op1->r.reg, HW_xBP ) )
             break;
     case V_OP2HIGH_W_ZERO:
         if( op2->c.const_type == CONS_ABSOLUTE && (op2->c.lo.int_value & 0xffff0000) == 0 )
@@ -227,7 +227,7 @@ bool    DoVerify( vertype kind, instruction *ins )
             return( true );
         break;
     case V_OP1SP:
-        if( HW_CEqual( op1->r.reg, HW_SP ) )
+        if( HW_CEqual( op1->r.reg, HW_xSP ) )
             return( true );
         break;
     case V_WORDREG_AVAIL:
@@ -286,7 +286,7 @@ bool    DoVerify( vertype kind, instruction *ins )
         if( OptForSize > 50 )
             break;
         if( result->n.class == N_REGISTER ) {
-            if( HW_Ovlap( result->r.reg, HW_BP ) ) {
+            if( HW_Ovlap( result->r.reg, HW_xBP ) ) {
                 break;
             }
         }

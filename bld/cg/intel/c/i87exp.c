@@ -557,7 +557,7 @@ static  instruction     *ExpPush( instruction *ins, operand_type op )
     int                 size;
     name                *index;
 
-    sp = AllocRegName( HW_SP );
+    sp = AllocRegName( HW_xSP );
     size = TypeClassSize[ins->type_class];
     new_ins = MakeBinary( OP_SUB, sp, AllocIntConst( size ), sp, WD );
     new_ins->u.gen_table = RC;
@@ -573,7 +573,7 @@ static  instruction     *ExpPush( instruction *ins, operand_type op )
         idx = IdxRegs();
         for(;;) {
             if( HW_CEqual( *idx, HW_EMPTY ) ) {
-                HW_CAsgn( avail_index, HW_BP );
+                HW_CAsgn( avail_index, HW_xBP );
                 break;
             }
             if( HW_Subset( avail_index, *idx ) ) {
@@ -587,7 +587,7 @@ static  instruction     *ExpPush( instruction *ins, operand_type op )
             HW_CTurnOff( avail_index, HW_SS );
         }
         index = AllocRegName( avail_index );
-        if( !HW_CEqual( avail_index, HW_BP ) ) {
+        if( !HW_CEqual( avail_index, HW_xBP ) ) {
             new_ins = MakeMove( sp, index, WD );
             new_ins->u.gen_table = RR1;
             PrefixIns( ins, new_ins );
@@ -955,7 +955,7 @@ static instruction *ExpandFPIns( instruction *ins, operand_type op1,
         case OP_CONVERT:
         case OP_ROUND:
             if( ins->result->n.class == N_REGISTER
-             && HW_CEqual( ins->result->r.reg, HW_EMPTY ) ) {
+              && HW_CEqual( ins->result->r.reg, HW_EMPTY ) ) {
                 ins->result = ST0;
                 ins->u.gen_table = RFST;
             } else {

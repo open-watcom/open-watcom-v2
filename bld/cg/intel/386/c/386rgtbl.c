@@ -58,8 +58,8 @@ static  hw_reg_set      Reg64Order[] = {
     HW_D_1( HW_EDI ),
     HW_D_1( HW_EDX ),
     HW_D_1( HW_ECX ),
-    HW_D_1( HW_BP ),
-    HW_D_1( HW_SP ),
+    HW_D_1( HW_EBP ),
+    HW_D_1( HW_ESP ),
     HW_D_1( HW_EMPTY )
 };
 static  hw_reg_set      Empty[] = {
@@ -192,7 +192,7 @@ static hw_reg_set       FarPointerRegs[] = {
     HW_D_2( HW_DS, HW_ECX ),
     HW_D_2( HW_DS, HW_ESI ),
     HW_D_2( HW_DS, HW_EDI ),
-    HW_D_2( HW_DS, HW_BP ),
+    HW_D_2( HW_DS, HW_EBP ),
 
     HW_D_2( HW_ES, HW_EAX ),
     HW_D_2( HW_ES, HW_EDX ),
@@ -200,7 +200,7 @@ static hw_reg_set       FarPointerRegs[] = {
     HW_D_2( HW_ES, HW_ECX ),
     HW_D_2( HW_ES, HW_ESI ),
     HW_D_2( HW_ES, HW_EDI ),
-    HW_D_2( HW_ES, HW_BP ),
+    HW_D_2( HW_ES, HW_EBP ),
 
     HW_D_2( HW_FS, HW_EAX ),
     HW_D_2( HW_FS, HW_EDX ),
@@ -208,7 +208,7 @@ static hw_reg_set       FarPointerRegs[] = {
     HW_D_2( HW_FS, HW_ECX ),
     HW_D_2( HW_FS, HW_ESI ),
     HW_D_2( HW_FS, HW_EDI ),
-    HW_D_2( HW_FS, HW_BP ),
+    HW_D_2( HW_FS, HW_EBP ),
 
     HW_D_2( HW_GS, HW_EAX ),
     HW_D_2( HW_GS, HW_EDX ),
@@ -216,7 +216,7 @@ static hw_reg_set       FarPointerRegs[] = {
     HW_D_2( HW_GS, HW_ECX ),
     HW_D_2( HW_GS, HW_ESI ),
     HW_D_2( HW_GS, HW_EDI ),
-    HW_D_2( HW_GS, HW_BP ),
+    HW_D_2( HW_GS, HW_EBP ),
 
     HW_D_2( HW_SS, HW_EAX ),
     HW_D_2( HW_SS, HW_EDX ),
@@ -224,7 +224,7 @@ static hw_reg_set       FarPointerRegs[] = {
     HW_D_2( HW_SS, HW_ECX ),
     HW_D_2( HW_SS, HW_ESI ),
     HW_D_2( HW_SS, HW_EDI ),
-    HW_D_2( HW_SS, HW_BP ),
+    HW_D_2( HW_SS, HW_EBP ),
 
     HW_D_1( HW_EMPTY )
 };
@@ -235,7 +235,7 @@ static  hw_reg_set      LongIndexRegs[] = {
     HW_D_2( HW_DS, HW_ECX ),
     HW_D_2( HW_DS, HW_ESI ),
     HW_D_2( HW_DS, HW_EDI ),
-    HW_D_2( HW_DS, HW_BP ),
+    HW_D_2( HW_DS, HW_EBP ),
 
     HW_D_2( HW_ES, HW_EAX ),
     HW_D_2( HW_ES, HW_EDX ),
@@ -243,7 +243,7 @@ static  hw_reg_set      LongIndexRegs[] = {
     HW_D_2( HW_ES, HW_ECX ),
     HW_D_2( HW_ES, HW_ESI ),
     HW_D_2( HW_ES, HW_EDI ),
-    HW_D_2( HW_ES, HW_BP ),
+    HW_D_2( HW_ES, HW_EBP ),
 
     HW_D_2( HW_FS, HW_EAX ),
     HW_D_2( HW_FS, HW_EDX ),
@@ -251,7 +251,7 @@ static  hw_reg_set      LongIndexRegs[] = {
     HW_D_2( HW_FS, HW_ECX ),
     HW_D_2( HW_FS, HW_ESI ),
     HW_D_2( HW_FS, HW_EDI ),
-    HW_D_2( HW_FS, HW_BP ),
+    HW_D_2( HW_FS, HW_EBP ),
 
     HW_D_2( HW_GS, HW_EAX ),
     HW_D_2( HW_GS, HW_EDX ),
@@ -259,7 +259,7 @@ static  hw_reg_set      LongIndexRegs[] = {
     HW_D_2( HW_GS, HW_ECX ),
     HW_D_2( HW_GS, HW_ESI ),
     HW_D_2( HW_GS, HW_EDI ),
-    HW_D_2( HW_GS, HW_BP ),
+    HW_D_2( HW_GS, HW_EBP ),
 
     HW_D_2( HW_SS, HW_EAX ),
     HW_D_2( HW_SS, HW_EDX ),
@@ -267,7 +267,7 @@ static  hw_reg_set      LongIndexRegs[] = {
     HW_D_2( HW_SS, HW_ECX ),
     HW_D_2( HW_SS, HW_ESI ),
     HW_D_2( HW_SS, HW_EDI ),
-    HW_D_2( HW_SS, HW_BP ),
+    HW_D_2( HW_SS, HW_EBP ),
 
     HW_D_2( HW_CS, HW_EAX ),
     HW_D_2( HW_CS, HW_EDX ),
@@ -275,7 +275,7 @@ static  hw_reg_set      LongIndexRegs[] = {
     HW_D_2( HW_CS, HW_ECX ),
     HW_D_2( HW_CS, HW_ESI ),
     HW_D_2( HW_CS, HW_EDI ),
-    HW_D_2( HW_CS, HW_BP ),
+    HW_D_2( HW_CS, HW_EBP ),
 
     HW_D_1( HW_EMPTY )
 };
@@ -293,8 +293,8 @@ static  hw_reg_set      DoubleRegs[] = {
     HW_D_1( HW_EBX ),
     HW_D_1( HW_ESI ),
     HW_D_1( HW_EDI ),
-    HW_D_1( HW_BP ),
-    HW_D_1( HW_SP ),
+    HW_D_1( HW_EBP ),
+    HW_D_1( HW_ESP ),
     HW_D_1( HW_EMPTY )
 };
 static  hw_reg_set      DoubleParmRegs[] = {
@@ -304,8 +304,8 @@ static  hw_reg_set      DoubleParmRegs[] = {
     HW_D_1( HW_ECX ),
     HW_D_1( HW_ESI ),
     HW_D_1( HW_EDI ),
-    HW_D_1( HW_BP ),
-    HW_D_1( HW_SP ),
+    HW_D_1( HW_EBP ),
+    HW_D_1( HW_ESP ),
     HW_D_1( HW_EMPTY )
 };
 static  hw_reg_set      QuadReg[] = {
@@ -324,12 +324,12 @@ static  hw_reg_set      QuadReg[] = {
     HW_D_2( HW_EDI, HW_ESI ),
     HW_D_2( HW_ESI, HW_EBX ),
     HW_D_2( HW_EBX, HW_EAX ),
-    HW_D_2( HW_BP,  HW_EAX ),
-    HW_D_2( HW_BP,  HW_EDX ),
-    HW_D_2( HW_BP,  HW_EBX ),
-    HW_D_2( HW_BP,  HW_ECX ),
-    HW_D_2( HW_BP,  HW_ESI ),
-    HW_D_2( HW_BP,  HW_EDI ),
+    HW_D_2( HW_EBP, HW_EAX ),
+    HW_D_2( HW_EBP, HW_EDX ),
+    HW_D_2( HW_EBP, HW_EBX ),
+    HW_D_2( HW_EBP, HW_ECX ),
+    HW_D_2( HW_EBP, HW_ESI ),
+    HW_D_2( HW_EBP, HW_EDI ),
     HW_D_1( HW_EMPTY )
 };
 static  hw_reg_set      ST0Reg[] = {
@@ -1111,8 +1111,8 @@ hw_reg_set      FixedRegs( void )
 {
     hw_reg_set  fixed;
 
-    HW_CAsgn( fixed, HW_SP );
-    HW_CTurnOn( fixed, HW_BP );
+    HW_CAsgn( fixed, HW_ESP );
+    HW_CTurnOn( fixed, HW_EBP );
     HW_CTurnOn( fixed, HW_SS );
     HW_CTurnOn( fixed, HW_CS );
     if( _IsntTargetModel( FLOATING_DS ) )
@@ -1136,7 +1136,7 @@ bool    IsStackReg( name *sp )
         return( false );
     if( sp->n.class != N_REGISTER )
         return( false );
-    if( !HW_CEqual( sp->r.reg, HW_SP ) )
+    if( !HW_CEqual( sp->r.reg, HW_ESP ) )
         return( false );
     return( true );
 }
@@ -1145,7 +1145,7 @@ bool    IsStackReg( name *sp )
 hw_reg_set      StackReg( void )
 /******************************/
 {
-    return( HW_SP );
+    return( HW_ESP );
 }
 
 
@@ -1153,8 +1153,8 @@ hw_reg_set      DisplayReg( void )
 /********************************/
 {
     if( CurrProc->targ.sp_frame )
-        return( HW_SP );
-    return( HW_BP );
+        return( HW_ESP );
+    return( HW_EBP );
 }
 
 

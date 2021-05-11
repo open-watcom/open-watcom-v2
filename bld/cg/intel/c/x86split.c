@@ -450,7 +450,7 @@ static  instruction     *LoadStringOps( instruction *ins,
     *op1 = FakeIndex( ins->operands[0], new_op1 );
     ins->operands[1] = ins->operands[0];
     HW_CTurnOff( new_op1, HW_SS );
-    HW_CTurnOff( new_op1, HW_SP );
+    HW_CTurnOff( new_op1, HW_xSP );
     HW_CTurnOff( new_op1, HW_ES );
     HW_CTurnOff( new_op1, HW_DS );
     ins->zap = &AllocRegName( new_op1 )->r;
@@ -785,8 +785,8 @@ instruction     *rDOLONGPUSH( instruction *ins )
         return( SplitPush( ins, size ) );
     } else {
         HW_CAsgn( hw_ss_sp, HW_SS );
-        HW_CTurnOn( hw_ss_sp, HW_SP );
-        sp = AllocRegName( HW_SP );
+        HW_CTurnOn( hw_ss_sp, HW_xSP );
+        sp = AllocRegName( HW_xSP );
         if( _IsTargetModel( FLOATING_SS ) ) {
             temp = AllocTemp( CP );
             temp_ins = MakeMove( AllocRegName( hw_ss_sp ), temp, CP );

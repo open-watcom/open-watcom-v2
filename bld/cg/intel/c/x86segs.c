@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -212,8 +212,8 @@ name    *SegName( name *op ) {
             return( SegName( op->i.base ) );
         }
         if( idx->n.class == N_REGISTER ) {
-            if( HW_CEqual( idx->r.reg, HW_SP )
-             || HW_CEqual( idx->r.reg, HW_BP ) ) {
+            if( HW_CEqual( idx->r.reg, HW_xSP )
+             || HW_CEqual( idx->r.reg, HW_xBP ) ) {
                 return( AllocRegName( HW_SS ) );
             } else {
                 _Zoiks( ZOIKS_022 );

@@ -521,7 +521,7 @@ void    ReserveStack( call_state *state, instruction *prev, type_length len ) {
     instruction *ins;
 
     CurrProc->targ.never_sp_frame = true;
-    reg = AllocRegName( HW_EAX );
+    reg = AllocRegName( HW_xAX );
     switch( len ) {
     case 8:
         ins = MakeUnary( OP_PUSH, reg, NULL, WD );
