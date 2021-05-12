@@ -1242,7 +1242,7 @@
 :jusage.
 
 :option. zri
-:target. 386
+:target. i86 386
 :usage. inline floating point rounding calls
 :jusage.
 

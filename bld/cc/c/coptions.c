@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1358,9 +1358,7 @@ static void Set_ZRO( void )
     GenSwitches |= FPU_ROUNDING_OMIT;
     GenSwitches &= ~FPU_ROUNDING_INLINE;
 }
-#endif
 
-#if _CPU == 386
 static void Set_ZRI( void )
 {
     GenSwitches |= FPU_ROUNDING_INLINE;
@@ -1799,8 +1797,6 @@ static struct option const CFE_Options[] = {
 #endif
 #if _CPU == 8086 || _CPU == 386
     { "zro",    0,              Set_ZRO },
-#endif
-#if _CPU == 386
     { "zri",    0,              Set_ZRI },
 #endif
     { "zs",     0,              Set_ZS },

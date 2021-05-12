@@ -1760,25 +1760,51 @@ void    GenObjCode( instruction *ins ) {
 
         if( gen == G_MFSTRND ) {
             _Code;
-            AddByte(0x68);      /*  push        0x00000c3f  */
-            AddByte(0x3f);      /*  ..                      */
-            AddByte(0x0c);      /*  ..                      */
-            AddByte(0x00);      /*  ..                      */
-            AddByte(0x00);      /*  ..                      */
+#if ( _TARGET & _TARG_8086 )
+            AddByte(0x6a);      /*  push    0x0000      */
+            AddByte(0x00);      /*  ..                  */
+            _Next;
+            AddByte(0x68);      /*  push    0x0c3f      */
+            AddByte(0x3f);      /*  ..                  */
+            AddByte(0x0c);      /*  ..                  */
+            _Next;
+            AddByte(0x55);      /*  push    bp          */
+            _Next;
+            AddByte(0x89);      /*  mov     bp,sp       */
+            AddByte(0xe5);      /*  ..                  */
+            _Next;
+            AddByte(0xd9);      /*  fnstcw  word ptr [bp+4] */
+            AddByte(0x7e);      /*  ..                      */
+            AddByte(0x04);      /*  ..                      */
+            _Next;
+            AddByte(0xd9);      /*  fldcw   word ptr [bp+2] */
+            AddByte(0x6e);      /*  ..                      */
+            AddByte(0x02);      /*  ..                      */
+            _Next;
+            AddByte(0x5d);      /*  pop     bp          */
+#else
+            AddByte(0x68);      /*  push    0x00000c3f  */
+            AddByte(0x3f);      /*  ..                  */
+            AddByte(0x0c);      /*  ..                  */
+            AddByte(0x00);      /*  ..                  */
+            AddByte(0x00);      /*  ..                  */
+            _Next;
+            AddByte(0xd9);      /*  fnstcw  word ptr [esp+2] */
+            AddByte(0x7c);      /*  ..                       */
+            AddByte(0x24);      /*  ..                       */
+            AddByte(0x02);      /*  ..                       */
+            _Next;
+            AddByte(0xd9);      /*  fldcw   word ptr [esp]  */
+            AddByte(0x2c);      /*  ..                      */
+            AddByte(0x24);      /*  ..                      */
+#endif
             _Emit;
 
-            _Code;
-            AddByte(0xd9);      /*  fnstcw      word ptr 0x2[esp]   */
-            AddByte(0x7c);      /*  ..                              */
-            AddByte(0x24);      /*  ..                              */
-            AddByte(0x02);      /*  ..                              */
-            _Emit;
-
-            _Code;
-            AddByte(0xd9);      /*  fldcw       word ptr [esp]  */
-            AddByte(0x2c);      /*  ..                          */
-            AddByte(0x24);      /*  ..                          */
-            _Emit;
+#if ( _TARGET & _TARG_8086 )
+            AdjustStackDepthDirect( 2 * WORD_SIZE );
+#else
+            AdjustStackDepthDirect( WORD_SIZE );
+#endif
         }
 
         _Code;
@@ -2170,25 +2196,44 @@ void    GenObjCode( instruction *ins ) {
 
         case G_MFSTRND:
             /* store with rounding */
-
-            AdjustStackDepthDirect( WORD_SIZE );
             LayMF( result );
             LayModRM( result );
+            _Emit;
+
+#if ( _TARGET & _TARG_8086 )
+            AdjustStackDepthDirect( -2 * WORD_SIZE );
+#else
             AdjustStackDepthDirect( -WORD_SIZE );
-            _Emit;
+#endif
 
             _Code;
-            AddByte(0xd9);      /*  fldcw       word ptr 0x2[esp]   */
-            AddByte(0x6c);      /*  ..                              */
-            AddByte(0x24);      /*  ..                              */
-            AddByte(0x02);      /*  ..                              */
+#if ( _TARGET & _TARG_8086 )
+            AddByte(0x55);      /*  push    bp          */
+            _Next;
+            AddByte(0x89);      /*  mov     bp,sp       */
+            AddByte(0xe5);      /*  ..                  */
+            _Next;
+            AddByte(0xd9);      /*  fldcw   word ptr [bp+4] */
+            AddByte(0x6e);      /*  ..                      */
+            AddByte(0x04);      /*  ..                      */
+            _Next;
+            AddByte(0x5d);      /*  pop     bp          */
+            _Next;
+            AddByte(0x83);      /*  add     sp,4        */
+            AddByte(0xc4);      /*  ..                  */
+            AddByte(0x04);      /*  ..                  */
+#else
+            AddByte(0xd9);      /*  fldcw   word ptr [esp+2] */
+            AddByte(0x6c);      /*  ..                       */
+            AddByte(0x24);      /*  ..                       */
+            AddByte(0x02);      /*  ..                       */
+            _Next;
+            AddByte(0x8d);      /*  lea     esp,[esp+4] */
+            AddByte(0x64);      /*  ..                  */
+            AddByte(0x24);      /*  ..                  */
+            AddByte(0x04);      /*  ..                  */
+#endif
             _Emit;
-
-            _Code;
-            AddByte(0x8d);      /*  lea         esp,0x4[esp]    */
-            AddByte(0x64);      /*  ..                          */
-            AddByte(0x24);      /*  ..                          */
-            AddByte(0x04);      /*  ..                          */
             break;
 
         case G_FCHS:

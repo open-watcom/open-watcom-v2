@@ -120,12 +120,10 @@ static const opcode_entry    MFST[1] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_MFST,         FU_FOP )
 };
-#if _TARGET & _TARG_80386
 static const opcode_entry    MFSTRND[1] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_MFSTRND,      FU_FOP )
 };
-#endif
 static const opcode_entry    MFST2[1] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
 _OE(                         PRESERVE, V_NO,           RG_,          G_MFST,         FU_FOP )
@@ -388,7 +386,6 @@ static  void    PrefixChop( instruction *ins )
     new_ins->stk_exit = ins->stk_entry;
 }
 
-#if _TARGET & _TARG_80386
 static    int     WantsChop( instruction *ins )
 /**********************************************
     Check whether instruction "ins" needs an instruction that will truncate
@@ -401,7 +398,6 @@ static    int     WantsChop( instruction *ins )
         return( false );
     return( true );
 }
-#endif
 
 static instruction  *ExpUnary( instruction *ins, operand_type src,
                             result_type res, const opcode_entry *table )
@@ -467,16 +463,6 @@ static instruction  *ExpMove( instruction *ins, operand_type src,
         DoNothing( ins );
         ins = SuffixFSTPRes( ins );
         */
-#if _TARGET & _TARG_8086
-        if( _IsModel( FPU_ROUNDING_OMIT ) ) {
-            DoNothing( ins );
-            ins = SuffixFSTPRes( ins );
-        } else {
-            PrefixChop( ins );
-            DoNothing( ins );
-            ins = SuffixFSTPRes( ins );
-        }
-#else
         if( _IsModel( FPU_ROUNDING_INLINE ) ) {
             DoNothing( ins );
             ins = SuffixFSTPRes( ins );
@@ -491,20 +477,11 @@ static instruction  *ExpMove( instruction *ins, operand_type src,
             DoNothing( ins );
             ins = SuffixFSTPRes( ins );
         }
-#endif
         break;
     case _Move( OP_STK0, RES_STK0 ):
         DoNothing( ins );
         break;
     case _Move( OP_STK0, RES_MEM  ):
-#if _TARGET & _TARG_8086
-        if( _IsModel( FPU_ROUNDING_OMIT ) ) {
-            ins->u.gen_table = MFST;
-        } else {
-            PrefixChop( ins );
-            ins->u.gen_table = MFST;
-        }
-#else
         if( _IsModel( FPU_ROUNDING_INLINE ) ) {
             if( WantsChop( ins ) ) {
                 ins->u.gen_table = MFSTRND;
@@ -517,7 +494,6 @@ static instruction  *ExpMove( instruction *ins, operand_type src,
             PrefixChop( ins );
             ins->u.gen_table = MFST;
         }
-#endif
         break;
     case _Move( OP_MEM , RES_STK0 ):
         ins->u.gen_table = MFLD;

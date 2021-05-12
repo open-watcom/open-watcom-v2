@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1002,11 +1002,6 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     if( data->zfw ) {
         TargetSwitches |= GEN_FWAIT_386;
     }
-#if _CPU == 8086
-    if( data->zro ) {
-        GenSwitches |= FPU_ROUNDING_OMIT;
-    }
-#else
     if( data->zro && data->zri ) {
 //        DbgDefault( "invalid fp rounding flags - ignored" );
         data->zro = data->zri = 0;
@@ -1016,7 +1011,6 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     } else if( data->zro ) {
         GenSwitches |= FPU_ROUNDING_OMIT;
     }
-#endif
 
 #if _CPU == 386
     if( data->zdl ) {
