@@ -558,14 +558,14 @@ static  void    DoP5RegisterDivide( instruction *ins ) {
     // je ok
     _Code;
     _Next;
-    LayOpbyte( 0x50 );                  // push [e]ax
+    LayOpbyte( 0x50 );                  /* push [e]ax           */
     _Next;
-    LayOpbyte( 0xb8 );                  // mov #cons -> [e]ax
+    LayOpbyte( 0xb8 );                  /* mov #cons -> [e]ax   */
     AddWData( ins_key, WD );
     _Emit;
-    DoRTCall( RT_FDIV_FPREG, false );   // call __fdiv_fpr
+    DoRTCall( RT_FDIV_FPREG, false );   /* call __fdiv_fpr      */
     _Code;
-    LayOpbyte( 0x58 );                  // pop [e]ax
+    LayOpbyte( 0x58 );                  /* pop [e]ax            */
     _Emit;
     GenJumpLabel( lbl_2 );
     CodeLabel( lbl, 0 );
@@ -787,36 +787,36 @@ static  void    SetCC(void) {
     }
     if( _CPULevel( CPU_386 ) ) {
         if( _IsEmulation() ) {
-            AddByte( 0x9b );        /*% FWAIT - needed for FIDRQQ to work */
+            AddByte( 0x9b );        /*  FWAIT - needed for FIDRQQ to work */
         }
-        AddByte( 0xdf );            /*% FSTSW  AX */
-        AddByte( 0xe0 );            /*% ..        */
+        AddByte( 0xdf );            /*  FSTSW  AX       */
+        AddByte( 0xe0 );            /*  ..              */
     } else {
         if( !_CPULevel( CPU_386 ) ) {
-            AddByte( 0x9b );        /*% FWAIT */
+            AddByte( 0x9b );        /*  FWAIT           */
         }
         if( _CPULevel( CPU_286 ) && !_IsEmulation() ) {
-            AddByte( 0xdf );        /*% FSTSW  AX */
-            AddByte( 0xe0 );        /*% ..        */
+            AddByte( 0xdf );        /*  FSTSW  AX       */
+            AddByte( 0xe0 );        /*  ..              */
         } else {
-            _Next;                  /*%*/
-            LayOpword( 0x38dd );    /*% FSTSW  temp */
-            LayModRM( FPStatWord ); /*% ..          */
+            _Next;                  /*                  */
+            LayOpword( 0x38dd );    /*  FSTSW  temp     */
+            LayModRM( FPStatWord ); /*  ..              */
             if( _IsEmulation() ) {
-                _Emit;              /*%*/
-                GFwait();           /*% FWAIT */
-                _Code;              /*%*/
+                _Emit;              /*                  */
+                GFwait();           /*  FWAIT           */
+                _Code;              /*                  */
             } else {
-                AddByte( 0x9b );    /*% FWAIT*/
-                _Next;              /*%*/
+                AddByte( 0x9b );    /*  FWAIT           */
+                _Next;              /*                  */
             }
-            LayOpword( 0x008a );    /*% MOV    AX,temp */
-            LayReg( HW_AX );        /*% ..             */
-            LayW( U2 );             /*% ..             */
-            LayModRM( FPStatWord ); /*% ..             */
+            LayOpword( 0x008a );    /*  MOV    AX,temp  */
+            LayReg( HW_AX );        /*  ..              */
+            LayW( U2 );             /*  ..              */
+            LayModRM( FPStatWord ); /*  ..              */
         }
     }
-    AddByte( 0x9e );                /*% SAHF */
+    AddByte( 0x9e );                /*  SAHF            */
 }
 
 
@@ -1530,22 +1530,22 @@ void    GenWindowsProlog( void )
 {
     _Code;
     if( _IsTargetModel( SMART_WINDOWS ) ) {
-        LayOpbyte( 0x8c );          /*  mov     ax, ss  */
-        AddByte( 0xd0 );            /*  ..              */
+        LayOpbyte( 0x8c );          /*  mov     [e]ax, ss   */
+        AddByte( 0xd0 );            /*  ..                  */
     } else {
-        LayOpbyte( 0x1e );          /*  push    ds      */
-        AddByte( 0x58 );            /*  pop     ax      */
-        AddByte( 0x90 );            /*  nop             */
+        LayOpbyte( 0x1e );          /*  push    ds          */
+        AddByte( 0x58 );            /*  pop     [e]ax       */
+        AddByte( 0x90 );            /*  nop                 */
     }
     if( !_CPULevel( CPU_386 ) ) {
-        AddByte( 0x45 );            /*  inc     bp      */
+        AddByte( 0x45 );            /*  inc     [e]bp       */
     }
-    AddByte( 0x55 );                /*  push    bp      */
-    AddByte( 0x89 );                /*  mov     bp,sp   */
-    AddByte( 0xe5 );                /*  ..              */
-    AddByte( 0x1e );                /*  push    ds      */
-    AddByte( 0x8e );                /*  mov     ds,ax   */
-    AddByte( 0xd8 );                /*  ..              */
+    AddByte( 0x55 );                /*  push    [e]bp       */
+    AddByte( 0x89 );                /*  mov     [e]bp,[e]sp */
+    AddByte( 0xe5 );                /*  ..                  */
+    AddByte( 0x1e );                /*  push    ds          */
+    AddByte( 0x8e );                /*  mov     ds,[e]ax    */
+    AddByte( 0xd8 );                /*  ..                  */
     _Emit;
 }
 
@@ -1556,11 +1556,11 @@ void    GenCypWindowsProlog( void )
 {
     _Code;
     if( !_CPULevel( CPU_386 ) ) {
-        LayOpbyte( 0x45 );          /*  inc     bp      */
+        LayOpbyte( 0x45 );          /*  inc     [e]bp       */
     }
-    AddByte( 0x55 );                /*  push    bp      */
-    AddByte( 0x89 );                /*  mov     bp,sp   */
-    AddByte( 0xe5 );                /*  ..              */
+    AddByte( 0x55 );                /*  push    [e]bp       */
+    AddByte( 0x89 );                /*  mov     [e]bp,[e]sp */
+    AddByte( 0xe5 );                /*  ..                  */
     _Emit;
 }
 
@@ -1568,10 +1568,10 @@ void    GenWindowsEpilog( void )
 /******************************/
 {
     _Code;
-    LayOpbyte( 0x1f );              /*  pop     ds      */
-    AddByte( 0x5d );                /*  pop     bp      */
+    LayOpbyte( 0x1f );              /*  pop     ds          */
+    AddByte( 0x5d );                /*  pop     [e]bp       */
     if( !_CPULevel( CPU_386 ) ) {
-        AddByte( 0x4d );            /*  dec     bp      */
+        AddByte( 0x4d );            /*  dec     [e]bp       */
     }
     _Emit;
 }
@@ -1582,9 +1582,9 @@ void    GenCypWindowsEpilog( void )
 */
 {
     _Code;
-    LayOpbyte( 0x5d );              /*  pop     bp      */
+    LayOpbyte( 0x5d );              /*  pop     [e]bp       */
     if( !_CPULevel( CPU_386 ) ) {
-        AddByte( 0x4d );            /*  dec     bp      */
+        AddByte( 0x4d );            /*  dec     [e]bp       */
     }
     _Emit;
 }
@@ -1672,45 +1672,45 @@ static  void    MathFunc( instruction *ins ) {
 
     switch( ins->head.opcode ) {
     case OP_EXP:
-        OutputFP( 0xE8D9 ); _Emit;  /*   FLD1    */
-        OutputFP( 0xEAD9 ); _Emit;  /*   FLDL2E    */
-        OutputFP( 0xCAD8 ); _Emit;  /*   FMUL ST,ST(2) */
-        OutputFP( 0xD2DD ); _Emit;  /*   FST  ST(2) */
-        OutputFP( 0xF8D9 ); _Emit;  /*   FPREM */
-        OutputFP( 0xF0D9 ); _Emit;  /*   F2XM1 */
+        OutputFP( 0xE8D9 ); _Emit;  /*   FLD1           */
+        OutputFP( 0xEAD9 ); _Emit;  /*   FLDL2E         */
+        OutputFP( 0xCAD8 ); _Emit;  /*   FMUL ST,ST(2)  */
+        OutputFP( 0xD2DD ); _Emit;  /*   FST  ST(2)     */
+        OutputFP( 0xF8D9 ); _Emit;  /*   FPREM          */
+        OutputFP( 0xF0D9 ); _Emit;  /*   F2XM1          */
         OutputFP( 0xC1DE ); _Emit;  /*   FADDP ST(1),ST */
         OutputFP( 0xFDD9 ); _Emit;  /*   FSCALE         */
         OutputFP( 0xD9DD );         /*   FSTP ST(1)     */
         break;
     case OP_LOG:
-        OutputFP( 0xEDD9 ); _Emit;  /*   FLDLN2    */
-        OutputFP( 0xC9D9 ); _Emit;  /*   FXCH    ST(1)    */
-        OutputFP( 0xF1D9 );         /*   FYL2X    */
+        OutputFP( 0xEDD9 ); _Emit;  /*   FLDLN2         */
+        OutputFP( 0xC9D9 ); _Emit;  /*   FXCH    ST(1)  */
+        OutputFP( 0xF1D9 );         /*   FYL2X          */
         break;
     case OP_LOG10:
-        OutputFP( 0xECD9 ); _Emit;  /*   FLDLG2    */
-        OutputFP( 0xC9D9 ); _Emit;  /*   FXCH    ST(1)    */
-        OutputFP( 0xF1D9 );         /*   FYL2X    */
+        OutputFP( 0xECD9 ); _Emit;  /*   FLDLG2         */
+        OutputFP( 0xC9D9 ); _Emit;  /*   FXCH    ST(1)  */
+        OutputFP( 0xF1D9 );         /*   FYL2X          */
         break;
     case OP_COS:
-        OutputFP( 0xffD9 );         /*   FCOS    */
+        OutputFP( 0xffD9 );         /*   FCOS           */
         break;
     case OP_SIN:
-        OutputFP( 0xfeD9 );         /*   FSIN    */
+        OutputFP( 0xfeD9 );         /*   FSIN           */
         break;
     case OP_TAN:
-        OutputFP( 0xF2D9 ); _Emit;  /*   FPTAN    */
-        OutputFP( 0xD8DD );         /*   FSTP    ST(0)    */
+        OutputFP( 0xF2D9 ); _Emit;  /*   FPTAN          */
+        OutputFP( 0xD8DD );         /*   FSTP    ST(0)  */
         break;
     case OP_ATAN:
-        OutputFP( 0xE8D9 ); _Emit;  /*   FLD1    */
-        OutputFP( 0xF3D9 );         /*   FPATAN    */
+        OutputFP( 0xE8D9 ); _Emit;  /*   FLD1           */
+        OutputFP( 0xF3D9 );         /*   FPATAN         */
         break;
     case OP_SQRT:
-        OutputFP( 0xFAD9 );         /*   FSQRT   */
+        OutputFP( 0xFAD9 );         /*   FSQRT          */
         break;
     case OP_FABS:
-        OutputFP( 0xE1D9 );         /*   FABS    */
+        OutputFP( 0xE1D9 );         /*   FABS           */
         break;
     default:
         break;
@@ -1895,11 +1895,11 @@ void    GenObjCode( instruction *ins ) {
             break;
         case G_RNSHIFT:
             LayRMRegOp( left );
-            AddByte( right->c.lo.int_value ); /* never address*/
+            AddByte( right->c.lo.int_value ); /* never address */
             break;
         case G_NSHIFT:
             LayModRM( left );
-            AddByte( right->c.lo.int_value ); /* never address*/
+            AddByte( right->c.lo.int_value ); /* never address */
             break;
         case G_R2:
             LayRMRegOp( right );
@@ -1921,7 +1921,7 @@ void    GenObjCode( instruction *ins ) {
             break;
         case G_LEA:
             LayRegOp( result );
-            if( left->n.class == N_REGISTER ) {  /* add/sub transformed to LEA*/
+            if( left->n.class == N_REGISTER ) {  /* add/sub transformed to LEA */
                 LayLeaRegOp( ins );
             } else {
                 LayModRM( left );
@@ -1935,7 +1935,7 @@ void    GenObjCode( instruction *ins ) {
                 AddToTemp( M_SECONDARY );
             }
             if( HW_COvlap( result->r.reg, HW_DS_GS ) ) {
-                Inst[KEY] |= B_KEY_DS;      /* indicate load to DS GS*/
+                Inst[KEY] |= B_KEY_DS;      /* indicate load to DS GS */
             }
             break;
         case G_MS1:
@@ -2068,9 +2068,9 @@ void    GenObjCode( instruction *ins ) {
 
                 segid = GenProfileData( "", &lbl, &CurrProc->targ.routine_profile_data );
                 _Code;
-                LayOpword( 0xc4f7 ); // test esp, offset L1
-                ILen += WORD_SIZE;
-                DoLblRef( lbl, segid, 0, OFST );
+                LayOpword( 0xc4f7 );                /* test [e]sp, offset L1  */
+                ILen += WORD_SIZE;                  /* ..                     */
+                DoLblRef( lbl, segid, 0, OFST );    /* ..                     */
                 _Emit;
             }
             return;
@@ -2093,9 +2093,9 @@ void    GenObjCode( instruction *ins ) {
                 c[1] = 0;
                 GenProfileData( c, &junk, &CurrProc->targ.routine_profile_data );
                 _Code;
-                LayOpword( 0xc5f7 );    /* test ebp, offset L1  */
-                ILen += WORD_SIZE;
-                DoLblRef( lbl, segid, 0, OFST );
+                LayOpword( 0xc5f7 );                /* test [e]bp, offset L1  */
+                ILen += WORD_SIZE;                  /* ..                     */
+                DoLblRef( lbl, segid, 0, OFST );    /* ..                     */
                 _Emit;
             }
             return;
