@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,14 +50,21 @@ typedef struct aux_info {
         char            *objname;       // also used by pre-compiled header
         unsigned        use;            // use count
         aux_flags       flags;
-        unsigned        index;          // for C/C++ pre-compiled header
   #ifdef BY_C_FRONT_END
+        unsigned        index;          // for C pre-compiled header
     #if _CPU == 370
         linkage_regs    *linkage;
     #endif
     #if _CPU == _AXP
         char            *except_rtn;
     #endif
+  #elif defined( BY_CPP_FRONT_END )
+        unsigned        index;          // for C++ pre-compiled header
+  #elif defined( BY_FORTRAN_FRONT_END )
+        struct aux_info *link;
+        pass_by         *arg_info;
+        byte            sym_len;
+        char            sym_name[1];
   #endif
 } aux_info;
 
