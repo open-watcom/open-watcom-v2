@@ -32,25 +32,10 @@
 
 
 #include <time.h>
+#include "passby.h"
 #include "cgaux.h"
 #include "auxflags.h"
 
-
-// The following describes argument information:
-
-typedef enum {
-    PASS_BY_REFERENCE       = 0x0001,
-    PASS_BY_VALUE           = 0x0002,
-    PASS_BY_DESCRIPTOR      = 0x0004,
-    PASS_BY_NODESCRIPTOR    = 0x0008,
-    PASS_BY_DATA            = 0x0010,
-
-    ARG_SIZE_1              = 0x0800,
-    ARG_SIZE_2              = 0x1000,
-    ARG_SIZE_4              = 0x2000,
-    ARG_SIZE_8              = 0x4000,
-    ARG_SIZE_16             = 0x8000
-} pass_info;
 
 #if _CPU == 386
 #define ARG_NEAR            ARG_SIZE_4
@@ -59,11 +44,6 @@ typedef enum {
 #define ARG_NEAR            ARG_SIZE_2
 #define ARG_FAR             ARG_SIZE_4
 #endif
-
-typedef struct pass_by {
-    struct pass_by      *link;
-    pass_info           info;
-} pass_by;
 
 typedef struct aux_info {
     call_class          cclass;
@@ -97,4 +77,3 @@ typedef struct dep_info {
     time_t              time_stamp;
     char                fn[1];
 } dep_info;
-

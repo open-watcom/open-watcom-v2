@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -149,3 +149,18 @@ void    wres_free( void *p )
     free( p );
 #endif
 }
+
+char *FStrDup( const char *buf )
+//==============================
+{
+    char    *new;
+    size_t  len;
+
+    len = strlen( buf ) + 1;
+    new = FMemAlloc( len );
+    if( new != NULL ) {
+        memcpy( new, buf, len );
+    }
+    return( new );
+}
+

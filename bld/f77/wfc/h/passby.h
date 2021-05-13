@@ -25,14 +25,29 @@
 *
 *  ========================================================================
 *
-* Description:  FORTRAN compiler memory manager routine prototypes
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-extern void     FMemInit( void );
-extern void     FMemFini( void );
-extern void     FMemErrors( void );
-extern void     *FMemAlloc( size_t size );
-extern void     FMemFree( void *p );
-extern char     *FStrDup( const char *buf );
+// The following describes argument information:
+
+typedef enum {
+    PASS_BY_REFERENCE       = 0x0001,
+    PASS_BY_VALUE           = 0x0002,
+    PASS_BY_DESCRIPTOR      = 0x0004,
+    PASS_BY_NODESCRIPTOR    = 0x0008,
+    PASS_BY_DATA            = 0x0010,
+
+    ARG_SIZE_1              = 0x0800,
+    ARG_SIZE_2              = 0x1000,
+    ARG_SIZE_4              = 0x2000,
+    ARG_SIZE_8              = 0x4000,
+    ARG_SIZE_16             = 0x8000
+} pass_info;
+
+typedef struct pass_by {
+    struct pass_by      *link;
+    pass_info           info;
+} pass_by;

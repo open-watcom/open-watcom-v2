@@ -50,7 +50,7 @@ typedef struct aux_info {
         char            *objname;       // also used by pre-compiled header
         unsigned        use;            // use count
         aux_flags       flags;
-  #ifdef BY_C_FRONT_END
+  #if defined( BY_C_FRONT_END )
         unsigned        index;          // for C pre-compiled header
     #if _CPU == 370
         linkage_regs    *linkage;
