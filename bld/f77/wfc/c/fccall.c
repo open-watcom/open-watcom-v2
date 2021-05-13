@@ -549,7 +549,7 @@ void    FCCall( void ) {
     if( num_args == 0 ) {
         arg_vec = NULL;
     } else {
-        // We need num_args + 1 becausewe use senitel NULL at the end
+        // We need num_args + 1 because we use NULL at the end
         arg_vec = FMemAlloc( ( num_args + 1 ) * sizeof( cg_name ) );
     }
     call = CGInitCall( rtn, sp_type, sp );

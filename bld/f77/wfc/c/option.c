@@ -200,8 +200,8 @@ static void PathOption( opt_entry *optn, const char *ptr )
 {
     char        *p;
     char        *old_list;
-    int         old_len;
-    int         len;
+    size_t      old_len;
+    size_t      len;
     const char  *end;
 
     /* unused parameters */ (void)optn;
