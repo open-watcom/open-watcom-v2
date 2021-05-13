@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,7 @@
 
 #include <time.h>
 #include "cgaux.h"
+#include "auxflags.h"
 
 
 // The following describes argument information:
@@ -65,26 +66,20 @@ typedef struct pass_by {
 } pass_by;
 
 typedef struct aux_info {
-    struct aux_info     *link;
     call_class          cclass;
-    hw_reg_set          save;
-    hw_reg_set          returns;
-    hw_reg_set          *parms;
     byte_seq            *code;
+    hw_reg_set          *parms;
+    hw_reg_set          returns;
     hw_reg_set          streturn;
+    hw_reg_set          save;
     char                *objname;
+    unsigned            use;
+    aux_flags           flags;
+    struct aux_info     *link;
     pass_by             *arg_info;
     byte                sym_len;
     char                sym_name[1];
 } aux_info;
-
-typedef struct aux_entry {
-    struct aux_info     *info;
-    struct aux_entry    *next;
-    pass_by             *arg_info;
-    byte                sym_len;
-    char                sym_name[1];
-} aux_entry;
 
 typedef struct default_lib {
     struct default_lib  *link;
