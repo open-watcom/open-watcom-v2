@@ -67,33 +67,33 @@ HW_DEFINE_SIMPLE( HW_UNUSED, 0xff000000U, 0xffffffffU );
 HW_DEFINE_SIMPLE( HW_EMPTY,  0x00000000U, 0x00000000U );
 HW_DEFINE_SIMPLE( HW_SEGS,   0x00000000U, 0x00000000U );
 
-#define HW_DEFINE_COMPOUND( x ) \
-enum {                                                             \
-                                                                   \
-HW_D0_##x    = (HW_Y0_##x+HW_Y0d_##x),           \
-HW_D2_##x    = (HW_Y2_##x+HW_Y2d_##x),           \
-HW_D4_##x    = (HW_Y4_##x+HW_Y4d_##x),           \
-HW_D6_##x    = (HW_Y6_##x+HW_Y6d_##x),           \
-                                                                   \
-HW_E0_##x    = (HW_D0_##x+HW_D2_##x),            \
-HW_E4_##x    = (HW_D4_##x+HW_D6_##x),            \
-                                                                   \
-HW_FLTS_##x  = (HW_E0_##x+HW_E4_##x),            \
-                                                                   \
-HW_EVEN_##x  = (HW_G0_##x+HW_G2_##x+HW_G4_##x    \
-                                 +HW_G6_##x+HW_G8_##x+HW_G10_##x   \
-                                 +HW_G12_##x+HW_G14_##x),          \
-                                                                   \
-HW_ODD_##x   = (HW_G1_##x+HW_G3_##x+HW_G5_##x    \
-                                 +HW_G7_##x+HW_G9_##x+HW_G11_##x   \
-                                 +HW_G13_##x+HW_G15_##x),          \
-                                                                   \
-HW_SNGL_##x  = (HW_Y0_##x+HW_Y2_##x+HW_Y4_##x    \
-                                 +HW_Y6_##x),                      \
-                                                                   \
-HW_G0_G1_G2_##x=(HW_G0_##x+HW_G1_##x+HW_G2_##x),  \
-                                                                   \
-HW__COMPOUND_END_##x                                               \
+#define HW_DEFINE_COMPOUND( x )         \
+enum {                                  \
+                                        \
+HW_D0_##x    = (HW_Y0_##x+HW_Y0d_##x),  \
+HW_D2_##x    = (HW_Y2_##x+HW_Y2d_##x),  \
+HW_D4_##x    = (HW_Y4_##x+HW_Y4d_##x),  \
+HW_D6_##x    = (HW_Y6_##x+HW_Y6d_##x),  \
+                                        \
+HW_E0_##x    = (HW_D0_##x+HW_D2_##x),   \
+HW_E4_##x    = (HW_D4_##x+HW_D6_##x),   \
+                                        \
+HW_FLTS_##x  = (HW_E0_##x+HW_E4_##x),   \
+                                        \
+HW_EVEN_##x  = (HW_G0_##x+HW_G2_##x+HW_G4_##x                       \
+                                 +HW_G6_##x+HW_G8_##x+HW_G10_##x    \
+                                 +HW_G12_##x+HW_G14_##x),           \
+                                                                    \
+HW_ODD_##x   = (HW_G1_##x+HW_G3_##x+HW_G5_##x                       \
+                                 +HW_G7_##x+HW_G9_##x+HW_G11_##x    \
+                                 +HW_G13_##x+HW_G15_##x),           \
+                                                                    \
+HW_SNGL_##x  = (HW_Y0_##x+HW_Y2_##x+HW_Y4_##x                       \
+                                 +HW_Y6_##x),                       \
+                                                                    \
+HW_G0_G1_G2_##x=(HW_G0_##x+HW_G1_##x+HW_G2_##x),                    \
+                                        \
+HW__COMPOUND_END_##x                    \
 }
 
 HW_ITER( HW_DEFINE_COMPOUND );
