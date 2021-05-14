@@ -77,3 +77,6 @@ typedef struct dep_info {
     time_t              time_stamp;
     char                fn[1];
 } dep_info;
+
+extern  default_lib     *DefaultLibs;
+extern  dep_info        *DependencyInfo;

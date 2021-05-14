@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,6 +58,24 @@
 #include "clibext.h"
 
 
+#define MAX_REG_SETS    16
+#define MAXIMUM_BYTESEQ 127
+
+#if _INTEL_CPU
+#elif _CPU == _AXP || _CPU == _PPC
+  #define AsmSymFini    AsmFini
+#endif
+
+#define AddDefaultLibConst(l,p) AddDefaultLib(l, sizeof( l ) - 1, p)
+
+
+default_lib             *DefaultLibs;
+aux_info                *AuxInfo;
+aux_info                FortranInfo;
+aux_info                ProgramInfo;
+dep_info                *DependencyInfo;
+
+
 static  aux_info        *CurrAux;
 static  const char      *TokStart;
 static  const char      *TokEnd;
@@ -69,153 +87,37 @@ static  uint            SymLen;
 static  arr_info        *ArrayInfo;
 #endif
 
-extern  const char      *RegNames[];
-extern  hw_reg_set      RegValue[];
-extern  byte            MaxReg;
-#if _INTEL_CPU
-#if _CPU == 8086
-extern  hw_reg_set      WinParms[];
-#else
-extern  hw_reg_set      StackParms[];
-#endif
-#endif
-
-extern  char            MsHexConst[];
-extern  char            MsPragCallBytes[];
-extern  char            MsArray[];
-
-#if _CPU == 8086
-
-#define _FLIBM          5
-#define _FLIB7M         6
-#define _FLIBL          5
-#define _FLIB7L         6
-#define _CLIBM          5
-#define _CLIBL          5
-#define _MATHM          5
-#define _MATH7M         7
-#define _MATHL          5
-#define _MATH7L         7
-#define _EMU87          5
-#define _NOEMU87        7
-#define _WRESL          5
-#define _WRESM          5
-
-static  char            _flibm[] = { "flibm" };
-static  char            _flib7m[] = { "flib7m" };
-static  char            _flibl[] = { "flibl" };
-static  char            _flib7l[] = { "flib7l" };
-static  char            _clibm[] = { "clibm" };
-static  char            _clibl[] = { "clibl" };
-static  char            _mathm[] = { "mathm" };
-static  char            _math7m[] = { "math87m" };
-static  char            _mathl[] = { "mathl" };
-static  char            _math7l[] = { "math87l" };
-static  char            _emu87[] = { "emu87" };
-static  char            _noemu87[] = { "noemu87" };
-static  char            _wresl[] = { "wresl" };
-static  char            _wresm[] = { "wresm" };
-
-#elif _CPU == 386
-
-#define _FLIB           4
-#define _FLIB7          5
-#define _FLIBS          5
-#define _FLIB7S         6
-#define _CLIB           6
-#define _CLIBS          6
-#define _MATH           6
-#define _MATHS          6
-#define _MATH7          8
-#define _MATH7S         8
-#define _EMU387         6
-#define _NOEMU387       8
-#define _WRESF          5
-#define _WRESFS         6
-
-static  char            _flib[] = { "flib" };
-static  char            _flibs[] = { "flibs" };
-static  char            _flib7[] = { "flib7" };
-static  char            _flib7s[] = { "flib7s" };
-static  char            _clib[] = { "clib3r" };
-static  char            _clibs[] = { "clib3s" };
-static  char            _math[] = { "math3r" };
-static  char            _maths[] = { "math3s" };
-static  char            _math7[] = { "math387r" };
-static  char            _math7s[] = { "math387s" };
-static  char            _emu387[] = { "emu387" };
-static  char            _noemu387[] = { "noemu387" };
-static  char            _wresf[] = { "wresf" };
-static  char            _wresfs[] = { "wresfs" };
-
-#elif _CPU == _AXP
-
-#define _FLIB           4
-#define _CLIB           4
-#define _MATH           4
-#define _WRESAXP        7
-
-static  char            _flib[] = { "flib" };
-static  char            _clib[] = { "clib" };
-static  char            _math[] = { "math" };
-static  char            _wresaxp[] = { "wresaxp" };
-
-#elif _CPU == _PPC
-
-#define _FLIB           4
-#define _CLIB           4
-#define _MATH           4
-#define _WRESPPC        7
-
-static  char            _flib[] = { "flib" };
-static  char            _clib[] = { "clib" };
-static  char            _math[] = { "math" };
-static  char            _wresppc[] = { "wresppc" };
-
-#endif
-
-#define MAX_REG_SETS    16
-#define MAXIMUM_BYTESEQ 127
-
-#if _INTEL_CPU
-#elif _CPU == _AXP || _CPU == _PPC
-  #define AsmSymFini    AsmFini
-#endif
-
-
 #if _CPU == 386
-    static      char    __Syscall[] = { "aux __syscall \"*\""
-                                    "parm caller []"
-                                    "value struct struct caller []"
-                                    "modify [eax ecx edx]" };
-    static      char    __Cdecl[] =   { "aux __cdecl \"_*\""
-                                    "parm caller loadds []"
-                                    "value struct float struct routine [eax]"
-                                    "modify [eax ebx ecx edx]" };
-    static      char    __Pascal[] =  { "aux __pascal \"^\""
-                                    "parm reverse routine []"
-                                    "value struct float struct caller []"
-                                    "modify [eax ebx ecx edx]" };
-    static      char    __Stdcall[] = { "aux __stdcall \"_*#\""
-                                    "parm routine []"
-                                    "value struct []"
-                                    "modify [eax ecx edx]" };
+static      char    __Syscall[] = { "aux __syscall \"*\""
+                                "parm caller []"
+                                "value struct struct caller []"
+                                "modify [eax ecx edx]" };
+static      char    __Cdecl[] =   { "aux __cdecl \"_*\""
+                                "parm caller loadds []"
+                                "value struct float struct routine [eax]"
+                                "modify [eax ebx ecx edx]" };
+static      char    __Pascal[] =  { "aux __pascal \"^\""
+                                "parm reverse routine []"
+                                "value struct float struct caller []"
+                                "modify [eax ebx ecx edx]" };
+static      char    __Stdcall[] = { "aux __stdcall \"_*#\""
+                                "parm routine []"
+                                "value struct []"
+                                "modify [eax ecx edx]" };
 #elif _CPU == 8086
-    static      char    __Pascal[] =  { "aux __pascal \"^\""
-                                    "parm routine reverse []"
-                                    "value struct float struct caller []"
-                                    "modify [ax bx cx dx]" };
-    static      char    __Cdecl[] =   { "aux __cdecl \"_*\""
-                                    "parm caller []"
-                                    "value struct float struct routine [ax]"
-                                    "modify [ax bx cx dx]" };
+static      char    __Pascal[] =  { "aux __pascal \"^\""
+                                "parm routine reverse []"
+                                "value struct float struct caller []"
+                                "modify [ax bx cx dx]" };
+static      char    __Cdecl[] =   { "aux __cdecl \"_*\""
+                                "parm caller []"
+                                "value struct float struct routine [ax]"
+                                "modify [ax bx cx dx]" };
 #endif
 
-default_lib             *DefaultLibs;
-aux_info                *AuxInfo;
-aux_info                FortranInfo;
-aux_info                ProgramInfo;
-dep_info                *DependencyInfo;
+
+#include "regs.c"
+
 
 void InitAuxInfo( void )
 //======================
@@ -565,78 +467,78 @@ void DefaultLibInfo( void )
 #if _CPU == 386
     if( CGOpts & CGOPT_STK_ARGS ) {
         if( CPUOpts & CPUOPT_FPC ) {
-            AddDefaultLib( _flibs, _FLIBS, '1' );
-            AddDefaultLib( _maths, _MATHS, '1' );
+            AddDefaultLibConst( "flibs", '1' );
+            AddDefaultLibConst( "math3s", '1' );
         } else {
-            AddDefaultLib( _flib7s, _FLIB7S, '1' );
-            AddDefaultLib( _math7s, _MATH7S, '1' );
+            AddDefaultLibConst( "flib7s", '1' );
+            AddDefaultLibConst( "math387s", '1' );
         }
-        AddDefaultLib( _clibs, _CLIBS, '1' );
+        AddDefaultLibConst( "clib3s", '1' );
         if( Options & OPT_RESOURCES ) {
-            AddDefaultLib( _wresfs, _WRESFS, '1' );
+            AddDefaultLibConst( "wresfs", '1' );
         }
     } else {
         if( CPUOpts & CPUOPT_FPC ) {
-            AddDefaultLib( _flib, _FLIB, '1' );
-            AddDefaultLib( _math, _MATH, '1' );
+            AddDefaultLibConst( "flib", '1' );
+            AddDefaultLibConst( "math3r", '1' );
         } else {
-            AddDefaultLib( _flib7, _FLIB7, '1' );
-            AddDefaultLib( _math7, _MATH7, '1' );
+            AddDefaultLibConst( "flib7", '1' );
+            AddDefaultLibConst( "math387r", '1' );
         }
-        AddDefaultLib( _clib, _CLIB, '1' );
+        AddDefaultLibConst( "clib3r", '1' );
         if( Options & OPT_RESOURCES ) {
-            AddDefaultLib( _wresf, _WRESF, '1' );
+            AddDefaultLibConst( "wresf", '1' );
         }
     }
     if( CPUOpts & CPUOPT_FPI ) {
-        AddDefaultLib( _emu387, _EMU387, '1' );
+        AddDefaultLibConst( "emu387", '1' );
     } else if( CPUOpts & CPUOPT_FPI87 ) {
-        AddDefaultLib( _noemu387, _NOEMU387, '1' );
+        AddDefaultLibConst( "noemu387", '1' );
     }
 #elif _CPU == 8086
     if( CGOpts & CGOPT_M_MEDIUM ) {
         if( CPUOpts & CPUOPT_FPC ) {
-            AddDefaultLib( _flibm, _FLIBM, '1' );
-            AddDefaultLib( _mathm, _MATHM, '1' );
+            AddDefaultLibConst( "flibm", '1' );
+            AddDefaultLibConst( "mathm", '1' );
         } else {
-            AddDefaultLib( _flib7m, _FLIB7M, '1' );
-            AddDefaultLib( _math7m, _MATH7M, '1' );
+            AddDefaultLibConst( "flib7m", '1' );
+            AddDefaultLibConst( "math87m", '1' );
         }
-        AddDefaultLib( _clibm, _CLIBM, '1' );
+        AddDefaultLibConst( "clibm", '1' );
         if( Options & OPT_RESOURCES ) {
-            AddDefaultLib( _wresm, _WRESM, '1' );
+            AddDefaultLibConst( "wresm", '1' );
         }
     } else {
         if( CPUOpts & CPUOPT_FPC ) {
-            AddDefaultLib( _flibl, _FLIBL, '1' );
-            AddDefaultLib( _mathl, _MATHL, '1' );
+            AddDefaultLibConst( "flibl", '1' );
+            AddDefaultLibConst( "mathl", '1' );
         } else {
-            AddDefaultLib( _flib7l, _FLIB7L, '1' );
-            AddDefaultLib( _math7l, _MATH7L, '1' );
+            AddDefaultLibConst( "flib7l", '1' );
+            AddDefaultLibConst( "math87l", '1' );
         }
-        AddDefaultLib( _clibl, _CLIBL, '1' );
+        AddDefaultLibConst( "clibl", '1' );
         if( Options & OPT_RESOURCES ) {
-            AddDefaultLib( _wresl, _WRESL, '1' );
+            AddDefaultLibConst( "wresl", '1' );
         }
     }
     if( CPUOpts & CPUOPT_FPI ) {
-        AddDefaultLib( _emu87, _EMU87, '1' );
+        AddDefaultLibConst( "emu87", '1' );
     } else if( CPUOpts & CPUOPT_FPI87 ) {
-        AddDefaultLib( _noemu87, _NOEMU87, '1' );
+        AddDefaultLibConst( "noemu87", '1' );
     }
 #elif _CPU == _AXP
-    AddDefaultLib( _flib, _FLIB, '1' );
-    AddDefaultLib( _math, _MATH, '1' );
-    AddDefaultLib( _clib, _CLIB, '1' );
+    AddDefaultLibConst( "flib", '1' );
+    AddDefaultLibConst( "math", '1' );
+    AddDefaultLibConst( "clib", '1' );
     if( Options & OPT_RESOURCES ) {
-        AddDefaultLib( _wresaxp, _WRESAXP, '1' );
+        AddDefaultLibConst( "wresaxp", '1' );
     }
 #elif _CPU == _PPC
-    AddDefaultLib( _flib, _FLIB, '1' );
-    AddDefaultLib( _math, _MATH, '1' );
-    AddDefaultLib( _clib, _CLIB, '1' );
+    AddDefaultLibConst( "flib", '1' );
+    AddDefaultLibConst( "math", '1' );
+    AddDefaultLibConst( "clib", '1' );
     if( Options & OPT_RESOURCES ) {
-        AddDefaultLib( _wresppc, _WRESPPC, '1' );
+        AddDefaultLibConst( "wresppc", '1' );
     }
 #endif
 }
@@ -1347,7 +1249,7 @@ static hw_reg_set RegSet( void )
         for( i = 0; i < TokEnd - TokStart; i++ ) {
             regname_buf[i] = toupper( TokStart[i] );
         }
-        reg = KwLookUp( RegNames, MaxReg, regname_buf, TokEnd - TokStart, true );
+        reg = KwLookUp( RegNames, sizeof( RegNames ) / sizeof( RegNames[0] ) - 1, regname_buf, TokEnd - TokStart, true );
         if( reg == 0 )
             break;
         HW_TurnOn( reg_set, RegValue[reg] );

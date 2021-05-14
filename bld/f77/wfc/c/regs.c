@@ -35,17 +35,14 @@
 // REGS         : register information
 //
 
-#include "ftnstd.h"
-#include "wf77auxd.h"
-
-hw_reg_set              StackParms[] = { HW_D( HW_EMPTY ) };
+static hw_reg_set       StackParms[] = { HW_D( HW_EMPTY ) };
 
 #if _CPU == 8086 || _CPU == 386
-  char                  IF_names[] = "IF@*";
-  char                  IF_Xnames[] = "IF@X*";
+static char             IF_names[] = "IF@*";
+static char             IF_Xnames[] = "IF@X*";
 #elif _CPU == _AXP || _CPU == _PPC
-  char                  IF_names[] = "_IF_*";
-  char                  IF_Xnames[] = "_IF_X*";
+static char             IF_names[] = "_IF_*";
+static char             IF_Xnames[] = "_IF_X*";
 #else
   #error Unknown OS
 #endif
@@ -55,19 +52,17 @@ hw_reg_set              StackParms[] = { HW_D( HW_EMPTY ) };
 static  pass_by         IFArgValue = { NULL, PASS_BY_VALUE };
 static  pass_by         IFArgDescriptor = { NULL, PASS_BY_DESCRIPTOR };
 
-const char      *RegNames[] = {
+static const char       *RegNames[] = {
     #define pick(text,regset) text,
     #include "regsdefn.h"
     #undef pick
 };
 
-hw_reg_set  RegValue[] = {
+static hw_reg_set       RegValue[] = {
     #define pick(text,regset) regset,
     #include "regsdefn.h"
     #undef pick
 };
-
-byte            MaxReg = { sizeof( RegNames ) / sizeof( RegNames[0] ) - 1 };
 
 #if _CPU == 8086
 
@@ -80,7 +75,7 @@ static  hw_reg_set      FortranParms[] =
 static  hw_reg_set      IFParms[] =
     { HW_D_5( HW_AX, HW_BX, HW_CX, HW_DX, HW_FLTS ), HW_D( HW_EMPTY ) };
 
-hw_reg_set              WinParms[] =
+static hw_reg_set       WinParms[] =
     { HW_D_4( HW_AX, HW_BX, HW_CX, HW_DX ), HW_D( HW_EMPTY ) };
 
 aux_info                RtRtnInfo = {
@@ -472,7 +467,7 @@ aux_info               IFXInfo = {
         HW_D( HW_EMPTY ),
         HW_D( HW_EMPTY ),
         HW_D( HW_FULL ),
-        &IF_Xnames,
+        IF_Xnames,
         0,
         0,
         NULL,
@@ -487,7 +482,7 @@ aux_info                IFInfo = {
         HW_D( HW_EMPTY ),
         HW_D( HW_EMPTY ),
         HW_D( HW_FULL ),
-        &IF_names,
+        IF_names,
         0,
         0,
         NULL,
@@ -502,7 +497,7 @@ aux_info                IFCharInfo = {
         HW_D( HW_EMPTY ),
         HW_D( HW_EMPTY ),
         HW_D( HW_FULL ),
-        &IF_names,
+        IF_names,
         0,
         0,
         NULL,
@@ -517,7 +512,7 @@ aux_info                IFChar2Info = {
         HW_D( HW_EMPTY ),
         HW_D( HW_EMPTY ),
         HW_D( HW_FULL ),
-        &IF_Xnames,
+        IF_Xnames,
         0,
         0,
         NULL,
@@ -532,7 +527,7 @@ aux_info                IFVarInfo = {
         HW_D( HW_EMPTY ),
         HW_D( HW_EMPTY ),
         HW_D( HW_FULL ),
-        &IF_Xnames,
+        IF_Xnames,
         0,
         0,
         NULL,

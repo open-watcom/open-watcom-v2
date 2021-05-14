@@ -66,6 +66,8 @@ exetarg_res_version_nt_x64 = exever.res
 exetarg_res_wresui    = wresui.res
 !include exetarg.mif
 
+wf77aux.obj : wf77aux.c regs.c
+
 #
 # rc and others
 #
