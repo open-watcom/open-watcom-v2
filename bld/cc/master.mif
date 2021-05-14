@@ -193,7 +193,7 @@ xcode$(target_cpu).tmp: ../../a/code$(target_cpu).asm
     $(noecho)*$(target_as_$(target_cpu)) -I"$(watcom_dir)/h" -fo=.obj $[@
     $(noecho)*bwlink system bin op quiet file code$(target_cpu).obj name $@
 
-./mkcode.exe: ../../a/mkcode.c
+./mkcode.exe: mkcode.c
     @%make echo_bldcl
     $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
 

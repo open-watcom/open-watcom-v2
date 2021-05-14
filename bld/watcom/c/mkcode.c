@@ -44,9 +44,9 @@
 #include <string.h>
 
 
-#define BUFSIZE 4096
+#define BUFSIZE     4096
 
-#define Xptr(x) (unsigned char *)(buff + x)
+#define Xptr(x)     (buff + x)
 
 struct bursts {
     unsigned short defs;
@@ -59,16 +59,28 @@ int main(int argc, char *argv[])
     FILE                *fp;
     int                 i;
     int                 len;
-    unsigned char       *p;
+    char                *p;
     struct bursts       *cb;
-    unsigned char       *buff;
+    char                *buff;
     size_t              size;
+    size_t              read_size;
+    int                 opt_bytes;
 
+    opt_bytes = 0;
+    i = 1;
+    if( argc > 1 ) {
+        p = argv[1];
+        if( p[0] == '-' || p[0] == '/' ) {
+            opt_bytes = ( p[1] == 'b' || p[1] == 'B' );
+            argc--;
+            i++;
+        }
+    }
     if( argc < 3 ) {
-        printf( "Usage: inp.file out.file\n" );
+        printf( "Usage: [-b] inp.file out.file\n" );
         return( 1 );
     }
-    fp = fopen( argv[1], "rb" );
+    fp = fopen( argv[i], "rb" );
     if( fp == NULL ) {
         printf( "Error: Can not open input file.\n" );
         return( 1 );
@@ -77,7 +89,9 @@ int main(int argc, char *argv[])
     buff = NULL;
     for( ;; ) {
         buff = realloc( buff, size + BUFSIZE );
-        if( fread( buff + size, 1, BUFSIZE, fp ) < BUFSIZE ) {
+        read_size = fread( buff + size, 1, BUFSIZE, fp );
+        if( read_size < BUFSIZE ) {
+            size += read_size;
             break;
         }
         size += BUFSIZE;
@@ -89,44 +103,60 @@ int main(int argc, char *argv[])
         return( 1 );
     }
     fclose( fp );
-    cb = (struct bursts *)Xptr( *(short *)buff );
-    fp = fopen( argv[2], "wt" );
+    fp = fopen( argv[i + 1], "wt" );
     if( fp == NULL ) {
         free( buff );
         printf( "Error: can not open out.file\n" );
         return( 1 );
     }
-    for( ;; ) {
-        p = Xptr( cb->defs );
-        if( p == buff )
-            break;
-        for( ;; ) {
-            fprintf( fp, "%s\n", p );
-            while( *p != '\0' )
-                ++p;
-            ++p;
-            if( *p == '\0' ) {
-                break;
-            }
-        }
-        p = Xptr( cb->burst );
-        len = *p++;
-        fprintf( fp, "static struct STRUCT_BYTE_SEQ( %d ) %s = { %d, false, {\n    ", len, Xptr( cb->name ), len );
+    if( opt_bytes ) {
+        p = buff;
         i = 0;
-        for( ;; ) {
-            fprintf( fp, "0x%2.2X", *p++ );
-            --len;
-            if( len == 0 )
-                break;
-            fprintf( fp, "," );
+        while( size-- > 0 ) {
+            fprintf( fp, "0x%2.2X,", (unsigned char)*p++ );
             i++;
-            if( i == 10 ) {
-                fprintf( fp, "\n    " );
+            if( i == 16 ) {
+                fprintf( fp, "\n" );
                 i = 0;
             }
         }
-        fprintf( fp, "\n} };\n\n" );
-        cb++;
+        if( i ) {
+            fprintf( fp, "\n" );
+        }
+    } else {
+        cb = (struct bursts *)Xptr( *(unsigned short *)buff );
+        for( ;; ) {
+            p = Xptr( cb->defs );
+            if( p == buff )
+                break;
+            for( ;; ) {
+                fprintf( fp, "%s\n", p );
+                while( *p != '\0' )
+                    ++p;
+                ++p;
+                if( *p == '\0' ) {
+                    break;
+                }
+            }
+            p = Xptr( cb->burst );
+            len = (unsigned char)*p++;
+            fprintf( fp, "static struct STRUCT_BYTE_SEQ( %d ) %s = { %d, false, {\n    ", len, Xptr( cb->name ), len );
+            i = 0;
+            for( ;; ) {
+                fprintf( fp, "0x%2.2X", (unsigned char)*p++ );
+                --len;
+                if( len == 0 )
+                    break;
+                fprintf( fp, "," );
+                i++;
+                if( i == 10 ) {
+                    fprintf( fp, "\n    " );
+                    i = 0;
+                }
+            }
+            fprintf( fp, "\n} };\n\n" );
+            cb++;
+        }
     }
     fclose( fp );
     free( buff );

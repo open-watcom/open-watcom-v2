@@ -9,7 +9,7 @@ cwc_autodepends = .AUTODEPEND
 #
 # cflags
 #
-.c : ../../c
+.c : ../../c;$(watcom_dir)/c
 .asm : ../../asm
 
 inc_dirs = -I.
@@ -34,7 +34,7 @@ copystub.tmp : copystub.asm
 
 copystub.gh : ./mkcode.exe copystub.tmp
     @%make echo_execute
-    $(noecho)$[@ $]@ $@
+    $(noecho)$[@ -b $]@ $@
 
 decstub.tmp : decstub.asm
     @%make echo_aslink
@@ -43,7 +43,7 @@ decstub.tmp : decstub.asm
 
 decstub.gh : ./mkcode.exe decstub.tmp
     @%make echo_execute
-    $(noecho)$[@ $]@ $@
+    $(noecho)$[@ -b $]@ $@
 
 ./mkcode.exe: mkcode.c
     @%make echo_bldcl

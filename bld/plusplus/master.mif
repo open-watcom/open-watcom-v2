@@ -275,7 +275,7 @@ xcode$(target_cpu).tmp: $(cc_dir)/a/code$(target_cpu).asm
 
 bld_extra_incs = -I. -I"$(fe_misc_dir)/h" -I"../../h" -I"$(wasm_dir)/h"
 
-./mkcode.exe: $(cc_dir)/a/mkcode.c
+./mkcode.exe: mkcode.c
     @%make echo_bldcl
     $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
 
