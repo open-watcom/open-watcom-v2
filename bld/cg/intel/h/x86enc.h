@@ -90,6 +90,8 @@ extern void             LayLeaRegOp( instruction *ins );
 extern void             DoMAddr( name *op );
 extern byte             DoMDisp( name *op, bool alt_encoding );
 extern void             LayModRM( name *op );
+extern byte             Displacement( signed_32 val, hw_reg_set regs );
+extern byte             DoIndex( hw_reg_set regs );
 extern void             DoRelocConst( name *op, type_class_def type_class );
 extern void             Do4Shift( instruction *ins );
 extern void             Do4RShift( instruction *ins );
@@ -97,8 +99,6 @@ extern void             Gen4RNeg( instruction *ins );
 extern void             Gen4Neg( instruction *ins );
 extern void             By2Div( instruction *ins );
 extern void             Pow2Div( instruction *ins );
-extern void             GenUnkLea( pointer value );
-extern void             GenLeaSP( int offset );
 extern void             GFstp10( type_length where );
 extern void             GFld10( type_length where );
 

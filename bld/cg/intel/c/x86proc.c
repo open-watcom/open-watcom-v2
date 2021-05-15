@@ -56,6 +56,7 @@
 #include "rgtbl.h"
 #include "x86base.h"
 #include "pccode.h"
+#include "pcencode.h"
 #include "x86enc.h"
 #include "x86temps.h"
 #include "feprotos.h"
@@ -702,6 +703,19 @@ static  void        Pop( hw_reg_set to_pop )
     }
 }
 
+static void    GenLeaSP( int offset )
+/************************************
+    LEA         [e]sp,[[e]bp+offset]
+*/
+{
+    _Code;
+    LayOpword( M_LEA );
+    OpndSize( HW_xSP );
+    LayReg( HW_xSP );
+    Inst[RMR] |= Displacement( offset, HW_xBP );
+    Inst[RMR] |= DoIndex( HW_xBP );
+    _Emit;
+}
 
 static  void    DoEpilog( void )
 /******************************/

@@ -1727,6 +1727,18 @@ static  void    CallMathFunc( instruction *ins ) {
     DoCall( RTLabel( rtindex ), true, _IsTargetModel( BIG_CODE ), false );
 }
 
+static void    GenUnkLea( pointer value )
+/***************************************/
+{
+    LayOpword( M_LEA );
+    OpndSize( HW_xSP );
+    LayReg( HW_xSP );
+    Inst[RMR] |= DISPW;
+    ILen += WORD_SIZE;
+    DoAbsPatch( value, WORD_SIZE );
+    Inst[RMR] |= DoIndex( HW_xBP );
+}
+
 void    GenObjCode( instruction *ins ) {
 /***************************************
     Generate object code for the instruction "ins" based on gen_table->generate

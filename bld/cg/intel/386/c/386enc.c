@@ -68,10 +68,6 @@
 #define RMR_MOD_DIR     5
 #define RMR_MOD_SIB     4
 
-#define D0      (0 << S_RMR_MOD)
-#define D8      (1 << S_RMR_MOD)
-#define D32     (2 << S_RMR_MOD)
-
 
 static void OpndSizeIf( bool if_32 )
 /**********************************/
@@ -139,8 +135,6 @@ void    DoRepOp( instruction *ins )
 
 
 static  hw_reg_set IndexTab[] = {
-#define INDICES 8
-#define BP_INDEX 5
         HW_D( HW_EAX ),
         HW_D( HW_ECX ),
         HW_D( HW_EDX ),
@@ -161,36 +155,33 @@ static  void    Add32Displacement( signed_32 val )
     AddByte( val >> 24 );
 }
 
-static  byte    Displacement( signed_32 val, hw_reg_set regs )
-/************************************************************/
+byte    Displacement( signed_32 val, hw_reg_set regs )
+/****************************************************/
 {
     if( val == 0 && !HW_COvlap( regs, HW_EBP ) )
-        return( D0 );
+        return( DISP0 );
     if( val <= 127 && val >= -128 ) {
         AddByte( val & 0xff );
-        return( D8 );
+        return( DISP8 );
     } else {
         Add32Displacement( val );
-        return( D32 );
+        return( DISPW );
     }
 }
 
 
-static  byte    DoIndex( hw_reg_set regs )
-/****************************************/
+byte    DoIndex( hw_reg_set regs )
+/********************************/
 {
     byte i;
 
-    for( i = 0; i < INDICES; ++i ) {
+    for( i = 0; i < sizeof( IndexTab ) / sizeof( IndexTab[0] ); i++ ) {
         if( HW_Equal( regs, IndexTab[i] ) ) {
-            break;
+            return( i << S_RMR_RM );
         }
     }
-    if( i >= INDICES ) {
-        _Zoiks( ZOIKS_033 );
-    }
-    i <<= S_RMR_RM;
-    return( i );
+    _Zoiks( ZOIKS_033 );
+    return( 0 );
 }
 
 
@@ -232,13 +223,13 @@ static  byte    DoDisp( type_length val, hw_reg_set base_reg, name *op )
     } else if( op->n.class == N_MEMORY ) {
         ILen += 4;
         DoSymRef( op, val, false );
-        return( D32 );
+        return( DISPW );
     } else if( op->n.class == N_CONSTANT ) {
         DoRelocConst( op, U4 );
-        return( D32 );
+        return( DISPW );
     } else {
         _Zoiks( ZOIKS_126 );
-        return( 0 );
+        return( DISP0 );
     }
 }
 
@@ -267,14 +258,15 @@ static  void    EA( hw_reg_set base, hw_reg_set index, scale_typ scale,
     if( HW_CEqual( base, HW_EMPTY ) ) {
         if( HW_CEqual( index, HW_EMPTY ) ) {
             // [d32]
-            if( scale != 0 || val != 0 ) _Zoiks( ZOIKS_079 );
+            if( scale != 0 || val != 0 )
+                _Zoiks( ZOIKS_079 );
             Inst[RMR] |= DoMDisp( mem_loc, true );
 
         } else {
             if( scale != 0 ) {
                 // [d32+scale_index]
                 Inst[RMR] |= DoScaleIndex( HW_EBP, index, scale );
-                Inst[RMR] |= D0;
+                Inst[RMR] |= DISP0;
                 if( mem_loc != NULL ) {
                     ILen += 4;
                     DoSymRef( mem_loc, val, false );
@@ -564,31 +556,6 @@ void    GenPushC( signed_32 value )
     _Emit;
 }
 
-
-void    GenUnkLea( pointer value )
-/********************************/
-{
-    LayOpword( M_LEA );
-    OpndSize( HW_ESP );
-    LayReg( HW_ESP );
-    Inst[RMR] |= D32;
-    ILen += 4;
-    DoAbsPatch( value, 4 );
-    Inst[RMR] |= DoIndex( HW_EBP );
-}
-
-void    GenLeaSP( int offset )
-/*****************************
-    LEA         esp,offset[ebp]
-*/
-{
-    _Code;
-    LayOpword( M_LEA );
-    OpndSize( HW_ESP );
-    LayReg( HW_ESP );
-    EA( HW_EMPTY, HW_EBP, 0, offset, NULL, false );
-    _Emit;
-}
 
 pointer GenFar16Thunk( pointer label, unsigned_16 parms_size, bool remove_parms )
 /*******************************************************************************/

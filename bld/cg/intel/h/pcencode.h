@@ -107,6 +107,10 @@ extern void     Format(oc_class);
 #define B_KEY_FSGS      (0xb4 - M_LDSES)
 #define B_KEY_DSES      (0xc4 - M_LDSES)
 
+#define DISP0           (0 << S_RMR_MOD)
+#define DISP8           (1 << S_RMR_MOD)
+#define DISPW           (2 << S_RMR_MOD)
+
 #define MF_FS           0x00
 #define MF_FD           0x04
 #define MF_FL           0x02
