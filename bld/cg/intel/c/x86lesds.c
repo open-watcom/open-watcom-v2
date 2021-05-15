@@ -261,7 +261,7 @@ static  bool    NotByteMove( instruction *ins )
 }
 
 
-static  bool    IsLESDS( instruction *ins, instruction *next )
+static  bool    IsLDSES( instruction *ins, instruction *next )
 /************************************************************/
 {
     if( G( ins ) != G_RM1 && G( ins ) != G_MOVAM )
@@ -320,9 +320,9 @@ void    OptSegs( void )
             for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
                 next = ins->head.next;
                 if( NotByteMove( ins ) && NotByteMove( next ) ) {
-                    if( IsLESDS( ins, next ) ) {
+                    if( IsLDSES( ins, next ) ) {
                         CheckLDSES( next, ins, false );
-                    } else if( IsLESDS( next, ins ) ) {
+                    } else if( IsLDSES( next, ins ) ) {
                         CheckLDSES( ins, next, true );
                     }
                 }
