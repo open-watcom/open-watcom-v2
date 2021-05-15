@@ -221,7 +221,7 @@ static  byte    DoDisp( type_length val, hw_reg_set base_reg, name *op )
         val += TmpLoc( base, op );
         return( Displacement( val, base_reg ) );
     } else if( op->n.class == N_MEMORY ) {
-        ILen += 4;
+        ILen += WORD_SIZE;
         DoSymRef( op, val, false );
         return( DISPW );
     } else if( op->n.class == N_CONSTANT ) {
@@ -257,14 +257,14 @@ static  void    EA( hw_reg_set base, hw_reg_set index, scale_typ scale,
         _Zoiks( ZOIKS_079 );
     if( HW_CEqual( base, HW_EMPTY ) ) {
         if( HW_CEqual( index, HW_EMPTY ) ) {
-            // [d32]
+            // [disp32]
             if( scale != 0 || val != 0 )
                 _Zoiks( ZOIKS_079 );
             Inst[RMR] |= DoMDisp( mem_loc, true );
 
         } else {
             if( scale != 0 ) {
-                // [d32+scale_index]
+                // [disp32+scale_index]
                 Inst[RMR] |= DoScaleIndex( HW_EBP, index, scale );
                 Inst[RMR] |= DISP0;
                 if( mem_loc != NULL ) {
@@ -274,13 +274,13 @@ static  void    EA( hw_reg_set base, hw_reg_set index, scale_typ scale,
                     Add32Displacement( val );
                 }
             } else {
-                // [(d0|d8|d32)+index]
+                // [(disp0|disp8|disp32)+index]
                 Inst[RMR] |= DoIndex( index );
                 Inst[RMR] |= DoDisp( val, index, mem_loc );
             }
         }
     } else {
-        // [(d0|d8|d32)+base+scale_index]
+        // [(disp0|disp8|disp32)+base+scale_index]
         if( HW_CEqual( index, HW_EMPTY ) ) {
             if( scale == 0 && !HW_CEqual( base, HW_ESP ) ) {
                 Inst[RMR] |= DoIndex( base );
@@ -289,13 +289,11 @@ static  void    EA( hw_reg_set base, hw_reg_set index, scale_typ scale,
             }
         } else {
             if( scale == 0 && HW_CEqual( base, HW_EBP )
-                && (lea || (_IsntTargetModel(FLOATING_DS)&&_IsntTargetModel(FLOATING_SS)))
-              ) {
+              && ( lea || _IsntTargetModel( FLOATING_DS ) && _IsntTargetModel( FLOATING_SS ) ) ) {
                 /*
-                   flip base & index registers so that we might avoid
-                   having to output a byte displacement (can't have a
-                   zero sized displacement with [E]BP as the base
-                   register)
+                   flip base & index registers so that we might avoid having
+                   to output a byte displacement (can't have a zero sized
+                   displacement with EBP as the base register)
                 */
                 base = index;
                 HW_CAsgn( index, HW_EBP );
@@ -625,53 +623,53 @@ static  void    doProfilingPrologEpilog( label_handle label, bool prolog )
         TellKeepLabel( data_lbl );
         _Code;
         if( prolog ) {
-            LayOpword( 0x05ff );
+            LayOpword( 0x05ff );                        /* inc L1+count */
             ILen += 4;
             DoLblRef( data_lbl, data_segid, offsetof( P5_timing_info, count ), OFST);
             _Next;
         }
-        LayOpword( prolog ? 0x05ff : 0x0dff );          // inc L1 / dec L1
+        LayOpword( prolog ? 0x05ff : 0x0dff );          /* inc/dec L1+semaphore */
         ILen += 4;
         DoLblRef( data_lbl, data_segid, offsetof( P5_timing_info, semaphore ), OFST );
         _Next;
         if( _IsTargetModel( P5_PROFILING_CTR0 ) ) {
-            LayOpword( prolog ? 0x1675 : 0x167d );              // jne skip / jge skip
+            LayOpword( prolog ? 0x1675 : 0x167d );      /* jne/jge skip */
             _Next;
-            LayOpbyte( 0x51 );                                  // push ecx
-            _Next;
-        } else {
-            LayOpword( prolog ? 0x1275 : 0x127d );              // jne skip / jge skip
-            _Next;
-        }
-        LayOpbyte( 0x52 );                                      // push edx
-        _Next;
-        if( _IsTargetModel( P5_PROFILING_CTR0 ) ) {
-            LayOpword( 0xc931 );                                // xor ecx,ecx
-            _Next;
-        }
-        LayOpbyte( 0x50 );                                      // push eax
-        _Next;
-        if( _IsTargetModel( P5_PROFILING_CTR0 ) ) {
-            LayOpword( 0x330f );                                // rdpmc
+            LayOpbyte( 0x51 );                          /* push ecx */
             _Next;
         } else {
-            LayOpword( 0x310f );                                // rdtsc
+            LayOpword( prolog ? 0x1275 : 0x127d );      /* jne/jge skip */
             _Next;
         }
-        LayOpword( prolog ? 0x0529 : 0x0501 );          // sub L1+4,eax / add L1+4,eax
+        LayOpbyte( 0x52 );                              /* push edx */
+        _Next;
+        if( _IsTargetModel( P5_PROFILING_CTR0 ) ) {
+            LayOpword( 0xc931 );                        /* xor ecx,ecx */
+            _Next;
+        }
+        LayOpbyte( 0x50 );                              /* push eax */
+        _Next;
+        if( _IsTargetModel( P5_PROFILING_CTR0 ) ) {
+            LayOpword( 0x330f );                        /* rdpmc */
+            _Next;
+        } else {
+            LayOpword( 0x310f );                        /* rdtsc */
+            _Next;
+        }
+        LayOpword( prolog ? 0x0529 : 0x0501 );          /* sub/add L1+lo_cycle,eax */
         ILen += 4;
         DoLblRef( data_lbl, data_segid, offsetof( P5_timing_info, lo_cycle ), OFST );
         _Next;
-        LayOpbyte( 0x58 );                                      // pop eax
+        LayOpbyte( 0x58 );                              /* pop eax */
         _Next;
-        LayOpword( prolog ? 0x1519 : 0x1511 );          // sbb L1+8,edx / adc L1+8,edx
+        LayOpword( prolog ? 0x1519 : 0x1511 );          /* sbb/adc L1+hi_cycle,edx */
         ILen += 4;
         DoLblRef( data_lbl, data_segid, offsetof( P5_timing_info, hi_cycle ), OFST );
         _Next;
-        LayOpbyte( 0x5a );                                      // pop edx
+        LayOpbyte( 0x5a );                              /* pop edx */
         _Next;
         if( _IsTargetModel( P5_PROFILING_CTR0 ) ) {
-            LayOpbyte( 0x59 );                                  // pop ecx
+            LayOpbyte( 0x59 );                          /* pop ecx */
             _Next;
         }
         _Emit;
@@ -907,12 +905,12 @@ void StartBlockProfiling( block *blk )
     TellByPassOver();
     SetOP( old_segid );
     _Code;
-    LayOpword( 0x0583 );                // sub L1+4,eax / add L1+4,eax
+    LayOpword( 0x0583 );                /* add L1+lo_count,1 */
     ILen += 4;
     DoLblRef( data, data_segid, offsetof( block_count_info, lo_count ), OFST );
     AddByte( 1 );
     _Next;
-    LayOpword( 0x1583 );                // sub L1+4,eax / add L1+4,eax
+    LayOpword( 0x1583 );                /* adc L1+hi_count,0 */
     ILen += 4;
     DoLblRef( data, data_segid, offsetof( block_count_info, hi_count ), OFST );
     AddByte( 0 );
