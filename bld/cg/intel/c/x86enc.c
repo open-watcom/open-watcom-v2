@@ -1727,8 +1727,8 @@ static  void    CallMathFunc( instruction *ins ) {
     DoCall( RTLabel( rtindex ), true, _IsTargetModel( BIG_CODE ), false );
 }
 
-static void    GenUnkLea( pointer value )
-/***************************************/
+static void     GenUnkLea( pointer value )
+/****************************************/
 {
     LayOpword( M_LEA );
     OpndSize( HW_xSP );
@@ -2028,25 +2028,26 @@ void    GenObjCode( instruction *ins ) {
         case G_LOADADDR:
             if( AskIsFrameIndex( left ) ) {
                 GenUnkLea( NextFramePatch() );
-            } else {
-                /* turn "LEA EAX, 0[ESP]" into "MOV EAX,ESP" */
-#if _TARGET & _TARG_80386
-                if((left->n.class == N_TEMP) && TmpLoc(DeAlias(left),left) == 0) {
-                    LayOpword( M_MOVRR | B_KEY_W );
-                    if( BaseIsSP( left ) ) {
-                        LayReg( HW_xSP );
-                    } else {
-                        LayReg( HW_xBP );
-                    }
-                    LayRMRegOp( result );
-                } else
-#endif
-                {
-                    LayOpword( M_LEA );
-                    LayRegOp( result );
-                    LayModRM( left );
-                }
+                break;
             }
+#if _TARGET & _TARG_80386
+            if( ( left->n.class == N_TEMP ) && TmpLoc( DeAlias( left ), left ) == 0 ) {
+                /* turn "LEA <reg>,[ESP+0]" into "MOV <reg>,ESP"
+                 * or "LEA <reg>,[EBP+0]" into "MOV <reg>,EBP"
+                 */
+                LayOpword( M_MOVRR | B_KEY_W );
+                if( BaseIsSP( left ) ) {
+                    LayReg( HW_xSP );
+                } else {
+                    LayReg( HW_xBP );
+                }
+                LayRMRegOp( result );
+                break;
+            }
+#endif
+            LayOpword( M_LEA );
+            LayRegOp( result );
+            LayModRM( left );
             break;
         case G_4SHIFT:
             Do4Shift( ins );
