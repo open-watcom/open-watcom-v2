@@ -274,20 +274,19 @@ static  bool    IsLDSES( instruction *ins, instruction *next )
 }
 
 
-static  void    CheckLDSES( instruction *seg, instruction *reg,
-                            bool seg_first )
-/*************************************************************/
+static  void    CheckLDSES( instruction *seg, instruction *reg, bool seg_first )
+/******************************************************************************/
 {
     hw_reg_set  tmp;
 
-    if( !HW_COvlap( seg->result->r.reg, HW_DS_ES_FS_GS ) )
+    if( !HW_COvlap( seg->result->r.reg, HW_DS_ES_SS_FS_GS ) )
         return;
     if( !AdjacentMem( seg->operands[0], reg->operands[0], U2 ) )
         return;
     if( seg->operands[0]->n.class == N_INDEXED ) {
         // special case of using result of seg
         if( seg_first ) {
-            // don't think we can get here - using one of DS|ES|FS|GS as index reg?!?
+            // don't think we can get here - using one of DS|ES|SS|FS|GS as index reg?!?
             if( HW_Ovlap( reg->operands[0]->i.index->r.reg, seg->result->r.reg ) ) {
                 return;
             }

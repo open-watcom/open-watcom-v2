@@ -1922,12 +1922,18 @@ void    GenObjCode( instruction *ins ) {
         case G_LDSES:
             LayRegOp( result );
             LayModRM( left );
+            if( HW_COvlap( result->r.reg, HW_SS ) ) {
+                AddToTemp( M_SECONDARY );   /* load SS */
+                break;
+            }
             if( HW_COvlap( result->r.reg, HW_FS_GS ) ) {
-                Inst[KEY] -= B_KEY_FS;      /* load ES or FS */
+                Inst[KEY] += B_KEY_FSGS;    /* load FS or GS */
                 AddToTemp( M_SECONDARY );
+            } else {
+                Inst[KEY] += B_KEY_DSES;    /* load DS or ES */
             }
             if( HW_COvlap( result->r.reg, HW_DS_GS ) ) {
-                Inst[KEY] |= B_KEY_DS;      /* indicate load to DS GS */
+                Inst[KEY] += 1;             /* indicate load to DS and GS */
             }
             break;
         case G_MS1:

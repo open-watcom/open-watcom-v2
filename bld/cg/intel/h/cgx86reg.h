@@ -134,7 +134,8 @@ HW_CS_EDI_##x   = (HW_CS_##x+HW_EDI_##x),                           \
 HW_FS_GS_##x    = (HW_FS_##x+HW_GS_##x),                            \
 HW_DS_GS_##x    = (HW_DS_##x+HW_GS_##x),                            \
 HW_ECX_EBX_##x  = (HW_ECX_##x+HW_EBX_##x),                          \
-HW_DS_ES_FS_GS_##x = (HW_DS_##x+HW_ES_##x+HW_FS_##x+HW_GS_##x),     \
+HW_DS_ES_SS_FS_GS_##x =                                             \
+    (HW_DS_##x+HW_ES_##x+HW_SS_##x+HW_FS_##x+HW_GS_##x),            \
 HW_DS_ES_SS_CS_##x = (HW_DS_##x+HW_ES_##x+HW_SS_##x+HW_CS_##x),     \
 HW_AL_BL_CL_DL_##x = (HW_AL_##x+HW_BL_##x+HW_CL_##x+HW_DL_##x),     \
 HW_AH_BH_CH_DH_##x = (HW_AH_##x+HW_BH_##x+HW_CH_##x+HW_DH_##x),     \

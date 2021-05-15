@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -113,8 +113,8 @@ static gen_opcode G5Opcodes[] = {
        0xc088, 0x008a, 0x0088 };
 
 static gen_opcode G6Opcodes[] = {
-/*       LEA   LDSES   MS1     SM1     RS      SR      MOVMC   MADDR   TEST*/
-        M_LEA, 0xc4,   0x8c,   0x8e,   0xc08c, 0xc08e, 0xc6,   0xc7,    M_TESTRR
+/*      LEA    LDSES    MS1     SM1     RS      SR      MOVMC   MADDR   TEST */
+        M_LEA, M_LDSES, 0x8c,   0x8e,   0xc08c, 0xc08e, 0xc6,   0xc7,   M_TESTRR
 };
 
 static gen_opcode G7Opcodes[] = {
