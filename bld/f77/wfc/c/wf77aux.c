@@ -70,11 +70,11 @@
 
 
 default_lib             *DefaultLibs;
+dep_info                *DependencyInfo;
+
 aux_info                *AuxInfo;
 aux_info                FortranInfo;
 aux_info                ProgramInfo;
-dep_info                *DependencyInfo;
-
 
 static  aux_info        *CurrAux;
 static  const char      *TokStart;

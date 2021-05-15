@@ -95,6 +95,8 @@ extern  global_seg      *CurrGSeg;
 extern  global_seg      *GlobalSeg;
 extern  char            ProgName[];
 
+segment_id              CurrCodeSegId;
+
 static  void            DefDbgStruct( sym_id sym );
 
 #define CS_SUFF_LEN             5
@@ -159,8 +161,6 @@ static  void    AllocComBlk( sym_id cb );
 #define _UnShadow( s )  if( (s != NULL) && (_MgcClass(s) == MAGIC_SHADOW) ) { \
                             s = sym->u.ns.si.ms.sym; \
                         }
-
-segment_id              CurrCodeSegId;
 
 #define SYM_MANGLE_PRE          "_COMMON_"
 #define SYM_MANGLE_POST         "_DATA"
