@@ -936,7 +936,7 @@ bool    IsStackReg( name *sp )
         return( false );
     if( sp->n.class != N_REGISTER )
         return( false );
-    if( !HW_CEqual( sp->r.reg, HW_SP ) )
+    if( !HW_COvlap( sp->r.reg, HW_SP ) )
         return( false );
     return( true );
 }
