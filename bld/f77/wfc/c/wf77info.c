@@ -172,11 +172,11 @@ static char                     MangleSymBuff[MAX_SYMLEN+4+SYM_MANGLE_LEN];
 #endif
 
 
-static uint     MangleCommonBlockName( sym_id sym, char *buffer,
+static size_t   MangleCommonBlockName( sym_id sym, char *buffer,
                                                bool class ) {
 //===========================================================
 
-    uint        cb_len;
+    size_t      cb_len;
 
     cb_len = sym->u.ns.u2.name_len;
     if( CGOpts & CGOPT_MANGLE ) {
@@ -334,7 +334,7 @@ static  void    DefineCommonSegs( void ) {
     uint_32     com_size;
     int         seg_count;
     sym_id      sym;
-    int         cb_len;
+    size_t      cb_len;
     int         private;
 
     char        cb_name[MAX_SYMLEN+4+SYM_MANGLE_LEN];
@@ -1441,7 +1441,7 @@ void    FEMessage( int msg, pointer x ) {
 }
 
 
-static  dbg_type        BaseDbgType( TYPE typ, uint size ) {
+static  dbg_type        BaseDbgType( TYPE typ, size_t size ) {
 //==========================================================
 
     if( typ == FT_CHAR ) {

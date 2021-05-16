@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -263,7 +263,7 @@ static  bool    HexConst(void) {
 // Check for a hexadecimal constant specifier.
 
     char        *hex_data;
-    uint        hex_len;
+    size_t      hex_len;
     sym_id      sym;
 
     hex_data = CITNode->opnd;
@@ -424,10 +424,10 @@ static char    Hex( char data )
 }
 
 
-uint MkHexConst( const char *src, char *dst, uint src_len )
-//=========================================================
+size_t MkHexConst( const char *src, char *dst, size_t src_len )
+//=============================================================
 {
-    uint        length;
+    size_t      length;
 
     length = 0;
     if( ( src_len % 2 ) != 0 ) {

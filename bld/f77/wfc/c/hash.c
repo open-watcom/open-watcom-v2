@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,16 +34,16 @@
 #include "fhash.h"
 
 
-unsigned int CalcHash( const char *p, unsigned len )
-//==================================================
+unsigned CalcHash( const char *p, size_t len )
+//============================================
 {
     unsigned long       h;
     unsigned long       g;
 
     h = 0;
     g = 0;
-    for( ; len != 0; --len, ++p ) {
-        h = ( h << 4 ) + *(unsigned char *)p;
+    while( len-- > 0 ) {
+        h = ( h << 4 ) + *(unsigned char *)p++;
         g = h & 0xf0000000L;
         if( g != 0 ) {
             h = h ^ ( g >> 24 );

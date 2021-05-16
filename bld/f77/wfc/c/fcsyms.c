@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -780,7 +780,7 @@ static  void    MergeCommonInfo( void ) {
 
     sym_id      sym;
     sym_id      g_sym;
-    uint        len;
+    size_t      len;
 
     for( sym = BList; sym != NULL; sym = sym->u.ns.link ) {
         for( g_sym = GList; ; g_sym = g_sym->u.ns.link ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,8 +41,8 @@ unsigned                HashValue;
 hash_entry              HashTable[HASH_PRIME];
 
 
-sym_id STSearch( const char *name, uint len, sym_id head )
-//========================================================
+sym_id STSearch( const char *name, size_t len, sym_id head )
+//==========================================================
 // Search symbol table for given name.
 {
     for(;;) {
@@ -59,8 +59,8 @@ sym_id STSearch( const char *name, uint len, sym_id head )
 }
 
 
-sym_id STNameSearch( const char *name, uint len )
-//===============================================
+sym_id STNameSearch( const char *name, size_t len )
+//=================================================
 // Search symbol table for given name.
 {
     sym_id      head;

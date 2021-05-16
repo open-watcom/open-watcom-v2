@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +44,7 @@
 #include "gtypes.h"
 
 
-static  void    GCnvTo( TYPE typ, uint size )
+static  void    GCnvTo( TYPE typ, size_t size )
 //===========================================
 // Convert operand.
 {
@@ -54,7 +55,7 @@ static  void    GCnvTo( TYPE typ, uint size )
 }
 
 
-void    GILCnvTo( TYPE typ, uint size )
+void    GILCnvTo( TYPE typ, size_t size )
 //=====================================
 // Convert operand to given type.
 {

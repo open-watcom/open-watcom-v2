@@ -57,7 +57,7 @@ typedef struct aux_info {
     aux_flags           flags;
     struct aux_info     *link;
     pass_by             *arg_info;
-    byte                sym_len;
+    size_t              sym_len;
     char                sym_name[1];
 } aux_info;
 

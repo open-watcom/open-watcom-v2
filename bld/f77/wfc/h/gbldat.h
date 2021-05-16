@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -77,8 +77,8 @@ gbl_defn char           TokenBuff[TOKLEN+1];
 gbl_defn char           SrcBuff[SRCLEN+1]; // input buffer for source lines
 gbl_defn char           *Cursor;        // pointer to current char in SrcBuff
 gbl_defn char           *TkCrsr;        // pointer to current char in TokenBuff
-gbl_defn lex            Lex;            // information kept by lexical analyser
-gbl_defn token_t        LexToken;       // information about token collected
+gbl_defn lex_info       Lex;            // information kept by lexical analyser
+gbl_defn lex_token      LexToken;       // information about token collected
 gbl_defn stnumbers      StNumbers;      // struct for statement number info
 gbl_defn token_state    State;          // state of token being collected
 gbl_defn byte           Line;           // continuation line number

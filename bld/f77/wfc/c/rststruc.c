@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,8 +42,8 @@
 #include "rststruc.h"
 
 
-static sym_id AddStruct( const char *name, uint length )
-//======================================================
+static sym_id AddStruct( const char *name, size_t length )
+//========================================================
 // Add a symbol table entry to the symbol table. Return a pointer to the
 // new symbol table entry.
 {
@@ -57,8 +57,8 @@ static sym_id AddStruct( const char *name, uint length )
 }
 
 
-sym_id FindStruct( const char *name, uint len )
-//=============================================
+sym_id FindStruct( const char *name, size_t len )
+//===============================================
 // Search symbol table for given name.
 {
     sym_id      head;
@@ -142,8 +142,8 @@ char    *STFieldName( sym_id sym, char *buff ) {
 }
 
 
-static sym_id *Strut( sym_id *p_field, const char *name, uint len )
-//=================================================================
+static sym_id *Strut( sym_id *p_field, const char *name, size_t len )
+//===================================================================
 {
     sym_id      map;
     sym_id      field;
@@ -176,8 +176,8 @@ static sym_id *Strut( sym_id *p_field, const char *name, uint len )
 }
 
 
-static sym_id AddField( const char *name, uint length )
-//=====================================================
+static sym_id AddField( const char *name, size_t length )
+//=======================================================
 // Add a symbol table entry to the symbol table. Return a pointer to the
 // new symbol table entry.
 {
@@ -207,7 +207,7 @@ sym_id STField( const char *name, uint len )
 }
 
 
-static sym_id LookupField( sym_id field, const char *name, uint len,
+static sym_id LookupField( sym_id field, const char *name, size_t len,
                              intstar4 *offset ) {
 //==============================================================
 

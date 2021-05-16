@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,7 +67,7 @@ char    *STGetName( sym_id sym, char *buff ) {
 }
 
 
-uint    AllocName( uint length ) {
+size_t  AllocName( size_t length ) {
 //================================
 
 // Determine how much space to allocate for the name of a symbol.
@@ -78,8 +78,8 @@ uint    AllocName( uint length ) {
 }
 
 
-sym_id STAdd( const char *name, int length )
-//==========================================
+sym_id STAdd( const char *name, size_t length )
+//=============================================
 // Add a symbol table entry to the symbol table. Return a pointer to the
 // new symbol table entry.
 {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +51,7 @@ extern void            SubAuxInit( void );
 extern void            SubAuxFini( void );
 extern void            AddDependencyInfo( source_t *fi );
 extern void            DefaultLibInfo( void );
-extern aux_info        *NewAuxEntry( const char *name, uint name_len );
+extern aux_info        *NewAuxEntry( const char *name, size_t name_len );
 extern void            DoPragma( const char *ptr );
 extern void            ProcPragma( const char *ptr );
 extern void            CopyAuxInfo( aux_info *dst, aux_info *src );

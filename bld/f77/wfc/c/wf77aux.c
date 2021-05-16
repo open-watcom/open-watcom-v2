@@ -81,7 +81,7 @@ static  const char      *TokStart;
 static  const char      *TokEnd;
 static  aux_info        *AliasInfo;
 static  char            SymName[MAX_SYMLEN];
-static  uint            SymLen;
+static  size_t          SymLen;
 
 #if _INTEL_CPU
 static  arr_info        *ArrayInfo;
@@ -544,8 +544,8 @@ void DefaultLibInfo( void )
 }
 
 
-aux_info *NewAuxEntry( const char *name, uint name_len )
-//======================================================
+aux_info *NewAuxEntry( const char *name, size_t name_len )
+//========================================================
 {
     aux_info    *aux;
 
@@ -968,8 +968,8 @@ enum sym_type AsmQueryType( void *handle )
 }
 
 
-static void InsertFixups( unsigned char *buff, byte_seq_len i )
-//=============================================================
+static void InsertFixups( unsigned char *buff, size_t len )
+//=========================================================
 {
                         // additional slop in buffer to simplify the code
     unsigned char       temp[MAXIMUM_BYTESEQ + 2];
@@ -1006,7 +1006,7 @@ static void InsertFixups( unsigned char *buff, byte_seq_len i )
         }
         dst = temp;
         src = buff;
-        end = src + i;
+        end = src + len;
         fix = FixupHead;
         owner = &FixupHead;
         // insert fixup escape sequences
@@ -1074,13 +1074,13 @@ static void InsertFixups( unsigned char *buff, byte_seq_len i )
             }
         }
         buff = temp;
-        i = dst - temp;
+        len = dst - temp;
         perform_fixups = true;
     }
-    seq = FMemAlloc( offsetof( byte_seq, data ) + i );
+    seq = FMemAlloc( offsetof( byte_seq, data ) + len );
     seq->relocs = perform_fixups;
-    seq->length = i;
-    memcpy( &seq->data, buff, i );
+    seq->length = len;
+    memcpy( &seq->data, buff, len );
     if( CurrAux->code != DefaultInfo.code ) {
         FMemFree( CurrAux->code );
     }
@@ -1097,8 +1097,8 @@ uint_32 AsmQuerySPOffsetOf( void *handle )
 }
 
 
-static void InsertFixups( unsigned char *buff, byte_seq_len len )
-//===============================================================
+static void InsertFixups( unsigned char *buff, size_t len )
+//=========================================================
 {
     byte_seq            *seq;
     asmreloc            *reloc;
@@ -1131,7 +1131,7 @@ static void InsertFixups( unsigned char *buff, byte_seq_len len )
 
 #if _CPU == 8086
 
-static void AddAFix( unsigned i, char *name, unsigned type, unsigned off )
+static void AddAFix( size_t i, char *name, unsigned type, unsigned off )
 //========================================================================
 {
     struct asmfixup     *fix;
@@ -1152,8 +1152,8 @@ static void AddAFix( unsigned i, char *name, unsigned type, unsigned off )
 static void GetByteSeq( void )
 //============================
 {
-    byte_seq_len    seq_len;
-    byte_seq_len    len;
+    size_t          seq_len;
+    size_t          len;
     const char      *ptr;
     byte            buff[MAXIMUM_BYTESEQ + 32]; // extra for assembler
 #if _CPU == 8086
@@ -1171,7 +1171,7 @@ static void GetByteSeq( void )
             if( *(TokEnd - 1) != '"' )
                 CSuicide();
             *(char *)(TokEnd - 1) = NULLCHAR;
-            AsmCodeAddress = seq_len;
+            AsmCodeAddress = (byte_seq_len)seq_len;
             AsmCodeLimit = MAXIMUM_BYTESEQ;
             AsmCodeBuffer = buff;
 #if _INTEL_CPU

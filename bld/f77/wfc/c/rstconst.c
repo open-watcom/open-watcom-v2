@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +41,7 @@
 
 hash_entry              ConstHashTable[HASH_PRIME];
 
-sym_id  STConst( void *ptr, TYPE typ, uint size ) {
+sym_id  STConst( void *ptr, TYPE typ, size_t size ) {
 //=================================================
 
 // Search the symbol table for a constant. If the constant is not in the

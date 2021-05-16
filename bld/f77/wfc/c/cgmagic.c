@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +50,7 @@ label_id        NextLabel( void ) {
 }
 
 
-sym_id  TmpVar( TYPE typ, uint size ) {
+sym_id  TmpVar( TYPE typ, size_t size ) {
 //====================================
 
 // Allocate a temporary symbol table entry that can be freed at the end
@@ -71,7 +72,7 @@ sym_id  TmpVar( TYPE typ, uint size ) {
 }
 
 
-sym_id  StaticAlloc( uint size, TYPE typ ) {
+sym_id  StaticAlloc( size_t size, TYPE typ ) {
 //=========================================
 
 // Allocate a static temporary symbol table entry.

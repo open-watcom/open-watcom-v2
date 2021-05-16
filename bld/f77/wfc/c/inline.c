@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -430,7 +430,7 @@ call_handle     InitInlineCall( int rtn_id ) {
 #if _CPU == 386 || _CPU == 8086
     sym_id              sym;
     inline_rtn          *in_entry;
-    uint                name_len;
+    size_t              name_len;
 
     if( !CreatedPragmas ) {
         InitInlinePragmas();

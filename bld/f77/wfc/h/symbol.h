@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -264,7 +265,7 @@ typedef struct named_symbol {
       unsigned_16       xsize;          // extra size information for common
     } u1;                               // blocks
     union {
-        byte            name_len;       // length of symbol name
+        size_t          name_len;       // length of symbol name
         byte            magic_flags;    // information about the magic symbol
     } u2;
     union {

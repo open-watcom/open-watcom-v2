@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,7 +62,7 @@ static  sym_id  LnkNewGlobal( sym_id local ) {
 // Allocate a global symbol and link it into the global list.
 
     sym_id      global;
-    uint        len;
+    size_t      len;
 
     len = sizeof( symbol ) + AllocName( local->u.ns.u2.name_len );
     global = FMemAlloc( len );
@@ -79,7 +80,7 @@ sym_id        SearchGList( sym_id local ) {
 
     sym_id      head;
     sym_id      tail;
-    uint        name_len;
+    size_t      name_len;
 
     name_len = local->u.ns.u2.name_len;
     HashValue = CalcHash( local->u.ns.name, name_len );

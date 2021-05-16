@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,7 +74,7 @@ TYPE    ImplType( char chr ) {
 }
 
 
-uint    ImplSize( char chr ) {
+uint      ImplSize( char chr ) {
 //============================
 
 // Determine the size of a storage unit a symbol starting with the
@@ -86,7 +86,7 @@ uint    ImplSize( char chr ) {
 }
 
 
-bool    SetImplType( char chr1, char chr2, TYPE typ, uint size ) {
+bool    SetImplType( char chr1, char chr2, TYPE typ, size_t size ) {
 //================================================================
 
 // Set the implicit type of the given range of characters to the
