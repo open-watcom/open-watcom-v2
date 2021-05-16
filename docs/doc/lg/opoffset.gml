@@ -29,7 +29,10 @@ The format of the "OFFSET" option (short form "OFF") is as follows.
 .esynote
 .np
 .sy n
-specifies the offset at which the output image will be located.
+specifies the offset (in bytes) at which the output image will be located.
+The &lnkname will round the value up to a multiple of 256 bytes if it is not
+already a multiple of 256.
+.np
 The following describes a use of the "OFFSET" option.
 .np
 .exam begin
