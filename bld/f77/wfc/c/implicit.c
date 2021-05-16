@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -151,11 +152,10 @@ static  bool    CheckSize( TYPE typ, intstar4 size, itnode *start )
 }
 
 
-bool    LenSpec( TYPE typ, uint *size_ptr ) {
-//==========================================
-
+bool    LenSpec( TYPE typ, size_t *size_ptr )
+//===========================================
 // Process a length specification.
-
+{
     itnode      *save_itptr;
     bool        len_spec;
     itnode      *temp;
@@ -201,7 +201,7 @@ bool    LenSpec( TYPE typ, uint *size_ptr ) {
             if( len_spec ) {
                 len_spec = CheckSize( typ, ivalue, save_itptr );
                 if( len_spec ) {
-                    *size_ptr = (uint)ivalue;
+                    *size_ptr = (size_t)ivalue;
                 }
             }
         }

@@ -231,7 +231,7 @@ static  void    TypeDecl( TYPE typ ) {
     itnode      *var_node;
     bool        len_spec;
     sym_id      sym;
-    uint        size;
+    size_t      size;
 
     size = SIZE_UNDEF;
     default_size = StorageSize( typ );
