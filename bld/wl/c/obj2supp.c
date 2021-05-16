@@ -1253,11 +1253,11 @@ static void MakeBase( fix_relo_data *fix )
 }
 
 #ifdef _OS2
-static unsigned ChkOS2IntEntry( group_entry *grp, segdata *seg,
-                                frame_spec *tthread, fix_relo_data *fix )
+static ordinal_t ChkOS2IntEntry( group_entry *grp, segdata *seg,
+                                target_spec *tthread, fix_relo_data *fix )
 /***********************************************************************/
 {
-    unsigned    int_ordinal = 0;    // 0 = no crazy stuff
+    ordinal_t   int_ordinal = 0;    // 0 = no crazy stuff
 
     // Fixups to an IOPL (Ring 2) code segment require special
     // handling in LX/LE executables. However, conforming IOPL
@@ -1268,7 +1268,7 @@ static unsigned ChkOS2IntEntry( group_entry *grp, segdata *seg,
 
             // The target has to be in the entry table, otherwise we can't
             // produce the required call gate fixup.
-            if( (tthread->type & FIX_FRAME_EXT) && (tthread->u.sym->info & SYM_EXPORTED) ) {
+            if( (tthread->type & FIX_TARGET_EXT) && (tthread->u.sym->info & SYM_EXPORTED) ) {
                 symbol          *sym = tthread->u.sym;
                 entry_export    *exp = sym->e.export;
 
