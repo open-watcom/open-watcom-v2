@@ -77,7 +77,7 @@ static void PageFileIOErr( int error )
 //====================================
 // Output i/o errors for page file.
 {
-    Error( error, PageFileName, strerror( errno ) ); 
+    Error( error, PageFileName, strerror( errno ) );
 }
 
 void    InitObj( void ) {
@@ -117,7 +117,7 @@ void    InitObj( void ) {
                 if( PageFile != NULL ) {
                     break;
                 }
-                InfoError( SM_OPENING_FILE, PageFileName, strerror( errno ) ); 
+                InfoError( SM_OPENING_FILE, PageFileName, strerror( errno ) );
             }
         }
         if( idx == 26 ) {

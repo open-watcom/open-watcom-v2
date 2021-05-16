@@ -47,7 +47,7 @@
 #include "fmtemit.h"
 
 
-void    GFEmEnd( void ) 
+void    GFEmEnd( void )
 //=====================
 {
     OutByte( END_FORMAT );
@@ -56,7 +56,7 @@ void    GFEmEnd( void )
 }
 
 
-void    GFEmCode( int int_code ) 
+void    GFEmCode( int int_code )
 //==============================
 {
     byte code = int_code;           // needed to match signature
@@ -72,21 +72,21 @@ void    GFEmCode( int int_code )
 }
 
 
-void    GFEmChar( char *ch ) 
+void    GFEmChar( char *ch )
 //==========================
 {
     OutByte( *ch );
 }
 
 
-void    GFEmNum( int num ) 
+void    GFEmNum( int num )
 //========================
 {
     OutInt( num );
 }
 
 
-void    GFEmByte( int num ) 
+void    GFEmByte( int num )
 //=========================
 {
     if( ( num < 0 ) || ( num > 255 ) ) {
