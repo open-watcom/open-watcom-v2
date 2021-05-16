@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -212,13 +212,13 @@ static  void    ExpOp( TYPE typ1, TYPE typ2, OPTR op ) {
 }
 
 
-void    ConstCat( uint size ) {
-//============================
-
+void    ConstCat( size_t size )
+//=============================
+{
     itnode      *last_node;
     byte        *dest;
-    uint        opn_size;
-    uint        size_left;
+    size_t      opn_size;
+    size_t      size_left;
     byte        *string;
     itnode      *link_node;
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +57,7 @@ void    CpParameter( void ) {
 //
 //     PARAMETER (P1=E1,...,Pn=En), n > 0
 
-    uint        parm_size;
+    size_t      parm_size;
     byte        *lit;
     byte        *string;
     uint        lit_len;

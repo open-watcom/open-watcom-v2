@@ -379,8 +379,8 @@ static bool cmp_ucased( const char *p1, const char *p2, uint len )
     return( true );
 }
 
-static void AddArrayInfo( const char *arr_name, uint arr_len )
-//============================================================
+static void AddArrayInfo( const char *arr_name, size_t arr_len )
+//==============================================================
 // Process aux information for an array.
 {
     arr_info    **arr;
@@ -433,8 +433,8 @@ void AddDependencyInfo( source_t *fi )
 }
 
 
-static void AddDefaultLib( const char *lib_ptr, int lib_len, char priority )
-//==========================================================================
+static void AddDefaultLib( const char *lib_ptr, size_t lib_len, char priority )
+//=============================================================================
 {
     default_lib         **lib;
     default_lib         *new_lib;
@@ -790,7 +790,7 @@ static void SymbolName( void )
 static void ObjectName( void )
 //============================
 {
-    int         obj_len;
+    size_t      obj_len;
     char        *name;
 
     if( *TokStart != '"' )
@@ -816,7 +816,7 @@ static void DupParmInfo( aux_info *dst, aux_info *src )
 {
     hw_reg_set  *new_reg_set;
     hw_reg_set  *reg_set;
-    int         size;
+    unsigned    size;
 
     reg_set = src->parms;
     size = 0;
@@ -834,7 +834,7 @@ static void DupCallBytes( aux_info *dst, aux_info *src )
 //======================================================
 {
     byte_seq        *new_seq;
-    byte_seq_len    seq_len;
+    size_t          seq_len;
 
     seq_len = src->code->length;
     new_seq = FMemAlloc( offsetof( byte_seq, data ) + seq_len );
@@ -1265,7 +1265,7 @@ static hw_reg_set *RegSets( void )
 {
     hw_reg_set  reg_sets[MAX_REG_SETS];
     hw_reg_set  *regs;
-    int         num_sets;
+    unsigned    num_sets;
 
     num_sets = 0;
     while( RecToken( "[" ) ) {

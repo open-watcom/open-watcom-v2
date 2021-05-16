@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,12 +38,11 @@
 #include "rstlit.h"
 
 
-sym_id  STLit( byte *string, uint len ) {
-//======================================
-
+sym_id  STLit( byte *string, size_t len )
+//=======================================
 // Search the symbol a literal. If the literal is not in the
 // symbol table, add it to the symbol table.
-
+{
     sym_id      sym;
 
     sym = LList;

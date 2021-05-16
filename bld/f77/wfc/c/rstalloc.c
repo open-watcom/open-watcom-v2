@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,7 +81,7 @@ act_dim_list    *STSubsList( act_dim_list *subs_ptr ) {
 
 // Allocate a dimension extension.
 
-    uint            size;
+    size_t          size;
     act_dim_list    *ste_ptr;
 
     size = sizeof( dim_list ) + ( 2 * sizeof( intstar4 ) ) * _DimCount( subs_ptr->dim_flags );

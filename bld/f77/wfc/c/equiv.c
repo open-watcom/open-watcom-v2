@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -85,7 +85,7 @@ void    CpEquivalence(void) {
     sym_id              sym;
     int                 num_equived;
     intstar4            *subscripts;
-    int                 eq_size;
+    size_t              eq_size;
     act_eq_entry        *new_eq;
     act_eq_entry        *eqv_entry;
     act_eq_entry        *eq_head;
@@ -186,8 +186,7 @@ void    CpEquivalence(void) {
                     equiv.substr = 0;
                 }
                 if( ( ( SgmtSw & SG_SYMTAB_RESOLVED ) == 0 ) && !ill_name ) {
-                    eq_size = sizeof( eq_entry ) +
-                              equiv.subs_no * sizeof( intstar4 );
+                    eq_size = sizeof( eq_entry ) + equiv.subs_no * sizeof( intstar4 );
                     if( equiv.substr != 0 ) {
                         eq_size += 2 * sizeof( intstar4 );
                     }
