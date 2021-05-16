@@ -262,7 +262,6 @@ typedef struct named_symbol {
         TYPE            typ;            // symbol type
         byte            xflags;         // extra symbol flags
       } s;
-      unsigned_16       xsize;          // extra size information for common
     } u1;                               // blocks
     union {
         size_t          name_len;       // length of symbol name
