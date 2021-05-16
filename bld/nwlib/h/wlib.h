@@ -78,4 +78,4 @@
 #define Round2var(x)    if((x) & 1) ++(x)
 
 #define FILE_TEMPLATE_MASK  "00000000"
-#define FILE_TEMPLATE_FMT   "8.8d"
+#define FILE_TEMPLATE_FMT   "%8.8d"
