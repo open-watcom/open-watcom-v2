@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,4 +29,4 @@
 ****************************************************************************/
 
 
-extern int     LexStrCmp( char PGM *ptr1, uint len1, char PGM *ptr2, uint len2 );
+extern int     LexStrCmp( char *ptr1, uint len1, char *ptr2, uint len2 );

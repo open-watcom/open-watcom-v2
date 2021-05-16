@@ -157,7 +157,6 @@ both += &
     japanese.obj &
     korean.obj &
     lexcmp.obj &
-    lexstcmp.obj &
     rtspawn.obj &
     sbcsutil.obj
 

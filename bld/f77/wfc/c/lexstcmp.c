@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,9 +33,9 @@
 #include "lexstcmp.h"
 
 
-static  int     ChkBlanks( char PGM *ptr, uint len ) {
-//====================================================
-
+static  int     ChkBlanks( char *ptr, uint len ) 
+//==============================================
+{
     for(;;) {
         --len;
         if( len == 0 ) break;
@@ -46,11 +46,10 @@ static  int     ChkBlanks( char PGM *ptr, uint len ) {
 }
 
 
-int     LexStrCmp( char PGM *ptr1, uint len1, char PGM *ptr2, uint len2 ) {
-//=========================================================================
-
+int     LexStrCmp( char *ptr1, uint len1, char *ptr2, uint len2 ) 
+//===============================================================
 // Compare two strings (compile-time entry point).
-
+{
     int         result;
 
     for(;;) {

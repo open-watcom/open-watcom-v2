@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,13 +31,56 @@
 
 #include "ftnstd.h"
 #include "rtenv.h"
-#include "lexstcmp.h"
 
 
-int     LexCmp( string PGM *str1, string PGM *str2 ) {
-//====================================================
+static  int     ChkBlanks( char PGM *ptr, uint len ) 
+//==================================================
+{
+    for(;;) {
+        --len;
+        if( len == 0 ) break;
+        if( *ptr != ' ' ) break;
+        ++ptr;
+    }
+    return( *ptr - ' ' );
+}
 
+
+static int  LexStrCmp( char PGM *ptr1, uint len1, char PGM *ptr2, uint len2 ) 
+//===========================================================================
+// Compare two strings (compile-time entry point).
+{
+    int         result;
+
+    for(;;) {
+        if( *ptr1 != *ptr2 ) break;
+        ++ptr1;
+        ++ptr2;
+        --len1;
+        --len2;
+        if( len1 == 0 ) break;
+        if( len2 == 0 ) break;
+    }
+    if( len1 == 0 ) {
+        if( len2 == 0 ) return( 0 );
+        result = -ChkBlanks( ptr2, len2 );
+    } else if( len2 == 0 ) {
+        result = ChkBlanks( ptr1, len1 );
+    } else {
+        result = *ptr1;
+        result -= *ptr2;
+    }
+    if( result < 0 ) {
+        result = -1;
+    } else if( result > 0 ) {
+        result = 1;
+    }
+    return( result );
+}
+
+int     LexCmp( string PGM *str1, string PGM *str2 ) 
+//==================================================
 // Compare two strings (run-time entry point).
-
+{
     return( LexStrCmp( str1->strptr, str1->len, str2->strptr, str2->len ) );
 }
