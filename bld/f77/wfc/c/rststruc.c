@@ -77,8 +77,8 @@ sym_id FindStruct( const char *name, size_t len )
 }
 
 
-sym_id STStruct( const char *name, uint length )
-//==============================================
+sym_id STStruct( const char *name, size_t length )
+//================================================
 // Lookup the specified structure name in the symbol table.
 {
     sym_id      sym;
@@ -190,8 +190,8 @@ static sym_id AddField( const char *name, size_t length )
 }
 
 
-sym_id STField( const char *name, uint len )
-//==========================================
+sym_id STField( const char *name, size_t len )
+//============================================
 // Allocate a field name.
 {
     sym_id      *p_field;
@@ -253,8 +253,8 @@ static sym_id LookupField( sym_id field, const char *name, size_t len,
 }
 
 
-sym_id FieldLookup( sym_id prev, const char *name, uint len, intstar4 *offset )
-//=============================================================================
+sym_id FieldLookup( sym_id prev, const char *name, size_t len, intstar4 *offset )
+//===============================================================================
 // Search for a field name.
 {
     *offset = 0;

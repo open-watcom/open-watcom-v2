@@ -75,8 +75,8 @@ sym_id  FindNameList( const char *name, size_t len )
 }
 
 
-sym_id  STNameList( const char *name, uint length )
-//=================================================
+sym_id  STNameList( const char *name, size_t length )
+//===================================================
 // Lookup the specified name list name in the symbol table.
 {
     sym_id      sym;

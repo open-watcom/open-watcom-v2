@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,5 +30,5 @@
 ****************************************************************************/
 
 
-extern sym_id       STSearch( const char *name, uint len, sym_id head );
-extern sym_id       STNameSearch( const char *name, uint len );
+extern sym_id       STSearch( const char *name, size_t len, sym_id head );
+extern sym_id       STNameSearch( const char *name, size_t len );

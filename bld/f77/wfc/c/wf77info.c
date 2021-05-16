@@ -1499,7 +1499,7 @@ static  dbg_type        GetDbgType( sym_id sym ) {
         return( sym->u.ns.xt.record->dbi );
     } else if( (sym->u.ns.u1.s.typ == FT_CHAR) ) {
         char    new_name[32];
-        sprintf( new_name, "%s*%u", DBGNames[ PT_CHAR ], sym->u.ns.xt.size );
+        sprintf( new_name, "%s*%lu", DBGNames[ PT_CHAR ], (unsigned long)sym->u.ns.xt.size );
         return( DBCharBlockNamed( new_name, sym->u.ns.xt.size ) );
     } else {
         return( BaseDbgType( sym->u.ns.u1.s.typ, sym->u.ns.xt.size ) );

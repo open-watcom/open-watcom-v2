@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,46 +36,45 @@
 //
 
 #include "ftnstd.h"
+#include <stdio.h>
 #include <string.h>
-#include "wio.h"
-#include "fcgbls.h"
 #include "cgflags.h"
-#include "blips.h"
 #include "fcgmain.h"
+#include "blips.h"
 
 
-void    SendBlip(void) {
-//==================
-
+void    SendBlip( void )
+//======================
 // Send a blip to console.
-
+{
     char        ch;
 
     ch = '.';
-    write( STDOUT_FILENO, &ch, 1 );
+    fwrite( &ch, 1, 1, stdout );
+    fflush( stdout );
     CGFlags |= CG_BLIPS;
 }
 
 
-void    CheckBlips(void) {
-//====================
-
+void    CheckBlips( void )
+//========================
 // If "blips" have been displayed, display a CR.
-
+{
     char        ch;
 
     if( CGFlags & CG_BLIPS ) {
         ch = '\r';
-        write( STDOUT_FILENO, &ch, 1 );
+        fwrite( &ch, 1, 1, stdout );
+        fflush( stdout );
         CGFlags &= ~CG_BLIPS;
     }
 }
 
 
-void    SendStd( char *msg ) {
-//============================
-
+void    SendStd( const char *msg )
+//================================
 // Send message to standard output.
-
-    write( STDOUT_FILENO, msg, strlen( msg ) );
+{
+    fwrite( msg, 1, strlen( msg ), stdout );
+    fflush( stdout );
 }
