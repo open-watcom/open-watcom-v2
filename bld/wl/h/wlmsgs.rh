@@ -203,8 +203,9 @@
 #define    MSG_STACK_SMALL                      172 + MSG_BASE
 #define    MSG_DEFDATA_TOO_BIG                  173 + MSG_BASE
 #define    MSG_IOPL_BYTES_ODD                   174 + MSG_BASE
-#define    MSG_TRACE_SYM_NOT_FOUND              175 + MSG_BASE
-#define    MSG_MAX_ERR_MSG_NUM                  175 + MSG_BASE
+#define    MSG_FIXUP_MISSING_THREAD             175 + MSG_BASE
+#define    MSG_TRACE_SYM_NOT_FOUND              176 + MSG_BASE
+#define    MSG_MAX_ERR_MSG_NUM                  176 + MSG_BASE
 
 #define    MSG_FILE_REC_NAME_0                  227 + MSG_BASE
 #define    MSG_FILE_REC_NAME_1                  228 + MSG_BASE
