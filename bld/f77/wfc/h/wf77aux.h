@@ -30,20 +30,36 @@
 ****************************************************************************/
 
 
-extern  aux_info        DefaultInfo;
-extern  aux_info        IFVarInfo;
-extern  aux_info        IFCharInfo;
-extern  aux_info        IFChar2Info;
-extern  aux_info        IFXInfo;
-extern  aux_info        IFInfo;
-extern  aux_info        FortranInfo;
-extern  aux_info        ProgramInfo;
-extern  aux_info        *AuxInfo;
+#include <time.h>
 
-extern  aux_info        RtRtnInfo;
-extern  aux_info        RtVarInfo;
-extern  aux_info        RtStopInfo;
-extern  aux_info        CoRtnInfo;
+
+#if _CPU == 386
+#define ARG_NEAR            ARG_SIZE_4
+#define ARG_FAR             ARG_SIZE_8
+#else
+#define ARG_NEAR            ARG_SIZE_2
+#define ARG_FAR             ARG_SIZE_4
+#endif
+
+typedef struct default_lib {
+    struct default_lib  *link;
+    char                lib[2]; // 1 for priority and 1 for NULLCHAR
+} default_lib;
+
+typedef struct arr_info {
+    struct arr_info     *link;
+    size_t              len;
+    char                arr[1];
+} arr_info;
+
+typedef struct dep_info {
+    struct dep_info     *link;
+    time_t              time_stamp;
+    char                fn[1];
+} dep_info;
+
+extern  default_lib     *DefaultLibs;
+extern  dep_info        *DependencyInfo;
 
 extern void            InitAuxInfo( void );
 extern void            FiniAuxInfo( void );
@@ -51,7 +67,6 @@ extern void            SubAuxInit( void );
 extern void            SubAuxFini( void );
 extern void            AddDependencyInfo( source_t *fi );
 extern void            DefaultLibInfo( void );
-extern aux_info        *NewAuxEntry( const char *name, size_t name_len );
 extern void            DoPragma( const char *ptr );
 extern void            ProcPragma( const char *ptr );
-extern void            CopyAuxInfo( aux_info *dst, aux_info *src );
+
