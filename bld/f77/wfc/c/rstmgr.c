@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -270,8 +270,8 @@ void    HashInsert( hash_entry *hash_table, unsigned hash_value,
 }
 
 
-sym_id STName( const char *name, uint length )
-//============================================
+sym_id STName( const char *name, size_t length )
+//==============================================
 // Lookup the specified name in the symbol table.
 {
     sym_id    sym;
@@ -293,8 +293,8 @@ sym_id STName( const char *name, uint length )
 }
 
 
-sym_id STCommon( const char *name, uint length )
-//==============================================
+sym_id STCommon( const char *name, size_t length )
+//================================================
 // Lookup the specified name in the common list.
 {
     sym_id      sym_ptr;

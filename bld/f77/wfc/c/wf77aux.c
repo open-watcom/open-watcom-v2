@@ -334,10 +334,9 @@ void FiniAuxInfo( void )
 
 void SubAuxInit( void )
 //=====================
+// Initialize aux information for a subprogram.
 {
 #if _INTEL_CPU
-// Initialize aux information for a subprogram.
-
     ArrayInfo = NULL;
 #endif
 }
@@ -345,10 +344,9 @@ void SubAuxInit( void )
 
 void SubAuxFini( void )
 //=====================
+// Finalize aux information for a subprogram.
 {
 #if _INTEL_CPU
-// Finalize aux information for a subprogram.
-
     arr_info    *next;
     sym_id      arr;
 
@@ -368,6 +366,7 @@ void SubAuxFini( void )
 
 #if _INTEL_CPU
 static bool cmp_ucased( const char *p1, const char *p2, uint len )
+//================================================================
 {
     uint    i;
 
