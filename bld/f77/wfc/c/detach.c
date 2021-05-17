@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -119,7 +119,7 @@ void    DetSubList(void) {
     int         dim_no;
     int         dim_cnt;
     itnode      *save_cit;
-    uint        ch_size;
+    size_t      ch_size;
 
     if( CITNode->opn.us & USOPN_FLD ) {
         dim_cnt = _DimCount( CITNode->sym_ptr->u.fd.dim_ext->dim_flags );

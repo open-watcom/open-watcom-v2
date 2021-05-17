@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,9 +40,9 @@
 #include "convert.h"
 
 
-static  void    CnI2I( itnode *it, uint size ) {
+static  void    CnI2I( itnode *it, size_t size )
 //==============================================
-
+{
     if( it->size == size )
         return;
     if( it->size == sizeof( intstar1 ) ) {
@@ -79,7 +79,7 @@ static  void    CnI2I( itnode *it, uint size ) {
 }
 
 
-static  void    CnR2I( itnode *it, uint dummy ) {
+static  void    CnR2I( itnode *it, size_t dummy ) {
 //===================================
 
     /* unused parameters */ (void)dummy;
@@ -88,7 +88,7 @@ static  void    CnR2I( itnode *it, uint dummy ) {
 }
 
 
-static  void    CnD2I( itnode *it, uint dummy ) {
+static  void    CnD2I( itnode *it, size_t dummy ) {
 //===================================
 
     /* unused parameters */ (void)dummy;
@@ -97,7 +97,7 @@ static  void    CnD2I( itnode *it, uint dummy ) {
 }
 
 
-static  void    CnE2I( itnode *it, uint dummy ) {
+static  void    CnE2I( itnode *it, size_t dummy ) {
 //===================================
 
     /* unused parameters */ (void)dummy;
@@ -106,7 +106,7 @@ static  void    CnE2I( itnode *it, uint dummy ) {
 }
 
 
-static  void    CnI2R( itnode *it, uint dummy ) {
+static  void    CnI2R( itnode *it, size_t dummy ) {
 //===================================
 
     /* unused parameters */ (void)dummy;
@@ -115,7 +115,7 @@ static  void    CnI2R( itnode *it, uint dummy ) {
 }
 
 
-static  void    CnD2R( itnode *it, uint dummy ) {
+static  void    CnD2R( itnode *it, size_t dummy ) {
 //===================================
 
     /* unused parameters */ (void)dummy;
@@ -124,7 +124,7 @@ static  void    CnD2R( itnode *it, uint dummy ) {
 }
 
 
-static  void    CnE2R( itnode *it, uint dummy ) {
+static  void    CnE2R( itnode *it, size_t dummy ) {
 //===================================
 
     /* unused parameters */ (void)dummy;
@@ -133,7 +133,7 @@ static  void    CnE2R( itnode *it, uint dummy ) {
 }
 
 
-static  void    CnI2D( itnode *it, uint dummy ) {
+static  void    CnI2D( itnode *it, size_t dummy ) {
 //===================================
 
     /* unused parameters */ (void)dummy;
@@ -142,7 +142,7 @@ static  void    CnI2D( itnode *it, uint dummy ) {
 }
 
 
-static  void    CnR2D( itnode *it, uint dummy ) {
+static  void    CnR2D( itnode *it, size_t dummy ) {
 //===================================
 
     /* unused parameters */ (void)dummy;
@@ -151,7 +151,7 @@ static  void    CnR2D( itnode *it, uint dummy ) {
 }
 
 
-static  void    CnE2D( itnode *it, uint dummy ) {
+static  void    CnE2D( itnode *it, size_t dummy ) {
 //===================================
 
     /* unused parameters */ (void)dummy;
@@ -160,7 +160,7 @@ static  void    CnE2D( itnode *it, uint dummy ) {
 }
 
 
-static  void    CnI2E( itnode *it, uint dummy ) {
+static  void    CnI2E( itnode *it, size_t dummy ) {
 //===================================
 
     /* unused parameters */ (void)dummy;
@@ -169,7 +169,7 @@ static  void    CnI2E( itnode *it, uint dummy ) {
 }
 
 
-static  void    CnR2E( itnode *it, uint dummy ) {
+static  void    CnR2E( itnode *it, size_t dummy ) {
 //===================================
 
     /* unused parameters */ (void)dummy;
@@ -178,7 +178,7 @@ static  void    CnR2E( itnode *it, uint dummy ) {
 }
 
 
-static  void    CnD2E( itnode *it, uint dummy ) {
+static  void    CnD2E( itnode *it, size_t dummy ) {
 //===================================
 
     /* unused parameters */ (void)dummy;
@@ -187,7 +187,7 @@ static  void    CnD2E( itnode *it, uint dummy ) {
 }
 
 
-static  void    CnI2C( itnode *it, uint dummy ) {
+static  void    CnI2C( itnode *it, size_t dummy ) {
 //===================================
 
     /* unused parameters */ (void)dummy;
@@ -197,7 +197,7 @@ static  void    CnI2C( itnode *it, uint dummy ) {
 }
 
 
-static  void    CnR2C( itnode *it, uint dummy ) {
+static  void    CnR2C( itnode *it, size_t dummy ) {
 //===================================
 
     /* unused parameters */ (void)dummy;
@@ -206,7 +206,7 @@ static  void    CnR2C( itnode *it, uint dummy ) {
 }
 
 
-static  void    CnD2C( itnode *it, uint dummy ) {
+static  void    CnD2C( itnode *it, size_t dummy ) {
 //===================================
 
     /* unused parameters */ (void)dummy;
@@ -216,7 +216,7 @@ static  void    CnD2C( itnode *it, uint dummy ) {
 }
 
 
-static  void    CnE2C( itnode *it, uint dummy ) {
+static  void    CnE2C( itnode *it, size_t dummy ) {
 //===================================
 
     /* unused parameters */ (void)dummy;
@@ -226,7 +226,7 @@ static  void    CnE2C( itnode *it, uint dummy ) {
 }
 
 
-static  void    CnQ2C( itnode *it, uint dummy ) {
+static  void    CnQ2C( itnode *it, size_t dummy ) {
 //===================================
 
     /* unused parameters */ (void)dummy;
@@ -236,7 +236,7 @@ static  void    CnQ2C( itnode *it, uint dummy ) {
 }
 
 
-static  void    CnX2C( itnode *it, uint dummy ) {
+static  void    CnX2C( itnode *it, size_t dummy ) {
 //===================================
 
     /* unused parameters */ (void)dummy;
@@ -246,7 +246,7 @@ static  void    CnX2C( itnode *it, uint dummy ) {
 }
 
 
-static  void    CnI2Q( itnode *it, uint dummy ) {
+static  void    CnI2Q( itnode *it, size_t dummy ) {
 //===================================
 
     /* unused parameters */ (void)dummy;
@@ -256,7 +256,7 @@ static  void    CnI2Q( itnode *it, uint dummy ) {
 }
 
 
-static  void    CnR2Q( itnode *it, uint dummy ) {
+static  void    CnR2Q( itnode *it, size_t dummy ) {
 //===================================
 
     /* unused parameters */ (void)dummy;
@@ -266,7 +266,7 @@ static  void    CnR2Q( itnode *it, uint dummy ) {
 }
 
 
-static  void    CnD2Q( itnode *it, uint dummy ) {
+static  void    CnD2Q( itnode *it, size_t dummy ) {
 //===================================
 
     /* unused parameters */ (void)dummy;
@@ -275,7 +275,7 @@ static  void    CnD2Q( itnode *it, uint dummy ) {
 }
 
 
-static  void    CnE2Q( itnode *it, uint dummy ) {
+static  void    CnE2Q( itnode *it, size_t dummy ) {
 //===================================
 
     /* unused parameters */ (void)dummy;
@@ -285,7 +285,7 @@ static  void    CnE2Q( itnode *it, uint dummy ) {
 }
 
 
-static  void    CnC2Q( itnode *it, uint dummy ) {
+static  void    CnC2Q( itnode *it, size_t dummy ) {
 //====================================
 
     /* unused parameters */ (void)dummy;
@@ -295,7 +295,7 @@ static  void    CnC2Q( itnode *it, uint dummy ) {
 }
 
 
-static  void    CnX2Q( itnode *it, uint dummy ) {
+static  void    CnX2Q( itnode *it, size_t dummy ) {
 //====================================
 
     /* unused parameters */ (void)dummy;
@@ -305,7 +305,7 @@ static  void    CnX2Q( itnode *it, uint dummy ) {
 }
 
 
-static  void    CnI2X( itnode *it, uint dummy ) {
+static  void    CnI2X( itnode *it, size_t dummy ) {
 //====================================
 
     /* unused parameters */ (void)dummy;
@@ -315,7 +315,7 @@ static  void    CnI2X( itnode *it, uint dummy ) {
 }
 
 
-static  void    CnR2X( itnode *it, uint dummy ) {
+static  void    CnR2X( itnode *it, size_t dummy ) {
 //====================================
 
     /* unused parameters */ (void)dummy;
@@ -325,7 +325,7 @@ static  void    CnR2X( itnode *it, uint dummy ) {
 }
 
 
-static  void    CnD2X( itnode *it, uint dummy ) {
+static  void    CnD2X( itnode *it, size_t dummy ) {
 //====================================
 
     /* unused parameters */ (void)dummy;
@@ -335,7 +335,7 @@ static  void    CnD2X( itnode *it, uint dummy ) {
 }
 
 
-static  void    CnE2X( itnode *it, uint dummy ) {
+static  void    CnE2X( itnode *it, size_t dummy ) {
 //====================================
 
     /* unused parameters */ (void)dummy;
@@ -345,7 +345,7 @@ static  void    CnE2X( itnode *it, uint dummy ) {
 }
 
 
-static  void    CnC2X( itnode *it, uint dummy ) {
+static  void    CnC2X( itnode *it, size_t dummy ) {
 //====================================
 
     /* unused parameters */ (void)dummy;
@@ -355,7 +355,7 @@ static  void    CnC2X( itnode *it, uint dummy ) {
 }
 
 
-static  void    CnQ2X( itnode *it, uint dummy ) {
+static  void    CnQ2X( itnode *it, size_t dummy ) {
 //====================================
 
     /* unused parameters */ (void)dummy;
@@ -365,10 +365,10 @@ static  void    CnQ2X( itnode *it, uint dummy ) {
 }
 
 
-static  void    NullRtn( itnode *dummy, uint dumy ) {
+static  void    NullRtn( itnode *dummy1, size_t dummy2 ) {
 //===============================
 
-    /* unused parameters */ (void)dummy; (void)dumy;
+    /* unused parameters */ (void)dummy1; (void)dummy2;
 }
 
 //
@@ -392,7 +392,7 @@ static  void    NullRtn( itnode *dummy, uint dumy ) {
 // 9. Converting DCMPLX  to DOUBLE   <===> EXTENDED to DOUBLE
 // 10 Converting XCMPLX  to EXTENDED <===> EXTENDED to EXTENDED <===> NOP
 
-static  void    (* const CnvToTab[])( itnode *, uint ) = {                        //from/
+static  void    (* const CnvToTab[])( itnode *, size_t ) = {                      //from/
                                                                                   //   /
 // int  int_2   int_1   real     double    extended  complex   dcomplex  xcomplex // / to
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -409,11 +409,10 @@ static  void    (* const CnvToTab[])( itnode *, uint ) = {                      
 };
 
 
-void    CnvTo( itnode *itptr, TYPE typ, uint size ) {
-//=================================================
-
+void    CnvTo( itnode *itptr, TYPE typ, size_t size )
+//===================================================
 // Convert itnode to desired numeric type.
-
+{
     CnvToTab[ ( ( typ - FT_INTEGER_1 ) * CONV_TAB_COLS )
            + ( itptr->typ - FT_INTEGER_1 ) ]( itptr, size );
     itptr->typ = typ;
