@@ -60,7 +60,7 @@ void    CpParameter( void ) {
     size_t      parm_size;
     byte        *lit;
     byte        *string;
-    uint        lit_len;
+    size_t      lit_len;
     sym_id      sym;
     sym_id      value_id;
     TYPE        typ;

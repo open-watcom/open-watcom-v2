@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +40,6 @@
 #include "rtconst.h"
 #include "wf77cg.h"
 #include "wf77defs.h"
-#include "wf77auxd.h"
 #include "fcjmptab.h"
 #include "fcrtns.h"
 #include "emitobj.h"

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +39,6 @@
 #include "global.h"
 #include "rtconst.h"
 #include "wf77defs.h"
-#include "wf77auxd.h"
 #include "cg.h"
 #include "cpopt.h"
 #include "emitobj.h"
@@ -59,7 +59,7 @@ static  void    DbSubscript( sym_id arr );
 static  void    VariableDims( sym_id arr );
 static  void    ConstDims( sym_id arr );
 static  void    Index( sym_id arr, cg_name offset );
-    
+
 cg_name GetAdv( sym_id arr )
 //==========================
 {

@@ -207,10 +207,9 @@ sym_id STField( const char *name, size_t len )
 }
 
 
-static sym_id LookupField( sym_id field, const char *name, size_t len,
-                             intstar4 *offset ) {
-//==============================================================
-
+static sym_id LookupField( sym_id field, const char *name, size_t len, intstar4 *offset )
+//=======================================================================================
+{
     sym_id      map;
     sym_id      u_field;
     intstar4    size;

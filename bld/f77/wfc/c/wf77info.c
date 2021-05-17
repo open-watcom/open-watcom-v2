@@ -1866,7 +1866,7 @@ dbg_type        FEDbgType( cg_sym_handle _sym ) {
 char    *GetFullSrcName( void ) {
 //===============================
 
-    int         idx;
+    size_t      idx;
 
     idx = MakeName( SrcName, SrcExtn, TokenBuff ) + sizeof( char );
     if( _fullpath( &TokenBuff[idx], TokenBuff, TOKLEN-idx ) != NULL ) {

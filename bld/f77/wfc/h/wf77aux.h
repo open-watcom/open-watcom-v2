@@ -58,15 +58,14 @@ typedef struct dep_info {
     char                fn[1];
 } dep_info;
 
-extern  default_lib     *DefaultLibs;
-extern  dep_info        *DependencyInfo;
+extern default_lib      *DefaultLibs;
+extern dep_info         *DependencyInfo;
 
-extern void            InitAuxInfo( void );
-extern void            FiniAuxInfo( void );
-extern void            SubAuxInit( void );
-extern void            SubAuxFini( void );
-extern void            AddDependencyInfo( source_t *fi );
-extern void            DefaultLibInfo( void );
-extern void            DoPragma( const char *ptr );
-extern void            ProcPragma( const char *ptr );
-
+extern void             InitAuxInfo( void );
+extern void             FiniAuxInfo( void );
+extern void             SubAuxInit( void );
+extern void             SubAuxFini( void );
+extern void             AddDependencyInfo( source_t *fi );
+extern void             DefaultLibInfo( void );
+extern void             DoPragma( const char *ptr );
+extern void             ProcPragma( const char *ptr );
