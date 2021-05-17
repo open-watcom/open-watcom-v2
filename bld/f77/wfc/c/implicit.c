@@ -56,11 +56,10 @@
 #include "fmtcnvt.h"
 
 
-static  bool    ReqChar( void ) {
-//=========================
-
+static  bool    ReqChar( void ) 
+//=============================
 // Recognize one character operand.
-
+{
     if( RecName() && (CITNode->opnd_size == 1) && !CharSetInfo.is_foreign( *CITNode->opnd ) )
         return( true );
     Error( IM_ILLEGAL_RANGE );
@@ -201,7 +200,7 @@ bool    LenSpec( TYPE typ, size_t *size_ptr )
             if( len_spec ) {
                 len_spec = CheckSize( typ, ivalue, save_itptr );
                 if( len_spec ) {
-                    *size_ptr = (size_t)ivalue;
+                    *size_ptr = (size_t)(unsigned_32)ivalue;
                 }
             }
         }
@@ -245,7 +244,7 @@ void    CpImplicit( void ) {
     byte        chr2;
     TYPE        typ;
     bool        valid_range;
-    uint        size;
+    size_t      size;
 
     if( (CITNode->opnd_size == 4) && (memcmp( CITNode->opnd, "NONE", 4 ) == 0) ) {
         AdvanceITPtr();

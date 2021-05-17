@@ -33,7 +33,7 @@
 #include "itdefn.h"
 
 
-#define SIZE_UNDEF  ((uint)-1)
+#define SIZE_UNDEF  ((size_t)-1)
 
 extern uint         TypeSize( TYPE typ );
 extern uint         StorageSize( TYPE typ );

@@ -160,12 +160,11 @@ sym_id  FieldDecl( void ) {
 }
 
 
-TYPE    MapTypes( TYPE typ, size_t size ) {
-//======================================
-
+TYPE    MapTypes( TYPE typ, size_t size )
+//=======================================
 // Given a type and size, return an equivalent type.
 // For example REAL*8 is equivalent to DOUBLE PRECISION.
-
+{
     if( typ == FT_REAL ) {
         switch( size ) {
         case( sizeof( double ) ):
@@ -227,7 +226,7 @@ static  void    TypeDecl( TYPE typ ) {
 
 // Process a type declaration statement.
 
-    uint        default_size;
+    size_t      default_size;
     itnode      *var_node;
     bool        len_spec;
     sym_id      sym;
