@@ -30,7 +30,4 @@
 ****************************************************************************/
 
 
-extern call_handle  InitCall( RTCODE rtn_id );
-extern void         InitRtRtns( void );
-extern void         FreeRtRtns( void );
-
+extern aux_info     *RTAuxInfo( sym_id rtn );

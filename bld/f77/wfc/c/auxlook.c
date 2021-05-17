@@ -45,6 +45,7 @@
 #include "rtconst.h"
 #include "auxlook.h"
 #include "fcrtns.h"
+#include "rtauxinf.h"
 
 #include "clibext.h"
 

@@ -54,6 +54,7 @@
 #include "cgswitch.h"
 #include "cgprotos.h"
 #include "fcgmain.h"
+#include "rtauxinf.h"
 
 
 typedef struct rt_rtn {
