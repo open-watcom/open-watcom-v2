@@ -68,7 +68,7 @@ typedef struct default_lib {
 
 typedef struct arr_info {
     struct arr_info     *link;
-    uint                len;
+    size_t              len;
     char                arr[1];
 } arr_info;
 

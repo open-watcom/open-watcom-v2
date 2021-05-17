@@ -29,12 +29,13 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
 #include "lexstcmp.h"
 
 
-static  int     ChkBlanks( char *ptr, uint len ) 
-//==============================================
+static  int     ChkBlanks( char *ptr, size_t len )
+//================================================
 {
     for(;;) {
         --len;
@@ -46,8 +47,8 @@ static  int     ChkBlanks( char *ptr, uint len )
 }
 
 
-int     LexStrCmp( char *ptr1, uint len1, char *ptr2, uint len2 ) 
-//===============================================================
+int     LexStrCmp( char *ptr1, size_t len1, char *ptr2, size_t len2 )
+//===================================================================
 // Compare two strings (compile-time entry point).
 {
     int         result;

@@ -29,4 +29,4 @@
 ****************************************************************************/
 
 
-extern int     LexStrCmp( char *ptr1, uint len1, char *ptr2, uint len2 );
+extern int     LexStrCmp( char *ptr1, size_t len1, char *ptr2, size_t len2 );

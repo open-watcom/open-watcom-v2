@@ -365,10 +365,10 @@ void SubAuxFini( void )
 }
 
 #if _INTEL_CPU
-static bool cmp_ucased( const char *p1, const char *p2, uint len )
-//================================================================
+static bool cmp_ucased( const char *p1, const char *p2, size_t len )
+//==================================================================
 {
-    uint    i;
+    size_t  i;
 
     for( i = 0; i < len; i++ ) {
         if( *p1++ != toupper( *p2++ ) ) {
@@ -384,7 +384,7 @@ static void AddArrayInfo( const char *arr_name, size_t arr_len )
 {
     arr_info    **arr;
     arr_info    *new_arr;
-    uint        i;
+    size_t      i;
 
     for( arr = &ArrayInfo; *arr != NULL; arr = &(*arr)->link ) {
         if( (*arr)->len != arr_len )
@@ -1556,7 +1556,7 @@ static void     Pragma( void )
 {
 #if _INTEL_CPU
     const char  *arr;
-    uint        arr_len;
+    size_t      arr_len;
 #endif
 
     struct {
