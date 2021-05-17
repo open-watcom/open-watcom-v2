@@ -55,8 +55,8 @@ typedef struct aux_info {
     char                *objname;
     unsigned            use;
     aux_flags           flags;
-    struct aux_info     *link;
     pass_by             *arg_info;
+    struct aux_info     *link;
     size_t              sym_len;
     char                sym_name[1];
 } aux_info;

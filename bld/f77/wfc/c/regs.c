@@ -88,9 +88,7 @@ aux_info                RtRtnInfo = {
         "RT@*",
         0,
         0,
-        NULL,
-        NULL,
-        0
+        NULL
 };
 
 aux_info                RtStopInfo = {
@@ -103,9 +101,7 @@ aux_info                RtStopInfo = {
         "RT@*",
         0,
         0,
-        NULL,
-        NULL,
-        0
+        NULL
 };
 
 aux_info                RtVarInfo = {
@@ -118,9 +114,7 @@ aux_info                RtVarInfo = {
         "RT@*",
         0,
         0,
-        NULL,
-        NULL,
-        0
+        NULL
 };
 
 aux_info                CoRtnInfo = {
@@ -133,9 +127,7 @@ aux_info                CoRtnInfo = {
         "RT@*",
         0,
         0,
-        NULL,
-        NULL,
-        0
+        NULL
 };
 
 aux_info               IFXInfo = {
@@ -148,9 +140,7 @@ aux_info               IFXInfo = {
         IF_Xnames,
         0,
         0,
-        NULL,
-        NULL,
-        0
+        NULL
 };
 
 aux_info                IFInfo = {
@@ -163,9 +153,7 @@ aux_info                IFInfo = {
         IF_names,
         0,
         0,
-        NULL,
-        &IFArgValue,
-        0
+        &IFArgValue
 };
 
 aux_info                IFCharInfo = {
@@ -178,9 +166,7 @@ aux_info                IFCharInfo = {
         IF_names,
         0,
         0,
-        NULL,
-        &IFArgDescriptor,
-        0
+        &IFArgDescriptor
 };
 
 aux_info                IFChar2Info = {
@@ -193,9 +179,7 @@ aux_info                IFChar2Info = {
         IF_Xnames,
         0,
         0,
-        NULL,
-        NULL,
-        0
+        NULL
 };
 
 aux_info                IFVarInfo = {
@@ -208,9 +192,7 @@ aux_info                IFVarInfo = {
         IF_Xnames,
         0,
         0,
-        NULL,
-        &IFArgValue,
-        0
+        &IFArgValue
 };
 
 aux_info                DefaultInfo = {
@@ -223,9 +205,7 @@ aux_info                DefaultInfo = {
         "^",
         0,
         0,
-        NULL,
-        NULL,
-        0
+        NULL
 };
 
 #elif   _CPU == 386
@@ -249,9 +229,7 @@ aux_info                RtRtnInfo = {
         "RT@*",
         0,
         0,
-        NULL,
-        NULL,
-        0
+        NULL
 };
 
 aux_info                RtStopInfo = {
@@ -264,9 +242,7 @@ aux_info                RtStopInfo = {
         "RT@*",
         0,
         0,
-        NULL,
-        NULL,
-        0
+        NULL
 };
 
 aux_info                RtVarInfo = {
@@ -279,9 +255,7 @@ aux_info                RtVarInfo = {
         "RT@*",
         0,
         0,
-        NULL,
-        NULL,
-        0
+        NULL
 };
 
 aux_info                CoRtnInfo = {
@@ -294,9 +268,7 @@ aux_info                CoRtnInfo = {
         "RT@*",
         0,
         0,
-        NULL,
-        NULL,
-        0
+        NULL
 };
 
 aux_info               IFXInfo = {
@@ -309,9 +281,7 @@ aux_info               IFXInfo = {
         IF_Xnames,
         0,
         0,
-        NULL,
-        NULL,
-        0
+        NULL
 };
 
 aux_info                IFInfo = {
@@ -324,9 +294,7 @@ aux_info                IFInfo = {
         IF_names,
         0,
         0,
-        NULL,
-        &IFArgValue,
-        0
+        &IFArgValue
 };
 
 aux_info                IFCharInfo = {
@@ -339,9 +307,7 @@ aux_info                IFCharInfo = {
         IF_names,
         0,
         0,
-        NULL,
-        &IFArgDescriptor,
-        0
+        &IFArgDescriptor
 };
 
 aux_info                IFChar2Info = {
@@ -354,9 +320,7 @@ aux_info                IFChar2Info = {
         IF_Xnames,
         0,
         0,
-        NULL,
-        NULL,
-        0
+        NULL
 };
 
 aux_info                IFVarInfo = {
@@ -369,9 +333,7 @@ aux_info                IFVarInfo = {
         IF_Xnames,
         0,
         0,
-        NULL,
-        &IFArgValue,
-        0
+        &IFArgValue
 };
 
 aux_info                DefaultInfo = {
@@ -384,9 +346,7 @@ aux_info                DefaultInfo = {
         "^",
         0,
         0,
-        NULL,
-        NULL,
-        0
+        NULL
 };
 
 #elif _CPU == _AXP || _CPU == _PPC
@@ -410,9 +370,7 @@ aux_info                RtRtnInfo = {
         "__RT_*",
         0,
         0,
-        NULL,
-        NULL,
-        0
+        NULL
 };
 
 aux_info                RtStopInfo = {
@@ -425,9 +383,7 @@ aux_info                RtStopInfo = {
         "__RT_*",
         0,
         0,
-        NULL,
-        NULL,
-        0
+        NULL
 };
 
 aux_info                RtVarInfo = {
@@ -440,9 +396,7 @@ aux_info                RtVarInfo = {
         "__RT_*",
         0,
         0,
-        NULL,
-        NULL,
-        0
+        NULL
 };
 
 aux_info                CoRtnInfo = {
@@ -455,9 +409,7 @@ aux_info                CoRtnInfo = {
         "__RT_*",
         0,
         0,
-        NULL,
-        NULL,
-        0
+        NULL
 };
 
 aux_info               IFXInfo = {
@@ -470,9 +422,7 @@ aux_info               IFXInfo = {
         IF_Xnames,
         0,
         0,
-        NULL,
-        NULL,
-        0
+        NULL
 };
 
 aux_info                IFInfo = {
@@ -485,9 +435,7 @@ aux_info                IFInfo = {
         IF_names,
         0,
         0,
-        NULL,
-        &IFArgValue,
-        0
+        &IFArgValue
 };
 
 aux_info                IFCharInfo = {
@@ -500,9 +448,7 @@ aux_info                IFCharInfo = {
         IF_names,
         0,
         0,
-        NULL,
-        &IFArgDescriptor,
-        0
+        &IFArgDescriptor
 };
 
 aux_info                IFChar2Info = {
@@ -515,9 +461,7 @@ aux_info                IFChar2Info = {
         IF_Xnames,
         0,
         0,
-        NULL,
-        NULL,
-        0
+        NULL
 };
 
 aux_info                IFVarInfo = {
@@ -530,9 +474,7 @@ aux_info                IFVarInfo = {
         IF_Xnames,
         0,
         0,
-        NULL,
-        &IFArgValue,
-        0
+        &IFArgValue
 };
 
 aux_info                DefaultInfo = {
@@ -545,9 +487,7 @@ aux_info                DefaultInfo = {
         "^",
         0,
         0,
-        NULL,
-        NULL,
-        0
+        NULL
 };
 
 #else

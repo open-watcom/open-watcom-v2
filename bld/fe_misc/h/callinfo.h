@@ -61,10 +61,7 @@ typedef struct aux_info {
   #elif defined( BY_CPP_FRONT_END )
         unsigned        index;          // for C++ pre-compiled header
   #elif defined( BY_FORTRAN_FRONT_END )
-        struct aux_info *link;
         pass_by         *arg_info;
-        byte            sym_len;
-        char            sym_name[1];
   #endif
 } aux_info;
 
