@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,12 +41,7 @@
 
 
 /* Forward declarations */
-static  void    FSkipSpaces( void );
-static  void    R_FSpec( void );
-static  void    GetRepSpec( void );
 static  void    FCode( void );
-static  int     R_FConst( void );
-static  void    FChkDelimiter( void );
 static  void    FReal( byte format_code );
 
 typedef struct f_procs {
@@ -54,17 +49,15 @@ typedef struct f_procs {
     void        (*routine)(void);
 } f_procs;
 
-void    R_FDoSpec( void )
-// Process a complete format specification.
+static  void    FSkipSpaces( void )
+// Skip spaces between format codes.
 {
-    FSkipSpaces();
-    if( *Fmt_charptr != '(' ) {
-        R_FError( PC_NO_OPENPAREN );
-    } else {
-        R_FSpec();
-    }
-    if( Fmt_paren_level != 0 ) {
-        R_FError( PC_UNMATCH_PAREN );
+    for(;;) {
+        if( Fmt_charptr >= Fmt_end )
+            break;
+        if( *Fmt_charptr != ' ' )
+            break;
+        ++Fmt_charptr;
     }
 }
 
@@ -87,37 +80,6 @@ static  bool    R_FR_Char( char test_char )
     ++Fmt_charptr;
     FSkipSpaces();
     return( true );
-}
-
-static  void    R_FSpec( void )
-// Process a format specification.
-{
-    Fmt_delimited = YES_DELIM;
-    for(;;) {
-        if( R_FRecEos() )
-            return;
-        if( R_FR_Char( ')' ) )
-            break;
-        GetRepSpec();
-        FCode();
-        if( Fmt_paren_level <= 0 ) {
-            return;
-        }
-    }
-    --Fmt_paren_level;
-    Fmt_delimited = NO_DELIM;
-    FEmCode( RP_FORMAT );
-}
-
-static  int     R_FRPConst( void ) {
-// Get a required positive constant in a format string.
-    int result;
-
-    result = R_FConst();
-    if( result <= 0 ) {
-        R_FError( FM_CONST );
-    }
-    return( result );
 }
 
 static  int     R_FConst( void ) {
@@ -154,29 +116,6 @@ static  int     R_FConst( void ) {
     return( result );
 }
 
-static  bool    R_FReqChar( char test_string, int err_code )
-// Formatted I/O token scanner.
-// This routine generates an error condition if the specified character
-// is not found.
-{
-    if( R_FR_Char( test_string ) )
-        return( true );
-    R_FError( err_code );
-    return( false );
-}
-
-static  void    FSkipSpaces( void )
-// Skip spaces between format codes.
-{
-    for(;;) {
-        if( Fmt_charptr >= Fmt_end )
-            break;
-        if( *Fmt_charptr != ' ' )
-            break;
-        ++Fmt_charptr;
-    }
-}
-
 static  void    GetRepSpec( void ) {
 // Get a possible repeat specification.
     bool        minus;
@@ -205,6 +144,48 @@ static  void    GetRepSpec( void ) {
     }
 }
 
+static  void    R_FSpec( void )
+// Process a format specification.
+{
+    Fmt_delimited = YES_DELIM;
+    for(;;) {
+        if( R_FRecEos() )
+            return;
+        if( R_FR_Char( ')' ) )
+            break;
+        GetRepSpec();
+        FCode();
+        if( Fmt_paren_level <= 0 ) {
+            return;
+        }
+    }
+    --Fmt_paren_level;
+    Fmt_delimited = NO_DELIM;
+    FEmCode( RP_FORMAT );
+}
+
+static  int     R_FRPConst( void ) {
+// Get a required positive constant in a format string.
+    int result;
+
+    result = R_FConst();
+    if( result <= 0 ) {
+        R_FError( FM_CONST );
+    }
+    return( result );
+}
+
+static  bool    R_FReqChar( char test_string, int err_code )
+// Formatted I/O token scanner.
+// This routine generates an error condition if the specified character
+// is not found.
+{
+    if( R_FR_Char( test_string ) )
+        return( true );
+    R_FError( err_code );
+    return( false );
+}
+
 static  bool    FNoRep( void )
 // Make sure that no repeat specification was given.
 // Return true if no repeat spec was given.
@@ -213,6 +194,15 @@ static  bool    FNoRep( void )
         return( true );
     R_FError( FM_NO_REP );
     return( false );
+}
+
+static  void    FChkDelimiter( void )
+// Make sure that an element has been delimited.
+{
+    if( Fmt_delimited != YES_DELIM ) {
+        R_FExtension( FM_ASSUME_COMMA );
+    }
+    Fmt_delimited = NO_DELIM;
 }
 
 static  void    R_FLiteral( void )
@@ -612,15 +602,6 @@ static  void    R_FM( void )
     R_FExtension(  FM_M_EXT );
 }
 
-static  void    FChkDelimiter( void )
-// Make sure that an element has been delimited.
-{
-    if( Fmt_delimited != YES_DELIM ) {
-        R_FExtension( FM_ASSUME_COMMA );
-    }
-    Fmt_delimited = NO_DELIM;
-}
-
 static  const f_procs __FAR FP_Cod[] = {
         '\'',   &R_FLiteral,
         'f',    &R_FF,
@@ -675,4 +656,18 @@ static  void    FCode( void )
         }
     }
     f_rtn->routine();
+}
+
+void    R_FDoSpec( void )
+// Process a complete format specification.
+{
+    FSkipSpaces();
+    if( *Fmt_charptr != '(' ) {
+        R_FError( PC_NO_OPENPAREN );
+    } else {
+        R_FSpec();
+    }
+    if( Fmt_paren_level != 0 ) {
+        R_FError( PC_UNMATCH_PAREN );
+    }
 }

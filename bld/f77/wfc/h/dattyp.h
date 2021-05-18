@@ -100,10 +100,8 @@ typedef union ftn_type {
     struct cstring      cstring;
     struct string       string;
     struct arr_desc     arr_desc;
-    void                *pgm_ptr;
-    struct {                            // we don't want the structure chain
-        intstar4        field_offset;   // to destroy the field offset during
-        void            *struct_chain;  // down-scan.
+    struct {
+        void            *struct_chain;
     } sc;
     struct {
         sym_id          field_id;       // structure name of fields
@@ -114,7 +112,5 @@ typedef union ftn_type {
 
 typedef     unsigned    label_id;
 typedef     obj_ptr     warp_label;
-
-typedef     unsigned_32 recnum_type;
 
 #endif

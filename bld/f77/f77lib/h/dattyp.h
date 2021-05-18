@@ -49,14 +49,6 @@ typedef     signed_32   intstar4;   // 32-bit integer
 typedef     real        single;     // single precision
 typedef     long double extended;   // extended precision
 
-#if _CPU == 8086
-typedef     intstar2    inttarg;    // target integer
-#else
-typedef     intstar4    inttarg;    // target integer
-#endif
-
-typedef     unsigned_32 ftnoption;
-
 typedef struct scomplex {           // single precision complex
     single      realpart;
     single      imagpart;
@@ -100,20 +92,6 @@ typedef union ftn_type {
     struct string       string;
     struct arr_desc     arr_desc;
     void                PGM *pgm_ptr;
-    struct {                            // we don't want the structure chain
-        intstar4        field_offset;   // to destroy the field offset during
-        void            *struct_chain;  // down-scan.
-    } sc;
-    struct {
-        sym_id          field_id;       // structure name of fields
-        sym_id          ss_id;          // substring symbol
-        uint            ss_size;        // length of substring/subscripted character string
-    } st;
 } ftn_type;
-
-typedef     unsigned    label_id;
-typedef     obj_ptr     warp_label;
-
-typedef     unsigned_32 recnum_type;
 
 #endif
