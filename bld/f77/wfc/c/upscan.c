@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -271,9 +271,9 @@ static  int     SameScripts( itnode *op1, itnode *op2 ) {
 }
 
 
-bool    OptimalChSize( uint size ) {
+bool    OptimalChSize( size_t size )
 //==================================
-
+{
     return( ( size == 1 ) || ( size == 2 ) || ( size == 4 ) );
 }
 
@@ -586,9 +586,9 @@ static  void    USCleanUp( void ) {
 }
 
 
-static  bool    DoGenerate( TYPE typ1, TYPE typ2, uint *res_size ) {
-//================================================================
-
+static  bool    DoGenerate( TYPE typ1, TYPE typ2, size_t *res_size )
+//==================================================================
+{
     if( CITNode->link->opr == OPR_EQU ) {
         ResultType = typ1;
         *res_size = CITNode->size;
@@ -678,7 +678,7 @@ static  void    Generate( void ) {
     OPR         opr;
     itnode      *next;
     unsigned_16 mask;
-    uint        res_size;
+    size_t      res_size;
 
     next = CITNode->link;
     if( next->opn.ds == DSOPN_PHI ) {

@@ -91,11 +91,10 @@ static  TYPE    MapType[] = {
 static  unsigned_32     DtItemSize;
 
 
-static  void    I2toI1( ftn_type *old, ftn_type *to ) {
-//=====================================================
-
+static  void    I2toI1( ftn_type *old, ftn_type *to )
+//===================================================
 // Convert constant old INTEGER*2 to INTEGER*1.
-
+{
     to->intstar1 = old->intstar2;
 }
 
@@ -751,11 +750,10 @@ static  void    C8toC20( ftn_type *old, ftn_type *to ) {
     to->xcomplex.imagpart = old->scomplex.imagpart;
 }
 
-static  void    C16toC20( ftn_type *old, ftn_type *to ) {
-//=======================================================
-
+static  void    C16toC20( ftn_type *old, ftn_type *to )
+//=====================================================
 // Convert constant old COMPLEX*16 to COMPLEX*20.
-
+{
     to->xcomplex.realpart = old->dcomplex.realpart;
     to->xcomplex.imagpart = old->dcomplex.imagpart;
 }
@@ -774,35 +772,32 @@ static  void            (*DataCnvTab[])(ftn_type *, ftn_type *) = {
 };
 
 
-static  bool    Numeric( PTYPE typ ) {
+static  bool    Numeric( PTYPE typ )
 //==================================
-
 // Is given type numeric?
-
+{
     return( ( typ >= PT_INT_1 ) && ( typ <= PT_CPLX_32 ) );
 }
 
 
-bool    IntType( PTYPE typ ) {
+bool    IntType( PTYPE typ )
 //==========================
-
 // Is given type integer?
-
+{
     return( ( typ >= PT_INT_1 ) && ( typ <= PT_INT_4 ) );
 }
 
-static  void    DoDataInit( PTYPE var_type ) {
+static  void    DoDataInit( PTYPE var_type )
 //==========================================
-
 // Do data initialization.
-
-    uint        const_size;
-    uint        var_size;
-    uint        size;
+{
+    size_t      const_size;
+    size_t      var_size;
+    size_t      size;
     byte        *const_ptr;
     segment_id  segid;
     seg_offset  offset;
-    byte        const_buff[sizeof(ftn_type)];
+    byte        const_buff[sizeof( ftn_type )];
 
     if( ( DtConstType == PT_CHAR ) || ( DtConstType == PT_NOTYPE ) ) {
         const_size = DtConst->u.lt.length;
@@ -907,11 +902,10 @@ static  void    DoDataInit( PTYPE var_type ) {
 }
 
 
-static  void    AsnVal( PTYPE var_type ) {
+static  void    AsnVal( PTYPE var_type )
 //======================================
-
 // Do data initialization.
-
+{
     bool        issue_err;
 
     issue_err = ( DtFlags & DT_NO_MORE_CONSTS ) == 0;
@@ -932,11 +926,10 @@ static  void    AsnVal( PTYPE var_type ) {
 }
 
 
-void    FCStartDataStmt( void ) {
-//=========================
-
+void    FCStartDataStmt( void )
+//=============================
 // Start DATA statement processing.
-
+{
     FCTablePtr = DataJmpTab;
     DtConstList = FCodeTell( GetU16() - sizeof( unsigned_16 ) );
     DtRepCount = 0;
@@ -946,22 +939,20 @@ void    FCStartDataStmt( void ) {
 }
 
 
-void    DtEndDataStmt( void ) {
-//=======================
-
+void    DtEndDataStmt( void )
+//===========================
 // End DATA statement processing.
-
+{
     DtFiniSequence();
     FCTablePtr = FCJmpTab;
     FCodeSeek( DtConstList );
 }
 
 
-void    DtEndVarSet( void ) {
-//=====================
-
+void    DtEndVarSet( void )
+//=========================
 // End of DATA variable set.
-
+{
     GetDataConst();
     if( ( DtFlags & DT_NO_MORE_CONSTS ) == 0 ) {
         Error( DA_TOO_MUCH );
@@ -972,11 +963,10 @@ void    DtEndVarSet( void ) {
 }
 
 
-void    DtDataDoLoop( void ) {
-//======================
-
+void    DtDataDoLoop( void )
+//==========================
 // Process implied-DO for DATA statement.
-
+{
     intstar4    e2;
     intstar4    e3;
     intstar4    iter_count;
@@ -1000,117 +990,105 @@ void    DtDataDoLoop( void ) {
 }
 
 
-void    DtInpLOG1( void ) {
-//===================
-
+void    DtInpLOG1( void )
+//=======================
 // Data initialize a LOGICAL*1 item.
-
+{
     AsnVal( PT_LOG_1 );
 }
 
 
-void    DtInpLOG4( void ) {
-//===================
-
+void    DtInpLOG4( void )
+//=======================
 // Data initialize a LOGICAL*4 item.
-
+{
     AsnVal( PT_LOG_4 );
 }
 
 
-void    DtInpINT1( void ) {
-//===================
-
+void    DtInpINT1( void )
+//=======================
 // Data initialize a INTEGER*1 item.
-
+{
     AsnVal( PT_INT_1 );
 }
 
 
-void    DtInpINT2( void ) {
-//===================
-
+void    DtInpINT2( void )
+//=======================
 // Data initialize a INTEGER*2 item.
-
+{
     AsnVal( PT_INT_2 );
 }
 
 
-void    DtInpINT4( void ) {
-//===================
-
+void    DtInpINT4( void )
+//=======================
 // Data initialize a INTEGER*4 item.
-
+{
     AsnVal( PT_INT_4 );
 }
 
 
-void    DtInpREAL( void ) {
-//===================
-
+void    DtInpREAL( void )
+//=======================
 // Data initialize a REAL*4 item.
-
+{
     AsnVal( PT_REAL_4 );
 }
 
 
-void    DtInpDBLE( void ) {
-//===================
-
+void    DtInpDBLE( void )
+//=======================
 // Data initialize a REAL*8 item.
-
+{
     AsnVal( PT_REAL_8 );
 }
 
 
-void    DtInpXTND( void ) {
-//===================
-
+void    DtInpXTND( void )
+//=======================
 // Data initialize a REAL*10 item.
-
+{
     AsnVal( PT_REAL_16 );
 }
 
 
-void    DtInpCPLX( void ) {
-//===================
-
+void    DtInpCPLX( void )
+//=======================
 // Data initialize a COMPLEX*8 item.
-
+{
     AsnVal( PT_CPLX_8 );
 }
 
 
-void    DtInpDBCX( void ) {
-//===================
-
+void    DtInpDBCX( void )
+//=======================
 // Data initialize a COMPLEX*16 item.
-
+{
     AsnVal( PT_CPLX_16 );
 }
 
 
-void    DtInpXTCX( void ) {
-//===================
-
+void    DtInpXTCX( void )
+//=======================
 // Data initialize a COMPLEX*20 item.
-
+{
     AsnVal( PT_CPLX_32 );
 }
 
 
-void    DtInpCHAR( void ) {
-//===================
-
+void    DtInpCHAR( void )
+//=======================
 // Data initialize a CHARACTER item.
-
+{
     AsnVal( PT_CHAR );
 }
 
 
-static  intstar4        IntegerValue( sym_id sym ) {
-//==================================================
-
+static  intstar4        IntegerValue( sym_id sym )
+//================================================
+{
     if( sym->u.cn.size == sizeof( intstar1 ) )
         return( sym->u.cn.value.intstar1 );
     if( sym->u.cn.size == sizeof( intstar2 ) )
@@ -1119,29 +1097,26 @@ static  intstar4        IntegerValue( sym_id sym ) {
 }
 
 
-void    DtPushConst( void ) {
-//=====================
-
+void    DtPushConst( void )
+//=========================
 // Push constant.
-
+{
     DXPush( IntegerValue( GetPtr() ) );
 }
 
 
-void    DtPushSCBLen( void ) {
-//======================
-
+void    DtPushSCBLen( void )
+//==========================
 // Indicate that the high bound of a substring operation was not specified.
-
+{
     DtFlags |= DT_SS_NO_HIGH;
 }
 
 
-void    DtPush( void ) {
-//================
-
+void    DtPush( void )
+//====================
 // Push value of symbol.
-
+{
     sym_id      sym;
 
     sym = GetPtr();
@@ -1157,11 +1132,10 @@ void    DtPush( void ) {
 }
 
 
-void    DtAdd( void ) {
-//===============
-
+void    DtAdd( void )
+//===================
 // Add constants.
-
+{
     intstar4    op1;
     intstar4    op2;
 
@@ -1172,11 +1146,10 @@ void    DtAdd( void ) {
 }
 
 
-void    DtMul( void ) {
-//===============
-
+void    DtMul( void )
+//===================
 // Multiply constants.
-
+{
     intstar4    op1;
     intstar4    op2;
 
@@ -1187,11 +1160,10 @@ void    DtMul( void ) {
 }
 
 
-void    DtUnaryMul( void ) {
-//====================
-
+void    DtUnaryMul( void )
+//========================
 // Multiply constants.
-
+{
     intstar4    op;
 
     op = DXPop();
@@ -1200,11 +1172,10 @@ void    DtUnaryMul( void ) {
 }
 
 
-void    DtSub( void ) {
-//===============
-
+void    DtSub( void )
+//===================
 // Subtract constants.
-
+{
     intstar4    op1;
     intstar4    op2;
 
@@ -1215,11 +1186,10 @@ void    DtSub( void ) {
 }
 
 
-void    DtDiv( void ) {
-//===============
-
+void    DtDiv( void )
+//===================
 // Divide constants.
-
+{
     intstar4    op1;
     intstar4    op2;
 
@@ -1230,11 +1200,10 @@ void    DtDiv( void ) {
 }
 
 
-void    DtExp( void ) {
-//===============
-
+void    DtExp( void )
+//===================
 // Exponentiate constants.
-
+{
     intstar4    op2;
     intstar4    op1;
     intstar4    result;
@@ -1260,21 +1229,19 @@ void    DtExp( void ) {
 }
 
 
-void    DtUMinus( void ) {
-//==================
-
+void    DtUMinus( void )
+//======================
 // Negate constant.
-
+{
     DXPush( -DXPop() );
     GetU16();   // skip typing information
 }
 
 
-void    DtFlip( void ) {
-//================
-
+void    DtFlip( void )
+//====================
 // Flip values on stack.
-
+{
     intstar4    op1;
     intstar4    op2;
 
@@ -1285,11 +1252,10 @@ void    DtFlip( void ) {
 }
 
 
-static  bool    CSubscript( act_dim_list *dim, intstar4 *offset ) {
-//================================================================
-
+static  bool    CSubscript( act_dim_list *dim, intstar4 *offset )
+//===============================================================
 // Data initialize an array element.
-
+{
     int         dim_no;
     int         dim_cnt;
     intstar4    subscrs[MAX_DIM];
@@ -1303,11 +1269,10 @@ static  bool    CSubscript( act_dim_list *dim, intstar4 *offset ) {
 }
 
 
-void    DtSubscript( void ) {
-//=====================
-
+void    DtSubscript( void )
+//=========================
 // Data initialize an array element.
-
+{
     intstar4    offset;
 
     InitVar = GetPtr();
@@ -1321,11 +1286,10 @@ void    DtSubscript( void ) {
 }
 
 
-void    DtSubstring( void ) {
-//=====================
-
+void    DtSubstring( void )
+//=========================
 // Data initialize a character substring.
-
+{
     intstar4    first;
     intstar4    last;
     sym_id      cv;
@@ -1351,11 +1315,10 @@ void    DtSubstring( void ) {
 }
 
 
-void    DtFieldSubscript( void ) {
-//==========================
-
+void    DtFieldSubscript( void )
+//==============================
 // Data initialize an array element within a structure.
-
+{
     sym_id      fd;
     intstar4    offset;
     intstar4    base;
@@ -1373,11 +1336,10 @@ void    DtFieldSubscript( void ) {
 }
 
 
-void    DtFieldSubstring( void ) {
-//==========================
-
+void    DtFieldSubstring( void )
+//==============================
 // Data initialize a substring character item within a structure.
-
+{
     sym_id      fd;
     intstar4    base;
     intstar4    first;
@@ -1404,11 +1366,10 @@ void    DtFieldSubstring( void ) {
 }
 
 
-static  void    InitArr( act_dim_list *dim, TYPE typ, size_t size ) {
+static  void    InitArr( act_dim_list *dim, TYPE typ, size_t size )
 //=================================================================
-
 // Data initialize an array.
-
+{
     unsigned_32 num_elts;
 
     num_elts = dim->num_elts;
@@ -1421,11 +1382,10 @@ static  void    InitArr( act_dim_list *dim, TYPE typ, size_t size ) {
 }
 
 
-void    DtInpArray( void ) {
-//====================
-
+void    DtInpArray( void )
+//========================
 // Data initialize an array.
-
+{
     sym_id      fd;
     sym_id      sym;
 
@@ -1441,22 +1401,20 @@ void    DtInpArray( void ) {
 }
 
 
-void    DtInpStructArray( void ) {
-//==========================
-
+void    DtInpStructArray( void )
+//==============================
 // Data initialize an array of structures.
-
+{
     InitVar = GetPtr();
     DtOffset = 0;
     InitStructArr( InitVar->u.ns.xt.record->fl.sym_fields, InitVar->u.ns.si.va.u.dim_ext );
 }
 
 
-static  void    InitStructArr( sym_id fd, act_dim_list *dim ) {
-//=============================================================
-
+static  void    InitStructArr( sym_id fd, act_dim_list *dim )
+//===========================================================
 // Data initialize an array.
-
+{
     unsigned_32 num_elts;
 
     num_elts = dim->num_elts;
@@ -1467,11 +1425,10 @@ static  void    InitStructArr( sym_id fd, act_dim_list *dim ) {
 }
 
 
-void    DtFieldOp( void ) {
-//===================
-
+void    DtFieldOp( void )
+//=======================
 // Field selection.
-
+{
     sym_id      fd;
 
     InitVar = GetPtr();
@@ -1488,18 +1445,17 @@ void    DtFieldOp( void ) {
 }
 
 
-void    DtInpStruct( void ) {
-//=====================
-
+void    DtInpStruct( void )
+//=========================
 // Initialize a struct.
-
+{
     StructInit( ((sym_id)GetPtr())->u.sd.fl.sym_fields );
 }
 
 
-static  void    StructInit( sym_id fd ) {
-//=======================================
-
+static  void    StructInit( sym_id fd )
+//=====================================
+{
     while( fd != NULL ) {
         if( fd->u.fd.typ == FT_STRUCTURE ) {
             StructInit( fd->u.fd.xt.record->fl.sym_fields );
@@ -1514,11 +1470,10 @@ static  void    StructInit( sym_id fd ) {
 }
 
 
-static  void    StructInitItem( sym_id fd ) {
-//===========================================
-
+static  void    StructInitItem( sym_id fd )
+//=========================================
 // Initialize a structure field.
-
+{
     DtItemSize = fd->u.fd.xt.size;
     if( fd->u.fd.dim_ext == NULL ) {
         AsnVal( ParmType( fd->u.fd.typ, DtItemSize ) );
@@ -1532,15 +1487,14 @@ static  void    StructInitItem( sym_id fd ) {
 }
 
 
-static  void    GetDataConst( void ) {
-//==============================
-
+static  void    GetDataConst( void )
+//==================================
 // Get a constant for data initialization.
-
+{
     obj_ptr     curr_fc;
     sym_id      rep;
 
-    if( ( DtFlags & DT_NO_MORE_CONSTS ) == 0 ) {
+    if( (DtFlags & DT_NO_MORE_CONSTS) == 0 ) {
         if( DtRepCount == 0 ) {
             curr_fc = FCodeSeek( DtConstList );
             rep = GetPtr();
@@ -1558,12 +1512,11 @@ static  void    GetDataConst( void ) {
 }
 
 
-static  void    FlushConsts( void ) {
-//=============================
-
+static  void    FlushConsts( void )
+//=================================
 // Flush constant list.
-
-    while( ( DtFlags & DT_NO_MORE_CONSTS ) == 0 ) {
+{
+    while( (DtFlags & DT_NO_MORE_CONSTS) == 0 ) {
         GetDataConst();
     }
 }

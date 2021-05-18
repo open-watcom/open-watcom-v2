@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,12 +52,11 @@
 #include "upcat.h"
 
 
-static  void    FoldCatSequence( itnode *cit ) {
-//==============================================
-
+static  void    FoldCatSequence( itnode *cit )
+//============================================
 // Fold a sequnece of character constants.
-
-    uint        size;
+{
+    size_t      size;
     uint        num;
     itnode      *save;
 
@@ -91,9 +90,9 @@ static  void    FoldCatSequence( itnode *cit ) {
 }
 
 
-static  void    ChkConstCatOpn( itnode *cat_opn ) {
-//=================================================
-
+static  void    ChkConstCatOpn( itnode *cat_opn )
+//===============================================
+{
     if( cat_opn->opn.us == USOPN_CON ) {
         FoldCatSequence( cat_opn );
         if( !AError ) {
@@ -103,9 +102,9 @@ static  void    ChkConstCatOpn( itnode *cat_opn ) {
 }
 
 
-static  void    GenCatOpn( void ) {
-//===========================
-
+static  void    GenCatOpn( void )
+//===============================
+{
     if( CITNode->opn.us != USOPN_CON ) {
         ChkConstCatOpn( CITNode->link );
         PushOpn( CITNode );
@@ -113,28 +112,26 @@ static  void    GenCatOpn( void ) {
 }
 
 
-static  void    FoldCat( void ) {
-//=========================
-
+static  void    FoldCat( void )
+//=============================
+{
     GenCatOpn();
     ChkConstCatOpn( CITNode );
 }
 
-void            CatOpn( void ) {
-//========================
-
+void            CatOpn( void )
+//============================
 // Process a concatenation operand.
-
+{
     GenCatOpn();
     BackTrack();
 }
 
-static  uint    ScanCat( uint *size_ptr ) {
-//========================================
-
+static uint     ScanCat( size_t *size_ptr )
+//=========================================
 // Scan for strings to be concatenated.
-
-    uint        cat_size;
+{
+    size_t      cat_size;
     itnode      *itptr;
     uint        num_cats;
 
@@ -168,14 +165,15 @@ static  uint    ScanCat( uint *size_ptr ) {
 }
 
 
-void            FiniCat( void ) {
+void            FiniCat( void )
+{
 //=========================
 
 // Finish concatenation.
 
     uint        num;
     sym_id      result;
-    uint        size;
+    size_t      size;
 
     // Make sure we don't PushOpn() a constant expression
     // in case it's for a PARAMETER constant

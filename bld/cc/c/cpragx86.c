@@ -952,10 +952,11 @@ void PragAux( void )
                for the use of this pragma. This is done by saying the pragma
                modifies the [E]SP register. A kludge, but it works.
             */
+            AuxInfo.cclass |= GENERATE_STACK_FRAME;
 #if _CPU == 8086
-            HW_CTurnOff( AuxInfo.save, HW_SP );
+//            HW_CTurnOff( AuxInfo.save, HW_SP );
 #else
-            HW_CTurnOff( AuxInfo.save, HW_ESP );
+//            HW_CTurnOff( AuxInfo.save, HW_ESP );
 #endif
         }
         CopyAuxInfo();
@@ -1007,10 +1008,11 @@ void AsmSysMakeInlineAsmFunc( bool too_many_bytes )
                for the use of this pragma. This is done by saying the pragma
                modifies the [E]SP register. A kludge, but it works.
             */
+            CurrInfo->cclass |= GENERATE_STACK_FRAME;
 #if _CPU == 8086
-            HW_CTurnOff( CurrInfo->save, HW_SP );
+//            HW_CTurnOff( CurrInfo->save, HW_SP );
 #else
-            HW_CTurnOff( CurrInfo->save, HW_ESP );
+//            HW_CTurnOff( CurrInfo->save, HW_ESP );
 #endif
         }
         CurrEntry->info = CurrInfo;

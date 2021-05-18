@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,7 +30,7 @@
 ****************************************************************************/
 
 
-extern uint     SymAlign( sym_id sym );
+extern size_t   SymAlign( sym_id sym );
 extern bool     SCBRequired( sym_id sym );
 extern void     GenLocalSyms( void );
 extern void     GenLocalDbgInfo( void );

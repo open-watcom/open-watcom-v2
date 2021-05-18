@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -586,9 +586,9 @@ sym_id          SymPop( void ) {
 }
 
 
-cg_name IntegerConstant( ftn_type *value, uint size ) {
+cg_name IntegerConstant( ftn_type *value, size_t size )
 //=====================================================
-
+{
     if( size == sizeof( intstar1 ) ) {
         return( CGInteger( value->intstar1, TY_INT_1 ) );
     } else if( size == sizeof( intstar2 ) ) {

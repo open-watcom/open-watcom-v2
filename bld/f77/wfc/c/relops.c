@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,9 +44,9 @@
 #include "gtypes.h"
 
 
-static  uint    CharLength( itnode *op ) {
-//========================================
-
+static size_t   CharLength( itnode *op )
+//======================================
+{
     USOPN       opn;
 
     if( op->typ != FT_CHAR )
@@ -84,8 +85,8 @@ void    RelOp( TYPE typ1, TYPE typ2, OPTR optr ) {
     bool        flip;
     bool        associative;
     bool        char_1_cmp;
-    uint        i;
-    uint        j;
+    size_t      i;
+    size_t      j;
     OPR         opr_code;
     FCODE       op_code;
 

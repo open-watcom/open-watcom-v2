@@ -157,9 +157,9 @@ static  temp_handle     MakeTempSCB( int len ) {
 }
 
 
-uint    SymAlign( sym_id sym ) {
-//==============================
-
+size_t  SymAlign( sym_id sym )
+//============================
+{
     switch( sym->u.ns.u1.s.typ ) {
     case FT_LOGICAL_1 :
     case FT_LOGICAL :
@@ -228,7 +228,7 @@ static  unsigned_32     CheckThreshold( sym_id sym, unsigned_32 g_offset ) {
 }
 
 
-static  void    DumpSCB( back_handle scb, back_handle data, uint len,
+static  void    DumpSCB( back_handle scb, back_handle data, size_t len,
                          bool allocatable, signed_32 offset ) {
 //=============================================================
 

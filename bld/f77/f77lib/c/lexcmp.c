@@ -33,36 +33,42 @@
 #include "rtenv.h"
 
 
-static  int     ChkBlanks( char PGM *ptr, uint len ) 
+static  int     ChkBlanks( char PGM *ptr, uint len )
 //==================================================
 {
     for(;;) {
         --len;
-        if( len == 0 ) break;
-        if( *ptr != ' ' ) break;
+        if( len == 0 )
+            break;
+        if( *ptr != ' ' )
+            break;
         ++ptr;
     }
     return( *ptr - ' ' );
 }
 
-
-static int  LexStrCmp( char PGM *ptr1, uint len1, char PGM *ptr2, uint len2 ) 
+static int  LexStrCmp( char PGM *ptr1, uint len1, char PGM *ptr2, uint len2 )
 //===========================================================================
 // Compare two strings (compile-time entry point).
 {
     int         result;
 
     for(;;) {
-        if( *ptr1 != *ptr2 ) break;
+        if( *ptr1 != *ptr2 )
+            break;
         ++ptr1;
         ++ptr2;
         --len1;
         --len2;
-        if( len1 == 0 ) break;
-        if( len2 == 0 ) break;
+        if( len1 == 0 )
+            break;
+        if( len2 == 0 ) {
+            break;
+        }
     }
     if( len1 == 0 ) {
-        if( len2 == 0 ) return( 0 );
+        if( len2 == 0 )
+            return( 0 );
         result = -ChkBlanks( ptr2, len2 );
     } else if( len2 == 0 ) {
         result = ChkBlanks( ptr1, len1 );
@@ -78,7 +84,7 @@ static int  LexStrCmp( char PGM *ptr1, uint len1, char PGM *ptr2, uint len2 )
     return( result );
 }
 
-int     LexCmp( string PGM *str1, string PGM *str2 ) 
+int     LexCmp( string PGM *str1, string PGM *str2 )
 //==================================================
 // Compare two strings (run-time entry point).
 {

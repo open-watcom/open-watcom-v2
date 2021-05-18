@@ -208,7 +208,7 @@ typedef struct constant {
     sym_id              link;           // pointer to next constant in chain
     void                *address;       // back handle
     TYPE                typ;            // type of constant
-    byte                size;           // size of constant
+    size_t              size;           // size of constant
     ftn_type            value;          // value of constant
 } constant;
 
@@ -218,7 +218,7 @@ typedef struct constant {
 typedef struct literal {
     sym_id              link;           // pointer to next literal in chain
     void                *address;       // back handle
-    uint                length;         // length of literal
+    size_t              length;         // length of literal
     unsigned_8          flags;          // constant appeared in DATA statement
     byte                value;          // value of literal
 } literal;

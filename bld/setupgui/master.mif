@@ -2,6 +2,8 @@ proj_name = setupgui
 
 setupgui_autodepends = .AUTODEPEND
 
+setupgui_nofpu = 1
+
 setupgui_trmem = 1
 
 setupgui_dos_extender = causeway

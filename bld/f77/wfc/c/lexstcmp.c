@@ -39,8 +39,10 @@ static  int     ChkBlanks( char *ptr, size_t len )
 {
     for(;;) {
         --len;
-        if( len == 0 ) break;
-        if( *ptr != ' ' ) break;
+        if( len == 0 )
+            break;
+        if( *ptr != ' ' )
+            break;
         ++ptr;
     }
     return( *ptr - ' ' );
@@ -54,16 +56,21 @@ int     LexStrCmp( char *ptr1, size_t len1, char *ptr2, size_t len2 )
     int         result;
 
     for(;;) {
-        if( *ptr1 != *ptr2 ) break;
+        if( *ptr1 != *ptr2 )
+            break;
         ++ptr1;
         ++ptr2;
         --len1;
         --len2;
-        if( len1 == 0 ) break;
-        if( len2 == 0 ) break;
+        if( len1 == 0 )
+            break;
+        if( len2 == 0 ) {
+            break;
+        }
     }
     if( len1 == 0 ) {
-        if( len2 == 0 ) return( 0 );
+        if( len2 == 0 )
+            return( 0 );
         result = -ChkBlanks( ptr2, len2 );
     } else if( len2 == 0 ) {
         result = ChkBlanks( ptr1, len1 );

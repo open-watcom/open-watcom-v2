@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,4 +47,4 @@ extern cg_name     StkElement( int idx );
 extern void        PopStkElements( int num );
 extern intstar4    DXPop( void );
 extern sym_id      SymPop( void );
-extern cg_name     IntegerConstant( ftn_type *value, uint size );
+extern cg_name     IntegerConstant( ftn_type *value, size_t size );
