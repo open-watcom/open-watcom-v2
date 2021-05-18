@@ -175,10 +175,10 @@ void    IOPurge( void ) {
 }
 
 
-static  uint    SrcRead( void ) {
-//===============================
-
-    uint        len;
+static size_t SrcRead( void )
+//===========================
+{
+    size_t      len;
     file_handle fp;
     char        msg[81];
 
@@ -197,7 +197,7 @@ static  uint    SrcRead( void ) {
 void    ReadSrc( void ) {
 //=======================
 
-    uint        len;
+    size_t      len;
 
     // If we are loading source as a result of an undefined
     // subprogram (as opposed to using an C$INCLUDE option),
