@@ -72,7 +72,7 @@
 default_lib             *DefaultLibs;
 dep_info                *DependencyInfo;
 
-aux_info                *AuxInfo;
+aux_info                *AuxList;
 aux_info                FortranInfo;
 aux_info                ProgramInfo;
 
@@ -180,7 +180,7 @@ void InitAuxInfo( void )
 #endif
 
     DefaultLibs = NULL;
-    AuxInfo = NULL;
+    AuxList = NULL;
     DependencyInfo = NULL;
 #if _INTEL_CPU
   #if _CPU == 8086
@@ -315,10 +315,10 @@ void FiniAuxInfo( void )
 {
     void        *next;
 
-    while( AuxInfo != NULL ) {
-        next = AuxInfo->link;
-        FreeAuxEntry( AuxInfo );
-        AuxInfo = next;
+    while( AuxList != NULL ) {
+        next = AuxList->link;
+        FreeAuxEntry( AuxList );
+        AuxList = next;
     }
     FreeAuxElements( &FortranInfo );
     FreeChain( &DefaultLibs );
@@ -552,12 +552,12 @@ aux_info *NewAuxEntry( const char *name, size_t name_len )
     aux->sym_len = name_len;
     memcpy( aux->sym_name, name, name_len );
     aux->sym_name[name_len] = NULLCHAR;
-    aux->link = AuxInfo;
+    aux->link = AuxList;
     aux->parms = DefaultInfo.parms;
     aux->code = DefaultInfo.code;
     aux->objname = DefaultInfo.objname;
     aux->arg_info = NULL;
-    AuxInfo = aux;
+    AuxList = aux;
     return( aux );
 }
 

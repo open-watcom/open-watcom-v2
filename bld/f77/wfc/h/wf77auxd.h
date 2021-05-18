@@ -60,7 +60,7 @@ extern aux_info     IFXInfo;
 extern aux_info     IFInfo;
 extern aux_info     FortranInfo;
 extern aux_info     ProgramInfo;
-extern aux_info     *AuxInfo;
+extern aux_info     *AuxList;
 
 extern aux_info     RtRtnInfo;
 extern aux_info     RtVarInfo;

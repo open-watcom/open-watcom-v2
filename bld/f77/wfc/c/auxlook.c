@@ -55,7 +55,7 @@ aux_info *AuxLookupName( const char *name, size_t name_len )
 {
     aux_info    *aux;
 
-    for( aux = AuxInfo; aux != NULL; aux = aux->link ) {
+    for( aux = AuxList; aux != NULL; aux = aux->link ) {
         if( aux->sym_len == name_len ) {
             if( strnicmp( name, aux->sym_name, name_len ) == 0 ) {
                 break;
