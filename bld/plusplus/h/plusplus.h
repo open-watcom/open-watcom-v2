@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -239,7 +239,7 @@ struct _src_file {                              // SOURCE FILE (PERMANENT)
 };
 
 typedef enum {
-    #define pick( a, b, c ) a,
+    #define pick(a,b,c,d)   a,
     #include "auxinfo.h"
     #undef pick
 } magic_word_idx;

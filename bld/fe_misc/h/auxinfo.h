@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -28,14 +29,15 @@
 *
 ****************************************************************************/
 
-pick( M_DEFAULT,  "\0\0default", &DefaultInfo  )
-pick( M_CDECL,    "__cdecl",     &CdeclInfo    )
-pick( M_PASCAL,   "__pascal",    &PascalInfo   )
-pick( M_FORTRAN,  "__fortran",   &FortranInfo  )
-pick( M_SYSCALL,  "__syscall",   &SyscallInfo  )
-pick( M_STDCALL,  "__stdcall",   &StdcallInfo  )
-pick( M_FASTCALL, "__fastcall",  &FastcallInfo )
-pick( M_OPTLINK,  "__optlink",   &OptlinkInfo  )
-pick( M_SYSTEM,   "__system",    &SyscallInfo  )
-pick( M_WATCALL,  "__watcall",   &WatcallInfo  )
-pick( M_UNKNOWN,  NULL,          NULL          )
+/*    enum        C/C++ magic    F77 magic     aux_info     */
+pick( M_DEFAULT,  "\0\0default", "DEFAULT",    &DefaultInfo  )
+pick( M_CDECL,    "__cdecl",     "__CDECL",    &CdeclInfo    )
+pick( M_PASCAL,   "__pascal",    "__PASCAL",   &PascalInfo   )
+pick( M_FORTRAN,  "__fortran",   "__FORTRAN",  &FortranInfo  )
+pick( M_SYSCALL,  "__syscall",   "__SYSCALL",  &SyscallInfo  )
+pick( M_STDCALL,  "__stdcall",   "__STDCALL",  &StdcallInfo  )
+pick( M_FASTCALL, "__fastcall",  "__FASTCALL", &FastcallInfo )
+pick( M_OPTLINK,  "__optlink",   "__OPTLINK",  &OptlinkInfo  )
+pick( M_SYSTEM,   "__system",    "__SYSTEM",   &SyscallInfo  )
+pick( M_WATCALL,  "__watcall",   "__WATCALL",  &WatcallInfo  )
+pick( M_UNKNOWN,  NULL,          NULL,         NULL          )
