@@ -1166,18 +1166,11 @@ static const char *GetBaseName( sym_id sym )
 {
     int         len;
     char        *buff;
-    aux_info    *aux;
 
     _UnShadow( sym );
     buff = StackBuffer( &len );
-    aux = AuxLookup( sym );
-    if( aux->sym_len > 0 ) {
-        strncpy( buff, aux->sym_name, aux->sym_len );
-        buff[ aux->sym_len ] = 0;
-    } else {
-        strncpy( buff, sym->u.ns.name, sym->u.ns.u2.name_len );
-        buff[ sym->u.ns.u2.name_len ] = 0;
-    }
+    strncpy( buff, sym->u.ns.name, sym->u.ns.u2.name_len );
+    buff[ sym->u.ns.u2.name_len ] = 0;
     return( buff );
 }
 
