@@ -1136,14 +1136,9 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
         return( (CGPOINTER)SegPeggedReg( (segment_id)(pointer_uint)req_handle ) );
     case DBG_DWARF_PRODUCER:
         return( (CGPOINTER)DWARF_PRODUCER_ID );
-    default:
-        break;
-    }
-
-    inf = FindInfo( &sym, req_handle );
-    switch( request ) {
     case SAVE_REGS:
-        if( req_handle != 0 ) {
+        inf = FindInfo( &sym, req_handle );
+        if( req_handle != NULL ) {
             inf = LangInfo( sym.mods, inf );
         } else {
             sym.mods = 0;
@@ -1164,11 +1159,13 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
   #endif
         return( (CGPOINTER)&save_set );
     case RETURN_REG:
-        if( req_handle != 0 ) {
+        inf = FindInfo( &sym, req_handle );
+        if( req_handle != NULL ) {
             inf = LangInfo( sym.mods, inf );
         }
         return( (CGPOINTER)&inf->returns );
     case CALL_BYTES:
+        inf = FindInfo( &sym, req_handle );
         return( (CGPOINTER)inf->code );
     case PARM_REGS:
   #ifdef __SEH__
@@ -1179,7 +1176,8 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
             return( (CGPOINTER)TryParms );
         }
   #endif
-        if( req_handle != 0 ) {
+        inf = FindInfo( &sym, req_handle );
+        if( req_handle != NULL ) {
             inf = LangInfo( sym.mods, inf );
             if( inf->code == NULL && VarFunc( &sym ) ) {
                 return( (CGPOINTER)DefaultVarParms );
@@ -1187,7 +1185,8 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
         }
         return( (CGPOINTER)inf->parms );
     case STRETURN_REG:
-        if( req_handle != 0 ) {
+        inf = FindInfo( &sym, req_handle );
+        if( req_handle != NULL ) {
             inf = LangInfo( sym.mods, inf );
         }
         return( (CGPOINTER)&inf->streturn );
@@ -1264,14 +1263,9 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
         return( (CGPOINTER)&(((FNAMEPTR)req_handle)->mtime) );
     case DEPENDENCY_NAME:
         return( (CGPOINTER)FNameFullPath( (FNAMEPTR)req_handle ) );
-    default:
-        break;
-    }
-
-    inf = FindInfo( &sym, req_handle );
-    switch( request ) {
     case SAVE_REGS:
-        if( req_handle != 0 ) {
+        inf = FindInfo( &sym, req_handle );
+        if( req_handle != NULL ) {
             inf = LangInfo( sym.mods, inf );
         } else {
             sym.mods = 0;
@@ -1279,14 +1273,17 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
         save_set = inf->save;
         return( (CGPOINTER)&save_set );
     case RETURN_REG:
-        if( req_handle != 0 ) {
+        inf = FindInfo( &sym, req_handle );
+        if( req_handle != NULL ) {
             inf = LangInfo( sym.mods, inf );
         }
         return( (CGPOINTER)&inf->returns );
     case CALL_BYTES:
+        inf = FindInfo( &sym, req_handle );
         return( (CGPOINTER)inf->code );
     case PARM_REGS:
-        if( req_handle != 0 ) {
+        inf = FindInfo( &sym, req_handle );
+        if( req_handle != NULL ) {
             inf = LangInfo( sym.mods, inf );
             if( inf->code == NULL && VarFunc( &sym ) ) {
                 return( (CGPOINTER)DefaultVarParms );

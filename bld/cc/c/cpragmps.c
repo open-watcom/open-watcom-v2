@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -179,7 +179,7 @@ static void InitAuxInfo( void )
 //    AuxInfoFlg.f_streturn = false;
 }
 
-static void CopyAuxInfo( void )
+static void PragmaAuxEnd( void )
 {
     if( CurrEntry == NULL ) {
         // Redefining a built-in calling convention
@@ -203,6 +203,7 @@ static void CopyAuxInfo( void )
     if( !HW_CEqual( AuxInfo.save, HW_EMPTY ) ) {
         HW_TurnOff( CurrInfo->save, AuxInfo.save );
     }
+    PragEnding();
 }
 
 bool GetPragAuxAlias( void )
@@ -212,7 +213,7 @@ bool GetPragAuxAlias( void )
     NextToken();
     if( CurToken == T_RIGHT_PAREN )
         NextToken();
-    CopyAuxInfo();
+    PragmaAuxEnd();
     return( true );
 }
 
@@ -303,8 +304,7 @@ void PragAux( void )
             */
 //            HW_CTurnOn( AuxInfo.save, HW_SP );
         }
-        CopyAuxInfo();
-        PragEnding();
+        PragmaAuxEnd();
     }
     PPCTL_DISABLE_MACROS();
 }

@@ -229,7 +229,6 @@ bool GetPragAuxAliasInfo( void )
         if( !IS_ID_OR_KEYWORD( CurToken ) )
             return( false );                /* error */
         GetPragAuxAlias();
-        PragEnding();
         return( false );                    /* process no more! */
     } else {                                /* error */
         advanceToken();

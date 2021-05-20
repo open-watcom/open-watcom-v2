@@ -150,8 +150,8 @@ static void InitAuxInfo( void )
     AuxInfoFlg.f_8087_returns = false;
 }
 
-static void CopyAuxInfo( void )
-/*****************************/
+static void PragmaAuxEnd( void )
+/******************************/
 {
     hw_reg_set      default_flt_n_seg;
     hw_reg_set      flt_n_seg;
@@ -200,6 +200,7 @@ static void CopyAuxInfo( void )
         }
         HW_TurnOff( CurrInfo->save, AuxInfo.save );
     }
+    PragEnding();
 }
 
 bool GetPragAuxAlias( void )
@@ -215,7 +216,7 @@ bool GetPragAuxAlias( void )
         PPNextToken();
     if( isfar16 )
         AuxInfo.flags |= AUX_FLAG_FAR16;
-    CopyAuxInfo();
+    PragmaAuxEnd();
     return( true );
 }
 
@@ -959,8 +960,7 @@ void PragAux( void )
 //            HW_CTurnOff( AuxInfo.save, HW_ESP );
 #endif
         }
-        CopyAuxInfo();
-        PragEnding();
+        PragmaAuxEnd();
     }
     PPCTL_DISABLE_MACROS();
 }
