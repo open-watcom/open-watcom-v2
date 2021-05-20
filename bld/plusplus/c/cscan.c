@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -239,75 +239,50 @@ static void doScanCComment( void )
     if( CompFlags.cpp_output ) {
         prt_comment_char( '/' );
         prt_comment_char( '*' );
-        c = '\0';
+    }
+    c = '\0';
+    for(;;) {
         for(;;) {
-            for(;;) {
-                prev_char = c;
-                c = NextChar();
-                prt_comment_char( c );
-                if( c == '/' )
-                    break;
-                if( c == LCHR_EOF ) {
-                    /* unterminated comment already detected in NextChar() */
-                    CompFlags.scanning_c_comment = false;
-                    return;
-                }
-            }
-            if( prev_char == '*' )
-                break;
-            // get next character and see if it is '*' for nested comment
+            prev_char = c;
             c = NextChar();
-            prt_comment_char( c );
-            if( c == '*' ) {
-                /* '*' may be just about to close this comment */
-                c = NextChar();
+            if( c == LCHR_EOF )
+                break;
+            if( CompFlags.cpp_output ) {
                 prt_comment_char( c );
-                if( c == '/' )
-                    break;
-                if( c == LCHR_EOF ) {
-                    /* unterminated comment already detected in NextChar() */
-                    CompFlags.scanning_c_comment = false;
-                    return;
-                }
-                SrcFileSetErrLoc();
-                CErr2( WARN_NESTED_COMMENT, start_line );
+            }
+            if( c == '/' ) {
+                break;
             }
         }
-    } else {
-        c = '\0';
-        for(;;) {
-            for(;;) {
-                prev_char = c;
-                c = NextChar();
-                if( c == '/' )
-                    break;
-                if( c == LCHR_EOF ) {
-                    /* unterminated comment already detected in NextChar() */
-                    CompFlags.scanning_c_comment = false;
-                    return;
-                }
-            }
-            if( prev_char == '*' )
-                break;
-            // get next character and see if it is '*' for nested comment
+        if( c == LCHR_EOF )
+            break;
+        if( prev_char == '*' )
+            break;
+        // get next character and see if it is '*' for nested comment
+        c = NextChar();
+        if( c == LCHR_EOF )
+            break;
+        if( CompFlags.cpp_output ) {
+            prt_comment_char( c );
+        }
+        if( c == '*' ) {
+            /* '*' may be just about to close this comment */
             c = NextChar();
-            if( c == '*' ) {
-                /* '*' may be just about to close this comment */
-                c = NextChar();
-                if( c == '/' )
-                    break;
-                if( c == LCHR_EOF ) {
-                    /* unterminated comment already detected in NextChar() */
-                    CompFlags.scanning_c_comment = false;
-                    return;
-                }
-                SrcFileSetErrLoc();
-                CErr2( WARN_NESTED_COMMENT, start_line );
+            if( c == LCHR_EOF )
+                break;
+            if( CompFlags.cpp_output ) {
+                prt_comment_char( c );
             }
+            if( c == '/' )
+                break;
+            SrcFileSetErrLoc();
+            CErr2( WARN_NESTED_COMMENT, start_line );
         }
     }
     CompFlags.scanning_c_comment = false;
-    NextChar();
+    if( c != LCHR_EOF ) {
+        NextChar();
+    }
 }
 
 static void doScanCppComment( void )
@@ -318,16 +293,16 @@ static void doScanCppComment( void )
     if( CompFlags.cpp_output ) {
         prt_comment_char( '/' );
         prt_comment_char( '/' );
-        for(;;) {
-            c = NextChar();
-            if( c == LCHR_EOF )
-                break;
-            if( c == '\n' )
-                break;
+    }
+    for(;;) {
+        c = NextChar();
+        if( c == LCHR_EOF )
+            break;
+        if( c == '\n' )
+            break;
+        if( CompFlags.cpp_output ) {
             prt_comment_char( c );
         }
-    } else {
-        SrcFileScanCppComment();
     }
     CompFlags.scanning_cpp_comment = false;
 }

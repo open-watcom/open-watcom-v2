@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,9 +57,6 @@ int SrcFileScanName(            // SCAN AN IDENTIFIER
 ;
 void SrcFileScanWhiteSpace(     // SCAN WHITESPACE
     bool expanding )            // - expanding a macro
-;
-void SrcFileScanCppComment(     // SCAN C++ COMMENT
-    void )
 ;
 bool IsSrcFileCmdLine(          // DETERMINE IF SOURCE FILE IS FOR CMD-LINE
     SRCFILE sf )                // - a source file

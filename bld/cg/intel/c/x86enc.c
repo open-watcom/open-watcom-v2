@@ -1445,9 +1445,9 @@ void    GenTouchStack( bool sp_might_point_at_something )
         QuickSave( HW_xAX, OP_POP );
     } else {
         _Code;
-        LayOpword( 0x0489 );
-        OpndSize( HW_xSP );
-        AddByte( 0x24 );
+        LayOpword( 0x0489 );    /*  mov dword ptr [esp],eax */
+        OpndSize( HW_xSP );     /*  ..                      */
+        AddByte( 0x24 );        /*  ..                      */
         _Emit;
     }
 #endif

@@ -276,28 +276,28 @@ void InitAuxInfo( void )
 }
 
 
-static void FreeArgList( aux_info *aux )
-//======================================
+static void FreeArgList( aux_info *info )
+//=======================================
 {
-    FreeChain( &aux->arg_info );
+    FreeChain( &info->arg_info );
 }
 
 
-static void FreeAuxElements( aux_info *aux )
-//==========================================
+static void FreeAuxElements( aux_info *info )
+//===========================================
 {
-    FreeArgList( aux );
-    if( aux->parms != DefaultInfo.parms ) {
-        FMemFree( aux->parms );
-        aux->parms = DefaultInfo.parms;
+    FreeArgList( info );
+    if( info->parms != DefaultInfo.parms ) {
+        FMemFree( info->parms );
+        info->parms = DefaultInfo.parms;
     }
-    if( aux->code != DefaultInfo.code ) {
-        FMemFree( aux->code );
-        aux->code = DefaultInfo.code;
+    if( info->code != DefaultInfo.code ) {
+        FMemFree( info->code );
+        info->code = DefaultInfo.code;
     }
-    if( aux->objname != DefaultInfo.objname ) {
-        FMemFree( aux->objname );
-        aux->objname = DefaultInfo.objname;
+    if( info->objname != DefaultInfo.objname ) {
+        FMemFree( info->objname );
+        info->objname = DefaultInfo.objname;
     }
 }
 

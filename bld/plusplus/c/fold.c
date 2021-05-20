@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -248,7 +249,7 @@ static bool nonZeroExpr( PTREE expr )
 
 
 /**
- * Check that the expression has no side effects.
+ * Check that the expression has side effects.
  *
  * \param expr The expression to be tested.
  */
@@ -282,10 +283,10 @@ static bool foldable( PTREE expr )
     default :
         if( zeroConstant( expr ) ) {
             return( true );
-        } else {
-            return( false );
         }
+        break;
     }
+    return( false );
 }
 
 PTREE CastIntConstant( PTREE expr, TYPE type, bool *happened )

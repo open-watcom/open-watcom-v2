@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1307,71 +1307,6 @@ void SrcFileScanWhiteSpace( bool expanding )
     }
 }
 
-void SrcFileScanCppComment( void )
-{
-    const unsigned char *p;
-    OPEN_FILE           *act;
-    int                 c;
-
-    if( NextChar == GetNextChar ) {
-        for( ;; ) {
-            // codegen can't do this optimization so we have to
-            c = '\0';
-            act = activeSrc();
-            p = act->nextc;
-            for( ;; ) {
-                c = *p++;
-                if( CharSet[c] & C_EX )
-                    break;
-                c = *p++;
-                if( CharSet[c] & C_EX )
-                    break;
-                c = *p++;
-                if( CharSet[c] & C_EX )
-                    break;
-                c = *p++;
-                if( CharSet[c] & C_EX ) {
-                    break;
-                }
-            }
-            // we don't have to keep the column up to date, because once
-            // we get to the end of the line, we will be starting the
-            // next line at column 0.
-            // act->column += p - act->nextc;
-            act->nextc = p;
-            if( c == '\n' ) {
-                act->line++;
-                act->column = 0;
-                break;
-            }
-            if( c != '\t' && c != '\r' ) {
-                c = getCharCheck( act, c );
-                if( c == '\n' || c == LCHR_EOF ) {
-                    return;
-                }
-                // might be a '?' in which case, NextChar has been changed
-                // to a special routine. In that case, keep calling it
-                // until we get back to scanning normal characters
-                while( NextChar != GetNextChar ) {
-                    c = NextChar();
-                    if( c == '\n' || c == LCHR_EOF ) {
-                        return;
-                    }
-                }
-            }
-        }
-        CurrChar = c;
-    } else {
-        for( ;; ) {
-            c = NextChar();
-            if( c == LCHR_EOF )
-                break;
-            if( c == '\n' ) {
-                break;
-            }
-        }
-    }
-}
 
 bool IsSrcFilePrimary(          // DETERMINE IF PRIMARY SOURCE FILE
     SRCFILE sf )                // - a source file

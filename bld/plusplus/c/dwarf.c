@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -130,10 +130,10 @@ static void type_reset( TYPE type )
     }
 }
 
-static void type_update( TYPE type, type_dbgflag mask, dw_handle dh )
-/*******************************************************************/
+static void type_update( TYPE type, type_dbgflag flags, dw_handle dh )
+/********************************************************************/
 {
-    type->dbgflag = (type->dbgflag & ~TF2_DWARF ) | mask;
+    type->dbgflag = (type->dbgflag & ~TF2_DWARF ) | flags;
     type->dbg.handle = dh;
 }
 
@@ -147,8 +147,8 @@ static void sym_reset( SYMBOL sym )
     }
 }
 
-static void sym_update( SYMBOL sym, symbol_flag2 mask, dw_handle dh )
-/*******************************************************************/
+static void sym_update( SYMBOL sym, symbol_flag2 flags, dw_handle dh )
+/********************************************************************/
 {
     #ifndef NDEBUG
     if( sym->flag2 & SYMF2_CG_HANDLE ) {
@@ -156,7 +156,7 @@ static void sym_update( SYMBOL sym, symbol_flag2 mask, dw_handle dh )
         CFatal( "dwarf: handle for sym busy" );
     }
     #endif
-    sym->flag2 |= mask;
+    sym->flag2 |= flags;
     if( sym->flag2 & SYMF2_TOKEN_LOCN ) {
         sym->locn->u.dwh = dh;
     }
