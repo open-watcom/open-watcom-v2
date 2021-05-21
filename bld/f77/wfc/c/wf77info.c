@@ -1162,6 +1162,12 @@ static char *GetName( sym_id sym ) {
     return( SymBuff );
 }
 
+static aux_info *GetAuxInfo( sym_id sym )
+{
+    _UnShadow( sym );
+    return( InfoLookup( sym ) );
+}
+
 static const char *GetBaseName( sym_id sym )
 {
     _UnShadow( sym );
@@ -1172,8 +1178,7 @@ static const char *GetNamePattern( sym_id sym )
 {
     aux_info    *info;
 
-    _UnShadow( sym );
-    info = InfoLookup( sym );
+    info = GetAuxInfo( sym );
     return( info->objname );
 }
 
@@ -1183,8 +1188,7 @@ static uint GetParmsSize( sym_id sym )
     pass_by     *arg;
     aux_info    *info;
 
-    _UnShadow( sym );
-    info = InfoLookup( sym );
+    info = GetAuxInfo( sym );
     args_size = 0;
     for( arg = info->arg_info; arg != NULL; arg = arg->link ) {
         if( arg->info & ARG_SIZE_1 ) {
@@ -1280,6 +1284,7 @@ cg_type FEParmType( cg_sym_handle fn, cg_sym_handle parm, cg_type tipe ) {
 #if _CPU == 386
         {
             aux_info    *info;
+
             info = InfoLookup( (sym_id)fn );
             if( info != NULL ) {
                 if( info->cclass & FAR16_CALL ) {
@@ -1315,17 +1320,6 @@ int     FEStackChk( cg_sym_handle _sym ) {
 
     _UnShadow( sym );
     return( ( CGOpts & CGOPT_STACK_CHK ) != 0 );
-}
-
-
-static  char    *AuxName( aux_info *aux, char *buff ) {
-//=====================================================
-
-    if( (aux == &FortranInfo) || (aux == &DefaultInfo) ) {
-        STGetName( SubProgId, buff );
-        return( buff );
-    }
-    return( aux->sym_name );
 }
 
 
@@ -1386,7 +1380,7 @@ void    FEMessage( int msg, pointer x ) {
         Error( CP_BAD_PARM_REGISTER, x );
         break;
     case MSG_BAD_RETURN_REGISTER :
-        Error( CP_BAD_RETURN_REGISTER, AuxName( x, name ) );
+        Error( CP_BAD_RETURN_REGISTER, FEName( x ) );
         break;
     case MSG_REGALLOC_DIED :
     case MSG_SCOREBOARD_DIED :
@@ -1407,7 +1401,7 @@ void    FEMessage( int msg, pointer x ) {
         Error( CP_BACK_END_ERROR, (int)(pointer_uint)x );
         break;
     case MSG_BAD_SAVE :
-        Error( CP_BAD_SAVE, AuxName( x, name ) );
+        Error( CP_BAD_SAVE, FEName( x ) );
         break;
     case MSG_BLIP :
         if( (Options & OPT_QUIET) == 0 ) {
@@ -1876,33 +1870,40 @@ pointer FEAuxInfo( pointer req_handle, int request )
     char        *fn;
     char        *fe;
     char        *ptr;
+    aux_info    *info;
 
     switch( request ) {
     case CALL_CLASS :
         {
             static call_class CallClass;
 
-            CallClass = ((aux_info *)req_handle)->cclass ^ REVERSE_PARMS;
+            info = GetAuxInfo( req_handle );
+            CallClass = info->cclass ^ REVERSE_PARMS;
             return( (pointer)&CallClass );
         }
     case SAVE_REGS :
-        return( (pointer)&((aux_info *)req_handle)->save );
+        info = GetAuxInfo( req_handle );
+        return( (pointer)&info->save );
     case RETURN_REG :
-        return( (pointer)&((aux_info *)req_handle)->returns );
+        info = GetAuxInfo( req_handle );
+        return( (pointer)&info->returns );
     case PARM_REGS :
-        return( (pointer)((aux_info *)req_handle)->parms );
+        info = GetAuxInfo( req_handle );
+        return( (pointer)info->parms );
     case CALL_BYTES :
 #if _CPU == _AXP || _CPU == _PPC
         return( NULL );
 #else
-        return( (pointer)((aux_info *)req_handle)->code );
+        info = GetAuxInfo( req_handle );
+        return( (pointer)info->code );
 #endif
 #if _CPU == 8086 || _CPU == 386
     case CODE_GROUP :
     case DATA_GROUP :
         return( (pointer)"" );
     case STRETURN_REG :
-        return( (pointer)&((aux_info *)req_handle)->streturn );
+        info = GetAuxInfo( req_handle );
+        return( (pointer)&info->streturn );
 #endif
     case NEXT_IMPORT :
         switch( (int)(pointer_uint)req_handle ) {
@@ -2022,9 +2023,7 @@ pointer FEAuxInfo( pointer req_handle, int request )
     case SOURCE_NAME :
         return( GetFullSrcName() );
     case AUX_LOOKUP :
-        sym = (sym_id)req_handle;
-        _UnShadow( sym );
-        return( InfoLookup( sym ) );
+        return( req_handle );
     case OBJECT_FILE_NAME :
         if( ObjName == NULL ) {
             MakeName( SDFName( SrcName ), ObjExtn, TokenBuff );
