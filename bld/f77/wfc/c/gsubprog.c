@@ -215,7 +215,7 @@ static  int     DumpArgInfo( itnode *node ) {
     PTYPE       parm_type;
     PCODE       parm_code;
 #if _CPU == 386
-    aux_info    *aux;
+    aux_info    *info;
 #endif
 
     num_args = 0;
@@ -232,8 +232,8 @@ static  int     DumpArgInfo( itnode *node ) {
                 parm_code = ParmClass( node );
 #if _CPU == 386
                 if( (parm_code == PC_PROCEDURE) || (parm_code == PC_FN_OR_SUB) ) {
-                    aux = AuxLookup( node->sym_ptr );
-                    if( aux->cclass & FAR16_CALL ) {
+                    info = InfoLookup( node->sym_ptr );
+                    if( info->cclass & FAR16_CALL ) {
                         parm_code |= PC_PROC_FAR16;
                     }
                 }

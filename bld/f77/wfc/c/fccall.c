@@ -373,13 +373,13 @@ static  void    PassCommonArgs( call_handle call, entry_pt *ep_called ) {
     parameter   *arg;
     cg_name     cg;
     cg_type     arg_type;
-    aux_info    *aux;
+    aux_info    *info;
     pass_by     *arg_aux;
 
     ep = Entries;
     while( ep != NULL ) {
-        aux = AuxLookup( ep->id );
-        arg_aux = aux->arg_info;
+        info = InfoLookup( ep->id );
+        arg_aux = info->arg_info;
         arg = ep->parms;
         while( arg != NULL ) {
             if( ( arg->flags & ( ARG_DUPLICATE | ARG_STMTNO ) ) == 0 ) {
@@ -518,7 +518,7 @@ void    FCCall( void ) {
     uint        idx;
     call_handle call;
     cg_type     sp_type;
-    aux_info    *aux;
+    aux_info    *info;
     cg_name     rtn;
     unsigned_16 arg_info;
     PTYPE       arg_type;
@@ -539,8 +539,8 @@ void    FCCall( void ) {
     scb = NULL;
     sp = GetPtr();
     sp_type = SPType( sp );
-    aux = AuxLookup( sp );
-    arg_aux = aux->arg_info;
+    info = InfoLookup( sp );
+    arg_aux = info->arg_info;
     if( sp->u.ns.flags & SY_SUB_PARM ) {
         rtn = CGUnary( O_POINTS, CGFEName( sp, TY_CODE_PTR ), TY_CODE_PTR );
     } else {
@@ -563,7 +563,7 @@ void    FCCall( void ) {
             scb = GetPtr();
             arg = SCBPointer( CGFEName( scb, TY_CHAR ) );
 #if _CPU == 386
-            if( aux->cclass & FAR16_CALL ) {
+            if( info->cclass & FAR16_CALL ) {
                 arg = CGUnary( O_PTR_TO_FOREIGN, arg, TY_POINTER );
             }
 #endif
@@ -585,7 +585,7 @@ void    FCCall( void ) {
             arg = XPop();
             cg_typ = TY_CODE_PTR;
 #if _CPU == 386 || _CPU == 8086
-            if( (aux->cclass & FAR16_CALL) && arg_proc_far16 ) {
+            if( (info->cclass & FAR16_CALL) && arg_proc_far16 ) {
                 chk_foreign = false;
             } else if( arg_aux != NULL ) {
                 if( arg_aux->info & ARG_FAR ) {
@@ -623,7 +623,7 @@ void    FCCall( void ) {
                 ++idx;
             }
 #if _CPU == 386
-            if( pass_scb && (aux->cclass & FAR16_CALL) ) {
+            if( pass_scb && (info->cclass & FAR16_CALL) ) {
                 arg = MkSCB16( arg );
             }
 #endif
@@ -721,7 +721,7 @@ void    FCCall( void ) {
             }
         }
 #if _CPU == 386 || _CPU == 8086
-        if( (aux->cclass & FAR16_CALL) && chk_foreign ) {
+        if( (info->cclass & FAR16_CALL) && chk_foreign ) {
             arg = CGUnary( O_PTR_TO_FOREIGN, arg, cg_typ );
         }
 #endif
@@ -745,7 +745,7 @@ void    FCCall( void ) {
                 scb = GetPtr();
                 arg = CGFEName( scb, TY_CHAR );
 #if _CPU == 386
-                if( aux->cclass & FAR16_CALL ) {
+                if( info->cclass & FAR16_CALL ) {
                     arg = MkSCB16( arg );
                     arg = CGUnary( O_PTR_TO_FOREIGN, arg, TY_GLOBAL_POINTER );
                 }

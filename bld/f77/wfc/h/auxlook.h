@@ -32,4 +32,4 @@
 
 extern aux_info     *AuxLookupName( const char *name, size_t name_len );
 extern aux_info     *AuxLookupAdd( const char *name, size_t name_len );
-extern aux_info     *AuxLookup( sym_id sym );
+extern aux_info     *InfoLookup( sym_id sym );

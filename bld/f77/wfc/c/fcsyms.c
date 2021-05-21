@@ -1406,13 +1406,13 @@ static  void    DefineCommonEntry( void ) {
 
     entry_pt    *ep;
     parameter   *arg;
-    aux_info    *aux;
+    aux_info    *info;
     pass_by     *arg_aux;
 
     ep = Entries;
     while( ep != NULL ) {
-        aux = AuxLookup( ep->id );
-        arg_aux = aux->arg_info;
+        info = InfoLookup( ep->id );
+        arg_aux = info->arg_info;
         for( arg = ep->parms; arg != NULL; arg = arg->link ) {
             if( (arg->flags & (ARG_DUPLICATE | ARG_STMTNO)) == 0 ) {
                 DeclareArg( arg, arg_aux );
@@ -1446,13 +1446,13 @@ static  void    DefineCommonEntry( void ) {
 }
 
 
-static  void    DeclareShadowArgs( entry_pt *ep, aux_info *aux ) {
-//================================================================
-
+static  void    DeclareShadowArgs( entry_pt *ep, aux_info *info ) 
+//===============================================================
+{
     parameter   *arg;
     pass_by     *arg_aux;
 
-    arg_aux = aux->arg_info;
+    arg_aux = info->arg_info;
     for( arg = ep->parms; arg != NULL; arg = arg->link ) {
         if( (arg->flags & ARG_STMTNO) == 0 ) {
             if( arg->id->u.ns.u1.s.typ == FT_CHAR ) {
@@ -1519,15 +1519,15 @@ static  void    DefineArgs( entry_pt *ep ) {
 //==========================================
 
     parameter   *arg;
-    aux_info    *aux;
+    aux_info    *info;
     pass_by     *arg_aux;
 
-    aux = AuxLookup( ep->id );
-    if( (aux->cclass & REVERSE_PARMS) ) {
+    info = InfoLookup( ep->id );
+    if( (info->cclass & REVERSE_PARMS) ) {
         ReverseList( (void **)&ep->parms );
-        ReverseList( (void **)&aux->arg_info );
+        ReverseList( (void **)&info->arg_info );
     }
-    arg_aux = aux->arg_info;
+    arg_aux = info->arg_info;
     for( arg = ep->parms; arg != NULL; arg = arg->link ) {
         if( (arg->flags & ARG_STMTNO) == 0 ) {
             DeclareArg( arg, arg_aux );
@@ -1537,10 +1537,10 @@ static  void    DefineArgs( entry_pt *ep ) {
         }
     }
     if( (Options & OPT_DESCRIPTOR) == 0 ) {
-        DeclareShadowArgs( ep, aux );
+        DeclareShadowArgs( ep, info );
     }
-    if( (aux->cclass & REVERSE_PARMS) ) {
+    if( (info->cclass & REVERSE_PARMS) ) {
         ReverseList( (void **)&ep->parms );
-        ReverseList( (void **)&aux->arg_info );
+        ReverseList( (void **)&info->arg_info );
     }
 }

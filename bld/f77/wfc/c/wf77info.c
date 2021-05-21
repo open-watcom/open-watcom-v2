@@ -1170,23 +1170,23 @@ static const char *GetBaseName( sym_id sym )
 
 static const char *GetNamePattern( sym_id sym )
 {
-    aux_info    *aux;
+    aux_info    *info;
 
     _UnShadow( sym );
-    aux = AuxLookup( sym );
-    return( aux->objname );
+    info = InfoLookup( sym );
+    return( info->objname );
 }
 
 static uint GetParmsSize( sym_id sym )
 {
     uint        args_size;
     pass_by     *arg;
-    aux_info    *aux;
+    aux_info    *info;
 
     _UnShadow( sym );
-    aux = AuxLookup( sym );
+    info = InfoLookup( sym );
     args_size = 0;
-    for( arg = aux->arg_info; arg != NULL; arg = arg->link ) {
+    for( arg = info->arg_info; arg != NULL; arg = arg->link ) {
         if( arg->info & ARG_SIZE_1 ) {
             args_size += 1;
         } else if( arg->info & ARG_SIZE_2 ) {
@@ -1279,10 +1279,10 @@ cg_type FEParmType( cg_sym_handle fn, cg_sym_handle parm, cg_type tipe ) {
     case TY_UINT_1:
 #if _CPU == 386
         {
-            aux_info    *aux;
-            aux = AuxLookup( (sym_id)fn );
-            if( aux != NULL ) {
-                if( aux->cclass & FAR16_CALL ) {
+            aux_info    *info;
+            info = InfoLookup( (sym_id)fn );
+            if( info != NULL ) {
+                if( info->cclass & FAR16_CALL ) {
                     return( TY_INT_2 );
                 }
             }
@@ -2024,7 +2024,7 @@ pointer FEAuxInfo( pointer req_handle, int request )
     case AUX_LOOKUP :
         sym = (sym_id)req_handle;
         _UnShadow( sym );
-        return( AuxLookup( sym ) );
+        return( InfoLookup( sym ) );
     case OBJECT_FILE_NAME :
         if( ObjName == NULL ) {
             MakeName( SDFName( SrcName ), ObjExtn, TokenBuff );

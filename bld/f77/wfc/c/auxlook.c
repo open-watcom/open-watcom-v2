@@ -80,9 +80,9 @@ aux_info *AuxLookupAdd( const char *name, size_t name_len )
 }
 
 
-aux_info    *AuxLookup( sym_id sym ) {
-//====================================
-
+aux_info    *InfoLookup( sym_id sym )
+//===================================
+{
     aux_info    *info;
 
     if( sym == NULL )
