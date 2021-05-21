@@ -866,10 +866,10 @@ static dw_handle BIGetUnionType( sym_id ste_ptr ) {
 
     struct fstruct      *fs;
     dw_handle           ret;
-    symbol              data;
-    long                max = 0;
-    long                map = 0;
-    char                buff[12];
+    sym_id              sym;
+    size_t              max = 0;
+    int                 map = 0;
+    char                buff[15];
 
     ret = DWStruct( cBIId, DW_ST_UNION );
     // find the largest size of map
@@ -881,21 +881,22 @@ static dw_handle BIGetUnionType( sym_id ste_ptr ) {
     // Start the union declaration
     DWDeclPos( cBIId, CurrFile->rec, 0 );
     DWBeginStruct( cBIId, ret, max, ste_ptr->u.ns.name, 0, 0 );
-    data.u.ns.xt.record = FMemAlloc( sizeof( fstruct) + STD_SYMLEN );
+    sym = FMemAlloc( sizeof( named_symbol ) + sizeof( buff ) );
+    sym->u.ns.xt.record = FMemAlloc( sizeof( fstruct) + sizeof( buff ) );
     for( fs = ste_ptr->u.ns.xt.record; fs != NULL; fs = &fs->link->u.sd ) {
-        memset( data.u.ns.xt.record, 0, sizeof( fstruct ) + STD_SYMLEN );
-        memcpy( data.u.ns.xt.record, fs, sizeof( fmap ) );
-        data.u.ns.si.va.u.dim_ext = NULL;
-        data.u.ns.u1.s.typ = FT_STRUCTURE;
-        strcpy( data.u.ns.name, "MAP" );
-        strcat( data.u.ns.name, itoa( map, buff, 10 ) );
-        data.u.ns.u2.name_len = strlen( data.u.ns.name );
-        strcpy( data.u.ns.xt.record->name, data.u.ns.name );
-        data.u.ns.xt.record->name_len = data.u.ns.u2.name_len;
+        memset( sym->u.ns.xt.record, 0, sizeof( fstruct ) + sizeof( buff ) );
+        memcpy( sym->u.ns.xt.record, fs, sizeof( fmap ) );
+        sym->u.ns.si.va.u.dim_ext = NULL;
+        sym->u.ns.u1.s.typ = FT_STRUCTURE;
+        sym->u.ns.u2.name_len = sprintf( buff, "MAP%d", map );
+        strcpy( sym->u.ns.name, buff);
+        sym->u.ns.xt.record->name_len = sym->u.ns.u2.name_len;
+        strcpy( sym->u.ns.xt.record->name, buff );
         map++;
-        DWAddField( cBIId, BIGetType( &data ), justJunk, data.u.ns.name, 0 );
+        DWAddField( cBIId, BIGetType( sym ), justJunk, sym->u.ns.name, 0 );
     }
-    FMemFree( data.u.ns.xt.record );
+    FMemFree( sym->u.ns.xt.record );
+    FMemFree( sym );
     DWEndStruct( cBIId );
     return( ret );
 }
