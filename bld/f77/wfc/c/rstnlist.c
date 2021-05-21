@@ -46,11 +46,12 @@ static  sym_id  AddNameList( const char *name, size_t length )
 {
     sym_id      sym;
 
-    sym = FMemAlloc( sizeof( name_list ) + AllocName( length ) );
+    sym = FMemAlloc( sizeof( name_list ) + length );
     sym->u.nl.name_len = length;
     sym->u.nl.address = NULL;
     sym->u.nl.dbh = 0;
     memcpy( &sym->u.nl.name, name, length );
+    sym->u.nl.name[length] = NULLCHAR;
     return( sym );
 }
 

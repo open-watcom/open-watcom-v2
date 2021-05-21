@@ -91,7 +91,7 @@ void ErrorMsg( b_file *io, char *buf, size_t max_len )
         msg = ErrMsgs[err];
     }
     strncpy( buf, msg, max_len - 1 );
-    buf[max_len - 1] = '\0';
+    buf[max_len - 1] = NULLCHAR;
 }
 
 

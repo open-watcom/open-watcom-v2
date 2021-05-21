@@ -282,7 +282,7 @@ typedef struct named_symbol {
         struct p_constant   pc;         // information for parameter constants
         struct m_sym        ms;         // information for magic symbols
     } si;
-    char        name[STD_SYMLEN];       // symbol name
+    char        name[1];                // symbol name
 } named_symbol;
 
 typedef struct symbol {

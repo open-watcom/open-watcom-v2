@@ -80,7 +80,7 @@ static  aux_info        *CurrAux;
 static  const char      *TokStart;
 static  const char      *TokEnd;
 static  aux_info        *AliasInfo;
-static  char            SymName[MAX_SYMLEN];
+static  char            SymName[MAX_SYMLEN+1];
 static  size_t          SymLen;
 
 #if _INTEL_CPU
@@ -576,7 +576,7 @@ static bool CurrToken( const char *tok )
         ptr++;
         tok++;
     }
-    if( ( ptr == TokEnd ) && ( *tok == '\0' ) )
+    if( ( ptr == TokEnd ) && ( *tok == NULLCHAR ) )
         return( true );
     return( false );
 }
@@ -598,14 +598,14 @@ static void ScanToken( void )
         switch( *ptr ) {
         case ' ' :
         case '\t' :
-        case '\0' :
+        case NULLCHAR :
             found_token = true;
             break;
         case '"' :
             if( first ) {
                 for(;;) {
                     ++ptr;
-                    if( *ptr == '\0' )
+                    if( *ptr == NULLCHAR )
                         break;
                     if( *ptr == '"' ) {
                         ++ptr;
@@ -695,14 +695,14 @@ static void ScanFnToken( void )
         switch( *ptr ) {
         case ' ' :
         case '\t' :
-        case '\0' :
+        case NULLCHAR :
             found_token = true;
             break;
         case '"' :
             if( first ) {
                 for(;;) {
                     ++ptr;
-                    if( *ptr == '\0' )
+                    if( *ptr == NULLCHAR )
                         break;
                     if( *ptr == '"' ) {
                         ++ptr;
@@ -781,6 +781,7 @@ static void SymbolName( void )
             SymLen = MAX_SYMLEN;
         }
         memcpy( SymName, TokStart, SymLen );
+        SymName[SymLen] = NULLCHAR;
         ScanToken();
     }
 }

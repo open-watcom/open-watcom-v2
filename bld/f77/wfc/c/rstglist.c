@@ -64,7 +64,7 @@ static  sym_id  LnkNewGlobal( sym_id local ) {
     sym_id      global;
     size_t      len;
 
-    len = sizeof( symbol ) + AllocName( local->u.ns.u2.name_len );
+    len = sizeof( named_symbol ) + local->u.ns.u2.name_len;
     global = FMemAlloc( len );
     memcpy( global, local, len );
     HashInsert( GHashTable, HashValue, &GList, global );
@@ -84,10 +84,10 @@ sym_id        SearchGList( sym_id local ) {
 
     name_len = local->u.ns.u2.name_len;
     HashValue = CalcHash( local->u.ns.name, name_len );
-    head = GHashTable[ HashValue ].h_head;
+    head = GHashTable[HashValue].h_head;
     if( head == NULL )
         return( NULL );
-    tail = GHashTable[ HashValue ].h_tail;
+    tail = GHashTable[HashValue].h_tail;
     for(;;) {
         if( ( head->u.ns.u2.name_len == name_len ) &&
             ( memcmp( &local->u.ns.name, &head->u.ns.name, name_len ) == 0 ) &&

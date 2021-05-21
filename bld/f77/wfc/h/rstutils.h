@@ -32,7 +32,6 @@
 
 extern char    *STExtractName( sym_id sym, char *buff );
 extern char    *STGetName( sym_id sym, char *buff );
-extern size_t  AllocName( size_t length );
 extern sym_id  STAdd( const char *name, size_t length );
 extern sym_id  STFree( sym_id sym );
 extern void    FreeSFHeader( sym_id sym );

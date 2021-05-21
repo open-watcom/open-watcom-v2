@@ -36,7 +36,7 @@ typedef struct name_list {
     obj_addr            address;                // address of namelist data
     db_handle           dbh;                    // dwarf handle
     size_t              name_len;               // length of namelist name
-    char                name[STD_SYMLEN];       // namelist name
+    char                name[1];                // namelist name
 } name_list;
 
 typedef struct grp_entry {

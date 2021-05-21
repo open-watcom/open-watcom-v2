@@ -49,10 +49,11 @@ static sym_id AddStruct( const char *name, size_t length )
 {
     sym_id      sym;
 
-    sym = FMemAlloc( sizeof( fstruct ) + AllocName( length ) );
+    sym = FMemAlloc( sizeof( fstruct ) + length );
     sym->u.sd.dbh = 0;
     sym->u.sd.name_len = length;
     memcpy( &sym->u.sd.name, name, length );
+    sym->u.sd.name[length] = NULLCHAR;
     return( sym );
 }
 
@@ -183,9 +184,10 @@ static sym_id AddField( const char *name, size_t length )
 {
     sym_id      sym;
 
-    sym = FMemAlloc( sizeof( field ) + AllocName( length ) );
+    sym = FMemAlloc( sizeof( field ) + length );
     sym->u.fd.name_len = length;
     memcpy( &sym->u.fd.name, name, length );
+    sym->u.fd.name[length] = NULLCHAR;
     return( sym );
 }
 
@@ -217,13 +219,10 @@ static sym_id LookupField( sym_id field, const char *name, size_t len, intstar4 
     intstar4    f_offset;
 
     f_offset = 0;
-    for(;;) {
-        if( field == NULL )
-            return( NULL );
+    for( ; field != NULL; field = field->u.fd.link ) {
         if( field->u.fd.typ == FT_UNION ) {
             size = 0;
-            map = field->u.fd.xt.sym_record;
-            while( map != NULL ) {
+            for( map = field->u.fd.xt.sym_record; map != NULL; map = map->u.sd.link ) {
                 u_field = LookupField( map->u.sd.fl.sym_fields, name, len, &f_size );
                 if( u_field != NULL ) {
                     *offset = f_offset + f_size;
@@ -232,13 +231,12 @@ static sym_id LookupField( sym_id field, const char *name, size_t len, intstar4 
                 if( size < map->u.sd.size ) {
                     size = map->u.sd.size;
                 }
-                map = map->u.sd.link;
             }
         } else {
             if( field->u.fd.name_len == len ) {
                 if( memcmp( name, &field->u.fd.name, len ) == 0 ) {
                     *offset = f_offset;
-                    return( field );
+                    break;
                 }
             }
             size = _FieldSize( field );
@@ -247,8 +245,8 @@ static sym_id LookupField( sym_id field, const char *name, size_t len, intstar4 
             }
         }
         f_offset += size;
-        field = field->u.fd.link;
     }
+    return( field );
 }
 
 

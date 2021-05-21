@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,8 +60,8 @@ static  void    GetImplType( sym_id sym ) {
 
     if( ( sym->u.ns.flags & SY_TYPE ) == 0 ) {
         sym->u.ns.flags |= SY_TYPE;
-        sym->u.ns.u1.s.typ = ImplType( sym->u.ns.name[ 0 ] );
-        sym->u.ns.xt.size = ImplSize( sym->u.ns.name[ 0 ] );
+        sym->u.ns.u1.s.typ = ImplType( sym->u.ns.name[0] );
+        sym->u.ns.xt.size = ImplSize( sym->u.ns.name[0] );
     }
 }
 

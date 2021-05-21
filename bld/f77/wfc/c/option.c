@@ -241,7 +241,7 @@ void    FIncludePathInit( void )
 
     FIncludePath = NULL;
     env = getenv( "FINCLUDE" );
-    if( env != NULL && *env != '\0' ) {
+    if( env != NULL && *env != NULLCHAR ) {
         len = strlen( env );
         p = FIncludePath = FMemAlloc( len + 1 );
         while( *env != NULLCHAR ) {
@@ -516,7 +516,7 @@ static void CompoundOptOption( const char *buff )
     single_opt[0] = buff[0];
     i = 0;
 
-    while( buff[++i] != '\0' ) {
+    while( buff[++i] != NULLCHAR ) {
         opt_i = 1;
         single_opt[opt_i++] = buff[i];
 
@@ -535,7 +535,7 @@ static void CompoundOptOption( const char *buff )
             break;
         }
 
-        single_opt[opt_i] = '\0';
+        single_opt[opt_i] = NULLCHAR;
         CmdOption( single_opt );
     }
 }

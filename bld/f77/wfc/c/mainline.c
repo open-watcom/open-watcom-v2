@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -145,7 +145,7 @@ int     main( int argc, char *argv[] ) {
     _real87 = _8087 = 0;
 #endif
     p = getenv( WFC_ENV );
-    if( p != NULL && *p != '\0' ) {
+    if( p != NULL && *p != NULLCHAR ) {
         strcpy( CmdBuff, p );
         p = &CmdBuff[ strlen( p ) ];
         *p = ' ';

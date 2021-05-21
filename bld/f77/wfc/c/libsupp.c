@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,14 +74,14 @@ static file_handle doSearchPath( char *path_list, const char *name )
     char        c;
 
     fp = NULL;
-    while( (c = *path_list) != '\0' ) {
+    while( (c = *path_list) != NULLCHAR ) {
         p = buff;
         do {
             ++path_list;
             if( IS_PATH_LIST_SEP( c ) )
                 break;
             *p++ = c;
-        } while( (c = *path_list) != '\0' );
+        } while( (c = *path_list) != NULLCHAR );
         c = p[-1];
         if( !IS_PATH_SEP( c ) ) {
             *p++ = DIR_SEP;

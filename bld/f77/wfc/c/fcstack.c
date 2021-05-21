@@ -411,16 +411,6 @@ cg_name SymValue( sym_id sym ) {
 }
 
 
-char *  StackBuffer( int * len ) {
-//================================
-
-// Return a pointer to a buffer on the stack.  This is a very temporary buffer.
-
-    *len = TOKLEN - ((char *)StkPtr - TokenBuff);
-    return( StkPtr );
-}
-
-
 void    DXPush( intstar4 val ) {
 //==============================
 

@@ -37,7 +37,6 @@ extern void        XPush( cg_name cgname );
 extern cg_name     SymIndex( sym_id sym, cg_name i );
 extern cg_name     SymAddr( sym_id sym );
 extern cg_name     SymValue( sym_id sym );
-extern char        *StackBuffer( int * len );
 extern void        DXPush( intstar4 val );
 extern void        SymPush( sym_id val );
 extern cg_name     XPop( void );

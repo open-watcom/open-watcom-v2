@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -91,7 +91,7 @@ static char             BrowseExtn[] = { "mbr" };
 
 static dw_client        cBIId;
 static dw_loc_handle    justJunk;
-static char             fullPathName[ PATH_MAX + 1 ];
+static char             fullPathName[PATH_MAX + 1];
 static dw_handle        subProgTyHandle;
 static unsigned_32      currState = 0;
 static sym_list         *fixStructs = NULL;
@@ -267,17 +267,13 @@ void    BIEndRBorEP( void ) {
     }
 }
 
-void    BIStartComBlock( sym_id ste_ptr ) {
-//=========================================
-
-    char        name[MAX_SYMLEN+1];
-
+void    BIStartComBlock( sym_id ste_ptr )
+//=======================================
+{
     if( _GenerateBrInfo() ) {
-        memset( name, 0, sizeof( name ) );
         DWDeclPos( cBIId, CurrFile->rec, 0 );
         currState |= BI_STATE_IN_COMMON_BLOCK;
-        DWIncludeCommonBlock( cBIId, DWBeginCommonBlock( cBIId, justJunk, 0,
-            strncpy( name, ste_ptr->u.ns.name, ste_ptr->u.ns.u2.name_len ), 0 ) );
+        DWIncludeCommonBlock( cBIId, DWBeginCommonBlock( cBIId, justJunk, 0, ste_ptr->u.ns.name, 0 ) );
 
     }
 }
@@ -291,16 +287,12 @@ void    BIEndComBlock( void ) {
     }
 }
 
-void    BIStartBlockData( sym_id ste_ptr ) {
-//==========================================
-
-    char        name[MAX_SYMLEN+1];
-
+void    BIStartBlockData( sym_id ste_ptr )
+//========================================
+{
     if( _GenerateBrInfo() ) {
-        memset( name, 0, sizeof( name ) );
         DWDeclPos( cBIId, CurrFile->rec, 0 );
-        DWBeginLexicalBlock( cBIId, 0,
-                strncpy( name, ste_ptr->u.ns.name, ste_ptr->u.ns.u2.name_len ) );
+        DWBeginLexicalBlock( cBIId, 0, ste_ptr->u.ns.name );
     }
 }
 
@@ -528,11 +520,10 @@ static void BIDumpAllEntryPoints( entry_pt *dum_lst, int level ) {
 }
 
 
-static void BIOutSP( sym_id ste_ptr ) {
-//=====================================
-
+static void BIOutSP( sym_id ste_ptr )
+//===================================
 // Dump the subprogram.
-    char        name[MAX_SYMLEN+1];
+{
     uint        flags = 0;
     dw_handle   fret;
 
@@ -551,17 +542,14 @@ static void BIOutSP( sym_id ste_ptr ) {
     } else {
         fret = BIGetSPType( ste_ptr );
     }
-    memset( name, 0, sizeof( name ) );
-    strncpy( name, ste_ptr->u.ns.name, ste_ptr->u.ns.u2.name_len );
     if( ste_ptr->u.ns.flags & SY_SENTRY ) {
-        fret =    DWBeginEntryPoint( cBIId, fret, justJunk, 0, name, 0, flags );
-    }else{
+        fret = DWBeginEntryPoint( cBIId, fret, justJunk, 0, ste_ptr->u.ns.name, 0, flags );
+    } else {
         if( (ste_ptr->u.ns.flags & SY_SUBPROG_TYPE) == SY_PROGRAM ) {
             flags |= DW_FLAG_MAIN;
         }
-        fret =    DWBeginSubroutine( cBIId, 0, fret, justJunk, 0, 0,
-                    0, 0, name,
-                    0, flags );
+        fret = DWBeginSubroutine( cBIId, 0, fret, justJunk, 0, 0,
+                    0, 0, ste_ptr->u.ns.name, 0, flags );
 
     }
     BISetHandle( ste_ptr, fret );
@@ -620,22 +608,18 @@ static void BISolidifyFunction( sym_id ste_ptr, dw_handle handle ) {
 }
 
 
-static void BIOutDeclareSP( sym_id ste_ptr, long flags ) {
-//========================================================
-
+static void BIOutDeclareSP( sym_id ste_ptr, long flags )
+//======================================================
 // Dump the name of an external or intrinsic function. and its data
-
-    char                name[MAX_SYMLEN+1];
+{
     dw_handle           handle;
 
     if( ste_ptr == SubProgId )
         return;
     flags |= DW_FLAG_DECLARATION;
 
-    memset( name, 0, sizeof( name ) );
     handle = DWBeginSubroutine( cBIId, 0, BIGetSPType( ste_ptr ), justJunk,
-                 0, 0, 0, 0, strncpy( name, ste_ptr->u.ns.name,
-                                        ste_ptr->u.ns.u2.name_len ), 0, flags );
+                 0, 0, 0, 0, ste_ptr->u.ns.name, 0, flags );
     DWEndSubroutine ( cBIId );
     BISetHandle( ste_ptr, handle );
     BIRefSymbol( handle );
@@ -659,47 +643,37 @@ static void BIOutSF( sym_id ste_ptr ) {
 }
 
 
-static void BIOutSPDumInfo( sym_id ste_ptr ) {
-//============================================
-
+static void BIOutSPDumInfo( sym_id ste_ptr )
+//==========================================
 // Dump the name of a subprogram dummy argument.
-
+{
     dw_handle           handle;
-    char                name[MAX_SYMLEN+1];
 
-    memset( name, 0, sizeof( name ) );
     handle = DWFormalParameter( cBIId, BIGetAnyType( ste_ptr ), 0, 0,
-                                strncpy( name, ste_ptr->u.ns.name, ste_ptr->u.ns.u2.name_len ),
-                                DW_DEFAULT_NONE );
+                                ste_ptr->u.ns.name, DW_DEFAULT_NONE );
     BIRefSymbol( handle );
     BISetHandle( ste_ptr, handle );
 }
 
 
-static void BIOutVar( sym_id ste_ptr ) {
-//======================================
-
+static void BIOutVar( sym_id ste_ptr )
+//====================================
 // Dump the name of a variable.
-
+{
     dw_handle           handle;
-    char                name[MAX_SYMLEN+1];
 
-    memset( name, 0, sizeof( name ) );
     handle = DWVariable(cBIId, BIGetAnyType(ste_ptr), 0, 0, 0,
-                        strncpy(name, ste_ptr->u.ns.name, ste_ptr->u.ns.u2.name_len ),
-                        0, 0 );
+                        ste_ptr->u.ns.name, 0, 0 );
     BIRefSymbol( handle );
     BISetHandle( ste_ptr, handle );
 }
 
 
-static void BIOutConst( sym_id ste_ptr ) {
-//========================================
-
+static void BIOutConst( sym_id ste_ptr )
+//======================================
 // Dump the name of a variable.
-
+{
     dw_handle           handle;
-    char                name[MAX_SYMLEN+1];
     void                *value;
 
     if( ste_ptr->u.ns.u1.s.typ == FT_CHAR ) {
@@ -707,12 +681,9 @@ static void BIOutConst( sym_id ste_ptr ) {
     } else {
         value = &(ste_ptr->u.ns.si.pc.value->u.cn.value);
     }
-
-    memset( name, 0, sizeof( name ) );
     handle = DWConstant(cBIId, BIGetAnyType(ste_ptr), value,
                         ste_ptr->u.ns.xt.size, 0,
-                        strncpy(name, ste_ptr->u.ns.name, ste_ptr->u.ns.u2.name_len),
-                        0, 0 );
+                        ste_ptr->u.ns.name, 0, 0 );
     BIRefSymbol( handle );
     BISetHandle( ste_ptr, handle );
 }
@@ -772,7 +743,7 @@ static dw_handle BIGetType( sym_id ste_ptr ) {
     case( FT_COMPLEX ):
     case( FT_DCOMPLEX ):
     case( FT_TRUE_XCOMPLEX ):
-        ret = baseTypes[ typ ];
+        ret = baseTypes[typ];
         break;
     case( FT_CHAR ):
         ret = DWString(cBIId, 0, ste_ptr->u.ns.xt.size, "", 0, 0);
@@ -795,7 +766,7 @@ static dw_handle BIGetBaseType( TYPE typ ) {
 // Get initialized base type
 
     DWDeclPos( cBIId, CurrFile->rec, 0 );
-    return( baseTypes[ typ ] );
+    return( baseTypes[typ] );
 }
 
 
@@ -831,7 +802,7 @@ static dw_handle BIGetStructType( sym_id ste_ptr, dw_handle handle ) {
 
     struct field        *fields;
     dw_handle           ret;
-    sym_id              data = alloca( sizeof(symbol) + AllocName(MAX_SYMLEN) );
+    sym_id              data = alloca( sizeof( named_symbol ) + MAX_SYMLEN );
     char                *name;
     char                buffer[MAX_SYMLEN+1];
     long                un = 0;
@@ -855,26 +826,24 @@ static dw_handle BIGetStructType( sym_id ste_ptr, dw_handle handle ) {
     DWDeclPos( cBIId, CurrFile->rec, 0 );
     memset( buffer, 0, sizeof( buffer ) );
     DWBeginStruct( cBIId, ret, ste_ptr->u.ns.xt.record->size,
-                        strncpy( buffer, ste_ptr->u.ns.xt.record->name,
-                                ste_ptr->u.ns.xt.record->name_len ),
-                        0, 0 );
+                        ste_ptr->u.ns.xt.record->name, 0, 0 );
     fields = ste_ptr->u.ns.xt.record->fl.fields;
     while( fields ) {
         data->u.ns.u1.s.typ = fields->typ;
         data->u.ns.xt.record = fields->xt.record;
-        name = NULL;
         if( fields->typ == FT_UNION ) {
             data->u.ns.si.va.u.dim_ext = NULL;
             data->u.ns.u2.name_len = 0;
-            data->u.ns.name[0] = 0;
+            data->u.ns.name[0] = NULLCHAR;
             un++;
             name = data->u.ns.name;
         } else {
             data->u.ns.si.va.u.dim_ext = fields->dim_ext;
             data->u.ns.u2.name_len = fields->name_len;
             strncpy( data->u.ns.name, fields->name, fields->name_len );
-            data->u.ns.name[ fields->name_len ] = 0;
-            if( *(data->u.ns.name) ) {
+            data->u.ns.name[fields->name_len] = NULLCHAR;
+            name = NULL;
+            if( data->u.ns.name[0] != NULLCHAR ) {
                 name = data->u.ns.name;
             }
         }
@@ -912,9 +881,9 @@ static dw_handle BIGetUnionType( sym_id ste_ptr ) {
     // Start the union declaration
     DWDeclPos( cBIId, CurrFile->rec, 0 );
     DWBeginStruct( cBIId, ret, max, ste_ptr->u.ns.name, 0, 0 );
-    data.u.ns.xt.record = FMemAlloc( sizeof( fstruct) );
+    data.u.ns.xt.record = FMemAlloc( sizeof( fstruct) + STD_SYMLEN );
     for( fs = ste_ptr->u.ns.xt.record; fs != NULL; fs = &fs->link->u.sd ) {
-        memset( data.u.ns.xt.record, 0, sizeof( fstruct ) );
+        memset( data.u.ns.xt.record, 0, sizeof( fstruct ) + STD_SYMLEN );
         memcpy( data.u.ns.xt.record, fs, sizeof( fmap ) );
         data.u.ns.si.va.u.dim_ext = NULL;
         data.u.ns.u1.s.typ = FT_STRUCTURE;
@@ -994,6 +963,6 @@ static void BIInitBaseTypes( void ) {
     // and types from FIRST_BASE_TYPE to LAST_BASE_TYPE are all fundamental
     // base types
     for( x = FIRST_BASE_TYPE; x <= LAST_BASE_TYPE; x++ ) {
-        baseTypes[ x ] = BIMakeFundamental( x );
+        baseTypes[x] = BIMakeFundamental( x );
     }
 }

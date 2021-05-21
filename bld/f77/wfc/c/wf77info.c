@@ -444,7 +444,7 @@ static  void   DefineGlobalSeg( global_seg *seg ) {
 
     seg->segid = AllocSegId();
     memcpy( g_name, GData, G_DATA_LEN );
-    itoa( seg->segid - GlobalSeg->segid, &g_name[ G_DATA_LEN ], 10 );
+    itoa( seg->segid - GlobalSeg->segid, &g_name[G_DATA_LEN], 10 );
 
 #if _CPU == 386 || _CPU == 8086
     if( _SmallDataModel( CGOpts ) ) {
@@ -1164,14 +1164,8 @@ static char *GetName( sym_id sym ) {
 
 static const char *GetBaseName( sym_id sym )
 {
-    int         len;
-    char        *buff;
-
     _UnShadow( sym );
-    buff = StackBuffer( &len );
-    strncpy( buff, sym->u.ns.name, sym->u.ns.u2.name_len );
-    buff[ sym->u.ns.u2.name_len ] = 0;
-    return( buff );
+    return( sym->u.ns.name );
 }
 
 static const char *GetNamePattern( sym_id sym )
@@ -1440,7 +1434,7 @@ static  dbg_type        BaseDbgType( TYPE typ, size_t size ) {
     if( typ == FT_CHAR ) {
         return( DBCharBlock( size ) );
     } else {
-        return( DBGTypes[ ParmType( typ, size ) ] );
+        return( DBGTypes[ParmType( typ, size )] );
     }
 }
 
@@ -1472,7 +1466,7 @@ static  dbg_type        GetDbgType( sym_id sym ) {
             // character*(*) variable/array
             if( sym->u.ns.flags & SY_VALUE_PARM ) {
                 char    new_name[32];
-                sprintf( new_name, "%s*(*)", DBGNames[ PT_CHAR ] );
+                sprintf( new_name, "%s*(*)", DBGNames[PT_CHAR] );
                 return( DBCharBlockNamed( new_name, 0 ) );
             }
             loc = DBLocInit();
@@ -1492,7 +1486,7 @@ static  dbg_type        GetDbgType( sym_id sym ) {
         return( sym->u.ns.xt.record->dbi );
     } else if( (sym->u.ns.u1.s.typ == FT_CHAR) ) {
         char    new_name[32];
-        sprintf( new_name, "%s*%lu", DBGNames[ PT_CHAR ], (unsigned long)sym->u.ns.xt.size );
+        sprintf( new_name, "%s*%lu", DBGNames[PT_CHAR], (unsigned long)sym->u.ns.xt.size );
         return( DBCharBlockNamed( new_name, sym->u.ns.xt.size ) );
     } else {
         return( BaseDbgType( sym->u.ns.u1.s.typ, sym->u.ns.xt.size ) );
@@ -1528,9 +1522,9 @@ static  dbg_type        GetDBGSubProgType( sym_id sym ) {
 
     if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) {
 #if _CPU == 8086
-        return( DBGTypes[ PT_INT_2 ] );
+        return( DBGTypes[PT_INT_2] );
 #elif _CPU == 386 || _CPU == _AXP || _CPU == _PPC
-        return( DBGTypes[ PT_INT_4 ] );
+        return( DBGTypes[PT_INT_4] );
 #else
         #error Unknown platform
 #endif
@@ -1551,9 +1545,9 @@ static  dbg_type        GetDBGSubProgType( sym_id sym ) {
         // We must assign a return type to bar, assume that it is a subroutine
         // Since we don't really know what it is.
 #if _CPU == 8086
-        return( DBGTypes[ PT_INT_2 ] );
+        return( DBGTypes[PT_INT_2] );
 #elif _CPU == 386 || _CPU == _AXP || _CPU == _PPC
-        return( DBGTypes[ PT_INT_4 ] );
+        return( DBGTypes[PT_INT_4] );
 #else
         #error Unknown platform
 #endif
@@ -1713,13 +1707,13 @@ static  void    InitDBGTypes( void ) {
 
     int         typ;
 
-    if( DBGTypes[ PT_LOG_1 ] == DBG_NIL_TYPE ) {
+    if( DBGTypes[PT_LOG_1] == DBG_NIL_TYPE ) {
         for( typ = PT_LOG_1; typ <= PT_REAL_16; ++typ ) {
-            DBGTypes[ typ ] = DBScalar( DBGNames[ typ ], MkCGType( typ ) );
+            DBGTypes[typ] = DBScalar( DBGNames[typ], MkCGType( typ ) );
         }
-        DBGTypes[ PT_CPLX_8 ]  = DBFtnType( DBGNames[ PT_CPLX_8 ],  T_DBG_COMPLEX );
-        DBGTypes[ PT_CPLX_16 ] = DBFtnType( DBGNames[ PT_CPLX_16 ], T_DBG_DCOMPLEX );
-        DBGTypes[ PT_CPLX_32 ] = DBFtnType( DBGNames[ PT_CPLX_32 ], T_DBG_XCOMPLEX );
+        DBGTypes[PT_CPLX_8]  = DBFtnType( DBGNames[PT_CPLX_8],  T_DBG_COMPLEX );
+        DBGTypes[PT_CPLX_16] = DBFtnType( DBGNames[PT_CPLX_16], T_DBG_DCOMPLEX );
+        DBGTypes[PT_CPLX_32] = DBFtnType( DBGNames[PT_CPLX_32], T_DBG_XCOMPLEX );
     }
 }
 
