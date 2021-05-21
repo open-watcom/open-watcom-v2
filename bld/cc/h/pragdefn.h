@@ -70,6 +70,10 @@ typedef struct toggle {
     int flag;
 } toggle;
 
+#ifndef global
+#define global	extern
+#endif
+
 global aux_entry        *AuxList;
 global aux_info         *CurrAlias;
 global aux_entry        *CurrEntry;
