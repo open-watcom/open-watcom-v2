@@ -85,15 +85,17 @@ typedef struct aux_info {
 #define MAX_BUILTIN_AUXINFO 9
 #endif
 
-global aux_info          BuiltinAuxInfo[MAX_BUILTIN_AUXINFO];
+extern aux_info     *DftCallConv;
 
-extern  void    PragmaAuxInfoInit( int );
-extern  void    SetAuxStackConventions( void );
-extern  void    SetAuxWatcallInfo( void );
-extern  void    SetAuxDefaultInfo( void );
-extern  int     IsAuxParmsBuiltIn( hw_reg_set *parms );
-extern  int     IsAuxInfoBuiltIn( aux_info *info );
-extern  char    *VarNamePattern( aux_info *inf );
+extern aux_info     BuiltinAuxInfo[MAX_BUILTIN_AUXINFO];
+
+extern void         PragmaAuxInfoInit( int );
+extern void         SetAuxStackConventions( void );
+extern void         SetAuxWatcallInfo( void );
+extern void         SetAuxDefaultInfo( void );
+extern int          IsAuxParmsBuiltIn( hw_reg_set *parms );
+extern int          IsAuxInfoBuiltIn( aux_info *info );
+extern char         *VarNamePattern( aux_info *inf );
 
 #endif
 

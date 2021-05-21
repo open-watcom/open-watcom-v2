@@ -34,21 +34,27 @@
 #include <stdio.h>
 
 #if defined( BY_C_FRONT_END )
-    #define AUX_MEMALLOC    CMemAlloc
-    #define AUX_STRALLOC    CStrSave
-    #define AUX_MEMFREE     CMemFree
+    #define AUX_MEMALLOC        CMemAlloc
+    #define AUX_STRALLOC        CStrSave
+    #define AUX_MEMFREE         CMemFree
+    #define DEFAULT_CALLINFO    WatcallInfo;
 #elif defined( BY_CPP_FRONT_END )
-    #define AUX_MEMALLOC    CMemAlloc
-    #define AUX_STRALLOC    strsave
-    #define AUX_MEMFREE     CMemFree
+    #define AUX_MEMALLOC        CMemAlloc
+    #define AUX_STRALLOC        strsave
+    #define AUX_MEMFREE         CMemFree
+    #define DEFAULT_CALLINFO    WatcallInfo;
 #elif defined( BY_FORTRAN_FRONT_END )
-    #define AUX_MEMALLOC    FMemAlloc
-    #define AUX_STRALLOC    FStrDup
-    #define AUX_MEMFREE     FMemFree
+    #define AUX_MEMALLOC        FMemAlloc
+    #define AUX_STRALLOC        FStrDup
+    #define AUX_MEMFREE         FMemFree
+    #define DEFAULT_CALLINFO    FortranInfo;
 #else
     #error "Unknown front end"
 #endif
 
+
+aux_info    *DftCallConv;
+aux_info    BuiltinAuxInfo[MAX_BUILTIN_AUXINFO];
 
 #if _INTEL_CPU
 
@@ -385,7 +391,7 @@ int IsAuxParmsBuiltIn( hw_reg_set *parms )
 void SetAuxWatcallInfo( void )
 /****************************/
 {
-    DftCallConv         = &WatcallInfo;
+    DftCallConv         = &DEFAULT_CALLINFO;
 
     WatcallInfo.cclass  = 0;
     WatcallInfo.code    = NULL;
