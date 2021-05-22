@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -25,18 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Format statement scanning routines for compile and run time
 *
 ****************************************************************************/
 
-#include "targdef.h"
-#include "sdmacro.h"
-#include "switch.h"
 
-#define CHAR_CR         0x0d            // carriage return
-#define CHAR_LF         0x0a            // line feed
-#define CHAR_FF         0x0c            // form feed
-
-#define CHAR_CTRL_Z     0x1a            // Ctrl/Z character (EOF marker)
-
+extern void    R_FDoSpec( void );

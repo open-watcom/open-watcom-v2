@@ -30,13 +30,16 @@
 *
 ****************************************************************************/
 
-#include "targdef.h"
-#include "sdmacro.h"
-#include "switch.h"
+#ifndef __FMTTAB_H_INCLUDED
+#define __FMTTAB_H_INCLUDED
 
-#define CHAR_CR         0x0d            // carriage return
-#define CHAR_LF         0x0a            // line feed
-#define CHAR_FF         0x0c            // form feed
+typedef struct {
+        void ( __FAR *FEMcode )(int);
+        void ( __FAR *FEMchar )(char *);
+        void ( __FAR *FEMnum )(int);
+        void ( __FAR *FEMbyte )(int);
+        void ( __FAR *FError )(int);
+        void ( __FAR *FExtension )(int);
+} FmtElements;
 
-#define CHAR_CTRL_Z     0x1a            // Ctrl/Z character (EOF marker)
-
+#endif /* __FMTTAB_H_INCLUDED */

@@ -2,7 +2,8 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,9 +25,21 @@
 *
 *  ========================================================================
 *
-* Description:  Format statement scanning routines for compile and run time
+* Description:  Character set information structure definition
 *
 ****************************************************************************/
 
+#ifndef _F77_CSETINFO_H
+#define _F77_CSETINFO_H 1
 
-extern void    R_FDoSpec( void );
+typedef struct character_set {
+    size_t      (* extract_text)(const char *,size_t);
+    bool        (* is_double_byte_blank)(const char *);
+    size_t      (* character_width)(const char PGM *);
+    bool        (* is_foreign)(char);
+    bool        (* is_double_byte_char)(char);
+    byte        const *character_set;
+    char        *initializer;
+} character_set;
+
+#endif

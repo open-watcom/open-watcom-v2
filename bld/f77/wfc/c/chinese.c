@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Korean character set support
+* Description:  Chinese character set support
 *
 ****************************************************************************/
 
@@ -38,15 +38,13 @@
 
 // Double-byte characters are represented as follows:
 //
-//    0x81 <= chr <= 0xbf --> 1st byte of 2-byte Korean character
+//    0x81 <= chr <= 0xfc --> 1st byte of 2-byte Chinese character
 //
-// The second byte of 2-byte Korean characters is in the range:
+// The second byte of 2-byte Chinese characters is in the range:
 //
 //    0x40 <= chr <= 0xfc, chr != 0x7f
 
-#if !defined( __RT__ )
-
-static const byte __FAR CharSet[] = {
+static const byte CharSet[] = {
 
 //   00 NUL 01 SOH 02 STX 03 ETX 04 EOT 05 ENQ 06 ACK 07 BEL
      C_EL,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, // NUL to BEL
@@ -121,31 +119,29 @@ static const byte __FAR CharSet[] = {
     XC_DB, XC_DB, XC_DB, XC_DB, XC_DB, XC_DB, XC_DB, XC_DB, // 0xB8 to 0xBF
 
 //   C0     C1     C2     C3     C4     C5     C6     C7
-    C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, // 0xC0 to 0xC7
+    XC_DB, XC_DB, XC_DB, XC_DB, XC_DB, XC_DB, XC_DB, XC_DB, // 0xC0 to 0xC7
 
 //   C8     C9     CA     CB     CC     CD     CE     CF
-    C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, // 0xC8 to 0xCF
+    XC_DB, XC_DB, XC_DB, XC_DB, XC_DB, XC_DB, XC_DB, XC_DB, // 0xC8 to 0xCF
 
 //   D0     D1     D2     D3     D4     D5     D6     D7
-    C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, // 0xD0 to 0xD7
+    XC_DB, XC_DB, XC_DB, XC_DB, XC_DB, XC_DB, XC_DB, XC_DB, // 0xD0 to 0xD7
 
 //   D8     D9     DA     DB     DC     DD     DE     DF
-    C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, // 0xD8 to 0xDF
+    XC_DB, XC_DB, XC_DB, XC_DB, XC_DB, XC_DB, XC_DB, XC_DB, // 0xD8 to 0xDF
 
 //   E0     E1     E2     E3     E4     E5     E6     E7
-    C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, // 0xE0 to 0xE7
+    XC_DB, XC_DB, XC_DB, XC_DB, XC_DB, XC_DB, XC_DB, XC_DB, // 0xE0 to 0xE7
 
 //   E8     E9     EA     EB     EC     ED     EE     EF
-    C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, // 0xE8 to 0xEF
+    XC_DB, XC_DB, XC_DB, XC_DB, XC_DB, XC_DB, XC_DB, XC_DB, // 0xE8 to 0xEF
 
 //   F0     F1     F2     F3     F4     F5     F6     F7
-    C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, // 0xF0 to 0xF7
+    XC_DB, XC_DB, XC_DB, XC_DB, XC_DB, XC_DB, XC_DB, XC_DB, // 0xF0 to 0xF7
 
 //   F8     F9     FA     FB     FC     FD     FE     FF
-    C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, C_BC,  C_BC   // 0xF8 to 0xFF
+    XC_DB, XC_DB, XC_DB, XC_DB, XC_DB, C_BC,  C_BC,  C_BC   // 0xF8 to 0xFF
 };
-
-#endif
 
 static  bool    IsDoubleByteBlank( const char *ptr )
 // Determine if character is a double-byte blank character.
@@ -157,11 +153,11 @@ static  bool    IsDoubleByteBlank( const char *ptr )
 static  bool    IsDoubleByteChar( char ch )
 // Determine if character is a double-byte character.
 {
-    return( ( 0x81 <= (unsigned char)ch ) && ( (unsigned char)ch <= 0xbf ) );
+    return( ( 0x81 <= (unsigned char)ch ) && ( (unsigned char)ch <= 0xfc ) );
 }
 
 
-static size_t   CharacterWidth( const char PGM *ptr )
+static size_t   CharacterWidth( const char *ptr )
 // Determine character width.
 {
     unsigned char   ch;
@@ -186,14 +182,13 @@ static  bool    IsForeign( char ch )
 }
 
 
-void    __UseKoreanCharSet( void )
+void    __UseChineseCharSet( void )
 {
     CharSetInfo.extract_text = ExtractTextDBCS;
     CharSetInfo.is_double_byte_blank = IsDoubleByteBlank;
+    CharSetInfo.is_double_byte_char = IsDoubleByteChar;
     CharSetInfo.character_width = CharacterWidth;
     CharSetInfo.is_foreign = IsForeign;
-#if !defined( __RT__ )
     CharSetInfo.character_set = CharSet;
-    CharSetInfo.initializer = "__init_korean";
-#endif
+    CharSetInfo.initializer = "__init_chinese";
 }

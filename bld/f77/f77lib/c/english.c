@@ -25,18 +25,63 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  English character set support
 *
 ****************************************************************************/
 
-#include "targdef.h"
-#include "sdmacro.h"
-#include "switch.h"
+#include "ftnstd.h"
+#include "scangbl.h"
+#include "csetinfo.h"
+#include "charset.h"
+#include "sbcsutil.h"
 
-#define CHAR_CR         0x0d            // carriage return
-#define CHAR_LF         0x0a            // line feed
-#define CHAR_FF         0x0c            // form feed
+// Modified:    By:             Reason:
+// --------     ---             -------
+// 92/12/18     G. Coschi       initial implementation
+// 93/12/14     Alex Brodsky    Added Q as legal exponent character
 
-#define CHAR_CTRL_Z     0x1a            // Ctrl/Z character (EOF marker)
 
+static  bool    IsDoubleByteBlank( const char *ptr )
+// Determine if character is a double-byte blank character.
+{
+    /* unused parameters */ (void)ptr;
+
+    return( false );
+}
+
+
+static  bool    IsDoubleByteChar( char ch )
+// Determine if character is a double-byte character.
+{
+    /* unused parameters */ (void)ch;
+
+    return( false );
+}
+
+
+static size_t   CharacterWidth( const char PGM *ptr )
+// Determine character width.
+{
+    /* unused parameters */ (void)ptr;
+
+    return( 1 );
+}
+
+
+static  bool    IsForeign( char ch )
+// Determine if character is a foreign character (i.e. non-ASCII).
+{
+    /* unused parameters */ (void)ch;
+
+    return( false );
+}
+
+
+void    __UseEnglishCharSet( void )
+{
+    CharSetInfo.extract_text = ExtractTextSBCS;
+    CharSetInfo.is_double_byte_blank = IsDoubleByteBlank;
+    CharSetInfo.is_double_byte_char = IsDoubleByteChar;
+    CharSetInfo.character_width = CharacterWidth;
+    CharSetInfo.is_foreign = IsForeign;
+}

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,21 +25,19 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Character set information structure definition
 *
 ****************************************************************************/
 
-#ifndef __FMTTAB_H_INCLUDED
-#define __FMTTAB_H_INCLUDED
+#ifndef _F77_CSETINFO_H
+#define _F77_CSETINFO_H 1
 
-typedef struct {
-        void ( __FAR *FEMcode )(int);
-        void ( __FAR *FEMchar )(char *);
-        void ( __FAR *FEMnum )(int);
-        void ( __FAR *FEMbyte )(int);
-        void ( __FAR *FError )(int);
-        void ( __FAR *FExtension )(int);
-} FmtElements;
+typedef struct character_set {
+    size_t      (* extract_text)(const char *,size_t);
+    bool        (* is_double_byte_blank)(const char *);
+    size_t      (* character_width)(const char PGM *);
+    bool        (* is_foreign)(char);
+    bool        (* is_double_byte_char)(char);
+} character_set;
 
-#endif /* __FMTTAB_H_INCLUDED */
+#endif

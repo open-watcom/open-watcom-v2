@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,14 +40,12 @@
 // 92/12/18     G. Coschi       initial implementation
 // 93/12/14     Alex Brodsky    Added Q as legal exponent character
 
-#if !defined( __RT__ )
-
 #if _CSET == _EBCDIC
 
 // EBCDIC character set:
 // =====================
 
-static const byte __FAR CharSet[] = {
+static const byte CharSet[] = {
 //    00     01     02     03     04     05     06     07
      C_EL,  C_BC,  C_BC,  C_BC,  C_BC,  C_TC,  C_BC,  C_BC, // NUL to BEL
 //    08     09     0A     0B     0C     0D     0E     0F
@@ -119,7 +117,7 @@ static const byte __FAR CharSet[] = {
 // ASCII character set:
 // ====================
 
-static const byte __FAR CharSet[] = {
+static const byte CharSet[] = {
 
 //   00 NUL 01 SOH 02 STX 03 ETX 04 EOT 05 ENQ 06 ACK 07 BEL
      C_EL,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC,  C_BC, // NUL to BEL
@@ -220,8 +218,6 @@ static const byte __FAR CharSet[] = {
 
 #endif
 
-#endif
-
 static  bool    IsDoubleByteBlank( const char *ptr )
 // Determine if character is a double-byte blank character.
 {
@@ -240,7 +236,7 @@ static  bool    IsDoubleByteChar( char ch )
 }
 
 
-static size_t   CharacterWidth( const char PGM *ptr )
+static size_t   CharacterWidth( const char *ptr )
 // Determine character width.
 {
     /* unused parameters */ (void)ptr;
@@ -265,8 +261,6 @@ void    __UseEnglishCharSet( void )
     CharSetInfo.is_double_byte_char = IsDoubleByteChar;
     CharSetInfo.character_width = CharacterWidth;
     CharSetInfo.is_foreign = IsForeign;
-#if !defined( __RT__ )
     CharSetInfo.character_set = CharSet;
     CharSetInfo.initializer = "__init_english";
-#endif
 }
