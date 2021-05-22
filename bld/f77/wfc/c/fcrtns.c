@@ -57,7 +57,7 @@
 
 
 typedef struct rt_rtn {
-    char        *name;
+    const char  *name;
     sym_id      sym_ptr;
     aux_info    *aux;
     byte        typ;
@@ -80,20 +80,11 @@ call_handle     InitCall( RTCODE rtn_id ) {
     sym_id      sym;
     rt_rtn      *rt_entry;
     byte        typ;
-    size_t      name_len;
-    char        *ptr;
 
     rt_entry = &RtnTab[ rtn_id ];
     sym = rt_entry->sym_ptr;
     if( sym == NULL ) {
-        name_len = 0;
-        ptr = rt_entry->name;
-        while( *ptr != NULLCHAR ) {
-            SymBuff[ name_len ] = *(unsigned char *)ptr;
-            ++name_len;
-            ++ptr;
-        }
-        sym = STAdd( SymBuff, name_len );
+        sym = STAdd( rt_entry->name, strlen( rt_entry->name ) );
         sym->u.ns.flags = SY_USAGE | SY_TYPE | SY_SUBPROGRAM | SY_FUNCTION | SY_RT_ROUTINE;
         if( rt_entry->typ == FT_NO_TYPE ) {
             sym->u.ns.u1.s.typ = FT_INTEGER_TARG;

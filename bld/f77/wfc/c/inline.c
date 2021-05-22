@@ -66,7 +66,7 @@
 // edi  - destination pointer
 // esi  - source pointer
 // ecx  - number of characters to move
-static  char    __RTIStrBlastEqOS[] =  { "aux __RTIStrBlastEq           \
+static const char   __RTIStrBlastEqOS[] =  { "aux __RTIStrBlastEq       \
                                         parm    reverse                 \
                                                 [edi] [esi] [ecx] =     \
                                         \"rep   movsb\"                 \
@@ -76,7 +76,7 @@ static  char    __RTIStrBlastEqOS[] =  { "aux __RTIStrBlastEq           \
 // eax  - number of spaces to append
 // esi  - source pointer
 // ecx  - number of characters to move
-static  char    __RTIStrBlastNeOS[] =  { "aux __RTIStrBlastNe           \
+static const char   __RTIStrBlastNeOS[] =  { "aux __RTIStrBlastNe       \
                                         parm    reverse                 \
                                                 [edi] [eax] [esi] [ecx]=\
                                         \"rep   movsb\"                 \
@@ -91,7 +91,7 @@ static  char    __RTIStrBlastNeOS[] =  { "aux __RTIStrBlastNe           \
 // esi  - source pointer
 // ecx  - number of 4 character tuples to move (strlen >> 2)
 // eax  - number of characters left over after initial 4-tuple move (strlen & 3)
-static  char    __RTIStrBlastEq[] =  { "aux __RTIStrBlastEq             \
+static const char   __RTIStrBlastEq[] =  { "aux __RTIStrBlastEq         \
                                         parm    reverse                 \
                                                 [edi] [esi] [ecx] [eax] =\
                                         \"rep   movsd\"                 \
@@ -103,7 +103,7 @@ static  char    __RTIStrBlastEq[] =  { "aux __RTIStrBlastEq             \
 // eax  - number of spaces to append
 // esi  - source pointer
 // ecx  - number of characters to move
-static  char    __RTIStrBlastNe[] =  { "aux __RTIStrBlastNe             \
+static const char   __RTIStrBlastNe[] =  { "aux __RTIStrBlastNe         \
                                         parm    reverse                 \
                                                 [edi] [edx] [esi] [eax] \
                                         modify  [ecx] =                 \
@@ -129,7 +129,7 @@ static  char    __RTIStrBlastNe[] =  { "aux __RTIStrBlastNe             \
 // es di - destination pointer
 // ds si - source pointer
 // cx    - number of characters to move
-static  char    __RTIStrBlastEqOS[] =  { "aux __RTIStrBlastEq           \
+static const char   __RTIStrBlastEqOS[] =  { "aux __RTIStrBlastEq       \
                                         parm    reverse                 \
                                                 [es di] [ds si] [cx]    \
                                         modify  exact [di si cx] =      \
@@ -140,7 +140,7 @@ static  char    __RTIStrBlastEqOS[] =  { "aux __RTIStrBlastEq           \
 // ax    - number of spaces to append
 // ds si - source pointer
 // cx    - number of characters to move
-static  char    __RTIStrBlastNeOS[] =  { "aux __RTIStrBlastNe           \
+static const char   __RTIStrBlastNeOS[] =  { "aux __RTIStrBlastNe       \
                                         parm    reverse                 \
                                                 [es di] [ax] [ds si] [cx]\
                                         modify  exact [di ax si cx] =   \
@@ -154,7 +154,7 @@ static  char    __RTIStrBlastNeOS[] =  { "aux __RTIStrBlastNe           \
 // ds si - source pointer
 // cx    - number of 2 character tuples to move (strlen >> 21
 // ax    - number of characters left over after initial 2-tuple move (strlen & 1)
-static  char    __RTIStrBlastEq[] =  { "aux __RTIStrBlastEq             \
+static const char   __RTIStrBlastEq[] =  { "aux __RTIStrBlastEq         \
                                         parm    reverse                 \
                                                 [es di] [ds si] [cx] [ax]\
                                         modify  exact [cx si di] =      \
@@ -167,7 +167,7 @@ static  char    __RTIStrBlastEq[] =  { "aux __RTIStrBlastEq             \
 // ax    - number of spaces to append
 // ds si - source pointer
 // cx    - number of characters to move
-static  char    __RTIStrBlastNe[] =  { "aux __RTIStrBlastNe             \
+static const char   __RTIStrBlastNe[] =  { "aux __RTIStrBlastNe         \
                                         parm    reverse                 \
                                                 [es di] [dx] [ds si] [ax]\
                                         modify  exact [di dx si ax cx] =\
@@ -189,7 +189,7 @@ static  char    __RTIStrBlastNe[] =  { "aux __RTIStrBlastNe             \
 // es di - destination pointer
 // si bx - source pointer
 // cx    - number of characters to move
-static  char    __RTIStrBlastEqWinOS[] =  { "aux __RTIStrBlastEq        \
+static const char   __RTIStrBlastEqWinOS[] =  { "aux __RTIStrBlastEq    \
                                         parm    reverse                 \
                                                 [es di] [si bx] [cx]    \
                                         modify  exact [di si cx] =      \
@@ -204,7 +204,7 @@ static  char    __RTIStrBlastEqWinOS[] =  { "aux __RTIStrBlastEq        \
 // ax    - number of spaces to append
 // si bx - source pointer
 // cx    - number of characters to move
-static  char    __RTIStrBlastNeWinOS[] =  { "aux __RTIStrBlastNe        \
+static const char   __RTIStrBlastNeWinOS[] =  { "aux __RTIStrBlastNe    \
                                         parm    reverse                 \
                                                 [es di] [ax] [si bx] [cx]\
                                         modify  exact [di ax si cx] =   \
@@ -222,7 +222,7 @@ static  char    __RTIStrBlastNeWinOS[] =  { "aux __RTIStrBlastNe        \
 // si bx - source pointer
 // cx    - number of 2 character tuples to move (strlen >> 21
 // ax    - number of characters left over after initial 2-tuple move (strlen & 1)
-static  char    __RTIStrBlastEqWin[] =  { "aux __RTIStrBlastEq          \
+static const char   __RTIStrBlastEqWin[] =  { "aux __RTIStrBlastEq      \
                                         parm    reverse                 \
                                                 [es di] [si bx] [cx] [ax]\
                                         modify  exact [cx si di] =      \
@@ -239,7 +239,7 @@ static  char    __RTIStrBlastEqWin[] =  { "aux __RTIStrBlastEq          \
 // ax    - number of spaces to append
 // si bx - source pointer
 // cx    - number of characters to move
-static  char    __RTIStrBlastNeWin[] =  { "aux __RTIStrBlastNe          \
+static const char   __RTIStrBlastNeWin[] =  { "aux __RTIStrBlastNe      \
                                         parm    reverse                 \
                                                 [es di] [dx] [si bx] [ax]\
                                         modify  exact [di dx si ax cx] =\
@@ -267,7 +267,7 @@ static  char    __RTIStrBlastNeWin[] =  { "aux __RTIStrBlastNe          \
 // di   - destination pointer
 // si   - source pointer
 // cx   - number of characters to move
-static  char    __RTIStrBlastEqSOS[] =  { "aux __RTIStrBlastEq          \
+static const char   __RTIStrBlastEqSOS[] =  { "aux __RTIStrBlastEq      \
                                         parm    reverse                 \
                                                 [di] [si] [cx]          \
                                         modify  [es] =                  \
@@ -280,7 +280,7 @@ static  char    __RTIStrBlastEqSOS[] =  { "aux __RTIStrBlastEq          \
 // ax   - number of spaces to append
 // si   - source pointer
 // cx   - number of characters to move
-static  char    __RTIStrBlastNeSOS[] =  { "aux __RTIStrBlastNe          \
+static const char   __RTIStrBlastNeSOS[] =  { "aux __RTIStrBlastNe      \
                                         parm    reverse                 \
                                                 [di] [ax] [si] [cx]     \
                                         modify  [es] =                  \
@@ -298,7 +298,7 @@ static  char    __RTIStrBlastNeSOS[] =  { "aux __RTIStrBlastNe          \
 // si   - source pointer
 // cx   - number of 2 character tuples to move (strlen >> 21
 // ax   - number of characters left over after initial 2-tuple move (strlen & 1)
-static  char    __RTIStrBlastEqS[] =  { "aux __RTIStrBlastEq            \
+static const char   __RTIStrBlastEqS[] =  { "aux __RTIStrBlastEq        \
                                         parm    reverse                 \
                                                 [di] [si] [cx] [ax]     \
                                         modify  [es] =                  \
@@ -313,7 +313,7 @@ static  char    __RTIStrBlastEqS[] =  { "aux __RTIStrBlastEq            \
 // ax   - number of spaces to append
 // si   - source pointer
 // cx   - number of characters to move
-static  char    __RTIStrBlastNeS[] =  { "aux __RTIStrBlastNe            \
+static const char   __RTIStrBlastNeS[] =  { "aux __RTIStrBlastNe        \
                                         parm    reverse                 \
                                                 [di] [dx] [si] [ax]     \
                                         modify  [cx es] =               \
@@ -334,8 +334,8 @@ static  char    __RTIStrBlastNeS[] =  { "aux __RTIStrBlastNe            \
 #endif
 
 typedef struct inline_rtn {
-    char        *name;
-    char        *pragma;
+    const char  *name;
+    const char  *pragma;
     cg_type     typ;
     sym_id      sym_ptr;
     aux_info    *aux;
@@ -443,8 +443,7 @@ call_handle     InitInlineCall( int rtn_id ) {
     sym = in_entry->sym_ptr;
     if( sym == NULL ) {
         name_len = strlen( in_entry->name );
-        strcpy( SymBuff, in_entry->name );
-        sym = STAdd( SymBuff, name_len );
+        sym = STAdd( in_entry->name, name_len );
         sym->u.ns.flags = SY_USAGE | SY_TYPE | SY_SUBPROGRAM | SY_FUNCTION;
         sym->u.ns.u1.s.typ = FT_INTEGER_TARG;
         sym->u.ns.xt.size = TypeSize( sym->u.ns.u1.s.typ );

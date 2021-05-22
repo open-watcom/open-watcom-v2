@@ -47,7 +47,7 @@
 
 
 typedef struct class_entry {
-    char        *class;
+    const char  *class;
     uint        id;
 } class_entry;
 
@@ -60,7 +60,7 @@ static  class_entry     ClassMsg[] = {
 #define MAX_MSGLEN      64      // maximum length of MS_xxx in error.msg
 
 
-char    *PrmCodTab[] = {
+const char  *PrmCodTab[] = {
     #define pick(en,text)  text,
     #include "_prmcode.h"
     #undef pick
@@ -105,8 +105,8 @@ static  uint    SymClass( sym_id sym )
 }
 
 
-static  char    *GetClass( uint idx, char *buff )
-//===============================================
+static const char   *GetClass( uint idx, char *buff )
+//===================================================
 {
     if( ClassMsg[idx].class != NULL )
         return( ClassMsg[idx].class );
