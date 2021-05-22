@@ -25,21 +25,65 @@
 *
 *  ========================================================================
 *
-* Description:  Character set information structure definition
+* Description:  format data emiting routines
 *
 ****************************************************************************/
 
-#ifndef _F77_CSETINFO_H
-#define _F77_CSETINFO_H 1
 
-typedef struct character_set {
-    size_t      (* extract_text)(const char *,size_t);
-    bool        (* is_double_byte_blank)(const char *);
-    size_t      (* character_width)(const char *);
-    bool        (* is_foreign)(char);
-    bool        (* is_double_byte_char)(char);
-    byte        const *character_set;
-    char        *initializer;
-} character_set;
+#include "ftnstd.h"
+#include "fmtdef.h"
+#include "fmtdat.h"
+#include "fmtboth.h"
 
-#endif
+
+void    FEmCode( int code ) {
+//===========================
+
+// Emit a format code.
+
+    FmtEmStruct->FEMcode( code );
+}
+
+
+void    FEmChar( char *ch ) 
+//=========================
+// Emit a character.
+{
+    FmtEmStruct->FEMchar( ch );
+}
+
+
+void    FEmNum( int num ) {
+//=========================
+
+// Emit a specification number.
+
+    FmtEmStruct->FEMnum( num );
+}
+
+
+void    FEmByte( int num ) {
+//==========================
+
+// Emit a byte of information.
+
+    FmtEmStruct->FEMbyte( num );
+}
+
+
+void    R_FError( int code ) {
+//============================
+
+// Process a format error.
+
+    FmtEmStruct->FError( code );
+}
+
+
+void    R_FExtension( int code ) {
+//================================
+
+// Process a format extension.
+
+    FmtEmStruct->FExtension( code );
+}

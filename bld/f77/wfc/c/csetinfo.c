@@ -25,21 +25,12 @@
 *
 *  ========================================================================
 *
-* Description:  Character set information structure definition
+* Description:  character set information structure
 *
 ****************************************************************************/
 
-#ifndef _F77_CSETINFO_H
-#define _F77_CSETINFO_H 1
+#include "ftnstd.h"
+#include "csetinfo.h"
+#include "charset.h"
 
-typedef struct character_set {
-    size_t      (* extract_text)(const char *,size_t);
-    bool        (* is_double_byte_blank)(const char *);
-    size_t      (* character_width)(const char *);
-    bool        (* is_foreign)(char);
-    bool        (* is_double_byte_char)(char);
-    byte        const *character_set;
-    char        *initializer;
-} character_set;
-
-#endif
+character_set           CharSetInfo;

@@ -25,21 +25,24 @@
 *
 *  ========================================================================
 *
-* Description:  Character set information structure definition
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
-#ifndef _F77_CSETINFO_H
-#define _F77_CSETINFO_H 1
+#include "fmtdef.h"
+#include "fmttab.h"     /* For struct FmtElements */
 
-typedef struct character_set {
-    size_t      (* extract_text)(const char *,size_t);
-    bool        (* is_double_byte_blank)(const char *);
-    size_t      (* character_width)(const char *);
-    bool        (* is_foreign)(char);
-    bool        (* is_double_byte_char)(char);
-    byte        const *character_set;
-    char        *initializer;
-} character_set;
+gbl_defn char           *Fmt_start;       // pointer to start of format string
+gbl_defn char           *Fmt_charptr;     // pointer to current format character
+gbl_defn char           *Fmt_end;         // pointer to end of format string
+gbl_defn int            Fmt_paren_level;  // parenthesis count
+gbl_defn fmt_ptr        Fmt_revert;       // position to revert to if required
+gbl_defn int            Fmt_rep_spec;     // repeat specification count
 
-#endif
+gbl_defn const FmtElements * FmtEmStruct;
+                                          // pointer to run-time or compile-time
+                                          // struct of format code generation
+                                          // routines
+
+gbl_defn byte           Fmt_delimited;    // has format code been delimite

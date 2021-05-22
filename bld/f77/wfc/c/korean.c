@@ -157,7 +157,7 @@ static  bool    IsDoubleByteChar( char ch )
 }
 
 
-static size_t   CharacterWidth( const char PGM *ptr )
+static size_t   CharacterWidth( const char *ptr )
 // Determine character width.
 {
     unsigned char   ch;

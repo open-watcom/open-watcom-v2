@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -25,21 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  Character set information structure definition
+* Description:  format data emiting routines
 *
 ****************************************************************************/
 
-#ifndef _F77_CSETINFO_H
-#define _F77_CSETINFO_H 1
 
-typedef struct character_set {
-    size_t      (* extract_text)(const char *,size_t);
-    bool        (* is_double_byte_blank)(const char *);
-    size_t      (* character_width)(const char *);
-    bool        (* is_foreign)(char);
-    bool        (* is_double_byte_char)(char);
-    byte        const *character_set;
-    char        *initializer;
-} character_set;
-
-#endif
+extern void    FEmCode( int code );
+extern void    FEmChar( char *ch );
+extern void    FEmNum( int num );
+extern void    FEmByte( int num );
+extern void    R_FError( int code );
+extern void    R_FExtension( int code );
