@@ -37,17 +37,17 @@
     #define AUX_MEMALLOC        CMemAlloc
     #define AUX_STRALLOC        CStrSave
     #define AUX_MEMFREE         CMemFree
-    #define DEFAULT_CALLINFO    WatcallInfo;
+    #define DEFAULT_CALLINFO    WatcallInfo
 #elif defined( BY_CPP_FRONT_END )
     #define AUX_MEMALLOC        CMemAlloc
     #define AUX_STRALLOC        strsave
     #define AUX_MEMFREE         CMemFree
-    #define DEFAULT_CALLINFO    WatcallInfo;
+    #define DEFAULT_CALLINFO    WatcallInfo
 #elif defined( BY_FORTRAN_FRONT_END )
     #define AUX_MEMALLOC        FMemAlloc
     #define AUX_STRALLOC        FStrDup
     #define AUX_MEMFREE         FMemFree
-    #define DEFAULT_CALLINFO    FortranInfo;
+    #define DEFAULT_CALLINFO    FortranInfo
 #else
     #error "Unknown front end"
 #endif
