@@ -1550,16 +1550,28 @@ static void GetParmInfo( void )
     }
 }
 
-
-static void     Pragma( void )
-//============================
-// Process a pragma.
+static void     PragmaLinkage( void )
+//===================================
+// Process a pragma linkage.
 {
-#if _INTEL_CPU
-    const char  *arr;
-    size_t      arr_len;
-#endif
+    AliasInfo = &FortranInfo;
+    ReqToken( "(" );
+    SymbolName();
+    ReqToken( "," );
+    AliasName();
+    ProcessAlias();
+    ReqToken( ")" );
+}
 
+static void PragmaAuxEnd( void )
+//==============================
+{
+}
+
+static void     PragmaAux( void )
+//===============================
+// Process a pragma aux.
+{
     struct {
         boolbit f_far    : 1;
         boolbit f_far16  : 1;
@@ -1570,11 +1582,81 @@ static void     Pragma( void )
         boolbit f_modify : 1;
     } have;
 
+    AliasInfo = &FortranInfo;
+    if( RecToken( "(" ) ) {
+        AliasName();
+        ReqToken( ")" );
+    }
+    SymbolName();
+    ProcessAlias();
+    ObjectName();
+
+    have.f_far    = false;
+    have.f_loadds = false;
+    have.f_export = false;
+    have.f_value  = false;
+    have.f_modify = false;
+    have.f_parm   = false;
+    for( ;; ) {
+        if( !have.f_parm && RecToken( "PARM" ) ) {
+            GetParmInfo();
+            have.f_parm = true;
+        } else if( !have.f_far && RecToken( "=" ) ) {
+            GetByteSeq();
+#if _INTEL_CPU
+            have.f_far = true;
+        } else if( !have.f_far && RecToken( "FAR" ) ) {
+            CurrAux->cclass |= FAR_CALL;
+            have.f_far = true;
+#if _CPU == 386
+        } else if( !have.f_far16 && RecToken( "FAR16" ) ) {
+            CurrAux->cclass |= FAR16_CALL;
+            have.f_far16 = true;
+#endif
+        } else if( !have.f_far && RecToken( "NEAR" ) ) {
+            CurrAux->cclass &= ~FAR_CALL;
+            have.f_far = true;
+        } else if( !have.f_loadds && RecToken( "LOADDS" ) ) {
+            CurrAux->cclass |= LOAD_DS_ON_ENTRY;
+            have.f_loadds = true;
+#endif
+        } else if( !have.f_export && RecToken( "EXPORT" ) ) {
+            CurrAux->cclass |= DLL_EXPORT;
+            have.f_export = true;
+#if _INTEL_CPU
+        } else if( !have.f_value && RecToken( "VALUE" ) ) {
+            GetRetInfo();
+            have.f_value = true;
+#endif
+        } else if( !have.f_value && RecToken( "ABORTS" ) ) {
+            CurrAux->cclass |= SUICIDAL;
+            have.f_value = true;
+#if _INTEL_CPU
+        } else if( !have.f_modify && RecToken( "MODIFY" ) ) {
+            GetSaveInfo();
+            have.f_modify = true;
+#endif
+        } else {
+            break;
+        }
+    }
+    PragmaAuxEnd();
+}
+
+static void     Pragma( void )
+//============================
+// Process a pragma.
+{
+#if _INTEL_CPU
+    const char  *arr;
+    size_t      arr_len;
+#endif
+
     if( RecFnToken( "LIBRARY" ) ) {
         if( RecFnToken( "\0" ) ) {
             DefaultLibInfo();
         } else {
-            while( !RecFnToken( "\0" ) ) {
+            while( !RecFnToken( "\0" ) ) {            
                 AddDefaultLib( TokStart, TokEnd - TokStart, '9' );
                 ScanFnToken();
             }
@@ -1597,75 +1679,10 @@ static void     Pragma( void )
   #endif
         }
 #endif
-    } else {
-        AliasInfo = &FortranInfo;
-        if( RecToken( "LINKAGE" ) ) {
-            ReqToken( "(" );
-            SymbolName();
-            ReqToken( "," );
-            AliasName();
-            ProcessAlias();
-            ReqToken( ")" );
-        } else {
-            ReqToken( "AUX" );
-            if( RecToken( "(" ) ) {
-                AliasName();
-                ReqToken( ")" );
-            }
-            SymbolName();
-            ProcessAlias();
-            ObjectName();
-
-            have.f_far    = false;
-            have.f_loadds = false;
-            have.f_export = false;
-            have.f_value  = false;
-            have.f_modify = false;
-            have.f_parm   = false;
-            for( ;; ) {
-                if( !have.f_parm && RecToken( "PARM" ) ) {
-                    GetParmInfo();
-                    have.f_parm = true;
-                } else if( !have.f_far && RecToken( "=" ) ) {
-                    GetByteSeq();
-#if _INTEL_CPU
-                    have.f_far = true;
-                } else if( !have.f_far && RecToken( "FAR" ) ) {
-                    CurrAux->cclass |= FAR_CALL;
-                    have.f_far = true;
-#if _CPU == 386
-                } else if( !have.f_far16 && RecToken( "FAR16" ) ) {
-                    CurrAux->cclass |= FAR16_CALL;
-                    have.f_far16 = true;
-#endif
-                } else if( !have.f_far && RecToken( "NEAR" ) ) {
-                    CurrAux->cclass &= ~FAR_CALL;
-                    have.f_far = true;
-                } else if( !have.f_loadds && RecToken( "LOADDS" ) ) {
-                    CurrAux->cclass |= LOAD_DS_ON_ENTRY;
-                    have.f_loadds = true;
-#endif
-                } else if( !have.f_export && RecToken( "EXPORT" ) ) {
-                    CurrAux->cclass |= DLL_EXPORT;
-                    have.f_export = true;
-#if _INTEL_CPU
-                } else if( !have.f_value && RecToken( "VALUE" ) ) {
-                    GetRetInfo();
-                    have.f_value = true;
-#endif
-                } else if( !have.f_value && RecToken( "ABORTS" ) ) {
-                    CurrAux->cclass |= SUICIDAL;
-                    have.f_value = true;
-#if _INTEL_CPU
-                } else if( !have.f_modify && RecToken( "MODIFY" ) ) {
-                    GetSaveInfo();
-                    have.f_modify = true;
-#endif
-                } else {
-                    break;
-                }
-            }
-        }
+    } else if( RecToken( "LINKAGE" ) ) {
+        PragmaLinkage();
+    } else if( RecToken( "AUX" ) ) {
+        PragmaAux();
     }
 }
 
