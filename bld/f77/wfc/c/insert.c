@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,7 +66,7 @@ char    *PrmCodTab[] = {
     #undef pick
 };
 
-static  uint    SymClass( sym_id sym ) 
+static  uint    SymClass( sym_id sym )
 //====================================
 {
     unsigned_16 class;
@@ -105,7 +105,7 @@ static  uint    SymClass( sym_id sym )
 }
 
 
-static  char    *GetClass( uint idx, char *buff ) 
+static  char    *GetClass( uint idx, char *buff )
 //===============================================
 {
     if( ClassMsg[idx].class != NULL )
@@ -140,7 +140,7 @@ static char *StmtName( char *buff )
 }
 
 
-void    StmtExtension( int errcode ) 
+void    StmtExtension( int errcode )
 //==================================
 {
     char        stmt[MAX_MSGLEN + 1];
@@ -149,7 +149,7 @@ void    StmtExtension( int errcode )
 }
 
 
-void    StmtErr( int errcode ) 
+void    StmtErr( int errcode )
 //============================
 {
     char        stmt[MAX_MSGLEN + 1];
@@ -158,7 +158,7 @@ void    StmtErr( int errcode )
 }
 
 
-void    StmtIntErr( int errcode, int num ) 
+void    StmtIntErr( int errcode, int num )
 //========================================
 {
     char        stmt[MAX_MSGLEN + 1];
@@ -176,7 +176,7 @@ void StmtPtrErr( int errcode, const char *ptr )
 }
 
 
-void    NameWarn( int errcod, sym_id sym ) 
+void    NameWarn( int errcod, sym_id sym )
 //========================================
 {
     char        buff[MAX_SYMLEN + 1];
@@ -186,7 +186,7 @@ void    NameWarn( int errcod, sym_id sym )
 }
 
 
-void    NameErr( int errcod, sym_id sym ) 
+void    NameErr( int errcod, sym_id sym )
 //=======================================
 {
     char        buff[MAX_SYMLEN + 1];
@@ -196,7 +196,7 @@ void    NameErr( int errcod, sym_id sym )
 }
 
 
-void    NameStmtErr( int errcod, sym_id sym, STMT stmt ) 
+void    NameStmtErr( int errcod, sym_id sym, STMT stmt )
 //======================================================
 {
     char        buff[MAX_SYMLEN + 1];
@@ -206,14 +206,14 @@ void    NameStmtErr( int errcod, sym_id sym, STMT stmt )
 }
 
 
-void    PrmCodeErr( int errcode, int code ) 
+void    PrmCodeErr( int errcode, int code )
 //=========================================
 {
     Error( errcode, PrmCodTab[code & ~PC_PROC_FAR16] );
 }
 
 
-void    NameExt( int errcod, sym_id sym ) 
+void    NameExt( int errcod, sym_id sym )
 //=======================================
 {
     char        buff[MAX_SYMLEN + 1];
@@ -223,7 +223,7 @@ void    NameExt( int errcod, sym_id sym )
 }
 
 
-void    NamNamErr( int errcod, sym_id var1, sym_id var2 ) 
+void    NamNamErr( int errcod, sym_id var1, sym_id var2 )
 //=======================================================
 {
     char        buff1[MAX_SYMLEN + 1];
@@ -235,7 +235,7 @@ void    NamNamErr( int errcod, sym_id var1, sym_id var2 )
 }
 
 
-void    ClassNameErr( int errcod, sym_id sym ) 
+void    ClassNameErr( int errcod, sym_id sym )
 //============================================
 {
     char        buff[MAX_SYMLEN + 1];
@@ -246,7 +246,7 @@ void    ClassNameErr( int errcod, sym_id sym )
 }
 
 
-void    PrevDef( sym_id sym ) 
+void    PrevDef( sym_id sym )
 //===========================
 {
     char        buff[MAX_SYMLEN + 1];
@@ -257,7 +257,7 @@ void    PrevDef( sym_id sym )
 }
 
 
-void    NameTypeErr( int errcod, sym_id sym ) 
+void    NameTypeErr( int errcod, sym_id sym )
 //===========================================
 {
     char        buff[MAX_SYMLEN + 1];
@@ -267,14 +267,14 @@ void    NameTypeErr( int errcod, sym_id sym )
 }
 
 
-void    TypeTypeErr( int errcod, TYPE typ1, TYPE typ2 ) 
+void    TypeTypeErr( int errcod, TYPE typ1, TYPE typ2 )
 //=====================================================
 {
     Error( errcod, TypeKW( typ1 ), TypeKW( typ2 ) );
 }
 
 
-void    TypeNameTypeErr( int errcod, TYPE typ1, sym_id sym, TYPE typ2 ) 
+void    TypeNameTypeErr( int errcod, TYPE typ1, sym_id sym, TYPE typ2 )
 //=====================================================================
 {
     char        buff[MAX_SYMLEN + 1];
@@ -284,14 +284,14 @@ void    TypeNameTypeErr( int errcod, TYPE typ1, sym_id sym, TYPE typ2 )
 }
 
 
-void    TypeErr( int errcod, TYPE typ ) 
+void    TypeErr( int errcod, TYPE typ )
 //=====================================
 {
     Error( errcod, TypeKW( typ ) );
 }
 
 
-void    KnownClassErr( int errcod, uint idx ) 
+void    KnownClassErr( int errcod, uint idx )
 //===========================================
 {
     char        class[MAX_MSGLEN + 1];
@@ -300,7 +300,7 @@ void    KnownClassErr( int errcod, uint idx )
 }
 
 
-void    ClassErr( int errcod, sym_id sym ) 
+void    ClassErr( int errcod, sym_id sym )
 //========================================
 {
     char        class[MAX_MSGLEN + 1];
@@ -309,7 +309,7 @@ void    ClassErr( int errcod, sym_id sym )
 }
 
 
-void    OpndErr( int errcod ) 
+void    OpndErr( int errcod )
 //===========================
 {
     char        *str;
@@ -320,7 +320,7 @@ void    OpndErr( int errcod )
 }
 
 
-void    IllName( sym_id sym ) 
+void    IllName( sym_id sym )
 //===========================
 {
     char        buff[MAX_SYMLEN + 1];
@@ -333,7 +333,7 @@ void    IllName( sym_id sym )
 }
 
 
-void    IllType( sym_id sym ) 
+void    IllType( sym_id sym )
 //===========================
 {
     char        buff[MAX_SYMLEN + 1];
@@ -344,7 +344,7 @@ void    IllType( sym_id sym )
 }
 
 
-void    StructErr( int errcode, sym_id sym ) 
+void    StructErr( int errcode, sym_id sym )
 //==========================================
 {
     char        struct_name[MAX_SYMLEN + 1];
@@ -354,7 +354,7 @@ void    StructErr( int errcode, sym_id sym )
 }
 
 
-void    FieldErr( int errcode, sym_id sym ) 
+void    FieldErr( int errcode, sym_id sym )
 //=========================================
 {
     char        field_name[MAX_SYMLEN + 1];

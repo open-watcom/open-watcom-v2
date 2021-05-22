@@ -140,7 +140,7 @@ void    SplitCmplx( cg_name cmplx_addr, cg_type typ ) {
 }
 
 
-static void DoCmplxOp( RTCODE rtn_id, cg_name a, cg_name b, cg_name c, cg_name d ) 
+static void DoCmplxOp( RTCODE rtn_id, cg_name a, cg_name b, cg_name c, cg_name d )
 //================================================================================
 // Do a complex operation.
 {

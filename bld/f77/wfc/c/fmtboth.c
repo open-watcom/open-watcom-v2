@@ -45,7 +45,7 @@ void    FEmCode( int code ) {
 }
 
 
-void    FEmChar( char *ch ) 
+void    FEmChar( char *ch )
 //=========================
 // Emit a character.
 {

@@ -56,7 +56,7 @@
 #include "fmtcnvt.h"
 
 
-static  bool    ReqChar( void ) 
+static  bool    ReqChar( void )
 //=============================
 // Recognize one character operand.
 {
