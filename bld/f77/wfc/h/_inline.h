@@ -31,19 +31,6 @@
 ****************************************************************************/
 
 
-#ifndef _F77_INLINE_INCLUDED_
-#define _F77_INLINE_INCLUDED_
-
-enum {
-    #define pick(e,n,s1,s2,s3,s4,s5,s6) e,
-    #include "_inline.h"
-    #undef pick
-    INLINETAB_SIZE
-};
-
-
-extern void         InitInlinePragmas( void );
-extern call_handle  InitInlineCall( int rtn_id );
-extern void         FreeInlinePragmas( void );
-
-#endif
+/*    e                   n               s1 s2  s3   s4     s5 s6 */
+pick( INLINE_STRBLAST_EQ, __RTIStrBlastEq, , OS, Win, WinOS, S, SOS )
+pick( INLINE_STRBLAST_NE, __RTIStrBlastNe, , OS, Win, WinOS, S, SOS )

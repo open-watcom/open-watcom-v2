@@ -342,40 +342,44 @@ typedef struct inline_rtn {
 } inline_rtn;
 
 static inline_rtn  NormalInlineTab[] = {
-        "__RTIStrBlastEq", __RTIStrBlastEq, TY_INTEGER, NULL, NULL,
-        "__RTIStrBlastNe", __RTIStrBlastNe, TY_INTEGER, NULL, NULL
+    #define pick(e,n,s1,s2,s3,s4,s5,s6)  #n, n##s1, TY_INTEGER, NULL, NULL,
+    #include "_inline.h"
+    #undef pick
 };
 
 static inline_rtn  OptSpaceInlineTab[] = {
-        "__RTIStrBlastEq", __RTIStrBlastEqOS, TY_INTEGER, NULL, NULL,
-        "__RTIStrBlastNe", __RTIStrBlastNeOS, TY_INTEGER, NULL, NULL
+    #define pick(e,n,s1,s2,s3,s4,s5,s6)  #n, n##s2, TY_INTEGER, NULL, NULL,
+    #include "_inline.h"
+    #undef pick
 };
 
 #if _CPU == 8086
 static inline_rtn  WinNormalInlineTab[] = {
-        "__RTIStrBlastEq", __RTIStrBlastEqWin, TY_INTEGER, NULL, NULL,
-        "__RTIStrBlastNe", __RTIStrBlastNeWin, TY_INTEGER, NULL, NULL
+    #define pick(e,n,s1,s2,s3,s4,s5,s6)  #n, n##s3, TY_INTEGER, NULL, NULL,
+    #include "_inline.h"
+    #undef pick
 };
 
 static inline_rtn  WinOptSpaceInlineTab[] = {
-        "__RTIStrBlastEq", __RTIStrBlastEqWinOS, TY_INTEGER, NULL, NULL,
-        "__RTIStrBlastNe", __RTIStrBlastNeWinOS, TY_INTEGER, NULL, NULL
+    #define pick(e,n,s1,s2,s3,s4,s5,s6)  #n, n##s4, TY_INTEGER, NULL, NULL,
+    #include "_inline.h"
+    #undef pick
 };
 
 static inline_rtn  SmallModelInlineTab[] = {
-        "__RTIStrBlastEq", __RTIStrBlastEqS, TY_INTEGER, NULL, NULL,
-        "__RTIStrBlastNe", __RTIStrBlastNeS, TY_INTEGER, NULL, NULL
+    #define pick(e,n,s1,s2,s3,s4,s5,s6)  #n, n##s5, TY_INTEGER, NULL, NULL,
+    #include "_inline.h"
+    #undef pick
 };
 
 static inline_rtn  OptSpaceSmallModelInlineTab[] = {
-        "__RTIStrBlastEq", __RTIStrBlastEqSOS, TY_INTEGER, NULL, NULL,
-        "__RTIStrBlastNe", __RTIStrBlastNeSOS, TY_INTEGER, NULL, NULL
+    #define pick(e,n,s1,s2,s3,s4,s5,s6)  #n, n##s6, TY_INTEGER, NULL, NULL,
+    #include "_inline.h"
+    #undef pick
 };
 #endif
 
 static inline_rtn  *InlineTab = NormalInlineTab;
-
-#define MAX_IN_INDEX    (sizeof( NormalInlineTab ) / sizeof( inline_rtn ))
 
 static bool     CreatedPragmas = false;
 
@@ -385,7 +389,7 @@ void    InitInlinePragmas( void ) {
 //===========================
 
 #if _CPU == 386 || _CPU == 8086
-    int index;
+    int i;
 
     if( !CreatedPragmas ) {
         if( OZOpts & OZOPT_O_SPACE ) {
@@ -410,13 +414,13 @@ void    InitInlinePragmas( void ) {
             }
 #endif
         }
-        for( index = 0; index < MAX_IN_INDEX; index++ ) {
-            DoPragma( InlineTab[ index ].pragma );
+        for( i = 0; i < INLINETAB_SIZE; i++ ) {
+            DoPragma( InlineTab[i].pragma );
         }
         CreatedPragmas = true;
     }
-    for( index = 0; index < MAX_IN_INDEX; index++ ) {
-        InlineTab[ index ].sym_ptr = NULL;
+    for( i = 0; i < INLINETAB_SIZE; i++ ) {
+        InlineTab[i].sym_ptr = NULL;
     }
 #endif
 }
@@ -435,7 +439,7 @@ call_handle     InitInlineCall( int rtn_id ) {
     if( !CreatedPragmas ) {
         InitInlinePragmas();
     }
-    in_entry = &InlineTab[ rtn_id ];
+    in_entry = &InlineTab[rtn_id];
     sym = in_entry->sym_ptr;
     if( sym == NULL ) {
         name_len = strlen( in_entry->name );
@@ -462,13 +466,13 @@ void    FreeInlinePragmas( void ) {
 // Free symbol table entries for run-time routines.
 
 #if _CPU == 386 || _CPU == 8086
-    int         index;
+    int         i;
     sym_id      sym;
 
     if( !CreatedPragmas )
         return;
-    for( index = 0; index < MAX_IN_INDEX; index++ ) {
-        sym = InlineTab[ index ].sym_ptr;
+    for( i = 0; i < INLINETAB_SIZE; i++ ) {
+        sym = InlineTab[i].sym_ptr;
         if( sym != NULL ) {
             if( ( CGFlags & CG_FATAL ) == 0 ) {
                 if( sym->u.ns.u3.address != NULL ) {
@@ -476,7 +480,7 @@ void    FreeInlinePragmas( void ) {
                 }
             }
             STFree( sym );
-            InlineTab[ index ].sym_ptr = NULL;
+            InlineTab[i].sym_ptr = NULL;
         }
     }
 #endif
