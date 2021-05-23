@@ -61,7 +61,7 @@
 
 #if _CPU == 386
 
-// Space optimization pragmas (take an awful beating on a pentium)
+// Space optimized pragmas (take an awful beating on a pentium)
 
 // edi  - destination pointer
 // esi  - source pointer
@@ -85,13 +85,13 @@ static  char    __RTIStrBlastNeOS[] =  { "aux __RTIStrBlastNe           \
                                         \"rep   stosb\"                 \
                                 " };
 
-// Time Optimization pragmas
+// Time Optimized pragmas
 
 // edi  - destination pointer
 // esi  - source pointer
 // ecx  - number of 4 character tuples to move (strlen >> 2)
 // eax  - number of characters left over after initial 4-tuple move (strlen & 3)
-static  char    __RTIStrBlastEq[] =  { "aux __RTIStrBlastEq             \
+static  char    __RTIStrBlastEqOT[] =  { "aux __RTIStrBlastEq             \
                                         parm    reverse                 \
                                                 [edi] [esi] [ecx] [eax] =\
                                         \"rep   movsd\"                 \
@@ -103,7 +103,7 @@ static  char    __RTIStrBlastEq[] =  { "aux __RTIStrBlastEq             \
 // eax  - number of spaces to append
 // esi  - source pointer
 // ecx  - number of characters to move
-static  char    __RTIStrBlastNe[] =  { "aux __RTIStrBlastNe             \
+static  char    __RTIStrBlastNeOT[] =  { "aux __RTIStrBlastNe             \
                                         parm    reverse                 \
                                                 [edi] [edx] [esi] [eax] \
                                         modify  [ecx] =                 \
@@ -124,7 +124,7 @@ static  char    __RTIStrBlastNe[] =  { "aux __RTIStrBlastNe             \
 
 #elif _CPU == 8086
 
-// Space Optimization pragmas
+// Space Optimized pragmas
 
 // es di - destination pointer
 // ds si - source pointer
@@ -150,11 +150,13 @@ static  char    __RTIStrBlastNeOS[] =  { "aux __RTIStrBlastNe           \
                                         \"rep   stosb\"                 \
                                 " };
 
+// Time Optimized pragmas
+
 // es di - destination pointer
 // ds si - source pointer
 // cx    - number of 2 character tuples to move (strlen >> 21
 // ax    - number of characters left over after initial 2-tuple move (strlen & 1)
-static  char    __RTIStrBlastEq[] =  { "aux __RTIStrBlastEq             \
+static  char    __RTIStrBlastEqOT[] =  { "aux __RTIStrBlastEq             \
                                         parm    reverse                 \
                                                 [es di] [ds si] [cx] [ax]\
                                         modify  exact [cx si di] =      \
@@ -167,7 +169,7 @@ static  char    __RTIStrBlastEq[] =  { "aux __RTIStrBlastEq             \
 // ax    - number of spaces to append
 // ds si - source pointer
 // cx    - number of characters to move
-static  char    __RTIStrBlastNe[] =  { "aux __RTIStrBlastNe             \
+static  char    __RTIStrBlastNeOT[] =  { "aux __RTIStrBlastNe             \
                                         parm    reverse                 \
                                                 [es di] [dx] [ds si] [ax]\
                                         modify  exact [di dx si ax cx] =\
@@ -186,10 +188,12 @@ static  char    __RTIStrBlastNe[] =  { "aux __RTIStrBlastNe             \
 
 // Windows pragmas (can't use DS as an argument since DS is pegged)
 
+// Space Optimized pragmas
+
 // es di - destination pointer
 // si bx - source pointer
 // cx    - number of characters to move
-static  char    __RTIStrBlastEqWinOS[] =  { "aux __RTIStrBlastEq        \
+static  char    __RTIStrBlastEqOSWin[] =  { "aux __RTIStrBlastEq        \
                                         parm    reverse                 \
                                                 [es di] [si bx] [cx]    \
                                         modify  exact [di si cx] =      \
@@ -204,7 +208,7 @@ static  char    __RTIStrBlastEqWinOS[] =  { "aux __RTIStrBlastEq        \
 // ax    - number of spaces to append
 // si bx - source pointer
 // cx    - number of characters to move
-static  char    __RTIStrBlastNeWinOS[] =  { "aux __RTIStrBlastNe        \
+static  char    __RTIStrBlastNeOSWin[] =  { "aux __RTIStrBlastNe        \
                                         parm    reverse                 \
                                                 [es di] [ax] [si bx] [cx]\
                                         modify  exact [di ax si cx] =   \
@@ -218,11 +222,13 @@ static  char    __RTIStrBlastNeWinOS[] =  { "aux __RTIStrBlastNe        \
                                         \"pop   ds\"                    \
                                 " };
 
+// Time Optimized pragmas
+
 // es di - destination pointer
 // si bx - source pointer
 // cx    - number of 2 character tuples to move (strlen >> 21
 // ax    - number of characters left over after initial 2-tuple move (strlen & 1)
-static  char    __RTIStrBlastEqWin[] =  { "aux __RTIStrBlastEq          \
+static  char    __RTIStrBlastEqOTWin[] =  { "aux __RTIStrBlastEq          \
                                         parm    reverse                 \
                                                 [es di] [si bx] [cx] [ax]\
                                         modify  exact [cx si di] =      \
@@ -239,7 +245,7 @@ static  char    __RTIStrBlastEqWin[] =  { "aux __RTIStrBlastEq          \
 // ax    - number of spaces to append
 // si bx - source pointer
 // cx    - number of characters to move
-static  char    __RTIStrBlastNeWin[] =  { "aux __RTIStrBlastNe          \
+static  char    __RTIStrBlastNeOTWin[] =  { "aux __RTIStrBlastNe          \
                                         parm    reverse                 \
                                                 [es di] [dx] [si bx] [ax]\
                                         modify  exact [di dx si ax cx] =\
@@ -262,12 +268,12 @@ static  char    __RTIStrBlastNeWin[] =  { "aux __RTIStrBlastNe          \
 
 // Small memory pragmas.
 
-// Space Optimizations pragmas
+// Space Optimized pragmas
 
 // di   - destination pointer
 // si   - source pointer
 // cx   - number of characters to move
-static  char    __RTIStrBlastEqSOS[] =  { "aux __RTIStrBlastEq          \
+static  char    __RTIStrBlastEqOSS[] =  { "aux __RTIStrBlastEq          \
                                         parm    reverse                 \
                                                 [di] [si] [cx]          \
                                         modify  [es] =                  \
@@ -280,7 +286,7 @@ static  char    __RTIStrBlastEqSOS[] =  { "aux __RTIStrBlastEq          \
 // ax   - number of spaces to append
 // si   - source pointer
 // cx   - number of characters to move
-static  char    __RTIStrBlastNeSOS[] =  { "aux __RTIStrBlastNe          \
+static  char    __RTIStrBlastNeOSS[] =  { "aux __RTIStrBlastNe          \
                                         parm    reverse                 \
                                                 [di] [ax] [si] [cx]     \
                                         modify  [es] =                  \
@@ -292,13 +298,13 @@ static  char    __RTIStrBlastNeSOS[] =  { "aux __RTIStrBlastNe          \
                                         \"rep   stosb\"                 \
                                 " };
 
-// Time Optimization pragmas
+// Time Optimized pragmas
 
 // di   - destination pointer
 // si   - source pointer
 // cx   - number of 2 character tuples to move (strlen >> 21
 // ax   - number of characters left over after initial 2-tuple move (strlen & 1)
-static  char    __RTIStrBlastEqS[] =  { "aux __RTIStrBlastEq            \
+static  char    __RTIStrBlastEqOTS[] =  { "aux __RTIStrBlastEq            \
                                         parm    reverse                 \
                                                 [di] [si] [cx] [ax]     \
                                         modify  [es] =                  \
@@ -313,7 +319,7 @@ static  char    __RTIStrBlastEqS[] =  { "aux __RTIStrBlastEq            \
 // ax   - number of spaces to append
 // si   - source pointer
 // cx   - number of characters to move
-static  char    __RTIStrBlastNeS[] =  { "aux __RTIStrBlastNe            \
+static  char    __RTIStrBlastNeOTS[] =  { "aux __RTIStrBlastNe            \
                                         parm    reverse                 \
                                                 [di] [dx] [si] [ax]     \
                                         modify  [cx es] =               \
@@ -341,7 +347,7 @@ typedef struct inline_rtn {
     aux_info    *aux;
 } inline_rtn;
 
-static inline_rtn  NormalInlineTab[] = {
+static inline_rtn  OptTimeInlineTab[] = {
     #define pick(e,n,s1,s2,s3,s4,s5,s6)  #n, n##s1, TY_INTEGER, NULL, NULL,
     #include "_inline.h"
     #undef pick
@@ -354,19 +360,19 @@ static inline_rtn  OptSpaceInlineTab[] = {
 };
 
 #if _CPU == 8086
-static inline_rtn  WinNormalInlineTab[] = {
+static inline_rtn  OptTimeWinInlineTab[] = {
     #define pick(e,n,s1,s2,s3,s4,s5,s6)  #n, n##s3, TY_INTEGER, NULL, NULL,
     #include "_inline.h"
     #undef pick
 };
 
-static inline_rtn  WinOptSpaceInlineTab[] = {
+static inline_rtn  OptSpaceWinInlineTab[] = {
     #define pick(e,n,s1,s2,s3,s4,s5,s6)  #n, n##s4, TY_INTEGER, NULL, NULL,
     #include "_inline.h"
     #undef pick
 };
 
-static inline_rtn  SmallModelInlineTab[] = {
+static inline_rtn  OptTimeSmallModelInlineTab[] = {
     #define pick(e,n,s1,s2,s3,s4,s5,s6)  #n, n##s5, TY_INTEGER, NULL, NULL,
     #include "_inline.h"
     #undef pick
@@ -379,7 +385,7 @@ static inline_rtn  OptSpaceSmallModelInlineTab[] = {
 };
 #endif
 
-static inline_rtn  *InlineTab = NormalInlineTab;
+static inline_rtn  *InlineTab = OptTimeInlineTab;
 
 static bool     CreatedPragmas = false;
 
@@ -400,16 +406,16 @@ void    InitInlinePragmas( void ) {
             } else {
                 // using large/huge memory model
                 if( CGOpts & CGOPT_WINDOWS ) {
-                    InlineTab = WinOptSpaceInlineTab;
+                    InlineTab = OptSpaceWinInlineTab;
                 }
             }
         } else {
             if( CGOpts & CGOPT_M_MEDIUM ) {
-                InlineTab = SmallModelInlineTab;
+                InlineTab = OptTimeSmallModelInlineTab;
             } else {
                 // using large/huge memory model
                 if( CGOpts & CGOPT_WINDOWS ) {
-                    InlineTab = WinNormalInlineTab;
+                    InlineTab = OptTimeWinInlineTab;
                 }
             }
 #endif

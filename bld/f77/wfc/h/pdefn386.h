@@ -31,6 +31,52 @@
 ****************************************************************************/
 
 
-/*    en                  name             s1  s2  s3     s4     s5   s6 */
-pick( INLINE_STRBLAST_EQ, __RTIStrBlastEq, OT, OS, OTWin, OSWin, OTS, OSS )
-pick( INLINE_STRBLAST_NE, __RTIStrBlastNe, OT, OS, OTWin, OSWin, OTS, OSS )
+/*      INLINE FUNCTIONS */
+
+aux_info        InlineInfo;
+
+/*
+  here come the code bursts ...
+*/
+
+#include "pragdefn.h"
+#include "code386.gh"
+
+#define PRAGMADEF(p,x)    #x, (byte_seq *)&p##x, p##x##_parms, p##x##_ret, p##x##_saves
+
+static inline_funcs  OptTimeInlineTab[] = {
+    PRAGMADEF( __RTIStrBlastEq, OT ), TY_INTEGER, NULL, NULL,
+    PRAGMADEF( __RTIStrBlastNe, OT ), TY_INTEGER, NULL, NULL,
+};
+
+static inline_funcs  OptSpaceInlineTab[] = {
+    PRAGMADEF( __RTIStrBlastEq, OS ), TY_INTEGER, NULL, NULL,
+    PRAGMADEF( __RTIStrBlastNe, OS ), TY_INTEGER, NULL, NULL,
+};
+
+static hw_reg_set P_EDI_ESI_ECX_EAX[] = {
+    HW_D( HW_EDI ),
+    HW_D( HW_ESI ),
+    HW_D( HW_ECX ),
+    HW_D( HW_EAX ),
+    HW_D( HW_EMPTY )
+};
+
+static hw_reg_set P_EDI_EAX_ESI_ECX[] = {
+    HW_D( HW_EDI ),
+    HW_D( HW_EAX ),
+    HW_D( HW_ESI ),
+    HW_D( HW_ECX ),
+    HW_D( HW_EMPTY )
+};
+
+static hw_reg_set P_EDI_ESI_ECX[] = {
+    HW_D( HW_EDI ),
+    HW_D( HW_ESI ),
+    HW_D( HW_ECX ),
+    HW_D( HW_EMPTY )
+};
+
+static inline_funcs  *InlineTab = OptTimeInlineTab;
+
+#define MAX_IN_INDEX    (sizeof( OptTimeInlineTab ) / sizeof( inline_funcs ))

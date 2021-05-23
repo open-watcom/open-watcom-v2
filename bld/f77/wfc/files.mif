@@ -263,4 +263,3 @@ comfiles = $(comroot) $(comovl1) $(comovl2)
 tdfiles = $(tdroot) $(tdovl1) $(tdovl2)
 
 fobjs = $(comfiles) $($(host_cpu)files) $(tdfiles) $(dbfiles)
-

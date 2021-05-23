@@ -31,6 +31,10 @@
 ****************************************************************************/
 
 
-/*    en                  name             s1  s2  s3     s4     s5   s6 */
-pick( INLINE_STRBLAST_EQ, __RTIStrBlastEq, OT, OS, OTWin, OSWin, OTS, OSS )
-pick( INLINE_STRBLAST_NE, __RTIStrBlastNe, OT, OS, OTWin, OSWin, OTS, OSS )
+typedef struct inline_funcs {
+    char       *name;       /* func name */
+    byte_seq   *code;       /* sequence of bytes */
+    hw_reg_set *parms;      /* parameter information */
+    hw_reg_set returns;     /* function return information */
+    hw_reg_set save;        /* registers not modified */
+} inline_funcs;
