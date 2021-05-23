@@ -280,12 +280,10 @@ bool    CalcStructSize( sym_id sd ) {
     }
     sd->u.sd.link = sd;           // to protect against recursion
     total_size = 0;
-    field = sd->u.sd.fl.sym_fields;
-    while( field != NULL ) {
+    for( field = sd->u.sd.fl.sym_fields; field != NULL; field = field->u.fd.link ) {
         size = 0;
         if( field->u.fd.typ == FT_UNION ) {
-            map = field->u.fd.xt.sym_record;
-            while( map != NULL ) {
+            for( map = field->u.fd.xt.sym_record; map != NULL; map = map->u.sd.link ) {
                 if( CalcStructSize( map ) ) {
                     sd->u.sd.link = saved_link;
                     return( true );             // recursion detected
@@ -293,7 +291,6 @@ bool    CalcStructSize( sym_id sd ) {
                 if( size < map->u.sd.size ) {
                     size = map->u.sd.size;
                 }
-                map = map->u.sd.link;
             }
         } else {
             if( field->u.fd.typ == FT_STRUCTURE ) {
@@ -313,7 +310,6 @@ bool    CalcStructSize( sym_id sd ) {
             }
         }
         total_size += size;
-        field = field->u.fd.link;
     }
     sd->u.sd.size = total_size;
     sd->u.sd.link = saved_link;                   // restore saved link

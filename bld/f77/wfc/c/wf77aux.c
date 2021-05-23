@@ -888,15 +888,13 @@ static void DupArgInfo( aux_info *dst, aux_info *src )
     pass_by     *args;
     pass_by     **curr_arg;
 
-    args = src->arg_info;
     curr_arg = &dst->arg_info;
-    while( args != NULL ) {
+    for( args = src->arg_info; args != NULL; args = args->link ) {
         new_arg = FMemAlloc( sizeof( pass_by ) );
         new_arg->info = args->info;
         new_arg->link = NULL;
         *curr_arg = new_arg;
         curr_arg = &new_arg->link;
-        args = args->link;
     }
 }
 
@@ -1656,7 +1654,7 @@ static void     Pragma( void )
         if( RecFnToken( "\0" ) ) {
             DefaultLibInfo();
         } else {
-            while( !RecFnToken( "\0" ) ) {            
+            while( !RecFnToken( "\0" ) ) {
                 AddDefaultLib( TokStart, TokEnd - TokStart, '9' );
                 ScanFnToken();
             }

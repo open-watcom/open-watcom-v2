@@ -164,7 +164,7 @@ static  void    StructIO( struct field *fd ) {
     sym_id      big_map = NULL;
     unsigned_32 size;
 
-    while( fd != NULL ) {
+    for( ; fd != NULL; fd = &fd->link->u.fd ) {
         if( fd->typ == FT_STRUCTURE ) {
             if( fd->dim_ext != NULL ) {
                 StructIOArrayStruct( (sym_id)fd );
@@ -173,19 +173,16 @@ static  void    StructIO( struct field *fd ) {
             }
         } else if( fd->typ == FT_UNION ) {
             size = 0;
-            map = fd->xt.sym_record;
-            while( map != NULL ) { // find biggest map
+            for( map = fd->xt.sym_record; map != NULL; map = map->u.sd.link ) { // find biggest map
                 if( map->u.sd.size > size ) {
                     size = map->u.sd.size;        // 91/08/01 DJG
                     big_map = map;
                 }
-                map = map->u.sd.link;
             }
             StructIO( big_map->u.sd.fl.fields );
         } else {
             StructIOItem( (sym_id)fd );
         }
-        fd = &fd->link->u.fd;
     }
 }
 
@@ -784,10 +781,8 @@ void    FCSetNml( void ) {
     call = InitCall( RT_SET_NML );
     nl = GetPtr();
     ReverseList( (void **)&nl->u.nl.group_list );
-    ge = nl->u.nl.group_list;
-    while( ge != NULL ) {
+    for( ge = nl->u.nl.group_list; ge != NULL; ge = ge->link ) {
         CGAddParm( call, SymAddr( ge->sym ), TY_POINTER );
-        ge = ge->link;
     }
     ReverseList( (void **)&nl->u.nl.group_list );
     CGAddParm( call, CGBackName( nl->u.nl.address, TY_POINTER ), TY_POINTER );

@@ -406,11 +406,9 @@ static  void    AllocComBlk( sym_id cb ) {
     BESetSeg( segid );
     cb->u.ns.u3.address = BENewBack( cb );
     DGLabel( cb->u.ns.u3.address );
-    size = GetComBlkSize( cb );
-    while( size > MaxSegSize ) {
+    for( size = GetComBlkSize( cb ); size > MaxSegSize; size -= MaxSegSize ) {
         BESetSeg( segid );
         SegBytes( MaxSegSize );
-        size -= MaxSegSize;
         segid++;
     }
     BESetSeg( segid );
@@ -475,10 +473,8 @@ static  void    DefineGlobalSegs( void ) {
 
     global_seg  *g_seg;
 
-    g_seg = GlobalSeg;
-    while( g_seg != NULL ) {
+    for( g_seg = GlobalSeg; g_seg != NULL; g_seg = g_seg->link ) {
         DefineGlobalSeg( g_seg );
-        g_seg = g_seg->link;
     }
 }
 
@@ -490,11 +486,9 @@ static  void    AllocGlobalSegs( void ) {
 
     global_seg  *g_seg;
 
-    g_seg = GlobalSeg;
-    while( g_seg != NULL ) {
+    for( g_seg = GlobalSeg; g_seg != NULL; g_seg = g_seg->link ) {
         BESetSeg( g_seg->segid );
         SegBytes( g_seg->size );
-        g_seg = g_seg->link;
     }
 }
 
@@ -522,10 +516,8 @@ void    DtInit( segment_id segid, seg_offset offset ) {
 
     if( offset + DtOffset >= MaxSegSize ) {
         segid++;
-        DtSegOffset = DtOffset - (MaxSegSize - offset);
-        while( DtSegOffset >= MaxSegSize ) {
+        for( DtSegOffset = DtOffset - (MaxSegSize - offset); DtSegOffset >= MaxSegSize; DtSegOffset -= MaxSegSize ) {
             segid++;
-            DtSegOffset -= MaxSegSize;
         }
     } else {
         DtSegOffset = offset + DtOffset;
@@ -701,11 +693,9 @@ segment_id      GetComSegId( sym_id sym, uint_32 offset ) {
 
     segment_id  segid;
 
-    offset += sym->u.ns.si.va.vi.ec_ext->offset;
     segid = sym->u.ns.si.va.vi.ec_ext->com_blk->u.ns.si.cb.segid;
-    while( offset > MaxSegSize ) {
+    for( offset += sym->u.ns.si.va.vi.ec_ext->offset; offset > MaxSegSize; offset -= MaxSegSize ) {
         segid++;
-        offset -= MaxSegSize;
     }
     return( segid );
 }
@@ -1607,17 +1597,14 @@ static  void    DefDbgFields( sym_id sd, dbg_struct db, uint_32 f_offset ) {
     dbg_type    db_type;
     char        field_name[MAX_SYMLEN+1];
 
-    field = sd->u.sd.fl.sym_fields;
-    while( field != NULL ) {
+    for( field = sd->u.sd.fl.sym_fields; field != NULL; field = field->u.fd.link ) {
         if( field->u.fd.typ == FT_UNION ) {
             size = 0;
-            map = field->u.fd.xt.sym_record;
-            while( map != NULL ) {
+            for( map = field->u.fd.xt.sym_record; map != NULL; map = map->u.sd.link ) {
                 DefDbgFields( map, db, f_offset );
                 if( size < map->u.sd.size ) {
                     size = map->u.sd.size;
                 }
-                map = map->u.sd.link;
             }
         } else {
             STFieldName( field, field_name );
@@ -1635,7 +1622,6 @@ static  void    DefDbgFields( sym_id sd, dbg_struct db, uint_32 f_offset ) {
             DBAddField( db, f_offset, field_name, db_type );
         }
         f_offset += size;
-        field = field->u.fd.link;
     }
 }
 

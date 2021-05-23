@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,7 +71,7 @@ void    DoSelect( FCODE kind ) {
     stmts = cases;
     CGSelOther( s, GetLabel( GetU16() ) );
     curr_obj = FCodeTell( 0 );
-    while( cases != 0 ) {
+    for( ; cases != 0; cases-- ) {
         if( kind == FC_COMPUTED_GOTO ) {
             sn = GetPtr();
             label = GetStmtLabel( sn );
@@ -88,7 +89,6 @@ void    DoSelect( FCODE kind ) {
         } else {
             CGSelRange( s, lo, hi, label );
         }
-        --cases;
     }
     sel_sym = GetPtr();
     if( sel_sym->u.ns.u1.s.typ == FT_CHAR ) {
@@ -101,11 +101,10 @@ void    DoSelect( FCODE kind ) {
     CGSelect( s, sel_expr );
     if( kind == FC_COMPUTED_GOTO ) {
         FCodeSeek( curr_obj );
-        while( stmts != 0 ) {
+        for( ; stmts != 0; stmts-- ) {
             RefStmtLabel( GetPtr() );
             GetConst32();
             GetConst32();
-            --stmts;
         }
         GetPtr(); // skip select variable
     }

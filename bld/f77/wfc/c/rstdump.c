@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -232,8 +232,7 @@ static  void    DumpLocalVars( void ) {
     unsigned_16 subprog_type;
     sym_id      sym;
 
-    sym = NList;
-    while( sym != NULL ) {
+    for( sym = NList; sym != NULL; sym = sym->u.ns.link ) {
         flags = sym->u.ns.flags;
         class = flags & SY_CLASS;
         if( class == SY_VARIABLE ) {
@@ -266,20 +265,17 @@ static  void    DumpLocalVars( void ) {
                 UnrefSym( sym );
             }
         }
-        sym = sym->u.ns.link;
     }
     // Common block list must be dumped after the name list so that the
     // SY_COMMON_INIT bit gets set in the common block flags
     // before we add the common block to the global list so that we can
     // detect whether common blocks appear in more than one block data
     // subprogram.
-    sym = BList;
-    while( sym != NULL ) {    // common block list
+    for( sym = BList; sym != NULL; sym = STFreeName( sym ) ) {    // common block list
         if( (SgmtSw & SG_BIG_SAVE) || (Options & OPT_SAVE) ) {
             sym->u.ns.flags |= SY_SAVED;
         }
         AddCB2GList( sym );
-        sym = STFreeName( sym );
     }
     BList = NULL;
     // Free NList after processing it since we need to compute offsets
@@ -374,8 +370,7 @@ static  void    DumpStmtNos( void ) {
     unsigned_16 sn_flags;
     unsigned_32 st_number;
 
-    sn = SList;
-    while( sn != NULL ) {
+    for( sn = SList; sn != NULL; sn = STFree( sn ) ) {
         sn_flags = sn->u.st.flags;
         st_number = GetStmtNum( sn );
         if( (sn_flags & SN_DEFINED) == 0 ) {
@@ -385,7 +380,6 @@ static  void    DumpStmtNos( void ) {
                 Warning( ST_UNREFERENCED, st_number );
             }
         }
-        sn = STFree( sn );
     }
     SList = NULL;
 }
@@ -437,10 +431,8 @@ static  void    DumpNameLists( void ) {
     sym_id      sym;
     unsigned_16 flags;
 
-    nl = NmList;
-    while( nl != NULL ) {
-        ge = nl->u.nl.group_list;
-        while( ge != NULL ) {
+    for( nl = NmList; nl != NULL; nl = nl->u.nl.link ) {
+        for( ge = nl->u.nl.group_list; ge != NULL; ge = ge->link ) {
             sym = ge->sym;
             flags = sym->u.ns.flags;
             // do error checks
@@ -450,9 +442,6 @@ static  void    DumpNameLists( void ) {
                 STNmListName( nl, buff2 );
                 Error( VA_BAD_SYM_IN_NAMELIST, buff1, buff2 );
             }
-
-            ge = ge->link;
         }
-        nl = nl->u.nl.link;
     }
 }

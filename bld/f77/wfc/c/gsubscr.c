@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,10 +81,8 @@ void    GEndSubScr( itnode *arr ) {
         OutPtr( arr->sym_ptr );
         dim_cnt = _DimCount( arr->sym_ptr->u.ns.si.va.u.dim_ext->dim_flags );
     }
-    arg = arr->list;
-    while( dim_cnt-- > 0 ) {
+    for( arg = arr->list; dim_cnt-- > 0; arg = arg->link ) {
         GenType( arg );
-        arg = arg->link;
     }
     if( ( arr->opn.us & USOPN_FLD ) == 0 ) {
         if( ( StmtSw & SS_DATA_INIT ) == 0 ) {

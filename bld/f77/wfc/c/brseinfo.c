@@ -316,19 +316,15 @@ void    BIOutNameList( sym_id ste_ptr ) {
             strncpy( name, ste_ptr->u.nl.name, ste_ptr->u.nl.name_len );
             name[ste_ptr->u.nl.name_len] = 0;
             BIOutSrcLine();
-            ge = ste_ptr->u.nl.group_list;
-            while( ge != NULL ) {
+            for( ge = ste_ptr->u.nl.group_list; ge != NULL; ge = ge->link ) {
                 var = BIGetHandle( ge->sym );
                 if( !var ) {
                     BIOutSymbol( ge->sym );
                 }
-                ge = ge->link;
             }
             ste_ptr->u.nl.dbh = DWNameListBegin( cBIId, name );
-            ge = ste_ptr->u.nl.group_list;
-            while( ge != NULL ) {
+            for( ge = ste_ptr->u.nl.group_list; ge != NULL; ge = ge->link ) {
                 DWNameListItem( cBIId, BIGetHandle( ge->sym ) );
-                ge = ge->link;
             }
             DWEndNameList( cBIId );
         }
@@ -493,12 +489,10 @@ static void BIOutDummies( entry_pt *dum_lst ) {
     if( !dum_lst ) {
         return;
     }
-    curr_parm = dum_lst->parms;
-    while( curr_parm != NULL ) {
+    for( curr_parm = dum_lst->parms; curr_parm != NULL; curr_parm = curr_parm->link ) {
         if( (curr_parm->flags & ARG_STMTNO) == 0 ) {
             BIOutSPDumInfo( curr_parm->id );
         }
-        curr_parm = curr_parm->link;
     }
 }
 
@@ -634,10 +628,8 @@ static void BIOutSF( sym_id ste_ptr ) {
     sf_parm             *tmp;
 
     BIOutSP( ste_ptr );
-    tmp = ste_ptr->u.ns.si.sf.header->parm_list;
-    while( tmp ) {
+    for( tmp = ste_ptr->u.ns.si.sf.header->parm_list; tmp != NULL; tmp = tmp->link ) {
         BIOutSPDumInfo( tmp->actual );
-        tmp = tmp->link;
     }
     currState |= BI_STATE_IN_STMT_FUNC;
 }
@@ -827,8 +819,7 @@ static dw_handle BIGetStructType( sym_id ste_ptr, dw_handle handle ) {
     memset( buffer, 0, sizeof( buffer ) );
     DWBeginStruct( cBIId, ret, ste_ptr->u.ns.xt.record->size,
                         ste_ptr->u.ns.xt.record->name, 0, 0 );
-    fields = ste_ptr->u.ns.xt.record->fl.fields;
-    while( fields ) {
+    for( fields = ste_ptr->u.ns.xt.record->fl.fields; fields != NULL; fields = &fields->link->u.fd ) {
         data->u.ns.u1.s.typ = fields->typ;
         data->u.ns.xt.record = fields->xt.record;
         if( fields->typ == FT_UNION ) {
@@ -852,7 +843,6 @@ static dw_handle BIGetStructType( sym_id ste_ptr, dw_handle handle ) {
         } else {
             DWAddField( cBIId, BIGetType( data ), justJunk, name, 0 );
         }
-        fields = &fields->link->u.fd;
     }
     DWEndStruct( cBIId );
     return( ret );
@@ -936,8 +926,7 @@ static void BIWalkList( sym_list **list, func action, int nuke_list ) {
 
     sym_list    *tmp;
 
-    tmp = *list;
-    while( tmp ) {
+    for( tmp = *list; tmp != NULL; ) {
         action( tmp->id, tmp->dbh );
         tmp = tmp->link;
         if( nuke_list ) {

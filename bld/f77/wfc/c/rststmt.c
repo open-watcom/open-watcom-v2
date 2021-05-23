@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,13 +61,11 @@ sym_id  STStmtNo( unsigned_32 stmnt_no ) {
     sym_id      ste_ptr;
     unsigned_32 st_number;
 
-    ste_ptr = SList;
-    while( ste_ptr != NULL ) {
+    for( ste_ptr = SList; ste_ptr != NULL; ste_ptr = ste_ptr->u.st.link ) {
         st_number = GetStmtNum( ste_ptr );
         if( st_number == stmnt_no ) {
             return( ste_ptr );
         }
-        ste_ptr = ste_ptr->u.st.link;
     }
     ste_ptr = FMemAlloc( sizeof( stmtno ) );
     ste_ptr->u.st.block = CSHead->block;

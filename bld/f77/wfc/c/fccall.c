@@ -151,11 +151,9 @@ void    FCPrologue( void ) {
     if( CommonEntry != NULL ) {
         sel = CGSelInit();
         ep_count = 1;
-        ep = Entries->link;
-        while( ep != NULL ) {
+        for( ep = Entries->link; ep != NULL; ep = ep->link ) {
             CGSelCase( sel, GetLabel( ep->id->u.ns.si.sp.u.entry ), ep_count );
             ep_count++;
-            ep = ep->link;
         }
         main_entry_label = BENewLabel();
         CGSelOther( sel, main_entry_label );
@@ -242,11 +240,10 @@ bool    EntryWithAltRets( void ) {
 
     entry_pt    *ep;
 
-    ep = Entries;
-    while( ep != NULL ) {
-        if( ChkForAltRets( ep ) )
+    for( ep = Entries; ep != NULL; ep = ep->link ) {
+        if( ChkForAltRets( ep ) ) {
             return( true );
-        ep = ep->link;
+        }
     }
     return( false );
 }
@@ -303,8 +300,7 @@ static  void    DefineEntries( void ) {
 
     common_type = CommonEntryType();
     ep_count = 0;
-    ep = Entries;
-    while( ep != NULL ) {
+    for( ep = Entries; ep != NULL; ep = ep->link ) {
         FreeLocalBacks( false );
         sp_type = SPType( ep->id );
         CGProcDecl( ep->id, sp_type );
@@ -346,7 +342,6 @@ static  void    DefineEntries( void ) {
             }
         }
         ep_count++;
-        ep = ep->link;
     }
 }
 
@@ -376,12 +371,10 @@ static  void    PassCommonArgs( call_handle call, entry_pt *ep_called ) {
     aux_info    *info;
     pass_by     *arg_aux;
 
-    ep = Entries;
-    while( ep != NULL ) {
+    for( ep = Entries; ep != NULL; ep = ep->link ) {
         info = InfoLookup( ep->id );
         arg_aux = info->arg_info;
-        arg = ep->parms;
-        while( arg != NULL ) {
+        for( arg = ep->parms; arg != NULL; arg = arg->link ) {
             if( ( arg->flags & ( ARG_DUPLICATE | ARG_STMTNO ) ) == 0 ) {
                 if( ( arg->id->u.ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) {
                     arg_type = TY_CODE_PTR;
@@ -418,9 +411,7 @@ static  void    PassCommonArgs( call_handle call, entry_pt *ep_called ) {
             if( ( arg_aux != NULL ) && ( arg_aux->link != NULL ) ) {
                 arg_aux = arg_aux->link;
             }
-            arg = arg->link;
         }
-        ep = ep->link;
     }
 }
 
@@ -927,11 +918,9 @@ void    FCAltReturn( void ) {
     curr_obj = FCodeTell( 0 );
     num_alts = GetU16();
     sel = CGSelInit();
-    alt_ret = 1;
-    while( alt_ret <= num_alts ) {
+    for( alt_ret = 1; alt_ret <= num_alts; alt_ret++ ) {
         sn = GetPtr();
         CGSelCase( sel, GetStmtLabel( sn ), alt_ret );
-        alt_ret++;
     }
     other = BENewLabel();
     CGSelOther( sel, other );
@@ -940,10 +929,8 @@ void    FCAltReturn( void ) {
     BEFiniLabel( other );
     // mark all referenced statements
     FCodeSeek( curr_obj );
-    num_alts = GetU16();
-    while( num_alts != 0 ) {
+    for( num_alts = GetU16(); num_alts != 0; num_alts-- ) {
         RefStmtLabel( GetPtr() );
-        num_alts--;
     }
 }
 

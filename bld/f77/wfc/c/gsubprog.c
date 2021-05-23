@@ -309,12 +309,10 @@ static  void    SetArgAddrs( void ) {
 
     EmitOp( FC_DARG_INIT );
     OutPtr( ArgList->id );
-    d_arg = ArgList->parms;
-    while( d_arg != NULL ) {
+    for( d_arg = ArgList->parms; d_arg != NULL; d_arg = d_arg->link ) {
         if( (d_arg->flags & ARG_STMTNO) == 0 ) {
             OutPtr( d_arg->id );
         }
-        d_arg = d_arg->link;
     }
     OutPtr( NULL );
 }

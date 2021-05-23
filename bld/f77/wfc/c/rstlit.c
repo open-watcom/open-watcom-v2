@@ -45,8 +45,7 @@ sym_id  STLit( byte *string, size_t len )
 {
     sym_id      sym;
 
-    sym = LList;
-    while( sym != NULL ) {
+    for( sym = LList; sym != NULL; sym = sym->u.lt.link ) {
         if( sym->u.lt.length == len ) {
             if( memcmp( string, &sym->u.lt.value, len ) == 0 ) {
                 if( StmtSw & SS_DATA_INIT ) {
@@ -57,7 +56,6 @@ sym_id  STLit( byte *string, size_t len )
                 return( sym );
             }
         }
-        sym = sym->u.lt.link;
     }
     sym = FMemAlloc( sizeof( literal ) - 1 + len );
     memcpy( &sym->u.lt.value, string, len );

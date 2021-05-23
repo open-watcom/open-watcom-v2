@@ -979,13 +979,11 @@ void    DtDataDoLoop( void )
     e1 = DXPop();
     do_var = GetPtr();
     do_var->u.ns.si.ms.u.value = &e1;
-    iter_count = ( e2 - e1 + e3 ) / e3;
     curr_fc = FCodeTell( 0 );
-    while( iter_count > 0 ) {
+    for( iter_count = ( e2 - e1 + e3 ) / e3; iter_count > 0; iter_count-- ) {
         FCodeSeek( curr_fc );
         FCodeSequence();
         *do_var->u.ns.si.ms.u.value += e3;
-        iter_count--;
     }
 }
 
@@ -1372,12 +1370,10 @@ static  void    InitArr( act_dim_list *dim, TYPE typ, size_t size )
 {
     unsigned_32 num_elts;
 
-    num_elts = dim->num_elts;
-    while( num_elts != 0 ) {
+    for( num_elts = dim->num_elts; num_elts != 0; num_elts-- ) {
         DtItemSize = size; // AsnVal() sets DtItemSize to 0 when done
         AsnVal( ParmType( typ, size ) );
         DtOffset += size;
-        num_elts--;
     }
 }
 
@@ -1417,10 +1413,8 @@ static  void    InitStructArr( sym_id fd, act_dim_list *dim )
 {
     unsigned_32 num_elts;
 
-    num_elts = dim->num_elts;
-    while( num_elts != 0 ) {
+    for( num_elts = dim->num_elts; num_elts != 0; num_elts-- ) {
         StructInit( fd );
-        num_elts--;
     }
 }
 
@@ -1456,7 +1450,7 @@ void    DtInpStruct( void )
 static  void    StructInit( sym_id fd )
 //=====================================
 {
-    while( fd != NULL ) {
+    for( ; fd != NULL; fd = fd->u.fd.link ) {
         if( fd->u.fd.typ == FT_STRUCTURE ) {
             StructInit( fd->u.fd.xt.record->fl.sym_fields );
         } else {
@@ -1465,7 +1459,6 @@ static  void    StructInit( sym_id fd )
                 DtOffset += fd->u.fd.xt.size;
             }
         }
-        fd = fd->u.fd.link;
     }
 }
 

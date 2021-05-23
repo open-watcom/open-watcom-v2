@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,14 +48,12 @@ bool    InArgList( entry_pt *entry, sym_id sym_ptr ) {
 
     parameter   *args;
 
-    args = entry->parms;
-    while( args != NULL ) {
+    for( args = entry->parms; args != NULL; args = args->link ) {
         if( ( args->flags & ARG_STMTNO ) == 0 ) {
             if( args->id == sym_ptr ) {
                 return( true );
             }
         }
-        args = args->link;
     }
     return( false );
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,8 +73,7 @@ void    STComDump( void )
     unsigned_32 end_common;
     unsigned_32 size;
 
-    com_blk = BList;
-    while( com_blk != NULL ) {
+    for( com_blk = BList; com_blk != NULL; com_blk = com_blk->u.ns.link ) {
         if( ( com_blk->u.ns.si.cb.first == NULL ) &&
             ( com_blk->u.ns.flags & SY_SAVED ) ) {
             NameErr( SA_COMBLK_EMPTY, com_blk );
@@ -145,7 +144,6 @@ void    STComDump( void )
             }
             SetComBlkSize( com_blk, end_common );
         }
-        com_blk = com_blk->u.ns.link;
     }
 }
 

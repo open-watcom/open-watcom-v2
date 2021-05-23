@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -123,12 +123,10 @@ segment_id      AllocGlobal( unsigned_32 g_size, bool init )
     } else {
         CurrGSeg->size = MaxSegSize;
     }
-    g_size -= CurrGSeg->size;
-    while( g_size > MaxSegSize ) {
+    for( g_size -= CurrGSeg->size; g_size > MaxSegSize; g_size -= MaxSegSize ) {
         NewGlobalSeg();
         CurrGSeg->size = MaxSegSize;
         CurrGSeg->initialized = init;
-        g_size -= MaxSegSize;
     }
     if( g_size != 0 ) {
         NewGlobalSeg();

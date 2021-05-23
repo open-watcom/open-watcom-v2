@@ -145,16 +145,15 @@ void DelCSNode(void)
 {
     csnode      *old;
     case_entry  *currcase;
-    case_entry  *newcase;
+    case_entry  *next;
 
     if( CSHead->typ != CS_EMPTY_LIST ) {
         old = CSHead;
         CSHead = CSHead->link;
         if( ( old->typ == CS_SELECT ) || ( old->typ == CS_CASE ) ||
             ( old->typ == CS_OTHERWISE ) || ( old->typ == CS_COMPUTED_GOTO ) ) {
-            currcase = old->cs_info.cases;
-            while( currcase != NULL ) {
-                newcase = currcase->link;
+            for( currcase = old->cs_info.cases; currcase != NULL; currcase = next ) {
+                next = currcase->link;
                 if( old->typ != CS_COMPUTED_GOTO ) {
                     // Consider:    CASE( 1, 2 )
                     // don't free the label more than once
@@ -163,7 +162,6 @@ void DelCSNode(void)
                     }
                 }
                 FMemFree( currcase );
-                currcase = newcase;
             }
         } else if( old->typ == CS_DO ) {
             FMemFree( old->cs_info.do_parms );

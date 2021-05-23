@@ -108,13 +108,10 @@ void    DumpEntries(void) {
     sym_id      sym;
     sym_id      fn_shadow;
 
-    dum_lst = Entries;
-    while( dum_lst != NULL ) {
+    for( dum_lst = Entries; dum_lst != NULL; dum_lst = dum_lst->link ) {
         args_cnt = 0;
-        curr_parm = dum_lst->parms;
-        while( curr_parm != NULL ) {
+        for( curr_parm = dum_lst->parms; curr_parm != NULL; curr_parm = curr_parm->link ) {
             ++args_cnt;
-            curr_parm = curr_parm->link;
         }
         sym = dum_lst->id;
         GetImplType( sym );
@@ -132,8 +129,7 @@ void    DumpEntries(void) {
         if( ( ProgSw & PS_ERROR ) == 0 ) {
             GArgList( dum_lst, args_cnt, typ );
         }
-        curr_parm = dum_lst->parms;
-        while( curr_parm != NULL ) {
+        for( curr_parm = dum_lst->parms; curr_parm != NULL; curr_parm = curr_parm->link ) {
             if( curr_parm->flags & ARG_STMTNO ) {
                 typ = PT_NOTYPE;
                 code = PC_STATEMENT;
@@ -163,9 +159,7 @@ void    DumpEntries(void) {
             if( ( ProgSw & PS_ERROR ) == 0 ) {
                 GArgInfo( sym, code, typ );
             }
-            curr_parm = curr_parm->link;
         }
-        dum_lst = dum_lst->link;
     }
 }
 
@@ -176,20 +170,15 @@ void    EnPurge(void) {
 // Free up all the entry list information.
 
     parameter   *curr_parm;
-    entry_pt    *dum_lst;
     pointer     next;
 
-    dum_lst = Entries;
-    while( dum_lst != NULL ) {
-        curr_parm = dum_lst->parms;
-        while( curr_parm != NULL ) {
+    while( Entries != NULL ) {
+        for( curr_parm = Entries->parms; curr_parm != NULL; curr_parm = next ) {
             next = curr_parm->link;
             FMemFree( curr_parm );
-            curr_parm = next;
         }
-        next = dum_lst->link;
-        FMemFree( dum_lst );
-        dum_lst = next;
+        next = Entries->link;
+        FMemFree( Entries );
+        Entries = next;
     }
-    Entries = NULL;
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -126,13 +126,11 @@ void    SFEpilogue( void ) {
     sf_parm     *parm;
 
     GEndSF();
-    parm = SFSymId->u.ns.si.sf.header->parm_list;
-    while( parm != NULL ) {
+    for( parm = SFSymId->u.ns.si.sf.header->parm_list; parm != NULL; parm = parm->link ) {
         if( parm->shadow->u.ns.flags & SY_REFERENCED ) {
             parm->actual->u.ns.flags |= SY_REFERENCED;
         }
         STUnShadow( parm->actual );
-        parm = parm->link;
     }
     BIEndSF( SFSymId ); // end statement function browsing information
 }

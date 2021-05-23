@@ -544,8 +544,7 @@ void    GenLocalSyms( void ) {
         }
     }
     MergeCommonInfo();
-    sym = NList;
-    while( sym != NULL ) {
+    for( sym = NList; sym != NULL; sym = sym->u.ns.link ) {
         flags = sym->u.ns.flags;
         if( (flags & SY_CLASS) == SY_VARIABLE ) {
             if( ( sym != EPValue ) && ( sym != ReturnValue ) ) {
@@ -607,7 +606,6 @@ void    GenLocalSyms( void ) {
                 }
             }
         }
-        sym = sym->u.ns.link;
     }
     if( sp_class != SY_BLOCK_DATA ) {
         for( sym = MList; sym != NULL; sym = sym->u.ns.link ) {
@@ -683,14 +681,12 @@ static  void    DumpNameLists( void ) {
     sym_id      sym;
     byte        nl_info;
 
-    nl = NmList;
-    while( nl != NULL ) {
+    for( nl = NmList; nl != NULL; nl = nl->u.nl.link ) {
         nl->u.nl.address = BENewBack( NULL );
         DGLabel( nl->u.nl.address );
         DGInteger( nl->u.nl.name_len, TY_UINT_1 );
         DGBytes( nl->u.nl.name_len, nl->u.nl.name );
-        ge = nl->u.nl.group_list;
-        while( ge != NULL ) {
+        for( ge = nl->u.nl.group_list; ge != NULL; ge = ge->link ) {
             sym = ge->sym;
             DumpSymName( sym );
             nl_info = 0;
@@ -707,10 +703,8 @@ static  void    DumpNameLists( void ) {
                 DGInteger( nl_info, TY_UINT_1 );
             }
             DGIBytes( BETypeLength( TY_POINTER ), 0 );
-            ge = ge->link;
         }
         DGInteger( 0, TY_UINT_1 );
-        nl = nl->u.nl.link;
     }
 }
 
@@ -1147,12 +1141,10 @@ static  void    DumpBrTable( void ) {
     CGControl( O_GOTO, NULL, end_sel );
     CGControl( O_LABEL, NULL, GetLabel( StNumbers.branches ) );
     s_handle = CGSelInit();
-    stmt = SList;
-    while( stmt != NULL ) {
+    for( stmt = SList; stmt != NULL; stmt = stmt->u.st.link ) {
         if( (stmt->u.st.flags & SN_ASSIGNED) && ( (stmt->u.st.flags & SN_BAD_BRANCH) == 0 ) ) {
             CGSelCase( s_handle, GetStmtLabel( stmt ), stmt->u.st.address );
         }
-        stmt = stmt->u.st.link;
     }
     CGSelOther( s_handle, end_sel );
     CGSelect( s_handle, CGUnary( O_POINTS, CGFEName( WildLabel, TY_INTEGER ), TY_INTEGER ) );
@@ -1409,8 +1401,7 @@ static  void    DefineCommonEntry( void ) {
     aux_info    *info;
     pass_by     *arg_aux;
 
-    ep = Entries;
-    while( ep != NULL ) {
+    for( ep = Entries; ep != NULL; ep = ep->link ) {
         info = InfoLookup( ep->id );
         arg_aux = info->arg_info;
         for( arg = ep->parms; arg != NULL; arg = arg->link ) {
@@ -1428,7 +1419,6 @@ static  void    DefineCommonEntry( void ) {
                 arg_aux = arg_aux->link;
             }
         }
-        ep = ep->link;
     }
     if( ( Entries->id->u.ns.flags & SY_SUBPROG_TYPE ) == SY_SUBROUTINE ) {
         CGParmDecl( EPValue, TY_INTEGER );
@@ -1446,7 +1436,7 @@ static  void    DefineCommonEntry( void ) {
 }
 
 
-static  void    DeclareShadowArgs( entry_pt *ep, aux_info *info ) 
+static  void    DeclareShadowArgs( entry_pt *ep, aux_info *info )
 //===============================================================
 {
     parameter   *arg;

@@ -443,8 +443,7 @@ static void CheckDoEnd( void )
         }
         FiniDo();
     }
-    cs_node = CSHead;
-    while( cs_node != NULL ) {
+    for( cs_node = CSHead; cs_node != NULL; cs_node = cs_node->link ) {
         if( cs_node->typ == CS_DO ) {
             if( cs_node->cs_info.do_parms->do_term == StmtNo ) {
                 Error( DO_NESTING_BAD );
@@ -454,7 +453,6 @@ static void CheckDoEnd( void )
                 Error( DO_NESTING_BAD );
             }
         }
-        cs_node = cs_node->link;
     }
 }
 

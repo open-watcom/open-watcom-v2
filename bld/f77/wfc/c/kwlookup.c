@@ -84,8 +84,7 @@ int KwLookUp( const char **table, int high, const char *id, size_t id_len, bool 
     if( exact )
         return( 0 );
     // Look sequentially through table (going backwards).
-    mid = high;
-    while( mid >= 0 ) {
+    for( mid = high; mid >= 0; mid-- ) {
         key = table[ mid ];
         if( *id > *key )
             break;
@@ -95,7 +94,6 @@ int KwLookUp( const char **table, int high, const char *id, size_t id_len, bool 
                 return( mid );
             }
         }
-        mid--;
     }
     return( 0 );
 }
