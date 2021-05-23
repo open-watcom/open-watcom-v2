@@ -66,7 +66,7 @@ module_start:
         dw      _Functions - module_start
 
 
-; Space optimization pragmas (take an awful beating on a pentium)
+; Space optimized pragmas (take an awful beating on a pentium)
 
 ; edi  - destination pointer
 ; esi  - source pointer
@@ -98,7 +98,7 @@ beginb  __RTIStrBlastNeOS
         rep   stosb
 endb    __RTIStrBlastNeOS
 
-; Time Optimization pragmas
+; Time optimized pragmas
 
 ; edi  - destination pointer
 ; esi  - source pointer

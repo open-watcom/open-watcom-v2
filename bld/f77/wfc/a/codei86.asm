@@ -65,7 +65,7 @@ module_start:
         dw      _Functions - module_start
 
 
-; Space Optimization pragmas
+; Space optimized pragmas
 
 ; es di - destination pointer
 ; ds si - source pointer
@@ -96,6 +96,8 @@ beginb  __RTIStrBlastNeOS
         mov   ax, 0x2020
         rep   stosb
 endb    __RTIStrBlastNeOS
+
+; Time optimized pragmas
 
 ; es di - destination pointer
 ; ds si - source pointer
@@ -139,6 +141,8 @@ endb    __RTIStrBlastNeOT
 
 ; Windows pragmas (can't use DS as an argument since DS is pegged)
 
+; Space optimized pragmas
+
 ; es di - destination pointer
 ; si bx - source pointer
 ; cx    - number of characters to move
@@ -176,6 +180,8 @@ beginb  __RTIStrBlastNeOSWin
         rep   stosb
         pop   ds
 endb    __RTIStrBlastNeOSWin
+
+; Time optimized pragmas
 
 ; es di - destination pointer
 ; si bx - source pointer
@@ -227,7 +233,7 @@ endb    __RTIStrBlastNeOTWin
 
 ; Small memory pragmas.
 
-; Space Optimizations pragmas
+; Space optimized pragmas
 
 ; di   - destination pointer
 ; si   - source pointer
@@ -263,7 +269,7 @@ beginb  __RTIStrBlastNeOSS
         rep   stosb
 endb    __RTIStrBlastNeOSS
 
-; Time Optimization pragmas
+; Time optimized pragmas
 
 ; di   - destination pointer
 ; si   - source pointer
