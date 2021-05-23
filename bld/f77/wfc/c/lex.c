@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,13 +52,24 @@
 
 extern  char            *LogTab[];
 
-#define LOG_OPS         11
-#define XLOG_OPS        11
+enum {
+    LOG_OPS = 0
+    #define pick(text,en,opr,std)   +opr
+    #include "_logoprs.h"
+    #undef pick
+};
 
-static  const OPR       LogOpr[] = { // must correspond to table in SCAN
-        OPR_EQ,  OPR_NE,  OPR_LT,  OPR_GT,  OPR_LE,   OPR_GE,
-        OPR_OR,  OPR_AND, OPR_NOT, OPR_EQV, OPR_NEQV, OPR_NEQV,
-        OPR_PHI, OPR_PHI, OPR_PHI
+enum {
+    XLOG_OPS = 0
+    #define pick(text,en,opr,std)   +std
+    #include "_logoprs.h"
+    #undef pick
+};
+
+static const OPR        LogOpr[] = {
+    #define pick(text,en,opr,std)   en,
+    #include "_logoprs.h"
+    #undef pick
 };
 
 static const DSOPN lexDsOpn[] = {
@@ -271,9 +282,9 @@ static  void    GetOpr( void ) {
             Scan();
         }
     } else if( LexToken.class == TO_LGL ) {
-        Lex.opr = LogOpr[ LexToken.log ];
+        Lex.opr = LogOpr[LexToken.log];
         if( LexToken.log >= XLOG_OPS ) {
-            Extension( MD_LOGOPR_EXTN, LogTab[ LexToken.log ] );
+            Extension( MD_LOGOPR_EXTN, LogTab[LexToken.log] );
         }
         Scan();
     } else {
@@ -296,7 +307,7 @@ static  void    GetOpnd( void ) {
     if( LexToken.class == TO_OPR ) {
         Lex.len = 0;
     } else if( LexToken.class == TO_LGL ) {
-        if( LexToken.log > LOG_OPS ) {
+        if( LexToken.log >= LOG_OPS ) {
             Scan();
         } else {
             Lex.len = 0;
@@ -308,14 +319,14 @@ static  void    GetOpnd( void ) {
         if( (ITHead == NULL) && (Lex.opr == OPR_TRM) && (Lex.opn.ds == DSOPN_NAM) ) {
             if( Lex.len == 6 ) {
                 if( ( Cursor == NULL ) || ( *Cursor == '(' ) ) {
-                    kw = StmtKeywords[ PR_FMT ];
+                    kw = StmtKeywords[PR_FMT];
                     if( memcmp( LexToken.start, kw, 6 ) == 0 ) {
                         State = SFM;
                     }
                 }
             } else if( Lex.len == 7 ) {
                 if( ( Cursor != NULL ) && ( *Cursor == '\'' ) ) {
-                    kw = StmtKeywords[ PR_INCLUDE ];
+                    kw = StmtKeywords[PR_INCLUDE];
                     if( memcmp( LexToken.start, kw, 7 ) == 0 ) {
                         LexToken.flags |= TK_INCLUDE;
                     }

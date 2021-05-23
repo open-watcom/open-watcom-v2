@@ -35,7 +35,7 @@
 #define _F77_INLINE_INCLUDED_
 
 enum {
-    #define pick(e,n,s1,s2,s3,s4,s5,s6) e,
+    #define pick(en,name,s1,s2,s3,s4,s5,s6) en,
     #include "_inline.h"
     #undef pick
     INLINETAB_SIZE

@@ -69,12 +69,17 @@ static  const token_state   StateTable[][COLUMNS] = {
   SLG,SLG,SSO,SSO,SFT,SLG,SSO,SSO,SSP,STC,SBC,SNR,SCM,SLG,SLG,SLG,SDB, // LL
 };
 
-#define BAD_LOG         14
+enum {
+    BAD_LOG = 0
+    #define pick(text,en,opr,std)   +1
+    #include "_logoprs.h"
+    #undef pick
+};
 
 const char  *LogTab[] = {
-    "EQ",   "NE",    "LT",    "GT",    "LE",     "GE",
-    "OR",   "AND",   "NOT",   "EQV",   "NEQV",   "XOR",
-    "TRUE", "FALSE", NULL
+    #define pick(text,en,opr,std)   text,
+    #include "_logoprs.h"
+    #undef pick
 };
 
 static  char            ExpREA;
@@ -108,7 +113,7 @@ void    InitScan( void ) {
     ExpEXT = 'Q';
     Line = 0;
     State = SNS;
-    TkCrsr = &TokenBuff[ 0 ];
+    TkCrsr = &TokenBuff[0];
     LexToken.stop = TkCrsr;
     LexToken.col = Column;
     LexToken.flags = 0;
@@ -153,9 +158,9 @@ void    Scan( void ) {
         LexToken.line = Line;
         for(;;) {
             ch = *Cursor;
-            ch_class = CharSetInfo.character_set[ ch ];
+            ch_class = CharSetInfo.character_set[ch];
             wasextch |= ch_class;
-            state2 = StateTable[ State ][ ch_class & C_MASK ];
+            state2 = StateTable[State][ch_class & C_MASK];
             switch( state2 ) {
             case SAN :
             case SLG :
@@ -174,7 +179,7 @@ void    Scan( void ) {
                     Column--; // compensate for Column++ and Cursor++
                     Cursor--; // after select
                 } else {
-                    State = StateTable[ State ][ C_AL ];
+                    State = StateTable[State][C_AL];
                     *TkCrsr++ = ch;
                     Cursor++;
                     Column++;
@@ -514,18 +519,15 @@ static  void    ScanNum( void ) {
 static  void    LkUpLog( void ) {
 //=========================
 
-    int         index;
+    int         i;
     char        *ptr;
 
-    index = 0;
     ptr = LexToken.start + sizeof( char ); // skip over "."
     *TkCrsr = NULLCHAR;
-    for(;;) {
-        if( strcmp( LogTab[ index ], ptr ) == 0 )
-            break;
-        if( LogTab[ ++index ] == NULL ) {
+    for( i = 0; i < BAD_LOG; i++) {
+        if( strcmp( LogTab[i], ptr ) == 0 ) {
             break;
         }
     }
-    LexToken.log = index;
+    LexToken.log = i;
 }

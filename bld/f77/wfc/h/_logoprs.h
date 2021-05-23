@@ -25,12 +25,23 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  compile-time logical operators and constants definitions.
 *
 ****************************************************************************/
 
 
-/*    en                  name            s1 s2  s3   s4     s5 s6 */
-pick( INLINE_STRBLAST_EQ, __RTIStrBlastEq, , OS, Win, WinOS, S, SOS )
-pick( INLINE_STRBLAST_NE, __RTIStrBlastNe, , OS, Win, WinOS, S, SOS )
+/*    text      en          opr std */
+pick( "EQ",     OPR_EQ,     1,  1 )
+pick( "NE",     OPR_NE,     1,  1 )
+pick( "LT",     OPR_LT,     1,  1 )
+pick( "GT",     OPR_GT,     1,  1 )
+pick( "LE",     OPR_LE,     1,  1 )
+pick( "GE",     OPR_GE,     1,  1 )
+pick( "OR",     OPR_OR,     1,  1 )
+pick( "AND",    OPR_AND,    1,  1 )
+pick( "NOT",    OPR_NOT,    1,  1 )
+pick( "EQV",    OPR_EQV,    1,  1 )
+pick( "NEQV",   OPR_NEQV,   1,  1 )
+pick( "XOR",    OPR_NEQV,   1,  0 )
+pick( "TRUE",   OPR_PHI,    0,  0 )
+pick( "FALSE",  OPR_PHI,    0,  0 )
