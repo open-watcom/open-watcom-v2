@@ -69,19 +69,18 @@ static rt_rtn   RtnTab[] = {
     #undef pick
 };
 
-#define MAX_RT_INDEX    ((sizeof( RtnTab ) / sizeof( RtnTab[0] ))-1)
+#define RT_INDEX_SIZE    (sizeof( RtnTab ) / sizeof( RtnTab[0] ))
 
 
-call_handle     InitCall( RTCODE rtn_id ) {
-//======================================
-
+call_handle     InitCall( RTCODE rtn_id )
+//=======================================
 // Initialize a call to a runtime routine.
-
+{
     sym_id      sym;
     rt_rtn      *rt_entry;
     byte        typ;
 
-    rt_entry = &RtnTab[ rtn_id ];
+    rt_entry = &RtnTab[rtn_id];
     sym = rt_entry->sym_ptr;
     if( sym == NULL ) {
         sym = STAdd( rt_entry->name, strlen( rt_entry->name ) );
@@ -101,32 +100,27 @@ call_handle     InitCall( RTCODE rtn_id ) {
 }
 
 
-void    InitRtRtns( void ) {
-//====================
-
+void    InitRtRtns( void )
+//========================
 // Initialize symbol table entries for run-time routines.
+{
+    RTCODE  i;
 
-    int         rt_index;
-
-    rt_index = 0;
-    while( rt_index <= MAX_RT_INDEX ) {
-        RtnTab[ rt_index ].sym_ptr = NULL;
-        rt_index++;
+    for( i = 0; i < RT_INDEX_SIZE; i++ ) {
+        RtnTab[i].sym_ptr = NULL;
     }
 }
 
 
-void    FreeRtRtns( void ) {
-//====================
-
+void    FreeRtRtns( void )
+//========================
 // Free symbol table entries for run-time routines.
-
-    int         rt_index;
+{
+    RTCODE      i;
     sym_id      sym;
 
-    rt_index = 0;
-    while( rt_index <= MAX_RT_INDEX ) {
-        sym = RtnTab[ rt_index ].sym_ptr;
+    for( i = 0; i < RT_INDEX_SIZE; i++ ) {
+        sym = RtnTab[i].sym_ptr;
         if( sym != NULL ) {
             if( ( CGFlags & CG_FATAL ) == 0 ) {
                 if( sym->u.ns.u3.address != NULL ) {
@@ -134,23 +128,22 @@ void    FreeRtRtns( void ) {
                 }
             }
             STFree( sym );
-            RtnTab[ rt_index ].sym_ptr = NULL;
+            RtnTab[i].sym_ptr = NULL;
         }
-        rt_index++;
     }
 }
 
 
-aux_info    *RTAuxInfo( sym_id rtn ) {
-//====================================
-
+aux_info    *RTAuxInfo( sym_id rtn )
+//==================================
 // Return aux information for run-time routine.
+{
+    RTCODE      i;
 
-    rt_rtn      *rt_entry;
-
-    rt_entry = RtnTab;
-    while( rt_entry->sym_ptr != rtn ) {
-        rt_entry++;
+    for( i = 0; i < RT_INDEX_SIZE; i++ ) {
+        if( RtnTab[i].sym_ptr == rtn ) {
+            return( RtnTab[i].aux );
+        }
     }
-    return( rt_entry->aux );
+    return( NULL );
 }
