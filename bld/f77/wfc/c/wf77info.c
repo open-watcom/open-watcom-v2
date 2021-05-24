@@ -229,7 +229,7 @@ void    InitSegs( void ) {
 
     CurrSegId = SEG_FREE;
 #if _CPU == _AXP || _CPU == _PPC
-    BEDefSeg( SEG_TDATA, EXEC|GLOBAL|GIVEN_NAME, TS_SEG_CODE, ALIGN_DWORD );
+    BEDefSeg( SEG_TDATA, EXEC | GLOBAL | GIVEN_NAME, TS_SEG_CODE, ALIGN_DWORD );
     CurrCodeSegId = SEG_TDATA;
 #endif
     BEDefSeg( SEG_CDATA, BACK | INIT | ROM, TS_SEG_CONST, ALIGN_SEGMENT );
@@ -308,7 +308,7 @@ static  void    DefCodeSeg( void ) {
     }
     BldCSName( seg_name );
     CurrCodeSegId = AllocSegId();
-    BEDefSeg( CurrCodeSegId, EXEC|GLOBAL|GIVEN_NAME, seg_name, alignment );
+    BEDefSeg( CurrCodeSegId, EXEC | GLOBAL | GIVEN_NAME, seg_name, alignment );
 }
 
 
@@ -336,8 +336,7 @@ static  void    DefineCommonSegs( void ) {
     sym_id      sym;
     size_t      cb_len;
     int         private;
-
-    char        cb_name[MAX_SYMLEN+4+SYM_MANGLE_LEN];
+    char        cb_name[MAX_SYMLEN + 4 + SYM_MANGLE_LEN];
 
 #if _CPU == 386 || _CPU == 8086
     if( _SmallDataModel( CGOpts ) ) {
@@ -347,7 +346,7 @@ static  void    DefineCommonSegs( void ) {
     }
 #endif
     for( sym = GList; sym != NULL; sym = sym->u.ns.link ) {
-        if( ( sym->u.ns.flags & SY_CLASS ) != SY_COMMON )
+        if( (sym->u.ns.flags & SY_CLASS) != SY_COMMON )
             continue;
 #if _CPU == _AXP || _CPU == _PPC
         if( sym->u.ns.flags & SY_COMMON_INIT ) {
@@ -387,7 +386,7 @@ static  void    AllocCommonSegs( void ) {
     sym_id      sym;
 
     for( sym = GList; sym != NULL; sym = sym->u.ns.link ) {
-        if( ( sym->u.ns.flags & SY_CLASS ) != SY_COMMON )
+        if( (sym->u.ns.flags & SY_CLASS) != SY_COMMON )
             continue;
         AllocComBlk( sym );
     }
@@ -776,7 +775,7 @@ back_handle FEBack( cg_sym_handle _sym ) {
 
     sym_id      sym = _sym;
 
-    if( ( sym->u.ns.flags & SY_CLASS ) != SY_COMMON ) {
+    if( (sym->u.ns.flags & SY_CLASS) != SY_COMMON ) {
         if( sym->u.ns.u3.address == NULL ) {
             sym->u.ns.u3.address = BENewBack( sym );
         }
@@ -922,7 +921,7 @@ void    DefStructs( void ) {
     }
     if( Options & OPT_AUTOMATIC ) {
         for( sym = NList; sym != NULL; sym = sym->u.ns.link ) {
-            if( ( sym->u.ns.flags & SY_CLASS ) != SY_VARIABLE )
+            if( (sym->u.ns.flags & SY_CLASS) != SY_VARIABLE )
                 continue;
             if( sym->u.ns.flags & (SY_SUB_PARM | SY_IN_COMMON) )
                 continue;
@@ -1005,7 +1004,7 @@ fe_attr FEAttr( cg_sym_handle _sym ) {
         return( 0 );
     attr = 0;
     flags = sym->u.ns.flags;
-    if( ( flags & SY_CLASS ) == SY_VARIABLE ) {
+    if( (flags & SY_CLASS) == SY_VARIABLE ) {
         // SY_VARIABLE with SY_PS_ENTRY is shadow for function return value
         if( (flags & (SY_SUB_PARM | SY_PS_ENTRY)) == 0 ) {
             if( flags & SY_IN_COMMON ) {
@@ -1053,20 +1052,20 @@ fe_attr FEAttr( cg_sym_handle _sym ) {
                     }
                 }
             }
-            if( ( flags & ( SY_SUBSCRIPTED | SY_IN_COMMON ) ) == 0 ) {
+            if( (flags & (SY_SUBSCRIPTED | SY_IN_COMMON)) == 0 ) {
                 attr |= FE_NOALIAS;
             }
         }
-    } else if( ( flags & SY_CLASS ) == SY_SUBPROGRAM ) {
-        if( ( flags & SY_SUBPROG_TYPE ) != SY_STMT_FUNC ) {
-            if( ( flags & SY_SUB_PARM ) == 0 ) {
+    } else if( (flags & SY_CLASS) == SY_SUBPROGRAM ) {
+        if( (flags & SY_SUBPROG_TYPE) != SY_STMT_FUNC ) {
+            if( (flags & SY_SUB_PARM) == 0 ) {
                 attr |= FE_PROC | FE_GLOBAL | FE_STATIC;
-                if( ( flags & SY_PS_ENTRY ) == 0 ) {
+                if( (flags & SY_PS_ENTRY) == 0 ) {
                     attr |= FE_IMPORT;
                 }
             }
         }
-    } else if( ( flags & SY_CLASS ) == SY_COMMON ) {
+    } else if( (flags & SY_CLASS) == SY_COMMON ) {
         attr |= FE_GLOBAL | FE_STATIC | FE_VISIBLE;
     }
     if( (attr & FE_GLOBAL) == 0 ) {
@@ -1096,8 +1095,8 @@ segment_id      FESegID( cg_sym_handle _sym ) {
     _UnShadow( sym );
     segid = SEG_LDATA;
     flags = sym->u.ns.flags;
-    if( ( flags & SY_CLASS ) == SY_VARIABLE ) {
-        if( ( flags & SY_SUB_PARM ) == 0 ) {
+    if( (flags & SY_CLASS) == SY_VARIABLE ) {
+        if( (flags & SY_SUB_PARM) == 0 ) {
             if( flags & SY_SUBSCRIPTED ) {
                 if( !_Allocatable( sym ) ) {
                     segid = GetDataSegId( sym );
@@ -1106,8 +1105,8 @@ segment_id      FESegID( cg_sym_handle _sym ) {
                 segid = GetDataSegId( sym );
             }
         }
-    } else if( ( flags & SY_CLASS ) == SY_SUBPROGRAM ) {
-        sp_type = flags & SY_SUBPROG_TYPE;
+    } else if( (flags & SY_CLASS) == SY_SUBPROGRAM ) {
+        sp_type = (flags & SY_SUBPROG_TYPE);
         if( sp_type != SY_STMT_FUNC ) {
             if( (flags & SY_SUB_PARM) == 0 ) {
                 if( (flags & SY_PS_ENTRY) == 0 ) {
@@ -1125,7 +1124,7 @@ segment_id      FESegID( cg_sym_handle _sym ) {
                 }
             }
         }
-    } else if( ( flags & SY_CLASS ) == SY_COMMON ) {
+    } else if( (flags & SY_CLASS) == SY_COMMON ) {
         segid = sym->u.ns.si.cb.segid;
     }
     return( segid );
@@ -1138,14 +1137,14 @@ static char *GetName( sym_id sym ) {
 // Return pointer to the name of the given symbol.
 
     if( _MgcIsMagic( sym ) ) {
-        if( ( sym->u.ns.flags & SY_PS_ENTRY ) == 0 ) {
+        if( (sym->u.ns.flags & SY_PS_ENTRY) == 0 ) {
             return( "*MAGIC*" );
         } else {
             sym = sym->u.ns.si.ms.sym;
         }
     }
-    if( ( ( sym->u.ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) &&
-        ( ( sym->u.ns.flags & SY_SUBPROG_TYPE ) == SY_PROGRAM ) ) {
+    if( ( (sym->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) &&
+        ( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_PROGRAM ) ) {
         return( ProgName );
     }
     STExtractName( sym, SymBuff );
@@ -1309,7 +1308,7 @@ int     FEStackChk( cg_sym_handle _sym ) {
     sym_id      sym = _sym;
 
     _UnShadow( sym );
-    return( ( CGOpts & CGOPT_STACK_CHK ) != 0 );
+    return( (CGOpts & CGOPT_STACK_CHK) != 0 );
 }
 
 
@@ -1341,7 +1340,7 @@ void    FEMessage( int msg, pointer x ) {
 
     char        name[MAX_SYMLEN+1];
 
-    if( ( CGFlags & CG_INIT ) == 0 ) {
+    if( (CGFlags & CG_INIT) == 0 ) {
         SendStd( x );
         exit( 1 );
     }
@@ -1562,7 +1561,7 @@ static  dbg_type        DefDbgSubprogram( sym_id sym, dbg_type db_type ) {
             if( arg->flags & ARG_STMTNO )
                 continue;
             arg_type = GetDbgType( arg->id );
-            if( ( arg->id->u.ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) {
+            if( (arg->id->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) {
                 arg_type = DBDereference( TY_CODE_PTR,
                                DBEndProc( DBBegProc( TY_CODE_PTR,
                                           GetDBGSubProgType( arg->id ) ) ) );
@@ -1903,8 +1902,8 @@ pointer FEAuxInfo( pointer req_handle, int request )
             /* fall through */
         case 1:
 #if _CPU == 386 || _CPU == 8086
-            if(( CGFlags & CG_FP_MODEL_80x87 )
-              && ( CGFlags & CG_USED_80x87 ))
+            if( (CGFlags & CG_FP_MODEL_80x87)
+              && (CGFlags & CG_USED_80x87) )
                 return( (pointer)(pointer_uint)2 );
             /* fall through */
         case 2:
@@ -1932,7 +1931,7 @@ pointer FEAuxInfo( pointer req_handle, int request )
             /* fall through */
         case 8:
 #if _CPU == 386 || _CPU == _PPC || _CPU == _AXP
-            if( CGOpts & ( CGOPT_BM | CGOPT_BD ) )
+            if( CGOpts & (CGOPT_BM | CGOPT_BD) )
                 return( (pointer)(pointer_uint)9 );
             /* fall through */
         case 9:
@@ -1952,9 +1951,9 @@ pointer FEAuxInfo( pointer req_handle, int request )
         }
         for( ; ImpSym != NULL; ImpSym = ImpSym->u.ns.link ) {
             flags = ImpSym->u.ns.flags;
-            if(( ( flags & SY_CLASS ) == SY_SUBPROGRAM )
-              && ( flags & SY_EXTERNAL )
-              && ( ( flags & ( SY_SUB_PARM | SY_REFERENCED | SY_RELAX_EXTERN ) ) == 0 )) {
+            if(( (flags & SY_CLASS) == SY_SUBPROGRAM )
+              && (flags & SY_EXTERNAL)
+              && ( (flags & (SY_SUB_PARM | SY_REFERENCED | SY_RELAX_EXTERN)) == 0 )) {
                 return( (pointer)(pointer_uint)1 );
             }
         }
@@ -2034,7 +2033,7 @@ pointer FEAuxInfo( pointer req_handle, int request )
 #if _CPU == 8086 || _CPU == 386
     case CLASS_NAME :
         for( sym = GList; sym != NULL; sym = sym->u.ns.link ) {
-            if( ( sym->u.ns.flags & SY_CLASS ) != SY_COMMON )
+            if( (sym->u.ns.flags & SY_CLASS) != SY_COMMON )
                 continue;
             idx = 0;
             for( com_size = GetComBlkSize( sym ); com_size > MaxSegSize; com_size -= MaxSegSize ) {

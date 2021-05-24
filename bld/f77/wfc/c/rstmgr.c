@@ -61,7 +61,7 @@ void    OpenSymTab( void ) {
 
 // Initialize the symbol table.
 
-    if( ( ProgSw & PS_DONT_GENERATE ) == 0 )
+    if( (ProgSw & PS_DONT_GENERATE) == 0 )
         return;
     GList = NULL;
     InitHashTable( GHashTable, HASH_PRIME + 1 );
@@ -285,8 +285,8 @@ sym_id STName( const char *name, size_t length )
         sym->u.ns.si.va.vi.ec_ext = NULL;
         sym->u.ns.u3.address = NULL;
         HashInsert( HashTable, HashValue, &NList, sym );
-    } else if( ( ( sym->u.ns.flags & SY_CLASS ) == SY_VARIABLE ) &&
-               ( sym->u.ns.flags & SY_SPECIAL_PARM ) ) {
+    } else if( ( (sym->u.ns.flags & SY_CLASS) == SY_VARIABLE ) &&
+               (sym->u.ns.flags & SY_SPECIAL_PARM) ) {
         sym = FindShadow( sym ); // Shadowed variable
     }
     return( sym );

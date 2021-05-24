@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,11 +53,11 @@ PCODE   ParmClass( itnode *arg ) {
     unsigned_16 flags;
 
     flags = arg->flags;
-    opn = arg->opn.us & USOPN_WHAT;
+    opn = (arg->opn.us & USOPN_WHAT);
     switch( opn ) {
         case USOPN_NNL:
-            if( ( flags & SY_CLASS ) == SY_SUBPROGRAM ) {
-                sp_typ = flags & SY_SUBPROG_TYPE;
+            if( (flags & SY_CLASS) == SY_SUBPROGRAM ) {
+                sp_typ = (flags & SY_SUBPROG_TYPE);
                 if( sp_typ == SY_FN_OR_SUB ) {
                     return( PC_FN_OR_SUB );
                 } else if( sp_typ == SY_SUBROUTINE ) {
@@ -108,8 +109,8 @@ PCODE   ParmCode( itnode *arg ) {
 
     USOPN   opn;
 
-    opn = arg->opn.us & USOPN_WHERE;
-    if( ( arg->opn.us & USOPN_WHAT ) == USOPN_ARR ) {
+    opn = (arg->opn.us & USOPN_WHERE);
+    if( (arg->opn.us & USOPN_WHAT) == USOPN_ARR ) {
         // an array name can't be part of an expression so check it first
         // so that we can detect whether an array has been passed to an
         // intrinsic function

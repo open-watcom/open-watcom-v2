@@ -58,7 +58,7 @@ static  void    GetImplType( sym_id sym ) {
 //    RETURN              - When we dump ARGLIST here, we better
 //    END                   update the type
 
-    if( ( sym->u.ns.flags & SY_TYPE ) == 0 ) {
+    if( (sym->u.ns.flags & SY_TYPE) == 0 ) {
         sym->u.ns.flags |= SY_TYPE;
         sym->u.ns.u1.s.typ = ImplType( sym->u.ns.name[0] );
         sym->u.ns.xt.size = ImplSize( sym->u.ns.name[0] );
@@ -71,7 +71,7 @@ static  void    ChkEntryType( sym_id sym, sym_id entry ) {
 
     // when we compile ENTRY statement, we make sure that its class
     // matches the class of the main entry
-    if( ( sym->u.ns.flags & SY_SUBPROG_TYPE ) == SY_SUBROUTINE )
+    if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE )
         return;
     if( (entry->u.ns.u1.s.typ == FT_CHAR) || (entry->u.ns.u1.s.typ == FT_STRUCTURE) ) {
         if( sym->u.ns.u1.s.typ != entry->u.ns.u1.s.typ ) {
@@ -117,7 +117,7 @@ void    DumpEntries(void) {
         GetImplType( sym );
         ChkEntryType( sym, SubProgId );
         typ = PT_NOTYPE;
-        if( ( sym->u.ns.flags & SY_SUBPROG_TYPE ) == SY_FUNCTION ) {
+        if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_FUNCTION ) {
             fn_shadow = FindShadow( sym );
             fn_shadow->u.ns.xt.size = sym->u.ns.xt.size;
             fn_shadow->u.ns.u1.s.typ = sym->u.ns.u1.s.typ;
@@ -126,7 +126,7 @@ void    DumpEntries(void) {
                 typ |= VAR_LEN_CHAR;
             }
         }
-        if( ( ProgSw & PS_ERROR ) == 0 ) {
+        if( (ProgSw & PS_ERROR) == 0 ) {
             GArgList( dum_lst, args_cnt, typ );
         }
         for( curr_parm = dum_lst->parms; curr_parm != NULL; curr_parm = curr_parm->link ) {
@@ -138,17 +138,17 @@ void    DumpEntries(void) {
                 GetImplType( sym );
                 typ = ParmType( sym->u.ns.u1.s.typ, sym->u.ns.xt.size );
                 flags = sym->u.ns.flags;
-                if( ( flags & SY_CLASS ) == SY_SUBPROGRAM ) {
+                if( (flags & SY_CLASS) == SY_SUBPROGRAM ) {
                     code = PC_FN_OR_SUB;
-                    if( ( flags & SY_SUBPROG_TYPE ) != SY_FN_OR_SUB ) {
+                    if( (flags & SY_SUBPROG_TYPE) != SY_FN_OR_SUB ) {
                         code = PC_PROCEDURE;
-                        if( ( flags & SY_SUBPROG_TYPE ) != SY_FUNCTION ) {
+                        if( (flags & SY_SUBPROG_TYPE) != SY_FUNCTION ) {
                             typ = PT_NOTYPE;
                         }
                     }
                 } else {
                     code = PC_VARIABLE;
-                    if( ( flags & SY_SUBSCRIPTED ) != 0 ) {
+                    if( (flags & SY_SUBSCRIPTED) != 0 ) {
                         code = PC_ARRAY_NAME;
                     }
                     if( ( typ == PT_CHAR ) && ( sym->u.ns.xt.size == 0 ) ) {
@@ -156,7 +156,7 @@ void    DumpEntries(void) {
                     }
                 }
             }
-            if( ( ProgSw & PS_ERROR ) == 0 ) {
+            if( (ProgSw & PS_ERROR) == 0 ) {
                 GArgInfo( sym, code, typ );
             }
         }

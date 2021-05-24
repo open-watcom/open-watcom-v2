@@ -361,7 +361,7 @@ void    Scan( void ) {
                         Extension( CC_TOO_MANY_CONT );
                         ExtnSw |= XS_CONT_20;
                     }
-                    if( (TkCrsr-TokenBuff) + (LastColumn-CONT_COL) > TOKLEN ) {
+                    if( (TkCrsr - TokenBuff) + (LastColumn - CONT_COL) > TOKLEN ) {
                         TkCrsr = TokenBuff; // so we don't overflow TokenBuff
                         if( (StmtSw & SS_CONT_ERROR_ISSUED) == 0 ) {
                             Error( CC_CONT_OVERFLOW );

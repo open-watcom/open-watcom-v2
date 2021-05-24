@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -156,10 +156,10 @@ static  void    ErrHandler( char *err_type, int error, va_list args )
             //       end
             if( ( caret != NO_CARET ) && ( CITNode->link != NULL ) ) {
                 if( caret == OPR_CARET ) {
-                    column = CITNode->oprpos & 0xff;
+                    column = (CITNode->oprpos & 0xff);
                     contline = CITNode->oprpos >> 8;
                 } else {
-                    column = CITNode->opnpos & 0xff;
+                    column = (CITNode->opnpos & 0xff);
                     contline = CITNode->opnpos >> 8;
                 }
             }

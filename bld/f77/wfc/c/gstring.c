@@ -109,10 +109,10 @@ static  size_t  SrcChar( itnode *op )
 {
     if( op->opn.us & USOPN_SS1 )
         return( op->value.st.ss_size );
-    if( ( op->opn.us & USOPN_WHAT ) == USOPN_CON ) { // character constant
+    if( (op->opn.us & USOPN_WHAT) == USOPN_CON ) { // character constant
         return( op->sym_ptr->u.lt.length );
     }
-    if( ( op->opn.us & USOPN_WHAT ) == USOPN_NNL ) { // character variable
+    if( (op->opn.us & USOPN_WHAT) == USOPN_NNL ) { // character variable
         if( op->sym_ptr->u.ns.u1.s.typ == FT_STRUCTURE ) {
             return( 0 );        // No mechanism exists for keeping the size.
         } else {
@@ -128,14 +128,14 @@ static  size_t  TargChar( itnode *op )
 {
     if( op->opn.us & USOPN_SS1 )
         return( op->value.st.ss_size );
-    if( ( op->opn.us & USOPN_WHAT ) == USOPN_NNL ) { // character variable
+    if( (op->opn.us & USOPN_WHAT) == USOPN_NNL ) { // character variable
         if( op->sym_ptr->u.ns.u1.s.typ == FT_STRUCTURE ) {
             return( 0 );        // No mechanism exists for keeping the size.
         } else {
             return( op->sym_ptr->u.ns.xt.size );
         }
     }
-    if( ( op->opn.us & USOPN_WHAT ) == USOPN_NWL ) { // character array
+    if( (op->opn.us & USOPN_WHAT) == USOPN_NWL ) { // character array
         if( op->sym_ptr->u.ns.u1.s.typ == FT_STRUCTURE ) {
             return( 0 );        // No mechanism exists for keeping the size.
         } else {
@@ -166,7 +166,7 @@ void    AsgnChar( void )
             EmitOp( FC_CHAR_1_MOVE );
             DumpType( MapTypes( FT_INTEGER, i ), i );
             GenChar1Op( CITNode );
-            if( ( CITNode->opn.us & USOPN_WHAT ) == USOPN_CON ) {
+            if( (CITNode->opn.us & USOPN_WHAT) == USOPN_CON ) {
                 CITNode->sym_ptr->u.lt.flags &= ~LT_SCB_TMP_REFERENCE;
             }
             CITNode = save_cit;

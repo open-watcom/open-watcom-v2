@@ -275,7 +275,7 @@ static  bool    HexConst(void) {
             return( false );
         sym = SymFind( hex_data, hex_len );
         if( sym != NULL ) {
-            if( ( sym->u.ns.flags & SY_CLASS ) == SY_PARAMETER ) {
+            if( (sym->u.ns.flags & SY_CLASS) == SY_PARAMETER ) {
                 return( false );
             }
         }
@@ -459,11 +459,11 @@ size_t MkHexConst( const char *src, char *dst, size_t src_len )
 static  void    CkFlags( void ) {
 //=========================
 
-    if( ( InitVar->u.ns.flags & SY_CLASS ) != SY_VARIABLE ) {
+    if( (InitVar->u.ns.flags & SY_CLASS) != SY_VARIABLE ) {
         ClassNameErr( DA_ILL_NAME, InitVar );
-    } else if( ( InitVar->u.ns.flags & SY_SUB_PARM ) != 0 ) {
+    } else if( (InitVar->u.ns.flags & SY_SUB_PARM) != 0 ) {
         ClassNameErr( DA_ILL_NAME, InitVar );
-    } else if((InitVar->u.ns.flags & SY_SUBSCRIPTED) && _Allocatable( InitVar )) {
+    } else if( (InitVar->u.ns.flags & SY_SUBSCRIPTED) && _Allocatable( InitVar ) ) {
         IllName( InitVar );
     } else {
         // Don't set SY_TYPE otherwise we won't be able to detect whether

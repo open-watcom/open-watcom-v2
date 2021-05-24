@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,11 +74,11 @@ void    FieldOp( TYPE typ1, TYPE typ2, OPTR op ) {
     } else {
         EmitOp( FC_FIELD_OP );
         OutPtr( CITNode->sym_ptr );
-        if( ( StmtSw & SS_DATA_INIT ) == 0 ) {
+        if( (StmtSw & SS_DATA_INIT) == 0 ) {
             if( typ2 == FT_CHAR ) {
-                if( ( CITNode->link->opn.us & USOPN_WHAT ) != USOPN_ARR ) {
-                    if( ( ( CITNode->link->opn.us & USOPN_WHAT ) != USOPN_NWL ) &&
-                        ( ( CITNode->link->opn.us & USOPN_WHAT ) != USOPN_ASS ) ) {
+                if( (CITNode->link->opn.us & USOPN_WHAT) != USOPN_ARR ) {
+                    if( ( (CITNode->link->opn.us & USOPN_WHAT) != USOPN_NWL ) &&
+                        ( (CITNode->link->opn.us & USOPN_WHAT) != USOPN_ASS ) ) {
                         GFieldSCB( CITNode->link->size );
                     }
                     EmitOp( FC_MAKE_SCB );

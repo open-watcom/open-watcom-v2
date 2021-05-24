@@ -908,7 +908,7 @@ static  void    AsnVal( PTYPE var_type )
 {
     bool        issue_err;
 
-    issue_err = ( DtFlags & DT_NO_MORE_CONSTS ) == 0;
+    issue_err = ( (DtFlags & DT_NO_MORE_CONSTS) == 0 );
     GetDataConst();
     if( DtFlags & DT_NO_MORE_CONSTS ) {
         if( issue_err ) {
@@ -954,7 +954,7 @@ void    DtEndVarSet( void )
 // End of DATA variable set.
 {
     GetDataConst();
-    if( ( DtFlags & DT_NO_MORE_CONSTS ) == 0 ) {
+    if( (DtFlags & DT_NO_MORE_CONSTS) == 0 ) {
         Error( DA_TOO_MUCH );
         FlushConsts();
     }

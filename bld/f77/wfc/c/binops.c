@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -113,8 +114,8 @@ static void Binary( TYPE typ1, TYPE typ2, OPTR opr ) {
         associative = true;
     }
     flip = false;
-    if( ( ( CITNode->opn.us & USOPN_WHERE ) == USOPN_SAFE ) &&
-        ( ( CITNode->link->opn.us & USOPN_WHERE ) != USOPN_SAFE ) ) {
+    if( ( (CITNode->opn.us & USOPN_WHERE) == USOPN_SAFE ) &&
+        ( (CITNode->link->opn.us & USOPN_WHERE) != USOPN_SAFE ) ) {
         flip = true;
     }
     op_code = opr - OPTR_FIRST_ARITHOP;

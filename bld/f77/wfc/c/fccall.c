@@ -121,12 +121,12 @@ void    FCPrologue( void ) {
 
     --NumSubProgs;
     sym = GetPtr();
-    sp_type = sym->u.ns.flags & SY_SUBPROG_TYPE;
+    sp_type = (sym->u.ns.flags & SY_SUBPROG_TYPE);
     SubCodeSeg();
     BESetSeg( SEG_LDATA );
     DGSeek( LDSegOffset );
     if( sp_type == SY_BLOCK_DATA ) {
-        if( ( sym->u.ns.flags & SY_UNNAMED ) == 0 ) {
+        if( (sym->u.ns.flags & SY_UNNAMED) == 0 ) {
             DGLabel( FEBack( sym ) );
         }
     } else {
@@ -189,7 +189,7 @@ void    FCEpilogue( void ) {
     unsigned_16 sp_type;
 
     sym = GetPtr();
-    sp_type = sym->u.ns.flags & SY_SUBPROG_TYPE;
+    sp_type = (sym->u.ns.flags & SY_SUBPROG_TYPE);
     if( sp_type != SY_BLOCK_DATA ) {
         GenTraceback();
     }
@@ -198,7 +198,7 @@ void    FCEpilogue( void ) {
     }
     FiniLabels( 0 );
     FiniTmps();
-    if( ( sym->u.ns.flags & SY_SUBPROG_TYPE ) == SY_PROGRAM ) {
+    if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_PROGRAM ) {
         CGReturn( NULL, TY_INTEGER );
     } else if( sp_type != SY_BLOCK_DATA ) {
         if( CommonEntry == NULL ) {
@@ -257,7 +257,7 @@ static  void    GenReturnValue( sym_id sym ) {
     cg_type     typ;
 
     typ = SPType( sym );
-    if( ( sym->u.ns.flags & SY_SUBPROG_TYPE ) == SY_SUBROUTINE ) {
+    if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) {
         if( !EntryWithAltRets() ) {
             CGReturn( NULL, TY_INTEGER );
             return;
@@ -310,7 +310,7 @@ static  void    DefineEntries( void ) {
         DefineEntryPoint( ep );
         call = CGInitCall( CGFEName( CommonEntry, common_type ), common_type, NULL );
         PassCommonArgs( call, ep );
-        if( ( ep->id->u.ns.flags & SY_SUBPROG_TYPE ) != SY_SUBROUTINE ) {
+        if( (ep->id->u.ns.flags & SY_SUBPROG_TYPE) != SY_SUBROUTINE ) {
             val = CGFEName( ReturnValue, sp_type );
             if( ep->id->u.ns.u1.s.typ == FT_CHAR ) {
                 val = CGUnary( O_POINTS, val, TY_POINTER );
@@ -325,7 +325,7 @@ static  void    DefineEntries( void ) {
             }
         }
         CGAddParm( call, CGInteger( ep_count, TY_INTEGER ), TY_INTEGER );
-        if( ( ep->id->u.ns.flags & SY_SUBPROG_TYPE ) == SY_SUBROUTINE ) {
+        if( (ep->id->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) {
             if( EntryWithAltRets() ) {
                 val = CGUnary( O_POINTS, CGCall( call ), sp_type );
                 CGReturn( val, sp_type );
@@ -375,14 +375,14 @@ static  void    PassCommonArgs( call_handle call, entry_pt *ep_called ) {
         info = InfoLookup( ep->id );
         arg_aux = info->arg_info;
         for( arg = ep->parms; arg != NULL; arg = arg->link ) {
-            if( ( arg->flags & ( ARG_DUPLICATE | ARG_STMTNO ) ) == 0 ) {
-                if( ( arg->id->u.ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) {
+            if( (arg->flags & (ARG_DUPLICATE | ARG_STMTNO)) == 0 ) {
+                if( (arg->id->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) {
                     arg_type = TY_CODE_PTR;
                 } else if( arg->id->u.ns.flags & SY_SUBSCRIPTED ) {
                     arg_type = TY_POINTER;
                 } else if( arg->id->u.ns.u1.s.typ == FT_CHAR ) {
                     arg_type = TY_POINTER;
-                } else if( ( arg_aux != NULL ) && ( arg_aux->info & PASS_BY_VALUE ) ) {
+                } else if( ( arg_aux != NULL ) && (arg_aux->info & PASS_BY_VALUE) ) {
                     arg_type = F77ToCGType( arg->id );
                 } else {
                     arg_type = TY_POINTER;
@@ -687,7 +687,7 @@ void    FCCall( void ) {
                 if( cg_typ != new_typ ) {
                     arg = CGUnary( O_CONVERT, arg, new_typ );
                     cg_typ = new_typ;
-                } else if( ( sp->u.ns.flags & SY_INTRINSIC ) &&
+                } else if( (sp->u.ns.flags & SY_INTRINSIC) &&
                            ( IFArgType( sp->u.ns.si.fi.index ) == FT_INTEGER ) ) {
                     // The following code is only useful when the intrinsic
                     // promotion switch is activated.  We don't need to check
@@ -732,7 +732,7 @@ void    FCCall( void ) {
         XPush( CGUnary( O_POINTS, CGCall( call ), sp_type ) );
     } else {
         if( sp->u.ns.u1.s.typ == FT_CHAR ) {
-            if( (Options & OPT_DESCRIPTOR) || ( sp->u.ns.flags & SY_INTRINSIC) ) {
+            if( (Options & OPT_DESCRIPTOR) || (sp->u.ns.flags & SY_INTRINSIC) ) {
                 scb = GetPtr();
                 arg = CGFEName( scb, TY_CHAR );
 #if _CPU == 386
@@ -817,7 +817,7 @@ void    FCDArgInit( void ) {
 
     sym = GetPtr();
     if( (Options & OPT_DESCRIPTOR) == 0 ) {
-        if( ( sym->u.ns.flags & SY_SUBPROG_TYPE ) == SY_FUNCTION ) {
+        if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_FUNCTION ) {
             if( sym->u.ns.u1.s.typ == FT_CHAR ) {
                 arg = CGUnary( O_POINTS, CGFEName( ReturnValue, TY_POINTER ), TY_POINTER );
                 if( Options & OPT_DESCRIPTOR ) {

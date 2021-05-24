@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -104,17 +105,17 @@ static  void    PrSFList( void ) {
                 TypeTypeErr( SF_PARM_TYPE_MISMATCH, CITNode->typ,
                              sym_ptr->u.ns.u1.s.typ );
             } else {
-                what = CITNode->opn.us & USOPN_WHAT;
-                where = CITNode->opn.us & USOPN_WHERE;
+                what = (CITNode->opn.us & USOPN_WHAT);
+                where = (CITNode->opn.us & USOPN_WHERE);
                 if( ( what == USOPN_NWL ) || ( where == USOPN_SAFE ) ||
                     ( where == USOPN_TMP ) ) {
                     GSFArg( sym_ptr );
                 } else {
                     flags = CITNode->flags;
-                    if( ( ( flags & SY_CLASS ) == SY_VARIABLE ) ||
-                        ( ( flags & SY_CLASS ) == SY_PARAMETER ) ) {
+                    if( ( (flags & SY_CLASS) == SY_VARIABLE ) ||
+                        ( (flags & SY_CLASS) == SY_PARAMETER ) ) {
                         if( ( what == USOPN_ASS ) ||
-                            ( ( flags & SY_SUBSCRIPTED ) == 0 ) ) {
+                            ( (flags & SY_SUBSCRIPTED) == 0 ) ) {
                             GSFArg( sym_ptr );
                         } else {
                             ClassNameErr( SF_ILL_PARM_PASSED,
@@ -201,8 +202,8 @@ void    ProcList( itnode *cit ) {
     save_citnode = CITNode;
     cit_flags = cit->flags;
     CITNode = cit->list;
-    if( ( cit_flags & SY_CLASS ) == SY_SUBPROGRAM ) {
-        if( ( cit_flags & SY_SUBPROG_TYPE ) == SY_STMT_FUNC ) {
+    if( (cit_flags & SY_CLASS) == SY_SUBPROGRAM ) {
+        if( (cit_flags & SY_SUBPROG_TYPE) == SY_STMT_FUNC ) {
             CITNode = cit;  // PrSFList has to look up the symbol
             PrSFList();
         } else {
@@ -213,8 +214,8 @@ void    ProcList( itnode *cit ) {
                 PrCallList( cit );
             }
         }
-    } else if( ( ( cit_flags & SY_CLASS ) == SY_VARIABLE ) &&
-            ( cit_flags & SY_SUBSCRIPTED ) ) {
+    } else if( ( (cit_flags & SY_CLASS) == SY_VARIABLE ) &&
+            (cit_flags & SY_SUBSCRIPTED) ) {
         PrSubList( cit );
     } else {
         PrSStr( cit );

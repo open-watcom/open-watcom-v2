@@ -348,7 +348,7 @@ static parameter *NameParm( entry_pt *entry )
 
     sym = LkSym();
     flags = sym->u.ns.flags;
-    class = flags & SY_CLASS;
+    class = (flags & SY_CLASS);
     if( class == SY_VARIABLE ) {
         if( InArgList( entry, sym ) ) {
             NameErr( AR_DUPLICATE_PARM, sym );
@@ -374,7 +374,7 @@ static parameter *NameParm( entry_pt *entry )
         IllName( sym );
         return( NULL );
     } else { // subroutine name
-        class = flags & SY_SUBPROG_TYPE;
+        class = (flags & SY_SUBPROG_TYPE);
         if( ( class != SY_FUNCTION ) && ( class != SY_SUBROUTINE ) &&
             ( class != SY_FN_OR_SUB ) ) {
             IllName( sym );

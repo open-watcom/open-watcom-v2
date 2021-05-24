@@ -283,7 +283,7 @@ bool    SetLst( bool new ) {
 
     bool        old;
 
-    old = ( ListFlag & LF_QUIET ) == 0;
+    old = ( (ListFlag & LF_QUIET) == 0 );
     if( new ) {
         ListFlag &= ~LF_QUIET;
     } else {
@@ -307,7 +307,7 @@ void    SrcInclude( const char *name )
     src->flags = 0;
     if( CurrFile != NULL ) {
         NewOptions = Options;
-        if( ( Options & OPT_INCLIST ) == 0 ) {
+        if( (Options & OPT_INCLIST) == 0 ) {
             SetLst( false );
         }
     }
@@ -330,8 +330,8 @@ void    Conclude( void ) {
     if( CurrFile != NULL ) {
         NewOptions = old->options;
         Options = NewOptions;
-        if( ( ( CurrFile->link == NULL ) && ( Options & OPT_LIST ) ) ||
-              ( Options & OPT_INCLIST ) ) {
+        if( ( ( CurrFile->link == NULL ) && (Options & OPT_LIST) ) ||
+              (Options & OPT_INCLIST) ) {
             SetLst( true );
         } else {
             SetLst( false );
@@ -358,7 +358,7 @@ void    OpenErr( void ) {
     char        buffer[_MAX_PATH];
     char        errmsg[81];
 
-    if( ( Options & OPT_ERRFILE ) && ( ( ProgSw & PS_ERR_OPEN_TRIED ) == 0 ) ) {
+    if( (Options & OPT_ERRFILE) && ( (ProgSw & PS_ERR_OPEN_TRIED) == 0 ) ) {
         ProgSw |= PS_ERR_OPEN_TRIED;
         MakeName( SDFName( SrcName ), ErrExtn, buffer );
         ErrFile = SDOpenText( buffer, "wt" );
@@ -393,9 +393,9 @@ void    PrintErr( const char *string )
 static  bool    ErrToTerm( void ) {
 //=================================
 
-    if( ( Options & OPT_TERM ) == 0 )
+    if( (Options & OPT_TERM) == 0 )
         return( false );
-    if( ( Options & OPT_TYPE ) && ( ListFile != NULL ) )
+    if( (Options & OPT_TYPE) && ( ListFile != NULL ) )
         return( false );
     return( true );
 }
@@ -547,7 +547,7 @@ static  void    OpenListingFile( bool reopen ) {
 
     /* unused parameters */ (void)reopen;
 
-    if( ( Options & OPT_LIST ) == 0 ) {
+    if( (Options & OPT_LIST) == 0 ) {
         // no listing file
         // ignore other listing file options
     } else {
@@ -595,7 +595,7 @@ void    ChkPntLst( void ) {
 bool    WasStmtListed( void ) {
 //=============================
 
-    return( ( ListFlag & LF_STMT_LISTED ) != 0 );
+    return( (ListFlag & LF_STMT_LISTED) != 0 );
 }
 
 
@@ -710,7 +710,7 @@ static  void    SetCtrlSeq( void ) {
     if( ListCount >= LinesPerPage - LF_PAGE_BOUNDARY ) {
         ListFlag |= LF_PAGE_FLAG;
     }
-    if(  ListFlag & LF_PAGE_FLAG ) {
+    if( ListFlag & LF_PAGE_FLAG ) {
         ListCount = 0;
         if( Options & OPT_TYPE ) {
             ctrlseq = SkipCtrlSeq;
@@ -732,7 +732,7 @@ static  void    PutLst( const char *string )
     size_t      len;
     bool        newline;
 
-    newline = ( ListFlag & LF_NEW_LINE );
+    newline = (ListFlag & LF_NEW_LINE);
     for( ; ListFile != NULL; ) {
         if( ListCursor == 0 ) {
             SetCtrlSeq();
@@ -768,7 +768,7 @@ void    CloseLst( void ) {
 
     if( ListFile == NULL )
         return;
-    SDWriteCCChar( ListFile, ' ', ( ListFlag & LF_CC_NOLF ) );
+    SDWriteCCChar( ListFile, ' ', (ListFlag & LF_CC_NOLF) );
     SDClose( ListFile );
     ListFile = NULL;
     if( ListBuff == NULL )
@@ -801,7 +801,7 @@ void    LFSkip( void ) {
 //======================
 
     ListFlag |= LF_SKIP_FLAG;
-    if( ( ListFlag & LF_QUIET ) == 0 ) {
+    if( (ListFlag & LF_QUIET) == 0 ) {
         ++ListCount;
     }
 }

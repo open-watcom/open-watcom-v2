@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -296,7 +296,7 @@ static  void    SubProg( void ) {
 
     unsigned_16 sp_type;
 
-    sp_type = CITNode->flags & SY_SUBPROG_TYPE;
+    sp_type = (CITNode->flags & SY_SUBPROG_TYPE);
     if( ( sp_type == SY_REMOTE_BLOCK ) || ( sp_type == SY_PROGRAM ) ) {
         IllName( CITNode->sym_ptr );
     } else if( sp_type == SY_STMT_FUNC ) {

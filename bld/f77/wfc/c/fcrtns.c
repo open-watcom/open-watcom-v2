@@ -122,7 +122,7 @@ void    FreeRtRtns( void )
     for( i = 0; i < RT_INDEX_SIZE; i++ ) {
         sym = RtnTab[i].sym_ptr;
         if( sym != NULL ) {
-            if( ( CGFlags & CG_FATAL ) == 0 ) {
+            if( (CGFlags & CG_FATAL) == 0 ) {
                 if( sym->u.ns.u3.address != NULL ) {
                     BEFreeBack( sym->u.ns.u3.address );
                 }

@@ -85,10 +85,10 @@ static const char * const CompDrctvs[] = {
     NULL
 };
 
-#define DISK_MASK       (OPT_TYPE|OPT_PRINT)
+#define DISK_MASK       (OPT_TYPE | OPT_PRINT)
 
 // Used for matching OZOpts bits
-#define _BitsMatched( bits, ptrn )      (((bits & ptrn) ^ ptrn) == 0)
+#define _BitsMatched( bits, ptrn )      ((((bits) & (ptrn)) ^ (ptrn)) == 0)
 
 
 static char *SkipOpt( const char *buff )
@@ -154,8 +154,8 @@ static void   BitOption( opt_entry *optn, bool negated )
             SetLst( true );
         }
         // SAVE turns off AUTOMATIC and vice-versa
-        if( opt_bit & ( OPT_SAVE | OPT_AUTOMATIC ) ) {
-            NewOptions &= ~( OPT_SAVE | OPT_AUTOMATIC );
+        if( opt_bit & (OPT_SAVE | OPT_AUTOMATIC) ) {
+            NewOptions &= ~(OPT_SAVE | OPT_AUTOMATIC);
         }
         NewOptions |= opt_bit;
     } else if( opt_bit & OPT_NO_NO ) {
@@ -292,8 +292,8 @@ static unsigned_32 OptV( opt_entry *optn, const char *ptr )
 
 
 
-#define _Excl( excl_bits )  if( opt_bit & ( excl_bits ) ) {       \
-                                CGOpts &= ~( excl_bits );         \
+#define _Excl( excl_bits )  if( opt_bit & (excl_bits) ) {       \
+                                CGOpts &= ~(excl_bits);         \
                             }
 
 
@@ -328,8 +328,8 @@ static void CGOption( opt_entry *optn, bool negated )
 }
 
 
-#define _OZExcl( excl_bits )  if( opt_bit & ( excl_bits ) ) {       \
-                                   OZOpts &= ~( excl_bits );        \
+#define _OZExcl( excl_bits )  if( opt_bit & (excl_bits) ) {       \
+                                   OZOpts &= ~(excl_bits);        \
                               }
 
 static void OZOption( opt_entry *optn, bool negated )
@@ -350,8 +350,8 @@ static void OZOption( opt_entry *optn, bool negated )
 }
 
 
-#define _CPUExcl( excl_bits )  if( opt_bit & ( excl_bits ) ) {       \
-                                   CPUOpts &= ~( excl_bits );        \
+#define _CPUExcl( excl_bits )  if( opt_bit & (excl_bits) ) {       \
+                                   CPUOpts &= ~(excl_bits);        \
                                }
 
 #if _CPU == 8086 || _CPU == 386
@@ -418,7 +418,7 @@ static  void    ChiOption( opt_entry *optn, bool negated )
     /* unused parameters */ (void)optn; (void)negated;
 
     __UseChineseCharSet();
-    NewOptions &= ~( OPT_CHINESE | OPT_JAPANESE | OPT_KOREAN );
+    NewOptions &= ~(OPT_CHINESE | OPT_JAPANESE | OPT_KOREAN);
     NewOptions |= OPT_CHINESE;
 }
 
@@ -429,7 +429,7 @@ static  void    JapOption( opt_entry *optn, bool negated )
     /* unused parameters */ (void)optn; (void)negated;
 
     __UseJapaneseCharSet();
-    NewOptions &= ~( OPT_CHINESE | OPT_JAPANESE | OPT_KOREAN );
+    NewOptions &= ~(OPT_CHINESE | OPT_JAPANESE | OPT_KOREAN);
     NewOptions |= OPT_JAPANESE;
 }
 
@@ -440,7 +440,7 @@ static  void    KorOption( opt_entry *optn, bool negated )
     /* unused parameters */ (void)optn; (void)negated;
 
     __UseKoreanCharSet();
-    NewOptions &= ~( OPT_CHINESE | OPT_JAPANESE | OPT_KOREAN );
+    NewOptions &= ~(OPT_CHINESE | OPT_JAPANESE | OPT_KOREAN);
     NewOptions |= OPT_KOREAN;
 }
 
@@ -498,7 +498,7 @@ static opt_entry *GetOptn( const char *buff, bool *negated )
         buff += 2 * sizeof( char );
     }
     for( optn = CompOptns; optn->option != NULL; ++optn ) {
-        if( OptMatch( buff, optn->option, optn->flags & VAL ) ) {
+        if( OptMatch( buff, optn->option, (optn->flags & VAL) ) ) {
             return( optn );
         }
     }
@@ -581,7 +581,7 @@ static void ScanOpts( const char *buff )
             break;
         }
         first_opt = false;
-        if( ( optn->flags & SRC ) == 0 ) {
+        if( (optn->flags & SRC) == 0 ) {
             Warning( CO_NOT_IN_SOURCE, optn->option );
             buff = SkipOpt( buff );
         } else {
@@ -788,7 +788,7 @@ void    PrtOptions( void )
                         continue;
                     }
                 } else {
-                    if( ( CGOpts & optn->value ) == 0 ) {
+                    if( (CGOpts & optn->value) == 0 ) {
                         continue;
                     }
                 }
@@ -798,7 +798,7 @@ void    PrtOptions( void )
                         continue;
                     }
                 } else {
-                    if( ( CPUOpts & optn->value ) == 0 ) {
+                    if( (CPUOpts & optn->value) == 0 ) {
                         continue;
                     }
                 }
@@ -823,7 +823,7 @@ void    PrtOptions( void )
                             continue;
                         }
                     } else {
-                        if( ( Options & optn->value ) == 0 ) {
+                        if( (Options & optn->value) == 0 ) {
                             continue;
                         }
                     }

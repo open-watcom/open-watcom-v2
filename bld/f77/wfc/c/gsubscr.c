@@ -84,8 +84,8 @@ void    GEndSubScr( itnode *arr ) {
     for( arg = arr->list; dim_cnt-- > 0; arg = arg->link ) {
         GenType( arg );
     }
-    if( ( arr->opn.us & USOPN_FLD ) == 0 ) {
-        if( ( StmtSw & SS_DATA_INIT ) == 0 ) {
+    if( (arr->opn.us & USOPN_FLD) == 0 ) {
+        if( (StmtSw & SS_DATA_INIT) == 0 ) {
             if( arr->sym_ptr->u.ns.u1.s.typ == FT_CHAR ) {
                 OutPtr( GTempString( 0 ) );
             }

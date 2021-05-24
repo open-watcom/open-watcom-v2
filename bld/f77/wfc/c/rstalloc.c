@@ -201,10 +201,10 @@ sym_id        STFreeName( sym_id sym_ptr ) {
 
 // Free a symbol name.
 
-    if( ( sym_ptr->u.ns.flags & SY_CLASS ) == SY_COMMON ) {
+    if( (sym_ptr->u.ns.flags & SY_CLASS) == SY_COMMON ) {
         sym_ptr = FreeLink( (void **)sym_ptr );
     } else {
-        if( ( sym_ptr->u.ns.flags & SY_CLASS ) == SY_VARIABLE ) {
+        if( (sym_ptr->u.ns.flags & SY_CLASS) == SY_VARIABLE ) {
             if( sym_ptr->u.ns.flags & SY_SUBSCRIPTED ) {
                 if( sym_ptr->u.ns.si.va.u.dim_ext != NULL ) {
                     FMemFree( sym_ptr->u.ns.si.va.u.dim_ext );
@@ -215,8 +215,8 @@ sym_id        STFreeName( sym_id sym_ptr ) {
                     FMemFree( sym_ptr->u.ns.si.va.vi.ec_ext );
                 }
             }
-        } else if( ( sym_ptr->u.ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) {
-            if( ( sym_ptr->u.ns.flags & SY_SUBPROG_TYPE ) == SY_STMT_FUNC ) {
+        } else if( (sym_ptr->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) {
+            if( (sym_ptr->u.ns.flags & SY_SUBPROG_TYPE) == SY_STMT_FUNC ) {
                 FreeSFHeader( sym_ptr );
             }
         }

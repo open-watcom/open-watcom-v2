@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,8 +49,8 @@ void    LogOp( TYPE typ1, TYPE typ2, OPTR op ) {
 
     op -= OPTR_FIRST_LOGOP;
     flip = false;
-    if( ( ( CITNode->opn.us & USOPN_WHERE ) == USOPN_SAFE ) &&
-        ( ( CITNode->link->opn.us & USOPN_WHERE ) != USOPN_SAFE ) ) {
+    if( ( (CITNode->opn.us & USOPN_WHERE) == USOPN_SAFE ) &&
+        ( (CITNode->link->opn.us & USOPN_WHERE) != USOPN_SAFE ) ) {
         flip = true;
     }
     PushOpn( CITNode->link );

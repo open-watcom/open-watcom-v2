@@ -162,7 +162,7 @@ static sym_id *Strut( sym_id *p_field, const char *name, size_t len )
                     FieldErr( SP_DUPLICATE_FIELD, *q_field );
                 }
             }
-            if( ( SgmtSw & SG_DEFINING_MAP ) && ( field->u.fd.link == NULL ) ) {
+            if( (SgmtSw & SG_DEFINING_MAP) && ( field->u.fd.link == NULL ) ) {
                 return( q_field );
             }
         } else {

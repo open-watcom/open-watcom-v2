@@ -74,7 +74,7 @@ sym_id SymLookup( const char *name, size_t length )
     sym_id    sym;
 
     sym = STName( name, length );
-    if( ( sym->u.ns.flags & ( SY_TYPE | SY_INTRINSIC ) ) == 0 ) {
+    if( (sym->u.ns.flags & (SY_TYPE | SY_INTRINSIC)) == 0 ) {
         sym->u.ns.xt.size = ImplSize( *name );
         sym->u.ns.u1.s.typ = MapTypes( ImplType( *name ), sym->u.ns.xt.size );
     }
@@ -95,7 +95,7 @@ sym_id  LkSym( void ) {
     CITNode->size = sym->u.ns.xt.size;
     CITNode->typ = sym->u.ns.u1.s.typ;
     if( ( sym->u.ns.u2.name_len > STD_SYMLEN ) &&
-        ( ( ExtnSw & XS_LONG_NAME ) == 0 ) ) {
+        ( (ExtnSw & XS_LONG_NAME) == 0 ) ) {
         NameExt( VA_NAME_LEN_EXT, sym );
         ExtnSw |= XS_LONG_NAME;
     }

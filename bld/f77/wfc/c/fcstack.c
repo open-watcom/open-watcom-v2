@@ -107,7 +107,7 @@ cg_type SymPtrType( sym_id sym ) {
     flags = sym->u.ns.flags;
     if( flags & SY_SUB_PARM ) {
         // subprogram argument
-        if( ( flags & SY_CLASS ) == SY_SUBPROGRAM ) {
+        if( (flags & SY_CLASS) == SY_SUBPROGRAM ) {
             p_type = TY_CODE_PTR;
         } else if( flags & SY_SUBSCRIPTED ) {
             p_type = ArrayPtrType( sym );
@@ -191,9 +191,9 @@ cg_type SymPtrType( sym_id sym ) {
                 }
             }
         }
-    } else if( ( flags & SY_SUBSCRIPTED ) && _Allocatable( sym ) ) {
+    } else if( (flags & SY_SUBSCRIPTED) && _Allocatable( sym ) ) {
         p_type = ArrayPtrType( sym );
-    } else if( ( flags & SY_SUBSCRIPTED ) || ( sym->u.ns.u1.s.typ == FT_STRUCTURE ) ) {
+    } else if( (flags & SY_SUBSCRIPTED) || ( sym->u.ns.u1.s.typ == FT_STRUCTURE ) ) {
         item_size = _SymSize( sym );
         if( flags & SY_SUBSCRIPTED ) {
             item_size *= sym->u.ns.si.va.u.dim_ext->num_elts;
@@ -237,8 +237,8 @@ cg_name SymIndex( sym_id sym, cg_name i ) {
     bool        data_reference;
 
     data_reference = true;
-    if( ( sym->u.ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) {
-        if( ( sym->u.ns.flags & SY_SUBPROG_TYPE ) == SY_STMT_FUNC ) {
+    if( (sym->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) {
+        if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_STMT_FUNC ) {
             addr = CGFEName( sym, F77ToCGType( sym ) );
         } else {
             addr = CGFEName( sym, TY_CODE_PTR );
@@ -346,7 +346,7 @@ cg_name SymIndex( sym_id sym, cg_name i ) {
         }
         i = NULL;
     } else if( ( sym->u.ns.u1.s.typ == FT_CHAR ) &&
-               ( ( sym->u.ns.flags & SY_SUBSCRIPTED ) == 0 ) ) {
+               ( (sym->u.ns.flags & SY_SUBSCRIPTED) == 0 ) ) {
         // character variable, address of scb
         addr = CGFEName( sym, F77ToCGType( sym ) );
     } else if( sym->u.ns.flags & SY_IN_COMMON ) {
@@ -362,14 +362,14 @@ cg_name SymIndex( sym_id sym, cg_name i ) {
         i = NULL;
     } else {
         addr = CGFEName( sym, F77ToCGType( sym ) );
-        if( ( sym->u.ns.flags & SY_SUBSCRIPTED ) && _Allocatable( sym ) ) {
+        if( (sym->u.ns.flags & SY_SUBSCRIPTED) && _Allocatable( sym ) ) {
             addr = CGUnary( O_POINTS, addr, ArrayPtrType( sym ) );
         }
     }
     if( i != NULL ) {
         addr = CGBinary( O_PLUS, addr, i, SymPtrType( sym ) );
     }
-    if( ( OZOpts & OZOPT_O_VOLATILE ) && data_reference &&
+    if( (OZOpts & OZOPT_O_VOLATILE) && data_reference &&
         ( ( sym->u.ns.u1.s.typ >= FT_REAL ) && ( sym->u.ns.u1.s.typ <= FT_XCOMPLEX ) ) ) {
         addr = CGVolatile( addr );
     } else if( sym->u.ns.u1.s.xflags & SY_VOLATILE ) {
@@ -514,7 +514,7 @@ void    FCPop( void ) {
             Cmplx2Scalar();
             src_typ = CmplxBaseType( src_typ );
         }
-        if( ((sym->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM) && (OZOpts & OZOPT_O_INLINE ) )
+        if( ( (sym->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) && (OZOpts & OZOPT_O_INLINE) )
             return;
         XPush( CGAssign( dst, XPopValue( src_typ ), dst_typ ) );
     }

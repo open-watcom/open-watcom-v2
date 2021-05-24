@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,4 +46,4 @@
 #define CF_NOT_IN_UNION         0x1000
 #define CF_NOT_IN_MAP           0x2000
 
-#define CtrlFlgOn( __bits )     ( CtrlFlgs & (__bits) )
+#define CtrlFlgOn(__bits)     (CtrlFlgs & (__bits))

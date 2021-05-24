@@ -234,7 +234,7 @@ static  void    DumpLocalVars( void ) {
 
     for( sym = NList; sym != NULL; sym = sym->u.ns.link ) {
         flags = sym->u.ns.flags;
-        class = flags & SY_CLASS;
+        class = (flags & SY_CLASS);
         if( class == SY_VARIABLE ) {
             if( (sym != ReturnValue) && (sym != EPValue) ) {
                 CkSymDeclared( sym );
@@ -247,7 +247,7 @@ static  void    DumpLocalVars( void ) {
             if( (flags & (SY_REFERENCED | SY_EXTERNAL)) == 0 ) {
                 UnrefSym( sym );
             }
-            subprog_type = flags & SY_SUBPROG_TYPE;
+            subprog_type = (flags & SY_SUBPROG_TYPE);
             if( subprog_type == SY_REMOTE_BLOCK ) {
                 if( (flags & SY_RB_DEFINED) == 0 ) {
                     NameErr( SP_RB_UNDEFINED, sym );

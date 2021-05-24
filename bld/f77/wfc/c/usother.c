@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,14 +59,14 @@ void    EndExpr( void ) {
             GCallWithArgs();
         }
     }
-    if( ( ( ASType & ( AST_DIM | AST_CEX ) ) == 0 ) &&
+    if( ( (ASType & (AST_DIM | AST_CEX)) == 0 ) &&
         ( CITNode->opn.us == USOPN_CON ) ) {
         AddConst( CITNode );
     }
     // We don't want to finish off the expression if an error
     // occurred during upscan process.
     if( !AError &&
-        ( ( ASType & ( AST_DIM | AST_IO | AST_SUB | AST_CEX ) ) == 0 ) ) {
+        ( (ASType & (AST_DIM | AST_IO | AST_SUB | AST_CEX)) == 0 ) ) {
         EmExprDone();
     }
     if( ASType & AST_ASF ) {

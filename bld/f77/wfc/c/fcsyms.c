@@ -535,7 +535,7 @@ void    GenLocalSyms( void ) {
 
     SFSymId = NULL; // for building statement function chain
     BESetSeg( SEG_LDATA );
-    sp_class = SubProgId->u.ns.flags & SY_SUBPROG_TYPE;
+    sp_class = (SubProgId->u.ns.flags & SY_SUBPROG_TYPE);
     if( sp_class != SY_BLOCK_DATA ) {
         if( CommonEntry != NULL ) {
             DefineCommonEntry();
@@ -551,7 +551,7 @@ void    GenLocalSyms( void ) {
                 GSegOffset = DumpVariable( sym, GSegOffset );
             }
         } else if( (flags & SY_CLASS) == SY_SUBPROGRAM ) {
-            sp_type = flags & SY_SUBPROG_TYPE;
+            sp_type = (flags & SY_SUBPROG_TYPE);
             if( sp_type == SY_STMT_FUNC ) {
                 sym->u.ns.si.sf.header->link = SFSymId;
                 SFSymId = sym;
@@ -1232,7 +1232,7 @@ void    FreeLocalBacks( bool free_dbg_handles ) {
                     }
                 }
             }
-        } else if( ( flags & SY_CLASS ) == SY_SUBPROGRAM ) {
+        } else if( (flags & SY_CLASS) == SY_SUBPROGRAM ) {
             if( flags & SY_SUB_PARM ) {
                 FreeBackHandle( &sym->u.ns.u3.address );
                 if( (sym->u.ns.u1.s.typ == FT_CHAR) && (CGOpts & CGOPT_DB_LOCALS) ) {
@@ -1240,7 +1240,7 @@ void    FreeLocalBacks( bool free_dbg_handles ) {
                         FreeBackHandle( &sym->u.ns.si.sp.alt_scb );
                     }
                 }
-            } else if( ( flags & SY_SUBPROG_TYPE ) == SY_STMT_FUNC ) {
+            } else if( (flags & SY_SUBPROG_TYPE) == SY_STMT_FUNC ) {
                 FreeBackHandle( &sym->u.ns.u3.address );
                 FreeSFHeader( sym );
             /*
@@ -1330,10 +1330,10 @@ void    FreeGlobalBacks( void ) {
 
     for( sym = NList; sym != NULL; sym = sym->u.ns.link ) {
         flags = sym->u.ns.flags;
-        if( ( flags & SY_CLASS ) != SY_SUBPROGRAM )
+        if( (flags & SY_CLASS) != SY_SUBPROGRAM )
             continue;
-        if( ( ( flags & SY_SUBPROG_TYPE ) != SY_STMT_FUNC ) &&
-            ( ( flags & SY_SUBPROG_TYPE ) != SY_REMOTE_BLOCK ) ) {
+        if( ( (flags & SY_SUBPROG_TYPE) != SY_STMT_FUNC ) &&
+            ( (flags & SY_SUBPROG_TYPE) != SY_REMOTE_BLOCK ) ) {
             if( sym->u.ns.u3.address != NULL ) {
                 BEFreeBack( sym->u.ns.u3.address );
             }
@@ -1368,7 +1368,7 @@ void    DefineEntryPoint( entry_pt *ep ) {
 
     sp = ep->id;
     if( (Options & OPT_DESCRIPTOR) == 0 ) {
-        if( ( sp->u.ns.flags & SY_SUBPROG_TYPE ) == SY_FUNCTION ) {
+        if( (sp->u.ns.flags & SY_SUBPROG_TYPE) == SY_FUNCTION ) {
             if( sp->u.ns.u1.s.typ == FT_CHAR ) {
                 CGParmDecl( ReturnValue, TY_POINTER );
                 CGParmDecl( STArgShadow( ReturnValue ), TY_INTEGER );
@@ -1376,7 +1376,7 @@ void    DefineEntryPoint( entry_pt *ep ) {
         }
     }
     DefineArgs( ep );
-    if( ( sp->u.ns.flags & SY_SUBPROG_TYPE ) == SY_SUBROUTINE ) {
+    if( (sp->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) {
         if( ChkForAltRets( ep ) ) {
             CGAutoDecl( ReturnValue, TY_INTEGER );
         }
@@ -1420,7 +1420,7 @@ static  void    DefineCommonEntry( void ) {
             }
         }
     }
-    if( ( Entries->id->u.ns.flags & SY_SUBPROG_TYPE ) == SY_SUBROUTINE ) {
+    if( (Entries->id->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) {
         CGParmDecl( EPValue, TY_INTEGER );
         if( EntryWithAltRets() ) {
             CGAutoDecl( ReturnValue, TY_INTEGER );
@@ -1468,7 +1468,7 @@ static  void    DeclareArg( parameter *arg, pass_by *arg_aux ) {
     sym_id      arg_id;
 
     arg_id = arg->id;
-    if( ( arg_id->u.ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) {
+    if( (arg_id->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) {
         arg_type = TY_CODE_PTR;
     } else if( arg_id->u.ns.flags & SY_SUBSCRIPTED ) {
         arg_type = ArrayPtrType( arg_id );
@@ -1529,7 +1529,7 @@ static  void    DefineArgs( entry_pt *ep ) {
     if( (Options & OPT_DESCRIPTOR) == 0 ) {
         DeclareShadowArgs( ep, info );
     }
-    if( (info->cclass & REVERSE_PARMS) ) {
+    if( info->cclass & REVERSE_PARMS ) {
         ReverseList( (void **)&ep->parms );
         ReverseList( (void **)&info->arg_info );
     }

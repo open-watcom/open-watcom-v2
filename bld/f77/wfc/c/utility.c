@@ -65,8 +65,8 @@ void    FreeITNodes( itnode *head ) {
     itnode      *next;
 
     while( head != NULL ) {
-        if( ( ( head->opn.us & USOPN_WHAT ) == USOPN_NWL ) ||
-            ( ( head->opn.us & USOPN_WHAT ) == USOPN_ASS ) ) {
+        if( ( (head->opn.us & USOPN_WHAT) == USOPN_NWL ) ||
+            ( (head->opn.us & USOPN_WHAT) == USOPN_ASS ) ) {
             if( head->list != NULL ) {
                 FreeITNodes( head->list );
             }
@@ -406,7 +406,7 @@ bool    BitOn( unsigned_16 bits ) {
 
 // Check if "flags" field of CITNode has ANY of specified BITS on.
 
-    return( ( CITNode->flags & bits ) != 0 );
+    return( (CITNode->flags & bits) != 0 );
 }
 
 
@@ -436,7 +436,7 @@ bool    ClassIs( unsigned_16 class ) {
 // Return true if current itnode has specified variable class.
 // ( SY_COMMON, SY_SUBPROGRAM, ... )
 
-    return( ( CITNode->flags & SY_CLASS ) == class );
+    return( (CITNode->flags & SY_CLASS) == class );
 }
 
 

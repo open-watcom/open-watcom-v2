@@ -1292,7 +1292,7 @@ static  void    InlineCnvt( void ) {
     cit = CITNode->list;
     CITNode->typ = func_type;
     CITNode->size = TypeSize( func_type );
-    SetOpn( CITNode, cit->opn.us & USOPN_WHERE );
+    SetOpn( CITNode, (cit->opn.us & USOPN_WHERE) );
     CITNode->list = NULL;
     UpdateNode( CITNode, cit );
     FreeITNodes( cit );

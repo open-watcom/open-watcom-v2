@@ -71,15 +71,15 @@ typedef enum {
 #define DIM_COUNT_MASK  0x07
 
 #define _LoConstBound( dim_flags, subs_no )     \
-        ( dim_flags & ( (dim_flags_type)1 << ( subs_no - 1 ) ) )
+        (dim_flags & ( (dim_flags_type)1 << ( subs_no - 1 ) ) )
 #define _SetLoConstBound( dim_flags, subs_no )  \
-        ( dim_flags |= ( (dim_flags_type)1 << ( subs_no - 1 ) ) )
+        (dim_flags |= ( (dim_flags_type)1 << ( subs_no - 1 ) ) )
 #define _DimCount( dim_flags )                  \
-        ( (dim_flags >> DIM_COUNT_SHIFT) & DIM_COUNT_MASK )
+        ((dim_flags >> DIM_COUNT_SHIFT) & DIM_COUNT_MASK )
 #define _SetDimCount( dim_flags, dim_count )    \
-        ( dim_flags |= (dim_count & DIM_COUNT_MASK) << DIM_COUNT_SHIFT )
+        (dim_flags |= (dim_count & DIM_COUNT_MASK) << DIM_COUNT_SHIFT )
 #define _AdvRequired( dim )                     \
-        (dim->dim_flags & (DIM_ASSUMED|DIM_VARIABLE|DIM_PVD|DIM_ALLOCATABLE))
+        (dim->dim_flags & (DIM_ASSUMED | DIM_VARIABLE | DIM_PVD | DIM_ALLOCATABLE))
 #define _Allocatable( sym )                     \
         (sym->u.ns.u1.s.xflags & (SY_ALLOCATABLE))
 #define _ArrElements( sym ) (sym->u.ns.si.va.u.dim_ext->num_elts)

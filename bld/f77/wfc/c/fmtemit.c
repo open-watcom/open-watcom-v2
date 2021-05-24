@@ -61,7 +61,7 @@ void    GFEmCode( int int_code )
 {
     byte code = int_code;           // needed to match signature
 
-    if( ( code & REV_CODE ) == REV_CODE ) {
+    if( (code & REV_CODE) == REV_CODE ) {
         code &= ~REV_CODE;
         Fmt_revert.cp = ObjTell();
     }

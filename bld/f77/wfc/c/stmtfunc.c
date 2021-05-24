@@ -84,8 +84,8 @@ void    SFPrologue( void ) {
                 sym = LkSym();
                 sym->u.ns.u1.s.xflags |= SY_DEFINED;
                 CkTypeDeclared();
-                if( ( ( sym->u.ns.flags & SY_CLASS ) == SY_VARIABLE ) &&
-                    ( ( sym->u.ns.flags & SY_SUBSCRIPTED ) == 0 ) &&
+                if( ( (sym->u.ns.flags & SY_CLASS) == SY_VARIABLE ) &&
+                    ( (sym->u.ns.flags & SY_SUBSCRIPTED) == 0 ) &&
                     ( ( sym->u.ns.u1.s.typ != FT_CHAR ) ||
                       ( sym->u.ns.xt.size != 0 ) ) &&
                     ( sym->u.ns.u1.s.typ != FT_STRUCTURE ) ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +56,7 @@ static  unsigned_16     SetCaret(void) {
     unsigned_16 opnpos;
 
     opnpos = CITNode->opnpos;
-    column = opnpos & 0xff;
+    column = (opnpos & 0xff);
     if( StmtProc != PR_FMT ) {
         column++;     // column points to starting quote of format literal
     }

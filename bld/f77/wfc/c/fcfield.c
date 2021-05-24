@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,7 +63,7 @@ void            FCFieldOp( void ) {
 
     sym = GetPtr();
     base = XPop();
-    if( ( sym->u.ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) {
+    if( (sym->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) {
         // function returning a structure
         ptr_type = TY_LOCAL_POINTER;
     } else {

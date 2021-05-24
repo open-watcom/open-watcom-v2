@@ -54,11 +54,11 @@ static size_t   CharLength( itnode *op )
     opn = op->opn.us;
     if( opn & USOPN_SS1 )
         return( op->value.st.ss_size );
-    if( ( opn & USOPN_WHERE ) == USOPN_SAFE )
+    if( (opn & USOPN_WHERE) == USOPN_SAFE )
         return( 0 );
-    if( ( opn & USOPN_WHAT ) == USOPN_NNL )
+    if( (opn & USOPN_WHAT) == USOPN_NNL )
         return( op->sym_ptr->u.ns.xt.size );
-    if( ( opn & USOPN_WHAT ) == USOPN_CON )
+    if( (opn & USOPN_WHAT) == USOPN_CON )
         return( op->sym_ptr->u.lt.length );
     return( 0 );
 }
@@ -67,7 +67,7 @@ static size_t   CharLength( itnode *op )
 void    GenChar1Op( itnode *op ) {
 //================================
 
-    if( ( ( op->opn.us & USOPN_WHAT ) == USOPN_CON ) ) {
+    if( ( (op->opn.us & USOPN_WHAT) == USOPN_CON ) ) {
         OutPtr( op->sym_ptr );
         SetOpn( op, USOPN_SAFE );
     } else {
@@ -95,8 +95,8 @@ void    RelOp( TYPE typ1, TYPE typ2, OPTR optr ) {
     // must check for "flip" before we call "CharLength" since they may
     // call "PushOpn"
     flip = false;
-    if( ( ( CITNode->opn.us & USOPN_WHERE ) == USOPN_SAFE ) &&
-        ( ( CITNode->link->opn.us & USOPN_WHERE ) != USOPN_SAFE ) ) {
+    if( ( (CITNode->opn.us & USOPN_WHERE) == USOPN_SAFE ) &&
+        ( (CITNode->link->opn.us & USOPN_WHERE) != USOPN_SAFE ) ) {
         flip = true;
     }
     // must do "CITNode->link" first to get operands in the right order

@@ -75,7 +75,7 @@ void    STComDump( void )
 
     for( com_blk = BList; com_blk != NULL; com_blk = com_blk->u.ns.link ) {
         if( ( com_blk->u.ns.si.cb.first == NULL ) &&
-            ( com_blk->u.ns.flags & SY_SAVED ) ) {
+            (com_blk->u.ns.flags & SY_SAVED) ) {
             NameErr( SA_COMBLK_EMPTY, com_blk );
         } else {
             extend_beg = NULL;

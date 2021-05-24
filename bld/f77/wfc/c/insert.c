@@ -73,7 +73,7 @@ static  uint    SymClass( sym_id sym )
     unsigned_16 flags;
 
     flags = sym->u.ns.flags;
-    class = flags & SY_CLASS;
+    class = (flags & SY_CLASS);
     if( class == SY_PARAMETER )
         return( NAME_PARAMETER );
     if( class == SY_COMMON )

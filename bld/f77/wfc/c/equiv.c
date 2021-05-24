@@ -114,12 +114,12 @@ void    CpEquivalence(void) {
                 num_equived++;
                 sym = LkSym();
                 ill_name = true;
-                if( ( sym->u.ns.flags & SY_CLASS ) == SY_VARIABLE ) {
+                if( (sym->u.ns.flags & SY_CLASS) == SY_VARIABLE ) {
                     if( sym->u.ns.flags & SY_DATA_INIT ) {
                         NameErr( ST_DATA_ALREADY, sym );
                     } else if( sym->u.ns.flags & SY_SUB_PARM ) {
                         IllName( sym );
-                    } else if( ( sym->u.ns.flags & SY_SUBSCRIPTED ) &&
+                    } else if( (sym->u.ns.flags & SY_SUBSCRIPTED) &&
                                 _Allocatable( sym ) ) {
                         IllName( sym );
                     } else {
@@ -185,7 +185,7 @@ void    CpEquivalence(void) {
                     equiv.subs_no = 0;
                     equiv.substr = 0;
                 }
-                if( ( ( SgmtSw & SG_SYMTAB_RESOLVED ) == 0 ) && !ill_name ) {
+                if( ( (SgmtSw & SG_SYMTAB_RESOLVED) == 0 ) && !ill_name ) {
                     eq_size = sizeof( eq_entry ) + equiv.subs_no * sizeof( intstar4 );
                     if( equiv.substr != 0 ) {
                         eq_size += 2 * sizeof( intstar4 );

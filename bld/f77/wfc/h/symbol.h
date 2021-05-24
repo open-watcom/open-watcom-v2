@@ -173,19 +173,19 @@ typedef struct remote_block {
 
 // Manipulation macros
 #define _MgcIsMagic( sym ) \
-        ( sym->u.ns.u2.magic_flags & MAGIC_BIT )
+        (sym->u.ns.u2.magic_flags & MAGIC_BIT)
 
 #define _MgcClass( sym ) \
-        ( sym->u.ns.u2.magic_flags & MAGIC_CLASSMASK )
+        (sym->u.ns.u2.magic_flags & MAGIC_CLASSMASK)
 
 #define _MgcSetClass( sym, class ) \
-        sym->u.ns.u2.magic_flags = ( MAGIC_BIT | class )
+        sym->u.ns.u2.magic_flags = (MAGIC_BIT | class)
 
 #define _MgcSetLocalTemp( sym ) \
-        sym->u.ns.u2.magic_flags |= ( MAGIC_BIT | MAGIC_LOCALIZED )
+        sym->u.ns.u2.magic_flags |= (MAGIC_BIT | MAGIC_LOCALIZED)
 
 #define _MgcIsLocalTemp( sym ) \
-        ( _MgcIsMagic( sym ) && ( sym->u.ns.u2.magic_flags & MAGIC_LOCALIZED ) )
+        (_MgcIsMagic( sym ) && (sym->u.ns.u2.magic_flags & MAGIC_LOCALIZED))
 
 
 typedef union tmp_info {

@@ -226,7 +226,7 @@ void    BIEndSubProg( void ) {
             BIDumpAllEntryPoints( Entries, 0 );
             DWEndSubroutine ( cBIId );
         }
-        currState &= ~( BI_STATE_IN_SCOPE | BI_STATE_RESOLVED );
+        currState &= ~(BI_STATE_IN_SCOPE | BI_STATE_RESOLVED);
     }
 }
 

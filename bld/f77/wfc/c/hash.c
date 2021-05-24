@@ -44,7 +44,7 @@ unsigned CalcHash( const char *p, size_t len )
     g = 0;
     while( len-- > 0 ) {
         h = ( h << 4 ) + *(unsigned char *)p++;
-        g = h & 0xf0000000L;
+        g = (h & 0xf0000000L);
         if( g != 0 ) {
             h = h ^ ( g >> 24 );
             h = h ^ g;

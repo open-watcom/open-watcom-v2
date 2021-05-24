@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -505,7 +505,7 @@ void    XBitNeqv( ftn_type *opnd1, ftn_type *opnd2 ) {
 void    XBitAnd( ftn_type *opnd1, ftn_type *opnd2 ) {
 //===================================================
 
-    opnd1->intstar4 = ( opnd1->intstar4 & opnd2->intstar4 );
+    opnd1->intstar4 = (opnd1->intstar4 & opnd2->intstar4);
 }
 
 
@@ -747,14 +747,14 @@ void    ExpI( TYPE typ, ftn_type *base, intstar4 exponent ) {
             InitOne( typ, &result );
             exponent = -exponent;
         }
-        if( ( exponent & 1 ) != 0 ) {
+        if( (exponent & 1) != 0 ) {
             result = *base;
         }
         exponent /= 2;
         while( exponent != 0 ) {
             for(;;) {
                 Mul[ typ - FT_INTEGER_1 ]( base, base );
-                odd = ( ( exponent & 1 ) != 0 );
+                odd = ( (exponent & 1) != 0 );
                 exponent /= 2;
                 if( odd ) {
                     break;

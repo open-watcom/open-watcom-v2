@@ -353,9 +353,9 @@ void SubAuxFini( void )
     while( ArrayInfo != NULL ) {
         next = ArrayInfo->link;
         arr = SymFind( ArrayInfo->arr, ArrayInfo->len );
-        if( ( arr != NULL ) && ( arr->u.ns.flags & SY_SUBSCRIPTED ) &&
+        if( ( arr != NULL ) && (arr->u.ns.flags & SY_SUBSCRIPTED) &&
             ( arr->u.ns.u1.s.typ != FT_CHAR ) &&
-            ( ( arr->u.ns.flags & SY_SUB_PARM ) || _Allocatable( arr ) ) ) {
+            ( (arr->u.ns.flags & SY_SUB_PARM) || _Allocatable( arr ) ) ) {
             arr->u.ns.si.va.u.dim_ext->dim_flags |= DIM_EXTENDED;
         }
         FMemFree( ArrayInfo );

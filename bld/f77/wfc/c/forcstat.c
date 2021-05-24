@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,6 +44,6 @@
 bool    ForceStatic( unsigned_16 sym_flags ) {
 //============================================
 
-    return( ( sym_flags & ( SY_DATA_INIT | SY_SAVED ) ) ||
-            ( SgmtSw & SG_BIG_SAVE ) );
+    return( (sym_flags & (SY_DATA_INIT | SY_SAVED)) ||
+            (SgmtSw & SG_BIG_SAVE) );
 }

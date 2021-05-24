@@ -49,7 +49,7 @@ bool    InArgList( entry_pt *entry, sym_id sym_ptr ) {
     parameter   *args;
 
     for( args = entry->parms; args != NULL; args = args->link ) {
-        if( ( args->flags & ARG_STMTNO ) == 0 ) {
+        if( (args->flags & ARG_STMTNO) == 0 ) {
             if( args->id == sym_ptr ) {
                 return( true );
             }

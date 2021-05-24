@@ -249,7 +249,7 @@ void    CpImplicit( void ) {
     if( (CITNode->opnd_size == 4) && (memcmp( CITNode->opnd, "NONE", 4 ) == 0) ) {
         AdvanceITPtr();
         Extension( SP_STRUCTURED_EXT, "IMPLICIT NONE" );
-        if( SgmtSw & ( SG_IMPLICIT_STMT | SG_IMPLICIT_NONE ) ) {
+        if( SgmtSw & (SG_IMPLICIT_STMT | SG_IMPLICIT_NONE) ) {
             Error( IM_NONE_USED );
         }
         SgmtSw |= SG_IMPLICIT_NONE;

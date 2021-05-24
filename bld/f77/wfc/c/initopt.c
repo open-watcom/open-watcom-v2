@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,11 +50,10 @@
   #define INIT_CG_OPTS  (CGOPT_M_LARGE | CGOPT_ALIGN | CGOPT_DI_DWARF)
   #define INIT_CPU_OPTS (CPUOPT_8086 | CPUOPT_FPI)
 #elif _CPU == 386
-  #define INIT_CG_OPTS  (CGOPT_M_FLAT | CGOPT_GS_FLOATS | CGOPT_ALIGN| \
-                         CGOPT_DI_DWARF)
+  #define INIT_CG_OPTS  (CGOPT_M_FLAT | CGOPT_GS_FLOATS | CGOPT_ALIGN | CGOPT_DI_DWARF)
   #define INIT_CPU_OPTS (CPUOPT_80686 | CPUOPT_FPI | CPUOPT_FP387)
 #else
-  #define INIT_CG_OPTS  (CGOPT_ALIGN| CGOPT_DI_DWARF|CGOPT_MANGLE)
+  #define INIT_CG_OPTS  (CGOPT_ALIGN | CGOPT_DI_DWARF | CGOPT_MANGLE)
   #define INIT_CPU_OPTS 0
 #endif
 

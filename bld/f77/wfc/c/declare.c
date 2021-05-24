@@ -109,12 +109,12 @@ sym_id  VarDecl( TYPE typ ) {
     if( flags & SY_TYPE ) {
         NameTypeErr( TY_TYP_PREV_DEF, sym );
     } else {
-        class = flags & SY_CLASS;
+        class = (flags & SY_CLASS);
         if( ( class == SY_COMMON ) || ( class == SY_PARAMETER ) ) {
             IllName( sym );
         } else {
             if( class == SY_SUBPROGRAM ) {
-                sp_type = flags & SY_SUBPROG_TYPE;
+                sp_type = (flags & SY_SUBPROG_TYPE);
                 if( sp_type != 0 ) {
                     if( sp_type != SY_FUNCTION ) {
                         IllName( sym );
@@ -215,7 +215,7 @@ void    MustBeTypeDecl( void ) {
 
     SgmtSw |= SG_NO_MORE_IMPLICIT;
     CkDefStmtNo();
-    if( ( SgmtSw & SG_STMT_PROCESSED ) == 0 ) {
+    if( (SgmtSw & SG_STMT_PROCESSED) == 0 ) {
         CtrlFlgs &= ~CF_SUBPROGRAM;        // not TYPE*LEN FUNCTION
         DefProg();
     }
@@ -429,12 +429,12 @@ void    ArrayDecl( sym_id sym ) {
     dim_list.dim_flags = 0;
     dim_list.l.init_label = 0;
     allocatable = RecNOpn() && RecNextOpr( OPR_COL );
-    if( ( SgmtSw & SG_DEFINING_STRUCTURE ) == 0 ) {
-        if( ( sym->u.ns.flags & ERR_MASK ) != SY_VARIABLE ) {
+    if( (SgmtSw & SG_DEFINING_STRUCTURE) == 0 ) {
+        if( (sym->u.ns.flags & ERR_MASK) != SY_VARIABLE ) {
             IllName( sym );
             return;
         } else if( allocatable ) {
-            if( sym->u.ns.flags & ( SY_IN_EC | SY_SUB_PARM ) ) {
+            if( sym->u.ns.flags & (SY_IN_EC | SY_SUB_PARM) ) {
                 IllName( sym );
                 return;
             }
@@ -603,6 +603,6 @@ void    ArrayDecl( sym_id sym ) {
             }
         }
         sym->u.ns.si.va.u.dim_ext = STSubsList( &dim_list );
-        sym->u.ns.flags |= ( SY_USAGE | SY_SUBSCRIPTED );
+        sym->u.ns.flags |= SY_USAGE | SY_SUBSCRIPTED;
     }
 }

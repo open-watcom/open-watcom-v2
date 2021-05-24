@@ -77,7 +77,7 @@ void            TDProgFini( void ) {
         }
         DefaultLibInfo();
     }
-    if( ( Options & OPT_SYNTAX ) || ( ( ProgSw & PS_DONT_GENERATE ) == 0 ) ) {
+    if( (Options & OPT_SYNTAX) || ( (ProgSw & PS_DONT_GENERATE) == 0 ) ) {
         FreeNameList( GList );
         GList = NULL;
     }
@@ -112,7 +112,7 @@ void            TDSubFini( void ) {
 // Finish off compilation of a subprogram.
 
     SubAuxFini();
-    if( ( ProgSw & PS_DONT_GENERATE ) == 0 ) {
+    if( (ProgSw & PS_DONT_GENERATE) == 0 ) {
         EmitOp( FC_END_OF_SEQUENCE );
         CGGenSub();
     }
@@ -155,7 +155,7 @@ void            TDPurge( void ) {
 // Free all allocated structures.
 
     FiniFormatList();
-    if( ( ProgSw & PS_DONT_GENERATE ) == 0 ) {
+    if( (ProgSw & PS_DONT_GENERATE) == 0 ) {
         CGPurge();
     }
     FiniObj();

@@ -95,7 +95,7 @@ void    InitObj( void ) {
     ObjPtr = ObjCode;
     *(unsigned_16 *)ObjPtr = FC_END_OF_SEQUENCE; // in case no source code in file
     PageFile = NULL;
-    if( ( ProgSw & PS_DONT_GENERATE ) == 0 ) {
+    if( (ProgSw & PS_DONT_GENERATE) == 0 ) {
         fn = PageFileBuff;
         tmp = getenv( "TMP" );
         if( tmp != NULL && *tmp != NULLCHAR ) {
@@ -257,7 +257,7 @@ void    OutPtr( pointer val ) {
 
 // Output a pointer to object memory.
 
-    if( ( ProgSw & ( PS_ERROR | PS_DONT_GENERATE ) ) == 0 ) {
+    if( (ProgSw & (PS_ERROR | PS_DONT_GENERATE)) == 0 ) {
         if( ObjEnd - ObjPtr < sizeof( pointer ) ) {
             if( ObjPtr < ObjEnd ) {   // value overlaps pages
                 SplitValue( &val, sizeof( pointer ), ObjEnd - ObjPtr );
@@ -277,7 +277,7 @@ void    OutU16( unsigned_16 val ) {
 
 // Output 16-bit value to object memory.
 
-    if( ( ProgSw & ( PS_ERROR | PS_DONT_GENERATE ) ) == 0 ) {
+    if( (ProgSw & (PS_ERROR | PS_DONT_GENERATE)) == 0 ) {
         if( ObjEnd - ObjPtr < sizeof( unsigned_16 ) ) {
             if( ObjPtr < ObjEnd ) {   // value overlaps pages
                 SplitValue( &val, sizeof( unsigned_16 ), ObjEnd - ObjPtr );
@@ -310,7 +310,7 @@ void    OutConst32( signed_32 val ) {
 
 // Output 32-bit constant to object memory.
 
-    if( ( ProgSw & ( PS_ERROR | PS_DONT_GENERATE ) ) == 0 ) {
+    if( (ProgSw & (PS_ERROR | PS_DONT_GENERATE)) == 0 ) {
         if( ObjEnd - ObjPtr < sizeof( signed_32 ) ) {
             if( ObjPtr < ObjEnd ) {   // value overlaps pages
                 SplitValue( &val, sizeof( signed_32 ), ObjEnd - ObjPtr );
@@ -330,7 +330,7 @@ void    OutObjPtr( obj_ptr val ) {
 
 // Output object code pointer to object memory.
 
-    if( ( ProgSw & ( PS_ERROR | PS_DONT_GENERATE ) ) == 0 ) {
+    if( (ProgSw & (PS_ERROR | PS_DONT_GENERATE)) == 0 ) {
         if( ObjEnd - ObjPtr < sizeof( obj_ptr ) ) {
             if( ObjPtr < ObjEnd ) {   // value overlaps pages
                 SplitValue( &val, sizeof( obj_ptr ), ObjEnd - ObjPtr );
@@ -350,7 +350,7 @@ void    OutByte( byte val ) {
 
 // Output a byte to object memory.
 
-    if( ( ProgSw & ( PS_ERROR | PS_DONT_GENERATE ) ) == 0 ) {
+    if( (ProgSw & (PS_ERROR | PS_DONT_GENERATE)) == 0 ) {
         if( ObjEnd - ObjPtr < sizeof( byte ) ) {
             NewPage();
         }

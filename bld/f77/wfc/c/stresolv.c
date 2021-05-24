@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -226,10 +226,10 @@ static  void    GenEquivSet( act_eq_entry *a, act_eq_entry *b,
 
     /* if an entry is marked static, then b must be too */
     if( ForceStatic( a->name_equived->u.ns.flags ) ) {
-        uint_16 sym_flags = a->name_equived->u.ns.flags & (SY_DATA_INIT | SY_SAVED);
+        uint_16 sym_flags = (a->name_equived->u.ns.flags & (SY_DATA_INIT | SY_SAVED));
         b->name_equived->u.ns.flags |= sym_flags;
     } else if( ForceStatic( b->name_equived->u.ns.flags ) ) {
-        uint_16 sym_flags = b->name_equived->u.ns.flags & (SY_DATA_INIT | SY_SAVED);
+        uint_16 sym_flags = (b->name_equived->u.ns.flags & (SY_DATA_INIT | SY_SAVED));
         a->name_equived->u.ns.flags |= sym_flags;
     }
 
@@ -252,7 +252,7 @@ static  void    GenEquivSet( act_eq_entry *a, act_eq_entry *b,
         q = q_ext->link_eqv;
     }
     q_in_common = (q->u.ns.flags & SY_IN_COMMON) || (q_ext->ec_flags & MEMBER_IN_COMMON);
-    q_type = q_ext->ec_flags & ES_TYPE;
+    q_type = (q_ext->ec_flags & ES_TYPE);
     if( q_type == ES_NO_TYPE ) {
         q_type = ClassifyType( q->u.ns.u1.s.typ );
     }
@@ -268,7 +268,7 @@ static  void    GenEquivSet( act_eq_entry *a, act_eq_entry *b,
         p = p_ext->link_eqv;
     }
     p_in_common = (p->u.ns.flags & SY_IN_COMMON) || (p_ext->ec_flags & MEMBER_IN_COMMON);
-    p_type = p_ext->ec_flags & ES_TYPE;
+    p_type = (p_ext->ec_flags & ES_TYPE);
     if( p_type == ES_NO_TYPE ) {
         p_type = ClassifyType( p->u.ns.u1.s.typ );
     }
@@ -318,7 +318,7 @@ static  void    GenEquivSet( act_eq_entry *a, act_eq_entry *b,
             // didn't have a LEADER.  So instead it is set here.
             q_ext->ec_flags |= MEMBER_INITIALIZED;
         }
-        q_ext->ec_flags |= ( IN_EQUIV_SET | LEADER );
+        q_ext->ec_flags |= IN_EQUIV_SET | LEADER;
         low = p_ext->low + p_ext->offset;
         if( q_ext->low > low ) {
             q_ext->low = low;

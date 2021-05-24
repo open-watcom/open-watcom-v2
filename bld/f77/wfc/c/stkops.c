@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,17 +57,17 @@ void    PushOpn( itnode *itptr ) {
     USOPN       what;
     USOPN       where;
 
-    where = itptr->opn.us & USOPN_WHERE;
+    where = (itptr->opn.us & USOPN_WHERE);
     if( ( itptr->opn.ds != DSOPN_PHI ) && ( where != USOPN_SAFE ) ) {
         typ = itptr->typ;
         flags = itptr->flags;
-        what = itptr->opn.us & USOPN_WHAT;
+        what = (itptr->opn.us & USOPN_WHAT);
         if( where != 0 ) {
             EmitOp( FC_PUSH );
             SymRef( itptr );
         } else if( itptr->opn.us & USOPN_FLD ) {
             PushConst( itptr->value.intstar4 );
-        } else if( ( flags & SY_CLASS ) == SY_SUBPROGRAM ) {
+        } else if( (flags & SY_CLASS) == SY_SUBPROGRAM ) {
             // 1. it's a statement function
             // 2. it's a subprogram passed as an argument
             EmitOp( FC_PUSH );

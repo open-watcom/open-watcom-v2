@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,11 +71,11 @@ void    CpIntrinsic(void) {
                 func_typ = IFType( func );
                 sym_ptr = LkSym();
                 flags = sym_ptr->u.ns.flags;
-                if( ( flags & SY_USAGE ) != 0 ) {
-                    if( ( flags & SY_CLASS ) == SY_SUBPROGRAM ) {
-                        if( ( flags & SY_INTRINSIC ) != 0 ) {
+                if( (flags & SY_USAGE) != 0 ) {
+                    if( (flags & SY_CLASS) == SY_SUBPROGRAM ) {
+                        if( (flags & SY_INTRINSIC) != 0 ) {
                             Error( SR_PREV_INTRNSC );
-                        } else if( ( flags & SY_EXTERNAL ) != 0 ) {
+                        } else if( (flags & SY_EXTERNAL) != 0 ) {
                             Error( SR_INTRNSC_EXTRN );
                         }
                     } else {
@@ -82,7 +83,7 @@ void    CpIntrinsic(void) {
                     }
                 } else if( flags & ERR_MASK ) {
                     IllName( sym_ptr );
-                } else if( ( flags & SY_TYPE ) &&
+                } else if( (flags & SY_TYPE) &&
                            ( sym_ptr->u.ns.u1.s.typ != func_typ ) ) {
                     NameTypeErr( TY_TYP_PREV_DEF, sym_ptr );
                 } else {
