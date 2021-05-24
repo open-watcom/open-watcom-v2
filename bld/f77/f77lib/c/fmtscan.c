@@ -37,7 +37,8 @@
 #include "fmtdef.h"
 #include "fmtdat.h"
 #include "fmtscan.h"
-#include "fmtboth.h"
+#include "rterr.h"
+#include "rfmtemit.h"
 
 
 /* Forward declarations */
@@ -104,10 +105,10 @@ static  int     R_FConst( void ) {
                 ++Fmt_charptr;
                 FSkipSpaces();
             } else {
-                R_FError( FM_CONST );
+                RTErr( FM_CONST );
             }
         } else {
-            R_FError( FM_CONST );
+            RTErr( FM_CONST );
         }
     }
     if( Fmt_charptr == start_char ) {
@@ -123,7 +124,7 @@ static  void    GetRepSpec( void ) {
     if( ( *Fmt_charptr != '-' ) && ( *Fmt_charptr != '+' ) ) {
         Fmt_rep_spec = R_FConst();
         if( ( tolower( *Fmt_charptr ) == 'p' ) && ( Fmt_rep_spec == -1 ) ) {
-            R_FError( FM_CONST );
+            RTErr( FM_CONST );
         }
     } else {
         minus = *Fmt_charptr == '-';
@@ -132,7 +133,7 @@ static  void    GetRepSpec( void ) {
         FSkipSpaces();
         if( tolower( *Fmt_charptr ) == 'p' ) {
             if( Fmt_rep_spec <= 0 ) {
-                R_FError( FM_CONST );
+                RTErr( FM_CONST );
             } else if( minus ) {
                 Fmt_rep_spec = -Fmt_rep_spec;
             }
@@ -161,7 +162,7 @@ static  void    R_FSpec( void )
     }
     --Fmt_paren_level;
     Fmt_delimited = NO_DELIM;
-    FEmCode( RP_FORMAT );
+    R_FEmCode( RP_FORMAT );
 }
 
 static  int     R_FRPConst( void ) {
@@ -170,7 +171,7 @@ static  int     R_FRPConst( void ) {
 
     result = R_FConst();
     if( result <= 0 ) {
-        R_FError( FM_CONST );
+        RTErr( FM_CONST );
     }
     return( result );
 }
@@ -182,7 +183,7 @@ static  bool    R_FReqChar( char test_string, int err_code )
 {
     if( R_FR_Char( test_string ) )
         return( true );
-    R_FError( err_code );
+    RTErr( err_code );
     return( false );
 }
 
@@ -192,7 +193,7 @@ static  bool    FNoRep( void )
 {
     if( Fmt_rep_spec == -1 )
         return( true );
-    R_FError( FM_NO_REP );
+    RTErr( FM_NO_REP );
     return( false );
 }
 
@@ -200,7 +201,7 @@ static  void    FChkDelimiter( void )
 // Make sure that an element has been delimited.
 {
     if( Fmt_delimited != YES_DELIM ) {
-        R_FExtension( FM_ASSUME_COMMA );
+        RTExtension( FM_ASSUME_COMMA );
     }
     Fmt_delimited = NO_DELIM;
 }
@@ -229,11 +230,11 @@ static  void    R_FLiteral( void )
             }
         }
         if( Fmt_charptr >= Fmt_end ) {
-            R_FError( FM_QUOTE );
+            RTErr( FM_QUOTE );
         }
         if( Fmt_charptr < Fmt_end ) {
-            FEmCode( H_FORMAT );
-            FEmNum( lit_length );
+            R_FEmCode( H_FORMAT );
+            R_FEmNum( lit_length );
             for(;;) {
                 if( *cur_char_ptr == '\'' ) {
                     ++cur_char_ptr;
@@ -241,7 +242,7 @@ static  void    R_FLiteral( void )
                         break;
                     }
                 }
-                FEmChar( cur_char_ptr );
+                R_FEmChar( cur_char_ptr );
                 ++cur_char_ptr;
             }
         }
@@ -255,12 +256,12 @@ static  void    R_FH( void )
 {
     FChkDelimiter();
     if( ( Fmt_rep_spec <= 0 ) || ( Fmt_charptr + Fmt_rep_spec >= Fmt_end ) ) {
-        R_FError( FM_WIDTH );
+        RTErr( FM_WIDTH );
     } else {
-        FEmCode( H_FORMAT );
-        FEmNum( Fmt_rep_spec );
+        R_FEmCode( H_FORMAT );
+        R_FEmNum( Fmt_rep_spec );
         for(;;) {
-            FEmChar( Fmt_charptr );
+            R_FEmChar( Fmt_charptr );
             ++Fmt_charptr;
             if( --Fmt_rep_spec == 0 ) {
                 break;
@@ -277,7 +278,7 @@ static  void    R_FComma( void )
             ( *Fmt_charptr != ')' ) ) {
             Fmt_delimited = YES_DELIM;
         } else {
-            R_FError( FM_DELIM );
+            RTErr( FM_DELIM );
         }
     }
 }
@@ -287,11 +288,11 @@ static  bool    FRep( void )
 // Return true if the repeat spec was valid.
 {
     if( Fmt_rep_spec == 0 ) {
-        R_FError( FM_INV_REP );
+        RTErr( FM_INV_REP );
         return( false );
     } else if( Fmt_rep_spec > 1 ) {
-        FEmCode( REP_FORMAT );
-        FEmNum( Fmt_rep_spec );
+        R_FEmCode( REP_FORMAT );
+        R_FEmNum( Fmt_rep_spec );
     }
     return( true );
 }
@@ -309,7 +310,7 @@ static  void    R_FSlash( void )
             }
         }
         FRep();
-        FEmCode( SL_FORMAT );
+        R_FEmCode( SL_FORMAT );
     }
 }
 
@@ -321,12 +322,12 @@ static  void    R_FX( void )
     FChkDelimiter();
     if( Fmt_rep_spec == -1 ) {
         Fmt_rep_spec = 1;
-        R_FExtension( FM_ASSUME_CONST );
+        RTExtension( FM_ASSUME_CONST );
     } else if( Fmt_rep_spec <= 0 ) {
-        R_FError( FM_CONST );
+        RTErr( FM_CONST );
     }
-    FEmCode( X_FORMAT );
-    FEmNum( Fmt_rep_spec );
+    R_FEmCode( X_FORMAT );
+    R_FEmNum( Fmt_rep_spec );
 }
 
 static  void    R_FI( void )
@@ -342,14 +343,14 @@ static  void    R_FI( void )
             if( R_FR_Char( '.' ) ) {
                 fmt_min = R_FConst();
                 if( ( fmt_width < fmt_min ) || ( fmt_min < 0 ) ) {
-                    R_FError( FM_MODIFIER );
+                    RTErr( FM_MODIFIER );
                 }
             } else {
                 fmt_min = 1;
             }
-            FEmCode( I_FORMAT );
-            FEmByte( fmt_width );
-            FEmByte( fmt_min );
+            R_FEmCode( I_FORMAT );
+            R_FEmByte( fmt_width );
+            R_FEmByte( fmt_min );
         }
     }
 }
@@ -358,7 +359,7 @@ static  void    R_FColon( void )
 // Process a colon.
 {
     FNoRep();
-    FEmCode( C_FORMAT );
+    R_FEmCode( C_FORMAT );
     Fmt_delimited = YES_DELIM;
 }
 
@@ -371,14 +372,14 @@ static  void    R_FA( void )
     if( FRep() ) {
         fmt_width = R_FConst();
         if( fmt_width == 0 ) {
-            R_FError( FM_WIDTH );
+            RTErr( FM_WIDTH );
         } else if( fmt_width < 0 ) {
             // width of 0 is a flag to indicate that the width corresponds
             // to the size of the variable being processed
             fmt_width = 0;
         }
-        FEmCode( A_FORMAT );
-        FEmNum( fmt_width );
+        R_FEmCode( A_FORMAT );
+        R_FEmNum( fmt_width );
     }
 }
 
@@ -390,15 +391,15 @@ static  void    R_FT( void )
     FChkDelimiter();
     if( FNoRep() ) {
         if( R_FR_Char( 'l' ) ) {
-            FEmCode( TL_FORMAT );
+            R_FEmCode( TL_FORMAT );
         } else if( R_FR_Char( 'r' ) ) {
-            FEmCode( TR_FORMAT );
+            R_FEmCode( TR_FORMAT );
         } else {
-            FEmCode( T_FORMAT );
+            R_FEmCode( T_FORMAT );
         }
         width = R_FRPConst();
         if( width > 0 ) {
-            FEmNum( width );
+            R_FEmNum( width );
         }
     }
 }
@@ -409,11 +410,11 @@ static  void    R_FS( void )
     FChkDelimiter();
     if( FNoRep() ) {
         if( R_FR_Char( 'p' ) ) {
-            FEmCode( SP_FORMAT );
+            R_FEmCode( SP_FORMAT );
         } else if( R_FR_Char( 's' ) ) {
-            FEmCode( SS_FORMAT );
+            R_FEmCode( SS_FORMAT );
         } else {
-            FEmCode( S_FORMAT );
+            R_FEmCode( S_FORMAT );
         }
     }
 }
@@ -424,10 +425,10 @@ static  void    R_FB( void )
     FChkDelimiter();
     if( FNoRep() ) {
         if( R_FR_Char( 'n' ) ) {
-            FEmCode( BN_FORMAT );
+            R_FEmCode( BN_FORMAT );
         } else {
             R_FReqChar( 'z', FM_FMTCHAR );
-            FEmCode( BZ_FORMAT );
+            R_FEmCode( BZ_FORMAT );
         }
     }
 }
@@ -439,10 +440,10 @@ static  void    R_FL( void )
 
     FChkDelimiter();
     if( FRep() ) {
-        FEmCode( L_FORMAT );
+        R_FEmCode( L_FORMAT );
         width = R_FRPConst();
         if( width > 0 ) {
-            FEmByte( width );
+            R_FEmByte( width );
         }
     }
 }
@@ -456,7 +457,7 @@ static  void    R_FD( void )
 static  void    R_FQ( void )
 // Process a Q format code.
 {
-    R_FExtension( FM_Q_FORMAT );
+    RTExtension( FM_Q_FORMAT );
     FReal( Q_FORMAT );
 }
 
@@ -486,7 +487,7 @@ static  void    FReal( byte format_code )
     int         fmt_exp;
 
     if( Fmt_delimited == NO_DELIM ) {
-        R_FExtension( FM_ASSUME_COMMA );
+        RTExtension( FM_ASSUME_COMMA );
     }
     Fmt_delimited = NO_DELIM;
     if( !FRep() )
@@ -498,7 +499,7 @@ static  void    FReal( byte format_code )
         return;
     fmt_modifier = R_FConst();
     if( ( fmt_modifier < 0 ) || ( fmt_width < fmt_modifier ) ) {
-        R_FError( FM_MODIFIER );
+        RTErr( FM_MODIFIER );
         return;
     }
     fmt_exp = 0;
@@ -511,10 +512,10 @@ static  void    FReal( byte format_code )
                             if( !R_FReqChar( 'q', FM_FMTCHAR ) )
                                 return;
                             format_code = EQ_FORMAT;
-                            R_FExtension( FM_Q_EXT );
+                            RTExtension( FM_Q_EXT );
                         } else {
                             format_code = ED_FORMAT;
-                            R_FExtension( FM_D_EXT );
+                            RTExtension( FM_D_EXT );
                         }
                     }
                 }
@@ -522,17 +523,17 @@ static  void    FReal( byte format_code )
                 if( fmt_exp <= 0 )
                     return;
                 if( fmt_width < fmt_modifier ) {
-                    R_FError( FM_MODIFIER );
+                    RTErr( FM_MODIFIER );
                 }
             }
         }
     }
-    FEmCode( format_code );
-    FEmByte( fmt_width );
-    FEmByte( fmt_modifier );
+    R_FEmCode( format_code );
+    R_FEmByte( fmt_width );
+    R_FEmByte( fmt_modifier );
     if( ( format_code == E_FORMAT )  || ( format_code == ED_FORMAT ) ||
         ( format_code == EQ_FORMAT ) || ( format_code == G_FORMAT ) ) {
-        FEmByte( fmt_exp );
+        R_FEmByte( fmt_exp );
     }
 }
 
@@ -542,8 +543,8 @@ static  void    R_FP( void )
 {
     FChkDelimiter();
     Fmt_delimited = P_DELIM;
-    FEmCode( P_FORMAT );
-    FEmNum( Fmt_rep_spec );
+    R_FEmCode( P_FORMAT );
+    R_FEmNum( Fmt_rep_spec );
 }
 
 static  void    R_FLParen( void )
@@ -552,22 +553,22 @@ static  void    R_FLParen( void )
     FChkDelimiter();
     if( Fmt_paren_level < 2 ) {
         if( Fmt_rep_spec == 0 ) {
-            R_FError( FM_INV_REP );
+            RTErr( FM_INV_REP );
         } else if( Fmt_rep_spec > 1 ) {
-            FEmCode( REP_FORMAT | REV_CODE );
-            FEmNum( Fmt_rep_spec );
-            FEmCode( LP_FORMAT );
+            R_FEmCode( REP_FORMAT | REV_CODE );
+            R_FEmNum( Fmt_rep_spec );
+            R_FEmCode( LP_FORMAT );
         } else {
-            FEmCode( LP_FORMAT | REV_CODE );
+            R_FEmCode( LP_FORMAT | REV_CODE );
         }
     } else {
         FRep();
-        FEmCode( LP_FORMAT );
+        R_FEmCode( LP_FORMAT );
     }
     ++Fmt_paren_level;
     ++Fmt_charptr;
     if( R_FR_Char( ',' ) ) {
-        R_FError( FM_DELIM );
+        RTErr( FM_DELIM );
     }
     R_FSpec();
 }
@@ -581,15 +582,15 @@ static  void    R_FZ( void )
     if( FRep() ) {
         width = R_FConst();
         if( width == 0 ) {
-            R_FError( FM_WIDTH );
+            RTErr( FM_WIDTH );
         } else if( width < 0 ) {
             // width of 0 is a flag to indicate that the width corresponds
             // to the size of the variable being processed
             width = 0;
         }
-        FEmCode( Z_FORMAT );
-        FEmByte( width );
-        R_FExtension( FM_Z_EXT );
+        R_FEmCode( Z_FORMAT );
+        R_FEmByte( width );
+        RTExtension( FM_Z_EXT );
     }
 }
 
@@ -598,8 +599,8 @@ static  void    R_FM( void )
 {
     FChkDelimiter();
     FNoRep();
-    FEmCode( M_FORMAT );
-    R_FExtension(  FM_M_EXT );
+    R_FEmCode( M_FORMAT );
+    RTExtension( FM_M_EXT );
 }
 
 static  const f_procs __FAR FP_Cod[] = {
@@ -635,14 +636,14 @@ static  void    FCode( void )
     const f_procs __FAR *f_rtn;
 
     if( R_FRecEos() ) {
-        R_FError( FM_FMTCHAR );
+        RTErr( FM_FMTCHAR );
         return;
     }
     current = tolower( *Fmt_charptr );
     f_rtn = FP_Cod;
     for(;;) {
         if( f_rtn->code == NULLCHAR ) {
-            R_FError( FM_FMTCHAR );
+            RTErr( FM_FMTCHAR );
             return;
         }
         if( f_rtn->code == current )
@@ -663,11 +664,11 @@ void    R_FDoSpec( void )
 {
     FSkipSpaces();
     if( *Fmt_charptr != '(' ) {
-        R_FError( PC_NO_OPENPAREN );
+        RTErr( PC_NO_OPENPAREN );
     } else {
         R_FSpec();
     }
     if( Fmt_paren_level != 0 ) {
-        R_FError( PC_UNMATCH_PAREN );
+        RTErr( PC_UNMATCH_PAREN );
     }
 }

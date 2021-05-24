@@ -107,7 +107,6 @@ rt += &
     rdwr.obj &
     rtutls.obj &
     rtinq.obj &
-    rfmterr.obj &
     rfmtemit.obj &
     rfmtinit.obj &
     rfmtexec.obj &
@@ -120,7 +119,6 @@ rt += &
     ioerr.obj &
     stop.obj &
     pause.obj &
-    rfmttab.obj &
     rcat.obj &
     rtcat.obj &
     rmove.obj &
@@ -150,7 +148,6 @@ both += &
     errrtns.obj &
     errgrp.obj &
     errmsg.obj &
-    fmtboth.obj &
     fmtcnvt.obj &
     fmtscan.obj &
     hexcnv.obj &

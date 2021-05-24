@@ -36,17 +36,14 @@
 #include "fmtdef.h"
 #include "fmtdat.h"
 #include "rtenv.h"
-#include "fmttab.h"
 #include "rfmtemit.h"
 #include "fmtscan.h"
 #include "setiocb.h"
-#include "rfmttab.h"
 
 
 static  void    FInit( string *fmt ) {
 //====================================
 
-    FmtEmStruct = &RFmtStruct;
     SetFmt( &FmtBuff[ 0 ] );
     IOCB->fmtlen = SCAN_STORAGE_SIZE;
     Fmt_charptr = fmt->strptr;
