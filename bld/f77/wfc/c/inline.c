@@ -455,7 +455,7 @@ call_handle     InitInlineCall( int rtn_id ) {
         sym->u.ns.xt.size = TypeSize( sym->u.ns.u1.s.typ );
         sym->u.ns.u3.address = NULL;
         in_entry->sym_ptr = sym;
-        in_entry->aux = AuxLookupName( in_entry->name, name_len );
+        in_entry->aux = AuxLookup( in_entry->name, name_len );
     }
     return( CGInitCall( CGFEName( sym, in_entry->typ ), in_entry->typ, in_entry->sym_ptr ) );
 #else

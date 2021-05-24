@@ -80,7 +80,7 @@ void    GBegCall( itnode *itptr ) {
 #if _CPU == 386
     {
         aux_info    *aux;
-        aux = AuxLookupName( sp->u.ns.name, sp->u.ns.u2.name_len );
+        aux = AuxLookup( sp->u.ns.name, sp->u.ns.u2.name_len );
         if( aux != NULL ) {
             if( aux->cclass & FAR16_CALL ) {
                 if( (SubProgId->u.ns.flags & SY_SUBPROG_TYPE) == SY_PROGRAM ) {

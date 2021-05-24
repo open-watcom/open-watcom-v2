@@ -761,7 +761,7 @@ static void AliasName( void )
     aux_info    *alias;
 
     SymbolId();
-    alias = AuxLookupName( TokStart, TokEnd - TokStart );
+    alias = AuxLookup( TokStart, TokEnd - TokStart );
     if( alias != NULL ) {
         AliasInfo = alias;
     }
@@ -927,7 +927,7 @@ static void ProcessAlias( void )
     if( SymLen == 0 ) { // "DEFAULT"
         CurrAux = AliasInfo;
     } else {
-        CurrAux = AuxLookupName( SymName, SymLen );
+        CurrAux = AuxLookup( SymName, SymLen );
         if( CurrAux != AliasInfo ) { // Consider: c$pragma aux (sp) sp
             if( CurrAux == NULL ) {
                 CurrAux = NewAuxEntry( SymName, SymLen );

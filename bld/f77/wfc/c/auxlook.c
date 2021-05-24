@@ -50,8 +50,8 @@
 #include "clibext.h"
 
 
-aux_info *AuxLookupName( const char *name, size_t name_len )
-//==========================================================
+aux_info *AuxLookup( const char *name, size_t name_len )
+//======================================================
 {
     aux_info    *aux;
 
@@ -71,7 +71,7 @@ aux_info *AuxLookupAdd( const char *name, size_t name_len )
 {
     aux_info    *aux;
 
-    aux = AuxLookupName( name, name_len );
+    aux = AuxLookup( name, name_len );
     if( aux == NULL ) {
         aux = NewAuxEntry( name, name_len );
         CopyAuxInfo( aux, &FortranInfo );
@@ -110,13 +110,13 @@ aux_info    *InfoLookup( sym_id sym )
         } else if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_PROGRAM ) {
             return( &ProgramInfo );
         } else {
-            info = AuxLookupName( sym->u.ns.name, sym->u.ns.u2.name_len );
+            info = AuxLookup( sym->u.ns.name, sym->u.ns.u2.name_len );
             if( info == NULL )
                 return( &FortranInfo );
             return( info );
         }
     } else {
-        info = AuxLookupName( sym->u.ns.name, sym->u.ns.u2.name_len );
+        info = AuxLookup( sym->u.ns.name, sym->u.ns.u2.name_len );
         if( info == NULL )
             return( &FortranInfo );
         return( info );
