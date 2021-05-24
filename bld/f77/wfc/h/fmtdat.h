@@ -30,16 +30,8 @@
 *
 ****************************************************************************/
 
-#ifndef __FMTTAB_H_INCLUDED
-#define __FMTTAB_H_INCLUDED
 
-typedef struct {
-        void ( *FEMcode )(int);
-        void ( *FEMchar )(char *);
-        void ( *FEMnum )(int);
-        void ( *FEMbyte )(int);
-        void ( *FError )(int);
-        void ( *FExtension )(int);
-} FmtElements;
+// used at compile time and runtime
 
-#endif /* __FMTTAB_H_INCLUDED */
+#define gbl_defn extern
+#include "fmtdefn.h"

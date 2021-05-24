@@ -25,65 +25,10 @@
 *
 *  ========================================================================
 *
-* Description:  format data emiting routines
+* Description:  integer and floating point conversion routines
 *
 ****************************************************************************/
 
 
-#include "ftnstd.h"
-#include "fmtdef.h"
-#include "fmtdat.h"
-#include "fmtboth.h"
-
-
-void    FEmCode( int code ) {
-//===========================
-
-// Emit a format code.
-
-    FmtEmStruct->FEMcode( code );
-}
-
-
-void    FEmChar( char *ch )
-//=========================
-// Emit a character.
-{
-    FmtEmStruct->FEMchar( ch );
-}
-
-
-void    FEmNum( int num ) {
-//=========================
-
-// Emit a specification number.
-
-    FmtEmStruct->FEMnum( num );
-}
-
-
-void    FEmByte( int num ) {
-//==========================
-
-// Emit a byte of information.
-
-    FmtEmStruct->FEMbyte( num );
-}
-
-
-void    R_FError( int code ) {
-//============================
-
-// Process a format error.
-
-    FmtEmStruct->FError( code );
-}
-
-
-void    R_FExtension( int code ) {
-//================================
-
-// Process a format extension.
-
-    FmtEmStruct->FExtension( code );
-}
+extern int  FmtS2I( char *str, uint len, bool blanks, intstar4 *value, bool stop_ok, uint *width );
+extern int  FmtS2F( char *field, uint width, int decimals, bool blanks, int scale, int prec, extended *result, bool stop_ok, uint *new_width, bool extend_flt );

@@ -19,7 +19,6 @@ comovl1 = &
     arglist.obj &
     arutls.obj &
     hash.obj &
-    cfmttab.obj &
     cftable.obj &
     cle.obj &
     cmsgproc.obj &
@@ -121,7 +120,6 @@ comovl1 += &
     dbcsutil.obj &
     english.obj &
     errutil.obj &
-    fmtboth.obj &
     fmtcnvt.obj &
     fmtscan.obj &
     japanese.obj &

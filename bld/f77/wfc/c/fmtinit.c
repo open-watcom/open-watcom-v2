@@ -41,7 +41,6 @@
 #include "fmtdat.h"
 #include "format.h"
 #include "global.h"
-#include "fmttab.h"
 #include "fmterr.h"
 #include "fmtinit.h"
 #include "cgformat.h"
@@ -49,7 +48,6 @@
 #include "fcodes.h"
 #include "gflow.h"
 #include "fmtscan.h"
-#include "cfmttab.h"
 
 
 static  void    FInit( size_t fmt_length, char *fmt_string )
@@ -60,7 +58,6 @@ static  void    FInit( size_t fmt_length, char *fmt_string )
     Fmt_paren_level = 0;
     Fmt_charptr = fmt_string;
     Fmt_delimited = NO_DELIM;
-    FmtEmStruct = &CFmtStruct;
 }
 
 

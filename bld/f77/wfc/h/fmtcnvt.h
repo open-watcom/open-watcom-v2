@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,10 +25,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  integer and floating point conversion routines
 *
 ****************************************************************************/
 
 
-#define  SCAN_STORAGE_SIZE      (4096-8*sizeof(int))
+extern int  FmtS2I( char *str, uint len, bool blanks, intstar4 *value, bool stop_ok, uint *width );
+extern int  FmtS2F( char *field, uint width, int decimals, bool blanks, int scale, int prec, extended *result, bool stop_ok, uint *new_width, bool extend_flt );
