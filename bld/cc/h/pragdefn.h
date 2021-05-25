@@ -71,7 +71,7 @@ typedef struct toggle {
 } toggle;
 
 #ifndef global
-#define global	extern
+#define global  extern
 #endif
 
 global aux_entry        *AuxList;

@@ -207,8 +207,8 @@ static void advanceToken( void )
     CurToken = LAToken;
 }
 
-bool GetPragAuxAliasInfo( void )
-/******************************/
+bool GetPragmaAuxAliasInfo( void )
+/********************************/
 {
     if( CurToken != T_LEFT_PAREN )          /* #pragma aux symbol ..... */
         return( IS_ID_OR_KEYWORD( CurToken ) );
@@ -217,7 +217,7 @@ bool GetPragAuxAliasInfo( void )
         return( false );
     LookAhead();
     if( LAToken == T_RIGHT_PAREN ) {        /* #pragma aux (alias) symbol ..... */
-        CurrAlias = SearchPragAuxAlias( SavedId );
+        CurrAlias = PragmaAuxAlias( SavedId );
         advanceToken();
         PPNextToken();
         return( IS_ID_OR_KEYWORD( CurToken ) );
@@ -228,7 +228,7 @@ bool GetPragAuxAliasInfo( void )
         PPNextToken();
         if( !IS_ID_OR_KEYWORD( CurToken ) )
             return( false );                /* error */
-        GetPragAuxAlias();
+        GetPragmaAuxAlias();
         return( false );                    /* process no more! */
     } else {                                /* error */
         advanceToken();
@@ -272,7 +272,8 @@ struct magic_words {
     #undef pick
 };
 
-static aux_info *MagicKeyword( const char *name )
+static aux_info *lookupMagicKeyword( const char *name )
+/*****************************************************/
 {
     int         i;
 
@@ -307,7 +308,7 @@ void SetCurrInfo( const char *name )
     SYM_ENTRY       sym;
     type_modifiers  sym_attrib = FLAG_NONE;
 
-    CurrInfo = MagicKeyword( name );
+    CurrInfo = lookupMagicKeyword( name );
     if( CurrInfo == NULL ) {
         if( CurrAlias == NULL ) {
             sym_handle = SymLook( HashValue, name );
@@ -324,13 +325,13 @@ void SetCurrInfo( const char *name )
 }
 
 
-aux_info *SearchPragAuxAlias( const char *name )
-/**********************************************/
+aux_info *PragmaAuxAlias( const char *name )
+/******************************************/
 {
     aux_entry   *search_entry;
     aux_info    *search_info;
 
-    search_info = MagicKeyword( name );
+    search_info = lookupMagicKeyword( name );
     if( search_info == NULL ) {
         search_entry = AuxLookup( name );
         if( search_entry != NULL ) {

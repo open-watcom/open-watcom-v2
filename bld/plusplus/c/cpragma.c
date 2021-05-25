@@ -1377,6 +1377,7 @@ static struct {
     #undef pick
 };
 
+
 static magic_word_idx lookupMagicKeyword(   // LOOKUP A MAGIC KEYWORD
     const char *name )                      // - name to be looked up
 {
@@ -1389,26 +1390,6 @@ static magic_word_idx lookupMagicKeyword(   // LOOKUP A MAGIC KEYWORD
         }
     }
     return( i );
-}
-
-static const char *retrieveName( magic_word_idx m_type )
-{
-    return( magicWords[m_type].name );
-}
-
-
-#if _INTEL_CPU
-static magic_word_idx MagicKeyword( // LOOKUP A MAGIC KEYWORD FROM BUFFER
-    void )
-{
-    return( lookupMagicKeyword( Buffer ) );
-}
-#endif
-
-static AUX_INFO *MagicKeywordInfo(  // LOOKUP A MAGIC KEYWORD FROM BUFFER
-    void )
-{
-    return( magicWords[lookupMagicKeyword( Buffer )].info );
 }
 
 
@@ -1446,32 +1427,29 @@ static bool setAuxInfo(         // SET CURRENT INFO. STRUCTURE
 bool PragmaName( AUX_INFO *pragma, const char **id )
 /**************************************************/
 {
-    *id = NULL;
     if( pragma == &DefaultInfo ) {
-        return( true );
-    }
-    if( pragma == &CdeclInfo ) {
-        *id = retrieveName( M_CDECL );
+        *id = NULL;
+    } else if( pragma == &CdeclInfo ) {
+        *id = magicWords[M_CDECL].name;
     } else if( pragma == &PascalInfo ) {
-        *id = retrieveName( M_PASCAL );
+        *id = magicWords[M_PASCAL].name;
     } else if( pragma == &FortranInfo ) {
-        *id = retrieveName( M_FORTRAN );
+        *id = magicWords[M_FORTRAN].name;
     } else if( pragma == &SyscallInfo ) {
-        *id = retrieveName( M_SYSCALL );
+        *id = magicWords[M_SYSCALL].name;
     } else if( pragma == &OptlinkInfo ) {
-        *id = retrieveName( M_OPTLINK );
+        *id = magicWords[M_OPTLINK].name;
     } else if( pragma == &StdcallInfo ) {
-        *id = retrieveName( M_STDCALL );
+        *id = magicWords[M_STDCALL].name;
     } else if( pragma == &FastcallInfo ) {
-        *id = retrieveName( M_FASTCALL );
+        *id = magicWords[M_FASTCALL].name;
     } else if( pragma == &WatcallInfo ) {
-        *id = retrieveName( M_WATCALL );
+        *id = magicWords[M_WATCALL].name;
+    } else {
+        *id = AuxRetrieve( pragma );
+        return( false );
     }
-    if( *id != NULL ) {
-        return( true );
-    }
-    *id = AuxRetrieve( pragma );
-    return( false );
+    return( true );
 }
 
 
@@ -1479,26 +1457,27 @@ bool PragmaName( AUX_INFO *pragma, const char **id )
 void SetCurrInfo(               // SET CURRENT INFO. STRUCTURE
     void )
 {
-    setAuxInfo( MagicKeyword(), true );
+    setAuxInfo( lookupMagicKeyword( Buffer ), true );
 }
 #endif
 
 
-void PragCurrAlias(             // LOCATE ALIAS FOR PRAGMA
-    void )
+AUX_INFO *PragmaAuxAlias(       // LOCATE ALIAS FOR PRAGMA
+    const char *name )
 {
-    AUX_ENTRY *search;
+    AUX_ENTRY *aux;
+    AUX_INFO  *info;
 
-    search = NULL;
-    CurrAlias = MagicKeywordInfo();
-    if( CurrAlias == NULL ) {
-        search = AuxLookup( Buffer );
-        if( search != NULL ) {
-            CurrAlias = search->info;
+    info = magicWords[lookupMagicKeyword( name )].info;
+    if( info == NULL ) {
+        aux = AuxLookup( name );
+        if( aux != NULL ) {
+            info = aux->info;
         } else {
-            CurrAlias = &DefaultInfo;
+            info = &DefaultInfo;
         }
     }
+    return( info );
 }
 
 
@@ -1759,8 +1738,8 @@ bool ReverseParms( AUX_INFO *pragma )
     return( false );
 }
 
-bool GetPragAuxAliasInfo( void )
-/******************************/
+bool GetPragmaAuxAliasInfo( void )
+/********************************/
 {
     char buff[256];
 
@@ -1770,7 +1749,7 @@ bool GetPragAuxAliasInfo( void )
     NextToken();
     if( !IS_ID_OR_KEYWORD( CurToken ) )         // error
         return( false );
-    PragCurrAlias();
+    CurrAlias = PragmaAuxAlias( Buffer );
     strcpy( buff, Buffer );
     NextToken();
     if( CurToken == T_RIGHT_PAREN ) {           // #pragma aux (alias) symbol ....
@@ -1781,7 +1760,7 @@ bool GetPragAuxAliasInfo( void )
         NextToken();
         if( IS_ID_OR_KEYWORD( CurToken ) ) {
             CreateAux( buff );
-            GetPragAuxAlias();
+            GetPragmaAuxAlias();
             PragEnding( true );
         }
     }

@@ -122,11 +122,11 @@ struct textsegment *LkSegName(  // LOOKUP SEGMENT NAME
 void PragAux(                   // #PRAGMA AUX ...
     void )
 ;
-void PragCurrAlias(             // LOCATE ALIAS FOR PRAGMA
-    void )
+AUX_INFO *PragmaAuxAlias(       // LOCATE ALIAS FOR PRAGMA
+    const char *name )
 ;
 void PragEnding(                // PROCESS END OF PRAGMA
-    bool set_sym )           // - true ==> set SYMBOL's aux_info
+    bool set_sym )              // - true ==> set SYMBOL's aux_info
 ;
 void PragmaExtrefsInject        // INJECT EXTREFS FOR PRAGMAS
     ( void )
@@ -143,7 +143,7 @@ void PragInitDefaultInfo(
 void PragManyRegSets(           // GET PRAGMA REGISTER SETS
     void )
 ;
-bool PragmaChangeConsistent( // TEST IF PRAGMA CHANGE IS CONSISTENT
+bool PragmaChangeConsistent(    // TEST IF PRAGMA CHANGE IS CONSISTENT
     AUX_INFO *oldp,             // - pragma, old
     AUX_INFO *newp )            // - pragma, new
 ;
@@ -210,10 +210,10 @@ const char *SkipUnderscorePrefix(
     bool iso_compliant_names )
 ;
 
-bool GetPragAuxAliasInfo(
+bool GetPragmaAuxAliasInfo(
     void )
 ;
-void GetPragAuxAlias(
+void GetPragmaAuxAlias(
     void )
 ;
 #endif

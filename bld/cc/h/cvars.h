@@ -665,9 +665,9 @@ extern void         AddLibraryName( const char *, const char );
 extern void         AddExtRefN( const char * );
 extern void         AddExtRefS( SYM_HANDLE );
 extern void         SetPackAmount( unsigned amount );
-extern bool         GetPragAuxAliasInfo( void );
-extern aux_info     *SearchPragAuxAlias( const char *name );
-extern bool         GetPragAuxAlias( void );
+extern bool         GetPragmaAuxAliasInfo( void );
+extern aux_info     *PragmaAuxAlias( const char *name );
+extern bool         GetPragmaAuxAlias( void );
 extern const char   *SkipUnderscorePrefix( const char *str, size_t *len, bool iso_compliant_names );
 
 /* cprag??? */

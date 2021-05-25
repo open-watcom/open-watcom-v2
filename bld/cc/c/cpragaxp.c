@@ -209,10 +209,10 @@ static void PragmaAuxEnd( void )
     PragEnding();
 }
 
-bool GetPragAuxAlias( void )
-/**************************/
+bool GetPragmaAuxAlias( void )
+/****************************/
 {
-    CurrAlias = SearchPragAuxAlias( Buffer );
+    CurrAlias = PragmaAuxAlias( Buffer );
     NextToken();
     if( CurToken == T_RIGHT_PAREN )
         NextToken();
@@ -278,7 +278,7 @@ void PragAux( void )
     InitAuxInfo();
     PPCTL_ENABLE_MACROS();
     NextToken();
-    if( GetPragAuxAliasInfo() ) {
+    if( GetPragmaAuxAliasInfo() ) {
         SetCurrInfo( Buffer );
         NextToken();
         PragObjNameInfo( &AuxInfo.objname );

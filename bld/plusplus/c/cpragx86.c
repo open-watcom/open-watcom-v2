@@ -216,12 +216,12 @@ static void AuxCopy(           // COPY AUX STRUCTURE
     to->code = AuxCodeDup( from->code );
 }
 
-void GetPragAuxAlias( void )
+void GetPragmaAuxAlias( void )
 {
     bool    isfar16;
 
     isfar16 = PragRecogId( "far16" );
-    PragCurrAlias();
+    CurrAlias = PragmaAuxAlias( Buffer );
     NextToken();
     if( CurToken == T_RIGHT_PAREN ) {
         AuxCopy( CurrInfo, CurrAlias );
@@ -403,7 +403,7 @@ void PragAux(                   // #PRAGMA AUX ...
 
     PPCTL_ENABLE_MACROS();
     NextToken();
-    if( GetPragAuxAliasInfo() ) {
+    if( GetPragmaAuxAliasInfo() ) {
         CurrEntry = NULL;
         if( IS_ID_OR_KEYWORD( CurToken ) ) {
             SetCurrInfo();

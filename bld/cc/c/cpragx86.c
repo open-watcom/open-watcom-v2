@@ -203,13 +203,13 @@ static void PragmaAuxEnd( void )
     PragEnding();
 }
 
-bool GetPragAuxAlias( void )
+bool GetPragmaAuxAlias( void )
 {
     bool    isfar16;
 
     isfar16 = PragRecogId( "far16" );
     if( IS_ID_OR_KEYWORD( CurToken ) ) {
-        CurrAlias = SearchPragAuxAlias( Buffer );
+        CurrAlias = PragmaAuxAlias( Buffer );
         PPNextToken();
     }
     if( CurToken == T_RIGHT_PAREN )
@@ -895,7 +895,7 @@ void PragAux( void )
     InitAuxInfo();
     PPCTL_ENABLE_MACROS();
     PPNextToken();
-    if( GetPragAuxAliasInfo() ) {
+    if( GetPragmaAuxAliasInfo() ) {
         SetCurrInfo( Buffer );
         PPNextToken();
         PragObjNameInfo( &AuxInfo.objname );
