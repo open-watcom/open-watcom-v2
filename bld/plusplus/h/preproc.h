@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -215,8 +215,10 @@ void DefineAlternativeTokens(   // DEFINE ALTERNATIVE TOKENS
     void )
 ;
 AUX_INFO *PragmaLookup(         // FIND A PRAGMA
-    const char *name,           // - name of the pragma
-    magic_word_idx index )      // - index (M_UNKNOWN if not known)
+    const char *name )          // - name of the pragma
+;
+AUX_INFO *PragmaLookupMagic(    // FIND A PRAGMA
+    magic_word_idx index )      // - index magic
 ;
 AUX_INFO *PragmaGetIndex( AUX_INFO * );
 

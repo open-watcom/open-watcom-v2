@@ -195,7 +195,7 @@ bool ReverseParms(              // ASK IF PRAGMA REQUIRES REVERSED PARMS
     AUX_INFO * pragma )         // - pragma
 ;
 void SetCurrInfo(               // SET CURRENT INFO. STRUCTURE
-    void )
+    const char *name )
 ;
 
 void AsmSysPCHWriteCode(        // write code sequence to PCH

@@ -207,7 +207,7 @@ static void PragmaAuxEnd( void )
 }
 
 bool GetPragmaAuxAlias( void )
-/**************************/
+/****************************/
 {
     CurrAlias = PragmaAuxAlias( Buffer );
     NextToken();

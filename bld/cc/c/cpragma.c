@@ -44,6 +44,13 @@
 #define pragmaNameRecog(what)   (strcmp(Buffer, what) == 0)
 #define pragmaIdRecog(what)     (stricmp(what, SkipUnderscorePrefix(Buffer, NULL, true)) == 0)
 
+typedef enum {
+    #define pick(a,b,c,d)   a,
+    #include "auxinfo.h"
+    #undef pick
+    M_SIZE
+} magic_words;
+
 struct  pack_info {
     struct pack_info    *next;
     align_type          pack_amount;
@@ -278,12 +285,12 @@ static aux_info *lookupMagicKeyword( const char *name )
     int         i;
 
     name = SkipUnderscorePrefix( name, NULL, true );
-    for( i = 0; MagicWords[i].name != NULL; ++i ) {
+    for( i = 0; i < M_SIZE; i++ ) {
         if( strcmp( name, MagicWords[i].name + 2 ) == 0 ) {
-            break;
+            return( MagicWords[i].info );
         }
     }
-    return( MagicWords[i].info );
+    return( NULL );
 }
 
 
@@ -328,17 +335,17 @@ void SetCurrInfo( const char *name )
 aux_info *PragmaAuxAlias( const char *name )
 /******************************************/
 {
-    aux_entry   *search_entry;
-    aux_info    *search_info;
+    aux_entry   *aux;
+    aux_info    *info;
 
-    search_info = lookupMagicKeyword( name );
-    if( search_info == NULL ) {
-        search_entry = AuxLookup( name );
-        if( search_entry != NULL ) {
-            search_info = search_entry->info;
+    info = lookupMagicKeyword( name );
+    if( info == NULL ) {
+        aux = AuxLookup( name );
+        if( aux != NULL ) {
+            info = aux->info;
         }
     }
-    return( search_info );
+    return( info );
 }
 
 

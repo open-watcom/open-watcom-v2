@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -4462,25 +4462,25 @@ TYPE MakePragma( const char *name )
 /*********************************/
 {
     TYPE type;
-    AUX_INFO *pragma;
+    AUX_INFO *info;
 
-    pragma = PragmaLookup( name, M_UNKNOWN );
-    if( pragma == NULL ) {
+    info = PragmaLookup( name );
+    if( info == NULL ) {
         CErr2p( ERR_PRAGMA_NOT_FOUND, name );
     }
-    type = MakePragmaModifier( pragma );
+    type = MakePragmaModifier( info );
     type->flag |= TF1_TYP_FUNCTION;
     return( type );
 }
 
-TYPE MakeIndexPragma( magic_word_idx index )
+TYPE MakePragmaMagic( magic_word_idx index )
 /******************************************/
 {
     TYPE type;
-    AUX_INFO *pragma;
+    AUX_INFO *info;
 
-    pragma = PragmaLookup( NULL, index );
-    type = MakePragmaModifier( pragma );
+    info = PragmaLookupMagic( index );
+    type = MakePragmaModifier( info );
     type->flag |= TF1_TYP_FUNCTION;
     return( type );
 }
@@ -8576,7 +8576,7 @@ static void typesInit(          // TYPES INITIALIZATION
     CompInfo.ptr_diff_far16 = basicTypes[TYP_SSHORT];
     CompInfo.ptr_diff_huge = basicTypes[TYP_SLONG];
     ClassInit();
-    cdeclPragma = PragmaLookup( NULL, M_CDECL );
+    cdeclPragma = PragmaLookupMagic( M_CDECL );
     ExtraRptRegisterCtr( &types_defined, "unique type entries defined" );
     ExtraRptRegisterCtr( &types_alloced, "type entries allocated" );
     ExtraRptRegisterCtr( &ctr_dups, "type duplication checks" );

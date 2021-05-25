@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -682,7 +682,7 @@ expression-before-semicolon
     }
     ;
 
-/* r/r conflict: 
+/* r/r conflict:
  *   id-expression <- qualified-id (unit production)
  *   access-declaration <- qualified-id
  */
@@ -1916,31 +1916,31 @@ pragma-modifier
         PTreeFree( $3 );
     }
     | Y__CDECL
-    { $$ = MakeIndexPragma( M_CDECL ); }
+    { $$ = MakePragmaMagic( M_CDECL ); }
     | Y___CDECL
-    { $$ = MakeIndexPragma( M_CDECL ); }
+    { $$ = MakePragmaMagic( M_CDECL ); }
     | Y__FASTCALL
-    { $$ = MakeIndexPragma( M_FASTCALL ); }
+    { $$ = MakePragmaMagic( M_FASTCALL ); }
     | Y___FASTCALL
-    { $$ = MakeIndexPragma( M_FASTCALL ); }
+    { $$ = MakePragmaMagic( M_FASTCALL ); }
     | Y___FORTRAN
-    { $$ = MakeIndexPragma( M_FORTRAN ); }
+    { $$ = MakePragmaMagic( M_FORTRAN ); }
     | Y__OPTLINK
-    { $$ = MakeIndexPragma( M_OPTLINK ); }
+    { $$ = MakePragmaMagic( M_OPTLINK ); }
     | Y__PASCAL
-    { $$ = MakeIndexPragma( M_PASCAL ); }
+    { $$ = MakePragmaMagic( M_PASCAL ); }
     | Y___PASCAL
-    { $$ = MakeIndexPragma( M_PASCAL ); }
+    { $$ = MakePragmaMagic( M_PASCAL ); }
     | Y___STDCALL
-    { $$ = MakeIndexPragma( M_STDCALL ); }
+    { $$ = MakePragmaMagic( M_STDCALL ); }
     | Y__SYSCALL
-    { $$ = MakeIndexPragma( M_SYSCALL ); }
+    { $$ = MakePragmaMagic( M_SYSCALL ); }
     | Y___SYSCALL
-    { $$ = MakeIndexPragma( M_SYSCALL ); }
+    { $$ = MakePragmaMagic( M_SYSCALL ); }
     | Y__SYSTEM
-    { $$ = MakeIndexPragma( M_SYSTEM ); }
+    { $$ = MakePragmaMagic( M_SYSTEM ); }
     | Y___WATCALL
-    { $$ = MakeIndexPragma( M_WATCALL ); }
+    { $$ = MakePragmaMagic( M_WATCALL ); }
     ;
 
 pragma-id
@@ -3217,7 +3217,7 @@ template-class-directive-extern
         TYPE type = NodeIsBinaryOp( $1, CO_STORAGE ) ?
             $1->u.subtree[1]->type : $1->type;
 
-        TemplateClassDirective( type, &($1->locn), TCD_EXTERN ); 
+        TemplateClassDirective( type, &($1->locn), TCD_EXTERN );
         NodeFreeDupedExpr( $1 );
     }
     ;
@@ -3228,7 +3228,7 @@ template-class-directive-instantiate
         TYPE type = NodeIsBinaryOp( $1, CO_STORAGE ) ?
             $1->u.subtree[1]->type : $1->type;
 
-        TemplateClassDirective( type, &($1->locn), TCD_INSTANTIATE ); 
+        TemplateClassDirective( type, &($1->locn), TCD_INSTANTIATE );
         NodeFreeDupedExpr( $1 );
     }
     ;

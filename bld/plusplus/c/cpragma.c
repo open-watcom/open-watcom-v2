@@ -1378,18 +1378,18 @@ static struct {
 };
 
 
-static magic_word_idx lookupMagicKeyword(   // LOOKUP A MAGIC KEYWORD
+static AUX_INFO *lookupMagicKeyword(        // LOOKUP A MAGIC KEYWORD
     const char *name )                      // - name to be looked up
 {
     magic_word_idx  i;
 
     name = SkipUnderscorePrefix( name, NULL, true );
-    for( i = 0; i < M_UNKNOWN; i++ ) {
+    for( i = 0; i < M_SIZE; i++ ) {
         if( strcmp( magicWords[i].name + 2, name ) == 0 ) {
-            break;
+            return( magicWords[i].info );
         }
     }
-    return( i );
+    return( NULL );
 }
 
 
@@ -1405,24 +1405,6 @@ void CreateAux(                 // CREATE AUX ID
     CurrInfo->code = NULL;
 }
 
-
-static bool setAuxInfo(         // SET CURRENT INFO. STRUCTURE
-    magic_word_idx m_type,      // - type to be set
-    bool create_new )           // - true if we want a new aux_info
-{
-    bool found;
-
-    found = true;
-    CurrInfo = magicWords[m_type].info;
-    if( CurrInfo == NULL ) {
-        if( create_new ) {
-            CreateAux( Buffer );
-        } else {
-            found = false;
-        }
-    }
-    return( found );
-}
 
 bool PragmaName( AUX_INFO *pragma, const char **id )
 /**************************************************/
@@ -1455,9 +1437,12 @@ bool PragmaName( AUX_INFO *pragma, const char **id )
 
 #if _INTEL_CPU
 void SetCurrInfo(               // SET CURRENT INFO. STRUCTURE
-    void )
+    const char *name )
 {
-    setAuxInfo( lookupMagicKeyword( Buffer ), true );
+    CurrInfo = lookupMagicKeyword( name );
+    if( CurrInfo == NULL ) {
+        CreateAux( name );
+    }
 }
 #endif
 
@@ -1468,7 +1453,7 @@ AUX_INFO *PragmaAuxAlias(       // LOCATE ALIAS FOR PRAGMA
     AUX_ENTRY *aux;
     AUX_INFO  *info;
 
-    info = magicWords[lookupMagicKeyword( name )].info;
+    info = lookupMagicKeyword( name );
     if( info == NULL ) {
         aux = AuxLookup( name );
         if( aux != NULL ) {
@@ -1544,17 +1529,13 @@ void PragObjNameInfo(           // RECOGNIZE OBJECT NAME INFORMATION
 #endif
 
 
-AUX_INFO *PragmaLookup( const char *name, magic_word_idx index )
-/**************************************************************/
+AUX_INFO *PragmaLookup( const char *name )
+/****************************************/
 {
     AUX_ENTRY *ent;
 
-    if( index != M_UNKNOWN ) {
-        if( setAuxInfo( index, false ) ) {
-            return( CurrInfo );
-        }
-    }
-    if( setAuxInfo( lookupMagicKeyword( name ), false ) ) {
+    CurrInfo = lookupMagicKeyword( name );
+    if( CurrInfo != NULL ) {
         return( CurrInfo );
     }
     ent = AuxLookup( name );
@@ -1562,6 +1543,13 @@ AUX_INFO *PragmaLookup( const char *name, magic_word_idx index )
         return( NULL );
     }
     return( ent->info );
+}
+
+
+AUX_INFO *PragmaLookupMagic( magic_word_idx index )
+/*************************************************/
+{
+    return( magicWords[index].info );
 }
 
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1609,7 +1609,7 @@ extern TYPE AddNonFunctionPragma( TYPE, TYPE );
 extern void ForceNoDefaultArgs( DECL_INFO *, int );
 
 extern TYPE MakePragma( const char * );
-extern TYPE MakeIndexPragma( magic_word_idx );
+extern TYPE MakePragmaMagic( magic_word_idx );
 extern bool CurrFunctionHasEllipsis( void );
 extern void TypeTraverse( type_id, void (*)( TYPE, void *), void * );
 extern bool FunctionUsesAllTypes( SYMBOL, SCOPE, void (*)( SYMBOL ) );

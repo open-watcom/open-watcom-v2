@@ -406,7 +406,7 @@ void PragAux(                   // #PRAGMA AUX ...
     if( GetPragmaAuxAliasInfo() ) {
         CurrEntry = NULL;
         if( IS_ID_OR_KEYWORD( CurToken ) ) {
-            SetCurrInfo();
+            SetCurrInfo( Buffer );
             NextToken();
             AuxCopy( CurrInfo, CurrAlias );
             PragObjNameInfo();

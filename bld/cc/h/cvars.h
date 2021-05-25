@@ -654,7 +654,6 @@ extern int          PragRegIndex(const char *,const char *,size_t,bool);
 extern int          PragRegNumIndex( const char *name, size_t len, int max_reg );
 extern void         PragRegNameErr( const char *regname, size_t regnamelen );
 extern hw_reg_set   *PragManyRegSets(void);
-extern void         PragCurrAlias(const char *);
 extern TOKEN        PragRegSet(void);
 extern void         ChkPragmas(void);
 extern void         CreateAux(const char *);
