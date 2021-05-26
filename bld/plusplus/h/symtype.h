@@ -1609,7 +1609,7 @@ extern TYPE AddNonFunctionPragma( TYPE, TYPE );
 extern void ForceNoDefaultArgs( DECL_INFO *, int );
 
 extern TYPE MakePragma( const char * );
-extern TYPE MakePragmaMagic( magic_word_idx );
+extern TYPE MakePragmaMagic( magic_words );
 extern bool CurrFunctionHasEllipsis( void );
 extern void TypeTraverse( type_id, void (*)( TYPE, void *), void * );
 extern bool FunctionUsesAllTypes( SYMBOL, SCOPE, void (*)( SYMBOL ) );

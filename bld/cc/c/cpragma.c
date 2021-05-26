@@ -71,6 +71,15 @@ static struct toggle ToggleNames[] = {
 };
 
 
+static struct magic_words_data {
+    const char      *name;
+    aux_info        *info;
+} magicWords[] = {
+    #define pick(a,b,c,d) { b, d },
+    #include "auxinfo.h"
+    #undef pick
+};
+
 void CPragmaInit( void )
 /**********************/
 {
@@ -270,24 +279,15 @@ enum sym_state AsmQueryState( void *handle )
     return( SYM_EXTERNAL );
 }
 
-struct magic_words {
-    const char      *name;
-    aux_info        *info;
-} MagicWords[] = {
-    #define pick(a,b,c,d) { b, d },
-    #include "auxinfo.h"
-    #undef pick
-};
-
 static aux_info *lookupMagicKeyword( const char *name )
 /*****************************************************/
 {
-    int         i;
+    magic_words     mword;
 
     name = SkipUnderscorePrefix( name, NULL, true );
-    for( i = 0; i < M_SIZE; i++ ) {
-        if( strcmp( name, MagicWords[i].name + 2 ) == 0 ) {
-            return( MagicWords[i].info );
+    for( mword = 0; mword < M_SIZE; mword++ ) {
+        if( strcmp( name, magicWords[mword].name + 2 ) == 0 ) {
+            return( magicWords[mword].info );
         }
     }
     return( NULL );
@@ -326,8 +326,10 @@ void SetCurrInfo( const char *name )
             CurrAlias = GetLangInfo( sym_attrib );
         }
         CreateAux( name );
-    } else if( CurrAlias == NULL ) {
-        CurrAlias = CurrInfo;
+    } else {
+        if( CurrAlias == NULL ) {
+            CurrAlias = CurrInfo;
+        }
     }
 }
 

@@ -218,7 +218,7 @@ AUX_INFO *PragmaLookup(         // FIND A PRAGMA
     const char *name )          // - name of the pragma
 ;
 AUX_INFO *PragmaLookupMagic(    // FIND A PRAGMA
-    magic_word_idx index )      // - index magic
+    magic_words mword )         // - magic index
 ;
 AUX_INFO *PragmaGetIndex( AUX_INFO * );
 

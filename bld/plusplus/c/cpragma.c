@@ -73,6 +73,16 @@ typedef struct {                // PRAG_EXT_REF -- extref's pragma'd
 
 static PRAG_EXT_REF *pragmaExtrefs; // ring of pragma'd extref symbols
 
+static struct magic_words_data {
+    const char  *name;
+    AUX_INFO    *info;
+} magicWords[] = {
+    #define pick(a,b,c,d) { b, d },
+    #include "auxinfo.h"
+    #undef pick
+};
+
+
 static void init                // MODULE INITIALIZATION
     ( INITFINI* defn )
 {
@@ -1368,25 +1378,15 @@ void PragInit(
 }
 
 
-static struct {
-    const char  *name;
-    AUX_INFO    *info;
-} magicWords[] = {
-    #define pick(a,b,c,d) { b, d },
-    #include "auxinfo.h"
-    #undef pick
-};
-
-
 static AUX_INFO *lookupMagicKeyword(        // LOOKUP A MAGIC KEYWORD
     const char *name )                      // - name to be looked up
 {
-    magic_word_idx  i;
+    magic_words     mword;
 
     name = SkipUnderscorePrefix( name, NULL, true );
-    for( i = 0; i < M_SIZE; i++ ) {
-        if( strcmp( magicWords[i].name + 2, name ) == 0 ) {
-            return( magicWords[i].info );
+    for( mword = 0; mword < M_SIZE; mword++ ) {
+        if( strcmp( magicWords[mword].name + 2, name ) == 0 ) {
+            return( magicWords[mword].info );
         }
     }
     return( NULL );
@@ -1546,10 +1546,10 @@ AUX_INFO *PragmaLookup( const char *name )
 }
 
 
-AUX_INFO *PragmaLookupMagic( magic_word_idx index )
-/*************************************************/
+AUX_INFO *PragmaLookupMagic( magic_words mword )
+/**********************************************/
 {
-    return( magicWords[index].info );
+    return( magicWords[mword].info );
 }
 
 

@@ -243,7 +243,7 @@ typedef enum {
     #include "auxinfo.h"
     #undef pick
     M_SIZE
-} magic_word_idx;
+} magic_words;
 
 #include "symtype.h"
 #include "symbol.h"

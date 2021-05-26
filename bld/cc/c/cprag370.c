@@ -113,7 +113,7 @@ void PragAux()
         CurrEntry = NULL;
         if( CurToken != T_ID ) return;
         linkage = PragLinkage();
-        SetCurrInfo();
+        SetCurrInfo( Buffer );
         NextToken();
         PragInitCurrInfo( linkage );
         have.f_offset = 0;

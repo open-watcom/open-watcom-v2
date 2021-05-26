@@ -4473,13 +4473,13 @@ TYPE MakePragma( const char *name )
     return( type );
 }
 
-TYPE MakePragmaMagic( magic_word_idx index )
-/******************************************/
+TYPE MakePragmaMagic( magic_words mword )
+/***************************************/
 {
     TYPE type;
     AUX_INFO *info;
 
-    info = PragmaLookupMagic( index );
+    info = PragmaLookupMagic( mword );
     type = MakePragmaModifier( info );
     type->flag |= TF1_TYP_FUNCTION;
     return( type );
