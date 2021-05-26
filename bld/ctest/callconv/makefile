@@ -44,7 +44,7 @@ test_flags_axp = -d2
 alt_error = 08
 !else ifdef test9
 test_flags_386 = -d1-oe-zri-mf
-test_flags_i86 = -d1-oe-ms
+test_flags_i86 = -d1-oe-zri-ms
 test_flags_axp = -d1-oe
 alt_error = 09
 !else
