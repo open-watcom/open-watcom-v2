@@ -323,7 +323,7 @@ void PragAux( void )
                 for the use of this pragma. This is done by saying the pragma
                 modifies the [E]SP register. A kludge, but it works.
             */
-//                HW_CTurnOn( AuxInfo.save, HW_SP );
+//                HW_CTurnOff( AuxInfo.save, HW_SP );
         }
         PragmaAuxEnd();
     }
