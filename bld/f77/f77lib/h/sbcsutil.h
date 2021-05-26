@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,9 +25,9 @@
 *
 *  ========================================================================
 *
-* Description:  double-byte character processing utilities
+* Description:  single-byte character processing utilities
 *
 ****************************************************************************/
 
 
-extern size_t   ExtractTextDBCS( const char *string, size_t len );
+extern size_t   ExtractTextSBCS( const char *string, size_t len );

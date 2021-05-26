@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,15 +25,9 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  double-byte character processing utilities
 *
 ****************************************************************************/
 
 
-#include <stdarg.h>
-#include <stdlib.h>
-#include "macro.h"
-#include "standard.h"
-#include "prmtypes.h"
-#include "dattyp.h"
+extern size_t   ExtractTextDBCS( const char *string, size_t len );

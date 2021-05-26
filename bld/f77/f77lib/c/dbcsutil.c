@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,14 +33,22 @@
 #include "ftnstd.h"
 #include "csetinfo.h"
 #include "charset.h"
-#include "sbcsutil.h"
+#include "dbcsutil.h"
 
 
-size_t  ExtractTextSBCS( const char *string, size_t len )
+size_t  ExtractTextDBCS( const char *string, size_t len )
 // Given a string of text, extract as much text as possible up to a maximum
 // of "len" bytes so that we don't split double-byte characters.
 {
-    /* unused parameters */ (void)string;
+    size_t      str_len;
+    size_t      chr_len;
 
-    return( len );
+    str_len = 0;
+    for( ;; ) {
+        chr_len = CharSetInfo.character_width( string + str_len );
+        if( str_len + chr_len > len )
+            break;
+        str_len += chr_len;
+    }
+    return( str_len );
 }
