@@ -193,7 +193,6 @@ printf_
 labs_
 IF@DSIN
 abort_
-__CHP
 _cstart_
 _fltused_
 _small_code_
@@ -213,7 +212,6 @@ printf_
 labs_
 IF@DSIN
 abort_
-__CHP
 _cstart_
 _fltused_
 _small_code_
@@ -233,7 +231,6 @@ printf_
 labs_
 IF@DSIN
 abort_
-__CHP
 _cstart_
 _fltused_
 _small_code_
@@ -253,7 +250,6 @@ printf_
 labs_
 IF@DSIN
 abort_
-__CHP
 _cstart_
 _fltused_
 _small_code_
@@ -273,7 +269,6 @@ printf_
 labs_
 IF@DSIN
 abort_
-__CHP
 _cstart_
 _fltused_
 _small_code_
@@ -293,7 +288,6 @@ printf_
 labs_
 IF@DSIN
 abort_
-__CHP
 _cstart_
 _fltused_
 _small_code_
@@ -313,7 +307,6 @@ printf_
 labs_
 IF@DSIN
 abort_
-__CHP
 _cstart_
 _fltused_
 _small_code_
@@ -333,7 +326,6 @@ printf_
 labs_
 IF@DSIN
 abort_
-__CHP
 _cstart_
 _fltused_
 _small_code_
@@ -353,7 +345,6 @@ printf_
 labs_
 IF@DSIN
 abort_
-__CHP
 _cstart_
 _fltused_
 _small_code_
@@ -533,7 +524,6 @@ _errors
 printf_
 abort_
 IF@DSIN
-__CHP
 _cstart_
 _fltused_
 _small_code_
@@ -551,7 +541,6 @@ _errors
 printf_
 abort_
 IF@DSIN
-__CHP
 _cstart_
 _fltused_
 _small_code_
@@ -569,7 +558,6 @@ _errors
 printf_
 abort_
 IF@DSIN
-__CHP
 _cstart_
 _fltused_
 _small_code_
@@ -587,7 +575,6 @@ errors
 printf_
 abort_
 IF@DSIN
-__CHP
 _cstart_
 _fltused_
 _small_code_
@@ -605,7 +592,6 @@ ERRORS
 printf_
 abort_
 IF@DSIN
-__CHP
 _cstart_
 _fltused_
 _small_code_
@@ -623,7 +609,6 @@ errors
 printf_
 abort_
 IF@DSIN
-__CHP
 _cstart_
 _fltused_
 _small_code_
@@ -641,7 +626,6 @@ ERRORS
 printf_
 abort_
 IF@DSIN
-__CHP
 _cstart_
 _fltused_
 _small_code_
@@ -659,7 +643,6 @@ _errors
 printf_
 abort_
 IF@DSIN
-__CHP
 _cstart_
 _fltused_
 _small_code_
@@ -677,7 +660,6 @@ _errors
 printf_
 abort_
 IF@DSIN
-__CHP
 _cstart_
 _fltused_
 _small_code_
