@@ -56,6 +56,28 @@
 aux_info    *DftCallConv;
 aux_info    BuiltinAuxInfo[MAX_BUILTIN_AUXINFO];
 
+#if _CPU == 8086
+
+static hw_reg_set WatcallParms[] = {
+    HW_D_4( HW_AX, HW_BX, HW_CX, HW_DX ) /*+HW_ST1+HW_ST2+HW_ST3+HW_ST4*/,
+    HW_D( HW_EMPTY )
+};
+
+#elif _CPU == 386
+
+static hw_reg_set WatcallParms[] = {
+    HW_D_4( HW_EAX,HW_EBX,HW_ECX,HW_EDX ) /*+HW_ST1+HW_ST2+HW_ST3+HW_ST4*/,
+    HW_D( HW_EMPTY )
+};
+
+#else
+
+static hw_reg_set WatcallParms[] = {
+    HW_D( HW_EMPTY )
+};
+
+#endif
+
 #if _INTEL_CPU
 
 static  hw_reg_set  StackParms[] = {
@@ -63,7 +85,7 @@ static  hw_reg_set  StackParms[] = {
 };
 
 #if _CPU == 386
-static  hw_reg_set  metaWareParms[] = {
+static  hw_reg_set  MetaWareParms[] = {
     HW_D( HW_EMPTY )
 };
 static  hw_reg_set  OptlinkParms[] = {
@@ -353,7 +375,7 @@ void SetAuxStackConventions( void )
 {
     WatcallInfo.cclass &= ( GENERATE_STACK_FRAME | FAR_CALL );
     WatcallInfo.cclass |= CALLER_POPS | NO_8087_RETURNS;
-    WatcallInfo.parms = metaWareParms;
+    WatcallInfo.parms = MetaWareParms;
     HW_CTurnOff( WatcallInfo.save, HW_EAX );
     HW_CTurnOff( WatcallInfo.save, HW_EDX );
     HW_CTurnOff( WatcallInfo.save, HW_ECX );
@@ -367,7 +389,7 @@ void SetAuxStackConventions( void )
 int IsAuxParmsBuiltIn( hw_reg_set *parms )
 /***************************************/
 {
-    if( parms == DefaultParms ) {
+    if( parms == WatcallParms ) {
         return( true );
 #if _INTEL_CPU
     } else if( parms == StackParms ) {
@@ -377,7 +399,7 @@ int IsAuxParmsBuiltIn( hw_reg_set *parms )
 #if _CPU == 386
     } else if( parms == OptlinkParms ) {
         return( true );
-    } else if( parms == metaWareParms ) {
+    } else if( parms == MetaWareParms ) {
         return( true );
 #endif
 #endif
@@ -395,7 +417,7 @@ void SetAuxWatcallInfo( void )
 
     WatcallInfo.cclass  = 0;
     WatcallInfo.code    = NULL;
-    WatcallInfo.parms   = DefaultParms;
+    WatcallInfo.parms   = WatcallParms;
 #if _CPU == 370
     WatcallInfo.linkage = &DefaultLinkage;
 #endif

@@ -33,11 +33,6 @@
 
 #define NC '\0'
 
-hw_reg_set DefaultParms[] = {
-    HW_D_4( HW_EAX,HW_EBX,HW_ECX,HW_EDX ) /*+HW_ST1+HW_ST2+HW_ST3+HW_ST4*/,
-    HW_D( HW_EMPTY )
-};
-
 hw_reg_set DefaultVarParms[] = {
     HW_D( HW_EMPTY )
 };

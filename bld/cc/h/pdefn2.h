@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,9 +37,6 @@
 global  linkage_regs    DefaultLinkage;
 global  linkage_regs    OSLinkage;
 #endif
-global  hw_reg_set      DefaultParms[];
-global  hw_reg_set      CdeclParms[];
-global  hw_reg_set      PascalParms[];
 global  hw_reg_set      DefaultVarParms[];
 global  hw_reg_set      RegBits[];
 global  char            Registers[];
