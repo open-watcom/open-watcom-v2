@@ -39,8 +39,6 @@
 #include <string.h>
 #include "global.h"
 #include "cgdefs.h"
-#include "cg.h"
-#include "wf77auxd.h"
 #include "wf77aux.h"
 #include "wf77defs.h"
 #include "fcgbls.h"
@@ -50,11 +48,10 @@
 #include "types.h"
 #include "fctypes.h"
 #include "rstutils.h"
-#include "auxlook.h"
 #include "wf77info.h"
+#include "fcgmain.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
-#include "fcgmain.h"
 
 
 #if _CPU == 386 || _CPU == 8086

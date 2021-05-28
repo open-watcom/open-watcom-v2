@@ -37,13 +37,13 @@
 
 #include "ftnstd.h"
 #include "global.h"
+#include "wf77aux.h"
 #include "fcodes.h"
 #include "opr.h"
 #include "opn.h"
 #include "fcgbls.h"
 #include "prmcodes.h"
 #include "cpopt.h"
-#include "wf77auxd.h"
 #include "recog.h"
 #include "emitobj.h"
 #include "types.h"
@@ -54,7 +54,6 @@
 #include "cgmagic.h"
 #include "gstring.h"
 #include "gsubprog.h"
-#include "auxlook.h"
 #include "gflow.h"
 #include "gtypes.h"
 

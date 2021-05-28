@@ -37,7 +37,6 @@
 #include <sys/stat.h>
 #include "global.h"
 #include "fcgbls.h"
-#include "wf77auxd.h"
 #include "wf77aux.h"
 #include "errcod.h"
 #include "cpopt.h"
@@ -51,9 +50,21 @@
 #include "data.h"
 #include "kwlookup.h"
 #include "symtab.h"
-#include "auxlook.h"
+#include "iflookup.h"
 #include "option.h"
 #include "cioconst.h"
+#include "fcrtns.h"
+#include "types.h"
+#include "rstutils.h"
+#include "cgdefs.h"
+#include "fctypes.h"
+#include "wf77defs.h"
+#include "wf77info.h"
+#include "cgflags.h"
+#include "fcgmain.h"
+#include "cgswitch.h"
+#include "cgprotos.h"
+#include "feprotos.h"
 
 #include "clibext.h"
 
@@ -69,12 +80,21 @@
 #define AddDefaultLibConst(l,p) AddDefaultLib(l, sizeof( l ) - 1, p)
 
 
+typedef struct rt_rtn {
+    const char  *name;
+    sym_id      sym_ptr;
+    aux_info    *aux;
+    byte        typ;
+} rt_rtn;
+
+
 default_lib             *DefaultLibs;
 dep_info                *DependencyInfo;
 
-aux_info                *AuxList;
-aux_info                FortranInfo;
 aux_info                ProgramInfo;
+
+static aux_info         *AuxList;
+static aux_info         FortranInfo;
 
 static  aux_info        *CurrAux;
 static  const char      *TokStart;
@@ -117,6 +137,15 @@ static      char    __Cdecl[] =   { "aux __cdecl \"_*\""
 
 
 #include "regs.c"
+
+
+static rt_rtn   RtnTab[] = {
+    #define pick(id,name,sym,aux,typ) {name,sym,aux,typ},
+    #include "rtdefn.h"
+    #undef pick
+};
+
+#define RT_INDEX_SIZE    (sizeof( RtnTab ) / sizeof( RtnTab[0] ))
 
 
 void InitAuxInfo( void )
@@ -543,7 +572,7 @@ void DefaultLibInfo( void )
 }
 
 
-aux_info *NewAuxEntry( const char *name, size_t name_len )
+static aux_info *NewAuxEntry( const char *name, size_t name_len )
 //========================================================
 {
     aux_info    *aux;
@@ -899,7 +928,7 @@ static void DupArgInfo( aux_info *dst, aux_info *src )
 }
 
 
-void CopyAuxInfo( aux_info *dst, aux_info *src )
+static void CopyAuxInfo( aux_info *dst, aux_info *src )
 //==============================================
 {
     if( dst != src ) {
@@ -1717,3 +1746,155 @@ void ProcPragma( const char *ptr )
         return;
     DoPragma( ptr );
 }
+
+
+
+aux_info *AuxLookup( const char *name, size_t name_len )
+//======================================================
+{
+    aux_info    *aux;
+
+    for( aux = AuxList; aux != NULL; aux = aux->link ) {
+        if( aux->sym_len == name_len ) {
+            if( strnicmp( name, aux->sym_name, name_len ) == 0 ) {
+                break;
+            }
+        }
+    }
+    return( aux );
+}
+
+
+aux_info *AuxLookupAdd( const char *name, size_t name_len )
+//=========================================================
+{
+    aux_info    *aux;
+
+    aux = AuxLookup( name, name_len );
+    if( aux == NULL ) {
+        aux = NewAuxEntry( name, name_len );
+        CopyAuxInfo( aux, &FortranInfo );
+    }
+    return( aux );
+}
+
+
+static aux_info    *RTAuxInfo( sym_id rtn )
+//=========================================
+// Return aux information for run-time routine.
+{
+    RTCODE      i;
+
+    for( i = 0; i < RT_INDEX_SIZE; i++ ) {
+        if( RtnTab[i].sym_ptr == rtn ) {
+            return( RtnTab[i].aux );
+        }
+    }
+    return( NULL );
+}
+
+aux_info    *InfoLookup( sym_id sym )
+//===================================
+{
+    aux_info    *info;
+
+    if( sym == NULL )
+        return( &FortranInfo );
+    if( (sym->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) {
+        if( sym->u.ns.flags & SY_INTRINSIC ) {
+            if( IFVarArgs( sym->u.ns.si.fi.index ) ) {
+                return( &IFVarInfo );
+            // check for character arguments must come first so that
+            // IF@xxx gets generated for intrinsic functions with character
+            // arguments (instead of XF@xxxx)
+            } else if( IFArgType( sym->u.ns.si.fi.index ) == FT_CHAR ) {
+                if( sym->u.ns.flags & SY_IF_ARGUMENT ) {
+                    if( (Options & OPT_DESCRIPTOR) == 0 ) {
+                        return( &IFChar2Info );
+                    }
+                }
+                return( &IFCharInfo );
+            } else if( sym->u.ns.flags & SY_IF_ARGUMENT ) {
+                return( &IFXInfo );
+            }
+            return( &IFInfo );
+        } else if( sym->u.ns.flags & SY_RT_ROUTINE ) {
+            return( RTAuxInfo( sym ) );
+        } else if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_PROGRAM ) {
+            return( &ProgramInfo );
+        } else {
+            info = AuxLookup( sym->u.ns.name, sym->u.ns.u2.name_len );
+            if( info == NULL )
+                return( &FortranInfo );
+            return( info );
+        }
+    } else {
+        info = AuxLookup( sym->u.ns.name, sym->u.ns.u2.name_len );
+        if( info == NULL )
+            return( &FortranInfo );
+        return( info );
+    }
+}
+
+
+call_handle     InitCall( RTCODE rtn_id )
+//=======================================
+// Initialize a call to a runtime routine.
+{
+    sym_id      sym;
+    rt_rtn      *rt_entry;
+    byte        typ;
+
+    rt_entry = &RtnTab[rtn_id];
+    sym = rt_entry->sym_ptr;
+    if( sym == NULL ) {
+        sym = STAdd( rt_entry->name, strlen( rt_entry->name ) );
+        sym->u.ns.flags = SY_USAGE | SY_TYPE | SY_SUBPROGRAM | SY_FUNCTION | SY_RT_ROUTINE;
+        if( rt_entry->typ == FT_NO_TYPE ) {
+            sym->u.ns.u1.s.typ = FT_INTEGER_TARG;
+        } else {
+            sym->u.ns.u1.s.typ = rt_entry->typ;
+        }
+        sym->u.ns.xt.size = TypeSize( sym->u.ns.u1.s.typ );
+        sym->u.ns.u3.address = NULL;
+        sym->u.ns.si.sp.u.segid = AllocImpSegId();
+        rt_entry->sym_ptr = sym;
+    }
+    typ = F77ToCGType( sym );
+    return( CGInitCall( CGFEName( sym, typ ), typ, rt_entry->sym_ptr ) );
+}
+
+
+void    InitRtRtns( void )
+//========================
+// Initialize symbol table entries for run-time routines.
+{
+    RTCODE  i;
+
+    for( i = 0; i < RT_INDEX_SIZE; i++ ) {
+        RtnTab[i].sym_ptr = NULL;
+    }
+}
+
+
+void    FreeRtRtns( void )
+//========================
+// Free symbol table entries for run-time routines.
+{
+    RTCODE      i;
+    sym_id      sym;
+
+    for( i = 0; i < RT_INDEX_SIZE; i++ ) {
+        sym = RtnTab[i].sym_ptr;
+        if( sym != NULL ) {
+            if( (CGFlags & CG_FATAL) == 0 ) {
+                if( sym->u.ns.u3.address != NULL ) {
+                    BEFreeBack( sym->u.ns.u3.address );
+                }
+            }
+            STFree( sym );
+            RtnTab[i].sym_ptr = NULL;
+        }
+    }
+}
+

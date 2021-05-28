@@ -37,9 +37,8 @@
 
 #include "ftnstd.h"
 #include "global.h"
-#include "rtconst.h"
 #include "wf77defs.h"
-#include "cg.h"
+#include "wf77aux.h"
 #include "cpopt.h"
 #include "emitobj.h"
 #include "fctypes.h"
@@ -47,7 +46,6 @@
 #include "fcstruct.h"
 #include "fcjmptab.h"
 #include "fcsubscr.h"
-#include "fcrtns.h"
 #include "fcstack.h"
 #include "rstmgr.h"
 #include "cgswitch.h"

@@ -36,16 +36,14 @@
 //
 
 #include "ftnstd.h"
-#include "symbol.h"
+#include "global.h"
 #include "wf77defs.h"
-#include "cg.h"
-#include "rtconst.h"
+#include "wf77aux.h"
 #include "emitobj.h"
 #include "fctypes.h"
 #include "fcjmptab.h"
 #include "fcrelops.h"
 #include "fcstring.h"
-#include "fcrtns.h"
 #include "fcstack.h"
 #include "cgswitch.h"
 #include "cgprotos.h"

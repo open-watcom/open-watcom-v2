@@ -37,11 +37,10 @@
 
 #include "ftnstd.h"
 #include "global.h"
-#include "rtconst.h"
-#include "wf77cg.h"
 #include "wf77defs.h"
+#include "wf77aux.h"
+#include "wf77cg.h"
 #include "fcjmptab.h"
-#include "fcrtns.h"
 #include "emitobj.h"
 #include "cgswitch.h"
 #include "cgprotos.h"

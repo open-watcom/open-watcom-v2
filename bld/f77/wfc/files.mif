@@ -171,7 +171,6 @@ comovl1 += &
     _matherr.obj
 
 tdroot = &
-    auxlook.obj &
     forcstat.obj &
     gsegs.obj &
     objutil.obj &
@@ -193,7 +192,6 @@ tdovl2 = &
     fcdata.obj &
     fcfield.obj &
     fcgmain.obj &
-    fcrtns.obj &
     inline.obj &
     fcifns.obj &
     fcstack.obj &

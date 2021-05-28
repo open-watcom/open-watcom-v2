@@ -34,7 +34,7 @@
 #include <string.h>
 #include "global.h"
 #include "wf77defs.h"
-#include "wf77auxd.h"
+#include "wf77aux.h"
 #include "wf77cg.h"
 #include "ecflags.h"
 #include "cpopt.h"
@@ -57,7 +57,6 @@
 #include "fcstring.h"
 #include "fcstruct.h"
 #include "fcsyms.h"
-#include "auxlook.h"
 #include "forcstat.h"
 #include "rstmgr.h"
 #include "fccall.h"

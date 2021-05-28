@@ -78,7 +78,7 @@ static  hw_reg_set      IFParms[] =
 static hw_reg_set       WinParms[] =
     { HW_D_4( HW_AX, HW_BX, HW_CX, HW_DX ), HW_D( HW_EMPTY ) };
 
-aux_info                RtRtnInfo = {
+static aux_info                RtRtnInfo = {
         FAR_CALL | NO_MEMORY_READ | NO_MEMORY_CHANGED | REVERSE_PARMS,
         NULL,
         RtRtnParms,
@@ -91,7 +91,7 @@ aux_info                RtRtnInfo = {
         NULL
 };
 
-aux_info                RtStopInfo = {
+static aux_info                RtStopInfo = {
         FAR_CALL | NO_MEMORY_READ | NO_MEMORY_CHANGED | SUICIDAL | REVERSE_PARMS,
         NULL,
         RtRtnParms,
@@ -104,7 +104,7 @@ aux_info                RtStopInfo = {
         NULL
 };
 
-aux_info                RtVarInfo = {
+static aux_info                RtVarInfo = {
         FAR_CALL | CALLER_POPS | NO_MEMORY_READ | NO_MEMORY_CHANGED | REVERSE_PARMS,
         NULL,
         StackParms,
@@ -117,7 +117,7 @@ aux_info                RtVarInfo = {
         NULL
 };
 
-aux_info                CoRtnInfo = {
+static aux_info                CoRtnInfo = {
         FAR_CALL | NO_MEMORY_READ | NO_MEMORY_CHANGED | REVERSE_PARMS,
         NULL,
         RtRtnParms,
@@ -130,7 +130,7 @@ aux_info                CoRtnInfo = {
         NULL
 };
 
-aux_info               IFXInfo = {
+static aux_info               IFXInfo = {
         FAR_CALL | NO_MEMORY_READ | NO_MEMORY_CHANGED,
         NULL,
         FortranParms,
@@ -143,7 +143,7 @@ aux_info               IFXInfo = {
         NULL
 };
 
-aux_info                IFInfo = {
+static aux_info                IFInfo = {
         FAR_CALL | NO_MEMORY_READ | NO_MEMORY_CHANGED,
         NULL,
         IFParms,
@@ -156,7 +156,7 @@ aux_info                IFInfo = {
         &IFArgValue
 };
 
-aux_info                IFCharInfo = {
+static aux_info                IFCharInfo = {
         FAR_CALL | NO_MEMORY_READ | NO_MEMORY_CHANGED,
         NULL,
         IFParms,
@@ -169,7 +169,7 @@ aux_info                IFCharInfo = {
         &IFArgDescriptor
 };
 
-aux_info                IFChar2Info = {
+static aux_info                IFChar2Info = {
         FAR_CALL | NO_MEMORY_READ | NO_MEMORY_CHANGED,
         NULL,
         IFParms,
@@ -182,7 +182,7 @@ aux_info                IFChar2Info = {
         NULL
 };
 
-aux_info                IFVarInfo = {
+static aux_info                IFVarInfo = {
         FAR_CALL | NO_MEMORY_READ | NO_MEMORY_CHANGED | CALLER_POPS,
         NULL,
         StackParms,
@@ -195,7 +195,7 @@ aux_info                IFVarInfo = {
         &IFArgValue
 };
 
-aux_info                DefaultInfo = {
+static aux_info                DefaultInfo = {
         FAR_CALL,
         NULL,
         FortranParms,
@@ -219,7 +219,7 @@ static  hw_reg_set      FortranParms[] =
 static  hw_reg_set      IFParms[] =
     { HW_D_5( HW_EAX, HW_EBX, HW_ECX, HW_EDX, HW_FLTS ), HW_D( HW_EMPTY ) };
 
-aux_info                RtRtnInfo = {
+static aux_info                RtRtnInfo = {
         NO_MEMORY_READ | NO_MEMORY_CHANGED | REVERSE_PARMS,
         NULL,
         RtRtnParms,
@@ -232,7 +232,7 @@ aux_info                RtRtnInfo = {
         NULL
 };
 
-aux_info                RtStopInfo = {
+static aux_info                RtStopInfo = {
         NO_MEMORY_READ | NO_MEMORY_CHANGED | SUICIDAL | REVERSE_PARMS,
         NULL,
         RtRtnParms,
@@ -245,7 +245,7 @@ aux_info                RtStopInfo = {
         NULL
 };
 
-aux_info                RtVarInfo = {
+static aux_info                RtVarInfo = {
         CALLER_POPS | NO_MEMORY_READ | NO_MEMORY_CHANGED | REVERSE_PARMS,
         NULL,
         StackParms,
@@ -258,7 +258,7 @@ aux_info                RtVarInfo = {
         NULL
 };
 
-aux_info                CoRtnInfo = {
+static aux_info                CoRtnInfo = {
         NO_MEMORY_READ | NO_MEMORY_CHANGED | REVERSE_PARMS,
         NULL,
         RtRtnParms,
@@ -271,7 +271,7 @@ aux_info                CoRtnInfo = {
         NULL
 };
 
-aux_info               IFXInfo = {
+static aux_info               IFXInfo = {
         NO_MEMORY_READ | NO_MEMORY_CHANGED,
         NULL,
         FortranParms,
@@ -284,7 +284,7 @@ aux_info               IFXInfo = {
         NULL
 };
 
-aux_info                IFInfo = {
+static aux_info                IFInfo = {
         NO_MEMORY_READ | NO_MEMORY_CHANGED,
         NULL,
         IFParms,
@@ -297,7 +297,7 @@ aux_info                IFInfo = {
         &IFArgValue
 };
 
-aux_info                IFCharInfo = {
+static aux_info                IFCharInfo = {
         NO_MEMORY_READ | NO_MEMORY_CHANGED,
         NULL,
         IFParms,
@@ -310,7 +310,7 @@ aux_info                IFCharInfo = {
         &IFArgDescriptor
 };
 
-aux_info                IFChar2Info = {
+static aux_info                IFChar2Info = {
         NO_MEMORY_READ | NO_MEMORY_CHANGED,
         NULL,
         IFParms,
@@ -323,7 +323,7 @@ aux_info                IFChar2Info = {
         NULL
 };
 
-aux_info                IFVarInfo = {
+static aux_info                IFVarInfo = {
         NO_MEMORY_READ | NO_MEMORY_CHANGED | CALLER_POPS,
         NULL,
         StackParms,
@@ -336,7 +336,7 @@ aux_info                IFVarInfo = {
         &IFArgValue
 };
 
-aux_info                DefaultInfo = {
+static aux_info                DefaultInfo = {
         0,
         NULL,
         FortranParms,
@@ -360,7 +360,7 @@ static  hw_reg_set      FortranParms[] =
 static  hw_reg_set      IFParms[] =
     { HW_D( HW_EMPTY ) };
 
-aux_info                RtRtnInfo = {
+static aux_info                RtRtnInfo = {
         NO_MEMORY_READ | NO_MEMORY_CHANGED | REVERSE_PARMS,
         NULL,
         RtRtnParms,
@@ -373,7 +373,7 @@ aux_info                RtRtnInfo = {
         NULL
 };
 
-aux_info                RtStopInfo = {
+static aux_info                RtStopInfo = {
         NO_MEMORY_READ | NO_MEMORY_CHANGED | SUICIDAL | REVERSE_PARMS,
         NULL,
         RtRtnParms,
@@ -386,7 +386,7 @@ aux_info                RtStopInfo = {
         NULL
 };
 
-aux_info                RtVarInfo = {
+static aux_info                RtVarInfo = {
         CALLER_POPS | NO_MEMORY_READ | NO_MEMORY_CHANGED | REVERSE_PARMS,
         NULL,
         StackParms,
@@ -399,7 +399,7 @@ aux_info                RtVarInfo = {
         NULL
 };
 
-aux_info                CoRtnInfo = {
+static aux_info                CoRtnInfo = {
         NO_MEMORY_READ | NO_MEMORY_CHANGED | REVERSE_PARMS,
         NULL,
         RtRtnParms,
@@ -412,7 +412,7 @@ aux_info                CoRtnInfo = {
         NULL
 };
 
-aux_info               IFXInfo = {
+static aux_info               IFXInfo = {
         NO_MEMORY_READ | NO_MEMORY_CHANGED,
         NULL,
         FortranParms,
@@ -425,7 +425,7 @@ aux_info               IFXInfo = {
         NULL
 };
 
-aux_info                IFInfo = {
+static aux_info                IFInfo = {
         NO_MEMORY_READ | NO_MEMORY_CHANGED,
         NULL,
         IFParms,
@@ -438,7 +438,7 @@ aux_info                IFInfo = {
         &IFArgValue
 };
 
-aux_info                IFCharInfo = {
+static aux_info                IFCharInfo = {
         NO_MEMORY_READ | NO_MEMORY_CHANGED,
         NULL,
         IFParms,
@@ -451,7 +451,7 @@ aux_info                IFCharInfo = {
         &IFArgDescriptor
 };
 
-aux_info                IFChar2Info = {
+static aux_info                IFChar2Info = {
         NO_MEMORY_READ | NO_MEMORY_CHANGED,
         NULL,
         IFParms,
@@ -464,7 +464,7 @@ aux_info                IFChar2Info = {
         NULL
 };
 
-aux_info                IFVarInfo = {
+static aux_info                IFVarInfo = {
         NO_MEMORY_READ | NO_MEMORY_CHANGED | CALLER_POPS,
         NULL,
         StackParms,
@@ -477,7 +477,7 @@ aux_info                IFVarInfo = {
         &IFArgValue
 };
 
-aux_info                DefaultInfo = {
+static aux_info                DefaultInfo = {
         0,
         NULL,
         FortranParms,

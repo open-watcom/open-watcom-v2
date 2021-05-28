@@ -36,12 +36,12 @@
 //
 
 #include "ftnstd.h"
-#include "rtconst.h"
+#include "global.h"
 #include "wf77defs.h"
+#include "wf77aux.h"
 #include "wf77cg.h"
 #include "tmpdefs.h"
 #include "cpopt.h"
-#include "global.h"
 #include "emitobj.h"
 #include "fctypes.h"
 #include "cnvd2s.h"
@@ -49,7 +49,6 @@
 #include "fccmplx.h"
 #include "fcstruct.h"
 #include "fctemp.h"
-#include "fcrtns.h"
 #include "fcstack.h"
 #include "cgswitch.h"
 #include "cgprotos.h"

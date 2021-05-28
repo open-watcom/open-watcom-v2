@@ -36,15 +36,13 @@
 //
 
 #include "ftnstd.h"
-#include "wf77defs.h"
-#include "rtconst.h"
-#include "cg.h"
-#include "tmpdefs.h"
 #include "global.h"
+#include "wf77defs.h"
+#include "wf77aux.h"
+#include "tmpdefs.h"
 #include "fcgbls.h"
 #include "fcjmptab.h"
 #include "fctemp.h"
-#include "fcrtns.h"
 #include "wf77info.h"
 #include "fcstack.h"
 #include "cgswitch.h"
