@@ -125,7 +125,7 @@ void PragAux(                   // #PRAGMA AUX ...
 AUX_INFO *PragmaAuxAlias(       // LOCATE ALIAS FOR PRAGMA
     const char *name )
 ;
-void PragEnding(                // PROCESS END OF PRAGMA
+void PragmaAuxEnding(           // PROCESS END OF PRAGMA
     bool set_sym )              // - true ==> set SYMBOL's aux_info
 ;
 void PragmaExtrefsInject        // INJECT EXTREFS FOR PRAGMAS
@@ -134,10 +134,7 @@ void PragmaExtrefsInject        // INJECT EXTREFS FOR PRAGMAS
 void PragmaExtrefsValidate      // VALIDATE EXTREFS FOR PRAGMAS
     ( void )
 ;
-void PragInit(
-    void )
-;
-void PragInitDefaultInfo(
+void PragmaAuxInit(
     void )
 ;
 void PragManyRegSets(           // GET PRAGMA REGISTER SETS

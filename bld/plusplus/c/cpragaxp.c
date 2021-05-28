@@ -51,8 +51,8 @@ static void pragmasInit(        // INIT PRAGMAS
 {
     /* unused parameters */ (void)defn;
 
-    PragInit();
-    SetAuxDefaultInfo();
+    PragmaAuxInit();
+    SetDefaultAuxInfo();
 }
 
 static void pragmasFini(        // FINISH PRAGMAS
@@ -264,7 +264,7 @@ char const *AsmSysDefineByte( void )
 void AsmSysDone( void )
 /*********************/
 {
-    PragEnding( false );
+    PragmaAuxEnding( false );
 }
 
 void *AsmQuerySymbol( const char *name )

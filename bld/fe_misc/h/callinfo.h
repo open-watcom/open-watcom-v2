@@ -89,10 +89,10 @@ extern aux_info     *DftCallConv;
 
 extern aux_info     BuiltinAuxInfo[MAX_BUILTIN_AUXINFO];
 
-extern void         PragmaAuxInfoInit( int );
+extern void         AuxInfoInit( int );
 extern void         SetAuxStackConventions( void );
 extern void         SetAuxWatcallInfo( void );
-extern void         SetAuxDefaultInfo( void );
+extern void         SetDefaultAuxInfo( void );
 extern int          IsAuxParmsBuiltIn( hw_reg_set *parms );
 extern int          IsAuxInfoBuiltIn( aux_info *info );
 extern char         *VarNamePattern( aux_info *inf );

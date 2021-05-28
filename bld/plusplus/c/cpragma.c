@@ -1361,7 +1361,7 @@ void CPragma( void )                  // PROCESS A PRAGMA
 }
 
 
-void PragInit(
+void PragmaAuxInit(
     void )
 {
     WatcallInfo.use = 2;
@@ -1489,7 +1489,7 @@ static void copyObjName(         // COPY OBJECT PORTION
     }
 }
 
-void PragEnding(                // PROCESS END OF PRAGMA
+void PragmaAuxEnding(           // PROCESS END OF PRAGMA
     bool set_sym )              // - true ==> set SYMBOL's aux_info
 {
     if( CurrEntry != NULL ) {
@@ -1749,7 +1749,7 @@ bool GetPragmaAuxAliasInfo( void )
         if( IS_ID_OR_KEYWORD( CurToken ) ) {
             CreateAux( buff );
             GetPragmaAuxAlias();
-            PragEnding( true );
+            PragmaAuxEnding( true );
         }
     }
     return( false );

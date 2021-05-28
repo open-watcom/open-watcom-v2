@@ -203,7 +203,7 @@ static void PragmaAuxEnd( void )
     if( !HW_CEqual( AuxInfo.save, HW_EMPTY ) ) {
         HW_TurnOff( CurrInfo->save, AuxInfo.save );
     }
-    PragEnding();
+    PragmaAuxEnding();
 }
 
 bool GetPragmaAuxAlias( void )

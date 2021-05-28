@@ -446,8 +446,8 @@ static void CopyExceptRtn( void )
 }
 #endif
 
-void PragEnding( void )
-/*********************/
+void PragmaAuxEnding( void )
+/**************************/
 {
     if( CurrEntry == NULL )
         return;

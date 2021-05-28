@@ -103,8 +103,8 @@ static  hw_reg_set  FastcallParms[] = {
 };
 #endif
 
-void PragmaAuxInfoInit( int flag_stdatnum )
-/*****************************************/
+void AuxInfoInit( int flag_stdatnum )
+/***********************************/
 {
     hw_reg_set  full_no_segs;
     call_class  call_type;
@@ -428,7 +428,7 @@ void SetAuxWatcallInfo( void )
     WatcallInfo.objname = NULL;
 }
 
-void SetAuxDefaultInfo( void )
+void SetDefaultAuxInfo( void )
 /****************************/
 {
     DefaultInfo = *DftCallConv;

@@ -65,9 +65,9 @@ static void pragmasInit(        // INITIALIZATION FOR PRAGMAS
 {
     /* unused parameters */ (void)defn;
 
-    PragInit();
+    PragmaAuxInit();
 
-    PragmaAuxInfoInit( CompFlags.use_stdcall_at_number );
+    AuxInfoInit( CompFlags.use_stdcall_at_number );
 
 #if _CPU == 8086
     HW_CTurnOff( asmRegsSaved, HW_ABCD );
@@ -83,7 +83,7 @@ static void pragmasInit(        // INITIALIZATION FOR PRAGMAS
     HW_CTurnOff( asmRegsSaved, HW_EDI );
 #endif
 
-    SetAuxDefaultInfo();
+    SetDefaultAuxInfo();
 }
 
 
@@ -460,7 +460,7 @@ void PragAux(                   // #PRAGMA AUX ...
             if( have.uses_auto ) {
                 AsmSysUsesAuto();
             }
-            PragEnding( true );
+            PragmaAuxEnding( true );
         }
     }
     PPCTL_DISABLE_MACROS();
@@ -918,7 +918,7 @@ char const *AsmSysDefineByte( void )
 void AsmSysDone( void )
 /*********************/
 {
-    PragEnding( false );
+    PragmaAuxEnding( false );
 }
 
 void AsmSysInit( void )

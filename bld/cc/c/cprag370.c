@@ -145,7 +145,7 @@ void PragAux()
                 break;
             }
         }
-        PragEnding();
+        PragmaAuxEnding();
     }
 
 static int TryForReg( hw_reg_set *field, char *name )

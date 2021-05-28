@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,6 @@
 
 extern void CreateAux( char *id );
 extern int OpenSrcFile( char *filename, int delimiter );
-extern void PragEnding( void );
 extern int PragRecog( char * what );
 extern int NextToken(void);
 extern void SetAuxName( void * filename );
@@ -99,7 +99,7 @@ void ParseAuxFile()
                     CurrEntry->offset = offset;
                     token = NextToken();
                     offset += GetConst( token );
-                    PragEnding();
+                    PragmaAuxEnding();
                 }else{
                     CErr1( ERR_EXPECTING_ID );
                 }

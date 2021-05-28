@@ -200,7 +200,7 @@ static void PragmaAuxEnd( void )
         }
         HW_TurnOff( CurrInfo->save, AuxInfo.save );
     }
-    PragEnding();
+    PragmaAuxEnding();
 }
 
 bool GetPragmaAuxAlias( void )
