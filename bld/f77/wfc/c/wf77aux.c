@@ -53,7 +53,6 @@
 #include "iflookup.h"
 #include "option.h"
 #include "cioconst.h"
-#include "fcrtns.h"
 #include "types.h"
 #include "rstutils.h"
 #include "cgdefs.h"
