@@ -97,7 +97,7 @@ void            TDSubInit( void ) {
     EPValue = NULL;
     EpilogLabel = 0;
     InitFormatList();
-    SubAuxInit();
+    SubPragmaInit();
     if( ProgSw & PS_DONT_GENERATE ) {
         ++NumSubProgs; // count # of subprograms on first pass
     } else {
@@ -111,7 +111,7 @@ void            TDSubFini( void ) {
 
 // Finish off compilation of a subprogram.
 
-    SubAuxFini();
+    SubPragmaFini();
     if( (ProgSw & PS_DONT_GENERATE) == 0 ) {
         EmitOp( FC_END_OF_SEQUENCE );
         CGGenSub();
@@ -159,5 +159,5 @@ void            TDPurge( void ) {
         CGPurge();
     }
     FiniObj();
-    FiniAuxInfo();
+    FiniPragma();
 }

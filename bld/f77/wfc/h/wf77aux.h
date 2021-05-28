@@ -82,16 +82,16 @@ typedef struct aux_info {
 extern default_lib      *DefaultLibs;
 extern dep_info         *DependencyInfo;
 
-extern void             InitAuxInfo( void );
-extern void             FiniAuxInfo( void );
-extern void             SubAuxInit( void );
-extern void             SubAuxFini( void );
+extern aux_info         ProgramInfo;
+
+extern void             InitPragma( void );
+extern void             FiniPragma( void );
+extern void             SubPragmaInit( void );
+extern void             SubPragmaFini( void );
 extern void             AddDependencyInfo( source_t *fi );
 extern void             DefaultLibInfo( void );
 extern void             DoPragma( const char *ptr );
 extern void             ProcPragma( const char *ptr );
-
-extern aux_info         ProgramInfo;
 
 extern aux_info         *AuxLookup( const char *name, size_t name_len );
 extern aux_info         *AuxLookupAdd( const char *name, size_t name_len );

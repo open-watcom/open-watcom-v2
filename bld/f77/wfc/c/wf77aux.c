@@ -134,6 +134,58 @@ static      char    __Cdecl[] =   { "aux __cdecl \"_*\""
                                 "modify [ax bx cx dx]" };
 #endif
 
+static hw_reg_set       StackParms[] = { HW_D( HW_EMPTY ) };
+
+#if _CPU == 8086
+static  hw_reg_set      FortranParms[] =
+    { HW_D_4( HW_AX, HW_BX, HW_CX, HW_DX ), HW_D( HW_EMPTY ) };
+
+static aux_info         DefaultInfo = {
+    FAR_CALL,
+    NULL,
+    FortranParms,
+    HW_D( HW_EMPTY ),
+    HW_D( HW_SI ),
+    HW_D( HW_FULL ),
+    "^",
+    0,
+    0,
+    NULL
+};
+#elif   _CPU == 386
+static  hw_reg_set      FortranParms[] =
+    { HW_D_4( HW_EAX, HW_EBX, HW_ECX, HW_EDX ), HW_D( HW_EMPTY ) };
+
+static aux_info         DefaultInfo = {
+    0,
+    NULL,
+    FortranParms,
+    HW_D( HW_EMPTY ),
+    HW_D( HW_ESI ),
+    HW_D( HW_FULL ),
+    "^",
+    0,
+    0,
+    NULL
+};
+#else
+static  hw_reg_set      FortranParms[] =
+    { HW_D( HW_EMPTY ) };
+
+static aux_info         DefaultInfo = {
+    0,
+    NULL,
+    FortranParms,
+    HW_D( HW_EMPTY ),
+    HW_D( HW_EMPTY ),
+    HW_D( HW_FULL ),
+    "^",
+    0,
+    0,
+    NULL
+};
+#endif
+
 
 #include "regs.c"
 
@@ -147,8 +199,8 @@ static rt_rtn   RtnTab[] = {
 #define RT_INDEX_SIZE    (sizeof( RtnTab ) / sizeof( RtnTab[0] ))
 
 
-void InitAuxInfo( void )
-//======================
+static void InitPragmaAux( void )
+//===============================
 {
 #if _INTEL_CPU
     int         cpu;
@@ -207,9 +259,7 @@ void InitAuxInfo( void )
     AsmInit();
 #endif
 
-    DefaultLibs = NULL;
     AuxList = NULL;
-    DependencyInfo = NULL;
 #if _INTEL_CPU
   #if _CPU == 8086
     // Change auxiliary information for calls to run-time routines to match
@@ -303,6 +353,14 @@ void InitAuxInfo( void )
 #endif
 }
 
+void InitPragma( void )
+//======================
+{
+    DefaultLibs = NULL;
+    DependencyInfo = NULL;
+
+    InitPragmaAux();
+}
 
 static void FreeArgList( aux_info *info )
 //=======================================
@@ -338,8 +396,8 @@ static void FreeAuxEntry( aux_info *aux )
 }
 
 
-void FiniAuxInfo( void )
-//======================
+static void FiniPragmaAux( void )
+//===============================
 {
     void        *next;
 
@@ -349,6 +407,14 @@ void FiniAuxInfo( void )
         AuxList = next;
     }
     FreeAuxElements( &FortranInfo );
+    AsmSymFini();
+}
+
+void FiniPragma( void )
+//======================
+{
+    FiniPragmaAux();
+
     FreeChain( &DefaultLibs );
     // in case of fatal error, FiniAuxInfo() is called
     // from TDPurge()
@@ -356,12 +422,10 @@ void FiniAuxInfo( void )
     FreeChain( &ArrayInfo );
 #endif
     FreeChain( &DependencyInfo );
-    AsmSymFini();
 }
 
-
-void SubAuxInit( void )
-//=====================
+void SubPragmaInit( void )
+//========================
 // Initialize aux information for a subprogram.
 {
 #if _INTEL_CPU
@@ -369,9 +433,8 @@ void SubAuxInit( void )
 #endif
 }
 
-
-void SubAuxFini( void )
-//=====================
+void SubPragmaFini( void )
+//========================
 // Finalize aux information for a subprogram.
 {
 #if _INTEL_CPU

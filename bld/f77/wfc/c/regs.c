@@ -35,8 +35,6 @@
 // REGS         : register information
 //
 
-static hw_reg_set       StackParms[] = { HW_D( HW_EMPTY ) };
-
 #if _CPU == 8086 || _CPU == 386
 static char             IF_names[] = "IF@*";
 static char             IF_Xnames[] = "IF@X*";
@@ -68,9 +66,6 @@ static hw_reg_set       RegValue[] = {
 
 static  hw_reg_set      RtRtnParms[] =
     { HW_D_5( HW_AX, HW_BX, HW_CX, HW_DX, HW_FLTS ), HW_D( HW_EMPTY ) };
-
-static  hw_reg_set      FortranParms[] =
-    { HW_D_4( HW_AX, HW_BX, HW_CX, HW_DX ), HW_D( HW_EMPTY ) };
 
 static  hw_reg_set      IFParms[] =
     { HW_D_5( HW_AX, HW_BX, HW_CX, HW_DX, HW_FLTS ), HW_D( HW_EMPTY ) };
@@ -195,26 +190,10 @@ static aux_info                IFVarInfo = {
         &IFArgValue
 };
 
-static aux_info                DefaultInfo = {
-        FAR_CALL,
-        NULL,
-        FortranParms,
-        HW_D( HW_EMPTY ),
-        HW_D( HW_SI ),
-        HW_D( HW_FULL ),
-        "^",
-        0,
-        0,
-        NULL
-};
-
 #elif   _CPU == 386
 
 static  hw_reg_set      RtRtnParms[] =
     { HW_D_5( HW_EAX, HW_EBX, HW_ECX, HW_EDX, HW_FLTS ), HW_D( HW_EMPTY ) };
-
-static  hw_reg_set      FortranParms[] =
-    { HW_D_4( HW_EAX, HW_EBX, HW_ECX, HW_EDX ), HW_D( HW_EMPTY ) };
 
 static  hw_reg_set      IFParms[] =
     { HW_D_5( HW_EAX, HW_EBX, HW_ECX, HW_EDX, HW_FLTS ), HW_D( HW_EMPTY ) };
@@ -334,19 +313,6 @@ static aux_info                IFVarInfo = {
         0,
         0,
         &IFArgValue
-};
-
-static aux_info                DefaultInfo = {
-        0,
-        NULL,
-        FortranParms,
-        HW_D( HW_EMPTY ),
-        HW_D( HW_ESI ),
-        HW_D( HW_FULL ),
-        "^",
-        0,
-        0,
-        NULL
 };
 
 #elif _CPU == _AXP || _CPU == _PPC
@@ -354,9 +320,6 @@ static aux_info                DefaultInfo = {
 static  hw_reg_set      RtRtnParms[] =
     { HW_D( HW_EMPTY )};
 
-static  hw_reg_set      FortranParms[] =
-    { HW_D( HW_EMPTY ) };
-
 static  hw_reg_set      IFParms[] =
     { HW_D( HW_EMPTY ) };
 
@@ -475,19 +438,6 @@ static aux_info                IFVarInfo = {
         0,
         0,
         &IFArgValue
-};
-
-static aux_info                DefaultInfo = {
-        0,
-        NULL,
-        FortranParms,
-        HW_D( HW_EMPTY ),
-        HW_D( HW_EMPTY ),
-        HW_D( HW_FULL ),
-        "^",
-        0,
-        0,
-        NULL
 };
 
 #else

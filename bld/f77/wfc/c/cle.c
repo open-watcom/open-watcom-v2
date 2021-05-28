@@ -87,7 +87,7 @@ static void Compile( void )
 {
     InitGlobalSegs();
     ProgSw |= PS_DONT_GENERATE;
-    InitAuxInfo();      // must be done before ComRead()
+    InitPragma();      // must be done before ComRead()
     InvokeCompile();
     if( ( (Options & OPT_SYNTAX) == 0 ) &&  // syntax check only
         ( ( CurrFile != NULL ) ) &&         // not an "null" file
@@ -99,7 +99,7 @@ static void Compile( void )
         SDRewind( CurrFile->fileptr );
         InvokeCompile();
     }
-    FiniAuxInfo();
+    FiniPragma();
     FreeGlobalSegs();
 }
 
