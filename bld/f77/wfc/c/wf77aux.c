@@ -93,40 +93,40 @@ aux_info                ProgramInfo;
 static aux_info         *AuxList;
 static aux_info         FortranInfo;
 
-static  aux_info        *CurrAux;
-static  const char      *TokStart;
-static  const char      *TokEnd;
-static  aux_info        *AliasInfo;
-static  char            SymName[MAX_SYMLEN+1];
-static  size_t          SymLen;
+static aux_info         *CurrAux;
+static const char       *TokStart;
+static const char       *TokEnd;
+static aux_info         *AliasInfo;
+static char             SymName[MAX_SYMLEN+1];
+static size_t           SymLen;
 
 #if _INTEL_CPU
-static  arr_info        *ArrayInfo;
+static arr_info         *ArrayInfo;
 #endif
 
 #if _CPU == 386
-static      char    __Syscall[] = { "aux __syscall \"*\""
+static char    __Syscall[] = { "aux __syscall \"*\""
                                 "parm caller []"
                                 "value struct struct caller []"
                                 "modify [eax ecx edx]" };
-static      char    __Cdecl[] =   { "aux __cdecl \"_*\""
+static char    __Cdecl[] =   { "aux __cdecl \"_*\""
                                 "parm caller loadds []"
                                 "value struct float struct routine [eax]"
                                 "modify [eax ebx ecx edx]" };
-static      char    __Pascal[] =  { "aux __pascal \"^\""
+static char    __Pascal[] =  { "aux __pascal \"^\""
                                 "parm reverse routine []"
                                 "value struct float struct caller []"
                                 "modify [eax ebx ecx edx]" };
-static      char    __Stdcall[] = { "aux __stdcall \"_*#\""
+static char    __Stdcall[] = { "aux __stdcall \"_*#\""
                                 "parm routine []"
                                 "value struct []"
                                 "modify [eax ecx edx]" };
 #elif _CPU == 8086
-static      char    __Pascal[] =  { "aux __pascal \"^\""
+static char    __Pascal[] =  { "aux __pascal \"^\""
                                 "parm routine reverse []"
                                 "value struct float struct caller []"
                                 "modify [ax bx cx dx]" };
-static      char    __Cdecl[] =   { "aux __cdecl \"_*\""
+static char    __Cdecl[] =   { "aux __cdecl \"_*\""
                                 "parm caller []"
                                 "value struct float struct routine [ax]"
                                 "modify [ax bx cx dx]" };
@@ -352,7 +352,7 @@ static void InitPragmaAux( void )
 }
 
 void InitPragma( void )
-//======================
+//=====================
 {
     DefaultLibs = NULL;
     DependencyInfo = NULL;
@@ -409,7 +409,7 @@ static void FiniPragmaAux( void )
 }
 
 void FiniPragma( void )
-//======================
+//=====================
 {
     FiniPragmaAux();
 
@@ -424,7 +424,7 @@ void FiniPragma( void )
 
 void SubPragmaInit( void )
 //========================
-// Initialize aux information for a subprogram.
+// Initialize pragmas information for a subprogram.
 {
 #if _INTEL_CPU
     ArrayInfo = NULL;
@@ -433,7 +433,7 @@ void SubPragmaInit( void )
 
 void SubPragmaFini( void )
 //========================
-// Finalize aux information for a subprogram.
+// Finalize pragmas information for a subprogram.
 {
 #if _INTEL_CPU
     arr_info    *next;
@@ -821,7 +821,6 @@ static bool RecFnToken( const char *tok )
 }
 
 
-
 static void SymbolId( void )
 //==========================
 {
@@ -989,7 +988,7 @@ static void DupArgInfo( aux_info *dst, aux_info *src )
 
 
 static void CopyAuxInfo( aux_info *dst, aux_info *src )
-//==============================================
+//=====================================================
 {
     if( dst != src ) {
         dst->cclass = src->cclass;
@@ -1808,7 +1807,6 @@ void ProcPragma( const char *ptr )
 }
 
 
-
 aux_info *AuxLookup( const char *name, size_t name_len )
 //======================================================
 {
@@ -1957,4 +1955,3 @@ void    FreeRtRtns( void )
         }
     }
 }
-
