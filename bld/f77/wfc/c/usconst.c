@@ -31,7 +31,6 @@
 
 
 #include "ftnstd.h"
-#include <string.h>
 #include "opr.h"
 #include "optr.h"
 #include "astype.h"

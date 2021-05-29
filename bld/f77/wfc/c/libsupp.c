@@ -36,8 +36,6 @@
 //
 
 #include "ftnstd.h"
-#include <string.h>
-#include <stdio.h>
 #include "global.h"
 #include "inout.h"
 #include "iopath.h"

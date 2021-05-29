@@ -30,6 +30,11 @@
 *
 ****************************************************************************/
 
+
+#ifndef gbl_defn
+#define gbl_defn extern
+#endif
+
 #include "fmtdef.h"
 
 gbl_defn char           *Fmt_start;       // pointer to start of format string

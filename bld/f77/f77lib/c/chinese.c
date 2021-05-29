@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 #include "ftnstd.h"
-#include "scangbl.h"
 #include "csetinfo.h"
 #include "charset.h"
 #include "dbcsutil.h"

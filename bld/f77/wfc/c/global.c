@@ -31,6 +31,7 @@
 ****************************************************************************/
 
 
+#define gbl_defn
 #include "ftnstd.h"
 #include "fio.h"
 #include "source.h"
@@ -50,7 +51,6 @@
 // The following files have been ordered so that variables are aligned on
 // an even address.  Be careful when you change them!
 
-#define gbl_defn
 #include "fmtdefn.h"
 #include "fcdatad.h"
 #include "prdefn.h"

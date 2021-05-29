@@ -31,8 +31,6 @@
 
 
 #include "ftnstd.h"
-#include <string.h>
-#include <stdio.h>
 #include "global.h"
 #include "wf77defs.h"
 #include "wf77aux.h"
@@ -78,13 +76,12 @@
 #endif
 #include "langenv.h"
 
-#include "cg.h"
+#include "wf77segs.h"
+#include "dwarfid.h"
+
 #include "cgswitch.h"
 #include "cgprotos.h"
 #include "feprotos.h"
-
-#include "wf77segs.h"
-#include "dwarfid.h"
 
 #include "clibext.h"
 

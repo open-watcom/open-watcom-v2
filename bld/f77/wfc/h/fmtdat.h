@@ -33,5 +33,4 @@
 
 // used at compile time and runtime
 
-#define gbl_defn extern
 #include "fmtdefn.h"

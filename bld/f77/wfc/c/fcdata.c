@@ -31,7 +31,6 @@
 
 
 #include "ftnstd.h"
-#include <string.h>
 #include "global.h"
 #include "fcgbls.h"
 #include "wf77defs.h"

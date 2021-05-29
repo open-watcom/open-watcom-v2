@@ -40,7 +40,6 @@
 // sequential search of a subset of the keywords.
 
 #include "ftnstd.h"
-#include <string.h>
 #include "kwlookup.h"
 
 

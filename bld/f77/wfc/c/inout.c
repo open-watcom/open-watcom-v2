@@ -31,8 +31,6 @@
 
 
 #include "ftnstd.h"
-#include <stdio.h>
-#include <string.h>
 #include <time.h>
 #include "progsw.h"
 #include "cpopt.h"

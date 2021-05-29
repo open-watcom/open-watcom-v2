@@ -36,8 +36,6 @@
 //
 
 #include "ftnstd.h"
-#include <stdio.h>
-#include <string.h>
 #include "cgflags.h"
 #include "fcgmain.h"
 #include "blips.h"

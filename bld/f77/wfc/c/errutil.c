@@ -31,7 +31,6 @@
 
 
 #include "ftnstd.h"
-#include <stdio.h>
 #include <ctype.h>
 #include "wressetr.h"
 #include "wresset2.h"

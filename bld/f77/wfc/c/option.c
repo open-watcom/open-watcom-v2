@@ -32,8 +32,6 @@
 
 #include "ftnstd.h"
 #include <ctype.h>
-#include <string.h>
-#include <stdio.h>
 #include "progsw.h"
 #include "errcod.h"
 #include "cpopt.h"

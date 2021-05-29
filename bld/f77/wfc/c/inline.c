@@ -36,7 +36,6 @@
 //
 
 #include "ftnstd.h"
-#include <string.h>
 #include "global.h"
 #include "cgdefs.h"
 #include "wf77aux.h"
@@ -392,7 +391,7 @@ void    InitInlinePragmas( void ) {
 //===========================
 
 #if _CPU == 386 || _CPU == 8086
-    int i;
+    rtn_ids     i;
 
     if( !CreatedPragmas ) {
         if( OZOpts & OZOPT_O_SPACE ) {
@@ -429,11 +428,10 @@ void    InitInlinePragmas( void ) {
 }
 
 
-call_handle     InitInlineCall( int rtn_id ) {
-//============================================
-
+call_handle     InitInlineCall( rtn_ids rtn_id )
+//==============================================
 // Initialize a call to a runtime routine.
-
+{
 #if _CPU == 386 || _CPU == 8086
     sym_id              sym;
     inline_rtn          *in_entry;
@@ -456,7 +454,7 @@ call_handle     InitInlineCall( int rtn_id ) {
     }
     return( CGInitCall( CGFEName( sym, in_entry->typ ), in_entry->typ, in_entry->sym_ptr ) );
 #else
-    rtn_id = rtn_id;
+    /* unused parameters */ (void)rtn_id;
     return( 0 );
 #endif
 }

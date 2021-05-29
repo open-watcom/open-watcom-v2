@@ -31,7 +31,6 @@
 
 
 #include "ftnstd.h"
-#include <string.h>
 #include "global.h"
 #include "opr.h"
 #include "errcod.h"

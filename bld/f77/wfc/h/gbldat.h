@@ -30,6 +30,10 @@
 ****************************************************************************/
 
 
+#ifndef gbl_defn
+#define gbl_defn extern
+#endif
+
 gbl_defn ftnoption      Options;        // compile options
 gbl_defn ftnoption      NewOptions;     // compile options for next statement
 gbl_defn unsigned_32    StmtNo;         // current statement number

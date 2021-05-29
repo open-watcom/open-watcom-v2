@@ -39,23 +39,26 @@ typedef struct adv_entry {
     uint        num_elts;
 } adv_entry;
 
-#include "tddattyp.h"
+typedef unsigned char   byte;
+typedef void            *pointer;
+typedef float           real;
+typedef double          reallong;
 
-typedef     signed_8    logstar1;   // 8-bit logical
-typedef     signed_32   logstar4;   // 32-bit logical
-typedef     signed_8    intstar1;   // 8-bit integer
-typedef     signed_16   intstar2;   // 16-bit integer
-typedef     signed_32   intstar4;   // 32-bit integer
-typedef     real        single;     // single precision
-typedef     long double extended;   // extended precision
+typedef signed_8        logstar1;   // 8-bit logical
+typedef signed_32       logstar4;   // 32-bit logical
+typedef signed_8        intstar1;   // 8-bit integer
+typedef signed_16       intstar2;   // 16-bit integer
+typedef signed_32       intstar4;   // 32-bit integer
+typedef real            single;     // single precision
+typedef long double     extended;   // extended precision
 
 #if _CPU == 8086
-typedef     intstar2    inttarg;    // target integer
+typedef intstar2        inttarg;    // target integer
 #else
-typedef     intstar4    inttarg;    // target integer
+typedef intstar4        inttarg;    // target integer
 #endif
 
-typedef     unsigned_32 ftnoption;
+typedef unsigned_32 ftnoption;
 
 typedef struct scomplex {           // single precision complex
     single      realpart;
@@ -110,7 +113,12 @@ typedef union ftn_type {
     } st;
 } ftn_type;
 
-typedef     unsigned    label_id;
-typedef     obj_ptr     warp_label;
+typedef char            *targ_addr;
+
+typedef unsigned_32     obj_ptr;
+typedef obj_ptr         warp_label;
+typedef unsigned_32     seg_offset;
+
+typedef unsigned        label_id;
 
 #endif

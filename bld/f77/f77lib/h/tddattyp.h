@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,30 +31,10 @@
 ****************************************************************************/
 
 
-#undef  near
-#undef  far
-#undef  huge
-#undef  pascal
-#undef  cdecl
-#undef  fortran
-#undef  interrupt
+//
+// Target dependent data structures.
+//
+typedef char            *targ_addr;
 
-#define _IORslt                 IORslt
-#define IOType_                 IOType
-#define __SetIOCB_              __SetIOCB
-#define __ReleaseIOSys_         __ReleaseIOSys
-#define __GetFThreadStack_      __GetFThreadStack
-#define DoWrite_                DoWrite
-#define DoRead_                 DoRead
-#define __STACKLOW              _STACKLOW
-#define ___ThreadData           __ThreadData
-#define __UseChineseCharSet_    __UseChineseCharSet
-#define __UseEnglishCharSet_    __UseEnglishCharSet
-#define __UseJapaneseCharSet_   __UseJapaneseCharSet
-#define __UseKoreanCharSet_     __UseKoreanCharSet
-#define __InitError_            __InitError
-#define __InitResource_         __InitResource
-#define __InitUnit6CC_          __InitUnit6CC
-#define __FormFeedWithLineFeed_ __FormFeedWithLineFeed
-#define __InitBeginThread_      __InitBeginThread
-#define __FiniBeginThread_      __FiniBeginThread
+typedef unsigned_32     obj_ptr;
+typedef unsigned_32     seg_offset;

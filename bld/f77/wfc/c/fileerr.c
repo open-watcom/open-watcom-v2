@@ -31,7 +31,6 @@
 
 
 #include "ftnstd.h"
-#include <string.h>
 #include <errno.h>
 #include "fileio.h"
 #include "fileerr.h"

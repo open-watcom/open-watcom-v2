@@ -31,7 +31,6 @@
 
 
 #include "ftnstd.h"
-#include <string.h>
 #include <ctype.h>
 #include "progsw.h"
 #include "stmtsw.h"

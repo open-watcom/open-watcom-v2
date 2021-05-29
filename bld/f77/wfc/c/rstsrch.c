@@ -31,7 +31,6 @@
 
 
 #include "ftnstd.h"
-#include <string.h>
 #include "symbol.h"
 #include "fhash.h"
 #include "rstsrch.h"

@@ -31,7 +31,6 @@
 
 
 #include "ftnstd.h"
-#include <string.h>
 #include "ecflags.h"
 #include "errcod.h"
 #include "undef.h"

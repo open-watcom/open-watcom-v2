@@ -29,10 +29,9 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
-#include <string.h>
 #include <ctype.h>
-#include <stdio.h>
 #include <errno.h>
 #include <float.h>
 #include "intcnv.h"

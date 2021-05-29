@@ -31,7 +31,6 @@
 
 
 #include "ftnstd.h"
-#include <string.h>
 #include <ctype.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -63,7 +62,6 @@
 #include "fcgmain.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
-#include "feprotos.h"
 
 #include "clibext.h"
 

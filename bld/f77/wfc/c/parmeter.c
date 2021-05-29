@@ -31,7 +31,6 @@
 
 
 #include "ftnstd.h"
-#include <string.h>
 #include "errcod.h"
 #include "opn.h"
 #include "namecod.h"
