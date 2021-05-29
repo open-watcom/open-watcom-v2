@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -260,7 +260,7 @@ STATIC RET_T carryOut( TARGET *targ, CLIST *clist, time_t max_time )
     } else if( !(targ->attr.precious || targ->attr.symbolic) ) {
         if( !Glob.hold && targExists( targ ) ) {
             if( Glob.erase || GetYes( SHOULD_FILE_BE_DELETED ) ) {
-                if( unlink( targ->node.name ) != 0 ) {
+                if( remove( targ->node.name ) != 0 ) {
                     PrtMsg( FTL | SYSERR_DELETING_ITEM, targ->node.name );
                     ExitFatal();
                     // never return

@@ -553,7 +553,7 @@ void writeerr( void )
     perror ( ofname );
     if (!zcat_flg && !keep_error){
         fclose(stdout);
-        unlink ( ofname );
+        remove( ofname );
     }
     exit ( 1 );
 }
@@ -642,7 +642,7 @@ int check_error( void )     /* returning OK continues with processing next file 
     }
     if (!zcat_flg && !keep_error){
         fclose(stdout);         /* won't get here without an error */
-        unlink ( ofname );
+        remove( ofname );
     }
     return(exit_stat);
 }

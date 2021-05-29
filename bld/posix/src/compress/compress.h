@@ -631,7 +631,6 @@ typedef unsigned int HASH;
 #ifdef vms
 #define ERROR       0x10000004  /* General unspecified error            */
 #define NORMAL      1           /* No error                             */
-#define unlink(x)   remove(x)
 #else
 #    define NORMAL      0
 #    ifdef ERROR

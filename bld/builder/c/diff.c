@@ -349,7 +349,7 @@ INT main( int argc, char **argv )
     output( argv[0], argv[1] );
     if( tempfd != NULL ) {
         fclose( tempfd );
-        unlink( TEMPFILE );
+        remove( TEMPFILE );
     }
     myfree( &oldseek );
     myfree( &newseek );

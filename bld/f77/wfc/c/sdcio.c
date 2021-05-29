@@ -31,7 +31,6 @@
 
 
 #include "ftnstd.h"
-#include "wio.h"
 #include "cpopt.h"
 #include "global.h"
 #include "blips.h"
@@ -54,7 +53,7 @@ void    SDInitIO(void)
 void    SDScratch( const char *name )
 //===================================
 {
-    if( unlink( name ) != 0 ) {
+    if( remove( name ) != 0 ) {
         FSetSysErr( NULL );
     }
 }

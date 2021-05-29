@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -844,15 +844,15 @@ void ActionRename( cmdline_t *cmd, const char *in, const char *out,
             } else if( rc > 0 ) {
                 Fatal( MSG_WLIB_ERROR );
             }
-            if( unlink( out ) != 0 ) {
-                Fatal( MSG_DISK_ERROR, "unlink" );
+            if( remove( out ) != 0 ) {
+                Fatal( MSG_DISK_ERROR, "remove" );
             }
         }
     } else if( cur->batch ) {
         PrtFmt( "if exist %s del %s\n", buf, buf );
         PrtFmt( "rename %s %s\n", out, buf );
     } else {
-        unlink( buf );          /* delete any file of this name */
+        remove( buf );          /* delete any file of this name */
         if( rename( out, buf ) != 0 ) {
             Fatal( MSG_DISK_ERROR, "rename" );
         }

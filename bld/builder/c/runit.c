@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -565,7 +565,7 @@ static int remove_item( const char *name, bool dir )
     } else {
         err_msg = "Unable to delete file %s\n";
         inf_msg = "File %s deleted\n";
-        rc = unlink( name );
+        rc = remove( name );
     }
     if( rm_fflag && rc != 0 && errno == EACCES ) {
         rc = chmod( name, PMODE_RW );
@@ -573,7 +573,7 @@ static int remove_item( const char *name, bool dir )
             if( dir ) {
                 rc = rmdir( name );
             } else {
-                rc = unlink( name );
+                rc = remove( name );
             }
         }
     }

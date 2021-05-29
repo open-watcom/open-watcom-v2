@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +32,7 @@
 
 /*
  * Authors: Spencer W. Thomas, Jim McKie, Steve Davies, Ken Turkowski
- *          James A. Woods, Joe Orost, Dave Mack        
+ *          James A. Woods, Joe Orost, Dave Mack
  */
 
 
@@ -174,7 +175,7 @@ static long int     ratio = 0;
 
 /* ratio check interval */
 #if BITSIZE == 16
-    #define CHECK_GAP 50000 
+    #define CHECK_GAP 50000
 #else
     #define CHECK_GAP 10000 /* ratio check interval */
 #endif
@@ -226,7 +227,7 @@ static void onintr( int sig )
 /***************************/
 {
     if( valid )
-        unlink( ofname );
+        remove( ofname );
     exit( 1 );
 }
 
@@ -236,7 +237,7 @@ static void oops( int sig ) /* wild pointer -- assume bad input */
     if( do_decomp == 1 )
         fprintf( stderr, "uncompress: corrupt input\n" );
     if( valid )
-        unlink( ofname );
+        remove( ofname );
     exit( 1 );
 }
 
@@ -245,7 +246,7 @@ static void writeerr( void )
 {
     perror( ofname );
     if( valid )
-        unlink( ofname );
+        remove( ofname );
     exit( 1 );
 }
 
@@ -656,7 +657,7 @@ static void copystat( char *ifname, char *ofname )
         times.modtime = insbuf.st_mtime;
         utime( ofname, &times );    /* Update last accessed and modified times */
         valid = 0;                  /* prevent latent ofname removal */
-        if( unlink( ifname ) )      /* Remove input file */
+        if( remove( ifname ) )      /* Remove input file */
             perror( ifname );
         if( !quiet )
             fprintf( stderr, " -- replaced with %s", ofname );
@@ -664,7 +665,7 @@ static void copystat( char *ifname, char *ofname )
     }
 
     /* Unsuccessful return -- one of the tests failed */
-    if( unlink( ofname ) )
+    if( remove( ofname ) )
     perror( ofname );
 }
 
@@ -691,7 +692,7 @@ static void compress_file( char **fileptr )
 #ifdef SHORTNAMES
                     if( (cp = strrchr( tempname, DIR_SEP_CHAR ) ) != NULL )
                         cp++;
-                    else                    
+                    else
                         cp = tempname;
                     if( strlen( cp ) > 12 ) {
                         fprintf( stderr, "%s.Z: No such file or directory\n", tempname );
@@ -829,7 +830,7 @@ static void compress_file( char **fileptr )
         if( overwrite == 0 && zcat_flg == 0 ) {
             if( stat( ofname, &statbuf ) == 0 ) {
                 char    response[2];
-            
+
                 response[0] = 'n';
                 fprintf( stderr, "%s already exists;", ofname );
                 if( foreground() ) {
@@ -865,9 +866,9 @@ static void compress_file( char **fileptr )
         setvbuf( stdout, NULL, _IOFBF, IO_BUF_SIZE );
 
         /* Actually do the compression/decompression */
-        if( do_decomp == 0 )    
+        if( do_decomp == 0 )
             compress();
-        else            
+        else
             decompress();
         if( zcat_flg == 0 ) {
             copystat( tempname, ofname );   /* Copy stats */
