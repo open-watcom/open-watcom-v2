@@ -55,7 +55,7 @@
 #include "fmacros.h"
 #include "option.h"
 #include "rstmgr.h"
-#include "wf77aux.h"
+#include "wf77prag.h"
 
 
 unsigned_32     CompTime;

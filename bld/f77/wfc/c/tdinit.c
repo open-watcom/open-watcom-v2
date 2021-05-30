@@ -49,7 +49,7 @@
 #include "cgformat.h"
 #include "cgmagic.h"
 #include "tdinit.h"
-#include "wf77aux.h"
+#include "wf77prag.h"
 #include "fcgmain.h"
 
 

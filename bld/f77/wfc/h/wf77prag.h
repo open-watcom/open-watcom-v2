@@ -25,54 +25,48 @@
 *
 *  ========================================================================
 *
-* Description:  Auxiliary pragma information processing.
+* Description:  Pragma information processing.
 *
 ****************************************************************************/
 
 
 #include <time.h>
-#include "passby.h"
-#include "cg.h"
-#include "cgaux.h"
-#include "auxflags.h"
-#include "rtconst.h"
 
 
-#if _CPU == 386
-#define ARG_NEAR            ARG_SIZE_4
-#define ARG_FAR             ARG_SIZE_8
-#else
-#define ARG_NEAR            ARG_SIZE_2
-#define ARG_FAR             ARG_SIZE_4
-#endif
+typedef struct default_lib {
+    struct default_lib  *link;
+    char                lib[2]; // 1 for priority and 1 for NULLCHAR
+} default_lib;
 
-typedef struct aux_info {
-    call_class          cclass;
-    byte_seq            *code;
-    hw_reg_set          *parms;
-    hw_reg_set          returns;
-    hw_reg_set          streturn;
-    hw_reg_set          save;
-    char                *objname;
-    unsigned            use;
-    aux_flags           flags;
-    pass_by             *arg_info;
-    struct aux_info     *link;
-    size_t              sym_len;
-    char                sym_name[1];
-} aux_info;
+typedef struct arr_info {
+    struct arr_info     *link;
+    size_t              len;
+    char                arr[1];
+} arr_info;
 
-extern aux_info         ProgramInfo;
+typedef struct dep_info {
+    struct dep_info     *link;
+    time_t              time_stamp;
+    char                fn[1];
+} dep_info;
 
-extern void             InitPragmaAux( void );
-extern void             FiniPragmaAux( void );
-extern void             PragmaAux( void );
-extern void             PragmaLinkage( void );
+extern const char       *TokStart;
+extern const char       *TokEnd;
 
-extern aux_info         *AuxLookup( const char *name, size_t name_len );
-extern aux_info         *AuxLookupAdd( const char *name, size_t name_len );
-extern aux_info         *InfoLookup( sym_id sym );
-extern call_handle      InitCall( RTCODE rtn_id );
-extern void             InitRtRtns( void );
-extern void             FreeRtRtns( void );
+extern default_lib      *DefaultLibs;
+extern dep_info         *DependencyInfo;
+
+extern void             InitPragma( void );
+extern void             FiniPragma( void );
+extern void             SubPragmaInit( void );
+extern void             SubPragmaFini( void );
+extern void             AddDependencyInfo( source_t *fi );
+extern void             DefaultLibInfo( void );
+extern void             DoPragma( const char *ptr );
+extern void             ProcPragma( const char *ptr );
+
+extern bool             CurrToken( const char *tok );
+extern void             ScanToken( void );
+extern bool             RecToken( const char *tok );
+extern void             SymbolId( void );
 

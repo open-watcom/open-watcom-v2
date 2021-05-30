@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Auxiliary information processing.
+* Description:  Auxiliary pragma information processing.
 *
 ****************************************************************************/
 
@@ -35,29 +35,25 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "global.h"
-#include "fcgbls.h"
-#include "wf77aux.h"
-#include "errcod.h"
-#include "cpopt.h"
-#include "progsw.h"
-#include "fmemmgr.h"
-#include "ferror.h"
-#include "inout.h"
-#include "cspawn.h"
-#include "asmstmt.h"
-#include "chain.h"
-#include "data.h"
-#include "kwlookup.h"
-#include "symtab.h"
-#include "iflookup.h"
-#include "option.h"
-#include "cioconst.h"
-#include "types.h"
-#include "rstutils.h"
 #include "cgdefs.h"
-#include "fctypes.h"
+#include "wf77aux.h"
+#include "wf77prag.h"
+#include "cpopt.h"
+#include "asmstmt.h"
+#include "fmemmgr.h"
+#include "chain.h"
+#include "ferror.h"
+#include "errcod.h"
+#include "cspawn.h"
+#include "data.h"
+#include "cioconst.h"
+#include "kwlookup.h"
+#include "iflookup.h"
+#include "rstutils.h"
+#include "types.h"
 #include "wf77defs.h"
 #include "wf77info.h"
+#include "fctypes.h"
 #include "cgflags.h"
 #include "fcgmain.h"
 #include "cgswitch.h"
@@ -69,12 +65,13 @@
 #define MAX_REG_SETS    16
 #define MAXIMUM_BYTESEQ 127
 
-#if _INTEL_CPU
-#elif _CPU == _AXP || _CPU == _PPC
-  #define AsmSymFini    AsmFini
-#endif
+#define RT_INDEX_SIZE   (sizeof( RtnTab ) / sizeof( RtnTab[0] ))
 
-#define AddDefaultLibConst(l,p) AddDefaultLib(l, sizeof( l ) - 1, p)
+#if _INTEL_CPU
+    #define REGNAME_MAX_LEN     4
+#elif _CPU == _AXP || _CPU == _PPC
+    #define AsmSymFini          AsmFini
+#endif
 
 
 typedef struct rt_rtn {
@@ -85,24 +82,15 @@ typedef struct rt_rtn {
 } rt_rtn;
 
 
-default_lib             *DefaultLibs;
-dep_info                *DependencyInfo;
-
 aux_info                ProgramInfo;
 
 static aux_info         *AuxList;
 static aux_info         FortranInfo;
 
 static aux_info         *CurrAux;
-static const char       *TokStart;
-static const char       *TokEnd;
 static aux_info         *AliasInfo;
 static char             SymName[MAX_SYMLEN+1];
 static size_t           SymLen;
-
-#if _INTEL_CPU
-static arr_info         *ArrayInfo;
-#endif
 
 #if _CPU == 386
 static char    __Syscall[] = { "aux __syscall \"*\""
@@ -194,11 +182,9 @@ static rt_rtn   RtnTab[] = {
     #undef pick
 };
 
-#define RT_INDEX_SIZE    (sizeof( RtnTab ) / sizeof( RtnTab[0] ))
 
-
-static void InitPragmaAux( void )
-//===============================
+void InitPragmaAux( void )
+//========================
 {
 #if _INTEL_CPU
     int         cpu;
@@ -351,15 +337,6 @@ static void InitPragmaAux( void )
 #endif
 }
 
-void InitPragma( void )
-//=====================
-{
-    DefaultLibs = NULL;
-    DependencyInfo = NULL;
-
-    InitPragmaAux();
-}
-
 static void FreeArgList( aux_info *info )
 //=======================================
 {
@@ -394,8 +371,8 @@ static void FreeAuxEntry( aux_info *aux )
 }
 
 
-static void FiniPragmaAux( void )
-//===============================
+void FiniPragmaAux( void )
+//========================
 {
     void        *next;
 
@@ -406,229 +383,6 @@ static void FiniPragmaAux( void )
     }
     FreeAuxElements( &FortranInfo );
     AsmSymFini();
-}
-
-void FiniPragma( void )
-//=====================
-{
-    FiniPragmaAux();
-
-    FreeChain( &DefaultLibs );
-    // in case of fatal error, FiniAuxInfo() is called
-    // from TDPurge()
-#if _INTEL_CPU
-    FreeChain( &ArrayInfo );
-#endif
-    FreeChain( &DependencyInfo );
-}
-
-void SubPragmaInit( void )
-//========================
-// Initialize pragmas information for a subprogram.
-{
-#if _INTEL_CPU
-    ArrayInfo = NULL;
-#endif
-}
-
-void SubPragmaFini( void )
-//========================
-// Finalize pragmas information for a subprogram.
-{
-#if _INTEL_CPU
-    arr_info    *next;
-    sym_id      arr;
-
-    while( ArrayInfo != NULL ) {
-        next = ArrayInfo->link;
-        arr = SymFind( ArrayInfo->arr, ArrayInfo->len );
-        if( ( arr != NULL ) && (arr->u.ns.flags & SY_SUBSCRIPTED) &&
-            ( arr->u.ns.u1.s.typ != FT_CHAR ) &&
-            ( (arr->u.ns.flags & SY_SUB_PARM) || _Allocatable( arr ) ) ) {
-            arr->u.ns.si.va.u.dim_ext->dim_flags |= DIM_EXTENDED;
-        }
-        FMemFree( ArrayInfo );
-        ArrayInfo = next;
-    }
-#endif
-}
-
-#if _INTEL_CPU
-static bool cmp_ucased( const char *p1, const char *p2, size_t len )
-//==================================================================
-{
-    size_t  i;
-
-    for( i = 0; i < len; i++ ) {
-        if( *p1++ != toupper( *p2++ ) ) {
-            return( false );
-        }
-    }
-    return( true );
-}
-
-static void AddArrayInfo( const char *arr_name, size_t arr_len )
-//==============================================================
-// Process aux information for an array.
-{
-    arr_info    **arr;
-    arr_info    *new_arr;
-    size_t      i;
-
-    for( arr = &ArrayInfo; *arr != NULL; arr = &(*arr)->link ) {
-        if( (*arr)->len != arr_len )
-            continue;
-        if( cmp_ucased( (*arr)->arr, arr_name, arr_len ) ) {
-            return;
-        }
-    }
-    new_arr = FMemAlloc( sizeof( arr_info ) + arr_len );
-    new_arr->link = NULL;
-    for( i = 0; i < arr_len; i++ ) {
-        new_arr->arr[i] = toupper( arr_name[i] );
-    }
-    new_arr->arr[arr_len] = NULLCHAR;
-    new_arr->len = arr_len;
-    *arr = new_arr;
-}
-#endif
-
-void AddDependencyInfo( source_t *fi )
-//====================================
-// Add dependency information for an included file.
-{
-    char        *p;
-    dep_info    **dep;
-    dep_info    *new_dep;
-    struct stat stat_info;
-    char        buff[_MAX_PATH];
-
-    p = _fullpath( buff, fi->name, _MAX_PATH );
-    if( p != NULL ) {
-        for( dep = &DependencyInfo; *dep != NULL; dep = &(*dep)->link ) {
-            if( strcmp( (*dep)->fn, p ) == 0 ) {
-                return;
-            }
-        }
-        if( stat( p, &stat_info ) != -1 ) {
-            new_dep = FMemAlloc( sizeof( dep_info ) + strlen( p ) );
-            new_dep->link = NULL;
-            strcpy( new_dep->fn, p );
-            new_dep->time_stamp = stat_info.st_mtime;
-            *dep = new_dep;
-        }
-    }
-}
-
-
-static void AddDefaultLib( const char *lib_ptr, size_t lib_len, char priority )
-//=============================================================================
-{
-    default_lib         **lib;
-    default_lib         *new_lib;
-
-    if( (Options & OPT_DFLT_LIB) == 0 )
-        return;
-    if( ( *lib_ptr == '"' ) && ( lib_ptr[lib_len - 1] == '"' ) ) {
-        lib_len -= 2;
-        ++lib_ptr;
-    }
-    for( lib = &DefaultLibs; *lib != NULL; lib = &(*lib)->link ) {
-        if( strlen( &(*lib)->lib[1] ) != lib_len )
-            continue;
-        if( memcmp( &(*lib)->lib[1], lib_ptr, lib_len ) == 0 ) {
-            return;
-        }
-    }
-    new_lib = FMemAlloc( sizeof( default_lib ) + lib_len );
-    new_lib->link = NULL;
-    new_lib->lib[0] = priority;
-    memcpy( &new_lib->lib[1], lib_ptr, lib_len );
-    new_lib->lib[1+lib_len] = NULLCHAR;
-    *lib = new_lib;
-}
-
-
-void DefaultLibInfo( void )
-//=========================
-{
-#if _CPU == 386
-    if( CGOpts & CGOPT_STK_ARGS ) {
-        if( CPUOpts & CPUOPT_FPC ) {
-            AddDefaultLibConst( "flibs", '1' );
-            AddDefaultLibConst( "math3s", '1' );
-        } else {
-            AddDefaultLibConst( "flib7s", '1' );
-            AddDefaultLibConst( "math387s", '1' );
-        }
-        AddDefaultLibConst( "clib3s", '1' );
-        if( Options & OPT_RESOURCES ) {
-            AddDefaultLibConst( "wresfs", '1' );
-        }
-    } else {
-        if( CPUOpts & CPUOPT_FPC ) {
-            AddDefaultLibConst( "flib", '1' );
-            AddDefaultLibConst( "math3r", '1' );
-        } else {
-            AddDefaultLibConst( "flib7", '1' );
-            AddDefaultLibConst( "math387r", '1' );
-        }
-        AddDefaultLibConst( "clib3r", '1' );
-        if( Options & OPT_RESOURCES ) {
-            AddDefaultLibConst( "wresf", '1' );
-        }
-    }
-    if( CPUOpts & CPUOPT_FPI ) {
-        AddDefaultLibConst( "emu387", '1' );
-    } else if( CPUOpts & CPUOPT_FPI87 ) {
-        AddDefaultLibConst( "noemu387", '1' );
-    }
-#elif _CPU == 8086
-    if( CGOpts & CGOPT_M_MEDIUM ) {
-        if( CPUOpts & CPUOPT_FPC ) {
-            AddDefaultLibConst( "flibm", '1' );
-            AddDefaultLibConst( "mathm", '1' );
-        } else {
-            AddDefaultLibConst( "flib7m", '1' );
-            AddDefaultLibConst( "math87m", '1' );
-        }
-        AddDefaultLibConst( "clibm", '1' );
-        if( Options & OPT_RESOURCES ) {
-            AddDefaultLibConst( "wresm", '1' );
-        }
-    } else {
-        if( CPUOpts & CPUOPT_FPC ) {
-            AddDefaultLibConst( "flibl", '1' );
-            AddDefaultLibConst( "mathl", '1' );
-        } else {
-            AddDefaultLibConst( "flib7l", '1' );
-            AddDefaultLibConst( "math87l", '1' );
-        }
-        AddDefaultLibConst( "clibl", '1' );
-        if( Options & OPT_RESOURCES ) {
-            AddDefaultLibConst( "wresl", '1' );
-        }
-    }
-    if( CPUOpts & CPUOPT_FPI ) {
-        AddDefaultLibConst( "emu87", '1' );
-    } else if( CPUOpts & CPUOPT_FPI87 ) {
-        AddDefaultLibConst( "noemu87", '1' );
-    }
-#elif _CPU == _AXP
-    AddDefaultLibConst( "flib", '1' );
-    AddDefaultLibConst( "math", '1' );
-    AddDefaultLibConst( "clib", '1' );
-    if( Options & OPT_RESOURCES ) {
-        AddDefaultLibConst( "wresaxp", '1' );
-    }
-#elif _CPU == _PPC
-    AddDefaultLibConst( "flib", '1' );
-    AddDefaultLibConst( "math", '1' );
-    AddDefaultLibConst( "clib", '1' );
-    if( Options & OPT_RESOURCES ) {
-        AddDefaultLibConst( "wresppc", '1' );
-    }
-#endif
 }
 
 
@@ -648,198 +402,6 @@ static aux_info *NewAuxEntry( const char *name, size_t name_len )
     aux->arg_info = NULL;
     AuxList = aux;
     return( aux );
-}
-
-
-static bool CurrToken( const char *tok )
-//======================================
-{
-    const char  *ptr;
-
-    ptr = TokStart;
-    for(;;) {
-        if( ptr == TokEnd )
-            break;
-        if( toupper( *ptr ) != *tok )
-            break;
-        ptr++;
-        tok++;
-    }
-    if( ( ptr == TokEnd ) && ( *tok == NULLCHAR ) )
-        return( true );
-    return( false );
-}
-
-
-static void ScanToken( void )
-//===========================
-{
-    const char  *ptr;
-    bool        found_token;
-    bool        first;
-
-    ptr = TokEnd;
-    ptr = SkipBlanks( ptr );
-    TokStart = ptr;
-    first = true;
-    found_token = false;
-    for(;;) {
-        switch( *ptr ) {
-        case ' ' :
-        case '\t' :
-        case NULLCHAR :
-            found_token = true;
-            break;
-        case '"' :
-            if( first ) {
-                for(;;) {
-                    ++ptr;
-                    if( *ptr == NULLCHAR )
-                        break;
-                    if( *ptr == '"' ) {
-                        ++ptr;
-                        break;
-                    }
-                }
-            }
-            found_token = true;
-            break;
-        case '[' :
-        case ']' :
-        case '(' :
-        case ')' :
-        case ',' :
-        case '=' :
-        case '*' :
-            if( first ) {
-                ++ptr;
-            }
-            found_token = true;
-            break;
-        case '\\' :
-            if( first ) {
-                ReadSrc();
-                ptr = SrcBuff;
-                if( ( *ptr == '*' ) || ( *ptr == 'C' ) || ( *ptr == 'c' ) ) {
-                    ++ptr;
-                } else {
-                    Error( PR_BAD_CONTINUATION );
-                    CSuicide();
-                }
-                ptr = SkipBlanks( ptr );
-                TokStart = ptr;
-            } else {
-                found_token = true;
-            }
-            break;
-        default :
-            first = false;
-            ptr++;
-        }
-        if( found_token ) {
-            break;
-        }
-    }
-    TokEnd = ptr;
-}
-
-static bool RecToken( const char *tok )
-//=====================================
-{
-    if( CurrToken( tok ) ) {
-        ScanToken();
-        return( true );
-    }
-    return( false );
-}
-
-static void ReqToken( const char *tok )
-//=====================================
-{
-    size_t      len;
-    char        buffer[ERR_BUFF_SIZE + 1];
-
-    if( !RecToken( tok ) ) {
-        len = TokEnd - TokStart;
-        memcpy( buffer, TokStart, len );
-        buffer[len] = NULLCHAR;
-        Error( PR_BAD_SYNTAX, tok, buffer );
-        CSuicide();
-    }
-}
-
-
-static void ScanFnToken( void )
-//=============================
-{
-    const char  *ptr;
-    bool        found_token;
-    bool        first;
-
-    ptr = TokEnd;
-    ptr = SkipBlanks( ptr );
-    TokStart = ptr;
-    first = true;
-    for( found_token = false; !found_token; ) {
-        switch( *ptr ) {
-        case ' ' :
-        case '\t' :
-        case NULLCHAR :
-            found_token = true;
-            break;
-        case '"' :
-            if( first ) {
-                for(;;) {
-                    ++ptr;
-                    if( *ptr == NULLCHAR )
-                        break;
-                    if( *ptr == '"' ) {
-                        ++ptr;
-                        break;
-                    }
-                }
-            }
-            found_token = true;
-            break;
-        default :
-            first = false;
-            ptr++;
-        }
-    }
-    TokEnd = ptr;
-}
-
-
-static bool RecFnToken( const char *tok )
-//=======================================
-{
-    if( CurrToken( tok ) ) {
-        ScanFnToken();
-        return( true );
-    }
-    return( false );
-}
-
-
-static void SymbolId( void )
-//==========================
-{
-    const char  *ptr;
-
-    ptr = TokStart;
-    if( ( isalpha( *ptr ) == 0 ) && ( *ptr != '$' ) && ( *ptr != '_' ) ) {
-        Error( PR_SYMBOL_NAME );
-        CSuicide();
-    }
-    for(;;) {
-        ptr++;
-        if( ptr == TokEnd )
-            break;
-        if( ( isalnum( *ptr ) == 0 ) && ( *ptr != '$' ) && ( *ptr != '_' ) ) {
-            Error( PR_SYMBOL_NAME );
-            CSuicide();
-        }
-    }
 }
 
 
@@ -1316,9 +878,23 @@ static void GetByteSeq( void )
 }
 
 
-#if _INTEL_CPU
+static void ReqToken( const char *tok )
+//=====================================
+{
+    size_t      len;
+    char        buffer[ERR_BUFF_SIZE + 1];
 
-#define REGNAME_MAX_LEN     4
+    if( !RecToken( tok ) ) {
+        len = TokEnd - TokStart;
+        memcpy( buffer, TokStart, len );
+        buffer[len] = NULLCHAR;
+        Error( PR_BAD_SYNTAX, tok, buffer );
+        CSuicide();
+    }
+}
+
+
+#if _INTEL_CPU
 
 static hw_reg_set RegSet( void )
 //==============================
@@ -1636,8 +1212,8 @@ static void GetParmInfo( void )
     }
 }
 
-static void     PragmaLinkage( void )
-//===================================
+void     PragmaLinkage( void )
+//============================
 // Process a pragma linkage.
 {
     AliasInfo = &FortranInfo;
@@ -1654,8 +1230,8 @@ static void PragmaAuxEnd( void )
 {
 }
 
-static void     PragmaAux( void )
-//===============================
+void     PragmaAux( void )
+//========================
 // Process a pragma aux.
 {
     struct {
@@ -1727,83 +1303,6 @@ static void     PragmaAux( void )
         }
     }
     PragmaAuxEnd();
-}
-
-static void     Pragma( void )
-//============================
-// Process a pragma.
-{
-#if _INTEL_CPU
-    const char  *arr;
-    size_t      arr_len;
-#endif
-
-    if( RecFnToken( "LIBRARY" ) ) {
-        if( RecFnToken( "\0" ) ) {
-            DefaultLibInfo();
-        } else {
-            while( !RecFnToken( "\0" ) ) {
-                AddDefaultLib( TokStart, TokEnd - TokStart, '9' );
-                ScanFnToken();
-            }
-        }
-#if _INTEL_CPU
-    } else if( RecToken( "ARRAY" ) ) {
-        SymbolId();
-        arr = TokStart;
-        arr_len = TokEnd - TokStart;
-        ScanToken();
-        if( RecToken( "FAR" ) ) {
-            if( _SmallDataModel( CGOpts ) ) {
-                AddArrayInfo( arr, arr_len );
-            }
-  #if _CPU == 8086
-        } else if( RecToken( "HUGE" ) ) {
-            if( CGOpts & CGOPT_M_LARGE ) {
-                AddArrayInfo( arr, arr_len );
-            }
-  #endif
-        }
-#endif
-    } else if( RecToken( "LINKAGE" ) ) {
-        PragmaLinkage();
-    } else if( RecToken( "AUX" ) ) {
-        PragmaAux();
-    }
-}
-
-
-void DoPragma( const char *ptr )
-//==============================
-{
-    int         status;
-
-    TokStart = ptr;
-    TokEnd = ptr;
-    ScanToken();
-    for(;;) {
-        status = CSpawn( &Pragma );
-        if( status != 0 ) {
-            if( ProgSw & PS_FATAL_ERROR ) {
-                CSuicide();
-            }
-            AsmSymFini();
-            break;
-        }
-        if( RecToken( "\0" ) ) {
-            break;
-        }
-    }
-}
-
-
-void ProcPragma( const char *ptr )
-//================================
-{
-    // don't process auxiliary pragma's until pass 2
-    if( ProgSw & PS_DONT_GENERATE )
-        return;
-    DoPragma( ptr );
 }
 
 

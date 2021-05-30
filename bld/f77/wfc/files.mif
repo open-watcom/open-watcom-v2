@@ -182,6 +182,7 @@ tdovl1 += &
     gsubstr.obj &
     initopt.obj &
     mainline.obj &
+    wf77prag.obj &
     wf77aux.obj &
     asmalloc.obj &
     asmmsg.obj &

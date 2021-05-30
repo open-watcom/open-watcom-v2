@@ -34,6 +34,7 @@
 #include "global.h"
 #include "wf77defs.h"
 #include "wf77aux.h"
+#include "wf77prag.h"
 #include "wf77info.h"
 #include "fcgbls.h"
 #include "ecflags.h"

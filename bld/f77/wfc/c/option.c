@@ -49,7 +49,7 @@
 #include "fmacros.h"
 #include "option.h"
 #include "compcfg.h"
-#include "wf77aux.h"
+#include "wf77prag.h"
 #include "fcdatad.h"
 #include "cioconst.h"
 

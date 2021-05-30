@@ -48,7 +48,7 @@
 #include "filescan.h"
 #include "sdcio.h"
 #include "libsupp.h"
-#include "wf77aux.h"
+#include "wf77prag.h"
 #include "errutil.h"
 #include "sdfile.h"
 #include "brseinfo.h"
