@@ -396,17 +396,11 @@ void InitPragmaAux( void )
 #endif
 }
 
-static void FreeArgList( aux_info *info )
-//=======================================
-{
-    FreeChain( &info->arg_info );
-}
-
 
 static void FreeAuxElements( aux_info *info )
 //===========================================
 {
-    FreeArgList( info );
+    FreeChain( &info->arg_info );
     if( info->parms != DefaultInfo.parms ) {
         FMemFree( info->parms );
         info->parms = DefaultInfo.parms;
@@ -515,21 +509,18 @@ static void DupObjectName( aux_info *dst, aux_info *src )
 }
 
 
-static void DupArgInfo( aux_info *dst, aux_info *src )
-//====================================================
+static void DupArgInfo( pass_by **dst, pass_by *src )
+//===================================================
 {
-    pass_by     *new_arg;
-    pass_by     *args;
-    pass_by     **curr_arg;
+    pass_by     *arg;
 
-    curr_arg = &dst->arg_info;
-    for( args = src->arg_info; args != NULL; args = args->link ) {
-        new_arg = FMemAlloc( sizeof( pass_by ) );
-        new_arg->info = args->info;
-        new_arg->link = NULL;
-        *curr_arg = new_arg;
-        curr_arg = &new_arg->link;
+    for( ; src != NULL; src = src->link ) {
+        arg = FMemAlloc( sizeof( pass_by ) );
+        arg->info = src->info;
+        *dst = arg;
+        dst = &arg->link;
     }
+    *dst = NULL;
 }
 
 
@@ -550,7 +541,7 @@ static void CopyAuxInfo( aux_info *dst, aux_info *src )
         if( src->objname != DefaultInfo.objname ) {
             DupObjectName( dst, src );
         }
-        DupArgInfo( dst, src );
+        DupArgInfo( &dst->arg_info, src->arg_info );
     }
 }
 
@@ -1016,7 +1007,7 @@ static void GetArgList( void )
     pass_by     **curr_arg;
     pass_info   arg_pass_info;
 
-    FreeArgList( CurrAux );
+    FreeChain( &CurrAux->arg_info );
     if( RecToken( ")" ) )
         return;
     curr_arg = &CurrAux->arg_info;
