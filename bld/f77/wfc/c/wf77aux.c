@@ -74,6 +74,20 @@
 #endif
 
 
+typedef enum {
+    #define pick(a,b,c,d)   a,
+    #include "auxinfo.h"
+    #undef pick
+    M_SIZE
+} magic_words;
+
+typedef struct aux_info_flg {
+    boolbit     f_near          : 1;
+    boolbit     f_routine_pops  : 1;
+    boolbit     f_caller_return : 1;
+    boolbit     f_8087_returns  : 1;
+} aux_info_flg;
+
 typedef struct rt_rtn {
     const char  *name;
     sym_id      sym_ptr;
@@ -81,14 +95,21 @@ typedef struct rt_rtn {
     byte        typ;
 } rt_rtn;
 
-
 aux_info                ProgramInfo;
 
-static aux_info         *AuxList;
 static aux_info         FortranInfo;
+static aux_info         WatcallInfo;
+static aux_info         CdeclInfo;
+static aux_info         PascalInfo;
+static aux_info         SyscallInfo;
+static aux_info         StdcallInfo;
+static aux_info         FastcallInfo;
+static aux_info         OptlinkInfo;
 
+static aux_info         *AuxList;
 static aux_info         *CurrAux;
 static aux_info         *AliasInfo;
+
 static char             SymName[MAX_SYMLEN+1];
 static size_t           SymLen;
 
@@ -176,12 +197,34 @@ static aux_info         DefaultInfo = {
 #include "regs.c"
 
 
+static struct magic_words_info {
+    const char      *name;
+    aux_info        *info;
+} MagicWords[] = {
+    #define pick(a,b,c,d) { c, d },
+    #include "auxinfo.h"
+    #undef pick
+};
+
 static rt_rtn   RtnTab[] = {
     #define pick(id,name,sym,aux,typ) {name,sym,aux,typ},
     #include "rtdefn.h"
     #undef pick
 };
 
+
+static aux_info *LookupMagicKeyword( void )
+/*****************************************/
+{
+    magic_words     mword;
+
+    for( mword = 0; mword < M_SIZE; mword++ ) {
+        if( RecToken( MagicWords[mword].name ) ) {
+            return( MagicWords[mword].info );
+        }
+    }
+    return( NULL );
+}
 
 void InitPragmaAux( void )
 //========================
@@ -410,21 +453,23 @@ static void AliasName( void )
 {
     aux_info    *alias;
 
-    SymbolId();
-    alias = AuxLookup( TokStart, TokEnd - TokStart );
+    alias = LookupMagicKeyword();   // magic keywords "DEFAULT", "__CDECL" ...
+    if( alias == NULL ) {
+        SymbolId();
+        alias = AuxLookup( TokStart, TokEnd - TokStart );
+        ScanToken();
+    }
     if( alias != NULL ) {
         AliasInfo = alias;
     }
-    ScanToken();
 }
 
 
 static void SymbolName( void )
 //============================
 {
-    if( RecToken( "DEFAULT" ) ) {
-        SymLen = 0;
-    } else {
+    CurrAux = LookupMagicKeyword(); // magic keywords "DEFAULT", "__CDECL" ...
+    if( CurrAux == NULL ) {
         SymbolId();
         SymLen = TokEnd - TokStart;
         if( SymLen > MAX_SYMLEN ) {
@@ -574,11 +619,14 @@ static void CopyAuxInfo( aux_info *dst, aux_info *src )
 static void ProcessAlias( void )
 //==============================
 {
-    if( SymLen == 0 ) { // "DEFAULT"
-        CurrAux = AliasInfo;
+    if( CurrAux != NULL ) {             // magic keywords "DEFAULT", "__CDECL" ...
+        if( CurrAux != AliasInfo ) {    // Consider: c$pragma aux (sp) sp
+            FreeAuxElements( CurrAux );
+            CopyAuxInfo( CurrAux, AliasInfo );
+        }
     } else {
         CurrAux = AuxLookup( SymName, SymLen );
-        if( CurrAux != AliasInfo ) { // Consider: c$pragma aux (sp) sp
+        if( CurrAux != AliasInfo ) {    // Consider: c$pragma aux (sp) sp
             if( CurrAux == NULL ) {
                 CurrAux = NewAuxEntry( SymName, SymLen );
             } else {
@@ -878,6 +926,8 @@ static void GetByteSeq( void )
 }
 
 
+#if _INTEL_CPU
+
 static void ReqToken( const char *tok )
 //=====================================
 {
@@ -893,8 +943,6 @@ static void ReqToken( const char *tok )
     }
 }
 
-
-#if _INTEL_CPU
 
 static hw_reg_set RegSet( void )
 //==============================
