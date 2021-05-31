@@ -458,20 +458,19 @@ void SymbolId( void )
 //===================
 {
     const char  *ptr;
+    char        c;
 
+    /* invalidate first character if it is digit */
     ptr = TokStart;
-    if( ( isalpha( *ptr ) == 0 ) && ( *ptr != '$' ) && ( *ptr != '_' ) ) {
-        Error( PR_SYMBOL_NAME );
-        CSuicide();
-    }
-    for(;;) {
-        ptr++;
-        if( ptr == TokEnd )
-            break;
-        if( ( isalnum( *ptr ) == 0 ) && ( *ptr != '$' ) && ( *ptr != '_' ) ) {
+    c = *ptr;
+    if( isdigit( c ) )
+        c = '!';
+    while( ptr != TokEnd ) {
+        if( ( isalnum( c ) == 0 ) && ( c != '$' ) && ( c != '_' ) ) {
             Error( PR_SYMBOL_NAME );
             CSuicide();
         }
+        c = *(++ptr);
     }
 }
 

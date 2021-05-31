@@ -75,4 +75,3 @@ extern aux_info         *InfoLookup( sym_id sym );
 extern call_handle      InitCall( RTCODE rtn_id );
 extern void             InitRtRtns( void );
 extern void             FreeRtRtns( void );
-
