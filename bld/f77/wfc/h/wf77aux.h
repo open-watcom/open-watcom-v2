@@ -69,7 +69,6 @@ extern void             FiniPragmaAux( void );
 extern void             PragmaAux( void );
 extern void             PragmaLinkage( void );
 
-extern aux_info         *AuxLookup( const char *name, size_t name_len );
 #if _CPU == 386
 extern void             CheckFar16Call( sym_id sp );
 #endif

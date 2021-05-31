@@ -226,6 +226,22 @@ static aux_info *LookupMagicKeyword( void )
     return( NULL );
 }
 
+static aux_info *AuxLookup( const char *name, size_t name_len )
+//=============================================================
+{
+    aux_info    *aux;
+
+    for( aux = AuxList; aux != NULL; aux = aux->link ) {
+        if( aux->sym_len == name_len ) {
+            if( strnicmp( name, aux->sym_name, name_len ) == 0 ) {
+                break;
+            }
+        }
+    }
+    return( aux );
+}
+
+
 void InitPragmaAux( void )
 //========================
 {
@@ -429,83 +445,6 @@ void FiniPragmaAux( void )
 }
 
 
-static aux_info *NewAuxEntry( const char *name, size_t name_len )
-//========================================================
-{
-    aux_info    *aux;
-
-    aux = FMemAlloc( sizeof( aux_info ) + name_len );
-    aux->sym_len = name_len;
-    memcpy( aux->sym_name, name, name_len );
-    aux->sym_name[name_len] = NULLCHAR;
-    aux->link = AuxList;
-    aux->parms = DefaultInfo.parms;
-    aux->code = DefaultInfo.code;
-    aux->objname = DefaultInfo.objname;
-    aux->arg_info = NULL;
-    AuxList = aux;
-    return( aux );
-}
-
-
-static void AliasName( void )
-//===========================
-{
-    aux_info    *alias;
-
-    alias = LookupMagicKeyword();   // magic keywords "DEFAULT", "__CDECL" ...
-    if( alias == NULL ) {
-        SymbolId();
-        alias = AuxLookup( TokStart, TokEnd - TokStart );
-        ScanToken();
-    }
-    if( alias != NULL ) {
-        AliasInfo = alias;
-    }
-}
-
-
-static void SymbolName( void )
-//============================
-{
-    CurrAux = LookupMagicKeyword(); // magic keywords "DEFAULT", "__CDECL" ...
-    if( CurrAux == NULL ) {
-        SymbolId();
-        SymLen = TokEnd - TokStart;
-        if( SymLen > MAX_SYMLEN ) {
-            SymLen = MAX_SYMLEN;
-        }
-        memcpy( SymName, TokStart, SymLen );
-        SymName[SymLen] = NULLCHAR;
-        ScanToken();
-    }
-}
-
-
-static void ObjectName( void )
-//============================
-{
-    size_t      obj_len;
-    char        *name;
-
-    if( *TokStart != '"' )
-        return;
-    if( TokStart == TokEnd - 1 )
-        CSuicide();
-    if( *(TokEnd - 1) != '"' )
-        CSuicide();
-    obj_len = TokEnd - TokStart - 2;
-    name = FMemAlloc( obj_len + 1 );
-    if( CurrAux->objname != DefaultInfo.objname ) {
-        FMemFree( CurrAux->objname );
-    }
-    memcpy( name, TokStart + 1, obj_len );
-    name[obj_len] = NULLCHAR;
-    CurrAux->objname = name;
-    ScanToken();
-}
-
-
 static void DupParmInfo( aux_info *dst, aux_info *src )
 //=====================================================
 {
@@ -613,6 +552,83 @@ static void CopyAuxInfo( aux_info *dst, aux_info *src )
         }
         DupArgInfo( dst, src );
     }
+}
+
+
+static aux_info *NewAuxEntry( const char *name, size_t name_len )
+//========================================================
+{
+    aux_info    *aux;
+
+    aux = FMemAlloc( sizeof( aux_info ) + name_len );
+    aux->sym_len = name_len;
+    memcpy( aux->sym_name, name, name_len );
+    aux->sym_name[name_len] = NULLCHAR;
+    aux->link = AuxList;
+    aux->parms = DefaultInfo.parms;
+    aux->code = DefaultInfo.code;
+    aux->objname = DefaultInfo.objname;
+    aux->arg_info = NULL;
+    AuxList = aux;
+    return( aux );
+}
+
+
+static void AliasName( void )
+//===========================
+{
+    aux_info    *alias;
+
+    alias = LookupMagicKeyword();   // magic keywords "DEFAULT", "__CDECL" ...
+    if( alias == NULL ) {
+        SymbolId();
+        alias = AuxLookup( TokStart, TokEnd - TokStart );
+        ScanToken();
+    }
+    if( alias != NULL ) {
+        AliasInfo = alias;
+    }
+}
+
+
+static void SymbolName( void )
+//============================
+{
+    CurrAux = LookupMagicKeyword(); // magic keywords "DEFAULT", "__CDECL" ...
+    if( CurrAux == NULL ) {
+        SymbolId();
+        SymLen = TokEnd - TokStart;
+        if( SymLen > MAX_SYMLEN ) {
+            SymLen = MAX_SYMLEN;
+        }
+        memcpy( SymName, TokStart, SymLen );
+        SymName[SymLen] = NULLCHAR;
+        ScanToken();
+    }
+}
+
+
+static void ObjectName( void )
+//============================
+{
+    size_t      obj_len;
+    char        *name;
+
+    if( *TokStart != '"' )
+        return;
+    if( TokStart == TokEnd - 1 )
+        CSuicide();
+    if( *(TokEnd - 1) != '"' )
+        CSuicide();
+    obj_len = TokEnd - TokStart - 2;
+    name = FMemAlloc( obj_len + 1 );
+    if( CurrAux->objname != DefaultInfo.objname ) {
+        FMemFree( CurrAux->objname );
+    }
+    memcpy( name, TokStart + 1, obj_len );
+    name[obj_len] = NULLCHAR;
+    CurrAux->objname = name;
+    ScanToken();
 }
 
 
@@ -1351,22 +1367,6 @@ void     PragmaAux( void )
         }
     }
     PragmaAuxEnd();
-}
-
-
-aux_info *AuxLookup( const char *name, size_t name_len )
-//======================================================
-{
-    aux_info    *aux;
-
-    for( aux = AuxList; aux != NULL; aux = aux->link ) {
-        if( aux->sym_len == name_len ) {
-            if( strnicmp( name, aux->sym_name, name_len ) == 0 ) {
-                break;
-            }
-        }
-    }
-    return( aux );
 }
 
 
