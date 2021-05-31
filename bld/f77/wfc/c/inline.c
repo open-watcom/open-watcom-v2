@@ -341,7 +341,7 @@ typedef struct inline_rtn {
     const char  *pragma;
     cg_type     typ;
     sym_id      sym_ptr;
-    aux_info    *aux;
+    aux_info    *info;
 } inline_rtn;
 
 static inline_rtn  OptTimeInlineTab[] = {
@@ -451,7 +451,7 @@ call_handle     InitInlineCall( rtn_ids rtn_id )
         sym->u.ns.xt.size = TypeSize( sym->u.ns.u1.s.typ );
         sym->u.ns.u3.address = NULL;
         in_entry->sym_ptr = sym;
-        in_entry->aux = AuxLookup( in_entry->name, name_len );
+        in_entry->info = InfoLookup( sym );
     }
     return( CGInitCall( CGFEName( sym, in_entry->typ ), in_entry->typ, in_entry->sym_ptr ) );
 #else

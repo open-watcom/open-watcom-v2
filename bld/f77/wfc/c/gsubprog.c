@@ -77,20 +77,7 @@ void    GBegCall( itnode *itptr ) {
 
     sp = itptr->sym_ptr;
 #if _CPU == 386
-    {
-        aux_info    *aux;
-        aux = AuxLookup( sp->u.ns.name, sp->u.ns.u2.name_len );
-        if( aux != NULL ) {
-            if( aux->cclass & FAR16_CALL ) {
-                if( (SubProgId->u.ns.flags & SY_SUBPROG_TYPE) == SY_PROGRAM ) {
-                    ProgramInfo.cclass |= THUNK_PROLOG;
-                } else {
-                    aux = AuxLookupAdd( SubProgId->u.ns.name, SubProgId->u.ns.u2.name_len );
-                    aux->cclass |= THUNK_PROLOG;
-                }
-            }
-        }
-    }
+    CheckFar16Call( sp );
 #endif
     EmitOp( FC_CALL );
     OutPtr( itptr->sym_ptr );

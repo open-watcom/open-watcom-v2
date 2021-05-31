@@ -70,7 +70,9 @@ extern void             PragmaAux( void );
 extern void             PragmaLinkage( void );
 
 extern aux_info         *AuxLookup( const char *name, size_t name_len );
-extern aux_info         *AuxLookupAdd( const char *name, size_t name_len );
+#if _CPU == 386
+extern void             CheckFar16Call( sym_id sp );
+#endif
 extern aux_info         *InfoLookup( sym_id sym );
 extern call_handle      InitCall( RTCODE rtn_id );
 extern void             InitRtRtns( void );

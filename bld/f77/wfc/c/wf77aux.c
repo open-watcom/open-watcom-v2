@@ -91,7 +91,7 @@ typedef struct aux_info_flg {
 typedef struct rt_rtn {
     const char  *name;
     sym_id      sym_ptr;
-    aux_info    *aux;
+    aux_info    *info;
     byte        typ;
 } rt_rtn;
 
@@ -1370,18 +1370,29 @@ aux_info *AuxLookup( const char *name, size_t name_len )
 }
 
 
-aux_info *AuxLookupAdd( const char *name, size_t name_len )
-//=========================================================
+#if _CPU == 386
+void CheckFar16Call( sym_id sp )
+//==============================
 {
-    aux_info    *aux;
+    aux_info    *info;
 
-    aux = AuxLookup( name, name_len );
-    if( aux == NULL ) {
-        aux = NewAuxEntry( name, name_len );
-        CopyAuxInfo( aux, &FortranInfo );
+    info = AuxLookup( sp->u.ns.name, sp->u.ns.u2.name_len );
+    if( info != NULL ) {
+        if( info->cclass & FAR16_CALL ) {
+            if( (SubProgId->u.ns.flags & SY_SUBPROG_TYPE) == SY_PROGRAM ) {
+                ProgramInfo.cclass |= THUNK_PROLOG;
+            } else {
+                info = AuxLookup( SubProgId->u.ns.name, SubProgId->u.ns.u2.name_len );
+                if( info == NULL ) {
+                    info = NewAuxEntry( SubProgId->u.ns.name, SubProgId->u.ns.u2.name_len );
+                    CopyAuxInfo( info, &FortranInfo );
+                }
+                info->cclass |= THUNK_PROLOG;
+            }
+        }
     }
-    return( aux );
 }
+#endif
 
 
 static aux_info    *RTAuxInfo( sym_id rtn )
@@ -1392,7 +1403,7 @@ static aux_info    *RTAuxInfo( sym_id rtn )
 
     for( i = 0; i < RT_INDEX_SIZE; i++ ) {
         if( RtnTab[i].sym_ptr == rtn ) {
-            return( RtnTab[i].aux );
+            return( RtnTab[i].info );
         }
     }
     return( NULL );
