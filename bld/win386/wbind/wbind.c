@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,6 +57,11 @@
 #define RC_STR          "wrc"
 #endif
 
+typedef struct file_str {
+    FILE        *fp;
+    const char  *name;
+} file_str;
+
 static bool quietFlag = false;
 
 static void normalizeFName( char *dst, size_t maxlen, const char *src )
@@ -99,7 +104,7 @@ static void normalizeFName( char *dst, size_t maxlen, const char *src )
     *dst = '\0';
 }
 
-static void updateNHStuff( FILE *fp, const char *fname, const char *desc )
+static void updateNHStuff( FILE *fp, const char *basename, const char *desc )
 {
     dos_exe_header      dh;
     os2_exe_header      nh;
@@ -107,12 +112,12 @@ static void updateNHStuff( FILE *fp, const char *fname, const char *desc )
     size_t              len;
     char                modname[8];
 
-    len = strlen( fname );
+    len = strlen( basename );
     if( len < 8 ) {
-        memcpy( modname, fname, len );
+        memcpy( modname, basename, len );
         memset( modname + len, ' ', 8 - len );
     } else {
-        memcpy( modname, fname, 8 );
+        memcpy( modname, basename, 8 );
     }
     fseek( fp, 0, SEEK_SET );
     fread( &dh, 1, sizeof( dh ), fp );
@@ -138,7 +143,7 @@ static void updateNHStuff( FILE *fp, const char *fname, const char *desc )
 }
 
 
-static void myPrintf( char *str, ... )
+static void myPrintf( const char *str, ... )
 {
     va_list     al;
 
@@ -150,7 +155,7 @@ static void myPrintf( char *str, ... )
 
 } /* myPrintf */
 
-static void doError( char *str, ... )
+static void doError( const char *str, ... )
 {
     va_list     al;
 
@@ -173,7 +178,7 @@ static void doBanner( void )
 }
 
 
-static void doUsage( char *str )
+static void doUsage( const char *str )
 {
     quietFlag = false;
     doBanner();
@@ -182,7 +187,7 @@ static void doUsage( char *str )
     }
 
     printf("Usage:  wbind [file] [-udnq] [-D \"<desc>\"] [-s <supervisor>] [-R <rc options>]\n" );
-    printf("        [file] is the name of the 32-bit windows exe to bind\n" );
+    printf("        [file] is the name of the 32-bit windows executable to bind\n" );
     printf("        -u              : unbind a bound executable\n" );
     printf("        -d              : build a 32-bit dll\n" );
     printf("        -n              : no resource compile required\n" );
@@ -207,7 +212,7 @@ static void *myAlloc( size_t amount )
     return( tmp );
 }
 
-static void errPrintf( char *str, ... )
+static void errPrintf( const char *str, ... )
 {
     va_list     al;
 
@@ -217,7 +222,7 @@ static void errPrintf( char *str, ... )
 
 } /* errPrintf */
 
-static long copy_file( FILE *in, FILE *out, const char *infile, const char *outfile )
+static long copy_file( file_str *in, file_str *out )
 {
     size_t      size;
     size_t      len;
@@ -227,15 +232,15 @@ static long copy_file( FILE *in, FILE *out, const char *infile, const char *outf
     buff = myAlloc( IO_BUFF );
     totalsize = 0L;
     for( ;; ) {
-        size = fread( buff, 1, IO_BUFF, in );
+        size = fread( buff, 1, IO_BUFF, in->fp );
         if( size != IO_BUFF ) {
-            if( ferror( in ) ) {
-                doError( "Error reading file \"%s\"", infile );
+            if( ferror( in->fp ) ) {
+                doError( "Error reading file \"%s\"", in->name );
             }
         }
-        len = fwrite( buff, 1, size, out );
+        len = fwrite( buff, 1, size, out->fp );
         if( len != size ) {
-            doError( "Error writing file \"%s\"", outfile );
+            doError( "Error writing file \"%s\"", out->name );
         }
         totalsize += (long)len;
         if( size != IO_BUFF ) {
@@ -246,55 +251,83 @@ static long copy_file( FILE *in, FILE *out, const char *infile, const char *outf
     return( totalsize );
 }
 
-static void FindExtender( char *extname, char *winext )
+#if defined( __UNIX__ )
+    #define WATCOM_SUBDIR   "/binw/"
+#else
+    #define WATCOM_SUBDIR   "\\binw\\"
+#endif
+#define DLL_NAME            "w386dll.ext"
+#define EXE_NAME            "win386.ext"
+
+static void FindExtender( bool dllflag, char *ext_path_name )
 {
     char        *watcom;
     FILE        *fp;
+    const char  *extender_name;
+    size_t      len;
 
-    _searchenv( extname, "PATH", winext );
-    if( winext[0] == '\0' ) {
+    if( dllflag ) {
+        extender_name = DLL_NAME;
+    } else {
+        extender_name = EXE_NAME;
+    }
+    _searchenv( extender_name, "PATH", ext_path_name );
+    if( ext_path_name[0] == '\0' ) {
         watcom = getenv( "WATCOM" );
         if( watcom != NULL ) {
-            strcpy( winext, watcom );
-#if defined( __UNIX__ )
-            strcat( winext, "/binw/" );
-#else
-            strcat( winext, "\\binw\\" );
-#endif
-            strcat( winext, extname );
-            if( (fp = fopen( winext, "r" )) != NULL ) {
+            strncpy( ext_path_name, watcom, _MAX_PATH - 1 );
+            ext_path_name[_MAX_PATH - 1] = '\0';
+            len = strlen( ext_path_name );
+            if( dllflag ) {
+                strncpy( ext_path_name + len, WATCOM_SUBDIR DLL_NAME, _MAX_PATH - 1 - len );
+            } else {
+                strncpy( ext_path_name + len, WATCOM_SUBDIR EXE_NAME, _MAX_PATH - 1 - len );
+            }
+            ext_path_name[_MAX_PATH - 1] = '\0';
+            if( (fp = fopen( ext_path_name, "r" )) != NULL ) {
                 fclose( fp );
             } else {
-                winext[0] = '\0';               // indicate file not found
+                watcom = NULL;
             }
         }
-        if( winext[0] == '\0' ) {
-            doError( "Could not find \"%s\" in your path", extname );
+        if( watcom == NULL ) {
+            doError( "Could not find \"%s\" in your path", extender_name );
         }
     }
 }
 
+static FILE *open_file( const char *name, const char *mode )
+{
+    FILE    *fp;
+
+    fp = fopen( name, mode );
+    if( fp == NULL ) {
+        doError( "Could not open %s", name );
+    }
+    return( fp );
+}
+
 int main( int argc, char *argv[] )
 {
-    FILE            *in;
-    FILE            *out;
+    file_str        in;
+    file_str        out;
     int             i, rcparm = 0, pcnt;
     bool            Rflag = false;
     bool            nflag = false;
     bool            uflag = false;
     bool            dllflag = false;
-    char            *wext = NULL;
-    unsigned_32     exelen = 0;
+    const char      *wext = NULL;
+    unsigned_32     u32;
     pgroup2         pg;
-    char            rex[_MAX_PATH];
-    char            exe[_MAX_PATH];
-    char            dll[_MAX_PATH];
-    char            res[_MAX_PATH];
-    char            winext[_MAX_PATH];
+    char            rex_name[_MAX_PATH];
+    char            exe_name[_MAX_PATH];
+    char            res_name[_MAX_PATH];
+    char            ext_name[_MAX_PATH];
     char            rc[256];
     long            totalsize;
+    long            exelen;
     const char      **arglist;
-    char            *path = NULL;
+    const char      *path = NULL;
     int             currarg;
     size_t          len;
     simple_header   re;
@@ -365,78 +398,70 @@ int main( int argc, char *argv[] )
     /*
      * get files to use
      */
-    normalizeFName( path, strlen( path ) + 1, path );
-    _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-    _makepath( rex, pg.drive, pg.dir, pg.fname, "rex" );
-    if( dllflag ) {
-        _makepath( dll, pg.drive, pg.dir, pg.fname, "dll" );
+    normalizeFName( ext_name, sizeof( ext_name ), path );
+    _splitpath2( ext_name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    if( uflag ) {
+        if( pg.ext[0] == '\0' ) {
+            pg.ext = "exe";
+        }
+    } else if( dllflag ) {
+        pg.ext = "dll";
+    } else {
+        pg.ext = "exe";
     }
-    _makepath( exe, pg.drive, pg.dir, pg.fname, "exe" );
-    _makepath( res, pg.drive, pg.dir, pg.fname, NULL );
+    _makepath( exe_name, pg.drive, pg.dir, pg.fname, pg.ext );
+    _makepath( rex_name, pg.drive, pg.dir, pg.fname, "rex" );
+    _makepath( res_name, pg.drive, pg.dir, pg.fname, NULL );
 
     /*
      * do the unbind
      */
     if( uflag ) {
-        if( pg.ext[0] == '\0' ) {
-            path = exe;
-        }
-        in = fopen( path, "rb" );
-        if( in == NULL ) {
-            doError( "Could not open %s", path );
-        }
-        out = fopen( rex, "wb" );
-        if( out == NULL ) {
-            doError( "Could not open %s", rex );
-        }
-        fseek( in, NH_MAGIC_REX, SEEK_SET );
-        fread( &exelen, 1, sizeof( exelen ), in );
-        fseek( in, exelen, SEEK_SET );
-        fread( &re, 1, sizeof( re ), in );
+        in.name = exe_name;
+        in.fp = open_file( in.name, "rb" );
+        out.name = rex_name;
+        out.fp = open_file( out.name, "wb" );
+        fseek( in.fp, NH_MAGIC_REX, SEEK_SET );
+        fread( &u32, 1, sizeof( u32 ), in.fp );
+        exelen = u32;
+        fseek( in.fp, exelen, SEEK_SET );
+        fread( &re, 1, sizeof( re ), in.fp );
         if( re.signature != ('M' & ('Q' << 8)) ) {
             doError( "Not a bound Open Watcom 32-bit Windows application" );
         }
-        fseek( in, exelen, SEEK_SET );
-        copy_file( in, out, path, rex );
-        fclose( in );
-        fclose( out );
-        myPrintf( ".rex file %s created", rex );
-        exit( 0 );
+        fseek( in.fp, exelen, SEEK_SET );
+        copy_file( &in, &out );
+        fclose( in.fp );
+        fclose( out.fp );
+        myPrintf( ".rex file %s created", out.name );
+        return( 0 );
     }
 
     if( wext == NULL ) {
-        if( dllflag ) {
-            FindExtender( "w386dll.ext", winext );
-        } else {
-            FindExtender( "win386.ext", winext );
-        }
+        FindExtender( dllflag, ext_name );
     } else {
-        normalizeFName( winext, sizeof( winext ), wext );
+        normalizeFName( ext_name, sizeof( ext_name ), wext );
     }
     if( dllflag ) {
-        myPrintf( "Loading 32-bit Windows DLL Supervisor \"%s\"\n", winext );
+        myPrintf( "Loading 32-bit Windows DLL Supervisor \"%s\"\n", ext_name );
     } else {
-        myPrintf( "Loading 32-bit Windows Supervisor \"%s\"\n", winext );
+        myPrintf( "Loading 32-bit Windows Supervisor \"%s\"\n", ext_name );
     }
 
     /*
      * open files
      */
-    in = fopen( winext, "rb" );
-    if( in == NULL )  {
-        doError( "Could not open %s", winext );
-    }
-    out = fopen( exe, "wb" );
-    if( out == NULL )  {
-        doError( "Could not open %s", exe );
-    }
+    in.name = ext_name;
+    in.fp = open_file( in.name, "rb" );
+    out.name = exe_name;
+    out.fp = open_file( out.name, "wb" );
 
     /*
      * copy extender over
      */
-    copy_file( in, out, winext, exe );
-    fclose( in );
-    fclose( out );
+    copy_file( &in, &out );
+    fclose( in.fp );
+    fclose( out.fp );
 
     /*
      * run the resource compiler
@@ -447,15 +472,15 @@ int main( int argc, char *argv[] )
             strcpy( rc, RC_STR );
             arglist = myAlloc( sizeof( char * ) * ( argc - rcparm + 3 ) );
             pcnt = 1;
-            for( i=rcparm;i<argc;i++ ) {
+            for( i = rcparm; i < argc; i++ ) {
                 arglist[pcnt++] = argv[i];
                 strcat( rc," " );
                 strcat( rc, argv[i] );
             }
         } else {
-            sprintf( rc, RC_STR " %s", res );
+            sprintf( rc, RC_STR " %s", res_name );
             arglist = myAlloc( sizeof( char * ) * 3 );
-            arglist[1] = res;
+            arglist[1] = res_name;
             pcnt = 2;
         }
         arglist[0] = RC_STR;
@@ -464,7 +489,7 @@ int main( int argc, char *argv[] )
         myPrintf( "%s\n",rc );
         i = (int)spawnvp( P_WAIT, RC_STR, arglist );
         if( i == -1 ) {
-            remove( exe );
+            remove( exe_name );
             switch( errno ) {
             case E2BIG:
                 doError( "Argument list too big. Resource compiler step failed." );
@@ -479,7 +504,7 @@ int main( int argc, char *argv[] )
             doError( "Unknown error %d, resource compiler step failed.", errno );
         }
         if( i != 0 ) {
-            remove( exe );
+            remove( exe_name );
             errPrintf( "Resource compiler failed, return code = %d\n", i );
             exit( i );
         }
@@ -488,38 +513,28 @@ int main( int argc, char *argv[] )
     /*
      * copy the rex file onto the end
      */
-    in = fopen( rex, "rb" );
-    if( in == NULL )  {
-        doError( "Could not open %s", rex );
-    }
-    out = fopen( exe, "rb+" );
-    if( out == NULL )  {
-        doError( "Could not open %s", exe );
-    }
-    fseek( out, 0, SEEK_END );
-    exelen = ftell( out );
+    in.name = rex_name;
+    in.fp = open_file( in.name, "rb" );
+    out.name = exe_name;
+    out.fp = open_file( out.name, "rb+" );
+    fseek( out.fp, 0, SEEK_END );
+    exelen = ftell( out.fp );
 
-    totalsize = copy_file( in, out, rex, exe );
-    fclose( in );
+    totalsize = copy_file( &in, &out );
+    fclose( in.fp );
 
     /*
      * noodle the file: change name, and then
      * write the file size into the old exe header (for
      * use by the loader)
      */
-    fseek( out, NH_MAGIC_REX, SEEK_SET );
-    fwrite( &exelen, 1, sizeof( exelen ), out );
-    updateNHStuff( out, pg.fname, desc );
-    fclose( out );
-    if( dllflag ) {
-        remove( dll );
-        rename( exe, dll );
-        myPrintf( "Created \"%s\" (%ld + %ld = %ld bytes)\n", dll,
+    fseek( out.fp, NH_MAGIC_REX, SEEK_SET );
+    u32 = exelen;
+    fwrite( &u32, 1, sizeof( u32 ), out.fp );
+    updateNHStuff( out.fp, pg.fname, desc );
+    fclose( out.fp );
+    myPrintf( "Created \"%s\" (%ld + %ld = %ld bytes)\n", exe_name,
                 exelen, totalsize, exelen + totalsize );
-    } else {
-        myPrintf( "Created \"%s\" (%ld + %ld = %ld bytes)\n", exe,
-                exelen, totalsize, exelen + totalsize );
-    }
 
     return( 0 );
 } /* main */
