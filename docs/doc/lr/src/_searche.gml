@@ -37,6 +37,12 @@ The full pathname is placed in the buffer pointed to by the argument
 If the specified file cannot be found, then
 .arg pathname
 will contain an empty string.
+The
+.arg pathname
+buffer should be at least _MAX_PATH characters long to accommodate
+the full length of the constructed path name.
+Otherwise, _searchenv might overrun the pathname buffer and cause
+unexpected behavior.
 .im widefun1
 .desc end
 .return begin
