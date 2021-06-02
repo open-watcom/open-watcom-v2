@@ -366,10 +366,12 @@ static void StripInfo( void )
 
 static bool Suffix( char *fname, const char *suff )
 {
-    char *scan;
-    char *end;
+    char    *scan;
+    char    *end;
+    size_t  len;
 
-    end = fname + strlen( fname );
+    len = strlen( fname );
+    end = fname + len;
     scan = end;
     for( ;; ) {
         --scan;
@@ -385,7 +387,9 @@ static bool Suffix( char *fname, const char *suff )
             return( false ); /* already has an extension */
         }
     }
-    strcpy( end, suff );
+    len = end - fname;
+    strncpy( end, suff, _MAX_PATH - 1 - len );
+    fname[_MAX_PATH - 1] = '\0';
     return( true );
 }
 
@@ -461,7 +465,8 @@ int main( int argc, char *argv[] )
     for( i = 0; i < ARRAYSIZE( ExtLst ); ++i ) {
         struct stat     in_stat;
 
-        strcpy( fin.name, argv[1] );
+        strncpy( fin.name, argv[1], _MAX_PATH - 1 );
+        fin.name[_MAX_PATH - 1] = '\0';
         has_ext = Suffix( fin.name, ExtLst[i] );
         if( stat( fin.name, &in_stat ) == 0 ) {
             mtime = in_stat.st_mtime;
@@ -479,7 +484,8 @@ int main( int argc, char *argv[] )
             _splitpath2( fin.name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
             _makepath( fout.name, NULL, argv[2], pg.fname, pg.ext );
         } else {
-            strcpy( fout.name, argv[2] );
+            strncpy( fout.name, argv[2], _MAX_PATH - 1 );
+            fout.name[_MAX_PATH - 1] = '\0';
             _splitpath2( fin.name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
             Suffix( fout.name, pg.ext );
         }
@@ -491,7 +497,8 @@ int main( int argc, char *argv[] )
             _splitpath2( fout.name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
             _makepath( finfo.name, NULL, argv[3], pg.fname, NULL );
         } else {
-            strcpy( finfo.name, argv[3] );
+            strncpy( finfo.name, argv[3], _MAX_PATH - 1 );
+            finfo.name[_MAX_PATH - 1] = '\0';
         }
         Suffix( finfo.name, (res ? ResExt : SymExt) );
     }
