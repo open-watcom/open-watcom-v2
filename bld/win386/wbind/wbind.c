@@ -52,9 +52,9 @@
 #define IO_BUFF         64000
 #define MAX_DESC        80
 #ifdef BOOTSTRAP
-#define RC_STR          "bwrc"
+#define WRC_STR         "bwrc"
 #else
-#define RC_STR          "wrc"
+#define WRC_STR         "wrc"
 #endif
 
 typedef struct file_str {
@@ -104,7 +104,7 @@ static void normalizeFName( char *dst, size_t maxlen, const char *src )
     *dst = '\0';
 }
 
-static void updateNHStuff( FILE *fp, const char *basename, const char *desc )
+static bool updateNHStuff( FILE *fp, const char *basename, const char *desc )
 {
     dos_exe_header      dh;
     os2_exe_header      nh;
@@ -120,14 +120,18 @@ static void updateNHStuff( FILE *fp, const char *basename, const char *desc )
         memcpy( modname, basename, 8 );
     }
     fseek( fp, 0, SEEK_SET );
-    fread( &dh, 1, sizeof( dh ), fp );
+    if( fread( &dh, 1, sizeof( dh ), fp ) != sizeof( dh ) )
+        return( false );
     off = dh.file_size * 512L - (-dh.mod_size & 0x1ff);
-    fseek( fp, off, SEEK_SET );
-    fread( &nh, 1, sizeof( nh ), fp );
+    if( fseek( fp, off, SEEK_SET ) )
+        return( false );
+    if( fread( &nh, 1, sizeof( nh ), fp ) != sizeof( nh ) )
+        return( false );
     off += nh.resident_off + 1L;
-    fseek( fp, off, SEEK_SET );
-    fwrite( modname, 1, 8, fp );
-
+    if( fseek( fp, off, SEEK_SET ) )
+        return( false );
+    if( fwrite( modname, 1, 8, fp ) != 8 )
+        return( false );
     if( desc == NULL ) {
         desc = modname;
         len = 8;
@@ -138,8 +142,9 @@ static void updateNHStuff( FILE *fp, const char *basename, const char *desc )
         }
     }
     off = nh.nonres_off + 1L;
-    fseek( fp, off, SEEK_SET );
-    fwrite( desc, 1, len, fp );
+    if( fseek( fp, off, SEEK_SET ) )
+        return( false );
+    return( fwrite( desc, 1, len, fp ) == len );
 }
 
 
@@ -160,9 +165,9 @@ static void doError( const char *str, ... )
     va_list     al;
 
     va_start( al, str );
-    vprintf( str, al );
+    vfprintf( stderr, str, al );
     va_end( al );
-    printf("\n");
+    fputs( "\n", stderr );
     exit( 1 );
 
 } /* doError */
@@ -207,7 +212,7 @@ static void *myAlloc( size_t amount )
 
     tmp = malloc( amount );
     if( tmp == NULL ) {
-        doError("Out of memory!");
+        doError( "Out of memory!" );
     }
     return( tmp );
 }
@@ -228,26 +233,42 @@ static long copy_file( file_str *in, file_str *out )
     size_t      len;
     long        totalsize;
     void        *buff;
+    bool        ok;
 
-    buff = myAlloc( IO_BUFF );
     totalsize = 0L;
-    for( ;; ) {
-        size = fread( buff, 1, IO_BUFF, in->fp );
-        if( size != IO_BUFF ) {
-            if( ferror( in->fp ) ) {
-                doError( "Error reading file \"%s\"", in->name );
+    ok = false;
+    buff = malloc( IO_BUFF );
+    if( buff == NULL ) {
+        errPrintf( "Out of memory!\n" );
+    } else {
+        ok = true;
+        for( ;; ) {
+            size = fread( buff, 1, IO_BUFF, in->fp );
+            if( size != IO_BUFF ) {
+                if( ferror( in->fp ) ) {
+                    errPrintf( "Error reading file \"%s\"\n", in->name );
+                    ok = false;
+                    break;
+                }
+            }
+            len = fwrite( buff, 1, size, out->fp );
+            if( len != size ) {
+                errPrintf( "Error writing file \"%s\"\n", out->name );
+                ok = false;
+                break;
+            }
+            totalsize += (long)len;
+            if( size != IO_BUFF ) {
+                break;
             }
         }
-        len = fwrite( buff, 1, size, out->fp );
-        if( len != size ) {
-            doError( "Error writing file \"%s\"", out->name );
-        }
-        totalsize += (long)len;
-        if( size != IO_BUFF ) {
-            break;
-        }
+        free( buff );
     }
-    free( buff );
+    if( !ok ) {
+        fclose( in->fp );
+        fclose( out->fp );
+        exit( 1 );
+    }
     return( totalsize );
 }
 
@@ -311,7 +332,6 @@ int main( int argc, char *argv[] )
 {
     file_str        in;
     file_str        out;
-    int             i, rcparm = 0, pcnt;
     bool            Rflag = false;
     bool            nflag = false;
     bool            uflag = false;
@@ -323,15 +343,17 @@ int main( int argc, char *argv[] )
     char            exe_name[_MAX_PATH];
     char            res_name[_MAX_PATH];
     char            ext_name[_MAX_PATH];
-    char            rc[256];
+    char            wrc_cmd[256];
+    int             wrc_parm;
     long            totalsize;
     long            exelen;
     const char      **arglist;
     const char      *path = NULL;
     int             currarg;
-    size_t          len;
     simple_header   re;
     char            *desc = NULL;
+    int             rc;
+    bool            ok;
 
     /*
      * get parms
@@ -339,13 +361,17 @@ int main( int argc, char *argv[] )
     if( argc < 2 ) {
         doUsage( NULL );
     }
-    currarg=1;
+    currarg = 1;
+    wrc_parm = 0;
     while( currarg < argc ) {
 #ifdef __UNIX__
         if( argv[currarg][0] == '-' ) {
 #else
         if( argv[currarg][0] == '/' || argv[currarg][0] == '-' ) {
 #endif
+            size_t  i;
+            size_t  len;
+
             len = strlen( argv[currarg] );
             for( i = 1; i < len; i++ ) {
                 switch( argv[currarg][i] ) {
@@ -372,8 +398,8 @@ int main( int argc, char *argv[] )
                     break;
                 case 'R': case 'r':
                     Rflag = true;
-                    rcparm = currarg+1;
-                    if( rcparm == argc ) {
+                    wrc_parm = currarg + 1;
+                    if( wrc_parm == argc ) {
                         doUsage("must specify resource compiler command line" );
                     }
                     break;
@@ -413,23 +439,24 @@ int main( int argc, char *argv[] )
     _makepath( rex_name, pg.drive, pg.dir, pg.fname, "rex" );
     _makepath( res_name, pg.drive, pg.dir, pg.fname, NULL );
 
-    /*
-     * do the unbind
-     */
     if( uflag ) {
+        /*
+         * do the unbind
+         */
         in.name = exe_name;
         in.fp = open_file( in.name, "rb" );
-        out.name = rex_name;
-        out.fp = open_file( out.name, "wb" );
         fseek( in.fp, NH_MAGIC_REX, SEEK_SET );
         fread( &u32, 1, sizeof( u32 ), in.fp );
         exelen = u32;
         fseek( in.fp, exelen, SEEK_SET );
         fread( &re, 1, sizeof( re ), in.fp );
         if( re.signature != ('M' & ('Q' << 8)) ) {
+            fclose( in.fp );
             doError( "Not a bound Open Watcom 32-bit Windows application" );
         }
         fseek( in.fp, exelen, SEEK_SET );
+        out.name = rex_name;
+        out.fp = open_file( out.name, "wb" );
         copy_file( &in, &out );
         fclose( in.fp );
         fclose( out.fp );
@@ -449,16 +476,12 @@ int main( int argc, char *argv[] )
     }
 
     /*
-     * open files
+     * copy extender over
      */
     in.name = ext_name;
     in.fp = open_file( in.name, "rb" );
     out.name = exe_name;
     out.fp = open_file( out.name, "wb" );
-
-    /*
-     * copy extender over
-     */
     copy_file( &in, &out );
     fclose( in.fp );
     fclose( out.fp );
@@ -469,33 +492,36 @@ int main( int argc, char *argv[] )
     if( !nflag ) {
         myPrintf( "Invoking the resource compiler...\n" );
         if( Rflag ) {
-            strcpy( rc, RC_STR );
-            arglist = myAlloc( sizeof( char * ) * ( argc - rcparm + 3 ) );
+            int     pcnt;
+            int     i;
+
+            strcpy( wrc_cmd, WRC_STR );
+            arglist = myAlloc( sizeof( char * ) * ( argc - wrc_parm + 3 ) );
             pcnt = 1;
-            for( i = rcparm; i < argc; i++ ) {
+            for( i = wrc_parm; i < argc; i++ ) {
                 arglist[pcnt++] = argv[i];
-                strcat( rc," " );
-                strcat( rc, argv[i] );
+                strcat( wrc_cmd, " " );
+                strcat( wrc_cmd, argv[i] );
             }
+            arglist[pcnt] = NULL;
         } else {
-            sprintf( rc, RC_STR " %s", res_name );
+            sprintf( wrc_cmd, WRC_STR " %s", res_name );
             arglist = myAlloc( sizeof( char * ) * 3 );
             arglist[1] = res_name;
-            pcnt = 2;
+            arglist[2] = NULL;
         }
-        arglist[0] = RC_STR;
-        arglist[pcnt] = NULL;
+        arglist[0] = WRC_STR;
 
-        myPrintf( "%s\n",rc );
-        i = (int)spawnvp( P_WAIT, RC_STR, arglist );
-        if( i == -1 ) {
+        myPrintf( "%s\n", wrc_cmd );
+        rc = (int)spawnvp( P_WAIT, WRC_STR, arglist );
+        if( rc == -1 ) {
             remove( exe_name );
             switch( errno ) {
             case E2BIG:
                 doError( "Argument list too big. Resource compiler step failed." );
                 break;
             case ENOENT:
-                doError( "Could not find " RC_STR ".exe." );
+                doError( "Could not find " WRC_STR ".exe." );
                 break;
             case ENOMEM:
                 doError( "Not enough memory. Resource compiler step failed." );
@@ -503,10 +529,10 @@ int main( int argc, char *argv[] )
             }
             doError( "Unknown error %d, resource compiler step failed.", errno );
         }
-        if( i != 0 ) {
+        if( rc != 0 ) {
             remove( exe_name );
-            errPrintf( "Resource compiler failed, return code = %d\n", i );
-            exit( i );
+            errPrintf( "Resource compiler failed, return code = %d\n", rc );
+            exit( rc );
         }
     }
 
@@ -517,24 +543,37 @@ int main( int argc, char *argv[] )
     in.fp = open_file( in.name, "rb" );
     out.name = exe_name;
     out.fp = open_file( out.name, "rb+" );
-    fseek( out.fp, 0, SEEK_END );
-    exelen = ftell( out.fp );
-
-    totalsize = copy_file( &in, &out );
+    exelen = 0;
+    totalsize = 0;
+    ok = false;
+    if( fseek( out.fp, 0, SEEK_END ) == 0 ) {
+        exelen = ftell( out.fp );
+        totalsize = copy_file( &in, &out );
+        ok = true;
+    }
     fclose( in.fp );
-
-    /*
-     * noodle the file: change name, and then
-     * write the file size into the old exe header (for
-     * use by the loader)
-     */
-    fseek( out.fp, NH_MAGIC_REX, SEEK_SET );
-    u32 = exelen;
-    fwrite( &u32, 1, sizeof( u32 ), out.fp );
-    updateNHStuff( out.fp, pg.fname, desc );
+    if( ok ) {
+        /*
+         * noodle the file: change name, and then
+         * write the file size into the old exe header (for
+         * use by the loader)
+         */
+        ok = false;
+        if( fseek( out.fp, NH_MAGIC_REX, SEEK_SET ) == 0 ) {
+            u32 = exelen;
+            if( fwrite( &u32, 1, sizeof( u32 ), out.fp ) == sizeof( u32 ) ) {
+                if( updateNHStuff( out.fp, pg.fname, desc ) ) {
+                    ok = true;
+                }
+            }
+        }
+    }
     fclose( out.fp );
-    myPrintf( "Created \"%s\" (%ld + %ld = %ld bytes)\n", exe_name,
+    if( ok ) {
+        myPrintf( "Created \"%s\" (%ld + %ld = %ld bytes)\n", exe_name,
                 exelen, totalsize, exelen + totalsize );
-
-    return( 0 );
+        return( 0 );
+    }
+    errPrintf( "Error writing executable \"%s\".\n", exe_name );
+    return( 1 );
 } /* main */
