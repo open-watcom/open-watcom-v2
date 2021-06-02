@@ -400,7 +400,10 @@ void InitPragmaAux( void )
 static void FreeAuxElements( aux_info *info )
 //===========================================
 {
-    FreeChain( &info->arg_info );
+    if( info->arg_info != DefaultInfo.arg_info ) {
+        FreeChain( &info->arg_info );
+        info->arg_info = DefaultInfo.arg_info;
+    }
     if( info->parms != DefaultInfo.parms ) {
         FMemFree( info->parms );
         info->parms = DefaultInfo.parms;
@@ -541,13 +544,15 @@ static void CopyAuxInfo( aux_info *dst, aux_info *src )
         if( src->objname != DefaultInfo.objname ) {
             DupObjectName( dst, src );
         }
-        DupArgInfo( &dst->arg_info, src->arg_info );
+        if( src->arg_info != DefaultInfo.arg_info ) {
+            DupArgInfo( &dst->arg_info, src->arg_info );
+        }
     }
 }
 
 
 static aux_info *NewAuxEntry( const char *name, size_t name_len )
-//========================================================
+//===============================================================
 {
     aux_info    *aux;
 
@@ -559,7 +564,7 @@ static aux_info *NewAuxEntry( const char *name, size_t name_len )
     aux->parms = DefaultInfo.parms;
     aux->code = DefaultInfo.code;
     aux->objname = DefaultInfo.objname;
-    aux->arg_info = NULL;
+    aux->arg_info = DefaultInfo.arg_info;
     AuxList = aux;
     return( aux );
 }
@@ -1000,17 +1005,15 @@ static hw_reg_set *RegSets( void )
 #endif
 
 
-static void GetArgList( void )
-//============================
+static void GetArgList( pass_by **curr_arg )
+//==========================================
 {
     pass_by     *arg;
-    pass_by     **curr_arg;
     pass_info   arg_pass_info;
 
-    FreeChain( &CurrAux->arg_info );
+    FreeChain( curr_arg );
     if( RecToken( ")" ) )
         return;
-    curr_arg = &CurrAux->arg_info;
     for(;;) {
         arg_pass_info = 0;
         if( RecToken( "VALUE" ) ) {
@@ -1235,7 +1238,7 @@ static void GetParmInfo( void )
     have.f_args          = false;
     for(;;) {
         if( !have.f_args && RecToken( "(" ) ) {
-            GetArgList();
+            GetArgList( &CurrAux->arg_info );
             have.f_args = true;
 #if _INTEL_CPU
         } else if( !have.f_pop && RecToken( "CALLER" ) ) {
