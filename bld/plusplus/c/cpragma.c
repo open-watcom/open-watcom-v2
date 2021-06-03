@@ -287,7 +287,7 @@ static void pragMessage(        // #PRAGMA MESSAGE
         NextToken();
         if( CurToken == T_STRING ) {
             collectStrings( &str );
-            CErr2p( WARN_USER_WARNING_MSG, VbufString( &str ) );
+            MsgDisplayBanner( VbufString( &str ) );
             VbufFree( &str );
         }
         MustRecog( T_RIGHT_PAREN );
