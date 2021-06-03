@@ -78,36 +78,31 @@
 
 #define HELP_SIG_1              0x1359ddcc
 #define HELP_SIG_2              0x95843561
+#define HELP_MAJ_V1             1
 #define HELP_MAJ_VER            2
 #define HELP_MIN_VER            0
 
-#include "pushpck1.h"
-
 typedef struct {
-    uint_32     sig[2];
+    uint_32     sig1;
+    uint_32     sig2;
     uint_16     ver_maj;
     uint_16     ver_min;
     uint_16     indexpagecnt;
     uint_16     datapagecnt;
     uint_32     topiccnt;
-    uint_16     str_size;
-    uint_16     unused[6];
+    uint_16     str_size;       /* does not exist in version 1 header */
+//    uint_16     unused[6];
 } HelpHeader;
 
-typedef struct {
-    uint_32     sig[2];
-    uint_16     ver_maj;
-    uint_16     ver_min;
-    uint_16     indexpagecnt;
-    uint_16     datapagecnt;
-    uint_32     topiccnt;
-    uint_16     unused[6];
-} OldHeader;
+#define HELP_HEADER_SIZE        (3 * sizeof( uint_32 ) + 11 * sizeof( uint_16 ))
+#define HELP_HEADER_V1_SIZE     (3 * sizeof( uint_32 ) + 10 * sizeof( uint_16 ))
 
 enum {
     PAGE_DATA,
     PAGE_INDEX
 };
+
+#include "pushpck1.h"
 
 typedef struct {
     uint_16     type;

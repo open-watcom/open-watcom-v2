@@ -158,7 +158,7 @@ static void lineLenCB( HelpTokenType type, Info *info, void *_len )
                 info = (Info *)&( block->info[i] );
                 switch( info->u.text.type ) {
                 case TT_PLAIN:
-                    *len = info->u.text.len;
+                    *len += info->u.text.len;
                     break;
                 case TT_ESC_SEQ:
                     *len += 1;
@@ -168,19 +168,6 @@ static void lineLenCB( HelpTokenType type, Info *info, void *_len )
         }
         break;
     }
-}
-
-static unsigned line_len( char *str )
-{
-    unsigned    len;
-    bool        newfile;
-
-    len = 0;
-    newfile = ScanLine( str, lineLenCB, &len );
-    if( ( !GenIndex || !GenStrings ) && newfile ) {
-        PrintError( "Cross file hyperlink in \"%s\" not supported with this format.\n", str );
-    }
-    return( len );
 }
 
 static char *find_str( char *buf )
@@ -262,20 +249,24 @@ static bool pass1( FILE *fin, const char **helpstr )
     unsigned        namebuff_len;
     int             count;
     unsigned        len;
+    bool            deftopic;
+    bool            defdesc;
 
     printf( "Pass One:\n" );
+    deftopic = false;
+    defdesc = false;
     fpos = 0;
     while( !feof( fin ) ) {
         fpos = ftell( fin );
         fgetstring( buffer, sizeof( buffer ), fin );
         if( IS_IB_DEFAULT_TOPIC( buffer ) ) {
-            if( helpstr[0] != NULL ) {
+            if( deftopic ) {
                 PrintError( "more than one DEFTOPIC found\n" );
             } else {
-                if( !GenStrings || !GenIndex ) {
+                deftopic = true;
+                if( helpstr == NULL ) {
                     PrintError( "DEFTOPIC string ignored with this format.\n" );
-                }
-                if( GenStrings ) {
+                } else {
                     ptr = find_str( buffer + IB_DEFAULT_TOPIC_SIZE );
                     namebuff = HelpMemAlloc( strlen( ptr ) + 1 );
                     strcpy( namebuff, ptr );
@@ -283,13 +274,13 @@ static bool pass1( FILE *fin, const char **helpstr )
                 }
             }
         } else if( IS_IB_DESCRIPTION( buffer ) ) {
-            if( helpstr[1] != NULL ) {
+            if( defdesc ) {
                 PrintError( "more than one DESCRIPTION found\n" );
             } else {
-                if( !GenStrings || !GenIndex ) {
+                defdesc = true;
+                if( helpstr == NULL ) {
                     PrintError( "DESCRIPTION string ignored with this format.\n" );
-                }
-                if( GenStrings ) {
+                } else {
                     ptr = find_str( buffer + IB_DESCRIPTION_SIZE );
                     namebuff = HelpMemAlloc( strlen( ptr ) + 1 );
                     strcpy( namebuff, ptr );
@@ -303,7 +294,6 @@ static bool pass1( FILE *fin, const char **helpstr )
 
     namebuff = NULL;
     namebuff_len = 0;
-
     while( !feof( fin ) ) {
         h = (a_helpnode *)HelpMemAlloc( sizeof( a_helpnode ) );
         h->fpos = fpos;
@@ -396,7 +386,12 @@ static bool pass1( FILE *fin, const char **helpstr )
                 h->lines = 0;
             } else if( IS_IB_HEADER_BEG( buffer ) || IS_IB_TRAILER_BEG( buffer ) ) {
             } else {
-                buflen = line_len( buffer );
+                buflen = 0;
+                if( ScanLine( buffer, lineLenCB, &buflen ) ) {
+                    if( helpstr == NULL ) {
+                        PrintError( "Cross file hyperlink in \"%s\" not supported with this format.\n", buffer );
+                    }
+                }
                 if( h->maxcol < buflen - 1 ) {
                     h->maxcol = buflen - 1;
                 }
@@ -462,7 +457,7 @@ static bool pass2( FILE *fin, FILE *fout, const char **helpstr )
 
     printf( "Pass Two:\n" );
     if( GenIndex ) {
-        indexlen = CalcIndexSize( helpstr, GenStrings );
+        indexlen = CalcIndexSize( helpstr );
         fseek( fout, indexlen, SEEK_SET );
     }
     for( h = HelpNodes; h != NULL; h = h->next ) {
@@ -521,7 +516,8 @@ int main( int argc, char **argv )
     char        **sargv;
     FILE        *fin;
     FILE        *fout;
-    const char  *helpstr[2];
+    const char  *helpdefstr[2];
+    const char  **helpstr;
     bool        f_swtch;
 
     HelpMemOpen();
@@ -626,8 +622,12 @@ int main( int argc, char **argv )
         return( -1 );
     }
 
-    helpstr[0] = NULL;
-    helpstr[1] = NULL;
+    helpstr = NULL;
+    if( GenIndex && GenStrings ) {
+        helpdefstr[0] = NULL;
+        helpdefstr[1] = NULL;
+        helpstr = helpdefstr;
+    }
 
     pass1( fin, helpstr );
     pass2( fin, fout, helpstr );
@@ -636,13 +636,14 @@ int main( int argc, char **argv )
     fclose( fout );
     if( GenIndex ) {
         fout = fopen( argv[2], "r+b" );
-        WriteIndex( fout, helpstr, GenStrings );
+        WriteIndex( fout, helpstr );
         fclose( fout );
     }
     FiniError();
-    HelpMemFree( (void *)helpstr[0] );
-    HelpMemFree( (void *)helpstr[1] );
-
+    if( helpstr != NULL ) {
+        HelpMemFree( (void *)helpdefstr[0] );
+        HelpMemFree( (void *)helpdefstr[1] );
+    }
     HelpMemPrtList();
     HelpMemClose();
 

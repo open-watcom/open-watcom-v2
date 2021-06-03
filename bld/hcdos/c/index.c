@@ -101,34 +101,34 @@ static unsigned calcIndexPages( unsigned pagecnt )
 }
 
 
-static unsigned calcStringBlockSize( const char **str )
+static unsigned calcStringBlockSize( const char **helpstr )
 {
     unsigned    blocksize;
     unsigned    i;
 
-    blocksize = ( STR_CNT + 1 ) * sizeof( uint_16 );
-    for( i = 0; i < STR_CNT; i++ ) {
-        if( str[i] != NULL ) {
-            blocksize += strlen( str[i] ) + 1;
+    blocksize = 0;
+    if( helpstr != NULL ) {
+        blocksize = ( STR_CNT + 1 ) * sizeof( uint_16 );
+        for( i = 0; i < STR_CNT; i++ ) {
+            if( helpstr[i] != NULL ) {
+                blocksize += strlen( helpstr[i] ) + 1;
+            }
         }
     }
     return( blocksize );
 }
 
 
-unsigned long CalcIndexSize( const char **str, bool gen_str )
+unsigned long CalcIndexSize( const char **helpstr )
 {
     unsigned long       ret;
 
     dataPageCnt = markDataPages();
     indexPageCnt = calcIndexPages( dataPageCnt );
-    ret = ( dataPageCnt + indexPageCnt ) * HLP_PAGE_SIZE + dataPageCnt * sizeof( uint_16 );
-    if( gen_str ) {
-        ret += sizeof( HelpHeader ) + calcStringBlockSize( str );
-    } else {
-        ret += sizeof( OldHeader );
-    }
-    return( ret );
+    ret = calcStringBlockSize( helpstr ) + ( dataPageCnt + indexPageCnt ) * HLP_PAGE_SIZE + dataPageCnt * sizeof( uint_16 );
+    if( helpstr != NULL )
+        return( ret + HELP_HEADER_SIZE );
+    return( ret + HELP_HEADER_V1_SIZE );
 }
 
 
@@ -336,73 +336,69 @@ static int writePageItemNumIndex( FILE *fout )
 }
 
 
-static int writeHeader( FILE *fout, unsigned blocksize )
+static int writeHeader( FILE *fout, const char **helpstr )
 {
-    HelpHeader          header;
+    uint_32     u32;
+    uint_16     u16;
 
-    memset( &header, 0, sizeof( HelpHeader ) );
-    header.sig[0] = HELP_SIG_1;
-    header.sig[1] = HELP_SIG_2;
-    header.ver_maj = HELP_MAJ_VER;
-    header.ver_min = HELP_MIN_VER;
-    header.indexpagecnt = indexPageCnt;
-    header.datapagecnt = dataPageCnt;
-    header.topiccnt = topicCnt;
-    header.str_size = blocksize;
-    fwrite( &header, sizeof( HelpHeader ), 1, fout );
+    u32 = HELP_SIG_1;
+    fwrite( &u32, sizeof( u32 ), 1, fout );
+    u32 = HELP_SIG_2;
+    fwrite( &u32, sizeof( u32 ), 1, fout );
+    if( helpstr != NULL ) {
+        u16 = HELP_MAJ_VER;
+    } else {
+        u16 = HELP_MAJ_V1;
+    }
+    fwrite( &u16, sizeof( u16 ), 1, fout );
+    u16 = HELP_MIN_VER;
+    fwrite( &u16, sizeof( u16 ), 1, fout );
+    u16 = indexPageCnt;
+    fwrite( &u16, sizeof( u16 ), 1, fout );
+    u16 = dataPageCnt;
+    fwrite( &u16, sizeof( u16 ), 1, fout );
+    u32 = topicCnt;
+    fwrite( &u32, sizeof( u32 ), 1, fout );
+    if( helpstr != NULL ) {
+        u16 = calcStringBlockSize( helpstr );
+        fwrite( &u16, sizeof( u16 ), 1, fout );
+    }
+    u16 = 3;
+    u32 = 0;
+    while( u16-- > 0 ) {
+        fwrite( &u32, sizeof( u32 ), 1, fout );
+    }
     return( 0 );
 }
 
-
-static int writeOldHeader( FILE *fout )
-{
-    OldHeader           header;
-
-    memset( &header, 0, sizeof( OldHeader ) );
-    header.sig[0] = HELP_SIG_1;
-    header.sig[1] = HELP_SIG_2;
-    header.ver_maj = 1;
-    header.ver_min = HELP_MIN_VER;
-    header.indexpagecnt = indexPageCnt;
-    header.datapagecnt = dataPageCnt;
-    header.topiccnt = topicCnt;
-    fwrite( &header, sizeof( OldHeader ), 1, fout );
-    return( 0 );
-}
-
-static void writeStrings( FILE *fout, const char **str )
+static void writeStrings( FILE *fout, const char **helpstr )
 {
     unsigned    i;
     uint_16     tmp[STR_CNT + 1];
 
-    tmp[0] = STR_CNT;
-    for( i = 0; i < STR_CNT; i++ ) {
-        if( str[i] != NULL ) {
-            tmp[i + 1] = strlen( str[i] ) + 1;
-        } else {
-            tmp[i + 1] = 0;
+    if( helpstr != NULL ) {
+        tmp[0] = STR_CNT;
+        for( i = 0; i < STR_CNT; i++ ) {
+            if( helpstr[i] != NULL ) {
+                tmp[i + 1] = strlen( helpstr[i] ) + 1;
+            } else {
+                tmp[i + 1] = 0;
+            }
         }
-    }
-    fwrite( &tmp, sizeof( uint_16 ) * ( STR_CNT + 1 ), 1, fout );
-    for( i = 0; i < STR_CNT; i++ ) {
-        if( str[i] != NULL ) {
-            fwrite( str[i], tmp[i + 1], 1, fout );
+        fwrite( &tmp, sizeof( uint_16 ) * ( STR_CNT + 1 ), 1, fout );
+        for( i = 0; i < STR_CNT; i++ ) {
+            if( helpstr[i] != NULL ) {
+                fwrite( helpstr[i], tmp[i + 1], 1, fout );
+            }
         }
     }
 }
 
-int WriteIndex( FILE *fout, const char **str, bool gen_str )
+int WriteIndex( FILE *fout, const char **helpstr )
 {
-    unsigned    blocksize;
-
     fseek( fout, 0, SEEK_SET );
-    if( gen_str ) {
-        blocksize = calcStringBlockSize( str );
-        writeHeader( fout, blocksize );
-        writeStrings( fout, str );
-    } else {
-        writeOldHeader( fout );
-    }
+    writeHeader( fout, helpstr );
+    writeStrings( fout, helpstr );
     writePageItemNumIndex( fout );
     writeIndexPages( fout );
     writeDataPages( fout );

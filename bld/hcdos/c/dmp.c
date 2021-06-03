@@ -39,18 +39,49 @@
 
 static char     Buffer[HLP_PAGE_SIZE];
 
+
+static void ReadHeader( &header, fp )
+{
+    uint_32 u32;
+    uint_16 u16;
+
+    fread( &u32, sizeof( u32 ), 1, fp );
+    header->sig1 = u32;
+    fread( &u32, sizeof( u32 ), 1, fp );
+    header->sig2 = u32;
+    fread( &u16, sizeof( u16 ), 1, fp );
+    header->ver_maj = u16;
+    fread( &u16, sizeof( u16 ), 1, fp );
+    header->ver_min = u16;
+    fread( &u16, sizeof( u16 ), 1, fp );
+    header->indexpagecnt = u16;
+    fread( &u16, sizeof( u16 ), 1, fp );
+    header->datapagecnt = u16;
+    fread( &u32, sizeof( u32 ), 1, fp );
+    header->topiccnt = u32;
+    if( header->ver_maj == HELP_MAJ_V1 ) {
+        u16 = 0;
+    } else {
+        fread( &u16, sizeof( u16 ), 1, fp );
+    }
+    header->str_size = u16;
+    fseek( fp, 6 * sizeof( uint_16 ), SEEK_CUR );
+}
+
+
 static void PrintHeader( const HelpHeader *header )
 {
     printf( "HELP HEADER\n" );
-    printf( "    signature 1            %08lX\n", header->sig[0] );
-    printf( "    signature 2            %08lX\n", header->sig[1] );
+    printf( "    signature 1            %08lX\n", header->sig1 );
+    printf( "    signature 2            %08lX\n", header->sig2 );
     printf( "    version maj            %04X\n", header->ver_maj );
     printf( "    version min            %04X\n", header->ver_min );
     printf( "    index page count       %d\n", header->indexpagecnt );
     printf( "    data page count        %d\n", header->datapagecnt );
     printf( "    topic count            %d\n", header->topiccnt );
-    if( header->sig[0] == HELP_SIG_1 && header->sig[1] == HELP_SIG_2
-        && header->ver_maj == HELP_MAJ_VER
+    if( header->sig1 == HELP_SIG_1 && header->sig2 == HELP_SIG_2
+        && ( header->ver_maj == HELP_MAJ_V1
+          || header->ver_maj == HELP_MAJ_VER )
         && header->ver_min == HELP_MIN_VER ) {
         printf( "    Header info OK\n" );
     }
@@ -156,7 +187,7 @@ void main( int argc, char *argv[] )
         printf( "Unable to open %s\n", argv[1] );
         return;
     }
-    fread( &header, sizeof( HelpHeader ), 1, fp );
+    ReadHeader( &header, fp );
     PrintHeader( &header );
     fread( Buffer, header.str_size, 1, fp );
     PrintStrings( Buffer );

@@ -50,16 +50,15 @@ void                    *pageIndex;
 static void loadPage( HelpHdl hdl, unsigned long pagenum )
 {
     unsigned long       offset;
-    unsigned            tmp;
 
     if( curFile == hdl->fp && pageHeader->page_num == pagenum )
         return;
+    offset = hdl->header.str_size + pagenum * HLP_PAGE_SIZE + hdl->header.datapagecnt * sizeof( uint_16 );
     if( hdl->header.ver_maj == 1 ) {
-        tmp = sizeof( HelpHeader ) - sizeof( uint_16 );   // no str_size
+        offset += HELP_HEADER_V1_SIZE;
     } else {
-        tmp = sizeof( HelpHeader );
+        offset += HELP_HEADER_SIZE;
     }
-    offset = tmp + hdl->header.str_size + pagenum * HLP_PAGE_SIZE + hdl->header.datapagecnt * sizeof( uint_16 );
     HelpSeek( hdl->fp, offset, HELP_SEEK_SET );
     HelpRead( hdl->fp, curPage, HLP_PAGE_SIZE );
     curFile = hdl->fp;
@@ -261,51 +260,71 @@ HelpHdl InitHelpSearch( FILE *fp )
 {
     HelpHdl     hdl;
     size_t      len;
+    uint_16     *buffer;
+    int         str_cnt;
     uint_16     *str_len;
     char        *ptr;
-    char        *buffer;
+    uint_32     u32;
+    uint_16     u16;
 
     HelpSeek( fp, 0, HELP_SEEK_SET );
     hdl = HelpMemAlloc( sizeof( struct HelpHdl ) );
     hdl->fp = fp;
-    HelpRead( fp, &( hdl->header ), sizeof( HelpHeader ) );
-    if( hdl->header.sig[0] != HELP_SIG_1
-      || hdl->header.sig[1] != HELP_SIG_2
+    HelpRead( fp, &u32, sizeof( u32 ) );
+    hdl->header.sig1 = u32;
+    HelpRead( fp, &u32, sizeof( u32 ) );
+    hdl->header.sig2 = u32;
+    HelpRead( fp, &u16, sizeof( u16 ) );
+    hdl->header.ver_maj = u16;
+    HelpRead( fp, &u16, sizeof( u16 ) );
+    hdl->header.ver_min = u16;
+    if( hdl->header.sig1 != HELP_SIG_1
+      || hdl->header.sig2 != HELP_SIG_2
       || hdl->header.ver_min != HELP_MIN_VER ) {
         HelpMemFree( hdl );
         hdl = NULL;
-    } else if( hdl->header.ver_maj != HELP_MAJ_VER ) {
-        if( hdl->header.ver_maj != 1 ) {
-            HelpMemFree( hdl );
-            hdl = NULL;
+    } else if( hdl->header.ver_maj == HELP_MAJ_V1
+      || hdl->header.ver_maj == HELP_MAJ_VER ) {
+        HelpRead( fp, &u16, sizeof( u16 ) );
+        hdl->header.indexpagecnt = u16;
+        HelpRead( fp, &u16, sizeof( u16 ) );
+        hdl->header.datapagecnt = u16;
+        HelpRead( fp, &u32, sizeof( u32 ) );
+        hdl->header.topiccnt = u32;
+        if( hdl->header.ver_maj == HELP_MAJ_V1 ) {
+            u16 = 0;                        // no str_size in V1 header format
         } else {
-            HelpSeek( fp, -(long)sizeof( uint_16 ), SEEK_CUR ); // no str_size in header
+            HelpRead( fp, &u16, sizeof( u16 ) );
+        }
+        hdl->header.str_size = u16;
+        HelpSeek( fp, 6 * sizeof( uint_16 ), HELP_SEEK_CUR );
+        if( hdl->header.str_size ) {
+            buffer = HelpMemAlloc( hdl->header.str_size );
+            HelpRead( fp, buffer, hdl->header.str_size );
+            str_cnt = buffer[0];
+            str_len = buffer + 1;
+            ptr = (char *)( str_len + str_cnt );
+            if( str_len[0] != 0 ) {
+                hdl->def_topic = HelpDupStr( ptr );
+            } else {
+                hdl->def_topic = HelpDupStr( DEFAULTTOPIC );
+            }
+            if( str_len[1] != 0 ) {
+                hdl->desc_str = HelpDupStr( ptr + str_len[0] );
+            } else {
+                hdl->desc_str = NULL;
+            }
+            HelpMemFree( buffer );
+        } else {
             hdl->def_topic = HelpDupStr( DEFAULTTOPIC );
             hdl->desc_str = NULL;
-            hdl->header.str_size = 0;   // no str_size in old header format
-            len = hdl->header.datapagecnt * sizeof( uint_16 );
-            hdl->itemindex = HelpMemAlloc( len );
-            HelpRead( fp, hdl->itemindex, len );
         }
-    } else {
-        buffer = HelpMemAlloc( hdl->header.str_size );
-        HelpRead( fp, buffer, hdl->header.str_size );
-        str_len = (uint_16 *)buffer;
-        ptr = buffer + ( str_len[0] + 1 ) * sizeof( uint_16 );
-        if( str_len[1] != 0 ) {
-            hdl->def_topic = HelpDupStr( ptr );     // assume topic is first string
-        } else {
-            hdl->def_topic = HelpDupStr( DEFAULTTOPIC );
-        }
-        if( str_len[2] != 0 ) {
-            hdl->desc_str = HelpDupStr( ptr + str_len[1] );
-        } else {
-            hdl->desc_str = NULL;
-        }
-        HelpMemFree( buffer );
-        len = ( hdl->header.datapagecnt ) * ( sizeof( uint_16 ) );
+        len = hdl->header.datapagecnt * ( sizeof( uint_16 ) );
         hdl->itemindex = HelpMemAlloc( len );
         HelpRead( fp, hdl->itemindex, len );
+    } else {
+        HelpMemFree( hdl );
+        hdl = NULL;
     }
 
     return( hdl );
