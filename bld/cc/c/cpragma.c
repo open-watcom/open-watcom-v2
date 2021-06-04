@@ -1089,13 +1089,21 @@ static void pragEnableDisableMessage( bool enabled )
 static void pragMessage( void )
 /*****************************/
 {
+    char    *message;
+    size_t  len;
+
     PPCTL_ENABLE_MACROS();
     PPNextToken();
     if( ExpectingToken( T_LEFT_PAREN ) ) {
+        message = NULL;
+        len = 0;
         while( PPNextToken() == T_STRING ) {
-            printf( "%s", Buffer );
+            message = CMemRealloc( message, len + strlen( Buffer ) + 1 );
+            strcpy( message + len, Buffer );
+            len += strlen( Buffer );
         }
-        printf( "\n" );
+        BannerMsg( message );
+        CMemFree( message );
         MustRecog( T_RIGHT_PAREN );
     }
     PPCTL_DISABLE_MACROS();
