@@ -1095,7 +1095,8 @@ static void pragMessage( void )
     PPCTL_ENABLE_MACROS();
     PPNextToken();
     if( ExpectingToken( T_LEFT_PAREN ) ) {
-        message = NULL;
+        message = CMemAlloc( 1 );
+        message[0] = '\0';
         len = 0;
         while( PPNextToken() == T_STRING ) {
             message = CMemRealloc( message, len + strlen( Buffer ) + 1 );
