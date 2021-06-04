@@ -1077,6 +1077,21 @@ static void pragEnableDisableMessage( bool enabled )
     PPCTL_DISABLE_MACROS();
 }
 
+static char *collectStrings( char *message )
+{
+    size_t  len;
+    size_t  new_len;
+
+    len = 0;
+    while( CurToken == T_STRING ) {
+        new_len = len + strlen( Buffer );
+        message = CMemRealloc( message, new_len + 1 );
+        strcpy( message + len, Buffer );
+        len = new_len;
+        PPNextToken();
+    }
+    return( message );
+}
 
 /* form:
  *
@@ -1090,21 +1105,18 @@ static void pragMessage( void )
 /*****************************/
 {
     char    *message;
-    size_t  len;
 
     PPCTL_ENABLE_MACROS();
     PPNextToken();
     if( ExpectingToken( T_LEFT_PAREN ) ) {
-        message = CMemAlloc( 1 );
-        message[0] = '\0';
-        len = 0;
-        while( PPNextToken() == T_STRING ) {
-            message = CMemRealloc( message, len + strlen( Buffer ) + 1 );
-            strcpy( message + len, Buffer );
-            len += strlen( Buffer );
+        PPNextToken();
+        if( CurToken == T_STRING ) {
+            message = CMemAlloc( 1 );
+            message[0] = '\0';
+            message = collectStrings( message );
+            BannerMsg( message );
+            CMemFree( message );
         }
-        BannerMsg( message );
-        CMemFree( message );
         MustRecog( T_RIGHT_PAREN );
     }
     PPCTL_DISABLE_MACROS();
