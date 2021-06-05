@@ -34,6 +34,8 @@
 #include "ms2wlink.h"
 #include "banner.h"
 
+#include "clibext.h"
+
 
 // this array contains linked lists of the commands which are to be put into the
 // wlink command file. The data stored in the indices is as followes:
@@ -193,9 +195,16 @@ static void DoConvert( void )
     }
 }
 
-int main( void )
-/**********************/
+int main( int argc, char **argv )
+/*******************************/
 {
+#if !defined( __WATCOMC__ )
+    _argc = argc;                                                                                                           
+    _argv = argv;                                                                                                       
+#else                                                                                                                       
+    /* unused parameters */ (void)argc; (void)argv;                                                                     
+#endif 
+
     MemInit();
     UtilsInit();
     Spawn( DoConvert );
