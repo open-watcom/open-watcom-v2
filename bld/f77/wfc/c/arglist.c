@@ -43,9 +43,8 @@
 #include "gsubprog.h"
 
 
-static  void    GetImplType( sym_id sym ) {
-//=========================================
-
+static  void    GetImplType( sym_id sym )
+//=======================================
 // Get the implicit type of a symbol.
 // The following is to dump the proper function type if:
 //    FUNCTION F()        - Type is REAL
@@ -57,7 +56,7 @@ static  void    GetImplType( sym_id sym ) {
 //    IMPLICIT REAL*8 (I) - Type is now DOUBLE PRECISION
 //    RETURN              - When we dump ARGLIST here, we better
 //    END                   update the type
-
+{
     if( (sym->u.ns.flags & SY_TYPE) == 0 ) {
         sym->u.ns.flags |= SY_TYPE;
         sym->u.ns.u1.s.typ = ImplType( sym->u.ns.name[0] );
@@ -66,11 +65,11 @@ static  void    GetImplType( sym_id sym ) {
 }
 
 
-static  void    ChkEntryType( sym_id sym, sym_id entry ) {
-//========================================================
-
-    // when we compile ENTRY statement, we make sure that its class
-    // matches the class of the main entry
+static  void    ChkEntryType( sym_id sym, sym_id entry )
+//======================================================
+// when we compile ENTRY statement, we make sure that its class
+// matches the class of the main entry
+{
     if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE )
         return;
     if( (entry->u.ns.u1.s.typ == FT_CHAR) || (entry->u.ns.u1.s.typ == FT_STRUCTURE) ) {
@@ -93,11 +92,10 @@ static  void    ChkEntryType( sym_id sym, sym_id entry ) {
 }
 
 
-void    DumpEntries(void) {
-//=====================
-
+void    DumpEntries( void )
+//=========================
 // Dump argument lists.
-
+{
     parameter   *curr_parm;
     entry_pt    *dum_lst;
 
@@ -164,11 +162,10 @@ void    DumpEntries(void) {
 }
 
 
-void    EnPurge(void) {
-//=================
-
+void    EnPurge( void )
+//=====================
 // Free up all the entry list information.
-
+{
     parameter   *curr_parm;
     pointer     next;
 
