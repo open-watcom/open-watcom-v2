@@ -204,16 +204,18 @@ static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
 
 static bool LoadMsg( unsigned msg, char *buffer, int buff_size )
-//==============================================================
-// Load a message into the specified buffer.  This function is called
-// by WLINK when linked with 16-bit version of WATFOR-77.
+/***************************************************************
+ * Load a message into the specified buffer.  This function is called
+ * by WLINK when linked with 16-bit version of WATFOR-77.
+ */
 {
     return( hInstance.status && ( WResLoadString( &hInstance, msg + MsgShift, buffer, buff_size ) > 0 ) );
 }
 
 static char *GetMsg( unsigned msg )
-//=================================
-// Build error message.
+/**********************************
+ * Build error message.
+ */
 {
     static char    msg_buf[ERR_BUFF_SIZE];
 
@@ -224,7 +226,7 @@ static char *GetMsg( unsigned msg )
 }
 
 static void ErrorInit( const char *pgm_name )
-//===========================================
+/*******************************************/
 {
     hInstance.status = 0;
     if( OpenResFile( &hInstance, pgm_name ) ) {
@@ -235,13 +237,13 @@ static void ErrorInit( const char *pgm_name )
 }
 
 static void ErrorFini( void )
-//===========================
+/***************************/
 {
     CloseResFile( &hInstance );
 }
 
-static  void    printfMsg( unsigned msg, ... ) 
-//============================================
+static  void    printfMsg( unsigned msg, ... )
+/********************************************/
 {
     va_list     args;
     char        buff[ERR_BUFF_SIZE+1];
@@ -253,8 +255,8 @@ static  void    printfMsg( unsigned msg, ... )
 }
 
 
-static void PrtBanner( void ) 
-//===========================
+static void PrtBanner( void )
+/***************************/
 {
 #if defined( _BETAVER )
     puts( banner1w1( "F77 " _TARGET_ " Compile and Link Utility" ) );
@@ -270,7 +272,7 @@ static void PrtBanner( void )
 
 
 static  void    Usage( void )
-//===========================
+/***************************/
 {
     unsigned    msg;
 
@@ -285,8 +287,8 @@ static  void    Usage( void )
 }
 
 
-static  void    *MemAlloc( size_t size ) 
-//======================================
+static  void    *MemAlloc( size_t size )
+/**************************************/
 {
     void            *ptr;
 
@@ -300,7 +302,7 @@ static  void    *MemAlloc( size_t size )
 }
 
 static void     AddFile( list **l, const char *fname )
-//====================================================
+/****************************************************/
 {
     list *p;
 
@@ -312,7 +314,7 @@ static void     AddFile( list **l, const char *fname )
 
 
 static int     IsOption( const char *cmd, size_t cmd_len, const char *opt )
-//=========================================================================
+/*************************************************************************/
 {
     size_t      len;
 
@@ -490,7 +492,7 @@ static int tool_exec( tool_type utl, char *target, char **options )
 
 
 static  void    Fputnl( const char *text, FILE *fptr )
-//====================================================
+/****************************************************/
 {
     fputs( text, fptr );
     fputs( "\n", fptr );
@@ -498,7 +500,7 @@ static  void    Fputnl( const char *text, FILE *fptr )
 
 
 static  void    MakeName( char *name, const char *ext )
-//=====================================================
+/*****************************************************/
 {
     pgroup2 pg;
 
@@ -510,7 +512,7 @@ static  void    MakeName( char *name, const char *ext )
 
 
 static  void    AddName( const char *name, FILE *link_fp )
-//========================================================
+/********************************************************/
 {
     list        *curr_name;
     list        *last_name;
@@ -556,7 +558,7 @@ static  void    AddName( const char *name, FILE *link_fp )
 }
 
 static  int     Parse( int argc, char **argv )
-//============================================
+/********************************************/
 {
     char        opt;
     //char        *end;
@@ -778,8 +780,8 @@ static  int     Parse( int argc, char **argv )
     return( 0 );
 }
 
-static  int     CompLink( void ) 
-//==============================
+static  int     CompLink( void )
+/******************************/
 {
     int         rc;
     const char  *file;
@@ -910,7 +912,7 @@ static  int     CompLink( void )
 }
 
 int     main( int argc, char *argv[] )
-//====================================
+/************************************/
 {
     int         rc;
     char        *wfl_env;
@@ -993,4 +995,3 @@ int     main( int argc, char *argv[] )
     ErrorFini();
     return( rc );
 }
-
