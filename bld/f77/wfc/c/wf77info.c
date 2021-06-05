@@ -168,10 +168,9 @@ static char                     MangleSymBuff[MAX_SYMLEN+4+SYM_MANGLE_LEN];
 #endif
 
 
-static size_t   MangleCommonBlockName( sym_id sym, char *buffer,
-                                               bool class ) {
-//===========================================================
-
+static size_t   MangleCommonBlockName( sym_id sym, char *buffer, bool class )
+//===========================================================================
+{
     size_t      cb_len;
 
     cb_len = sym->u.ns.u2.name_len;
@@ -190,9 +189,9 @@ static size_t   MangleCommonBlockName( sym_id sym, char *buffer,
 }
 
 
-static  segment_id      AllocSegId( void ) {
-//====================================
-
+static  segment_id      AllocSegId( void )
+//========================================
+{
     segment_id  segid;
 
     segid = CurrSegId;
@@ -201,16 +200,16 @@ static  segment_id      AllocSegId( void ) {
 }
 
 
-void    InitSubSegs( void ) {
-//=====================
-
+void    InitSubSegs( void )
+//=========================
+{
     import_segid = -1;
 }
 
 
-segment_id      AllocImpSegId( void ) {
-//===============================
-
+segment_id      AllocImpSegId( void )
+//===================================
+{
     segment_id  segid;
 
     segid = import_segid--;
@@ -218,11 +217,10 @@ segment_id      AllocImpSegId( void ) {
 }
 
 
-void    InitSegs( void ) {
-//==================
-
+void    InitSegs( void )
+//======================
 // Define segments.
-
+{
     CurrSegId = SEG_FREE;
 #if _CPU == _AXP || _CPU == _PPC
     BEDefSeg( SEG_TDATA, EXEC | GLOBAL | GIVEN_NAME, TS_SEG_CODE, ALIGN_DWORD );
@@ -238,11 +236,10 @@ void    InitSegs( void ) {
 }
 
 
-void    FiniSegs( void ) {
-//==================
-
+void    FiniSegs( void )
+//======================
 // Finish segment processing.
-
+{
     sym_id      sym;
 
     for( sym = GList; sym != NULL; sym = sym->u.ns.link ) {
@@ -253,20 +250,19 @@ void    FiniSegs( void ) {
 }
 
 
-void    AllocSegs( void ) {
-//===================
-
+void    AllocSegs( void )
+//=======================
 // Allocate segments.
-
+{
     AllocGlobalSegs();
     AllocCommonSegs();
 }
 
 
-void    SubCodeSeg( void ) {
-//====================
-
+void    SubCodeSeg( void )
+//========================
 // Define a code segment for a subprogram.
+{
 #if _CPU == 8086 || _CPU == 386
     DefCodeSeg();
 #endif
@@ -274,9 +270,9 @@ void    SubCodeSeg( void ) {
 
 
 #if _CPU == 8086 || _CPU == 386
-static  unsigned char   *AlignmentSeq( void ) {
-//=============================================
-
+static  unsigned char   *AlignmentSeq( void )
+//===========================================
+{
     if( OZOpts & OZOPT_O_TIME ) {
         return( CodeAlignSeq );
     } else {
@@ -285,11 +281,10 @@ static  unsigned char   *AlignmentSeq( void ) {
 }
 
 
-static  void    DefCodeSeg( void ) {
-//============================
-
+static  void    DefCodeSeg( void )
+//================================
 // Define a code segment.
-
+{
     char            seg_name[MAX_SYMLEN+CS_SUFF_LEN+1];
     unsigned char   *align_info_bytes;
     int             i;
@@ -308,11 +303,10 @@ static  void    DefCodeSeg( void ) {
 }
 
 
-static  void    BldCSName( char *buff ) {
-//=======================================
-
+static  void    BldCSName( char *buff )
+//=====================================
 // Build code segment name.
-
+{
 #if _CPU == 8086
     strcpy( STGetName( SubProgId, buff ), CSSuff );
 #else
@@ -322,11 +316,10 @@ static  void    BldCSName( char *buff ) {
 #endif
 
 
-static  void    DefineCommonSegs( void ) {
-//==================================
-
+static  void    DefineCommonSegs( void )
+//======================================
 // Define segments for a common blocks.
-
+{
     uint_32     com_size;
     int         seg_count;
     sym_id      sym;
@@ -374,11 +367,10 @@ static  void    DefineCommonSegs( void ) {
 }
 
 
-static  void    AllocCommonSegs( void ) {
-//=================================
-
+static  void    AllocCommonSegs( void )
+//=====================================
 // Allocate segments for a common blocks.
-
+{
     sym_id      sym;
 
     for( sym = GList; sym != NULL; sym = sym->u.ns.link ) {
@@ -389,11 +381,10 @@ static  void    AllocCommonSegs( void ) {
 }
 
 
-static  void    AllocComBlk( sym_id cb ) {
-//========================================
-
+static  void    AllocComBlk( sym_id cb )
+//======================================
 // Allocate a common block.
-
+{
     segment_id  segid;
     uint_32     size;
 
@@ -427,11 +418,10 @@ static  void    SegBytes( uint_32 size )
 }
 
 
-static  void   DefineGlobalSeg( global_seg *seg ) {
-//==========================================================
-
+static  void   DefineGlobalSeg( global_seg *seg )
+//===============================================
 // Define a global segment.
-
+{
     int         private;
     char        g_name[G_DATA_LEN+3];
 
@@ -461,11 +451,10 @@ static  void   DefineGlobalSeg( global_seg *seg ) {
 }
 
 
-static  void    DefineGlobalSegs( void ) {
-//==================================
-
+static  void    DefineGlobalSegs( void )
+//======================================
 // Define global segments.
-
+{
     global_seg  *g_seg;
 
     for( g_seg = GlobalSeg; g_seg != NULL; g_seg = g_seg->link ) {
@@ -474,11 +463,10 @@ static  void    DefineGlobalSegs( void ) {
 }
 
 
-static  void    AllocGlobalSegs( void ) {
-//=================================
-
+static  void    AllocGlobalSegs( void )
+//=====================================
 // Allocate global segments.
-
+{
     global_seg  *g_seg;
 
     for( g_seg = GlobalSeg; g_seg != NULL; g_seg = g_seg->link ) {
@@ -488,11 +476,10 @@ static  void    AllocGlobalSegs( void ) {
 }
 
 
-static  global_seg      *GSegDesc( uint_32 g_offset ) {
-//=========================================================
-
+static  global_seg      *GSegDesc( uint_32 g_offset )
+//===================================================
 // Find global segment descriptor for given offset.
-
+{
     global_seg  *g_seg;
     uint_32     g_size;
 
@@ -504,11 +491,10 @@ static  global_seg      *GSegDesc( uint_32 g_offset ) {
 }
 
 
-void    DtInit( segment_id segid, seg_offset offset ) {
+void    DtInit( segment_id segid, seg_offset offset )
 //===================================================
-
 // Set to do DATA initialization.
-
+{
     if( offset + DtOffset >= MaxSegSize ) {
         segid++;
         for( DtSegOffset = DtOffset - (MaxSegSize - offset); DtSegOffset >= MaxSegSize; DtSegOffset -= MaxSegSize ) {
@@ -529,9 +515,9 @@ struct {
 } CurrDt;
 
 
-static  void    InitBytes( unsigned long size, byte value ) {
-//===========================================================
-
+static  void    InitBytes( unsigned long size, byte value )
+//=========================================================
+{
 #if _CPU == 386
     DGIBytes( size, value );
 #else
@@ -546,9 +532,9 @@ static  void    InitBytes( unsigned long size, byte value ) {
 }
 
 
-static  void    UndefBytes( unsigned long size, byte *data ) {
-//============================================================
-
+static  void    UndefBytes( unsigned long size, byte *data )
+//==========================================================
+{
 #if _CPU == 386
     DGBytes( size, data );
 #else
@@ -563,9 +549,9 @@ static  void    UndefBytes( unsigned long size, byte *data ) {
 }
 
 
-static  void    FlushCurrDt( void ) {
-//=============================
-
+static  void    FlushCurrDt( void )
+//=================================
+{
     if( CurrDt.segid != SEG_NULL ) {
         BESetSeg( CurrDt.segid );
         DGSeek( CurrDt.offset );
@@ -574,9 +560,9 @@ static  void    FlushCurrDt( void ) {
 }
 
 
-static  void    InitCurrDt( void ) {
-//============================
-
+static  void    InitCurrDt( void )
+//================================
+{
     CurrDt.segid = SEG_NULL;
     CurrDt.offset = 0;
     CurrDt.byte_value = 0;
@@ -584,11 +570,10 @@ static  void    InitCurrDt( void ) {
 }
 
 
-void    DtIBytes( byte data, int size ) {
-//=======================================
-
+void    DtIBytes( byte data, int size )
+//=====================================
 // Initialize with specified data.
-
+{
     if( ( DtSegId == CurrDt.segid ) &&
         (DtSegOffset == CurrDt.offset + CurrDt.size) &&
         (data == CurrDt.byte_value) &&
@@ -620,11 +605,10 @@ void    DtIBytes( byte data, int size ) {
 }
 
 
-void    DtStreamBytes( byte *data, int size ) {
-//=============================================
-
+void    DtStreamBytes( byte *data, int size )
+//===========================================
 // Initialize with specified data.
-
+{
     FlushCurrDt();
     InitCurrDt();
     BESetSeg( DtSegId );
@@ -648,11 +632,10 @@ void    DtStreamBytes( byte *data, int size ) {
 }
 
 
-void    DtBytes( byte *data, int size ) {
-//=======================================
-
+void    DtBytes( byte *data, int size )
+//=====================================
 // Initialize with specified data.
-
+{
     byte        byte_value;
     int         i;
 
@@ -667,25 +650,24 @@ void    DtBytes( byte *data, int size ) {
 }
 
 
-void    DtStartSequence( void ) {
-//=========================
-
+void    DtStartSequence( void )
+//=============================
+{
     InitCurrDt();
 }
 
 
-void    DtFiniSequence( void ) {
-//========================
-
+void    DtFiniSequence( void )
+//============================
+{
     FlushCurrDt();
 }
 
 
-segment_id      GetComSegId( sym_id sym, uint_32 offset ) {
-//===========================================================
-
+segment_id      GetComSegId( sym_id sym, uint_32 offset )
+//=======================================================
 // Get segment id of common block for variable in common.
-
+{
     segment_id  segid;
 
     segid = sym->u.ns.si.va.vi.ec_ext->com_blk->u.ns.si.cb.segid;
@@ -696,11 +678,10 @@ segment_id      GetComSegId( sym_id sym, uint_32 offset ) {
 }
 
 
-segment_id      GetDataSegId( sym_id sym ) {
-//==========================================
-
+segment_id      GetDataSegId( sym_id sym )
+//========================================
 // Get segment containing data for given variable.
-
+{
     segment_id  segid;
     uint_32     offset;
     com_eq      *ce_ext;
@@ -736,11 +717,10 @@ segment_id      GetDataSegId( sym_id sym ) {
 }
 
 
-seg_offset      GetGlobalOffset( uint_32 g_offset ) {
-//=======================================================
-
+seg_offset      GetGlobalOffset( uint_32 g_offset )
+//=================================================
 // Find offset in the global segment containing data at given offset.
-
+{
     global_seg  *g_seg;
     uint_32     g_size;
 
@@ -752,11 +732,10 @@ seg_offset      GetGlobalOffset( uint_32 g_offset ) {
 }
 
 
-seg_offset      GetComOffset( uint_32 offset ) {
-//==================================================
-
+seg_offset      GetComOffset( uint_32 offset )
+//============================================
 // Get segment offset in common block for variable in common.
-
+{
     while( offset >= MaxSegSize ) {
         offset -= MaxSegSize;
     }
@@ -764,11 +743,10 @@ seg_offset      GetComOffset( uint_32 offset ) {
 }
 
 
-back_handle FEBack( cg_sym_handle _sym ) {
-//========================================
-
+back_handle FEBack( cg_sym_handle _sym )
+//======================================
 // Return the back handle for the given symbol.
-
+{
     sym_id      sym = _sym;
 
     if( (sym->u.ns.flags & SY_CLASS) != SY_COMMON ) {
@@ -780,11 +758,10 @@ back_handle FEBack( cg_sym_handle _sym ) {
 }
 
 
-seg_offset      GetDataOffset( sym_id sym ) {
-//===========================================
-
+seg_offset      GetDataOffset( sym_id sym )
+//=========================================
 // Get offset in segment containing data for given variable.
-
+{
     seg_offset  seg_offset;
     uint_32     offset;
     com_eq      *ce_ext;
@@ -816,20 +793,18 @@ seg_offset      GetDataOffset( sym_id sym ) {
 }
 
 
-segment_id  GetGlobalSegId( uint_32 g_offset ) {
-//================================================
-
+segment_id  GetGlobalSegId( uint_32 g_offset )
+//============================================
 // Find global segment containing data at given offset.
-
+{
     return( GSegDesc( g_offset )->segid );
 }
 
 
-void    DefTypes( void ) {
-//==================
-
+void    DefTypes( void )
+//======================
 // Define FORTRAN 77 data types.
-
+{
     int         adv_cnt;
     int         adv_size;
     int         total_size;
@@ -901,11 +876,10 @@ void    DefTypes( void ) {
 }
 
 
-void    DefStructs( void ) {
-//====================
-
+void    DefStructs( void )
+//========================
 // Define user-defined data types.
-
+{
     sym_id      sym;
 
     UserType = TY_USER_DEFINED;
@@ -963,34 +937,30 @@ void    DefStructs( void ) {
 }
 
 
-const char  *FEModuleName( void ) {
-//=================================
-
+const char  *FEModuleName( void )
+//===============================
 // Return pointer to module name (no file extension).
-
+{
     return( SDFName( SrcName ) );
 }
 
 
-int     FETrue( void ) {
-//================
-
+int     FETrue( void )
+//====================
 // Return the value for "true".
-
+{
     return( _LogValue( true ) );
 }
 
 
-fe_attr FEAttr( cg_sym_handle _sym ) {
-//====================================
-
+fe_attr FEAttr( cg_sym_handle _sym )
+//==================================
 // Return the front end attributes for the given symbol.
-
 // FE_NOALIAS:  variable can't be modified by an indirect store
 //              (unless its address has been taken)
 // FE_VISIBLE:  variable can be modified by a call even though
 //              it's not global
-
+{
     uint_16     flags;
     fe_attr     attr;
     sym_id      sym = _sym;
@@ -1071,18 +1041,17 @@ fe_attr FEAttr( cg_sym_handle _sym ) {
 }
 
 
-void    FEGenProc( cg_sym_handle sym, call_handle handle)
-//=======================================================
+void    FEGenProc( cg_sym_handle sym, call_handle handle )
+//========================================================
 {
     /* unused parameters */ (void)sym; (void)handle;
 }
 
 
-segment_id      FESegID( cg_sym_handle _sym ) {
-//=============================================
-
+segment_id      FESegID( cg_sym_handle _sym )
+//===========================================
 // Return identifier of the segment that the given symbol is defined in.
-
+{
     segment_id  segid;
     uint_16     flags;
     uint_16     sp_type;
@@ -1127,11 +1096,10 @@ segment_id      FESegID( cg_sym_handle _sym ) {
 }
 
 
-static char *GetName( sym_id sym ) {
-//==================================
-
+static char *GetName( sym_id sym )
+//================================
 // Return pointer to the name of the given symbol.
-
+{
     if( _MgcIsMagic( sym ) ) {
         if( (sym->u.ns.flags & SY_PS_ENTRY) == 0 ) {
             return( "*MAGIC*" );
@@ -1193,11 +1161,10 @@ static uint GetParmsSize( sym_id sym )
     return( args_size );
 }
 
-const char *FEExtName( cg_sym_handle sym, int request ) {
-//=======================================================
-
+const char *FEExtName( cg_sym_handle sym, int request )
+//=====================================================
 // Return symbol name related info for object file.
-
+{
     switch( request ) {
     case EXTN_BASENAME:
         return( GetBaseName( (sym_id)sym ) );
@@ -1213,11 +1180,10 @@ const char *FEExtName( cg_sym_handle sym, int request ) {
     }
 }
 
-const char  *FEName( cg_sym_handle _sym ) {
-//====================================
-
+const char  *FEName( cg_sym_handle _sym )
+//=======================================
 // Return pointer to the name of the given symbol.
-
+{
     sym_id      sym = _sym;
 
     _UnShadow( sym );
@@ -1227,11 +1193,10 @@ const char  *FEName( cg_sym_handle _sym ) {
 }
 
 
-void    *ConstBack( sym_id c_ptr ) {
-//==================================
-
+void    *ConstBack( sym_id c_ptr )
+//================================
 // Get a back handle for a literal.
-
+{
     if( c_ptr->u.cn.address == NULL ) {
         c_ptr->u.cn.address = BENewBack( NULL );
     }
@@ -1239,11 +1204,10 @@ void    *ConstBack( sym_id c_ptr ) {
 }
 
 
-int     FELexLevel( cg_sym_handle _sym ) {
-//========================================
-
+int     FELexLevel( cg_sym_handle _sym )
+//======================================
 // Return scoping level of given symbol.
-
+{
     sym_id      sym = _sym;
 
     _UnShadow( sym );
@@ -1251,12 +1215,11 @@ int     FELexLevel( cg_sym_handle _sym ) {
 }
 
 
-cg_type FEParmType( cg_sym_handle fn, cg_sym_handle parm, cg_type tipe ) {
-//=========================================================================
-
+cg_type FEParmType( cg_sym_handle fn, cg_sym_handle parm, cg_type tipe )
+//======================================================================
 // Return the type that an argument of the given type should be converted
 // to.
-
+{
     /* unused parameters */ (void)parm; (void)fn;
 
     switch( tipe ) {
@@ -1285,7 +1248,7 @@ cg_type FEParmType( cg_sym_handle fn, cg_sym_handle parm, cg_type tipe ) {
 
 
 int     FEMoreMem( size_t size )
-//==================================
+//==============================
 // We can't free any memory for use by the back end.
 {
 
@@ -1295,12 +1258,11 @@ int     FEMoreMem( size_t size )
 }
 
 
-int     FEStackChk( cg_sym_handle _sym ) {
-//========================================
-
+int     FEStackChk( cg_sym_handle _sym )
+//======================================
 // Do we want to generate stack overflow checking in the prologue for the
 // given symbol?
-
+{
     sym_id      sym = _sym;
 
     _UnShadow( sym );
@@ -1308,9 +1270,9 @@ int     FEStackChk( cg_sym_handle _sym ) {
 }
 
 
-void    FCMessage( fc_msg_class tipe, pointer x ) {
-//=================================================
-
+void    FCMessage( fc_msg_class tipe, pointer x )
+//===============================================
+{
     char        name[MAX_SYMLEN+1];
 
     switch( tipe ) {
@@ -1329,11 +1291,10 @@ void    FCMessage( fc_msg_class tipe, pointer x ) {
     }
 }
 
-void    FEMessage( int msg, pointer x ) {
-//=======================================
-
+void    FEMessage( int msg, pointer x )
+//=====================================
 // Print a message for the back end.
-
+{
     char        name[MAX_SYMLEN+1];
 
     if( (CGFlags & CG_INIT) == 0 ) {
@@ -1407,9 +1368,9 @@ void    FEMessage( int msg, pointer x ) {
 }
 
 
-static  dbg_type        BaseDbgType( TYPE typ, size_t size ) {
+static  dbg_type        BaseDbgType( TYPE typ, size_t size )
 //==========================================================
-
+{
     if( typ == FT_CHAR ) {
         return( DBCharBlock( size ) );
     } else {
@@ -1418,11 +1379,10 @@ static  dbg_type        BaseDbgType( TYPE typ, size_t size ) {
 }
 
 
-static  dbg_type        GetDbgType( sym_id sym ) {
-//================================================
-
+static  dbg_type        GetDbgType( sym_id sym )
+//==============================================
 // Get debugging information type.
-
+{
     dbg_loc     loc;
     dbg_type    type;
 
@@ -1473,9 +1433,9 @@ static  dbg_type        GetDbgType( sym_id sym ) {
 }
 
 
-static dbg_type ArrayDbgType( act_dim_list *dim_ptr, dbg_type db_type ) {
-//=======================================================================
-
+static dbg_type ArrayDbgType( act_dim_list *dim_ptr, dbg_type db_type )
+//=====================================================================
+{
     int         dim_cnt;
     intstar4    *bounds;
     intstar4    lo;
@@ -1494,11 +1454,10 @@ static dbg_type ArrayDbgType( act_dim_list *dim_ptr, dbg_type db_type ) {
 }
 
 
-static  dbg_type        GetDBGSubProgType( sym_id sym ) {
-//=======================================================
-
+static  dbg_type        GetDBGSubProgType( sym_id sym )
+//=====================================================
 // Get debugging information type for subprograms.
-
+{
     if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) {
 #if _CPU == 8086
         return( DBGTypes[PT_INT_2] );
@@ -1536,11 +1495,10 @@ static  dbg_type        GetDBGSubProgType( sym_id sym ) {
 }
 
 
-static  dbg_type        DefDbgSubprogram( sym_id sym, dbg_type db_type ) {
-//========================================================================
-
+static  dbg_type        DefDbgSubprogram( sym_id sym, dbg_type db_type )
+//======================================================================
 // Define debugging information for subprograms.
-
+{
     dbg_proc    db_proc;
     entry_pt    *ep;
     parameter   *arg;
@@ -1583,9 +1541,9 @@ static  dbg_type        DefDbgSubprogram( sym_id sym, dbg_type db_type ) {
 }
 
 
-static  void    DefDbgFields( sym_id sd, dbg_struct db, uint_32 f_offset ) {
-//==============================================================================
-
+static  void    DefDbgFields( sym_id sd, dbg_struct db, uint_32 f_offset )
+//========================================================================
+{
     sym_id      map;
     sym_id      field;
     uint_32     size;
@@ -1621,11 +1579,10 @@ static  void    DefDbgFields( sym_id sd, dbg_struct db, uint_32 f_offset ) {
 }
 
 
-static  void    DefDbgStruct( sym_id sym ) {
-//==========================================
-
+static  void    DefDbgStruct( sym_id sym )
+//========================================
 // Define debugging information for structure.
-
+{
     dbg_struct  db;
 
     if( sym->u.sd.dbi != DBG_NIL_TYPE )
@@ -1636,11 +1593,10 @@ static  void    DefDbgStruct( sym_id sym ) {
 }
 
 
-static  dbg_type        DefCommonStruct( sym_id sym ) {
-//=====================================================
-
+static  dbg_type        DefCommonStruct( sym_id sym )
+//===================================================
 // Define debugging information for a COMMON block.
-
+{
     dbg_struct  db;
     uint_32     com_offset;
     uint_32     size;
@@ -1677,9 +1633,9 @@ static  dbg_type        DefCommonStruct( sym_id sym ) {
 }
 
 
-static  void    InitDBGTypes( void ) {
-//==============================
-
+static  void    InitDBGTypes( void )
+//==================================
+{
     int         typ;
 
     if( DBGTypes[PT_LOG_1] == DBG_NIL_TYPE ) {
@@ -1693,11 +1649,10 @@ static  void    InitDBGTypes( void ) {
 }
 
 
-dbg_type        FEDbgRetType( cg_sym_handle _sym ) {
-//==================================================
-
+dbg_type        FEDbgRetType( cg_sym_handle _sym )
+//================================================
 // Return the debug type handle for a subprogram.
-
+{
     sym_id      sym = _sym;
 
     _UnShadow( sym );
@@ -1709,9 +1664,9 @@ dbg_type        FEDbgRetType( cg_sym_handle _sym ) {
 }
 
 
-static  dbg_type        DbgADV( act_dim_list *dim_ptr, dbg_type db_type ) {
-//=========================================================================
-
+static  dbg_type        DbgADV( act_dim_list *dim_ptr, dbg_type db_type )
+//=======================================================================
+{
     int         dim_cnt;
     int         dim_no;
     int         len;
@@ -1747,11 +1702,10 @@ static  dbg_type        DbgADV( act_dim_list *dim_ptr, dbg_type db_type ) {
 }
 
 
-dbg_type        FEDbgType( cg_sym_handle _sym ) {
-//===============================================
-
+dbg_type        FEDbgType( cg_sym_handle _sym )
+//=============================================
 // Return the debug type handle for the given symbol.
-
+{
     dbg_type            db_type;
     act_dim_list        *dim_ptr;
     sym_id              sym = _sym;
@@ -1825,9 +1779,9 @@ dbg_type        FEDbgType( cg_sym_handle _sym ) {
 }
 
 
-char    *GetFullSrcName( void ) {
-//===============================
-
+char    *GetFullSrcName( void )
+//=============================
+{
     size_t      idx;
 
     idx = MakeName( SrcName, SrcExtn, TokenBuff ) + sizeof( char );
@@ -1839,7 +1793,7 @@ char    *GetFullSrcName( void ) {
 }
 
 pointer FEAuxInfo( pointer req_handle, int request )
-//====================================================
+//==================================================
 // Return specified auxiliary information for given auxiliary entry.
 {
     uint_16     flags;

@@ -41,4 +41,3 @@ typedef enum {
 #define RT_CMPLXDIV     RT_C8DIV
 #define RT_CMPLXPOW     RT_C8POW
 #define RT_CMPLXPOWI    RT_C8POWI
-
