@@ -231,10 +231,10 @@ void WEXPORT WString::printf( const char* parms... )
     int     bufsize;
 
     va_start( args, parms );
-    bufsize = _vsnprintf( NULL, 0, parms, args ) + 1;
+    bufsize = vsnprintf( NULL, 0, parms, args ) + 1;
     buffer = MALLOC( bufsize );
     if( buffer != NULL ) {
-        if( _vsnprintf( buffer, bufsize, parms, args ) == bufsize - 1 ) {
+        if( vsnprintf( buffer, bufsize, parms, args ) >= 0 ) {
             (*this) = buffer;
         }
         FREE( buffer );
@@ -276,10 +276,10 @@ void WEXPORT WString::concatf( const char* parms... )
     int     bufsize;
 
     va_start( args, parms );
-    bufsize = _vsnprintf( NULL, 0, parms, args ) + 1;
+    bufsize = vsnprintf( NULL, 0, parms, args ) + 1;
     buffer = MALLOC( bufsize );
     if( buffer != NULL ) {
-        if( _vsnprintf( buffer, bufsize, parms, args ) == bufsize - 1 ) {
+        if( vsnprintf( buffer, bufsize, parms, args ) >= 0 ) {
             concat( buffer );
         }
         FREE( buffer );

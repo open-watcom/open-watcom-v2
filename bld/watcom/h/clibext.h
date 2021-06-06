@@ -72,7 +72,6 @@
 #define _MAX_DIR    (PATH_MAX-3)
 #define _MAX_FNAME  (PATH_MAX-3)
 #define _MAX_EXT    (PATH_MAX-3)
-#define _snprintf snprintf
 #define _fsopen(x,y,z) fopen(x,y)
 #define _fmemcpy memcpy
 #define __int64 long long
@@ -103,7 +102,6 @@
 #define fseeko fseek
 #define strcasecmp stricmp
 #define _grow_handles _setmaxstdio
-#define snprintf _snprintf
 #define _mbislead _ismbblead
 #define utoa ultoa
 #define gmtime_r(a,b) gmtime_s(b,a)
@@ -116,7 +114,6 @@
 //#ifndef getch
 //#define getch getchar
 //#endif
-#define _vsnprintf vsnprintf
 #define __va_list  va_list
 #define __Strtold(s,ld,endptr) ((*(double *)(ld))=strtod(s,endptr))
 

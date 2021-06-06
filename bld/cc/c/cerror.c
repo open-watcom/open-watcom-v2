@@ -165,7 +165,7 @@ static void CMsgInfo( cmsg_info *info, int parmno, msg_codes msgnum, va_list arg
         info->msgtxt[prefix_len++] = ' ';
     }
     msgstr = CGetMsgStr( msgnum );
-    _vsnprintf( info->msgtxt + prefix_len, MAX_MSG_LEN - prefix_len, msgstr, args );
+    vsnprintf( info->msgtxt + prefix_len, MAX_MSG_LEN - prefix_len, msgstr, args );
     info->msgtxt[MAX_MSG_LEN - 1] = '\0';
     info->line = line;
     info->column = column;
@@ -195,21 +195,20 @@ static char const *MsgClassPhrase( cmsg_class class )
 // format message with line & file int buff
 void FmtCMsg( char *buff, cmsg_info *info )
 {
-    int         len;
+    size_t      len;
     char const  *phrase;
     char const  *code_prefix;
 
-    len = 0;
+    buff[0] = '\0';
     if( info->line != 0 ) {
         if( info->fname != NULL ) {
-            len += _snprintf( &buff[len], MAX_MSG_LEN - len, "%s(%u): ", info->fname, info->line );
+            snprintf( buff, MAX_MSG_LEN, "%s(%u): ", info->fname, info->line );
         }
-    } else {
-        buff[0] = '\0';
     }
     code_prefix = CGetMsgPrefix( info->msgnum );
     phrase = MsgClassPhrase( info->class );
-    len += _snprintf( &buff[len], MAX_MSG_LEN - len, "%s %s%03d: ", phrase, code_prefix, info->msgnum );
+    len = strlen( buff );
+    snprintf( buff + len, MAX_MSG_LEN - len, "%s %s%03d: ", phrase, code_prefix, info->msgnum );
 }
 
 // print message to streams
@@ -387,7 +386,7 @@ void PCHNote( msg_codes msgnum, ... )
     if( !CompFlags.no_pch_warnings ) {
         msgstr = CGetMsgStr( msgnum );
         va_start( args1, msgnum );
-        _vsnprintf( msgbuf, MAX_MSG_LEN, msgstr, args1 );
+        vsnprintf( msgbuf, MAX_MSG_LEN, msgstr, args1 );
         va_end( args1 );
         NoteMsg( msgbuf );
     }
