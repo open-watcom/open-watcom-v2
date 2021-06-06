@@ -113,7 +113,7 @@ sys_handle LocalOpen( const char *name, obj_attrs oattrs )
     if( oattrs & OP_CREATE ) {
         openflags = OPEN_ACTION_CREATE_IF_NEW;
     } else {
-        openflags = OPEN_ACTION_FAIL_IF_NEW
+        openflags = OPEN_ACTION_FAIL_IF_NEW;
     }
     if( oattrs & OP_TRUNC ) {
         openflags |= OPEN_ACTION_REPLACE_IF_EXISTS;
