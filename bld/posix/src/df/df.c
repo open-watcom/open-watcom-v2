@@ -38,9 +38,9 @@
 #endif
 #include <stdio.h>
 #include <stdlib.h>
-#include <dos.h>
 #include <string.h>
 #include <ctype.h>
+#include <direct.h>
 #include "misc.h"
 #include "getopt.h"
 #include "argvenv.h"
@@ -187,22 +187,6 @@ static drive_type doGetDriveType( int drv )
 
 } /* doGetDriveType */
 
-unsigned _dos_getdiskfree( unsigned dnum, struct diskfree_t *df )
-{
-    FSALLOCATE  fs;
-    unsigned    rc;
-
-    rc = DosQFSInfo( dnum, 1, (PVOID) &fs, sizeof( fs ) );
-    if( rc ) {
-        return( rc );
-    }
-    df->sectors_per_cluster = fs.cSectorUnit;
-    df->total_clusters = fs.cUnit;
-    df->avail_clusters = fs.cUnitAvail;
-    df->bytes_per_sector = fs.cbSector;
-    return( 0 );
-}
-
 #elif defined( __NT__ )
 
 /*
@@ -251,7 +235,7 @@ static void doDF( int drive )
     if( dt == DRIVE_IS_REMOTE && !includeNetwork ) {
         return;
     }
-    if( _dos_getdiskfree( toupper( drive ) - 'A' +1, &df ) == 0 ) {
+    if( _getdiskfree( toupper( drive ) - 'A' + 1, &df ) == 0 ) {
         cl_bytes = (unsigned long long)df.sectors_per_cluster * (unsigned long long)df.bytes_per_sector;
         total = ( df.total_clusters * cl_bytes ) / 1024;
         avail = ( df.avail_clusters * cl_bytes ) / 1024;

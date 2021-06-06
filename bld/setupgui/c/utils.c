@@ -686,7 +686,7 @@ static int GetDriveInfo( char drive, bool removable )
             } else {
                 info->fixed = false;
             }
-            if( _dos_getdiskfree( drive_num, &FreeSpace ) == 0 ) {
+            if( _getdiskfree( drive_num, &FreeSpace ) == 0 ) {
                 info->cluster_size = (unsigned long)FreeSpace.sectors_per_cluster *
                                      FreeSpace.bytes_per_sector;
                 info->free_space = FreeSpace.avail_clusters *

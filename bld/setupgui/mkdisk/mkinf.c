@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +38,9 @@
 #ifndef __UNIX__
     #include <direct.h>
     #include <dos.h>
+#endif
+#ifdef __NT__
+    #include <windows.h>
 #endif
 #include "bool.h"
 #include "wio.h"
@@ -523,6 +526,8 @@ static int mkdir_nested( const char *path )
 {
 #ifdef __UNIX__
     struct stat sb;
+#elif defined( __NT__ )
+    DWORD       attr;
 #else
     unsigned    attr;
 #endif
@@ -555,6 +560,9 @@ static int mkdir_nested( const char *path )
         /* check if pathname exists */
 #ifdef __UNIX__
         if( stat( pathname, &sb ) == -1 ) {
+#elif defined( __NT__ )
+        attr = GetFileAttributes( pathname );
+        if( attr == INVALID_FILE_ATTRIBUTES ) {
 #else
         if( _dos_getfileattr( pathname, &attr ) != 0 ) {
 #endif
@@ -573,6 +581,8 @@ static int mkdir_nested( const char *path )
             /* make sure it really is a directory */
 #ifdef __UNIX__
             if( !S_ISDIR( sb.st_mode ) ) {
+#elif defined( __NT__ )
+            if( (attr & FILE_ATTRIBUTE_DIRECTORY) == 0 ) {
 #else
             if( (attr & _A_SUBDIR) == 0 ) {
 #endif

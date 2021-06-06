@@ -108,7 +108,6 @@
 #define utoa ultoa
 #define gmtime_r(a,b) gmtime_s(b,a)
 #define localtime_r(a,b) localtime_s(b,a)
-#define _dos_getdiskfree _getdiskfree
 
 #endif
 
@@ -191,20 +190,11 @@ extern int    spawnvp( int mode, const char *cmd, const char * const *args );
 
 #elif defined( _MSC_VER )
 
-extern unsigned _dos_getfileattr( const char *path, unsigned *dos_attrib );
-extern unsigned _dos_setfileattr( const char *path, unsigned dos_attrib );
 extern int      setenv( const char *name, const char *newvalue, int overwrite );
 extern int      unsetenv( const char *name );
 extern DIR      *opendir( const char *dirname );
 extern struct dirent *readdir( DIR *dirp );
 extern int      closedir( DIR *dirp );
-extern unsigned _dos_open( const char *name, unsigned mode, void **h );
-extern unsigned _dos_creat( const char *name, unsigned mode, void **h );
-extern unsigned _dos_close( void *h );
-extern unsigned _dos_getftime( void *h, unsigned *date, unsigned *time );
-extern unsigned _dos_setftime( void *h, unsigned date, unsigned time );
-extern unsigned _dos_read( void *h, void *buffer, unsigned count, unsigned *bytes );
-extern unsigned _dos_write( void *h, void const *buffer, unsigned count, unsigned *bytes );
 extern unsigned sleep( unsigned );
 
 extern int      getopt( int argc, char * const argv[], const char *optstring );

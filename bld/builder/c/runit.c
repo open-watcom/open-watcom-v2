@@ -49,6 +49,9 @@
     #include <direct.h>
     #include <dos.h>
 #endif
+#ifdef __NT__
+    #include <windows.h>
+#endif
 #include "watcom.h"
 #include "builder.h"
 #include "pmake.h"
@@ -82,6 +85,12 @@
 
 #define COPY_BUFF_SIZE  (32 * 1024)
 
+#ifdef __NT__
+typedef DWORD           fattrs;
+#else
+typedef unsigned        fattrs;
+#endif
+
 typedef struct struct_copy {
     struct struct_copy  *next;
     char                src[_MAX_PATH];
@@ -90,7 +99,7 @@ typedef struct struct_copy {
 
 typedef struct dd {
     struct dd   *next;
-    char        attr;
+//    char        attr;
     char        name[1];
 } iolist;
 
@@ -120,9 +129,14 @@ static bool chk_same_time( const char *name1, const char *name2 )
 #else
 static bool chk_is_archived( const char *name )
 {
-    unsigned    attr;
+    fattrs      attr;
 
+#if defined( __NT__ )
+    attr = GetFileAttributes( name );
+    return( attr != INVALID_FILE_ATTRIBUTES && (attr & FILE_ATTRIBUTE_ARCHIVE) );
+#else
     return( _dos_getfileattr( name, &attr ) == 0 && (attr & _A_ARCH) );
+#endif
 }
 #endif
 
@@ -184,13 +198,20 @@ static int ProcSet( const char *cmd )
 void ResetArchives( copy_entry list )
 {
     copy_entry  next;
-#ifndef __UNIX__
-    unsigned    attr;
+#if defined( __UNIX__ )
+#else
+    fattrs      attr;
 #endif
 
     while( list != NULL ) {
         next = list->next;
-#ifndef __UNIX__
+#if defined( __UNIX__ )
+#elif defined( __NT__ )
+        attr = GetFileAttributes( list->src );
+        if( attr != INVALID_FILE_ATTRIBUTES ) {
+            SetFileAttributes( list->src, attr & ~FILE_ATTRIBUTE_ARCHIVE );
+        }
+#else
         if( _dos_getfileattr( list->src, &attr ) == 0 ) {
             _dos_setfileattr( list->src, attr & ~_A_ARCH );
         }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,26 +30,35 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <dos.h>
-#include "bool.h"
 #include "cp.h"
 
-int rflag = false, iflag = false, npflag = true,  aflag = false;
-int fflag = false, tflag2 = false, Tflag1 = false, dflag2 = false;
-int Dflag1 = false, sflag = false, todflag = false;
-int pattrflag = false,rxflag = false;
+bool    rflag = false;
+bool    iflag = false;
+bool    npflag = true;
+bool    aflag = false;
+bool    fflag = false;
+bool    tflag2 = false;
+bool    Tflag1 = false;
+bool    dflag2 = false;
+bool    Dflag1 = false;
+bool    sflag = false;
+bool    todflag = false;
+bool    pattrflag = false;
+bool    rxflag = false;
 
 char OutOfMemory[] = "Out of memory!\n";
 char InvalidTDStr[] = "Invalid time/date string\n";
 
-ctrl_block *CBHead=NULL,*CBTail=NULL;
+ctrl_block      *CBHead = NULL;
+ctrl_block      *CBTail = NULL;
 
-long TotalBytes=0;
-unsigned DumpCnt = 0;
-unsigned FileCnt = 0,TotalFiles=0;
-unsigned DirCnt = 0, TotalDirs = 0;
-unsigned long TotalTime;
-clock_t StartTime;
-timedate after_t_d = { 0,0,0,0,0,0 };
-timedate before_t_d = { 1000,1000,1000,1000,1000,1000 };
+long            TotalBytes = 0;
+unsigned        DumpCnt = 0;
+unsigned        FileCnt = 0;
+unsigned        TotalFiles = 0;
+unsigned        DirCnt = 0;
+unsigned        TotalDirs = 0;
+unsigned long   TotalTime;
+clock_t         StartTime;
+timedate        after_t_d = { 0,0,0,0,0,0 };
+timedate        before_t_d = { 1000,1000,1000,1000,1000,1000 };

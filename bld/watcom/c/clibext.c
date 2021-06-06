@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -1716,28 +1716,6 @@ int unsetenv( const char *name )
     return( 0 );
 }
 
-unsigned _dos_getfileattr( const char *path, unsigned *dos_attrib )
-{
-    HANDLE              h;
-    WIN32_FIND_DATA     ffd;
-
-    h = FindFirstFile( path, &ffd );
-    if( h == INVALID_HANDLE_VALUE ) {
-        return( __set_errno( ENOENT ) );
-    }
-    *dos_attrib = NT2DOSATTR( ffd.dwFileAttributes );
-    FindClose( h );
-    return( 0 );
-}
-
-unsigned _dos_setfileattr( const char *path, unsigned dos_attrib )
-{
-    if( !SetFileAttributes( path, DOS2NTATTR( dos_attrib ) ) ) {
-        __set_errno( ENOENT );
-    }
-    return( 0 );
-}
-
 #define GET_CHAR(p)       _mbsnextc((const unsigned char *)p)
 #define NEXT_CHAR_PTR(p)  _mbsinc((const unsigned char *)p)
 
@@ -2005,99 +1983,6 @@ int closedir( DIR *dirp )
     if( dirp->d_openpath != NULL )
         free( dirp->d_openpath );
     free( dirp );
-    return( 0 );
-}
-
-unsigned _dos_open( const char *name, unsigned mode, HANDLE *h )
-{
-    HANDLE      handle;
-    DWORD       rwmode;
-    DWORD       share_mode;
-    DWORD       desired_access;
-    DWORD       nt_attrib;
-
-    rwmode = mode & OPENMODE_ACCESS_MASK;
-
-    __GetNTAccessAttr( rwmode, &desired_access, &nt_attrib );
-    __GetNTShareAttr( mode & (OPENMODE_SHARE_MASK | OPENMODE_ACCESS_MASK), &share_mode );
-    handle = CreateFile( name, desired_access, share_mode, 0, OPEN_EXISTING, nt_attrib, NULL );
-    if( handle == INVALID_HANDLE_VALUE ) {
-        __set_errno( ENOENT );
-        return( (unsigned)-1 );
-    }
-    *h = handle;
-    return( 0 );
-}
-
-unsigned _dos_creat( const char *name, unsigned dos_attrib, HANDLE *h )
-{
-    HANDLE      handle;
-    DWORD       desired_access;
-    DWORD       nt_attrib;
-
-    __GetNTCreateAttr( dos_attrib, &desired_access, &nt_attrib );
-    handle = CreateFile( name, desired_access, 0, 0, CREATE_ALWAYS, nt_attrib, NULL );
-    if( handle == INVALID_HANDLE_VALUE ) {
-        __set_errno( ENOENT );
-        return( (unsigned)-1 );
-    }
-    *h = handle;
-    return( 0 );
-}
-
-unsigned _dos_close( HANDLE h )
-{
-    if( !CloseHandle( h ) ) {
-        __set_errno( ENOENT );
-        return( (unsigned)-1 );
-    }
-    return( 0 );
-}
-
-unsigned _dos_getftime( HANDLE h, unsigned *date, unsigned *time )
-{
-    FILETIME        ctime, atime, wtime;
-    unsigned short  d, t;
-
-    if( GetFileTime( h, &ctime, &atime, &wtime ) ) {
-        __MakeDOSDT( &wtime, &d, &t );
-        *date = d;
-        *time = t;
-        return( 0 );
-    }
-    __set_errno( ENOENT );
-    return( (unsigned)-1 );
-}
-
-unsigned _dos_setftime( HANDLE h, unsigned date, unsigned time )
-{
-    FILETIME    ctime, atime, wtime;
-
-    if( GetFileTime( h, &ctime, &atime, &wtime ) ) {
-        __FromDOSDT( (unsigned short)date, (unsigned short)time, &wtime );
-        if( SetFileTime( h, &ctime, &wtime, &wtime ) ) {
-            return( 0 );
-        }
-    }
-    __set_errno( ENOENT );
-    return( (unsigned)-1 );
-}
-
-unsigned _dos_read( HANDLE h, void *buffer, unsigned count, unsigned *bytes )
-{
-    if( !ReadFile( h, buffer, count, (LPDWORD)bytes, NULL ) ) {
-        __set_errno( ENOENT );
-        return( (unsigned)-1 );
-    }
-    return( 0 );
-}
-
-unsigned _dos_write( HANDLE h, void const *buffer, unsigned count, unsigned *bytes )
-{
-    if( !WriteFile( h, buffer, count, (LPDWORD)bytes, NULL ) ) {
-        __set_errno( ENOENT );
-        return( (unsigned)-1 );
-    }
     return( 0 );
 }
 
