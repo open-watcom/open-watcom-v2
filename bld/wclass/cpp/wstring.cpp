@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -227,25 +228,18 @@ void WEXPORT WString::printf( const char* parms... )
 {
     char*   buffer;
     va_list args;
-    int     bufsize = DEF_BUFFER;
+    int     bufsize;
 
+    va_start( args, parms );
+    bufsize = _vsnprintf( NULL, 0, parms, args ) + 1;
     buffer = MALLOC( bufsize );
     if( buffer != NULL ) {
-        va_start( args, parms );
-        while( _vbprintf( buffer, bufsize, parms, args ) == bufsize - 1 ) {
-            bufsize *= 2;
-            FREE( buffer );
-            buffer = MALLOC( bufsize );
-            if( buffer == NULL ) {
-                va_end( args );
-                return;
-            }
-            va_start( args, parms );
+        if( _vsnprintf( buffer, bufsize, parms, args ) == bufsize - 1 ) {
+            (*this) = buffer;
         }
-        va_end( args );
-        (*this) = buffer;
         FREE( buffer );
     }
+    va_end( args );
 }
 
 void WEXPORT WString::concat( char chr )
@@ -279,25 +273,18 @@ void WEXPORT WString::concatf( const char* parms... )
 {
     char*   buffer;
     va_list args;
-    int     bufsize = DEF_BUFFER;
+    int     bufsize;
 
+    va_start( args, parms );
+    bufsize = _vsnprintf( NULL, 0, parms, args ) + 1;
     buffer = MALLOC( bufsize );
     if( buffer != NULL ) {
-        va_start( args, parms );
-        while( _vbprintf( buffer, bufsize, parms, args ) == bufsize - 1 ) {
-            bufsize *= 2;
-            FREE( buffer );
-            buffer = MALLOC( bufsize );
-            if( buffer == NULL ) {
-                va_end( args );
-                return;
-            }
-            va_start( args, parms );
+        if( _vsnprintf( buffer, bufsize, parms, args ) == bufsize - 1 ) {
+            concat( buffer );
         }
-        va_end( args );
-        concat( buffer );
         FREE( buffer );
     }
+    va_end( args );
 }
 
 void WEXPORT WString::truncate( size_t count )

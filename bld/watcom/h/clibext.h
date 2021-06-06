@@ -171,50 +171,50 @@ typedef int     mode_t;
 
 #if defined( __UNIX__ )
 
-extern char   *itoa( int value, char *buf, int radix );
-extern char   *utoa( unsigned int value, char *buf, int radix );
-extern char   *ltoa( long value, char *buf, int radix );
-extern char   *ultoa( unsigned long value, char *buf, int radix );
-extern void   _makepath( char *path, const char *drive, const char *dir, const char *fname, const char *ext );
-extern char   *_fullpath( char *buf, const char *path, size_t size );
-extern char   *strlwr( char *string );
-extern char   *strupr( char *string );
-extern char   *strrev( char *string );
-extern off_t  tell( int handle );
-extern long   filelength(int handle);
-extern int    eof( int fildes );
-extern void   _searchenv( const char *name, const char *env_var, char *buf );
-extern char   *strnset( char *string, int c, size_t len );
-extern int    spawnlp( int mode, const char *path, const char *cmd, ... );
-extern int    spawnvp( int mode, const char *cmd, const char * const *args );
+extern char     *itoa( int value, char *buf, int radix );
+extern char     *utoa( unsigned int value, char *buf, int radix );
+extern char     *ltoa( long value, char *buf, int radix );
+extern char     *ultoa( unsigned long value, char *buf, int radix );
+extern void     _makepath( char *path, const char *drive, const char *dir, const char *fname, const char *ext );
+extern char     *_fullpath( char *buf, const char *path, size_t size );
+extern char     *strlwr( char *string );
+extern char     *strupr( char *string );
+extern char     *strrev( char *string );
+extern off_t    tell( int handle );
+extern long     filelength(int handle);
+extern int      eof( int fildes );
+extern void     _searchenv( const char *name, const char *env_var, char *buf );
+extern char     *strnset( char *string, int c, size_t len );
+extern int      spawnlp( int mode, const char *path, const char *cmd, ... );
+extern int      spawnvp( int mode, const char *cmd, const char * const *args );
 
 #elif defined( _MSC_VER )
 
 extern int      setenv( const char *name, const char *newvalue, int overwrite );
 extern int      unsetenv( const char *name );
-extern DIR      *opendir( const char *dirname );
-extern struct dirent *readdir( DIR *dirp );
-extern int      closedir( DIR *dirp );
 extern unsigned sleep( unsigned );
+
+extern DIR              *opendir( const char *dirname );
+extern struct dirent    *readdir( DIR *dirp );
+extern int              closedir( DIR *dirp );
 
 extern int      getopt( int argc, char * const argv[], const char *optstring );
 /* Globals used and set by getopt() */
-extern char   *optarg;
-extern int    optind;
-extern int    opterr;
-extern int    optopt;
+extern char     *optarg;
+extern int      optind;
+extern int      opterr;
+extern int      optopt;
 
-extern int    fnmatch( const char *__pattern, const char *__string, int __flags );
-extern int    mkstemp( char *__template );
+extern int      fnmatch( const char *__pattern, const char *__string, int __flags );
+extern int      mkstemp( char *__template );
 
 #endif
 
-extern int    _vbprintf( char *s, size_t bufsize, const char *format, __va_list arg );
-extern void   _splitpath2( const char *inp, char *outp, char **drive, char **dir, char **fn, char **ext );
-extern int    _bgetcmd( char *buffer, int len );
-extern char   *getcmd( char *buffer );
-extern char   *_cmdname( char *name );
-extern char   *get_dllname( char *buf, int len );
+extern void     _splitpath2( const char *inp, char *outp, char **drive, char **dir, char **fn, char **ext );
+extern int      _bgetcmd( char *buffer, int len );
+extern char     *getcmd( char *buffer );
+extern char     *_cmdname( char *name );
+extern char     *get_dllname( char *buf, int len );
 
 #ifdef __cplusplus
 }

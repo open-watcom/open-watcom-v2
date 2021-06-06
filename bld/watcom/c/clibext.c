@@ -1805,7 +1805,7 @@ void __GetNTShareAttr( unsigned mode, LPDWORD share_mode )
         *share_mode = FILE_SHARE_READ;
         break;
     case OPENMODE_DENY_NONE:
-        *share_mode = FILE_SHARE_READ|FILE_SHARE_WRITE;
+        *share_mode = FILE_SHARE_READ | FILE_SHARE_WRITE;
         break;
     }
 }
@@ -2156,19 +2156,6 @@ char *get_dllname( char *buf, int len )
     GetModuleFileName( hnd, buf, len );
 #endif
     return( buf );
-}
-
-int _vbprintf( char *s, size_t bufsize, const char *format, __va_list arg )
-{
-    int rc;
-
-    --bufsize;
-    rc = vsnprintf( s, bufsize, format, arg );
-    if( rc < 0 ) {
-        rc = (int)bufsize;
-    }
-    s[bufsize] = '\0';
-    return( rc );
 }
 
 #endif /* ! __WATCOMC__ */
