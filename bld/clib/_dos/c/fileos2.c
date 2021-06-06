@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,23 +55,25 @@ _WCRTLINK unsigned _dos_open( const char *name, unsigned mode, int *handle )
     OS_UINT     rwmode, share, openmode;
     unsigned    iomode_flags;
 
-    while( *name == ' ' ) ++name;
+    while( *name == ' ' )
+        name++;
     rwmode = mode & OPENMODE_ACCESS_MASK;
-    /* Can't open WRONLY file in bound application under DOS */
-#if defined(__OS2_286__)
-    if( rwmode == OPENMODE_ACCESS_WRONLY && _osmode_REALMODE() ) {
-#else
-    if( rwmode == OPENMODE_ACCESS_WRONLY ) {
-#endif
-        rwmode = OPENMODE_ACCESS_RDWR;
+#ifdef _M_I86
+    if( rwmode == OPEN_ACCESS_WRITEONLY && _osmode_REALMODE() ) {
+        /* Can't open WRONLY file in bound application under DOS */
+        rwmode = OPEN_ACCESS_READWRITE;
     }
+#endif
     share = mode & OPENMODE_SHARE_MASK;
     if( share == OPENMODE_DENY_COMPAT ) {
-        share = OPENMODE_DENY_NONE;
+        share = OPEN_SHARE_DENYNONE;
     }
-    openmode = share + rwmode;
-    rc = DosOpen( (PSZ)name, &fhandle, &actiontaken, 0ul,
-                    _A_NORMAL, OPENFLAG_OPEN_IF_EXISTS, openmode, 0ul );
+    openmode = share | rwmode;
+    rc = DosOpen( (PSZ)name, &fhandle, &actiontaken, 0,
+                    FILE_NORMAL,
+                    OPEN_ACTION_FAIL_IF_NEW | OPEN_ACTION_OPEN_IF_EXISTS ,
+                    openmode,
+                    0 );
     if( rc ) {
         return( __set_errno_dos_reterr( rc ) );
     }

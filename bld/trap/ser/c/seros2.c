@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -329,7 +330,11 @@ char *ParsePortSpec( const char **spec )
         ComPort = 0;
     }
     name[sizeof( name ) - 2] = port;
-    if( DosOpen( (PSZ)name, &ComPort, &action, 0, 0, 1, 0x12, 0 ) ) {
+    if( DosOpen( (PSZ)name, &ComPort, &action, 0,
+            FILE_NORMAL,
+            OPEN_ACTION_FAIL_IF_NEW | OPEN_ACTION_OPEN_IF_EXISTS,
+            OPEN_SHARE_DENYREADWRITE | OPEN_ACCESS_READWRITE,
+            0 ) ) {
         ComPort = 0;
         return( TRP_ERR_serial_port_not_available );
     }

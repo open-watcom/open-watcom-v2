@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -89,7 +90,11 @@ char __far *InitAlias( char __far * inname )
         ++inname;
     }
     action=action;
-    if( DosOpen( b, &hdl, &action, 0L, 0, 1, 0x10 ,0L ) == 0 ) {
+    if( DosOpen( b, &hdl, &action, 0,
+            FILE_NORMAL,
+            OPEN_ACTION_FAIL_IF_NEW | OPEN_ACTION_OPEN_IF_EXISTS,
+            OPEN_SHARE_DENYREADWRITE | OPEN_ACCESS_READONLY,
+            0 ) == 0 ) {
         DosChgFilePtr( hdl, 0L, 2, &ppos );
         pos = ppos;
         DosChgFilePtr( hdl, 0L, 0, &ppos );

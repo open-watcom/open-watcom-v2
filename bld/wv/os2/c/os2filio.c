@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,11 +46,6 @@
 #include "dbgio.h"
 #include "doserr.h"
 #include "filelcl.h"
-
-#define READONLY    0
-#define WRITEONLY   1
-#define READWRITE   2
-#define FROMEND     2
 
 #define SYSH2LH(sh)     (HFILE)((sh).u._32[0])
 #define LH2SYSH(sh,lh)  (sh).u._32[0]=lh;(sh).u._32[1]=0
@@ -105,24 +101,30 @@ sys_handle LocalOpen( const char *name, obj_attrs oattrs )
     APIRET      rc;
     sys_handle  sh;
 
+    openmode = OPEN_FLAGS_FAIL_ON_ERROR | OPEN_FLAGS_NOINHERIT | OPEN_SHARE_DENYNONE;
     if( (oattrs & OP_WRITE) == 0 ) {
-        openmode = READONLY;
+        openmode |= OPEN_ACCESS_READONLY;
         oattrs &= ~(OP_CREATE | OP_TRUNC);
     } else if( oattrs & OP_READ ) {
-        openmode = READWRITE;
+        openmode |= OPEN_ACCESS_READWRITE;
     } else {
-        openmode = WRITEONLY;
+        openmode |= OPEN_ACCESS_WRITEONLY;
     }
-    openmode |= 0x20c0;
-    openflags = 0;
-    if( oattrs & OP_CREATE )
-        openflags |= 0x10;
-    openflags |= (oattrs & OP_TRUNC) ? 0x02 : 0x01;
+    if( oattrs & OP_CREATE ) {
+        openflags = OPEN_ACTION_CREATE_IF_NEW;
+    } else {
+        openflags = OPEN_ACTION_FAIL_IF_NEW
+    }
+    if( oattrs & OP_TRUNC ) {
+        openflags |= OPEN_ACTION_REPLACE_IF_EXISTS;
+    } else {
+        openflags |= OPEN_ACTION_OPEN_IF_EXISTS;
+    }
     rc = DosOpen( (char *)name, /* name */
                 &hdl,           /* handle to be filled in */
                 &action,        /* action taken */
                 0,              /* initial allocation */
-                0,              /* normal file */
+                FILE_NORMAL,    /* normal file */
                 openflags,      /* open the file */
                 openmode,       /* deny-none, inheritance */
                 0 );            /* reserved */

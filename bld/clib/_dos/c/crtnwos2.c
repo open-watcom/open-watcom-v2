@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,12 +54,11 @@ _WCRTLINK unsigned _dos_creatnew( const char *name, unsigned attribute, int *han
     rc = DosOpen( (PSZ)name,
                      &fhandle,
                      &actiontaken,
-                     0ul,
+                     0,
                      attribute,
-                     OPENFLAG_FAIL_IF_EXISTS |
-                     OPENFLAG_CREATE_IF_NOT_EXISTS,
-                     OPENMODE_ACCESS_RDWR | OPENMODE_DENY_NONE,
-                     0ul );
+                     OPEN_ACTION_CREATE_IF_NEW | OPEN_ACTION_FAIL_IF_EXISTS,
+                     OPEN_SHARE_DENYNONE | OPEN_ACCESS_READWRITE,
+                     0 );
     if( rc ) {
         return( __set_errno_dos_reterr( rc ) );
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -192,7 +192,11 @@ long _fork( const char *cmd, size_t len )
     savestdout = 0xffff;
     DosDupHandle( 0, &savestdin );
     DosDupHandle( 1, &savestdout );
-    if (DosOpen( "CON", &console, &act, 0, 0, 0x11, 0x42, 0) == 0 ) {
+    if( DosOpen( "CON", &console, &act, 0,
+            FILE_NORMAL,
+            OPEN_ACTION_CREATE_IF_NEW | OPEN_ACTION_OPEN_IF_EXISTS,
+            OPEN_SHARE_DENYNONE | OPEN_ACCESS_READWRITE,
+            0 ) == 0 ) {
         new = 0;
         DosDupHandle( console, &new );
         new = 1;

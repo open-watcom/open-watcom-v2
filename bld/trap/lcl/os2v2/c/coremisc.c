@@ -194,20 +194,20 @@ static long OpenFile( char *name, USHORT mode, int flags )
     APIRET      rc;
 
     if( flags & OPEN_CREATE ) {
-        openflags = 0x12;
-        openmode = 0x2042;
+        openflags = OPEN_ACTION_CREATE_IF_NEW | OPEN_ACTION_REPLACE_IF_EXISTS;
+        openmode = OPEN_FLAGS_FAIL_ON_ERROR | OPEN_SHARE_DENYNONE | OPEN_ACCESS_READWRITE;
     } else {
-        openflags = 0x01;
-        openmode = mode | 0x2040;
+        openflags = OPEN_ACTION_FAIL_IF_NEW | OPEN_ACTION_OPEN_IF_EXISTS;
+        openmode = OPEN_FLAGS_FAIL_ON_ERROR | OPEN_SHARE_DENYNONE | mode;
     }
     if( flags & OPEN_PRIVATE ) {
-        openmode |= 0x80;
+        openmode |= OPEN_FLAGS_NOINHERIT;
     }
     rc = DosOpen( name,         /* name */
                 &hdl,           /* handle to be filled in */
                 &action,        /* action taken */
                 0,              /* initial allocation */
-                0,              /* normal file */
+                FILE_NORMAL,    /* normal file */
                 openflags,      /* open the file */
                 openmode,       /* deny-none, inheritance */
                 0 );            /* reserved */

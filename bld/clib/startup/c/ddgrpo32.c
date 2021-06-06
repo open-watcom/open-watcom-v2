@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -127,7 +128,11 @@ int __disallow_single_dgroup( unsigned hmod )
         p = my_strcat( p, "\n" );
         p = my_strcat( p, message );
         *p = 0;
-        DosOpen( "CON", &file, &action, 0, 0, 0, OPEN_ACCESS_WRITEONLY, 0 );
+        DosOpen( "CON", &file, &action, 0,
+            FILE_NORMAL,
+            0,
+            OPEN_ACCESS_WRITEONLY,
+            0 );
         if( file != -1 ) {
             DosWrite( file, buf, strlen( buf ), &written );
             DosClose( file );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -161,8 +161,8 @@ static  void    SysIOInfo( ftnfile *fcb ) {
             fcb->device |= INFO_DEV;
         } else {
 #endif
-        // for stdin, don't use file name "CON" since information will always
-        // indicate it's a device even if stdin is redirected
+            // for stdin, don't use file name "CON" since information will always
+            // indicate it's a device even if stdin is redirected
             if( fstat( FGetFileHandle( fcb->fileptr ), &info ) == -1 ) {
                 FSetSysErr( fcb->fileptr );
                 IOErr( IO_FILE_PROBLEM );
