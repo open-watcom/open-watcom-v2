@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -91,9 +92,11 @@ VRcsClient::~VRcsClient() {
         WSystemService::freeLibrary( _dllhdl );
     }
 #ifdef __WINDOWS__
-    if( _msgcb != NULL ) FreeProcInstance( _msgcb );
+    if( _msgcb != NULL )
+        FreeProcInstance( _msgcb );
     _msgcb = NULL;
-    if( _batchcb != NULL ) FreeProcInstance( _batchcb );
+    if( _batchcb != NULL )
+        FreeProcInstance( _batchcb );
     _batchcb = NULL;
 #endif
     _initialized = false;
@@ -104,55 +107,69 @@ bool VRcsClient::Init( void ) {
     int         rc;
 
     _dllhdl = WSystemService::loadLibrary( RCS_DLLNAME );
-    if( _dllhdl == 0 ) return( false );
+    if( _dllhdl == 0 )
+        return( false );
 
     _checkin = (RCSCheckinFn *)
         WSystemService::getProcAddr( _dllhdl, CHECKIN_FN_NAME );
-    if( _checkin == NULL ) return( false );
+    if( _checkin == NULL )
+        return( false );
 
     _checkout = (RCSCheckoutFn *)
         WSystemService::getProcAddr( _dllhdl, CHECKOUT_FN_NAME );
-    if( _checkout == NULL ) return( false );
+    if( _checkout == NULL )
+        return( false );
 
     _fini = (RCSFiniFn *)WSystemService::getProcAddr( _dllhdl, FINI_FN_NAME );
-    if( _fini == NULL ) return( false );
+    if( _fini == NULL )
+        return( false );
 
     _getver = (RCSGetVersionFn *)
         WSystemService::getProcAddr( _dllhdl, GETVER_FN_NAME );
-    if( _getver == NULL ) return( false );
+    if( _getver == NULL )
+        return( false );
 
     _hasshell = (RCSHasShellFn *)
         WSystemService::getProcAddr( _dllhdl, HAS_SHELL_FN_NAME );
-    if( _hasshell == NULL ) return( false );
+    if( _hasshell == NULL )
+        return( false );
 
     _querysystem = (RCSQuerySystemFn *)
         WSystemService::getProcAddr( _dllhdl, GETSYS_FN_NAME );
-    if( _querysystem == NULL ) return( false );
+    if( _querysystem == NULL )
+        return( false );
 
     _init = (RCSInitFn *)WSystemService::getProcAddr( _dllhdl, INIT_FN_NAME );
-    if( _init == NULL ) return( false );
+    if( _init == NULL )
+        return( false );
 
     _regbatchcb = (RCSRegBatchCbFn *)
         WSystemService::getProcAddr( _dllhdl, REG_BAT_CB_FN_NAME );
-    if( _regbatchcb == NULL ) return( false );
+    if( _regbatchcb == NULL )
+        return( false );
 
     _regmsgboxcb = (RCSRegMsgBoxCbFn *)
         WSystemService::getProcAddr( _dllhdl, REG_MSGBOX_CB_FN_NAME );
-    if( _regmsgboxcb== NULL ) return( false );
+    if( _regmsgboxcb== NULL )
+        return( false );
 
     _runshell = (RCSRunShellFn *)
         WSystemService::getProcAddr( _dllhdl, RUNSHELL_FN_NAME );
-    if( _runshell == NULL ) return( false );
+    if( _runshell == NULL )
+        return( false );
 
     _setsystem = (RCSSetSystemFn *)
         WSystemService::getProcAddr( _dllhdl, SETSYS_FN_NAME );
-    if( _setsystem == NULL ) return( false );
+    if( _setsystem == NULL )
+        return( false );
 
-    if( _getver() != RCS_DLL_VER ) return( false );
+    if( _getver() != RCS_DLL_VER )
+        return( false );
 
     // getting the HWND like this violates GUI
     _dllcookie = _init( GET_HWND( _parent->handle() ), getenv( "WATCOM" ) );
-    if( _dllcookie == NULL ) return( false );
+    if( _dllcookie == NULL )
+        return( false );
 
 #ifdef __WINDOWS__
     _batchcb = MakeProcInstance( (FARPROC)DoBatchCB, GUIMainHInst );

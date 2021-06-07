@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +57,7 @@ WEXPORT MAction::MAction( WTokenFile& fil, WString& tok )
         }
     }
     fil.token( tok );   //read ahead
-    for(;;) {
+    for( ;; ) {
         if( tok == "Command" ) {
             _commands.add( new MCommand( fil, tok ) );
         } else if( tok == "Hint" ) {
@@ -119,7 +120,8 @@ int MAction::expand( WString& command, WFileName* target, const WString& mask, W
         MCommand* x = (MCommand*)_commands[j];
         const WString& xm = x->mask();
         if( xm.size() == 0 || xm.match( mask ) ) {
-            if( j > 0 ) s.concat( '\n' );
+            if( j > 0 )
+                s.concat( '\n' );
             s.concat( *x );
         }
     }

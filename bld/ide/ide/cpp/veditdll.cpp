@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -85,7 +86,8 @@ void VEditDLL::resetPointers( void ) {
     _saveAll = NULL;
     _saveThis = NULL;
     _isFileInBuf = NULL;
-    if( _hdl != 0 ) WSystemService::freeLibrary( _hdl );
+    if( _hdl != 0 )
+        WSystemService::freeLibrary( _hdl );
     _hdl = 0;
 }
 
@@ -120,48 +122,57 @@ void VEditDLL::LoadDll( const char *dllname, WString *errmsg ) {
 }
 
 int VEditDLL::EDITConnect( void ) {
-    if( _connect == NULL ) return( (int)true );
+    if( _connect == NULL )
+        return( (int)true );
     return( _connect() );
 }
 
 int VEditDLL::EDITFile( editstring filename , editstring helpfile ) {
-    if( _file == NULL ) return( (int)true );
+    if( _file == NULL )
+        return( (int)true );
     return( _file( filename, helpfile ) );
 }
 
 int VEditDLL::EDITLocate( long row, int col, int len ) {
-    if( _locate == NULL ) return( (int)true );
+    if( _locate == NULL )
+        return( (int)true );
     return( _locate( row, col, len ) );
 }
 
 int VEditDLL::EDITLocateError( long row, int col, int len, int idres,
                                editstring errmsg )
 {
-    if( _locateError == NULL ) return( (int)true );
+    if( _locateError == NULL )
+        return( (int)true );
     return( _locateError( row, col, len, idres, errmsg ) );
 }
 
 int VEditDLL::EDITShowWindow( show_method cmdshow ) {
-    if( _showWindow == NULL ) return( (int)true );
+    if( _showWindow == NULL )
+        return( (int)true );
     return( _showWindow( cmdshow ) );
 }
 
 int VEditDLL::EDITDisconnect( void ) {
-    if( _disconnect == NULL ) return( (int)true );
+    if( _disconnect == NULL )
+        return( (int)true );
     return( _disconnect() );
 }
 
 int VEditDLL::EDITSaveAll( void ) {
-    if( _saveAll == NULL ) return( (int)true );
+    if( _saveAll == NULL )
+        return( (int)true );
     return( _saveAll() );
 }
 
 int VEditDLL::EDITSaveThis( WFileName *fn ) {
-    if( _saveThis == NULL ) return( (int)true );
+    if( _saveThis == NULL )
+        return( (int)true );
     return( _saveThis( fn->gets() ) );
 }
 
 int VEditDLL::EDITIsFileInBuf( WFileName *fn ) {
-    if( _isFileInBuf == NULL ) return( (int)false );
+    if( _isFileInBuf == NULL )
+        return( (int)false );
     return( _isFileInBuf( fn->gets() ) );
 }

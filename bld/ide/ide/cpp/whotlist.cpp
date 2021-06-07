@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -81,7 +81,8 @@ void WHotSpotList::resized( WOrdinal w, WOrdinal h )
 
     WWindow::resized( w, h );
     newtop = count() - getRows();
-    if( newtop < 0 ) newtop = 0;
+    if( newtop < 0 )
+        newtop = 0;
     if( newtop < _topIndex ) {
         performScroll( newtop, true );
     }
@@ -118,7 +119,8 @@ bool WHotSpotList::paint()
             offset = 0;
         }
         extent = r.w();
-        if( width() > extent ) extent = width();
+        if( width() > extent )
+            extent = width();
         if( i == _selected ) {
             drawTextExtent( i - _topIndex, offset, str, WPaintAttrMenuActive,
                             extent );
@@ -138,7 +140,8 @@ bool WHotSpotList::mouseMove( int x, int y, WMouseKeyFlags )
         int row = getRow( WPoint( x, y ) );
         int oldSel = _selected;
 
-        if( row < 0 ) row = 0;
+        if( row < 0 )
+            row = 0;
         if( row > getRows() - 1 ) {
             row = getRows() - 1;
         }
@@ -189,8 +192,10 @@ bool WHotSpotList::leftBttnDn( int x, int y, WMouseKeyFlags f )
 {
     int row = getRow( WPoint( x, y ) ) + _topIndex;
 
-    if( row < 0 ) row = 0;
-    if( row >= count() ) row = count() - 1;
+    if( row < 0 )
+        row = 0;
+    if( row >= count() )
+        row = count() - 1;
     if( row < 0 ) {     // count == 0
         return( false );
     }
@@ -402,7 +407,8 @@ bool WHotSpotList::keyDown(  WKeyCode key, WKeyState state )
         switch( key ) {
         case WKeyPageup:
             _selected -= nRows - 1;
-            if( _selected < 0 ) _selected = 0;
+            if( _selected < 0 )
+                _selected = 0;
 
             if( oldSel != _selected ) {
                 invalidateRow( oldSel - _topIndex );
@@ -428,7 +434,8 @@ bool WHotSpotList::keyDown(  WKeyCode key, WKeyState state )
 
         case WKeyUp:
             _selected -= 1;
-            if( _selected < 0 ) _selected = 0;
+            if( _selected < 0 )
+                _selected = 0;
 
             if( oldSel != _selected ) {
                 invalidateRow( oldSel - _topIndex );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -81,7 +81,8 @@ MComponent* WEXPORT MComponent::createSelf( WObjectFile& p )
     WString ruletag;
     p.readObject( &ruletag );
     MRule* rule = _config->findRule( ruletag );
-    if( !rule ) rule = _config->nilRule();
+    if( !rule )
+        rule = _config->nilRule();
     return( new MComponent( project, rule, "", "" ) );
 }
 
@@ -471,7 +472,9 @@ bool MComponent::addFromFilename( WFileName& filename, WString& err )
 
             cnt = _items.count();
             for( ; cnt > 0; cnt-- ) {
-                if( *(MItem *)_items[cnt - 1] == filename ) break;
+                if( *(MItem *)_items[cnt - 1] == filename ) {
+                    break;
+                }
             }
             if( cnt == 0 ) {
                 MItem* item = new MItem( filename, this, rule );
@@ -603,7 +606,7 @@ void MComponent::writeTargetCD( ContFile& mak )
 
     _filename.path( path, false );
     if( path.match( NULL, matchDir ) ) {
-        path.concat( "\\" );
+        path.concat( '\\' );
     }
     drive = path.drive();
     if( drive[0] != '\0' && drive[1] == ':' )
@@ -613,7 +616,8 @@ void MComponent::writeTargetCD( ContFile& mak )
 
 void MComponent::writeRule( ContFile& mak )
 {
-    if( !_target->ismakeable() ) return;
+    if( !_target->ismakeable() )
+        return;
 
     WFileName tgt;
     _target->absName( tgt );
@@ -633,7 +637,8 @@ void MComponent::writeRule( ContFile& mak )
             mak.printf( "%s : %s", (const char*)r, (const char*)*w );
             r.removeQuotes();
             w->removeQuotes();
-            if( _autodepend ) mak.puts( " .AUTODEPEND" );
+            if( _autodepend )
+                mak.puts( " .AUTODEPEND" );
             mak.puts( "\n" );
             WString c;
             w->makeCommand( c, NULL );
@@ -660,7 +665,8 @@ void MComponent::writeRule( ContFile& mak )
             w->relativeTo( _filename );
         }
     }
-    if( _autodepend ) mak.puts( " .AUTODEPEND" );
+    if( _autodepend )
+        mak.puts( " .AUTODEPEND" );
     mak.puts( "\n" );
     bool browseable = writeCBR();
     if( _target->ismakeable() ) {
@@ -697,7 +703,7 @@ void MComponent::expand( WString& c, const MCommand& cmd )
 {
     if( cmd.size() > 0 ) {
         cmd.expand( c, _target, _config->nilTool(), _mask, NULL, _mode );
-        c.concat( "\n" );
+        c.concat( '\n' );
         _project->insertBlanks( c );
     }
 }

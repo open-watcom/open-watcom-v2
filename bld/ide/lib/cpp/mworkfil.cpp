@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -94,13 +95,16 @@ void MWorkFile::dump( WFile& fil )
             WString temp;
             st->sw()->getText( temp, st );
             if( temp.size() > 0 ) {
-                if( first ) n.concat( " (" );
-                if( !first ) n.concat( ' ' );
+                n.concat( ' ' );
+                if( first )
+                    n.concat( '(' );
                 n.concat( temp );
                 first = false;
             }
         }
-        if( !first ) n.concat( ')' );
+        if( !first ) {
+            n.concat( ')' );
+        }
     }
     fil.printf( " %s\n", (const char*)n );
 }

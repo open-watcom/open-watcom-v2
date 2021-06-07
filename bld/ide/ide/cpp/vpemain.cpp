@@ -495,7 +495,8 @@ void VpeMain::buildMenuBar()
     WPopupMenu* pop7 = makeMenu( &popup7, toolBar );
     menuBar->insertPopup( pop7, 7 );
     helpcnt = _config->helpactions().count();
-    if( helpcnt > 0 ) pop7->insertSeparator();
+    if( helpcnt > 0 )
+        pop7->insertSeparator();
     for( i = 0; i < helpcnt; i++ ) {
         action = (MAction *)_config->helpactions()[i];
         action->menuName( &mname );
@@ -2026,7 +2027,8 @@ void VpeMain::runBatch( const WString& cmd )
                 _activeVComp->setFocus();
             }
         }
-        if( !_msgLog ) return;
+        if( !_msgLog )
+            return;
         WFileName dir; dir.getCWD( false );
         _msgLog->setDirectory( dir );
         _msgLog->runCommand( cmd );
@@ -2043,7 +2045,7 @@ void VpeMain::executeBrowse( const WString& cmd )
     WStringList x( cmd );
     bat.concat( _config->browse() );
     if( x.stringAt(0) == "Open" ) {
-        bat.concat( " " );
+        bat.concat( ' ' );
         bat.concat( x.cString( 1 ) );
     }
 

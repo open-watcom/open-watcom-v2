@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -127,13 +128,13 @@ WEXPORT WKeyCode MAccelerator::lookUpAccel( WTokenFile &fil, WString &tok ) {
         sp_len = sizeof( ctrlSpecialKeys ) / sizeof( KeyMap );
         alph_keys = ctrlAlph;
         _desc.concat( tok );
-        _desc.concat( "+" );
+        _desc.concat( '+' );
     } else if( tok == "ALT" ) {
         sp_keys = altSpecialKeys;
         sp_len = sizeof( altSpecialKeys ) / sizeof( KeyMap );
         alph_keys = altAlph;
         _desc.concat( tok );
-        _desc.concat( "+" );
+        _desc.concat( '+' );
     } else if( tok == "PLAIN" ) {
         sp_keys = plainSpecialKeys;
         sp_len = sizeof( plainSpecialKeys ) / sizeof( KeyMap );

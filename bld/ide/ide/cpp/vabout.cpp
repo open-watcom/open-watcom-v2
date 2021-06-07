@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,7 +53,8 @@ void VAbout::initialize()
         int w = getTextExtentX( _viperDesc[i] );
         int h = getTextExtentY( _viperDesc[i] );
         if( w > 0 ) {
-            if( wid < w ) wid = w;
+            if( wid < w )
+                wid = w;
             WText* t1 = new WText( this, WRect(fw, yoff, w, h), _viperDesc[i] );
 //          WText* t1 = new WText( this, WRect(fw, yoff, w, h), _viperDesc[i], TextStyleCentre );
             yoff += h * 5/4;

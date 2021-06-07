@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -125,8 +126,10 @@ static unsigned calcControlHite( WVList *list, unsigned index,
         cnt = list->count();
         for( ; index < cnt ; index++ ) {
             sw = (MSwitch*)(*list)[index];
-            if( !streq( sw->className(), "MRSwitch" ) ) break;
-            if( !(groupName == ((MRSwitch*)sw)->group()) ) break;
+            if( !streq( sw->className(), "MRSwitch" ) )
+                break;
+            if( !(groupName == ((MRSwitch*)sw)->group()) )
+                break;
             ret += radiobutton_hite;
         }
     } else if( streq( sw->className(), "MCSwitch" ) ) {
@@ -317,8 +320,10 @@ void VSetup::initialize()
                         for( ; j < jcount; ) {
                             sw = (MSwitch*)myList[j];
                             st = findState( sw, _mode );
-                            if( !streq( sw->className(), "MRSwitch" ) ) break;
-                            if( !(groupName == ((MRSwitch*)sw)->group()) ) break;
+                            if( !streq( sw->className(), "MRSwitch" ) )
+                                break;
+                            if( !(groupName == ((MRSwitch*)sw)->group()) )
+                                break;
                             if( j + 1 < jcount ) {
                                 MSwitch* nsw = (MSwitch*)myList[j+1];
                                 if( !streq( nsw->className(), "MRSwitch" ) ||
@@ -390,8 +395,11 @@ void VSetup::initialize()
                     } else {
                         j++;    //this should not happen!
                     }
-                    if( xoff+wid > maxw ) maxw = xoff+wid;
-                    if( yoff > maxh ) maxh = yoff;
+                    if( xoff+wid > maxw )
+                        maxw = xoff+wid;
+                    if( yoff > maxh ) {
+                        maxh = yoff;
+                    }
                 } else {
                     j++;
                 }
@@ -453,7 +461,8 @@ void VSetup::initialize()
         _next->show();
     }
 
-    if( maxw < xoff ) maxw = xoff;
+    if( maxw < xoff )
+        maxw = xoff;
 
     //
     // hide the drop down list box at the top of the dialog and move all
@@ -576,8 +585,11 @@ void VSetup::initControls( WVList* swList, SwMode mode, bool useStates )
 void VSetup::enableButtons()
 {
     int index = _combo->selected();
-    if( _prev ) _prev->enable( ( index > 0 ) );
-    if( _next ) _next->enable( ( index + 1 < _screens.count() ) );
+    if( _prev )
+        _prev->enable( ( index > 0 ) );
+    if( _next ) {
+        _next->enable( ( index + 1 < _screens.count() ) );
+    }
 }
 
 void VSetup::okButton( WWindow* )
@@ -691,9 +703,13 @@ void VSetup::shiftFamily( int index, int xoff, int yoff )
     WVList* swList = (WVList*)_families[index];
     for( int i = 0; i < swList->count(); i++ ) {
         SwitchMap* sm = (SwitchMap*)(*swList)[i];
-        if( sm->ctl() ) shift( sm->ctl(), xoff, yoff );
-        if( sm->ctl2() ) shift( sm->ctl2(), xoff, yoff );
-        if( sm->ctrl() ) shift( sm->ctrl(), xoff, yoff );
+        if( sm->ctl() )
+            shift( sm->ctl(), xoff, yoff );
+        if( sm->ctl2() )
+            shift( sm->ctl2(), xoff, yoff );
+        if( sm->ctrl() ) {
+            shift( sm->ctrl(), xoff, yoff );
+        }
     }
 #else
     WWindow* w = (WWindow*)_screens[index];
@@ -707,9 +723,13 @@ void VSetup::hideFamily( int index )
     WVList* swList = (WVList*)_families[index];
     for( int i = 0; i < swList->count(); i++ ) {
         SwitchMap* sm = (SwitchMap*)(*swList)[i];
-        if( sm->ctl() ) sm->ctl()->show( WWinStateHide );
-        if( sm->ctl2() ) sm->ctl2()->show( WWinStateHide );
-        if( sm->ctrl() ) sm->ctrl()->show( WWinStateHide );
+        if( sm->ctl() )
+            sm->ctl()->show( WWinStateHide );
+        if( sm->ctl2() )
+            sm->ctl2()->show( WWinStateHide );
+        if( sm->ctrl() ) {
+            sm->ctrl()->show( WWinStateHide );
+        }
     }
 #else
     WWindow* g = (WWindow*)_screens[index];
@@ -723,9 +743,13 @@ void VSetup::showFamily( int index )
     WVList* swList = (WVList*)_families[index];
     for( int i = 0; i < swList->count(); i++ ) {
         SwitchMap* sm = (SwitchMap*)(*swList)[i];
-        if( sm->ctl() ) sm->ctl()->show();
-        if( sm->ctl2() ) sm->ctl2()->show();
-        if( sm->ctrl() ) sm->ctrl()->show();
+        if( sm->ctl() )
+            sm->ctl()->show();
+        if( sm->ctl2() )
+            sm->ctl2()->show();
+        if( sm->ctrl() ) {
+            sm->ctrl()->show();
+        }
     }
 #else
     WWindow* g = (WWindow*)_screens[index];

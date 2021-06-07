@@ -109,9 +109,13 @@ void VCompDialog::initialize()
         icount = targets.count();
         for( i=0; i < icount; i++ ) {
             curtarg = (MTarget *)targets[i];
-            if( curtarg->mask() == _comp->mask() ) break;
+            if( curtarg->mask() == _comp->mask() ) {
+                break;
+            }
         }
-        if( i == icount ) curtarg = NULL;
+        if( i == icount ) {
+            curtarg = NULL;
+        }
     }
 
     WVList &list = _config->targetOSs();
@@ -158,7 +162,8 @@ void VCompDialog::initialize()
 
     WGroupBox           *gbox;
 
-    if( i < 5 ) i = 5;
+    if( i < 5 )
+        i = 5;
     int boxtop = 29;
     int boxhite = i * rb_hite + 20;
     int boxbottom = boxtop + boxhite;

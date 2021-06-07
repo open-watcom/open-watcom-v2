@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -183,8 +183,10 @@ void VpeMain::readIdeInit()
 
     WRect sc;
     WSystemMetrics::screenCoordinates( sc );
-    if( width == 0 ) width = sc.w() * 3/4;
-    if( height == 0 ) height = sc.h() * 9/10;
+    if( width == 0 )
+        width = sc.w() * 3/4;
+    if( height == 0 )
+        height = sc.h() * 9/10;
 
     sc.w( width );
     sc.h( height );
@@ -359,7 +361,8 @@ bool VpeMain::execute( const WString& cmd )
     size_t icount = strlen( cmd );
     for( size_t i = 0; i < icount; ) {
         WString cbuff;
-        while( isspace( cmd[i] ) ) i++;
+        while( isspace( cmd[i] ) )
+            i++;
         for( ; i < icount; ) {
             char ch = cmd[i];
             i++;
