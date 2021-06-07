@@ -191,7 +191,7 @@ static int elf_read_phdr( int fd, Elf32_Ehdr *e_hdr, Elf32_Phdr **pp_hdr )
                     break;
                 }
                 /* Skip any extra bytes that might be present */
-                if( lseek( fd, e_hdr->e_phentsize - sizeof( *e_phdr ), SEEK_CUR ) < 0 ) {
+                if( lseek( fd, e_hdr->e_phentsize - sizeof( *e_phdr ), SEEK_CUR ) == -1L ) {
                     error = true;
                     break;
                 }

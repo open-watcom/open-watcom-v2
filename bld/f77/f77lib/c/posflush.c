@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,7 +47,7 @@ int     FlushBuffer( b_file *io )
     rc = 0;
     if( io->attrs & DIRTY_BUFFER ) {
         if( io->attrs & READ_AHEAD ) {
-            if( lseek( io->handle, -(long)io->read_len, SEEK_CUR ) < 0 ) {
+            if( lseek( io->handle, -(long)io->read_len, SEEK_CUR ) == -1L ) {
                 return( -1 );
             }
             amt = io->high_water;

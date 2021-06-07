@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -148,7 +148,7 @@ static short            _YVecDir = 0;
   #define TINY_OK( rc )                 ( rc >= 0 )
   #define TINY_INFO( rc )               ( rc )
   #define TinyOpen( f, m )              __open_slib( f, O_RDONLY, 0 )
-  #define FontSeekSet( f, o )           ( ( lseek( f, o, SEEK_SET ) == -1 ) ? -1 : 0 )
+  #define FontSeekSet( f, o )           ( ( lseek( f, o, SEEK_SET ) == -1L ) ? -1 : 0 )
   #define TinyRead( f, b, l )           read( f, b, l )
   #define MyTinyFarRead( f, b, l )      read( f, b, l )
   #define TinyClose( f )                close( f )

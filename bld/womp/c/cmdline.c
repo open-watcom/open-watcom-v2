@@ -498,7 +498,7 @@ STATIC char *readIncludeFile( int fh ) {
     }
     if( file_len > 0 ) {
         /* now read the file into an array of the appropriate size */
-        if( lseek( fh, (long)0, SEEK_SET ) == -1 ) {
+        if( lseek( fh, (long)0, SEEK_SET ) == -1L ) {
             Fatal( MSG_DISK_ERROR, "lseek" );
         }
         file = MemAlloc( file_len + 1 );

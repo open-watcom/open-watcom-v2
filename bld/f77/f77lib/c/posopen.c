@@ -54,7 +54,8 @@ static  void    ChkRedirection( b_file *fp )
 {
     struct stat         info;
 
-    if( fstat( fp->handle, &info ) == -1 ) return;
+    if( fstat( fp->handle, &info ) == -1 )
+        return;
     if( !S_ISCHR( info.st_mode ) ) {
         fp->attrs |= BUFFERED;
     }
@@ -173,7 +174,7 @@ b_file  *Openf( const char *f, f_attrs attrs )
     fpos = 0;
     if( attrs & APPEND ) {
         fpos = lseek( retc, 0, SEEK_END );
-        if( fpos < 0 ) {
+        if( fpos == -1L ) {
             FSetSysErr( NULL );
             close( retc );
             return( NULL );

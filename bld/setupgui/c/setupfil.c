@@ -1273,7 +1273,7 @@ static void VersionStr( int fp, char *ver, int verlen, char *verbuf, size_t verb
         }
         if( len < sizeof( Buffer ) )
             break;    // eof
-        if( lseek( fp, -256L, SEEK_CUR ) == -1 ) {
+        if( lseek( fp, -256L, SEEK_CUR ) == -1L ) {
             break;
         }
     }

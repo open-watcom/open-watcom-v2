@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,7 +65,7 @@ static int verifyOBJFile( int fh )
         obj_name        name;
     } theadr;
 
-    if( lseek( fh, 0, SEEK_SET ) < 0 ) {
+    if( lseek( fh, 0, SEEK_SET ) == -1L ) {
         return( 0 );
     }
     if( read( fh, &theadr, sizeof( theadr ) ) != sizeof( theadr ) ) {
@@ -77,7 +77,7 @@ static int verifyOBJFile( int fh )
     if(( theadr.name.len + 2 ) != theadr.header.length ) {
         return( 0 );
     }
-    if( lseek( fh, 0, SEEK_SET ) < 0 ) {
+    if( lseek( fh, 0, SEEK_SET ) == -1L ) {
         return( 0 );
     }
     return( 1 );

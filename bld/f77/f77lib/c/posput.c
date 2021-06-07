@@ -78,7 +78,7 @@ void    ChopFile( b_file *io )
     }
     // We have to call lseek here, not SysSeek to ensure that the real
     // file offset is actually where we want it.
-    if( lseek( io->handle, offset, SEEK_SET ) < 0 )
+    if( lseek( io->handle, offset, SEEK_SET ) == -1L )
         return;
     io->phys_offset = offset;
     if( chsize( io->handle, offset ) < 0 ) {

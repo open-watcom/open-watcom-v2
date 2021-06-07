@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -115,7 +115,7 @@ bool ExeType( const char *fname, char *exe_type )
     strcpy( exe_type, "MZ" );
 
     // get offset of extended header
-    if( lseek( fp, NH_OFFSET, SEEK_SET ) == -1 ) {
+    if( lseek( fp, NH_OFFSET, SEEK_SET ) == -1L ) {
         close( fp );
         return( true );
     }
@@ -126,7 +126,7 @@ bool ExeType( const char *fname, char *exe_type )
     }
 
     // determine type of extended executable
-    if( lseek( fp, offset, SEEK_SET ) == -1 ) {
+    if( lseek( fp, offset, SEEK_SET ) == -1L ) {
         close( fp );
         return( true );
     }

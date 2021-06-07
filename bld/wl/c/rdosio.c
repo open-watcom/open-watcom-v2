@@ -233,7 +233,7 @@ long QLSeek( f_handle file, long position, int start, const char *name )
 
     CheckBreak();
     h = lseek( file, position, start );
-    if( h == -1 && name != NULL ) {
+    if( h == -1L && name != NULL ) {
         LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, strerror( errno ) );
     }
     return( h );

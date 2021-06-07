@@ -236,11 +236,13 @@ static ssize_t  posix_read( int fildes, void *buffer, size_t nbyte )
 #endif
 
 size_t res_read( FILE *fp, void *buf, size_t len )
+/************************************************/
 {
     return( posix_read( FP2POSIX( fp ), buf, len ) );
 }
 
 size_t res_write( FILE *fp, const void *buf, size_t len )
+/*******************************************************/
 {
     /* unused parameters */ (void)fp;
 
@@ -249,12 +251,13 @@ size_t res_write( FILE *fp, const void *buf, size_t len )
 }
 
 bool res_seek( FILE *fp, long amount, int where )
+/***********************************************/
 {
     if( fp == hInstance.fp ) {
         if( where == SEEK_SET ) {
-            return( lseek( FP2POSIX( fp ), amount + WResFileShift, where ) == -1 );
+            return( lseek( FP2POSIX( fp ), amount + WResFileShift, where ) == -1L );
         } else {
-            return( lseek( FP2POSIX( fp ), amount, where ) == -1 );
+            return( lseek( FP2POSIX( fp ), amount, where ) == -1L );
         }
     }
 
@@ -278,11 +281,12 @@ bool res_seek( FILE *fp, long amount, int where )
         }
         return( false );
     } else {
-        return( QLSeek( FP2POSIX( fp ), amount, where, "resource file" ) == -1 );
+        return( QLSeek( FP2POSIX( fp ), amount, where, "resource file" ) == -1L );
     }
 }
 
 long res_tell( FILE *fp )
+/***********************/
 {
     if( fp == hInstance.fp ) {
         return( lseek( FP2POSIX( fp ), 0, SEEK_CUR ) );

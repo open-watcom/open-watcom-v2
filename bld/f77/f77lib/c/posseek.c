@@ -88,7 +88,7 @@ int     SysSeek( b_file *io, long new_offset, int seek_mode )
                 FSetSysErr( io );
                 return( -1 );
             }
-            if( lseek( io->handle, new_offset, SEEK_SET ) == -1 ) {
+            if( lseek( io->handle, new_offset, SEEK_SET ) == -1L ) {
                 FSetSysErr( io );
                 return( -1 );
             }
@@ -118,7 +118,7 @@ int     SysSeek( b_file *io, long new_offset, int seek_mode )
         }
         // we have part of this page in memory already... so read the
         // rest of the page
-        if( lseek( io->handle, io->high_water, SEEK_CUR ) < 0 ) {
+        if( lseek( io->handle, io->high_water, SEEK_CUR ) == -1L ) {
             FSetSysErr( io );
             return( -1 );
         }
@@ -129,7 +129,7 @@ int     SysSeek( b_file *io, long new_offset, int seek_mode )
                 return( -1 );
             FSetIOOk( io );
             io->phys_offset -= io->high_water;  // restore offset
-            if( lseek( io->handle, -(long)io->high_water, SEEK_CUR ) < 0 ) {
+            if( lseek( io->handle, -(long)io->high_water, SEEK_CUR ) == -1L ) {
                 FSetSysErr( io );
                 return( -1 );
             }
@@ -148,7 +148,7 @@ int     SysSeek( b_file *io, long new_offset, int seek_mode )
             return( 0 );
         // round down to the nearest multiple of buff_size
         new_page = new_offset - new_offset % io->buff_size;
-        if( lseek( io->handle, new_page, SEEK_SET ) < 0 ) {
+        if( lseek( io->handle, new_page, SEEK_SET ) == -1L ) {
             FSetSysErr( io );
             return( -1 );
         }
