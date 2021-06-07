@@ -937,17 +937,6 @@ char *strupr( char *str )
 
 /****************************************************************************
 *
-* Description:  Implementation of tell().
-*
-****************************************************************************/
-
-off_t tell( int handle )
-{
-    return( lseek( handle, 0L, SEEK_CUR ) );
-}
-
-/****************************************************************************
-*
 * Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
 *               DESCRIBE IT HERE!
 *
@@ -972,47 +961,6 @@ char *strrev( char *str )
         --p2;
     }
     return( str );
-}
-
-/****************************************************************************
-*
-* Description:  Implements POSIX filelength() function
-*
-****************************************************************************/
-
-long filelength( int handle )
-{
-    long        current_posn, file_len;
-
-    current_posn = lseek( handle, 0L, SEEK_CUR );
-    if( current_posn == -1L ) {
-        return( -1L );
-    }
-    file_len = lseek( handle, 0L, SEEK_END );
-    lseek( handle, current_posn, SEEK_SET );
-
-    return( file_len );
-}
-
-/****************************************************************************
-*
-* Description:  Implementation of eof().
-*
-****************************************************************************/
-
-int eof( int handle )         /* determine if at EOF */
-{
-    off_t   current_posn, file_len;
-
-    file_len = filelength( handle );
-    if( file_len == -1L )
-        return( -1 );
-    current_posn = tell( handle );
-    if( current_posn == -1L )
-        return( -1 );
-    if( current_posn == file_len )
-        return( 1 );
-    return( 0 );
 }
 
 #endif /* !_MSC_VER */

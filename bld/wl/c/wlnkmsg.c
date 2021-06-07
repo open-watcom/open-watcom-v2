@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -285,7 +285,7 @@ bool res_seek( FILE *fp, long amount, int where )
 long res_tell( FILE *fp )
 {
     if( fp == hInstance.fp ) {
-        return( tell( FP2POSIX( fp ) ) );
+        return( lseek( FP2POSIX( fp ), 0, SEEK_CUR ) );
     } else if( FP2POSIX( fp ) == Root->outfile->handle ) {
         return( PosLoad() );
     } else {

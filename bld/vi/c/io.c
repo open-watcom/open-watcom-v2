@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -165,7 +166,7 @@ vi_rc FileSeek( int handle, long where )
 {
     long        i, relo, lastpos;
 
-    lastpos = tell( handle );
+    lastpos = lseek( handle, 0, SEEK_CUR );
     if( lastpos < 0 ) {
         return( ERR_FILE_SEEK );
     }
