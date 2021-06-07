@@ -181,7 +181,6 @@ extern off_t    tell( int handle );
 extern long     filelength(int handle);
 extern int      eof( int fildes );
 extern void     _searchenv( const char *name, const char *env_var, char *buf );
-extern char     *strnset( char *string, int c, size_t len );
 extern int      spawnlp( int mode, const char *path, const char *cmd, ... );
 extern int      spawnvp( int mode, const char *cmd, const char * const *args );
 

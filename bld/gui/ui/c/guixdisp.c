@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -211,7 +211,7 @@ static char *tabFilter( const char *message )
         /* don't forget the NULL */
         start = new_message + tab_pos;
         memmove( start + TAB_SIZE, start + 1, strlen( start + 1 ) + 1 );
-        strnset( start, ' ', TAB_SIZE );
+        memset( start, ' ', TAB_SIZE );
     }
     return( new_message );
 }

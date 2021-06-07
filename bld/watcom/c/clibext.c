@@ -953,25 +953,6 @@ off_t tell( int handle )
 *
 ****************************************************************************/
 
-char *strnset( char *str, int c, size_t len )
-{
-    char *p;
-
-    for( p = str; len; --len ) {
-        if( *p == '\0' )
-            break;
-        *p++ = (char)c;
-    }
-    return( str );
-}
-
-/****************************************************************************
-*
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
-*
-****************************************************************************/
-
 char *strrev( char *str )
 /* reverse characters in string */
 {
