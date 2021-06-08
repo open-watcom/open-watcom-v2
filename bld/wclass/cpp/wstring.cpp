@@ -245,26 +245,42 @@ void WEXPORT WString::printf( const char* parms... )
 
 void WEXPORT WString::concat( char chr )
 {
-    char temp[2];
-    temp[0] = chr;
-    temp[1] = '\0';
-    concat( temp );
+    if( _value == NULL ) {
+        char* value = MALLOC( 2 );
+        if( value != NULL ) {
+            _value = value;
+            value[0] = chr;
+            value[1] = '\0';
+        }
+    } else {
+        size_t len = size();
+        char* value = REALLOC( _value, len + 2 );
+        if( value != NULL ) {
+            _value = value;
+            value[len++] = chr;
+            value[len] = '\0';
+        }
+    }
 }
 
 void WEXPORT WString::concat( const char* str )
 {
-    if( ( str != NULL ) && strlen( str ) > 0 ) {
-        if( _value != NULL ) {
-            size_t len = size();
-            char* value = REALLOC( _value, len + strlen( str ) + 1 );
-            if( value != NULL ) {
-                _value = value;
-                strcpy( &_value[len], str );
-            }
-        } else {
-            _value = MALLOC( strlen( str ) + 1 );
-            if( _value != NULL ) {
-                strcpy( _value, str );
+    if( str != NULL ) {
+        size_t str_len = strlen( str );
+        if( str_len > 0 ) {
+            if( _value == NULL ) {
+                char* value = MALLOC( str_len + 1 );
+                if( value != NULL ) {
+                    _value = value;
+                    strcpy( value, str );
+                }
+            } else {
+                size_t len = size();
+                char* value = REALLOC( _value, len + str_len + 1 );
+                if( value != NULL ) {
+                    _value = value;
+                    strcpy( &value[len], str );
+                }
             }
         }
     }
@@ -306,7 +322,7 @@ void WEXPORT WString::chop( size_t count )
         size_t len = strlen( _value );
         if( count > 0 ) {
             if( count <= len ) {
-                memmove( _value, &_value[count], len-count+1 );
+                memmove( _value, &_value[count], len - count + 1 );
             }
         }
         fixup();
