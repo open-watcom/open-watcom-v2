@@ -348,21 +348,23 @@ void Dump_asciiz( unsigned long offset )
 
 
     Wlseek( offset );
-    fsize = WFileSize();
-    memset( buf, 0, sizeof( buf ) );
+    fsize = WFileSize() - offset;
 
     /* We must handle both arbitrarily long strings and strings that
      * are stored right at the end of the image.
      */
+    amount = sizeof( buf ) - 1;
     do {
-        amount = min_len( sizeof( buf ) - 1, fsize - offset );
+        if( amount > fsize )
+            amount = fsize;
         Wread( buf, amount );
+        buf[amount] = '\0';
         Wdputs( buf );
         /* Check if we read in a null terminator. */
-        if( strlen( buf ) < sizeof( buf ) - 1 )
+        if( strlen( buf ) < amount )
             break;
-        offset += amount;
-    } while( offset < fsize );
+        fsize -= amount;
+    } while( fsize > 0 );
 }
 
 /*
