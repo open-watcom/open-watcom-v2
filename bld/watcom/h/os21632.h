@@ -44,6 +44,19 @@
 // lets do it here
 #define NULLHANDLE      ((LHANDLE)0)
 
+#if defined(INCL_DOSSESMGR)
+
+#define FAPPTYP_NOTSPEC         0x0000
+#define FAPPTYP_NOTWINDOWCOMPAT 0x0001
+#define FAPPTYP_WINDOWCOMPAT    0x0002
+#define FAPPTYP_WINDOWAPI       0x0003
+#define FAPPTYP_BOUND           0x0008
+#define FAPPTYP_DLL             0x0010
+#define FAPPTYP_DOS             0x0020
+#define FAPPTYP_EXETYPE         0x0003
+
+#endif
+
 #else
 
 #define OS_UINT         ULONG
