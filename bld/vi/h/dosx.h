@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,11 +33,7 @@
 #ifndef _DOSX_INCLUDED
 #define _DOSX_INCLUDED
 
-#define USE_FCNS
-
-#if defined(__LINUX__)
-  #include "dosext.h"
-#elif defined(__QNX__)
+#if defined(__QNX__)
   #include <sys/seginfo.h>
   #include <sys/console.h>
   #include <sys/con_msg.h>
@@ -48,16 +45,12 @@
   #include <sys/proxy.h>
   #include <termios.h>
   #include <i86.h>
-  #include "dosext.h"
 #else
-  #include "dosext.h"
   #if defined(__OS2__)
     #define INCL_BASE
     #include "os2.h"
   #endif
 #endif
-
-extern InterruptData idata;
 
 #define KEY_SHIFT_RIGHT 0x01
 #define KEY_SHIFT_LEFT  0x02
