@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,35 +41,6 @@
 #define _osmode_REALMODE()  (_osmode == DOS_MODE)
 #define _osmode_PROTMODE()  (_osmode == OS2_MODE)
 
-/* Process Type codes (local information segment typeProcess field)           */
-
-#define _PT_FULLSCREEN              0 /* Full screen application               */
-#define _PT_REALMODE                1 /* Real mode process                     */
-#define _PT_WINDOWABLEVIO           2 /* VIO windowable application            */
-#define _PT_PM                      3 /* Presentation Manager application      */
-#define _PT_DETACHED                4 /* Detached application                  */
-
-/* Local Information Segment */
-
-typedef struct __LINFOSEG {      /* lis */
-    PID     pidCurrent;
-    PID     pidParent;
-    USHORT  prtyCurrent;
-    TID     tidCurrent;
-    USHORT  sgCurrent;
-    UCHAR   rfProcStatus;
-    UCHAR   dummy1;
-    BOOL    fForeground;
-    UCHAR   typeProcess;
-    UCHAR   dummy2;
-    SEL     selEnvironment;
-    USHORT  offCmdLine;
-    USHORT  cbDataSegment;
-    USHORT  cbStack;
-    USHORT  cbHeap;
-    HMODULE hmod;
-    SEL     selDS;
-} __LINFOSEG;
 
 static HMOU             MouHandle;
 static bool             TwoButtonMouse = false;
@@ -212,6 +183,26 @@ static void DOS_initmouse( init_mode install )
 }
 #endif
 
+static bool isNotFullScreen( void )
+/*********************************/
+{
+#ifdef _M_I86
+    SEL                 gbl;
+    SEL                 lcl;
+    LINFOSEG            __far *linfo;
+
+    DosGetInfoSeg( &gbl, &lcl );
+    linfo = _MK_FP( lcl, 0 );
+    return( linfo->typeProcess != PT_FULLSCREEN );
+#else
+    PTIB        tib;
+    PPIB        pib;
+
+    DosGetInfoBlocks( &tib, &pib );
+    return( pib->pib_ultype != PT_FULLSCREEN );
+#endif
+}
+
 static void OS2_initmouse( init_mode install )
 /********************************************/
 {
@@ -230,26 +221,8 @@ static void OS2_initmouse( init_mode install )
             }
         }
         MouseInstalled = true;
-        {
-#ifdef _M_I86
-            SEL                 gbl;
-            SEL                 lcl;
-            __LINFOSEG          __far *linfo;
-
-            DosGetInfoSeg( &gbl, &lcl );
-            linfo = _MK_FP( lcl, 0 );
-            if( linfo->typeProcess != _PT_FULLSCREEN ) {
-                uimouseforceoff();      /* let PM draw the mouse cursor */
-            }
-#else
-            PTIB        tib;
-            PPIB        pib;
-
-            DosGetInfoBlocks( &tib, &pib );
-            if( pib->pib_ultype != _PT_FULLSCREEN ) {
-                uimouseforceoff();      /* let PM draw the mouse cursor */
-            }
-#endif
+        if( isNotFullScreen() ) {
+            uimouseforceoff();      /* let PM draw the mouse cursor */
         }
     }
     MouseOn = false;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -451,10 +452,10 @@ static void LoadProg( char *cmd, char *cmd_tail )
     RESULTCODES         res;
     STARTDATA           start;
     ULONG               SID;
-    ULONG               flags;
+    ULONG               app_type;
 
-    if( DosQueryAppType( cmd, &flags ) == 0 ) {
-        if( (flags & FAPPTYP_EXETYPE) == FAPPTYP_WINDOWAPI ) {
+    if( DosQueryAppType( cmd, &app_type ) == 0 ) {
+        if( (app_type & FAPPTYP_EXETYPE) == FAPPTYP_WINDOWAPI ) {
             NewSession = 1;
         }
     }
