@@ -1033,7 +1033,7 @@ static unsigned StartProcess( const char *exe_name, char *parms )
     start.Environment = (PBYTE)ppib->pib_pchenv;
     rc = 0;
     if( GetEXEFlags( UtilBuff ) == EXE_IS_PM ) {
-        if( TypeProcess == SSF_TYPE_WINDOWABLEVIO ) {
+        if( TypeProcess == PT_WINDOWABLEVIO ) {
             rc = ERROR_OS2_TRAP( ERROR_NOT_IN_WINDOW );
         } else {
             start.SessionType = SSF_TYPE_PM;

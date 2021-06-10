@@ -129,7 +129,7 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
     if( typ == WWinTypeDefault ) {
         if( app_type & FAPPTYP_DOS ) {
             sess_type = SSF_TYPE_WINDOWEDVDM;
-        } else if( app_type & ( FAPPTYP_WINDOWSPROT31 | FAPPTYP_WINDOWSPROT ) ) {
+        } else if( app_type & (FAPPTYP_WINDOWSPROT31 | FAPPTYP_WINDOWSPROT) ) {
             sess_type = SSF_TYPE_31_ENHSEAMLESSVDM;
             args.insertAt( 0, new WString( WINOS2_NAME ) );
             args.insertAt( 1, new WString( WINOS2_PARM ) );
@@ -166,7 +166,7 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
         case WWinTypeFullScreen:
             if( app_type & FAPPTYP_DOS ) {
                 sess_type = SSF_TYPE_VDM;
-            } else if( app_type & ( FAPPTYP_WINDOWSPROT31 | FAPPTYP_WINDOWSPROT ) ) {
+            } else if( app_type & (FAPPTYP_WINDOWSPROT31 | FAPPTYP_WINDOWSPROT) ) {
                 sess_type = SSF_TYPE_DEFAULT;
                 args.insertAt( 0, new WString( WINOS2_NAME ) );
                 args.insertAt( 1, new WString( WINOS2_PARM ) );
@@ -177,7 +177,7 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
         case WWinTypeWindowed:
             if( app_type & FAPPTYP_DOS ) {
                 sess_type = SSF_TYPE_WINDOWEDVDM;
-            } else if( app_type & ( FAPPTYP_WINDOWSPROT31 | FAPPTYP_WINDOWSPROT ) ) {
+            } else if( app_type & (FAPPTYP_WINDOWSPROT31 | FAPPTYP_WINDOWSPROT) ) {
                 sess_type = SSF_TYPE_31_ENHSEAMLESSVDM;
             } else {
                 sess_type = SSF_TYPE_WINDOWABLEVIO;
