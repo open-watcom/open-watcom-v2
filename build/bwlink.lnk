@@ -265,6 +265,7 @@ system begin os2_pm
     libpath %OWSRCDIR%/fpuemu/i86/stubi86
     libpath %OWSRCDIR%/fpuemu/i86/os2i86
     libpath %OWSRCDIR%/clib/library/os2.286/ml
+    libpath %OWSRCDIR%/mathlib/library/msdos.286/ml
     libpath %OWSRCDIR%/mathlib/library/msdos.287/ml
     libpath %OWSRCDIR%/os2api/os2286/lib
     format os2 pm ^

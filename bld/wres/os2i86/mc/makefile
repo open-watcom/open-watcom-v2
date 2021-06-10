@@ -3,6 +3,6 @@ host_os  = os2
 host_cpu = i86
 
 pegged  = 1
-model   = l
+model   = c
 
 !include ../../master.mif
