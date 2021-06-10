@@ -28,7 +28,11 @@ extra_c_flags_win = -zw-zu
 #
 extra_l_flags_dll = op implib
 extra_l_flags_dll_win = op rwr export WEP RESIDENT
+!if host_cpu i86
+extra_l_flags_dll_os2 = initinstance op manyautodata
+!else
 extra_l_flags_dll_os2 = initinstance terminstance op manyautodata
+!endif
 
 # explicit rules
 #################

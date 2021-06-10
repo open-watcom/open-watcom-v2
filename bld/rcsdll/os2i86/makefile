@@ -1,4 +1,4 @@
-#pmake: build cxx cpu_i86 os_os2
+#pmake: nobuild cxx cpu_i86 os_os2
 host_os  = os2
 host_cpu = i86
 

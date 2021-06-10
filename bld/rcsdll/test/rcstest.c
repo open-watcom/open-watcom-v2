@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -335,7 +335,7 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 
 ****************************************************************************/
 
-BOOL WINAPI About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+INT_PTR WINAPI About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
     lParam = lParam;
     switch (message) {
