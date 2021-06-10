@@ -63,25 +63,24 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
     STARTDATA   sd;
     ULONG       session;
     PID         pid;
-    char        pgm_starter;
+    bool        use_exec_pgm;
     int         exec_state;
     int         show;
     USHORT      sess_type;
 
     args.parseIn( cmd );
     pgm = args.stringAt( 0 );
-    pgm_starter = PGM_DOSSTARTSESSION;
-    sess_type = SSF_TYPE_DEFAULT;
     rc = DosQueryAppType( (char const *)pgm, &app_type );
     printf( "DosQueryAppType returned %d\n", rc );
     if( rc != 0 )
         return( -1 );
+
+    use_exec_pgm = false;
+    sess_type = SSF_TYPE_DEFAULT;
     if( typ == WWinTypeDefault ) {
         if( app_type & FAPPTYP_DOS ) {
-            pgm_starter = PGM_DOSSTARTSESSION;
             sess_type = SSF_TYPE_WINDOWEDVDM;
         } else if( app_type & FAPPTYP_WINDOWSPROT31 ) {
-            pgm_starter = PGM_DOSSTARTSESSION;
             sess_type = SSF_TYPE_31_ENHSEAMLESSVDM;
             args.insertAt( 0, new WString( WINOS2_NAME ) );
             args.insertAt( 1, new WString( WINOS2_PARM ) );
@@ -89,23 +88,28 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
             rc = DosGetInfoBlocks( &ptib, &ppib );
             if( rc != 0 )
                 return( -1 );
-            app_type &= FAPPTYP_EXETYPE;
-            if( (app_type == FAPPTYP_WINDOWCOMPAT) ||
-                (app_type == FAPPTYP_NOTWINDOWCOMPAT) ) {
-                // we are starting a full screen or PM-compatible program
-                if( background ) {
-                    // we want the program to execute in the background
-                    pgm_starter = PGM_DOSEXECPGM;
-                } else if( ppib->pib_ultype == FAPPTYP_NOTSPEC ) {
-                    // we are starting the program from a full screen session
-                    pgm_starter = PGM_DOSEXECPGM;
+            // we are starting a full screen or PM-compatible program
+            switch( app_type & FAPPTYP_EXETYPE ) {
+            case FAPPTYP_NOTSPEC:
+                if( ppib->pib_ultype == PT_FULLSCREEN ) {
+                    use_exec_pgm = true;
                 }
-            } else {
-                if( app_type == ppib->pib_ultype ) {
-                    // the program we are starting is the same type
-                    // as its parent
-                    pgm_starter = PGM_DOSEXECPGM;
+                break;
+            case FAPPTYP_NOTWINDOWCOMPAT:
+                if( background || ppib->pib_ultype == PT_FULLSCREEN ) {
+                    use_exec_pgm = true;
                 }
+                break;
+            case FAPPTYP_WINDOWCOMPAT:
+                if( background || ppib->pib_ultype == PT_FULLSCREEN ) {
+                    use_exec_pgm = true;
+                }
+                break;
+            case FAPPTYP_WINDOWAPI:
+                if( ppib->pib_ultype == PT_PM ) {
+                    use_exec_pgm = true;
+                }
+                break;
             }
         }
     } else {
@@ -134,7 +138,7 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
     }
     WFileName fn( args.stringAt( 0 ) );
     fn.setExtIfNone( "exe" );
-    if( pgm_starter == PGM_DOSEXECPGM ) {
+    if( use_exec_pgm ) {
         exec_state = EXEC_ASYNC;
         if( background ) {
             exec_state = EXEC_BACKGROUND;
@@ -150,7 +154,7 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
         if( rc != 0 )
             return( -1 );
         return( returncodes.codeTerminate );    // process id of child
-    } else { // pgm_starter == PGM_DOSSTARTSESSION
+    } else {
         switch( state ) {
         case WWinStateHide:
             show = SSF_CONTROL_INVISIBLE;

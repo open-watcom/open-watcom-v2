@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,10 +52,6 @@
 #include "_process.h"
 
 
-#define FS_SESSION      0
-#define PMC_SESSION     2
-#define PM_SESSION      3
-#define DETACH_SESSION  4
 #define TERM_QUEUE      "\\queues\\session"
 
 #pragma on(stack_check);
@@ -123,9 +119,9 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, const char * const
 
         rc = DosQAppType( pgm, &app_type );
         if( rc != 0 ) {
-            app_type = 0x00;  // Works around a prob in the NT OS/2 subsystem
+            app_type = FAPPTYP_NOTSPEC; // Works around a prob in the NT OS/2 subsystem
         }
-        if( (app_type & 0x03) == 0 || (app_type & 0x20) ) {
+        if( (app_type & FAPPTYP_EXETYPE) == FAPPTYP_NOTSPEC || (app_type & FAPPTYP_DOS) ) {
             /* type of program not specified, or is a DOS app */
             use_exec_pgm = 1;
         } else {
@@ -133,15 +129,30 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, const char * const
             if( rc != 0 ) {
                 return( __set_errno_dos( rc ) );
             }
-            local = (LINFOSEG _WCFAR *) (slocal:>0);
-            if( (app_type & 0x20) == 0 ) {
-                app_type &= 0x03;
-                if( local->typeProcess == FS_SESSION ) {
-                    if( (app_type == FS_SESSION) || (app_type == PMC_SESSION) ){
+            local = _MK_FP( slocal, 0 );
+            if( (app_type & FAPPTYP_DOS) == 0 ) {
+                switch( app_type & FAPPTYP_EXETYPE ) {
+                case FAPPTYP_NOTSPEC:
+                    if( local->typeProcess == PT_FULLSCREEN ) {
                         use_exec_pgm = 1;
                     }
-                } else if( local->typeProcess == (app_type & 0x03) ) {
-                    use_exec_pgm = 1;
+                    break;
+                case FAPPTYP_NOTWINDOWCOMPAT:
+                    if( local->typeProcess == PT_REALMODE ) {
+                        use_exec_pgm = 1;
+                    }
+                    break;
+                case FAPPTYP_WINDOWCOMPAT:
+                    if( local->typeProcess == PT_FULLSCREEN
+                      || local->typeProcess == PT_WINDOWABLEVIO ) {
+                        use_exec_pgm = 1;
+                    }
+                    break;
+                case FAPPTYP_WINDOWAPI:
+                    if( local->typeProcess == PT_PM ) {
+                        use_exec_pgm = 1;
+                    }
+                    break;
                 }
             }
         }
@@ -149,7 +160,7 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, const char * const
             char    *np;
             int     len;
 
-            if( app_type & 0x20 ) { // DOS app
+            if( app_type & FAPPTYP_DOS ) { // DOS app
                 // merge argv[0] & argv[1]
                 cmdline[ strlen( cmdline ) ] = ' ';
                 len = strlen( cmdline ) + 8;
@@ -170,9 +181,8 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, const char * const
                 cmdline[3] = '\0';
                 pgm = getenv( "COMSPEC" );
             }
-            rc = DosExecPgm( NULL, 0, exec_flag,
-                             cmdline, envp, &returncodes, pgm );
-            if( app_type & 0x20 ) { // cleanup: DOS app only
+            rc = DosExecPgm( NULL, 0, exec_flag, cmdline, envp, &returncodes, pgm );
+            if( app_type & FAPPTYP_DOS ) { // cleanup: DOS app only
     #if defined( __BIG_DATA__ )
                 lib_ffree( cmdline );
     #else
@@ -242,20 +252,35 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, const char * const
                 return( __set_errno_dos( rc ) );
             }
             if( (app_type & FAPPTYP_DOS) == 0 ) {
-                app_type &= FAPPTYP_EXETYPE;
-                if( (ppib->pib_ultype == FS_SESSION)
-                 || (ppib->pib_ultype == DETACH_SESSION) ) {
-                    if( (app_type == FS_SESSION) || (app_type == PMC_SESSION) ){
+                switch( app_type & FAPPTYP_EXETYPE ) {
+                case FAPPTYP_NOTSPEC:
+                    if( ppib->pib_ultype == PT_FULLSCREEN
+                      || ppib->pib_ultype == PT_DETACHED ) {
                         use_exec_pgm = 1;
                     }
-                } else if( ppib->pib_ultype == app_type ) {
-                    use_exec_pgm = 1;
+                    break;
+                case FAPPTYP_NOTWINDOWCOMPAT:
+                    if( ppib->pib_ultype == PT_REALMODE ) {
+                        use_exec_pgm = 1;
+                    }
+                    break;
+                case FAPPTYP_WINDOWCOMPAT:
+                    if( ppib->pib_ultype == PT_FULLSCREEN
+                      || ppib->pib_ultype == PT_WINDOWABLEVIO
+                      || ppib->pib_ultype == PT_DETACHED ) {
+                        use_exec_pgm = 1;
+                    }
+                    break;
+                case FAPPTYP_WINDOWAPI:
+                    if( ppib->pib_ultype == PT_PM ) {
+                        use_exec_pgm = 1;
+                    }
+                    break;
                 }
             }
         }
         if( use_exec_pgm ) {
-            rc = DosExecPgm( NULL, 0, exec_flag,
-                             cmdline, envp, &returncodes, pgm );
+            rc = DosExecPgm( NULL, 0, exec_flag, cmdline, envp, &returncodes, pgm );
         } else {
             termq = NULLHANDLE;
             related = SSF_RELATED_INDEPENDENT;
@@ -272,13 +297,17 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, const char * const
             sd.FgBg = SSF_FGBG_FORE;
             sd.TraceOpt = SSF_TRACEOPT_NONE;
             sd.PgmTitle = NULL;
-            while( *cmdline != '\0' ) ++cmdline;    // don't need argv[0]
+            while( *cmdline != '\0' )
+                ++cmdline;    // don't need argv[0]
             ++cmdline;
             sd.PgmName = pgm;
             sd.PgmInputs = (PBYTE)cmdline;
             if( app_type & FAPPTYP_DOS ) {  // A DOS program
-                sd.SessionType = ( ppib->pib_ultype == FS_SESSION )
-                                 ? SSF_TYPE_VDM: SSF_TYPE_WINDOWEDVDM;
+                if( ppib->pib_ultype == PT_FULLSCREEN ) {
+                    sd.SessionType = SSF_TYPE_VDM;
+                } else {
+                    sd.SessionType = SSF_TYPE_WINDOWEDVDM;
+                }
                 sd.Environment = NULL;
             } else {
                 sd.SessionType = SSF_TYPE_DEFAULT;

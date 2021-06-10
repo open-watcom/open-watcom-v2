@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,6 +46,12 @@
 
 #if defined(INCL_DOSSESMGR)
 
+/*
+ * from BSEDOS.H, OS/2 2.0
+ *
+ * Application type flags
+ */
+#define FAPPTYP_EXETYPE         0x0003  // mask
 #define FAPPTYP_NOTSPEC         0x0000
 #define FAPPTYP_NOTWINDOWCOMPAT 0x0001
 #define FAPPTYP_WINDOWCOMPAT    0x0002
@@ -53,7 +59,22 @@
 #define FAPPTYP_BOUND           0x0008
 #define FAPPTYP_DLL             0x0010
 #define FAPPTYP_DOS             0x0020
-#define FAPPTYP_EXETYPE         0x0003
+
+/*
+ * from BSEDOS.H, OS/2 2.0
+ *
+ * Session type
+ */
+#define SSF_TYPE_DEFAULT        0
+#define SSF_TYPE_FULLSCREEN     1
+#define SSF_TYPE_WINDOWABLEVIO  2
+#define SSF_TYPE_PM             3
+#define SSF_TYPE_VDM            4
+#define SSF_TYPE_GROUP          5
+#define SSF_TYPE_DLL            6
+#define SSF_TYPE_WINDOWEDVDM    7
+#define SSF_TYPE_PDD            8
+#define SSF_TYPE_VDD            9
 
 #endif
 
