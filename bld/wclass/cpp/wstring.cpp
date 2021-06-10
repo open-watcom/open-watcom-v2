@@ -245,20 +245,22 @@ void WEXPORT WString::printf( const char* parms... )
 
 void WEXPORT WString::concat( char chr )
 {
-    if( _value == NULL ) {
-        char* value = MALLOC( 2 );
-        if( value != NULL ) {
-            _value = value;
-            value[0] = chr;
-            value[1] = '\0';
-        }
-    } else {
-        size_t len = size();
-        char* value = REALLOC( _value, len + 2 );
-        if( value != NULL ) {
-            _value = value;
-            value[len++] = chr;
-            value[len] = '\0';
+    if( chr != '\0' ) {
+        if( _value == NULL ) {
+            char* value = MALLOC( 2 );
+            if( value != NULL ) {
+                _value = value;
+                value[0] = chr;
+                value[1] = '\0';
+            }
+        } else {
+            size_t len = size();
+            char* value = REALLOC( _value, len + 2 );
+            if( value != NULL ) {
+                _value = value;
+                value[len++] = chr;
+                value[len] = '\0';
+            }
         }
     }
 }

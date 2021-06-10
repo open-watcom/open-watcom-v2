@@ -499,7 +499,8 @@ typedef struct _GINFOSEG {
     UCHAR   hour;
     UCHAR   minutes;
     UCHAR   seconds;
-    UCHAR   hundredths;    USHORT  timezone;
+    UCHAR   hundredths;
+    USHORT  timezone;
     USHORT  cusecTimerInterval;
     UCHAR   day;
     UCHAR   month;

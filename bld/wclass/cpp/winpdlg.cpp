@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -168,7 +169,7 @@ void WEXPORT WInputDialog::browseButton( WWindow* ) {
     if( _multiSelect ) {
         WFileNameList   fn_list;
         _browseDialog->getOpenFileName( fn_list, "", "Pick filename", WFOpenNew );
-        fn = fn_list.cString( 0, -1 );
+        fn = fn_list.cString();
     } else {
         fn = _browseDialog->getOpenFileName( "", "Pick filename", WFOpenNew );
     }

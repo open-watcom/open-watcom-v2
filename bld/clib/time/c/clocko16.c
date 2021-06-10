@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +32,7 @@
 #include "variety.h"
 #include <time.h>
 #include <wos2.h>
+#include <i86.h>
 #include "rtinit.h"
 
 /* OS/2 gives us time in milliseconds, so we're OK as long as
@@ -65,7 +67,7 @@ static void __clock_init( void )
     if( rc != NO_ERROR ) {
         global = NULL;
     } else {
-        global = (GINFOSEG _WCFAR *) (sglobal:>0);
+        global = _MK_FP( sglobal, 0 );
         init_milliseconds = global->msecs;
     }
 }

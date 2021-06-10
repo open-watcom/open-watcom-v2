@@ -65,7 +65,7 @@ static void RunCmd( char *cmd_name )
     //DOS programs can be handled by quoting the redirection
     //operators:
     //          prog 1^>out 2^>&1
-    sprintf( cmd, "%s%c/C %s 0<NUL 1>%s 2>&1%c", CmdProc, 0, cmd_name, RedirName, 0 );
+    snprintf( cmd, sizeof( cmd ), "%s%c/C %s 0<NUL 1>%s 2>&1%c", CmdProc, '\0', cmd_name, RedirName, '\0' );
     rc = DosExecPgm( NULL, 0,           /* don't care about fail name */
                 EXEC_ASYNCRESULT,       /* execflags */
                 cmd,                    /* args */
