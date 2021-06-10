@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -459,7 +459,7 @@ static void LoadProg( char *cmd, char *cmd_tail )
         start.TermQ = 0;
         start.Environment = NULL;
         start.InheritOpt = 1;
-        start.SessionType = 0;
+        start.SessionType = SSF_TYPE_DEFAULT;
         start.IconFile = NULL;
         start.PgmHandle = 0;
         start.PgmControl = 0;

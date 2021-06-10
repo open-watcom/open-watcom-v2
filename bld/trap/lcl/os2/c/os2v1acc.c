@@ -1294,7 +1294,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, unsigned_8 remote
     }
     GblInfo = MK_FP( gi, 0 );
     linfo = MK_FP( li, 0 );
-    if( linfo->typeProcess == _PT_FULLSCREEN ) {
+    if( linfo->typeProcess == PT_FULLSCREEN ) {
         SessionType = SSF_TYPE_FULLSCREEN;
     } else {
         SessionType = SSF_TYPE_WINDOWABLEVIO;

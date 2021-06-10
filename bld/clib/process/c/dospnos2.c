@@ -210,7 +210,7 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, const char * const
             ++cmdline;
             sd.PgmName = pgm;
             sd.PgmInputs = (PBYTE)cmdline;
-            sd.SessionType = 0;
+            sd.SessionType = SSF_TYPE_DEFAULT;
             sd.Environment = (PBYTE)envp;
             sd.TermQ = (PBYTE)queuename;
             sd.InheritOpt = 1;

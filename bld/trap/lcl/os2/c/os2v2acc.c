@@ -1020,15 +1020,15 @@ trap_retval TRAP_CORE( Prog_load )( void )
     start.InheritOpt = 1;
     ret->err = 0;
     if( GetEXEFlags( UtilBuff ) == EXE_IS_PM ) {
-        if( TypeProcess == SSF_TYPE_WINDOWABLEVIO ) {
+        if( TypeProcess == PT_WINDOWABLEVIO ) {
             ret->err = ERROR_OS2_TRAP( ERROR_NOT_IN_WINDOW );
         } else {
             start.SessionType = SSF_TYPE_PM;
             if( !IsPMDebugger() ) StartPMHelp();
         }
-    } else if( TypeProcess == _PT_WINDOWABLEVIO || TypeProcess == _PT_PM ) {
+    } else if( TypeProcess == PT_WINDOWABLEVIO || TypeProcess == PT_PM ) {
         start.SessionType = SSF_TYPE_WINDOWABLEVIO;
-    } else if( TypeProcess == _PT_FULLSCREEN ) {
+    } else if( TypeProcess == PT_FULLSCREEN ) {
         start.SessionType = SSF_TYPE_FULLSCREEN;
     }
     if( ret->err == 0 ) {

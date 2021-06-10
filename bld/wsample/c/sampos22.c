@@ -470,7 +470,7 @@ static void LoadProg( char *cmd, char *cmd_tail )
         start.TermQ = 0;
         start.Environment = NULL;
         start.InheritOpt = 1;
-        start.SessionType = 0;
+        start.SessionType = SSF_TYPE_DEFAULT;
         if( DosStartSession( &start, &SID, &Pid ) != 0 ) {
             internalErrorMsg( MSG_SAMPLE_3 );
         }
