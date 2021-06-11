@@ -176,7 +176,7 @@ global unsigned     TargetSwitches;     /* target specific code generator switch
 global unsigned     ProcRevision;       /* processor revision for c.g. */
 global char         *GenCodeGroup;      /* pointer to code group name */
 global unsigned     ProEpiDataSize;     /* data to be alloc'd for pro/epi hook */
-global toggles      PragmaToggles;      /* global toggle flags */
+global toggles      PragmaToggles;      /* global pragma toggle flags */
 
 global unsigned     ErrLimit;
 #define ERRLIMIT_NOMAX  ((unsigned)-1)
