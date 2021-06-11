@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -179,7 +179,7 @@ void GenFunctionNode( SYM_HANDLE sym_handle )
     sym = SymGetPtr( sym_handle );
     tree->op.u2.func.sym_handle = sym_handle;
     tree->op.u2.func.flags = FUNC_NONE;
-    if( (Toggles & TOGGLE_INLINE) || (sym->mods & FLAG_INLINE) ) {
+    if( PragmaToggles.TOGGLE( inline ) || (sym->mods & FLAG_INLINE) ) {
         if( !sym->attribs.naked ) {
             if( CMPLIT( sym->name, "main" ) != 0 ) {
                 tree->op.u2.func.flags |= FUNC_OK_TO_INLINE;
@@ -1458,7 +1458,7 @@ void Statement( void )
         }
     }
 
-    if( Toggles & TOGGLE_INLINE ) {
+    if( PragmaToggles.TOGGLE( inline ) ) {
         if( Inline_Threshold < NodeCount ) {
             CurFuncNode->op.u2.func.flags &= ~FUNC_OK_TO_INLINE;
         }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -389,7 +389,7 @@ static SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
             sym->u.var.segid = thread_segid;
         }
     }
-    if( (Toggles & TOGGLE_UNREFERENCED) == 0 ) {
+    if( !PragmaToggles.TOGGLE( unreferenced ) ) {
         sym->flags |= SYM_IGNORE_UNREFERENCE;
     }
     old_sym_handle = SymLook( sym->info.hash, sym->name );
@@ -1511,7 +1511,7 @@ static TYPEPTR *GetProtoType( decl_info *first )
             CheckUniqueName( parm_namelist, sym->name );
             prev_parm->next_parm = parm;
         }
-        if( (Toggles & TOGGLE_UNREFERENCED) == 0 ) {
+        if( !PragmaToggles.TOGGLE( unreferenced ) ) {
             sym->flags |= SYM_REFERENCED;
         }
         ++parm_count;
@@ -1674,7 +1674,7 @@ static void GetFuncParmList( void )
             parm = newparm;
         }
         parm->sym.info.hash = HashValue;
-        if( (Toggles & TOGGLE_UNREFERENCED) == 0 ) {
+        if( !PragmaToggles.TOGGLE( unreferenced ) ) {
             parm->sym.flags |= SYM_REFERENCED;
         }
         NextToken();

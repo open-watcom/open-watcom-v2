@@ -176,7 +176,7 @@ global unsigned     TargetSwitches;     /* target specific code generator switch
 global unsigned     ProcRevision;       /* processor revision for c.g. */
 global char         *GenCodeGroup;      /* pointer to code group name */
 global unsigned     ProEpiDataSize;     /* data to be alloc'd for pro/epi hook */
-global int          Toggles;            /* global toggle flags */
+global toggles      PragmaToggles;      /* global toggle flags */
 
 global unsigned     ErrLimit;
 #define ERRLIMIT_NOMAX  ((unsigned)-1)
@@ -637,7 +637,7 @@ extern void         MergeInclude(void);
 /* cpragma */
 extern void         CPragmaInit( void );
 extern void         CPragmaFini( void );
-extern bool         SetToggleFlag( char const *name, int const value );
+extern void         SetToggleFlag( char const *name, bool set_flag );
 extern void         CPragma(void);
 extern textsegment  *LkSegName(const char *,const char *);
 extern textsegment  *NewTextSeg(const char *,const char *,const char *);

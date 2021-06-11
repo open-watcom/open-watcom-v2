@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -292,9 +292,9 @@ void InitModInfo( void )
 {
     GenSwitches = 0;
     TargetSwitches = 0;
-    Toggles = TOGGLE_CHECK_STACK
-            | TOGGLE_UNREFERENCED
-            | TOGGLE_REUSE_DUPLICATE_STRINGS;
+    PragmaToggles.TOGGLE( check_stack ) = true;
+    PragmaToggles.TOGGLE( unreferenced ) = true;
+    PragmaToggles.TOGGLE( reuse_duplicate_strings ) = true;
     DataThreshold = 32767;
     OptSize = 50;
     UndefNames = NULL;

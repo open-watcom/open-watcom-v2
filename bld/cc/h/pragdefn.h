@@ -65,11 +65,6 @@ typedef struct alt_inline_funcs {
     inline_funcs    alt_ifunc;
 } alt_inline_funcs;
 
-typedef struct toggle {
-    char *name;
-    int flag;
-} toggle;
-
 #ifndef global
 #define global  extern
 #endif

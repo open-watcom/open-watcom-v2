@@ -1373,7 +1373,7 @@ void DoCompile( void )
             if( ! CompFlags.zu_switch_used ) {
                 TargetSwitches &= ~ FLOATING_SS;
             }
-            if( Toggles & TOGGLE_DUMP_CG ) {
+            if( PragmaToggles.TOGGLE( dump_cg ) ) {
                 GenSwitches |= ECHO_API_CALLS;
             }
 #ifdef POSITION_INDEPENDANT

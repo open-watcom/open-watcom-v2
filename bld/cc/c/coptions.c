@@ -802,7 +802,7 @@ static void MacroDefs( void )
         Define_Macro( "__SW_OP" );
     }
 #endif
-    if( (Toggles & TOGGLE_CHECK_STACK) == 0 ) {
+    if( !PragmaToggles.TOGGLE( check_stack ) ) {
         Define_Macro( "__SW_S" );
     }
 }
@@ -1231,7 +1231,7 @@ static void Set_ST( void )          { CompFlags.st_switch_used = true; }
 #if _CPU == _AXP || _CPU == _MIPS
 static void Set_SI( void )          { TargetSwitches |= STACK_INIT; }
 #endif
-static void Set_S( void )           { Toggles &= ~TOGGLE_CHECK_STACK; }
+static void Set_S( void )           { PragmaToggles.TOGGLE( check_stack ) = false; }
 
 static void Set_TP( void )
 {
@@ -1483,7 +1483,7 @@ static void Set_OD( void )          { GenSwitches |= NO_OPTIMIZATION; }
 static void Set_OE( void )
 {
     Inline_Threshold = OptValue;
-    Toggles |= TOGGLE_INLINE;
+    PragmaToggles.TOGGLE( inline ) = true;
 }
 
 #if _CPU == 8086 || _CPU == 386
@@ -1511,7 +1511,7 @@ static void Set_OT( void )          { GenSwitches &= ~NO_OPTIMIZATION; OptSize =
 static void Set_OU( void )          { CompFlags.unique_functions = true; }
 static void Set_OX( void )
 {
-    Toggles &= ~TOGGLE_CHECK_STACK;
+    PragmaToggles.TOGGLE( check_stack ) = false;
     GenSwitches &= ~NO_OPTIMIZATION;
     GenSwitches |= LOOP_OPTIMIZATION | INS_SCHEDULING | BRANCH_PREDICTION;
     CompFlags.inline_functions = true;
@@ -1984,7 +1984,7 @@ static char *ReadIndirectFile( void )
         len = (size_t)ftell( fp );
         env = CMemAlloc( len + 1 );
         rewind( fp );
-        fread( env, len, 1, fp );
+        len = fread( env, len, 1, fp );
         env[len] = '\0';
         fclose( fp );
         // zip through characters changing \r, \n etc into ' '

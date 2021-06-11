@@ -148,7 +148,6 @@ void InitGlobalVars( void )
     ProcRevision            = 0;        /* processor revision for c.g. */
     GenCodeGroup            = NULL;     /* pointer to code group name */
     ProEpiDataSize          = 0;        /* data to be alloc'd for pro/epi hook */
-    Toggles                 = 0;        /* global toggle flags */
     ErrLimit                = 0;
 
     DataThreshold           = 0;        /* sizeof(obj) > this ==> separate segment */
@@ -229,6 +228,7 @@ void InitGlobalVars( void )
     UndefNames              = NULL;
     Check_global_prototype  = 0;
 
+    memset( &PragmaToggles, 0, sizeof( PragmaToggles ) );   /* global toggle flags */
     memset( &CompFlags, 0, sizeof( CompFlags ) );
 
     InitMacroSegments();                /* initialize pointer to list of macro segments */

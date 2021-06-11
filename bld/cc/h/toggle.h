@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,14 +25,15 @@
 *
 *  ========================================================================
 *
-* Description:  C compiler toggles controllable through pragmas.
+* Description:  C compiler structure with toggles controllable through pragmas.
 *
 ****************************************************************************/
 
 
-#define TOGGLE_CHECK_STACK      0x0001
-#define TOGGLE_UNREFERENCED     0x0002
-#define TOGGLE_THIS_ONES_UNUSED 0x0004
-#define TOGGLE_INLINE           0x0008
-#define TOGGLE_DUMP_CG          0x0010
-#define TOGGLE_REUSE_DUPLICATE_STRINGS  0x0020
+#define TOGGLE(x)   tog_##x
+
+typedef struct toggles {
+    #define pick(x)     unsigned TOGGLE(x) :1;
+    #include "togdef.h"
+    #undef pick
+} toggles;

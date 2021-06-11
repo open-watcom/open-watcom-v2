@@ -62,15 +62,6 @@ struct enums_info {
 } *EnumInfo;
 
 
-/* local variables */
-static struct toggle ToggleNames[] = {
-    #define TOGDEF( a, b ) {  #a, b },
-    #include "togdef.h"
-    #undef TOGDEF
-    { NULL, 0 }
-};
-
-
 static struct magic_words_data {
     const char      *name;
     aux_info        *info;
@@ -619,28 +610,16 @@ hw_reg_set *PragManyRegSets( void )
  *
  *******************************************************/
 
-bool SetToggleFlag( char const *name, int const value )
-/*****************************************************/
+void SetToggleFlag( char const *name, bool set_flag )
+/***************************************************/
 {
-    int     i;
-    char    *pnt;
-    bool    ret;
-    size_t  len;
-
-    len = strlen( name ) + 1;
-    ret = false;
-    for( i = 0; (pnt = ToggleNames[i].name) != NULL; ++i ) {
-        if( memcmp( pnt, name, len ) == 0 ) {
-            if( value == 0 ) {
-                Toggles &= ~ToggleNames[i].flag;
-            } else {
-                Toggles |= ToggleNames[i].flag;
-            }
-            ret = true;
-            break;
-        }
+#define pick( x ) \
+    if( strcmp( name, #x ) == 0 ) { \
+        PragmaToggles.TOGGLE( x ) = set_flag; \
+        return; \
     }
-    return( ret );
+#include "togdef.h"
+#undef pick
 }
 
 /* forms:

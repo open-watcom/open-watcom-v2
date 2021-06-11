@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,13 +68,14 @@ static FILE *OpenUnicodeFile( const char *filename )
 
 static void ReadUnicodeFile( FILE *fp )
 {
-    int             i;
+    size_t          i;
+    size_t          len;
     unicode_type    unicode_table[256];
 
-    fread( unicode_table, sizeof( unicode_type ), 256, fp );
+    len = fread( unicode_table, sizeof( unicode_type ), 256, fp );
     /* UniCode might be a FAR table */
     for( i = 0; i < 256; i++ ) {
-        UniCode[i] = unicode_table[i];
+        UniCode[i] = ( i < len ) ? unicode_table[i] : 0;
     }
 }
 
@@ -290,7 +291,7 @@ TREEPTR StringLeaf( string_flags flags )
     if( flags & STRLIT_FAR )
         CompFlags.far_strings = true;
     h = CalcStringHash( new_lit );
-    if( Toggles & TOGGLE_REUSE_DUPLICATE_STRINGS ) {
+    if( PragmaToggles.TOGGLE( reuse_duplicate_strings ) ) {
         for( strlit = StringHash[h]; strlit != NULL; strlit = strlit->next_string ) {
             if( strlit->length == new_lit->length && strlit->flags == flags ) {
                 if( memcmp( strlit->literal, new_lit->literal, new_lit->length ) == 0 ) {

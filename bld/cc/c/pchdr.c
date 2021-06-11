@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +46,7 @@ extern  TAGPTR  TagHash[ID_HASH_SIZE + 1];
 
 #define PH_BUF_SIZE     32768
 #define PCH_SIGNATURE   (('H'<<24)|('C'<<16)|('P'<<8)|'W')     /* 'WPCH' */
-#define PCH_VERSION     0x0127
+#define PCH_VERSION     0x0128
 #if defined(_M_I86)
 #define PCH_VERSION_HOST ( ( 1L << 16 ) | PCH_VERSION )
 #elif defined(_M_IX86)
@@ -122,7 +122,7 @@ typedef struct pheader {
     unsigned        pack_amount;    // PackAmount
     unsigned        gen_switches;   // GenSwitches
     unsigned        target_switches;// TargetSwitches
-    int             toggles;        // Toggles
+    toggles         pragma_toggles; // PragmaToggles
     unsigned        size;
     unsigned        macro_size;
     unsigned        file_count;
@@ -287,7 +287,7 @@ static void OutPutHeader( void )
     pch.pack_amount       = PackAmount;
     pch.gen_switches      = GenSwitches;
     pch.target_switches   = TargetSwitches;
-    pch.toggles           = Toggles;
+    pch.pragma_toggles    = PragmaToggles;
     pch.size              = PH_size - PH_MacroSize;
     pch.macro_size        = PH_MacroSize;
     pch.file_count        = PH_FileCount;
@@ -1693,7 +1693,7 @@ static int FixupDataStructures( char *p, pheader *pch )
     PCH_MaxSymHandle = pch->symbol_count;
     SetNextSymHandle( pch->symbol_count - 1 );
     IncLineCount = pch->incline_count;
-    Toggles = pch->toggles;
+    PragmaToggles = pch->pragma_toggles;
     FixupFNames();
     InitDebugTypes();
     InitDebugTags();
