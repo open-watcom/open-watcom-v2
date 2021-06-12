@@ -106,7 +106,7 @@ char __far *InitAlias( char __far * inname )
             static int alias_seg;
 
             DosAllocSeg( pos + 1 + ALIAS_SLACK, &alias_seg, 0 );
-            AliasList = (char __far *)MK_FP( alias_seg, 0 );
+            AliasList = (char __far *)_MK_FP( alias_seg, 0 );
             AliasSize = pos + ALIAS_SLACK;
         }
 #endif

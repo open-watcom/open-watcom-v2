@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -129,13 +129,13 @@ int OSCorrupted( void )
     UINT16      new_chain_seg;
 
     first_MCB = _DOS_list_of_lists();
-    if( FP_OFF( first_MCB ) == 1 ) {    /* next instr will hang! */
+    if( _FP_OFF( first_MCB ) == 1 ) {    /* next instr will hang! */
         /* list of lists DOS call may have been interrupted */
         return( 1 );
     }
     chain_seg = first_MCB[-1];
     for( ;; ) {
-        chain = MK_FP( chain_seg, 0 );
+        chain = _MK_FP( chain_seg, 0 );
         if( chain->id == 'Z' ) {
             break;
         }
@@ -458,7 +458,7 @@ char *GetEnvExt( const char *str )
     }
     if( strcmp( str, ENDPATHNAME ) == 0 ) {
         if( ensure_loaded( ORD_DOS32QUERYEXTLIBPATH, (PFN *)&fnDosQueryExtLIBPATH ) ) {
-        	rc = os2EndLibPath;
+            rc = os2EndLibPath;
             if( os2EndLibPath[0] == '\0' ) {
                 if( fnDosQueryExtLIBPATH( os2EndLibPath, END_LIBPATH ) ) {
                     rc = NULL;

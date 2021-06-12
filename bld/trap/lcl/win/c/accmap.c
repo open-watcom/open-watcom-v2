@@ -329,7 +329,7 @@ trap_retval TRAP_CORE( Map_addr )( void )
         }
         ptr = GlobalLock( ge.hBlock );
         GlobalUnlock( ge.hBlock );
-        sel = FP_SEG( ptr );
+        sel = _FP_SEG( ptr );
         if( sel == NULL ) {
             sel = (WORD)ge.hBlock + 1;
         }

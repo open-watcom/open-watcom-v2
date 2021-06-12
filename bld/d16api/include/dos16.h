@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -284,10 +285,10 @@ typedef struct {
 extern "C" {
 #endif
 
-#undef  FP_SEG
-#undef  FP_OFF
-#define FP_SEG(p)   (*((USHORT FP16) &(p) + 1))
-#define FP_OFF(p)   (*(USHORT FP16) &(p))
+#undef  _FP_SEG
+#undef  _FP_OFF
+#define _FP_SEG(p)   (*((USHORT FP16) &(p) + 1))
+#define _FP_OFF(p)   (*(USHORT FP16) &(p))
 
 #define NULL_PTR    ((void *)0)
 #define NULL_SEGREG 0

@@ -225,9 +225,9 @@ static void RecordModHandle( HMODULE value )
 
     if( ModHandles == NULL ) {
         DosAllocSeg( sizeof( USHORT ), (PSEL)&sel, 0 );
-        ModHandles = MK_FP( sel, 0 );
+        ModHandles = _MK_FP( sel, 0 );
     } else {
-        DosReallocSeg( ( NumModHandles + 1 ) * sizeof( HMODULE ), FP_SEG( ModHandles ) );
+        DosReallocSeg( ( NumModHandles + 1 ) * sizeof( HMODULE ), _FP_SEG( ModHandles ) );
     }
     ModHandles[NumModHandles++] = value;
 }
@@ -297,10 +297,10 @@ static long TaskExecute( excfn rtn )
 
     if( CanExecTask ) {
         buff = Buff;
-        buff.u.r.CS = FP_SEG( rtn );
-        buff.u.r.IP = FP_OFF( rtn );
-        buff.u.r.SS = FP_SEG( stack );
-        buff.u.r.SP = FP_OFF( stack ) + sizeof( stack );
+        buff.u.r.CS = _FP_SEG( rtn );
+        buff.u.r.IP = _FP_OFF( rtn );
+        buff.u.r.SS = _FP_SEG( stack );
+        buff.u.r.SP = _FP_OFF( stack ) + sizeof( stack );
         WriteRegs( &buff );
         ExecuteCode( &buff );
         return( ( (unsigned long)buff.u.r.DX << 16 ) + buff.u.r.AX );
@@ -312,9 +312,9 @@ static long TaskExecute( excfn rtn )
 
 long TaskOpenFile( char __far *name, int mode, int flags ) {
 
-    WriteBuffer( (byte __far *)name, FP_SEG( UtilBuff ), FP_OFF( UtilBuff ), strlen( name ) + 1 );
-    Buff.u.r.DX = FP_SEG( UtilBuff );
-    Buff.u.r.AX = FP_OFF( UtilBuff );
+    WriteBuffer( (byte __far *)name, _FP_SEG( UtilBuff ), _FP_OFF( UtilBuff ), strlen( name ) + 1 );
+    Buff.u.r.DX = _FP_SEG( UtilBuff );
+    Buff.u.r.AX = _FP_OFF( UtilBuff );
     Buff.u.r.BX = mode;
     Buff.u.r.CX = flags;
     return( TaskExecute( (excfn)DoOpen ) );
@@ -368,8 +368,8 @@ trap_retval TRAP_CORE( Get_sys_config )( void )
     WriteRegs( &Buff );
     if( ret->sys.fpu != X86_NO ) {
         buff.cmd = PT_CMD_READ_8087;
-        buff.segv = FP_SEG( tmp );
-        buff.offv = FP_OFF( tmp );
+        buff.segv = _FP_SEG( tmp );
+        buff.offv = _FP_OFF( tmp );
         buff.tid = 1;
         buff.pid = Pid;
         DosPTrace( &buff );
@@ -533,8 +533,8 @@ trap_retval TRAP_CORE( Read_regs )( void )
         ReadCPU( &mr->x86.cpu );
 
         Buff.cmd = PT_CMD_READ_8087;
-        Buff.segv = FP_SEG( mr );
-        Buff.offv = FP_OFF( &mr->x86.u.fpu );
+        Buff.segv = _FP_SEG( mr );
+        Buff.offv = _FP_OFF( &mr->x86.u.fpu );
         save = Buff.tid;
         Buff.tid = 1;   /*NYI: OS/2 V1.2 gets upset trying to read other tids */
         DosPTrace( &Buff );
@@ -557,8 +557,8 @@ trap_retval TRAP_CORE( Write_regs )( void )
         WriteRegs( &Buff );
 
         Buff.cmd = PT_CMD_WRITE_8087;
-        Buff.segv = FP_SEG( mr );
-        Buff.offv = FP_OFF( &mr->x86.u.fpu );
+        Buff.segv = _FP_SEG( mr );
+        Buff.offv = _FP_OFF( &mr->x86.u.fpu );
         FPUContract( &mr->x86.u.fpu );
         save = Buff.tid;
         Buff.tid = 1;   /*NYI: OS/2 V1.2 gets upset trying to read other tids */
@@ -1095,9 +1095,9 @@ trap_retval TRAP_FILE( write_console )( void )
         while( len != 0 ) {
             curr = len;
             if( len > sizeof( UtilBuff ) ) len = sizeof( UtilBuff );
-            WriteBuffer( ptr, FP_SEG( UtilBuff ), FP_OFF( UtilBuff ), curr );
-            Buff.u.r.AX = FP_OFF( UtilBuff );
-            Buff.u.r.DX = FP_SEG( UtilBuff );
+            WriteBuffer( ptr, _FP_SEG( UtilBuff ), _FP_OFF( UtilBuff ), curr );
+            Buff.u.r.AX = _FP_OFF( UtilBuff );
+            Buff.u.r.DX = _FP_SEG( UtilBuff );
             Buff.u.r.BX = curr;
             TaskExecute( (excfn)DoWritePgmScrn );
             ptr += curr;
@@ -1122,8 +1122,8 @@ static int ValidThread( TID thread )
     save = Buff.tid;
     Buff.tid = thread;
     Buff.cmd = PT_CMD_THREAD_STAT;
-    Buff.segv = FP_SEG( &state );
-    Buff.offv = FP_OFF( &state );
+    Buff.segv = _FP_SEG( &state );
+    Buff.offv = _FP_OFF( &state );
     DosPTrace( &Buff );
     Buff.tid = save;
     return( Buff.cmd == PT_RET_SUCCESS );
@@ -1224,8 +1224,8 @@ trap_retval TRAP_CORE( Get_lib_name )( void )
     }
     name = GetOutPtr( sizeof(*ret) );
     Buff.value = ModHandles[CurrModHandle];
-    Buff.segv = FP_SEG( name );
-    Buff.offv = FP_OFF( name );
+    Buff.segv = _FP_SEG( name );
+    Buff.offv = _FP_OFF( name );
     Buff.cmd = PT_CMD_GET_LIB_NAME;
     DosPTrace( &Buff );
     ret->mod_handle = CurrModHandle;
@@ -1292,8 +1292,8 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, unsigned_8 remote
         strcpy( err, TRP_OS2_no_info );
         return( ver );
     }
-    GblInfo = MK_FP( gi, 0 );
-    linfo = MK_FP( li, 0 );
+    GblInfo = _MK_FP( gi, 0 );
+    linfo = _MK_FP( li, 0 );
     if( linfo->typeProcess == PT_FULLSCREEN ) {
         SessionType = SSF_TYPE_FULLSCREEN;
     } else {

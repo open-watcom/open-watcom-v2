@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -342,9 +343,9 @@ static void codeLoad( HANDLE handle, DWORD base, const char *name, samp_block_ki
     for( i = 0; i < peh.num_objects; i++ ) {
         ReadFile( handle, &obj, sizeof( obj ), &bytes, NULL );
         if( obj.flags & (PE_OBJ_CODE | PE_OBJ_EXECUTABLE) ) {
-            seg = FP_SEG( codeLoad );
+            seg = _FP_SEG( codeLoad );
         } else {
-            seg = FP_SEG( &seg );
+            seg = _FP_SEG( &seg );
         }
         offset = (DWORD)base + obj.rva;
         WriteAddrMap( i + 1, seg, offset );

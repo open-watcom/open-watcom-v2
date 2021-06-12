@@ -66,10 +66,10 @@ bool CheckOvl( addr32_ptr start )
 {
     struct ovl_header   __far *hdr;
 
-    hdr = MK_FP( start.segment, start.offset );
+    hdr = _MK_FP( start.segment, start.offset );
     if( hdr->signature == OVL_SIGNATURE ) {
         hdr->hook = &OvlTrap;
-        OvlRequest = MK_FP( start.segment, hdr->handler_offset );
+        OvlRequest = _MK_FP( start.segment, hdr->handler_offset );
         RunProg( &TaskRegs, &TaskRegs ); /* init overlay manager */
         return( true );
     }

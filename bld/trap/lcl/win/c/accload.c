@@ -156,8 +156,8 @@ trap_retval TRAP_CORE( Prog_load )( void )
             tid = 0;
         } else {
             DebugeeTask = tid;
-            StopNewTask.loc.segment = FP_SEG( (LPVOID) csip );
-            StopNewTask.loc.offset = FP_OFF( (LPVOID) csip );
+            StopNewTask.loc.segment = _FP_SEG( (LPVOID) csip );
+            StopNewTask.loc.offset = _FP_OFF( (LPVOID) csip );
             ReadMem( StopNewTask.loc.segment, StopNewTask.loc.offset,
                     &StopNewTask.value, 1 );
             ch = '\xcc';

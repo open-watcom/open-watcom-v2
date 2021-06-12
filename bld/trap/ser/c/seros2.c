@@ -404,8 +404,8 @@ char *InitSys( void )
 #endif
         return( TRP_OS2_no_info );
 #ifdef _M_I86
-    GInfoSeg = MK_FP( sel_global, 0 );
-    LInfoSeg = MK_FP( sel_local, 0 );
+    GInfoSeg = _MK_FP( sel_global, 0 );
+    LInfoSeg = _MK_FP( sel_local, 0 );
     if( DosSetPrty( PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, LInfoSeg->tidCurrent ) )
 #else
     if( DosSetPriority( PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, 0 ) )

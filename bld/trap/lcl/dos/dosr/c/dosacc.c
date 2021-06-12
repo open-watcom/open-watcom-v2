@@ -266,11 +266,11 @@ trap_retval TRAP_CORE( Map_addr )( void )
         break;
     }
     if( Flags & F_BoundApp ) {
-        segment = MK_FP( SegmentChain, 14 );
+        segment = _MK_FP( SegmentChain, 14 );
         for( count = NumSegments - seg; count != 0; --count ) {
-            segment = MK_FP( *segment, 14 );
+            segment = _MK_FP( *segment, 14 );
         }
-        ret->out_addr.segment = FP_SEG( segment ) + 1;
+        ret->out_addr.segment = _FP_SEG( segment ) + 1;
     } else {
         ret->out_addr.segment = DOSTaskPSP() + seg;
         if( (Flags & F_Com_file) == 0 ) {
@@ -306,7 +306,7 @@ trap_retval TRAP_CORE( Checksum_mem )( void )
 
     acc = GetInPtr(0);
     ret = GetOutPtr(0);
-    ptr = MK_FP( acc->in_addr.segment, acc->in_addr.offset );
+    ptr = _MK_FP( acc->in_addr.segment, acc->in_addr.offset );
     for( len = acc->len; len != 0; --len ) {
         sum += *ptr++;
     }
@@ -343,7 +343,7 @@ trap_retval TRAP_CORE( Read_mem )( void )
         len = 0x10000 - acc->mem_addr.offset;
     }
     MoveBytes( acc->mem_addr.segment, acc->mem_addr.offset,
-               FP_SEG( data ), FP_OFF( data ), len );
+               _FP_SEG( data ), _FP_OFF( data ), len );
     if( int_tbl )
         ClrIntVecs();
     return( len );
@@ -370,7 +370,7 @@ trap_retval TRAP_CORE( Write_mem )( void )
     if( ( acc->mem_addr.offset + len ) > 0xffff ) {
         len = 0x10000 - acc->mem_addr.offset;
     }
-    MoveBytes( FP_SEG( data ), FP_OFF( data ),
+    MoveBytes( _FP_SEG( data ), _FP_OFF( data ),
                acc->mem_addr.segment, acc->mem_addr.offset, len );
     if( int_tbl )
         ClrIntVecs();
@@ -524,7 +524,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     len = GetTotalSizeIn() - ( parm - name ) - sizeof( prog_load_req );
     if( len > 126 )
         len = 126;
-    dst = MK_FP( psp, CMD_OFFSET + 1 );
+    dst = _MK_FP( psp, CMD_OFFSET + 1 );
     for( ; len > 0; --len ) {
         ch = *parm++;
         if( ch == '\0' ) {
@@ -535,7 +535,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
         *dst++ = ch;
     }
     *dst = '\r';
-    *(byte __far *)MK_FP( psp, CMD_OFFSET ) = FP_OFF( dst ) - ( CMD_OFFSET + 1 );
+    *(byte __far *)_MK_FP( psp, CMD_OFFSET ) = _FP_OFF( dst ) - ( CMD_OFFSET + 1 );
     parmblock.envstring = 0;
     parmblock.commandln.segment = psp;
     parmblock.commandln.offset =  CMD_OFFSET;
@@ -614,7 +614,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
 
                 BoundAppLoading = true;
                 RunProg( &TaskRegs, &TaskRegs );
-                loc_brk_opcode = MK_FP(TaskRegs.CS, TaskRegs.EIP);
+                loc_brk_opcode = _MK_FP(TaskRegs.CS, TaskRegs.EIP);
                 if( *loc_brk_opcode == BRKPOINT ) {
                     *loc_brk_opcode = saved_opcode;
                 }
@@ -677,7 +677,7 @@ trap_retval TRAP_CORE( Set_watch )( void )
         curr = WatchPoints + WatchCount;
         curr->addr.segment = wp->watch_addr.segment;
         curr->addr.offset = wp->watch_addr.offset;
-        curr->value = *(dword __far *)MK_FP( wp->watch_addr.segment, wp->watch_addr.offset );
+        curr->value = *(dword __far *)_MK_FP( wp->watch_addr.segment, wp->watch_addr.offset );
         curr->linear = ( (dword)wp->watch_addr.segment << 4 ) + wp->watch_addr.offset;
         curr->len = wp->size;
         curr->linear &= ~( curr->len - 1 );
@@ -712,7 +712,7 @@ trap_retval TRAP_CORE( Set_break )( void )
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
 
-    loc_brk_opcode = MK_FP( acc->break_addr.segment, acc->break_addr.offset );
+    loc_brk_opcode = _MK_FP( acc->break_addr.segment, acc->break_addr.offset );
     ret->old = *loc_brk_opcode;
     *loc_brk_opcode = BRKPOINT;
     if( *loc_brk_opcode != BRKPOINT ) {
@@ -728,7 +728,7 @@ trap_retval TRAP_CORE( Clear_break )( void )
     clear_break_req     *bp;
 
     bp = GetInPtr( 0 );
-    *(opcode_type __far *)MK_FP( bp->break_addr.segment, bp->break_addr.offset ) = bp->old;
+    *(opcode_type __far *)_MK_FP( bp->break_addr.segment, bp->break_addr.offset ) = bp->old;
     GotABadBreak = false;
     return( 0 );
 }

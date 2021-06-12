@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +52,7 @@ USHORT DosGetEnv( USHORT PASPTR *segment, USHORT PASPTR *offset )
 {
     r.h.ah = 0x62;
     intr( 0x21, &r );
-    *segment = *(unsigned __far *)MK_FP( r.x.bx, 0x2c );
+    *segment = *(unsigned __far *)_MK_FP( r.x.bx, 0x2c );
     *offset = 0;
     return( 0 );
 }
@@ -267,8 +268,8 @@ USHORT DosClose( USHORT hdl )
 
 USHORT DDosOpen( char PASPTR *name, USHORT PASPTR *hdl )
 {
-    r.x.dx = FP_OFF( name );
-    r.x.ds = FP_SEG( name );
+    r.x.dx = _FP_OFF( name );
+    r.x.ds = _FP_SEG( name );
     r.h.al = 0;
     r.h.ah = 0x3d;
     intr( 0x21, &r );
@@ -298,8 +299,8 @@ USHORT DosChgFilePtr( int hdl, long offset, int typ, unsigned long PASPTR *newp 
 USHORT DosRead( USHORT hdl, char __far *buff, USHORT len, USHORT PASPTR *readlen )
 {
     r.x.bx = hdl;
-    r.x.ds = FP_SEG( buff );
-    r.x.dx = FP_OFF( buff );
+    r.x.ds = _FP_SEG( buff );
+    r.x.dx = _FP_OFF( buff );
     r.x.cx = len;
     r.h.ah = 0x3F;
     intr( 0x21, &r );
@@ -315,8 +316,8 @@ USHORT DosRead( USHORT hdl, char __far *buff, USHORT len, USHORT PASPTR *readlen
 USHORT DosWrite( USHORT hdl, char __far *buff, USHORT len, USHORT PASPTR *writelen )
 {
     r.x.bx = hdl;
-    r.x.ds = FP_SEG( buff );
-    r.x.dx = FP_OFF( buff );
+    r.x.ds = _FP_SEG( buff );
+    r.x.dx = _FP_OFF( buff );
     r.x.cx = len;
     r.h.ah = 0x40;
     intr( 0x21, &r );
@@ -345,7 +346,7 @@ int DosFreeEnv( void )
     r.h.ah = 0x62;
     intr( 0x21, &r );
     r.h.ah = 0x49;
-    r.x.es = *(unsigned __far *)MK_FP( r.x.bx, 0x2c );
+    r.x.es = *(unsigned __far *)_MK_FP( r.x.bx, 0x2c );
     intr( 0x21, &r );
     return( 0 );
 }
@@ -389,16 +390,16 @@ USHORT DDosFindFirst( char PASPTR *spec, int attr, DIRINFO PASPTR *buf )
         ++q;
     }
     r.x.ax = 0x714E;
-    r.x.dx = FP_OFF( buff );
-    r.x.ds = FP_SEG( buff );
-    r.x.di = FP_OFF( buf );
-    r.x.es = FP_SEG( buf );
+    r.x.dx = _FP_OFF( buff );
+    r.x.ds = _FP_SEG( buff );
+    r.x.di = _FP_OFF( buf );
+    r.x.es = _FP_SEG( buf );
     r.x.cx = attr;
     intr( 0x21, &r );
     if( r.x.flags & INTR_CF ) {
-        setdta( FP_SEG( buf ), FP_OFF( buf ) );
-        r.x.dx = FP_OFF( spec );
-        r.x.ds = FP_SEG( spec );
+        setdta( _FP_SEG( buf ), _FP_OFF( buf ) );
+        r.x.dx = _FP_OFF( spec );
+        r.x.ds = _FP_SEG( spec );
         r.x.cx = attr;
         r.h.ah = 0x4E;
         intr( 0x21, &r );
@@ -417,13 +418,13 @@ USHORT DDosFindNext( DIRINFO PASPTR *buf )
     if( findHandle != 0 ) {
         r.x.ax = 0x714F;
         r.x.bx = findHandle;
-        r.x.di = FP_OFF( buf );
-        r.x.es = FP_SEG( buf );
+        r.x.di = _FP_OFF( buf );
+        r.x.es = _FP_SEG( buf );
         intr( 0x21, &r );
         memmove( buf->achName, ((WIN32_FIND_DATA*)buf)->cFileName, strlen( (char const *)( ((WIN32_FIND_DATA*)buf)->cFileName + 1 ) ) );
         buf->attrFile = ((WIN32_FIND_DATA*)buf)->dwFileAttributes;
     } else {
-        setdta( FP_SEG( buf ), FP_OFF( buf ) );
+        setdta( _FP_SEG( buf ), _FP_OFF( buf ) );
         r.h.ah = 0x4F;
         intr( 0x21, &r );
         resetdta();
@@ -453,8 +454,8 @@ USHORT DosQCurDir( int drive_num, char PASPTR *buff, int PASPTR *size )
 
     r.h.ah = 0x47;
     r.h.dl = drive_num;
-    r.x.si = FP_OFF( buff );
-    r.x.ds = FP_SEG( buff );
+    r.x.si = _FP_OFF( buff );
+    r.x.ds = _FP_SEG( buff );
     intr( 0x21, &r );
     if( r.x.flags & INTR_CF ) {
         return( 1 );
@@ -481,13 +482,13 @@ USHORT DDosChDir( char PASPTR *dir )
         ++p;
     }
     r.x.ax = 0x713B;
-    r.x.ds = FP_SEG( buff );
-    r.x.dx = FP_OFF( buff );
+    r.x.ds = _FP_SEG( buff );
+    r.x.dx = _FP_OFF( buff );
     intr( 0x21, &r );
     if( r.x.flags & INTR_CF ) {
         r.h.ah = 0x3B;
-        r.x.ds = FP_SEG( dir );
-        r.x.dx = FP_OFF( dir );
+        r.x.ds = _FP_SEG( dir );
+        r.x.dx = _FP_OFF( dir );
         intr( 0x21, &r );
     }
     return( ( r.x.flags & INTR_CF ) != 0 );

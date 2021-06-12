@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,7 +47,7 @@
 
 /* GDT definitions */
 typedef unsigned long   flat_address;
-#define MAKE_LINEAR(x)  ((((flat_address) FP_SEG( x )) << 4) + FP_OFF( x ))
+#define MAKE_LINEAR(x)  ((((flat_address)_FP_SEG( x )) << 4) + _FP_OFF( x ))
 
 /* read/write data, 16 bit (byte length) segment, ring 0 */
 #define GDT_RW_DATA     0x93000000L

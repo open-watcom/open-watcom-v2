@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -134,21 +134,21 @@ static void restoreState( volatile fault_frame *ff )
      * because do not have data segment addressability when we need it
      * (when we go to push it onto a new stack)
      */
-    wptr = MK_FP( CSAlias, FP_OFF( &NewAX ) );
+    wptr = _MK_FP( CSAlias, _FP_OFF( &NewAX ) );
     *wptr = (WORD) IntResult.EAX;
-    wptr = MK_FP( CSAlias, FP_OFF( &NewCS ) );
+    wptr = _MK_FP( CSAlias, _FP_OFF( &NewCS ) );
     *wptr = IntResult.CS;
-    wptr = MK_FP( CSAlias, FP_OFF( &NewIP ) );
+    wptr = _MK_FP( CSAlias, _FP_OFF( &NewIP ) );
     *wptr = (WORD) IntResult.EIP;
-    wptr = MK_FP( CSAlias, FP_OFF( &NewFLAGS ) );
+    wptr = _MK_FP( CSAlias, _FP_OFF( &NewFLAGS ) );
     *wptr = (WORD) IntResult.EFlags;
-    wptr = MK_FP( CSAlias, FP_OFF( &OldretCS ) );
+    wptr = _MK_FP( CSAlias, _FP_OFF( &OldretCS ) );
     *wptr = ff->intf.retCS;
-    wptr = MK_FP( CSAlias, FP_OFF( &OldretIP ) );
+    wptr = _MK_FP( CSAlias, _FP_OFF( &OldretIP ) );
     *wptr = ff->intf.retIP;
-    wptr = MK_FP( CSAlias, FP_OFF( &Oldintnumber ) );
+    wptr = _MK_FP( CSAlias, _FP_OFF( &Oldintnumber ) );
     *wptr = ff->intf.intnumber;
-    wptr = MK_FP( CSAlias, FP_OFF( &Oldhandle ) );
+    wptr = _MK_FP( CSAlias, _FP_OFF( &Oldhandle ) );
     *wptr = ff->intf.handle;
 
     ff->SS = IntResult.SS;
@@ -189,8 +189,8 @@ static void newStack( WORD SS, DWORD ESP )
     WORD        __far *wptr;
     DWORD       __far *dwptr;
 
-    wptr = MK_FP( CSAlias, FP_OFF( &NewSS ) );
-    dwptr = MK_FP( CSAlias, FP_OFF( &NewESP ) );
+    wptr = _MK_FP( CSAlias, _FP_OFF( &NewSS ) );
+    dwptr = _MK_FP( CSAlias, _FP_OFF( &NewESP ) );
 
     *wptr = SS;
     *dwptr = ESP;
@@ -208,7 +208,7 @@ static void setRetHow( appl_action appl_act )
 {
     appl_action     __far *wptr;
 
-    wptr = MK_FP( CSAlias, FP_OFF( &RetHow ) );
+    wptr = _MK_FP( CSAlias, _FP_OFF( &RetHow ) );
 
     *wptr = appl_act;
 
@@ -350,7 +350,7 @@ void __loadds __cdecl __near FaultHandler( volatile fault_frame ff )
         if( appl_act == RUN_REDIRECT ) {
             ExecuteRedirect();
         } else if( appl_act == ACCESS_SEGMENT ) {
-            AVolatileInt = *(LPINT) MK_FP( SegmentToAccess+1, 0 );
+            AVolatileInt = *(LPINT)_MK_FP( SegmentToAccess+1, 0 );
         } else {
             break;
         }

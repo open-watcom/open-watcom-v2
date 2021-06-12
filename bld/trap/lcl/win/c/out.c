@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +52,7 @@ static int _line=0;
 #define MONO
 
 // extern char _B000H[];
-//  MK_FP( _B000H, 0 );
+//  _MK_FP( _B000H, 0 );
 
 #include "dpmi.h"
 static char *GetScreenPointer( void )
@@ -66,10 +67,10 @@ static char *GetScreenPointer( void )
             sel = rc;
         }
     }
-    return( MK_FP( sel, 0 ) );
+    return( _MK_FP( sel, 0 ) );
 #else
     extern char _B000h[];
-    return( MK_FP( _B000h, 0 ) );
+    return( _MK_FP( _B000h, 0 ) );
 #endif
 }
 

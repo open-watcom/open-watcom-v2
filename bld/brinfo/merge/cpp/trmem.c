@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -180,10 +180,10 @@ static char *formHex( char *ptr, uint_32 data, uint size )
 static char * formFarPtr( char *ptr, void far *data )
 /***************************************************/
 {
-    ptr = formHex( ptr, FP_SEG(data), 2 );
+    ptr = formHex( ptr, _FP_SEG(data), 2 );
     *ptr = ':';
     ptr++;
-    return formHex( ptr, FP_OFF(data), sizeof( void near * ) );
+    return formHex( ptr, _FP_OFF(data), sizeof( void near * ) );
 }
 #endif
 
@@ -195,9 +195,9 @@ static char * formCodePtr( _trmem_hdl hdl, char *ptr, _trmem_who who )
     if( hdl->use_code_seg_num ) {
         MEMSET( &entry, 0, sizeof( GLOBALENTRY ) );
         entry.dwSize = sizeof( GLOBALENTRY );
-        if( GlobalEntryHandle( &entry, (HGLOBAL) GlobalHandle( FP_SEG( who ) ) ) ) {
+        if( GlobalEntryHandle( &entry, (HGLOBAL) GlobalHandle( _FP_SEG( who ) ) ) ) {
             if( entry.wType == GT_CODE ) {
-                who = (_trmem_who) MK_FP( entry.wData, FP_OFF( who ) );
+                who = (_trmem_who)_MK_FP( entry.wData, _FP_OFF( who ) );
             }
         }
     }

@@ -184,7 +184,7 @@ bool VersionCheck( void )
             internalErrorMsg( MSG_SAMPLE_8 );
         }
         DosGetEnv( &env_sel, &cmd_off );
-        if( DosExecPgm( NULL, 0, EXEC_ASYNC, MK_FP( env_sel, cmd_off ), NULL, &res, UtilBuff ) != 0 ) {
+        if( DosExecPgm( NULL, 0, EXEC_ASYNC, _MK_FP( env_sel, cmd_off ), NULL, &res, UtilBuff ) != 0 ) {
             internalErrorMsg( MSG_SAMPLE_9 );
         }
         _exit( 0 );
@@ -335,8 +335,8 @@ void GetNextAddr( void )
         CGraphOff = 0;
         CGraphSeg = 0;
     } else {
-        addr.segment = FP_SEG( Comm.cgraph_top );
-        addr.offset = FP_OFF( Comm.cgraph_top );
+        addr.segment = _FP_SEG( Comm.cgraph_top );
+        addr.offset = _FP_OFF( Comm.cgraph_top );
         readMemory( &addr, sizeof( stack_entry ), (char *)&stack_entry );
         CGraphOff = stack_entry.ip;
         CGraphSeg = stack_entry.cs;
@@ -390,8 +390,8 @@ static USHORT LibLoadPTrace( TRACEBUF FAR_PTR *buff )
         if( buff->cmd != PT_RET_LIB_LOADED )
             return( rv );
         buff->cmd = PT_CMD_GET_LIB_NAME;
-        buff->segv = FP_SEG( name );
-        buff->offv = FP_OFF( name );
+        buff->segv = _FP_SEG( name );
+        buff->offv = _FP_OFF( name );
         DosPTrace( buff );
         CodeLoad( buff, buff->value, name, ( MainMod == buff->value ) ? SAMP_MAIN_LOAD : SAMP_CODE_LOAD );
         buff->value = value;

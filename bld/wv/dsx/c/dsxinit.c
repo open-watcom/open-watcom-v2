@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,12 +80,12 @@ unsigned_32 MyGetRMVector( unsigned vect )
     void __far  *p;
 
     p = DPMIGetRealModeInterruptVector( vect );
-    return( (FP_SEG( p ) << 16) + (FP_OFF( p ) & 0xffff) );
+    return( (_FP_SEG( p ) << 16) + (_FP_OFF( p ) & 0xffff) );
 }
 
 void MySetRMVector( unsigned vect, unsigned seg, unsigned off )
 {
-    DPMISetRealModeInterruptVector( vect, MK_FP( seg, off ) );
+    DPMISetRealModeInterruptVector( vect, _MK_FP( seg, off ) );
 }
 
 void GrabHandlers( void )
@@ -147,7 +147,7 @@ void GUImain( void )
     if( RMData.pm == 0 ) {
         StartupErr( LIT_ENG( Unable_to_alloc_DOS_mem ) );
     }
-    PMData = MK_FP( RMData.pm, 0 );
+    PMData = _MK_FP( RMData.pm, 0 );
     _fmemcpy( PMData, RMSegStart, RMSegEnd - RMSegStart );
     if( _osmajor == 2 ) {
         PMData->fail = 0;

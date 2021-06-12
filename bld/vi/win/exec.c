@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,8 +39,8 @@
 /* Local Windows CALLBACK function prototypes */
 WINEXPORT BOOL CALLBACK NotifyHandler( WORD id, DWORD data );
 
-#define MODULE_FROM_TASK( t )   (*((WORD __far *)MK_FP( (t), 0x1e )))
-#define INSTANCE_FROM_TASK( t ) (*((WORD __far *)MK_FP( (t), 0x1c )))
+#define MODULE_FROM_TASK( t )   (*((WORD __far *)_MK_FP( (t), 0x1e )))
+#define INSTANCE_FROM_TASK( t ) (*((WORD __far *)_MK_FP( (t), 0x1c )))
 
 static bool     doneExec;
 static HMODULE  moduleHandle;

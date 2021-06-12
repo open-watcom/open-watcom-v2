@@ -212,7 +212,7 @@ void GetCommArea( void )
         mybuff.Cmd = DBG_C_ReadMemBuf;
         mybuff.Addr = CommonAddr.offset;
         mybuff.Len = sizeof( Comm );
-        mybuff.Buffer = FP_OFF( &Comm );
+        mybuff.Buffer = _FP_OFF( &Comm );
         DosDebug( &mybuff );
     }
 }
@@ -230,7 +230,7 @@ void ResetCommArea( void )
         mybuff.Cmd = DBG_C_WriteMemBuf;
         mybuff.Addr = CommonAddr.offset + 11;
         mybuff.Len = 4;
-        mybuff.Buffer = FP_OFF( &Comm.pop_no );
+        mybuff.Buffer = _FP_OFF( &Comm.pop_no );
         DosDebug( &mybuff );
     }
 }
@@ -254,7 +254,7 @@ void GetNextAddr( void )
         mybuff.Cmd = DBG_C_ReadMemBuf;
         mybuff.Addr = Comm.cgraph_top;
         mybuff.Len = sizeof( stack_entry );
-        mybuff.Buffer = FP_OFF( &stack_entry );
+        mybuff.Buffer = _FP_OFF( &stack_entry );
         DosDebug( &mybuff );
         CGraphOff = stack_entry.ip;
         CGraphSeg = stack_entry.cs;
@@ -285,7 +285,7 @@ static void CodeLoad( uDB_t FAR_PTR *buff, ULONG mte, const char *name, samp_blo
         if( buff->Cmd != DBG_N_Success )
             break;
         /* Assume that all 32-bit apps are running on the CS selector value */
-        WriteAddrMap( i, FP_SEG( CodeLoad ), buff->Addr );
+        WriteAddrMap( i, _FP_SEG( CodeLoad ), buff->Addr );
     }
 }
 
@@ -567,14 +567,14 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
                     Buff.Cmd = DBG_C_ReadMemBuf;
                     Buff.Addr = Buff.EAX + len;
                     Buff.Len = 1;
-                    Buff.Buffer = FP_OFF( &UtilBuff[len] );
+                    Buff.Buffer = _FP_OFF( &UtilBuff[len] );
                     DosDebug( &Buff );
                     if( UtilBuff[len] == '\0' )
                         break;
                     ++len;
                 }
                 UtilBuff[len] = '\0';
-                where.segment = FP_SEG( CodeLoad );
+                where.segment = _FP_SEG( CodeLoad );
                 where.offset = Buff.EIP;
                 WriteMark( UtilBuff, where );
             } else {            /* this passes CommonAddr */

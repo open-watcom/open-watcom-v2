@@ -123,7 +123,7 @@ static char __far *GetScreenPointer( void )
 {
     extern      short           Meg1;
     InitMeg1();
-    return( MK_FP( Meg1, 0xB0000 ) );
+    return( _MK_FP( Meg1, 0xB0000 ) );
 }
 
 void MyClearScreen()

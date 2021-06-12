@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -108,7 +108,7 @@ static bool memBlockWrite( void (*rtn)(xhandle, void*, unsigned), __segment buff
         *size = MAX_IO_BUFFER >> 4;
     }
     bytes = *size << 4;
-    rtn( xHandle[currMem], MK_FP( buff, 0 ), bytes );
+    rtn( xHandle[currMem], _MK_FP( buff, 0 ), bytes );
     xSize[currMem] = bytes;
     currMem++;
     return( true );
@@ -116,7 +116,7 @@ static bool memBlockWrite( void (*rtn)(xhandle, void*, unsigned), __segment buff
 
 static bool memBlockRead( void (*rtn)(xhandle, void*, unsigned), __segment *buff )
 {
-    rtn( xHandle[currMem], MK_FP( *buff, 0 ), xSize[currMem] );
+    rtn( xHandle[currMem], _MK_FP( *buff, 0 ), xSize[currMem] );
     *buff += MAX_IO_BUFFER >> 4;
     if( xSize[currMem] < MAX_IO_BUFFER ) {
         return( false );

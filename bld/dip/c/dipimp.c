@@ -308,7 +308,7 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int
     off = strtoul( cmdline, NULL, 16 );
     if( seg == 0 || off == 0 )
         return( 1 );
-    link = MK_FP( seg, off );
+    link = _MK_FP( seg, off );
     TaskId = GetCurrentTask();
     ThisInst = this_inst;
     func = (FARPROC *)&ImpInterface.FIRST_IMP_FUNC;

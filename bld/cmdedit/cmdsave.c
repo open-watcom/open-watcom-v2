@@ -1,7 +1,8 @@
-/****************************************************************************
+f/****************************************************************************
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,8 +71,8 @@ static int RestSave( char __far *file )
     file[len] = '\0';
     if( file[0] == '\0' )
         return( 0 );
-    r.x.dx = FP_OFF( file );
-    r.x.ds = FP_SEG( file );
+    r.x.dx = _FP_OFF( file );
+    r.x.ds = _FP_SEG( file );
     r.h.ah = 0x3d;
     r.h.al = 0;
     intr( 0x21, &r );
@@ -118,8 +119,8 @@ void __far SaveSave( char __far *file )
     file[len] = '\0';
     if( file[0] == '\0' )
         return;
-    r.x.dx = FP_OFF( file );
-    r.x.ds = FP_SEG( file );
+    r.x.dx = _FP_OFF( file );
+    r.x.ds = _FP_SEG( file );
     r.h.ah = 0x3c;
     r.x.cx = 0;
     intr( 0x21, &r );

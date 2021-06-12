@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -109,7 +110,7 @@ char *InitSys( void )
     SEL         sel_local;
 
     DosGetInfoSeg( &sel_global, &sel_local );
-    GInfoSeg = MK_FP( sel_global, 0 );
+    GInfoSeg = _MK_FP( sel_global, 0 );
 #endif
     PortsFound = 0;
     for( i = 0; i < NUM_ELTS( PortTest ); ++i ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -114,8 +114,8 @@ int FAR PASCAL SetDebugInterrupts32( void )
     IDTInit( IDTSel );
     HookIDT( ReflectInt1Int3 );
 
-    InterruptStackSel = FP_SEG( IStack );
-    InterruptStackOff = (DWORD) (FP_OFF( IStack ) + MAX_ISTACK-16);
+    InterruptStackSel = _FP_SEG( IStack );
+    InterruptStackOff = (DWORD)( _FP_OFF( IStack ) + MAX_ISTACK - 16 );
 
 
     /*

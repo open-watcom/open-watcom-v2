@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -191,13 +191,13 @@ static char *formHex( char *ptr, memsize data, uint size )
 static char * formFarPtr( char *ptr, void __far *data )
 /*****************************************************/
 {
-    ptr = formHex( ptr, FP_SEG( data ), 2 );
+    ptr = formHex( ptr, _FP_SEG( data ), 2 );
     *ptr = ':';
     ptr++;
 #ifdef __WATCOMC__
-//#pragma disable_message( 579 )  // shut up pointer truncated warning for FP_OFF
+//#pragma disable_message( 579 )  // shut up pointer truncated warning for _FP_OFF
 #endif
-    return formHex( ptr, FP_OFF( data ), sizeof( void __near * ) );
+    return formHex( ptr, _FP_OFF( data ), sizeof( void __near * ) );
 #ifdef __WATCOMC__
 //#pragma enable_message( 579 )   // reenable pointer truncated warning
 #endif
@@ -207,18 +207,18 @@ static char * formFarPtr( char *ptr, void __far *data )
 static char * formCodePtr( _trmem_hdl hdl, char *ptr, _trmem_who who )
 {
 #ifdef __WINDOWS__
-//#pragma disable_message( 579 )  // shut up pointer truncated warning for FP_OFF
+//#pragma disable_message( 579 )  // shut up pointer truncated warning for _FP_OFF
     GLOBALENTRY     entry;
 
     if( hdl->use_code_seg_num ) {
         MEMSET( &entry, 0, sizeof( GLOBALENTRY ) );
         entry.dwSize = sizeof( GLOBALENTRY );
-        if( GlobalEntryHandle( &entry, (HGLOBAL)GlobalHandle( FP_SEG( who ) ) ) ) {
+        if( GlobalEntryHandle( &entry, (HGLOBAL)GlobalHandle( _FP_SEG( who ) ) ) ) {
             if( entry.wType == GT_CODE ) {
 #ifdef _M_I86
-                who = (_trmem_who)MK_FP( entry.wData, FP_OFF( who ) );
+                who = (_trmem_who)_MK_FP( entry.wData, _FP_OFF( who ) );
 #else
-                who = (_trmem_who)(unsigned long long)MK_FP( entry.wData, FP_OFF( who ) );
+                who = (_trmem_who)(unsigned long long)_MK_FP( entry.wData, _FP_OFF( who ) );
 #endif
             }
         }

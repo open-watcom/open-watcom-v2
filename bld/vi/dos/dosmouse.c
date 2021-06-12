@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,14 +85,14 @@ void InitMouse( void )
     }
 
 #if defined( _M_I86 )
-    vector = MK_FP( 0, VECTOR_MOUSE * 4 );
-    intrtn = MK_FP( vector[1], vector[0] );
+    vector = _MK_FP( 0, VECTOR_MOUSE * 4 );
+    intrtn = _MK_FP( vector[1], vector[0] );
 #elif defined( __4G__ )
     vector = (unsigned short _FAR *)(VECTOR_MOUSE * 4);
     intrtn = (unsigned char _FAR *)((((unsigned)vector[1]) << 4) + vector[0]);
 #else
-    vector = MK_FP( 0x34, VECTOR_MOUSE * 4 );
-    intrtn = MK_FP( 0x34, (((unsigned) vector[1]) << 4) + vector[0]);
+    vector = _MK_FP( 0x34, VECTOR_MOUSE * 4 );
+    intrtn = _MK_FP( 0x34, (((unsigned) vector[1]) << 4) + vector[0]);
 #endif
     if( ( intrtn == NULL ) || ( *intrtn == 0xcf ) ) {
         EditFlags.UseMouse = false;

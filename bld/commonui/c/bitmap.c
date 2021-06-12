@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -127,14 +127,14 @@ static void HugeMemCopy( void __far *dst, void __far *src, unsigned bytes )
     long                selector;
     long                bytes_before_segment_end;
 
-    offset = FP_OFF( dst );
-    selector = FP_SEG( dst );
+    offset = _FP_OFF( dst );
+    selector = _FP_SEG( dst );
     bytes_before_segment_end = 0x10000L - offset;
     if( bytes_before_segment_end < bytes ) {
         _fmemcpy( dst, src, bytes_before_segment_end );
         bytes -= bytes_before_segment_end;
         selector += HUGE_SHIFT;
-        dst = MK_FP( selector, 0 );
+        dst = _MK_FP( selector, 0 );
         src = (char *)src + bytes_before_segment_end;
     }
     _fmemcpy( dst, src, bytes );

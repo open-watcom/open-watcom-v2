@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -235,7 +235,7 @@ static  void    CalcMemSize( void )
                     }
                 }
             } else {
-                memory_available = *(char * __far *)MK_FP( __psp, 0x60 ) - sbrk( 0 );
+                memory_available = *(char * __far *)_MK_FP( __psp, 0x60 ) - sbrk( 0 );
             }
             if( memory_available < _1M ) {
                 memory_available = _1M;

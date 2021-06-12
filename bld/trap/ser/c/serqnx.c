@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -297,7 +298,7 @@ char *InitSys( void )
     struct _osinfo  osinfo;
 
     qnx_osinfo( 0, &osinfo );
-    SysTime = MK_FP( osinfo.timesel, 0 );
+    SysTime = _MK_FP( osinfo.timesel, 0 );
     NSecScale = (osinfo.version >= 410) ? 1000000 : (64UL*1024)*10;
     StartSecs = SysTime->seconds;
     CurrentBaud = -1;

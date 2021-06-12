@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -111,21 +111,21 @@ static void printCommand( unsigned seg )
         putchar( '\n' );
         return;
     }
-    p = MK_FP( seg, 0 );
+    p = _MK_FP( seg, 0 );
     if( p[0] != 0xcd || p[1] != 0x20 ) {
         putchar( '\n' );
         return;
     }
-    env_seg = MK_FP( seg, 0x2c );
+    env_seg = _MK_FP( seg, 0x2c );
     if( *env_seg == 0 ) {
         putchar( '\n' );
         return;
     }
-    if( *env_seg == *envp && FP_SEG( envp ) != seg ) {
+    if( *env_seg == *envp && _FP_SEG( envp ) != seg ) {
         putchar( '\n' );
         return;
     }
-    p = MK_FP( *env_seg, 0 );
+    p = _MK_FP( *env_seg, 0 );
     while( *p ) {
         while( *p ) {
             ++p;
@@ -150,12 +150,12 @@ static void do_ps( void )
     segment_t __far *pid;
     segment_t seg;
 
-    envp = MK_FP( _psp, 0x2c );
+    envp = _MK_FP( _psp, 0x2c );
     printf( "PID  PPID SIZE\n", *envp );
     pid = __first_pid();
     seg = *--pid;
     for(;;) {
-        p = MK_FP( seg, 0 );
+        p = _MK_FP( seg, 0 );
         if( p->owner == 0 ) {
             printf( "%4.4X FREE %4.4X  %lu bytes\n", seg+1,p->size,p->size*16L);
         } else {

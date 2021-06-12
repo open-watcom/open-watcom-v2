@@ -140,9 +140,9 @@ void RecordModHandle( HMODULE value )
 
     if( ModHandles == NULL ) {
         DosAllocSeg( sizeof( ULONG ), (PSEL)&sel, 0 );
-        ModHandles = MK_FP( sel, 0 );
+        ModHandles = _MK_FP( sel, 0 );
     } else {
-        DosReallocSeg( ( NumModHandles + 1 ) * sizeof( HMODULE ), FP_SEG( ModHandles ) );
+        DosReallocSeg( ( NumModHandles + 1 ) * sizeof( HMODULE ), _FP_SEG( ModHandles ) );
     }
     ModHandles[NumModHandles++] = value;
 }
@@ -1571,8 +1571,8 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
         StrCopy( TRP_OS2_no_info, err );
         return( ver );
     }
-    GblInfo = MK_FP( gi, 0 );
-    linfo = MK_FP( li, 0 );
+    GblInfo = _MK_FP( gi, 0 );
+    linfo = _MK_FP( li, 0 );
     TypeProcess = linfo->typeProcess;
     if( !GetDos32Debug( err ) ) {
         return( ver );

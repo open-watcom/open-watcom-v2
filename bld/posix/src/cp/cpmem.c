@@ -105,7 +105,7 @@ void __far *FarAlloc( size_t size )
         return( (void __far *)NULL );
     }
 
-    if( FP_SEG( tmp ) == FP_SEG( (void __far *)&tmp ) ) {
+    if( _FP_SEG( tmp ) == _FP_SEG( (void __far *)&tmp ) ) {
         _ffree( tmp );
         return( (void __far *)NULL );
     }

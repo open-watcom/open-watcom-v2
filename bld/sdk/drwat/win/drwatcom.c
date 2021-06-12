@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,7 +80,7 @@ int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int c
     /*
      * don't let two of us run!
      */
-    GlobalPageLock( (HGLOBAL)FP_SEG( IntHandler ) );
+    GlobalPageLock( (HGLOBAL)_FP_SEG( IntHandler ) );
     _STACKLOW = 0;
     SetInstance( currinst );
     if( previnst ) {
@@ -219,7 +219,7 @@ void Death( msg_id msgid, ... )
     JDialogFini();
     FiniSymbols();
     FreeRCString( AppName );
-    GlobalPageUnlock( (HGLOBAL)FP_SEG( IntHandler ) );
+    GlobalPageUnlock( (HGLOBAL)_FP_SEG( IntHandler ) );
     exit( 1 );
 
 } /* Death */

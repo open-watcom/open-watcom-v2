@@ -286,15 +286,15 @@ int DIPIMPENTRY( SymCmp )( imp_image_handle *iih, imp_sym_handle *ish1, imp_sym_
         unsigned        s1;
         unsigned        s2;
 
-        s1 = FP_SEG( g1 );
-        s2 = FP_SEG( g2 );
+        s1 = _FP_SEG( g1 );
+        s2 = _FP_SEG( g2 );
         if( s1 < s2 )
             return( -1 );
         if( s1 > s2 )
             return( 1 );
-        if( FP_OFF( g1 ) < FP_OFF( g2 ) )
+        if( _FP_OFF( g1 ) < _FP_OFF( g2 ) )
             return( -1 );
-        if( FP_OFF( g1 ) > FP_OFF( g2 ) )
+        if( _FP_OFF( g1 ) > _FP_OFF( g2 ) )
             return( 1 );
         return( 0 );
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -168,7 +168,7 @@ void    Alloc( unsigned_16 alloc_type, uint num, ... ) {
                     *(void __far **)item = MK_FP32( (void *)location );
                 }
     #else
-                *(void __far **)item = MK_FP( location >> 16, location & 0x0000ffff );
+                *(void __far **)item = _MK_FP( location >> 16, location & 0x0000ffff );
     #endif
             } else {
 #endif

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,7 +81,7 @@ static int checkenv_NO87( void )
     char __far      *p;
 
     DosGetEnv( (PUSHORT)&seg, (PUSHORT)&count );
-    p = (char __far *)MK_FP( seg, 0 );
+    p = (char __far *)_MK_FP( seg, 0 );
     while( *p ) {
         if( isNO87( p ) )
             return( 1 );

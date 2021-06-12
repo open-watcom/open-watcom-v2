@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,7 +77,7 @@ static int ProcData( FILE *fp, struct _lmf_data *data, unsigned nbytes )
 {
     void        *pos;
 
-    pos = MK_FP( SuppSegs[data->segment_index], data->offset );
+    pos = _MK_FP( SuppSegs[data->segment_index], data->offset );
     nbytes -= sizeof( struct _lmf_data );
     if( DIGLoader( Read )( fp, pos, nbytes ) )
         return( EIO );
@@ -91,7 +92,7 @@ static int ProcFixup( FILE *fp, int size )
     for( ; size > 0; size -= sizeof( a_fix ) ) {
         if( DIGLoader( Read )( fp, &a_fix, sizeof( a_fix ) ) )
             return( EIO );
-        fix = MK_FP( SuppSegs[a_fix.fixup_seg_index], a_fix.fixup_offset );
+        fix = _MK_FP( SuppSegs[a_fix.fixup_seg_index], a_fix.fixup_offset );
         *fix = SuppSegs[*fix >> 3];
     }
     return( EOK );
@@ -150,7 +151,7 @@ static supp_header *ReadSupp( FILE *fp )
                     }
                 }
             }
-            return( MK_FP( SuppSegs[0], 0 ) );
+            return( _MK_FP( SuppSegs[0], 0 ) );
         default:
             return( NULL );
         }

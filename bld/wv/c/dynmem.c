@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,7 +76,7 @@
 #define _4MB    (4UL * 1024UL * 1024UL)
 
 #ifdef __DOS__
-    #define MEM_NEAR_PTR(x)     (void *)FP_OFF( x )
+    #define MEM_NEAR_PTR(x)     (void *)_FP_OFF( x )
 #else
     #define MEM_NEAR_PTR(x)     x
 #endif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -88,10 +88,10 @@ mad_status MADSysLoad( const char *path, mad_client_routines *cli,
     strcat( newpath, ".dll" );
     p = parm;
     *p++ = ' ';
-    utoa( FP_SEG( &transfer_block ), p, 16 );
+    utoa( _FP_SEG( &transfer_block ), p, 16 );
     p = &parm[ strlen( parm ) ];
     *p++ = ' ';
-    utoa( FP_OFF( &transfer_block ), p, 16 );
+    utoa( _FP_OFF( &transfer_block ), p, 16 );
     transfer_block.load = NULL;
     transfer_block.unload = NULL;
     show_block.mb2 = 2;

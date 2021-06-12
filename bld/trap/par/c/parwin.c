@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +39,7 @@ static  unsigned long __far *BiosTime;
 
 char *InitSys()
 {
-    BiosTime = MK_FP( 0x40, 0x6c );
+    BiosTime = _MK_FP( 0x40, 0x6c );
     return( 0 );
 }
 
@@ -56,7 +57,7 @@ int NumPrinters()
 {
     unsigned short __far *pp;
 
-    pp = MK_FP(0x40,8);
+    pp = _MK_FP(0x40,8);
     if( pp[0] == 0 ) return( 0 );
     if( pp[1] == 0 ) return( 1 );
     if( pp[2] == 0 ) return( 2 );
@@ -76,7 +77,7 @@ unsigned PrnAddress( int printer )
     }
     #endif
 
-    pp = MK_FP(0x40,8);
+    pp = _MK_FP(0x40,8);
     return( pp[printer] );
 
 }

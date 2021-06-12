@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -132,7 +133,7 @@ void BeginSoftModeThread( thread_data *arglist )
 
     DosSemRequest( &BeginThreadSem, -1L );
     DosAllocSeg( STACK_SIZE + sizeof( thread_data ), (PSEL)&sel, 0 );
-    stack = MK_FP( sel, 0 );
+    stack = _MK_FP( sel, 0 );
     BeginThreadArg = (thread_data*)stack;
     stack += sizeof( thread_data );
     *BeginThreadArg = *arglist;

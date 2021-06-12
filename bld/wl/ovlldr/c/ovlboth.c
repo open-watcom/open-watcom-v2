@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,7 +69,7 @@ void __near __OvlCodeLoad__( ovltab_entry_ptr ovl, tiny_handle_t fp )
         if( code_size < 0x0fff ) {
             block_size = code_size;
         }
-        status = __OvlRead__( fp, MK_FP( load_seg, 0 ), block_size << 4 );
+        status = __OvlRead__( fp, _MK_FP( load_seg, 0 ), block_size << 4 );
         if( TINY_ERROR( status ) )
             __OvlExit__( OVL_IO_ERR );
         load_seg += block_size;
@@ -101,7 +101,7 @@ int __near __OvlRelocLoad__( ovltab_entry_ptr ovl, tiny_handle_t fp )
             __OvlExit__( OVL_IO_ERR );
         num_relocs -= buffered_relocs;
         for( ; buffered_relocs != 0; --buffered_relocs ) {
-            fixup = MK_FP( ovl->code_handle + relocs->seg, relocs->off );
+            fixup = _MK_FP( ovl->code_handle + relocs->seg, relocs->off );
             if( (unsigned)(*fixup - ovl->start_para) < ovl->num_paras ) {
                 self_ref = 1;
                 *fixup += (ovl->code_handle - ovl->start_para);
@@ -142,7 +142,7 @@ static char __far *getpathenv( void )
 {
     char __far  *ptr;
 
-    for( ptr = MK_FP( *(unsigned __far *)MK_FP( __OVLPSP__, 0x2c ), 0 ); *ptr; ++ptr ) {
+    for( ptr = _MK_FP( *(unsigned __far *)_MK_FP( __OVLPSP__, 0x2c ), 0 ); *ptr; ++ptr ) {
         if(    ptr[0] == 'P'
             && ptr[1] == 'A'
             && ptr[2] == 'T'
@@ -200,7 +200,7 @@ tiny_ret_t __near __OpenOvl__( unsigned offset )
         }
         if( __OVLFLAGS__ & OVL_DOS3 ) {
             // go through environment to find path of .EXE file.
-            for( cmd = MK_FP( *(unsigned __far *)MK_FP( __OVLPSP__, 0x2c ), 0 ); cmd[0] | cmd[1]; )
+            for( cmd = _MK_FP( *(unsigned __far *)_MK_FP( __OVLPSP__, 0x2c ), 0 ); cmd[0] | cmd[1]; )
                 ++cmd;
             cmd += 4;
             // now replace executable name with fname.

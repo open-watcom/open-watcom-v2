@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -284,7 +284,7 @@ void ScreenPage( int page )
     } else {
         Scrn = (char_info _FAR *)0xb0000000;
     }
-    a = *(unsigned short _FAR *)MK_FP( 0x40, 0x4e ) / sizeof( char_info );
+    a = *(unsigned short _FAR *)_MK_FP( 0x40, 0x4e ) / sizeof( char_info );
     Scrn += a;
     PageCnt += page;
     if( PageCnt > 0 ) {
@@ -327,7 +327,7 @@ void ScreenPage( int page )
     } else {
         c = 0xb0000;
     }
-    a = *(unsigned short _FAR *)MK_FP( PHAR_SCRN_SEL, 0x44e );
+    a = *(unsigned short _FAR *)_MK_FP( PHAR_SCRN_SEL, 0x44e );
     c += a;
     PageCnt += page;
     if( PageCnt > 0 ) {
@@ -339,7 +339,7 @@ void ScreenPage( int page )
     } else {
         EditFlags.NoSetCursor = false;
     } /* if */
-    Scrn = MK_FP( PHAR_SCRN_SEL, c );
+    Scrn = _MK_FP( PHAR_SCRN_SEL, c );
 #endif
 
 } /* ScreenPage */
@@ -349,7 +349,7 @@ void ScreenPage( int page )
 #elif defined( __4G__ )
     #define KEY_PTR (char _FAR *)0x00000417;
 #else
-    #define KEY_PTR MK_FP( PHAR_SCRN_SEL, 0x417 );
+    #define KEY_PTR _MK_FP( PHAR_SCRN_SEL, 0x417 );
 #endif
 
 /*

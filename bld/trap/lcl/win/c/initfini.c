@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -96,7 +96,7 @@ char *InitDebugging( void )
         return( TRP_WIN_Failed_to_get_notify_hook );
     }
     Out(( OUT_INIT,"ds=%04x, faultInstance=%Fp, notifyInstance=%Fp,Instance=%04x",
-        FP_SEG( &fault_fn ), fault_fn, notify_fn, Instance ));
+        _FP_SEG( &fault_fn ), fault_fn, notify_fn, Instance ));
     if( WDebug386 ) {
         if( Start386Debug() ) {
             DebuggerIsExecuting( 1 );

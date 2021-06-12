@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -510,15 +510,15 @@ static int GblCmp( gbl_info *g1, gbl_info *g2 )
     unsigned    s1;
     unsigned    s2;
 
-    s1 = FP_SEG( g1 );
-    s2 = FP_SEG( g2 );
+    s1 = _FP_SEG( g1 );
+    s2 = _FP_SEG( g2 );
     if( s1 < s2 )
         return( -1 );
     if( s1 > s2 )
         return( 1 );
-    if( FP_OFF( g1 ) < FP_OFF( g2 ) )
+    if( _FP_OFF( g1 ) < _FP_OFF( g2 ) )
         return( -1 );
-    if( FP_OFF( g1 ) > FP_OFF( g2 ) )
+    if( _FP_OFF( g1 ) > _FP_OFF( g2 ) )
         return( 1 );
     return( 0 );
 #else

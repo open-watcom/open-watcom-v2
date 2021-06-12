@@ -99,8 +99,8 @@ int main( void )
     }
 
     msg.s.type    = _PROC_EMUL87;
-    msg.s.segment = FP_SEG( __int7 );
-    msg.s.offset  = FP_OFF( __int7 );
+    msg.s.segment = _FP_SEG( __int7 );
+    msg.s.offset  = _FP_OFF( __int7 );
     msg.s.nbytes  = 128;    /* size of emulator save area */
     Send( PROC_PID, &msg.s, &msg.r, sizeof( msg.s ), sizeof( msg.r ) );
     if( msg.r.status != EOK ) {

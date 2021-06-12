@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -119,8 +119,8 @@ void ResetCommArea( void )
     if( CommonAddr.offset != 0 ) {      /* reset common variables */
         Comm.pop_no = 0;
         Comm.push_no = 0;
-        ReadMem( FP_SEG( &Comm.pop_no ), FP_OFF( &Comm.pop_no ),
-                        MK_FP( CommonAddr.segment, CommonAddr.offset + 9 ),
+        ReadMem( _FP_SEG( &Comm.pop_no ), _FP_OFF( &Comm.pop_no ),
+                        _MK_FP( CommonAddr.segment, CommonAddr.offset + 9 ),
                         4 );
     }
 }
@@ -137,7 +137,7 @@ void GetNextAddr( void )
         CGraphOff = 0;
         CGraphSeg = 0;
     } else {
-        ReadMem( FP_SEG( Comm.cgraph_top ), FP_OFF( Comm.cgraph_top ),
+        ReadMem( _FP_SEG( Comm.cgraph_top ), _FP_OFF( Comm.cgraph_top ),
                         &stack_entry, sizeof( stack_entry ) );
         CGraphOff = stack_entry.ip;
         CGraphSeg = stack_entry.cs;
@@ -191,7 +191,7 @@ void StopProg( void )
 void CloseShop( void )
 {
     if( SampSave != NULL ) {
-        GlobalFree( (HGLOBAL)FP_SEG( SampSave ) );
+        GlobalFree( (HGLOBAL)_FP_SEG( SampSave ) );
     }
     if( SharedMemory != NULL ) {        /* JBS 93/03/17 */
         SharedMemory->ShopClosed = TRUE;

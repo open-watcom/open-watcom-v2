@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -184,7 +184,7 @@ static int WindowsInit( HANDLE inst, int showcmd )
         KillTimer( MainWindowHandle, TIMER_ID);
         return( FALSE );
     }
-    SampSave = MK_FP( handle, 0 );
+    SampSave = _MK_FP( handle, 0 );
 
     wc.style = 0;
     wc.lpfnWndProc = MainDriver;
@@ -342,7 +342,7 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE previnst, LPSTR cmd, int show)
             CloseShop();
             return( FALSE );
         }
-        SharedMemory = MK_FP( h,0 );
+        SharedMemory = _MK_FP( h,0 );
 
         WaitForFirst = TRUE;    /* tell our counterpart to wait for
                                us before starting the timer */

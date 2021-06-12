@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -301,7 +301,7 @@ static size_t xmsRead( xhandle addr, void __far *buff, size_t size )
     offset = h.internal.offset << 2;
 
     if( h.internal.handle == XMS_HMA_HANDLE ) {
-        dest = MK_FP( XMS_HMA_SEGMENT, offset );
+        dest = _MK_FP( XMS_HMA_SEGMENT, offset );
         if( _XMSEnableA20( &xmsControl ) == 0 ) {
             return( XMS_IO_ERROR );
         }
@@ -341,7 +341,7 @@ static size_t xmsWrite( xhandle addr, void __far *buff, size_t size )
     offset = h.internal.offset << 2;
     if( h.internal.handle == XMS_HMA_HANDLE ) {
 
-        dest = MK_FP( XMS_HMA_SEGMENT, offset );
+        dest = _MK_FP( XMS_HMA_SEGMENT, offset );
         if( _XMSEnableA20( &xmsControl ) == 0 ) {
             return( XMS_IO_ERROR );
         }

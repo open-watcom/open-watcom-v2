@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,8 +65,8 @@ unsigned RemoteGet( void __far *data, unsigned len )
 
     len=len;
     status = mal_read( GetHandle, &buffer, &buflen );
-    movedata( FP_SEG( buffer ), FP_OFF( buffer ),
-              FP_SEG( data ), FP_OFF( data ),
+    movedata( _FP_SEG( buffer ), _FP_OFF( buffer ),
+              _FP_SEG( data ), _FP_OFF( data ),
               buflen );
     return( buflen );
 }

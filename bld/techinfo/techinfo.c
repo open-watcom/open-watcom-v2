@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -492,7 +492,7 @@ static void get_config_files( void )
     PGINFOSEG           gbl;
 
     DosGetInfoSeg( &gbl_seg, &lcl_seg );
-    gbl = MK_FP( gbl_seg, 0 );
+    gbl = _MK_FP( gbl_seg, 0 );
     techoutput( "OS/2 Version %d.%d%c\n", gbl->uchMajorVersion,
                 gbl->uchMinorVersion, gbl->chRevisionLetter);
     drive_name = gbl->bootdrive + 'A' - 1;

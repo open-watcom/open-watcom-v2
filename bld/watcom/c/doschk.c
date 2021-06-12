@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -132,7 +132,7 @@ static bool XchkWrite( where_parm where, __segment buff, unsigned *size )
             *size = FILE_BLOCK_SIZE >> 4;
         }
         bytes = *size << 4;
-        rc = TinyFarWrite( fileHandle, MK_FP( buff, 0 ), bytes );
+        rc = TinyFarWrite( fileHandle, _MK_FP( buff, 0 ), bytes );
         return( TINY_OK( rc ) && TINY_INFO( rc ) == bytes );
 #if defined( USE_XMEM )
     } else {
@@ -152,7 +152,7 @@ static bool XchkRead( where_parm where, __segment *buff )
 #if defined( USE_XMEM )
     if( where == ON_DISK ) {
 #endif
-        rc = TinyFarRead( fileHandle, MK_FP( *buff, 0 ), FILE_BLOCK_SIZE );
+        rc = TinyFarRead( fileHandle, _MK_FP( *buff, 0 ), FILE_BLOCK_SIZE );
         if( TINY_ERROR( rc ) || TINY_INFO( rc ) != FILE_BLOCK_SIZE ) {
             return( false );
         }

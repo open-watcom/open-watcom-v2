@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -109,16 +109,16 @@ static void do_dev( void )
 
     blocks = 0;
     first_pid = __first_pid();
-    device_chain = MK_FP( FP_SEG( first_pid ), FP_OFF( first_pid ) + 0x22 );
-    while( FP_OFF( device_chain ) != 0xffff ) {
+    device_chain = _MK_FP( _FP_SEG( first_pid ), _FP_OFF( first_pid ) + 0x22 );
+    while( _FP_OFF( device_chain ) != 0xffff ) {
         if(( device_chain->attr & DA_CHAR_DEVICE ) == 0 ) {
             blocks += device_chain->name[ 0 ];
         }
         device_chain = device_chain->next;
     }
-    device_chain = MK_FP( FP_SEG( first_pid ), FP_OFF( first_pid ) + 0x22 );
-    while( FP_OFF( device_chain ) != 0xffff ) {
-        printf( "%04x:%04x ", FP_SEG( device_chain ), FP_OFF( device_chain ) );
+    device_chain = _MK_FP( _FP_SEG( first_pid ), _FP_OFF( first_pid ) + 0x22 );
+    while( _FP_OFF( device_chain ) != 0xffff ) {
+        printf( "%04x:%04x ", _FP_SEG( device_chain ), _FP_OFF( device_chain ) );
         if( device_chain->attr & DA_CHAR_DEVICE ) {
             printf( "CHAR  " );
             for( i = 0; i < 8; ++i ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -429,24 +429,24 @@ bool Init32BitTask( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline, i
     /*
      * ptrs to some data areas
      */
-    dataptr->CodeSelectorBase.seg =  (WORD) FP_SEG( &CodeSelectorBase );
-    dataptr->CodeSelectorBase.off = (DWORD) FP_OFF( &CodeSelectorBase );
-    dataptr->DataSelectorBase.seg =  (WORD) FP_SEG( &DataSelectorBase );
-    dataptr->DataSelectorBase.off = (DWORD) FP_OFF( &DataSelectorBase );
-    dataptr->_32BitCallBackAddr.seg =  (WORD) FP_SEG( &_32BitCallBackAddr );
-    dataptr->_32BitCallBackAddr.off = (DWORD) FP_OFF( &_32BitCallBackAddr );
-    dataptr->_DLLEntryAddr.seg =  (WORD) FP_SEG( &_DLLEntryAddr );
-    dataptr->_DLLEntryAddr.off = (DWORD) FP_OFF( &_DLLEntryAddr );
-    dataptr->_WEPAddr.seg =  (WORD) FP_SEG( &_WEPAddr );
-    dataptr->_WEPAddr.off = (DWORD) FP_OFF( &_WEPAddr );
+    dataptr->CodeSelectorBase.seg =  (WORD)_FP_SEG( &CodeSelectorBase );
+    dataptr->CodeSelectorBase.off = (DWORD)_FP_OFF( &CodeSelectorBase );
+    dataptr->DataSelectorBase.seg =  (WORD)_FP_SEG( &DataSelectorBase );
+    dataptr->DataSelectorBase.off = (DWORD)_FP_OFF( &DataSelectorBase );
+    dataptr->_32BitCallBackAddr.seg =  (WORD)_FP_SEG( &_32BitCallBackAddr );
+    dataptr->_32BitCallBackAddr.off = (DWORD)_FP_OFF( &_32BitCallBackAddr );
+    dataptr->_DLLEntryAddr.seg =  (WORD)_FP_SEG( &_DLLEntryAddr );
+    dataptr->_DLLEntryAddr.off = (DWORD)_FP_OFF( &_DLLEntryAddr );
+    dataptr->_WEPAddr.seg =  (WORD)_FP_SEG( &_WEPAddr );
+    dataptr->_WEPAddr.off = (DWORD)_FP_OFF( &_WEPAddr );
     dataptr->_16BitCallBackAddr = &__CallBack;
 
     /*
      * insert glue routines into data area of caller
      */
     for( j = 0; j < MaxGlueRoutines; j++ ) {
-        dataptr->gluertns[j].seg =  (WORD) FP_SEG( Glue[j].rtn );
-        dataptr->gluertns[j].off = (DWORD) FP_OFF( Glue[j].rtn );
+        dataptr->gluertns[j].seg =  (WORD)_FP_SEG( Glue[j].rtn );
+        dataptr->gluertns[j].off = (DWORD)_FP_OFF( Glue[j].rtn );
     }
     _DPMIFreeAlias( sel );
 

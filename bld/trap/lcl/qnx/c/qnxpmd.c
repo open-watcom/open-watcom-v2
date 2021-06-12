@@ -229,8 +229,8 @@ static addr48_ptr GetSLibTable( bool is_32 )
         #if 0 //NYI: Don't know how to find 16-bit Slib
         extern int (__far * (__far *__f)) ();
 
-        slib.offset  = FP_OFF( __f );
-        slib.segment = FP_SEG( __f );
+        slib.offset  = _FP_OFF( __f );
+        slib.segment = _FP_SEG( __f );
         /*
             There are 3 different SLib segments, one for each priv level.
             Make the assumption that they're all contiguous and figure out
@@ -238,7 +238,7 @@ static addr48_ptr GetSLibTable( bool is_32 )
             priv level and the debuggee's. Ugh. Talk to QSSL about this.
         */
         slib.segment += ((PmdInfo.segs[0].real_seg & PRIV_MASK)
-                        - (FP_SEG( &__f ) & PRIV_MASK)) * 8;
+                        - (_FP_SEG( &__f ) & PRIV_MASK)) * 8;
         #endif
     }
     return( slib );
@@ -330,7 +330,7 @@ static unsigned ReadGDT( read_mem_req *acc, unsigned len, void *ret )
         len = info.nbytes - acc->mem_addr.offset;
     }
     if( len == 0 ) return( 0 );
-    _fmemcpy( ret, MK_FP( segment, acc->mem_addr.offset ), len );
+    _fmemcpy( ret, _MK_FP( segment, acc->mem_addr.offset ), len );
     return( len );
 }
 

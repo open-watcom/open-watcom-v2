@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -98,7 +99,7 @@ void __far *RMLinToPM( unsigned long linear_addr, int pool )
     if( pool ) {
         for( i = 0; i < MAX_MAPPINGS; ++i ) {
             if( Mappings_pool[ i ].real == real ) {
-                return( MK_FP( Mappings_pool[ i ].prot, offset ) );
+                return( _MK_FP( Mappings_pool[ i ].prot, offset ) );
             }
         }
     }
@@ -107,14 +108,14 @@ void __far *RMLinToPM( unsigned long linear_addr, int pool )
         _DBG_Write( "Can't get PM pointer for " );
         _DBG_Write32( linear_addr );
         _DBG_NewLine();
-        pm_sel = FP_SEG( &dummy );
+        pm_sel = _FP_SEG( &dummy );
     }
     if( pool ) {
         for( i = 0; i < MAX_MAPPINGS; ++i ) {
             if( Mappings_pool[ i ].real == NONE ) {
                 Mappings_pool[ i ].real = real;
                 Mappings_pool[ i ].prot = pm_sel;
-                return( MK_FP( pm_sel, offset ) );
+                return( _MK_FP( pm_sel, offset ) );
             }
         }
         rsi_sel_free( Mappings_pool[ Loser ].prot );
@@ -125,14 +126,14 @@ void __far *RMLinToPM( unsigned long linear_addr, int pool )
             Loser = 0;
         }
     }
-    return( MK_FP( pm_sel, offset ) );
+    return( _MK_FP( pm_sel, offset ) );
 }
 
 void CallRealMode( unsigned long dos_addr )
 {
     D16REGS     regs;
 
-    regs.ds = regs.es = FP_SEG( dos_addr ); /* the trap file runs tiny -zu */
+    regs.ds = regs.es = _FP_SEG( dos_addr ); /* the trap file runs tiny -zu */
     _DBG_Writeln( "Calling RealMode" );
     rsi_rm_far_call( (void __far *)( dos_addr ), &regs, &regs );
     _DBG_Writeln( "Back from RealMode" );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -202,18 +202,18 @@ static bool CheckVecAddr( ovl_address __far *data )
     ovltab_entry_ptr    ovl;
 #endif
 
-    if( data->mach.segment != FP_SEG( __OVLSTARTVEC__ ) )
+    if( data->mach.segment != _FP_SEG( __OVLSTARTVEC__ ) )
         return( false );
     vect = (vector_ptr)data->mach.offset;
-    if( FP_OFF( vect ) < FP_OFF( __OVLSTARTVEC__ ) )
+    if( _FP_OFF( vect ) < _FP_OFF( __OVLSTARTVEC__ ) )
         return( false );
     if( !OVLVEC_OK( vect ) )
         return( false );
-    if( (( FP_OFF( vect ) - FP_OFF( __OVLSTARTVEC__ ) ) % sizeof( vector )) != 0 )
+    if( (( _FP_OFF( vect ) - _FP_OFF( __OVLSTARTVEC__ ) ) % sizeof( vector )) != 0 )
         return( false );
 #ifdef OVL_SMALL
-    data->mach.segment = FP_SEG( vect );
-    data->mach.offset = vect->target + FP_OFF( &vect->target ) + sizeof( vect->target );
+    data->mach.segment = _FP_SEG( vect );
+    data->mach.offset = vect->target + _FP_OFF( &vect->target ) + sizeof( vect->target );
     data->sect_id = vect->sec_num;
 #elif defined( OVL_WHOOSH )
     if( vect->u.i.cs_over == OVV_CS_OVERRIDE ) {
@@ -229,7 +229,7 @@ static bool CheckVecAddr( ovl_address __far *data )
         } else if( ovl->flags_anc & FLAG_RET_TRAP ) {
             ret_trap_ptr        rt;
 
-            rt = MK_FP( ovl->code_handle, 0 );
+            rt = _MK_FP( ovl->code_handle, 0 );
             data->mach.segment = rt->old_code_handle;
         } else if( ovl->code_handle != 0 ) {
             data->mach.segment = ovl->code_handle;
@@ -278,7 +278,7 @@ static bool GetChangedSections( ovl_address __far *data )
             if( ovl->flags_anc & FLAG_RET_TRAP ) {
                 ret_trap_ptr    rt;
 
-                rt = MK_FP( ovl->code_handle, 0 );
+                rt = _MK_FP( ovl->code_handle, 0 );
                 data->mach.segment = rt->old_code_handle;
                 return( true );
             }

@@ -47,7 +47,7 @@ DWORD ReadMem( WORD sel, DWORD off, LPVOID buff, DWORD size )
     DWORD       rc = 0;
 
     if( WDebug386 ) {
-        rc = CopyMemory386( FP_SEG(buff), FP_OFF(buff), sel, off,  size );
+        rc = CopyMemory386( _FP_SEG( buff ), _FP_OFF( buff ), sel, off,  size );
     } else if( DebugeeTask != NULL ) {
         rc = MemoryRead( sel, off, buff, size );
     }
@@ -63,7 +63,7 @@ DWORD WriteMem( WORD sel, DWORD off, LPVOID buff, DWORD size )
     DWORD       rc = 0;
 
     if( WDebug386 ) {
-        rc = CopyMemory386( sel, off, FP_SEG(buff), FP_OFF(buff), size );
+        rc = CopyMemory386( sel, off, _FP_SEG( buff ), _FP_OFF( buff ), size );
     } else if( DebugeeTask != NULL ) {
         rc = MemoryWrite( sel, off, buff, size );
     }
