@@ -317,7 +317,7 @@ extern SCOPE    SetCurrScope(SCOPE newScope)
     g_CurrScope = newScope;
 
 #ifndef NDEBUG
-    if( PragDbgToggles.dump_scopes )
+    if( TOGGLEDBG( dump_scopes ) )
     {
         printf("Set new scope to 0x%p\n", newScope);
         if(newScope)
@@ -447,7 +447,7 @@ static void dumpThunk( THUNK_ACTION *thunk )
 {
     SYMBOL sym;
 
-    if( !PragDbgToggles.dump_vftables ) {
+    if( !TOGGLEDBG( dump_vftables ) ) {
         return;
     }
     printf( "thunk:" );
@@ -501,7 +501,7 @@ static void dumpVFN( SYMBOL sym, vftable_walk *data, CLASS_VFTABLE *table, vinde
     BASE_STACK *top;
     BASE_CLASS *base;
 
-    if( !PragDbgToggles.dump_vftables ) {
+    if( !TOGGLEDBG( dump_vftables ) ) {
         return;
     }
     printSymbolName( sym );
@@ -522,7 +522,7 @@ static void dumpVFN( SYMBOL sym, vftable_walk *data, CLASS_VFTABLE *table, vinde
 
 static void dumpDerivation( MEMBER_PTR_CAST *data )
 {
-    if( !PragDbgToggles.dump_member_ptr ) {
+    if( !TOGGLEDBG( dump_member_ptr ) ) {
         return;
     }
     if( data->safe ) {
@@ -535,7 +535,7 @@ static void dumpDerivation( MEMBER_PTR_CAST *data )
 
 static void dumpData( MEMBER_PTR_CAST *data )
 {
-    if( !PragDbgToggles.dump_member_ptr ) {
+    if( !TOGGLEDBG( dump_member_ptr ) ) {
         return;
     }
     printf(
@@ -932,7 +932,7 @@ static void addUsingDirective( SCOPE gets_using, SCOPE using_scope, SCOPE trigge
     USING_NS *curr;
 
 #ifndef NDEBUG
-    if( PragDbgToggles.dump_using_dir ) {
+    if( TOGGLEDBG( dump_using_dir ) ) {
         printf( "using directive: in " );
         printScopeName( gets_using, "using " );
         printScopeName( using_scope, "trigger " );
@@ -3616,7 +3616,7 @@ static void dumpSearch( lookup_walk *data )
     PATH_CAP *cap;
     BASE_PATH *path;
 
-    if( !PragDbgToggles.dump_scopes ) {
+    if( !TOGGLEDBG( dump_scopes ) ) {
         return;
     }
     for( cap = data->paths; cap != NULL; cap = cap->next ) {
@@ -5335,7 +5335,7 @@ static void checkAmbiguousOverride( THUNK_ACTION *thunk, vftable_walk *data )
     override_scope = SymScope( override_sym );
     base_sym = thunk->sym;
 #ifndef NDEBUG
-    if( PragDbgToggles.dump_vftables ) {
+    if( TOGGLEDBG( dump_vftables ) ) {
         printf( "Searching for: base(" );
         printSymbolName( base_sym );
         printf( ") override(" );
@@ -5344,13 +5344,13 @@ static void checkAmbiguousOverride( THUNK_ACTION *thunk, vftable_walk *data )
     }
 #endif
     for( top = data->top; top != NULL; top = top->parent ) {
-        DbgStmt( if( PragDbgToggles.dump_vftables ) \
+        DbgStmt( if( TOGGLEDBG( dump_vftables ) ) \
                      printScopeName( top->scope, NULL ); );
         if( top->scope == override_scope ) {
             break;
         }
     }
-    DbgStmt( if( PragDbgToggles.dump_vftables ) \
+    DbgStmt( if( TOGGLEDBG( dump_vftables ) ) \
                  putchar( '\n' ); );
     if( top != NULL ) {
         /* quick check to see if override is in this path succeeded! */
@@ -5360,7 +5360,7 @@ static void checkAmbiguousOverride( THUNK_ACTION *thunk, vftable_walk *data )
     virtual_base = NULL;
     first_top = data->top;
     for( top = first_top; top != NULL; top = top->parent ) {
-        DbgStmt( if( PragDbgToggles.dump_vftables ) \
+        DbgStmt( if( TOGGLEDBG( dump_vftables ) ) \
                      printScopeName( top->scope, "\n" ); );
         if( virtual_base == NULL ) {
             base = top->base;
@@ -5378,7 +5378,7 @@ static void checkAmbiguousOverride( THUNK_ACTION *thunk, vftable_walk *data )
                 if( test_sym != NULL ) {
                     test_override_sym = test_sym;
 #ifndef NDEBUG
-                    if( PragDbgToggles.dump_vftables ) {
+                    if( TOGGLEDBG( dump_vftables ) ) {
                         printf( "found override(" );
                         printSymbolName( test_override_sym );
                         printf( ")\n" );
@@ -5514,7 +5514,7 @@ static walk_status collectVFTable( BASE_STACK *top, void *parm )
 
     data->top = top;
     scope = top->scope;
-    DbgStmt( if( PragDbgToggles.dump_vftables ) \
+    DbgStmt( if( TOGGLEDBG( dump_vftables ) ) \
                  printScopeName( scope, "collectVFTable()\n" ); );
     class_type = ScopeClass( scope );
     info = class_type->u.c.info;
@@ -5597,7 +5597,7 @@ CLASS_VFTABLE *ScopeCollectVFTable( SCOPE scope, scv_control control )
         data.OK_to_diagnose = true;
     }
     VstkOpen( &data.disambig, sizeof( SCOPE ), 8 );
-    DbgStmt( if( PragDbgToggles.dump_vftables ) \
+    DbgStmt( if( TOGGLEDBG( dump_vftables ) ) \
                  printScopeName( scope, "collecting virtual function table\n" ); );
     walkDirectBases( scope, collectVFTable, &data );
     VstkClose( &data.disambig );

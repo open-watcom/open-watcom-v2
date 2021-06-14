@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -424,7 +424,7 @@ carve_t CarveRestart( carve_t cv )
     free_t *free_list;
 
 #ifdef DUMP_MEMORY
-    if( !PragDbgToggle.dump_memory ) {
+    if( !TOGGLEDBG( dump_memory ) ) {
         carve_t old_cv = cv;
         restoreFromZapped( old_cv );
         old_cv->free_list = (void *)-1;

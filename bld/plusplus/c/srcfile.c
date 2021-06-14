@@ -48,7 +48,7 @@
 #include "iosupp.h"
 #include "pathlist.h"
 #ifndef NDEBUG
-        #include "pragdefn.h"
+    #include "pragdefn.h"
     #include "togglesd.h"
 #endif
 #include "brinfo.h"
@@ -266,7 +266,7 @@ static void setGuardState(      // SET GUARD STATE FOR CURRENT FILE
     actual = srcFile;
     _FIND_ACTUAL( actual );
 #ifndef NDEBUG
-    if( PragDbgToggles.dump_tokens ) {
+    if( TOGGLEDBG( dump_tokens ) ) {
         if( actual->guard_state != new_state ) {
             printf( "New Guard State[%s]: %s\n"
                   , actual->name

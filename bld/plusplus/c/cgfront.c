@@ -81,12 +81,12 @@ static struct {                  // FLAGS FOR CGFRONT
 static void cgfront_debug(      // DEBUGGING ROUTINE
     char *str )                 // - prefix
 {
-    if( PragDbgToggles.dump_emit_ic ) {
+    if( TOGGLEDBG( dump_emit_ic ) ) {
         printf( "%s\n", str );
     }
 }
 
-#define dump_label( inst ) if( PragDbgToggles.dump_labels ) inst
+#define dump_label( inst ) if( TOGGLEDBG( dump_labels ) ) inst
 #else
 #define cgfront_debug( str )
 #define dump_label( inst )
@@ -312,7 +312,7 @@ void CgFrontDbgLine(            // SET LINE FOR DEBUGGING
     gen = getGenData();
     emitSourcePosn( gen, posn );
 #ifndef NDEBUG
-    if( PragDbgToggles.dump_tokens || PragDbgToggles.dump_emit_ic ) {
+    if( TOGGLEDBG( dump_tokens ) || TOGGLEDBG( dump_emit_ic ) ) {
         printf( "CgFrontDbgLine: %d\n", posn->line );
     }
 #endif

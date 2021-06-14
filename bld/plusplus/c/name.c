@@ -549,7 +549,7 @@ static void fini(               // INITIALIZATION
     /* unused parameters */ (void)defn;
 
 #ifndef NDEBUG
-    if( PragDbgToggles.dump_names ) {
+    if( TOGGLEDBG( dump_names ) ) {
         dumpNames();
         puts( "created name.lst" );
     }

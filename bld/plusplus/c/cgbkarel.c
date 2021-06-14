@@ -64,7 +64,7 @@ struct auto_sym {
 
     static void __dump_sym( AUTO_SYM*asym, const char* msg )
     {
-        if( PragDbgToggles.dump_auto_rel ) {
+        if( TOGGLEDBG( dump_auto_rel ) ) {
             printf( "AUTO_SYM[%p] rels(%p) sym(%p) %s\n"
                   , asym
                   , asym->rels
@@ -134,7 +134,7 @@ void CgBackDtorAutoOffset(      // RELOCATION FOR A SYMBOL
     if( sym_entry != NULL ) {
         __dump_sym( sym_entry, "-- relocated" );
 #ifndef NDEBUG
-        if( PragDbgToggles.dump_auto_rel ) {
+        if( TOGGLEDBG( dump_auto_rel ) ) {
             printf( "  --- offset = %x/%d\n", offset, offset );
         }
 #endif

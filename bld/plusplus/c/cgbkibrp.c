@@ -91,7 +91,7 @@ static unsigned parm_no;            // parm # being defined
         IBRP* ibrp,                 // - entry
         const char *text )          // - text string
     {
-        if( PragDbgToggles.dump_exec_ic ) {
+        if( TOGGLEDBG( dump_exec_ic ) ) {
             prt_ibrp( ibrp, text );
         }
     }
@@ -248,7 +248,7 @@ bool IbpReference(              // LOCATE A BOUND REFERENCE
             *offset = ibrp->offset;
             dump_ibrp( ibrp, "IBRP(used)" );
 #if 0
-            if( PragDbgToggles.dump_exec_ic ) {
+            if( TOGGLEDBG( dump_exec_ic ) ) {
                 printf( "ibrp->func: " );
                 DumpSymbol( ibrp->func );
                 printf( "ibrp->refed: " );

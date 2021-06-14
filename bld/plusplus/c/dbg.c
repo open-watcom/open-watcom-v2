@@ -114,7 +114,7 @@ static void printToken(         // PRINT CURRENT TOKEN
 void DumpToken(                 // DUMP A TOKEN
     void )
 {
-    if( PragDbgToggles.dump_tokens ) {
+    if( TOGGLEDBG( dump_tokens ) ) {
         printf( "Token(%3d) Line(%4d) Column(%3d) ", CurToken, TokenLine, TokenColumn );
         printToken();
     }
@@ -124,7 +124,7 @@ void DumpToken(                 // DUMP A TOKEN
 void DumpMacToken(              // DUMP A MACRO TOKEN
     void )
 {
-    if( PragDbgToggles.dump_mtokens ) {
+    if( TOGGLEDBG( dump_mtokens ) ) {
         printf( "MacroToken(%3d) Line(%4d) Column(%3d) ", CurToken, TokenLine, TokenColumn );
         printToken();
     }
@@ -138,7 +138,7 @@ void DumpMacPush(               // DUMP PUSH OF MACRO
     const MEPTR mentry = (const MEPTR)p_mac; // - macro being pushed
     const char**args = (const char **)p_args;  // - arguments
     unsigned count;
-    if( PragDbgToggles.dump_mtokens ) {
+    if( TOGGLEDBG( dump_mtokens ) ) {
         printf( "Macro Push: %s", mentry->macro_name );
         if( !MacroIsSpecial( mentry ) && ( args != NULL ) ) {
             count = mentry->parm_count;
@@ -752,7 +752,7 @@ static void DumpExpandedType(   // DUMP EXPANDED TYPE
 void DumpFullType(              // DUMP FULL TYPE INFORMATION
     TYPE tp )                   // - type
 {
-    if( PragDbgToggles.dump_noformat ) {
+    if( TOGGLEDBG( dump_noformat ) ) {
         DumpExpandedType( tp );
     } else {
         PrintFullType( tp );

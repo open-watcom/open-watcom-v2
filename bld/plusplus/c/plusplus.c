@@ -354,10 +354,10 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                 ModuleInitFini();
                 ScopeEndFileScope();
 #ifndef NDEBUG
-                if( PragDbgToggles.dump_scopes ) {
+                if( TOGGLEDBG( dump_scopes ) ) {
                     DumpScopes();
                 }
-                if( PragDbgToggles.dump_hash ) {
+                if( TOGGLEDBG( dump_hash ) ) {
                     DumpHashStats();
                 }
 #endif

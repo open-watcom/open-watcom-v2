@@ -37,10 +37,9 @@
 #include "rtfuns.h"
 #include "pstk.h"
 #include "feprotos.h"
-
 #ifndef NDEBUG
-#   include "pragdefn.h"
-#   include "togglesd.h"
+    #include "pragdefn.h"
+    #include "togglesd.h"
 #endif
 
 
@@ -123,7 +122,7 @@ back_handle FEBack(             // GET BACK HANDLE FOR A SYMBOL
         }
     }
 #ifndef NDEBUG
-    if( PragDbgToggles.auxinfo ) {
+    if( TOGGLEDBG( auxinfo ) ) {
         printf( "FEBack( %p ) -> bh[%p]\n", orig, cg_handle );
     }
 #endif

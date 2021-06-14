@@ -153,7 +153,7 @@ static char const * res_names[] = {
 
 static void _print( char const * msg )
 {
-    if( PragDbgToggles.callgraph_scan ) {
+    if( TOGGLEDBG( callgraph_scan ) ) {
         printf( msg );
     }
 }
@@ -170,7 +170,7 @@ static char const* _unr_use( UNR_USE type )
 
 static void _printAction( RES_ACT const * ra, char const * msg )
 {
-    if( PragDbgToggles.callgraph_scan && ra != NULL ) {
+    if( TOGGLEDBG( callgraph_scan ) && ra != NULL ) {
         printf( "RES_ACT[%p] %s %p %s\n"
               , ra
               , _res_type( ra->type )
@@ -181,7 +181,7 @@ static void _printAction( RES_ACT const * ra, char const * msg )
 
 static void _printScopeRes( SCOPE_RES const *sr, char const * msg )
 {
-    if( PragDbgToggles.callgraph_scan ) {
+    if( TOGGLEDBG( callgraph_scan ) ) {
         printf( "SCOPE_RES[%p] %s\n"
                 "  next[%p] enclosing[%p] scope[%p] unresolved[%p]\n"
                 "  toresolve[%d] func[%p] dtm[%x]\n"
@@ -208,7 +208,7 @@ static void _printScopeRes( SCOPE_RES const *sr, char const * msg )
 
 static void _printUnrUsage( UNR_USAGE const *fu, char const * msg )
 {
-    if( PragDbgToggles.callgraph_scan ) {
+    if( TOGGLEDBG( callgraph_scan ) ) {
         printf( "UNR_USAGE[%p] %s %p %s\n"
               , fu
               , _unr_use( fu->type )
@@ -221,7 +221,7 @@ static void _printUnrUsage( UNR_USAGE const *fu, char const * msg )
 static void _printScopeResAll( SCOPE_RES const *sr, char const * msg )
 {
     UNR_USAGE* su;
-    if( PragDbgToggles.callgraph_scan ) {
+    if( TOGGLEDBG( callgraph_scan ) ) {
         _printScopeRes( sr, msg );
         RingIterBeg( sr->unresolved, su ) {
             _printUnrUsage( su, msg );
@@ -231,7 +231,7 @@ static void _printScopeResAll( SCOPE_RES const *sr, char const * msg )
 
 static void _printFunction( SYMBOL fun, char const * msg )
 {
-    if( PragDbgToggles.callgraph_scan ) {
+    if( TOGGLEDBG( callgraph_scan ) ) {
         VBUF vbuf;
         printf( "%s [%p] %s\n"
               , msg
@@ -247,7 +247,7 @@ static bool _printCallNode
 {
     UNR_USAGE *fu;
     ctl = ctl;
-    if( PragDbgToggles.callgraph_scan ) {
+    if( TOGGLEDBG( callgraph_scan ) ) {
         VBUF vbuf;
         printf( "CALLNODE[%p] unresolved[%p] %s\n"
               , node

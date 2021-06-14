@@ -86,7 +86,7 @@ PTREE DataDtorObjPush(          // START OF DTORABLE OBJECT
     TYPE dtor_type;             // - type for dtor
 
 #ifndef NDEBUG
-    if( PragDbgToggles.dump_data_dtor ) {
+    if( TOGGLEDBG( dump_data_dtor ) ) {
         VBUF vbuf;
         printf( "DataDtorObjPush -- symbol %s\n"
                 "                -- offset %x\n"
@@ -111,7 +111,7 @@ PTREE DataDtorObjPop(           // COMPLETE DTORABLE OBJECT
     PTREE expr )                // - expression to be decorated
 {
 #ifndef NDEBUG
-    if( PragDbgToggles.dump_data_dtor ) {
+    if( TOGGLEDBG( dump_data_dtor ) ) {
         printf( "DataDtorObjPop\n" );
     }
 #endif
@@ -125,7 +125,7 @@ PTREE DataDtorCompClass(        // MARK CLASS OBJECT AS DTORABLE COMPONENT
     DTC_KIND kind )             // - kind of component
 {
 #ifndef NDEBUG
-    if( PragDbgToggles.dump_data_dtor ) {
+    if( TOGGLEDBG( dump_data_dtor ) ) {
         printf( "DataDtorCompClass -- offset %x\n", offset );
     }
 #endif
@@ -139,7 +139,7 @@ PTREE DataDtorCompArrEl(        // MARK ARRAY ELEMENT AS DTORABLE COMPONENT
     target_offset_t index )     // - array index
 {
 #ifndef NDEBUG
-    if( PragDbgToggles.dump_data_dtor ) {
+    if( TOGGLEDBG( dump_data_dtor ) ) {
         printf( "DataDtorCompArrEl -- index(%x)\n", index );
     }
 #endif

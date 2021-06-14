@@ -374,7 +374,7 @@ fe_attr FEAttr(                 // GET SYMBOL ATTRIBUTES
     DbgAssert( mask == 0 || (attr & FE_COMMON) == 0 );
     attr &= ~mask;
 #ifndef NDEBUG
-    if( PragDbgToggles.auxinfo ) {
+    if( TOGGLEDBG( auxinfo ) ) {
         printf( "FeAttr( %p = %s ) -> %x\n"
               , (void *)sym
               , GetMangledName( sym )
@@ -1427,7 +1427,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
     case DEFAULT_IMPORT_RESOLVE :
         retn = ExtrefResolve( sym, &res_info );
   #ifndef NDEBUG
-        if( PragDbgToggles.extref ) {
+        if( TOGGLEDBG( extref ) ) {
             printf( "DEFAULT_IMPORT_RESOLVE[%p]: %s ==> %s\n", sym
                   , GetMangledName( sym )
                   , retn == NULL ? "0" : GetMangledName( retn ) );
@@ -1438,7 +1438,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         DbgNotRetn();
         retn = ExtrefImportType( &res_info );
   #ifndef NDEBUG
-        if( PragDbgToggles.extref ) {
+        if( TOGGLEDBG( extref ) ) {
             printf( "  IMPORT_TYPE[%p]: %s <%p>\n"
                   , sym, GetMangledName( sym ), retn );
         }
@@ -1449,7 +1449,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         DbgNotSym();
         retn = ExtrefVirtualSymbol( &res_info );
   #ifndef NDEBUG
-        if( PragDbgToggles.extref ) {
+        if( TOGGLEDBG( extref ) ) {
             printf( "  NEXT_/CONDITIONAL/_IMPORT: %s\n"
                   , GetMangledName( retn ) );
         }
@@ -1458,7 +1458,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
     case CONDITIONAL_SYMBOL :
         retn = sym;
   #ifndef NDEBUG
-        if( PragDbgToggles.extref ) {
+        if( TOGGLEDBG( extref ) ) {
             printf( "  CONDITIONAL_SYMBOL: %s\n"
                   , GetMangledName( retn ) );
         }
@@ -1467,7 +1467,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
     case VIRT_FUNC_REFERENCE :
   #ifndef NDEBUG
         DbgNotRetn();
-        if( ( PragDbgToggles.extref )
+        if( ( TOGGLEDBG( extref ) )
           &&( sym->id == SYMC_VIRTUAL_FUNCTION ) ) {
             SYMBOL vsym;
             vsym = sym->u.virt_fun;
@@ -1487,7 +1487,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         DbgNotRetn();
         retn = ExtrefNextVfunSym( sym );
   #ifndef NDEBUG
-        if( PragDbgToggles.extref ) {
+        if( TOGGLEDBG( extref ) ) {
             printf( "  VIRT_FUNC_NEXT_REFERENCE[%p]: <%p>\n", sym, retn );
         }
   #endif
@@ -1496,7 +1496,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         DbgNotSym();
         retn = ExtrefVfunSym( sym );
   #ifndef NDEBUG
-        if( PragDbgToggles.extref ) {
+        if( TOGGLEDBG( extref ) ) {
             printf( "  VIRT_FUNC_SYM[%p]: %s\n"
                   , sym, GetMangledName( retn ) );
         }
@@ -1533,7 +1533,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         break;
     }
 #ifndef NDEBUG
-    if( PragDbgToggles.auxinfo ) {
+    if( TOGGLEDBG( auxinfo ) ) {
         printf( "FeAuxInfo( %p, %x ) -> %p\n", sym, request, retn );
         if( isSym && ( NULL != sym )) {
             printf( "  sym = %s\n", GetMangledName( sym ) );

@@ -1729,7 +1729,7 @@ static FNOV_RESULT doOverload( FNOV_INFO* info )
     }
 
 #ifndef NDEBUG
-    if( PragDbgToggles.dump_rank ) {
+    if( TOGGLEDBG( dump_rank ) ) {
         printf( "\nOverloaded Symbol Resolution" );
         PrintFnovResolution( result
                            , info->alist
@@ -2047,7 +2047,7 @@ static FNOV_RESULT doFunctionDistinctCheck( FNOV_CONTROL control, SYMBOL *pold_s
     }
 
 #ifndef NDEBUG
-    if( PragDbgToggles.dump_rank ) {
+    if( TOGGLEDBG( dump_rank ) ) {
         printf( "Overloaded Symbol Distinct Check" );
         PrintFnovResolution( result
                            , info.alist
@@ -2110,7 +2110,7 @@ bool IsOverloadedFunc( SYMBOL sym )
     }
 
 #ifndef NDEBUG
-    if( PragDbgToggles.dump_rank ) {
+    if( TOGGLEDBG( dump_rank ) ) {
         VBUF name;
         printf( "Function '%s' is%soverloaded\n", FormatSym( sym, &name ), ok ? " " : " not " );
         VbufFree( &name );
@@ -2200,7 +2200,7 @@ bool IsActualOverloadedFunc(            // TEST IF ACTUAL (IGNORE SYMC_DEFAULT) 
 
     ok = ( NULL == ActualNonOverloadedFunc( sym, result ) );
 #ifndef NDEBUG
-    if( PragDbgToggles.dump_rank ) {
+    if( TOGGLEDBG( dump_rank ) ) {
         VBUF name;
         printf( "Function '%s' is%soverloaded (ignoring default arguments)\n",
             FormatSym( sym, &name ), ok ? " " : " not " );

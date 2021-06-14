@@ -84,7 +84,7 @@ void BeGenTsRef(                // GENERATE REFERENCE TO TYPE-SIGNATURE
 
     TypeSigSymOffset( ts, &sym, &offset );
 #ifndef NDEBUG
-    if( PragDbgToggles.dump_stab ) {
+    if( TOGGLEDBG( dump_stab ) ) {
         VBUF vbuf;
         printf( " typsig=%s+%x"
               , DbgSymNameFull( sym, &vbuf )
@@ -131,7 +131,7 @@ static void genBaseHdr(         // GENERATE BASE HEADER FOR TYPE-SIGNATURE
     DgByte( THROBJ_REFERENCE );
     DgByte( flags );
 #ifndef NDEBUG
-    if( PragDbgToggles.dump_stab ) {
+    if( TOGGLEDBG( dump_stab ) ) {
         printf( " base=%d,%d,%d,%d"
               , thr
               , THROBJ_PTR_CLASS
@@ -150,7 +150,7 @@ static void genScalarHdr(       // GENERATE SCALAR HDR
     size = CgMemorySize( ts->type );
     DgOffset( size );
 #ifndef NDEBUG
-    if( PragDbgToggles.dump_stab ) {
+    if( TOGGLEDBG( dump_stab ) ) {
         printf( " size=%d\n", size );
     }
 #endif
@@ -166,7 +166,7 @@ static void genTsPtr(           // GENERATE PTR TO TYPE SIGNATURE
     ts = BeTypeSignature( type );
     DgPtrSymData( ts->sym );
 #ifndef NDEBUG
-    if( PragDbgToggles.dump_stab ) {
+    if( TOGGLEDBG( dump_stab ) ) {
         printf( " sig=%x\n", ts );
     }
 #endif
@@ -190,7 +190,7 @@ static void genTypeSig(         // GENERATE A TYPE_SIG
     if( thr == THROBJ_ANYTHING )
         return;
 #ifndef NDEBUG
-    if( PragDbgToggles.dump_stab ) {
+    if( TOGGLEDBG( dump_stab ) ) {
         const char* code;
         switch( thr ) {
         case THROBJ_SCALAR:     code = "THROBJ_SCALAR";     break;
@@ -218,7 +218,7 @@ static void genTypeSig(         // GENERATE A TYPE_SIG
         genBaseHdr( thr, TSIG_FLAGS_INDIRECT );
         BeGenTsRef( ts );
 #ifndef NDEBUG
-        if( PragDbgToggles.dump_stab ) {
+        if( TOGGLEDBG( dump_stab ) ) {
             printf( "\n" );
         }
 #endif
@@ -244,7 +244,7 @@ static void genTypeSig(         // GENERATE A TYPE_SIG
         DgOffset( size );
         genName( thr, ts->type );
 #ifndef NDEBUG
-        if( PragDbgToggles.dump_stab ) {
+        if( TOGGLEDBG( dump_stab ) ) {
             VBUF vbuf1;
             VBUF vbuf2;
             VBUF vbuf3;
@@ -318,7 +318,7 @@ void BeGenTypeSigEnts(          // EMIT TYPE_SIG_ENT RING
 
     count = RingCount( ring );
 #ifndef NDEBUG
-    if( PragDbgToggles.dump_stab ) {
+    if( TOGGLEDBG( dump_stab ) ) {
         printf( "%d\n", count );
     }
 #endif
@@ -326,7 +326,7 @@ void BeGenTypeSigEnts(          // EMIT TYPE_SIG_ENT RING
     RingIterBegSafe( ring, curr ) {
        BeGenTsRef( curr->sig );
 #ifndef NDEBUG
-        if( PragDbgToggles.dump_stab ) {
+        if( TOGGLEDBG( dump_stab ) ) {
             printf( "\n" );
         }
 #endif

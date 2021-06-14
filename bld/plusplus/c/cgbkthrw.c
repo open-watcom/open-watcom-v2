@@ -108,13 +108,13 @@ static void cgGenThrowCnv(      // GENERATE THROW CONVERSION
 
     sig = BeTypeSignature( type );
 #ifndef NDEBUG
-    if( PragDbgToggles.dump_stab ) {
+    if( TOGGLEDBG( dump_stab ) ) {
         printf( "   conversion: " );
     }
 #endif
     BeGenTsRef( sig );
 #ifndef NDEBUG
-    if( PragDbgToggles.dump_stab ) {
+    if( TOGGLEDBG( dump_stab ) ) {
         printf( " offset=%x\n", offset );
     }
 #endif
@@ -140,7 +140,7 @@ void ThrowRoGen(                // GENERATE A THROW R/O BLOCK
             DbgVerify( ! ctl.error_occurred
                      , "cgGenThrowRo -- failure in ThrowCnvInit" );
 #ifndef NDEBUG
-            if( PragDbgToggles.dump_stab ) {
+            if( TOGGLEDBG( dump_stab ) ) {
                 printf( "ThrowRo[%p] offset=%p sig=%x\n"
                       , ro
                       , ro->sig

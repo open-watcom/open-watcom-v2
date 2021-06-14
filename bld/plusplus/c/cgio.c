@@ -74,7 +74,7 @@ ExtraRptCtr( cgio_locates_thunk );
 
     static void _dump( CGFILE* cgfile, const char* prefix )
     {
-        if( PragDbgToggles.callgraph ) {
+        if( TOGGLEDBG( callgraph ) ) {
             VBUF vbuf;
             printf( "Cgio: %p %s - %s\n"
                   , cgfile

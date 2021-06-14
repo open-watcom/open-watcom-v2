@@ -633,7 +633,7 @@ static bool analyseMembPtr(     // ANALYSE MEMBER-PTR OPERANDS
     if( CNV_OK == ConversionDiagnose( cnv, expr, &diagMembPtrOps ) ) {
         ScopeMemberPtrCastAction( inf );
 #ifndef NDEBUG
-        if( PragDbgToggles.dump_mptr ) {
+        if( TOGGLEDBG( dump_mptr ) ) {
             DumpMemberPtrInfo( inf );
         }
 #endif

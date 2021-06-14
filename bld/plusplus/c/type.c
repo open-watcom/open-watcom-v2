@@ -1238,7 +1238,7 @@ DECL_INFO *MakeNewDeclarator( DECL_SPEC *dspec,DECL_INFO *ptrs,DECL_INFO*arrays)
     }
     arrays = FinishDeclarator( dspec, arrays );
 #ifndef NDEBUG
-    if( PragDbgToggles.dump_types ) {
+    if( TOGGLEDBG( dump_types ) ) {
         DumpFullType( arrays->type );
     }
 #endif
@@ -4038,7 +4038,7 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
         }
     }
 #ifndef NDEBUG
-    if( PragDbgToggles.dump_types ) {
+    if( TOGGLEDBG( dump_types ) ) {
         DumpFullType( prev_type );
     }
 #endif
@@ -7429,7 +7429,7 @@ static void pushArguments( PSTK_CTL *stk, arg_list *args )
         type = *p;
         TypeStripTdMod( type );
 #ifndef NDEBUG
-        if( PragDbgToggles.dump_types ) {
+        if( TOGGLEDBG( dump_types ) ) {
             printf( "arg #%u\n", ( args->num_args - i ) + 1 );
             DumpFullType( type );
         }
@@ -7474,7 +7474,7 @@ static void pushPrototypeAndArguments( type_bind_info *data,
         }
 
 #ifndef NDEBUG
-        if( PragDbgToggles.dump_types ) {
+        if( TOGGLEDBG( dump_types ) ) {
             printf( "p_arg #%u\n", i + 1 );
             if( p->op == PT_TYPE ) {
                 DumpFullType( p_type );

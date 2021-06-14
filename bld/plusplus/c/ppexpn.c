@@ -136,7 +136,7 @@ void DbgDumpOperatorStack( void )       // dump PPEXPN_OPERATOR_STACK
 {
     PPEXPN_OPERATOR_STACK *cur;
 
-    if( PragDbgToggles.ppexpn ) {
+    if( TOGGLEDBG( ppexpn ) ) {
         Stack_forall( HeadOperator, cur ) {
             printf("Token: %d %s Pos %d\n", cur->token
                                           , Tokens[cur->token]
@@ -154,7 +154,7 @@ void DbgDumpOperandStack( void )        // dump PPEXPN_OPERAND_STACK
 {
     PPEXPN_OPERAND_STACK *cur;
 
-    if( PragDbgToggles.ppexpn ) {
+    if( TOGGLEDBG( ppexpn ) ) {
         Stack_forall( HeadOperand, cur ) {
             printf("uval: %lld sval %lld no_sign %d Pos %d\n", VAL64( cur->value.u.uval ),
                     VAL64( cur->value.u.sval ), cur->value.no_sign, cur->loc.pos );
