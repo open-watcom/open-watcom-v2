@@ -33,11 +33,11 @@
 #ifndef __TOGGLESD_H_
 #define __TOGGLESD_H_
 
-#define TOGGLEDBG(x)        PragDbgToggles.##x
-#define TOGGLEDBG_STK(x)    HeadDbgToggles_##x
+#define TOGGLEDBG(x)        PragDbgToggles.tog_##x
+#define TOGGLEDBG_STK(x)    HeadDbgToggles_tog_##x
 
 typedef struct pragma_dbg_toggles {
-    #define pick( x )       boolbit     x : 1;
+    #define pick( x )       boolbit     tog_##x : 1;
     #include "togdefd.h"
     #undef pick
 } pragma_dbg_toggles;
