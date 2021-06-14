@@ -40,6 +40,6 @@ typedef struct pragma_toggles {
     #undef toggle_pick
 } pragma_toggles;
 
-extern pragma_toggles       PragToggle;
+extern pragma_toggles       PragToggles;
 
 #endif

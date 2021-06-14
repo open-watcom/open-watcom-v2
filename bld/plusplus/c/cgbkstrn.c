@@ -59,7 +59,7 @@ typedef struct                  // SYM_TRANS -- symbol translation
 
     static void dump( const char* msg, SYM_TRANS* tr )
     {
-        if( PragDbgToggle.dump_exec_ic ) {
+        if( PragDbgToggles.dump_exec_ic ) {
             printf( "SYM_TRANS( %s ) src(%p) tgt(%p) id(%x)\n"
                   , msg
                   , tr->src

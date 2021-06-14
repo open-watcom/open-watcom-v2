@@ -123,7 +123,7 @@ back_handle FEBack(             // GET BACK HANDLE FOR A SYMBOL
         }
     }
 #ifndef NDEBUG
-    if( PragDbgToggle.auxinfo ) {
+    if( PragDbgToggles.auxinfo ) {
         printf( "FEBack( %p ) -> bh[%p]\n", orig, cg_handle );
     }
 #endif

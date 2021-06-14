@@ -846,7 +846,7 @@ static void updateTemplatePartialOrdering( TEMPLATE_INFO *tinfo,
                 bound = BindGenericTypes( parm_scope, tspec->spec_args,
                                           curr_spec->spec_args, false, 0 );
 #ifndef NDEBUG
-                if( PragDbgToggle.templ_spec && bound ) {
+                if( PragDbgToggles.templ_spec && bound ) {
                     VBUF    vbuf1;
                     VBUF    vbuf2;
 
@@ -875,7 +875,7 @@ static void updateTemplatePartialOrdering( TEMPLATE_INFO *tinfo,
                 bound = BindGenericTypes( parm_scope, curr_spec->spec_args,
                                           tspec->spec_args, false, 0 );
 #ifndef NDEBUG
-                if( PragDbgToggle.templ_spec && bound ) {
+                if( PragDbgToggles.templ_spec && bound ) {
                     VBUF    vbuf1;
                     VBUF    vbuf2;
 
@@ -1408,7 +1408,7 @@ static DECL_INFO *attemptGen( arg_list *args, SYMBOL fn_templ,
     ScopeSetEnclosing( parm_scope, decl_scope );
 
 #ifndef NDEBUG
-    if( PragDbgToggle.templ_function ) {
+    if( PragDbgToggles.templ_function ) {
         VBUF vbuf1, vbuf2;
 
         FormatPTreeList( templ_args, &vbuf1 );
@@ -1505,7 +1505,7 @@ static DECL_INFO *attemptGen( arg_list *args, SYMBOL fn_templ,
             SetCurrScope( save_scope );
         } else if( fn_type != NULL ) {
 #ifndef NDEBUG
-            if( PragDbgToggle.templ_function ) {
+            if( PragDbgToggles.templ_function ) {
                 printf( "attemptGen: BindGenericTypes failed\n" );
             }
 #endif
@@ -1514,7 +1514,7 @@ static DECL_INFO *attemptGen( arg_list *args, SYMBOL fn_templ,
         popInstContext();
     } else {
 #ifndef NDEBUG
-        if( PragDbgToggle.templ_function ) {
+        if( PragDbgToggles.templ_function ) {
             printf( "attemptGen: BindExplicitTemplateArguments failed\n" );
         }
 #endif
@@ -1669,7 +1669,7 @@ SYMBOL TemplateFunctionGenerate( SYMBOL sym, arg_list *args,
     } RingIterEnd( fn_inst )
 
 #ifndef NDEBUG
-    if( PragDbgToggle.templ_function && ( generated_fn == NULL ) ) {
+    if( PragDbgToggles.templ_function && ( generated_fn == NULL ) ) {
         VBUF vbuf1, vbuf2, vbuf3;
         FormatType( fn_type, &vbuf1, &vbuf2 );
         FormatTemplateParmScope( &vbuf3, parm_scope );
@@ -2395,7 +2395,7 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms, SCOPE *parm_
     ambiguous = false;
 
 #ifndef NDEBUG
-    if( PragDbgToggle.templ_spec && ( tinfo->nr_specs > 1 )) {
+    if( PragDbgToggles.templ_spec && ( tinfo->nr_specs > 1 )) {
         VBUF vbuf;
 
         FormatPTreeList( parms, &vbuf );
@@ -2420,7 +2420,7 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms, SCOPE *parm_
             bound = BindGenericTypes( parm_scope1, spec_list, parms, false, 0 );
             if( bound ) {
 #ifndef NDEBUG
-                if( PragDbgToggle.templ_spec && ( tinfo->nr_specs > 1 ) ) {
+                if( PragDbgToggles.templ_spec && ( tinfo->nr_specs > 1 ) ) {
                     VBUF vbuf;
 
                     FormatPTreeList( spec_list, &vbuf );
@@ -2475,7 +2475,7 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms, SCOPE *parm_
         tspec = RingFirst( tinfo->specializations );
 
 #ifndef NDEBUG
-        if( PragDbgToggle.templ_spec && ( tinfo->nr_specs > 1 )) {
+        if( PragDbgToggles.templ_spec && ( tinfo->nr_specs > 1 )) {
             printf( "chose primary template %s ", NameStr( tinfo->sym->name->name ) );
             DbgDumpTokenLocn( tinfo->sym->locn );
             printf( "\n" );
@@ -2491,7 +2491,7 @@ findTemplateClassSpecialization( TEMPLATE_INFO *tinfo, PTREE parms, SCOPE *parm_
         RingFree( &candidate_list );
 
 #ifndef NDEBUG
-        if( PragDbgToggle.templ_spec && ( tinfo->nr_specs > 1 )) {
+        if( PragDbgToggles.templ_spec && ( tinfo->nr_specs > 1 )) {
             VBUF vbuf;
 
             FormatPTreeList( tspec->spec_args, &vbuf );
@@ -2554,7 +2554,7 @@ TYPE TemplateClassReference( PTREE tid, PTREE parms )
         unsigned int hash;
 
 #ifndef NDEBUG
-        if( PragDbgToggle.templ_inst ) {
+        if( PragDbgToggles.templ_inst ) {
             VBUF vbuf;
 
             FormatPTreeList( parms, &vbuf );
@@ -2683,7 +2683,7 @@ static TYPE makeBoundClass( TYPE unbound_class, SCOPE parm_scope,
     parms = fakeUpTemplateParms( parm_scope, type_args );
 
 #ifndef NDEBUG
-    if( PragDbgToggle.templ_inst ) {
+    if( PragDbgToggles.templ_inst ) {
         VBUF vbuf;
 
         FormatPTreeList( parms, &vbuf );
@@ -3021,7 +3021,7 @@ static void templateFunctionInstantiate( FN_TEMPLATE *fn_templ,
     ScopeSetParmFn( parm_scope, fn_sym->u.defn );
 
 #ifndef NDEBUG
-    if( PragDbgToggle.templ_function ) {
+    if( PragDbgToggles.templ_function ) {
         VBUF vbuf1, vbuf2, vbuf3;
         FormatType( bound_sym->sym_type, &vbuf1, &vbuf2 );
         FormatTemplateParmScope( &vbuf3, parm_scope );
@@ -3152,7 +3152,7 @@ static void processInstantiationMembers( CLASS_INST *instance )
          || ( sym->sym_type->flag & TF1_VIRTUAL ) ) {
 
 #ifndef NDEBUG
-            if( PragDbgToggle.member_inst ) {
+            if( PragDbgToggles.member_inst ) {
                 VBUF vbuf;
                 printf( "instantiating %stemplate member: %s\n",
                         curr_member->is_inline ? "inline " : "",

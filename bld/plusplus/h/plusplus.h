@@ -120,7 +120,7 @@ typedef const struct idname *NAME;      // name pointer
     #define DbgAssert( cond )   if( !(cond) ) CFatal( #cond __location )
     #define DbgStmt( stmt )     stmt
     #define XTRA_RPT
-    #define IfDbgToggle( n )    if( PragDbgToggle.n )
+    #define IfDbgToggle( n )    if( PragDbgToggles.n )
 
     #define DbgNever()          (CFatal( "should never execute this" __location ))
     #define DbgUseless()        (CFatal( "this code isn't useless!" __location ))

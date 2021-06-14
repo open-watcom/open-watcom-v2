@@ -911,7 +911,7 @@ cg_name CgDtorStatic(           // DTOR STATIC OBJECT
     StabCtlInit( &sctl, &dctl );
     StabDefnInit( &dctl, DTRG_STATIC_INITLS );
 #ifndef NDEBUG
-    if( PragDbgToggle.dump_stab ) {
+    if( PragDbgToggles.dump_stab ) {
         printf( "State Table for static object: %p\n", &dctl.state_table );
     }
 #endif

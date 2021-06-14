@@ -4350,11 +4350,11 @@ static PTREE run_traversals(    // ANALYZE EXPRESSION VIA TRAVERSALS
 {
 #ifndef NDEBUG
     expr = DbgCommaInsertion( expr );
-    if( PragDbgToggle.dump_ptree ) {
+    if( PragDbgToggles.dump_ptree ) {
         DumpCommentary( "Parse tree to be analyzed semantically" );
         DumpPTree( expr );
     }
-    if( PragDbgToggle.print_ptree ) {
+    if( PragDbgToggles.print_ptree ) {
         DumpCommentary( "Parse tree to be analyzed semantically" );
         DbgPrintPTREE( expr );
     }

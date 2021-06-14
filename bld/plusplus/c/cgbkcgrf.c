@@ -71,7 +71,7 @@
 
 #ifndef NDEBUG
     static void _DUMP_CGRF( char *msg, SYMBOL sym ) {
-        if( PragDbgToggle.callgraph ) {
+        if( PragDbgToggles.callgraph ) {
             VBUF vbuf;
             printf( msg, DbgSymNameFull( sym, &vbuf ) );
             VbufFree( &vbuf );
@@ -155,7 +155,7 @@ static void forceGeneration(    // FORCE CODE FILE TO BE GENERATED
 
     static void _printScanInt( const char* msg, unsigned val )
     {
-        if( PragDbgToggle.callgraph_scan ) {
+        if( PragDbgToggles.callgraph_scan ) {
             printf( msg, val );
         }
     }
@@ -953,7 +953,7 @@ static void markAsGen(          // MARK CODE FILE TO BE GENERATED
                 SegmentMarkUsed( func->segid );
             }
         #ifndef NDEBUG
-            if( PragDbgToggle.dump_emit_ic ) {
+            if( PragDbgToggles.dump_emit_ic ) {
                 VBUF vbuf;
                 printf( "Selected code file: %s\n", DbgSymNameFull( func, &vbuf ) );
                 VbufFree( &vbuf );
@@ -1150,7 +1150,7 @@ static void removeCodeFile(     // REMOVE CODE FILE FOR FUNCTION
     cgfile = nodeCgFile( node );
     if( node->inline_fun ) {
 #ifndef NDEBUG
-        if( PragDbgToggle.dump_emit_ic || PragDbgToggle.callgraph ) {
+        if( PragDbgToggles.dump_emit_ic || PragDbgToggles.callgraph ) {
             VBUF vbuf;
             printf( "Removed inline code file: %s\n", DbgSymNameFull( func, &vbuf ) );
             VbufFree( &vbuf );
@@ -1161,7 +1161,7 @@ static void removeCodeFile(     // REMOVE CODE FILE FOR FUNCTION
         func->flag &= ~SYMF_REFERENCED;
     } else if ( SymIsRegularStaticFunc( func ) ) {
 #ifndef NDEBUG
-        if( PragDbgToggle.dump_emit_ic || PragDbgToggle.callgraph ) {
+        if( PragDbgToggles.dump_emit_ic || PragDbgToggles.callgraph ) {
             VBUF vbuf;
             printf( "Removed static code file: %s\n", DbgSymNameFull( func, &vbuf ) );
             VbufFree( &vbuf );
@@ -1312,7 +1312,7 @@ static bool setFunctionStab(    // SET STATE-TABLE INFO. FOR FUNCTION
             cgfile->u.s.stab_gen = stab_gen;
             cgfile->cond_flags = max_cond_flags;
 #ifndef NDEBUG
-            if( PragDbgToggle.dump_emit_ic || PragDbgToggle.callgraph || PragDbgToggle.dump_stab ) {
+            if( PragDbgToggles.dump_emit_ic || PragDbgToggles.callgraph || PragDbgToggles.dump_stab ) {
                 VBUF vbuf;
                 SYMBOL func = cgfile->symbol;
                 if( state_table ) {
@@ -1342,10 +1342,10 @@ void MarkFuncsToGen(            // DETERMINE FUNCTIONS TO BE GENERATED
 #ifndef NDEBUG
     bool dbg_dump_exec;
 
-    dbg_dump_exec = PragDbgToggle.dump_exec_ic;
-    PragDbgToggle.dump_exec_ic = false;
-    if( PragDbgToggle.callgraph_scan ) {
-        PragDbgToggle.callgraph = true;
+    dbg_dump_exec = PragDbgToggles.dump_exec_ic;
+    PragDbgToggles.dump_exec_ic = false;
+    if( PragDbgToggles.callgraph_scan ) {
+        PragDbgToggles.callgraph = true;
     }
 #endif
     vft_defs = NULL;
@@ -1448,8 +1448,8 @@ void MarkFuncsToGen(            // DETERMINE FUNCTIONS TO BE GENERATED
     }
     VstkClose( &ctl.calls );
 #ifndef NDEBUG
-    PragDbgToggle.dump_exec_ic = dbg_dump_exec;
-    if( PragDbgToggle.callgraph ) {
+    PragDbgToggles.dump_exec_ic = dbg_dump_exec;
+    if( PragDbgToggles.callgraph ) {
         CgrfDump( &ctl );
     }
 #endif

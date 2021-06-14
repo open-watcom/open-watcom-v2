@@ -444,7 +444,7 @@ static FNLABEL *findLabel( NAME name )
     new_label->dangerous = false;
     new_label->destination.id = CgFrontLabelGoto();
     new_label->destination.defn = LabelAllocLabDef();
-    new_label->referenced = !PragToggle.unreferenced;
+    new_label->referenced = !PragToggles.unreferenced;
     return( new_label );
 }
 
@@ -1699,7 +1699,7 @@ static void doFnStartup( SYMBOL func
         /* in case the type was derived from a stack-checked function */
         func->sym_type = RemoveFunctionFlag( func->sym_type, TF1_STACK_CHECK );
     } else {
-        if( PragToggle.check_stack ) {
+        if( PragToggles.check_stack ) {
             func->sym_type = AddFunctionFlag( func->sym_type, TF1_STACK_CHECK );
         }
     }

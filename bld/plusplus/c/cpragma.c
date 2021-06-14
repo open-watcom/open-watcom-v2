@@ -79,9 +79,9 @@ typedef struct prag_stack {
     unsigned            value;
 } prag_stack;
 
-pragma_toggles          PragToggle;
+pragma_toggles          PragToggles;
 #ifndef NDEBUG
-pragma_dbg_toggles      PragDbgToggle;
+pragma_dbg_toggles      PragDbgToggles;
 #endif
 
 static prag_stack       *HeadPacks;
@@ -574,30 +574,7 @@ static void pragDisableMessage( // DISABLE WARNING MESSAGE
     PPCTL_DISABLE_MACROS();
 }
 
-void PragmaSetToggle(           // SET TOGGLE
-    bool set_flag )             // - true ==> set flag
-{
-#ifndef NDEBUG
-    #define toggle_pick( x ) \
-        if( strcmp( Buffer, #x ) == 0 ) {       \
-            PragDbgToggle.x = set_flag;         \
-            return;                             \
-        }
-    #include "togdefd.h"
-    #undef toggle_pick
-#endif
-
-    #define toggle_pick( x ) \
-        if( strcmp( Buffer, #x ) == 0 ) {       \
-            PragToggle.x = set_flag;            \
-            return;                             \
-        }
-    #include "togdef.h"
-    #undef toggle_pick
-}
-
-
-static void pragFlag(           // SET TOGGLES
+static void pragOptions(        // SET TOGGLES
     bool set_flag )             // - true ==> set flag
 {
     PPCTL_ENABLE_MACROS();
@@ -1328,9 +1305,9 @@ void CPragma( void )                  // PROCESS A PRAGMA
         }
     } else if( IS_ID_OR_KEYWORD( CurToken ) ) {
         if( pragmaNameRecog( "on" ) ) {
-            pragFlag( true );
+            pragOptions( true );
         } else if( pragmaNameRecog( "off" ) ) {
-            pragFlag( false );
+            pragOptions( false );
         } else if( pragmaNameRecog( "aux" ) || pragmaNameRecog( "linkage" ) ) {
             PragAux();
         } else if( pragmaNameRecog( "library" ) ) {
@@ -1928,7 +1905,7 @@ pch_status PCHReadPragmaData( void )
     unsigned depth;
     unsigned value;
 
-    PCHReadVar( PragToggle );
+    PCHReadVar( PragToggles );
     CgInfoLibPCHRead();
     readPacks();
     readEnums();
@@ -1947,7 +1924,7 @@ pch_status PCHWritePragmaData( void )
     unsigned depth;
     unsigned value;
 
-    PCHWriteVar( PragToggle );
+    PCHWriteVar( PragToggles );
     CgInfoLibPCHWrite();
     writePacks();
     writeEnums();
@@ -1975,10 +1952,32 @@ pch_status PCHFiniPragmaData( bool writing )
     return( PCHCB_OK );
 }
 
+void PragmaSetToggle(           // SET TOGGLE
+    bool set_flag )             // - true ==> set flag
+{
+#ifndef NDEBUG
+    #define toggle_pick( x ) \
+        if( strcmp( Buffer, #x ) == 0 ) {       \
+            PragDbgToggles.x = set_flag;         \
+            return;                             \
+        }
+    #include "togdefd.h"
+    #undef toggle_pick
+#endif
+
+    #define toggle_pick( x ) \
+        if( strcmp( Buffer, #x ) == 0 ) {       \
+            PragToggles.x = set_flag;           \
+            return;                             \
+        }
+    #include "togdef.h"
+    #undef toggle_pick
+}
+
 void PragmaTogglesInit( void )
 {
-    PragToggle.check_stack = true;
-    PragToggle.unreferenced = true;
+    PragToggles.check_stack = true;
+    PragToggles.unreferenced = true;
     HeadPacks = NULL;
     HeadEnums = NULL;
     FreePrags = NULL;

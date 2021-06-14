@@ -51,7 +51,7 @@ static carve_t carve_call_stab; // carve control: CALL_STAB
 
 static void __dump( const char* text, CALL_STAB* cstb )
 {
-    if( PragDbgToggle.dump_stab ) {
+    if( PragDbgToggles.dump_stab ) {
         printf( "CALL_STAB[%p] %s handle(%p) se(%p) has_cd_arg(%d) cd_arg(%x)\n"
               , cstb
               , text

@@ -132,7 +132,7 @@ void *CMemAlloc( size_t size )
         return( NULL );
     }
 #ifndef NDEBUG
-    if( !PragDbgToggle.no_mem_cleanup ) {
+    if( !PragDbgToggles.no_mem_cleanup ) {
         CLEANPTR curr;
         static unsigned test_cleanup;
         static unsigned test_inc = 1;
@@ -308,7 +308,7 @@ static void cmemFini(           // COMPLETION
 #endif
 #ifdef TRMEM
  #ifndef NDEBUG
-    if( PragDbgToggle.dump_memory ) {
+    if( PragDbgToggles.dump_memory ) {
         _trmem_prt_list( trackerHdl );
     }
     if( _trmem_close( trackerHdl ) != 0 && !CompFlags.compile_failed ) {

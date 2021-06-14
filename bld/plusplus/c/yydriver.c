@@ -1536,7 +1536,7 @@ static void pushRestartDecl( PARSE_STACK *state )
     restart->reset_scope = GetCurrScope();
 
 #ifndef NDEBUG
-    if( PragDbgToggle.dump_parse ) {
+    if( PragDbgToggles.dump_parse ) {
         printf( "===============================================================================\n" );
         printf( "*** pushRestartDecl: 0x%p 0x%p\n", state, restart );
         printf( "===============================================================================\n" );
@@ -1555,7 +1555,7 @@ static void popRestartDecl( PARSE_STACK *state )
 
     DbgStmt( restart = state->restart );
 #ifndef NDEBUG
-    if( PragDbgToggle.dump_parse ) {
+    if( PragDbgToggles.dump_parse ) {
         printf( "===============================================================================\n" );
         printf( "*** popRestartDecl: 0x%p 0x%p\n", state, restart );
         printf( "===============================================================================\n" );
@@ -1601,7 +1601,7 @@ static void syncToRestart( PARSE_STACK *state )
         restartInit( state );
 
 #ifndef NDEBUG
-        if( PragDbgToggle.dump_parse ) {
+        if( PragDbgToggles.dump_parse ) {
             dump_state_stack("after syncToRestart", state);
         }
 #endif
@@ -1719,7 +1719,7 @@ static p_action normalYYAction( YYTOKENTYPE t, PARSE_STACK *state, YYACTIONTYPE 
         lhs = yyplhstab[rule];
         top_state = yyactiontab[lhs + yygotobase[ssp[-1]]];
 #ifndef NDEBUG
-        if( PragDbgToggle.dump_parse ) {
+        if( PragDbgToggles.dump_parse ) {
             printf( "=== Unit reduction. New top state %03u Old state %03u ===\n", top_state, ssp[0] );
         }
 #endif
@@ -1742,7 +1742,7 @@ static void pushOperatorQualification( PTREE tree )
 static void lookAheadShift( PARSE_STACK *state, YYACTIONTYPE new_state, YYTOKENTYPE t )
 {
 #ifndef NDEBUG
-    if( PragDbgToggle.dump_parse ) {
+    if( PragDbgToggles.dump_parse ) {
         puts( yytoknames[t] );
     }
 #else
@@ -1758,7 +1758,7 @@ static la_action lookAheadReduce( PARSE_STACK *state, YYACTIONTYPE new_rule )
     YYACTIONTYPE yyaction;
 
 #ifndef NDEBUG
-    if( PragDbgToggle.dump_parse ) {
+    if( PragDbgToggles.dump_parse ) {
         dump_rule( new_rule );
     }
 #endif
@@ -1922,13 +1922,13 @@ static YYACTIONTYPE lookAheadYYAction( YYTOKENTYPE t, PARSE_STACK *state, PARSE_
     newLookAheadStack( &look_ahead_expr_state, state );
     newLookAheadStack( &look_ahead_decl_state, state );
 #ifndef NDEBUG
-    if( PragDbgToggle.dump_parse ) {
+    if( PragDbgToggles.dump_parse ) {
         printf( "expr...\n" );
     }
 #endif
     lookAheadShift( &look_ahead_expr_state, YYAMBIGH0, t );
 #ifndef NDEBUG
-    if( PragDbgToggle.dump_parse ) {
+    if( PragDbgToggles.dump_parse ) {
         printf( "decl...\n" );
     }
 #endif
@@ -1941,13 +1941,13 @@ static YYACTIONTYPE lookAheadYYAction( YYTOKENTYPE t, PARSE_STACK *state, PARSE_
             t = yylex( host );
             lookAheadSaveToken( host, t );
 #ifndef NDEBUG
-            if( PragDbgToggle.dump_parse ) {
+            if( PragDbgToggles.dump_parse ) {
                 printf( "expr...\n" );
             }
 #endif
             expr_what = lookAheadShiftReduce( t, &look_ahead_expr_state, host );
 #ifndef NDEBUG
-            if( PragDbgToggle.dump_parse ) {
+            if( PragDbgToggles.dump_parse ) {
                 printf( "decl...\n" );
             }
 #endif
@@ -2035,7 +2035,7 @@ static p_action doAction( YYTOKENTYPE t, PARSE_STACK *state )
         unsigned stackDepth;
 #endif
         yyk = *(state->ssp);
-        DbgStmt( if( PragDbgToggle.parser_states ) \
+        DbgStmt( if( PragDbgToggles.parser_states ) \
                      printf( "parser top state: %u token: 0x%x (%s)\n", yyk, t , yytoknames[t] ); );
         DbgStmt( stackDepth = (state->ssp - &(state->sstack[0])) + 1; );
 
@@ -2043,7 +2043,7 @@ static p_action doAction( YYTOKENTYPE t, PARSE_STACK *state )
         //  DumpStack
         */
 #ifndef NDEBUG
-        if( PragDbgToggle.dump_parse ) {
+        if( PragDbgToggles.dump_parse ) {
             dump_state_stack("in start of doAction loop", state);
         }
 #endif
@@ -2079,7 +2079,7 @@ static p_action doAction( YYTOKENTYPE t, PARSE_STACK *state )
             INC_STACK( lsp );
 
 #ifndef NDEBUG
-            if( PragDbgToggle.dump_parse ) {
+            if( PragDbgToggles.dump_parse ) {
                 dump_state_stack("after yyaction shift", state);
             }
 #endif
@@ -2092,7 +2092,7 @@ static p_action doAction( YYTOKENTYPE t, PARSE_STACK *state )
                 break;
             }
 #ifndef NDEBUG
-            if( PragDbgToggle.dump_parse ) {
+            if( PragDbgToggles.dump_parse ) {
                 switch( t ) {
                 case Y_ID:
                 case Y_UNKNOWN_ID:
@@ -2118,7 +2118,7 @@ static p_action doAction( YYTOKENTYPE t, PARSE_STACK *state )
                 fatalParserError();
             }
 #ifndef NDEBUG
-            if( PragDbgToggle.dump_parse ) {
+            if( PragDbgToggles.dump_parse ) {
                 printf( "=== Parser stack reduced by %u levels ===\n", yyl );
             }
 #endif
@@ -2134,12 +2134,12 @@ static p_action doAction( YYTOKENTYPE t, PARSE_STACK *state )
         yyvp = curr_vsp;
         yylp = state->lsp;
 #ifndef NDEBUG
-        if( PragDbgToggle.dump_parse ) {
+        if( PragDbgToggles.dump_parse ) {
             dump_state_stack("shift / reduce?", state);
         }
 #endif
 #ifndef NDEBUG
-        if( PragDbgToggle.dump_parse ) {
+        if( PragDbgToggles.dump_parse ) {
             dump_rule( rule );
         }
 #endif

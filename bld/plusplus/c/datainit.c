@@ -93,8 +93,8 @@ static unsigned bitMask[] = {       // for bitfields
 #define _dumpDtor( x )
 #define _dumpDtorSymbol( x )
 #else
-#define __DUMP_INIT ( PragDbgToggle.dump_init )
-#define __DUMP_DTOR ( __DUMP_INIT || ( PragDbgToggle.dump_data_dtor ) )
+#define __DUMP_INIT ( PragDbgToggles.dump_init )
+#define __DUMP_DTOR ( __DUMP_INIT || ( PragDbgToggles.dump_data_dtor ) )
 #define _fatal( x )             CFatal( x )
 #define _dump( x )              if( __DUMP_INIT ) puts( x )
 #define _dumpPTree( x )         if( __DUMP_INIT ) DumpPTree( x )

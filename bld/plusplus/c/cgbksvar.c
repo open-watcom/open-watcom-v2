@@ -99,7 +99,7 @@ static void pruneSE(            // PRUNE STATE ENTRY
 
     RingPrune( a_stab, se );
 #ifndef NDEBUG
-    if( PragDbgToggle.dump_stab ) {
+    if( PragDbgToggles.dump_stab ) {
         printf( "State Table[%p] removed: %p\n", a_stab, se );
         DbgDumpStateEntry( se );
     }
@@ -129,7 +129,7 @@ static bool sameSE(             // DETERMINE IF SAME STATE ENTRY
                 last->set_sv.se = se->set_sv.se;
 // check for SET_SV to previous
 #ifndef NDEBUG
-                if( PragDbgToggle.dump_stab ) {
+                if( PragDbgToggles.dump_stab ) {
                     printf( "State Table replacement %p\n", se );
                     DbgDumpStateEntry( last );
                 }
@@ -186,7 +186,7 @@ static SE* stateTableAddSe(     // ADD TO STATE TABLE
         se->base.prev = next->base.prev;
         next->base.prev = se;
 #ifndef NDEBUG
-        if( PragDbgToggle.dump_stab ) {
+        if( PragDbgToggles.dump_stab ) {
             printf( "State Table[%p] added: %p\n", a_stab, se );
             DbgDumpStateEntry( se );
         }

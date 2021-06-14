@@ -294,7 +294,7 @@ void MiscMacroDefs(             // PREDEFINE MISCELLANEOUS MACROS
     PreDefineStringMacro( "__WATCOM_CPLUSPLUS__=" _MACROSTR( _BLDVER ) );
     // #if __WATCOM_REVISION__ >= 8
     PreDefineStringMacro( "__WATCOM_REVISION__=8" );
-    if( !PragToggle.check_stack ) {
+    if( !PragToggles.check_stack ) {
         DefSwitchMacro( "S" );
     }
     RingNameFree( &undef_names );

@@ -913,19 +913,19 @@ PTREE IcEmitExpr(               // EMIT EXPRESSION
     expr = NodePromoteDups( expr, &posn );
     SrcPosnEmit( &posn );
 #ifndef NDEBUG
-    if( PragDbgToggle.ic_trace_on ) {
+    if( PragDbgToggles.ic_trace_on ) {
         CgFrontCode( IC_TRACE_BEG );
-        PragDbgToggle.ic_trace_on = false;
+        PragDbgToggles.ic_trace_on = false;
     }
-    if( PragDbgToggle.ic_trace_off ) {
+    if( PragDbgToggles.ic_trace_off ) {
         CgFrontCode( IC_TRACE_END );
-        PragDbgToggle.ic_trace_off = false;
+        PragDbgToggles.ic_trace_off = false;
     }
-    if( PragDbgToggle.dump_ptree ) {
+    if( PragDbgToggles.dump_ptree ) {
         DumpCommentary( "Parse tree to be emited" );
         DumpPTree( expr );
     }
-    if( PragDbgToggle.print_ptree ) {
+    if( PragDbgToggles.print_ptree ) {
         DumpCommentary( "Parse tree to be emited" );
         DbgPrintPTREE( expr );
     }

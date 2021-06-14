@@ -442,11 +442,11 @@ CGIOBUFF *CgioBuffWriteIC(      // WRITE AN IC RECORD
 #ifndef NDEBUG
     DbgAssert( ins->opcode != IC_EOF );
     if( icMaskTable[ins->opcode] & ICOPM_BRINFO ) {
-        if( PragDbgToggle.browse_emit ) {
+        if( PragDbgToggles.browse_emit ) {
             DumpCgFront( "BiEm", ctl->disk_addr, ctl->free_offset, ins );
         }
     } else {
-        if( PragDbgToggle.dump_emit_ic ) {
+        if( PragDbgToggles.dump_emit_ic ) {
             DumpCgFront( "Emit", ctl->disk_addr, ctl->free_offset, ins );
         }
         if( ICOpTypes[ins->opcode] == ICOT_SYM ) {
@@ -498,12 +498,12 @@ static void dumpRead            // DBG: TRACE AN INSTRUCTION READ
     char * prefix = NULL;       // - NULL or prefix when tracing
 
     if( IC_EOF != curr->opcode && (icMaskTable[curr->opcode] & ICOPM_BRINFO) ) {
-        if( PragDbgToggle.browse_read ) {
+        if( PragDbgToggles.browse_read ) {
             prefix = "BiRd";
         }
-    } else if( PragDbgToggle.dump_exec_ic ) {
+    } else if( PragDbgToggles.dump_exec_ic ) {
         prefix = exec;
-    } else if( PragDbgToggle.callgraph_scan ) {
+    } else if( PragDbgToggles.callgraph_scan ) {
         prefix = scan;
     }
     if( NULL != prefix ) {
@@ -800,11 +800,11 @@ void CgioBuffZap(               // ZAP A WRITTEN AREA OF A BUFFER
     ctl = findRdBuffer( zap.block );
 #ifndef NDEBUG
     if( icMaskTable[ins->opcode] & ICOPM_BRINFO ) {
-        if( PragDbgToggle.browse_emit ) {
+        if( PragDbgToggles.browse_emit ) {
             DumpCgFront( "ZAP ", zap.block, zap.offset, ins );
         }
     } else {
-        if( PragDbgToggle.dump_emit_ic ) {
+        if( PragDbgToggles.dump_emit_ic ) {
             DumpCgFront( "ZAP ", zap.block, zap.offset, ins );
         }
     }

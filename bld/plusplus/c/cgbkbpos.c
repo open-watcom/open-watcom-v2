@@ -67,7 +67,7 @@ static void DbgDumpBlkPosn(     // DUMP A BLK_POSN
     BLK_POSN* bpos,             // - entry
     const char* text )          // - text
 {
-    if( PragDbgToggle.dump_blk_posn ) {
+    if( PragDbgToggles.dump_blk_posn ) {
         printf( "%s BLK_POSN[%p] scope(%p) posn(%p)\n"
                 "    last_method(%d) starting(%p) temp_beg(%p) temp_end(%p)\n"
               , text
@@ -79,7 +79,7 @@ static void DbgDumpBlkPosn(     // DUMP A BLK_POSN
               , bpos->temp_beg
               , bpos->temp_end );
     }
-    if( PragDbgToggle.dump_blk_posn || PragDbgToggle.dump_exec_ic ) {
+    if( PragDbgToggles.dump_blk_posn || PragDbgToggles.dump_exec_ic ) {
         FN_CTL* fctl = FnCtlTop();
         printf( "** function dtm(%d) scope dtm(%d)\n"
               , fctl->func_dtor_method

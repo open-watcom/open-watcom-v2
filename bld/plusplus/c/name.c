@@ -41,7 +41,7 @@
 #include "stats.h"
 #include "pcheader.h"
 #ifndef NDEBUG
-	#include "pragdefn.h"
+    #include "pragdefn.h"
     #include "togglesd.h"
 #endif
 
@@ -549,7 +549,7 @@ static void fini(               // INITIALIZATION
     /* unused parameters */ (void)defn;
 
 #ifndef NDEBUG
-    if( PragDbgToggle.dump_names ) {
+    if( PragDbgToggles.dump_names ) {
         dumpNames();
         puts( "created name.lst" );
     }

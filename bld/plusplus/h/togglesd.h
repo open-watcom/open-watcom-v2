@@ -39,6 +39,6 @@ typedef struct pragma_dbg_toggles {
     #undef toggle_pick
 } pragma_dbg_toggles;
 
-extern pragma_dbg_toggles       PragDbgToggle;
+extern pragma_dbg_toggles       PragDbgToggles;
 
 #endif

@@ -69,7 +69,7 @@ typedef struct {                // INFO FOR A CONDITION
 #ifndef NDEBUG
     static void _Dump( COND_STK* cond, const char* msg )
     {
-        if( PragDbgToggle.dump_stab ) {
+        if( PragDbgToggles.dump_stab ) {
             printf( "COND_STK[%p]: flag(%d) %s\n"
                     "  last(%p) true(%p) false(%p)\n"
                     "  patch_set(%p) patch_clr(%p) mask_set(%x) mask_clr(%x)\n"

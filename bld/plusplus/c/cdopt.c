@@ -265,7 +265,7 @@ static void DumpCdoptIter(      // DUMP ITERATOR
     const char* text1,          // - and some text
     const char* text2 )         // - and some text
 {
-    if( PragDbgToggle.cdopt ) {
+    if( PragDbgToggles.cdopt ) {
         printf( "CDOPT_ITER[%p] info(%p) orig_otype(%s) %s %s\n"
                 "    offsets: comp(%x) elem(%x) vbase(%p) gened_comp(%x) at_end(%x)\n"
               , iter
@@ -317,7 +317,7 @@ static void DumpCdoptInfo(      // DUMP CD_DESCR
     CL_ELEM* elem;              // - current element
     ACC_FUN* af;                // - current function access
 
-    if( PragDbgToggle.cdopt ) {
+    if( PragDbgToggles.cdopt ) {
         VBUF vbuf;
 
         printf( "CD_DESCR[%p]: type(%p) opt(%s) elements(%p)\n"
@@ -345,7 +345,7 @@ static void DumpCdoptIn(        // DUMP INPUT STACK ENTRY
     STKIN *inp,                 // - input stack
     const char* text )          // - descriptive text
 {
-    if( PragDbgToggle.cdopt ) {
+    if( PragDbgToggles.cdopt ) {
         printf( "STKIN[%p]: info(%p) elem(%p) %s\n"
               , inp
               , inp->info
@@ -360,7 +360,7 @@ static void DumpClIter(         // DUMP STACK ENTRY
     CL_ITER* exp,               // - stack entry
     const char* text )          // - and some text
 {
-    if( PragDbgToggle.cdopt ) {
+    if( PragDbgToggles.cdopt ) {
         printf( "CL_ITER[%p]: info(%p) elem(%p) comp_otype(%s) %s\n"
               , exp
               , exp->info
@@ -389,12 +389,12 @@ static void DumpCdoptCaches(    // DUMP CDOPT CACHES
 {
     bool saved;
 
-    saved = PragDbgToggle.cdopt;
-    PragDbgToggle.cdopt = true;
+    saved = PragDbgToggles.cdopt;
+    PragDbgToggles.cdopt = true;
     dumpRing( allDescriptors.cdopt_ctor );
     dumpRing( allDescriptors.cdopt_dtor );
     dumpRing( allDescriptors.cdopt_opeq );
-    PragDbgToggle.cdopt = saved;
+    PragDbgToggles.cdopt = saved;
 }
 
 #else
@@ -1470,7 +1470,7 @@ static void addInfoElement(     // ADD ELEMENT TO CD_DESCR
     CL_ELEM* elem )             // - the element
 {
 #ifndef NDEBUG
-    if( PragDbgToggle.cdopt ) {
+    if( PragDbgToggles.cdopt ) {
         printf( "-- ADDED %p TO %p\n", elem, info );
     }
 #endif
@@ -1895,7 +1895,7 @@ void CDoptBackEnd(              // START OF BACK-END PROCESSING
     void )
 {
 #ifndef NDEBUG
-    if( PragDbgToggle.dump_cdopt ) {
+    if( PragDbgToggles.dump_cdopt ) {
         DumpCdoptCaches();
     }
 #endif
