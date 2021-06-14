@@ -59,7 +59,7 @@
 #include "compinfo.h"
 #include "toggles.h"
 #ifndef NDEBUG
-        #include "togglesd.h"
+    #include "togglesd.h"
 #endif
 
 #include "clibext.h"

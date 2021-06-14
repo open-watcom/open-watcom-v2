@@ -84,6 +84,9 @@ pragma_toggles          PragToggles;
 pragma_dbg_toggles      PragDbgToggles;
 #endif
 
+#define pick( x ) static prag_stack *TOGGLE_STK( x );
+#include "togdef.h"
+#undef pick
 static prag_stack       *TOGGLE_STK( pack );
 static prag_stack       *TOGGLE_STK( enum );
 static prag_stack       *FreePrags;
@@ -1308,8 +1311,8 @@ void CPragma( void )                  // PROCESS A PRAGMA
             pragOptions( 1 );
         } else if( pragmaNameRecog( "off" ) ) {
             pragOptions( 0 );
-//        } else if( pragmaNameRecog( "pop" ) ) {
-//            pragOptions( -1 );
+        } else if( pragmaNameRecog( "pop" ) ) {
+            pragOptions( -1 );
         } else if( pragmaNameRecog( "aux" ) || pragmaNameRecog( "linkage" ) ) {
             PragAux();
         } else if( pragmaNameRecog( "library" ) ) {
@@ -1786,8 +1789,7 @@ static void writePacks( void )
         stackPush( &reversed_entries, stack_entry );
     }
     while( (stack_entry = stackPop( &reversed_entries )) != NULL ) {
-        pack_amount = stack_entry->value;
-        PCHWriteUInt( pack_amount );
+        PCHWriteUInt( stack_entry->value );
         stackPush( &TOGGLE_STK( pack ), stack_entry );
     }
     PCHWriteUInt( PCH_LIST_TERM );
@@ -1947,12 +1949,13 @@ void PragmaSetToggle(           // SET TOGGLE
     int func,                   // - -1/0/1 ==> func pop/off/on
     bool push )                 // - true ==> push current value on stack
 {
-    /* unused parameters */ (void)push;
-
 #ifndef NDEBUG
     #define pick( x ) \
         if( strcmp( name, #x ) == 0 ) { \
-            TOGGLEDBG( x ) = ( func != 0 ); \
+            if( func == -1 ) { \
+            } else { \
+                TOGGLEDBG( x ) = ( func != 0 ); \
+            } \
             return; \
         }
     #include "togdefd.h"
@@ -1960,7 +1963,17 @@ void PragmaSetToggle(           // SET TOGGLE
 #endif
     #define pick( x ) \
         if( strcmp( name, #x ) == 0 ) { \
-            TOGGLE( x ) = ( func != 0 ); \
+            if( func == -1 ) { \
+                unsigned    value; \
+                if( popPrag( &TOGGLE_STK( x ), &value ) ) { \
+                    TOGGLE( x ) = ( value != 0 ); \
+                } \
+            } else { \
+                if( push ) { \
+                    pushPrag( &TOGGLE_STK( x ), TOGGLE( x ) ); \
+                } \
+                TOGGLE( x ) = ( func != 0 ); \
+            } \
             return; \
         }
     #include "togdef.h"
@@ -1971,6 +1984,9 @@ void PragmaTogglesInit( void )
 {
     TOGGLE( check_stack ) = true;
     TOGGLE( unreferenced ) = true;
+    #define pick( x ) TOGGLE_STK( x ) = NULL;
+    #include "togdef.h"
+    #undef pick
     TOGGLE_STK( pack ) = NULL;
     TOGGLE_STK( enum ) = NULL;
     FreePrags = NULL;

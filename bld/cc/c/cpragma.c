@@ -65,6 +65,9 @@ pragma_toggles          PragmaToggles;
 pragma_dbg_toggles      PragmaDbgToggles;
 #endif
 
+#define pick( x ) static prag_stack *TOGGLE_STK( x );
+#include "togdef.h"
+#undef pick
 static prag_stack       *TOGGLE_STK( pack );
 static prag_stack       *TOGGLE_STK( enum );
 static prag_stack       *FreePrags;
@@ -139,9 +142,12 @@ void InitPragmaToggles( void )
 void CPragmaInit( void )
 /**********************/
 {
-    TextSegList = NULL;
+    #define pick( x ) TOGGLE_STK( x ) = NULL;
+    #include "togdef.h"
+    #undef pick
     TOGGLE_STK( pack ) = NULL;
     TOGGLE_STK( enum ) = NULL;
+    TextSegList = NULL;
     AliasHead = NULL;
     HeadLibs = NULL;
     ExtrefInfo = NULL;
@@ -160,11 +166,13 @@ void CPragmaFini( void )
 
     PragmaAuxFini();
 
-    while( TextSegList != NULL ) {
-        junk = TextSegList;
-        TextSegList = TextSegList->next;
-        CMemFree( junk );
-    }
+    #define pick( x ) \
+        while( (junk = TOGGLE_STK( x )) != NULL ) { \
+            TOGGLE_STK( x ) = TOGGLE_STK( x )->next; \
+            CMemFree( junk ); \
+        }
+    #include "togdef.h"
+    #undef pick
 
     while( (junk = TOGGLE_STK( pack )) != NULL ) {
         TOGGLE_STK( pack ) = TOGGLE_STK( pack )->next;
@@ -176,20 +184,22 @@ void CPragmaFini( void )
         CMemFree( junk );
     }
 
-    while( HeadLibs != NULL ) {
-        junk = HeadLibs;
+    while( (junk = TextSegList) != NULL ) {
+        TextSegList = TextSegList->next;
+        CMemFree( junk );
+    }
+
+    while( (junk = HeadLibs) != NULL ) {
         HeadLibs = HeadLibs->next;
         CMemFree( junk );
     }
 
-    while( AliasHead != NULL ) {
-        junk = AliasHead;
+    while( (junk = AliasHead) != NULL ) {
         AliasHead = AliasHead->next;
         CMemFree( junk );
     }
 
-    while( ExtrefInfo != NULL ) {
-        junk = ExtrefInfo;
+    while( (junk = ExtrefInfo) != NULL ) {
         ExtrefInfo = ExtrefInfo->next;
         CMemFree( junk );
     }
@@ -676,24 +686,35 @@ hw_reg_set *PragManyRegSets( void )
 void SetToggleFlag( char const *name, int func, bool push )
 /*********************************************************/
 {
-    /* unused parameters */ (void)push;
-
 #ifndef NDEBUG
-#define pick( x ) \
-    if( strcmp( name, #x ) == 0 ) { \
-        TOGGLEDBG( x ) = ( func != 0 ); \
-        return; \
-    }
-#include "togdefd.h"
-#undef pick
+    #define pick( x ) \
+        if( strcmp( name, #x ) == 0 ) { \
+            if( func == -1 ) { \
+            } else { \
+                TOGGLEDBG( x ) = ( func != 0 ); \
+            } \
+            return; \
+        }
+    #include "togdefd.h"
+    #undef pick
 #endif
-#define pick( x ) \
-    if( strcmp( name, #x ) == 0 ) { \
-        TOGGLE( x ) = ( func != 0 ); \
-        return; \
-    }
-#include "togdef.h"
-#undef pick
+    #define pick( x ) \
+        if( strcmp( name, #x ) == 0 ) { \
+            if( func == -1 ) { \
+                unsigned    value; \
+                if( popPrag( &TOGGLE_STK( x ), &value ) ) { \
+                    TOGGLE( x ) = ( value != 0 ); \
+                } \
+            } else { \
+                if( push ) { \
+                    pushPrag( &TOGGLE_STK( x ), TOGGLE( x ) ); \
+                } \
+                TOGGLE( x ) = ( func != 0 ); \
+            } \
+            return; \
+        }
+    #include "togdef.h"
+    #undef pick
 }
 
 /* forms:
@@ -1669,8 +1690,8 @@ void CPragma( void )
             pragOptions( 1 );
         } else if( pragmaNameRecog( "off" ) ) {
             pragOptions( 0 );
-//        } else if( pragmaNameRecog( "pop" ) ) {
-//            pragOptions( -1 );
+        } else if( pragmaNameRecog( "pop" ) ) {
+            pragOptions( -1 );
         } else if( pragmaNameRecog( "aux" ) || pragmaNameRecog( "linkage" ) ) {
             PragAux();
         } else if( pragmaNameRecog( "library" ) ) {

@@ -39,6 +39,11 @@
 #include "memmgr.h"
 #include "callinfo.h"
 
+
+#define MAX_POSSIBLE_REG        8
+
+#define MAXIMUM_PARMSETS        32
+
 typedef struct aux_entry AUX_ENTRY;
 typedef struct aux_info AUX_INFO;
 
@@ -65,10 +70,6 @@ global AUX_ENTRY        *AuxList;
 global AUX_ENTRY        *CurrEntry;
 global AUX_INFO         *CurrAlias;
 global AUX_INFO         *CurrInfo;
-
-#define MAX_POSSIBLE_REG        8
-
-#define MAXIMUM_PARMSETS        32
 
 // PROTOTYPES FOR PRAGMA PROCESSING
 
