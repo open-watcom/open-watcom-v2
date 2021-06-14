@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,6 +44,11 @@
 #include "reposit.h"
 #include "scoperes.h"
 #include "dumpapi.h"
+#ifndef NDEBUG
+    #include "togglesd.h"
+    #include "dbg.h"
+    #include "pragdefn.h"
+#endif
 
 
 //typedef struct unr_usage        UNR_USAGE;          // unresolved usage
@@ -130,9 +136,6 @@ static SCOPE_RES* scopes;       // unresolved scopes
 
 
 #ifndef NDEBUG
-
-#include "dbg.h"
-#include "pragdefn.h"
 
 static char const * usage_names[] = {
     #define USAGE_DEF(a) # a

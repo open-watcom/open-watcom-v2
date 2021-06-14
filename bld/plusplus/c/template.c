@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,11 +48,13 @@
 #include "initdefs.h"
 #include "conpool.h"
 #ifndef NDEBUG
-#include "pragdefn.h"
-#include "dbg.h"
-#include "fmttype.h"
-#include "fmtsym.h"
+    #include "pragdefn.h"
+    #include "dbg.h"
+    #include "fmttype.h"
+    #include "fmtsym.h"
+    #include "togglesd.h"
 #endif
+
 
 #define BLOCK_TEMPLATE_INFO     16
 #define BLOCK_CLASS_INST        32

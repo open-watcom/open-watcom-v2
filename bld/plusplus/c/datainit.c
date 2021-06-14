@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,9 +44,7 @@
 #include "ring.h"
 #include "stack.h"
 #include "carve.h"
-#include "toggle.h"
 #include "decl.h"
-#include "dbg.h"
 #include "datainit.h"
 #include "rtfuns.h"
 #include "label.h"
@@ -54,8 +52,11 @@
 #include "datadtor.h"
 #include "initdefs.h"
 #ifndef NDEBUG
-#include "pragdefn.h"
+    #include "dbg.h"
+    #include "pragdefn.h"
+    #include "togglesd.h"
 #endif
+
 
 #define BLOCK_NEST      16
 #define BLOCK_QUEUE     16

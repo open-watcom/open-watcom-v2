@@ -66,14 +66,6 @@ global AUX_ENTRY        *CurrEntry;
 global AUX_INFO         *CurrAlias;
 global AUX_INFO         *CurrInfo;
 
-struct pragma_dbg_toggles  {
-    #define toggle_pick( id )   boolbit     id : 1;
-    #include "dbgtogg.h"
-    #undef toggle_pick
-};
-global struct pragma_dbg_toggles  PragDbgToggle;
-
-
 #define MAX_POSSIBLE_REG        8
 
 #define MAXIMUM_PARMSETS        32
@@ -206,11 +198,13 @@ const char *SkipUnderscorePrefix(
     size_t *len,
     bool iso_compliant_names )
 ;
-
 bool GetPragmaAuxAliasInfo(
     void )
 ;
 void GetPragmaAuxAlias(
+    void )
+;
+void PragmaTogglesInit(
     void )
 ;
 #endif

@@ -49,9 +49,13 @@
 #include "bool.h"
 #include "wcpp.h"
 #include "target.h"
-#if defined( __WATCOMC__ ) && !defined( NDEBUG )
-#include "wtrap.h"
+#ifndef NDEBUG
+  #if defined( __WATCOMC__ )
+    #include "wtrap.h"
+  #endif
 #endif
+#include "dbgzap.h"
+
 
 #define ARRAY_SIZE( array ) ( sizeof( array ) / sizeof( array[0] ) )
 #define PAD_UNSIGNED unsigned :0;
@@ -121,7 +125,6 @@ typedef const struct idname *NAME;      // name pointer
     #define DbgNever()          (CFatal( "should never execute this" __location ))
     #define DbgUseless()        (CFatal( "this code isn't useless!" __location ))
 #else
-    #include "toggle.h"
     #define DbgVerify( cond, msg )
     #define DbgDefault( msg )
     #define DbgAssert( cond )
@@ -131,7 +134,6 @@ typedef const struct idname *NAME;      // name pointer
     #define DbgNever()
     #define DbgUseless()
 #endif
-#include "dbgzap.h"
 
 typedef unsigned MSG_NUM;           // - message number
 

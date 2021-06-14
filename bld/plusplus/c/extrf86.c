@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,6 @@
 #include "plusplus.h"
 #include "rtfuns.h"
 #include "fnovload.h"
-#include "dbg.h"
 #include "cgback.h"
 #include "extrf.h"
 #include "cgaux.h"
@@ -42,6 +42,9 @@
 #include "vfun.h"
 #include "initdefs.h"
 #include "stats.h"
+#ifndef NDEBUG
+    #include "dbg.h"
+#endif
 
 
 ExtraRptCtr( ctr_cgfiles );     // number of CGFILE lookups

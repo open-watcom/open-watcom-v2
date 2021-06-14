@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,8 +39,6 @@
 #include "ring.h"
 #include "iosupp.h"
 #include "fname.h"
-#include "toggle.h"
-#include "dbg.h"
 #include "stats.h"
 #include "cgdata.h"
 #include "icopmask.h"
@@ -47,6 +46,12 @@
 #include "conpool.h"
 #include "pcheader.h"
 #include "cgio.h"
+#ifndef NDEBUG
+    #include "dbg.h"
+    #include "pragdefn.h"
+    #include "togglesd.h"
+#endif
+
 
 #define CGIOBUFF_CHECK  (-(int)(sizeof(CGIOBUFF)|1))
 
@@ -59,7 +64,6 @@
 
 #ifndef NDEBUG
 #define DICT_SIZE       4
-#include "pragdefn.h"
 #else
 #define DICT_SIZE       128
 #endif

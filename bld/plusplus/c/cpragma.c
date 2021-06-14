@@ -42,7 +42,6 @@
 #include "template.h"
 #include "pcheader.h"
 #include "name.h"
-#include "stack.h"
 #include "ring.h"
 #include "fnovload.h"
 #include "cginlibs.h"
@@ -52,6 +51,10 @@
 #include "ialias.h"
 #include "cgfront.h"
 #include "compinfo.h"
+#include "toggles.h"
+#ifndef NDEBUG
+    #include "togglesd.h"
+#endif
 // from \watcom\h
 #include "rtprior.h"
 
@@ -65,13 +68,27 @@
 #define PCH_LIST_TERM       ((unsigned)-1)
 #define PCH_GLOBAL_PACK     ((unsigned)-1)
 
-typedef struct {                // PRAG_EXT_REF -- extref's pragma'd
+typedef struct prag_ext_ref {   // PRAG_EXT_REF -- extref's pragma'd
     void    *next;              // - next in ring
     SYMBOL  symbol;             // - extref symbol
     char    name[1];            // - extref name
-} PRAG_EXT_REF;
+} prag_ext_ref;
 
-static PRAG_EXT_REF *pragmaExtrefs; // ring of pragma'd extref symbols
+typedef struct prag_stack {
+    struct prag_stack   *next;
+    unsigned            value;
+} prag_stack;
+
+pragma_toggles          PragToggle;
+#ifndef NDEBUG
+pragma_dbg_toggles      PragDbgToggle;
+#endif
+
+static prag_stack       *HeadPacks;
+static prag_stack       *HeadEnums;
+static prag_stack       *FreePrags;
+
+static prag_ext_ref     *pragmaExtrefs; // ring of pragma'd extref symbols
 
 static struct magic_words_data {
     const char  *name;
@@ -560,20 +577,22 @@ static void pragDisableMessage( // DISABLE WARNING MESSAGE
 void PragmaSetToggle(           // SET TOGGLE
     bool set_flag )             // - true ==> set flag
 {
+#ifndef NDEBUG
     #define toggle_pick( x ) \
         if( strcmp( Buffer, #x ) == 0 ) {       \
             PragDbgToggle.x = set_flag;         \
             return;                             \
         }
-    #include "dbgtogg.h"
+    #include "togdefd.h"
     #undef toggle_pick
+#endif
 
     #define toggle_pick( x ) \
         if( strcmp( Buffer, #x ) == 0 ) {       \
             PragToggle.x = set_flag;            \
             return;                             \
         }
-    #include "tognam.h"
+    #include "togdef.h"
     #undef toggle_pick
 }
 
@@ -654,28 +673,50 @@ static void pragInitialize(     // #pragma initialize ...
     CompInfo.init_priority = (unsigned char)priority;
 }
 
-static void pushPrag( PRAG_STACK **h, unsigned value )
+static prag_stack *stackPush( prag_stack **header, prag_stack *element )
+/**********************************************************************/
 {
-    PRAG_STACK *stack_entry;
+    element->next = *header;
+    *header = element;
+    return( element );
+}
 
-    stack_entry = StackPop( &FreePrags );
+static prag_stack *stackPop( prag_stack **header )
+/************************************************/
+{
+    prag_stack  *element;
+
+    element = *header;
+    if( element != NULL ) {
+        *header = element->next;
+    }
+    return( element );
+}
+
+static void pushPrag( prag_stack **h, unsigned value )
+/****************************************************/
+{
+    prag_stack *stack_entry;
+
+    stack_entry = stackPop( &FreePrags );
     if( stack_entry == NULL ) {
         stack_entry = CPermAlloc( sizeof( *stack_entry ) );
     }
     stack_entry->value = value;
-    StackPush( h, stack_entry );
+    stackPush( h, stack_entry );
 }
 
-static bool popPrag( PRAG_STACK **h, unsigned *pvalue )
+static bool popPrag( prag_stack **h, unsigned *pvalue )
+/*****************************************************/
 {
-    PRAG_STACK *pack_entry;
+    prag_stack *pack_entry;
 
-    pack_entry = StackPop( h );
+    pack_entry = stackPop( h );
     if( pack_entry != NULL ) {
         if( pvalue != NULL ) {
             *pvalue = pack_entry->value;
         }
-        StackPush( &FreePrags, pack_entry );
+        stackPush( &FreePrags, pack_entry );
         return( true );
     }
     return( false );
@@ -754,10 +795,10 @@ static void pragInitSeg(     // #pragma init_seg ...
 static void parseExtRef(     // PARSE SYMBOL NAME
     void )
 {
-    PRAG_EXT_REF *entry;
+    prag_ext_ref *entry;
 
     if( CurToken == T_STRING ) {
-        entry = RingAlloc( &pragmaExtrefs, offsetof( PRAG_EXT_REF, name ) + TokenLen + 1 );
+        entry = RingAlloc( &pragmaExtrefs, offsetof( prag_ext_ref, name ) + TokenLen + 1 );
         memcpy( entry->name, Buffer, TokenLen + 1 );
         entry->symbol = NULL;
     } else if( IS_ID_OR_KEYWORD( CurToken ) ) {
@@ -785,7 +826,7 @@ static void parseExtRef(     // PARSE SYMBOL NAME
                 sym = NULL;
             }
             if( sym != NULL ) {
-                entry = RingAlloc( &pragmaExtrefs, offsetof( PRAG_EXT_REF, name ) + 1 );
+                entry = RingAlloc( &pragmaExtrefs, offsetof( prag_ext_ref, name ) + 1 );
                 entry->symbol = sym;
                 entry->name[0] = '\0';
             }
@@ -824,7 +865,7 @@ static void pragExtRef(
 void PragmaExtrefsValidate      // VALIDATE EXTREFS FOR PRAGMAS
     ( void )
 {
-    PRAG_EXT_REF* entry;        // - current entry
+    prag_ext_ref    *entry;     // - current entry
 
     RingIterBeg( pragmaExtrefs, entry ) {
         if( entry->symbol != NULL ) {
@@ -846,7 +887,7 @@ void PragmaExtrefsValidate      // VALIDATE EXTREFS FOR PRAGMAS
 void PragmaExtrefsInject        // INJECT EXTREFS FOR PRAGMAS
     ( void )
 {
-    PRAG_EXT_REF* entry;        // - current entry
+    prag_ext_ref    *entry;     // - current entry
 
     RingIterBeg( pragmaExtrefs, entry ) {
         if( entry->symbol != NULL ) {
@@ -1757,24 +1798,24 @@ bool GetPragmaAuxAliasInfo( void )
 
 static void writePacks( void )
 {
-    PRAG_STACK *pack_entry;
-    PRAG_STACK *reversed_packs;
+    prag_stack *pack_entry;
+    prag_stack *reversed_packs;
     unsigned pack_amount;
 
     reversed_packs = NULL;
     for( ;; ) {
-        pack_entry = StackPop( &HeadPacks );
+        pack_entry = stackPop( &HeadPacks );
         if( pack_entry == NULL )
             break;
-        StackPush( &reversed_packs, pack_entry );
+        stackPush( &reversed_packs, pack_entry );
     }
     for( ;; ) {
-        pack_entry = StackPop( &reversed_packs );
+        pack_entry = stackPop( &reversed_packs );
         if( pack_entry == NULL )
             break;
         pack_amount = pack_entry->value;
         PCHWriteUInt( pack_amount );
-        StackPush( &HeadPacks, pack_entry );
+        stackPush( &HeadPacks, pack_entry );
     }
     pack_amount = PCH_GLOBAL_PACK;
     PCHWriteUInt( pack_amount );
@@ -1805,24 +1846,24 @@ static void readPacks( void )
 
 static void writeEnums( void )
 {
-    PRAG_STACK *enum_entry;
-    PRAG_STACK *reversed_enums;
+    prag_stack *enum_entry;
+    prag_stack *reversed_enums;
     unsigned enum_int;
 
     reversed_enums = NULL;
     for( ;; ) {
-        enum_entry = StackPop( &HeadPacks );
+        enum_entry = stackPop( &HeadPacks );
         if( enum_entry == NULL )
             break;
-        StackPush( &reversed_enums, enum_entry );
+        stackPush( &reversed_enums, enum_entry );
     }
     for( ;; ) {
-        enum_entry = StackPop( &reversed_enums );
+        enum_entry = stackPop( &reversed_enums );
         if( enum_entry == NULL )
             break;
         enum_int = enum_entry->value;
         PCHWriteUInt( enum_int );
-        StackPush( &HeadPacks, enum_entry );
+        stackPush( &HeadPacks, enum_entry );
     }
     enum_int = PCH_LIST_TERM;
     PCHWriteUInt( enum_int );
@@ -1845,7 +1886,7 @@ static void readEnums( void )
 static void writeExtrefs( void )
 {
     unsigned        len;
-    PRAG_EXT_REF    *e;
+    prag_ext_ref    *e;
 
     RingIterBeg( pragmaExtrefs, e ) {
         if( e->symbol != NULL ) {
@@ -1867,16 +1908,16 @@ static void readExtrefs( void )
 {
     SYMBOL       sym;
     unsigned     len;
-    PRAG_EXT_REF *entry;
+    prag_ext_ref *entry;
 
     RingFree( &pragmaExtrefs );
     while( (sym = SymbolPCHRead()) != NULL ) {
-        entry = RingAlloc( &pragmaExtrefs, offsetof( PRAG_EXT_REF, name ) + 1 );
+        entry = RingAlloc( &pragmaExtrefs, offsetof( prag_ext_ref, name ) + 1 );
         entry->symbol = sym;
         entry->name[0] = '\0';
     }
     while( (len = PCHReadUInt()) != 0 ) {
-        entry = RingAlloc( &pragmaExtrefs, offsetof( PRAG_EXT_REF, name ) + len + 1 );
+        entry = RingAlloc( &pragmaExtrefs, offsetof( prag_ext_ref, name ) + len + 1 );
         PCHRead( entry->name, len + 1 );
         entry->symbol = NULL;
     }
@@ -1932,4 +1973,13 @@ pch_status PCHFiniPragmaData( bool writing )
     /* unused parameters */ (void)writing;
 
     return( PCHCB_OK );
+}
+
+void PragmaTogglesInit( void )
+{
+    PragToggle.check_stack = true;
+    PragToggle.unreferenced = true;
+    HeadPacks = NULL;
+    HeadEnums = NULL;
+    FreePrags = NULL;
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,13 +38,16 @@
 #include "cgfront.h"
 #include "carve.h"
 #include "vbuf.h"
-#include "dbg.h"
 #include "fmtsym.h"
 #include "fmttype.h"
 #include "name.h"
 #include "initdefs.h"
 #include "ringfns.h"
 #include "template.h"
+#ifndef NDEBUG
+    #include "dbg.h"
+#endif
+
 
 typedef enum {
     LEFT, RIGHT

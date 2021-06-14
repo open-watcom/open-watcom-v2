@@ -25,27 +25,20 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Definitions for #pragma aux processing.
 *
 ****************************************************************************/
 
 
-// CARVECPP.H -- customization of carve for C++
-//
-//
-#include "fesupp.h"
+#ifndef __TOGGLESD_H_
+#define __TOGGLESD_H_
 
-#include "stats.h"
-#include "ring.h"
-#include "pcheader.h"
-#include "pragdefn.h"
-#ifndef NDEBUG
-#   include "togglesd.h"
-#endif
+typedef struct pragma_dbg_toggles {
+    #define toggle_pick( id )   boolbit     id : 1;
+    #include "togdefd.h"
+    #undef toggle_pick
+} pragma_dbg_toggles;
 
-#define ERR_RET ( ErrCount != 0 )
-#define ERR_SET ++ErrCount
-#ifndef NDEBUG
-#   define DUMP_MEMORY
+extern pragma_dbg_toggles       PragDbgToggle;
+
 #endif

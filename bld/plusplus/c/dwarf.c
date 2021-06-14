@@ -40,7 +40,6 @@
 #include "pragdefn.h"
 #include "cgback.h"
 #include "ring.h"
-#include "dbg.h"
 #include "dw.h"
 #include "cppdwarf.h"
 #include "dwarfdbg.h"
@@ -51,6 +50,10 @@
 #include "name.h"
 #include "icopmask.h"
 #include "fmttype.h"
+#ifndef NDEBUG
+    #include "dbg.h"
+#endif
+
 
 #define _typeHasForwardDwarfHandle( type ) \
 ( ((type)->dbgflag & (TF2_SYMDBG|TF2_DWARF_FWD)) == (TF2_SYMDBG|TF2_DWARF_FWD) )

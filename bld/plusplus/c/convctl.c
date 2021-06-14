@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,9 @@
 #include "template.h"
 #include "class.h"
 #include "dumpapi.h"
+#ifndef NDEBUG
+    #include "dbg.h"
+#endif
 
 
 static CNV_DIAG diagImpossible  // DIAGNOSIS FOR IMPOSSIBLE CONVERT FAILURE
@@ -1419,8 +1422,6 @@ CNV_RETN CastPtrToPtr           // IMPLICIT/EXPLICIT CAST PTR -> PTR
 
 
 #ifndef NDEBUG
-
-#include "dbg.h"
 
 static char const * const rkdstr[] = {
     #define dfnRKD(a) # a

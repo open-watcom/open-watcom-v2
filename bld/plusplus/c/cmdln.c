@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +43,7 @@
 #include "ring.h"
 #include "ringname.h"
 #include "cgdata.h"
-#include "toggle.h"
+#include "toggles.h"
 #include "pragdefn.h"
 #include "pdefn2.h"
 #include "context.h"
@@ -54,6 +54,7 @@
 
 #include "cmdlnprs.gh"
 #include "cmdlnsys.h"
+
 
 static  RINGNAMECTL undef_names =       // #UNDEF NAMES LIST
 {   NULL                                // - ring
@@ -306,8 +307,6 @@ void InitModInfo(               // INITIALIZE MODULE INFORMATION
     GblPackAmount = PackAmount;
     SrcFileSetTab( DEF_TAB_WIDTH );
     RingNameInit( &undef_names );
-    PragToggle.check_stack = true;
-    PragToggle.unreferenced = true;
     DataThreshold = 32767;
     OptSize = 50;
     WholeFName = NULL;
@@ -327,9 +326,8 @@ void InitModInfo(               // INITIALIZE MODULE INFORMATION
 
     SetAuxWatcallInfo();
 
-    HeadPacks = NULL;
-    HeadEnums = NULL;
-    FreePrags = NULL;
+    PragmaTogglesInit();
+
     CgBackSetInlineDepth( DEFAULT_INLINE_DEPTH );
     CgBackSetOeSize( 0 );
     CgBackSetInlineRecursion( false );

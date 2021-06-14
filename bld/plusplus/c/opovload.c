@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,6 +42,9 @@
 #include "stats.h"
 #include "template.h"
 #include "class.h"
+#ifndef NDEBUG
+    #include "dbg.h"
+#endif
 
 
 typedef enum                    // Used to control scalar operand types
@@ -1220,8 +1223,6 @@ pch_status PCHFiniOperatorOverloadData( bool writing )
 
 
 #ifndef NDEBUG
-
-#include "dbg.h"
 
 static void dumpOVOP            // DEBUG -- DUMP OVOP structure
     ( OVOP* ovop                // - OVOP

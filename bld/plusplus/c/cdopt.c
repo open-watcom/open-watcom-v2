@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,8 +44,11 @@
 #include "context.h"
 #include "stats.h"
 #ifndef NDEBUG
-#include "pragdefn.h"
+    #include "pragdefn.h"
+    #include "dbg.h"
+    #include "togglesd.h"
 #endif
+
 
 #define TIS_DEFS                /* types in input stack     */ \
   TIS_DEF( DT_INPUT )           /* - dtor, unprocessed      */ \
@@ -204,10 +207,6 @@ ExtraRptCtr( ctr_opeq_kept );   // # opeq elements kept
 ExtraRptCtr( ctr_caches );      // # caches
 
 #ifndef NDEBUG
-
-#include "dbg.h"
-#include "toggle.h"
-
 
 static const char *tob_names[] = {
     #define TOB_DEF(a) # a

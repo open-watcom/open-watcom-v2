@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,12 +44,12 @@
 #include "ring.h"
 #include "rtti.h"
 #include "initdefs.h"
-
 #ifndef NDEBUG
     #include "dbg.h"
-    #include "toggle.h"
+    #include "togglesd.h"
     #include "pragdefn.h"
 #endif
+
 
 static carve_t carveTYPE_SIG_ENT;   // allocations for TYPE_SIG_ENT
 static bool type_sig_gened;         // true ==> a type signature was gen'ed

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,6 +43,10 @@
 #include "vstk.h"
 #include "initdefs.h"
 #include "preproc.h"
+#ifndef NDEBUG
+    #include "togglesd.h"
+    #include "pragdefn.h"
+#endif
 
 
 typedef struct                  // SYM_TRANS -- symbol translation
@@ -52,9 +56,6 @@ typedef struct                  // SYM_TRANS -- symbol translation
 } SYM_TRANS;
 
 #ifndef NDEBUG
-
-    #include "toggle.h"
-    #include "pragdefn.h"
 
     static void dump( const char* msg, SYM_TRANS* tr )
     {

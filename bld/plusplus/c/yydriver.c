@@ -15,7 +15,6 @@ YYDRIVER: driver code to make use of YACC generated parser tables and support
 #include "decl.h"
 #include "carve.h"
 #include "rewrite.h"
-#include "toggle.h"
 #include "ppops.h"
 #include "gstack.h"
 #include "class.h"
@@ -30,9 +29,11 @@ YYDRIVER: driver code to make use of YACC generated parser tables and support
 #include "cgfront.h"
 #include "rtngen.h"
 #ifndef NDEBUG
-#include "pragdefn.h"
-#include "dbg.h"
+    #include "pragdefn.h"
+    #include "dbg.h"
+    #include "togglesd.h"
 #endif
+
 
 ExtraRptCtr( lookup_lexical );
 ExtraRptCtr( lookup_other );
@@ -1022,7 +1023,9 @@ static YYTOKENTYPE yylex( PARSE_STACK *state )
     if( token != Y_IMPOSSIBLE ) {
         return( token );
     }
+#ifndef NDEBUG
     DbgZapMem( &yylval, 0xef, sizeof( yylval ) );
+#endif
     switch( CurToken ) {
     case T_COLON_COLON:
         if( flags.no_super_token ) {

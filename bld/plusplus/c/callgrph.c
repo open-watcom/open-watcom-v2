@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,9 +33,12 @@
 
 #include "plusplus.h"
 #include "callgrph.h"
-#include "dbg.h"
 #include "stats.h"
 #include "cgfront.h"
+#ifndef NDEBUG
+    #include "dbg.h"
+#endif
+
 
 ExtraRptCtr( ctr_nodes );       // # nodes
 ExtraRptCtr( ctr_edges );       // # edges
@@ -288,9 +292,6 @@ bool CgrfWalkCalls(             // WALK CALLS FROM NODE IN GRAPH
 }
 
 #ifndef NDEBUG
-
-    #include "dbg.h"
-
 
 static bool cgrfDumpCall(       // DUMP CALL GRAPH EDGE
     CALLGRAPH *ctl,             // - call graph information

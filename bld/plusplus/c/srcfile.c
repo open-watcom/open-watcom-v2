@@ -43,13 +43,13 @@
 #include "sysdep.h"
 #include "name.h"
 #include "cmdline.h"
-#include "toggle.h"
 #include "pcheader.h"
 #include "initdefs.h"
 #include "iosupp.h"
 #include "pathlist.h"
 #ifndef NDEBUG
-#include "pragdefn.h"
+	#include "pragdefn.h"
+    #include "togglesd.h"
 #endif
 #include "brinfo.h"
 #include "cscanbuf.h"

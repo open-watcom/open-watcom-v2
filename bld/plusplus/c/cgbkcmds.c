@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,12 +42,12 @@
 #include "carve.h"
 #include "ring.h"
 #include "initdefs.h"
-
 #ifndef NDEBUG
     #include "dbg.h"
-    #include "toggle.h"
+    #include "togglesd.h"
     #include "pragdefn.h"
 #endif
+
 
 enum                                    // INDICES FOR STATE-TABLE COMMANDS
 {   DTOR_CMD_INDEX_VBASE                // - virtual base

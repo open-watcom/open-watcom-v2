@@ -42,11 +42,10 @@
 #include "ring.h"
 #include "carve.h"
 #include "preproc.h"
-#include "dbg.h"
 #include "template.h"
 #include "class.h"
 #include "name.h"
-#include "toggle.h"
+#include "toggles.h"
 #include "fnovload.h"
 #include "fnbody.h"
 #include "pragdefn.h"
@@ -65,6 +64,10 @@
 #include "rtti.h"
 #include "dumpapi.h"
 #include "compinfo.h"
+#ifndef NDEBUG
+    #include "dbg.h"
+    #include "togglesd.h"
+#endif
 
 
 #define TYPE_HASH_MODULUS       (1<<5)  // modulus when type hashed

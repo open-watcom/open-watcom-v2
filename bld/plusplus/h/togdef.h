@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,15 +31,6 @@
 ****************************************************************************/
 
 
-#ifndef __TOGGLE_H
-#define __TOGGLE_H
-
-struct pragma_toggles {
-    #define toggle_pick( x )    boolbit     x : 1;
-    #include "tognam.h"
-    #undef toggle_pick
-};
-
-global struct pragma_toggles    PragToggle;
-
-#endif
+                                // #pragma on/off( <toggle-name> )
+toggle_pick( check_stack )      // - enable stack checking for functions
+toggle_pick( unreferenced )     // - don't warn if symbol isn't ref'd

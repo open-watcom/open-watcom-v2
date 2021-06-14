@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +44,6 @@
 #include "fname.h"
 #include "yydriver.h"
 #include "cmdline.h"
-#include "dbg.h"
 #include "cgfront.h"
 #include "context.h"
 #include "srcfile.h"
@@ -63,8 +62,10 @@
 #include "ideentry.h"
 #include "pathgrp2.h"
 #ifndef NDEBUG
-#include "pragdefn.h"
-#include "enterdb.h"
+    #include "dbg.h"
+    #include "pragdefn.h"
+    #include "enterdb.h"
+    #include "togglesd.h"
 #endif
 
 #include "clibext.h"
@@ -578,7 +579,9 @@ int WppCompile(                 // MAIN-LINE (DLL)
     stackZap();
     InitFiniStartup( &exitPointStart );
     ExitPointAcquire( mem_management );
+#ifndef NDEBUG
     DbgHeapInit();
+#endif
     if( dll_data->cmd_line != NULL ) {
         char* vect[4];
         unsigned i = 1;
@@ -628,7 +631,9 @@ int WppCompile(                 // MAIN-LINE (DLL)
             exit_status = WPP_FATAL;
         }
     }
+#ifndef NDEBUG
     DbgHeapFini();
+#endif
     ExitPointRelease( mem_management );
     return( exit_status );
 }

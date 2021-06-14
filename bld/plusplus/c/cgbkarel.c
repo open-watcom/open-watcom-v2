@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,6 +41,11 @@
 #include "cgbackut.h"
 #include "ring.h"
 #include "initdefs.h"
+#ifndef NDEBUG
+    #include "togglesd.h"
+    #include "pragdefn.h"
+#endif
+
 
 typedef struct auto_rel         AUTO_REL; // A RELOCATION
 struct auto_rel {
@@ -55,8 +61,6 @@ struct auto_sym {
 };
 
 #ifndef NDEBUG
-    #include "toggle.h"
-    #include "pragdefn.h"
 
     static void __dump_sym( AUTO_SYM*asym, const char* msg )
     {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +38,6 @@
 #include "vbuf.h"
 #include "fmttype.h"
 #include "fmtsym.h"
-#include "dbg.h"
 #include "ring.h"
 #include "ptree.h"
 #include "template.h"
@@ -46,10 +45,10 @@
 #include "iosupp.h"
 #include "codegen.h"
 #include "initdefs.h"
-#include "feprotos.h"
-#ifndef NDEBUG
 #include "pragdefn.h"
-#endif
+#include "togglesd.h"
+#include "dbg.h"
+#include "feprotos.h"
 
 
 #define F_ADDR      "%p"

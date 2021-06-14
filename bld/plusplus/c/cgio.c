@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,6 +45,11 @@
 #include "stats.h"
 #include "module.h"
 #include "dumpapi.h"
+#ifndef NDEBUG
+    #include "togglesd.h"
+    #include "dbg.h"
+    #include "pragdefn.h"
+#endif
 
 
 static CGFILE *cg_file_ring;    // ring of virtual files (live)
@@ -66,9 +71,6 @@ ExtraRptCtr( cgio_locates_thunk );
 
 
 #ifndef NDEBUG
-
-    #include "dbg.h"
-    #include "pragdefn.h"
 
     static void _dump( CGFILE* cgfile, const char* prefix )
     {

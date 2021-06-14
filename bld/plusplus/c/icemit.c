@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,8 +40,6 @@
 #include "ptree.h"
 #include "carve.h"
 #include "cgfront.h"
-#include "dbg.h"
-#include "toggle.h"
 #include "conpool.h"
 #include "label.h"
 #include "codegen.h"
@@ -50,6 +48,11 @@
 #include "rtfuns.h"
 #include "specfuns.h"
 #include "objmodel.h"
+#ifndef NDEBUG
+    #include "dbg.h"
+    #include "togglesd.h"
+#endif
+
 
 static TOKEN_LOCN posn_gened;   // source position -- generated
 static SYMBOL init_ref_temp;    // temp used for auto initialization of refer.

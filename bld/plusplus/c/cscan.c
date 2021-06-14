@@ -37,11 +37,13 @@
 #include "scan.h"
 #include "escchars.h"
 #include "memmgr.h"
-#include "dbg.h"
 #include "name.h"
 #include "context.h"
 #include "unicode.h"
 #include "cscanbuf.h"
+#ifndef NDEBUG
+    #include "dbg.h"
+#endif
 
 
 #if defined(__DOS__) || defined(__OS2__) || defined(__NT__)
