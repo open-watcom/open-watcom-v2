@@ -4005,7 +4005,7 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
         }
         setStorageClass( sym, dspec->stg_class );
         SymbolLocnDefine( &(id_tree->locn), sym );
-        if( !PragToggles.unreferenced ) {
+        if( !TOGGLE( unreferenced ) ) {
             sym->flag |= SYMF_NO_REF_WARN;
         }
         dinfo->sym = sym;

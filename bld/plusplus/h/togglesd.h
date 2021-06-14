@@ -33,12 +33,15 @@
 #ifndef __TOGGLESD_H_
 #define __TOGGLESD_H_
 
+#define TOGGLEDBG(x)        PragDbgToggles.##x
+#define TOGGLEDBG_STK(x)    HeadDbgToggles_##x
+
 typedef struct pragma_dbg_toggles {
-    #define toggle_pick( id )   boolbit     id : 1;
+    #define pick( x )       boolbit     x : 1;
     #include "togdefd.h"
-    #undef toggle_pick
+    #undef pick
 } pragma_dbg_toggles;
 
-extern pragma_dbg_toggles       PragDbgToggles;
+extern pragma_dbg_toggles   PragDbgToggles;
 
 #endif

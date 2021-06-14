@@ -84,8 +84,8 @@ pragma_toggles          PragToggles;
 pragma_dbg_toggles      PragDbgToggles;
 #endif
 
-static prag_stack       *HeadPacks;
-static prag_stack       *HeadEnums;
+static prag_stack       *TOGGLE_STK( pack );
+static prag_stack       *TOGGLE_STK( enum );
 static prag_stack       *FreePrags;
 
 static prag_ext_ref     *pragmaExtrefs; // ring of pragma'd extref symbols
@@ -722,16 +722,16 @@ static void pragEnum            // #pragma enum PARSING
     PPCTL_ENABLE_MACROS();
     NextToken();
     if( PragRecogId( "int" ) ) {
-        pushPrag( &HeadEnums, CompFlags.make_enums_an_int );
+        pushPrag( &TOGGLE_STK( enum ), CompFlags.make_enums_an_int );
         CompFlags.make_enums_an_int = true;
     } else if( PragRecogId( "minimum" ) ) {
-        pushPrag( &HeadEnums, CompFlags.make_enums_an_int );
+        pushPrag( &TOGGLE_STK( enum ), CompFlags.make_enums_an_int );
         CompFlags.make_enums_an_int = false;
     } else if( PragRecogId( "original" ) ) {
-        pushPrag( &HeadEnums, CompFlags.make_enums_an_int );
+        pushPrag( &TOGGLE_STK( enum ), CompFlags.make_enums_an_int );
         CompFlags.make_enums_an_int = CompFlags.original_enum_setting;
     } else if( PragRecogId( "pop" ) ) {
-        if( popPrag( &HeadEnums, &make_enums_an_int ) ) {
+        if( popPrag( &TOGGLE_STK( enum ), &make_enums_an_int ) ) {
             CompFlags.make_enums_an_int = ( make_enums_an_int != 0 );
         }
     }
@@ -1220,16 +1220,16 @@ static void pragPack(           // #PRAGMA PACK
         switch( CurToken ) {
         case T_ID:
             if( PragRecogId( "pop" ) ) {
-                popPrag( &HeadPacks, &PackAmount );
+                popPrag( &TOGGLE_STK( pack ), &PackAmount );
             } else if( PragRecogId( "push" ) ) {
                 if( CurToken == T_RIGHT_PAREN ) {
-                    pushPrag( &HeadPacks, PackAmount );
+                    pushPrag( &TOGGLE_STK( pack ), PackAmount );
                 } else {
                     if( ExpectingToken( T_COMMA ) ) {
                         NextToken();
                     }
                     if( CurToken == T_CONSTANT ) {
-                        pushPrag( &HeadPacks, PackAmount );
+                        pushPrag( &TOGGLE_STK( pack ), PackAmount );
                         PackAmount = VerifyPackAmount( U32Fetch( Constant64 ) );
                         NextToken();
                     } else {
@@ -1781,7 +1781,7 @@ static void writePacks( void )
 
     reversed_packs = NULL;
     for( ;; ) {
-        pack_entry = stackPop( &HeadPacks );
+        pack_entry = stackPop( &TOGGLE_STK( pack ) );
         if( pack_entry == NULL )
             break;
         stackPush( &reversed_packs, pack_entry );
@@ -1792,11 +1792,11 @@ static void writePacks( void )
             break;
         pack_amount = pack_entry->value;
         PCHWriteUInt( pack_amount );
-        stackPush( &HeadPacks, pack_entry );
+        stackPush( &TOGGLE_STK( pack ), pack_entry );
     }
     pack_amount = PCH_GLOBAL_PACK;
     PCHWriteUInt( pack_amount );
-    if( HeadPacks != NULL ) {
+    if( TOGGLE_STK( pack ) != NULL ) {
         pack_amount = PackAmount;
     } else if( PackAmount != GblPackAmount ) {
         pack_amount = PackAmount;
@@ -1808,11 +1808,11 @@ static void readPacks( void )
 {
     unsigned pack_amount;
 
-    while( HeadPacks != NULL ) {
-        popPrag( &HeadPacks, &PackAmount );
+    while( TOGGLE_STK( pack ) != NULL ) {
+        popPrag( &TOGGLE_STK( pack ), &PackAmount );
     }
     for( ; (pack_amount = PCHReadUInt()) != PCH_LIST_TERM; ) {
-        pushPrag( &HeadPacks, pack_amount );
+        pushPrag( &TOGGLE_STK( pack ), pack_amount );
     }
     pack_amount = PCHReadUInt();
     if( pack_amount == PCH_GLOBAL_PACK ) {
@@ -1829,7 +1829,7 @@ static void writeEnums( void )
 
     reversed_enums = NULL;
     for( ;; ) {
-        enum_entry = stackPop( &HeadPacks );
+        enum_entry = stackPop( &TOGGLE_STK( pack ) );
         if( enum_entry == NULL )
             break;
         stackPush( &reversed_enums, enum_entry );
@@ -1840,7 +1840,7 @@ static void writeEnums( void )
             break;
         enum_int = enum_entry->value;
         PCHWriteUInt( enum_int );
-        stackPush( &HeadPacks, enum_entry );
+        stackPush( &TOGGLE_STK( pack ), enum_entry );
     }
     enum_int = PCH_LIST_TERM;
     PCHWriteUInt( enum_int );
@@ -1851,11 +1851,11 @@ static void readEnums( void )
 {
     unsigned enum_int;
 
-    while( HeadEnums != NULL ) {
-        popPrag( &HeadEnums, NULL );
+    while( TOGGLE_STK( enum ) != NULL ) {
+        popPrag( &TOGGLE_STK( enum ), NULL );
     }
     for( ; (enum_int = PCHReadUInt()) != PCH_LIST_TERM; ) {
-        pushPrag( &HeadEnums, enum_int );
+        pushPrag( &TOGGLE_STK( enum ), enum_int );
     }
     CompFlags.make_enums_an_int = ( PCHReadUInt() != 0 );
 }
@@ -1956,29 +1956,29 @@ void PragmaSetToggle(           // SET TOGGLE
     bool set_flag )             // - true ==> set flag
 {
 #ifndef NDEBUG
-    #define toggle_pick( x ) \
-        if( strcmp( Buffer, #x ) == 0 ) {       \
-            PragDbgToggles.x = set_flag;         \
-            return;                             \
+    #define pick( x ) \
+        if( strcmp( Buffer, #x ) == 0 ) { \
+            TOGGLEDBG( x ) = set_flag; \
+            return; \
         }
     #include "togdefd.h"
-    #undef toggle_pick
+    #undef pick
 #endif
 
-    #define toggle_pick( x ) \
-        if( strcmp( Buffer, #x ) == 0 ) {       \
-            PragToggles.x = set_flag;           \
-            return;                             \
+    #define pick( x ) \
+        if( strcmp( Buffer, #x ) == 0 ) { \
+            TOGGLE( x ) = set_flag; \
+            return; \
         }
     #include "togdef.h"
-    #undef toggle_pick
+    #undef pick
 }
 
 void PragmaTogglesInit( void )
 {
-    PragToggles.check_stack = true;
-    PragToggles.unreferenced = true;
-    HeadPacks = NULL;
-    HeadEnums = NULL;
+    TOGGLE( check_stack ) = true;
+    TOGGLE( unreferenced ) = true;
+    TOGGLE_STK( pack ) = NULL;
+    TOGGLE_STK( enum ) = NULL;
     FreePrags = NULL;
 }

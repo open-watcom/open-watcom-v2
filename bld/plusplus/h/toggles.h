@@ -34,10 +34,13 @@
 #ifndef __TOGGLES_H
 #define __TOGGLES_H
 
+#define TOGGLE(x)           PragToggles.##x
+#define TOGGLE_STK(x)       HeadToggles_##x
+
 typedef struct pragma_toggles {
-    #define toggle_pick( x )    boolbit     x : 1;
+    #define pick( x )       boolbit     x : 1;
     #include "togdef.h"
-    #undef toggle_pick
+    #undef pick
 } pragma_toggles;
 
 extern pragma_toggles       PragToggles;

@@ -722,7 +722,7 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
             data->oe_value = 100;
         }
 #endif
-        PragToggles.check_stack = false;         // -s
+        TOGGLE( check_stack ) = false;         // -s
         break;
     case OPT_ENUM_opt_level_od:
         GenSwitches |= NO_OPTIMIZATION;
@@ -1056,7 +1056,7 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         }
     }
     if( data->s ) {
-        PragToggles.check_stack = false;
+        TOGGLE( check_stack ) = false;
     }
     if( data->t ) {
         SrcFileSetTab( data->t_value );
