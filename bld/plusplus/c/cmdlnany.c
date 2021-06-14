@@ -1155,20 +1155,17 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     }
 #ifndef NDEBUG
     if( data->tp ) {
-        for(;;) {
-            OPT_STRING* str = data->tp_value;
-            if( NULL == str )
-                break;
+        OPT_STRING *str;
+        while( (str = data->tp_value) != NULL ) {
             data->tp_value = str->next;
-            strcpy( Buffer, str->data );
+            PragmaSetToggle( str->data, 1, false );
             CMemFree( str );
-            PragmaSetToggle( true );
         }
     }
     if( data->zi ) {
         CompFlags.extra_stats_wanted = true;
         // try to prevent distortions caused by debug stuff
-        PragDbgToggles.no_mem_cleanup = true;
+        TOGGLEDBG( no_mem_cleanup ) = true;
     }
 #endif
     CBanner();

@@ -575,14 +575,14 @@ static void pragDisableMessage( // DISABLE WARNING MESSAGE
 }
 
 static void pragOptions(        // SET TOGGLES
-    bool set_flag )             // - true ==> set flag
+    int func )                  // - true ==> set flag
 {
     PPCTL_ENABLE_MACROS();
     NextToken();
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         NextToken();
         while( IS_ID_OR_KEYWORD( CurToken ) ) {
-            PragmaSetToggle( set_flag );
+            PragmaSetToggle( Buffer, func, true );
             NextToken();
         }
         MustRecog( T_RIGHT_PAREN );
@@ -670,8 +670,8 @@ static prag_stack *stackPop( prag_stack **header )
     return( element );
 }
 
-static void pushPrag( prag_stack **h, unsigned value )
-/****************************************************/
+static void pushPrag( prag_stack **header, unsigned value )
+/*********************************************************/
 {
     prag_stack *stack_entry;
 
@@ -680,20 +680,20 @@ static void pushPrag( prag_stack **h, unsigned value )
         stack_entry = CPermAlloc( sizeof( *stack_entry ) );
     }
     stack_entry->value = value;
-    stackPush( h, stack_entry );
+    stackPush( header, stack_entry );
 }
 
-static bool popPrag( prag_stack **h, unsigned *pvalue )
-/*****************************************************/
+static bool popPrag( prag_stack **header, unsigned *pvalue )
+/**********************************************************/
 {
-    prag_stack *pack_entry;
+    prag_stack *stack_entry;
 
-    pack_entry = stackPop( h );
-    if( pack_entry != NULL ) {
+    stack_entry = stackPop( header );
+    if( stack_entry != NULL ) {
         if( pvalue != NULL ) {
-            *pvalue = pack_entry->value;
+            *pvalue = stack_entry->value;
         }
-        stackPush( &FreePrags, pack_entry );
+        stackPush( &FreePrags, stack_entry );
         return( true );
     }
     return( false );
@@ -1305,9 +1305,11 @@ void CPragma( void )                  // PROCESS A PRAGMA
         }
     } else if( IS_ID_OR_KEYWORD( CurToken ) ) {
         if( pragmaNameRecog( "on" ) ) {
-            pragOptions( true );
+            pragOptions( 1 );
         } else if( pragmaNameRecog( "off" ) ) {
-            pragOptions( false );
+            pragOptions( 0 );
+//        } else if( pragmaNameRecog( "pop" ) ) {
+//            pragOptions( -1 );
         } else if( pragmaNameRecog( "aux" ) || pragmaNameRecog( "linkage" ) ) {
             PragAux();
         } else if( pragmaNameRecog( "library" ) ) {
@@ -1775,31 +1777,26 @@ bool GetPragmaAuxAliasInfo( void )
 
 static void writePacks( void )
 {
-    prag_stack *pack_entry;
-    prag_stack *reversed_packs;
+    prag_stack *stack_entry;
+    prag_stack *reversed_entries;
     unsigned pack_amount;
 
-    reversed_packs = NULL;
-    for( ;; ) {
-        pack_entry = stackPop( &TOGGLE_STK( pack ) );
-        if( pack_entry == NULL )
-            break;
-        stackPush( &reversed_packs, pack_entry );
+    reversed_entries = NULL;
+    while( (stack_entry = stackPop( &TOGGLE_STK( pack ) )) != NULL ) {
+        stackPush( &reversed_entries, stack_entry );
     }
-    for( ;; ) {
-        pack_entry = stackPop( &reversed_packs );
-        if( pack_entry == NULL )
-            break;
-        pack_amount = pack_entry->value;
+    while( (stack_entry = stackPop( &reversed_entries )) != NULL ) {
+        pack_amount = stack_entry->value;
         PCHWriteUInt( pack_amount );
-        stackPush( &TOGGLE_STK( pack ), pack_entry );
+        stackPush( &TOGGLE_STK( pack ), stack_entry );
     }
-    pack_amount = PCH_GLOBAL_PACK;
-    PCHWriteUInt( pack_amount );
+    PCHWriteUInt( PCH_LIST_TERM );
     if( TOGGLE_STK( pack ) != NULL ) {
         pack_amount = PackAmount;
     } else if( PackAmount != GblPackAmount ) {
         pack_amount = PackAmount;
+    } else {
+        pack_amount = PCH_GLOBAL_PACK;
     }
     PCHWriteUInt( pack_amount );
 }
@@ -1811,7 +1808,7 @@ static void readPacks( void )
     while( TOGGLE_STK( pack ) != NULL ) {
         popPrag( &TOGGLE_STK( pack ), &PackAmount );
     }
-    for( ; (pack_amount = PCHReadUInt()) != PCH_LIST_TERM; ) {
+    while( (pack_amount = PCHReadUInt()) != PCH_LIST_TERM ) {
         pushPrag( &TOGGLE_STK( pack ), pack_amount );
     }
     pack_amount = PCHReadUInt();
@@ -1823,28 +1820,21 @@ static void readPacks( void )
 
 static void writeEnums( void )
 {
-    prag_stack *enum_entry;
-    prag_stack *reversed_enums;
+    prag_stack *stack_entry;
+    prag_stack *reversed_entries;
     unsigned enum_int;
 
-    reversed_enums = NULL;
-    for( ;; ) {
-        enum_entry = stackPop( &TOGGLE_STK( pack ) );
-        if( enum_entry == NULL )
-            break;
-        stackPush( &reversed_enums, enum_entry );
+    reversed_entries = NULL;
+    while( (stack_entry = stackPop( &TOGGLE_STK( enum ) )) != NULL ) {
+        stackPush( &reversed_entries, stack_entry );
     }
-    for( ;; ) {
-        enum_entry = stackPop( &reversed_enums );
-        if( enum_entry == NULL )
-            break;
-        enum_int = enum_entry->value;
+    while( (stack_entry = stackPop( &reversed_entries )) != NULL ) {
+        enum_int = stack_entry->value;
         PCHWriteUInt( enum_int );
-        stackPush( &TOGGLE_STK( pack ), enum_entry );
+        stackPush( &TOGGLE_STK( enum ), stack_entry );
     }
-    enum_int = PCH_LIST_TERM;
-    PCHWriteUInt( enum_int );
-    PCHWriteUInt( CompFlags.make_enums_an_int );
+    PCHWriteUInt( PCH_LIST_TERM );
+    PCHWriteUInt( ( CompFlags.make_enums_an_int != 0 ) );
 }
 
 static void readEnums( void )
@@ -1854,7 +1844,7 @@ static void readEnums( void )
     while( TOGGLE_STK( enum ) != NULL ) {
         popPrag( &TOGGLE_STK( enum ), NULL );
     }
-    for( ; (enum_int = PCHReadUInt()) != PCH_LIST_TERM; ) {
+    while( (enum_int = PCHReadUInt()) != PCH_LIST_TERM ) {
         pushPrag( &TOGGLE_STK( enum ), enum_int );
     }
     CompFlags.make_enums_an_int = ( PCHReadUInt() != 0 );
@@ -1953,21 +1943,24 @@ pch_status PCHFiniPragmaData( bool writing )
 }
 
 void PragmaSetToggle(           // SET TOGGLE
-    bool set_flag )             // - true ==> set flag
+    const char *name,           // - toggle name
+    int func,                   // - -1/0/1 ==> func pop/off/on
+    bool push )                 // - true ==> push current value on stack
 {
+    /* unused parameters */ (void)push;
+
 #ifndef NDEBUG
     #define pick( x ) \
-        if( strcmp( Buffer, #x ) == 0 ) { \
-            TOGGLEDBG( x ) = set_flag; \
+        if( strcmp( name, #x ) == 0 ) { \
+            TOGGLEDBG( x ) = ( func != 0 ); \
             return; \
         }
     #include "togdefd.h"
     #undef pick
 #endif
-
     #define pick( x ) \
-        if( strcmp( Buffer, #x ) == 0 ) { \
-            TOGGLE( x ) = set_flag; \
+        if( strcmp( name, #x ) == 0 ) { \
+            TOGGLE( x ) = ( func != 0 ); \
             return; \
         }
     #include "togdef.h"

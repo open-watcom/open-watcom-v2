@@ -147,7 +147,9 @@ bool PragmaOKForInlines(        // TEST IF PRAGMA IS SUITABLE FOR INLINED FN
     AUX_INFO *fnp )             // - pragma
 ;
 void PragmaSetToggle(           // SET TOGGLE
-    bool set_flag )             // - true ==> set flag
+    const char *name,           // - toggle name
+    int func,                   // - -1/0/1 ==> func pop/off/on
+    bool push )                 // - true ==> push current value on stack
 ;
 void PragObjNameInfo(           // RECOGNIZE OBJECT NAME INFORMATION
     void )
