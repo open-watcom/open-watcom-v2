@@ -48,7 +48,6 @@
 #include "csegid.h"
 #include "ctokens.h"
 #include "cerrs.h"
-#include "toggle.h"
 #include "cmsg.h"
 #include "pragdefn.h"
 
@@ -176,7 +175,6 @@ global unsigned     TargetSwitches;     /* target specific code generator switch
 global unsigned     ProcRevision;       /* processor revision for c.g. */
 global char         *GenCodeGroup;      /* pointer to code group name */
 global unsigned     ProEpiDataSize;     /* data to be alloc'd for pro/epi hook */
-global toggles      PragmaToggles;      /* global pragma toggle flags */
 
 global unsigned     ErrLimit;
 #define ERRLIMIT_NOMAX  ((unsigned)-1)
@@ -635,9 +633,10 @@ extern void         GenCOptions(char **);
 extern void         MergeInclude(void);
 
 /* cpragma */
+extern void         InitPragmaToggles( void );
 extern void         CPragmaInit( void );
 extern void         CPragmaFini( void );
-extern void         SetToggleFlag( char const *name, bool set_flag );
+extern void         SetToggleFlag( char const *name, int func, bool push );
 extern void         CPragma(void);
 extern textsegment  *LkSegName(const char *,const char *);
 extern textsegment  *NewTextSeg(const char *,const char *,const char *);

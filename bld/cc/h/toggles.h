@@ -25,14 +25,18 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  C compiler structure with toggles controllable through pragmas.
 *
 ****************************************************************************/
 
 
-#include "target.h"
-#include "pragdefn.h"
-#include "pdefnaxp.h"
+#define TOGGLE(x)       PragmaToggles.tog_##x
+#define TOGGLE_STK(x)   HeadToggles_tog_##x
 
-#include "callinfo.c"
+typedef struct pragma_toggles {
+    #define pick(x)     unsigned    tog_##x :1;
+    #include "togdef.h"
+    #undef pick
+} pragma_toggles;
+
+extern pragma_toggles   PragmaToggles;

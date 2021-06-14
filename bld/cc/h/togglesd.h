@@ -25,15 +25,19 @@
 *
 *  ========================================================================
 *
-* Description:  C compiler structure with toggles controllable through pragmas.
+* Description:  C compiler structure with debug toggles controllable through
+*               pragmas.
 *
 ****************************************************************************/
 
 
-#define TOGGLE(x)   tog_##x
+#define TOGGLEDBG(x)        PragmaDbgToggles.tog_##x
+#define TOGGLEDBG_STK(x)    HeadDbgToggles_tog_##x
 
-typedef struct toggles {
-    #define pick(x)     unsigned TOGGLE(x) :1;
-    #include "togdef.h"
+typedef struct pragma_dbg_toggles {
+    #define pick(x)     unsigned    tog_##x :1;
+    #include "togdefd.h"
     #undef pick
-} toggles;
+} pragma_dbg_toggles;
+
+extern pragma_dbg_toggles   PragmaDbgToggles;

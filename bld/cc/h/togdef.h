@@ -34,5 +34,4 @@
 pick( check_stack )
 pick( unreferenced )
 pick( inline )
-pick( dump_cg )
 pick( reuse_duplicate_strings )

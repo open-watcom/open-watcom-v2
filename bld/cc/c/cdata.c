@@ -228,9 +228,9 @@ void InitGlobalVars( void )
     UndefNames              = NULL;
     Check_global_prototype  = 0;
 
-    memset( &PragmaToggles, 0, sizeof( PragmaToggles ) );   /* global pragma toggle flags */
     memset( &CompFlags, 0, sizeof( CompFlags ) );
 
+    InitPragmaToggles();
     InitMacroSegments();                /* initialize pointer to list of macro segments */
     InitStmt();
     InitErrLoc();

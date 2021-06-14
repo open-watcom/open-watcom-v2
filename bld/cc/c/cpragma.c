@@ -37,6 +37,10 @@
 #include "caux.h"
 #include "cfeinfo.h"
 #include "asmstmt.h"
+#include "toggles.h"
+#ifndef NDEBUG
+    #include "togglesd.h"
+#endif
 
 #include "clibext.h"
 
@@ -51,16 +55,19 @@ typedef enum {
     M_SIZE
 } magic_words;
 
-struct  pack_info {
-    struct pack_info    *next;
-    align_type          pack_amount;
-} *PackInfo;
+typedef struct prag_stack {
+    struct prag_stack   *next;
+    unsigned            value;
+} prag_stack;
 
-struct enums_info {
-    struct enums_info *next;
-    bool   make_enums;
-} *EnumInfo;
+pragma_toggles          PragmaToggles;
+#ifndef NDEBUG
+pragma_dbg_toggles      PragmaDbgToggles;
+#endif
 
+static prag_stack       *TOGGLE_STK( pack );
+static prag_stack       *TOGGLE_STK( enum );
+static prag_stack       *FreePrags;
 
 static struct magic_words_data {
     const char      *name;
@@ -71,12 +78,70 @@ static struct magic_words_data {
     #undef pick
 };
 
+static prag_stack *stackPush( prag_stack **header, prag_stack *element )
+/**********************************************************************/
+{
+    element->next = *header;
+    *header = element;
+    return( element );
+}
+
+static prag_stack *stackPop( prag_stack **header )
+/************************************************/
+{
+    prag_stack  *element;
+
+    element = *header;
+    if( element != NULL ) {
+        *header = element->next;
+    }
+    return( element );
+}
+
+static void pushPrag( prag_stack **header, unsigned value )
+/*********************************************************/
+{
+    prag_stack *stack_entry;
+
+    stack_entry = stackPop( &FreePrags );
+    if( stack_entry == NULL ) {
+        stack_entry = CPermAlloc( sizeof( *stack_entry ) );
+    }
+    stack_entry->value = value;
+    stackPush( header, stack_entry );
+}
+
+static bool popPrag( prag_stack **header, unsigned *pvalue )
+/**********************************************************/
+{
+    prag_stack *stack_entry;
+
+    stack_entry = stackPop( header );
+    if( stack_entry != NULL ) {
+        if( pvalue != NULL ) {
+            *pvalue = stack_entry->value;
+        }
+        stackPush( &FreePrags, stack_entry );
+        return( true );
+    }
+    return( false );
+}
+
+void InitPragmaToggles( void )
+/****************************/
+{
+    memset( &PragmaToggles, 0, sizeof( PragmaToggles ) );
+#ifndef NDEBUG
+    memset( &PragmaDbgToggles, 0, sizeof( PragmaDbgToggles ) );
+#endif
+}
+
 void CPragmaInit( void )
 /**********************/
 {
     TextSegList = NULL;
-    PackInfo = NULL;
-    EnumInfo = NULL;
+    TOGGLE_STK( pack ) = NULL;
+    TOGGLE_STK( enum ) = NULL;
     AliasHead = NULL;
     HeadLibs = NULL;
     ExtrefInfo = NULL;
@@ -101,15 +166,13 @@ void CPragmaFini( void )
         CMemFree( junk );
     }
 
-    while( PackInfo != NULL ) {
-        junk = PackInfo;
-        PackInfo = PackInfo->next;
+    while( (junk = TOGGLE_STK( pack )) != NULL ) {
+        TOGGLE_STK( pack ) = TOGGLE_STK( pack )->next;
         CMemFree( junk );
     }
 
-    while( EnumInfo != NULL ) {
-        junk = EnumInfo;
-        EnumInfo = EnumInfo->next;
+    while( (junk = TOGGLE_STK( enum )) != NULL ) {
+        TOGGLE_STK( enum ) = TOGGLE_STK( enum )->next;
         CMemFree( junk );
     }
 
@@ -610,12 +673,23 @@ hw_reg_set *PragManyRegSets( void )
  *
  *******************************************************/
 
-void SetToggleFlag( char const *name, bool set_flag )
-/***************************************************/
+void SetToggleFlag( char const *name, int func, bool push )
+/*********************************************************/
 {
+    /* unused parameters */ (void)push;
+
+#ifndef NDEBUG
 #define pick( x ) \
     if( strcmp( name, #x ) == 0 ) { \
-        PragmaToggles.TOGGLE( x ) = set_flag; \
+        TOGGLEDBG( x ) = ( func != 0 ); \
+        return; \
+    }
+#include "togdefd.h"
+#undef pick
+#endif
+#define pick( x ) \
+    if( strcmp( name, #x ) == 0 ) { \
+        TOGGLE( x ) = ( func != 0 ); \
         return; \
     }
 #include "togdef.h"
@@ -626,15 +700,16 @@ void SetToggleFlag( char const *name, bool set_flag )
  *
  *      #pragma on (<toggle name>)
  *      #pragma off (<toggle name>)
+ *      #pragma pop (<toggle name>)
  */
-static void pragFlag( int value )
-/*******************************/
+static void pragOptions( int func )
+/**********************************/
 {
     PPCTL_ENABLE_MACROS();
     PPNextToken();
     if( ExpectingToken( T_LEFT_PAREN ) ) {
         for( PPNextToken(); IS_ID_OR_KEYWORD( CurToken ); PPNextToken() ) {
-            SetToggleFlag( Buffer, value );
+            SetToggleFlag( Buffer, func, true );
         }
         MustRecog( T_RIGHT_PAREN );
     }
@@ -744,14 +819,9 @@ void SetPackAmount( unsigned amount )
 static void getPackArgs( void )
 /****************************/
 {
-    struct pack_info    *pi;
-
     /* check to make sure it is a numeric token */
     if( PragRecogId( "push" ) ) {
-        pi = (struct pack_info *)CMemAlloc( sizeof( struct pack_info ) );
-        pi->next = PackInfo;
-        pi->pack_amount = PackAmount;
-        PackInfo = pi;
+        pushPrag( &TOGGLE_STK( pack ), PackAmount );
         if( CurToken == T_COMMA ) {
             PPNextToken();
             if( ExpectingConstant() ) {
@@ -760,11 +830,10 @@ static void getPackArgs( void )
             PPNextToken();
         }
     } else if( PragRecogId( "pop" ) ) {
-        pi = PackInfo;
-        if( pi != NULL ) {
-            PackAmount = pi->pack_amount;
-            PackInfo = pi->next;
-            CMemFree( pi );
+        unsigned    value;
+
+        if( popPrag( &TOGGLE_STK( pack ), &value ) ) {
+            PackAmount = value;
         }
     } else {
         CErr1( ERR_NOT_A_CONSTANT_EXPR );
@@ -1101,30 +1170,6 @@ static void pragMessage( void )
     PPCTL_DISABLE_MACROS();
 }
 
-static void PushEnum( void )
-/**************************/
-{
-    struct enums_info *ei;
-
-    ei = CMemAlloc( sizeof( struct enums_info ) );
-    ei->make_enums = CompFlags.make_enums_an_int;
-    ei->next = EnumInfo;
-    EnumInfo = ei;
-}
-
-static void PopEnum( void )
-/*************************/
-{
-    struct enums_info *ei;
-
-    ei = EnumInfo;
-    if( EnumInfo != NULL ) {
-        CompFlags.make_enums_an_int = ei->make_enums;
-        EnumInfo =  ei->next;
-        CMemFree( ei );
-    }
-}
-
 /* forms:
  *
  * (1) #pragma enum int
@@ -1148,16 +1193,20 @@ static void pragEnum( void )
     PPCTL_ENABLE_MACROS();
     PPNextToken();
     if( PragRecogId( "int" ) ) {
-        PushEnum();
+        pushPrag( &TOGGLE_STK( enum ), CompFlags.make_enums_an_int );
         CompFlags.make_enums_an_int = true;
     } else if( PragRecogId( "minimum" ) ) {
-        PushEnum();
+        pushPrag( &TOGGLE_STK( enum ), CompFlags.make_enums_an_int );
         CompFlags.make_enums_an_int = false;
     } else if( PragRecogId( "original" ) ) {
-        PushEnum();
+        pushPrag( &TOGGLE_STK( enum ), CompFlags.make_enums_an_int );
         CompFlags.make_enums_an_int = CompFlags.original_enum_setting;
     } else if( PragRecogId( "pop" ) ) {
-        PopEnum();
+        unsigned    value;
+
+        if( popPrag( &TOGGLE_STK( enum ), &value ) ) {
+            CompFlags.make_enums_an_int = ( value != 0 );
+        }
     }
     PPCTL_DISABLE_MACROS();
 }
@@ -1617,9 +1666,11 @@ void CPragma( void )
         }
     } else if( IS_ID_OR_KEYWORD( CurToken ) ) {
         if( pragmaNameRecog( "on" ) ) {
-            pragFlag( 1 );
+            pragOptions( 1 );
         } else if( pragmaNameRecog( "off" ) ) {
-            pragFlag( 0 );
+            pragOptions( 0 );
+//        } else if( pragmaNameRecog( "pop" ) ) {
+//            pragOptions( -1 );
         } else if( pragmaNameRecog( "aux" ) || pragmaNameRecog( "linkage" ) ) {
             PragAux();
         } else if( pragmaNameRecog( "library" ) ) {

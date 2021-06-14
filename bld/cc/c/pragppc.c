@@ -33,8 +33,6 @@
 
 #include "target.h"
 #include "pragdefn.h"
-#include "toggle.h"
-
 #include "pdefnppc.h"
 
 #include "callinfo.c"

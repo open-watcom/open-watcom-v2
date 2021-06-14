@@ -25,14 +25,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  C compiler debug toggles controllable through pragmas.
 *
 ****************************************************************************/
 
 
-#include "target.h"
-#include "pragdefn.h"
-#include "pdefnaxp.h"
-
-#include "callinfo.c"
+/*    name                   */
+pick( dump_cg )

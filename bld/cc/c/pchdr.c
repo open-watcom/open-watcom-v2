@@ -38,6 +38,7 @@
 #include "watcom.h"
 #include "sopen.h"
 #include "cmacadd.h"
+#include "toggles.h"
 
 #include "clibext.h"
 
@@ -122,7 +123,7 @@ typedef struct pheader {
     unsigned        pack_amount;    // PackAmount
     unsigned        gen_switches;   // GenSwitches
     unsigned        target_switches;// TargetSwitches
-    toggles         pragma_toggles; // PragmaToggles
+    pragma_toggles  ptoggles;       // PragmaToggles
     unsigned        size;
     unsigned        macro_size;
     unsigned        file_count;
@@ -287,7 +288,7 @@ static void OutPutHeader( void )
     pch.pack_amount       = PackAmount;
     pch.gen_switches      = GenSwitches;
     pch.target_switches   = TargetSwitches;
-    pch.pragma_toggles    = PragmaToggles;
+    pch.ptoggles          = PragmaToggles;
     pch.size              = PH_size - PH_MacroSize;
     pch.macro_size        = PH_MacroSize;
     pch.file_count        = PH_FileCount;
@@ -1693,7 +1694,7 @@ static int FixupDataStructures( char *p, pheader *pch )
     PCH_MaxSymHandle = pch->symbol_count;
     SetNextSymHandle( pch->symbol_count - 1 );
     IncLineCount = pch->incline_count;
-    PragmaToggles = pch->pragma_toggles;
+    PragmaToggles = pch->ptoggles;
     FixupFNames();
     InitDebugTypes();
     InitDebugTags();

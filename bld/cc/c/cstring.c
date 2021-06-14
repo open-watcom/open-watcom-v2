@@ -38,6 +38,7 @@
 #include "asciiout.h"
 #include "unicode.h"
 #include "escchars.h"
+#include "toggles.h"
 
 #include "clibext.h"
 
@@ -291,7 +292,7 @@ TREEPTR StringLeaf( string_flags flags )
     if( flags & STRLIT_FAR )
         CompFlags.far_strings = true;
     h = CalcStringHash( new_lit );
-    if( PragmaToggles.TOGGLE( reuse_duplicate_strings ) ) {
+    if( TOGGLE( reuse_duplicate_strings ) ) {
         for( strlit = StringHash[h]; strlit != NULL; strlit = strlit->next_string ) {
             if( strlit->length == new_lit->length && strlit->flags == flags ) {
                 if( memcmp( strlit->literal, new_lit->literal, new_lit->length ) == 0 ) {

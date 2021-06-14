@@ -36,6 +36,7 @@
 #include "pdefn2.h"
 #include <ctype.h>
 #include "cmacadd.h"
+#include "toggles.h"
 
 
 extern  char    CompilerID[];
@@ -292,9 +293,9 @@ void InitModInfo( void )
 {
     GenSwitches = 0;
     TargetSwitches = 0;
-    PragmaToggles.TOGGLE( check_stack ) = true;
-    PragmaToggles.TOGGLE( unreferenced ) = true;
-    PragmaToggles.TOGGLE( reuse_duplicate_strings ) = true;
+    TOGGLE( check_stack ) = true;
+    TOGGLE( unreferenced ) = true;
+    TOGGLE( reuse_duplicate_strings ) = true;
     DataThreshold = 32767;
     OptSize = 50;
     UndefNames = NULL;

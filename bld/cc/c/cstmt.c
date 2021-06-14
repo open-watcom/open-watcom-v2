@@ -33,6 +33,7 @@
 #include "cvars.h"
 #include "i64.h"
 #include "cfeinfo.h"
+#include "toggles.h"
 
 
 typedef struct block_entry {
@@ -179,7 +180,7 @@ void GenFunctionNode( SYM_HANDLE sym_handle )
     sym = SymGetPtr( sym_handle );
     tree->op.u2.func.sym_handle = sym_handle;
     tree->op.u2.func.flags = FUNC_NONE;
-    if( PragmaToggles.TOGGLE( inline ) || (sym->mods & FLAG_INLINE) ) {
+    if( TOGGLE( inline ) || (sym->mods & FLAG_INLINE) ) {
         if( !sym->attribs.naked ) {
             if( CMPLIT( sym->name, "main" ) != 0 ) {
                 tree->op.u2.func.flags |= FUNC_OK_TO_INLINE;
@@ -1458,7 +1459,7 @@ void Statement( void )
         }
     }
 
-    if( PragmaToggles.TOGGLE( inline ) ) {
+    if( TOGGLE( inline ) ) {
         if( Inline_Threshold < NodeCount ) {
             CurFuncNode->op.u2.func.flags &= ~FUNC_OK_TO_INLINE;
         }

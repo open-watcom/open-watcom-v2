@@ -33,6 +33,7 @@
 #include "cvars.h"
 #include "cgswitch.h"
 #include "i64.h"
+#include "toggles.h"
 
 
 static TYPEPTR      DeclPart2( TYPEPTR typ, type_modifiers mod );
@@ -389,7 +390,7 @@ static SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
             sym->u.var.segid = thread_segid;
         }
     }
-    if( !PragmaToggles.TOGGLE( unreferenced ) ) {
+    if( !TOGGLE( unreferenced ) ) {
         sym->flags |= SYM_IGNORE_UNREFERENCE;
     }
     old_sym_handle = SymLook( sym->info.hash, sym->name );
@@ -1511,7 +1512,7 @@ static TYPEPTR *GetProtoType( decl_info *first )
             CheckUniqueName( parm_namelist, sym->name );
             prev_parm->next_parm = parm;
         }
-        if( !PragmaToggles.TOGGLE( unreferenced ) ) {
+        if( !TOGGLE( unreferenced ) ) {
             sym->flags |= SYM_REFERENCED;
         }
         ++parm_count;
@@ -1674,7 +1675,7 @@ static void GetFuncParmList( void )
             parm = newparm;
         }
         parm->sym.info.hash = HashValue;
-        if( !PragmaToggles.TOGGLE( unreferenced ) ) {
+        if( !TOGGLE( unreferenced ) ) {
             parm->sym.flags |= SYM_REFERENCED;
         }
         NextToken();

@@ -46,6 +46,7 @@
 #include "cgswitch.h"
 #include "iopath.h"
 #include "pathlist.h"
+#include "toggles.h"
 #include "feprotos.h"
 
 #include "clibext.h"
@@ -802,7 +803,7 @@ static void MacroDefs( void )
         Define_Macro( "__SW_OP" );
     }
 #endif
-    if( !PragmaToggles.TOGGLE( check_stack ) ) {
+    if( !TOGGLE( check_stack ) ) {
         Define_Macro( "__SW_S" );
     }
 }
@@ -1231,14 +1232,14 @@ static void Set_ST( void )          { CompFlags.st_switch_used = true; }
 #if _CPU == _AXP || _CPU == _MIPS
 static void Set_SI( void )          { TargetSwitches |= STACK_INIT; }
 #endif
-static void Set_S( void )           { PragmaToggles.TOGGLE( check_stack ) = false; }
+static void Set_S( void )           { TOGGLE( check_stack ) = false; }
 
 static void Set_TP( void )
 {
     char    *togname;
 
     togname = CopyOfParm();
-    SetToggleFlag( togname, true );
+    SetToggleFlag( togname, 1, false );
     CMemFree( togname );
 }
 
@@ -1483,7 +1484,7 @@ static void Set_OD( void )          { GenSwitches |= NO_OPTIMIZATION; }
 static void Set_OE( void )
 {
     Inline_Threshold = OptValue;
-    PragmaToggles.TOGGLE( inline ) = true;
+    TOGGLE( inline ) = true;
 }
 
 #if _CPU == 8086 || _CPU == 386
@@ -1511,7 +1512,7 @@ static void Set_OT( void )          { GenSwitches &= ~NO_OPTIMIZATION; OptSize =
 static void Set_OU( void )          { CompFlags.unique_functions = true; }
 static void Set_OX( void )
 {
-    PragmaToggles.TOGGLE( check_stack ) = false;
+    TOGGLE( check_stack ) = false;
     GenSwitches &= ~NO_OPTIMIZATION;
     GenSwitches |= LOOP_OPTIMIZATION | INS_SCHEDULING | BRANCH_PREDICTION;
     CompFlags.inline_functions = true;

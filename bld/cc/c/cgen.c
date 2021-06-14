@@ -42,6 +42,9 @@
 #ifdef __SEH__
 #include "tryblock.h"
 #endif
+#ifndef NDEBUG
+#include "togglesd.h"
+#endif
 
 #define PushCGName(name)        ValueStack[index++] = (TREEPTR)name
 #define PopCGName()             (cg_name)ValueStack[--index]
@@ -1373,9 +1376,11 @@ void DoCompile( void )
             if( ! CompFlags.zu_switch_used ) {
                 TargetSwitches &= ~ FLOATING_SS;
             }
-            if( PragmaToggles.TOGGLE( dump_cg ) ) {
+#ifndef NDEBUG
+            if( TOGGLEDBG( dump_cg ) ) {
                 GenSwitches |= ECHO_API_CALLS;
             }
+#endif
 #ifdef POSITION_INDEPENDANT
             if( CompFlags.rent ) {
                 GenSwitches |= POSITION_INDEPENDANT;

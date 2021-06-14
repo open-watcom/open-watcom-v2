@@ -34,6 +34,8 @@
 #include "cgswitch.h"
 #include "langenv.h"
 #include "cfeinfo.h"
+#include "toggles.h"
+
 
 static   void    ParmDeclList( void );
 static   void    AddParms( void );
@@ -118,7 +120,7 @@ static void FuncDefn( SYMPTR sym )
     }
 
     CompFlags.external_defn_found = true;
-    if( PragmaToggles.TOGGLE( check_stack ) )
+    if( TOGGLE( check_stack ) )
         sym->flags |= SYM_CHECK_STACK;
 
     if( !CompFlags.zu_switch_used ) {
