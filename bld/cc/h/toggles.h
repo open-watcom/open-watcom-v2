@@ -30,13 +30,13 @@
 ****************************************************************************/
 
 
-#define TOGGLE(x)       PragmaToggles.tog_##x
-#define TOGGLE_STK(x)   HeadToggles_tog_##x
+#define TOGGLE(x)           PragmaToggles.tog_##x
+#define TOGGLE_STK(x)       HeadToggles_tog_##x
 
 typedef struct pragma_toggles {
-    #define pick(x)     unsigned    tog_##x :1;
+    #define pick(x)         unsigned    tog_##x :1;
     #include "togdef.h"
     #undef pick
 } pragma_toggles;
 
-extern pragma_toggles   PragmaToggles;
+extern pragma_toggles       PragmaToggles;

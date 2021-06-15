@@ -35,7 +35,7 @@
 #define TOGGLEDBG_STK(x)    HeadDbgToggles_tog_##x
 
 typedef struct pragma_dbg_toggles {
-    #define pick(x)     unsigned    tog_##x :1;
+    #define pick(x)         unsigned    tog_##x :1;
     #include "togdefd.h"
     #undef pick
 } pragma_dbg_toggles;
