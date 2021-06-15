@@ -1,4 +1,4 @@
-32
+33
 alias
 alloc_text
 aux
@@ -26,6 +26,7 @@ off
 on
 once
 pack
+pop
 read_only_directory
 read_only_file
 unroll
