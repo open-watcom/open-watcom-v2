@@ -673,6 +673,17 @@ static prag_stack *stackPop( prag_stack **header )
     return( element );
 }
 
+static void freeStack( prag_stack **header )
+/******************************************/
+{
+    prag_stack  *element;
+
+    while( (element = *header) != NULL ) {
+        *header = element->next;
+        CMemFree( element );
+    }
+}
+
 static void pushPrag( prag_stack **header, unsigned value )
 /*********************************************************/
 {
@@ -680,7 +691,7 @@ static void pushPrag( prag_stack **header, unsigned value )
 
     stack_entry = stackPop( &FreePrags );
     if( stack_entry == NULL ) {
-        stack_entry = CPermAlloc( sizeof( *stack_entry ) );
+        stack_entry = CMemAlloc( sizeof( *stack_entry ) );
     }
     stack_entry->value = value;
     stackPush( header, stack_entry );
@@ -1985,8 +1996,6 @@ static void togglesInit(    // INITIALIZE TOGGLES
 {
     /* unused parameters */ (void)defn;
 
-    TOGGLE( check_stack ) = true;
-    TOGGLE( unreferenced ) = true;
     #define pick( x ) TOGGLE_STK( x ) = NULL;
     #include "togdef.h"
     #undef pick
@@ -1998,25 +2007,14 @@ static void togglesInit(    // INITIALIZE TOGGLES
 static void togglesFini(    // FINALIZE TOGGLES
     INITFINI* defn )
 {
-    void    *junk;
-
     /* unused parameters */ (void)defn;
 
-    #define pick( x ) \
-        while( (junk = stackPop( &TOGGLE_STK( x ) )) != NULL ) { \
-            CMemFree( junk ); \
-        }
+    #define pick( x )   freeStack( &TOGGLE_STK( x ) );
     #include "togdef.h"
     #undef pick
-    while( (junk = stackPop( &TOGGLE_STK( pack ) )) != NULL ) {
-        CMemFree( junk );
-    }
-    while( (junk = stackPop( &TOGGLE_STK( enum ) )) != NULL ) {
-        CMemFree( junk );
-    }
-    while( (junk = stackPop( &FreePrags )) != NULL ) {
-        CMemFree( junk );
-    }
+    freeStack( &TOGGLE_STK( pack ) );
+    freeStack( &TOGGLE_STK( enum ) );
+    freeStack( &FreePrags );
 }
 
-INITDEFN( toggles, togglesInit, togglesFini )
+INITDEFN( toggles_stack, togglesInit, togglesFini )

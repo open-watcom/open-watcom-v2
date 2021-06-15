@@ -43,7 +43,6 @@
 #include "ring.h"
 #include "ringname.h"
 #include "cgdata.h"
-#include "toggles.h"
 #include "pragdefn.h"
 #include "pdefn2.h"
 #include "context.h"
@@ -51,6 +50,10 @@
 #include "cgback.h"
 #include "vstk.h"
 #include "vbuf.h"
+#include "toggles.h"
+#ifndef NDEBUG
+    #include "togglesd.h"
+#endif
 
 #include "cmdlnprs.gh"
 #include "cmdlnsys.h"
@@ -323,6 +326,13 @@ void InitModInfo(               // INITIALIZE MODULE INFORMATION
     CompFlags.emit_targimp_symbols = true;
     CompFlags.check_truncated_fnames = true;
     CompFlags.inline_functions = true;
+
+    memset( &PragmaToggles, 0, sizeof( PragmaToggles ) );
+#ifndef NDEBUG
+    memset( &PragmaDbgToggles, 0, sizeof( PragmaDbgToggles ) );
+#endif
+    TOGGLE( check_stack ) = true;
+    TOGGLE( unreferenced ) = true;
 
     SetAuxWatcallInfo();
 

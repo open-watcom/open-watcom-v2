@@ -123,7 +123,7 @@ typedef struct pheader {
     unsigned        pack_amount;    // PackAmount
     unsigned        gen_switches;   // GenSwitches
     unsigned        target_switches;// TargetSwitches
-    pragma_toggles  ptoggles;       // PragmaToggles
+    pragma_toggles  toggles;        // PragmaToggles
     unsigned        size;
     unsigned        macro_size;
     unsigned        file_count;
@@ -288,7 +288,7 @@ static void OutPutHeader( void )
     pch.pack_amount       = PackAmount;
     pch.gen_switches      = GenSwitches;
     pch.target_switches   = TargetSwitches;
-    pch.ptoggles          = PragmaToggles;
+    pch.toggles           = PragmaToggles;
     pch.size              = PH_size - PH_MacroSize;
     pch.macro_size        = PH_MacroSize;
     pch.file_count        = PH_FileCount;
@@ -1694,7 +1694,7 @@ static int FixupDataStructures( char *p, pheader *pch )
     PCH_MaxSymHandle = pch->symbol_count;
     SetNextSymHandle( pch->symbol_count - 1 );
     IncLineCount = pch->incline_count;
-    PragmaToggles = pch->ptoggles;
+    PragmaToggles = pch->toggles;
     FixupFNames();
     InitDebugTypes();
     InitDebugTags();

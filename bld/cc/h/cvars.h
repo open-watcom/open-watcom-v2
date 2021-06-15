@@ -633,7 +633,6 @@ extern void         GenCOptions(char **);
 extern void         MergeInclude(void);
 
 /* cpragma */
-extern void         InitPragmaToggles( void );
 extern void         CPragmaInit( void );
 extern void         CPragmaFini( void );
 extern void         SetToggleFlag( char const *name, int func, bool push );

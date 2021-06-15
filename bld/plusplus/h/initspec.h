@@ -122,7 +122,6 @@ EXIT_BEG( cpp_front_end )       // cmd line, pre-processing, analysis, codegen
 #ifdef XTRA_RPT
   EXIT_REG( repos_rpts )
 #endif
-  EXIT_REG( toggles )
 EXIT_END
 
 EXIT_BEG( cpp_preproc )         // pre-processing generally
@@ -130,6 +129,7 @@ EXIT_BEG( cpp_preproc )         // pre-processing generally
   EXIT_REG( pragma_extref )
   EXIT_REG( ppexpn )
   EXIT_REG( assembler )
+  EXIT_REG( toggles_stack )
 EXIT_END
 
 EXIT_BEG( cpp_preproc_only )    // pre-processing only

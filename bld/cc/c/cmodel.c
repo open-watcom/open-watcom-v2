@@ -37,6 +37,9 @@
 #include <ctype.h>
 #include "cmacadd.h"
 #include "toggles.h"
+#ifndef NDEBUG
+    #include "togglesd.h"
+#endif
 
 
 extern  char    CompilerID[];
@@ -293,9 +296,6 @@ void InitModInfo( void )
 {
     GenSwitches = 0;
     TargetSwitches = 0;
-    TOGGLE( check_stack ) = true;
-    TOGGLE( unreferenced ) = true;
-    TOGGLE( reuse_duplicate_strings ) = true;
     DataThreshold = 32767;
     OptSize = 50;
     UndefNames = NULL;
@@ -346,6 +346,14 @@ void InitModInfo( void )
     CompFlags.use_stdcall_at_number             = true;
     CompFlags.rent                              = false;
     CompFlags.check_truncated_fnames            = true;
+
+    memset( &PragmaToggles, 0, sizeof( PragmaToggles ) );
+#ifndef NDEBUG
+    memset( &PragmaDbgToggles, 0, sizeof( PragmaDbgToggles ) );
+#endif
+    TOGGLE( check_stack ) = true;
+    TOGGLE( unreferenced ) = true;
+    TOGGLE( reuse_duplicate_strings ) = true;
 
     SetAuxWatcallInfo();
 }

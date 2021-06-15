@@ -101,6 +101,17 @@ static prag_stack *stackPop( prag_stack **header )
     return( element );
 }
 
+static void freeStack( prag_stack **header )
+/******************************************/
+{
+    prag_stack  *element;
+
+    while( (element = *header) != NULL ) {
+        *header = element->next;
+        CMemFree( element );
+    }
+}
+
 static void pushPrag( prag_stack **header, unsigned value )
 /*********************************************************/
 {
@@ -108,7 +119,7 @@ static void pushPrag( prag_stack **header, unsigned value )
 
     stack_entry = stackPop( &FreePrags );
     if( stack_entry == NULL ) {
-        stack_entry = CPermAlloc( sizeof( *stack_entry ) );
+        stack_entry = CMemAlloc( sizeof( *stack_entry ) );
     }
     stack_entry->value = value;
     stackPush( header, stack_entry );
@@ -130,15 +141,6 @@ static bool popPrag( prag_stack **header, unsigned *pvalue )
     return( false );
 }
 
-void InitPragmaToggles( void )
-/****************************/
-{
-    memset( &PragmaToggles, 0, sizeof( PragmaToggles ) );
-#ifndef NDEBUG
-    memset( &PragmaDbgToggles, 0, sizeof( PragmaDbgToggles ) );
-#endif
-}
-
 void CPragmaInit( void )
 /**********************/
 {
@@ -147,6 +149,8 @@ void CPragmaInit( void )
     #undef pick
     TOGGLE_STK( pack ) = NULL;
     TOGGLE_STK( enum ) = NULL;
+    FreePrags = NULL;
+
     TextSegList = NULL;
     AliasHead = NULL;
     HeadLibs = NULL;
@@ -166,21 +170,12 @@ void CPragmaFini( void )
 
     PragmaAuxFini();
 
-    #define pick( x ) \
-        while( (junk = stackPop( &TOGGLE_STK( x ) )) != NULL ) { \
-            CMemFree( junk ); \
-        }
+    #define pick( x )   freeStack( &TOGGLE_STK( x ) );
     #include "togdef.h"
     #undef pick
-    while( (junk = stackPop( &TOGGLE_STK( pack ) )) != NULL ) {
-        CMemFree( junk );
-    }
-    while( (junk = stackPop( &TOGGLE_STK( enum ) )) != NULL ) {
-        CMemFree( junk );
-    }
-    while( (junk = stackPop( &FreePrags )) != NULL ) {
-        CMemFree( junk );
-    }
+    freeStack( &TOGGLE_STK( pack ) );
+    freeStack( &TOGGLE_STK( enum ) );
+    freeStack( &FreePrags );
 
     while( (junk = TextSegList) != NULL ) {
         TextSegList = TextSegList->next;

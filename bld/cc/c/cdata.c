@@ -230,7 +230,6 @@ void InitGlobalVars( void )
 
     memset( &CompFlags, 0, sizeof( CompFlags ) );
 
-    InitPragmaToggles();
     InitMacroSegments();                /* initialize pointer to list of macro segments */
     InitStmt();
     InitErrLoc();
