@@ -326,8 +326,6 @@ void InitModInfo(               // INITIALIZE MODULE INFORMATION
 
     SetAuxWatcallInfo();
 
-    PragmaTogglesInit();
-
     CgBackSetInlineDepth( DEFAULT_INLINE_DEPTH );
     CgBackSetOeSize( 0 );
     CgBackSetInlineRecursion( false );

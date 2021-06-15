@@ -167,20 +167,18 @@ void CPragmaFini( void )
     PragmaAuxFini();
 
     #define pick( x ) \
-        while( (junk = TOGGLE_STK( x )) != NULL ) { \
-            TOGGLE_STK( x ) = TOGGLE_STK( x )->next; \
+        while( (junk = stackPop( &TOGGLE_STK( x ) )) != NULL ) { \
             CMemFree( junk ); \
         }
     #include "togdef.h"
     #undef pick
-
-    while( (junk = TOGGLE_STK( pack )) != NULL ) {
-        TOGGLE_STK( pack ) = TOGGLE_STK( pack )->next;
+    while( (junk = stackPop( &TOGGLE_STK( pack ) )) != NULL ) {
         CMemFree( junk );
     }
-
-    while( (junk = TOGGLE_STK( enum )) != NULL ) {
-        TOGGLE_STK( enum ) = TOGGLE_STK( enum )->next;
+    while( (junk = stackPop( &TOGGLE_STK( enum ) )) != NULL ) {
+        CMemFree( junk );
+    }
+    while( (junk = stackPop( &FreePrags )) != NULL ) {
         CMemFree( junk );
     }
 
@@ -842,7 +840,7 @@ static void getPackArgs( void )
 {
     /* check to make sure it is a numeric token */
     if( PragRecogId( "push" ) ) {
-        pushPrag( &TOGGLE_STK( pack ), PackAmount );
+        pushPrag( &TOGGLE_STK( pack ), (unsigned)PackAmount );
         if( CurToken == T_COMMA ) {
             PPNextToken();
             if( ExpectingConstant() ) {
@@ -854,7 +852,7 @@ static void getPackArgs( void )
         unsigned    value;
 
         if( popPrag( &TOGGLE_STK( pack ), &value ) ) {
-            PackAmount = value;
+            PackAmount = (align_type)value;
         }
     } else {
         CErr1( ERR_NOT_A_CONSTANT_EXPR );

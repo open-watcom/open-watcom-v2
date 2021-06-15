@@ -79,9 +79,9 @@ typedef struct prag_stack {
     unsigned            value;
 } prag_stack;
 
-pragma_toggles          PragToggles;
+pragma_toggles          PragmaToggles;
 #ifndef NDEBUG
-pragma_dbg_toggles      PragDbgToggles;
+pragma_dbg_toggles      PragmaDbgToggles;
 #endif
 
 #define pick( x ) static prag_stack *TOGGLE_STK( x );
@@ -1897,7 +1897,7 @@ pch_status PCHReadPragmaData( void )
     unsigned depth;
     unsigned value;
 
-    PCHReadVar( PragToggles );
+    PCHReadVar( PragmaToggles );
     CgInfoLibPCHRead();
     readPacks();
     readEnums();
@@ -1916,7 +1916,7 @@ pch_status PCHWritePragmaData( void )
     unsigned depth;
     unsigned value;
 
-    PCHWriteVar( PragToggles );
+    PCHWriteVar( PragmaToggles );
     CgInfoLibPCHWrite();
     writePacks();
     writeEnums();
@@ -1980,8 +1980,11 @@ void PragmaSetToggle(           // SET TOGGLE
     #undef pick
 }
 
-void PragmaTogglesInit( void )
+static void togglesInit(    // INITIALIZE TOGGLES
+    INITFINI* defn )
 {
+    /* unused parameters */ (void)defn;
+
     TOGGLE( check_stack ) = true;
     TOGGLE( unreferenced ) = true;
     #define pick( x ) TOGGLE_STK( x ) = NULL;
@@ -1991,3 +1994,29 @@ void PragmaTogglesInit( void )
     TOGGLE_STK( enum ) = NULL;
     FreePrags = NULL;
 }
+
+static void togglesFini(    // FINALIZE TOGGLES
+    INITFINI* defn )
+{
+    void    *junk;
+
+    /* unused parameters */ (void)defn;
+
+    #define pick( x ) \
+        while( (junk = stackPop( &TOGGLE_STK( x ) )) != NULL ) { \
+            CMemFree( junk ); \
+        }
+    #include "togdef.h"
+    #undef pick
+    while( (junk = stackPop( &TOGGLE_STK( pack ) )) != NULL ) {
+        CMemFree( junk );
+    }
+    while( (junk = stackPop( &TOGGLE_STK( enum ) )) != NULL ) {
+        CMemFree( junk );
+    }
+    while( (junk = stackPop( &FreePrags )) != NULL ) {
+        CMemFree( junk );
+    }
+}
+
+INITDEFN( toggles, togglesInit, togglesFini )

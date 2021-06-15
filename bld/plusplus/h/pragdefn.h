@@ -207,7 +207,4 @@ bool GetPragmaAuxAliasInfo(
 void GetPragmaAuxAlias(
     void )
 ;
-void PragmaTogglesInit(
-    void )
-;
 #endif
