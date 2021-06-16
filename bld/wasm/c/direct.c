@@ -385,14 +385,14 @@ static bool get_watcom_argument_string( char *buffer, int size, int *parm_number
     } else {
         switch( size ) {
         case 1:
-            sprintf( buffer, regs[A_BYTE][parm] );
+            sprintf( buffer, "%s", regs[A_BYTE][parm] );
             break;
         case 2:
-            sprintf( buffer, regs[A_WORD][parm] );
+            sprintf( buffer, "%s", regs[A_WORD][parm] );
             break;
         case 4:
             if( Use32 ) {
-                sprintf( buffer, regs[A_DWORD][parm] );
+                sprintf( buffer, "%s", regs[A_DWORD][parm] );
             } else {
                 if( parm > 2 ) {
                     *on_stack = true;

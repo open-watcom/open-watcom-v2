@@ -569,7 +569,7 @@ int main(int argc, char **argv )
     ClassList->lnameidx = 0;
     memcpy( ClassList->name, DEF_CLASS, sizeof( DEF_CLASS ) - 1 );
     if( ( argc < 2 ) || ( argv[1][0] == '?' ) ) {
-        printf( HelpMsg );
+        printf( "%s", HelpMsg );
     } else {
         argv++;     // skip the program name
         retval = Spawn1( ProcessFiles, argv );
