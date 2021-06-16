@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -680,7 +680,7 @@ static void CEndif( void )
 
         --NestLevel;
         cpp = CppStack;
-        if( cpp->flist != SrcFile->src_flist ) {
+        if( SrcFile != NULL && cpp->flist != SrcFile->src_flist ) {
              CWarn2p( WARN_LEVEL_1, ERR_WEIRD_ENDIF_ENCOUNTER, FileIndexToCorrectName( cpp->src_loc.fno ) );
         }
         CppStack = cpp->prev_cpp;
