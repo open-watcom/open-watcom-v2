@@ -114,6 +114,7 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, const char * const
         LINFOSEG        _WCFAR *local;
         USHORT          pid;
         ULONG           request_data;
+        USHORT          proc_type;
 
         use_exec_pgm = 0;
 
@@ -130,26 +131,27 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, const char * const
                 return( __set_errno_dos( rc ) );
             }
             local = _MK_FP( slocal, 0 );
+            proc_type = local->typeProcess;
             if( (app_type & FAPPTYP_DOS) == 0 ) {
                 switch( app_type & FAPPTYP_EXETYPE ) {
-                case FAPPTYP_NOTSPEC:
-                    if( local->typeProcess == PT_FULLSCREEN ) {
+                case FAPPTYP_WINDOWCOMPAT:
+                    if( proc_type == PT_FULLSCREEN
+                      || proc_type == PT_WINDOWABLEVIO ) {
                         use_exec_pgm = 1;
                     }
                     break;
                 case FAPPTYP_NOTWINDOWCOMPAT:
-                    if( local->typeProcess == PT_REALMODE ) {
+                    if( proc_type == PT_REALMODE ) {
                         use_exec_pgm = 1;
                     }
                     break;
-                case FAPPTYP_WINDOWCOMPAT:
-                    if( local->typeProcess == PT_FULLSCREEN
-                      || local->typeProcess == PT_WINDOWABLEVIO ) {
+                case FAPPTYP_NOTSPEC:
+                    if( proc_type == PT_FULLSCREEN ) {
                         use_exec_pgm = 1;
                     }
                     break;
                 case FAPPTYP_WINDOWAPI:
-                    if( local->typeProcess == PT_PM ) {
+                    if( proc_type == PT_PM ) {
                         use_exec_pgm = 1;
                     }
                     break;
@@ -237,6 +239,7 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, const char * const
         PIB             *ppib;
         PID             pid;
         REQUESTDATA     request_data;
+        ULONG           proc_type;
 
         use_exec_pgm = 0;
         rc = DosQueryAppType( pgm, &app_type );
@@ -251,28 +254,29 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, const char * const
             if( rc != 0 ) {
                 return( __set_errno_dos( rc ) );
             }
+            proc_type = ppib->pib_ultype;
             if( (app_type & FAPPTYP_DOS) == 0 ) {
                 switch( app_type & FAPPTYP_EXETYPE ) {
-                case FAPPTYP_NOTSPEC:
-                    if( ppib->pib_ultype == PT_FULLSCREEN
-                      || ppib->pib_ultype == PT_DETACHED ) {
+                case FAPPTYP_WINDOWCOMPAT:
+                    if( proc_type == PT_FULLSCREEN
+                      || proc_type == PT_WINDOWABLEVIO
+                      || proc_type == PT_DETACHED ) {
                         use_exec_pgm = 1;
                     }
                     break;
                 case FAPPTYP_NOTWINDOWCOMPAT:
-                    if( ppib->pib_ultype == PT_REALMODE ) {
+                    if( proc_type == PT_REALMODE ) {
                         use_exec_pgm = 1;
                     }
                     break;
-                case FAPPTYP_WINDOWCOMPAT:
-                    if( ppib->pib_ultype == PT_FULLSCREEN
-                      || ppib->pib_ultype == PT_WINDOWABLEVIO
-                      || ppib->pib_ultype == PT_DETACHED ) {
+                case FAPPTYP_NOTSPEC:
+                    if( proc_type == PT_FULLSCREEN
+                      || proc_type == PT_DETACHED ) {
                         use_exec_pgm = 1;
                     }
                     break;
                 case FAPPTYP_WINDOWAPI:
-                    if( ppib->pib_ultype == PT_PM ) {
+                    if( proc_type == PT_PM ) {
                         use_exec_pgm = 1;
                     }
                     break;
@@ -303,7 +307,7 @@ int _dospawn( int mode, char *pgm, char *cmdline, char *envp, const char * const
             sd.PgmName = pgm;
             sd.PgmInputs = (PBYTE)cmdline;
             if( app_type & FAPPTYP_DOS ) {  // A DOS program
-                if( ppib->pib_ultype == PT_FULLSCREEN ) {
+                if( proc_type == PT_FULLSCREEN ) {
                     sd.SessionType = SSF_TYPE_VDM;
                 } else {
                     sd.SessionType = SSF_TYPE_WINDOWEDVDM;
