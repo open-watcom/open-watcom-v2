@@ -387,7 +387,7 @@ will cause &cmpcname to not emit user functions inline.
 .millust end
 will returns to previous settings of "inline" option.
 .pc
-Note that additional rules are checked for custom functions, so the
+Note that additional rules are checked for user functions, so the
 functions do not have to be emited inline even if the "inline" option
 has been specified.
 .*
@@ -1258,15 +1258,27 @@ files and reduce the time required to compile an application.
 .ix 'pack pragma'
 The "pack" pragma can be used to control the way in which structures
 are stored in memory.
-There are 4 forms of the "pack" pragma.
+The forms of the "pack" pragma are as follows.
+.mbox begin
+:prgbeg. pack ( :id.number:eid. ) :prgend.
+:prgbeg. pack ( push, :id.number:eid. ) :prgend.
+:prgbeg. pack ( push ) :prgend.
+:prgbeg. pack ( pop ) :prgend.
+.mbox end
 .np
 The following form of the "pack" pragma can be used to change the
 alignment of structures and their fields in memory.
-.mbox begin
-:prgbeg. pack ( :id.n:eid. ) :prgend.
-.mbox end
+.millust begin
+&pragma pack ( number )&epragma
+.millust end
+The following form of the "pack" pragma saves the current alignment amount
+on an internal stack before alignment amount change.
+.millust begin
+&pragma pack ( push, number )&epragma
+.millust end
+.np
 .synote
-.note n
+.note number
 is 1, 2, 4, 8 or 16 and specifies the method of alignment.
 .endnote
 .np
@@ -1319,21 +1331,15 @@ compiler command line option.
 .np
 The following form of the "pack" pragma can be used to save the current
 alignment amount on an internal stack.
-.mbox begin
-:prgbeg. pack ( push ) :prgend.
-.mbox end
-.np
-The following form of the "pack" pragma can be used to save the current
-alignment amount on an internal stack and set the current alignment.
-.mbox begin
-:prgbeg. pack ( push, :id.number:eid. ) :prgend.
-.mbox end
+.millust begin
+&pragma pack ( push )&epragma
+.millust end
 .np
 The following form of the "pack" pragma can be used to restore the
 previous alignment amount from an internal stack.
-.mbox begin
-:prgbeg. pack ( pop ) :prgend.
-.mbox end
+.millust begin
+&pragma pack ( pop )&epragma
+.millust end
 .*
 .section The READ_ONLY_FILE Pragma
 .*
