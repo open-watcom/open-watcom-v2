@@ -30,6 +30,7 @@ diags_0099_defn = &
     diag0021$(err_sin) &
     diag0022$(err_sin) &
     diag0023$(err_sin) &
+    diag0024$(err_sin) &
     diag0100$(err_sin) &
     diag0101$(err_sin) &
     diag0102$(err_sin) &

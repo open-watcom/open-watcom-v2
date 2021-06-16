@@ -278,6 +278,7 @@ source\diag0023.c(19): Error! E1190: 'else' without 'if'
 source\diag0023.c(20): Error! E1190: 'else' without 'if'
 source\diag0023.c(21): Error! E1190: 'else' without 'if'
 source\diag0023.c(23): Error! E1190: 'else' without 'if'
+source\diag0024.c(3): Warning! W138: No newline at end of file
 source\diag0100.c(7): Warning! W140: Definition of macro 'MAC1' not identical to previous definition
 source\diag0100.c(7): Note! I2002: 'MAC1' defined in: source\diag0100.c(3)
 source\diag0100.c(9): Warning! W140: Definition of macro 'MAC2' not identical to previous definition
