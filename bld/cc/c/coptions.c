@@ -1985,7 +1985,7 @@ static char *ReadIndirectFile( void )
         len = (size_t)ftell( fp );
         env = CMemAlloc( len + 1 );
         rewind( fp );
-        len = fread( env, len, 1, fp );
+        len = fread( env, 1, len, fp );
         env[len] = '\0';
         fclose( fp );
         // zip through characters changing \r, \n etc into ' '
