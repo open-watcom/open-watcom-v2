@@ -38,7 +38,7 @@ Pragmas are specified in the source file using the
 directive.
 A pragma operator of the form,
 .kw _Pragma
-( string-literal )
+( "string-literal" )
 is an alternative method of specifying
 .kw pragma
 directives.

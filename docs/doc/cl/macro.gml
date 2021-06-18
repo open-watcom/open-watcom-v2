@@ -883,7 +883,7 @@ A pragma operator of the form,
 .ppix _Pragma
 .cillust begin
 .kwpp _Pragma
-( string-literal )
+( "string-literal" )
 .cillust end
 .pc
 is an alternative method of specifying #pragma directives.

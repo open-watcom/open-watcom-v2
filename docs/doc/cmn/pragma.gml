@@ -228,9 +228,9 @@ code generation
 .ix 'options' 'using pragmas'
 The following describes the form of the pragma to specify option.
 .mbox begin
-:prgbeg. on ( :id.option_name:eid. ) :prgend.
-:prgbeg. off ( :id.option_name:eid. ) :prgend.
-:prgbeg. pop ( :id.option_name:eid. ) :prgend.
+:prgbeg. :id.on:eid. ( :id.option_name:eid. :rp. :id.option_name:eid.:erp. ) :prgend.
+:prgbeg. :id.off:eid. ( :id.option_name:eid. :rp. :id.option_name:eid.:erp. ) :prgend.
+:prgbeg. :id.pop:eid. ( :id.option_name:eid. :rp. :id.option_name:eid.:erp. ) :prgend.
 .mbox end
 .synote
 .note on
@@ -239,13 +239,13 @@ activates option.
 deactivates option.
 .note pop
 restore option to previous setting.
-.endnote
+.esynote
 The first two forms all push the previous setting before establishing
 the new setting.
-.begnote
+.synote
 .note option_name
 is a name of the option to be manipulate.
-.endnote
+.esynote
 .np
 It is also possible to specify more than one option in a pragma as
 illustrated by the following example.
@@ -418,7 +418,7 @@ is either a name or an identifier of the symbol to be aliased.
 is either a name or an identifier of the symbol that references to
 .id alias
 will be replaced with.
-.endnote
+.esynote
 .np
 Consider the following example.
 .millust begin
@@ -455,7 +455,7 @@ The following describes the form of the "alloc_text" pragma.
 is the name of the text segment.
 .note fn
 is the name of a function.
-.endnote
+.esynote
 .np
 Consider the following example.
 .millust begin
@@ -506,7 +506,7 @@ may be a macro as in:
 #define class_name "MY_CODE"
 &pragma code_seg ( "MY_CODE_SEG", class_name )&epragma
 .millust end
-.endnote
+.esynote
 .np
 Consider the following example.
 .millust begin
@@ -569,7 +569,7 @@ See the section entitled :HDREF refid='&praglib'. for more information.
 .note "comment_string"
 is an optional string literal that provides additional information
 for some comment types.
-.endnote
+.esynote
 .np
 Consider the following example.
 .millust begin
@@ -606,7 +606,7 @@ may be a macro as in:
 #define class_name "MY_CLASS"
 &pragma data_seg ( "MY_DATA_SEG", class_name )&epragma
 .millust end
-.endnote
+.esynote
 .np
 Consider the following example.
 .millust begin
@@ -684,14 +684,14 @@ enumeration constants with their values.
 The general form of the "dump_object_model" pragma is as follows.
 .mbox begin
 :prgbeg. dump_object_model :id.class:eid. :prgend.
-.if &vermacro ge 1070 .do begin
 :prgbeg. dump_object_model :id.enumeration:eid. :prgend.
-.do end
-:id.class ::= a defined C++ class free of errors:eid.
-.if &vermacro ge 1070 .do begin
-:id.enumeration ::= a defined C++ enumeration name:eid.
-.do end
 .mbox end
+.synote
+.note class
+a defined C++ class free of errors
+.note enumeration
+a defined C++ enumeration name
+.esynote
 .np
 This pragma is designed to be used for information purposes only.
 .*
@@ -735,10 +735,10 @@ subsequent
 declarations.
 The forms of the "enum" pragma are as follows.
 .mbox begin
-:prgbeg. enum int :prgend.
-:prgbeg. enum minimum :prgend.
-:prgbeg. enum original :prgend.
-:prgbeg. enum pop :prgend.
+:prgbeg. enum :id.int:eid. :prgend.
+:prgbeg. enum :id.minimum:eid. :prgend.
+:prgbeg. enum :id.original:eid. :prgend.
+:prgbeg. enum :id.pop:eid. :prgend.
 .mbox end
 .synote
 .note int
@@ -760,7 +760,7 @@ establishing the new setting.
 .*
 .do end
 .*
-.section The ERROR Pragma
+.section The ERROR Pragma (C++ only)
 .*
 .np
 .ix 'pragmas' 'error'
@@ -769,12 +769,12 @@ The "error" pragma can be used to issue an error message with the
 specified text.
 The following describes the form of the "error" pragma.
 .mbox begin
-:prgbeg. error :id."error text":eid. :prgend.
+:prgbeg. error :id."error text":eid. :rp. :id."error text":eid.:erp.:prgend.
 .mbox end
 .synote
 .note "error text"
 is the text of the message that you wish to display.
-.endnote
+.esynote
 .np
 You should use the ISO
 .kw #error
@@ -854,7 +854,7 @@ The following describes the form of the "function" pragma.
 .synote
 .note fn
 is the name of a function.
-.endnote
+.esynote
 .np
 Suppose the following source code was compiled using the "om" option
 so that when one of the special math functions is referenced, the
@@ -897,7 +897,7 @@ The form of the "include_alias" pragma follows.
 is the name referenced in include directives in source code.
 .note real_name
 is the translated name that the compiler will reference instead.
-.endnote
+.esynote
 .np
 The following is an example.
 .millust begin
@@ -934,24 +934,26 @@ be used.
 .np
 The general form of the "initialize" pragma is as follows.
 .mbox begin
-:prgbeg. initialize :op.before :or. after:eop. :id.priority:eid. :prgend.
-
-:id.priority ::=:eid. :id.n:eid. :or. library :or. program
+:prgbeg. initialize :op.before :or. after:eop. :id.n:eid. :prgend.
+:prgbeg. initialize :op.before :or. after:eop. :id.library:eid. :prgend.
+:prgbeg. initialize :op.before :or. after:eop. :id.program:eid. :prgend.
 .mbox end
+Priority is a number and must be in the range 0-255. The larger the priority,
+the later the point at which initialization will occur.
 .synote
 .note n
-is a number representing the priority and must be in the range 0-255.
-The larger the priority, the later the point at which initialization will
-occur.
+is a number in the range 0-255
+.note library
+the keyword represents a priority of 32 and can be used for class
+libraries that require initialization before the program is initialized.
+.note program
+the keyword represents a priority of 64 and is the default priority
+for any compiled code.
 .esynote
 .np
 Priorities in the range 0-20 are reserved for the C++ compiler.
 This is to ensure that proper initialization of the C++ run-time system
 takes place before the execution of your program.
-The "library" keyword represents a priority of 32 and can be used for class
-libraries that require initialization before the program is initialized.
-The "program" keyword represents a priority of 64 and is the default priority
-for any compiled code.
 Specifying "before" adjusts the priority by subtracting one.
 Specifying "after" adjusts the priority by adding one.
 .np
@@ -1004,7 +1006,8 @@ expansion of in-line functions will occur for a call.
 .np
 The form of the "inline_depth" pragma is as follows.
 .mbox begin
-:prgbeg. inline_depth :op.(:eop. :id.n:eid. :op.):eop. :prgend.
+:prgbeg. inline_depth :id.n:eid. :prgend.
+:prgbeg. inline_depth ( :id.n:eid. ) :prgend.
 .mbox end
 .synote
 .note n
@@ -1038,7 +1041,8 @@ The "inline_recursion" pragma controls the recursive expansion of
 inline functions.
 The form of the "inline_recursion" pragma is as follows.
 .mbox begin
-:prgbeg. inline_recursion :op.(:eop. on :or. off :op.):eop. :prgend.
+:prgbeg. inline_recursion on :or. off :prgend.
+:prgbeg. inline_recursion ( on :or. off ) :prgend.
 .mbox end
 .np
 Specifying "on" will enable expansion of recursive inline functions.
@@ -1068,7 +1072,7 @@ The following describes the form of the "intrinsic" pragma.
 .synote
 .note fn
 is the name of a function.
-.endnote
+.esynote
 .np
 Suppose the following source code was compiled without using the "oi" option
 so that no function had the intrinsic attribute.
@@ -1129,6 +1133,19 @@ placed in the object file.
 .np
 If you wish to add your own default libraries to this list, you can do
 so with a library pragma.
+.np
+.ix 'pragmas' 'library'
+.ix 'library pragma'
+The following describes the form of the "library" pragma.
+.mbox begin
+:prgbeg. library ( :id.library_name:eid. :rp. :id.library_name:eid.:erp. ) :prgend.
+.mbox end
+.synote
+.note library_name
+library name to be added to the list of default libraries specified in
+the object file.
+.esynote
+.np
 Consider the following example.
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
 .millust begin
@@ -1144,7 +1161,6 @@ Consider the following example.
 The name "mylib" will be added to the list of default libraries
 specified in the object file.
 .if '&lang' eq 'C' or '&lang' eq 'C/C++' .do begin
-.np
 If the library specification contains characters such as '&pc', ':' or
 ',' (i.e., any character not allowed in a C identifier), you must
 enclose it in double quotes as in the following example.
@@ -1201,12 +1217,12 @@ The "message" pragma can be used to issue a message with the specified
 text to the standard output without terminating compilation.
 The following describes the form of the "message" pragma.
 .mbox begin
-:prgbeg. message ( :id."message text":eid. ) :prgend.
+:prgbeg. message ( :id."message text":eid. :rp. :id."message text":eid.:erp. ) :prgend.
 .mbox end
 .synote
 .note "message text"
 is the text of the message that you wish to display.
-.endnote
+.esynote
 .np
 The following is an example.
 .millust begin
@@ -1260,8 +1276,8 @@ The "pack" pragma can be used to control the way in which structures
 are stored in memory.
 The forms of the "pack" pragma are as follows.
 .mbox begin
-:prgbeg. pack ( :id.number:eid. ) :prgend.
-:prgbeg. pack ( push, :id.number:eid. ) :prgend.
+:prgbeg. pack ( :id.n:eid. ) :prgend.
+:prgbeg. pack ( push, :id.n:eid. ) :prgend.
 :prgbeg. pack ( push ) :prgend.
 :prgbeg. pack ( pop ) :prgend.
 .mbox end
@@ -1269,18 +1285,18 @@ The forms of the "pack" pragma are as follows.
 The following form of the "pack" pragma can be used to change the
 alignment of structures and their fields in memory.
 .millust begin
-&pragma pack ( number )&epragma
+&pragma pack ( n )&epragma
 .millust end
 The following form of the "pack" pragma saves the current alignment amount
 on an internal stack before alignment amount change.
 .millust begin
-&pragma pack ( push, number )&epragma
+&pragma pack ( push, n )&epragma
 .millust end
 .np
 .synote
-.note number
+.note n
 is 1, 2, 4, 8 or 16 and specifies the method of alignment.
-.endnote
+.esynote
 .np
 The alignment of structure members is described in the following
 table.
@@ -1380,7 +1396,8 @@ detected.
 .np
 The form of the "template_depth" pragma is as follows.
 .mbox begin
-:prgbeg. template_depth :op.(:eop. :id.n:eid. :op.):eop. :prgend.
+:prgbeg. template_depth :id.n:eid. :prgend.
+:prgbeg. template_depth ( :id.n:eid. ) :prgend.
 .mbox end
 .synote
 .note n
@@ -2242,8 +2259,7 @@ way a &function is to be called.
     or
 :prgbeg. aux :id.sym:eid. = :id.in_line:eid. :prgend.
 
-:id.in_line ::= { const | (:eid.seg:id. id) | (:eid.offset:id. id) | (:eid.reloff:id. id)
-                    | (:eid.float:id. fpinst) | :eid.":id.asm:eid." :id.}:eid.
+:id.in_line ::= { const | (:eid.seg:id. id) | (:eid.offset:id. id) | (:eid.reloff:id. id) | (:eid.float:id. fpinst) | :eid.":id.asm:eid." :id.}:eid.
 .mbox end
 .do end
 .* ---------------------------------------
@@ -2255,8 +2271,7 @@ way a &function is to be called.
     or
 :prgbeg. aux :id.sym:eid. = :id.in_line:eid. :prgend.
 
-:id.in_line ::= { const | (:eid.seg:id. id) | (:eid.offset:id. id) | (:eid.reloff:id. id)
-                    | :eid.":id.asm:eid." :id.}:eid.
+:id.in_line ::= { const | (:eid.seg:id. id) | (:eid.offset:id. id) | (:eid.reloff:id. id) | :eid.":id.asm:eid." :id.}:eid.
 .mbox end
 .do end
 .* ---------------------------------------
@@ -3425,7 +3440,6 @@ function returns its value is the following.
 .ix 'struct caller (pragma)'
 .mbox begin
 :prgbeg. aux :id.sym:eid. value :rp.no8087 :or. :id.reg_set:eid. :or. :id.struct_info:eid.:erp. :prgend.
-.millust break
 
 :id.struct_info ::=:eid. struct :rp.float :or. struct :or. :id.(:eid.routine :or. caller:id.):eid. :or. :id.reg_set:eid.:erp.
 .mbox end
@@ -3588,7 +3602,7 @@ register that is to be used to point to the return value.
 .ix 'struct caller (pragma)'
 .ix 'struct routine (pragma)'
 .mbox begin
-:prgbeg. aux :id.sym:eid. value struct :id.(:eid.caller:or.routine:id.):eid. :id.reg_set:eid. :prgend.
+:prgbeg. aux :id.sym:eid. value struct :id.(:eid.caller :or. routine:id.):eid. :id.reg_set:eid. :prgend.
 .mbox end
 .synote
 .note sym
