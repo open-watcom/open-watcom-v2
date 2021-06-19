@@ -76,7 +76,6 @@ typedef enum {
     M_COMPLEX       = 0x0400,
     M_IMAGINARY     = 0x0800,
     M_BOOL          = 0x1000,
-    M_INT8          = 0x2000,
 } type_mask;
 
 void InitTypeHashTables( void )
@@ -265,12 +264,9 @@ static TYPEPTR GetScalarType( bool *plain_int, type_mask bmask, type_modifiers f
     case M_CHAR:
         data_type = TYP_PLAIN_CHAR;
         break;
-    case M_INT8:
-    case M_SIGNED | M_INT8:
     case M_SIGNED | M_CHAR:
         data_type = TYP_CHAR;
         break;
-    case M_UNSIGNED | M_INT8:
     case M_UNSIGNED | M_CHAR:
         data_type = TYP_UCHAR;
         break;
@@ -415,7 +411,7 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
             bit = M_LONG;
             break;
         case T___INT8:
-            bit = M_INT8;
+            bit = M_CHAR;
             break;
         case T___INT16:
             bit = M_SHORT;
