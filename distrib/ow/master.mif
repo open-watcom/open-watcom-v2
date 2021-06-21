@@ -96,7 +96,7 @@ all: .SYMBOLIC
 all : $(distrib_bindir)/$(installer_c) $(distrib_bindir)/$(installer_f77) .SYMBOLIC
 
 $(distrib_bindir)/$(installer_c) : ../files.dat $(distrib_bindir) $(setup_c) .ALWAYS
-    @rm -f *.c
+    @rm -f *.__c
     @%make clean_inf
     langdat -l filelist $(langdat_keys) -r $(bld_ver) -c $[@ c
     @cp $]@ setup.exe >$(nulldevice)
@@ -106,9 +106,9 @@ $(distrib_bindir)/$(installer_c) : ../files.dat $(distrib_bindir) $(setup_c) .AL
     @rm $(%OWRELROOT)/setup.inf
     @rm setup.exe
 !ifdef debug
-    @%ren filelist      filelist.c
-    @%ren instarch.lst  instarch.c
-    @%ren setup.inf     setup.c
+    @%ren filelist      filelist.__c
+    @%ren instarch.lst  instarch.__c
+    @%ren setup.inf     setup.__c
 !else
     @%make clean_inf
 !endif
@@ -116,7 +116,7 @@ $(distrib_bindir)/$(installer_c) : ../files.dat $(distrib_bindir) $(setup_c) .AL
     @rm setup.zip
 
 $(distrib_bindir)/$(installer_f77) : ../files.dat $(distrib_bindir) $(setup_f77) .ALWAYS
-    @rm -f *.f77
+    @rm -f *.__f
     @%make clean_inf
     langdat -l filelist $(langdat_keys) -r $(bld_ver) -c $[@ f77
     @cp $]@ setup.exe >$(nulldevice)
@@ -126,9 +126,9 @@ $(distrib_bindir)/$(installer_f77) : ../files.dat $(distrib_bindir) $(setup_f77)
     @rm $(%OWRELROOT)/setup.inf
     @rm setup.exe
 !ifdef debug
-    @%ren filelist      filelist.f77
-    @%ren instarch.lst  instarch.f77
-    @%ren setup.inf     setup.f77
+    @%ren filelist      filelist.__f
+    @%ren instarch.lst  instarch.__f
+    @%ren setup.inf     setup.__f
 !else
     @%make clean_inf
 !endif
@@ -149,7 +149,7 @@ clean : .symbolic
     @if exist setup.zip rm setup.zip
     @if exist setup.exe rm setup.exe
     @%make clean_inf
-    @rm -f *.c
-    @rm -f *.f77
+    @rm -f *.__c
+    @rm -f *.__f
 
 !endif
