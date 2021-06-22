@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -127,8 +127,8 @@ typedef enum {
 
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
 #define DLGFILE_DRV_CTLS() \
-    pick_p3(   DRIVES_TITLE,      DLG_STRING,     2,                            11, 20 ) \
-    pick_p4id( DRIVES,            DLG_COMBO_BOX,  2,                            12, 2 + BOX_WIDTH + 3,            15 )
+    pick_p3(   DRIVES_TITLE,      DLG_STRING,     DIR_START,                    11, 20 ) \
+    pick_p4id( DRIVES,            DLG_COMBO_BOX,  DIR_START,                    12, 2 + BOX_WIDTH + 3,            15 )
 #endif
 
 enum {
