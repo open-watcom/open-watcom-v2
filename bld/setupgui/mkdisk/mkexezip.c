@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,43 +35,10 @@
 #include <string.h>
 #include <sys/types.h>
 #include "watcom.h"
+#include "wzipcdir.h"
 
-#include "zipint.h"
 
 #define BUFFER_SIZE 65536
-
-#include "pushpck1.h"
-typedef struct {
-    char        signature[4];
-    unsigned_16    disk_number;            // not supported by libzip
-    unsigned_16    disk_having_cd;         // not supported by libzip
-    unsigned_16    num_entries_on_disk;    // not supported by libzip
-    unsigned_16    total_num_entries;
-    unsigned_32    cd_size;
-    unsigned_32    cd_offset;
-    unsigned_16    comment_length;
-} ZIP_END_OF_CENTRAL_DIRECTORY;
-
-typedef struct {
-    char        signature[4];
-    unsigned_16    version_made_by;
-    unsigned_16    version_needed;
-    unsigned_16    flags;
-    unsigned_16    method;
-    unsigned_16    mod_time;
-    unsigned_16    mod_date;
-    unsigned_32    crc32;
-    unsigned_32    compressed_size;
-    unsigned_32    uncompressed_size;
-    unsigned_16    file_name_length;
-    unsigned_16    extra_field_length;
-    unsigned_16    file_comment_length;
-    unsigned_16    disk;                   // not supported by libzip
-    unsigned_16    int_attrib;
-    unsigned_32    ext_attrib;
-    unsigned_32    offset;
-} ZIP_CENTRAL_DIRECTORY_FILE_HEADER;
-#include "poppck.h"
 
 static const char   usage[] = "%s <target exe> <source zip> <source exe>\n";
 
@@ -111,8 +79,8 @@ static long find( char *buffer, size_t buffer_len, char *match, size_t match_len
 
 static size_t fix_cd( FILE *f, void *buffer, size_t buffer_len, long offset )
 {
-    ZIP_END_OF_CENTRAL_DIRECTORY        *eocd;
-    ZIP_CENTRAL_DIRECTORY_FILE_HEADER   fileheader;
+    wzip_cdir        *eocd;
+    wzip_dirent   fileheader;
     long                                header_pos;
     unsigned_32                         i;
 
@@ -130,7 +98,7 @@ static size_t fix_cd( FILE *f, void *buffer, size_t buffer_len, long offset )
         }
 
         // make sure we are at the correct position in file
-        if( find( (char *)&fileheader, 4, CENTRAL_MAGIC, 4 ) != 0) {
+        if( find( (char *)&fileheader, SIZE_CENTRAL_MAGIC, CENTRAL_MAGIC, SIZE_CENTRAL_MAGIC ) != 0) {
             return( 0 );
         }
 
@@ -259,7 +227,7 @@ int main( int argc, char *argv[] )
 
     pos = 0;
     while( pos != -1L ) {
-        pos = find( buffer + pos, n - pos, EOCD_MAGIC, strlen( EOCD_MAGIC ) );
+        pos = find( buffer + pos, n - pos, EOCD_MAGIC, SIZE_EOCD_MAGIC );
         if( pos == -1L ) {
             fprintf( stderr, "error: no ZIP magic found in '%s'\n", target );
             fclose( ftarget );
@@ -269,7 +237,7 @@ int main( int argc, char *argv[] )
 
         if( fix_cd( ftarget, buffer + pos, n - pos, offset ) ) {
             // fixup also eocd
-            ZIP_END_OF_CENTRAL_DIRECTORY    eocd;
+            wzip_cdir    eocd;
             long                            off;
 
             if( length < BUFFER_SIZE ) {
@@ -287,7 +255,7 @@ int main( int argc, char *argv[] )
                 return( 1 );
             }
 
-            if( find( (char *)&eocd, 4, EOCD_MAGIC, 4 ) != 0 ) {
+            if( find( (char *)&eocd, SIZE_EOCD_MAGIC, EOCD_MAGIC, SIZE_EOCD_MAGIC ) != 0 ) {
                 fprintf( stderr, "file read error while checking eocd magic: '%s'\n", target );
                 fclose( ftarget );
                 free( buffer );

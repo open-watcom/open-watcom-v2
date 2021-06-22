@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,40 +37,8 @@
 #include "wresrtns.h"
 #include "machtype.h"
 #include "wdbginfo.h"
+#include "wzipcdir.h"
 
-
-#include "pushpck1.h"
-typedef struct {
-    char        signature[4];
-    uint_16     disk_number;
-    uint_16     disk_having_cd;
-    uint_16     num_entries_on_disk;
-    uint_16     total_num_entries;
-    uint_32     cd_size;
-    uint_32     cd_offset;
-    uint_16     comment_length;
-} zip_eocd;
-
-typedef struct {
-    char        signature[4];
-    uint_16     version_made_by;
-    uint_16     version_needed;
-    uint_16     flags;
-    uint_16     method;
-    uint_16     mod_time;
-    uint_16     mod_date;
-    uint_32     crc32;
-    uint_32     compressed_size;
-    uint_32     uncompressed_size;
-    uint_16     file_name_length;
-    uint_16     extra_field_length;
-    uint_16     file_comment_length;
-    uint_16     disk;                   // not supported by libzip
-    uint_16     int_attrib;
-    uint_32     ext_attrib;
-    uint_32     offset;
-} zip_cdfh;
-#include "poppck.h"
 
 long            WResFileShift = 0;
 
@@ -79,8 +48,8 @@ bool FindResourcesX( PHANDLE_INFO hinfo, bool res_file )
     long                currpos;
     long                offset;
     master_dbg_header   header;
-    zip_eocd            eocd;
-    zip_cdfh            cdfh;
+    wzip_cdir           eocd;
+    wzip_dirent         cdfh;
     bool                notfound;
 
     notfound = !res_file;
@@ -91,10 +60,10 @@ bool FindResourcesX( PHANDLE_INFO hinfo, bool res_file )
         /* Look for a PKZIP header and skip archive if present */
         if( !WRESSEEK( hinfo->fp, -(long)sizeof( eocd ), SEEK_END ) ) {
             if( WRESREAD( hinfo->fp, &eocd, sizeof( eocd ) ) == sizeof( eocd ) ) {
-                if( memcmp( &eocd.signature, "PK\005\006", 4 ) == 0 ) {
+                if( memcmp( &eocd.signature, EOCD_MAGIC, SIZE_EOCD_MAGIC ) == 0 ) {
                     if( !WRESSEEK( hinfo->fp, eocd.cd_offset, SEEK_SET ) ) {
                         if( WRESREAD( hinfo->fp, &cdfh, sizeof( cdfh ) ) == sizeof( cdfh ) ) {
-                            if( memcmp( &cdfh.signature, "PK\001\002", 4 ) == 0 ) {
+                            if( memcmp( &cdfh.signature, CENTRAL_MAGIC, SIZE_CENTRAL_MAGIC ) == 0 ) {
                                 offset += eocd.cd_offset + eocd.cd_size - cdfh.offset + sizeof( eocd );
                             }
                         }
