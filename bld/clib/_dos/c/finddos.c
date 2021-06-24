@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -211,8 +211,8 @@ static void convert_to_find_t( struct find_t *fdta, lfnfind_t *lfndta )
     strcpy( fdta->name, ( *lfndta->lfn != '\0' ) ? lfndta->lfn : lfndta->sfn );
 }
 
-static tiny_ret_t _dos_find_first_lfn( const char *path, unsigned attrib, lfnfind_t *lfndta )
-/*******************************************************************************************/
+static lfn_ret_t _dos_find_first_lfn( const char *path, unsigned attrib, lfnfind_t *lfndta )
+/******************************************************************************************/
 {
 #ifdef _M_I86
     return( __dos_find_first_lfn( path, attrib, lfndta ) );
@@ -232,16 +232,16 @@ static tiny_ret_t _dos_find_first_lfn( const char *path, unsigned attrib, lfnfin
     if( __dpmi_dos_call( &dpmi_rm ) ) {
         return( -1 );
     }
-    if( dpmi_rm.flags & 1 ) {
-        return( TINY_RET_ERROR( dpmi_rm.ax ) );
+    if( LFN_DPMI_ERROR( dpmi_rm ) ) {
+        return( LFN_RET_ERROR( dpmi_rm.ax ) );
     }
     memcpy( lfndta, RM_TB_PARM2_LINEAR, sizeof( *lfndta ) );
     return( dpmi_rm.ax );
 #endif
 }
 
-static tiny_ret_t _dos_find_next_lfn( unsigned handle, lfnfind_t *lfndta )
-/************************************************************************/
+static lfn_ret_t _dos_find_next_lfn( unsigned handle, lfnfind_t *lfndta )
+/***********************************************************************/
 {
 #ifdef _M_I86
     return( __dos_find_next_lfn( handle, lfndta ) );
@@ -258,16 +258,16 @@ static tiny_ret_t _dos_find_next_lfn( unsigned handle, lfnfind_t *lfndta )
     if( __dpmi_dos_call( &dpmi_rm ) ) {
         return( -1 );
     }
-    if( dpmi_rm.flags & 1 ) {
-        return( TINY_RET_ERROR( dpmi_rm.ax ) );
+    if( LFN_DPMI_ERROR( dpmi_rm ) ) {
+        return( LFN_RET_ERROR( dpmi_rm.ax ) );
     }
     memcpy( lfndta, RM_TB_PARM1_LINEAR, sizeof( *lfndta ) );
     return( 0 );
 #endif
 }
 
-static tiny_ret_t _dos_find_close_lfn( unsigned handle )
-/******************************************************/
+static lfn_ret_t _dos_find_close_lfn( unsigned handle )
+/*****************************************************/
 {
 #ifdef _M_I86
     return( __dos_find_close_lfn( handle ) );
@@ -281,8 +281,8 @@ static tiny_ret_t _dos_find_close_lfn( unsigned handle )
     if( __dpmi_dos_call( &dpmi_rm ) ) {
         return( -1 );
     }
-    if( dpmi_rm.flags & 1 ) {
-        return( TINY_RET_ERROR( dpmi_rm.ax ) );
+    if( LFN_DPMI_ERROR( dpmi_rm ) ) {
+        return( LFN_RET_ERROR( dpmi_rm.ax ) );
     }
     return( 0 );
 #endif
@@ -294,19 +294,19 @@ _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned attrib,
 /******************************************************************************/
 {
 #ifdef __WATCOM_LFN__
-    lfnfind_t       lfndta;
-    tiny_ret_t      rc = 0;
+    lfnfind_t   lfndta;
+    lfn_ret_t   rc = 0;
 
     DTALFN_SIGN_OF( fdta->reserved )   = 0;
     DTALFN_HANDLE_OF( fdta->reserved ) = 0;
-    if( _RWD_uselfn && TINY_OK( rc = _dos_find_first_lfn( path, attrib, &lfndta ) ) ) {
+    if( _RWD_uselfn && LFN_OK( rc = _dos_find_first_lfn( path, attrib, &lfndta ) ) ) {
         convert_to_find_t( fdta, &lfndta );
         DTALFN_SIGN_OF( fdta->reserved )   = _LFN_SIGN;
-        DTALFN_HANDLE_OF( fdta->reserved ) = TINY_INFO( rc );
+        DTALFN_HANDLE_OF( fdta->reserved ) = LFN_INFO( rc );
         return( 0 );
     }
-    if( IS_LFN_ERROR( rc ) ) {
-        return( __set_errno_dos_reterr( TINY_INFO( rc ) ) );
+    if( LFN_ERROR( rc ) ) {
+        return( __set_errno_dos_reterr( LFN_INFO( rc ) ) );
     }
 #endif
     return( __dos_find_first_dta( path, attrib, fdta ) );
@@ -317,16 +317,16 @@ _WCRTLINK unsigned _dos_findnext( struct find_t *fdta )
 /*****************************************************/
 {
 #ifdef __WATCOM_LFN__
-    lfnfind_t       lfndta;
-    tiny_ret_t      rc;
+    lfnfind_t   lfndta;
+    lfn_ret_t   rc;
 
     if( IS_LFN( fdta->reserved ) ) {
         rc = _dos_find_next_lfn( DTALFN_HANDLE_OF( fdta->reserved ), &lfndta );
-        if( TINY_OK( rc ) ) {
+        if( LFN_OK( rc ) ) {
             convert_to_find_t( fdta, &lfndta );
             return( 0 );
         }
-        return( __set_errno_dos_reterr( TINY_INFO( rc ) ) );
+        return( __set_errno_dos_reterr( LFN_INFO( rc ) ) );
     }
 #endif
     return( __dos_find_next_dta( fdta ) );
@@ -337,12 +337,12 @@ _WCRTLINK unsigned _dos_findclose( struct find_t *fdta )
 /******************************************************/
 {
 #if defined( __WATCOM_LFN__ )
-    tiny_ret_t      rc;
+    lfn_ret_t   rc;
 
     if( IS_LFN( fdta->reserved ) ) {
-        if( TINY_OK( rc = _dos_find_close_lfn( DTALFN_HANDLE_OF( fdta->reserved ) ) ) )
+        if( LFN_OK( rc = _dos_find_close_lfn( DTALFN_HANDLE_OF( fdta->reserved ) ) ) )
             return( 0 );
-        return( __set_errno_dos_reterr( TINY_INFO( rc ) ) );
+        return( __set_errno_dos_reterr( LFN_INFO( rc ) ) );
     }
 #else
 

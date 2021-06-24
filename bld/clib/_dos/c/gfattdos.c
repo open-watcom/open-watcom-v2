@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,8 +73,8 @@ extern unsigned __dos_getfileattr_sfn( const char *path, unsigned *attrib );
     AUX_INFO
 
 #ifdef __WATCOM_LFN__
-static tiny_ret_t _dos_getfileattr_lfn( const char *path )
-/********************************************************/
+static lfn_ret_t _dos_getfileattr_lfn( const char *path )
+/*******************************************************/
 {
   #ifdef _M_I86
     return( __dos_getfileattr_lfn( path ) );
@@ -92,8 +92,8 @@ static tiny_ret_t _dos_getfileattr_lfn( const char *path )
     if( __dpmi_dos_call( &dpmi_rm ) ) {
         return( -1 );
     }
-    if( dpmi_rm.flags & 1 ) {
-        return( TINY_RET_ERROR( dpmi_rm.ax ) );
+    if( LFN_DPMI_ERROR( dpmi_rm ) ) {
+        return( LFN_RET_ERROR( dpmi_rm.ax ) );
     }
     return( dpmi_rm.cx );
   #endif
@@ -104,14 +104,14 @@ _WCRTLINK unsigned _dos_getfileattr( const char *path, unsigned *attrib )
 /***********************************************************************/
 {
 #ifdef __WATCOM_LFN__
-    tiny_ret_t  rc = 0;
+    lfn_ret_t   rc = 0;
 
-    if( _RWD_uselfn && TINY_OK( rc = _dos_getfileattr_lfn( path ) ) ) {
-        *attrib = TINY_INFO( rc );
+    if( _RWD_uselfn && LFN_OK( rc = _dos_getfileattr_lfn( path ) ) ) {
+        *attrib = LFN_INFO( rc );
         return( 0 );
     }
-    if( IS_LFN_ERROR( rc ) ) {
-        return( __set_errno_dos_reterr( TINY_INFO( rc ) ) );
+    if( LFN_ERROR( rc ) ) {
+        return( __set_errno_dos_reterr( LFN_INFO( rc ) ) );
     }
 #endif
     return( __dos_getfileattr_sfn( path, attrib ) );

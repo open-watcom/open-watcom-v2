@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,19 @@
 #include <dos.h>
 #include "tinyio.h"
 #include "rtdata.h"
+#include "doserror.h"
 
+
+#define _LFN_SIGN           0x004e464cUL    // "LFN"
+
+#define IS_LFN(x)           (_RWD_uselfn && DTALFN_SIGN_OF(x) == _LFN_SIGN && DTALFN_HANDLE_OF(x))
+
+#define LFN_ERROR(x)        ((x) < 0 && (x)!= 0xFFFF7100)
+#define LFN_OK(x)           ((x) >= 0)
+#define LFN_INFO(x)         ((unsigned short)(x))
+
+#define LFN_DPMI_ERROR(x)   ((x).flags & 1)
+#define LFN_RET_ERROR(e)    ((e) | ~0xFFFF)
 
 #define EX_LFN_OPEN         0x01
 #define EX_LFN_CREATE       0x12
@@ -66,6 +78,32 @@
     #define _RST_DS
     #define _RST_ES
 #endif
+
+#define MOV_DTA             \
+        "mov    ecx,43"     \
+        "rep movsb"
+
+#define MOV_DATA_TO_DTA     \
+        "mov    esi,edx"    \
+        "mov    edi,ebx"    \
+        MOV_DTA
+
+#define MOV_DATA_FROM_DTA   \
+        "mov    esi,ebx"    \
+        "mov    edi,edx"    \
+        "mov    ebx,ds"     \
+        "push   es"         \
+        "pop    ds"         \
+        "mov    es,ebx"     \
+        MOV_DTA             \
+        "mov    ds,ebx"
+
+#define RETURN_VALUE        \
+        "jc short LX"       \
+        SAVE_VALUE          \
+    "LX:"
+
+typedef long        lfn_ret_t;
 
 #include "pushpck1.h"
 /* The find block for the LFN find */
@@ -101,15 +139,9 @@ typedef struct {
 } lfninfo_t;
 #include "poppck.h"
 
-extern unsigned __doserror_( unsigned );
-#pragma aux __doserror_ "*" __parm __caller
-
-extern unsigned __doserror1_( unsigned );
-#pragma aux __doserror1_ "*" __parm __caller
-
 #ifdef _M_I86
 
-extern tiny_ret_t __dos_create_ex_lfn( const char *name, unsigned mode, unsigned attrib, unsigned action );
+extern lfn_ret_t __dos_create_ex_lfn( const char *name, unsigned mode, unsigned attrib, unsigned action );
   #ifdef __BIG_DATA__
     #pragma aux __dos_create_ex_lfn = \
             "push   ds"         \
@@ -134,7 +166,7 @@ extern tiny_ret_t __dos_create_ex_lfn( const char *name, unsigned mode, unsigned
         __modify __exact    [__ax __cx __dx]
   #endif
 
-extern tiny_ret_t __dos_find_first_lfn( const char *path, unsigned attr, lfnfind_t __far *lfndta );
+extern lfn_ret_t __dos_find_first_lfn( const char *path, unsigned attr, lfnfind_t __far *lfndta );
   #ifdef __BIG_DATA__
     #pragma aux __dos_find_first_lfn = \
             "push   ds"         \
@@ -161,7 +193,7 @@ extern tiny_ret_t __dos_find_first_lfn( const char *path, unsigned attr, lfnfind
         __modify __exact    [__ax __cx __dx __si]
   #endif
 
-extern tiny_ret_t __dos_find_next_lfn( unsigned handle, lfnfind_t __far *lfndta );
+extern lfn_ret_t __dos_find_next_lfn( unsigned handle, lfnfind_t __far *lfndta );
 #pragma aux __dos_find_next_lfn = \
         "mov    si,1"       \
         "mov    ax,714fh"   \
@@ -175,7 +207,7 @@ extern tiny_ret_t __dos_find_next_lfn( unsigned handle, lfnfind_t __far *lfndta 
     __value             [__dx __ax] \
     __modify __exact    [__ax __cx __dx __si]
 
-extern tiny_ret_t __dos_find_close_lfn( unsigned handle );
+extern lfn_ret_t __dos_find_close_lfn( unsigned handle );
 #pragma aux __dos_find_close_lfn = \
         "mov    ax,71A1h"   \
         "stc"               \
@@ -188,7 +220,7 @@ extern tiny_ret_t __dos_find_close_lfn( unsigned handle );
     __value             [__dx __ax] \
     __modify __exact    [__ax __dx]
 
-extern tiny_ret_t __dos_getfileattr_lfn( const char *path );
+extern lfn_ret_t __dos_getfileattr_lfn( const char *path );
   #ifdef __BIG_DATA__
     #pragma aux __dos_getfileattr_lfn = \
             "push   ds"         \
@@ -221,7 +253,7 @@ extern tiny_ret_t __dos_getfileattr_lfn( const char *path );
         __modify __exact    [__ax __bl __cx __dx]
   #endif
 
-extern tiny_ret_t __dos_setfileattr_lfn( const char *path, unsigned attr );
+extern lfn_ret_t __dos_setfileattr_lfn( const char *path, unsigned attr );
   #ifdef __BIG_DATA__
     #pragma aux __dos_setfileattr_lfn = \
             "push   ds"         \
@@ -254,7 +286,7 @@ extern tiny_ret_t __dos_setfileattr_lfn( const char *path, unsigned attr );
         __modify __exact    [__ax __bl __dx]
   #endif
 
-extern tiny_ret_t ___getdcwd_lfn( char *path, unsigned char drv );
+extern lfn_ret_t ___getdcwd_lfn( char *path, unsigned char drv );
   #ifdef __BIG_DATA__
     #pragma aux ___getdcwd_lfn = \
             "push   ds"         \
@@ -284,7 +316,7 @@ extern tiny_ret_t ___getdcwd_lfn( char *path, unsigned char drv );
         __modify __exact    [__ax __dx]
   #endif
 
-extern tiny_ret_t __chdir_lfn( const char *path );
+extern lfn_ret_t __chdir_lfn( const char *path );
   #ifdef __BIG_DATA__
     #pragma aux __chdir_lfn =   \
             "push   ds"         \
@@ -315,7 +347,7 @@ extern tiny_ret_t __chdir_lfn( const char *path );
         __modify __exact    [__ax __dx]
   #endif
 
-extern tiny_ret_t __mkdir_lfn( const char *path );
+extern lfn_ret_t __mkdir_lfn( const char *path );
   #ifdef __BIG_DATA__
     #pragma aux __mkdir_lfn =   \
             "push   ds"         \
@@ -346,7 +378,7 @@ extern tiny_ret_t __mkdir_lfn( const char *path );
         __modify __exact    [__ax __dx]
   #endif
 
-extern tiny_ret_t __rmdir_lfn( const char *path );
+extern lfn_ret_t __rmdir_lfn( const char *path );
   #ifdef __BIG_DATA__
     #pragma aux __rmdir_lfn =   \
             "push   ds"         \
@@ -377,7 +409,7 @@ extern tiny_ret_t __rmdir_lfn( const char *path );
         __modify __exact    [__ax __dx]
   #endif
 
-extern tiny_ret_t __rename_lfn( const char *old, const char *new );
+extern lfn_ret_t __rename_lfn( const char *old, const char *new );
   #ifdef __BIG_DATA__
     #pragma aux __rename_lfn =  \
             "push   ds"         \
@@ -412,7 +444,7 @@ extern tiny_ret_t __rename_lfn( const char *old, const char *new );
         __modify __exact    [__ax __dx]
   #endif
 
-extern tiny_ret_t __dos_utime_lfn( const char *path, unsigned time, unsigned date, unsigned mode );
+extern lfn_ret_t __dos_utime_lfn( const char *path, unsigned time, unsigned date, unsigned mode );
   #ifdef __BIG_DATA__
     #pragma aux __dos_utime_lfn = \
             "push   ds"         \
@@ -443,7 +475,7 @@ extern tiny_ret_t __dos_utime_lfn( const char *path, unsigned time, unsigned dat
         __modify __exact    [__ax __dx]
   #endif
 
-extern tiny_ret_t __unlink_lfn( const char *filename );
+extern lfn_ret_t __unlink_lfn( const char *filename );
   #ifdef __BIG_DATA__
     #pragma aux __unlink_lfn =  \
             "push   ds"         \
@@ -476,7 +508,7 @@ extern tiny_ret_t __unlink_lfn( const char *filename );
         __modify __exact    [__ax __dx __si]
   #endif
 
-extern tiny_ret_t __getfileinfo_lfn( int handle, lfninfo_t *lfninfo );
+extern lfn_ret_t __getfileinfo_lfn( int handle, lfninfo_t *lfninfo );
   #ifdef __BIG_DATA__
     #pragma aux __getfileinfo_lfn = \
             "push   ds"         \
@@ -542,39 +574,39 @@ extern long __cvt_stamp2dos_lfn( long long *timestamp );
         __modify __exact    [__ax __bx __cx __dx]
   #endif
 
+extern lfn_ret_t __lfntosfn_lfn( const char *orgname, char *shortname );
+  #ifdef __BIG_DATA__
+    #pragma aux __lfntosfn_lfn = \
+            "mov    cx,1"      \
+            "mov    ax,7160h"   \
+            "stc"               \
+            "int 21h"           \
+            "sbb    dx,dx"      \
+            "jnz short L1"      \
+            "xor    ax,ax"      \
+        "L1:"                   \
+        __parm __caller     [__ds __si] [__es __di] \
+        __value             [__dx __ax] \
+        __modify __exact    [__ax __cx __dx]
+  #else
+    #pragma aux __lfntosfn_lfn = \
+            "push   es"         \
+            "mov    ax,ds"      \
+            "mov    es,ax"      \
+            "mov    cx,1"       \
+            "mov    ax,7160h"   \
+            "stc"               \
+            "int 21h"           \
+            "pop    es"         \
+            "sbb    dx,dx"      \
+            "jnz short L1"      \
+            "xor    ax,ax"      \
+        "L1:"                   \
+        __parm __caller     [__si] [__di] \
+        __modify __exact    [__ax __cx __dx]
+  #endif
+
 #endif
-
-#define MOV_DTA             \
-        "mov    ecx,43"     \
-        "rep movsb"
-
-#define MOV_DATA_TO_DTA     \
-        "mov    esi,edx"    \
-        "mov    edi,ebx"    \
-        MOV_DTA
-
-#define MOV_DATA_FROM_DTA   \
-        "mov    esi,ebx"    \
-        "mov    edi,edx"    \
-        "mov    ebx,ds"     \
-        "push   es"         \
-        "pop    ds"         \
-        "mov    es,ebx"     \
-        MOV_DTA             \
-        "mov    ds,ebx"
-
-#define RETURN_VALUE        \
-        "jc short LX"       \
-        SAVE_VALUE          \
-    "LX:"
-
-#define _LFN_SIGN           0x004e464cUL    // "LFN"
-
-#define IS_LFN_ERROR(x)     ((int_32)(x) < 0 && (x)!= 0xFFFF7100)
-
-#define IS_LFN(x)           (_RWD_uselfn && DTALFN_SIGN_OF(x) == _LFN_SIGN && DTALFN_HANDLE_OF(x))
-
-#define TINY_RET_ERROR(e)   ((e) | ~0xFFFF)
 
 #if defined( __WATCOM_LFN__ ) && !defined( _M_I86 )
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -129,7 +129,7 @@ static long _cvt_stamp2dos_lfn( long long *timestamp )
     if( __dpmi_dos_call( &dpmi_rm ) ) {
         return( -1 );
     }
-    if( dpmi_rm.flags & 1 ) {
+    if( LFN_DPMI_ERROR( dpmi_rm ) ) {
         return( __set_errno_dos( dpmi_rm.ax ) );
     }
     return( dpmi_rm.dx << 16 | dpmi_rm.cx );
@@ -147,7 +147,7 @@ static time_t _cvt_stamp2ttime_lfn( long long *timestamp )
     return( _d2ttime( rc >> 16, rc ) );
 }
 
-static tiny_ret_t _getfileinfo_lfn( int handle, lfninfo_t *lfninfo )
+static lfn_ret_t _getfileinfo_lfn( int handle, lfninfo_t *lfninfo )
 {
 #ifdef _M_I86
     return( __getfileinfo_lfn( handle, lfninfo ) );
@@ -163,8 +163,8 @@ static tiny_ret_t _getfileinfo_lfn( int handle, lfninfo_t *lfninfo )
     if( __dpmi_dos_call( &dpmi_rm ) ) {
         return( -1 );
     }
-    if( dpmi_rm.flags & 1 ) {
-        return( TINY_RET_ERROR( dpmi_rm.ax ) );
+    if( LFN_DPMI_ERROR( dpmi_rm ) ) {
+        return( LFN_RET_ERROR( dpmi_rm.ax ) );
     }
     memcpy( lfninfo, RM_TB_PARM1_LINEAR, sizeof( *lfninfo ) );
     return( 0 );
@@ -205,9 +205,10 @@ _WCRTLINK int fstat( int handle, struct stat *buf )
     } else {                /* file */
 #ifdef __WATCOM_LFN__
         lfninfo_t       lfni;
+        lfn_ret_t       rc1;
 
-        rc = 0;
-        if( _RWD_uselfn && TINY_OK( rc = _getfileinfo_lfn( handle, &lfni ) ) ) {
+        rc1 = 0;
+        if( _RWD_uselfn && LFN_OK( rc1 = _getfileinfo_lfn( handle, &lfni ) ) ) {
             buf->st_mtime = _cvt_stamp2ttime_lfn( &lfni.writetimestamp );
             if( lfni.creattimestamp ) {
                 buf->st_ctime = _cvt_stamp2ttime_lfn( &lfni.creattimestamp );
@@ -221,17 +222,17 @@ _WCRTLINK int fstat( int handle, struct stat *buf )
             }
             buf->st_size = lfni.lfilesize;
             buf->st_attr = lfni.attributes;
-        } else if( IS_LFN_ERROR( rc ) ) {
-            return( __set_errno_dos( TINY_INFO( rc ) ) );
+        } else if( LFN_ERROR( rc1 ) ) {
+            return( __set_errno_dos( LFN_INFO( rc1 ) ) );
         } else {
 #endif
-            long    rc1;
+            long    rc2;
 
-            rc1 = __getfilestamp_sfn( handle );
-            if( rc1 == -1 ) {
+            rc2 = __getfilestamp_sfn( handle );
+            if( rc2 == -1 ) {
                 return( -1 );
             }
-            buf->st_mtime = _d2ttime( rc1 >> 16, rc1 );
+            buf->st_mtime = _d2ttime( rc2 >> 16, rc2 );
             buf->st_atime = buf->st_mtime;
             buf->st_ctime = buf->st_mtime;
             buf->st_size = filelength( handle );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,8 +67,8 @@ extern unsigned __getdcwd_sfn( char *buff, unsigned char drv );
     AUX_INFO
 
 #ifdef __WATCOM_LFN__
-static tiny_ret_t __getdcwd_lfn( char *buff, unsigned char drv )
-/**************************************************************/
+static lfn_ret_t __getdcwd_lfn( char *buff, unsigned char drv )
+/*************************************************************/
 {
   #ifdef _M_I86
     return( ___getdcwd_lfn( buff, drv ) );
@@ -83,8 +84,8 @@ static tiny_ret_t __getdcwd_lfn( char *buff, unsigned char drv )
     if( __dpmi_dos_call( &dpmi_rm ) ) {
         return( -1 );
     }
-    if( dpmi_rm.flags & 1 ) {
-        return( TINY_RET_ERROR( dpmi_rm.ax ) );
+    if( LFN_DPMI_ERROR( dpmi_rm ) ) {
+        return( LFN_RET_ERROR( dpmi_rm.ax ) );
     }
     strcpy( buff, RM_TB_PARM1_LINEAR );
     return( 0 );
@@ -96,13 +97,13 @@ unsigned __getdcwd( char *buff, unsigned char drv )
 /*************************************************/
 {
 #ifdef __WATCOM_LFN__
-    tiny_ret_t  rc = 0;
+    lfn_ret_t  rc = 0;
 
-    if( _RWD_uselfn && TINY_OK( rc = __getdcwd_lfn( buff, drv ) ) ) {
+    if( _RWD_uselfn && LFN_OK( rc = __getdcwd_lfn( buff, drv ) ) ) {
         return( 0 );
     }
-    if( IS_LFN_ERROR( rc ) ) {
-        return( __set_errno_dos_reterr( TINY_INFO( rc ) ) );
+    if( LFN_ERROR( rc ) ) {
+        return( __set_errno_dos_reterr( LFN_INFO( rc ) ) );
     }
 #endif
     return( __getdcwd_sfn( buff, drv ) );

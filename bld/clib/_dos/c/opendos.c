@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -85,8 +86,8 @@ extern unsigned __dos_open_sfn_err( const char *name, unsigned mode, int *handle
     AUX_INFO
 
 #ifdef __WATCOM_LFN__
-static tiny_ret_t _dos_open_ex_lfn( const char *name, unsigned mode )
-/*******************************************************************/
+static lfn_ret_t _dos_open_ex_lfn( const char *name, unsigned mode )
+/******************************************************************/
 {
 #ifdef _M_I86
     return( __dos_create_ex_lfn( name, mode, 0, EX_LFN_OPEN ) );
@@ -105,15 +106,15 @@ static tiny_ret_t _dos_open_ex_lfn( const char *name, unsigned mode )
     if( __dpmi_dos_call( &dpmi_rm ) ) {
         return( -1 );
     }
-    if( dpmi_rm.flags & 1 ) {
-        return( TINY_RET_ERROR( dpmi_rm.ax ) );
+    if( LFN_DPMI_ERROR( dpmi_rm ) ) {
+        return( LFN_RET_ERROR( dpmi_rm.ax ) );
     }
     return( dpmi_rm.ax );
 #endif
 }
 
-static tiny_ret_t __dos_open_lfn( const char *path, unsigned mode )
-/*****************************************************************/
+static lfn_ret_t __dos_open_lfn( const char *path, unsigned mode )
+/****************************************************************/
 {
     char        short_name[128];
     int         handle;
@@ -134,14 +135,14 @@ _WCRTLINK unsigned _dos_open( const char *path, unsigned mode, int *handle )
 /**************************************************************************/
 {
 #ifdef __WATCOM_LFN__
-    tiny_ret_t  rc = 0;
+    lfn_ret_t   rc = 0;
 
-    if( _RWD_uselfn && TINY_OK( rc = __dos_open_lfn( path, mode ) ) ) {
-        *handle = TINY_INFO( rc );
+    if( _RWD_uselfn && LFN_OK( rc = __dos_open_lfn( path, mode ) ) ) {
+        *handle = LFN_INFO( rc );
         return( 0 );
     }
-    if( IS_LFN_ERROR( rc ) ) {
-        return( __set_errno_dos_reterr( TINY_INFO( rc ) ) );
+    if( LFN_ERROR( rc ) ) {
+        return( __set_errno_dos_reterr( LFN_INFO( rc ) ) );
     }
 #endif
     return( __dos_open_sfn_err( path, mode, handle ) );

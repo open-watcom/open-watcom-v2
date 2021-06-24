@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +35,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dos.h>
+#include "_doslfn.h"
+
 
 _WCRTLINK int _islfn( const char *path )
 {
@@ -54,36 +56,50 @@ _WCRTLINK int _islfn( const char *path )
     return( 0 );
 }
 
+#ifdef __WATCOM_LFN__
+static lfn_ret_t _lfntosfn_lfn( const char *orgname, char *shortname )
+{
+  #ifdef _M_I86
+    return( __lfntosfn_lfn( orgname, shortname ) );
+  #else
+    call_struct     dpmi_rm;
+
+    strcpy( RM_TB_PARM1_LINEAR, orgname );
+    memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
+    dpmi_rm.ds  = RM_TB_PARM1_SEGM;
+    dpmi_rm.esi = RM_TB_PARM1_OFFS;
+    dpmi_rm.es  = RM_TB_PARM2_SEGM;
+    dpmi_rm.edi = RM_TB_PARM2_OFFS;
+    dpmi_rm.ecx = 1;
+    dpmi_rm.eax = 0x7160;
+    dpmi_rm.flags = 1;
+    if( __dpmi_dos_call( &dpmi_rm ) ) {
+        return( -1 );
+    }
+    if( LFN_DPMI_ERROR( dpmi_rm ) ) {
+        return( LFN_RET_ERROR( dpmi_rm.ax ) );
+    }
+    strcpy( shortname, RM_TB_PARM2_LINEAR );
+    return( 0 );
+  #endif
+}
+#endif
+
 _WCRTLINK char *_lfntosfn( const char *orgname, char *shortname )
 {
 #ifdef __WATCOM_LFN__
-    union  REGS     r;
-    struct SREGS    s;
+    lfn_ret_t   rc;
 
-    r.w.ax = 0x7160;              /* LFN Truename, CL = 1 */
-    r.h.cl = 1;
-    r.h.ch = 0;
-    s.ds   = _FP_SEG( orgname   ); /* LFN path goes in DS:SI */
-    r.w.si = _FP_OFF( orgname   );
-    s.es   = _FP_SEG( shortname ); /* Buffer for short name goes in ES:DI */
-    r.w.di = _FP_OFF( shortname );
-
-    intdosx( &r, &r, &s );        /* Let's call the interrupt */
-
-    /*
-     * If ax = 7100, there is probably an LFN TSR but no LFN support for
-     * whatever drive or directory is being searched. In that case, return the
-     * original path/name.  Also if the function fails, it could be because of
-     * no LFN TSR so fall back to the original name.
-     */
-    if( r.w.cflag || r.w.ax == 0x7100 ) {
-        strcpy( shortname, orgname );
-        return( NULL );
+    if( _RWD_uselfn ) {
+        rc = _lfntosfn_lfn( orgname, shortname );
+        if( LFN_ERROR( rc ) ) {
+            strcpy( shortname, orgname );
+            return( NULL );
+        }
+        if( LFN_OK( rc ) ) {
+            return( shortname );
+        }
     }
-
-    /* If there was no failure, return the new short filename */
-    return( shortname );
-#else
-    return( strcpy( shortname, orgname ) );
 #endif
+    return( strcpy( shortname, orgname ) );
 }

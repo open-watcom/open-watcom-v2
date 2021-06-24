@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,8 +68,8 @@ extern unsigned __unlink_sfn( const char *filename );
     AUX_INFO
 
 #if defined( __WATCOM_LFN__ ) && !defined( __WIDECHAR__ )
-static tiny_ret_t _unlink_lfn( const char *filename )
-/***************************************************/
+static lfn_ret_t _unlink_lfn( const char *filename )
+/**************************************************/
 {
 #ifdef _M_I86
     return( __unlink_lfn( filename ) );
@@ -85,8 +86,8 @@ static tiny_ret_t _unlink_lfn( const char *filename )
     if( __dpmi_dos_call( &dpmi_rm ) ) {
         return( -1 );
     }
-    if( dpmi_rm.flags & 1 ) {
-        return( TINY_RET_ERROR( dpmi_rm.ax ) );
+    if( LFN_DPMI_ERROR( dpmi_rm ) ) {
+        return( LFN_RET_ERROR( dpmi_rm.ax ) );
     }
     return( 0 );
 #endif
@@ -105,13 +106,13 @@ _WCRTLINK int __F_NAME(unlink,_wunlink)( const CHAR_TYPE *filename )
     return( unlink( mbFilename ) );
 #else
   #ifdef __WATCOM_LFN__
-    tiny_ret_t  rc = 0;
+    lfn_ret_t   rc = 0;
 
-    if( _RWD_uselfn && TINY_OK( rc = _unlink_lfn( filename ) ) ) {
+    if( _RWD_uselfn && LFN_OK( rc = _unlink_lfn( filename ) ) ) {
         return( 0 );
     }
-    if( IS_LFN_ERROR( rc ) ) {
-        return( __set_errno_dos( TINY_INFO( rc ) ) );
+    if( LFN_ERROR( rc ) ) {
+        return( __set_errno_dos( LFN_INFO( rc ) ) );
     }
   #endif
     return( __unlink_sfn( filename ) );

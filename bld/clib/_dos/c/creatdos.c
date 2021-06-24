@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +35,7 @@
 #include <fcntl.h>
 #include "seterrno.h"
 #include "_doslfn.h"
+
 
 #ifdef _M_I86
     #define INIT_VALUE
@@ -82,8 +84,8 @@ extern unsigned __dos_create_new_sfn( const char *name, unsigned attrib, int *ha
     AUX_INFO
 
 #ifdef __WATCOM_LFN__
-static tiny_ret_t _dos_create_ex_lfn( const char *path, unsigned attrib, unsigned style )
-/***************************************************************************************/
+static lfn_ret_t _dos_create_ex_lfn( const char *path, unsigned attrib, unsigned style )
+/**************************************************************************************/
 {
   #ifdef _M_I86
     return( __dos_create_ex_lfn( path, O_WRONLY, attrib, style ) );
@@ -102,8 +104,8 @@ static tiny_ret_t _dos_create_ex_lfn( const char *path, unsigned attrib, unsigne
     if( __dpmi_dos_call( &dpmi_rm ) ) {
         return( -1 );
     }
-    if( dpmi_rm.flags & 1 ) {
-        return( TINY_RET_ERROR( dpmi_rm.ax ) );
+    if( LFN_DPMI_ERROR( dpmi_rm ) ) {
+        return( LFN_RET_ERROR( dpmi_rm.ax ) );
     }
     return( dpmi_rm.ax );
   #endif
@@ -114,14 +116,14 @@ _WCRTLINK unsigned _dos_creat( const char *path, unsigned attrib, int *handle )
 /*****************************************************************************/
 {
 #ifdef __WATCOM_LFN__
-    tiny_ret_t  rc = 0;
+    lfn_ret_t  rc = 0;
 
-    if( _RWD_uselfn && TINY_OK( rc = _dos_create_ex_lfn( path, attrib, EX_LFN_CREATE ) ) ) {
-        *handle = TINY_INFO( rc );
+    if( _RWD_uselfn && LFN_OK( rc = _dos_create_ex_lfn( path, attrib, EX_LFN_CREATE ) ) ) {
+        *handle = LFN_INFO( rc );
         return( 0 );
     }
-    if( IS_LFN_ERROR( rc ) ) {
-        return( __set_errno_dos_reterr( TINY_INFO( rc ) ) );
+    if( LFN_ERROR( rc ) ) {
+        return( __set_errno_dos_reterr( LFN_INFO( rc ) ) );
     }
 #endif
     return( __dos_create_sfn( path, attrib, handle ) );
@@ -131,14 +133,14 @@ _WCRTLINK unsigned _dos_creatnew( const char *path, unsigned attrib, int *handle
 /********************************************************************************/
 {
 #ifdef __WATCOM_LFN__
-    tiny_ret_t  rc = 0;
+    lfn_ret_t  rc = 0;
 
-    if( _RWD_uselfn && TINY_OK( rc = _dos_create_ex_lfn( path, attrib, EX_LFN_CREATE_NEW ) ) ) {
-        *handle = TINY_INFO( rc );
+    if( _RWD_uselfn && LFN_OK( rc = _dos_create_ex_lfn( path, attrib, EX_LFN_CREATE_NEW ) ) ) {
+        *handle = LFN_INFO( rc );
         return( 0 );
     }
-    if( IS_LFN_ERROR( rc ) ) {
-        return( __set_errno_dos_reterr( TINY_INFO( rc ) ) );
+    if( LFN_ERROR( rc ) ) {
+        return( __set_errno_dos_reterr( LFN_INFO( rc ) ) );
     }
 #endif
     return( __dos_create_new_sfn( path, attrib, handle ) );

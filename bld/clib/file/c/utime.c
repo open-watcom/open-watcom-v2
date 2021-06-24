@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -88,8 +88,8 @@ static int _get_dos_tms( struct utimbuf const *times, _dos_tms *dostms )
 }
 
 #if defined( __WATCOM_LFN__ )
-static tiny_ret_t _dos_utime_lfn( const char *path, unsigned time, unsigned date, unsigned mode )
-/***********************************************************************************************/
+static lfn_ret_t _dos_utime_lfn( const char *path, unsigned time, unsigned date, unsigned mode )
+/**********************************************************************************************/
 {
   #ifdef _M_I86
     return( __dos_utime_lfn( path, time, date, mode ) );
@@ -110,22 +110,22 @@ static tiny_ret_t _dos_utime_lfn( const char *path, unsigned time, unsigned date
     if( __dpmi_dos_call( &dpmi_rm ) ) {
         return( -1 );
     }
-    if( dpmi_rm.flags & 1 ) {
-        return( TINY_RET_ERROR( dpmi_rm.ax ) );
+    if( LFN_DPMI_ERROR( dpmi_rm ) ) {
+        return( LFN_RET_ERROR( dpmi_rm.ax ) );
     }
     return( 0 );
   #endif
 }
 
-static tiny_ret_t _utime_lfn( const char *path, _dos_tms *dostms )
-/****************************************************************/
+static lfn_ret_t _utime_lfn( const char *path, _dos_tms *dostms )
+/***************************************************************/
 {
-    tiny_ret_t  rc;
+    lfn_ret_t   rc;
 
   #ifndef _M_I86
     strcpy( RM_TB_PARM1_LINEAR, path );
   #endif
-    if( TINY_OK( rc = _dos_utime_lfn( path, dostms->wr_time, dostms->wr_date, 3 ) ) ) {
+    if( LFN_OK( rc = _dos_utime_lfn( path, dostms->wr_time, dostms->wr_date, 3 ) ) ) {
         rc = _dos_utime_lfn( path, dostms->ac_time, dostms->ac_date, 5 );
     }
     return( rc );
@@ -219,7 +219,7 @@ _WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fname,
     return( utime( mbPath, times ) );
 #else
   #ifdef __WATCOM_LFN__
-    tiny_ret_t  rc = 0;
+    lfn_ret_t   rc = 0;
   #endif
     _dos_tms    dostms;
 
@@ -228,11 +228,11 @@ _WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fname,
         return( -1 );
     }
   #ifdef __WATCOM_LFN__
-    if( _RWD_uselfn && TINY_OK( rc = _utime_lfn( fname, &dostms ) ) ) {
+    if( _RWD_uselfn && LFN_OK( rc = _utime_lfn( fname, &dostms ) ) ) {
         return( 0 );
     }
-    if( IS_LFN_ERROR( rc ) ) {
-        return( __set_errno_dos( TINY_INFO( rc ) ) );
+    if( LFN_ERROR( rc ) ) {
+        return( __set_errno_dos( LFN_INFO( rc ) ) );
     }
   #endif
     return( _utime_sfn( fname, &dostms ) );

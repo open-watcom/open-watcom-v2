@@ -25,51 +25,17 @@
 *
 *  ========================================================================
 *
-* Description:  DOS implementation of close / commit files functions.
+* Description:  doserror related CLIB internal declarations.
 *
 ****************************************************************************/
 
+#ifndef _DOSERROR_H_INCLUDED
+#define _DOSERROR_H_INCLUDED
 
-#include "variety.h"
-#include <dos.h>
-#include "rtdata.h"
-#include "tinyio.h"
-#include "doserror.h"
+extern unsigned __doserror_( unsigned );
+#pragma aux __doserror_ "*" __parm __caller
 
+extern unsigned __doserror1_( unsigned );
+#pragma aux __doserror1_ "*" __parm __caller
 
-#ifdef _M_I86
-    #define AUX_INFO \
-        __parm __caller     [__bx] \
-        __value             [__ax] \
-        __modify __exact    [__ax]
-#else
-    #define AUX_INFO \
-        __parm __caller     [__ebx] \
-        __value             [__eax] \
-        __modify __exact    [__eax]
 #endif
-
-extern unsigned __dos_close( unsigned handle );
-#pragma aux __dos_close =   \
-        _MOV_AH DOS_CLOSE   \
-        _INT_21             \
-        "call __doserror_"  \
-    AUX_INFO
-
-extern unsigned __dos_commit( unsigned handle );
-#pragma aux __dos_commit =  \
-        _MOV_AH DOS_COMMIT_FILE \
-        "clc"               \
-        _INT_21             \
-        "call __doserror_"  \
-    AUX_INFO
-
-_WCRTLINK unsigned _dos_close( int handle )
-{
-    return( __dos_close( handle ) );
-}
-
-_WCRTLINK unsigned _dos_commit( int handle )
-{
-    return( __dos_commit( handle ) );
-}
