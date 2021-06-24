@@ -88,16 +88,15 @@ static int _get_dos_tms( struct utimbuf const *times, _dos_tms *dostms )
 }
 
 #if defined( __WATCOM_LFN__ )
-static lfn_ret_t _dos_utime_lfn( const char *path, unsigned time, unsigned date, unsigned mode )
-/**********************************************************************************************/
+static lfn_ret_t _dos_utime_lfn( const char *fname, unsigned time, unsigned date, unsigned mode )
+/***********************************************************************************************/
 {
   #ifdef _M_I86
-    return( __dos_utime_lfn( path, time, date, mode ) );
+    return( __dos_utime_lfn( fname, time, date, mode ) );
   #else
     call_struct     dpmi_rm;
 
-    /* unused parameters */ (void)path;
-
+    strcpy( RM_TB_PARM1_LINEAR, fname );
     memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
     dpmi_rm.ds  = RM_TB_PARM1_SEGM;
     dpmi_rm.edx = RM_TB_PARM1_OFFS;
@@ -115,20 +114,6 @@ static lfn_ret_t _dos_utime_lfn( const char *path, unsigned time, unsigned date,
     }
     return( 0 );
   #endif
-}
-
-static lfn_ret_t _utime_lfn( const char *path, _dos_tms *dostms )
-/***************************************************************/
-{
-    lfn_ret_t   rc;
-
-  #ifndef _M_I86
-    strcpy( RM_TB_PARM1_LINEAR, path );
-  #endif
-    if( LFN_OK( rc = _dos_utime_lfn( path, dostms->wr_time, dostms->wr_date, 3 ) ) ) {
-        rc = _dos_utime_lfn( path, dostms->ac_time, dostms->ac_date, 5 );
-    }
-    return( rc );
 }
 #endif
 
@@ -206,9 +191,8 @@ static unsigned _utime_sfn( const char *fname, _dos_tms *dostms )
 }
 #endif
 
-_WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fname,
-                                                       struct utimbuf const *times )
-/**********************************************************************************/
+_WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fname, struct utimbuf const *times )
+/******************************************************************************************/
 {
 #ifdef __WIDECHAR__
     char        mbPath[MB_CUR_MAX * _MAX_PATH];     /* single-byte char */
@@ -228,8 +212,10 @@ _WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fname,
         return( -1 );
     }
   #ifdef __WATCOM_LFN__
-    if( _RWD_uselfn && LFN_OK( rc = _utime_lfn( fname, &dostms ) ) ) {
-        return( 0 );
+    if( _RWD_uselfn && LFN_OK( rc = _dos_utime_lfn( fname, dostms.wr_time, dostms.wr_date, 3 ) ) ) {
+        if( LFN_OK( rc = _dos_utime_lfn( fname, dostms.ac_time, dostms.ac_date, 5 ) ) ) {
+            return( 0 );
+        }
     }
     if( LFN_ERROR( rc ) ) {
         return( __set_errno_dos( LFN_INFO( rc ) ) );
