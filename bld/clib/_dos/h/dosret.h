@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,10 +30,9 @@
 ****************************************************************************/
 
 
+#if defined( _M_IX86 )
 extern  int _dosretax( int ax, int carry );
 extern  int _dosret0( int ax, int carry );
-
-#if defined( _M_IX86 ) && defined( __WATCOMC__ )
 #if defined( _M_I86 )
 #pragma aux _dosretax "_*" __parm [__ax] [__dx]
 #pragma aux _dosret0 "_*" __parm [__ax] [__dx]

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +40,6 @@
 
 typedef unsigned __based(__segname("_STACK")) *uint_stk_ptr;
 
-#if defined(__WATCOMC__)
 unsigned __udiv( unsigned, uint_stk_ptr );
 #if defined(__386__) && defined(__SMALL_DATA__)
     #pragma aux __udiv = \
@@ -74,7 +74,6 @@ unsigned __udiv( unsigned, uint_stk_ptr );
         __value             [__dx] \
         __modify __exact    [__ax __dx]
 #endif
-#endif /* __WATCOMC__ */
 
 _WCRTLINK CHAR_TYPE *__F_NAME(utoa,_utow)( unsigned value, CHAR_TYPE *buffer, int radix )
 {
@@ -87,7 +86,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(utoa,_utow)( unsigned value, CHAR_TYPE *buffer, in
     buf[0] = '\0';
     q = &buf[1];
     do {
-#if defined(_M_IX86) && defined(__WATCOMC__)
+#if defined(_M_IX86)
         quot = radix;
         rem = __udiv( value, &quot );
 #else

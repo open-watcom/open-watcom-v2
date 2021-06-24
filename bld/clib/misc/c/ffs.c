@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +51,7 @@ extern unsigned int __ffs( int value );
 
 _WCRTLINK int ffs( int value )
 {
-#if defined(__386__) && defined(__WATCOMC__)
+#if defined(__386__)
     return( __ffs( value ) );
 #else
     int     index;
