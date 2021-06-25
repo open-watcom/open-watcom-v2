@@ -110,9 +110,9 @@ _WCRTLINK unsigned _dos_open( const char *path, unsigned mode, int *handle )
 /**************************************************************************/
 {
 #ifdef __WATCOM_LFN__
-    lfn_ret_t   rc = 0;
-
     if( _RWD_uselfn ) {
+        lfn_ret_t   rc;
+
         rc = __dos_open_lfn( path, mode );
         if( LFN_ERROR( rc ) ) {
             return( __set_errno_dos_reterr( LFN_INFO( rc ) ) );

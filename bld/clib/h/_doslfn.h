@@ -130,8 +130,8 @@ extern lfn_ret_t _dos_create_open_ex_lfn( const char *path, unsigned mode, unsig
 
 #if defined( __WATCOM_LFN__ ) && !defined( _M_I86 )
 
-extern char             * const __lfn_rm_tb_linear;
-extern unsigned short   const __lfn_rm_tb_segment;
+extern char                 * const __lfn_rm_tb_linear;
+extern unsigned short       const __lfn_rm_tb_segment;
 
 #define RM_TB_PARM1_SIZE    ( MB_CUR_MAX * _MAX_PATH )
 #define RM_TB_PARM2_SIZE    ( MB_CUR_MAX * _MAX_PATH )

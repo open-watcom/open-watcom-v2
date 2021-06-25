@@ -121,7 +121,7 @@ extern lfn_ret_t __getfileinfo_lfn( int handle, lfninfo_t *lfninfo );
 
 extern long __getfilestamp_sfn( int handle );
 #ifdef _M_I86
-#pragma aux __getfilestamp_sfn = \
+  #pragma aux __getfilestamp_sfn = \
         _MOV_AX_W _GET_ DOS_FILE_DATE \
         _INT_21             \
         "jnc short L1"      \
@@ -134,7 +134,7 @@ extern long __getfilestamp_sfn( int handle );
     __value             [__dx __ax] \
     __modify __exact    [__ax __cx __dx]
 #else
-#pragma aux __getfilestamp_sfn = \
+  #pragma aux __getfilestamp_sfn = \
         _MOV_AX_W _GET_ DOS_FILE_DATE \
         _INT_21             \
         "jnc short L1"      \
@@ -188,11 +188,12 @@ _WCRTLINK int _fstati64( int handle, struct _stati64 *buf )
 #else
 
 #ifdef __WATCOM_LFN__
+
 static long _cvt_stamp2dos_lfn( long long *timestamp )
 {
-#ifdef _M_I86
+  #ifdef _M_I86
     return( __cvt_stamp2dos_lfn( timestamp ) );
-#else
+  #else
     call_struct     dpmi_rm;
 
     *((long long *)RM_TB_PARM1_LINEAR) = *timestamp;
@@ -212,14 +213,14 @@ static long _cvt_stamp2dos_lfn( long long *timestamp )
         return( __set_errno_dos( dpmi_rm.ax ) );
     }
     return( dpmi_rm.dx << 16 | dpmi_rm.cx );
-#endif
+  #endif
 }
 
 static lfn_ret_t _getfileinfo_lfn( int handle, lfninfo_t *lfninfo )
 {
-#ifdef _M_I86
+  #ifdef _M_I86
     return( __getfileinfo_lfn( handle, lfninfo ) );
-#else
+  #else
     call_struct     dpmi_rm;
 
     memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
@@ -236,8 +237,9 @@ static lfn_ret_t _getfileinfo_lfn( int handle, lfninfo_t *lfninfo )
     }
     memcpy( lfninfo, RM_TB_PARM1_LINEAR, sizeof( *lfninfo ) );
     return( 0 );
-#endif
+  #endif
 }
+
 #endif
 
 _WCRTLINK int fstat( int handle, struct stat *buf )
@@ -281,7 +283,7 @@ _WCRTLINK int fstat( int handle, struct stat *buf )
         }
     }
     /* file */
-#ifdef __WATCOM_LFN__
+  #ifdef __WATCOM_LFN__
     {
         if( _RWD_uselfn ) {
             lfninfo_t   lfni;
@@ -320,7 +322,7 @@ _WCRTLINK int fstat( int handle, struct stat *buf )
             }
         }
     }
-#endif
+  #endif
     {
         long    rc;
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,7 +71,7 @@
     #include "libwin32.h"
 #elif !defined(__NETWARE__)
     #include "_direct.h"
-    #include "_doslfn.h"
+    #include "tinyio.h"
 #endif
 #include "liballoc.h"
 #include "thread.h"
@@ -94,10 +94,10 @@ static char *__qnx_fullpath( char *fullpath, const char *path )
 /*************************************************************/
 {
     struct {
-            struct _io_open _io_open;
-            char            m[_QNX_PATH_MAX];
-    } msg;
-    int             fd;
+        struct _io_open _io_open;
+        char            m[_QNX_PATH_MAX];
+    }           msg;
+    int         fd;
 
     msg._io_open.oflag = _IO_HNDL_INFO;
     fd = __resolve_net( _IO_HANDLE, 1, &msg._io_open, path, 0, fullpath );
