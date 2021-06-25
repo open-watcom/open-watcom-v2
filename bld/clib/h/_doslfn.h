@@ -36,7 +36,6 @@
 #include <dos.h>
 #include "tinyio.h"
 #include "rtdata.h"
-#include "doserror.h"
 
 
 #define _LFN_SIGN           0x004e464cUL    // "LFN"
@@ -78,25 +77,6 @@
     #define _RST_DS
     #define _RST_ES
 #endif
-
-#define MOV_DTA             \
-        "mov    ecx,43"     \
-        "rep movsb"
-
-#define MOV_DATA_TO_DTA     \
-        "mov    esi,edx"    \
-        "mov    edi,ebx"    \
-        MOV_DTA
-
-#define MOV_DATA_FROM_DTA   \
-        "mov    esi,ebx"    \
-        "mov    edi,edx"    \
-        "mov    ebx,ds"     \
-        "push   es"         \
-        "pop    ds"         \
-        "mov    es,ebx"     \
-        MOV_DTA             \
-        "mov    ds,ebx"
 
 #define RETURN_VALUE        \
         "jc short LX"       \

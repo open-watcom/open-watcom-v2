@@ -34,6 +34,7 @@
 #include <string.h>
 #include "liballoc.h"
 #include "seterrno.h"
+#include "doserror.h"
 #include "_direct.h"
 #include "_doslfn.h"
 

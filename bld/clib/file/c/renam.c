@@ -37,7 +37,9 @@
 #include <stdio.h>
 #include <string.h>
 #include "seterrno.h"
+#include "doserror.h"
 #include "_doslfn.h"
+
 
 #ifdef _M_I86
   #ifdef __BIG_DATA__

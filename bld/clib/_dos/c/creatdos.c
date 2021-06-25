@@ -34,6 +34,7 @@
 #include <string.h>
 #include <fcntl.h>
 #include "seterrno.h"
+#include "doserror.h"
 #include "_doslfn.h"
 
 

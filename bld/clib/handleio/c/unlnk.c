@@ -37,7 +37,9 @@
 #include <string.h>
 #include <unistd.h>
 #include "seterrno.h"
+#include "doserror.h"
 #include "_doslfn.h"
+
 
 #ifdef _M_I86
   #ifdef __BIG_DATA__
@@ -57,6 +59,15 @@
         __value             [__eax] \
         __modify __exact    [__eax]
 #endif
+
+extern unsigned __unlink_sfn( const char *filename );
+#pragma aux __unlink_sfn =  \
+        _SET_DSDX           \
+        _MOV_AH DOS_UNLINK  \
+        _INT_21             \
+        _RST_DS             \
+        "call __doserror1_" \
+    AUX_INFO
 
 #ifdef _M_I86
 extern lfn_ret_t __unlink_lfn( const char *filename );
@@ -86,15 +97,6 @@ extern lfn_ret_t __unlink_lfn( const char *filename );
         __modify __exact    [__ax __dx __si]
   #endif
 #endif
-
-extern unsigned __unlink_sfn( const char *filename );
-#pragma aux __unlink_sfn =  \
-        _SET_DSDX           \
-        _MOV_AH DOS_UNLINK  \
-        _INT_21             \
-        _RST_DS             \
-        "call __doserror1_" \
-    AUX_INFO
 
 #if defined( __WATCOM_LFN__ ) && !defined( __WIDECHAR__ )
 static lfn_ret_t _unlink_lfn( const char *filename )

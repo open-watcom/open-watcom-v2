@@ -35,10 +35,30 @@
 #include <string.h>
 #include <mbstring.h>
 #include "seterrno.h"
+#include "doserror.h"
 #include "_doslfn.h"
 #include "_dtaxxx.h"
 #include "extender.h"
 
+
+#define MOV_DTA             \
+        "mov    ecx,43"     \
+        "rep movsb"
+
+#define MOV_DATA_TO_DTA     \
+        "mov    esi,edx"    \
+        "mov    edi,ebx"    \
+        MOV_DTA
+
+#define MOV_DATA_FROM_DTA   \
+        "mov    esi,ebx"    \
+        "mov    edi,edx"    \
+        "mov    ebx,ds"     \
+        "push   es"         \
+        "pop    ds"         \
+        "mov    es,ebx"     \
+        MOV_DTA             \
+        "mov    ds,ebx"
 
 //#define CMP_EXTENDER_INTEL  "cmp  _Extender,9"
 #define CMP_EXTENDER_INTEL  0x80 0x3D __offset _Extender DOSX_INTEL
