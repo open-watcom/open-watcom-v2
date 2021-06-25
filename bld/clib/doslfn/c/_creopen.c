@@ -25,87 +25,61 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of internal __getdcwd for DOS, WINDOWS
+* Description:  DOS implementation of interrnal function
+*                 _dos_create_open_ex_lfn (LFN-enabled)
 *
 ****************************************************************************/
 
 
-#include "variety.h"
+#define __WATCOM_LFN__
 #include <string.h>
-#include "liballoc.h"
-#include "seterrno.h"
-#include "_direct.h"
 #include "_doslfn.h"
 
 
 #ifdef _M_I86
+extern lfn_ret_t __dos_create_open_ex_lfn( const char *name, unsigned mode, unsigned attrib, unsigned action );
   #ifdef __BIG_DATA__
-    #define AUX_INFO \
-        __parm __caller     [__si __ax] [__dl] \
-        __value             [__ax] \
-        __modify __exact    [__ax __si]
-  #else
-    #define AUX_INFO \
-        __parm __caller     [__si] [__dl] \
-        __value             [__ax] \
-        __modify __exact    [__ax]
-  #endif
-#else
-    #define AUX_INFO \
-        __parm __caller     [__esi] [__dl] \
-        __value             [__eax] \
-        __modify __exact    [__eax]
-#endif
-
-extern unsigned __getdcwd_sfn( char *buff, unsigned char drv );
-#pragma aux __getdcwd_sfn = \
-        _SET_DSSI           \
-        _MOV_AH DOS_GETCWD  \
-        _INT_21             \
-        _RST_DS             \
-        "call __doserror_"  \
-    AUX_INFO
-
-#ifdef _M_I86
-extern lfn_ret_t ___getdcwd_lfn( char *path, unsigned char drv );
-  #ifdef __BIG_DATA__
-    #pragma aux ___getdcwd_lfn = \
+    #pragma aux __dos_create_open_ex_lfn = \
             "push   ds"         \
-            "mov    ds,cx"      \
-            "mov    ax,7147h"   \
+            "xchg   ax,si"      \
+            "mov    ds,ax"      \
+            "mov    ax,716Ch"   \
             "stc"               \
             "int 21h"           \
             "pop    ds"         \
-            "call __lfnerror_0" \
-        __parm __caller     [__cx __si] [__dl] \
+            "call __lfnerror_ax" \
+        __parm __caller     [__si __ax] [__bx] [__cx] [__dx] \
         __value             [__dx __ax] \
-        __modify __exact    [__ax __dx]
+        __modify __exact    [__ax __cx __dx __si]
   #else
-    #pragma aux ___getdcwd_lfn = \
-            "mov    ax,7147h"   \
+    #pragma aux __dos_create_open_ex_lfn = \
+            "mov    ax,716Ch"   \
             "stc"               \
             "int 21h"           \
-            "call __lfnerror_0" \
-        __parm __caller     [__si] [__dl] \
+            "call __lfnerror_ax" \
+        __parm __caller     [__si] [__bx] [__cx] [__dx] \
         __value             [__dx __ax] \
-        __modify __exact    [__ax __dx]
+        __modify __exact    [__ax __cx __dx]
   #endif
 #endif
 
-#ifdef __WATCOM_LFN__
-static lfn_ret_t __getdcwd_lfn( char *buff, unsigned char drv )
-/*************************************************************/
+
+lfn_ret_t _dos_create_open_ex_lfn( const char *path, unsigned mode, unsigned attrib, unsigned action )
+/****************************************************************************************************/
 {
   #ifdef _M_I86
-    return( ___getdcwd_lfn( buff, drv ) );
+    return( __dos_create_open_ex_lfn( path, mode, attrib, action ) );
   #else
     call_struct     dpmi_rm;
 
+    strcpy( RM_TB_PARM1_LINEAR, path );
     memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
     dpmi_rm.ds  = RM_TB_PARM1_SEGM;
     dpmi_rm.esi = RM_TB_PARM1_OFFS;
-    dpmi_rm.edx = drv;
-    dpmi_rm.eax = 0x7147;
+    dpmi_rm.edx = action;
+    dpmi_rm.ecx = attrib;
+    dpmi_rm.ebx = mode;
+    dpmi_rm.eax = 0x716C;
     dpmi_rm.flags = 1;
     if( __dpmi_dos_call( &dpmi_rm ) ) {
         return( -1 );
@@ -113,27 +87,6 @@ static lfn_ret_t __getdcwd_lfn( char *buff, unsigned char drv )
     if( LFN_DPMI_ERROR( dpmi_rm ) ) {
         return( LFN_RET_ERROR( dpmi_rm.ax ) );
     }
-    strcpy( buff, RM_TB_PARM1_LINEAR );
-    return( 0 );
+    return( dpmi_rm.ax );
   #endif
-}
-#endif
-
-unsigned __getdcwd( char *buff, unsigned char drv )
-/*************************************************/
-{
-#ifdef __WATCOM_LFN__
-    if( _RWD_uselfn ) {
-        lfn_ret_t  rc;
-
-        rc = __getdcwd_lfn( buff, drv );
-        if( LFN_ERROR( rc ) ) {
-            return( __set_errno_dos_reterr( LFN_INFO( rc ) ) );
-        }
-        if( LFN_OK( rc ) ) {
-            return( 0 );
-        }
-    }
-#endif
-    return( __getdcwd_sfn( buff, drv ) );
 }

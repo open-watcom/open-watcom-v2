@@ -70,6 +70,33 @@ extern unsigned __rmdir_sfn( const char *path );
         "call __doserror1_" \
     AUX_INFO
 
+#ifdef _M_I86
+extern lfn_ret_t __rmdir_lfn( const char *path );
+  #ifdef __BIG_DATA__
+    #pragma aux __rmdir_lfn =   \
+            "push   ds"         \
+            "xchg   ax,dx"      \
+            "mov    ds,ax"      \
+            "mov    ax,713Ah"   \
+            "stc"               \
+            "int 21h"           \
+            "pop    ds"         \
+            "call __lfnerror_0" \
+        __parm __caller     [__dx __ax] \
+        __value             [__dx __ax] \
+        __modify __exact    [__ax __dx]
+  #else
+    #pragma aux __rmdir_lfn =   \
+            "mov    ax,713Ah"   \
+            "stc"               \
+            "int 21h"           \
+            "call __lfnerror_0" \
+        __parm __caller     [__dx] \
+        __value             [__dx __ax] \
+        __modify __exact    [__ax __dx]
+  #endif
+#endif
+
 #if defined( __WATCOM_LFN__ ) && !defined( __WIDECHAR__ )
 static lfn_ret_t _rmdir_lfn( const char *path )
 /*********************************************/
@@ -111,13 +138,16 @@ _WCRTLINK int __F_NAME(rmdir,_wrmdir)( const CHAR_TYPE *path )
     return( rmdir( mbcsPath ) );
 #else
   #ifdef __WATCOM_LFN__
-    lfn_ret_t   rc = 0;
+    if( _RWD_uselfn ) {
+        lfn_ret_t   rc;
 
-    if( _RWD_uselfn && LFN_OK( rc = _rmdir_lfn( path ) ) ) {
-        return( 0 );
-    }
-    if( LFN_ERROR( rc ) ) {
-        return( __set_errno_dos( LFN_INFO( rc ) ) );
+        rc = _rmdir_lfn( path );
+        if( LFN_ERROR( rc ) ) {
+            return( __set_errno_dos( LFN_INFO( rc ) ) );
+        }
+        if( LFN_OK( rc ) ) {
+            return( 0 );
+        }
     }
   #endif
     return( __rmdir_sfn( path ) );

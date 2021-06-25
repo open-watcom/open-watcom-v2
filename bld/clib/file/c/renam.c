@@ -69,6 +69,37 @@ extern unsigned __rename_sfn( const char *old, const char *new );
         "call __doserror1_" \
     AUX_INFO
 
+#ifdef _M_I86
+extern lfn_ret_t __rename_lfn( const char *old, const char *new );
+  #ifdef __BIG_DATA__
+    #pragma aux __rename_lfn =  \
+            "push   ds"         \
+            "xchg   ax,dx"      \
+            "mov    ds,ax"      \
+            "mov    ax,7156h"   \
+            "stc"               \
+            "int 21h"           \
+            "pop    ds"         \
+            "call __lfnerror_0" \
+        __parm __caller     [__dx __ax] [__es __di] \
+        __value             [__dx __ax] \
+        __modify __exact    [__ax __dx]
+  #else
+    #pragma aux __rename_lfn =  \
+            "push   es"         \
+            "mov    ax,ds"      \
+            "mov    es,ax"      \
+            "mov    ax,7156h"   \
+            "stc"               \
+            "int 21h"           \
+            "pop    es"         \
+            "call __lfnerror_0" \
+        __parm __caller     [__dx] [__di] \
+        __value             [__dx __ax] \
+        __modify __exact    [__ax __dx]
+  #endif
+#endif
+
 #if !defined( __WIDECHAR__ ) && defined( __WATCOM_LFN__ )
 static lfn_ret_t _rename_lfn( const char *old, const char *new )
 /**************************************************************/
@@ -114,13 +145,16 @@ _WCRTLINK int __F_NAME(rename,_wrename)( const CHAR_TYPE *old, const CHAR_TYPE *
     return( rename( mbOld, mbNew ) );
 #else
   #if defined( __WATCOM_LFN__ )
-    lfn_ret_t   rc = 0;
+    if( _RWD_uselfn ) {
+        lfn_ret_t   rc;
 
-    if( _RWD_uselfn && LFN_OK( rc = _rename_lfn( old, new ) ) ) {
-        return( 0 );
-    }
-    if( LFN_ERROR( rc ) ) {
-        return( __set_errno_dos( LFN_INFO( rc ) ) );
+        rc = _rename_lfn( old, new );
+        if( LFN_ERROR( rc ) ) {
+            return( __set_errno_dos( LFN_INFO( rc ) ) );
+        }
+        if( LFN_OK( rc ) ) {
+            return( 0 );
+        }
     }
   #endif
     return( __rename_sfn( old, new ) );

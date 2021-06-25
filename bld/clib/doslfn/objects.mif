@@ -2,6 +2,7 @@
 #===================================================================================================
 !inject accss.obj       d16 d32 dpm
 !inject creatdos.obj    d16 d32 dpm
+!inject _creopen.obj    d16 d32 dpm
 !inject dir.obj         d16 d32 dpm
 !inject findclos.obj    d16 d32 dpm
 !inject finddos.obj     d16 d32 dpm
@@ -15,6 +16,7 @@
 !inject chdir.obj       d16 d32 dpm
 !inject chmod.obj       d16 d32 dpm
 !inject inirmlfn.obj        d32
+!inject lfnerror.obj    d16     dpm
 !inject lfntosfn.obj    d16 d32 dpm
 !inject mkdir.obj       d16 d32 dpm
 !inject open.obj        d16 d32 dpm

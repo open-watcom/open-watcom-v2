@@ -58,6 +58,35 @@
         __modify __exact    [__eax]
 #endif
 
+#ifdef _M_I86
+extern lfn_ret_t __unlink_lfn( const char *filename );
+  #ifdef __BIG_DATA__
+    #pragma aux __unlink_lfn =  \
+            "push   ds"         \
+            "xchg   ax,dx"      \
+            "mov    ds,ax"      \
+            "xor    si,si"      \
+            "mov    ax,7141h"   \
+            "stc"               \
+            "int 21h"           \
+            "pop    ds"         \
+            "call __lfnerror_0" \
+        __parm __caller     [__dx __ax] \
+        __value             [__dx __ax] \
+        __modify __exact    [__ax __dx __si]
+  #else
+    #pragma aux __unlink_lfn =  \
+            "xor    si,si"      \
+            "mov    ax,7141h"   \
+            "stc"               \
+            "int 21h"           \
+            "call __lfnerror_0" \
+        __parm __caller     [__dx] \
+        __value             [__dx __ax] \
+        __modify __exact    [__ax __dx __si]
+  #endif
+#endif
+
 extern unsigned __unlink_sfn( const char *filename );
 #pragma aux __unlink_sfn =  \
         _SET_DSDX           \
@@ -106,13 +135,16 @@ _WCRTLINK int __F_NAME(unlink,_wunlink)( const CHAR_TYPE *filename )
     return( unlink( mbFilename ) );
 #else
   #ifdef __WATCOM_LFN__
-    lfn_ret_t   rc = 0;
+    if( _RWD_uselfn ) {
+        lfn_ret_t   rc;
 
-    if( _RWD_uselfn && LFN_OK( rc = _unlink_lfn( filename ) ) ) {
-        return( 0 );
-    }
-    if( LFN_ERROR( rc ) ) {
-        return( __set_errno_dos( LFN_INFO( rc ) ) );
+        rc = _unlink_lfn( filename );
+        if( LFN_ERROR( rc ) ) {
+            return( __set_errno_dos( LFN_INFO( rc ) ) );
+        }
+        if( LFN_OK( rc ) ) {
+            return( 0 );
+        }
     }
   #endif
     return( __unlink_sfn( filename ) );

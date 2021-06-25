@@ -72,6 +72,49 @@ extern unsigned __dos_getfileattr_sfn( const char *path, unsigned *attrib );
         "call __doserror_"  \
     AUX_INFO
 
+#ifdef _M_I86
+extern lfn_ret_t __dos_getfileattr_lfn( const char *path );
+  #ifdef __BIG_DATA__
+    #pragma aux __dos_getfileattr_lfn = \
+            "push   ds"         \
+            "xchg   ax,dx"      \
+            "mov    ds,ax"      \
+            "xor    bl,bl"      \
+            "mov    ax,7143h"   \
+            "stc"               \
+            "int 21h"           \
+            "pop    ds"         \
+            "sbb    dx,dx"      \
+            "jnz short L2"      \
+            "cmp    ax,7100h"   \
+            "jz short L1"       \
+            "mov    ax,cx"      \
+            "jmp short L2"      \
+        "L1: mov    dx,-1"      \
+        "L2:"                   \
+        __parm __caller     [__dx __ax] \
+        __value             [__dx __ax] \
+        __modify __exact    [__ax __bl __cx __dx]
+  #else
+    #pragma aux __dos_getfileattr_lfn = \
+            "xor    bl,bl"      \
+            "mov    ax,7143h"   \
+            "stc"               \
+            "int 21h"           \
+            "sbb    dx,dx"      \
+            "jnz short L2"      \
+            "cmp    ax,7100h"   \
+            "jz short L1"       \
+            "mov    ax,cx"      \
+            "jmp short L2"      \
+        "L1: mov    dx,-1"      \
+        "L2:"                   \
+        __parm __caller     [__dx] \
+        __value             [__dx __ax] \
+        __modify __exact    [__ax __bl __cx __dx]
+  #endif
+#endif
+
 #ifdef __WATCOM_LFN__
 static lfn_ret_t _dos_getfileattr_lfn( const char *path )
 /*******************************************************/
@@ -104,14 +147,17 @@ _WCRTLINK unsigned _dos_getfileattr( const char *path, unsigned *attrib )
 /***********************************************************************/
 {
 #ifdef __WATCOM_LFN__
-    lfn_ret_t   rc = 0;
+    if( _RWD_uselfn ) {
+        lfn_ret_t   rc;
 
-    if( _RWD_uselfn && LFN_OK( rc = _dos_getfileattr_lfn( path ) ) ) {
-        *attrib = LFN_INFO( rc );
-        return( 0 );
-    }
-    if( LFN_ERROR( rc ) ) {
-        return( __set_errno_dos_reterr( LFN_INFO( rc ) ) );
+        rc = _dos_getfileattr_lfn( path );
+        if( LFN_ERROR( rc ) ) {
+            return( __set_errno_dos_reterr( LFN_INFO( rc ) ) );
+        }
+        if( LFN_OK( rc ) ) {
+            *attrib = LFN_INFO( rc );
+            return( 0 );
+        }
     }
 #endif
     return( __dos_getfileattr_sfn( path, attrib ) );

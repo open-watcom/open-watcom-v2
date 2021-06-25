@@ -38,6 +38,34 @@
 #include "_doslfn.h"
 
 
+#if defined( __WATCOM_LFN__ ) && defined( _M_I86 )
+extern lfn_ret_t __lfntosfn_lfn( const char *orgname, char *shortname );
+  #ifdef __BIG_DATA__
+    #pragma aux __lfntosfn_lfn = \
+            "mov    cx,1"      \
+            "mov    ax,7160h"   \
+            "stc"               \
+            "int 21h"           \
+            "call __lfnerror_0" \
+        __parm __caller     [__ds __si] [__es __di] \
+        __value             [__dx __ax] \
+        __modify __exact    [__ax __cx __dx]
+  #else
+    #pragma aux __lfntosfn_lfn = \
+            "push   es"         \
+            "mov    ax,ds"      \
+            "mov    es,ax"      \
+            "mov    cx,1"       \
+            "mov    ax,7160h"   \
+            "stc"               \
+            "int 21h"           \
+            "pop    es"         \
+            "call __lfnerror_0" \
+        __parm __caller     [__si] [__di] \
+        __modify __exact    [__ax __cx __dx]
+  #endif
+#endif
+
 _WCRTLINK int _islfn( const char *path )
 {
     const char *buff;

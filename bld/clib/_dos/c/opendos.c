@@ -86,33 +86,6 @@ extern unsigned __dos_open_sfn_err( const char *name, unsigned mode, int *handle
     AUX_INFO
 
 #ifdef __WATCOM_LFN__
-static lfn_ret_t _dos_open_ex_lfn( const char *name, unsigned mode )
-/******************************************************************/
-{
-#ifdef _M_I86
-    return( __dos_create_ex_lfn( name, mode, 0, EX_LFN_OPEN ) );
-#else
-    call_struct     dpmi_rm;
-
-    strcpy( RM_TB_PARM1_LINEAR, name );
-    memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
-    dpmi_rm.ds  = RM_TB_PARM1_SEGM;
-    dpmi_rm.esi = RM_TB_PARM1_OFFS;
-    dpmi_rm.edx = EX_LFN_OPEN;
-    dpmi_rm.ecx = 0;
-    dpmi_rm.ebx = mode;
-    dpmi_rm.eax = 0x716C;
-    dpmi_rm.flags = 1;
-    if( __dpmi_dos_call( &dpmi_rm ) ) {
-        return( -1 );
-    }
-    if( LFN_DPMI_ERROR( dpmi_rm ) ) {
-        return( LFN_RET_ERROR( dpmi_rm.ax ) );
-    }
-    return( dpmi_rm.ax );
-#endif
-}
-
 static lfn_ret_t __dos_open_lfn( const char *path, unsigned mode )
 /****************************************************************/
 {
@@ -127,7 +100,7 @@ static lfn_ret_t __dos_open_lfn( const char *path, unsigned mode )
             }
         }
     }
-    return( _dos_open_ex_lfn( path, mode ) );
+    return( _dos_create_open_ex_lfn( path, mode, _A_NORMAL, EX_LFN_OPEN ) );
 }
 #endif
 
@@ -137,12 +110,15 @@ _WCRTLINK unsigned _dos_open( const char *path, unsigned mode, int *handle )
 #ifdef __WATCOM_LFN__
     lfn_ret_t   rc = 0;
 
-    if( _RWD_uselfn && LFN_OK( rc = __dos_open_lfn( path, mode ) ) ) {
-        *handle = LFN_INFO( rc );
-        return( 0 );
-    }
-    if( LFN_ERROR( rc ) ) {
-        return( __set_errno_dos_reterr( LFN_INFO( rc ) ) );
+    if( _RWD_uselfn ) {
+        rc = __dos_open_lfn( path, mode );
+        if( LFN_ERROR( rc ) ) {
+            return( __set_errno_dos_reterr( LFN_INFO( rc ) ) );
+        }
+        if( LFN_OK( rc ) ) {
+            *handle = LFN_INFO( rc );
+            return( 0 );
+        }
     }
 #endif
     return( __dos_open_sfn_err( path, mode, handle ) );

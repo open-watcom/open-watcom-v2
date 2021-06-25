@@ -196,6 +196,56 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
 
 #endif
 
+#if defined( _M_I86 )
+extern lfn_ret_t __dos_find_first_lfn( const char *path, unsigned attr, lfnfind_t __far *lfndta );
+  #ifdef __BIG_DATA__
+    #pragma aux __dos_find_first_lfn = \
+            "push   ds"         \
+            "xchg   ax,dx"      \
+            "mov    ds,ax"      \
+            "mov    si,1"       \
+            "mov    ax,714Eh"   \
+            "stc"               \
+            "int 21h"           \
+            "pop    ds"         \
+            "call __lfnerror_ax" \
+        __parm __caller     [__dx __ax] [__cx] [__es __di] \
+        __value             [__dx __ax] \
+        __modify __exact    [__ax __cx __dx __si]
+  #else
+    #pragma aux __dos_find_first_lfn = \
+            "mov    si,1"       \
+            "mov    ax,714Eh"   \
+            "stc"               \
+            "int 21h"           \
+            "call __lfnerror_ax" \
+        __parm __caller     [__dx] [__cx] [__es __di] \
+        __value             [__dx __ax] \
+        __modify __exact    [__ax __cx __dx __si]
+  #endif
+
+extern lfn_ret_t __dos_find_next_lfn( unsigned handle, lfnfind_t __far *lfndta );
+#pragma aux __dos_find_next_lfn = \
+        "mov    si,1"       \
+        "mov    ax,714fh"   \
+        "stc"               \
+        "int 21h"           \
+        "call __lfnerror_0" \
+    __parm __caller     [__bx] [__es __di] \
+    __value             [__dx __ax] \
+    __modify __exact    [__ax __cx __dx __si]
+
+extern lfn_ret_t __dos_find_close_lfn( unsigned handle );
+#pragma aux __dos_find_close_lfn = \
+        "mov    ax,71A1h"   \
+        "stc"               \
+        "int 21h"           \
+        "call __lfnerror_0" \
+    __parm __caller     [__bx] \
+    __value             [__dx __ax] \
+    __modify __exact    [__ax __dx]
+#endif
+
 #ifdef __WATCOM_LFN__
 static void convert_to_find_t( struct find_t *fdta, lfnfind_t *lfndta )
 /*********************************************************************/
@@ -294,19 +344,22 @@ _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned attrib,
 /******************************************************************************/
 {
 #ifdef __WATCOM_LFN__
-    lfnfind_t   lfndta;
-    lfn_ret_t   rc = 0;
-
     DTALFN_SIGN_OF( fdta->reserved )   = 0;
     DTALFN_HANDLE_OF( fdta->reserved ) = 0;
-    if( _RWD_uselfn && LFN_OK( rc = _dos_find_first_lfn( path, attrib, &lfndta ) ) ) {
-        convert_to_find_t( fdta, &lfndta );
-        DTALFN_SIGN_OF( fdta->reserved )   = _LFN_SIGN;
-        DTALFN_HANDLE_OF( fdta->reserved ) = LFN_INFO( rc );
-        return( 0 );
-    }
-    if( LFN_ERROR( rc ) ) {
-        return( __set_errno_dos_reterr( LFN_INFO( rc ) ) );
+    if( _RWD_uselfn ) {
+        lfnfind_t   lfndta;
+        lfn_ret_t   rc;
+
+        rc = _dos_find_first_lfn( path, attrib, &lfndta );
+        if( LFN_ERROR( rc ) ) {
+            return( __set_errno_dos_reterr( LFN_INFO( rc ) ) );
+        }
+        if( LFN_OK( rc ) ) {
+            convert_to_find_t( fdta, &lfndta );
+            DTALFN_SIGN_OF( fdta->reserved )   = _LFN_SIGN;
+            DTALFN_HANDLE_OF( fdta->reserved ) = LFN_INFO( rc );
+            return( 0 );
+        }
     }
 #endif
     return( __dos_find_first_dta( path, attrib, fdta ) );
@@ -317,16 +370,18 @@ _WCRTLINK unsigned _dos_findnext( struct find_t *fdta )
 /*****************************************************/
 {
 #ifdef __WATCOM_LFN__
-    lfnfind_t   lfndta;
-    lfn_ret_t   rc;
-
     if( IS_LFN( fdta->reserved ) ) {
+        lfnfind_t   lfndta;
+        lfn_ret_t   rc;
+
         rc = _dos_find_next_lfn( DTALFN_HANDLE_OF( fdta->reserved ), &lfndta );
+        if( LFN_ERROR( rc ) ) {
+            return( __set_errno_dos_reterr( LFN_INFO( rc ) ) );
+        }
         if( LFN_OK( rc ) ) {
             convert_to_find_t( fdta, &lfndta );
             return( 0 );
         }
-        return( __set_errno_dos_reterr( LFN_INFO( rc ) ) );
     }
 #endif
     return( __dos_find_next_dta( fdta ) );
@@ -337,12 +392,16 @@ _WCRTLINK unsigned _dos_findclose( struct find_t *fdta )
 /******************************************************/
 {
 #if defined( __WATCOM_LFN__ )
-    lfn_ret_t   rc;
-
     if( IS_LFN( fdta->reserved ) ) {
-        if( LFN_OK( rc = _dos_find_close_lfn( DTALFN_HANDLE_OF( fdta->reserved ) ) ) )
+        lfn_ret_t   rc;
+
+        rc = _dos_find_close_lfn( DTALFN_HANDLE_OF( fdta->reserved ) );
+        if( LFN_ERROR( rc ) ) {
+            return( __set_errno_dos_reterr( LFN_INFO( rc ) ) );
+        }
+        if( LFN_OK( rc ) ) {
             return( 0 );
-        return( __set_errno_dos_reterr( LFN_INFO( rc ) ) );
+        }
     }
 #else
 
