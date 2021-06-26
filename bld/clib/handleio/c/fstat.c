@@ -205,7 +205,7 @@ static long _cvt_stamp2dos_lfn( long long *timestamp )
     if( (rc = __dpmi_dos_call_lfn( &dpmi_rm )) == 0 ) {
         return( dpmi_rm.dx << 16 | dpmi_rm.cx );
     }
-    return( rc );
+    return( -1 );
   #endif
 }
 
