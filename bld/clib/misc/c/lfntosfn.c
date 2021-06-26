@@ -91,6 +91,7 @@ static lfn_ret_t _lfntosfn_lfn( const char *orgname, char *shortname )
     return( __lfntosfn_lfn( orgname, shortname ) );
   #else
     call_struct     dpmi_rm;
+    lfn_ret_t       rc;
 
     strcpy( RM_TB_PARM1_LINEAR, orgname );
     memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
@@ -100,15 +101,10 @@ static lfn_ret_t _lfntosfn_lfn( const char *orgname, char *shortname )
     dpmi_rm.edi = RM_TB_PARM2_OFFS;
     dpmi_rm.ecx = 1;
     dpmi_rm.eax = 0x7160;
-    dpmi_rm.flags = 1;
-    if( __dpmi_dos_call( &dpmi_rm ) ) {
-        return( -1 );
+    if( (rc = __dpmi_dos_call_lfn( &dpmi_rm )) == 0 ) {
+        strcpy( shortname, RM_TB_PARM2_LINEAR );
     }
-    if( LFN_DPMI_ERROR( dpmi_rm ) ) {
-        return( LFN_RET_ERROR( dpmi_rm.ax ) );
-    }
-    strcpy( shortname, RM_TB_PARM2_LINEAR );
-    return( 0 );
+    return( rc );
   #endif
 }
 #endif

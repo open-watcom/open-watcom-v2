@@ -142,19 +142,52 @@ extern unsigned short       const __lfn_rm_tb_segment;
 #define RM_TB_PARM2_OFFS    RM_TB_PARM1_SIZE
 #define RM_TB_PARM2_LINEAR  (__lfn_rm_tb_linear + RM_TB_PARM1_SIZE)
 
-extern unsigned __dpmi_dos_call( call_struct __far *cs );
-#pragma aux __dpmi_dos_call = \
+#define __DPMI_DOS_CALL \
         "push   es"         \
-        "mov    es,edx"     \
+        "mov    eax,ds"     \
+        "mov    es,eax"     \
         "xor    ecx,ecx"    \
         "mov    bx,21h"     \
         "mov    ax,300h"    \
         "int 31h"           \
-        "pop    es"         \
-        "sbb    eax,eax"    \
-    __parm __caller     [__dx __edi] \
+        "pop    es"
+
+#define __DPMI_DOS_CALL_INFO \
+    __parm __caller     [__edi] \
     __value             [__eax] \
     __modify __exact    [__eax __bx __ecx]
+
+extern int __dpmi_dos_call_lfn( call_struct *cs );
+#pragma aux __dpmi_dos_call_lfn = \
+        "or     byte ptr [edi+20H],1" \
+        __DPMI_DOS_CALL     \
+        "sbb    eax,eax"    \
+        "jnz short L2"      \
+        "mov    ax,word ptr [edi+1cH]" \
+        "test   byte ptr [edi+20H],1" \
+        "jne short L1"      \
+        "cmp    ax, 7100h"  \
+        "je short L1"       \
+        "xor    eax,eax"    \
+        "jmp short L2"      \
+    "L1: or     eax,0ffff0000h" \
+    "L2:"                   \
+    __DPMI_DOS_CALL_INFO
+
+extern int __dpmi_dos_call_lfn_ax( call_struct *cs );
+#pragma aux __dpmi_dos_call_lfn_ax = \
+        "or     byte ptr [edi+20H],1" \
+        __DPMI_DOS_CALL     \
+        "sbb    eax,eax"    \
+        "jnz short L2"      \
+        "mov    ax,word ptr [edi+1cH]" \
+        "test   byte ptr [edi+20H],1" \
+        "jne short L1"      \
+        "cmp    ax, 7100h"  \
+        "jne short L2"      \
+    "L1: or     eax,0ffff0000h" \
+    "L2:"                   \
+    __DPMI_DOS_CALL_INFO
 
 #endif
 

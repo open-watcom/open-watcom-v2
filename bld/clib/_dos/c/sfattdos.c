@@ -111,14 +111,7 @@ static lfn_ret_t _dos_setfileattr_lfn( const char *path, unsigned attrib )
     dpmi_rm.ecx = attrib;
     dpmi_rm.ebx = 1;
     dpmi_rm.eax = 0x7143;
-    dpmi_rm.flags = 1;
-    if( __dpmi_dos_call( &dpmi_rm ) ) {
-        return( -1 );
-    }
-    if( LFN_DPMI_ERROR( dpmi_rm ) ) {
-        return( LFN_RET_ERROR( dpmi_rm.ax ) );
-    }
-    return( 0 );
+    return( __dpmi_dos_call_lfn( &dpmi_rm ) );
   #endif
 }
 #endif

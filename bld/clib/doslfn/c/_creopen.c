@@ -67,9 +67,9 @@ extern lfn_ret_t __dos_create_open_ex_lfn( const char *name, unsigned mode, unsi
 lfn_ret_t _dos_create_open_ex_lfn( const char *path, unsigned mode, unsigned attrib, unsigned action )
 /****************************************************************************************************/
 {
-  #ifdef _M_I86
+#ifdef _M_I86
     return( __dos_create_open_ex_lfn( path, mode, attrib, action ) );
-  #else
+#else
     call_struct     dpmi_rm;
 
     strcpy( RM_TB_PARM1_LINEAR, path );
@@ -80,13 +80,6 @@ lfn_ret_t _dos_create_open_ex_lfn( const char *path, unsigned mode, unsigned att
     dpmi_rm.ecx = attrib;
     dpmi_rm.ebx = mode;
     dpmi_rm.eax = 0x716C;
-    dpmi_rm.flags = 1;
-    if( __dpmi_dos_call( &dpmi_rm ) ) {
-        return( -1 );
-    }
-    if( LFN_DPMI_ERROR( dpmi_rm ) ) {
-        return( LFN_RET_ERROR( dpmi_rm.ax ) );
-    }
-    return( dpmi_rm.ax );
-  #endif
+    return( __dpmi_dos_call_lfn_ax( &dpmi_rm ) );
+#endif
 }

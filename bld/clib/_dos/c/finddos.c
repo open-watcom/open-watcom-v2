@@ -288,6 +288,7 @@ static lfn_ret_t _dos_find_first_lfn( const char *path, unsigned attrib, lfnfind
     return( __dos_find_first_lfn( path, attrib, lfndta ) );
 #else
     call_struct     dpmi_rm;
+    lfn_ret_t       rc;
 
     strcpy( RM_TB_PARM1_LINEAR, path );
     memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
@@ -298,15 +299,10 @@ static lfn_ret_t _dos_find_first_lfn( const char *path, unsigned attrib, lfnfind
     dpmi_rm.ecx = attrib;
     dpmi_rm.esi = 1;
     dpmi_rm.eax = 0x714E;
-    dpmi_rm.flags = 1;
-    if( __dpmi_dos_call( &dpmi_rm ) ) {
-        return( -1 );
+    if( (rc = __dpmi_dos_call_lfn_ax( &dpmi_rm )) >= 0 ) {
+        memcpy( lfndta, RM_TB_PARM2_LINEAR, sizeof( *lfndta ) );
     }
-    if( LFN_DPMI_ERROR( dpmi_rm ) ) {
-        return( LFN_RET_ERROR( dpmi_rm.ax ) );
-    }
-    memcpy( lfndta, RM_TB_PARM2_LINEAR, sizeof( *lfndta ) );
-    return( dpmi_rm.ax );
+    return( rc );
 #endif
 }
 
@@ -317,6 +313,7 @@ static lfn_ret_t _dos_find_next_lfn( unsigned handle, lfnfind_t *lfndta )
     return( __dos_find_next_lfn( handle, lfndta ) );
 #else
     call_struct     dpmi_rm;
+    lfn_ret_t       rc;
 
     memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
     dpmi_rm.es  = RM_TB_PARM1_SEGM;
@@ -324,15 +321,10 @@ static lfn_ret_t _dos_find_next_lfn( unsigned handle, lfnfind_t *lfndta )
     dpmi_rm.ebx = handle;
     dpmi_rm.esi = 1;
     dpmi_rm.eax = 0x714F;
-    dpmi_rm.flags = 1;
-    if( __dpmi_dos_call( &dpmi_rm ) ) {
-        return( -1 );
+    if( (rc = __dpmi_dos_call_lfn( &dpmi_rm )) == 0 ) {
+        memcpy( lfndta, RM_TB_PARM1_LINEAR, sizeof( *lfndta ) );
     }
-    if( LFN_DPMI_ERROR( dpmi_rm ) ) {
-        return( LFN_RET_ERROR( dpmi_rm.ax ) );
-    }
-    memcpy( lfndta, RM_TB_PARM1_LINEAR, sizeof( *lfndta ) );
-    return( 0 );
+    return( rc );
 #endif
 }
 
@@ -347,14 +339,7 @@ static lfn_ret_t _dos_find_close_lfn( unsigned handle )
     memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
     dpmi_rm.ebx = handle;
     dpmi_rm.eax = 0x71A1;
-    dpmi_rm.flags = 1;
-    if( __dpmi_dos_call( &dpmi_rm ) ) {
-        return( -1 );
-    }
-    if( LFN_DPMI_ERROR( dpmi_rm ) ) {
-        return( LFN_RET_ERROR( dpmi_rm.ax ) );
-    }
-    return( 0 );
+    return( __dpmi_dos_call_lfn( &dpmi_rm ) );
 #endif
 }
 #endif //__WATCOM_LFN__

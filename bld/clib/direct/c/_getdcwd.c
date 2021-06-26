@@ -101,21 +101,17 @@ static lfn_ret_t __getdcwd_lfn( char *buff, unsigned char drv )
     return( ___getdcwd_lfn( buff, drv ) );
   #else
     call_struct     dpmi_rm;
+    lfn_ret_t       rc;
 
     memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
     dpmi_rm.ds  = RM_TB_PARM1_SEGM;
     dpmi_rm.esi = RM_TB_PARM1_OFFS;
     dpmi_rm.edx = drv;
     dpmi_rm.eax = 0x7147;
-    dpmi_rm.flags = 1;
-    if( __dpmi_dos_call( &dpmi_rm ) ) {
-        return( -1 );
+    if( (rc = __dpmi_dos_call_lfn( &dpmi_rm )) == 0 ) {
+        strcpy( buff, RM_TB_PARM1_LINEAR );
     }
-    if( LFN_DPMI_ERROR( dpmi_rm ) ) {
-        return( LFN_RET_ERROR( dpmi_rm.ax ) );
-    }
-    strcpy( buff, RM_TB_PARM1_LINEAR );
-    return( 0 );
+    return( rc );
   #endif
 }
 #endif

@@ -119,14 +119,7 @@ static lfn_ret_t _rename_lfn( const char *old, const char *new )
     dpmi_rm.es  = RM_TB_PARM2_SEGM;
     dpmi_rm.edi = RM_TB_PARM2_OFFS;
     dpmi_rm.eax = 0x7156;
-    dpmi_rm.flags = 1;
-    if( __dpmi_dos_call( &dpmi_rm ) ) {
-        return( -1 );
-    }
-    if( LFN_DPMI_ERROR( dpmi_rm ) ) {
-        return( LFN_RET_ERROR( dpmi_rm.ax ) );
-    }
-    return( 0 );
+    return( __dpmi_dos_call_lfn( &dpmi_rm ) );
 #endif
 }
 #endif

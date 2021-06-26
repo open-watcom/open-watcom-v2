@@ -129,16 +129,8 @@ static lfn_ret_t _dos_utime_lfn( const char *fname, unsigned time, unsigned date
     dpmi_rm.ecx = time;
     dpmi_rm.ebx = mode;
     dpmi_rm.edi = date;
-    dpmi_rm.esi = 0;
     dpmi_rm.eax = 0x7143;
-    dpmi_rm.flags = 1;
-    if( __dpmi_dos_call( &dpmi_rm ) ) {
-        return( -1 );
-    }
-    if( LFN_DPMI_ERROR( dpmi_rm ) ) {
-        return( LFN_RET_ERROR( dpmi_rm.ax ) );
-    }
-    return( 0 );
+    return( __dpmi_dos_call_lfn( &dpmi_rm ) );
   #endif
 }
 #endif

@@ -113,14 +113,7 @@ static lfn_ret_t _rmdir_lfn( const char *path )
     dpmi_rm.ds  = RM_TB_PARM1_SEGM;
     dpmi_rm.edx = RM_TB_PARM1_OFFS;
     dpmi_rm.eax = 0x713A;
-    dpmi_rm.flags = 1;
-    if( __dpmi_dos_call( &dpmi_rm ) ) {
-        return( -1 );
-    }
-    if( LFN_DPMI_ERROR( dpmi_rm ) ) {
-        return( LFN_RET_ERROR( dpmi_rm.ax ) );
-    }
-    return( 0 );
+    return( __dpmi_dos_call_lfn( &dpmi_rm ) );
 #endif
 }
 #endif

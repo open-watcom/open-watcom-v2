@@ -125,22 +125,17 @@ static lfn_ret_t _dos_getfileattr_lfn( const char *path )
     return( __dos_getfileattr_lfn( path ) );
   #else
     call_struct     dpmi_rm;
+    lfn_ret_t       rc;
 
     strcpy( RM_TB_PARM1_LINEAR, path );
     memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
     dpmi_rm.ds  = RM_TB_PARM1_SEGM;
     dpmi_rm.edx = RM_TB_PARM1_OFFS;
-    dpmi_rm.ecx = 0;
-    dpmi_rm.ebx = 0;
     dpmi_rm.eax = 0x7143;
-    dpmi_rm.flags = 1;
-    if( __dpmi_dos_call( &dpmi_rm ) ) {
-        return( -1 );
+    if( (rc = __dpmi_dos_call_lfn( &dpmi_rm )) == 0 ) {
+        return( dpmi_rm.cx );
     }
-    if( LFN_DPMI_ERROR( dpmi_rm ) ) {
-        return( LFN_RET_ERROR( dpmi_rm.ax ) );
-    }
-    return( dpmi_rm.cx );
+    return( rc );
   #endif
 }
 #endif
