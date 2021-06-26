@@ -53,30 +53,6 @@
 #define EX_LFN_CREATE       0x12
 #define EX_LFN_CREATE_NEW   0x10
 
-#define _XCHG_AX_DX         0x92
-#define _XCHG_AX_SI         0x96
-
-#ifdef _M_I86
-  #ifdef __BIG_DATA__
-    #define _SET_DSDX       _PUSH_DS _XCHG_AX_DX _MOV_DS_AX
-    #define _SET_DSSI       _PUSH_DS _XCHG_AX_SI _MOV_DS_AX
-    #define _SET_ES
-    #define _RST_DS         _POP_DS
-    #define _RST_ES
-  #else
-    #define _SET_DSDX
-    #define _SET_DSSI
-    #define _SET_ES         _PUSH_ES _PUSH_DS _POP_ES
-    #define _RST_DS
-    #define _RST_ES         _POP_ES
-  #endif
-#else
-    #define _SET_DSDX
-    #define _SET_DSSI
-    #define _SET_ES
-    #define _RST_DS
-    #define _RST_ES
-#endif
 
 #define RETURN_VALUE        \
         "jc short LX"       \
