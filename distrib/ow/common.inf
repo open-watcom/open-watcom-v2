@@ -178,6 +178,7 @@ icon=%OWDir%\binw\wde.exe,, Dialog Editor,,, IsWin16 DoCreateIcons ?%OWDir%\binw
 icon=%OWDir%\binw\wimgedit.exe,, Image Editor,,, IsWin16 DoCreateIcons ?%OWDir%\binw\wimgedit.exe
 icon=%OWDir%\binw\wzoom.exe,, Zoom,,, IsWin16 DoCreateIcons ?%OWDir%\binw\wzoom.exe
 icon=%OWDir%\binw\viw.exe,, Text Editor,,, IsWin16 DoCreateIcons ?%OWDir%\binw\viw.exe
+icon=%OWDir%\binw\viw32.exe,, Text Editor 32-bit,,, IsWin16 DoCreateIcons ?%OWDir%\binw\viw32.exe
 icon=%OWDir%\binnt\ide.exe,, IDE,,, IsWin32 DoCreateIcons ?%OWDir%\binnt\ide.exe
 icon=%OWDir%\binnt\wbrw.exe,, Source Browser,,, IsWin32 DoCreateIcons ?%OWDir%\binnt\wbrw.exe IsFortranInstall !
 icon=%OWDir%\binnt\wprof.exe,, Profiler,,, IsWin32 DoCreateIcons ?%OWDir%\binnt\wprof.exe
