@@ -30,13 +30,54 @@
 ****************************************************************************/
 
 
+#ifdef __INT64__
+
+#include "variety.h"
+#include <sys/types.h>
+#include <sys/stat.h>
+
+
+_WCRTLINK int _fstati64( int handle, struct _stati64 *buf )
+{
+    struct stat         buf32;
+    int                 rc;
+
+    /*** Get the info using non-64bit version ***/
+    rc = _fstat( handle, &buf32 );
+    if( rc == -1 )
+        return( -1 );
+
+    /*** Convert the info to 64-bit equivalent ***/
+    buf->st_dev = buf32.st_dev;
+    buf->st_ino = buf32.st_ino;
+    buf->st_mode = buf32.st_mode;
+    buf->st_nlink = buf32.st_nlink;
+    buf->st_uid = buf32.st_uid;
+    buf->st_gid = buf32.st_gid;
+    buf->st_rdev = buf32.st_rdev;
+    buf->st_size = (unsigned long)buf32.st_size;
+    buf->st_atime = buf32.st_atime;
+    buf->st_mtime = buf32.st_mtime;
+    buf->st_ctime = buf32.st_ctime;
+    buf->st_btime = buf32.st_btime;
+    buf->st_attr = buf32.st_attr;
+    buf->st_archivedID = buf32.st_archivedID;
+    buf->st_updatedID = buf32.st_updatedID;
+    buf->st_inheritedRightsMask = buf32.st_inheritedRightsMask;
+    buf->st_originatingNameSpace = buf32.st_originatingNameSpace;
+
+    return( rc );
+}
+
+#else
+
 #include "variety.h"
 #include <stdio.h>
 #include <stddef.h>
 #include <string.h>
-#include <io.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <io.h>
 #include "rtdata.h"
 #include "iomode.h"
 #include "rtcheck.h"
@@ -45,6 +86,40 @@
 #include "d2ttime.h"
 #include "_doslfn.h"
 
+
+extern long __getfilestamp_sfn( int handle );
+#ifdef _M_I86
+  #pragma aux __getfilestamp_sfn = \
+        _MOV_AX_W _GET_ DOS_FILE_DATE \
+        _INT_21             \
+        "jnc short L1"      \
+        "call __set_errno_dos" \
+        "mov  dx,ax"        \
+        "jmp short L2"      \
+    "L1: mov  ax,cx"        \
+    "L2:"                   \
+    __parm __caller     [__bx] \
+    __value             [__dx __ax] \
+    __modify __exact    [__ax __cx __dx]
+#else
+  #pragma aux __getfilestamp_sfn = \
+        _MOV_AX_W _GET_ DOS_FILE_DATE \
+        _INT_21             \
+        "jnc short L1"      \
+        "and  eax,0ffffh"   \
+        "call __set_errno_dos" \
+        "mov  edx,eax"      \
+        "jmp short L2"      \
+    "L1: shl  edx,16"       \
+        "mov  dx,cx"        \
+    "L2:"                   \
+    __parm __caller     [__ebx] \
+    __value             [__edx] \
+    __modify __exact    [__eax __ecx __edx]
+#endif
+
+
+#ifdef __WATCOM_LFN__
 
 #ifdef _M_I86
 extern long __cvt_stamp2dos_lfn( long long *timestamp );
@@ -119,76 +194,6 @@ extern lfn_ret_t __getfileinfo_lfn( int handle, lfninfo_t *lfninfo );
   #endif
 #endif
 
-extern long __getfilestamp_sfn( int handle );
-#ifdef _M_I86
-  #pragma aux __getfilestamp_sfn = \
-        _MOV_AX_W _GET_ DOS_FILE_DATE \
-        _INT_21             \
-        "jnc short L1"      \
-        "call __set_errno_dos" \
-        "mov  dx,ax"        \
-        "jmp short L2"      \
-    "L1: mov  ax,cx"        \
-    "L2:"                   \
-    __parm __caller     [__bx] \
-    __value             [__dx __ax] \
-    __modify __exact    [__ax __cx __dx]
-#else
-  #pragma aux __getfilestamp_sfn = \
-        _MOV_AX_W _GET_ DOS_FILE_DATE \
-        _INT_21             \
-        "jnc short L1"      \
-        "and  eax,0ffffh"   \
-        "call __set_errno_dos" \
-        "mov  edx,eax"      \
-        "jmp short L2"      \
-    "L1: shl  edx,16"       \
-        "mov  dx,cx"        \
-    "L2:"                   \
-    __parm __caller     [__ebx] \
-    __value             [__edx] \
-    __modify __exact    [__eax __ecx __edx]
-#endif
-
-
-#ifdef __INT64__
-
-_WCRTLINK int _fstati64( int handle, struct _stati64 *buf )
-{
-    struct stat         buf32;
-    int                 rc;
-
-    /*** Get the info using non-64bit version ***/
-    rc = _fstat( handle, &buf32 );
-    if( rc == -1 )
-        return( -1 );
-
-    /*** Convert the info to 64-bit equivalent ***/
-    buf->st_dev = buf32.st_dev;
-    buf->st_ino = buf32.st_ino;
-    buf->st_mode = buf32.st_mode;
-    buf->st_nlink = buf32.st_nlink;
-    buf->st_uid = buf32.st_uid;
-    buf->st_gid = buf32.st_gid;
-    buf->st_rdev = buf32.st_rdev;
-    buf->st_size = (unsigned long)buf32.st_size;
-    buf->st_atime = buf32.st_atime;
-    buf->st_mtime = buf32.st_mtime;
-    buf->st_ctime = buf32.st_ctime;
-    buf->st_btime = buf32.st_btime;
-    buf->st_attr = buf32.st_attr;
-    buf->st_archivedID = buf32.st_archivedID;
-    buf->st_updatedID = buf32.st_updatedID;
-    buf->st_inheritedRightsMask = buf32.st_inheritedRightsMask;
-    buf->st_originatingNameSpace = buf32.st_originatingNameSpace;
-
-    return( rc );
-}
-
-#else
-
-#ifdef __WATCOM_LFN__
-
 static long _cvt_stamp2dos_lfn( long long *timestamp )
 {
   #ifdef _M_I86
@@ -229,7 +234,7 @@ static lfn_ret_t _getfileinfo_lfn( int handle, lfninfo_t *lfninfo )
   #endif
 }
 
-#endif
+#endif  /* __WATCOM_LFN__ */
 
 _WCRTLINK int fstat( int handle, struct stat *buf )
 {

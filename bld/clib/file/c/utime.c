@@ -47,6 +47,7 @@
 #include "_doslfn.h"
 #include "seterrno.h"
 
+
 #define CVT_TM2DOS_TIME(t)  ((t)->tm_hour*2048+(t)->tm_min*32+(t)->tm_sec/2)
 #define CVT_TM2DOS_DATE(t)  (((t)->tm_year-80)*512+((t)->tm_mon+1)*32+(t)->tm_mday)
 
@@ -59,6 +60,11 @@ typedef struct {
     unsigned    wr_time;
     unsigned    wr_date;
 } _dos_tms;
+
+
+#if !defined( __WIDECHAR__ )
+
+#if defined( __WATCOM_LFN__ )
 
 #ifdef _M_I86
 extern lfn_ret_t __dos_utime_lfn( const char *path, unsigned time, unsigned date, unsigned mode );
@@ -87,33 +93,6 @@ extern lfn_ret_t __dos_utime_lfn( const char *path, unsigned time, unsigned date
   #endif
 #endif
 
-#ifndef __WIDECHAR__
-static int _get_dos_tms( struct utimbuf const *times, _dos_tms *dostms )
-/**********************************************************************/
-{
-    struct tm       *act;
-    struct tm       *wrt;
-
-    if( times == NULL ) {
-        time_t  curr_time = time( NULL );
-        wrt = localtime( &curr_time );
-        act = wrt;
-    } else {
-        wrt = localtime( &(times->modtime) );
-        act = localtime( &(times->actime) );
-        if( act->tm_year < 80 || wrt->tm_year < 80 ) {
-            /* DOS file-system cannot handle dates before 1980 */
-            return( -1 );
-        }
-    }
-    dostms->wr_time = CVT_TM2DOS_TIME( wrt );
-    dostms->wr_date = CVT_TM2DOS_DATE( wrt );
-    dostms->ac_time = CVT_TM2DOS_TIME( act );
-    dostms->ac_date = CVT_TM2DOS_DATE( act );
-    return( 0 );
-}
-
-#if defined( __WATCOM_LFN__ )
 static lfn_ret_t _dos_utime_lfn( const char *fname, unsigned time, unsigned date, unsigned mode )
 /***********************************************************************************************/
 {
@@ -133,7 +112,8 @@ static lfn_ret_t _dos_utime_lfn( const char *fname, unsigned time, unsigned date
     return( __dpmi_dos_call_lfn( &dpmi_rm ) );
   #endif
 }
-#endif
+
+#endif  /* __WATCOM_LFN__ */
 
 static unsigned _utime_sfn( const char *fname, _dos_tms *dostms )
 /***************************************************************/
@@ -207,7 +187,33 @@ static unsigned _utime_sfn( const char *fname, _dos_tms *dostms )
     }
     return( 0 );
 }
-#endif
+
+static int _get_dos_tms( struct utimbuf const *times, _dos_tms *dostms )
+/**********************************************************************/
+{
+    struct tm       *act;
+    struct tm       *wrt;
+
+    if( times == NULL ) {
+        time_t  curr_time = time( NULL );
+        wrt = localtime( &curr_time );
+        act = wrt;
+    } else {
+        wrt = localtime( &(times->modtime) );
+        act = localtime( &(times->actime) );
+        if( act->tm_year < 80 || wrt->tm_year < 80 ) {
+            /* DOS file-system cannot handle dates before 1980 */
+            return( -1 );
+        }
+    }
+    dostms->wr_time = CVT_TM2DOS_TIME( wrt );
+    dostms->wr_date = CVT_TM2DOS_DATE( wrt );
+    dostms->ac_time = CVT_TM2DOS_TIME( act );
+    dostms->ac_date = CVT_TM2DOS_DATE( act );
+    return( 0 );
+}
+
+#endif  /* !__WIDECHAR__ */
 
 _WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fname, struct utimbuf const *times )
 /******************************************************************************************/

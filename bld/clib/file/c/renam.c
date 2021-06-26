@@ -71,6 +71,8 @@ extern unsigned __rename_sfn( const char *old, const char *new );
         "call __doserror1_" \
     AUX_INFO
 
+#if defined( __WATCOM_LFN__ ) && !defined( __WIDECHAR__ )
+
 #ifdef _M_I86
 extern lfn_ret_t __rename_lfn( const char *old, const char *new );
   #ifdef __BIG_DATA__
@@ -102,7 +104,6 @@ extern lfn_ret_t __rename_lfn( const char *old, const char *new );
   #endif
 #endif
 
-#if !defined( __WIDECHAR__ ) && defined( __WATCOM_LFN__ )
 static lfn_ret_t _rename_lfn( const char *old, const char *new )
 /**************************************************************/
 {
@@ -122,7 +123,8 @@ static lfn_ret_t _rename_lfn( const char *old, const char *new )
     return( __dpmi_dos_call_lfn( &dpmi_rm ) );
 #endif
 }
-#endif
+
+#endif  /* __WATCOM_LFN__ && !__WIDECHAR__ */
 
 _WCRTLINK int __F_NAME(rename,_wrename)( const CHAR_TYPE *old, const CHAR_TYPE *new )
 /***********************************************************************************/

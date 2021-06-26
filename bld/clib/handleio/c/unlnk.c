@@ -69,6 +69,8 @@ extern unsigned __unlink_sfn( const char *filename );
         "call __doserror1_" \
     AUX_INFO
 
+#if defined( __WATCOM_LFN__ ) && !defined( __WIDECHAR__ )
+
 #ifdef _M_I86
 extern lfn_ret_t __unlink_lfn( const char *filename );
   #ifdef __BIG_DATA__
@@ -98,7 +100,6 @@ extern lfn_ret_t __unlink_lfn( const char *filename );
   #endif
 #endif
 
-#if defined( __WATCOM_LFN__ ) && !defined( __WIDECHAR__ )
 static lfn_ret_t _unlink_lfn( const char *filename )
 /**************************************************/
 {
@@ -115,7 +116,8 @@ static lfn_ret_t _unlink_lfn( const char *filename )
     return( __dpmi_dos_call_lfn( &dpmi_rm ) );
 #endif
 }
-#endif
+
+#endif  /* __WATCOM_LFN__ && !__WIDECHAR__ */
 
 _WCRTLINK int __F_NAME(unlink,_wunlink)( const CHAR_TYPE *filename )
 /******************************************************************/

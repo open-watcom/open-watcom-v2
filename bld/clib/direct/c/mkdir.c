@@ -72,6 +72,8 @@ extern unsigned __mkdir_sfn( const char *path );
         "call __doserror1_" \
     AUX_INFO
 
+#if defined( __WATCOM_LFN__ ) && !defined( __WIDECHAR__ )
+
 #ifdef _M_I86
 extern lfn_ret_t __mkdir_lfn( const char *path );
   #ifdef __BIG_DATA__
@@ -99,7 +101,6 @@ extern lfn_ret_t __mkdir_lfn( const char *path );
   #endif
 #endif
 
-#if defined( __WATCOM_LFN__ ) && !defined( __WIDECHAR__ )
 static lfn_ret_t _mkdir_lfn( const char *path )
 /*********************************************/
 {
@@ -116,7 +117,8 @@ static lfn_ret_t _mkdir_lfn( const char *path )
     return( __dpmi_dos_call_lfn( &dpmi_rm ) );
 #endif
 }
-#endif
+
+#endif  /* __WATCOM_LFN__ && !__WIDECHAR__ */
 
 _WCRTLINK int __F_NAME(mkdir,_wmkdir)( const CHAR_TYPE *path )
 /************************************************************/
