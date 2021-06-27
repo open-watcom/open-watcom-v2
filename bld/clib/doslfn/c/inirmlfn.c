@@ -44,6 +44,7 @@
 #include "tinyio.h"
 #include "_doslfn.h"
 
+
 extern unsigned __alloc_dos_tb( unsigned short size, unsigned short *segm );
 #pragma aux __alloc_dos_tb = \
         "mov    ax,100h"    \

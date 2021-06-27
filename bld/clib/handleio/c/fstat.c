@@ -69,7 +69,7 @@ _WCRTLINK int _fstati64( int handle, struct _stati64 *buf )
     return( rc );
 }
 
-#else
+#else   /* !__INT64__ */
 
 #include "variety.h"
 #include <stdio.h>
@@ -202,14 +202,13 @@ static long _cvt_stamp2dos_lfn( long long *timestamp )
     return( __cvt_stamp2dos_lfn( timestamp ) );
   #else
     call_struct     dpmi_rm;
-    lfn_ret_t       rc;
 
     *((long long *)RM_TB_PARM1_LINEAR) = *timestamp;
     memset( &dpmi_rm, 0, sizeof( dpmi_rm ) );
     dpmi_rm.ds  = RM_TB_PARM1_SEGM;
     dpmi_rm.esi = RM_TB_PARM1_OFFS;
     dpmi_rm.eax = 0x71A7;
-    if( (rc = __dpmi_dos_call_lfn( &dpmi_rm )) == 0 ) {
+    if( __dpmi_dos_call_lfn( &dpmi_rm ) == 0 ) {
         return( dpmi_rm.dx << 16 | dpmi_rm.cx );
     }
     return( -1 );
@@ -333,4 +332,4 @@ _WCRTLINK int fstat( int handle, struct stat *buf )
     }
 }
 
-#endif
+#endif  /* !__INT64__ */

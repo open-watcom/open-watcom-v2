@@ -251,22 +251,22 @@ extern lfn_ret_t __dos_find_first_lfn( const char *path, unsigned attr, lfnfind_
 
 extern lfn_ret_t __dos_find_next_lfn( unsigned handle, lfnfind_t __far *lfndta );
 #pragma aux __dos_find_next_lfn = \
-        "mov    si,1"       \
-        "mov    ax,714fh"   \
-        "stc"               \
-        "int 21h"           \
-        "call __lfnerror_0" \
+        "mov    si,1"           \
+        "mov    ax,714fh"       \
+        "stc"                   \
+        "int 21h"               \
+        "call __lfnerror_0"     \
     __parm __caller     [__bx] [__es __di] \
     __value             [__dx __ax] \
     __modify __exact    [__ax __cx __dx __si]
 
 extern lfn_ret_t __dos_find_close_lfn( unsigned handle );
 #pragma aux __dos_find_close_lfn = \
-        "mov    ax,71A1h"   \
-        "stc"               \
-        "int 21h"           \
-        "call __lfnerror_0" \
-    __parm __caller     [__bx] \
+        "mov    ax,71A1h"       \
+        "stc"                   \
+        "int 21h"               \
+        "call __lfnerror_0"     \
+    __parm __caller     [__bx]  \
     __value             [__dx __ax] \
     __modify __exact    [__ax __dx]
 #endif

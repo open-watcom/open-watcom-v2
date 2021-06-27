@@ -62,11 +62,11 @@
 
 extern unsigned __dos_setfileattr_sfn( const char *path, unsigned attrib );
 #pragma aux __dos_setfileattr_sfn = \
-        _SET_DSDX           \
+        _SET_DSDX               \
         _MOV_AX_W _SET_ DOS_CHMOD \
-        _INT_21             \
-        _RST_DS             \
-        "call __doserror_"  \
+        _INT_21                 \
+        _RST_DS                 \
+        "call __doserror_"      \
     AUX_INFO
 
 #ifdef __WATCOM_LFN__
