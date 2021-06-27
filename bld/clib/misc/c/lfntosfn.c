@@ -35,10 +35,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dos.h>
+#include "rtdata.h"
+#include "tinyio.h"
 #include "_doslfn.h"
 
 
-#if defined( __WATCOM_LFN__ ) && defined( _M_I86 )
+#ifdef __WATCOM_LFN__
+
+#if defined( _M_I86 )
 extern lfn_ret_t __lfntosfn_lfn( const char *orgname, char *shortname );
   #ifdef __BIG_DATA__
     #pragma aux __lfntosfn_lfn = \
@@ -66,25 +70,6 @@ extern lfn_ret_t __lfntosfn_lfn( const char *orgname, char *shortname );
   #endif
 #endif
 
-_WCRTLINK int _islfn( const char *path )
-{
-    const char *buff;
-
-    buff = strrchr( path, '\\' );
-    if( buff == NULL ) {
-        buff = path;
-        if( buff[0] != '\0' && buff[1] == ':' ) {
-            buff += 2;
-        }
-    } else {
-        ++buff;
-    }
-    if( strlen( buff ) > 12 || strchr( buff, ' ' ) != NULL )
-        return( 1 );
-    return( 0 );
-}
-
-#ifdef __WATCOM_LFN__
 static lfn_ret_t _lfntosfn_lfn( const char *orgname, char *shortname )
 {
   #ifdef _M_I86
@@ -107,7 +92,8 @@ static lfn_ret_t _lfntosfn_lfn( const char *orgname, char *shortname )
     return( rc );
   #endif
 }
-#endif
+
+#endif  /* __WATCOM_LFN__ */
 
 _WCRTLINK char *_lfntosfn( const char *orgname, char *shortname )
 {
@@ -126,4 +112,22 @@ _WCRTLINK char *_lfntosfn( const char *orgname, char *shortname )
     }
 #endif
     return( strcpy( shortname, orgname ) );
+}
+
+_WCRTLINK int _islfn( const char *path )
+{
+    const char *buff;
+
+    buff = strrchr( path, '\\' );
+    if( buff == NULL ) {
+        buff = path;
+        if( buff[0] != '\0' && buff[1] == ':' ) {
+            buff += 2;
+        }
+    } else {
+        ++buff;
+    }
+    if( strlen( buff ) > 12 || strchr( buff, ' ' ) != NULL )
+        return( 1 );
+    return( 0 );
 }

@@ -32,10 +32,13 @@
 
 #include "variety.h"
 #include <string.h>
+#include <dos.h>
 #include "liballoc.h"
+#include "rtdata.h"
 #include "seterrno.h"
 #include "doserror.h"
 #include "_direct.h"
+#include "tinyio.h"
 #include "_doslfn.h"
 
 
@@ -67,6 +70,8 @@ extern unsigned __getdcwd_sfn( char *buff, unsigned char drv );
         "call __doserror_"  \
     AUX_INFO
 
+#ifdef __WATCOM_LFN__
+
 #ifdef _M_I86
 extern lfn_ret_t ___getdcwd_lfn( char *path, unsigned char drv );
   #ifdef __BIG_DATA__
@@ -93,7 +98,6 @@ extern lfn_ret_t ___getdcwd_lfn( char *path, unsigned char drv );
   #endif
 #endif
 
-#ifdef __WATCOM_LFN__
 static lfn_ret_t __getdcwd_lfn( char *buff, unsigned char drv )
 /*************************************************************/
 {
@@ -114,7 +118,8 @@ static lfn_ret_t __getdcwd_lfn( char *buff, unsigned char drv )
     return( rc );
   #endif
 }
-#endif
+
+#endif  /* __WATCOM_LFN__ */
 
 unsigned __getdcwd( char *buff, unsigned char drv )
 /*************************************************/

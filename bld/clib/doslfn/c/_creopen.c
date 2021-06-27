@@ -33,6 +33,8 @@
 
 #define __WATCOM_LFN__
 #include <string.h>
+#include <dos.h>
+#include "tinyio.h"
 #include "_doslfn.h"
 
 

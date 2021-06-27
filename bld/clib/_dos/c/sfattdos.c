@@ -33,8 +33,11 @@
 #include "variety.h"
 #include <string.h>
 #include <fcntl.h>
+#include <dos.h>
 #include "seterrno.h"
 #include "doserror.h"
+#include "rtdata.h"
+#include "tinyio.h"
 #include "_doslfn.h"
 
 
@@ -66,6 +69,8 @@ extern unsigned __dos_setfileattr_sfn( const char *path, unsigned attrib );
         "call __doserror_"  \
     AUX_INFO
 
+#ifdef __WATCOM_LFN__
+
 #ifdef _M_I86
 extern lfn_ret_t __dos_setfileattr_lfn( const char *path, unsigned attr );
   #ifdef __BIG_DATA__
@@ -95,7 +100,6 @@ extern lfn_ret_t __dos_setfileattr_lfn( const char *path, unsigned attr );
   #endif
 #endif
 
-#ifdef __WATCOM_LFN__
 static lfn_ret_t _dos_setfileattr_lfn( const char *path, unsigned attrib )
 /************************************************************************/
 {
@@ -114,7 +118,8 @@ static lfn_ret_t _dos_setfileattr_lfn( const char *path, unsigned attrib )
     return( __dpmi_dos_call_lfn( &dpmi_rm ) );
   #endif
 }
-#endif
+
+#endif  /* __WATCOM_LFN__ */
 
 _WCRTLINK unsigned _dos_setfileattr( const char *path, unsigned attrib )
 /**********************************************************************/

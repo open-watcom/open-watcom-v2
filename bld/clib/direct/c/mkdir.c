@@ -41,6 +41,8 @@
 #endif
 #include "seterrno.h"
 #include "doserror.h"
+#include "rtdata.h"
+#include "tinyio.h"
 #include "_doslfn.h"
 
 

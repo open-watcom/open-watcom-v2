@@ -78,12 +78,14 @@ _WCRTLINK int _fstati64( int handle, struct _stati64 *buf )
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <io.h>
+#include <dos.h>
 #include "rtdata.h"
 #include "iomode.h"
 #include "rtcheck.h"
 #include "rterrno.h"
 #include "seterrno.h"
 #include "d2ttime.h"
+#include "tinyio.h"
 #include "_doslfn.h"
 
 

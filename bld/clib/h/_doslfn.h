@@ -33,10 +33,7 @@
 #ifndef __DOSLFN_H_INCLUDED
 #define __DOSLFN_H_INCLUDED
 
-#include <dos.h>
-#include "tinyio.h"
-#include "rtdata.h"
-
+#if defined( __WATCOM_LFN__ )
 
 #define _LFN_SIGN           0x004e464cUL    // "LFN"
 
@@ -52,12 +49,6 @@
 #define EX_LFN_OPEN         0x01
 #define EX_LFN_CREATE       0x12
 #define EX_LFN_CREATE_NEW   0x10
-
-
-#define RETURN_VALUE        \
-        "jc short LX"       \
-        SAVE_VALUE          \
-    "LX:"
 
 typedef long        lfn_ret_t;
 
@@ -100,11 +91,7 @@ typedef struct {
 extern lfn_ret_t __lfnerror_0( void );
 extern lfn_ret_t __lfnerror_ax( void );
 
-#endif
-
-extern lfn_ret_t _dos_create_open_ex_lfn( const char *path, unsigned mode, unsigned attrib, unsigned action );
-
-#if defined( __WATCOM_LFN__ ) && !defined( _M_I86 )
+#else  /* !_M_I86 */
 
 extern char                 * const __lfn_rm_tb_linear;
 extern unsigned short       const __lfn_rm_tb_segment;
@@ -135,12 +122,12 @@ extern unsigned short       const __lfn_rm_tb_segment;
 
 extern int __dpmi_dos_call_lfn( call_struct *cs );
 #pragma aux __dpmi_dos_call_lfn = \
-        "or     byte ptr [edi+20H],1" \
+        "or     byte ptr [edi+20H],1" /* cs struct flags carry */ \
         __DPMI_DOS_CALL     \
         "sbb    eax,eax"    \
         "jnz short L2"      \
-        "mov    ax,word ptr [edi+1cH]" \
-        "test   byte ptr [edi+20H],1" \
+        "mov    ax,word ptr [edi+1cH]" /* cs struct reg AX */ \
+        "test   byte ptr [edi+20H],1" /* cs struct flags carry */ \
         "jne short L1"      \
         "cmp    ax, 7100h"  \
         "je short L1"       \
@@ -152,12 +139,12 @@ extern int __dpmi_dos_call_lfn( call_struct *cs );
 
 extern int __dpmi_dos_call_lfn_ax( call_struct *cs );
 #pragma aux __dpmi_dos_call_lfn_ax = \
-        "or     byte ptr [edi+20H],1" \
+        "or     byte ptr [edi+20H],1" /* cs struct flags carry */ \
         __DPMI_DOS_CALL     \
         "sbb    eax,eax"    \
         "jnz short L2"      \
-        "mov    ax,word ptr [edi+1cH]" \
-        "test   byte ptr [edi+20H],1" \
+        "mov    ax,word ptr [edi+1cH]" /* cs struct reg AX */ \
+        "test   byte ptr [edi+20H],1" /* cs struct flags carry */ \
         "jne short L1"      \
         "cmp    ax, 7100h"  \
         "jne short L2"      \
@@ -165,6 +152,10 @@ extern int __dpmi_dos_call_lfn_ax( call_struct *cs );
     "L2:"                   \
     __DPMI_DOS_CALL_INFO
 
-#endif
+#endif  /* !_M_I86 */
+
+extern lfn_ret_t _dos_create_open_ex_lfn( const char *path, unsigned mode, unsigned attrib, unsigned action );
+
+#endif  /* __WATCOM_LFN__ */
 
 #endif

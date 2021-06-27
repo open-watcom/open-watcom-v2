@@ -36,8 +36,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <dos.h>
 #include "seterrno.h"
 #include "doserror.h"
+#include "rtdata.h"
+#include "tinyio.h"
 #include "_doslfn.h"
 
 

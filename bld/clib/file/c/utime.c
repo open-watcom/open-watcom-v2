@@ -37,15 +37,18 @@
 #include <sys/types.h>
 #include <string.h>
 #include <time.h>
-#include <dosfunc.h>
 #include <sys/stat.h>
 #include <utime.h>
+#include <dos.h>
+#include <dosfunc.h>
 #ifdef __WINDOWS_386__
     #include <windows.h>
 #endif
+#include "rtdata.h"
 #include "rterrno.h"
-#include "_doslfn.h"
 #include "seterrno.h"
+#include "tinyio.h"
+#include "_doslfn.h"
 
 
 #define CVT_TM2DOS_TIME(t)  ((t)->tm_hour*2048+(t)->tm_min*32+(t)->tm_sec/2)

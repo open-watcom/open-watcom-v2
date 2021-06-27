@@ -34,8 +34,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <mbstring.h>
+#include <dos.h>
 #include "seterrno.h"
 #include "doserror.h"
+#include "rtdata.h"
+#include "tinyio.h"
 #include "_doslfn.h"
 #include "_dtaxxx.h"
 #include "extender.h"
@@ -216,6 +219,8 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
 
 #endif
 
+#ifdef __WATCOM_LFN__
+
 #if defined( _M_I86 )
 extern lfn_ret_t __dos_find_first_lfn( const char *path, unsigned attr, lfnfind_t __far *lfndta );
   #ifdef __BIG_DATA__
@@ -266,7 +271,6 @@ extern lfn_ret_t __dos_find_close_lfn( unsigned handle );
     __modify __exact    [__ax __dx]
 #endif
 
-#ifdef __WATCOM_LFN__
 static void convert_to_find_t( struct find_t *fdta, lfnfind_t *lfndta )
 /*********************************************************************/
 {
@@ -342,7 +346,8 @@ static lfn_ret_t _dos_find_close_lfn( unsigned handle )
     return( __dpmi_dos_call_lfn( &dpmi_rm ) );
 #endif
 }
-#endif //__WATCOM_LFN__
+
+#endif /* __WATCOM_LFN__ */
 
 _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned attrib,
                                                            struct find_t *fdta )

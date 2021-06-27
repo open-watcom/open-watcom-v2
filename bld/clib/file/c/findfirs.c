@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,6 +58,8 @@
     #include "liballoc.h"
 #else
     #include "liballoc.h"
+    #include "rtdata.h"
+    #include "tinyio.h"
     #include "_doslfn.h"
     #include "_dtaxxx.h"
     #include "d2ttime.h"

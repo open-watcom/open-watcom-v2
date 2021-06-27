@@ -33,8 +33,11 @@
 #include "variety.h"
 #include <string.h>
 #include <fcntl.h>
+#include <dos.h>
 #include "seterrno.h"
 #include "doserror.h"
+#include "rtdata.h"
+#include "tinyio.h"
 #include "_doslfn.h"
 
 
@@ -69,8 +72,9 @@ extern unsigned __dos_create_sfn( const char *name, unsigned attrib, int *handle
         _MOV_AH DOS_CREAT   \
         _INT_21             \
         _RST_DS             \
-        RETURN_VALUE        \
-        "call __doserror_"  \
+        "jc short L1"       \
+        SAVE_VALUE          \
+    "L1: call __doserror_"  \
     AUX_INFO
 
 extern unsigned __dos_create_new_sfn( const char *name, unsigned attrib, int *handle );
@@ -80,8 +84,9 @@ extern unsigned __dos_create_new_sfn( const char *name, unsigned attrib, int *ha
         _MOV_AH DOS_CREATE_NEW \
         _INT_21             \
         _RST_DS             \
-        RETURN_VALUE        \
-        "call __doserror_"  \
+        "jc short L1"       \
+        SAVE_VALUE          \
+    "L1: call __doserror_"  \
     AUX_INFO
 
 _WCRTLINK unsigned _dos_creat( const char *path, unsigned attrib, int *handle )

@@ -33,8 +33,11 @@
 #include "variety.h"
 #include <string.h>
 #include <fcntl.h>
+#include <dos.h>
 #include "seterrno.h"
 #include "doserror.h"
+#include "rtdata.h"
+#include "tinyio.h"
 #include "_doslfn.h"
 
 
@@ -72,22 +75,27 @@
         "mov    al,cl"      \
         _MOV_AH DOS_OPEN    \
         _INT_21             \
-        _RST_DS             \
-        RETURN_VALUE
-
-extern unsigned __dos_open_sfn_chk( const char *name, unsigned mode, int *handle );
-#pragma aux __dos_open_sfn_chk = \
-        __DOS_OPEN_SFN      \
-        RETURN_CY           \
-    AUX_INFO
+        _RST_DS
 
 extern unsigned __dos_open_sfn_err( const char *name, unsigned mode, int *handle );
 #pragma aux __dos_open_sfn_err = \
         __DOS_OPEN_SFN      \
-        "call __doserror_"  \
+        "jc short L1"       \
+        SAVE_VALUE          \
+    "L1: call __doserror_"  \
     AUX_INFO
 
 #ifdef __WATCOM_LFN__
+
+extern unsigned __dos_open_sfn_chk( const char *name, unsigned mode, int *handle );
+#pragma aux __dos_open_sfn_chk = \
+        __DOS_OPEN_SFN      \
+        "jc short L1"       \
+        SAVE_VALUE          \
+    "L1:"                   \
+        RETURN_CY           \
+    AUX_INFO
+
 static lfn_ret_t __dos_open_lfn( const char *path, unsigned mode )
 /****************************************************************/
 {
@@ -104,7 +112,8 @@ static lfn_ret_t __dos_open_lfn( const char *path, unsigned mode )
     }
     return( _dos_create_open_ex_lfn( path, mode, _A_NORMAL, EX_LFN_OPEN ) );
 }
-#endif
+
+#endif  /* __WATCOM_LFN__ */
 
 _WCRTLINK unsigned _dos_open( const char *path, unsigned mode, int *handle )
 /**************************************************************************/

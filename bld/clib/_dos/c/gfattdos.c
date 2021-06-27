@@ -33,8 +33,11 @@
 #include "variety.h"
 #include <string.h>
 #include <fcntl.h>
+#include <dos.h>
 #include "seterrno.h"
 #include "doserror.h"
+#include "rtdata.h"
+#include "tinyio.h"
 #include "_doslfn.h"
 
 
@@ -70,9 +73,12 @@ extern unsigned __dos_getfileattr_sfn( const char *path, unsigned *attrib );
         _MOV_AX_W   _GET_ DOS_CHMOD \
         _INT_21             \
         _RST_DS             \
-        RETURN_VALUE        \
-        "call __doserror_"  \
+        "jc short L1"       \
+        SAVE_VALUE          \
+    "L1: call __doserror_"  \
     AUX_INFO
+
+#ifdef __WATCOM_LFN__
 
 #ifdef _M_I86
 extern lfn_ret_t __dos_getfileattr_lfn( const char *path );
@@ -117,7 +123,6 @@ extern lfn_ret_t __dos_getfileattr_lfn( const char *path );
   #endif
 #endif
 
-#ifdef __WATCOM_LFN__
 static lfn_ret_t _dos_getfileattr_lfn( const char *path )
 /*******************************************************/
 {
@@ -138,7 +143,8 @@ static lfn_ret_t _dos_getfileattr_lfn( const char *path )
     return( rc );
   #endif
 }
-#endif
+
+#endif  /* __WATCOM_LFN__ */
 
 _WCRTLINK unsigned _dos_getfileattr( const char *path, unsigned *attrib )
 /***********************************************************************/
