@@ -94,8 +94,6 @@ bool            ProgramGroups;
 bool            StartupChange;
 char            InstallerFile[_MAX_PATH] = { 0 };
 
-static enum { SRC_UNKNOWN, SRC_CD, SRC_DISK } SrcInstState;
-
 void ConcatDirSep( char *dir )
 /****************************/
 {
@@ -2086,30 +2084,6 @@ static void RemoveExtraFiles( void )
     }
 }
 
-static void DetermineSrcState( const VBUF *src_dir )
-/**************************************************/
-{
-    VBUF        dir;
-
-//  if( SrcInstState != SRC_UNKNOWN ) return;
-
-    VbufInit( &dir );
-    // if installing from CD or hard disk, add DISK# to source path
-    VbufConcVbuf( &dir, src_dir );
-#if defined( __UNIX__ )
-    VbufConcStr( &dir, "/diskimgs/disk01" );
-#else
-    VbufConcStr( &dir, "\\cd_source" );
-#endif
-    if( access_vbuf( &dir, F_OK ) == 0 ) {
-        SetBoolVariableByName( "SrcIsCD", true );
-        SrcInstState = SRC_CD;
-    } else {
-        SetBoolVariableByName( "SrcIsCD", false );
-        SrcInstState = SRC_DISK;
-    }
-    VbufFree( &dir );
-}
 
 bool CopyAllFiles( void )
 /***********************/
@@ -2701,7 +2675,7 @@ bool InitInfo( const VBUF *inf_name, const VBUF *src_path )
     int                 ret;
 
     SetVariableByName_vbuf( "SrcDir", src_path );
-    DetermineSrcState( src_path );
+    SetBoolVariableByName( "SrcIsCD", false );
     SetVariableByName_vbuf( "SrcDir2", src_path );
 //    VbufSplitpath( inf_name, drive, dir, NULL, NULL );
 

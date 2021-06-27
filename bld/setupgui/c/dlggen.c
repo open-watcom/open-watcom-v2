@@ -304,19 +304,6 @@ static void CheckChildChecks( a_dialog_header *dlg )
 }
 
 
-static void DoBeep( void )
-/************************/
-{
-#if defined( __WINDOWS__ ) || defined( __NT__ )
-    MessageBeep( 0 );
-#elif defined( __OS2__ )
-    DosBeep( 750, 250 );
-#else
-    putchar( 7 );
-    fflush( stdout );
-#endif
-}
-
 dlg_state IdToDlgState( gui_ctl_id id )
 /*************************************/
 {
@@ -568,9 +555,6 @@ static bool GenericGUIEventProc( gui_window *gui, gui_event gui_ev, void *param 
         SetDefaultVals( gui, dlg );
         SetFocusCtrl( gui, dlg );
         GUIGetTextMetrics( gui, &metrics );
-        if( stricmp( dlg->name, "InsertDisk" ) == 0 ) {
-            DoBeep();
-        }
 #if defined( __OS2__ )
         {
             int         i;
