@@ -2371,8 +2371,6 @@ long SimInit( const VBUF *inf_name )
     if( RawReadBuf == NULL ) {
         return( SIM_INIT_NOMEM );
     }
-    RawBufPos = NULL;       // reset buffer position
-
     fh = FileOpen( inf_name, "rb" );
     if( fh == NULL ) {
         GUIMemFree( ReadBuf );
@@ -2380,6 +2378,7 @@ long SimInit( const VBUF *inf_name )
         return( SIM_INIT_NOFILE );
     }
     SetVariableByName_vbuf( "SetupInfFile", inf_name );
+    RawBufPos = NULL;       // reset buffer position
     result = PrepareSetupInfo( fh, PRESCAN_FILE );
     FileClose( fh );
     fh = FileOpen( inf_name, "rb" );
@@ -2415,6 +2414,7 @@ long SimInit( const VBUF *inf_name )
     if( MaxWidthChars > MAX_WINDOW_WIDTH )  {
         MaxWidthChars = MAX_WINDOW_WIDTH;
     }
+    RawBufPos = NULL;       // reset buffer position
     result = PrepareSetupInfo( fh, FINAL_SCAN );
     FileClose( fh );
     GUIMemFree( ReadBuf );
