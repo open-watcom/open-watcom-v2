@@ -236,8 +236,8 @@ Sections
 
   detail_check=dwin32sdk,"&Win32 SDK...",win32sdk,,"32-&bit Windows SDK"[,<cond>[,<visib.cond>]]
 
-  edit_control=SrcDir,,"Source Directory:"[,<cond>[,<visib.cond>]]
-     Get a value form the user. It is followed by 3 values: a variable name, an
+  edit_control=DstDir,,"Destination Directory:"[,<cond>[,<visib.cond>]]
+     Get a value from the user. It is followed by 3 values: a variable name, an
      optional initial value, and a explanatory text.
 
   text_window=<height>,<text>[,<cond>[,<visib.cond>]]
