@@ -30,16 +30,6 @@ check_box=pdf_helpfiles,,\
         //2"&PDF Help Files"\
         //0
 static_text=
-static_text=,SrcIsCD
-radio_button=helpfiles,,\
-        //1"Copy on-line help files to hard &disk"\
-        //2"オンライン・ヘルプファイルをハードディスクにコピーします (&d)"\
-        //0,SrcIsCD
-radio_button=other_dummy_1,helpfiles !,\
-        //1"&Leave on-line help files on CD-ROM"\
-        //2"オンライン・ヘルプファイルを CD-ROM に残します (&L)"\
-        //0,SrcIsCD
-static_text=
 include=space.dlg
 static_text=
 include=ohc.dlg

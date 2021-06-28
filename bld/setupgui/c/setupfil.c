@@ -1182,7 +1182,7 @@ void ReplaceVars( VBUF *dst, const char *src )
             colon = strchr( quest, ':' );
             VbufSetBuffer( &var2, quest, colon - quest );
             colon++;    // skip ':'
-            if( GetOptionVarValue( GetVariableByName( VbufString( &var1 ) ), false ) ) {
+            if( GetOptionVarValue( GetVariableByName( VbufString( &var1 ) ) ) ) {
                 varval = GetVariableStrVal( VbufString( &var2 ) );
                 break;
             }

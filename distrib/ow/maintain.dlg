@@ -8,7 +8,6 @@ dynamic_text=maint_1,\
 static_text=
 include=full.dlg
 include=sel.dlg
-include=mini.dlg
 radio_button=UnInstall,false,\
         //1"&Un-install all components"\
         //2"全コンポーネントをアンインストールします(&U)"\

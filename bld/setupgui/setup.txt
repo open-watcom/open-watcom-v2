@@ -106,7 +106,6 @@ the override file will be cleared (i.e., false).
  lnxtarg         - Linux x86 target files
  nlmtarg         - Novell NLM target files
  rdostarg        - RDOS target files
- helpfiles       - install online help (affects xxx_helpfiles variables)
  win16_helpfiles - help files in Win16 .hlp format
  win32_helpfiles - help files in Win32 .hlp format
  whelp_helpfiles - help files in whelp .ihp format
@@ -132,7 +131,6 @@ cplusplus=true
 wnthost=true
 wnttarg=true
 # Install Win32 help files, too
-helpfiles=true
 win32_helpfiles=true
 ------------------------------------------
 

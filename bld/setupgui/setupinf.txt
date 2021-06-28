@@ -27,7 +27,6 @@ Variables
   Magic variables
    FullInstall         If set, all non-magic variables are true
    UnInstall           If set, all non-magic variables are false
-   MinimalInstall      If set, make all file variables false
    SelectiveInstall
    PreviousInstall
 
@@ -47,7 +46,6 @@ Variables
    IsLinux32
    IsLinux64
    IsAlpha
-   HelpFiles
    SrcIsCD
 
  The nonmagic variables are pre-set automatically by the installer. The 'IsX'

@@ -218,7 +218,7 @@ extern int              SimNumUpgrades( void );
 extern const char       *SimGetUpgradeName( int );
 extern vhandle          MakeDummyVar( void );
 
-extern bool             GetOptionVarValue( vhandle var_handle, bool is_minimal );
+extern bool             GetOptionVarValue( vhandle var_handle );
 extern char             *TrimQuote( char * );
 extern void             SetDefaultAutoSetValue( vhandle var_handle );
 extern bool             CheckForceDLLInstall( const VBUF *name );

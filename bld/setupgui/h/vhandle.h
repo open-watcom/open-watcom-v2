@@ -37,7 +37,6 @@
 #define MAGICVARS( x, y ) \
     x( FullInstall, y ) \
     x( UnInstall, y ) \
-    x( MinimalInstall, y ) \
     x( SelectiveInstall, y ) \
     x( PreviousInstall, y )
 

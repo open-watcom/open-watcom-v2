@@ -90,8 +90,7 @@
     x( IsWin2000, y ) \
     x( IsLinux32, y ) \
     x( IsLinux64, y ) \
-    x( IsAlpha, y ) \
-    x( HelpFiles, y ) \
+    x( IsAlpha, y )
 
 typedef struct a_file_info {
     VBUF                name;
@@ -521,8 +520,8 @@ static vhandle GetTokenHandle( const char *p )
 #define orvar( x, y ) x == y ||
 #define IsMagicVar( v ) MAGICVARS( orvar, v ) false
 
-bool GetOptionVarValue( vhandle var_handle, bool is_minimal )
-/***********************************************************/
+bool GetOptionVarValue( vhandle var_handle )
+/******************************************/
 {
 //    if( GetVariableBoolVal( "_Visibility_Condition_" ) ) {
     if( VisibilityCondition ) {
@@ -536,9 +535,6 @@ bool GetOptionVarValue( vhandle var_handle, bool is_minimal )
     } else if( VarGetBoolVal( FullInstall ) && VarGetAutoSetCond( var_handle ) != NULL ) {
         // fullinstall pretends all options are turned on
         return( true );
-    } else if( is_minimal ) {
-        // is_minimal makes all file condition variables false
-        return( false );
     } else {
         return( VarGetBoolVal( var_handle ) );
     }
@@ -546,21 +542,21 @@ bool GetOptionVarValue( vhandle var_handle, bool is_minimal )
 
 #undef orvar
 
-static bool EvalExprTree( tree_node *tree, bool is_minimal )
-/**********************************************************/
+static bool EvalExprTree( tree_node *tree )
+/*****************************************/
 {
     bool        value;
     VBUF        tmp;
 
     switch( tree->op ) {
     case OP_AND:
-        value = EvalExprTree( tree->u.left, is_minimal ) & EvalExprTree( tree->right, is_minimal );
+        value = EvalExprTree( tree->u.left ) & EvalExprTree( tree->right );
         break;
     case OP_OR:
-        value = EvalExprTree( tree->u.left, is_minimal ) | EvalExprTree( tree->right, is_minimal );
+        value = EvalExprTree( tree->u.left ) | EvalExprTree( tree->right );
         break;
     case OP_NOT:
-        value = !EvalExprTree( tree->u.left, is_minimal );
+        value = !EvalExprTree( tree->u.left );
         break;
     case OP_EXIST:
         VbufInit( &tmp );
@@ -569,10 +565,10 @@ static bool EvalExprTree( tree_node *tree, bool is_minimal )
         VbufFree( &tmp );
         break;
     case OP_VAR:
-        value = GetOptionVarValue( (vhandle)(pointer_uint)tree->u.left, is_minimal );
+        value = GetOptionVarValue( (vhandle)(pointer_uint)tree->u.left );
         break;
     case OP_TRUE:
-        value = !is_minimal;
+        value = true;
         break;
     case OP_FALSE:
     default:
@@ -582,14 +578,14 @@ static bool EvalExprTree( tree_node *tree, bool is_minimal )
     return( value );
 }
 
-static bool DoEvalCondition( const char *str, bool is_minimal )
-/*************************************************************/
+static bool DoEvalCondition( const char *str )
+/********************************************/
 {
     bool        value;
     tree_node   *tree;
 
     tree = BuildExprTree( str );
-    value = EvalExprTree( tree, is_minimal );
+    value = EvalExprTree( tree );
     BurnTree( tree );
     return( value );
 }
@@ -599,7 +595,7 @@ bool EvalCondition( const char *str )
 {
     if( str == NULL || *str == '\0' )
         return( true );
-    return( DoEvalCondition( str, false ) );
+    return( DoEvalCondition( str ) );
 }
 
 static void PropagateValue( tree_node *tree, bool value )
@@ -3235,7 +3231,7 @@ void SimCalcAddRemove( void )
     for( i = 0; ok && i < SetupInfo.files.num; ++i ) {
         dir_index = FileInfo[i].dir_index;
         targ_index = DirInfo[dir_index].target;
-        add = EvalExprTree( FileInfo[i].condition.p->cond, VarGetBoolVal( MinimalInstall ) );
+        add = EvalExprTree( FileInfo[i].condition.p->cond );
         if( FileInfo[i].supplemental ) {
             remove = false;
             if( uninstall ) {

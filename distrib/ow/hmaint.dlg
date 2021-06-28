@@ -20,7 +20,6 @@ static_text=\
         //1"    - Any component you do not choose will be removed."\
         //2"    - 選択しなかったコンポーネントは削除します."\
         //0
-include=hmini.dlg
 static_text=\
         //1"Un-Install All Components"\
         //2"すべてのコンポーネントをアンインストールします"\

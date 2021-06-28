@@ -44,17 +44,17 @@ autoset=wnttarg=IsWin32 IsWin64 |
 autoset=wnt64host=IsWin64
 autoset=tools16=IsDos IsOS2 IsWin16 | |
 autoset=samples=true
-autoset=helpfiles=true
-autoset=win16_helpfiles=helpfiles winhost
-autoset=win32_helpfiles=helpfiles wnthost
-autoset=whtml_helpfiles=helpfiles IsWin98 IsWin2000 IsWin64 | |
-autoset=whelp_helpfiles=helpfiles doshost
-autoset=os2_helpfiles=helpfiles os2host
-autoset=pdf_helpfiles=helpfiles lnxhost lnx64host | &
+autoset=win16_helpfiles=winhost
+autoset=win32_helpfiles=wnthost
+autoset=whtml_helpfiles=IsWin98 IsWin2000 IsWin64 | |
+autoset=whelp_helpfiles=doshost lnxhost lnx64host | |
+autoset=os2_helpfiles=os2host
+autoset=pdf_helpfiles=false
 autoset=rtsource=false
 autoset=3r=true
 autoset=3s=true
 autoset=cplusplus=true
+autoset=MinimalInstall=false
 dialogorder=License,DstDir,GetDiskSizesHere,NewInstall,Maintain,Options,Final,MaintainFinal,UnInstallFinal
 dialog=license.dlg
 dialog=disksize.dlg
@@ -108,13 +108,13 @@ env=++FINCLUDE=%DstDir%\SRC\FORTRAN\OS2,        IsOS2 IsOS2DosBox | ?%DstDir%\bi
 env=++FINCLUDE=%DstDir%\SRC\FORTRAN\WIN,        IsWin16 IsWin32 IsWin64 | | ?%DstDir%\binw\wfc386.exe
 env=++FINCLUDE=%DstDir%\SRC\FORTRAN\DOS,        IsDOS ?%DstDir%\binw\wfc386.exe
 env=++FINCLUDE=%DstDir%\SRC\FORTRAN,            IsOS2 IsOS2DosBox IsDOS IsWin16 IsWin32 IsWin64 | | | | | ?%DstDir%\binw\wfc386.exe
-env=WATCOM=%DstDir%,                             IsOS2 IsOS2DosBox IsDOS IsWin16 IsWin32 IsWin64 IsLinux32 IsLinux64 | | | | | | |
-env=EDPATH=%DstDir%\EDDAT,                       IsOS2 IsOS2DosBox IsDOS IsWin16 IsWin32 IsWin64 | | | | |
-env=EDPATH=%DstDir%/eddat,                       IsLinux32 IsLinux64 |
-env=WWINHELP=%DstDir%\BINW,                       IsDOS IsWin16 IsWin32 | | MinimalInstall helpfiles ! SrcIsCD & |
-env=WHTMLHELP=%DstDir%\BINNT\HELP,               IsWin32 IsWin64 |
-env=WIPFC=%DstDir%\WIPFC,                        IsOS2 IsOS2DosBox IsDOS IsWin16 IsWin32 IsWin64 | | | | |
-env=WIPFC=%DstDir%/wipfc,                        IsLinux32 IsLinux64 |
+env=WATCOM=%DstDir%,                            IsOS2 IsOS2DosBox IsDOS IsWin16 IsWin32 IsWin64 IsLinux32 IsLinux64 | | | | | | |
+env=EDPATH=%DstDir%\EDDAT,                      IsOS2 IsOS2DosBox IsDOS IsWin16 IsWin32 IsWin64 | | | | |
+env=EDPATH=%DstDir%/eddat,                      IsLinux32 IsLinux64 |
+env=WWINHELP=%DstDir%\BINW,                     IsDOS IsWin16 IsWin32 | |
+env=WHTMLHELP=%DstDir%\BINNT\HELP,              IsWin32 IsWin64 |
+env=WIPFC=%DstDir%\WIPFC,                       IsOS2 IsOS2DosBox IsDOS IsWin16 IsWin32 IsWin64 | | | | |
+env=WIPFC=%DstDir%/wipfc,                       IsLinux32 IsLinux64 |
 icon=view.exe, %DstDir%\binp\help\c_readme.inf, Getting Started,,, IsOS2 DoCreateHelpIcons IsFortranInstall !
 icon=view.exe, %DstDir%\binp\help\f_readme.inf, Getting Started,,, IsOS2 DoCreateHelpIcons IsFortranInstall
 icon=e.exe, %DstDir%\readme.txt, Read Me,,, IsOS2 DoCreateHelpIcons IsFortranInstall ! IsJapanese !

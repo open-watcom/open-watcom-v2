@@ -12,6 +12,5 @@ static_text=\
 static_text=
 include=hfull.dlg
 include=hsel.dlg
-include=hmini.dlg
 static_text=
 include=ok.dlg
