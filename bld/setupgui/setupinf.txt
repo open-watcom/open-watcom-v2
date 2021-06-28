@@ -489,7 +489,7 @@ Sections
    the first is the program to run, the second the condition(s) under which
    it should run. Example:
 
-   after=cmd.exe /c detach %CDDir%\binp\nmpbind.exe, SrcIsCD IsOS2
+   after=cmd.exe /c detach %DstDir%\binp\nmpbind.exe, IsOS2
 
 
 [StatusLineMessage]
