@@ -2675,7 +2675,6 @@ bool InitInfo( const VBUF *inf_name, const VBUF *src_path )
     int                 ret;
 
     SetVariableByName_vbuf( "SrcDir", src_path );
-    SetBoolVariableByName( "SrcIsCD", false );
     SetVariableByName_vbuf( "SrcDir2", src_path );
 //    VbufSplitpath( inf_name, drive, dir, NULL, NULL );
 

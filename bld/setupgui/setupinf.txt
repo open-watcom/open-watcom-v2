@@ -46,13 +46,9 @@ Variables
    IsLinux32
    IsLinux64
    IsAlpha
-   SrcIsCD
 
  The nonmagic variables are pre-set automatically by the installer. The 'IsX'
-variables are set if 'X' is the platform the installer is running on. The
-SrcIsCD is set when the install source is a CD; currently, the installer
-checks for the existence of a file named 'cd_source' in the same place where
-setup.inf is located, but the SrcIsCD may be overridden by the setup script.
+variables are set if 'X' is the platform the installer is running on.
 
 Conditions
 ----------

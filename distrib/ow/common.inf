@@ -3,6 +3,7 @@ dialog=templat1.inf
 supplemental=winsys
 supplemental=windir
 winsys=%winsystemdir%
+MinimalInstall=false
 CDDir=%SrcDir2%
 DoCreateIcons=1
 DoCreateHelpIcons=1
@@ -54,7 +55,6 @@ autoset=rtsource=false
 autoset=3r=true
 autoset=3s=true
 autoset=cplusplus=true
-autoset=MinimalInstall=false
 dialogorder=License,DstDir,GetDiskSizesHere,NewInstall,Maintain,Options,Final,MaintainFinal,UnInstallFinal
 dialog=license.dlg
 dialog=disksize.dlg
