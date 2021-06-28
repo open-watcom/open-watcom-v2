@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -536,9 +536,6 @@ bool GetOptionVarValue( vhandle var_handle, bool is_minimal )
     } else if( VarGetBoolVal( FullInstall ) && VarGetAutoSetCond( var_handle ) != NULL ) {
         // fullinstall pretends all options are turned on
         return( true );
-    } else if( VarGetBoolVal( FullCDInstall ) && VarGetAutoSetCond( var_handle ) != NULL ) {
-        // fullinstallcd pretends all options are turned on except 'HelpFiles'
-        return( var_handle != HelpFiles );
     } else if( is_minimal ) {
         // is_minimal makes all file condition variables false
         return( false );

@@ -26,8 +26,6 @@ Variables
 
   Magic variables
    FullInstall         If set, all non-magic variables are true
-   FullCDInstall       If set, all non-magic variables are true
-                       with the exception of "HelpFiles" variable
    UnInstall           If set, all non-magic variables are false
    MinimalInstall      If set, make all file variables false
    SelectiveInstall
@@ -56,7 +54,7 @@ Variables
 variables are set if 'X' is the platform the installer is running on. The
 SrcIsCD is set when the install source is a CD; currently, the installer
 checks for the existence of a file named 'cd_source' in the same place where
-setup.inf is located, but the SrcIsCD may be overridden by the setup script. 
+setup.inf is located, but the SrcIsCD may be overridden by the setup script.
 
 Conditions
 ----------
@@ -110,7 +108,7 @@ Sections
    <prog>       program name used for open files with file extension
    <iconfile>   icon file, if not specified then program file is used
    <iconidx>    icon index in icon file
-   <cond>       a condition is a variable name which is true or false. The 
+   <cond>       a condition is a variable name which is true or false. The
                 condition can be negated by following the name with a space
                 and an exclamation mark '!'
 
@@ -123,8 +121,8 @@ Sections
 
    The format is variable name, followed by an '=', then the value terminated
    by a comma, then a condition. If the variable is preceded by a '+' sign,
-   the value is appended to the end of any existing variable. 
-   If the variable is preceded by a '++' sign, the value is appended to 
+   the value is appended to the end of any existing variable.
+   If the variable is preceded by a '++' sign, the value is appended to
    the begin of any existing variable, else the variable is simply set.
 
 [AutoSet]
@@ -143,8 +141,8 @@ Sections
 
    The format is variable name, followed by an '=', then the value terminated
    by a comma, then a condition. If the variable is preceded by a '+' sign,
-   the value is appended to the end of any existing variable. 
-   If the variable is preceded by a '++' sign, the value is appended to 
+   the value is appended to the end of any existing variable.
+   If the variable is preceded by a '++' sign, the value is appended to
    the begin of any existing variable, else the variable is simply set.
 
    Example:
@@ -271,10 +269,10 @@ Sections
 
    binp\dll,1,8
 
-   The first value is the directory name, the second is the target index, 
-   the third is the parent index. 
-   The target is number of target directory in Targets section. 
-   The parent is the number of the directory under which this particular 
+   The first value is the directory name, the second is the target index,
+   the third is the parent index.
+   The target is number of target directory in Targets section.
+   The parent is the number of the directory under which this particular
    directory resides. In the example, "binp" would have been the 8th directory
    line. If the parent is "-1", then this is root of target tree
 
@@ -283,7 +281,7 @@ Sections
 
 
 [Environment]
-   This section defines modifications to be made to the environment. 
+   This section defines modifications to be made to the environment.
 
    Behaviour is host specific:
 
@@ -298,8 +296,8 @@ Sections
 
    The format is variable name, followed by an '=', then the value terminated
    by a comma, then a condition. If the variable is preceded by a '+' sign,
-   the value is appended to the end of any existing variable. 
-   If the variable is preceded by a '++' sign, the value is appended to 
+   the value is appended to the end of any existing variable.
+   If the variable is preceded by a '++' sign, the value is appended to
    the begin of any existing variable, else the variable is simply set.
 
    Example:
@@ -361,7 +359,7 @@ Sections
    this field is empty, the date from the .inf file is used. The fourth
    (optional) value (string) is a variable name which will be created if
    needed and associated with the file. The fifth (optional) value (character)
-   is an additional indicator, a single letter: If 's', it is supplemental; 
+   is an additional indicator, a single letter: If 's', it is supplemental;
    if 'k', it is a core component.
 
    Following is the trailing part of an archive entry. Example:

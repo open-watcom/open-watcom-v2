@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,6 @@
 
 #define MAGICVARS( x, y ) \
     x( FullInstall, y ) \
-    x( FullCDInstall, y ) \
     x( UnInstall, y ) \
     x( MinimalInstall, y ) \
     x( SelectiveInstall, y ) \

@@ -15,11 +15,10 @@ static_text=\
         //0
 static_text=
 include=hfull.dlg
-include=hfullcd.dlg
 include=hsel.dlg
 static_text=\
-        //1"	- Any component you do not choose will be removed."\
-        //2"	- 選択しなかったコンポーネントは削除します."\
+        //1"    - Any component you do not choose will be removed."\
+        //2"    - 選択しなかったコンポーネントは削除します."\
         //0
 include=hmini.dlg
 static_text=\

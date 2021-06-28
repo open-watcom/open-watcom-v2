@@ -7,7 +7,6 @@ dynamic_text=targ_1,\
         //0
 static_text=
 include=full.dlg
-include=fullcd.dlg
 include=sel.dlg
 include=mini.dlg
 static_text=

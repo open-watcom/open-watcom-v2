@@ -7,7 +7,6 @@ dynamic_text=maint_1,\
         //0
 static_text=
 include=full.dlg
-include=fullcd.dlg
 include=sel.dlg
 include=mini.dlg
 radio_button=UnInstall,false,\

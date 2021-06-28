@@ -20,7 +20,7 @@ user to set installation options interactively. However, it can be run with
 arguments to facilitate unattended installation. The syntax is as follows:
 
  setup -f=<var_file> -d<name=val) -i -s -np -ns
- 
+
   The options are case insensitive. Their description follows:
 
 
@@ -160,10 +160,9 @@ to 0 or 1.
  A non-exhaustive list follows:
 
  FullInstall    - install all source files
- FullCDInstall  - install all source files except online help
  DstDir         - destination directory for installation
  UnInstall      - uninstall previously installed product
 
  The destination directory for Open Watcom C/C++ is controlled by the WATCOM
 environment variable. If the environment variable does not exist, the default
-directory is 'c:\watcom'. Setting DstDir overrides the defaults. 
+directory is 'c:\watcom'. Setting DstDir overrides the defaults.
