@@ -49,6 +49,7 @@ winhost             - Windows 3.x host
 wintarg             - Windows 3.x target
 wnthost             - Win32 host
 wnttarg             - Win32 target
+wnt64host           - Win32 host (64-bit)
 os2host             - OS/2 2.x host
 os2targ             - OS/2 2.x target
 doshost             - DOS host
@@ -56,6 +57,7 @@ dostarg             - DOS target
 nlmtarg             - Netware target
 lnxhost             - Linux host
 lnxtarg             - Linux target
+lnx64host           - Linux host (64-bit)
 rdoshost            - RDOS host
 rdostarg            - RDOS target
 tools16             - 16-bit development tools
