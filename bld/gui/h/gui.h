@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -389,6 +389,8 @@ typedef enum {
 
 typedef int                 gui_ord;
 
+typedef unsigned short      gui_text_ord;
+
 typedef unsigned            gui_ctl_id;
 typedef unsigned            gui_res_id;
 typedef unsigned            gui_hlp_id;
@@ -403,6 +405,11 @@ typedef struct gui_coord {
     gui_ord x;
     gui_ord y;
 } gui_coord;
+
+typedef struct gui_text_coord {
+    gui_text_ord x;
+    gui_text_ord y;
+} gui_text_coord;
 
 typedef struct gui_point {
     int x;
@@ -490,7 +497,7 @@ typedef bool (GUICALLBACK)( gui_window *, gui_event gui_ev, void *param );
 typedef void (ENUMCALLBACK)( gui_window *, void *param );
 typedef void (CONTRENUMCALLBACK)( gui_window *parent, gui_ctl_id id, void *param );
 typedef void (GUIPICKCALLBACK)( gui_window *, gui_ctl_id id );
-typedef void (PICKDLGOPEN)( const char *title, int rows, int cols,
+typedef void (PICKDLGOPEN)( const char *title, gui_text_ord rows, gui_text_ord cols,
                              gui_control_info *controls_info, int num_controls,
                              GUICALLBACK *gui_call_back, void *extra );
 typedef const char *(GUIPICKGETTEXT)( const void *data_handle, int item );
@@ -538,7 +545,7 @@ typedef void            *gui_mcursor_handle;
  * GUI_RBUTTONUP :
  * GUI_RBUTTONDBLCLK : 1 parameter - gui_point : GUI_GET_POINT
  *************************************************************************
- * GUI_PAINT : 2 parameters - gui_ord, int : GUI_GET_ROWS
+ * GUI_PAINT : 2 parameters - gui_text_ord, gui_text_ord : GUI_GET_ROWS
  *************************************************************************
  * GUI_ENDSESSION :
  * GUI_QUERYENDSESSION : 2 parameters - bool, bool : GUI_GET_ENDSESSION
@@ -561,8 +568,8 @@ typedef void            *gui_mcursor_handle;
  */
 
 typedef struct gui_row_num {
-    gui_ord     start;
-    int         num;
+    gui_text_ord    start;
+    gui_text_ord    num;
 } gui_row_num;
 
 typedef struct gui_end_session {
@@ -647,7 +654,7 @@ extern bool GUIGetColourFromUser( const char *title, gui_colour *init, gui_colou
 extern bool GUIInitHotSpots( int num_hot_spots, gui_resource *hot );
 extern int  GUIGetNumHotSpots( void );
 extern bool GUIGetHotSpotSize( int hot_spot, gui_coord *size );
-extern void GUIDrawHotSpot( gui_window *wnd, int hot_spot, gui_ord row,
+extern void GUIDrawHotSpot( gui_window *wnd, int hot_spot, gui_text_ord row,
                             gui_ord indent, gui_attr attr );
 
 /* Window Functions */
@@ -658,7 +665,7 @@ extern gui_colour_set *GUIGetWindowColours( gui_window *wnd );
 extern void GUIDestroyWnd( gui_window *wnd );
 extern void GUIWndDirty( gui_window *wnd );
 extern void GUIControlDirty( gui_window *wnd, gui_ctl_id id );
-extern void GUIWndDirtyRow( gui_window *wnd, gui_ord row );
+extern void GUIWndDirtyRow( gui_window *wnd, gui_text_ord row );
 extern void GUIWndDirtyRect( gui_window *wnd, gui_rect *rect );
 extern void GUIRefresh( void );
 extern void GUIWndUpdate( gui_window *wnd );
@@ -726,31 +733,31 @@ extern bool GUIDrawRectRGB( gui_window *wnd, gui_rect *rect, gui_rgb rgb );
 extern bool GUIDrawLineRGB( gui_window *wnd, gui_point *start, gui_point *end,
                          gui_line_styles style, gui_ord thickness, gui_rgb rgb );
 extern void GUIDrawText( gui_window *wnd, const char *text, size_t length,
-                         gui_ord row, gui_ord indent, gui_attr attr );
+                         gui_text_ord row, gui_ord indent, gui_attr attr );
 extern void GUIDrawTextPos( gui_window *wnd, const char *text, size_t length,
                             gui_coord *pos, gui_attr attr );
 extern void GUIDrawTextExtent( gui_window *wnd, const char *text, size_t length,
-                               gui_ord row, gui_ord indent, gui_attr attr,
+                               gui_text_ord row, gui_ord indent, gui_attr attr,
                                gui_ord extentx );
 extern void GUIDrawTextExtentPos( gui_window *wnd, const char *text, size_t length,
                                gui_coord *pos, gui_attr attr, gui_ord extentx );
 extern void GUIDrawTextRGB( gui_window *wnd, const char *text, size_t length,
-                            gui_ord row, gui_ord indent,
+                            gui_text_ord row, gui_ord indent,
                             gui_rgb fore, gui_rgb back );
 extern void GUIDrawTextPosRGB( gui_window *wnd, const char *text, size_t length,
                                gui_coord *pos, gui_rgb fore, gui_rgb back );
 extern void GUIDrawTextExtentRGB( gui_window *wnd, const char *text, size_t length,
-                                  gui_ord row, gui_ord indent,
+                                  gui_text_ord row, gui_ord indent,
                                   gui_rgb fore, gui_rgb back,
                                   gui_ord extentx );
 extern void GUIDrawTextExtentPosRGB( gui_window *wnd, const char *text, size_t length,
                                      gui_coord *pos,
                                      gui_rgb fore, gui_rgb back,
                                      gui_ord extentx );
-extern bool GUIDrawBar( gui_window *wnd, gui_ord row, gui_ord start,
+extern bool GUIDrawBar( gui_window *wnd, gui_text_ord row, gui_ord start,
                         gui_ord width, gui_bar_styles bstyle, gui_attr attr,
                         bool selected );
-extern bool GUIDrawBarGroup( gui_window *wnd, gui_ord row, gui_ord start,
+extern bool GUIDrawBarGroup( gui_window *wnd, gui_text_ord row, gui_ord start,
                         gui_ord width1, gui_ord width2, gui_bar_styles bstyle,
                         gui_attr attr1, gui_attr attr2, bool selected );
 
@@ -891,7 +898,7 @@ extern void GUISetHScrollRange( gui_window *wnd, gui_ord range );
 extern void GUISetVScrollRange( gui_window *wnd, gui_ord range );
 extern gui_ord GUIGetHScrollRange( gui_window *wnd );
 extern gui_ord GUIGetVScrollRange( gui_window *wnd );
-extern gui_ord GUIGetNumRows( gui_window *wnd );
+extern gui_text_ord GUIGetNumRows( gui_window *wnd );
 
 /* Built in user interactions */
 

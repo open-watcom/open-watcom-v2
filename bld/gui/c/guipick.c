@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -118,7 +118,7 @@ bool GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pickinit, PICKDLGOPE
     Controls[CANCEL_IDX].text = LIT( Cancel );
     dlg.func = pickinit;
     dlg.choice = -1;
-    openrtn( title, DLG_PICK_ROWS, len, Controls, GUI_ARRAY_SIZE( Controls ), &GUIPickGUIEventProc, &dlg );
+    openrtn( title, DLG_PICK_ROWS, (gui_text_ord)len, Controls, GUI_ARRAY_SIZE( Controls ), &GUIPickGUIEventProc, &dlg );
     if( dlg.choice == -1 )
         return( false );
     *choice = dlg.choice;

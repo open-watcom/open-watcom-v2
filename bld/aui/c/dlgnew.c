@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -107,7 +108,7 @@ static bool dlgNewGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 }
 
 bool    DlgNewWithCtl( const char *title, char *buff, size_t buff_len, gui_control_info *controls,
-                    int num_controls, GUICALLBACK *gui_call_back, int rows, int cols, int max_cols )
+                    int num_controls, GUICALLBACK *gui_call_back, gui_text_ord rows, gui_text_ord cols, gui_text_ord max_cols )
 {
     dlgnew_ctl  dlgnew;
     int         len;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +42,7 @@
  *                    window wnd are bad.
  */
 
-void GUIWndDirtyRow( gui_window *wnd, gui_ord row )
+void GUIWndDirtyRow( gui_window *wnd, gui_text_ord row )
 {
     WPI_RECT    rect;
     int         height;

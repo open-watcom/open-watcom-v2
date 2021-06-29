@@ -319,7 +319,7 @@ static void freeStringControls( int num_controls, string_info *info )
  *               and location of control
  */
 
-static int UpdateCols( gui_control_info *ctl_info, int cols )
+static gui_text_ord UpdateCols( gui_control_info *ctl_info, gui_text_ord cols )
 {
     if( cols < ctl_info->rect.x - DLG_COL_0 + ctl_info->rect.width - DLG_COL_0 )
         cols = ctl_info->rect.x - DLG_COL_0 + ctl_info->rect.width - DLG_COL_0;
@@ -331,7 +331,7 @@ static int UpdateCols( gui_control_info *ctl_info, int cols )
  *               to the number of lines of text ( also adjusts cols )
  */
 
-static int AdjustVert( int *cols, control_types controls_to_use,
+static int AdjustVert( gui_text_ord *cols, control_types controls_to_use,
                 gui_control_info *controls_info, int num_controls,
                 int num_string_controls )
 {
@@ -372,7 +372,7 @@ static int AdjustVert( int *cols, control_types controls_to_use,
  * CentreButtons -- centre the buttons horizontally
  */
 
-static void CentreButtons( int cols, int num_buttons, gui_control_info *controls_info, int num_controls )
+static void CentreButtons( gui_text_ord cols, int num_buttons, gui_control_info *controls_info, int num_controls )
 {
     int button_number;
     int space_per_button;
@@ -404,8 +404,8 @@ static void CentreButtons( int cols, int num_buttons, gui_control_info *controls
 gui_message_return GUIDisplayMessage( gui_window *wnd, const char *message,
                                       const char *title, gui_message_type type )
 {
-    int                 rows;
-    int                 cols;
+    gui_text_ord        rows;
+    gui_text_ord        cols;
     gui_control_info    *controls_info;
     int                 num_controls;
     int                 num_string_controls;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -127,10 +127,10 @@ static bool GetNewValGUIEventProc( gui_window *gui, gui_event gui_ev, void *para
 
 gui_message_return GUIGetNewVal( const char *title, const char *old, char **new_val )
 {
-    int         length;
-    int         disp_length;
-    int         cols;
-    ret_info    info;
+    int             length;
+    int             disp_length;
+    gui_text_ord    cols;
+    ret_info        info;
 
     info.ret_val = GUI_RET_ABORT;
     info.text = NULL;

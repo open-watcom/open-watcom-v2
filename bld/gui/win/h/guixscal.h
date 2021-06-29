@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +52,7 @@ extern void GUIFromText( gui_coord *coord, gui_window *wnd );
 extern gui_ord GUIToTextX( gui_ord ord, gui_window *wnd );
 extern gui_ord GUIToTextY( gui_ord ord, gui_window *wnd );
 
-extern void GUIGetUpdateRows( gui_window *, HWND, gui_ord *, int * );
+extern void GUIGetUpdateRows( gui_window *, HWND, gui_text_ord *, gui_text_ord * );
 
 extern void GUIGetMetrics( gui_window * );
 extern bool GUIGetTheDC( gui_window *wnd );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -139,11 +140,11 @@ enum {
       GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_AUTOMATIC, \
       id }
 
-extern void GUIDlgOpen( const char *title, int rows, int cols, gui_control_info *controls_info,
+extern void GUIDlgOpen( const char *title, gui_text_ord rows, gui_text_ord cols, gui_control_info *controls_info,
                         int num_controls, GUICALLBACK *gui_call_back, void *extra );
 
-extern void GUIModalDlgOpen( gui_window *parent, const char *title, int rows, int cols,
+extern void GUIModalDlgOpen( gui_window *parent, const char *title, gui_text_ord rows, gui_text_ord cols,
             gui_control_info *controls_info, int num_controls, GUICALLBACK *gui_call_back, void *extra );
 
-extern void GUISysModalDlgOpen( const char *title, int rows, int cols,
+extern void GUISysModalDlgOpen( const char *title, gui_text_ord rows, gui_text_ord cols,
             gui_control_info *controls_info, int num_controls, GUICALLBACK *gui_call_back, void *extra );

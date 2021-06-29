@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -149,9 +149,9 @@ struct gui_window {
     gui_flags           flags;
     int                 num_attrs;
     gui_colour_set      *attrs;
-    gui_ord             num_rows;
-    gui_ord             old_rows;
-    gui_ord             num_cols;
+    gui_text_ord        num_rows;
+    gui_text_ord        old_rows;
+    gui_text_ord        num_cols;
     unsigned int        hscroll_range;
     unsigned int        vscroll_range;
     GUICALLBACK         *gui_call_back;

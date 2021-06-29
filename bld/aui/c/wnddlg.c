@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,7 +75,7 @@ gui_window *DlgOpenGetGUIParent( void )
     return( ( Nested == -1 ) ? WndMain->gui : Parents[Nested] );
 }
 
-void DlgOpen( const char *title, int rows, int cols,
+void DlgOpen( const char *title, gui_text_ord rows, gui_text_ord cols,
                      gui_control_info *ctl, int num_controls,
                      GUICALLBACK *gui_call_back, void *extra )
 {

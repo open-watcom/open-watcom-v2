@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -195,7 +196,7 @@ static bool DrawShadowBar( gui_window *wnd, gui_rect *rect, WPI_COLOUR colour,
     return( true );
 }
 
-bool GUIDrawBar( gui_window *wnd, gui_ord row, gui_ord start, gui_ord width,
+bool GUIDrawBar( gui_window *wnd, gui_text_ord row, gui_ord start, gui_ord width,
                  gui_bar_styles bstyle, gui_attr attr, bool selected )
 {
     bool                ret;
@@ -247,7 +248,7 @@ bool GUIDrawBar( gui_window *wnd, gui_ord row, gui_ord start, gui_ord width,
 }
 
 
-bool GUIDrawBarGroup( gui_window *wnd, gui_ord row, gui_ord start,
+bool GUIDrawBarGroup( gui_window *wnd, gui_text_ord row, gui_ord start,
                       gui_ord width1, gui_ord width2, gui_bar_styles bstyle,
                       gui_attr attr1, gui_attr attr2, bool selected )
 {
@@ -273,8 +274,7 @@ bool GUIDrawBarGroup( gui_window *wnd, gui_ord row, gui_ord start,
         ret = GUIDrawBar( wnd, row, start, stretch_width, bstyle, attr1, selected );
     }
     if( ret ) {
-        ret = GUIDrawBar( wnd, row, start+width1, width2, bstyle,
-                          attr2, selected );
+        ret = GUIDrawBar( wnd, row, start+width1, width2, bstyle, attr2, selected );
     }
     return( ret );
 }

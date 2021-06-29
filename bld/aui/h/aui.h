@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -301,8 +301,8 @@ extern bool                 DlgPickWithRtn2( const char *title, const void *data
 extern bool                 DlgPick( const char *title, const void *data_handle, int def_item, int num_items, int *choice );
 extern bool                 DlgNew( const char *title, char *buff, size_t buff_len );
 extern bool                 DlgNewWithCtl( const char *title, char *buff, size_t buff_len, gui_control_info *controls, int num_controls,
-                                            GUICALLBACK *gui_call_back, int rows, int cols, int max_cols );
-extern void                 DlgOpen( const char *title, int, int, gui_control_info *, int, GUICALLBACK *, void * );
+                                            GUICALLBACK *gui_call_back, gui_text_ord rows, gui_text_ord cols, gui_text_ord max_cols );
+extern void                 DlgOpen( const char *title, gui_text_ord, gui_text_ord, gui_control_info *, int, GUICALLBACK *, void * );
 extern void                 ResDlgOpen( GUICALLBACK *, void *, int dlg_id );
 extern int                  DlgGetFileName( open_file_name *ofn );
 extern bool                 DlgFileBrowse( char *title, char *filter, char *path, unsigned len, fn_flags flags );

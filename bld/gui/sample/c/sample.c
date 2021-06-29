@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -461,7 +461,7 @@ bool MainWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id          id;
     char                *new;
-    int                 numrows;
+    gui_text_ord        numrows;
     gui_text_metrics    text_metrics;
     gui_rect            client;
     gui_coord           scroll;
@@ -1014,12 +1014,12 @@ static int GetStringIndent( int *indent, gui_ord hscroll, gui_text_metrics *metr
     return( string_indent );
 }
 
-static void PaintWindow( gui_window *gui, gui_ord row, gui_ord num, int vscroll,
+static void PaintWindow( gui_window *gui, gui_text_ord row, gui_text_ord num, int vscroll,
                   int hscroll )
 {
     out_info            *out;
-    int                 numrows;
-    int                 i;
+    gui_text_ord        numrows;
+    gui_text_ord        i;
     attr_entry          *currattr;
     gui_ord             extent;
     int                 indent;
@@ -1098,8 +1098,8 @@ bool Child1WndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
     int                 diff;
     gui_rect            client;
     gui_text_metrics    metrics;
-    gui_ord             row;
-    gui_ord             num;
+    gui_text_ord        row;
+    gui_text_ord        num;
     gui_point           point;
     gui_key             key;
     gui_ctl_id          id;
@@ -1305,7 +1305,7 @@ static void CreatePopup( gui_window *gui, const gui_menu_items *menus, gui_ctl_i
 bool Child2WndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_point           point;
-    gui_ord             row;
+    gui_text_ord        row;
     gui_ord             col;
 #if keys
     gui_key             key;
@@ -1313,8 +1313,8 @@ bool Child2WndGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
     gui_ctl_id          id;
     attr_entry          *new_attr;
     char                Buffer[80];
-    int                 i;
-    int                 num;
+    gui_text_ord        i;
+    gui_text_ord        num;
     gui_ord             prev_col;
     out_info            *out;
     char                *start;

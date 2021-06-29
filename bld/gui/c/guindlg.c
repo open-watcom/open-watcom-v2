@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -147,8 +147,8 @@ static void DlgSetCtlSizes( gui_control_info *controls_info,
     }
 }
 
-static void DlgSetSize( gui_window *parent, gui_create_info *dlg_info, int rows,
-                        int cols, gui_coord *charuse )
+static void DlgSetSize( gui_window *parent, gui_create_info *dlg_info, gui_text_ord rows,
+                        gui_text_ord cols, gui_coord *charuse )
 {
     gui_rect            max_size;
     gui_rect            rect;
@@ -178,7 +178,7 @@ static void DlgSetSize( gui_window *parent, gui_create_info *dlg_info, int rows,
     }
 }
 
-static void doDlgOpen( gui_window *parent, const char *title, int rows, int cols,
+static void doDlgOpen( gui_window *parent, const char *title, gui_text_ord rows, gui_text_ord cols,
                      gui_control_info *controls_info, int num_controls,
                      GUICALLBACK *gui_call_back, void *extra, bool sys )
 {
@@ -216,20 +216,20 @@ void GUISetModalDlgs( bool modal )
     DlgModal = modal;
 }
 
-void GUIDlgOpen( const char *title, int rows, int cols, gui_control_info *controls_info,
+void GUIDlgOpen( const char *title, gui_text_ord rows, gui_text_ord cols, gui_control_info *controls_info,
                  int num_controls, GUICALLBACK *gui_call_back, void *extra )
 {
     doDlgOpen( NULL, title, rows, cols, controls_info, num_controls, gui_call_back, extra, false );
 }
 
-void GUIModalDlgOpen( gui_window *parent, const char *title, int rows, int cols,
+void GUIModalDlgOpen( gui_window *parent, const char *title, gui_text_ord rows, gui_text_ord cols,
                       gui_control_info *controls_info, int num_controls,
                       GUICALLBACK *gui_call_back, void *extra )
 {
     doDlgOpen( parent, title, rows, cols, controls_info, num_controls, gui_call_back, extra, false );
 }
 
-void GUISysModalDlgOpen( const char *title, int rows, int cols,
+void GUISysModalDlgOpen( const char *title, gui_text_ord rows, gui_text_ord cols,
                          gui_control_info *controls_info, int num_controls,
                          GUICALLBACK *gui_call_back, void *extra )
 {

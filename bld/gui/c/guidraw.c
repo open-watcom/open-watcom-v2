@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,7 @@
  */
 
 void GUIDrawText( gui_window *wnd, const char *text, size_t length,
-                         gui_ord row, gui_ord indent, gui_attr attr )
+                         gui_text_ord row, gui_ord indent, gui_attr attr )
 {
     gui_text_metrics    metrics;
     gui_coord           pos;
@@ -59,7 +60,7 @@ void GUIDrawTextPos( gui_window *wnd, const char *text, size_t length,
  */
 
 void GUIDrawTextExtent( gui_window *wnd, const char *text, size_t length,
-                        gui_ord row, gui_ord indent, gui_attr attr,
+                        gui_text_ord row, gui_ord indent, gui_attr attr,
                         gui_ord extent )
 {
     gui_text_metrics    metrics;
@@ -78,7 +79,7 @@ void GUIDrawTextExtentPos( gui_window *wnd, const char *text, size_t length,
 }
 
 void GUIDrawTextRGB( gui_window *wnd, const char *text, size_t length,
-                            gui_ord row, gui_ord indent,
+                            gui_text_ord row, gui_ord indent,
                             gui_rgb fore, gui_rgb back )
 {
     gui_text_metrics    metrics;
@@ -101,7 +102,7 @@ void GUIDrawTextPosRGB( gui_window *wnd, const char *text, size_t length,
  */
 
 void GUIDrawTextExtentRGB( gui_window *wnd, const char *text, size_t length,
-                           gui_ord row, gui_ord indent,
+                           gui_text_ord row, gui_ord indent,
                            gui_rgb fore, gui_rgb back,
                            gui_ord extent )
 {

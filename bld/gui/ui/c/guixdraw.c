@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -395,7 +395,7 @@ static void WndClean( gui_window *wnd )
 void GUIWndRfrshArea( gui_window *wnd, SAREA *area )
 {
     gui_control *control;
-    gui_row_num rownum;
+    gui_row_num row_num;
     int         hscroll;
     int         vscroll;
     int         frame_adjust;
@@ -439,9 +439,9 @@ void GUIWndRfrshArea( gui_window *wnd, SAREA *area )
                     wnd->background );
 
         if( GUI_WND_VISIBLE( wnd ) && (wnd->flags & DONT_SEND_PAINT) == 0 ) {
-            rownum.start = vscroll + area->row - frame_adjust;
-            rownum.num = area->height;
-            GUIEVENT( wnd, GUI_PAINT, &rownum );
+            row_num.start = vscroll + area->row - frame_adjust;
+            row_num.num = area->height;
+            GUIEVENT( wnd, GUI_PAINT, &row_num );
         }
         for( control = wnd->controls; control != NULL; control = control->sibling ) {
             GUIRefreshControl( control->parent, control->id );

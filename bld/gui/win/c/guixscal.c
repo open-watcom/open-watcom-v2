@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -165,7 +166,7 @@ void GUIGetMetrics( gui_window * wnd )
  * GUIEndPaint, so the wnd->hdc is valid and wnd->font is selected
  */
 
-void GUIGetUpdateRows( gui_window *wnd, HWND hwnd, gui_ord *start, int *num )
+void GUIGetUpdateRows( gui_window *wnd, HWND hwnd, gui_text_ord *start, gui_text_ord *num )
 {
     WPI_RECT    rect;
     int         avgy;

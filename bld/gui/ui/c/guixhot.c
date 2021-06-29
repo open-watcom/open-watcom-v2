@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,7 +64,7 @@ bool GUIXInitHotSpots( int num, gui_resource *hot )
 }
 
 
-void GUIDrawHotSpot( gui_window *wnd, int hot_spot, gui_ord row,
+void GUIDrawHotSpot( gui_window *wnd, int hot_spot, gui_text_ord row,
                      gui_ord indent, gui_attr attr )
 {
     if( ( hot_spot > 0 ) && ( hot_spot <= GUINumHotSpots ) ) {
