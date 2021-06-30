@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -159,8 +159,8 @@ bool GUIDrawLine( gui_window *wnd, gui_point *start, gui_point *end,
 
     my_start = *start;
     my_end = *end;
-    GUIScaleToScreenRPt( &my_start );
-    GUIScaleToScreenRPt( &my_end );
+    GUIScaleToScreenPointR( &my_start );
+    GUIScaleToScreenPointR( &my_end );
 
     area.row = my_start.y;
     area.height = my_end.y - my_start.y + 1;

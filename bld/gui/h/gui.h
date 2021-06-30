@@ -402,18 +402,18 @@ typedef const char          *res_name_or_id;
 #endif
 
 typedef struct gui_coord {
-    gui_ord x;
-    gui_ord y;
+    gui_ord             x;
+    gui_ord             y;
 } gui_coord;
 
 typedef struct gui_text_coord {
-    gui_text_ord x;
-    gui_text_ord y;
+    gui_text_ord        x;
+    gui_text_ord        y;
 } gui_text_coord;
 
 typedef struct gui_point {
-    int x;
-    int y;
+    int                 x;
+    int                 y;
 } gui_point;
 
 typedef struct gui_window   gui_window;

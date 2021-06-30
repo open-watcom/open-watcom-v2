@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +46,7 @@ gui_ord GUIGetRow( gui_window * wnd, gui_point * in_pt )
     /* unused parameters */ (void)wnd;
 
     pt = *in_pt;
-    GUIScaleToScreenRPt( &pt );
+    GUIScaleToScreenPointR( &pt );
     if( pt.y >=0 ) {
         return( (gui_ord) pt.y );
     } else {
@@ -65,7 +65,7 @@ gui_ord GUIGetCol( gui_window *wnd, const char *text, gui_point *in_pt )
     /* unused parameters */ (void)wnd; (void)text;
 
     pt = *in_pt;
-    GUIScaleToScreenRPt( &pt );
+    GUIScaleToScreenPointR( &pt );
     if( pt.x >=0 ) {
         return( (gui_ord) pt.x );
     } else {

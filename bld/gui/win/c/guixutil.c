@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -478,7 +479,7 @@ void GUIMakeRelative( gui_window *wnd, WPI_POINT *pt, gui_point *point )
             point->y += GUIGetScrollPos( wnd, SB_VERT );
         }
     }
-    GUIScreenToScaleRPt( point );
+    GUIScreenToScalePointR( point );
 }
 
 HWND GUIGetScrollHWND( gui_window *wnd )

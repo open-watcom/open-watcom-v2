@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +45,7 @@ bool GUISetCursorPos( gui_window *wnd, gui_point *point )
 
     if( wnd->style & GUI_CURSOR ) {
         pt = *point;
-        GUIScaleToScreenRPt( &pt );
+        GUIScaleToScreenPointR( &pt );
         if( ( wnd->hgadget != NULL ) && !GUI_HSCROLL_EVENTS_SET( wnd ) ) {
             pt.x -= wnd->hgadget->pos;
         }
@@ -75,7 +75,7 @@ bool GUIGetCursorPos( gui_window *wnd, gui_point *point )
     if( ( wnd->vgadget != NULL ) && !GUI_VSCROLL_EVENTS_SET( wnd ) ) {
         point->y += wnd->vgadget->pos;
     }
-    GUIScreenToScaleRPt( point );
+    GUIScreenToScalePointR( point );
     return( true );
 }
 

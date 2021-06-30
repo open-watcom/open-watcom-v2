@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -139,12 +140,12 @@ bool GUIScreenToScaleR( gui_coord *coord )
     return( GUIConvert( SCREEN, SCALE, coord, true ) );
 }
 
-void GUIScaleToScreenRPt( gui_point *point )
+void GUIScaleToScreenPointR( gui_point *point )
 {
     GUIConvertPoint( SCALE, SCREEN, point );
 }
 
-void GUIScreenToScaleRPt( gui_point *point )
+void GUIScreenToScalePointR( gui_point *point )
 {
     GUIConvertPoint( SCREEN, SCALE, point );
 }

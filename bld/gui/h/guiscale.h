@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +44,7 @@ extern bool GUIScaleToScreenR( gui_coord *coord );
 extern bool GUIScreenToScale( gui_coord *coord );
 extern bool GUIScreenToScaleR( gui_coord *coord );
 
-extern void GUIScaleToScreenRPt( gui_point *point );
-extern void GUIScreenToScaleRPt( gui_point *point );
+extern void GUIScaleToScreenPointR( gui_point *point );
+extern void GUIScreenToScalePointR( gui_point *point );
 
 #endif // _GUISCALE_H_
