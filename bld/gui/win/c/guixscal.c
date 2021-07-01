@@ -57,51 +57,33 @@ void GUIClientToScaleRect( gui_rect * rect )
  *  GUIToText -- divide by character width, height
  */
 
-void GUIToText( gui_coord *coord , gui_window *wnd )
-{
-    GUIGetMetrics( wnd );
-    coord->y = GUIMulDiv( coord->y, 1, AVGYCHAR( GUItm ) );
-    coord->x = GUIMulDiv( coord->x, 1, AVGXCHAR( GUItm ) );
-}
-
-gui_ord GUIToTextX( gui_ord ord, gui_window *wnd )
+gui_text_ord GUIToTextX( gui_ord ord, gui_window *wnd )
 {
     GUIGetMetrics( wnd );
     return( GUIMulDiv( ord, 1, AVGXCHAR( GUItm ) ) );
 }
 
-gui_ord GUIToTextY( gui_ord ord, gui_window *wnd )
+gui_text_ord GUIToTextY( gui_ord ord, gui_window *wnd )
 {
     GUIGetMetrics( wnd );
     return( GUIMulDiv( ord, 1, AVGYCHAR( GUItm ) ) );
 }
 
 /*
- *  GUIFromText -- multiply by character widht, height
- */
-
-void GUIFromText( gui_coord *coord, gui_window *wnd )
-{
-    GUIGetMetrics( wnd );
-    coord->y = GUIMulDiv( coord->y, AVGYCHAR( GUItm ), 1 );
-    coord->x = GUIMulDiv( coord->x, AVGXCHAR( GUItm ), 1 );
-}
-
-/*
  *  GUIFromTextX -- multiply by character width, height
  */
 
-gui_ord GUIFromTextX( gui_ord ord, gui_window *wnd )
+gui_ord GUIFromTextX( gui_text_ord ord, gui_window *wnd )
 {
     GUIGetMetrics( wnd );
-    return( ord *= AVGXCHAR( GUItm ) );
+    return( GUIMulDiv( ord, AVGXCHAR( GUItm ), 1 ) );
 }
 
 /*
  *  GUIFromTextY -- multiply by character widht, height
  */
 
-gui_ord GUIFromTextY( gui_ord ord, gui_window *wnd )
+gui_ord GUIFromTextY( gui_text_ord ord, gui_window *wnd )
 {
     GUIGetMetrics( wnd );
     return( GUIMulDiv( ord, AVGYCHAR( GUItm ), 1 ) );

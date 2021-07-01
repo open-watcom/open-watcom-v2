@@ -45,12 +45,10 @@ extern void GUIScreenToScaleRect( gui_rect *rect );
 
 extern void GUIClientToScaleRect( gui_rect *rect );
 
-extern void GUIToText( gui_coord *coord, gui_window *wnd );
-extern gui_ord GUIFromTextX( gui_ord ord, gui_window *wnd );
-extern gui_ord GUIFromTextY( gui_ord ord, gui_window *wnd );
-extern void GUIFromText( gui_coord *coord, gui_window *wnd );
-extern gui_ord GUIToTextX( gui_ord ord, gui_window *wnd );
-extern gui_ord GUIToTextY( gui_ord ord, gui_window *wnd );
+extern gui_ord GUIFromTextX( gui_text_ord ord, gui_window *wnd );
+extern gui_ord GUIFromTextY( gui_text_ord ord, gui_window *wnd );
+extern gui_text_ord GUIToTextX( gui_ord ord, gui_window *wnd );
+extern gui_text_ord GUIToTextY( gui_ord ord, gui_window *wnd );
 
 extern void GUIGetUpdateRows( gui_window *, HWND, gui_text_ord *, gui_text_ord * );
 

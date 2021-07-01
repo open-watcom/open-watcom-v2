@@ -407,9 +407,8 @@ void GUISetRowCol( gui_window *wnd, gui_coord *size )
         my_size = *size;
     }
 
-    GUIToText( &my_size, wnd );
-    wnd->num_rows = my_size.y;
-    wnd->num_cols = my_size.x;
+    wnd->num_rows = GUIToTextY( my_size.y, wnd );
+    wnd->num_cols = GUIToTextX( my_size.x, wnd );
 }
 
 /*

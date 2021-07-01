@@ -406,11 +406,6 @@ typedef struct gui_coord {
     gui_ord             y;
 } gui_coord;
 
-typedef struct gui_text_coord {
-    gui_text_ord        x;
-    gui_text_ord        y;
-} gui_text_coord;
-
 typedef struct gui_point {
     int                 x;
     int                 y;
