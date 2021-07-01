@@ -34,8 +34,6 @@
 #ifndef _GUIXSCAL_H_
 #define _GUIXSCAL_H_
 
-#define GUIMulDiv(a,b,c) ((int)(((long)a * (long)b) / (long)c))
-
 extern WPI_TEXTMETRIC   GUItm;
 
 extern void GUIGetScale( gui_rect * rect);

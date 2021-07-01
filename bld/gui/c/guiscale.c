@@ -87,8 +87,8 @@ bool GUIConvert( gui_coord_systems from, gui_coord_systems to, gui_coord *coord,
         coord->x -= scale_data[from].x;
         coord->y -= scale_data[from].y;
     }
-    coord->x = GUIMulDiv( coord->x, scale_data[to].width,  scale_data[from].width );
-    coord->y = GUIMulDiv( coord->y, scale_data[to].height, scale_data[from].height );
+    coord->x = GUIMulDiv( int, coord->x, scale_data[to].width,  scale_data[from].width );
+    coord->y = GUIMulDiv( int, coord->y, scale_data[to].height, scale_data[from].height );
     if( !rel ) {
         coord->x += scale_data[to].x;
         coord->y += scale_data[to].y;
@@ -114,8 +114,8 @@ bool GUIConvertRect( gui_coord_systems from, gui_coord_systems to, gui_rect * re
 
 void GUIConvertPoint( gui_coord_systems from, gui_coord_systems to, gui_point * point )
 {
-    point->x = GUIMulDiv( point->x, scale_data[to].width, scale_data[from].width );
-    point->y = GUIMulDiv( point->y, scale_data[to].height, scale_data[from].height );
+    point->x = GUIMulDiv( int, point->x, scale_data[to].width, scale_data[from].width );
+    point->y = GUIMulDiv( int, point->y, scale_data[to].height, scale_data[from].height );
 }
 
 /* Routines Used by lower levels of GUI library */

@@ -60,13 +60,13 @@ void GUIClientToScaleRect( gui_rect * rect )
 gui_text_ord GUIToTextX( gui_ord ord, gui_window *wnd )
 {
     GUIGetMetrics( wnd );
-    return( GUIMulDiv( ord, 1, AVGXCHAR( GUItm ) ) );
+    return( GUIMulDiv( gui_text_ord, ord, 1, AVGXCHAR( GUItm ) ) );
 }
 
 gui_text_ord GUIToTextY( gui_ord ord, gui_window *wnd )
 {
     GUIGetMetrics( wnd );
-    return( GUIMulDiv( ord, 1, AVGYCHAR( GUItm ) ) );
+    return( GUIMulDiv( gui_text_ord, ord, 1, AVGYCHAR( GUItm ) ) );
 }
 
 /*
@@ -76,7 +76,7 @@ gui_text_ord GUIToTextY( gui_ord ord, gui_window *wnd )
 gui_ord GUIFromTextX( gui_text_ord ord, gui_window *wnd )
 {
     GUIGetMetrics( wnd );
-    return( GUIMulDiv( ord, AVGXCHAR( GUItm ), 1 ) );
+    return( GUIMulDiv( gui_ord, ord, AVGXCHAR( GUItm ), 1 ) );
 }
 
 /*
@@ -86,7 +86,7 @@ gui_ord GUIFromTextX( gui_text_ord ord, gui_window *wnd )
 gui_ord GUIFromTextY( gui_text_ord ord, gui_window *wnd )
 {
     GUIGetMetrics( wnd );
-    return( GUIMulDiv( ord, AVGYCHAR( GUItm ), 1 ) );
+    return( GUIMulDiv( gui_ord, ord, AVGYCHAR( GUItm ), 1 ) );
 }
 
 /*
@@ -123,7 +123,7 @@ void GUIReleaseTheDC( gui_window * wnd )
 }
 
 /*
- * GUIGetMetrics - Initialize the tm structure with infor for the given window
+ * GUIGetMetrics - Initialize the tm structure with info for the given window
  */
 
 void GUIGetMetrics( gui_window * wnd )

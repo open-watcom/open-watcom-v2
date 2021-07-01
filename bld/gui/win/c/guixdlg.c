@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -534,8 +535,8 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
 static void ToDialogUnits( gui_coord *coord )
 {
     if( coord != NULL ) {
-        coord->x = GUIMulDiv( coord->x, SizeDialog.x, SizeScreen.x );
-        coord->y = GUIMulDiv( coord->y, SizeDialog.y, SizeScreen.y );
+        coord->x = GUIMulDiv( int, coord->x, SizeDialog.x, SizeScreen.x );
+        coord->y = GUIMulDiv( int, coord->y, SizeDialog.y, SizeScreen.y );
     }
 }
 
@@ -830,8 +831,8 @@ void GUIInitDialog( void )
 static void ScaleGrow( gui_coord * coord )
 {
     if( coord != NULL ) {
-        coord->x = GUIMulDiv( coord->x, ActualSize.x, ExpectedSize.x );
-        coord->y = GUIMulDiv( coord->y, ActualSize.y, ExpectedSize.y );
+        coord->x = GUIMulDiv( int, coord->x, ActualSize.x, ExpectedSize.x );
+        coord->y = GUIMulDiv( int, coord->y, ActualSize.y, ExpectedSize.y );
     }
 }
 #endif

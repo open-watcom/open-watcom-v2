@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +41,5 @@ extern bool GUIScreenToScaleRectR( SAREA *area, gui_rect *rect );
 
 extern bool GUIScaleToScreenRect( gui_rect *rect, SAREA *area );
 extern bool GUIScaleToScreenRectR( gui_rect *rect, SAREA *area );
-
-extern int GUIMulDiv( int a, int b, int c );
 
 #endif // _GUIXSCAL_H_
