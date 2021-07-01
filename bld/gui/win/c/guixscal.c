@@ -36,21 +36,12 @@
 #include "guiscale.h"
 #include "guixutil.h"
 
+
 WPI_TEXTMETRIC GUItm;
-
-void GUIScaleToScreenRect( gui_rect * rect )
-{
-    GUIConvertRect( SCALE, SCREEN, rect, false );
-}
-
-void GUIScreenToScaleRect( gui_rect * rect )
-{
-    GUIConvertRect( SCREEN, SCALE, rect, false );
-}
 
 void GUIClientToScaleRect( gui_rect * rect )
 {
-    GUIScreenToScaleRect( rect );
+    GUIScreenToScaleRect( rect, rect );
 }
 
 /*

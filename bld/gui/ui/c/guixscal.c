@@ -32,83 +32,19 @@
 
 
 #include "guiwind.h"
-#include "guisdef.h"
 #include "guiscale.h"
-
-
-#define COPYAREATORECT( area, rect ) {                                  \
-        (rect).x = (area).col; (rect).y = (area).row;                   \
-        (rect).width = (area).width; (rect).height = (area).height; }
-
-#define COPYRECTTOAREA( rect, area ) {                                  \
-        (area).row = (rect).y; (area).col = (rect).x;                   \
-        (area).width = (rect).width; (area).height = (rect).height; }
 
 
 /* Information Function */
 
-void GUIGetScreenArea( SAREA * area )
+void GUIGetScreenArea( SAREA *area )
 {
     gui_rect rect;
 
     GUIGetScreen( &rect );
-    COPYRECTTOAREA( rect, *area );
+    area->row = rect.y;
+    area->col = rect.x;
+    area->width = rect.width;
+    area->height = rect.height;
 }
 
-/* Conversion routines */
-
-/*
- * ConvertRect -- from == SCREEN,  to == SCALE  implies area -> rect
- *                from == SCALE,   to == SCREEN implies rect -> area
- */
-
-static bool ConvertRectArea( SAREA *area, gui_rect *rect, gui_coord_systems from,
-                             gui_coord_systems to, bool rel )
-{
-    gui_rect    my_rect;
-    gui_rect    *convert;
-
-    if( from == SCREEN ) {
-        /* copy area info to destination (rect), point convert at this */
-        COPYAREATORECT( *area, *rect );
-        convert = rect;
-    } else {
-        /* copy rect to static (my_rect) so rect isn't changed */
-        /* point convert at my_rect */
-        COPYRECT( *rect, my_rect );
-        convert = &my_rect;
-    }
-
-    if( !GUIConvertRect( from, to, convert, rel ) ) {
-        return( false );
-    }
-
-    /* put my_rect into info to return */
-    if( to == SCREEN ) {
-        /* copy convert to area */
-        COPYRECTTOAREA( *convert, *area );
-    }
-    return( true );
-}
-
-/* User Routines */
-
-bool GUIScreenToScaleRect( SAREA *area, gui_rect *rect )
-{
-    return( ConvertRectArea( area, rect, SCREEN, SCALE, false ) );
-}
-
-bool GUIScreenToScaleRectR( SAREA *area, gui_rect *rect )
-{
-    return( ConvertRectArea( area, rect, SCREEN, SCALE, true ) );
-}
-
-bool GUIScaleToScreenRect( gui_rect *rect, SAREA *area )
-{
-    return( ConvertRectArea( area, rect, SCALE, SCREEN, false ) );
-}
-
-bool GUIScaleToScreenRectR( gui_rect *rect, SAREA *area )
-{
-    return( ConvertRectArea( area, rect, SCALE, SCREEN, true ) );
-}

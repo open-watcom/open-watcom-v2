@@ -34,12 +34,17 @@
 #ifndef _GUIXSCAL_H_
 #define _GUIXSCAL_H_
 
+#define gui_screen_ord      gui_ord
+#define gui_screen_point    gui_point
+#define gui_screen_rect     gui_rect
+#define s_x                 x
+#define s_y                 y
+#define s_height            height
+#define s_width             width
+
 extern WPI_TEXTMETRIC   GUItm;
 
 extern void GUIGetScale( gui_rect * rect);
-
-extern void GUIScaleToScreenRect( gui_rect *rect );
-extern void GUIScreenToScaleRect( gui_rect *rect );
 
 extern void GUIClientToScaleRect( gui_rect *rect );
 

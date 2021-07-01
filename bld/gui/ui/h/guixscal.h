@@ -34,12 +34,14 @@
 #ifndef _GUIXSCAL_H_
 #define _GUIXSCAL_H_
 
+#define gui_screen_ord      gui_text_ord
+#define gui_screen_point    gui_point
+#define gui_screen_rect     SAREA
+#define s_x                 row
+#define s_y                 col
+#define s_height            height
+#define s_width             width
+
 extern void GUIGetScreenArea( SAREA *area );
-
-extern bool GUIScreenToScaleRect( SAREA *area, gui_rect *rect );
-extern bool GUIScreenToScaleRectR( SAREA *area, gui_rect *rect );
-
-extern bool GUIScaleToScreenRect( gui_rect *rect, SAREA *area );
-extern bool GUIScaleToScreenRectR( gui_rect *rect, SAREA *area );
 
 #endif // _GUIXSCAL_H_

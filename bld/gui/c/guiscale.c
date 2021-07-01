@@ -32,10 +32,27 @@
 
 
 #include "guiwind.h"
-#include "guisdef.h"
 #include "guiscale.h"
 
-static gui_rect scale_data[NUM_COORD_SYSTEMS];
+
+#define COPYRECT( old, new ) {                                  \
+        (new).x = (old).x; (new).y = (old).y;                   \
+        (new).width = (old).width; (new).height = (old).height; }
+
+static struct {
+    gui_ord         x;
+    gui_ord         y;
+    gui_ord         width;
+    gui_ord         height;
+} scale_data;
+
+static struct {
+    gui_screen_ord  x;
+    gui_screen_ord  y;
+    gui_screen_ord  width;
+    gui_screen_ord  height;
+} screen_data;
+
 
 /*
  * GUISetScale -- Set the user defined scale
@@ -43,7 +60,7 @@ static gui_rect scale_data[NUM_COORD_SYSTEMS];
 
 void GUISetScale( gui_rect * rect )
 {
-    COPYRECT( *rect, scale_data[SCALE] );
+    COPYRECT( *rect, scale_data );
 }
 
 /*
@@ -52,7 +69,7 @@ void GUISetScale( gui_rect * rect )
 
 void GUIGetScale( gui_rect * rect )
 {
-    COPYRECT( scale_data[SCALE], *rect )
+    COPYRECT( scale_data, *rect )
 }
 
 /*
@@ -61,10 +78,10 @@ void GUIGetScale( gui_rect * rect )
 
 void GUISetScreen( gui_ord xmin, gui_ord ymin, gui_ord width, gui_ord height )
 {
-    scale_data[SCREEN].x = xmin;
-    scale_data[SCREEN].y = ymin;
-    scale_data[SCREEN].width = width;
-    scale_data[SCREEN].height = height;
+    screen_data.x = xmin;
+    screen_data.y = ymin;
+    screen_data.width = width;
+    screen_data.height = height;
 }
 
 /*
@@ -73,79 +90,183 @@ void GUISetScreen( gui_ord xmin, gui_ord ymin, gui_ord width, gui_ord height )
 
 void GUIGetScreen( gui_rect * rect )
 {
-    COPYRECT( scale_data[SCREEN], *rect )
+    COPYRECT( screen_data, *rect )
+}
+
+static gui_screen_ord ConvertToScreenH( gui_ord ord )
+{
+    return( GUIMulDiv( gui_screen_ord, ord, screen_data.width, scale_data.width ) );
+}
+
+static gui_screen_ord ConvertToScreenV( gui_ord ord )
+{
+    return( GUIMulDiv( gui_screen_ord, ord, screen_data.height, scale_data.height ) );
+}
+
+static gui_screen_ord ConvertToScreenX( gui_ord ix, bool rel )
+{
+    gui_screen_ord ox;
+
+    if( !rel ) {
+        ix -= scale_data.x;
+    }
+    ox = ConvertToScreenH( ix );
+    if( !rel ) {
+        ox += screen_data.x;
+    }
+    return( ox );
+}
+
+static gui_screen_ord ConvertToScreenY( gui_ord iy, bool rel )
+{
+    gui_screen_ord oy;
+
+    if( !rel ) {
+        iy -= scale_data.y;
+    }
+    oy = ConvertToScreenV( iy );
+    if( !rel ) {
+        oy += screen_data.y;
+    }
+    return( oy );
+}
+
+static gui_ord ConvertFromScreenH( gui_screen_ord ord )
+{
+    return( GUIMulDiv( gui_ord, ord, scale_data.width, screen_data.width ) );
+}
+
+static gui_ord ConvertFromScreenV( gui_screen_ord ord )
+{
+    return( GUIMulDiv( gui_ord, ord, scale_data.height, screen_data.height ) );
+}
+
+static gui_ord ConvertFromScreenX( gui_screen_ord ix, bool rel )
+{
+    gui_ord ox;
+
+    if( !rel ) {
+        ix -= screen_data.x;
+    }
+    ox = GUIMulDiv( gui_screen_ord, ix, screen_data.width, scale_data.width );
+    if( !rel ) {
+        ox += scale_data.x;
+    }
+    return( ox );
+}
+
+static gui_ord ConvertFromScreenY( gui_screen_ord iy, bool rel )
+{
+    gui_ord oy;
+
+    if( !rel ) {
+        iy -= screen_data.y;
+    }
+    oy = GUIMulDiv( gui_screen_ord, iy, screen_data.height, scale_data.height );
+    if( !rel ) {
+        oy += scale_data.y;
+    }
+    return( oy );
 }
 
 /*
- * GUIConvert -- convert a gui_coord from one coordinate system to another
+ * ConvertToScreen -- convert a gui_coord from one coordinate system to another
  */
 
-bool GUIConvert( gui_coord_systems from, gui_coord_systems to, gui_coord *coord,
-                 bool rel )
+static bool ConvertToScreenCoord( gui_coord *coord, gui_screen_coord *screen_coord, bool rel )
 {
-    if( !rel ) {
-        coord->x -= scale_data[from].x;
-        coord->y -= scale_data[from].y;
-    }
-    coord->x = GUIMulDiv( int, coord->x, scale_data[to].width,  scale_data[from].width );
-    coord->y = GUIMulDiv( int, coord->y, scale_data[to].height, scale_data[from].height );
-    if( !rel ) {
-        coord->x += scale_data[to].x;
-        coord->y += scale_data[to].y;
-    }
+    screen_coord->x = ConvertToScreenX( coord->x, rel );
+    screen_coord->y = ConvertToScreenY( coord->y, rel );
     return( true );
 }
 
 /*
- * GUIConvertRect -- convert a rect from one coordinate system to another
+ * ConvertFromScreen -- convert a gui_coord from one coordinate system to another
  */
 
-bool GUIConvertRect( gui_coord_systems from, gui_coord_systems to, gui_rect * rect, bool rel )
+static bool ConvertFromScreenCoord( gui_screen_coord *screen_coord, gui_coord *coord, bool rel )
 {
-    if( !GUIConvert( from, to, (gui_coord *)rect, rel ) ) {
-        return( false );
-    }
-    return( GUIConvert( from, to, (gui_coord *)(&(rect->width)), true ) );
+    coord->x = ConvertFromScreenX( screen_coord->x, rel );
+    coord->y = ConvertFromScreenY( screen_coord->y, rel );
+    return( true );
 }
 
 /*
- * GUIConvertPoint -- convert a point from one coordinate system to another
+ * ConvertToScreenRect -- convert a gui_coord from one coordinate system to another
  */
 
-void GUIConvertPoint( gui_coord_systems from, gui_coord_systems to, gui_point * point )
+static bool ConvertToScreenRect( gui_rect *rect, gui_screen_rect *screen_rect, bool rel )
 {
-    point->x = GUIMulDiv( int, point->x, scale_data[to].width, scale_data[from].width );
-    point->y = GUIMulDiv( int, point->y, scale_data[to].height, scale_data[from].height );
+    screen_rect->s_x = ConvertToScreenX( rect->x, rel );
+    screen_rect->s_y = ConvertToScreenY( rect->y, rel );
+    screen_rect->s_width = ConvertToScreenH( rect->width );
+    screen_rect->s_height = ConvertToScreenV( rect->height );
+    return( true );
+}
+
+/*
+ * ConvertFromScreenRect -- convert a gui_coord from one coordinate system to another
+ */
+
+static bool ConvertFromScreenRect( gui_screen_rect *screen_rect, gui_rect *rect, bool rel )
+{
+    rect->x = ConvertFromScreenX( screen_rect->s_x, rel );
+    rect->y = ConvertFromScreenY( screen_rect->s_y, rel );
+    rect->width = ConvertFromScreenH( screen_rect->s_width );
+    rect->height = ConvertFromScreenV( screen_rect->s_height );
+    return( true );
 }
 
 /* Routines Used by lower levels of GUI library */
 
+bool GUIScreenToScaleRect( gui_screen_rect *screen_rect, gui_rect *rect )
+{
+    return( ConvertFromScreenRect( screen_rect, rect, false ) );
+}
+
+bool GUIScreenToScaleRectR( gui_screen_rect *screen_rect, gui_rect *rect )
+{
+    return( ConvertFromScreenRect( screen_rect, rect, true ) );
+}
+
+bool GUIScaleToScreenRect( gui_rect *rect, gui_screen_rect *screen_rect )
+{
+    return( ConvertToScreenRect( rect, screen_rect, false ) );
+}
+
+bool GUIScaleToScreenRectR( gui_rect *rect, gui_screen_rect *screen_rect )
+{
+    return( ConvertToScreenRect( rect, screen_rect, true ) );
+}
+
 bool GUIScaleToScreen( gui_coord *coord )
 {
-    return( GUIConvert( SCALE, SCREEN, coord, false ) );
+    return( ConvertToScreenCoord( coord, coord, false ) );
 }
 
 bool GUIScaleToScreenR( gui_coord *coord )
 {
-    return( GUIConvert( SCALE, SCREEN, coord, true ) );
+    return( ConvertToScreenCoord( coord, coord, true ) );
 }
 
 bool GUIScreenToScale( gui_coord *coord )
 {
-    return( GUIConvert( SCREEN, SCALE, coord, false ) );
+    return( ConvertFromScreenCoord( coord, coord, false ) );
 }
 
 bool GUIScreenToScaleR( gui_coord *coord )
 {
-    return( GUIConvert( SCREEN, SCALE, coord, true ) );
+    return( ConvertFromScreenCoord( coord, coord, true ) );
 }
 
 void GUIScaleToScreenPointR( gui_point *point )
 {
-    GUIConvertPoint( SCALE, SCREEN, point );
+    point->x = GUIMulDiv( int, point->x, screen_data.width, scale_data.width );
+    point->y = GUIMulDiv( int, point->y, screen_data.height, scale_data.height );
 }
 
 void GUIScreenToScalePointR( gui_point *point )
 {
-    GUIConvertPoint( SCREEN, SCALE, point );
+    point->x = GUIMulDiv( int, point->x, scale_data.width, screen_data.width );
+    point->y = GUIMulDiv( int, point->y, scale_data.height, screen_data.height );
 }
