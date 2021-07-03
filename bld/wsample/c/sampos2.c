@@ -442,7 +442,7 @@ typedef struct _NEWSTARTDATA {  /* stdata */
     ULONG   ObjectBuffLen;
 } NEWSTARTDATA;
 
-static void LoadProg( char *cmd, char *cmd_tail )
+static void LoadProg( char *cmd, char *cmd_args )
 {
     RESULTCODES         res;
     NEWSTARTDATA        start;
@@ -455,7 +455,7 @@ static void LoadProg( char *cmd, char *cmd_tail )
         start.TraceOpt = 1;
         start.PgmTitle = cmd;
         start.PgmName = cmd;
-        start.PgmInputs = (PBYTE)cmd_tail;
+        start.PgmInputs = (PBYTE)cmd_args;
         start.TermQ = 0;
         start.Environment = NULL;
         start.InheritOpt = 1;
@@ -489,7 +489,7 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
     USHORT      rc;
     char        buff[BSIZE];
     seg_offset  where;
-    char        *cmd_tail;
+    char        *cmd_args;
 
     /* unused parameters */ (void)cmd; (void)dos_args;
 
@@ -519,13 +519,13 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
             *dst++ = '\\';
         }
     }
-    strcpy( dst, src );
-    dst = UtilBuff + strlen( UtilBuff ) + 1;
-    cmd_tail = dst;
-    strcpy( dst, full_args );
-    dst += strlen( dst );
-    *++dst = '\0';      /* Need two nulls at end */
-    LoadProg( UtilBuff, cmd_tail );
+    while( (*dst++ = *src++) != '\0' )
+        ;
+    cmd_args = dst;
+    while( (*dst++ = *full_args++) != '\0' )
+        ;
+    *dst = '\0';  /* Need two nulls at end */
+    LoadProg( UtilBuff, cmd_args );
     OutputMsgParmNL( MSG_SAMPLE_1, UtilBuff );
     Buff.pid = Pid;
     Buff.tid = 1;
