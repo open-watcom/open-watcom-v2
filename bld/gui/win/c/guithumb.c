@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,7 @@
 
 #include "guiwind.h"
 #include "guixutil.h"
+#include "guiscale.h"
 #include "guiscrol.h"
 
 /*
@@ -58,8 +60,7 @@ static void SetScrollThumb( gui_window * wnd, int percent, int bar )
             range_set = GUI_HRANGE_SET( wnd );
         }
         if( range_set ) {
-            new = (int)( (long)GUIGetScrollRange( wnd, bar ) *
-                         (long)percent / (long)100 );
+            new = GUIMulDiv( int, GUIGetScrollRange( wnd, bar ), percent, 100 );
         } else {
             new = percent;
             GUISetScrollRange( wnd, bar, 0, 100, true );

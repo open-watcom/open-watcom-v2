@@ -763,8 +763,7 @@ extern size_t GUIGetWindowTextLength( gui_window *wnd );
 extern size_t GUIGetWindowText( gui_window *wnd, char *buff, size_t buff_len );
 extern gui_ord GUIGetRow( gui_window *wnd, gui_point *pos );
 extern gui_ord GUIGetCol( gui_window *wnd, const char *text, gui_point *pos );
-extern gui_ord GUIGetStringPos( gui_window *wnd, gui_ord indent,
-                                const char *string, int mouse_x );
+extern gui_ord GUIGetStringPos( gui_window *wnd, gui_ord indent, const char *string, gui_ord mouse_x );
 extern gui_ord GUIGetExtentX( gui_window *wnd, const char *text, size_t length );
 extern gui_ord GUIGetExtentY( gui_window *wnd, const char *text );
 extern gui_ord GUIGetControlExtentX( gui_window *wnd, gui_ctl_id id, const char *text, size_t length );
@@ -772,8 +771,7 @@ extern gui_ord GUIGetControlExtentY( gui_window *wnd, gui_ctl_id id, const char 
 extern void GUIGetTextMetrics( gui_window *wnd, gui_text_metrics *metrics );
 extern void GUIGetDlgTextMetrics( gui_text_metrics *metrics );
 extern void GUIGetMaxDialogSize( gui_coord *size );
-extern void GUIGetPoint( gui_window *wnd, gui_ord extent, gui_ord row,
-                         gui_point *point );
+extern void GUIGetPoint( gui_window *wnd, gui_ord extent, gui_ord row, gui_point *point );
 
 /* Menu Functions */
 

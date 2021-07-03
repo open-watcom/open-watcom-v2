@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,12 +55,8 @@ static void SetScrollRange( p_gadget gadget, gui_ord range )
 
 void GUISetHScrollRange( gui_window * wnd, gui_ord range )
 {
-    gui_coord coord;
-
     if( wnd != NULL ) {
-        coord.x  = range;
-        GUIScaleToScreenR( &coord );
-        SetScrollRange( wnd->hgadget, coord.x );
+        SetScrollRange( wnd->hgadget, GUIScaleToScreenH( range ) );
         wnd->flags |= SETHRANGE;
     }
 }
@@ -70,12 +67,8 @@ void GUISetHScrollRange( gui_window * wnd, gui_ord range )
 
 void GUISetVScrollRange( gui_window * wnd, gui_ord range )
 {
-    gui_coord coord;
-
     if( wnd != NULL ) {
-        coord.y  = range;
-        GUIScaleToScreenR( &coord );
-        SetScrollRange( wnd->vgadget, coord.y );
+        SetScrollRange( wnd->vgadget, GUIScaleToScreenV( range ) );
         wnd->flags |= SETVRANGE;
     }
 }
@@ -120,12 +113,11 @@ gui_ord GUIGetVScrollRangeRows( gui_window * wnd )
 
 gui_ord GUIGetVScrollRange( gui_window *wnd )
 {
-    gui_coord   coord;
+    gui_ord   ord;
 
-    coord.y = GUIGetVScrollRangeRows( wnd );
-    if( coord.y != GUI_NO_ROW ) {
-        GUIScreenToScaleR( &coord );
-        return( coord.y );
+    ord = GUIGetVScrollRangeRows( wnd );
+    if( ord != GUI_NO_ROW ) {
+        return( GUIScreenToScaleV( ord ) );
     } else {
         return( GUI_NO_ROW );
     }
@@ -146,12 +138,11 @@ gui_ord GUIGetHScrollRangeCols( gui_window * wnd )
 
 gui_ord GUIGetHScrollRange( gui_window *wnd )
 {
-    gui_coord   coord;
+    gui_ord     ord;
 
-    coord.x = GUIGetHScrollRangeCols( wnd );
-    if( coord.x != GUI_NO_COLUMN ) {
-        GUIScreenToScaleR( &coord );
-        return( coord.x );
+    ord = GUIGetHScrollRangeCols( wnd );
+    if( ord != GUI_NO_COLUMN ) {
+        return( GUIScreenToScaleH( ord ) );
     } else {
         return( GUI_NO_COLUMN );
     }

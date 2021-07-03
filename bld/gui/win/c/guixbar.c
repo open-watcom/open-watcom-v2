@@ -202,7 +202,6 @@ bool GUIDrawBar( gui_window *wnd, gui_text_ord row, gui_ord start, gui_ord width
     bool                ret;
     gui_rect            rect;
     gui_text_metrics    metrics;
-    gui_coord           coord;
     WPI_COLOUR          colour;
 
     if( (wnd == NULL) || (wnd->hdc == NULLHANDLE) || (wnd->ps == NULL) ) {
@@ -212,16 +211,10 @@ bool GUIDrawBar( gui_window *wnd, gui_text_ord row, gui_ord start, gui_ord width
     ret = true;
 
     GUIGetTextMetrics( wnd, &metrics );
-    coord.x     = start;
-    coord.y     = row * metrics.avg.y;
-    GUIScaleToScreenR( &coord );
-    rect.x      = coord.x;
-    rect.y      = coord.y;
-    coord.x  = width;
-    coord.y  = metrics.avg.y;
-    GUIScaleToScreenR( &coord );
-    rect.width  = coord.x;
-    rect.height = coord.y;
+    rect.x = GUIScaleToScreenH( start );
+    rect.y = GUIScaleToScreenV( row * metrics.avg.y );
+    rect.width = GUIScaleToScreenH( width );
+    rect.height = GUIScaleToScreenV( metrics.avg.y );
     if( width > 0 && rect.width == 0 ) {
         rect.width = 1;
     }

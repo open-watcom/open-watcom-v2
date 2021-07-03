@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -132,16 +132,11 @@ int GUIGetTopIndex( gui_window *wnd, gui_ctl_id id )
 bool GUISetHorizontalExtent( gui_window *wnd, gui_ctl_id id, int extent )
 {
 #ifndef __OS2_PM__
-    gui_coord   coord;
-
-    coord.x = extent;
-    GUIScaleToScreenR( &coord );
-    GUIToComboList( wnd, id, LB_SETHORIZONTALEXTENT, LB_SETHORIZONTALEXTENT, coord.x, (WPI_PARAM2)0, (WPI_MRESULT)0 );
+    GUIToComboList( wnd, id, LB_SETHORIZONTALEXTENT, LB_SETHORIZONTALEXTENT, GUIScaleToScreenH( extent ), (WPI_PARAM2)0, (WPI_MRESULT)0 );
     return( true );
 #else
-    wnd = wnd;
-    id = id;
-    extent = extent;
+    /* unused parameters */ (void)wnd; (void)id; (void)extent;
+
     return( false );
 #endif
 }

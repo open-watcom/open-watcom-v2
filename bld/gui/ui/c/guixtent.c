@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,17 +41,15 @@
 
 gui_ord GUIGetExtentX( gui_window * wnd, const char * text, size_t length )
 {
-    gui_coord coord;
+    gui_ord     ord;
 
     /* unused parameters */ (void)wnd;
 
     if( text ) {
-        coord.x = strlen( text );
-        if( coord.x > length )
-            coord.x = length;
-        coord.y = 1;
-        GUIScreenToScaleR( &coord );
-        return( coord.x );
+        ord = strlen( text );
+        if( ord > length )
+            ord = length;
+        return( GUIScreenToScaleH( ord ) );
     } else {
         return( 0 );
     }
@@ -58,14 +57,9 @@ gui_ord GUIGetExtentX( gui_window * wnd, const char * text, size_t length )
 
 gui_ord GUIGetExtentY( gui_window * wnd, const char * text )
 {
-    gui_coord coord;
-
     /* unused parameters */ (void)wnd; (void)text;
 
-    coord.x = 1;
-    coord.y = 1;
-    GUIScreenToScaleR( &coord );
-    return( coord.y );
+    return( GUIScreenToScaleV( 1 ) );
 }
 
 gui_ord GUIGetControlExtentX( gui_window * wnd, gui_ctl_id id, const char * text, size_t length )

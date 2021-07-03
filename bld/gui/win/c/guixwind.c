@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -707,9 +707,8 @@ void GUIResizeBackground( gui_window *wnd, bool force_msg )
     _wpi_getclientrect( wnd->hwnd, &wnd->hwnd_client_rect );
 
     if( force_msg && (wnd->flags & SENT_INIT) ) {
-        size.x = right - left;
-        size.y = bottom - top;
-        GUIScreenToScaleR( &size );
+        size.x = GUIScreenToScaleH( right - left );
+        size.y = GUIScreenToScaleV( bottom - top );
         GUIEVENT( wnd, GUI_RESIZE, &size );
     }
 }
@@ -1156,9 +1155,8 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
     case WM_MOUSEMOVE:
         currentpoint.x = GET_WM_MOUSEMOVE_POSX( wparam, lparam );
         currentpoint.y = GET_WM_MOUSEMOVE_POSY( wparam, lparam );
-        point.x = currentpoint.x;
-        point.y = currentpoint.y;
-        GUIScreenToScaleR( &point );
+        point.x = GUIScreenToScaleH( currentpoint.x );
+        point.y = GUIScreenToScaleV( currentpoint.y );
         if( ( currentpoint.x != prevpoint.x ) || ( currentpoint.y != prevpoint.y ) ) {
             prevpoint.x = currentpoint.x;
             prevpoint.y = currentpoint.y;

@@ -130,7 +130,7 @@ static bool DrawLine( gui_window *wnd, gui_point *start, gui_point *end,
     gui_point   my_end;
     HPEN        pen;
     int         win_style;
-    gui_coord   coord;
+    gui_ord     pen_thickness;
     HPEN        old_pen;
     int         hscroll;
     int         vscroll;
@@ -154,31 +154,30 @@ static bool DrawLine( gui_window *wnd, gui_point *start, gui_point *end,
     switch( style ) {
     case GUI_PEN_SOLID :
         win_style = PS_SOLID;
-        coord.x = thickness;
-        GUIScaleToScreenR( &coord );
+        pen_thickness = GUIScaleToScreenH( thickness );
         break;
     case GUI_PEN_DASH :
-        coord.x = 1;
+        pen_thickness = 1;
         win_style = PS_DASH;
         break;
     case GUI_PEN_DOT :
-        coord.x = 1;
+        pen_thickness = 1;
         win_style = PS_DOT;
         break;
     case GUI_PEN_DASHDOT :
-        coord.x = 1;
+        pen_thickness = 1;
         win_style = PS_DASHDOT;
         break;
     case GUI_PEN_DASHDOTDOT :
-        coord.x = 1;
+        pen_thickness = 1;
         win_style = PS_DASHDOTDOT;
         break;
     default:
-        coord.x = 0;
+        pen_thickness = 0;
         win_style = 0;
         break;
     }
-    pen = _wpi_createpen( win_style, coord.x, colour );
+    pen = _wpi_createpen( win_style, pen_thickness, colour );
 
     old_pen = _wpi_selectpen( wnd->hdc, pen );
 

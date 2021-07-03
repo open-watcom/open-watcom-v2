@@ -106,21 +106,14 @@ static bool DrawRect( gui_window *wnd, gui_rect *rect, gui_attr attr,
                       bool fill, bool outline, char draw_char )
 {
     SAREA       area;
-    gui_coord   coord;
 
     if( ( rect->width == 0 ) || ( rect->height == 0 ) || ( (wnd->flags & CONTENTS_INVALID) == 0 ) ) {
         return( false );
     }
-    coord.x = rect->x;
-    coord.y = rect->y;
-    GUIScaleToScreenR( &coord );
-    area.col = coord.x;
-    area.row = coord.y;
-    coord.x = rect->width;
-    coord.y = rect->height;
-    GUIScaleToScreenR( &coord );
-    area.width = coord.x;
-    area.height = coord.y;
+    area.col = GUIScaleToScreenH( rect->x );
+    area.row = GUIScaleToScreenV( rect->y );
+    area.width = GUIScaleToScreenH( rect->width );
+    area.height = GUIScaleToScreenV( rect->height );
     if( AdjustRect( wnd, &area ) ) {
         if( fill ) {
             uivfill( &wnd->vs, area, WNDATTR( wnd, attr ), draw_char );

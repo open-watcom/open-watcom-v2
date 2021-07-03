@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,7 @@
 void GUITruncToPixel( gui_coord * coord )
 {
     if( coord != NULL ) {
-        GUIScaleToScreenR( coord );
-        GUIScreenToScaleR( coord );
+        coord->x = GUIScreenToScaleH( GUIScaleToScreenH( coord->x ) );
+        coord->y = GUIScreenToScaleV( GUIScaleToScreenV( coord->y ) );
     }
 }

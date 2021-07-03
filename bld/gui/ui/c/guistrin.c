@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,20 +42,18 @@
 gui_ord GUIGetStringPos( gui_window *wnd, gui_ord indent, const char *string, gui_ord mouse_x )
 {
     size_t      pos;
-    gui_coord   start;
-    gui_coord   mouse;
+    gui_ord     start;
+    gui_ord     mouse;
 
     /* unused parameters */ (void)wnd;
 
-    start.x = indent ;
-    GUIScaleToScreenR( &start );
-    mouse.x = mouse_x;
-    GUIScaleToScreenR( &mouse );
+    start = GUIScaleToScreenH( indent );
+    mouse = GUIScaleToScreenH( mouse_x );
 
-    if( mouse.x < start.x ) {
+    if( mouse < start ) {
         return( GUI_NO_COLUMN );
     }
-    pos = mouse.x - start.x;
+    pos = mouse - start;
     if( pos >= strlen( string ) ) {
         return( GUI_NO_COLUMN );
     } else {

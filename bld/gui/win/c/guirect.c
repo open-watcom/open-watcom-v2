@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,16 +65,16 @@ void DoGetRelRect( HWND hwnd, WPI_RECT *win, gui_rect *rect, bool ispopup )
         pos.x -= left;
         pos.y -= top;
         pos.y = _wpi_cvth_y( pos.y, bottom - top );
-        GUIScreenToScaleR( &pos );
+        rect->x = GUIScreenToScaleH( pos.x );
+        rect->y = GUIScreenToScaleV( pos.y );
     } else {
         pos.y = _wpi_cvts_y( pos.y );
         GUIScreenToScale( &pos );
+        rect->x = pos.x;
+        rect->y = pos.y;
     }
-    GUIScreenToScaleR( &size );
-    rect->x = pos.x;
-    rect->y = pos.y;
-    rect->width = size.x;
-    rect->height = size.y;
+    rect->width = GUIScreenToScaleH( size.x );
+    rect->height = GUIScreenToScaleV( size.y );
 }
 
 void GUIGetRelRect( HWND hwnd, gui_rect *rect, bool ispopup )

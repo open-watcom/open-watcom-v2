@@ -53,9 +53,13 @@ extern void GUISetScreen( gui_ord xmin, gui_ord ymin, gui_ord width, gui_ord hei
 
 extern bool GUIScaleToScreen( gui_coord *coord );
 extern bool GUIScaleToScreenR( gui_coord *coord );
+extern gui_screen_ord GUIScaleToScreenH( gui_ord ord );
+extern gui_screen_ord GUIScaleToScreenV( gui_ord ord );
 
 extern bool GUIScreenToScale( gui_coord *coord );
 extern bool GUIScreenToScaleR( gui_coord *coord );
+extern gui_ord GUIScreenToScaleH( gui_screen_ord screen_ord );
+extern gui_ord GUIScreenToScaleV( gui_screen_ord screen_ord );
 
 extern bool GUIScreenToScaleRect( gui_screen_rect *screen_rect, gui_rect *rect );
 extern bool GUIScreenToScaleRectR( gui_screen_rect *screen_rect, gui_rect *rect );

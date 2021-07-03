@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -334,16 +334,10 @@ void GUIMakeRelative( gui_window *wnd, gui_coord *point, gui_point *pt )
     SAREA       area;
     SAREA       use;
 
-    GUIScreenToScaleR( point );
     GUIGetSAREA( wnd, &area );
     GUISetUseArea( wnd, &area, &use );
-    pt->x = point->x;
-    pt->y = point->y;
-    point->x = use.col + area.col;
-    point->y = use.row + area.row;
-    GUIScreenToScaleR( point );
-    pt->x -= point->x;
-    pt->y -= point->y;
+    pt->x = GUIScreenToScaleH( point->x ) - GUIScreenToScaleH( use.col + area.col );
+    pt->y = GUIScreenToScaleV( point->y ) - GUIScreenToScaleV( use.row + area.row );
 }
 
 /*

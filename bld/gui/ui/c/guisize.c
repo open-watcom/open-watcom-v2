@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -275,9 +275,8 @@ static bool SizeWnd( gui_window *wnd, SAREA *area, gui_flags flag,
     wnd->flags |= NEEDS_RESIZE_REDRAW;
     wnd->flags &= ~DONT_SEND_PAINT;
     if( flag != MINIMIZED ) {
-        newsize.x = wnd->use.width;
-        newsize.y = wnd->use.height;
-        GUIScreenToScaleR( &newsize );
+        newsize.x = GUIScreenToScaleH( wnd->use.width );
+        newsize.y = GUIScreenToScaleV( wnd->use.height );
         GUIEVENT( wnd, GUI_RESIZE, &newsize );
     }
     if( was_minimized ) {
@@ -624,9 +623,8 @@ bool GUIResizeWindow( gui_window *wnd, gui_rect *rect )
     }
     if( GUI_IS_DIALOG( wnd ) ) {
         ret = GUIResizeDialog( wnd, &area );
-        newsize.x = wnd->use.width;
-        newsize.y = wnd->use.height;
-        GUIScreenToScaleR( &newsize );
+        newsize.x = GUIScreenToScaleH( wnd->use.width );
+        newsize.y = GUIScreenToScaleV( wnd->use.height );
         GUIEVENT( wnd, GUI_RESIZE, &newsize );
     } else {
         hidden = uivshow( &wnd->vs );

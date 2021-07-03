@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +50,6 @@ void GUIXDrawText( gui_window *wnd, const char *text, size_t length, gui_coord *
     gui_coord   my_pos;         /* pos in screen coords */
     int         pos;            /* position to draw on VSCREEN */
     int         col;            /* index into string */
-    gui_coord   extent;
     SAREA       area;
     int         width;
     int         frame_adjust;
@@ -68,9 +67,8 @@ void GUIXDrawText( gui_window *wnd, const char *text, size_t length, gui_coord *
         frame_adjust = 1;
     }
 
-    my_pos.x = in_pos->x;
-    my_pos.y = in_pos->y;
-    GUIScaleToScreenR( &my_pos );
+    my_pos.x = GUIScaleToScreenH( in_pos->x );
+    my_pos.y = GUIScaleToScreenV( in_pos->y );
 
     /* adjust for scrolling */
     vscroll = 0;
@@ -155,9 +153,7 @@ void GUIXDrawText( gui_window *wnd, const char *text, size_t length, gui_coord *
             /* record total width user wants to cover, adjusting for
              * portion not visible due to scrolling scrolling
              */
-            extent.x = extentx + in_pos->x;
-            GUIScaleToScreenR( &extent );
-            extentx = extent.x - hscroll;
+            extentx = GUIScaleToScreenH( extentx + in_pos->x ) - hscroll;
         }
 
         if( ( pos + length ) <= extentx ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,26 +83,21 @@ static void DoResizeStatus( gui_window *wnd )
     }
 }
 
-static void CalcStatusRect( gui_window *wnd, gui_ord x, gui_ord height,
-                            WPI_RECT *rect )
+static void CalcStatusRect( gui_window *wnd, gui_ord x, gui_ord height, WPI_RECT *rect )
 {
     gui_text_metrics    metrics;
-    gui_coord           size;
-    gui_coord           pos;
+    gui_ord             size_y;
 
-    pos.x = x;
-    GUIScaleToScreenR( &pos );
     if( height == 0 ) {
         GUIGetTextMetrics( wnd, &metrics );
-        size.y = metrics.max.y;
+        size_y = GUIScaleToScreenV( metrics.max.y );
     } else {
-        size.y = height;
+        size_y = GUIScaleToScreenV( height );
     }
-    GUIScaleToScreenR( &size );
     if( height == 0 ) {
-        size.y += TOTAL_VERT + 2; /* windows is 2 pixels higher than client */
+        size_y += TOTAL_VERT + 2; /* windows is 2 pixels higher than client */
     }
-    SetStatusRect( wnd->root, rect, pos.x, size.y );
+    SetStatusRect( wnd->root, rect, GUIScaleToScreenH( x ), size_y );
 }
 
 /*

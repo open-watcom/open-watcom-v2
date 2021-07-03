@@ -38,7 +38,7 @@
 #include "guiscale.h"
 
 
-gui_ord GUIGetRow( gui_window * wnd, gui_point * in_pos )
+gui_ord GUIGetRow( gui_window *wnd, gui_point *in_pos )
 {
     int         height;
     gui_ord     row;

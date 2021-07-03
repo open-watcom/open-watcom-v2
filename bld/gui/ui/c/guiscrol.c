@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -106,21 +106,14 @@ static void InitScroll( p_gadget gadget, int pos )
 static void Scrl( p_gadget gadget, gui_ord scroll_pos, bool scale,
                   void (*fn)( p_gadget, int ) )
 {
-    gui_coord coord;
     gui_ord   pos;
 
     if( gadget != NULL ) {
         if( scale ) {
             if( gadget->dir == VERTICAL ) {
-                coord.y  = scroll_pos;
+                pos = GUIScaleToScreenV( scroll_pos );
             } else {
-                coord.x = scroll_pos;
-            }
-            GUIScaleToScreenR( &coord );
-            if( gadget->dir == VERTICAL ) {
-                pos  = coord.y;
-            } else {
-                pos = coord.x;
+                pos = GUIScaleToScreenH( scroll_pos );
             }
             if( ( pos == 0 ) && ( scroll_pos != 0 ) ) {
                 pos++;

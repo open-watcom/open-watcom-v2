@@ -335,9 +335,8 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
         if( wnd != NULL ) {
             _wpi_getclientrect( hwnd, &wnd->hwnd_client_rect );
             wnd->root_client_rect = wnd->hwnd_client_rect;
-            size.x = _wpi_getwmsizex( wparam, lparam );
-            size.y = _wpi_getwmsizey( wparam, lparam );
-            GUIScreenToScaleR( &size );
+            size.x = GUIScreenToScaleH( _wpi_getwmsizex( wparam, lparam ) );
+            size.y = GUIScreenToScaleV( _wpi_getwmsizey( wparam, lparam ) );
             GUISetRowCol( wnd, &size );
             GUIEVENT( wnd, GUI_RESIZE, &size );
         }
@@ -581,12 +580,10 @@ static void AdjustForFrame( gui_coord *pos, gui_coord *size )
 
 static void GUIDlgCalcLocation( gui_rect *rect, gui_coord *pos, gui_coord *size )
 {
-    pos->x = rect->x;
-    pos->y = rect->y;
-    size->x = rect->width;
-    size->y = rect->height;
-    GUIScaleToScreenR( pos );
-    GUIScaleToScreenR( size );
+    pos->x = GUIScaleToScreenH( rect->x );
+    pos->y = GUIScaleToScreenV( rect->y );
+    size->x = GUIScaleToScreenH( rect->width );
+    size->y = GUIScaleToScreenV( rect->height );
 }
 
 /*

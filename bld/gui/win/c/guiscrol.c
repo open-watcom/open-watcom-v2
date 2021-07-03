@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -147,14 +148,13 @@ void GUISetHScrollCol( gui_window *wnd, int hscroll_pos )
 
 void GUISetVScroll( gui_window *wnd, gui_ord vscroll_pos )
 {
-    gui_coord coord;
+    gui_ord     ord;
 
-    coord.y = vscroll_pos;
-    GUIScaleToScreenR( &coord );
-    if( ( vscroll_pos != 0 ) && ( coord.y == 0 ) ) {
-        coord.y++;
+    ord = GUIScaleToScreenV( vscroll_pos );
+    if( ( vscroll_pos != 0 ) && ( ord == 0 ) ) {
+        ord++;
     }
-    SetScroll( wnd, SB_VERT, coord.y );
+    SetScroll( wnd, SB_VERT, ord );
 }
 
 /*
@@ -164,14 +164,13 @@ void GUISetVScroll( gui_window *wnd, gui_ord vscroll_pos )
 
 void GUISetHScroll( gui_window *wnd, gui_ord hscroll_pos )
 {
-    gui_coord coord;
+    gui_ord     ord;
 
-    coord.x = hscroll_pos;
-    GUIScaleToScreenR( &coord );
-    if( ( hscroll_pos != 0 ) && ( coord.x == 0 ) ) {
-        coord.x++;
+    ord = GUIScaleToScreenH( hscroll_pos );
+    if( ( hscroll_pos != 0 ) && ( ord == 0 ) ) {
+        ord++;
     }
-    SetScroll( wnd, SB_HORZ, coord.x );
+    SetScroll( wnd, SB_HORZ, ord );
 }
 
 /*

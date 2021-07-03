@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -281,11 +281,7 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
         width = fixed_width + OUTLINE_AMOUNT;
     } else {
         /* only height of windows given, make bitmaps square */
-        size.x = 0;
-        size.y = height - 2;
-        GUIScaleToScreenR( &size );
-        height = size.y;
-        width = size.y;
+        width = height = GUIScaleToScreenV( height - 2 );
     }
 
     _wpi_getrectvalues( tbar->fixedrect, &left, &top, &right, &bottom );

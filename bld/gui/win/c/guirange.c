@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -93,12 +94,8 @@ void GUISetVScrollRangeRows( gui_window *wnd, gui_ord range )
 
 void GUISetHScrollRange( gui_window *wnd, gui_ord range )
 {
-    gui_coord coord;
-
     wnd->flags &= ~HRANGE_COL;
-    coord.x = range;
-    GUIScaleToScreenR( &coord );
-    SetRange( wnd, SB_HORZ, coord.x, false );
+    SetRange( wnd, SB_HORZ, GUIScaleToScreenH( range ), false );
 }
 
 /*
@@ -107,12 +104,8 @@ void GUISetHScrollRange( gui_window *wnd, gui_ord range )
 
 void GUISetVScrollRange( gui_window *wnd, gui_ord range )
 {
-    gui_coord coord;
-
     wnd->flags &= ~VRANGE_ROW;
-    coord.y = range;
-    GUIScaleToScreenR( &coord );
-    SetRange( wnd, SB_VERT, coord.y, false );
+    SetRange( wnd, SB_VERT, GUIScaleToScreenV( range ), false );
 }
 
 /*
@@ -121,11 +114,7 @@ void GUISetVScrollRange( gui_window *wnd, gui_ord range )
 
 gui_ord GUIGetHScrollRange( gui_window *wnd )
 {
-    gui_coord   coord;
-
-    coord.x = GUIGetScrollRange( wnd, SB_HORZ );
-    GUIScreenToScaleR( &coord );
-    return( coord.x );
+    return( GUIScreenToScaleH( GUIGetScrollRange( wnd, SB_HORZ ) ) );
 }
 
 /*
@@ -134,11 +123,7 @@ gui_ord GUIGetHScrollRange( gui_window *wnd )
 
 gui_ord GUIGetVScrollRange( gui_window *wnd )
 {
-    gui_coord   coord;
-
-    coord.y = GUIGetScrollRange( wnd, SB_VERT );
-    GUIScreenToScaleR( &coord );
-    return( coord.y );
+    return( GUIScreenToScaleV( GUIGetScrollRange( wnd, SB_VERT ) ) );
 }
 
 /*

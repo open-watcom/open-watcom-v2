@@ -39,7 +39,7 @@
  * GUIGetRow - get the row that the mouse is on
  */
 
-gui_ord GUIGetRow( gui_window * wnd, gui_point * in_pt )
+gui_ord GUIGetRow( gui_window *wnd, gui_point *in_pt )
 {
     gui_point pt;
 
@@ -48,7 +48,7 @@ gui_ord GUIGetRow( gui_window * wnd, gui_point * in_pt )
     pt = *in_pt;
     GUIScaleToScreenPointR( &pt );
     if( pt.y >=0 ) {
-        return( (gui_ord) pt.y );
+        return( (gui_ord)pt.y );
     } else {
         return( GUI_NO_ROW );
     }
@@ -67,7 +67,7 @@ gui_ord GUIGetCol( gui_window *wnd, const char *text, gui_point *in_pt )
     pt = *in_pt;
     GUIScaleToScreenPointR( &pt );
     if( pt.x >=0 ) {
-        return( (gui_ord) pt.x );
+        return( (gui_ord)pt.x );
     } else {
         return( GUI_NO_COLUMN );
     }

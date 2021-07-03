@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,14 +49,14 @@ static gui_ord DoReturn( gui_ord ret, gui_window *wnd, bool got_new )
  * GUIGetStringPos
  */
 
-gui_ord GUIGetStringPos( gui_window *wnd, gui_ord indent, const char *string, int mouse_x )
+gui_ord GUIGetStringPos( gui_window *wnd, gui_ord indent, const char *string, gui_ord mouse_x )
 {
-    gui_coord diff;
-    int       guess;
-    int       length;
-    int       curr;
-    int       new_curr;
-    bool      got_new;
+    gui_ord     diff_x;
+    gui_ord     guess;
+    gui_ord     length;
+    gui_ord     curr;
+    gui_ord     new_curr;
+    bool        got_new;
 
     if( indent > mouse_x ) {
         return( GUI_NO_COLUMN );
@@ -63,23 +64,22 @@ gui_ord GUIGetStringPos( gui_window *wnd, gui_ord indent, const char *string, in
 
     got_new = GUIGetTheDC( wnd );
 
-    diff.x = mouse_x - indent;
-    GUIScaleToScreenR( &diff );
+    diff_x = GUIScaleToScreenH( mouse_x - indent );
     length = strlen( string );
     guess = length;
     curr = GUIGetTextExtentX( wnd, string, guess );
-    if( curr < diff.x ) {
+    if( curr < diff_x ) {
         return( DoReturn( GUI_NO_COLUMN, wnd, got_new ) );
     }
-    if( curr == diff.x ) {
-        return( DoReturn( (gui_ord)guess, wnd, got_new ) );
+    if( curr == diff_x ) {
+        return( DoReturn( guess, wnd, got_new ) );
     }
-    guess = diff.x * (long)length / curr;
+    guess = GUIMulDiv( gui_ord, length, diff_x, curr );
     curr = GUIGetTextExtentX( wnd, string, guess );
-    if( curr == diff.x ) {
-        return( DoReturn( (gui_ord)guess, wnd, got_new ) );
+    if( curr == diff_x ) {
+        return( DoReturn( guess, wnd, got_new ) );
     }
-    if( curr < diff.x ) {
+    if( curr < diff_x ) {
         guess++;
     } else {
         guess--;
@@ -87,16 +87,16 @@ gui_ord GUIGetStringPos( gui_window *wnd, gui_ord indent, const char *string, in
     for( ;; ) {
         new_curr = GUIGetTextExtentX( wnd, string, guess );
 
-        if( new_curr == diff.x ) {
-            return( DoReturn( (gui_ord) guess, wnd, got_new ) );
+        if( new_curr == diff_x ) {
+            return( DoReturn( guess, wnd, got_new ) );
         }
-        if( ( new_curr < diff.x ) && ( curr > diff.x ) ) {
-            return( DoReturn( (gui_ord)guess, wnd, got_new ) );
+        if( ( new_curr < diff_x ) && ( curr > diff_x ) ) {
+            return( DoReturn( guess, wnd, got_new ) );
         }
-        if( ( new_curr > diff.x ) && ( curr < diff.x ) ) {
-            return( DoReturn( (gui_ord)guess - 1, wnd, got_new ) );
+        if( ( new_curr > diff_x ) && ( curr < diff_x ) ) {
+            return( DoReturn( guess - 1, wnd, got_new ) );
         }
-        if( new_curr < diff.x ) {
+        if( new_curr < diff_x ) {
             guess++;
         } else {
             guess--;

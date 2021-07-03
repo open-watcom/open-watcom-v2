@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -81,8 +82,7 @@ bool GUIGetHotSpotSize( int hot_spot, gui_coord *size )
         ( hot_spot < 1 ) ) {
         return( false );
     }
-    size->x = GUIHotSpots[hot_spot-1].size.x;
-    size->y = GUIHotSpots[hot_spot-1].size.y;
-    GUIScreenToScaleR( size );
+    size->x = GUIScreenToScaleH( GUIHotSpots[hot_spot-1].size.x );
+    size->y = GUIScreenToScaleV( GUIHotSpots[hot_spot-1].size.y );
     return( true );
 }
