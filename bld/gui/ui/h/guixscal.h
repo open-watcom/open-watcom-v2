@@ -39,8 +39,8 @@
 #define gui_screen_rect     SAREA
 #define s_x                 col
 #define s_y                 row
-#define s_height            height
 #define s_width             width
+#define s_height            height
 
 extern void GUIGetScreenArea( SAREA *area );
 

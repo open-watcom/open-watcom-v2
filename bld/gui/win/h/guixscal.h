@@ -39,8 +39,8 @@
 #define gui_screen_rect     gui_rect
 #define s_x                 x
 #define s_y                 y
-#define s_height            height
 #define s_width             width
+#define s_height            height
 
 extern WPI_TEXTMETRIC   GUItm;
 
