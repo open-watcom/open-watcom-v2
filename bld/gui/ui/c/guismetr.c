@@ -40,7 +40,7 @@ void GUIGetSystemMetrics( gui_system_metrics *pmetrics )
     if( pmetrics != NULL ) {
         GUIGetTextMetrics( NULL, &metrics );
         pmetrics->resize_border.x = metrics.max.x; /* don't need to scale 0 */
-        pmetrics->resize_border.y = metrics.max.x;
+        pmetrics->resize_border.y = metrics.max.y;
         pmetrics->mouse = uimouseinstalled();
         if( UIData != NULL ) {
             pmetrics->colour = ( UIData->colour != M_MONO );
