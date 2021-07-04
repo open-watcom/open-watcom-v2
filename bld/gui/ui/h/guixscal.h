@@ -37,8 +37,8 @@
 #define gui_screen_ord      gui_text_ord
 #define gui_screen_point    gui_point
 #define gui_screen_rect     SAREA
-#define s_x                 row
-#define s_y                 col
+#define s_x                 col
+#define s_y                 row
 #define s_height            height
 #define s_width             width
 
