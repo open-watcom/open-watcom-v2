@@ -63,7 +63,7 @@ static bool scroll_catch_check( WPI_QMSG *qmsg )
 static gui_window *getFirstGUIParent( HWND hwnd )
 {
     HWND        parent;
-    gui_window  *gui;
+    gui_window  *wnd;
 
     wnd = NULL;
 
