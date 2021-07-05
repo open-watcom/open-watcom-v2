@@ -1264,7 +1264,11 @@ extern BOOL _wpi_isiconic( HWND hwnd );
 
     #define GET_WM_INITMENU_MENU( parm1, parm2 ) (HMENU) parm2
 
+    #define GET_WM_HSCROLL_CMD( parm1, parm2 ) SHORT2FROMMP( parm2 )
+
     #define GET_WM_VSCROLL_CMD( parm1, parm2 ) SHORT2FROMMP( parm2 )
+
+    #define GET_WM_HSCROLL_POS( parm1, parm2 ) SHORT1FROMMP( parm2 )
 
     #define GET_WM_VSCROLL_POS( parm1, parm2 ) SHORT1FROMMP( parm2 )
 
