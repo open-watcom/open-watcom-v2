@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -131,7 +131,7 @@ static gui_window * Status = NULL;
  * GetNewGUIEventProc - call back routine for the GetNewVal dialog
  */
 
-static bool GetNewGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool GetNewGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
 
@@ -148,18 +148,18 @@ static bool GetNewGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
         GUI_GETID( param, id );
         switch( id ) {
         case CTL_CANCEL:
-            GUICloseDialog( gui );
+            GUICloseDialog( wnd );
             ret_val = GUI_RET_CANCEL;
             break;
         case CTL_OK:
-            text = GUIGetText( gui, CTL_EDIT );
+            text = GUIGetText( wnd, CTL_EDIT );
             if( Status == NULL ) {
                 Status = GUICreateWindow( &StatusWnd );
             } else {
                 NumEnters ++;
                 Rect.width = ( NumEnters * Width ) / 4;
                 if( NumEnters > 4 ) {
-                    GUICloseDialog( gui );
+                    GUICloseDialog( wnd );
                 } else {
                     GUIWndDirty( Status );
                 }
@@ -176,7 +176,7 @@ static bool GetNewGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
  * StatusGUIEventProc - call back routine for the status window
  */
 
-static bool StatusGUIEventProc( gui_window * gui, gui_event gui_ev, void * param )
+static bool StatusGUIEventProc( gui_window * wnd, gui_event gui_ev, void * param )
 {
     int              i;
     int              pos;
@@ -186,9 +186,9 @@ static bool StatusGUIEventProc( gui_window * gui, gui_event gui_ev, void * param
 
     switch( gui_ev ) {
     case GUI_INIT_WINDOW :
-        Row = GUIGetNumRows( gui ) / 2;
-        GUIGetTextMetrics( gui, &metrics );
-        GUIGetClientRect( gui, &Rect );
+        Row = GUIGetNumRows( wnd ) / 2;
+        GUIGetTextMetrics( wnd, &metrics );
+        GUIGetClientRect( wnd, &Rect );
 #if 1
         Rect.x = 1;
         Rect.y = 1;
@@ -207,16 +207,16 @@ static bool StatusGUIEventProc( gui_window * gui, gui_event gui_ev, void * param
     case GUI_DESTROY :
         return( true );
     case GUI_PAINT :
-        GUIDrawRect( gui, &Rect, GUI_FIRST_UNUSED );
+        GUIDrawRect( wnd, &Rect, GUI_FIRST_UNUSED );
         for( i = 0; i < NUM_TEXT; i++ ) {
             pos = ( i * Width / 4 ) - Strlen[i] + Rect.x;
             if( pos < (int)Rect.x ) {
                 pos = Rect.x;
             }
             if( ( i > NumEnters ) || ( i == 0 ) && ( NumEnters == 0 ) ) {
-                GUIDrawText( gui, &Text[i], Strlen[i], Row, pos, GUI_TITLE_ACTIVE );
+                GUIDrawText( wnd, &Text[i], Strlen[i], Row, pos, GUI_TITLE_ACTIVE );
             } else {
-                GUIDrawText( gui, &Text[i], Strlen[i], Row, pos, GUI_FIRST_UNUSED );
+                GUIDrawText( wnd, &Text[i], Strlen[i], Row, pos, GUI_FIRST_UNUSED );
             }
         }
         return( true );

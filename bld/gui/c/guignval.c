@@ -89,12 +89,12 @@ typedef struct ret_info {
  * GetNewValGUIEventProc - call back routine for the GetNewVal dialog
  */
 
-static bool GetNewValGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool GetNewValGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
     ret_info    *info;
 
-    info = GUIGetExtra( gui );
+    info = GUIGetExtra( wnd );
     switch( gui_ev ) {
     case GUI_INIT_DIALOG :
         info->ret_val = GUI_RET_CANCEL;
@@ -103,12 +103,12 @@ static bool GetNewValGUIEventProc( gui_window *gui, gui_event gui_ev, void *para
         GUI_GETID( param, id );
         switch( id ) {
         case CTL_CANCEL :
-            GUICloseDialog( gui );
+            GUICloseDialog( wnd );
             info->ret_val = GUI_RET_CANCEL;
             return( true );
         case CTL_OK :
-            info->text = GUIGetText( gui, CTL_EDIT );
-            GUICloseDialog( gui );
+            info->text = GUIGetText( wnd, CTL_EDIT );
+            GUICloseDialog( wnd );
             info->ret_val = GUI_RET_OK;
             return( true );
         default :

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,14 +35,14 @@
 #include <string.h>
 
 
-size_t GUIDlgBuffGetText( gui_window *gui, gui_ctl_id id, char *buff, size_t buff_len )
+size_t GUIDlgBuffGetText( gui_window *wnd, gui_ctl_id id, char *buff, size_t buff_len )
 {
     char        *str;
     size_t      len;
 
     if( buff_len == 0 )
         return( 0 );
-    str = GUIGetText( gui, id );
+    str = GUIGetText( wnd, id );
     if( str == NULL ) {
         len = 0;
     } else {

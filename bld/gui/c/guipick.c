@@ -63,24 +63,24 @@ static gui_control_info Controls[] = {
     #undef pick_p3id
 };
 
-bool GUIPickGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+bool GUIPickGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
 {
     gui_ctl_id          id;
     dlg_pick            *dlg;
 
-    dlg = (dlg_pick*)GUIGetExtra( gui );
+    dlg = (dlg_pick*)GUIGetExtra( wnd );
     switch( gui_ev ) {
     case GUI_INIT_DIALOG:
-        GUIClearList( gui, CTL_PICK_LIST );
-        (*dlg->func)( gui, CTL_PICK_LIST );
-        GUISetFocus( gui, CTL_PICK_LIST );
+        GUIClearList( wnd, CTL_PICK_LIST );
+        (*dlg->func)( wnd, CTL_PICK_LIST );
+        GUISetFocus( wnd, CTL_PICK_LIST );
         return( true );
     case GUI_CONTROL_DCLICKED:
         GUI_GETID( param, id );
         if( id == CTL_PICK_LIST ) {
             dlg->choice = -1;
-            GUIGetCurrSelect( gui, CTL_PICK_LIST, &dlg->choice );
-            GUICloseDialog( gui );
+            GUIGetCurrSelect( wnd, CTL_PICK_LIST, &dlg->choice );
+            GUICloseDialog( wnd );
             return( true );
         }
         break;
@@ -89,10 +89,10 @@ bool GUIPickGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
         switch( id ) {
         case CTL_PICK_OK:
             dlg->choice = -1;
-            GUIGetCurrSelect( gui, CTL_PICK_LIST, &dlg->choice );
+            GUIGetCurrSelect( wnd, CTL_PICK_LIST, &dlg->choice );
             /* fall through */
         case CTL_PICK_CANCEL:
-            GUICloseDialog( gui );
+            GUICloseDialog( wnd );
             return( true );
         }
         break;

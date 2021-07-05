@@ -158,12 +158,12 @@ static void InitMessageControls( void )
  * DisplayMessageGUIEventProc - callback function for dialog box
  */
 
-static bool DisplayMessageGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool DisplayMessageGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
 {
     gui_message_return *ret;
     gui_ctl_id          id;
 
-    ret = GUIGetExtra( gui );
+    ret = GUIGetExtra( wnd );
     switch( gui_ev ) {
     case GUI_CONTROL_CLICKED :
         GUI_GETID( param, id );
@@ -176,7 +176,7 @@ static bool DisplayMessageGUIEventProc( gui_window *gui, gui_event gui_ev, void 
         case GUI_RET_RETRY :
         case GUI_RET_YES :
             *ret = (gui_message_return)id;
-            GUICloseDialog( gui );
+            GUICloseDialog( wnd );
             return( true );
         default :
             break;
