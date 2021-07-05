@@ -41,7 +41,7 @@
 
 #define _osmode_REALMODE()  (_osmode == DOS_MODE)
 
-#if defined( _M_X86 )
+#if defined( _M_IX86 )
 extern long DosGetFullPath( char __FAR *org, char __FAR *real );
 #if defined( _M_I86 )
 #pragma aux DosGetFullPath = \

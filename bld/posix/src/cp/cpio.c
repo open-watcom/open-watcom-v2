@@ -36,6 +36,7 @@
 #else
     #include <sys/utime.h>
 #endif
+#include "wio.h"
 
 #include "clibext.h"
 
