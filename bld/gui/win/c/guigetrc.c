@@ -38,38 +38,27 @@
 #include "guiscale.h"
 
 
-gui_ord GUIGetRow( gui_window *wnd, gui_point *in_pos )
+gui_text_ord GUIGetRow( gui_window *wnd, gui_point *in_pos )
 {
-    int         height;
-    gui_ord     row;
-    gui_point   pos;
-
-
-    pos = *in_pos;
     GUIGetMetrics( wnd );
-    height = AVGYCHAR( GUItm );
-
-    GUIScaleToScreenPointR( &pos );
-    row = pos.y / height;
-    return( row );
+    return( GUIScaleToScreenV( in_pos->y ) / AVGYCHAR( GUItm ) );
 }
 
-gui_ord GUIGetCol( gui_window *wnd, const char *text, gui_point *in_pos )
+gui_text_ord GUIGetCol( gui_window *wnd, const char *text, gui_point *in_pos )
 {
-    int         width;
-    bool        got_new;
-    gui_point   pos;
+    gui_text_ord    width;
+    gui_text_ord    x;
+    bool            got_new;
 
     got_new = GUIGetTheDC( wnd );
     GUIGetMetrics( wnd );
-    pos = *in_pos;
-    GUIScaleToScreenPointR( &pos );
-    width = pos.x / MAXXCHAR( GUItm );
-    while( ( width < strlen( text ) ) && ( GUIGetTextExtentX( wnd, text, width ) <= pos.x ) ) {
+    x = GUIScaleToScreenH( in_pos->x );
+    width = x / MAXXCHAR( GUItm );
+    while( ( width < strlen( text ) ) && ( GUIGetTextExtentX( wnd, text, width ) <= x ) ) {
         width++ ;
     }
     if( got_new ) {
         GUIReleaseTheDC( wnd );
     }
-    return( (gui_ord)( width - 1 ) );
+    return( width - 1 );
 }

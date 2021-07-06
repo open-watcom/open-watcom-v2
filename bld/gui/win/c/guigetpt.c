@@ -39,14 +39,12 @@
  * GUIGetPoint -- Get the point in win at extent in row
  */
 
-void GUIGetPoint( gui_window * wnd, gui_ord extent, gui_ord row, gui_point *point )
+void GUIGetPoint( gui_window *wnd, gui_ord extent, gui_text_ord row, gui_point *point )
 {
     if( point == NULL ) {
         return;
     }
-    point->x = extent;
-    GUIScaleToScreenPointR( point );
     GUIGetMetrics( wnd );
-    point->y = row * AVGYCHAR( GUItm );
-    GUIScreenToScalePointR( point );
+    point->x = GUIScreenToScaleH( GUIScaleToScreenH( extent ) );
+    point->y = GUIScreenToScaleV( row * AVGYCHAR( GUItm ) );
 }
