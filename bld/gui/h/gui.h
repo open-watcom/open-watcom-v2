@@ -382,6 +382,9 @@ typedef enum {
 #define GUI_NO_COLUMN       ((gui_ord)-1)
 #define GUI_NO_ROW          ((gui_ord)-1)
 
+#define GUI_TEXT_NO_COLUMN  ((gui_text_ord)-1)
+#define GUI_TEXT_NO_ROW     ((gui_text_ord)-1)
+
 // GUIIsChecked and GUISetChecked values
 #define GUI_NOT_CHECKED     0
 #define GUI_CHECKED         1
