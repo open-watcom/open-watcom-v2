@@ -141,7 +141,7 @@ gui_ord GUIGetHScrollRange( gui_window *wnd )
     gui_text_ord    text_ord;
 
     text_ord = GUIGetHScrollRangeCols( wnd );
-    if( text_ord != GUI_NO_COLUMN ) {
+    if( text_ord != GUI_TEXT_NO_COLUMN ) {
         return( GUIScreenToScaleH( text_ord ) );
     } else {
         return( GUI_NO_COLUMN );
