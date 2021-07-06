@@ -127,7 +127,7 @@ static void SetScroll( gui_window *wnd, int bar, int pos )
  * GUISetVScrollRow -- Set the vertical scrolling position for the window
  */
 
-void GUISetVScrollRow( gui_window *wnd, int vscroll_pos )
+void GUISetVScrollRow( gui_window *wnd, gui_text_ord vscroll_pos )
 {
     SetScroll( wnd, SB_VERT, GUIFromTextY( vscroll_pos, wnd ) );
 }
@@ -136,7 +136,7 @@ void GUISetVScrollRow( gui_window *wnd, int vscroll_pos )
  * GUISetHScrollCol -- Set the horizontal scrolling position for the window
  */
 
-void GUISetHScrollCol( gui_window *wnd, int hscroll_pos )
+void GUISetHScrollCol( gui_window *wnd, gui_text_ord hscroll_pos )
 {
     SetScroll( wnd, SB_HORZ, GUIFromTextX( hscroll_pos, wnd ) );
 }

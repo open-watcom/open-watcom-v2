@@ -859,10 +859,10 @@ extern bool GUIDisplayHelpId( gui_window *wnd, const char *file, gui_hlp_id id )
 
 /* deals with character units */
 
-extern void GUIInitHScrollCol( gui_window *wnd, int hscroll_pos );
-extern void GUIInitVScrollRow( gui_window *wnd, int vscroll_pos );
-extern void GUISetHScrollCol( gui_window *wnd, int hscroll_pos );
-extern void GUISetVScrollRow( gui_window *wnd, int vscroll_pos );
+extern void GUIInitHScrollCol( gui_window *wnd, gui_text_ord hscroll_pos );
+extern void GUIInitVScrollRow( gui_window *wnd, gui_text_ord vscroll_pos );
+extern void GUISetHScrollCol( gui_window *wnd, gui_text_ord hscroll_pos );
+extern void GUISetVScrollRow( gui_window *wnd, gui_text_ord vscroll_pos );
 extern int GUIGetHScrollCol( gui_window *wnd );
 extern int GUIGetVScrollRow( gui_window *wnd );
 extern void GUISetHScrollRangeCols( gui_window *wnd, gui_ord range );

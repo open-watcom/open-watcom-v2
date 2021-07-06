@@ -914,9 +914,9 @@ static void GetNewVal( char *str, size_t length, gui_window *wnd )
 
 static void HScroll( gui_window *wnd, int diff )
 {
-    int new;
-    int old;
-    int range;
+    gui_text_ord    new;
+    gui_text_ord    old;
+    gui_text_ord    range;
 
     old = GUIGetHScrollCol( wnd );
     new = old + diff;
@@ -936,9 +936,9 @@ static void HScroll( gui_window *wnd, int diff )
 
 static void VScroll( gui_window *wnd, int diff )
 {
-    int new;
-    int old;
-    int range;
+    gui_text_ord    new;
+    gui_text_ord    old;
+    gui_text_ord    range;
 
     old = GUIGetVScrollRow( wnd );
     new = old + diff;
@@ -1014,8 +1014,7 @@ static int GetStringIndent( int *indent, gui_ord hscroll, gui_text_metrics *metr
     return( string_indent );
 }
 
-static void PaintWindow( gui_window *wnd, gui_text_ord row, gui_text_ord num, int vscroll,
-                  int hscroll )
+static void PaintWindow( gui_window *wnd, gui_text_ord row, gui_text_ord num, int vscroll, int hscroll )
 {
     out_info            *out;
     gui_text_ord        numrows;
@@ -1779,4 +1778,3 @@ char *GUIGetWindowClassName( void )
 {
     return( "foobar" );
 }
-

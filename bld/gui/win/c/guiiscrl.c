@@ -39,7 +39,7 @@
  * InitScroll -- Init the scrolling position for the window
  */
 
-void static InitScroll( gui_window *wnd, int bar, int pos )
+static void InitScroll( gui_window *wnd, int bar, int pos )
 {
     int old;
     int max;
@@ -65,7 +65,7 @@ void static InitScroll( gui_window *wnd, int bar, int pos )
  * GUIInitVScrollRow -- Init the vertical scrolling position for the window
  */
 
-void GUIInitVScrollRow( gui_window *wnd, int vscroll_pos )
+void GUIInitVScrollRow( gui_window *wnd, gui_text_ord vscroll_pos )
 {
     InitScroll( wnd, SB_VERT, GUIFromTextY( vscroll_pos, wnd ) );
 }
@@ -74,7 +74,7 @@ void GUIInitVScrollRow( gui_window *wnd, int vscroll_pos )
  * GUIInitHScrollCol -- Init the horizontal scrolling position for the window
  */
 
-void GUIInitHScrollCol( gui_window *wnd, int hscroll_pos )
+void GUIInitHScrollCol( gui_window *wnd, gui_text_ord hscroll_pos )
 {
     InitScroll( wnd, SB_HORZ, GUIFromTextX( hscroll_pos, wnd ) );
 }
