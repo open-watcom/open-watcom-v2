@@ -34,7 +34,7 @@
 #include "guiwind.h"
 #include "guiscale.h"
 
-int GUIGetHScrollCol( gui_window * wnd )
+gui_text_ord GUIGetHScrollCol( gui_window * wnd )
 {
     if( wnd->hgadget == NULL ) {
         return( 0 );
@@ -43,7 +43,7 @@ int GUIGetHScrollCol( gui_window * wnd )
     }
 }
 
-int GUIGetVScrollRow( gui_window * wnd )
+gui_text_ord GUIGetVScrollRow( gui_window * wnd )
 {
     if( wnd->vgadget == NULL ) {
         return( 0 );

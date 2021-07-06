@@ -130,13 +130,13 @@ gui_ord GUIGetVScrollRange( gui_window *wnd )
  * GUIGetVScrollRangeRows
  */
 
-gui_ord GUIGetVScrollRangeRows( gui_window *wnd )
+gui_text_ord GUIGetVScrollRangeRows( gui_window *wnd )
 {
     gui_ord     range;
 
     range = GUIGetScrollRange( wnd, SB_VERT );
     if( range == GUI_NO_ROW ) {
-        return( range );
+        return( GUI_TEXT_NO_ROW );
     } else {
         return( GUIToTextY( range, wnd ) );
     }
@@ -146,13 +146,13 @@ gui_ord GUIGetVScrollRangeRows( gui_window *wnd )
  * GUIGetHScrollRangeCols
  */
 
-gui_ord GUIGetHScrollRangeCols( gui_window *wnd )
+gui_text_ord GUIGetHScrollRangeCols( gui_window *wnd )
 {
     gui_ord     range;
 
     range = GUIGetScrollRange( wnd, SB_HORZ );
     if( range == GUI_NO_COLUMN ) {
-        return( range );
+        return( GUI_TEXT_NO_COLUMN );
     } else {
         return( GUIToTextX( range, wnd ) );
     }
