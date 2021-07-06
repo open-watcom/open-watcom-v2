@@ -103,19 +103,16 @@
   #endif
 
   #ifdef USE_FILENAME_VERSION
-    #define QUOTED(x)       # x
-    #define STRX(x)         QUOTED(x)
-
     #if defined(ACAD)
       #define HELPNAME      ""
     #elif defined(PHARLAP)
-      #define HELPNAME      "PLSHEL" STRX( USE_FILENAME_VERSION ) ".EXP"
-      #define HELPNAME_DS   "PEDHEL" STRX( USE_FILENAME_VERSION ) ".EXP"
-      #define HELPNAME_NS   "PENHEL" STRX( USE_FILENAME_VERSION ) ".EXP"   /* not supported yet */
+      #define HELPNAME      "PLSHEL" QUOTED( USE_FILENAME_VERSION ) ".EXP"
+      #define HELPNAME_DS   "PEDHEL" QUOTED( USE_FILENAME_VERSION ) ".EXP"
+      #define HELPNAME_NS   "PENHEL" QUOTED( USE_FILENAME_VERSION ) ".EXP"   /* not supported yet */
     #elif defined(DOS4G)
-      #define HELPNAME      "RSIHEL" STRX( USE_FILENAME_VERSION ) ".EXP"
+      #define HELPNAME      "RSIHEL" QUOTED( USE_FILENAME_VERSION ) ".EXP"
     #elif defined(CAUSEWAY)
-      #define HELPNAME      "CWHEL" STRX( USE_FILENAME_VERSION ) ".EXE"
+      #define HELPNAME      "CWHEL" QUOTED( USE_FILENAME_VERSION ) ".EXE"
     #endif
   #else
     #if defined(ACAD)
