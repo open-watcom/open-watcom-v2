@@ -48,8 +48,8 @@ extern void GUIGetScale( gui_rect * rect);
 
 extern void GUIClientToScaleRect( gui_rect *rect );
 
-extern gui_ord GUIFromTextX( gui_text_ord ord, gui_window *wnd );
-extern gui_ord GUIFromTextY( gui_text_ord ord, gui_window *wnd );
+extern gui_ord GUIFromTextX( gui_text_ord text_ord, gui_window *wnd );
+extern gui_ord GUIFromTextY( gui_text_ord text_ord, gui_window *wnd );
 extern gui_text_ord GUIToTextX( gui_ord ord, gui_window *wnd );
 extern gui_text_ord GUIToTextY( gui_ord ord, gui_window *wnd );
 

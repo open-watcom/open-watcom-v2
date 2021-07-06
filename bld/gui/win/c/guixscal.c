@@ -63,20 +63,20 @@ gui_text_ord GUIToTextY( gui_ord ord, gui_window *wnd )
  *  GUIFromTextX -- multiply by character width, height
  */
 
-gui_ord GUIFromTextX( gui_text_ord ord, gui_window *wnd )
+gui_ord GUIFromTextX( gui_text_ord text_ord, gui_window *wnd )
 {
     GUIGetMetrics( wnd );
-    return( GUIMulDiv( gui_ord, ord, AVGXCHAR( GUItm ), 1 ) );
+    return( GUIMulDiv( gui_ord, text_ord, AVGXCHAR( GUItm ), 1 ) );
 }
 
 /*
  *  GUIFromTextY -- multiply by character widht, height
  */
 
-gui_ord GUIFromTextY( gui_text_ord ord, gui_window *wnd )
+gui_ord GUIFromTextY( gui_text_ord text_ord, gui_window *wnd )
 {
     GUIGetMetrics( wnd );
-    return( GUIMulDiv( gui_ord, ord, AVGYCHAR( GUItm ), 1 ) );
+    return( GUIMulDiv( gui_ord, text_ord, AVGYCHAR( GUItm ), 1 ) );
 }
 
 /*

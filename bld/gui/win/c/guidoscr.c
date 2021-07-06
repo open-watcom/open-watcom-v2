@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,8 +62,8 @@ static void DoScroll( gui_window *wnd, int rows, int cols, int start, int end, b
     multx = 1;
     multy = 1;
     if( chars ) {
-        multx = GUIFromTextX( multx, wnd );
-        multy = GUIFromTextY( multy, wnd );
+        multx = GUIFromTextX( 1, wnd );
+        multy = GUIFromTextY( 1, wnd );
     }
     dx = -cols * multx;
     dy = -rows * multy;
