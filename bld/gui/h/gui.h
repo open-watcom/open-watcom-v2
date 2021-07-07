@@ -615,226 +615,226 @@ typedef struct gui_timer_event {
 
 /* Initialization Functions */
 
-extern bool GUIWndInit( unsigned dclick_ms, gui_window_styles style );
-extern void GUIGMouseOn( void );
-extern void GUIGMouseOff( void );
-extern void GUIMDIInit( void );
-extern void GUIMDIInitMenuOnly( void );
-extern bool GUI3DDialogInit( void );
-extern void GUI3DDialogFini( void );
-extern void GUISetBetweenTitles( int between_titles );
-extern void GUIGetRoundScale( gui_coord *scale );
-extern void GUISetScale( gui_rect *screen );
-extern void GUIGetScale( gui_rect *screen );
-extern void GUIGetScreen( gui_rect *rect );
-extern void GUISetDClickRate( unsigned dclick_ms );
-extern void GUISetCharacter( gui_draw_char draw_char, int new_char );
-extern int  GUIGetCharacter( gui_draw_char draw_char );
-extern bool GUIIsInit( void );
-extern void GUISetF10Menus( bool setting );
-extern void GUICleanup( void );
+extern bool     GUIWndInit( unsigned dclick_ms, gui_window_styles style );
+extern void     GUIGMouseOn( void );
+extern void     GUIGMouseOff( void );
+extern void     GUIMDIInit( void );
+extern void     GUIMDIInitMenuOnly( void );
+extern bool     GUI3DDialogInit( void );
+extern void     GUI3DDialogFini( void );
+extern void     GUISetBetweenTitles( int between_titles );
+extern void     GUIGetRoundScale( gui_coord *scale );
+extern void     GUISetScale( gui_rect *screen );
+extern void     GUIGetScale( gui_rect *screen );
+extern void     GUIGetScreen( gui_rect *rect );
+extern void     GUISetDClickRate( unsigned dclick_ms );
+extern void     GUISetCharacter( gui_draw_char draw_char, int new_char );
+extern int      GUIGetCharacter( gui_draw_char draw_char );
+extern bool     GUIIsInit( void );
+extern void     GUISetF10Menus( bool setting );
+extern void     GUICleanup( void );
 
 /* colour functions */
 
-extern void GUISetBackgroundColour( gui_colour_set *colour );
-extern void GUIGetDialogColours( gui_colour_set *colours );
-extern void GUISetDialogColours( gui_colour_set *colours );
-extern void GUISetWindowColours( gui_window *wnd, int num_colours, gui_colour_set *colours );
-extern bool GUISetRGB( gui_colour colour, gui_rgb rgb );
-extern bool GUIGetRGB( gui_colour colour, gui_rgb *rgb );
-extern bool GUIGetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set );
-extern bool GUISetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set );
-extern bool GUIGetRGBFromUser( gui_rgb init_rgb, gui_rgb *new_rgb );
-extern bool GUIGetColourFromUser( const char *title, gui_colour *init, gui_colour *new_colour );
+extern void     GUISetBackgroundColour( gui_colour_set *colour );
+extern void     GUIGetDialogColours( gui_colour_set *colours );
+extern void     GUISetDialogColours( gui_colour_set *colours );
+extern void     GUISetWindowColours( gui_window *wnd, int num_colours, gui_colour_set *colours );
+extern bool     GUISetRGB( gui_colour colour, gui_rgb rgb );
+extern bool     GUIGetRGB( gui_colour colour, gui_rgb *rgb );
+extern bool     GUIGetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set );
+extern bool     GUISetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set );
+extern bool     GUIGetRGBFromUser( gui_rgb init_rgb, gui_rgb *new_rgb );
+extern bool     GUIGetColourFromUser( const char *title, gui_colour *init, gui_colour *new_colour );
 
 /* Hot Spot (sizzle spot) functions */
 
-extern bool GUIInitHotSpots( int num_hot_spots, gui_resource *hot );
-extern int  GUIGetNumHotSpots( void );
-extern bool GUIGetHotSpotSize( int hot_spot, gui_coord *size );
-extern void GUIDrawHotSpot( gui_window *wnd, int hot_spot, gui_text_ord row,
-                            gui_ord indent, gui_attr attr );
+extern bool     GUIInitHotSpots( int num_hot_spots, gui_resource *hot );
+extern int      GUIGetNumHotSpots( void );
+extern bool     GUIGetHotSpotSize( int hot_spot, gui_coord *size );
+extern void     GUIDrawHotSpot( gui_window *wnd, int hot_spot, gui_text_ord row,
+                                gui_ord indent, gui_attr attr );
 
 /* Window Functions */
 
 extern gui_window *GUICreateWindow( gui_create_info *dlg_info );
-extern int GUIGetNumWindowColours( gui_window *wnd );
+extern int      GUIGetNumWindowColours( gui_window *wnd );
 extern gui_colour_set *GUIGetWindowColours( gui_window *wnd );
-extern void GUIDestroyWnd( gui_window *wnd );
-extern void GUIWndDirty( gui_window *wnd );
-extern void GUIControlDirty( gui_window *wnd, gui_ctl_id id );
-extern void GUIWndDirtyRow( gui_window *wnd, gui_text_ord row );
-extern void GUIWndDirtyRect( gui_window *wnd, gui_rect *rect );
-extern void GUIRefresh( void );
-extern void GUIWndUpdate( gui_window *wnd );
-extern bool GUISetBackgroundChar( gui_window *wnd, char background );
+extern void     GUIDestroyWnd( gui_window *wnd );
+extern void     GUIWndDirty( gui_window *wnd );
+extern void     GUIControlDirty( gui_window *wnd, gui_ctl_id id );
+extern void     GUIWndDirtyRow( gui_window *wnd, gui_text_ord row );
+extern void     GUIWndDirtyRect( gui_window *wnd, gui_rect *rect );
+extern void     GUIRefresh( void );
+extern void     GUIWndUpdate( gui_window *wnd );
+extern bool     GUISetBackgroundChar( gui_window *wnd, char background );
 
-extern void GUIActivateNC( gui_window *wnd, bool activate );
-extern void GUIBringToFront( gui_window *wnd );
+extern void     GUIActivateNC( gui_window *wnd, bool activate );
+extern void     GUIBringToFront( gui_window *wnd );
 extern gui_window *GUIGetFront( void );
 extern gui_window *GUIGetParentWindow( gui_window *wnd );
-extern bool GUIIsRootWindow( gui_window *wnd );
+extern bool     GUIIsRootWindow( gui_window *wnd );
 extern gui_window *GUIGetRootWindow( void );
 extern gui_window *GUIGetNextWindow( gui_window *wnd );
 extern gui_window *GUIGetFirstSibling( gui_window *wnd );
-extern bool GUIIsValidWindow( gui_window *wnd );
-extern bool GUISetFocus( gui_window *wnd, gui_ctl_id id );
-extern bool GUIGetFocus( gui_window *wnd, gui_ctl_id *id );
+extern bool     GUIIsValidWindow( gui_window *wnd );
+extern bool     GUISetFocus( gui_window *wnd, gui_ctl_id id );
+extern bool     GUIGetFocus( gui_window *wnd, gui_ctl_id *id );
 
-extern bool GUIResizeWindow( gui_window *wnd, gui_rect *rect );
-extern bool GUIIsMinimized( gui_window *wnd );
-extern bool GUIIsMaximized( gui_window *wnd );
-extern void GUIMaximizeWindow( gui_window *wnd );
-extern void GUIMinimizeWindow( gui_window *wnd );
-extern void GUIRestoreWindow( gui_window *wnd );
-extern void GUIHideWindow( gui_window *wnd );
-extern void GUIShowWindow( gui_window *wnd );
-extern void GUIShowWindowNA( gui_window *wnd );
-extern bool GUIIsWindowVisible( gui_window *wnd );
-extern void GUISetRestoredSize( gui_window *wnd, gui_rect *rect );
-extern bool GUIGetRestoredSize( gui_window *wnd, gui_rect *rect );
-extern bool GUISetIcon( gui_window *wnd, gui_resource *res );
-extern bool GUISetRedraw( gui_window *wnd, bool redraw );
+extern bool     GUIResizeWindow( gui_window *wnd, gui_rect *rect );
+extern bool     GUIIsMinimized( gui_window *wnd );
+extern bool     GUIIsMaximized( gui_window *wnd );
+extern void     GUIMaximizeWindow( gui_window *wnd );
+extern void     GUIMinimizeWindow( gui_window *wnd );
+extern void     GUIRestoreWindow( gui_window *wnd );
+extern void     GUIHideWindow( gui_window *wnd );
+extern void     GUIShowWindow( gui_window *wnd );
+extern void     GUIShowWindowNA( gui_window *wnd );
+extern bool     GUIIsWindowVisible( gui_window *wnd );
+extern void     GUISetRestoredSize( gui_window *wnd, gui_rect *rect );
+extern bool     GUIGetRestoredSize( gui_window *wnd, gui_rect *rect );
+extern bool     GUISetIcon( gui_window *wnd, gui_resource *res );
+extern bool     GUISetRedraw( gui_window *wnd, bool redraw );
 
-extern bool GUICascadeWindows( void );
-extern void GUIWantPartialRows( gui_window *wnd, bool want );
-extern void GUISetCheckResizeAreaForChildren( gui_window *wnd, bool check );
+extern bool     GUICascadeWindows( void );
+extern void     GUIWantPartialRows( gui_window *wnd, bool want );
+extern void     GUISetCheckResizeAreaForChildren( gui_window *wnd, bool check );
 
 /* Cursor Functions */
 
-extern bool GUIGetCursorPos( gui_window *wnd, gui_point *point );
-extern bool GUISetCursorPos( gui_window *wnd, gui_point *point );
-extern bool GUIGetCursorType( gui_window *wnd, gui_cursor_type *cursor );
-extern bool GUISetCursorType( gui_window *wnd, gui_cursor_type cursor );
+extern bool     GUIGetCursorPos( gui_window *wnd, gui_point *point );
+extern bool     GUISetCursorPos( gui_window *wnd, gui_point *point );
+extern bool     GUIGetCursorType( gui_window *wnd, gui_cursor_type *cursor );
+extern bool     GUISetCursorType( gui_window *wnd, gui_cursor_type cursor );
 
 extern gui_mcursor_handle GUISetMouseCursor( gui_mcursor_type type );
-extern void GUIResetMouseCursor( gui_mcursor_handle old_cursor );
+extern void     GUIResetMouseCursor( gui_mcursor_handle old_cursor );
 
 /* Font Functions */
 
-extern bool GUIFontsSupported( void );
-extern bool GUIChangeFont( gui_window *wnd );
-extern char *GUIGetFontInfo( gui_window *wnd );
-extern bool GUISetFontInfo( gui_window *wnd, char *fontinfo );
-extern bool GUISetSystemFont( gui_window *wnd, bool fixed );
-extern char *GUIGetFontFromUser( char *fontinfo );
+extern bool     GUIFontsSupported( void );
+extern bool     GUIChangeFont( gui_window *wnd );
+extern char     *GUIGetFontInfo( gui_window *wnd );
+extern bool     GUISetFontInfo( gui_window *wnd, char *fontinfo );
+extern bool     GUISetSystemFont( gui_window *wnd, bool fixed );
+extern char     *GUIGetFontFromUser( char *fontinfo );
 
 /* Painting functions */
 
-extern bool GUIFillRect( gui_window *wnd, gui_rect *rect, gui_attr attr );
-extern bool GUIFillBar( gui_window *wnd, gui_rect *rect, gui_attr attr );
-extern bool GUIDrawRect( gui_window *wnd, gui_rect *rect, gui_attr attr );
-extern bool GUIDrawLine( gui_window *wnd, gui_point *start, gui_point *end,
-                         gui_line_styles style, gui_ord thickness, gui_attr attr );
-extern bool GUIFillRectRGB( gui_window *wnd, gui_rect *rect, gui_rgb rgb );
-extern bool GUIDrawRectRGB( gui_window *wnd, gui_rect *rect, gui_rgb rgb );
-extern bool GUIDrawLineRGB( gui_window *wnd, gui_point *start, gui_point *end,
-                         gui_line_styles style, gui_ord thickness, gui_rgb rgb );
-extern void GUIDrawText( gui_window *wnd, const char *text, size_t length,
-                         gui_text_ord row, gui_ord indent, gui_attr attr );
-extern void GUIDrawTextPos( gui_window *wnd, const char *text, size_t length,
-                            gui_coord *pos, gui_attr attr );
-extern void GUIDrawTextExtent( gui_window *wnd, const char *text, size_t length,
-                               gui_text_ord row, gui_ord indent, gui_attr attr,
-                               gui_ord extentx );
-extern void GUIDrawTextExtentPos( gui_window *wnd, const char *text, size_t length,
-                               gui_coord *pos, gui_attr attr, gui_ord extentx );
-extern void GUIDrawTextRGB( gui_window *wnd, const char *text, size_t length,
-                            gui_text_ord row, gui_ord indent,
-                            gui_rgb fore, gui_rgb back );
-extern void GUIDrawTextPosRGB( gui_window *wnd, const char *text, size_t length,
-                               gui_coord *pos, gui_rgb fore, gui_rgb back );
-extern void GUIDrawTextExtentRGB( gui_window *wnd, const char *text, size_t length,
-                                  gui_text_ord row, gui_ord indent,
-                                  gui_rgb fore, gui_rgb back,
-                                  gui_ord extentx );
-extern void GUIDrawTextExtentPosRGB( gui_window *wnd, const char *text, size_t length,
-                                     gui_coord *pos,
-                                     gui_rgb fore, gui_rgb back,
-                                     gui_ord extentx );
-extern bool GUIDrawBar( gui_window *wnd, gui_text_ord row, gui_ord start,
-                        gui_ord width, gui_bar_styles bstyle, gui_attr attr,
-                        bool selected );
-extern bool GUIDrawBarGroup( gui_window *wnd, gui_text_ord row, gui_ord start,
-                        gui_ord width1, gui_ord width2, gui_bar_styles bstyle,
-                        gui_attr attr1, gui_attr attr2, bool selected );
+extern bool     GUIFillRect( gui_window *wnd, gui_rect *rect, gui_attr attr );
+extern bool     GUIFillBar( gui_window *wnd, gui_rect *rect, gui_attr attr );
+extern bool     GUIDrawRect( gui_window *wnd, gui_rect *rect, gui_attr attr );
+extern bool     GUIDrawLine( gui_window *wnd, gui_point *start, gui_point *end,
+                             gui_line_styles style, gui_ord thickness, gui_attr attr );
+extern bool     GUIFillRectRGB( gui_window *wnd, gui_rect *rect, gui_rgb rgb );
+extern bool     GUIDrawRectRGB( gui_window *wnd, gui_rect *rect, gui_rgb rgb );
+extern bool     GUIDrawLineRGB( gui_window *wnd, gui_point *start, gui_point *end,
+                             gui_line_styles style, gui_ord thickness, gui_rgb rgb );
+extern void     GUIDrawText( gui_window *wnd, const char *text, size_t length,
+                             gui_text_ord row, gui_ord indent, gui_attr attr );
+extern void     GUIDrawTextPos( gui_window *wnd, const char *text, size_t length,
+                                gui_coord *pos, gui_attr attr );
+extern void     GUIDrawTextExtent( gui_window *wnd, const char *text, size_t length,
+                                   gui_text_ord row, gui_ord indent, gui_attr attr,
+                                   gui_ord extentx );
+extern void     GUIDrawTextExtentPos( gui_window *wnd, const char *text, size_t length,
+                                   gui_coord *pos, gui_attr attr, gui_ord extentx );
+extern void     GUIDrawTextRGB( gui_window *wnd, const char *text, size_t length,
+                                gui_text_ord row, gui_ord indent,
+                                gui_rgb fore, gui_rgb back );
+extern void     GUIDrawTextPosRGB( gui_window *wnd, const char *text, size_t length,
+                                   gui_coord *pos, gui_rgb fore, gui_rgb back );
+extern void     GUIDrawTextExtentRGB( gui_window *wnd, const char *text, size_t length,
+                                      gui_text_ord row, gui_ord indent,
+                                      gui_rgb fore, gui_rgb back,
+                                      gui_ord extentx );
+extern void     GUIDrawTextExtentPosRGB( gui_window *wnd, const char *text, size_t length,
+                                         gui_coord *pos,
+                                         gui_rgb fore, gui_rgb back,
+                                         gui_ord extentx );
+extern bool     GUIDrawBar( gui_window *wnd, gui_text_ord row, gui_ord start,
+                            gui_ord width, gui_bar_styles bstyle, gui_attr attr,
+                            bool selected );
+extern bool     GUIDrawBarGroup( gui_window *wnd, gui_text_ord row, gui_ord start,
+                            gui_ord width1, gui_ord width2, gui_bar_styles bstyle,
+                            gui_attr attr1, gui_attr attr2, bool selected );
 
 /* Text Functions */
 
-extern bool GUISetWindowText( gui_window *wnd, const char *data );
-extern size_t GUIGetWindowTextLength( gui_window *wnd );
-extern size_t GUIGetWindowText( gui_window *wnd, char *buff, size_t buff_len );
+extern bool     GUISetWindowText( gui_window *wnd, const char *data );
+extern size_t   GUIGetWindowTextLength( gui_window *wnd );
+extern size_t   GUIGetWindowText( gui_window *wnd, char *buff, size_t buff_len );
 extern gui_text_ord GUIGetRow( gui_window *wnd, gui_point *pos );
 extern gui_text_ord GUIGetCol( gui_window *wnd, const char *text, gui_point *pos );
-extern gui_ord GUIGetStringPos( gui_window *wnd, gui_ord indent, const char *string, gui_ord mouse_x );
-extern gui_ord GUIGetExtentX( gui_window *wnd, const char *text, size_t length );
-extern gui_ord GUIGetExtentY( gui_window *wnd, const char *text );
-extern gui_ord GUIGetControlExtentX( gui_window *wnd, gui_ctl_id id, const char *text, size_t length );
-extern gui_ord GUIGetControlExtentY( gui_window *wnd, gui_ctl_id id, const char *text );
-extern void GUIGetTextMetrics( gui_window *wnd, gui_text_metrics *metrics );
-extern void GUIGetDlgTextMetrics( gui_text_metrics *metrics );
-extern void GUIGetMaxDialogSize( gui_coord *size );
-extern void GUIGetPoint( gui_window *wnd, gui_ord extent, gui_text_ord row, gui_point *point );
+extern gui_text_ord GUIGetStringPos( gui_window *wnd, gui_ord indent, const char *string, gui_ord mouse_x );
+extern gui_ord  GUIGetExtentX( gui_window *wnd, const char *text, size_t length );
+extern gui_ord  GUIGetExtentY( gui_window *wnd, const char *text );
+extern gui_ord  GUIGetControlExtentX( gui_window *wnd, gui_ctl_id id, const char *text, size_t length );
+extern gui_ord  GUIGetControlExtentY( gui_window *wnd, gui_ctl_id id, const char *text );
+extern void     GUIGetTextMetrics( gui_window *wnd, gui_text_metrics *metrics );
+extern void     GUIGetDlgTextMetrics( gui_text_metrics *metrics );
+extern void     GUIGetMaxDialogSize( gui_coord *size );
+extern void     GUIGetPoint( gui_window *wnd, gui_ord extent, gui_text_ord row, gui_point *point );
 
 /* Menu Functions */
 
 extern const gui_menu_items     NoMenu;
 
-extern bool GUICreateFloatingPopup( gui_window *wnd, gui_point *location,
-                                    const gui_menu_items *menus,
-                                    gui_mouse_track track, gui_ctl_id *curr_id );
-extern bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
-                               gui_mouse_track track, gui_ctl_id *curr_id );
-extern bool GUIEnableMenuItem( gui_window *wnd, gui_ctl_id id, bool enabled, bool floating );
-extern bool GUICheckMenuItem( gui_window *wnd, gui_ctl_id id, bool check, bool floating );
-extern bool GUISetMenuText( gui_window *wnd, gui_ctl_id id, const char *text, bool floating );
-extern bool GUISetMenuHintText( gui_window *wnd, gui_ctl_id id, const char *hinttext );
+extern bool     GUICreateFloatingPopup( gui_window *wnd, gui_point *location,
+                                        const gui_menu_items *menus,
+                                        gui_mouse_track track, gui_ctl_id *curr_id );
+extern bool     GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
+                                   gui_mouse_track track, gui_ctl_id *curr_id );
+extern bool     GUIEnableMenuItem( gui_window *wnd, gui_ctl_id id, bool enabled, bool floating );
+extern bool     GUICheckMenuItem( gui_window *wnd, gui_ctl_id id, bool check, bool floating );
+extern bool     GUISetMenuText( gui_window *wnd, gui_ctl_id id, const char *text, bool floating );
+extern bool     GUISetMenuHintText( gui_window *wnd, gui_ctl_id id, const char *hinttext );
 
-extern bool GUIEnableMDIMenus( bool enable );
-extern bool GUIEnableMenus( gui_window *wnd, bool enable ); // NYI
-extern bool GUIDeleteMenuItem( gui_window *wnd, gui_ctl_id id, bool floating );
+extern bool     GUIEnableMDIMenus( bool enable );
+extern bool     GUIEnableMenus( gui_window *wnd, bool enable ); // NYI
+extern bool     GUIDeleteMenuItem( gui_window *wnd, gui_ctl_id id, bool floating );
 
-extern bool GUIResetMenus( gui_window *wnd, const gui_menu_items *menus );
+extern bool     GUIResetMenus( gui_window *wnd, const gui_menu_items *menus );
 
-extern int  GUIGetMenuPopupCount( gui_window *wnd, gui_ctl_id id );
+extern int      GUIGetMenuPopupCount( gui_window *wnd, gui_ctl_id id );
 
-extern bool GUIInsertMenuByIdx( gui_window *wnd, int position, const gui_menu_struct *menu, bool floating );
-extern bool GUIInsertMenuByID( gui_window *wnd, gui_ctl_id id, const gui_menu_struct *menu );
-extern bool GUIAppendMenu( gui_window *wnd, const gui_menu_struct *menu, bool floating );
-extern bool GUIAppendMenuByIdx( gui_window *wnd, int position, const gui_menu_struct *menu );
-extern bool GUIAppendMenuToPopup( gui_window *wnd, gui_ctl_id id, const gui_menu_struct *menu, bool floating );
-extern bool GUIInsertMenuToPopup( gui_window *wnd, gui_ctl_id id, int position, const gui_menu_struct *menu, bool floating );
+extern bool     GUIInsertMenuByIdx( gui_window *wnd, int position, const gui_menu_struct *menu, bool floating );
+extern bool     GUIInsertMenuByID( gui_window *wnd, gui_ctl_id id, const gui_menu_struct *menu );
+extern bool     GUIAppendMenu( gui_window *wnd, const gui_menu_struct *menu, bool floating );
+extern bool     GUIAppendMenuByIdx( gui_window *wnd, int position, const gui_menu_struct *menu );
+extern bool     GUIAppendMenuToPopup( gui_window *wnd, gui_ctl_id id, const gui_menu_struct *menu, bool floating );
+extern bool     GUIInsertMenuToPopup( gui_window *wnd, gui_ctl_id id, int position, const gui_menu_struct *menu, bool floating );
 
 /* Toolbar Functions */
 
 extern const gui_toolbar_items  NoToolbar;
 
-extern bool GUICreateFloatToolBar( gui_window *wnd, bool fixed, gui_ord height,
-                                    const gui_toolbar_items *toolinfo,
-                                    bool excl, gui_colour_set *plain,
-                                    gui_colour_set *standout, gui_rect *rect );
-extern bool GUICreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
-                              const gui_toolbar_items *toolinfo,
-                              bool excl, gui_colour_set *plain,
-                              gui_colour_set *standout );
-extern bool GUICreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
-                                      const gui_toolbar_items *toolinfo,
-                                      bool excl, gui_colour_set *plain,
-                                      gui_colour_set *standout );
-extern bool GUICloseToolBar( gui_window *wnd );
-extern bool GUIHasToolBar( gui_window *wnd );
-extern bool GUIChangeToolBar( gui_window *wnd );
-extern bool GUIToolBarFixed( gui_window *wnd );
+extern bool     GUICreateFloatToolBar( gui_window *wnd, bool fixed, gui_ord height,
+                                        const gui_toolbar_items *toolinfo,
+                                        bool excl, gui_colour_set *plain,
+                                        gui_colour_set *standout, gui_rect *rect );
+extern bool     GUICreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
+                                  const gui_toolbar_items *toolinfo,
+                                  bool excl, gui_colour_set *plain,
+                                  gui_colour_set *standout );
+extern bool     GUICreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
+                                          const gui_toolbar_items *toolinfo,
+                                          bool excl, gui_colour_set *plain,
+                                          gui_colour_set *standout );
+extern bool     GUICloseToolBar( gui_window *wnd );
+extern bool     GUIHasToolBar( gui_window *wnd );
+extern bool     GUIChangeToolBar( gui_window *wnd );
+extern bool     GUIToolBarFixed( gui_window *wnd );
 
 /* Status Window Functions */
 
-extern bool GUICreateStatusWindow( gui_window *wnd, gui_ord x, gui_ord height,
-                                   gui_colour_set *colour );
-extern bool GUICloseStatusWindow( gui_window *wnd );
-extern bool GUIHasStatus( gui_window *wnd );
-extern bool GUIDrawStatusText( gui_window *wnd, const char *text );
-extern bool GUIClearStatusText( gui_window *wnd );
-extern bool GUIResizeStatusWindow( gui_window *wnd, gui_ord x, gui_ord height );
+extern bool     GUICreateStatusWindow( gui_window *wnd, gui_ord x, gui_ord height,
+                                       gui_colour_set *colour );
+extern bool     GUICloseStatusWindow( gui_window *wnd );
+extern bool     GUIHasStatus( gui_window *wnd );
+extern bool     GUIDrawStatusText( gui_window *wnd, const char *text );
+extern bool     GUIClearStatusText( gui_window *wnd );
+extern bool     GUIResizeStatusWindow( gui_window *wnd, gui_ord x, gui_ord height );
 
 /* Help Functions */
 
@@ -843,15 +843,15 @@ extern bool GUIResizeStatusWindow( gui_window *wnd, gui_ord x, gui_ord height );
 //                                                           |
 //                                                           V
 extern gui_help_instance GUIHelpInit( gui_window *wnd, const char *file, const char *title );
-extern void GUIHelpFini( gui_help_instance inst, gui_window *wnd, const char *file );
-extern bool GUIShowHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act, const char *file, const char *topic );
-extern bool GUIShowHtmlHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act, const char *file, const char *topic );
+extern void     GUIHelpFini( gui_help_instance inst, gui_window *wnd, const char *file );
+extern bool     GUIShowHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act, const char *file, const char *topic );
+extern bool     GUIShowHtmlHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act, const char *file, const char *topic );
 
 // the obsolete, crotchety old guard
 // please use the above functions instead
-extern bool GUIDisplayHelp( gui_window *wnd, const char *file, const char *topic );
-extern bool GUIDisplayHelpWin4( gui_window *wnd, const char *file, const char *topic );
-extern bool GUIDisplayHelpId( gui_window *wnd, const char *file, gui_hlp_id id );
+extern bool     GUIDisplayHelp( gui_window *wnd, const char *file, const char *topic );
+extern bool     GUIDisplayHelpWin4( gui_window *wnd, const char *file, const char *topic );
+extern bool     GUIDisplayHelpId( gui_window *wnd, const char *file, gui_hlp_id id );
 
 /* Scroll Functions                            */
 /* Init - set value, don't draw anything       */
@@ -862,157 +862,157 @@ extern bool GUIDisplayHelpId( gui_window *wnd, const char *file, gui_hlp_id id )
 
 /* deals with character units */
 
-extern void GUIInitHScrollCol( gui_window *wnd, gui_text_ord hscroll_pos );
-extern void GUIInitVScrollRow( gui_window *wnd, gui_text_ord vscroll_pos );
-extern void GUISetHScrollCol( gui_window *wnd, gui_text_ord hscroll_pos );
-extern void GUISetVScrollRow( gui_window *wnd, gui_text_ord vscroll_pos );
+extern void     GUIInitHScrollCol( gui_window *wnd, gui_text_ord hscroll_pos );
+extern void     GUIInitVScrollRow( gui_window *wnd, gui_text_ord vscroll_pos );
+extern void     GUISetHScrollCol( gui_window *wnd, gui_text_ord hscroll_pos );
+extern void     GUISetVScrollRow( gui_window *wnd, gui_text_ord vscroll_pos );
 extern gui_text_ord GUIGetHScrollCol( gui_window *wnd );
 extern gui_text_ord GUIGetVScrollRow( gui_window *wnd );
-extern void GUISetHScrollRangeCols( gui_window *wnd, gui_text_ord range );
-extern void GUISetVScrollRangeRows( gui_window *wnd, gui_text_ord range );
+extern void     GUISetHScrollRangeCols( gui_window *wnd, gui_text_ord range );
+extern void     GUISetVScrollRangeRows( gui_window *wnd, gui_text_ord range );
 extern gui_text_ord GUIGetHScrollRangeCols( gui_window *wnd );
 extern gui_text_ord GUIGetVScrollRangeRows( gui_window *wnd );
-extern void GUIDoHScroll( gui_window *wnd, int cols );
-extern void GUIDoVScroll( gui_window *wnd, int rows );
-extern void GUIDoHScrollClip( gui_window *wnd, int cols, int start, int end );
-extern void GUIDoVScrollClip( gui_window *wnd, int rows, int start, int end );
+extern void     GUIDoHScroll( gui_window *wnd, int cols );
+extern void     GUIDoVScroll( gui_window *wnd, int rows );
+extern void     GUIDoHScrollClip( gui_window *wnd, int cols, int start, int end );
+extern void     GUIDoVScrollClip( gui_window *wnd, int rows, int start, int end );
 
 /* deals in percent of range */
 
-extern void GUISetHScrollThumb( gui_window *wnd, int percent );
-extern void GUISetVScrollThumb( gui_window *wnd, int percent );
+extern void     GUISetHScrollThumb( gui_window *wnd, int percent );
+extern void     GUISetVScrollThumb( gui_window *wnd, int percent );
 
 /* deals with user defined scale */
 
-extern void GUIInitHScroll( gui_window *wnd, gui_ord hscroll_pos );
-extern void GUIInitVScroll( gui_window *wnd, gui_ord vscroll_pos );
-extern void GUISetHScroll( gui_window *wnd, gui_ord hscroll_pos );
-extern void GUISetVScroll( gui_window *wnd, gui_ord vscroll_pos );
-extern gui_ord GUIGetHScroll( gui_window *wnd );
-extern gui_ord GUIGetVScroll( gui_window *wnd );
-extern void GUISetHScrollRange( gui_window *wnd, gui_ord range );
-extern void GUISetVScrollRange( gui_window *wnd, gui_ord range );
-extern gui_ord GUIGetHScrollRange( gui_window *wnd );
-extern gui_ord GUIGetVScrollRange( gui_window *wnd );
+extern void     GUIInitHScroll( gui_window *wnd, gui_ord hscroll_pos );
+extern void     GUIInitVScroll( gui_window *wnd, gui_ord vscroll_pos );
+extern void     GUISetHScroll( gui_window *wnd, gui_ord hscroll_pos );
+extern void     GUISetVScroll( gui_window *wnd, gui_ord vscroll_pos );
+extern gui_ord  GUIGetHScroll( gui_window *wnd );
+extern gui_ord  GUIGetVScroll( gui_window *wnd );
+extern void     GUISetHScrollRange( gui_window *wnd, gui_ord range );
+extern void     GUISetVScrollRange( gui_window *wnd, gui_ord range );
+extern gui_ord  GUIGetHScrollRange( gui_window *wnd );
+extern gui_ord  GUIGetVScrollRange( gui_window *wnd );
 extern gui_text_ord GUIGetNumRows( gui_window *wnd );
 
 /* Built in user interactions */
 
 extern gui_message_return GUIDisplayMessage( gui_window *wnd, const char *message, const char *title, gui_message_type type );
 extern gui_message_return GUIGetNewVal( const char *title, const char *old, char **new_val );
-extern bool GUIDlgPick( const char *title, GUIPICKCALLBACK *pickinit, int *choice );
-extern bool GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pickinit, PICKDLGOPEN *, int *choice );
+extern bool     GUIDlgPick( const char *title, GUIPICKCALLBACK *pickinit, int *choice );
+extern bool     GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pickinit, PICKDLGOPEN *, int *choice );
 
 /* Dialog Functions */
 
-extern bool GUICreateDialog( gui_create_info *dlg_info, int num_controls, gui_control_info *controls_info );
-extern bool GUICreateSysModalDialog( gui_create_info *dlg_info, int num_controls, gui_control_info *controls_info );
-extern bool GUICreateResDialog( gui_create_info *dlg_info, res_name_or_id dlg_id );
-extern void GUICloseDialog( gui_window *wnd );
-extern void GUISetModalDlgs( bool );
+extern bool     GUICreateDialog( gui_create_info *dlg_info, int num_controls, gui_control_info *controls_info );
+extern bool     GUICreateSysModalDialog( gui_create_info *dlg_info, int num_controls, gui_control_info *controls_info );
+extern bool     GUICreateResDialog( gui_create_info *dlg_info, res_name_or_id dlg_id );
+extern void     GUICloseDialog( gui_window *wnd );
+extern void     GUISetModalDlgs( bool );
 
 /* Control Functions */
 
-extern bool GUIAddControl( gui_control_info *ctl_info, gui_colour_set *plain, gui_colour_set *standout );
-extern bool GUIDeleteControl( gui_window *wnd, gui_ctl_id id );
-extern bool GUIResizeControl( gui_window *wnd, gui_ctl_id id, gui_rect *rect );
-extern bool GUIEnableControl( gui_window *wnd, gui_ctl_id id, bool enable );
-extern bool GUIIsControlEnabled( gui_window *wnd, gui_ctl_id id );
-extern bool GUIGetControlRect( gui_window *wnd, gui_ctl_id id, gui_rect *rect );
-extern bool GUIGetControlClass( gui_window *wnd, gui_ctl_id id, gui_control_class *control_class );
-extern void GUIHideControl( gui_window *wnd, gui_ctl_id id );
-extern void GUIShowControl( gui_window *wnd, gui_ctl_id id );
-extern bool GUIIsControlVisible( gui_window *wnd, gui_ctl_id id );
+extern bool     GUIAddControl( gui_control_info *ctl_info, gui_colour_set *plain, gui_colour_set *standout );
+extern bool     GUIDeleteControl( gui_window *wnd, gui_ctl_id id );
+extern bool     GUIResizeControl( gui_window *wnd, gui_ctl_id id, gui_rect *rect );
+extern bool     GUIEnableControl( gui_window *wnd, gui_ctl_id id, bool enable );
+extern bool     GUIIsControlEnabled( gui_window *wnd, gui_ctl_id id );
+extern bool     GUIGetControlRect( gui_window *wnd, gui_ctl_id id, gui_rect *rect );
+extern bool     GUIGetControlClass( gui_window *wnd, gui_ctl_id id, gui_control_class *control_class );
+extern void     GUIHideControl( gui_window *wnd, gui_ctl_id id );
+extern void     GUIShowControl( gui_window *wnd, gui_ctl_id id );
+extern bool     GUIIsControlVisible( gui_window *wnd, gui_ctl_id id );
 
 /* combo/list box functions */
-extern bool GUIControlSetRedraw( gui_window *wnd, gui_ctl_id id, bool redraw );
-extern bool GUIAddText( gui_window *wnd, gui_ctl_id id, const char *text );
-extern bool GUISetListItemData( gui_window *wnd, gui_ctl_id id, int choice, void *data );
-extern void *GUIGetListItemData( gui_window *wnd, gui_ctl_id id, int choice );
-extern bool GUIAddTextList( gui_window *wnd, gui_ctl_id id, int num_items,
-                            const void *data_handle, GUIPICKGETTEXT *getstring );
-extern bool GUIInsertText( gui_window *wnd, gui_ctl_id id, int choice, const char *text );
-extern bool GUISetTopIndex( gui_window *wnd, gui_ctl_id id, int choice );
-extern int GUIGetTopIndex( gui_window *wnd, gui_ctl_id id );
-extern bool GUISetHorizontalExtent( gui_window *wnd, gui_ctl_id id, int extent );
-extern bool GUIClearList( gui_window *wnd, gui_ctl_id id );
-extern bool GUIDeleteItem( gui_window *wnd, gui_ctl_id id, int choice );
-extern int GUIGetListSize( gui_window *wnd, gui_ctl_id id );
-extern bool GUIGetCurrSelect( gui_window *wnd, gui_ctl_id id, int *choice );
-extern bool GUISetCurrSelect( gui_window *wnd, gui_ctl_id id, int choice );
-extern char *GUIGetListItem( gui_window *wnd, gui_ctl_id id, int choice );
+extern bool     GUIControlSetRedraw( gui_window *wnd, gui_ctl_id id, bool redraw );
+extern bool     GUIAddText( gui_window *wnd, gui_ctl_id id, const char *text );
+extern bool     GUISetListItemData( gui_window *wnd, gui_ctl_id id, int choice, void *data );
+extern void     *GUIGetListItemData( gui_window *wnd, gui_ctl_id id, int choice );
+extern bool     GUIAddTextList( gui_window *wnd, gui_ctl_id id, int num_items,
+                                const void *data_handle, GUIPICKGETTEXT *getstring );
+extern bool     GUIInsertText( gui_window *wnd, gui_ctl_id id, int choice, const char *text );
+extern bool     GUISetTopIndex( gui_window *wnd, gui_ctl_id id, int choice );
+extern int      GUIGetTopIndex( gui_window *wnd, gui_ctl_id id );
+extern bool     GUISetHorizontalExtent( gui_window *wnd, gui_ctl_id id, int extent );
+extern bool     GUIClearList( gui_window *wnd, gui_ctl_id id );
+extern bool     GUIDeleteItem( gui_window *wnd, gui_ctl_id id, int choice );
+extern int      GUIGetListSize( gui_window *wnd, gui_ctl_id id );
+extern bool     GUIGetCurrSelect( gui_window *wnd, gui_ctl_id id, int *choice );
+extern bool     GUISetCurrSelect( gui_window *wnd, gui_ctl_id id, int choice );
+extern char     *GUIGetListItem( gui_window *wnd, gui_ctl_id id, int choice );
 
-extern bool GUISetText( gui_window *wnd, gui_ctl_id id, const char *text );
-extern bool GUIClearText( gui_window *wnd, gui_ctl_id id );
-extern char *GUIGetText( gui_window *wnd, gui_ctl_id id );
-extern size_t GUIDlgBuffGetText( gui_window *wnd, gui_ctl_id id, char *buff, size_t buff_len );
-extern bool GUISelectAll( gui_window *wnd, gui_ctl_id id, bool select );
-extern bool GUISetEditSelect( gui_window *wnd, gui_ctl_id id, int start, int end );
-extern bool GUIGetEditSelect( gui_window *wnd, gui_ctl_id id, int *start, int *end );
-extern bool GUILimitEditText( gui_window *wnd, gui_ctl_id id, int len );
-extern bool GUIDropDown( gui_window *wnd, gui_ctl_id id, bool drop );
-extern void GUIScrollCaret( gui_window *wnd, gui_ctl_id id );
+extern bool     GUISetText( gui_window *wnd, gui_ctl_id id, const char *text );
+extern bool     GUIClearText( gui_window *wnd, gui_ctl_id id );
+extern char     *GUIGetText( gui_window *wnd, gui_ctl_id id );
+extern size_t   GUIDlgBuffGetText( gui_window *wnd, gui_ctl_id id, char *buff, size_t buff_len );
+extern bool     GUISelectAll( gui_window *wnd, gui_ctl_id id, bool select );
+extern bool     GUISetEditSelect( gui_window *wnd, gui_ctl_id id, int start, int end );
+extern bool     GUIGetEditSelect( gui_window *wnd, gui_ctl_id id, int *start, int *end );
+extern bool     GUILimitEditText( gui_window *wnd, gui_ctl_id id, int len );
+extern bool     GUIDropDown( gui_window *wnd, gui_ctl_id id, bool drop );
+extern void     GUIScrollCaret( gui_window *wnd, gui_ctl_id id );
 
 extern unsigned GUIIsChecked( gui_window *wnd, gui_ctl_id id );
-extern bool GUISetChecked( gui_window *wnd, gui_ctl_id id, unsigned check );
+extern bool     GUISetChecked( gui_window *wnd, gui_ctl_id id, unsigned check );
 
 /* Information Functions */
 
-extern void GUIGetKeyState( gui_keystate *state );
-extern void GUIFlushKeys( void );
-extern void GUIDrainEvents( void );
-extern void GUISetExtra( gui_window *wnd, void *extra );
-extern void *GUIGetExtra( gui_window *wnd );
-extern void GUIGetClientRect( gui_window *wnd, gui_rect *client );
-extern bool GUIGetPaintRect( gui_window *wnd, gui_rect *paint );
-extern void GUIGetAbsRect( gui_window *wnd, gui_rect *rect );
-extern void GUIGetRect( gui_window *wnd, gui_rect *rect );
+extern void     GUIGetKeyState( gui_keystate *state );
+extern void     GUIFlushKeys( void );
+extern void     GUIDrainEvents( void );
+extern void     GUISetExtra( gui_window *wnd, void *extra );
+extern void     *GUIGetExtra( gui_window *wnd );
+extern void     GUIGetClientRect( gui_window *wnd, gui_rect *client );
+extern bool     GUIGetPaintRect( gui_window *wnd, gui_rect *paint );
+extern void     GUIGetAbsRect( gui_window *wnd, gui_rect *rect );
+extern void     GUIGetRect( gui_window *wnd, gui_rect *rect );
 extern gui_scroll_styles GUIGetScrollStyle( gui_window *wnd );
 extern gui_create_styles GUIGetCreateStyle( gui_window *wnd );
-extern void GUITruncToPixel( gui_coord *coord );
-extern bool GUIGetMousePosn( gui_window *wnd, gui_point *point );
-extern void GUIGetSystemMetrics( gui_system_metrics *metrics );
-extern bool GUIGetMinSize( gui_coord *size );
-extern void GUIEnumChildWindows( gui_window *wnd, ENUMCALLBACK *func, void *param );
-extern void GUIEnumControls( gui_window *wnd, CONTRENUMCALLBACK *func, void *param );
-extern bool GUIIsGUI( void );
-extern bool GUIGetArgs( char ***argv, int *argc );
+extern void     GUITruncToPixel( gui_coord *coord );
+extern bool     GUIGetMousePosn( gui_window *wnd, gui_point *point );
+extern void     GUIGetSystemMetrics( gui_system_metrics *metrics );
+extern bool     GUIGetMinSize( gui_coord *size );
+extern void     GUIEnumChildWindows( gui_window *wnd, ENUMCALLBACK *func, void *param );
+extern void     GUIEnumControls( gui_window *wnd, CONTRENUMCALLBACK *func, void *param );
+extern bool     GUIIsGUI( void );
+extern bool     GUIGetArgs( char ***argv, int *argc );
 
 /* Spawn functions */
-extern void GUISpawnStart( void );
-extern void GUISpawnEnd( void );
+extern void     GUISpawnStart( void );
+extern void     GUISpawnEnd( void );
 
 /* Resource String Functions */
-extern bool GUILoadStrInit( const char *fname );
-extern bool GUILoadStrFini( void );
-extern bool GUILoadString( gui_res_id string_id, char *buffer, int buffer_length );
-extern bool GUIIsLoadStrInitialized( void );
+extern bool     GUILoadStrInit( const char *fname );
+extern bool     GUILoadStrFini( void );
+extern bool     GUILoadString( gui_res_id string_id, char *buffer, int buffer_length );
+extern bool     GUIIsLoadStrInitialized( void );
 
 /* Hooking the F1 key */
-extern void GUIHookF1( void );
-extern void GUIUnHookF1( void );
+extern void     GUIHookF1( void );
+extern void     GUIUnHookF1( void );
 
 /* DBCS functions */
-extern int  GUICharLen( int );
-extern bool GUIIsDBCS( void );
-extern void GUISetJapanese( void );
+extern int      GUICharLen( int );
+extern bool     GUIIsDBCS( void );
+extern void     GUISetJapanese( void );
 
-extern bool GUIIsFirstInstance( void );
+extern bool     GUIIsFirstInstance( void );
 
-extern void GUIHookFileDlg( bool hook );
+extern void     GUIHookFileDlg( bool hook );
 
 /* Application related functions */
 /* must be implemented by application */
-extern void GUImain( void );
+extern void     GUImain( void );
 #if defined( __RDOS__ ) || defined( __NT__ )
-extern void GUITimer( void );
+extern void     GUITimer( void );
 #endif
 
 /* may be implemented by application, stub functions */
-extern bool GUIFirstCrack( void );
-extern bool GUIDead( void );
-extern bool GUIDeath( void );
-extern char *GUIGetWindowClassName( void );
+extern bool     GUIFirstCrack( void );
+extern bool     GUIDead( void );
+extern bool     GUIDeath( void );
+extern char     *GUIGetWindowClassName( void );
 
-extern bool GUISysInit( init_mode install );
-extern void GUISysFini( void  );
+extern bool     GUISysInit( init_mode install );
+extern void     GUISysFini( void  );
