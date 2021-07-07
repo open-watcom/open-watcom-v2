@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,8 +34,8 @@
 #ifndef _GUIGETX_H_
 #define _GUIGETX_H_
 
-extern int  GUIGetTextExtentX( gui_window *wnd, const char *, int );
-extern int  GUIGetTextExtentY( gui_window *wnd, const char *, int );
-extern void GUIGetTextExtent( gui_window *wnd, const char *, int, int *, int * );
+extern gui_ord  GUIGetTextExtentX( gui_window *wnd, const char *, gui_text_ord );
+extern gui_ord  GUIGetTextExtentY( gui_window *wnd, const char *, gui_text_ord );
+extern void     GUIGetTextExtent( gui_window *wnd, const char *, gui_text_ord, int *, int * );
 
 #endif // _GUIGETX_H_

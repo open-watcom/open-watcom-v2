@@ -39,11 +39,11 @@
  * GUIGetStringPos
  */
 
-gui_ord GUIGetStringPos( gui_window *wnd, gui_ord indent, const char *string, gui_ord mouse_x )
+gui_text_ord GUIGetStringPos( gui_window *wnd, gui_ord indent, const char *string, gui_ord mouse_x )
 {
-    size_t      pos;
-    gui_ord     start;
-    gui_ord     mouse;
+    gui_text_ord    pos;
+    gui_text_ord    start;
+    gui_text_ord    mouse;
 
     /* unused parameters */ (void)wnd;
 
@@ -51,12 +51,12 @@ gui_ord GUIGetStringPos( gui_window *wnd, gui_ord indent, const char *string, gu
     mouse = GUIScaleToScreenH( mouse_x );
 
     if( mouse < start ) {
-        return( GUI_NO_COLUMN );
+        return( GUI_TEXT_NO_COLUMN );
     }
     pos = mouse - start;
     if( pos >= strlen( string ) ) {
-        return( GUI_NO_COLUMN );
+        return( GUI_TEXT_NO_COLUMN );
     } else {
-        return( (gui_ord)pos );
+        return( pos );
     }
 }

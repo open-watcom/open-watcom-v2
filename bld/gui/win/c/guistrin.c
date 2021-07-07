@@ -37,7 +37,7 @@
 #include "guigetx.h"
 
 
-static gui_ord DoReturn( gui_ord ret, gui_window *wnd, bool got_new )
+static gui_text_ord DoReturn( gui_text_ord ret, gui_window *wnd, bool got_new )
 {
     if( got_new ) {
         GUIReleaseTheDC( wnd );
@@ -49,32 +49,31 @@ static gui_ord DoReturn( gui_ord ret, gui_window *wnd, bool got_new )
  * GUIGetStringPos
  */
 
-gui_ord GUIGetStringPos( gui_window *wnd, gui_ord indent, const char *string, gui_ord mouse_x )
+gui_text_ord GUIGetStringPos( gui_window *wnd, gui_ord indent, const char *string, gui_ord mouse_x )
 {
-    gui_ord     diff_x;
-    gui_ord     guess;
-    gui_ord     length;
-    gui_ord     curr;
-    gui_ord     new_curr;
-    bool        got_new;
+    gui_ord         diff_x;
+    gui_text_ord    guess;
+    gui_text_ord    length;
+    gui_ord         curr;
+    gui_ord         new_curr;
+    bool            got_new;
 
     if( indent > mouse_x ) {
-        return( GUI_NO_COLUMN );
+        return( GUI_TEXT_NO_COLUMN );
     }
 
     got_new = GUIGetTheDC( wnd );
 
     diff_x = GUIScaleToScreenH( mouse_x - indent );
-    length = strlen( string );
-    guess = length;
+    guess = length = strlen( string );
     curr = GUIGetTextExtentX( wnd, string, guess );
     if( curr < diff_x ) {
-        return( DoReturn( GUI_NO_COLUMN, wnd, got_new ) );
+        return( DoReturn( GUI_TEXT_NO_COLUMN, wnd, got_new ) );
     }
     if( curr == diff_x ) {
         return( DoReturn( guess, wnd, got_new ) );
     }
-    guess = GUIMulDiv( gui_ord, length, diff_x, curr );
+    guess = GUIMulDiv( gui_text_ord, length, diff_x, curr );
     curr = GUIGetTextExtentX( wnd, string, guess );
     if( curr == diff_x ) {
         return( DoReturn( guess, wnd, got_new ) );
