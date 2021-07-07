@@ -150,10 +150,10 @@ bool GUIDrawLine( gui_window *wnd, gui_point *start, gui_point *end,
 
     /* unused parameters */ (void)style; (void)thickness;
 
-    my_start = *start;
-    my_end = *end;
-    GUIScaleToScreenPointR( &my_start );
-    GUIScaleToScreenPointR( &my_end );
+    my_start.x = GUIScaleToScreenH( start->x );
+    my_start.y = GUIScaleToScreenV( start->y );
+    my_end.x = GUIScaleToScreenH( end->x );
+    my_end.y = GUIScaleToScreenV( end->y );
 
     area.row = my_start.y;
     area.height = my_end.y - my_start.y + 1;

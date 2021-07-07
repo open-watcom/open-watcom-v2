@@ -61,7 +61,8 @@ static gui_window   *MenuWnd        = NULL;
 
 static void MapLocation( gui_window *wnd, gui_point *point )
 {
-    GUIScaleToScreenPointR( point );
+    point->x = GUIScaleToScreenH( point->x );
+    point->y = GUIScaleToScreenV( point->y );
     if( ( wnd->hgadget != NULL ) && !GUI_HSCROLL_EVENTS_SET( wnd ) ) {
         point->x -= wnd->hgadget->pos;
     }

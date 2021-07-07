@@ -80,8 +80,10 @@ static bool DrawRect( gui_window *wnd, gui_rect *rect, WPI_COLOUR colour,
         size.y *= -1;
     }
 
-    GUIScaleToScreenR( &pos );
-    GUIScaleToScreenR( &size );
+    pos.x = GUIScaleToScreenH( pos.x );
+    pos.y = GUIScaleToScreenV( pos.y );
+    size.x = GUIScaleToScreenH( size.x );
+    size.y = GUIScaleToScreenV( size.y );
 
     pos.x -= hscroll;
     pos.y -= vscroll;
@@ -137,10 +139,11 @@ static bool DrawLine( gui_window *wnd, gui_point *start, gui_point *end,
     WPI_POINT   pt;
     int         win_height;
 
-    my_start = *start;
-    my_end = *end;
-    GUIScaleToScreenPointR( &my_start );
-    GUIScaleToScreenPointR( &my_end );
+    my_start.x = GUIScaleToScreenH( start->x );
+    my_start.y = GUIScaleToScreenV( start->y );
+    my_end.x = GUIScaleToScreenH( end->x );
+    my_end.y = GUIScaleToScreenV( end->y );
+
     if( GUI_DO_VSCROLL( wnd ) ) {
         vscroll = GUIGetScrollPos( wnd, SB_VERT );
     } else {

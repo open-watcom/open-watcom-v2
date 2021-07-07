@@ -57,7 +57,8 @@ bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
         return( false );
     }
 
-    GUIScaleToScreenPointR( location );
+    location->x = GUIScaleToScreenH( location->x );
+    location->y = GUIScaleToScreenV( location->y );
     _wpi_getrectvalues( wnd->hwnd_client_rect, &left, &top, &right, &bottom );
     location->x += left;
     location->y += top;

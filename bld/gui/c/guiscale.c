@@ -278,15 +278,3 @@ gui_ord GUIScreenToScaleV( gui_screen_ord screen_ord )
 {
     return( ConvertFromScreenV( screen_ord ) );
 }
-
-void GUIScaleToScreenPointR( gui_point *point )
-{
-    point->x = GUIMulDiv( int, point->x, screen_data.width, scale_data.width );
-    point->y = GUIMulDiv( int, point->y, screen_data.height, scale_data.height );
-}
-
-void GUIScreenToScalePointR( gui_point *point )
-{
-    point->x = GUIMulDiv( int, point->x, scale_data.width, screen_data.width );
-    point->y = GUIMulDiv( int, point->y, scale_data.height, screen_data.height );
-}

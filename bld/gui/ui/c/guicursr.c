@@ -44,8 +44,8 @@ bool GUISetCursorPos( gui_window *wnd, gui_point *point )
     gui_point   pt;
 
     if( wnd->style & GUI_CURSOR ) {
-        pt = *point;
-        GUIScaleToScreenPointR( &pt );
+        pt.x = GUIScaleToScreenH( point->x );
+        pt.y = GUIScaleToScreenV( point->y );
         if( ( wnd->hgadget != NULL ) && !GUI_HSCROLL_EVENTS_SET( wnd ) ) {
             pt.x -= wnd->hgadget->pos;
         }
@@ -75,7 +75,8 @@ bool GUIGetCursorPos( gui_window *wnd, gui_point *point )
     if( ( wnd->vgadget != NULL ) && !GUI_VSCROLL_EVENTS_SET( wnd ) ) {
         point->y += wnd->vgadget->pos;
     }
-    GUIScreenToScalePointR( point );
+    point->x = GUIScreenToScaleH( point->x );
+    point->y = GUIScreenToScaleV( point->y );
     return( true );
 }
 

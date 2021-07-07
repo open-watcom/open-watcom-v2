@@ -67,7 +67,4 @@ extern bool GUIScreenToScaleRectR( gui_screen_rect *screen_rect, gui_rect *rect 
 extern bool GUIScaleToScreenRect( gui_rect *rect, gui_screen_rect *screen_rect );
 extern bool GUIScaleToScreenRectR( gui_rect *rect, gui_screen_rect *screen_rect );
 
-extern void GUIScaleToScreenPointR( gui_point *point );
-extern void GUIScreenToScalePointR( gui_point *point );
-
 #endif // _GUISCALE_H_

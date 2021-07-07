@@ -478,7 +478,8 @@ void GUIMakeRelative( gui_window *wnd, WPI_POINT *pt, gui_point *point )
             point->y += GUIGetScrollPos( wnd, SB_VERT );
         }
     }
-    GUIScreenToScalePointR( point );
+    point->x = GUIScreenToScaleH( point->x );
+    point->y = GUIScreenToScaleV( point->y );
 }
 
 HWND GUIGetScrollHWND( gui_window *wnd )
