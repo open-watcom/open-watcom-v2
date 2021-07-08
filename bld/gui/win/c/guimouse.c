@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,18 +37,18 @@
 
 bool GUIGetMousePosn( gui_window *wnd, gui_point *point )
 {
-    WPI_POINT   pt;
+    WPI_POINT   screen_point;
 
     if( !_wpi_getsystemmetrics( SM_MOUSEPRESENT ) ) {
         return( false );
     }
-    _wpi_getcursorpos( &pt );
+    _wpi_getcursorpos( &screen_point );
 #ifdef __OS2_PM__ // close your eyes!!! gross hack coming up
-    _wpi_screentoclient( wnd->hwnd, &pt );
-    pt.y = _wpi_cvtc_y( wnd->hwnd, pt.y );
-    _wpi_clienttoscreen( wnd->hwnd, &pt );
+    _wpi_screentoclient( wnd->hwnd, &screen_point );
+    screen_point.y = _wpi_cvtc_y( wnd->hwnd, screen_point.y );
+    _wpi_clienttoscreen( wnd->hwnd, &screen_point );
 #endif
-    GUIMakeRelative( wnd, &pt, point );
+    GUIMakeRelative( wnd, &screen_point, point );
     return( true );
 }
 

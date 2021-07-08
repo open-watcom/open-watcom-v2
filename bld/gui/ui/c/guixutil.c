@@ -329,15 +329,25 @@ void GUIRedrawTitle( gui_window *wnd )
     GUIWndUpdate( wnd );
 }
 
-void GUIMakeRelative( gui_window *wnd, gui_coord *point, gui_point *pt )
+void GUIMakeRelative( gui_window *wnd, gui_point *screen_pt, gui_point *point )
 {
     SAREA       area;
     SAREA       use;
+    gui_ord     screen_x;
+    gui_ord     screen_y;
 
     GUIGetSAREA( wnd, &area );
     GUISetUseArea( wnd, &area, &use );
-    pt->x = GUIScreenToScaleH( point->x ) - GUIScreenToScaleH( use.col + area.col );
-    pt->y = GUIScreenToScaleV( point->y ) - GUIScreenToScaleV( use.row + area.row );
+    screen_x = screen_pt->x - use.col - area.col;
+    screen_y = screen_pt->y - use.row - area.row;
+    if( ( wnd->hgadget != NULL ) && !GUI_HSCROLL_EVENTS_SET( wnd ) ) {
+        screen_x += wnd->hgadget->pos;
+    }
+    if( ( wnd->vgadget != NULL ) && !GUI_VSCROLL_EVENTS_SET( wnd ) ) {
+        screen_y += wnd->vgadget->pos;
+    }
+    point->x = GUIScreenToScaleH( screen_x );
+    point->y = GUIScreenToScaleV( screen_y );
 }
 
 /*

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +42,7 @@ extern bool GUISetDialogArea( gui_window *wnd, SAREA *area, gui_rect *ect, SAREA
 extern bool GUIIsOpen( gui_window * );
 extern char *GUIMakeEditCopy( char * buffer, int length );
 extern void GUIRedrawTitle( gui_window * wnd );
-extern void GUIMakeRelative( gui_window *wnd, gui_coord * point, gui_point *pt );
+extern void GUIMakeRelative( gui_window *wnd, gui_point *screen_pt, gui_point *point );
 extern bool GUIJustSetWindowText( gui_window *wnd, const char *title );
 extern bool GUIInArea( ORD row, ORD col, SAREA *area );
 extern void GUISetUseArea( gui_window *wnd, SAREA *area, SAREA *use );
