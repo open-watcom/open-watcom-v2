@@ -41,21 +41,21 @@
 
 bool GUISetCursorPos( gui_window *wnd, gui_point *point )
 {
-    gui_point   pt;
+    gui_text_ord    text_x;
+    gui_text_ord    text_y;
 
     if( wnd->style & GUI_CURSOR ) {
-        pt.x = GUIScaleToScreenH( point->x );
-        pt.y = GUIScaleToScreenV( point->y );
+        text_x = GUIScaleToScreenH( point->x );
+        text_y = GUIScaleToScreenV( point->y );
         if( ( wnd->hgadget != NULL ) && !GUI_HSCROLL_EVENTS_SET( wnd ) ) {
-            pt.x -= wnd->hgadget->pos;
+            text_x -= wnd->hgadget->pos;
         }
         if( ( wnd->vgadget != NULL ) && !GUI_VSCROLL_EVENTS_SET( wnd ) ) {
-            pt.y -= wnd->vgadget->pos;
+            text_y -= wnd->vgadget->pos;
         }
-        if( ( pt.x >= 0 ) && ( pt.y >= 0 ) && ( pt.y < wnd->use.height ) &&
-            ( pt.x < ( wnd->use.width  ) ) ) {
-            wnd->vs.cursor_row = pt.y + wnd->use.row;
-            wnd->vs.cursor_col = pt.x + wnd->use.col;
+        if( ( text_y < wnd->use.height ) && ( text_x < wnd->use.width ) ) {
+            wnd->vs.cursor_row = text_y + wnd->use.row;
+            wnd->vs.cursor_col = text_x + wnd->use.col;
             return( GUISetCursor( wnd ) );
         }
     }
@@ -64,19 +64,22 @@ bool GUISetCursorPos( gui_window *wnd, gui_point *point )
 
 bool GUIGetCursorPos( gui_window *wnd, gui_point *point )
 {
+    gui_text_ord    text_x;
+    gui_text_ord    text_y;
+
     if( ( point == NULL ) || (wnd->style & GUI_CURSOR) == 0 ) {
         return( false );
     }
-    point->x = wnd->vs.cursor_col - wnd->use.col;
-    point->y = wnd->vs.cursor_row - wnd->use.col;
+    text_x = wnd->vs.cursor_col - wnd->use.col;
+    text_y = wnd->vs.cursor_row - wnd->use.col;
     if( ( wnd->hgadget != NULL ) && !GUI_HSCROLL_EVENTS_SET( wnd ) ) {
-        point->x += wnd->hgadget->pos;
+        text_x += wnd->hgadget->pos;
     }
     if( ( wnd->vgadget != NULL ) && !GUI_VSCROLL_EVENTS_SET( wnd ) ) {
-        point->y += wnd->vgadget->pos;
+        text_y += wnd->vgadget->pos;
     }
-    point->x = GUIScreenToScaleH( point->x );
-    point->y = GUIScreenToScaleV( point->y );
+    point->x = GUIScreenToScaleH( text_x );
+    point->y = GUIScreenToScaleV( text_y );
     return( true );
 }
 

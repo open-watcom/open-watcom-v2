@@ -58,7 +58,7 @@ static struct {
  * GUISetScale -- Set the user defined scale
  */
 
-void GUISetScale( gui_rect * rect )
+void GUISetScale( gui_rect *rect )
 {
     COPYRECT( *rect, scale_data );
 }
@@ -67,7 +67,7 @@ void GUISetScale( gui_rect * rect )
  * GUIGetScale -- Get the user defined scale
  */
 
-void GUIGetScale( gui_rect * rect )
+void GUIGetScale( gui_rect *rect )
 {
     COPYRECT( scale_data, *rect )
 }
@@ -88,7 +88,7 @@ void GUISetScreen( gui_ord xmin, gui_ord ymin, gui_ord width, gui_ord height )
  * GUIGetScreen -- get the screen coordinates
  */
 
-void GUIGetScreen( gui_rect * rect )
+void GUIGetScreen( gui_rect *rect )
 {
     COPYRECT( screen_data, *rect )
 }

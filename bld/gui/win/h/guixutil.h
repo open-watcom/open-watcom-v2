@@ -43,7 +43,7 @@ extern void GUISetRowCol( gui_window * wnd, gui_coord * size );
 extern void GUIInvalidateResize( gui_window *wnd );
 extern WPI_MRESULT GUISendMessage( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 extern WPI_MRESULT GUISendDlgItemMessage( HWND hwnd, gui_ctl_id id, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
-extern void GUIMakeRelative( gui_window *wnd, WPI_POINT *screen_pt, gui_point *point );
+extern void GUIMakeRelative( gui_window *wnd, WPI_POINT *screen_point, gui_point *point );
 extern HWND GUIGetScrollHWND( gui_window *wnd );
 extern int GUIGetScrollPos( gui_window *wnd, int bar );
 extern int GUIGetScrollRange( gui_window *wnd, int bar );

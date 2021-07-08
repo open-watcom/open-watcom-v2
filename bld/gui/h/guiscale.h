@@ -68,4 +68,3 @@ extern bool GUIScaleToScreenRect( gui_rect *rect, gui_screen_rect *screen_rect )
 extern bool GUIScaleToScreenRectR( gui_rect *rect, gui_screen_rect *screen_rect );
 
 #endif // _GUISCALE_H_
-

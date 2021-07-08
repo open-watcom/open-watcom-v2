@@ -329,7 +329,7 @@ void GUIRedrawTitle( gui_window *wnd )
     GUIWndUpdate( wnd );
 }
 
-void GUIMakeRelative( gui_window *wnd, gui_point *screen_pt, gui_point *point )
+void GUIMakeRelative( gui_window *wnd, gui_point *screen_point, gui_point *point )
 {
     SAREA       area;
     SAREA       use;
@@ -338,8 +338,8 @@ void GUIMakeRelative( gui_window *wnd, gui_point *screen_pt, gui_point *point )
 
     GUIGetSAREA( wnd, &area );
     GUISetUseArea( wnd, &area, &use );
-    screen_x = screen_pt->x - use.col - area.col;
-    screen_y = screen_pt->y - use.row - area.row;
+    screen_x = screen_point->x - use.col - area.col;
+    screen_y = screen_point->y - use.row - area.row;
     if( ( wnd->hgadget != NULL ) && !GUI_HSCROLL_EVENTS_SET( wnd ) ) {
         screen_x += wnd->hgadget->pos;
     }
