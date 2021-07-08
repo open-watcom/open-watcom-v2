@@ -38,13 +38,13 @@
 
 WPI_TEXTMETRIC GUItm;
 
-void GUIClientToScaleRect( gui_rect * rect )
+void GUIClientToScaleRect( gui_rect *rect )
 {
     GUIScreenToScaleRect( rect, rect );
 }
 
 /*
- *  GUIToText -- divide by character width, height
+ *  GUIToTextX -- divide by character width, height
  */
 
 gui_text_ord GUIToTextX( gui_ord ord, gui_window *wnd )
@@ -52,6 +52,10 @@ gui_text_ord GUIToTextX( gui_ord ord, gui_window *wnd )
     GUIGetMetrics( wnd );
     return( GUIMulDiv( gui_text_ord, ord, 1, AVGXCHAR( GUItm ) ) );
 }
+
+/*
+ *  GUIToTextY -- divide by character width, height
+ */
 
 gui_text_ord GUIToTextY( gui_ord ord, gui_window *wnd )
 {
@@ -97,7 +101,7 @@ bool GUIGetTheDC( gui_window *wnd )
     return( false );
 }
 
-void GUIReleaseTheDC( gui_window * wnd )
+void GUIReleaseTheDC( gui_window *wnd )
 {
 #ifdef __OS2_PM__
     wnd=wnd;
@@ -116,7 +120,7 @@ void GUIReleaseTheDC( gui_window * wnd )
  * GUIGetMetrics - Initialize the tm structure with info for the given window
  */
 
-void GUIGetMetrics( gui_window * wnd )
+void GUIGetMetrics( gui_window *wnd )
 {
     bool got_new;
 
@@ -173,4 +177,3 @@ void GUIGetUpdateRows( gui_window *wnd, HWND hwnd, gui_text_ord *start, gui_text
         }
     }
 }
-

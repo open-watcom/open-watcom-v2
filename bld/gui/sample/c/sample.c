@@ -261,7 +261,7 @@ static  gui_window      *Child4_2Wnd    = NULL;
 static  gui_window      *Child4_3Wnd    = NULL;
 static  int             Percent         = 50;
 static  bool            Highlight       = false;
-static  int             PrevRow;
+static  gui_text_ord    PrevRow;
 static  bool            KeyDown         = false;
 static  bool            WndScaled       = false;
 static  char            *FloatHelp      = "Float Toolbar";
@@ -982,7 +982,7 @@ static void ProcessCursor( gui_window *wnd, gui_key key )
     GUISetCursorPos( wnd, &point );
 }
 
-static void InitIndent( gui_window *wnd, int num_rows, out_info *out )
+static void InitIndent( gui_window *wnd, gui_text_ord num_rows, out_info *out )
 {
     int         i;
     gui_ord     max_extent;
@@ -1314,7 +1314,7 @@ bool Child2WndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
     char                Buffer[80];
     gui_text_ord        i;
     gui_text_ord        num;
-    gui_ord             prev_col;
+    gui_text_ord        prev_col;
     out_info            *out;
     char                *start;
     char                *end;
@@ -1432,7 +1432,7 @@ bool Child2WndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
         out = GUIGetExtra( wnd );
         if( row < out->numrows ) {
             col = GUIGetStringPos( wnd, IndentData[row].indent, IndentData[row].data, point.x );
-            if( col != GUI_NO_COLUMN ) {
+            if( col != GUI_TEXT_NO_COLUMN ) {
                 sprintf( Buffer, "Mouse press - position %d", col );
                 GUIDisplayMessage( wnd, Buffer, "SAMPLE PROGRAM", GUI_INFORMATION );
             }
