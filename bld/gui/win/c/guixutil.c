@@ -123,20 +123,19 @@ void GUICalcLocation( gui_rect *rect, gui_coord *pos, gui_coord *size,
     if( parent == NULLHANDLE ) {
         parent = HWND_DESKTOP;
     }
-    pos->x = rect->x;
-    pos->y = rect->y;
-    size->x = rect->width;
-    size->y = rect->height;
     if( parent == HWND_DESKTOP ) {
-        GUIScaleToScreen( pos );
+        pos->x = GUIScaleToScreenX( rect->x );
+        pos->y = GUIScaleToScreenY( rect->y );
     } else {
-        GUIScaleToScreenR( pos );
+        pos->x = GUIScaleToScreenH( rect->x );
+        pos->y = GUIScaleToScreenV( rect->y );
         _wpi_getclientrect( parent, &r );
         _wpi_getrectvalues( r, &left, &top, &right, &bottom );
         pos->x += left;
         pos->y += top;
     }
-    GUIScaleToScreenR( size );
+    size->x = GUIScaleToScreenH( rect->width );
+    size->y = GUIScaleToScreenV( rect->height );
 
     pos->y = _wpi_cvtc_y_size_plus1( parent, pos->y, size->y );
 }

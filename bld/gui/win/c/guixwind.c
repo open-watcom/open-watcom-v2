@@ -737,7 +737,7 @@ static bool SetFocusToParent( void )
 }
 #endif
 
-void GUIDoResize( gui_window *wnd, HWND hwnd, gui_coord *size )
+void GUIDoResize( gui_window *wnd, HWND hwnd, gui_coord *screen_size )
 {
     hwnd = hwnd;
     if( wnd->style & GUI_CHANGEABLE_FONT ) {
@@ -751,12 +751,15 @@ void GUIDoResize( gui_window *wnd, HWND hwnd, gui_coord *size )
     if( (wnd->flags & NEEDS_RESIZE_REDRAW) == 0 ) {
         wnd->old_rows = wnd->num_rows;
     }
-    GUISetRowCol( wnd, size );
+    GUISetRowCol( wnd, screen_size );
     wnd->flags |= NEEDS_RESIZE_REDRAW;
     GUISetScroll( wnd );
     if( wnd->flags & SENT_INIT ) {
-        GUIScreenToScaleR( size );
-        GUIEVENT( wnd, GUI_RESIZE, size );
+        gui_coord   size;
+
+        size.x = GUIScreenToScaleH( screen_size->x );
+        size.y = GUIScreenToScaleV( screen_size->y );
+        GUIEVENT( wnd, GUI_RESIZE, &size );
     }
     GUIInvalidatePaintHandles( wnd );
 #ifdef __OS2_PM__

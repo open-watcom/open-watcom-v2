@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,9 +75,7 @@ static void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
     int         old_rop;
     size_t      num_chars;
     WPI_RECT    rect;
-    gui_coord   indent;
     int         hscroll_pos;
-    gui_coord   extent;
     WPI_COLOUR  colour;
     GUI_RECTDIM left, top, right, bottom;
     GUI_RECTDIM paint_left, paint_top, paint_right, paint_bottom;
@@ -118,15 +117,12 @@ static void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
         }
     }
 
-    indent.x = pos->x;
-    indent.y = pos->y;
-    GUIScaleToScreenR( &indent );
-    nDrawY = indent.y;
+    nDrawY = GUIScaleToScreenV( pos->y );
     if( GUI_DO_VSCROLL( wnd ) ) {
         nDrawY -= GUIGetScrollPos( wnd, SB_VERT );
     }
     nDrawX = left;
-    nDrawX += ( indent.x - hscroll_pos );
+    nDrawX += ( GUIScaleToScreenH( pos->x ) - hscroll_pos );
 
     if( bitmap > 0 ) {
         lenx = length ;
@@ -137,9 +133,7 @@ static void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
     if( draw_extent ) {
         /* blanks out some portion of rest of the line */
         if( extentx != GUI_NO_COLUMN ) {
-            extent.x = extentx;
-            GUIScaleToScreen( &extent );
-            right = nDrawX + extent.x;
+            right = nDrawX + GUIScaleToScreenX( extentx );
         }
     } else {
         right = nDrawX + lenx;

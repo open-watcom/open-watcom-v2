@@ -69,9 +69,8 @@ void DoGetRelRect( HWND hwnd, WPI_RECT *win, gui_rect *rect, bool ispopup )
         rect->y = GUIScreenToScaleV( pos.y );
     } else {
         pos.y = _wpi_cvts_y( pos.y );
-        GUIScreenToScale( &pos );
-        rect->x = pos.x;
-        rect->y = pos.y;
+        rect->x = GUIScreenToScaleX( pos.x );
+        rect->y = GUIScreenToScaleY( pos.y );
     }
     rect->width = GUIScreenToScaleH( size.x );
     rect->height = GUIScreenToScaleV( size.y );

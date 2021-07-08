@@ -246,7 +246,6 @@ bool GUIDrawBarGroup( gui_window *wnd, gui_text_ord row, gui_ord start,
                       gui_attr attr1, gui_attr attr2, bool selected )
 {
     gui_ord     stretch_width;
-    gui_coord   coord;
     bool        ret;
 
     if( width1 == 0 ) {
@@ -254,15 +253,16 @@ bool GUIDrawBarGroup( gui_window *wnd, gui_text_ord row, gui_ord start,
     } else {
         stretch_width = width1;
         if( bstyle == GUI_BAR_SHADOW ) {
-            coord.x = SHADOW_OFFSET;
-            GUIScreenToScale( &coord );
-            if( width2 < coord.x ) {
-                if( width1 > coord.x ) {
-                    width1 -= coord.x;
+            gui_ord    x;
+
+            x = GUIScreenToScaleX( SHADOW_OFFSET );
+            if( width2 < x ) {
+                if( width1 > x ) {
+                    width1 -= x;
                 }
-                coord.x = width2;
+                x = width2;
             }
-            stretch_width += coord.x;
+            stretch_width += x;
         }
         ret = GUIDrawBar( wnd, row, start, stretch_width, bstyle, attr1, selected );
     }

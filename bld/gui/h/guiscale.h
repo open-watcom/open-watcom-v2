@@ -51,15 +51,15 @@ typedef struct gui_screen_coord {
 
 extern void GUISetScreen( gui_ord xmin, gui_ord ymin, gui_ord width, gui_ord height );
 
-extern bool GUIScaleToScreen( gui_coord *coord );
-extern bool GUIScaleToScreenR( gui_coord *coord );
 extern gui_screen_ord GUIScaleToScreenH( gui_ord ord );
 extern gui_screen_ord GUIScaleToScreenV( gui_ord ord );
+extern gui_screen_ord GUIScaleToScreenX( gui_ord ord );
+extern gui_screen_ord GUIScaleToScreenY( gui_ord ord );
 
-extern bool GUIScreenToScale( gui_coord *coord );
-extern bool GUIScreenToScaleR( gui_coord *coord );
 extern gui_ord GUIScreenToScaleH( gui_screen_ord screen_ord );
 extern gui_ord GUIScreenToScaleV( gui_screen_ord screen_ord );
+extern gui_ord GUIScreenToScaleX( gui_screen_ord screen_ord );
+extern gui_ord GUIScreenToScaleY( gui_screen_ord screen_ord );
 
 extern bool GUIScreenToScaleRect( gui_screen_rect *screen_rect, gui_rect *rect );
 extern bool GUIScreenToScaleRectR( gui_screen_rect *screen_rect, gui_rect *rect );
@@ -68,3 +68,4 @@ extern bool GUIScaleToScreenRect( gui_rect *rect, gui_screen_rect *screen_rect )
 extern bool GUIScaleToScreenRectR( gui_rect *rect, gui_screen_rect *screen_rect );
 
 #endif // _GUISCALE_H_
+

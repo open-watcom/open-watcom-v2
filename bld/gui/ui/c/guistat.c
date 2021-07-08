@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,9 +46,8 @@ static bool SetStatusArea( gui_window *wnd, gui_ord x, gui_ord height,
 
     GUIGetClientSAREA( wnd, &sarea );
 
-    dim.x = x;
-    dim.y = height;
-    GUIScaleToScreenR( &dim );
+    dim.x = GUIScaleToScreenH( x );
+    dim.y = GUIScaleToScreenV( height );
     if( dim.y == 0 ) {
         dim.y = 1;
     }
