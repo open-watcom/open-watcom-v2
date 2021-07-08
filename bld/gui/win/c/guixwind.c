@@ -664,7 +664,7 @@ bool SendPointEvent( WPI_PARAM1 wparam, WPI_PARAM2 lparam,
 void GUIResizeBackground( gui_window *wnd, bool force_msg )
 {
     WPI_RECT    status;
-    int         t_height, s_height;
+    int         tbar_height, status_height;
     GUI_RECTDIM left, top, right, bottom;
     gui_coord   size;
 
@@ -675,16 +675,16 @@ void GUIResizeBackground( gui_window *wnd, bool force_msg )
         return;
     }
 
-    t_height = 0;
-    s_height = 0;
+    tbar_height = 0;
+    status_height = 0;
 
     if( ( wnd->tbar != NULL ) && ( wnd->tbar->info.is_fixed ) ) {
-        t_height = _wpi_getheightrect( wnd->tbar->fixedrect );
+        tbar_height = _wpi_getheightrect( wnd->tbar->fixedrect );
     }
 
     if( wnd->status != NULLHANDLE ) {
         _wpi_getwindowrect( wnd->status, &status );
-        s_height = _wpi_getheightrect( status );
+        status_height = _wpi_getheightrect( status );
     }
 
     _wpi_getclientrect( wnd->root_frame, &wnd->root_client_rect );
@@ -694,11 +694,11 @@ void GUIResizeBackground( gui_window *wnd, bool force_msg )
     top = left = 0;
 
 #ifdef __OS2_PM__
-    top    += s_height;
-    bottom -= t_height;
+    top    += status_height;
+    bottom -= tbar_height;
 #else
-    top    += t_height;
-    bottom -= s_height;
+    top    += tbar_height;
+    bottom -= status_height;
 #endif
 
     /* if the root client is a separate window resize it too */
