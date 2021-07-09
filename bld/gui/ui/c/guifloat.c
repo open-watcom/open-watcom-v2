@@ -258,4 +258,3 @@ bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
     }
     return( false );
 }
-

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,4 +51,3 @@ bool GUIGetPaintRect( gui_window *wnd, gui_rect *paint )
     GUIScreenToScaleRect( &area, paint );
     return( true );
 }
-

@@ -75,4 +75,3 @@ gui_ord GUIGetControlExtentY( gui_window * wnd, gui_ctl_id id, const char * text
 
     return( GUIGetExtentY( wnd, text ) );
 }
-

@@ -84,4 +84,3 @@ bool GUIDrawBarGroup( gui_window *wnd, gui_text_ord row, gui_ord start,
     }
     return( ret );
 }
-

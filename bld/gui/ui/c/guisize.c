@@ -707,4 +707,3 @@ bool GUIIsMinimized( gui_window *wnd )
 {
     return( (wnd->flags & MINIMIZED) != 0 );
 }
-

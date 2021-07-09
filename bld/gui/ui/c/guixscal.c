@@ -47,4 +47,3 @@ void GUIGetScreenArea( SAREA *area )
     area->width = rect.width;
     area->height = rect.height;
 }
-
