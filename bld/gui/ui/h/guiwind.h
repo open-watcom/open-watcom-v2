@@ -35,8 +35,8 @@
 #define _GUIWIND_H_
 
 #include "gui.h"
-#include "stdui.h"
 #include "guitypes.h"
+#include "stdui.h"
 #include "uivedit.h"
 #include "uiledit.h"
 #include "uidialog.h"
