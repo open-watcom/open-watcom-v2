@@ -16,6 +16,8 @@
 #include "wdpmi.h"
 #include "misc.h"
 #include "country.h"
+#include "iregs.h"
+
 
 char _country_info[35];
 
@@ -30,63 +32,64 @@ int GetCountryCode (void)
   if (_osmajor >= 3)
   {
 #if (DOSX & DJGPP)
-    __dpmi_regs reg;
+    IREGS regs;
 
-    reg.d.edx = 0;
-    reg.x.ds  = __tb / 16;
-    reg.d.eax = 0x3800;
-    __dpmi_int (0x21, &reg);
-    if (reg.x.flags & 1)
+    memset (&regs, 0, sizeof(regs));
+    regs.r_dx = 0;
+    regs.r_ds = __tb / 16;
+    regs.r_ax = 0x3800;
+    GEN_RM_INTERRUPT (0x21, &regs);
+    if (regs.r_flags & CARRY_BIT)
        return (0);
     dosmemget (__tb, sizeof(_country_info), &_country_info);
-    return (reg.x.bx);
+    return (regs.r_bx);
 
 #elif (DOSX & PHARLAP)
-    SWI_REGS reg;
+    IREGS regs;
 
     if (_watt_dosTbSize < sizeof(_country_info))
        return (0);
 
-    reg.edx = RP_OFF (_watt_dosTbr);
-    reg.ds  = RP_SEG (_watt_dosTbr);
-    reg.eax = 0x3800;
-    _dx_real_int (0x21, &reg);
-    if (reg.flags & 1)
+    memset (&regs, 0, sizeof(regs));
+    regs.r_dx = RP_OFF (_watt_dosTbr);
+    regs.r_ds = RP_SEG (_watt_dosTbr);
+    regs.r_ax = 0x3800;
+    GEN_RM_INTERRUPT (0x21, &regs);
+    if (regs.r_flags & CARRY_BIT)
        return (0);
     ReadRealMem (&_country_info, _watt_dosTbr, sizeof(_country_info));
-    return (reg.ebx);
+    return (regs.r_bx);
 
 #elif (DOSX & (DOS4GW|WDOSX))
-    union  REGS  reg;
-    struct SREGS sreg;
+    IREGS  regs;
 
     if (_watt_dosTbSize < sizeof(_country_info))
        return (0);
 
-    reg.x.edx = 0;
-    sreg.ds   = _watt_dosTbSeg;
-    reg.x.eax = 0x3800;
-    int386x (0x21, &reg, &reg, &sreg);
-    if (reg.x.cflag)
+    memset (&regs, 0, sizeof(regs));
+    regs.r_dx = 0;
+    regs.r_ds = _watt_dosTbSeg;
+    regs.r_ax = 0x3800;
+    GEN_RM_INTERRUPT (0x21, &regs);
+    if (regs.r_flags & CARRY_BIT)
        return (0);
-    memcpy (&_country_info, SEG_OFS_TO_LIN(_watt_dosTbSeg,0),
-            sizeof(_country_info));
-    return (reg.w.bx);
+    memcpy (&_country_info, SEG_OFS_TO_LIN(_watt_dosTbSeg,0), sizeof(_country_info));
+    return (regs.r_bx);
 
 #elif (DOSX & POWERPAK)
     UNFINISHED();
 
 #elif (DOSX == 0)        /* real-mode */
-    union  REGS  reg;
-    struct SREGS sreg;
+    IREGS  regs;
 
-    reg.x.dx = FP_OFF (_country_info);
-    sreg.ds  = FP_SEG (_country_info);
-    reg.x.ax = 0x3800;
-    int86x (0x21, &reg, &reg, &sreg);
-    if (reg.x.cflag)
+    memset (&regs, 0, sizeof(regs));
+    regs.r_dx = FP_OFF (_country_info);
+    regs.r_ds = FP_SEG (_country_info);
+    regs.r_ax = 0x3800;
+    GEN_RM_INTERRUPT (0x21, &regs);
+    if (regs.r_flags & CARRY_BIT)
        return (0);
-    return (reg.x.bx);
+    return (regs.r_bx);
 
 #else
   #error Unsupported target
@@ -106,42 +109,48 @@ int GetCodePage (void)
   if ((_osmajor << 8) + _osminor >= 0x303)
   {
 #if (DOSX & DJGPP)
-    __dpmi_regs reg;
+    IREGS regs;
 
-    reg.d.eax = 0x6601;
-    __dpmi_int (0x21, &reg);
-    if (reg.x.flags & 1)
+    memset (&regs, 0, sizeof(regs));
+    regs.r_ax = 0x6601;
+    GEN_RM_INTERRUPT (0x21, &regs);
+    if (regs.r_flags & CARRY_BIT)
        return (0);
-    return (reg.x.bx);
+    return (regs.r_bx);
 
 #elif (DOSX & PHARLAP)
-    SWI_REGS reg;
+    IREGS regs;
 
-    reg.eax = 0x6601;
-    _dx_real_int (0x21, &reg);
-    if (reg.flags & 1)
+    memset (&regs, 0, sizeof(regs));
+    regs.r_ax = 0x6601;
+    GEN_RM_INTERRUPT (0x21, &regs);
+    if (regs.r_flags & CARRY_BIT)
        return (0);
-    return (WORD)reg.ebx;
+    return (WORD)regs.r_bx;
 
 #elif (DOSX & (DOS4GW|WDOSX))
-    struct DPMI_regs reg;
+    IREGS regs;
 
-    reg.r_ax = 0x6601;
-    if (!dpmi_real_interrupt (0x21, &reg))
+    memset (&regs, 0, sizeof(regs));
+    regs.r_ax = 0x6601;
+    if (!dpmi_real_interrupt (0x21, &regs))
        return (0);
-    return (WORD)reg.r_bx;
+    if (regs.r_flags & CARRY_BIT)
+       return (0);
+    return (WORD)regs.r_bx;
 
 #elif (DOSX & POWERPAK)
     UNFINISHED();
 
 #elif (DOSX == 0)       /* real-mode */
-    union REGS reg;
+    IREGS regs;
 
-    reg.x.ax = 0x6601;
-    int86 (0x21, &reg, &reg);
-    if (reg.x.cflag)
+    memset (&regs, 0, sizeof(regs));
+    regs.r_ax = 0x6601;
+    GEN_RM_INTERRUPT (0x21, &regs);
+    if (regs.r_flags & CARRY_BIT)
        return (0);
-    return (reg.x.bx);
+    return (regs.r_bx);
 
 #else
   #error Unsupported target

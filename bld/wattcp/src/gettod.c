@@ -17,6 +17,7 @@
 #include "wattcp.h"
 #include "misc.h"
 #include "gettod.h"
+#include "iregs.h"
 
 /*
  * Timezone defines for Watcom, Borland <= 3.1 and MSC <= 6.0
@@ -51,26 +52,27 @@ static void get_zone (struct timezone *tz, time_t now)
 #if (DOSX == 0)
 int gettimeofday (struct timeval *tv, struct timezone *tz)
 {
-  union  REGS reg;
+  IREGS  regs;
   struct tm   tm;
 
   if (!tv)
      return (-1);
 
-  reg.h.ah = 0x2C;
-  int86 (0x21, &reg, &reg);
+  memset (&regs, 0, sizeof(regs));
+  hiREG(regs.r_ax, 0x2C);
+  GEN_RM_INTERRUPT (0x21, &regs);
 
-  tv->tv_usec = reg.h.dl * 10000L;
-  tm.tm_sec   = reg.h.dh;
-  tm.tm_min   = reg.h.cl;
-  tm.tm_hour  = reg.h.ch;
+  tv->tv_usec = loBYTE (regs.r_dx) * 10000L;
+  tm.tm_sec   = hiBYTE (regs.r_dx);
+  tm.tm_min   = loBYTE (regs.r_cx);
+  tm.tm_hour  = hiBYTE (regs.r_cx);
 
-  reg.h.ah = 0x2A;
-  int86 (0x21, &reg, &reg);
+  hiREG(regs.r_ax, 0x2A);
+  GEN_RM_INTERRUPT (0x21, &regs);
 
-  tm.tm_mday  = reg.h.dl;
-  tm.tm_mon   = reg.h.dh - 1;
-  tm.tm_year  = (reg.x.cx & 0x7FF) - 1900;
+  tm.tm_mday  = loBYTE (regs.r_dx);
+  tm.tm_mon   = hiBYTE (regs.r_dx) - 1;
+  tm.tm_year  = (regs.r_cx & 0x7FF) - 1900;
   tm.tm_wday  = tm.tm_yday = 0;
   tm.tm_isdst = -1;
 
@@ -84,26 +86,27 @@ int gettimeofday (struct timeval *tv, struct timezone *tz)
 #elif (DOSX & PHARLAP)
 int gettimeofday (struct timeval *tv, struct timezone *tz)
 {
-  SWI_REGS  reg;
+  IREGS  regs;
   struct tm tm;
 
   if (!tv)
      return (-1);
 
-  reg.eax = 0x2C00;
-  _dx_real_int (0x21, &reg);
+  memset (&regs, 0, sizeof(regs));
+  regs.r_ax = 0x2C00;
+  GEN_RM_INTERRUPT (0x21, &regs);
 
-  tv->tv_usec = loBYTE (reg.edx) * 10000L;
-  tm.tm_sec   = hiBYTE (reg.edx);
-  tm.tm_min   = loBYTE (reg.ecx);
-  tm.tm_hour  = hiBYTE (reg.ecx);
+  tv->tv_usec = loBYTE (regs.r_dx) * 10000L;
+  tm.tm_sec   = hiBYTE (regs.r_dx);
+  tm.tm_min   = loBYTE (regs.r_cx);
+  tm.tm_hour  = hiBYTE (regs.r_cx);
 
-  reg.eax = 0x2A00;
-  _dx_real_int (0x21, &reg);
+  regs.r_ax = 0x2A00;
+  GEN_RM_INTERRUPT (0x21, &regs);
 
-  tm.tm_mday  = loBYTE (reg.edx);
-  tm.tm_mon   = hiBYTE (reg.edx) - 1;
-  tm.tm_year  = (reg.ecx & 0x7FF) - 1900;
+  tm.tm_mday  = loBYTE (regs.r_dx);
+  tm.tm_mon   = hiBYTE (regs.r_dx) - 1;
+  tm.tm_year  = (regs.r_cx & 0x7FF) - 1900;
   tm.tm_wday  = tm.tm_yday = 0;
   tm.tm_isdst = -1;
 
@@ -116,26 +119,27 @@ int gettimeofday (struct timeval *tv, struct timezone *tz)
 #elif (DOSX & (DOS4GW|WDOSX)) && !defined(__GNUC__)
 int gettimeofday (struct timeval *tv, struct timezone *tz)
 {
-  union  REGS reg;
+  IREGS  regs;
   struct tm   tm;
 
   if (!tv)
      return (-1);
 
-  reg.x.eax = 0x2C00;
-  int386 (0x21, &reg, &reg);
+  memset (&regs, 0, sizeof(regs));
+  regs.r_ax = 0x2C00;
+  GEN_RM_INTERRUPT (0x21, &regs);
 
-  tv->tv_usec = reg.h.dl * 10000;
-  tm.tm_sec   = reg.h.dh;
-  tm.tm_min   = reg.h.cl;
-  tm.tm_hour  = reg.h.ch;
+  tv->tv_usec = loBYTE (regs.r_dx) * 10000;
+  tm.tm_sec   = hiBYTE (regs.r_dx);
+  tm.tm_min   = loBYTE (regs.r_cx);
+  tm.tm_hour  = hiBYTE (regs.r_cx);
 
-  reg.x.eax = 0x2A00;
-  int386 (0x21, &reg, &reg);
+  regs.r_ax = 0x2A00;
+  GEN_RM_INTERRUPT (0x21, &regs);
 
-  tm.tm_mday  = reg.h.dl;
-  tm.tm_mon   = reg.h.dh - 1;
-  tm.tm_year  = (reg.x.ecx & 0x7FF) - 1900;
+  tm.tm_mday  = loBYTE (regs.r_dx);
+  tm.tm_mon   = hiBYTE (regs.r_dx) - 1;
+  tm.tm_year  = (regs.r_cx & 0x7FF) - 1900;
   tm.tm_wday  = tm.tm_yday = 0;
   tm.tm_isdst = -1;
 

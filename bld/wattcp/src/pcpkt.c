@@ -26,7 +26,7 @@
 #include "pcmulti.h"
 #include "pcqueue.h"
 
-#define DEFINE_IREGS
+#include "iregs.h"
 #include "pcpkt.h"
 #include "pcpkt32.h"
 
@@ -154,10 +154,9 @@ static WORD pkt_interrupt = 0;
 static int  release_handles (BOOL quiet);
 static WORD find_vector (int first, int num);
 static int  setup_pkt_inf (void);
-static int  pkt_api_entry (IREGS *reg, unsigned called_from_line);
+static int  pkt_api_entry (IREGS *regs, unsigned called_from_line);
 
-#define PKT_API(reg)     pkt_api_entry (reg, __LINE__)
-#define CARRY_BIT        1   /* carry bit in flags register */
+#define PKT_API(regs)   pkt_api_entry (regs, __LINE__)
 
 #define PKT_ERR(str,dx)  do {                                              \
                            const char *s = pkt_errStr ((BYTE)((dx) >> 8)); \
@@ -518,8 +517,8 @@ static int pkt_drvr_info (void)
   }
   else          /* new Packet-Driver (1.09+) */
   {
-    _pktdevlevel = (regs.r_ax & 0xFF);
-    _pktdevclass = (BYTE)(regs.r_cx >> 8);
+    _pktdevlevel = loBYTE (regs.r_ax);
+    _pktdevclass = hiBYTE (regs.r_cx);
 
     switch (_pktdevclass)
     {
@@ -627,59 +626,6 @@ int pkt_get_drvr_ver (void)
   return (-1);
 }
 
-/**************************************************************************/
-
-
-#if (DOSX == 0) && defined(USE_DEBUG)
-/*
- *  Some paranoia checks for real-targets; if our IREGS structure
- *  doesn't match REGPACK of the C-lib, intr() will probably cause a
- *  crash. Better safe than sorry..
- */
-static int check_reg_struct (void)
-{
-#define OffsetOf(x) (unsigned)&(x)
-
-#if defined(_MSC_VER)  /* We made our own intr(), hence no need to do this */
-  return (1);
-
-#elif defined(__WATCOMC__)
-  union  REGPACK *r1 = NULL;
-  struct IREGS   *r2 = NULL;
-
-  if ((OffsetOf(r1->w.ax)    != OffsetOf(r2->r_ax)) ||
-      (OffsetOf(r1->w.bx)    != OffsetOf(r2->r_bx)) ||
-      (OffsetOf(r1->w.cx)    != OffsetOf(r2->r_cx)) ||
-      (OffsetOf(r1->w.dx)    != OffsetOf(r2->r_dx)) ||
-      (OffsetOf(r1->w.bp)    != OffsetOf(r2->r_bp)) ||
-      (OffsetOf(r1->w.si)    != OffsetOf(r2->r_si)) ||
-      (OffsetOf(r1->w.di)    != OffsetOf(r2->r_di)) ||
-      (OffsetOf(r1->w.ds)    != OffsetOf(r2->r_ds)) ||
-      (OffsetOf(r1->w.es)    != OffsetOf(r2->r_es)) ||
-      (OffsetOf(r1->x.flags) != OffsetOf(r2->r_flags)))
-    return (0);
-
-#else  /* Borland */
-  struct REGPACK *r1 = NULL;
-  struct IREGS   *r2 = NULL;
-
-  if ((OffsetOf(r1->r_ax)    != OffsetOf(r2->r_ax)) ||
-      (OffsetOf(r1->r_bx)    != OffsetOf(r2->r_bx)) ||
-      (OffsetOf(r1->r_cx)    != OffsetOf(r2->r_cx)) ||
-      (OffsetOf(r1->r_dx)    != OffsetOf(r2->r_dx)) ||
-      (OffsetOf(r1->r_bp)    != OffsetOf(r2->r_bp)) ||
-      (OffsetOf(r1->r_si)    != OffsetOf(r2->r_si)) ||
-      (OffsetOf(r1->r_di)    != OffsetOf(r2->r_di)) ||
-      (OffsetOf(r1->r_ds)    != OffsetOf(r2->r_ds)) ||
-      (OffsetOf(r1->r_es)    != OffsetOf(r2->r_es)) ||
-      (OffsetOf(r1->r_flags) != OffsetOf(r2->r_flags)))
-    return (0);
-#endif
-
-  return (1);
-}
-#endif /* (DOSX == 0) && USE_DEBUG */
-
 /*
  * pkt_init - Called from pkt_eth_init() to search for PKT-DRVR.
  *          - Allocates '_pkt_inf' structure.
@@ -688,14 +634,6 @@ static int pkt_init (void)
 {
 #if (DOSX)
   int rc;
-#endif
-
-#if (DOSX == 0) && defined(USE_DEBUG)
-  if (!check_reg_struct())
-  {
-    outsnl (__FILE__ ": IREGS/REGPACK size mismatch!");
-    return (0);
-  }
 #endif
 
   /* If interrupt specified in environment ("WATTCP.VEC=0xNN" or
@@ -1571,8 +1509,8 @@ BOOL pkt_eth_init (eth_address *eth)
        return (-2);
 
     rm_base = (_pkt_inf->rm_mem.rm_segment << 4);
-    for (i = 0; i < RDATA_SIZE/4; i++)
-        _farpokel (_dos_ds, rm_base + 4*i, 0L);
+    for (i = 0; i < RDATA_SIZE / 4; i++)
+        _farpokel (_dos_ds, rm_base + 4 * i, 0L);
 
   #if 0  /* test */
     (*_printf) ("rm_mem = %04X:%04X  rmode call-back %04X:%04X\r\n",
@@ -1755,37 +1693,6 @@ static int setup_pkt_inf (void)
   return (1);
 }
 
-
-/*
- * Microsoft Quick-C doesn't have 'intr()' so we make our own.
- */
-#if defined(_MSC_VER) && (DOSX == 0)
-static void intr (int intno, IREGS *reg)
-{
-  union  REGS  r;
-  struct SREGS s;
-
-  r.x.ax = reg->r_ax;
-  r.x.bx = reg->r_bx;
-  r.x.cx = reg->r_cx;
-  r.x.dx = reg->r_dx;
-  r.x.si = reg->r_si;
-  r.x.di = reg->r_di;
-  s.ds   = reg->r_ds;
-  s.es   = reg->r_es;
-  int86x (intno, &r, &r, &s);
-  reg->r_flags = r.x.cflag;
-  reg->r_ax    = r.x.ax;
-  reg->r_bx    = r.x.bx;
-  reg->r_cx    = r.x.cx;
-  reg->r_dx    = r.x.dx;
-  reg->r_si    = r.x.si;
-  reg->r_di    = r.x.di;
-  reg->r_ds    = s.ds;
-  reg->r_es    = s.es;
-}
-#endif
-
 /*
  *  The API entry to the network link-driver. Either use protected mode
  *  interface via a (far) call (dynamic loaded module) or issue an
@@ -1820,35 +1727,9 @@ static int pkt_api_entry (IREGS *reg, unsigned line)
     return (0);
   }
 
- /* Use the (slower) 16-bit real-mode PKTDRVR API.
-  */
-#if (DOSX & PHARLAP)
-  _dx_real_int ((UINT)pkt_interrupt, reg);
-
-#elif (DOSX & DJGPP)
-  __dpmi_int ((int)pkt_interrupt, reg);
-
-#elif (DOSX & DOS4GW) && defined(__WATCOMC__)
-  dpmi_real_interrupt ((int)pkt_interrupt, reg);
-
-#elif (DOSX & WDOSX)
-  dpmi_real_interrupt2 ((int)pkt_interrupt, reg);
-
-#elif (DOSX & POWERPAK)
-  UNFINISHED();
-
-#elif (DOSX == 0) && defined(_MSC_VER)
-  intr ((int)pkt_interrupt, reg);
-
-#elif (DOSX == 0) && defined(__WATCOMC__)
-  intr ((int)pkt_interrupt, (union REGPACK*)reg);
-
-#elif (DOSX == 0)
-  intr ((int)pkt_interrupt, (struct REGPACK*)reg);
-
-#else
-  #error Unknown method in pkt_api_entry
-#endif
+  /* Use the (slower) 16-bit real-mode PKTDRVR API.
+   */
+  GEN_RM_INTERRUPT (pkt_interrupt, reg);
 
   return ((reg->r_flags & CARRY_BIT) == 0);
 }
