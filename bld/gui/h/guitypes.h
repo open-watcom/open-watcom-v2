@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,3 +36,8 @@
 #define GUIEVENT( wnd, event, param )   ((*wnd->gui_call_back)(wnd, event, param))
 
 #define UCHAR_VALUE( c )                (unsigned char)(c)
+
+typedef struct gui_text_coord {
+    gui_text_ord        x;
+    gui_text_ord        y;
+} gui_text_coord;
