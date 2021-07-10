@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,5 +32,5 @@
 
 
 extern bool GUIProcessEvent( ui_event );
-extern ui_event GUICreatePopup( gui_window * wnd, gui_coord * point );
+extern ui_event GUICreatePopup( gui_window *wnd, const guix_coord *scr_point );
 extern gui_window *GUIGetMenuWindow( void );

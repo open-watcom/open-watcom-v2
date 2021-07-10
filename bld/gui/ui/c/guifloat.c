@@ -59,18 +59,18 @@ static gui_window   *MenuWnd        = NULL;
  * MapLocation --
  */
 
-static void MapLocation( gui_window *wnd, gui_point *point )
+static void MapLocation( gui_window *wnd, gui_point *point, guix_point *scr_point )
 {
-    point->x = GUIScaleToScreenH( point->x );
-    point->y = GUIScaleToScreenV( point->y );
+    scr_point->x = GUIScaleToScreenH( point->x );
+    scr_point->y = GUIScaleToScreenV( point->y );
     if( ( wnd->hgadget != NULL ) && !GUI_HSCROLL_EVENTS_SET( wnd ) ) {
-        point->x -= wnd->hgadget->pos;
+        scr_point->x -= wnd->hgadget->pos;
     }
     if( ( wnd->vgadget != NULL ) && !GUI_VSCROLL_EVENTS_SET( wnd ) ) {
-        point->y -= wnd->vgadget->pos;
+        scr_point->y -= wnd->vgadget->pos;
     }
-    point->x += wnd->use.col + 1;
-    point->y += wnd->use.row + 1;
+    scr_point->x += wnd->use.col + 1;
+    scr_point->y += wnd->use.row + 1;
 }
 
 /*
@@ -131,7 +131,7 @@ void GUIProcessMenuCurr( UIMENUITEM *menuitem )
  * GUICreateMenuPopup - create a floating popup menu
  */
 
-ui_event GUICreateMenuPopup( gui_window *wnd, gui_point *location, UIMENUITEM *menuitems,
+ui_event GUICreateMenuPopup( gui_window *wnd, guix_point *scr_location, UIMENUITEM *menuitems,
                                     gui_mouse_track track, gui_ctl_id *curr_id )
 {
     ui_event    ui_ev;
@@ -171,8 +171,8 @@ ui_event GUICreateMenuPopup( gui_window *wnd, gui_point *location, UIMENUITEM *m
     COPYAREA( top->use, area );
     area.row += top->vs.area.row;
     area.col += top->vs.area.col;
-    ok = uiposfloatingpopup( menuitems, &desc, wnd->vs.area.row + location->y,
-                            wnd->vs.area.col + location->x, &area, NULL );
+    ok = uiposfloatingpopup( menuitems, &desc, wnd->vs.area.row + scr_location->y,
+                            wnd->vs.area.col + scr_location->x, &area, NULL );
     if( ok ) {
         ui_ev = uicreatepopupinarea( menuitems, &desc, track & GUI_TRACK_LEFT,
                               track & GUI_TRACK_RIGHT, ui_ev, &area, false );
@@ -218,12 +218,14 @@ ui_event GUICreateMenuPopup( gui_window *wnd, gui_point *location, UIMENUITEM *m
 static void TrackPopup( gui_window *wnd, gui_point *location,
                         UIMENUITEM *menuitems, gui_mouse_track track, gui_ctl_id *curr_id )
 {
-    MapLocation( wnd, location );
+    guix_point  scr_location;
+
+    MapLocation( wnd, location, &scr_location );
 
     MenuState = MENU_FLOAT;
     uipushlist( NULL );
     uipushlist( GUIUserEvents );
-    GUICreateMenuPopup( wnd, location, menuitems, track, curr_id );
+    GUICreateMenuPopup( wnd, &scr_location, menuitems, track, curr_id );
     uipoplist( /* GUIUserEvents */ );
     uipoplist( /* NULL */ );
     MenuState = MENU_NONE;

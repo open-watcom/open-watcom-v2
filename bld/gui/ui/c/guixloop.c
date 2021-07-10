@@ -215,17 +215,17 @@ static bool ProcessMousePos( gui_event gui_ev, ORD row, ORD col, gui_window * wn
     return( true );
 }
 
-ui_event GUICreatePopup( gui_window *wnd, gui_coord *point )
+ui_event GUICreatePopup( gui_window *wnd, const guix_coord *point )
 {
     ui_event    ui_ev;
-    gui_point   gpoint;
+    guix_point  scr_point;
 
-    gpoint.x = point->x - wnd->vs.area.col;
-    gpoint.y = point->y - (wnd->vs.area.row - 1);
+    scr_point.x = point->x - wnd->vs.area.col;
+    scr_point.y = point->y - (wnd->vs.area.row - 1);
     uipushlist( NULL );
     uipushlist( GUIInternalEvents );
     uipushlist( GUIUserEvents );
-    ui_ev = GUICreateMenuPopup( wnd, &gpoint, wnd->menu, GUI_TRACK_LEFT, NULL );
+    ui_ev = GUICreateMenuPopup( wnd, &scr_point, wnd->menu, GUI_TRACK_LEFT, NULL );
     uipoplist( /* GUIUserEvents */ );
     uipoplist( /* GUIInternalEvents */ );
     uipoplist( /* NULL */ );
@@ -234,8 +234,6 @@ ui_event GUICreatePopup( gui_window *wnd, gui_coord *point )
 
 static void ProcessMinimizedMouseEvent( ui_event ui_ev, ORD row, ORD col )
 {
-    gui_coord point;
-
     switch( ui_ev ) {
     case EV_MOUSE_PRESS :
         if( GUIStartMoveResize( GUIMouseWnd, row, col, RESIZE_NONE ) ) {
@@ -253,9 +251,11 @@ static void ProcessMinimizedMouseEvent( ui_event ui_ev, ORD row, ORD col )
             MouseState = MOUSE_FREE;
         }
         if( !MinimizedMoved ) {
-            point.x = (gui_ord)col;
-            point.y = (gui_ord)row;
-            if( GUICreatePopup( GUICurrWnd, &point ) == EV_MOUSE_DCLICK ) {
+            guix_coord  scr_point;
+
+            scr_point.x = col;
+            scr_point.y = row;
+            if( GUICreatePopup( GUICurrWnd, &scr_point ) == EV_MOUSE_DCLICK ) {
                 GUIZoomWnd( GUICurrWnd, GUI_NONE );
             }
         }
@@ -297,11 +297,11 @@ static void ProcessMousePress( ui_event ui_ev, gui_event gui_ev, ORD row, ORD co
         if( use_gadgets && GUI_HAS_CLOSER( GUICurrWnd ) &&
             ( wnd_col >= CLOSER_COL - 1 ) && ( wnd_col <= CLOSER_COL + 1 ) ) {
             if( ( GUICurrWnd->menu != NULL ) && ( ui_ev == EV_MOUSE_PRESS ) ) {
-                gui_coord   point;
+                guix_coord  scr_point;
 
-                point.x = GUICurrWnd->vs.area.col;
-                point.y = row;
-                ui_ev = GUICreatePopup( GUICurrWnd, &point );
+                scr_point.x = GUICurrWnd->vs.area.col;
+                scr_point.y = row;
+                ui_ev = GUICreatePopup( GUICurrWnd, &scr_point );
             }
             if( (GUICurrWnd->style & GUI_CLOSEABLE) && (ui_ev == EV_MOUSE_DCLICK) ) {
                 if( GUICloseWnd( GUICurrWnd ) ) {
