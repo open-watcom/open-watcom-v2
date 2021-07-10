@@ -55,14 +55,14 @@ typedef struct draw_cache {
  *            for the given attributes
  */
 
-static void SetText( gui_window * wnd, WPI_COLOUR fore, WPI_COLOUR back )
+static void SetText( gui_window *wnd, WPI_COLOUR fore, WPI_COLOUR back )
 {
     _wpi_settextcolor( wnd->hdc, _wpi_getnearestcolor( wnd->hdc, fore ) );
     _wpi_setbackcolour( wnd->hdc, _wpi_getnearestcolor( wnd->hdc , back ) );
 }
 
 static void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
-                            size_t length, int height, gui_coord *pos,
+                            size_t length, int height, const gui_coord *pos,
                             WPI_COLOUR fore, WPI_COLOUR back, gui_ord extentx,
                             bool draw_extent, int bitmap )
 {
@@ -189,7 +189,7 @@ static void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
 }
 
 void GUIDrawTextBitmapAttr( gui_window *wnd, const char *text, size_t length,
-                            int height, gui_coord *pos,
+                            int height, const gui_coord *pos,
                             gui_attr attr, gui_ord extentx,
                             bool draw_extent, int bitmap )
 {
@@ -202,13 +202,13 @@ void GUIDrawTextBitmapAttr( gui_window *wnd, const char *text, size_t length,
                            draw_extent, bitmap );
 }
 
-void GUIXDrawText( gui_window *wnd, const char *text, size_t length, gui_coord *pos,
+void GUIXDrawText( gui_window *wnd, const char *text, size_t length, const gui_coord *pos,
                    gui_attr attr, gui_ord extentx, bool draw_extent )
 {
     GUIDrawTextBitmapAttr( wnd, text, length, 0, pos, attr, extentx, draw_extent, 0 );
 }
 
-void GUIXDrawTextRGB( gui_window *wnd, const char *text, size_t length, gui_coord *pos,
+void GUIXDrawTextRGB( gui_window *wnd, const char *text, size_t length, const gui_coord *pos,
                       gui_rgb fore, gui_rgb back, gui_ord extentx,
                       bool draw_extent )
 {

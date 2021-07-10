@@ -36,7 +36,7 @@
 #include "guidraw.h"
 #include "guixutil.h"
 
-static bool GUIIntersectRect( SAREA *area, SAREA *bound )
+static bool IntersectRect( SAREA *area, SAREA *bound )
 {
     if( ( ( area->row + area->height ) < bound->row ) ||
         ( area->row > ( bound->row + bound->height ) ) ) {
@@ -99,10 +99,10 @@ static bool AdjustRect( gui_window *wnd, SAREA *area )
     }
     area->col += wnd->use.col;
     area->row += wnd->use.row;
-    return( GUIIntersectRect( area, &wnd->dirty ) );
+    return( IntersectRect( area, &wnd->dirty ) );
 }
 
-static bool DrawRect( gui_window *wnd, gui_rect *rect, gui_attr attr,
+static bool DrawRect( gui_window *wnd, const gui_rect *rect, gui_attr attr,
                       bool fill, bool outline, char draw_char )
 {
     SAREA       area;
@@ -122,45 +122,47 @@ static bool DrawRect( gui_window *wnd, gui_rect *rect, gui_attr attr,
     return( true );
 }
 
-bool GUIDrawRect( gui_window *wnd, gui_rect *rect, gui_attr attr )
+bool GUIDrawRect( gui_window *wnd, const gui_rect *rect, gui_attr attr )
 {
     return( DrawRect( wnd, rect, attr, false, true, DRAW( BLOCK ) ) );
 }
 
-bool GUIFillRect( gui_window *wnd, gui_rect *rect, gui_attr attr )
+bool GUIFillRect( gui_window *wnd, const gui_rect *rect, gui_attr attr )
 {
     return( DrawRect( wnd, rect, attr, true, false, DRAW( BLOCK ) ) );
 }
 
-bool GUIFillBar( gui_window *wnd, gui_rect *rect, gui_attr attr )
+bool GUIFillBar( gui_window *wnd, const gui_rect *rect, gui_attr attr )
 {
     return( DrawRect( wnd, rect, attr, true, false, DRAW( TOP_HALF ) ) );
 }
 
-bool GUIDrawLine( gui_window *wnd, gui_point *start, gui_point *end,
+bool GUIDrawLine( gui_window *wnd, const gui_point *start, const gui_point *end,
                   gui_line_styles style, gui_ord thickness, gui_attr attr )
 {
-    gui_point   my_start;
-    gui_point   my_end;
+    guix_ord    scr_start_x;
+    guix_ord    scr_start_y;
+    guix_ord    scr_end_x;
+    guix_ord    scr_end_y;
     SAREA       area;
     char        to_use;
 
     /* unused parameters */ (void)style; (void)thickness;
 
-    my_start.x = GUIScaleToScreenH( start->x );
-    my_start.y = GUIScaleToScreenV( start->y );
-    my_end.x = GUIScaleToScreenH( end->x );
-    my_end.y = GUIScaleToScreenV( end->y );
+    scr_start_x = GUIScaleToScreenH( start->x );
+    scr_start_y = GUIScaleToScreenV( start->y );
+    scr_end_x = GUIScaleToScreenH( end->x );
+    scr_end_y = GUIScaleToScreenV( end->y );
 
-    area.row = my_start.y;
-    area.height = my_end.y - my_start.y + 1;
-    area.col = my_start.x;
-    area.width = my_end.x - my_start.x + 1;
+    area.row = scr_start_y;
+    area.height = scr_end_y - scr_start_y + 1;
+    area.col = scr_start_x;
+    area.width = scr_end_x - scr_start_x + 1;
 
-    if( my_start.x == my_end.x ) {
+    if( scr_start_x == scr_end_x ) {
         to_use = DRAW( VERT_FRAME );
     } else {
-        if( my_start.y == my_end.y ) {
+        if( scr_start_y == scr_end_y ) {
             to_use = DRAW( HOR_FRAME );
         } else {
             return( false );
@@ -172,21 +174,21 @@ bool GUIDrawLine( gui_window *wnd, gui_point *start, gui_point *end,
     return( true );
 }
 
-bool GUIFillRectRGB( gui_window *wnd, gui_rect *rect, gui_rgb rgb )
+bool GUIFillRectRGB( gui_window *wnd, const gui_rect *rect, gui_rgb rgb )
 {
     /* unused parameters */ (void)wnd; (void)rect; (void)rgb;
 
     return( false );
 }
 
-bool GUIDrawRectRGB( gui_window *wnd, gui_rect *rect, gui_rgb rgb )
+bool GUIDrawRectRGB( gui_window *wnd, const gui_rect *rect, gui_rgb rgb )
 {
     /* unused parameters */ (void)wnd; (void)rect; (void)rgb;
 
     return( false );
 }
 
-bool GUIDrawLineRGB( gui_window *wnd, gui_point *start, gui_point *end,
+bool GUIDrawLineRGB( gui_window *wnd, const gui_point *start, const gui_point *end,
                      gui_line_styles style, gui_ord thickness, gui_rgb rgb )
 {
     /* unused parameters */ (void)wnd; (void)start; (void)end; (void)style; (void)thickness; (void)rgb;

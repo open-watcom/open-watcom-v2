@@ -50,10 +50,10 @@ extern gui_ord GUIScreenToScaleV( guix_ord screen_ord );
 extern gui_ord GUIScreenToScaleX( guix_ord screen_ord );
 extern gui_ord GUIScreenToScaleY( guix_ord screen_ord );
 
-extern bool GUIScreenToScaleRect( guix_rect *screen_rect, gui_rect *rect );
-extern bool GUIScreenToScaleRectR( guix_rect *screen_rect, gui_rect *rect );
+extern bool GUIScreenToScaleRect( const guix_rect *screen_rect, gui_rect *rect );
+extern bool GUIScreenToScaleRectR( const guix_rect *screen_rect, gui_rect *rect );
 
-extern bool GUIScaleToScreenRect( gui_rect *rect, guix_rect *screen_rect );
-extern bool GUIScaleToScreenRectR( gui_rect *rect, guix_rect *screen_rect );
+extern bool GUIScaleToScreenRect( const gui_rect *rect, guix_rect *screen_rect );
+extern bool GUIScaleToScreenRectR( const gui_rect *rect, guix_rect *screen_rect );
 
 #endif // _GUISCALE_H_

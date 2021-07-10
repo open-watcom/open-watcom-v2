@@ -117,7 +117,7 @@ static gui_ord ConvertFromScreenV( guix_ord ord )
  * ConvertToScreenRect -- convert a gui_coord from one coordinate system to another
  */
 
-static bool ConvertToScreenRect( gui_rect *rect, guix_rect *screen_rect, bool rel )
+static bool ConvertToScreenRect( const gui_rect *rect, guix_rect *screen_rect, bool rel )
 {
     if( rel ) {
         screen_rect->s_x = ConvertToScreenH( rect->x );
@@ -135,7 +135,7 @@ static bool ConvertToScreenRect( gui_rect *rect, guix_rect *screen_rect, bool re
  * ConvertFromScreenRect -- convert a gui_coord from one coordinate system to another
  */
 
-static bool ConvertFromScreenRect( guix_rect *screen_rect, gui_rect *rect, bool rel )
+static bool ConvertFromScreenRect( const guix_rect *screen_rect, gui_rect *rect, bool rel )
 {
     if( rel ) {
         rect->x = ConvertFromScreenH( screen_rect->s_x );
@@ -151,22 +151,22 @@ static bool ConvertFromScreenRect( guix_rect *screen_rect, gui_rect *rect, bool 
 
 /* Routines Used by lower levels of GUI library */
 
-bool GUIScreenToScaleRect( guix_rect *screen_rect, gui_rect *rect )
+bool GUIScreenToScaleRect( const guix_rect *screen_rect, gui_rect *rect )
 {
     return( ConvertFromScreenRect( screen_rect, rect, false ) );
 }
 
-bool GUIScreenToScaleRectR( guix_rect *screen_rect, gui_rect *rect )
+bool GUIScreenToScaleRectR( const guix_rect *screen_rect, gui_rect *rect )
 {
     return( ConvertFromScreenRect( screen_rect, rect, true ) );
 }
 
-bool GUIScaleToScreenRect( gui_rect *rect, guix_rect *screen_rect )
+bool GUIScaleToScreenRect( const gui_rect *rect, guix_rect *screen_rect )
 {
     return( ConvertToScreenRect( rect, screen_rect, false ) );
 }
 
-bool GUIScaleToScreenRectR( gui_rect *rect, guix_rect *screen_rect )
+bool GUIScaleToScreenRectR( const gui_rect *rect, guix_rect *screen_rect )
 {
     return( ConvertToScreenRect( rect, screen_rect, true ) );
 }

@@ -721,37 +721,34 @@ extern char     *GUIGetFontFromUser( char *fontinfo );
 
 /* Painting functions */
 
-extern bool     GUIFillRect( gui_window *wnd, gui_rect *rect, gui_attr attr );
-extern bool     GUIFillBar( gui_window *wnd, gui_rect *rect, gui_attr attr );
-extern bool     GUIDrawRect( gui_window *wnd, gui_rect *rect, gui_attr attr );
-extern bool     GUIDrawLine( gui_window *wnd, gui_point *start, gui_point *end,
+extern bool     GUIFillRect( gui_window *wnd, const gui_rect *rect, gui_attr attr );
+extern bool     GUIFillBar( gui_window *wnd, const gui_rect *rect, gui_attr attr );
+extern bool     GUIDrawRect( gui_window *wnd, const gui_rect *rect, gui_attr attr );
+extern bool     GUIDrawLine( gui_window *wnd, const gui_point *start, const gui_point *end,
                              gui_line_styles style, gui_ord thickness, gui_attr attr );
-extern bool     GUIFillRectRGB( gui_window *wnd, gui_rect *rect, gui_rgb rgb );
-extern bool     GUIDrawRectRGB( gui_window *wnd, gui_rect *rect, gui_rgb rgb );
-extern bool     GUIDrawLineRGB( gui_window *wnd, gui_point *start, gui_point *end,
+extern bool     GUIFillRectRGB( gui_window *wnd, const gui_rect *rect, gui_rgb rgb );
+extern bool     GUIDrawRectRGB( gui_window *wnd, const gui_rect *rect, gui_rgb rgb );
+extern bool     GUIDrawLineRGB( gui_window *wnd, const gui_point *start, const gui_point *end,
                              gui_line_styles style, gui_ord thickness, gui_rgb rgb );
 extern void     GUIDrawText( gui_window *wnd, const char *text, size_t length,
                              gui_text_ord row, gui_ord indent, gui_attr attr );
 extern void     GUIDrawTextPos( gui_window *wnd, const char *text, size_t length,
-                                gui_coord *pos, gui_attr attr );
+                                const gui_coord *pos, gui_attr attr );
 extern void     GUIDrawTextExtent( gui_window *wnd, const char *text, size_t length,
                                    gui_text_ord row, gui_ord indent, gui_attr attr,
                                    gui_ord extentx );
 extern void     GUIDrawTextExtentPos( gui_window *wnd, const char *text, size_t length,
-                                   gui_coord *pos, gui_attr attr, gui_ord extentx );
+                                   const gui_coord *pos, gui_attr attr, gui_ord extentx );
 extern void     GUIDrawTextRGB( gui_window *wnd, const char *text, size_t length,
-                                gui_text_ord row, gui_ord indent,
-                                gui_rgb fore, gui_rgb back );
+                                gui_text_ord row, gui_ord indent, gui_rgb fore, gui_rgb back );
 extern void     GUIDrawTextPosRGB( gui_window *wnd, const char *text, size_t length,
-                                   gui_coord *pos, gui_rgb fore, gui_rgb back );
+                                   const gui_coord *pos, gui_rgb fore, gui_rgb back );
 extern void     GUIDrawTextExtentRGB( gui_window *wnd, const char *text, size_t length,
                                       gui_text_ord row, gui_ord indent,
-                                      gui_rgb fore, gui_rgb back,
-                                      gui_ord extentx );
+                                      gui_rgb fore, gui_rgb back, gui_ord extentx );
 extern void     GUIDrawTextExtentPosRGB( gui_window *wnd, const char *text, size_t length,
-                                         gui_coord *pos,
-                                         gui_rgb fore, gui_rgb back,
-                                         gui_ord extentx );
+                                         const gui_coord *pos,
+                                         gui_rgb fore, gui_rgb back, gui_ord extentx );
 extern bool     GUIDrawBar( gui_window *wnd, gui_text_ord row, gui_ord start,
                             gui_ord width, gui_bar_styles bstyle, gui_attr attr,
                             bool selected );

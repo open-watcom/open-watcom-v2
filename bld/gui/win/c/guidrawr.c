@@ -38,59 +38,50 @@
 #include "guixwind.h"
 
 
-static bool DrawRect( gui_window *wnd, gui_rect *rect, WPI_COLOUR colour,
-                      bool fill, bool outline )
+static bool DrawRect( gui_window *wnd, const gui_rect *rect, WPI_COLOUR colour, bool fill, bool outline )
 {
     WPI_RECT    wnd_rect;
-    gui_coord   pos;
-    gui_coord   size;
+    guix_ord  	pos_x;
+    guix_ord  	pos_y;
+    guix_ord  	size_x;
+    guix_ord  	size_y;
     HBRUSH      brush;
-    int         hscroll;
-    int         vscroll;
-    int         win_height;
+    guix_ord    win_height;
+    gui_ord     pos;
+    gui_ord     size;
 
     if( ( rect->width == 0 ) || ( rect->height == 0 ) ) {
         return( false );
     }
 
-    if( GUI_DO_VSCROLL( wnd ) ) {
-        vscroll = GUIGetScrollPos( wnd, SB_VERT );
-    } else {
-        vscroll = 0;
-    }
-
-    if( GUI_DO_HSCROLL( wnd ) ) {
-        hscroll = GUIGetScrollPos( wnd, SB_HORZ );
-    } else {
-        hscroll = 0;
-    }
-
     win_height = _wpi_getheightrect( wnd->hwnd_client_rect );
 
-    pos.x = rect->x;
-    pos.y = rect->y;
-    size.x = rect->width;
-    if( rect->width < 0 ) {
-        pos.x += rect->width;
-        size.x *= -1;
+    pos = rect->x;
+    size = rect->width;
+    if( size < 0 ) {
+        pos += rect->width;
+        size *= -1;
     }
-    size.y = rect->height;
-    if( rect->height < 0 ) {
-        pos.y += rect->height;
-        size.y *= -1;
+    pos_x = GUIScaleToScreenH( pos );
+    size_x = GUIScaleToScreenH( size );
+    if( GUI_DO_HSCROLL( wnd ) ) {
+        pos_x += GUIGetScrollPos( wnd, SB_HORZ );
     }
 
-    pos.x = GUIScaleToScreenH( pos.x );
-    pos.y = GUIScaleToScreenV( pos.y );
-    size.x = GUIScaleToScreenH( size.x );
-    size.y = GUIScaleToScreenV( size.y );
+    pos = rect->y;
+    size = rect->height;
+    if( size < 0 ) {
+        pos += rect->height;
+        size *= -1;
+    }
+    pos_y = GUIScaleToScreenH( pos );
+    size_y = GUIScaleToScreenH( size );
+    if( GUI_DO_VSCROLL( wnd ) ) {
+        pos_y += GUIGetScrollPos( wnd, SB_VERT );
+    }
+    pos_y  = _wpi_cvth_y_size_plus1( pos_y, win_height, size_y );
 
-    pos.x -= hscroll;
-    pos.y -= vscroll;
-
-    pos.y  = _wpi_cvth_y_size_plus1( pos.y, win_height, size.y );
-
-    _wpi_setrectvalues( &wnd_rect, pos.x, pos.y, pos.x + size.x, pos.y + size.y );
+    _wpi_setrectvalues( &wnd_rect, pos_x, pos_y, pos_x + size_x, pos_y + size_y );
     if( GUIIsRectInUpdateRect( wnd, &wnd_rect ) ) {
         brush = _wpi_createsolidbrush( colour );
         if( fill ) {
@@ -104,56 +95,41 @@ static bool DrawRect( gui_window *wnd, gui_rect *rect, WPI_COLOUR colour,
     return( true );
 }
 
-bool GUIFillRect( gui_window *wnd, gui_rect *rect, gui_attr attr )
+bool GUIFillRect( gui_window *wnd, const gui_rect *rect, gui_attr attr )
 {
     return( DrawRect( wnd, rect, GUIGetFore( wnd, attr ), true, false ) );
 }
 
-bool GUIDrawRect( gui_window *wnd, gui_rect *rect, gui_attr attr )
+bool GUIDrawRect( gui_window *wnd, const gui_rect *rect, gui_attr attr )
 {
     return( DrawRect( wnd, rect, GUIGetFore( wnd, attr ), false, true ) );
 }
 
-bool GUIFillRectRGB( gui_window *wnd, gui_rect *rect, gui_rgb rgb )
+bool GUIFillRectRGB( gui_window *wnd, const gui_rect *rect, gui_rgb rgb )
 {
     return( DrawRect( wnd, rect, GETRGB( rgb ), true, false ) );
 }
 
-bool GUIDrawRectRGB( gui_window *wnd, gui_rect *rect, gui_rgb rgb )
+bool GUIDrawRectRGB( gui_window *wnd, const gui_rect *rect, gui_rgb rgb )
 {
     return( DrawRect( wnd, rect, GETRGB( rgb ), false, true ) );
 }
 
-static bool DrawLine( gui_window *wnd, gui_point *start, gui_point *end,
-                      gui_line_styles style, gui_ord thickness,
-                      WPI_COLOUR colour )
+static bool DrawLine( gui_window *wnd, const gui_point *start, const gui_point *end,
+                      gui_line_styles style, gui_ord thickness, WPI_COLOUR colour )
 {
-    gui_point   my_start;
-    gui_point   my_end;
+    guix_ord  	scr_start_x;
+    guix_ord  	scr_start_y;
+    guix_ord    scr_end_x;
+    guix_ord    scr_end_y;
     HPEN        pen;
     int         win_style;
-    gui_ord     pen_thickness;
+    guix_ord    pen_thickness;
+    guix_ord    win_height;
     HPEN        old_pen;
-    int         hscroll;
-    int         vscroll;
+    int         scroll;
     WPI_POINT   pt;
-    int         win_height;
 
-    my_start.x = GUIScaleToScreenH( start->x );
-    my_start.y = GUIScaleToScreenV( start->y );
-    my_end.x = GUIScaleToScreenH( end->x );
-    my_end.y = GUIScaleToScreenV( end->y );
-
-    if( GUI_DO_VSCROLL( wnd ) ) {
-        vscroll = GUIGetScrollPos( wnd, SB_VERT );
-    } else {
-        vscroll = 0;
-    }
-    if( GUI_DO_HSCROLL( wnd ) ) {
-        hscroll = GUIGetScrollPos( wnd, SB_HORZ );
-    } else {
-        hscroll = 0;
-    }
     switch( style ) {
     case GUI_PEN_SOLID :
         win_style = PS_SOLID;
@@ -180,20 +156,34 @@ static bool DrawLine( gui_window *wnd, gui_point *start, gui_point *end,
         win_style = 0;
         break;
     }
-    pen = _wpi_createpen( win_style, pen_thickness, colour );
 
-    old_pen = _wpi_selectpen( wnd->hdc, pen );
+    scr_start_x = GUIScaleToScreenH( start->x );
+    scr_start_y = GUIScaleToScreenV( start->y );
+    scr_end_x = GUIScaleToScreenH( end->x );
+    scr_end_y = GUIScaleToScreenV( end->y );
+
+    if( GUI_DO_HSCROLL( wnd ) ) {
+        scroll = GUIGetScrollPos( wnd, SB_HORZ );
+    	scr_start_x -= scroll;
+    	scr_end_x -= scroll;
+    }
+    if( GUI_DO_VSCROLL( wnd ) ) {
+        scroll = GUIGetScrollPos( wnd, SB_VERT );
+    	scr_start_y -= scroll;
+    	scr_end_y -= scroll;
+    }
 
     win_height = _wpi_getheightrect( wnd->hwnd_client_rect );
 
-    pt.x = my_start.x - hscroll;
-    pt.y = my_start.y - vscroll;
-    pt.y = _wpi_cvth_y_plus1( pt.y, win_height );
+    pen = _wpi_createpen( win_style, pen_thickness, colour );
+    old_pen = _wpi_selectpen( wnd->hdc, pen );
+
+    pt.x = scr_start_x;
+    pt.y = _wpi_cvth_y_plus1( scr_start_y, win_height );
     _wpi_movetoex( wnd->hdc, &pt, &pt );
 
-    pt.x = my_end.x - hscroll;
-    pt.y = my_end.y - vscroll;
-    pt.y = _wpi_cvth_y_plus1( pt.y, win_height );
+    pt.x = scr_end_x;
+    pt.y = _wpi_cvth_y_plus1( scr_end_y, win_height );
     _wpi_lineto( wnd->hdc, &pt );
 
     if( old_pen != NULLHANDLE ) {
@@ -205,16 +195,14 @@ static bool DrawLine( gui_window *wnd, gui_point *start, gui_point *end,
     return( true );
 }
 
-bool GUIDrawLine( gui_window *wnd, gui_point *start, gui_point *end,
+bool GUIDrawLine( gui_window *wnd, const gui_point *start, const gui_point *end,
                   gui_line_styles style, gui_ord thickness, gui_attr attr )
 {
-    return( DrawLine( wnd, start, end, style, thickness,
-                      GUIGetFore( wnd, attr ) ) );
+    return( DrawLine( wnd, start, end, style, thickness, GUIGetFore( wnd, attr ) ) );
 }
 
-bool GUIDrawLineRGB( gui_window *wnd, gui_point *start, gui_point *end,
+bool GUIDrawLineRGB( gui_window *wnd, const gui_point *start, const gui_point *end,
                      gui_line_styles style, gui_ord thickness, gui_rgb rgb )
 {
-    return( DrawLine( wnd, start, end, style, thickness,
-                      GETRGB( rgb ) ) );
+    return( DrawLine( wnd, start, end, style, thickness, GETRGB( rgb ) ) );
 }

@@ -50,7 +50,7 @@ void GUIDrawText( gui_window *wnd, const char *text, size_t length,
 }
 
 void GUIDrawTextPos( gui_window *wnd, const char *text, size_t length,
-                            gui_coord *pos, gui_attr attr )
+                            const gui_coord *pos, gui_attr attr )
 {
     GUIXDrawText( wnd, text, length, pos, attr, GUI_NO_COLUMN, false );
 }
@@ -73,7 +73,7 @@ void GUIDrawTextExtent( gui_window *wnd, const char *text, size_t length,
 }
 
 void GUIDrawTextExtentPos( gui_window *wnd, const char *text, size_t length,
-                           gui_coord *pos, gui_attr attr, gui_ord extent )
+                           const gui_coord *pos, gui_attr attr, gui_ord extent )
 {
     GUIXDrawText( wnd, text, length, pos, attr, extent, true );
 }
@@ -92,7 +92,7 @@ void GUIDrawTextRGB( gui_window *wnd, const char *text, size_t length,
 }
 
 void GUIDrawTextPosRGB( gui_window *wnd, const char *text, size_t length,
-                               gui_coord *pos, gui_rgb fore, gui_rgb back )
+                               const gui_coord *pos, gui_rgb fore, gui_rgb back )
 {
     GUIXDrawTextRGB( wnd, text, length, pos, fore, back, GUI_NO_COLUMN, false );
 }
@@ -103,8 +103,7 @@ void GUIDrawTextPosRGB( gui_window *wnd, const char *text, size_t length,
 
 void GUIDrawTextExtentRGB( gui_window *wnd, const char *text, size_t length,
                            gui_text_ord row, gui_ord indent,
-                           gui_rgb fore, gui_rgb back,
-                           gui_ord extent )
+                           gui_rgb fore, gui_rgb back, gui_ord extent )
 {
     gui_text_metrics    metrics;
     gui_coord           pos;
@@ -116,7 +115,7 @@ void GUIDrawTextExtentRGB( gui_window *wnd, const char *text, size_t length,
 }
 
 void GUIDrawTextExtentPosRGB( gui_window *wnd, const char *text, size_t length,
-                              gui_coord *pos, gui_rgb fore, gui_rgb back,
+                              const gui_coord *pos, gui_rgb fore, gui_rgb back,
                               gui_ord extent )
 {
     GUIXDrawTextRGB( wnd, text, length, pos, fore, back, extent, true );

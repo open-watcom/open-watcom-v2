@@ -182,7 +182,7 @@ static void DrawChar( gui_window *wnd, int row, int col, ATTR attr, char chr )
     uivtextput( &wnd->vs, row, col, attr, &chr, 1 );
 }
 
-static void DrawText( gui_window *wnd, int row, int col, ATTR attr, char *buff, int length )
+static void DrawText( gui_window *wnd, int row, int col, ATTR attr, const char *buff, int length )
 {
     if( length > 0 ) {
         uivtextput( &wnd->vs, row, col, attr, buff, length );
