@@ -531,11 +531,11 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
  * ToDialogUnits -- convert the given coordinate to dialog units
  */
 
-static void ToDialogUnits( gui_coord *coord )
+static void ToDialogUnits( guix_coord *scr_coord )
 {
-    if( coord != NULL ) {
-        coord->x = GUIMulDiv( int, coord->x, SizeDialog.x, SizeScreen.x );
-        coord->y = GUIMulDiv( int, coord->y, SizeDialog.y, SizeScreen.y );
+    if( scr_coord != NULL ) {
+        scr_coord->x = GUIMulDiv( int, scr_coord->x, SizeDialog.x, SizeScreen.x );
+        scr_coord->y = GUIMulDiv( int, scr_coord->y, SizeDialog.y, SizeScreen.y );
     }
 }
 
@@ -544,12 +544,12 @@ static void ToDialogUnits( gui_coord *coord )
  *                        adjust
  */
 
-static void AdjustToDialogUnits( gui_coord *coord )
+static void AdjustToDialogUnits( guix_coord *scr_coord )
 {
-    ToDialogUnits( coord );
+    ToDialogUnits( scr_coord );
 }
 
-static void AdjustForFrame( gui_coord *pos, gui_coord *size )
+static void AdjustForFrame( guix_coord *scr_pos, guix_coord *scr_size )
 {
 #ifndef __OS2_PM__
     int xframe, yframe, ycaption;
@@ -557,33 +557,33 @@ static void AdjustForFrame( gui_coord *pos, gui_coord *size )
     xframe = 0;
     yframe = 0;
     ycaption = 0;
-    if( ( pos != NULL )  || ( size != NULL ) ) {
+    if( ( scr_pos != NULL )  || ( scr_size != NULL ) ) {
         xframe   = _wpi_getsystemmetrics( SM_CXDLGFRAME );
         yframe   = _wpi_getsystemmetrics( SM_CYDLGFRAME );
         ycaption = _wpi_getsystemmetrics( SM_CYCAPTION );
     }
 
-    if( pos != NULL ) {
-        pos->x += xframe;
-        pos->y += ( yframe + ycaption );
+    if( scr_pos != NULL ) {
+        scr_pos->x += xframe;
+        scr_pos->y += ( yframe + ycaption );
     }
 
-    if( size != NULL ) {
-        size->x -= ( 2 * xframe );
-        size->y -= ( 2 * yframe + ycaption );
+    if( scr_size != NULL ) {
+        scr_size->x -= ( 2 * xframe );
+        scr_size->y -= ( 2 * yframe + ycaption );
     }
 #else
-    pos = pos;
-    size = size;
+    scr_pos = scr_pos;
+    scr_size = scr_size;
 #endif
 }
 
-static void GUIDlgCalcLocation( gui_rect *rect, gui_coord *pos, gui_coord *size )
+static void GUIDlgCalcLocation( gui_rect *rect, guix_coord *scr_pos, guix_coord *scr_size )
 {
-    pos->x = GUIScaleToScreenH( rect->x );
-    pos->y = GUIScaleToScreenV( rect->y );
-    size->x = GUIScaleToScreenH( rect->width );
-    size->y = GUIScaleToScreenV( rect->height );
+    scr_pos->x = GUIScaleToScreenH( rect->x );
+    scr_pos->y = GUIScaleToScreenV( rect->y );
+    scr_size->x = GUIScaleToScreenH( rect->width );
+    scr_size->y = GUIScaleToScreenV( rect->height );
 }
 
 /*
@@ -594,8 +594,9 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
                        int num_controls, gui_control_info *controls_info,
                        bool sys, res_name_or_id dlg_id )
 {
-    gui_coord           pos, size;
-    gui_coord           parent_pos;
+    guix_coord          scr_pos;
+    guix_coord          scr_size;
+    guix_coord          parent_scr_pos;
     TEMPLATE_HANDLE     old_dlgtemplate;
     TEMPLATE_HANDLE     new_dlgtemplate;
     int                 i;
@@ -623,7 +624,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
         parent_hwnd = dlg_info->parent->hwnd;
     }
 
-    if( !GUISetupStruct( wnd, dlg_info, &parent_pos, &size, parent_hwnd, NULL ) ) {
+    if( !GUISetupStruct( wnd, dlg_info, &parent_scr_pos, &scr_size, parent_hwnd, NULL ) ) {
         return( false );
     }
 
@@ -633,9 +634,9 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
         return( GUICreateDialogFromRes( dlg_id, dlg_info->parent, NULL, (void *)wnd ) );
     }
 
-    AdjustForFrame( &parent_pos, &size );
-    AdjustToDialogUnits( &parent_pos );
-    AdjustToDialogUnits( &size );
+    AdjustForFrame( &parent_scr_pos, &scr_size );
+    AdjustToDialogUnits( &parent_scr_pos );
+    AdjustToDialogUnits( &scr_size );
 
     if( sys ) {
         dlg_style = SYSTEM_MODAL_STYLE;
@@ -644,7 +645,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
     }
 
     old_dlgtemplate = DialogTemplate( dlg_style | DS_SETFONT,
-                           parent_pos.x, parent_pos.y, size.x, size.y,
+                           parent_scr_pos.x, parent_scr_pos.y, scr_size.x, scr_size.y,
                            LIT( Empty ), LIT( Empty ), dlg_info->title,
                            FontPointSize, Font, &templatelen );
     if( old_dlgtemplate == NULL ) {
@@ -667,9 +668,9 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
             pctldatalen = sizeof( edata );
         }
 #endif
-        GUIDlgCalcLocation( &ctl_info->rect, &pos, &size );
-        AdjustToDialogUnits( &pos );
-        AdjustToDialogUnits( &size );
+        GUIDlgCalcLocation( &ctl_info->rect, &scr_pos, &scr_size );
+        AdjustToDialogUnits( &scr_pos );
+        AdjustToDialogUnits( &scr_size );
         if( ctl_info->text == NULL ) {
             captiontext = LIT( Empty );
         } else {
@@ -683,11 +684,11 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
             in_group = !in_group;
         }
 #ifdef __OS2_PM__
-        new_dlgtemplate = AddControl( old_dlgtemplate, pos.x, pos.y, size.x, size.y, ctl_info->id,
+        new_dlgtemplate = AddControl( old_dlgtemplate, scr_pos.x, scr_pos.y, scr_size.x, scr_size.y, ctl_info->id,
                           style, GUIControls[ctl_info->control_class].classname, captiontext,
                           pctldata, (BYTE)pctldatalen, &templatelen );
 #else
-        new_dlgtemplate = AddControl( old_dlgtemplate, pos.x, pos.y, size.x, size.y, ctl_info->id,
+        new_dlgtemplate = AddControl( old_dlgtemplate, scr_pos.x, scr_pos.y, scr_size.x, scr_size.y, ctl_info->id,
                           style, GUIControls[ctl_info->control_class].classname, captiontext,
                           NULL, 0, &templatelen );
 #endif

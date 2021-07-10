@@ -43,8 +43,8 @@
 
 bool GUIResizeWindow( gui_window *wnd, gui_rect *rect )
 {
-    gui_coord   pos;
-    gui_coord   screen_size;
+    guix_coord  scr_pos;
+    guix_coord  scr_size;
     gui_window  *parent;
     HWND        frame;
     HWND        phwnd;
@@ -59,15 +59,15 @@ bool GUIResizeWindow( gui_window *wnd, gui_rect *rect )
         if( parent ) {
             phwnd = parent->hwnd;
         }
-        GUICalcLocation( rect, &pos, &screen_size, phwnd );
+        GUICalcLocation( rect, &scr_pos, &scr_size, phwnd );
         if( GUI_IS_DIALOG( wnd ) ) {
             // dialogs are owned by, but not children of, phwnd
             // so lets map pos to its real parent
-            pt.x = pos.x;
-            pt.y = pos.y;
+            pt.x = scr_pos.x;
+            pt.y = scr_pos.y;
             rphwnd = _wpi_getparent( frame );
             _wpi_mapwindowpoints( phwnd, rphwnd, &pt, 1 );
-            _wpi_movewindow( frame, pt.x, pt.y, screen_size.x, screen_size.y, TRUE );
+            _wpi_movewindow( frame, pt.x, pt.y, scr_size.x, scr_size.y, TRUE );
 
 // The following is a bandaid 'till I find out why WM_SIZE's aren't
 // generated for PM GUI dialogs by this fuction
@@ -78,13 +78,13 @@ bool GUIResizeWindow( gui_window *wnd, gui_rect *rect )
                 _wpi_getclientrect( frame, &wnd->hwnd_client_rect );
                 wnd->root_client_rect = wnd->hwnd_client_rect;
                 GUISetRowCol( wnd, NULL );
-                size.x = GUIScreenToScaleH( screen_size.x );
-                size.y = GUIScreenToScaleV( screen_size.y );
+                size.x = GUIScreenToScaleH( scr_size.x );
+                size.y = GUIScreenToScaleV( scr_size.y );
                 GUIEVENT( wnd, GUI_RESIZE, &size );
             }
 #endif
         } else {
-            _wpi_setwindowpos( frame, NULLHANDLE, pos.x, pos.y, screen_size.x, screen_size.y,
+            _wpi_setwindowpos( frame, NULLHANDLE, scr_pos.x, scr_pos.y, scr_size.x, scr_size.y,
                                SWP_NOACTIVATE | SWP_NOZORDER | SWP_SIZE | SWP_MOVE );
                                //SWP_NOREDRAW | SWP_NOACTIVATE | SWP_NOZORDER | SWP_SIZE | SWP_MOVE );
         }
@@ -94,8 +94,8 @@ bool GUIResizeWindow( gui_window *wnd, gui_rect *rect )
 
 void GUISetRestoredSize( gui_window *wnd, gui_rect *rect )
 {
-    gui_coord           pos;
-    gui_coord           size;
+    guix_coord          scr_pos;
+    guix_coord          scr_size;
     gui_window          *parent;
     HWND                frame;
     HWND                phwnd;
@@ -109,9 +109,9 @@ void GUISetRestoredSize( gui_window *wnd, gui_rect *rect )
             if( parent ) {
                 phwnd = parent->hwnd;
             }
-            GUICalcLocation( rect, &pos, &size, phwnd );
-            _wpi_setrectvalues( &new_rect, pos.x, pos.y, pos.x + size.x,
-                                pos.y + size.y );
+            GUICalcLocation( rect, &scr_pos, &scr_size, phwnd );
+            _wpi_setrectvalues( &new_rect, scr_pos.x, scr_pos.y,
+                    scr_pos.x + scr_size.x, scr_pos.y + scr_size.y );
             if( GUIMDIMaximized( wnd ) ) {
                 GUISetMDIRestoredSize( frame, &new_rect );
             } else {

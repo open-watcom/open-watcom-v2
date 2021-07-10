@@ -59,7 +59,7 @@ void GUIXDrawText( gui_window *wnd, const char *text, size_t length, const gui_c
         return;
     }
     if( (wnd->style & GUI_VISIBLE) == 0 ) {
-         return;
+        return;
     }
 
     if( wnd->style & GUI_NOFRAME ) {
@@ -131,7 +131,7 @@ void GUIXDrawText( gui_window *wnd, const char *text, size_t length, const gui_c
                 for( cp = text; cp < text+col; cp += uicharlen( UCHAR_VALUE( *cp ) ) ) ;
                 if( cp != text + col ) {
                     p = alloca( length );
-                    cp = memcpy( p, text+col, length );
+                    cp = memcpy( p, text + col, length );
                     p[0] = ' ';
                 }
                 uivtextput( &wnd->vs, scr_pos_y - vscroll + frame_adjust,

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -652,8 +652,8 @@ static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent, gui_c
 
 bool GUIAddControl( gui_control_info *ctl_info, gui_colour_set *plain, gui_colour_set *standout )
 {
-    gui_coord           pos;
-    gui_coord           size;
+    guix_coord          scr_pos;
+    guix_coord          scr_size;
     HWND                hwnd;
     control_item        *item;
     gui_window          *parent;
@@ -661,8 +661,8 @@ bool GUIAddControl( gui_control_info *ctl_info, gui_colour_set *plain, gui_colou
     plain = plain;
     standout = standout;
     parent = ctl_info->parent;
-    GUICalcLocation( &ctl_info->rect, &pos, &size, parent->hwnd );
-    hwnd = CreateControl( ctl_info, parent, pos, size );
+    GUICalcLocation( &ctl_info->rect, &scr_pos, &scr_size, parent->hwnd );
+    hwnd = CreateControl( ctl_info, parent, scr_pos, scr_size );
     if( hwnd == NULLHANDLE ) {
         return( false );
     }

@@ -217,8 +217,8 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
                                 gui_colour_set *standout, gui_rect *float_pos,
                                 bool use_tips )
 {
-    gui_coord           size;
-    gui_coord           pos;
+    guix_coord          scr_size;
+    guix_coord          scr_pos;
     HWND                parent;
     HWND                toolhwnd;
     toolbarinfo         *tbar;
@@ -316,9 +316,9 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
         tbar->info.style = TOOLBAR_FIXED_STYLE;
     } else {
         if( float_pos != NULL ) {
-            GUICalcLocation( float_pos, &pos, &size, parent );
-            _wpi_setwrectvalues( &tbar->floatrect, pos.x, pos.y,
-                                 pos.x + size.x, pos.y + size.y );
+            GUICalcLocation( float_pos, &scr_pos, &scr_size, parent );
+            _wpi_setwrectvalues( &tbar->floatrect, scr_pos.x, scr_pos.y,
+                                 scr_pos.x + scr_size.x, scr_pos.y + scr_size.y );
             _wpi_mapwindowpoints( parent, HWND_DESKTOP, (WPI_PPOINT)&tbar->floatrect, 2 );
         }
         tbar->info.area = tbar->floatrect;
