@@ -31,13 +31,18 @@
 ****************************************************************************/
 
 
-/* to be included by the /gui directory */
+#include "guixtype.h"
 
 #define GUIEVENT( wnd, event, param )   ((*wnd->gui_call_back)(wnd, event, param))
 
 #define UCHAR_VALUE( c )                (unsigned char)(c)
 
-typedef struct gui_text_coord {
-    gui_text_ord        x;
-    gui_text_ord        y;
-} gui_text_coord;
+typedef struct guix_coord {
+    guix_ord            x;
+    guix_ord            y;
+} guix_coord;
+
+typedef struct guix_point {
+    guix_ord            x;
+    guix_ord            y;
+} guix_point;

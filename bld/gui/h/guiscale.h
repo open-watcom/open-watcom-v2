@@ -38,33 +38,22 @@
 
 #define GUIMulDiv(a,b,c,d) ((a)(((long)b * (long)c) / (long)d))
 
-#if 0
-typedef struct gui_screen_coord {
-    gui_screen_ord      x;
-    gui_screen_ord      y;
-    gui_screen_ord      width;
-    gui_screen_ord      height;
-} gui_screen_coord;
-#else
-#define gui_screen_coord  gui_coord
-#endif
-
 extern void GUISetScreen( gui_ord xmin, gui_ord ymin, gui_ord width, gui_ord height );
 
-extern gui_screen_ord GUIScaleToScreenH( gui_ord ord );
-extern gui_screen_ord GUIScaleToScreenV( gui_ord ord );
-extern gui_screen_ord GUIScaleToScreenX( gui_ord ord );
-extern gui_screen_ord GUIScaleToScreenY( gui_ord ord );
+extern guix_ord GUIScaleToScreenH( gui_ord ord );
+extern guix_ord GUIScaleToScreenV( gui_ord ord );
+extern guix_ord GUIScaleToScreenX( gui_ord ord );
+extern guix_ord GUIScaleToScreenY( gui_ord ord );
 
-extern gui_ord GUIScreenToScaleH( gui_screen_ord screen_ord );
-extern gui_ord GUIScreenToScaleV( gui_screen_ord screen_ord );
-extern gui_ord GUIScreenToScaleX( gui_screen_ord screen_ord );
-extern gui_ord GUIScreenToScaleY( gui_screen_ord screen_ord );
+extern gui_ord GUIScreenToScaleH( guix_ord screen_ord );
+extern gui_ord GUIScreenToScaleV( guix_ord screen_ord );
+extern gui_ord GUIScreenToScaleX( guix_ord screen_ord );
+extern gui_ord GUIScreenToScaleY( guix_ord screen_ord );
 
-extern bool GUIScreenToScaleRect( gui_screen_rect *screen_rect, gui_rect *rect );
-extern bool GUIScreenToScaleRectR( gui_screen_rect *screen_rect, gui_rect *rect );
+extern bool GUIScreenToScaleRect( guix_rect *screen_rect, gui_rect *rect );
+extern bool GUIScreenToScaleRectR( guix_rect *screen_rect, gui_rect *rect );
 
-extern bool GUIScaleToScreenRect( gui_rect *rect, gui_screen_rect *screen_rect );
-extern bool GUIScaleToScreenRectR( gui_rect *rect, gui_screen_rect *screen_rect );
+extern bool GUIScaleToScreenRect( gui_rect *rect, guix_rect *screen_rect );
+extern bool GUIScaleToScreenRectR( gui_rect *rect, guix_rect *screen_rect );
 
 #endif // _GUISCALE_H_

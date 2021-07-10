@@ -31,24 +31,16 @@
 ****************************************************************************/
 
 
-#ifndef _GUIXSCAL_H_
-#define _GUIXSCAL_H_
+#define s_x             x
+#define s_y             y
+#define s_width         width
+#define s_height        height
 
-extern WPI_TEXTMETRIC   GUItm;
+typedef int             guix_ord;
 
-extern void GUIGetScale( gui_rect * rect);
-
-extern void GUIClientToScaleRect( gui_rect *rect );
-
-extern gui_ord GUIFromTextX( gui_text_ord text_ord, gui_window *wnd );
-extern gui_ord GUIFromTextY( gui_text_ord text_ord, gui_window *wnd );
-extern gui_text_ord GUIToTextX( gui_ord ord, gui_window *wnd );
-extern gui_text_ord GUIToTextY( gui_ord ord, gui_window *wnd );
-
-extern void GUIGetUpdateRows( gui_window *, HWND, gui_text_ord *, gui_text_ord * );
-
-extern void GUIGetMetrics( gui_window * );
-extern bool GUIGetTheDC( gui_window *wnd );
-extern void GUIReleaseTheDC( gui_window *wnd );
-
-#endif // _GUIXSCAL_H_
+typedef struct guix_rect {
+    guix_ord            x;
+    guix_ord            y;
+    guix_ord            width;
+    guix_ord            height;
+} guix_rect;

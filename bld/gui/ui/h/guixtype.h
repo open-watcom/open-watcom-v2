@@ -31,24 +31,11 @@
 ****************************************************************************/
 
 
-#ifndef _GUIXSCAL_H_
-#define _GUIXSCAL_H_
+#define s_x             col
+#define s_y             row
+#define s_width         width
+#define s_height        height
 
-extern WPI_TEXTMETRIC   GUItm;
+typedef short           guix_ord;
 
-extern void GUIGetScale( gui_rect * rect);
-
-extern void GUIClientToScaleRect( gui_rect *rect );
-
-extern gui_ord GUIFromTextX( gui_text_ord text_ord, gui_window *wnd );
-extern gui_ord GUIFromTextY( gui_text_ord text_ord, gui_window *wnd );
-extern gui_text_ord GUIToTextX( gui_ord ord, gui_window *wnd );
-extern gui_text_ord GUIToTextY( gui_ord ord, gui_window *wnd );
-
-extern void GUIGetUpdateRows( gui_window *, HWND, gui_text_ord *, gui_text_ord * );
-
-extern void GUIGetMetrics( gui_window * );
-extern bool GUIGetTheDC( gui_window *wnd );
-extern void GUIReleaseTheDC( gui_window *wnd );
-
-#endif // _GUIXSCAL_H_
+#define guix_rect       SAREA

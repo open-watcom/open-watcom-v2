@@ -47,10 +47,10 @@ static struct {
 } scale_data;
 
 static struct {
-    gui_screen_ord  x;
-    gui_screen_ord  y;
-    gui_screen_ord  width;
-    gui_screen_ord  height;
+    guix_ord        x;
+    guix_ord        y;
+    guix_ord        width;
+    guix_ord        height;
 } screen_data;
 
 
@@ -93,22 +93,22 @@ void GUIGetScreen( gui_rect *rect )
     COPYRECT( screen_data, *rect )
 }
 
-static gui_screen_ord ConvertToScreenH( gui_ord ord )
+static guix_ord ConvertToScreenH( gui_ord ord )
 {
-    return( GUIMulDiv( gui_screen_ord, ord, screen_data.width, scale_data.width ) );
+    return( GUIMulDiv( guix_ord, ord, screen_data.width, scale_data.width ) );
 }
 
-static gui_screen_ord ConvertToScreenV( gui_ord ord )
+static guix_ord ConvertToScreenV( gui_ord ord )
 {
-    return( GUIMulDiv( gui_screen_ord, ord, screen_data.height, scale_data.height ) );
+    return( GUIMulDiv( guix_ord, ord, screen_data.height, scale_data.height ) );
 }
 
-static gui_ord ConvertFromScreenH( gui_screen_ord ord )
+static gui_ord ConvertFromScreenH( guix_ord ord )
 {
     return( GUIMulDiv( gui_ord, ord, scale_data.width, screen_data.width ) );
 }
 
-static gui_ord ConvertFromScreenV( gui_screen_ord ord )
+static gui_ord ConvertFromScreenV( guix_ord ord )
 {
     return( GUIMulDiv( gui_ord, ord, scale_data.height, screen_data.height ) );
 }
@@ -117,7 +117,7 @@ static gui_ord ConvertFromScreenV( gui_screen_ord ord )
  * ConvertToScreenRect -- convert a gui_coord from one coordinate system to another
  */
 
-static bool ConvertToScreenRect( gui_rect *rect, gui_screen_rect *screen_rect, bool rel )
+static bool ConvertToScreenRect( gui_rect *rect, guix_rect *screen_rect, bool rel )
 {
     if( rel ) {
         screen_rect->s_x = ConvertToScreenH( rect->x );
@@ -135,7 +135,7 @@ static bool ConvertToScreenRect( gui_rect *rect, gui_screen_rect *screen_rect, b
  * ConvertFromScreenRect -- convert a gui_coord from one coordinate system to another
  */
 
-static bool ConvertFromScreenRect( gui_screen_rect *screen_rect, gui_rect *rect, bool rel )
+static bool ConvertFromScreenRect( guix_rect *screen_rect, gui_rect *rect, bool rel )
 {
     if( rel ) {
         rect->x = ConvertFromScreenH( screen_rect->s_x );
@@ -151,62 +151,62 @@ static bool ConvertFromScreenRect( gui_screen_rect *screen_rect, gui_rect *rect,
 
 /* Routines Used by lower levels of GUI library */
 
-bool GUIScreenToScaleRect( gui_screen_rect *screen_rect, gui_rect *rect )
+bool GUIScreenToScaleRect( guix_rect *screen_rect, gui_rect *rect )
 {
     return( ConvertFromScreenRect( screen_rect, rect, false ) );
 }
 
-bool GUIScreenToScaleRectR( gui_screen_rect *screen_rect, gui_rect *rect )
+bool GUIScreenToScaleRectR( guix_rect *screen_rect, gui_rect *rect )
 {
     return( ConvertFromScreenRect( screen_rect, rect, true ) );
 }
 
-bool GUIScaleToScreenRect( gui_rect *rect, gui_screen_rect *screen_rect )
+bool GUIScaleToScreenRect( gui_rect *rect, guix_rect *screen_rect )
 {
     return( ConvertToScreenRect( rect, screen_rect, false ) );
 }
 
-bool GUIScaleToScreenRectR( gui_rect *rect, gui_screen_rect *screen_rect )
+bool GUIScaleToScreenRectR( gui_rect *rect, guix_rect *screen_rect )
 {
     return( ConvertToScreenRect( rect, screen_rect, true ) );
 }
 
-gui_screen_ord GUIScaleToScreenH( gui_ord ord )
+guix_ord GUIScaleToScreenH( gui_ord ord )
 {
     return( ConvertToScreenH( ord ) );
 }
 
-gui_screen_ord GUIScaleToScreenV( gui_ord ord )
+guix_ord GUIScaleToScreenV( gui_ord ord )
 {
     return( ConvertToScreenV( ord ) );
 }
 
-gui_screen_ord GUIScaleToScreenX( gui_ord ord )
+guix_ord GUIScaleToScreenX( gui_ord ord )
 {
     return( ConvertToScreenH( ord - scale_data.x ) + screen_data.x );
 }
 
-gui_screen_ord GUIScaleToScreenY( gui_ord ord )
+guix_ord GUIScaleToScreenY( gui_ord ord )
 {
     return( ConvertToScreenV( ord - scale_data.y ) + screen_data.y );
 }
 
-gui_ord GUIScreenToScaleH( gui_screen_ord screen_ord )
+gui_ord GUIScreenToScaleH( guix_ord screen_ord )
 {
     return( ConvertFromScreenH( screen_ord ) );
 }
 
-gui_ord GUIScreenToScaleV( gui_screen_ord screen_ord )
+gui_ord GUIScreenToScaleV( guix_ord screen_ord )
 {
     return( ConvertFromScreenV( screen_ord ) );
 }
 
-gui_ord GUIScreenToScaleX( gui_screen_ord screen_ord )
+gui_ord GUIScreenToScaleX( guix_ord screen_ord )
 {
     return( ConvertFromScreenH( screen_ord - screen_data.x ) + scale_data.x );
 }
 
-gui_ord GUIScreenToScaleY( gui_screen_ord screen_ord )
+gui_ord GUIScreenToScaleY( guix_ord screen_ord )
 {
     return( ConvertFromScreenV( screen_ord - screen_data.y ) + scale_data.y );
 }
