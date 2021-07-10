@@ -90,12 +90,12 @@ void GUIFreeColours( gui_window *wnd )
     wnd->attrs = NULL;
 }
 
-int GUIGetNumWindowColours( gui_window *wnd )
+int GUIAPI GUIGetNumWindowColours( gui_window *wnd )
 {
     return( wnd->num_attrs );
 }
 
-gui_colour_set *GUIGetWindowColours( gui_window *wnd )
+gui_colour_set * GUIAPI GUIGetWindowColours( gui_window *wnd )
 {
     gui_colour_set *colours;
 

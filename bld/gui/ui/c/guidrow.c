@@ -39,7 +39,7 @@
  *                   window wnd are bad.
  */
 
-void GUIWndDirtyRow( gui_window * wnd, gui_text_ord row )
+void GUIAPI GUIWndDirtyRow( gui_window * wnd, gui_text_ord row )
 {
     SAREA area;
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -134,7 +135,7 @@ bool GUIGetArgs( char ***argv, int *argc )
     return( false );
 }
 
-bool GUIIsRootWindow( gui_window *wnd )
+bool GUIAPI GUIIsRootWindow( gui_window *wnd )
 {
     if( wnd != NULL ) {
         return( (bool)(GUIGetParentWindow( wnd ) == NULL)  );
@@ -142,7 +143,7 @@ bool GUIIsRootWindow( gui_window *wnd )
     return( false );
 }
 
-gui_window *GUIGetRootWindow( void )
+gui_window * GUIAPI GUIGetRootWindow( void )
 {
     gui_window  *root;
 

@@ -88,8 +88,11 @@ void GUISetVScrollRangeRows( gui_window *wnd, gui_text_ord text_range )
 
 void GUISetHScrollRange( gui_window *wnd, gui_ord range )
 {
+    guix_ord    scr_range;
+
     wnd->flags &= ~HRANGE_COL;
-    SetRange( wnd, SB_HORZ, GUIScaleToScreenH( range ), GUIScaleToScreenH( range ) );
+    scr_range = GUIScaleToScreenH( range );
+    SetRange( wnd, SB_HORZ, scr_range, scr_range );
 }
 
 /*
@@ -98,8 +101,11 @@ void GUISetHScrollRange( gui_window *wnd, gui_ord range )
 
 void GUISetVScrollRange( gui_window *wnd, gui_ord range )
 {
+    guix_ord    scr_range;
+
     wnd->flags &= ~VRANGE_ROW;
-    SetRange( wnd, SB_VERT, GUIScaleToScreenV( range ), GUIScaleToScreenV( range ) );
+    scr_range = GUIScaleToScreenV( range );
+    SetRange( wnd, SB_VERT, scr_range, scr_range );
 }
 
 /*

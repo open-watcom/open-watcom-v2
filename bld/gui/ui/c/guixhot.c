@@ -61,7 +61,7 @@ bool GUIXInitHotSpots( int num, gui_resource *hot )
 }
 
 
-void GUIDrawHotSpot( gui_window *wnd, int hot_spot, gui_text_ord row,
+void GUIAPI GUIDrawHotSpot( gui_window *wnd, int hot_spot, gui_text_ord row,
                      gui_ord indent, gui_attr attr )
 {
     if( ( hot_spot > 0 ) && ( hot_spot <= GUINumHotSpots ) ) {

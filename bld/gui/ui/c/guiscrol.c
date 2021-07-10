@@ -88,37 +88,37 @@ void GUIScroll( int change, p_gadget gadget )
     }
 }
 
-static void InitScroll( p_gadget gadget, gui_text_ord pos )
+static void InitScroll( p_gadget gadget, guix_ord scr_pos )
 {
-    if( pos > ( gadget->total_size - gadget->page_size ) ) {
-        pos = gadget->total_size - gadget->page_size;
+    if( scr_pos > ( gadget->total_size - gadget->page_size ) ) {
+        scr_pos = gadget->total_size - gadget->page_size;
     }
-    GUISetShowGadget( gadget, true, true, pos );
+    GUISetShowGadget( gadget, true, true, scr_pos );
 }
 
-static void SetScroll( p_gadget gadget, gui_text_ord pos )
+static void SetScroll( p_gadget gadget, guix_ord scr_pos )
 {
-   GUIScroll( (int)pos - gadget->pos, gadget );
+   GUIScroll( (int)scr_pos - gadget->pos, gadget );
 }
 
-static void Scrl( p_gadget gadget, gui_ord scroll_pos, void (*fn)( p_gadget, gui_text_ord ) )
+static void Scrl( p_gadget gadget, gui_ord scroll_pos, void (*fn)( p_gadget, guix_ord ) )
 {
-    gui_text_ord    pos;
+    guix_ord    scr_pos;
 
     if( gadget != NULL ) {
         if( gadget->dir == VERTICAL ) {
-            pos = GUIScaleToScreenV( scroll_pos );
+            scr_pos = GUIScaleToScreenV( scroll_pos );
         } else {
-            pos = GUIScaleToScreenH( scroll_pos );
+            scr_pos = GUIScaleToScreenH( scroll_pos );
         }
-        if( ( pos == 0 ) && ( scroll_pos != 0 ) ) {
-            pos++;
+        if( ( scr_pos == 0 ) && ( scroll_pos != 0 ) ) {
+            scr_pos++;
         }
-        (*fn)( gadget, pos );
+        (*fn)( gadget, scr_pos );
     }
 }
 
-static void ScrlText( p_gadget gadget, gui_text_ord scroll_pos, void (*fn)( p_gadget, gui_text_ord ) )
+static void ScrlText( p_gadget gadget, guix_ord scroll_pos, void (*fn)( p_gadget, guix_ord ) )
 {
     if( gadget != NULL ) {
         (*fn)( gadget, scroll_pos );

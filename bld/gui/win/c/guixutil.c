@@ -142,8 +142,8 @@ void GUICalcLocation( gui_rect *rect, guix_coord *scr_pos, guix_coord *scr_size,
  *                   create_info information.
  */
 
-bool GUISetupStruct( gui_window *wnd, gui_create_info *dlg_info, guix_coord *scr_pos, 
-			guix_coord *scr_size, HWND parent, HMENU *hmenu )
+bool GUISetupStruct( gui_window *wnd, gui_create_info *dlg_info, guix_coord *scr_pos,
+                        guix_coord *scr_size, HWND parent, HMENU *hmenu )
 {
     GUICalcLocation( &dlg_info->rect, scr_pos, scr_size, parent );
     if( wnd != NULL ) {
@@ -651,7 +651,7 @@ gui_window *GUIGetWindow( HWND hwnd )
     return( NULL );
 }
 
-gui_window *GUIGetParentWindow( gui_window *wnd )
+gui_window * GUIAPI GUIGetParentWindow( gui_window *wnd )
 {
     if( wnd != NULL ) {
         return( wnd->parent );
@@ -671,7 +671,7 @@ bool GUIParentHasFlags( gui_window *wnd, gui_flags flags )
     return( false );
 }
 
-gui_window *GUIGetFirstSibling( gui_window *wnd )
+gui_window * GUIAPI GUIGetFirstSibling( gui_window *wnd )
 {
     gui_window  *parent;
 

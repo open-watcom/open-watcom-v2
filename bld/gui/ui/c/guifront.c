@@ -38,7 +38,7 @@
 #include "guizlist.h"
 
 
-void GUIBringToFront( gui_window * wnd )
+void GUIAPI GUIBringToFront( gui_window * wnd )
 {
     gui_window  *curr;
     bool        change;
@@ -78,7 +78,7 @@ void GUIBringToFront( gui_window * wnd )
     }
 }
 
-void GUIActivateNC( gui_window *wnd, bool activate )
+void GUIAPI GUIActivateNC( gui_window *wnd, bool activate )
 {
     /* unused parameters */ (void)wnd; (void)activate;
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +40,7 @@
  *                 are bad.  If wnd is NULL, they are all bad.
  */
 
-void GUIWndDirty( gui_window *wnd )
+void GUIAPI GUIWndDirty( gui_window *wnd )
 {
     gui_window *curr;
 
@@ -57,7 +58,7 @@ void GUIWndDirty( gui_window *wnd )
     }
 }
 
-void GUIControlDirty( gui_window *wnd, gui_ctl_id id )
+void GUIAPI GUIControlDirty( gui_window *wnd, gui_ctl_id id )
 {
     HWND        control;
 

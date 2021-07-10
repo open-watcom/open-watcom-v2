@@ -579,7 +579,7 @@ void GUIFreeMenus( gui_window * wnd )
     }
 }
 
-void GUISetBetweenTitles( int between_titles )
+void GUIAPI GUISetBetweenTitles( int between_titles )
 {
     uisetbetweentitles( between_titles );
 }

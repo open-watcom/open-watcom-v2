@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -87,7 +88,7 @@ void GUIFrontOfList( gui_window *wnd )
  * GUIGetFront
  */
 
-gui_window *GUIGetFront( void )
+gui_window * GUIAPI GUIGetFront( void )
 {
     return( GUIHead );
 }
@@ -96,7 +97,7 @@ gui_window *GUIGetFront( void )
  * GUIGetNextWindow
  */
 
-gui_window *GUIGetNextWindow( gui_window *wnd )
+gui_window * GUIAPI GUIGetNextWindow( gui_window *wnd )
 {
     if( InList( wnd ) ) {
         return( wnd->next );
@@ -104,7 +105,7 @@ gui_window *GUIGetNextWindow( gui_window *wnd )
     return( NULL );
 }
 
-bool GUIIsValidWindow( gui_window *wnd )
+bool GUIAPI GUIIsValidWindow( gui_window *wnd )
 {
     gui_window  *curr;
 

@@ -41,7 +41,7 @@
  *                    contents of window wnd are bad.
  */
 
-void GUIWndDirtyRect( gui_window *wnd, gui_rect *rect )
+void GUIAPI GUIWndDirtyRect( gui_window *wnd, gui_rect *rect )
 {
     gui_rect    my_rect;
     WPI_RECT    win_rect;

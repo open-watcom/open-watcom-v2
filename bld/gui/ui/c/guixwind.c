@@ -119,7 +119,7 @@ static void MessageLoop( void )
     uipoplist( /* GUIAllEvents */ );
 }
 
-void GUICleanup( void )
+void GUIAPI GUICleanup( void )
 {
     GUIDeath();                 /* user replaceable stub function */
     uirefresh();
@@ -201,7 +201,7 @@ void GUIXSetupWnd( gui_window *wnd )
     wnd->background = ' ';
 }
 
-bool GUISetBackgroundChar( gui_window *wnd, char background )
+bool GUIAPI GUISetBackgroundChar( gui_window *wnd, char background )
 {
     wnd->background = background;
     return( true );

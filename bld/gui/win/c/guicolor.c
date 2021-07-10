@@ -102,7 +102,7 @@ static void InitSystemRGB( void )
 }
 
 
-bool GUISetRGB( gui_colour colour, gui_rgb rgb )
+bool GUIAPI GUISetRGB( gui_colour colour, gui_rgb rgb )
 {
     if( colour < GUI_NUM_COLOURS  ) {
         GUIColours[colour] = GETRGB( rgb );
@@ -123,7 +123,7 @@ static void FillInRGB( WPI_COLOUR colour, gui_rgb *rgb )
     *rgb = GUIRGB( r, g, b );
 }
 
-bool GUIGetRGB( gui_colour colour, gui_rgb *rgb )
+bool GUIAPI GUIGetRGB( gui_colour colour, gui_rgb *rgb )
 {
     if( ( colour < GUI_NUM_COLOURS ) && ( rgb != NULL ) ) {
         FillInRGB( GUIColours[colour], rgb );
@@ -132,7 +132,7 @@ bool GUIGetRGB( gui_colour colour, gui_rgb *rgb )
     return( false );
 }
 
-bool GUIGetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set )
+bool GUIAPI GUIGetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set )
 {
     if( colour_set == NULL ) {
         return( false );
@@ -190,7 +190,7 @@ void GUICheckBKBrush( gui_window *wnd )
 }
 #endif
 
-bool GUISetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set )
+bool GUIAPI GUISetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set )
 {
     if( colour_set == NULL ) {
         return( false );
@@ -206,7 +206,7 @@ bool GUISetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set
     return( false );
 }
 
-bool GUIGetRGBFromUser( gui_rgb init_rgb, gui_rgb *new_rgb )
+bool GUIAPI GUIGetRGBFromUser( gui_rgb init_rgb, gui_rgb *new_rgb )
 {
 #ifdef __OS2_PM__
     /* unused parameters */ (void)init_rgb; (void)new_rgb;
@@ -319,7 +319,7 @@ HBRUSH GUIFreeBKBrush( gui_window * wnd )
     return( brush );
 }
 
-void GUISetWindowColours( gui_window *wnd, int num_colours,
+void GUIAPI GUISetWindowColours( gui_window *wnd, int num_colours,
                           gui_colour_set *colours )
 {
     GUIFreeColours( wnd );

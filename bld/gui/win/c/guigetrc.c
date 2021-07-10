@@ -47,14 +47,14 @@ gui_text_ord GUIGetRow( gui_window *wnd, gui_point *in_pos )
 gui_text_ord GUIGetCol( gui_window *wnd, const char *text, gui_point *in_pos )
 {
     gui_text_ord    width;
-    gui_ord         x;
+    guix_ord        scr_x;
     bool            got_new;
 
     got_new = GUIGetTheDC( wnd );
     GUIGetMetrics( wnd );
-    x = GUIScaleToScreenH( in_pos->x );
-    width = x / MAXXCHAR( GUItm );
-    while( ( width < strlen( text ) ) && ( GUIGetTextExtentX( wnd, text, width ) <= x ) ) {
+    scr_x = GUIScaleToScreenH( in_pos->x );
+    width = scr_x / MAXXCHAR( GUItm );
+    while( ( width < strlen( text ) ) && ( GUIGetTextExtentX( wnd, text, width ) <= scr_x ) ) {
         width++ ;
     }
     if( got_new ) {

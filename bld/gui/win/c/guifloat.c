@@ -52,21 +52,23 @@ bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
     ULONG       flags;
     GUI_RECTDIM left, top, right, bottom;
     HMENU       hpopup;
+    guix_ord    scr_x;
+    guix_ord    scr_y;
 
     if( ( hpopup = GUIHFloatingPopup ) == NULLHANDLE ) {
         return( false );
     }
 
-    location->x = GUIScaleToScreenH( location->x );
-    location->y = GUIScaleToScreenV( location->y );
+    scr_x = GUIScaleToScreenH( location->x );
+    scr_y = GUIScaleToScreenV( location->y );
     _wpi_getrectvalues( wnd->hwnd_client_rect, &left, &top, &right, &bottom );
-    location->x += left;
-    location->y += top;
+    scr_x += left;
+    scr_y += top;
     if( GUI_DO_HSCROLL( wnd ) ) {
-        location->x -= GUIGetScrollPos( wnd, SB_HORZ );
+        scr_x -= GUIGetScrollPos( wnd, SB_HORZ );
     }
     if( GUI_DO_VSCROLL( wnd ) ) {
-        location->y -= GUIGetScrollPos( wnd, SB_VERT );
+        scr_y -= GUIGetScrollPos( wnd, SB_VERT );
     }
 
     CurrId = 0;
@@ -74,10 +76,10 @@ bool GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
         CurrId = *curr_id;
     }
 
-    location->y = _wpi_cvth_y( location->y, (bottom - top) );
+    scr_y = _wpi_cvth_y( scr_y, (bottom - top) );
 
-    pt.x = location->x;
-    pt.y = location->y;
+    pt.x = scr_x;
+    pt.y = scr_y;
 
     _wpi_mapwindowpoints( wnd->hwnd, HWND_DESKTOP, &pt, 1 );
 

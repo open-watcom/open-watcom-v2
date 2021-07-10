@@ -91,12 +91,12 @@ void GUIResetMouseCursor( gui_mcursor_handle old )
     /* unused parameters */ (void)old;
 }
 
-bool GUI3DDialogInit( void )
+bool GUIAPI GUI3DDialogInit( void )
 {
     return( false );
 }
 
-void GUI3DDialogFini( void )
+void GUIAPI GUI3DDialogFini( void )
 {
 }
 

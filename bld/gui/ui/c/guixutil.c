@@ -394,7 +394,7 @@ gui_window *GUIGetTopWnd( gui_window *wnd )
     return( wnd );
 }
 
-gui_window *GUIGetFirstSibling( gui_window *wnd )
+gui_window * GUIAPI GUIGetFirstSibling( gui_window *wnd )
 {
     if( wnd == NULL || wnd->parent == NULL ) {
         return( NULL );
@@ -402,7 +402,7 @@ gui_window *GUIGetFirstSibling( gui_window *wnd )
     return( wnd->parent->child );
 }
 
-gui_window *GUIGetParentWindow( gui_window *wnd )
+gui_window * GUIAPI GUIGetParentWindow( gui_window *wnd )
 {
     if( wnd == NULL ) {
         return( NULL );
@@ -553,7 +553,7 @@ bool GUICloseWnd( gui_window *wnd )
  * GUIDestroyWnd
  */
 
-void GUIDestroyWnd( gui_window *wnd )
+void GUIAPI GUIDestroyWnd( gui_window *wnd )
 {
     DoDestroy( wnd, false );
 }

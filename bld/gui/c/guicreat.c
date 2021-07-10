@@ -43,7 +43,7 @@
  *                     GUIWndInit
  */
 
-gui_window *GUICreateWindow( gui_create_info *dlg_info )
+gui_window * GUIAPI GUICreateWindow( gui_create_info *dlg_info )
 {
     gui_window  *wnd;
     gui_window  *parent_wnd;

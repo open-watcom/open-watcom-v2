@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -148,7 +148,7 @@ ATTR GUIMakeColour( gui_colour fore, gui_colour back )
     return( MakeAttr( fore, back )  );
 }
 
-void GUISetWindowColours( gui_window *wnd, int num_attrs, gui_colour_set *colours )
+void GUIAPI GUISetWindowColours( gui_window *wnd, int num_attrs, gui_colour_set *colours )
 {
     gui_control *control;
 
@@ -214,18 +214,18 @@ void GUIResetDialColours( void )
     ColoursSet = false;
 }
 
-void GUISetBackgroundColour( gui_colour_set *colour )
+void GUIAPI GUISetBackgroundColour( gui_colour_set *colour )
 {
     Normal.back = colour->back;
     Normal.fore = colour->fore;
 }
 
-void GUIGetDialogColours( gui_colour_set *colours )
+void GUIAPI GUIGetDialogColours( gui_colour_set *colours )
 {
     memcpy( colours, DialColours, GUI_DLG_NUM_ATTRS * sizeof( gui_colour_set ) );
 }
 
-void GUISetDialogColours( gui_colour_set *colours )
+void GUIAPI GUISetDialogColours( gui_colour_set *colours )
 {
     memcpy( DialColours, colours, GUI_DLG_NUM_ATTRS * sizeof( gui_colour_set ) );
     GUIResetDialColours();
@@ -253,21 +253,21 @@ void GUIXGetWindowColours( gui_window *wnd, gui_colour_set *colours )
     }
 }
 
-bool GUISetRGB( gui_colour colour, gui_rgb rgb )
+bool GUIAPI GUISetRGB( gui_colour colour, gui_rgb rgb )
 {
     /* unused parameters */ (void)colour; (void)rgb;
 
     return( false );
 }
 
-bool GUIGetRGB( gui_colour colour, gui_rgb *rgb )
+bool GUIAPI GUIGetRGB( gui_colour colour, gui_rgb *rgb )
 {
     /* unused parameters */ (void)colour; (void)rgb;
 
     return( false );
 }
 
-bool GUIGetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set )
+bool GUIAPI GUIGetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set )
 {
     if( colour_set == NULL ) {
         return( false );
@@ -280,7 +280,7 @@ bool GUIGetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set
     return( false );
 }
 
-bool GUISetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set )
+bool GUIAPI GUISetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set )
 {
     if( colour_set == NULL ) {
         return( false );
@@ -292,7 +292,7 @@ bool GUISetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set
     return( false );
 }
 
-bool GUIGetRGBFromUser( gui_rgb rgb, gui_rgb *new_rgb )
+bool GUIAPI GUIGetRGBFromUser( gui_rgb rgb, gui_rgb *new_rgb )
 {
     /* unused parameters */ (void)rgb; (void)new_rgb;
 

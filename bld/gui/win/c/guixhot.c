@@ -91,7 +91,7 @@ void GUIXCleanupHotSpots( void )
 #endif
 }
 
-void GUIDrawHotSpot( gui_window *wnd, int hot_spot, gui_text_ord row,
+void GUIAPI GUIDrawHotSpot( gui_window *wnd, int hot_spot, gui_text_ord row,
                      gui_ord indent, gui_attr attr )
 {
     gui_text_metrics    metrics;

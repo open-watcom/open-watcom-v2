@@ -83,28 +83,28 @@ void GUIInitHScrollCol( gui_window *wnd, gui_text_ord hscroll_pos )
  * GUIInitVScroll -- Init the vertical scrolling position for the window
  */
 
-void GUIInitVScroll( gui_window * wnd, gui_ord vscroll_pos )
+void GUIInitVScroll( gui_window *wnd, gui_ord vscroll_pos )
 {
-    gui_ord     ord;
+    guix_ord    scr_y;
 
-    ord = GUIScaleToScreenV( vscroll_pos );
-    if( ( vscroll_pos != 0 ) && ( ord == 0 ) ) {
-        ord++;
+    scr_y = GUIScaleToScreenV( vscroll_pos );
+    if( ( vscroll_pos != 0 ) && ( scr_y == 0 ) ) {
+        scr_y++;
     }
-    InitScroll( wnd, SB_VERT, ord );
+    InitScroll( wnd, SB_VERT, scr_y );
 }
 
 /*
  * GUIInitHScroll -- Init the horizontal scrolling position for the window
  */
 
-void GUIInitHScroll( gui_window * wnd, gui_ord hscroll_pos )
+void GUIInitHScroll( gui_window *wnd, gui_ord hscroll_pos )
 {
-    gui_ord     ord;
+    guix_ord    scr_x;
 
-    ord = GUIScaleToScreenH( hscroll_pos );
-    if( ( hscroll_pos != 0 ) && ( ord == 0 ) ) {
-        ord++;
+    scr_x = GUIScaleToScreenH( hscroll_pos );
+    if( ( hscroll_pos != 0 ) && ( scr_x == 0 ) ) {
+        scr_x++;
     }
-    InitScroll( wnd, SB_HORZ, ord );
+    InitScroll( wnd, SB_HORZ, scr_x );
 }

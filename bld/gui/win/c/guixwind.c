@@ -150,7 +150,7 @@ void GUISetCheckResizeAreaForChildren( gui_window *wnd, bool check )
  *                  Window will not get WM_CLOSE message.
  */
 
-void GUIDestroyWnd( gui_window *wnd )
+void GUIAPI GUIDestroyWnd( gui_window *wnd )
 {
     HWND        hwnd;
     gui_window  *curr;
@@ -222,7 +222,7 @@ static bool SetupClass( void )
     return( false );
 }
 
-void GUICleanup( void )
+void GUIAPI GUICleanup( void )
 {
     GUIDeath();                 /* user replaceable stub function */
     GUICleanupHotSpots();

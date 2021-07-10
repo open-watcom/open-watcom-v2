@@ -36,8 +36,6 @@
 
 extern WPI_TEXTMETRIC   GUItm;
 
-extern void GUIGetScale( gui_rect * rect);
-
 extern void GUIClientToScaleRect( gui_rect *rect );
 
 extern gui_ord GUIFromTextX( gui_text_ord text_ord, gui_window *wnd );

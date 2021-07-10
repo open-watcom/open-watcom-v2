@@ -158,7 +158,7 @@ void GUIInitDrawingChars( bool dbcs )
 }
 
 
-int GUIGetCharacter( gui_draw_char draw_char )
+int GUIAPI GUIGetCharacter( gui_draw_char draw_char )
 {
     if( draw_char < GUI_NUM_DRAW_CHARS ) {
         return( UCHAR_VALUE( DrawingChars[DrawIndex[draw_char]] ) );
@@ -166,7 +166,7 @@ int GUIGetCharacter( gui_draw_char draw_char )
     return( 0 );
 }
 
-void GUISetCharacter( gui_draw_char draw_char, int ch )
+void GUIAPI GUISetCharacter( gui_draw_char draw_char, int ch )
 {
     /* unused parameters */ (void)ch; (void)draw_char;
 
@@ -461,7 +461,7 @@ static void DrawGadget( gui_window *wnd, p_gadget gadget, gui_flags flag )
  * GUIWndUpdate -- refresh the portions of the given window which require it
  */
 
-void GUIWndUpdate( gui_window *wnd )
+void GUIAPI GUIWndUpdate( gui_window *wnd )
 {
     if( !GUIIsOpen( wnd ) ) {
         return;
