@@ -73,41 +73,38 @@
 
 /* Initialization Functions */
 
-extern bool GUIXWndInit( unsigned );
+extern bool         GUIXWndInit( unsigned );
 
 
-extern bool GUIXInitHotSpots( int num, gui_resource *hot );
-extern void GUIXCleanupHotSpots( void );
+extern bool         GUIXInitHotSpots( int num, gui_resource *hot );
+extern void         GUIXCleanupHotSpots( void );
 
 /* Window Functions */
-extern bool GUIXCreateWindow( gui_window *wnd, gui_create_info *, gui_window *parent_wnd );
-extern void GUIXSetupWnd( gui_window *wnd );
+extern bool         GUIXCreateWindow( gui_window *wnd, gui_create_info *, gui_window *parent_wnd );
+extern void         GUIXSetupWnd( gui_window *wnd );
 
 /* Control Functions */
-extern bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd, int,
-                              gui_control_info *controls_info, bool sys, res_name_or_id dlg_id );
+extern bool         GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd, int,
+                        gui_control_info *controls_info, bool sys, res_name_or_id dlg_id );
 
 /* Administration functions */
 
-extern void GUIFreeWindowMemory( gui_window *wnd, bool from_parent, bool dialog );
+extern void         GUIFreeWindowMemory( gui_window *wnd, bool from_parent, bool dialog );
 
-extern bool GUIXCreateFloatingPopup( gui_window *wnd, gui_point *location,
-                                     const gui_menu_items *menus,
-                                     gui_mouse_track track, gui_ctl_id *curr_id );
-extern bool GUIXCreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
-                       const gui_toolbar_items *toolinfo,
-                       bool excl, gui_colour_set *plain, gui_colour_set *standout,
-                       gui_rect *rect );
-extern bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
-                       const gui_toolbar_items *toolinfo,
-                       bool excl, gui_colour_set *plain, gui_colour_set *standout,
-                       gui_rect *rect, bool use_tips );
+extern bool         GUIXCreateFloatingPopup( gui_window *wnd, gui_point *location,
+                        const gui_menu_items *menus, gui_mouse_track track, gui_ctl_id *curr_id );
+extern bool         GUIXCreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
+                        const gui_toolbar_items *toolinfo, bool excl, gui_colour_set *plain, 
+                        gui_colour_set *standout, gui_rect *rect );
+extern bool         GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
+                        const gui_toolbar_items *toolinfo, bool excl, gui_colour_set *plain, 
+                        gui_colour_set *standout, gui_rect *rect, bool use_tips );
 
-extern bool GUIXCloseToolBar( gui_window *wnd );
+extern bool         GUIXCloseToolBar( gui_window *wnd );
 
-extern void GUIXDrawText( gui_window *wnd, const char *text, size_t length, const gui_coord *pos,
-                          gui_attr attr, gui_ord extentx, bool draw_extent );
-extern void GUIXDrawTextRGB( gui_window *wnd, const char *text, size_t length, const gui_coord *pos,
-                             gui_rgb fore, gui_rgb back, gui_ord extentx, bool draw_extent );
-extern void GUISetKeyState( void );
-extern gui_window *GUIXGetRootWindow( void );
+extern void         GUIXDrawText( gui_window *wnd, const char *text, size_t length, const gui_coord *pos,
+                        gui_attr attr, gui_ord extentx, bool draw_extent );
+extern void         GUIXDrawTextRGB( gui_window *wnd, const char *text, size_t length, const gui_coord *pos,
+                        gui_rgb fore, gui_rgb back, gui_ord extentx, bool draw_extent );
+extern void         GUISetKeyState( void );
+extern gui_window   *GUIXGetRootWindow( void );

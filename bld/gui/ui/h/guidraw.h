@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +39,6 @@ enum {
     DRAW_LAST
 };
 
-extern char DrawingChars[];
+extern char     DrawingChars[];
 
-extern void GUIInitDrawingChars( bool dbcs );
+extern void     GUIInitDrawingChars( bool dbcs );

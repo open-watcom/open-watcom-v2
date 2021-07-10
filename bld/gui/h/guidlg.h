@@ -144,7 +144,7 @@ extern void GUIDlgOpen( const char *title, gui_text_ord rows, gui_text_ord cols,
                         int num_controls, GUICALLBACK *gui_call_back, void *extra );
 
 extern void GUIModalDlgOpen( gui_window *parent, const char *title, gui_text_ord rows, gui_text_ord cols,
-            gui_control_info *controls_info, int num_controls, GUICALLBACK *gui_call_back, void *extra );
+                gui_control_info *controls_info, int num_controls, GUICALLBACK *gui_call_back, void *extra );
 
 extern void GUISysModalDlgOpen( const char *title, gui_text_ord rows, gui_text_ord cols,
-            gui_control_info *controls_info, int num_controls, GUICALLBACK *gui_call_back, void *extra );
+                gui_control_info *controls_info, int num_controls, GUICALLBACK *gui_call_back, void *extra );
