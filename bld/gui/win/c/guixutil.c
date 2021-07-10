@@ -493,18 +493,23 @@ HWND GUIGetScrollHWND( gui_window *wnd )
     return( wnd->hwnd );
 }
 
+static bool ChangeScrollPos( gui_window *wnd, int bar, int new )
+{
+    if( bar == SB_HORZ ) {
+        if( wnd->hpos == new )
+            return( false );
+        wnd->hpos = new;
+    } else {
+        if( wnd->vpos == new )
+            return( false );
+        wnd->vpos = new;
+    }
+    return( true );
+}
+
 void GUISetScrollPos( gui_window *wnd, int bar, int new, bool redraw )
 {
-    int *pos;
-
-    redraw = redraw;
-    if( bar == SB_HORZ ) {
-        pos = &wnd->hpos;
-    } else {
-        pos = &wnd->vpos;
-    }
-    if( *pos != new ) {
-        *pos = new;
+    if( ChangeScrollPos( wnd, bar, new ) ) {
         _wpi_setscrollpos( GUIGetParentFrameHWND( wnd ), bar, new, ( redraw ) ? TRUE : FALSE );
     }
 }
@@ -518,17 +523,23 @@ int GUIGetScrollPos( gui_window *wnd, int bar )
     }
 }
 
+static bool ChangeScrollRange( gui_window *wnd, int bar, int new )
+{
+    if( bar == SB_HORZ ) {
+        if( wnd->hrange == new )
+            return( false );
+        wnd->hpos = new;
+    } else {
+        if( wnd->vrange == new )
+            return( false );
+        wnd->vpos = new;
+    }
+    return( true );
+}
+
 void GUISetScrollRange( gui_window *wnd, int bar, int min, int max, bool redraw )
 {
-    int *old_range;
-
-    if( bar == SB_HORZ ) {
-        old_range = &wnd->hrange;
-    } else {
-        old_range = &wnd->vrange;
-    }
-    if( ( max - min ) != *old_range ) {
-        *old_range = max - min;
+    if( ChangeScrollRange( wnd, bar, max - min ) ) {
         _wpi_setscrollrange( GUIGetParentFrameHWND( wnd ), bar, min, max, ( redraw ) ? TRUE : FALSE );
         if( bar == SB_HORZ ) {
             GUIRedrawScroll( wnd, SB_HORZ, redraw );
@@ -701,4 +712,3 @@ WPI_FONT GUIGetSystemFont( void )
 
     return( font );
 }
-
