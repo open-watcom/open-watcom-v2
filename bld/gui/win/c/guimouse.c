@@ -37,18 +37,18 @@
 
 bool GUIGetMousePosn( gui_window *wnd, gui_point *point )
 {
-    WPI_POINT   screen_point;
+    WPI_POINT   scr_point;
 
     if( !_wpi_getsystemmetrics( SM_MOUSEPRESENT ) ) {
         return( false );
     }
-    _wpi_getcursorpos( &screen_point );
+    _wpi_getcursorpos( &scr_point );
 #ifdef __OS2_PM__ // close your eyes!!! gross hack coming up
-    _wpi_screentoclient( wnd->hwnd, &screen_point );
-    screen_point.y = _wpi_cvtc_y( wnd->hwnd, screen_point.y );
-    _wpi_clienttoscreen( wnd->hwnd, &screen_point );
+    _wpi_screentoclient( wnd->hwnd, &scr_point );
+    scr_point.y = _wpi_cvtc_y( wnd->hwnd, scr_point.y );
+    _wpi_clienttoscreen( wnd->hwnd, &scr_point );
 #endif
-    GUIMakeRelative( wnd, &screen_point, point );
+    GUIMakeRelative( wnd, &scr_point, point );
     return( true );
 }
 

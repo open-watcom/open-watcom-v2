@@ -36,19 +36,19 @@
 
 bool GUIGetMousePosn( gui_window *wnd, gui_point *point )
 {
-    gui_point   screen_point;
+    guix_point  scr_point;
     ORD         row;
     ORD         col;
 
     if( uimouseinstalled() ) {
         uivmousepos( NULL, &row, &col );
-        screen_point.x = col;
-        screen_point.y = row;
+        scr_point.x = col;
+        scr_point.y = row;
     } else {
-        screen_point.x = 0;
-        screen_point.y = 0;
+        scr_point.x = 0;
+        scr_point.y = 0;
         return( false );
     }
-    GUIMakeRelative( wnd, &screen_point, point );
+    GUIMakeRelative( wnd, &scr_point, point );
     return( true );
 }

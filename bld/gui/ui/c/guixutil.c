@@ -329,17 +329,17 @@ void GUIRedrawTitle( gui_window *wnd )
     GUIWndUpdate( wnd );
 }
 
-void GUIMakeRelative( gui_window *wnd, gui_point *screen_point, gui_point *point )
+void GUIMakeRelative( gui_window *wnd, const guix_point *scr_point, gui_point *point )
 {
     SAREA       area;
     SAREA       use;
-    gui_ord     screen_x;
-    gui_ord     screen_y;
+    guix_ord    screen_x;
+    guix_ord    screen_y;
 
     GUIGetSAREA( wnd, &area );
     GUISetUseArea( wnd, &area, &use );
-    screen_x = screen_point->x - use.col - area.col;
-    screen_y = screen_point->y - use.row - area.row;
+    screen_x = scr_point->x - use.col - area.col;
+    screen_y = scr_point->y - use.row - area.row;
     if( ( wnd->hgadget != NULL ) && !GUI_HSCROLL_EVENTS_SET( wnd ) ) {
         screen_x += wnd->hgadget->pos;
     }
@@ -522,7 +522,7 @@ void GUIFreeWindowMemory( gui_window *wnd, bool from_parent, bool dialog )
     GUIMemFree( wnd );
 }
 
-static void DoDestroy( gui_window * wnd, bool dialog )
+static void DoDestroy( gui_window *wnd, bool dialog )
 {
     if( wnd != NULL ) {
         GUIEVENT( wnd, GUI_DESTROY, NULL );
@@ -534,7 +534,7 @@ static void DoDestroy( gui_window * wnd, bool dialog )
     }
 }
 
-void GUIDestroyDialog( gui_window * wnd )
+void GUIDestroyDialog( gui_window *wnd )
 {
     DoDestroy( wnd, true );
 }
@@ -554,7 +554,7 @@ bool GUICloseWnd( gui_window *wnd )
  * GUIDestroyWnd
  */
 
-void GUIDestroyWnd( gui_window * wnd )
+void GUIDestroyWnd( gui_window *wnd )
 {
     DoDestroy( wnd, false );
 }

@@ -89,7 +89,7 @@ static  gui_window      *ButtonDownSent = NULL;
  * sendPointGUIEvent -- send mouse event to use with the point it occured at
  */
 
-static void sendPointGUIEvent( gui_window *wnd, gui_event gui_ev, gui_point *screen_point )
+static void sendPointGUIEvent( gui_window *wnd, gui_event gui_ev, const guix_point *scr_point )
 {
     bool        down_sent;
 
@@ -112,7 +112,7 @@ static void sendPointGUIEvent( gui_window *wnd, gui_event gui_ev, gui_point *scr
     if( down_sent || ( MouseState == MOUSE_CLIENT ) ) {
         gui_point   point;
 
-        GUIMakeRelative( wnd, screen_point, &point );
+        GUIMakeRelative( wnd, scr_point, &point );
         GUIEVENT( wnd, gui_ev, &point );
     }
 }
@@ -183,11 +183,11 @@ static void ProcessMouseReleaseDrag( ui_event ui_ev, gui_event gui_ev, ORD row, 
         break;
     default :
         if( GUIMouseWnd != NULL ) {
-            gui_point   screen_point;
+            guix_point  scr_point;
 
-            screen_point.x = col;
-            screen_point.y = row;
-            sendPointGUIEvent( GUIMouseWnd, gui_ev, &screen_point );
+            scr_point.x = col;
+            scr_point.y = row;
+            sendPointGUIEvent( GUIMouseWnd, gui_ev, &scr_point );
         }
     }
     if( ui_ev == EV_MOUSE_RELEASE || ui_ev == EV_MOUSE_RELEASE_R ) {
@@ -202,16 +202,16 @@ static void ProcessMouseReleaseDrag( ui_event ui_ev, gui_event gui_ev, ORD row, 
 
 static bool ProcessMousePos( gui_event gui_ev, ORD row, ORD col, gui_window * wnd )
 {
-    gui_point   screen_point;
+    guix_point  scr_point;
 
     OldCol = col;
     OldRow = row;
     if( wnd == NULL ) {
         return( false );
     }
-    screen_point.x = col;
-    screen_point.y = row;
-    sendPointGUIEvent( wnd, gui_ev, &screen_point );
+    scr_point.x = col;
+    scr_point.y = row;
+    sendPointGUIEvent( wnd, gui_ev, &scr_point );
     return( true );
 }
 
@@ -325,12 +325,12 @@ static void ProcessMousePress( ui_event ui_ev, gui_event gui_ev, ORD row, ORD co
             }
         }
     } else if( GUIPtInRect( &GUICurrWnd->use, wnd_row, wnd_col ) ) {
-        gui_point   screen_point;
+        guix_point  scr_point;
 
         MouseState = MOUSE_CLIENT;
-        screen_point.x = col;
-        screen_point.y = row;
-        sendPointGUIEvent( GUICurrWnd, gui_ev, &screen_point );
+        scr_point.x = col;
+        scr_point.y = row;
+        sendPointGUIEvent( GUICurrWnd, gui_ev, &scr_point );
     } else if( (GUICurrWnd->style & GUI_RESIZEABLE) && ( ui_ev == EV_MOUSE_PRESS ) &&
                ( wnd_row == GUICurrWnd->vs.area.height - 1 ) &&
                ( ( wnd_col == 0 ) || ( wnd_col == GUICurrWnd->vs.area.width - 1 ) ) ) {

@@ -42,7 +42,7 @@ extern bool GUISetDialogArea( gui_window *wnd, SAREA *area, gui_rect *ect, SAREA
 extern bool GUIIsOpen( gui_window * );
 extern char *GUIMakeEditCopy( char * buffer, int length );
 extern void GUIRedrawTitle( gui_window * wnd );
-extern void GUIMakeRelative( gui_window *wnd, gui_point *screen_point, gui_point *point );
+extern void GUIMakeRelative( gui_window *wnd, const guix_point *scr_point, gui_point *point );
 extern bool GUIJustSetWindowText( gui_window *wnd, const char *title );
 extern bool GUIInArea( ORD row, ORD col, SAREA *area );
 extern void GUISetUseArea( gui_window *wnd, SAREA *area, SAREA *use );
