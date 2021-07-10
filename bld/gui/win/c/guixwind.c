@@ -423,7 +423,7 @@ static void DoSetWindowLongPtr( HWND hwnd, gui_window *wnd )
  * GUIXCreateWindow
  */
 
-bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *parent )
+bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *parent_wnd )
 {
     DWORD               style;
     HMENU               hmenu;
@@ -453,15 +453,15 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *p
     wnd->root_pinfo.force_count = NUMBER_OF_FORCED_REPAINTS;
     wnd->hwnd_pinfo.force_count = NUMBER_OF_FORCED_REPAINTS;
 
-    wnd->parent = parent;
+    wnd->parent = parent_wnd;
     style = COMMON_STYLES;
-    if( parent == NULL ) {
+    if( parent_wnd == NULL ) {
         parent_hwnd = HWND_DESKTOP;
         if( (dlg_info->style & GUI_POPUP) == 0 ) {
             wnd->flags |= IS_ROOT;
         }
     } else {
-        parent_hwnd = parent->hwnd;
+        parent_hwnd = parent_wnd->hwnd;
         if( (dlg_info->style & GUI_POPUP) == 0 ) {
             style |= CHILD_STYLE;
         }

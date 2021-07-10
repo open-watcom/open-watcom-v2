@@ -32,7 +32,7 @@
 
 
 #include "guiwind.h"
-#include "guixhot.h"
+#include "guihot.h"
 #include "guixdraw.h"
 #include "guixwind.h"
 #include "guirdlg.h"
@@ -41,10 +41,6 @@
 #ifdef __NT__
 typedef HANDLE (WINAPI *PFNLI)( HINSTANCE, LPCSTR, UINT, int, int, UINT );
 #endif
-
-extern  int         GUINumHotSpots;
-
-hotspot_info        *GUIHotSpots;
 
 #ifdef __NT__
 // For TransparentBlt function

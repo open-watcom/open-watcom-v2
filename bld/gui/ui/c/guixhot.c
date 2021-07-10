@@ -33,12 +33,9 @@
 
 #include "guiwind.h"
 #include "guiutil.h"
-#include "guixhot.h"
 #include "guihot.h"
 #include <string.h>
 
-extern  int             GUINumHotSpots;
-        hotspot_info    *GUIHotSpots    = NULL;
 
 bool GUIXInitHotSpots( int num, gui_resource *hot )
 {

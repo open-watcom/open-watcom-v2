@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,14 +47,14 @@
 gui_window *GUICreateWindow( gui_create_info *dlg_info )
 {
     gui_window  *wnd;
-    gui_window  *parent;
+    gui_window  *parent_wnd;
 
     wnd = GUISetupWnd( dlg_info );
     if( wnd == NULL ) {
         return( NULL );
     }
-    parent = dlg_info->parent;
-    if( GUIXCreateWindow( wnd, dlg_info, parent ) ) {
+    parent_wnd = dlg_info->parent;
+    if( GUIXCreateWindow( wnd, dlg_info, parent_wnd ) ) {
         GUIInitMDI( wnd, dlg_info );
         return( wnd );
     }

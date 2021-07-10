@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,8 +80,8 @@ extern bool GUIXInitHotSpots( int num, gui_resource *hot );
 extern void GUIXCleanupHotSpots( void );
 
 /* Window Functions */
-extern bool GUIXCreateWindow( gui_window *, gui_create_info *, gui_window * );
-extern void GUIXSetupWnd( gui_window * );
+extern bool GUIXCreateWindow( gui_window *wnd, gui_create_info *, gui_window *parent_wnd );
+extern void GUIXSetupWnd( gui_window *wnd );
 
 /* Control Functions */
 extern bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd, int,
@@ -88,7 +89,7 @@ extern bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd, int,
 
 /* Administration functions */
 
-extern void GUIFreeWindowMemory( gui_window *, bool from_parent, bool dialog );
+extern void GUIFreeWindowMemory( gui_window *wnd, bool from_parent, bool dialog );
 
 extern bool GUIXCreateFloatingPopup( gui_window *wnd, gui_point *location,
                                      const gui_menu_items *menus,

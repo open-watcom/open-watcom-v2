@@ -34,12 +34,11 @@
 #include "guiwind.h"
 #include "guiscale.h"
 #include "guihot.h"
-#include "guixhot.h"
 #include "guihook.h"
 
-        int             GUINumHotSpots;
-extern  hotspot_info    *GUIHotSpots;
 
+int             GUINumHotSpots = 0;
+hotspot_info    *GUIHotSpots = NULL;
 
 static void Cleanup( void )
 {

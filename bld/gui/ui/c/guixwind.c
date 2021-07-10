@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -212,12 +212,12 @@ bool GUISetBackgroundChar( gui_window *wnd, char background )
  * GUIXCreateWindow - create a UI window
  */
 
-bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *parent )
+bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *parent_wnd )
 {
-    if( parent != NULL ) {
-        wnd->sibling = parent->child;
-        parent->child = wnd;
-        wnd->parent = parent;
+    if( parent_wnd != NULL ) {
+        wnd->sibling = parent_wnd->child;
+        parent_wnd->child = wnd;
+        wnd->parent = parent_wnd;
     } else {
         if( (dlg_info->style & GUI_POPUP) == 0 ) {
             wnd->flags |= IS_ROOT;
