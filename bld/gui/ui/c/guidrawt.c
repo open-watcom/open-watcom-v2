@@ -33,9 +33,9 @@
 
 #include "guiwind.h"
 #include "guiscale.h"
-#include "guix.h"
 #include <string.h>
 #include "walloca.h"
+
 
 /*
  * GUIXDrawText -- draw text
@@ -53,7 +53,7 @@ void GUIXDrawText( gui_window *wnd, const char *text, size_t length, const gui_c
     SAREA       area;
     guix_ord    width;
     guix_ord    frame_adjust;
-    guix_ord	extentx;
+    guix_ord    extentx;
 
     if( attr >= wnd->num_attrs ) {
         return;

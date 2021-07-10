@@ -35,7 +35,6 @@
 #include <string.h>
 #include "guiscale.h"
 #include "guixutil.h"
-#include "guix.h"
 #include "guixdraw.h"
 #include "guiutil.h"
 #include "guixdlg.h"

@@ -36,7 +36,6 @@
     #include <process.h>
 #endif
 #include <stdlib.h>
-#include "guix.h"
 #include "guiscale.h"
 #include "guixloop.h"
 #include "guixutil.h"

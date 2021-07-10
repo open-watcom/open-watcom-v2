@@ -32,7 +32,6 @@
 
 
 #include "guiwind.h"
-#include "guix.h"
 #include "guiscale.h"
 #include "guimenu.h"
 #include "guisysme.h"

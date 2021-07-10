@@ -41,7 +41,6 @@
 #include "guistyle.h"
 #include "guixdlg.h"
 #include "guitextm.h"
-#include "guixscal.h"
 #include "guiscale.h"
 #include "guistr.h"
 #include "guixwind.h"

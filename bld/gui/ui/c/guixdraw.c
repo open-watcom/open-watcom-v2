@@ -33,7 +33,6 @@
 #include "guiwind.h"
 #include "guidraw.h"
 #include "guixdraw.h"
-#include "guix.h"
 #include "guixutil.h"
 #include "guicontr.h"
 #include "guiscale.h"
