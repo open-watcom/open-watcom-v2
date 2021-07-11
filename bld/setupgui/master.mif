@@ -38,7 +38,7 @@ dosstub = dosstub.exe
 #
 .c : ../c;$(trmem_dir)
 
-inc_dirs  = -I"../h" $(ui_inc_dirs) $(wpi_inc_dirs) $(gui_inc_dirs) $(commonui_inc_dirs) &
+inc_dirs  = -I"../h" $(ui_inc_dirs) $(wpi_inc_dirs) $(gui_inc_dirs) $(gui_inc_dirs_internal) $(commonui_inc_dirs) &
     $(wpi_inc_dirs) $(hlpview_inc_dirs) -I"$(libzip_dir)/lib" -I"$(zlib_dir)"
 
 !ifeq sys_windowed 1

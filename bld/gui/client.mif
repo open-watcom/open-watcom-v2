@@ -8,5 +8,6 @@ gui_type = ui
 !endif
 gui_path = $(gui_dir)/$(gui_type)/$(objs_subdir)
 gui_inc_dirs = -I"$(gui_path)" -I"$(gui_dir)/h"
+gui_inc_dirs_internal = -I"$(gui_dir)/$(gui_type)/h"
 gui_rc_inc_dirs = -I"$(gui_path)" -I"$(gui_dir)/h"
 gui_lib = $(gui_path)/gui.lib
