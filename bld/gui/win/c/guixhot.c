@@ -68,8 +68,7 @@ bool GUIXInitHotSpots( int num_hot_spots, gui_resource *hot )
                                                   LR_LOADMAP3DCOLORS );
         } else {
 #endif
-            GUIHotSpots[i].bitmap = _wpi_loadbitmap( GUIResHInst,
-                                        MAKEINTRESOURCE( hot[i].res ) );
+            GUIHotSpots[i].bitmap = _wpi_loadbitmap( GUIResHInst, MAKEINTRESOURCE( hot[i].res ) );
 #ifdef __NT__
         }
 #endif
@@ -86,31 +85,26 @@ void GUIXCleanupHotSpots( void )
         _wpi_deletebitmap( GUIHotSpots[i].bitmap );
     }
 #ifdef __NT__
-    if( bitmap2 != NULL )
+    if( bitmap2 != NULL ) {
         _wpi_deletebitmap( GUIHotSpots[i].bitmap );
+    }
 #endif
 }
 
-void GUIAPI GUIDrawHotSpot( gui_window *wnd, int hot_spot, gui_text_ord row,
-                     gui_ord indent, gui_attr attr )
+void GUIAPI GUIDrawHotSpot( gui_window *wnd, int hot_spot, gui_text_ord row, gui_ord indent, gui_attr attr )
 {
     gui_text_metrics    metrics;
-    gui_coord           pos;
+    guix_coord          pos;
 
     if( ( hot_spot > 0 ) && ( hot_spot <= GUINumHotSpots ) ) {
         GUIGetTextMetrics( wnd, &metrics );
         pos.x = indent;
         pos.y = row * metrics.avg.y;
-        GUIDrawTextBitmapAttr( wnd, NULL, GUIHotSpots[hot_spot - 1].size.x,
-                               GUIHotSpots[hot_spot - 1].size.y,
-                               &pos, attr, GUI_NO_COLUMN, false,
-                               hot_spot );
+        GUIDrawBitmapAttr( wnd, &GUIHotSpots[hot_spot - 1].size, &pos, attr, hot_spot );
     }
 }
 
-void GUIDrawBitmap( int hot_spot, WPI_PRES hdc,
-                    int nDrawX, int nDrawY,
-                    WPI_COLOUR bkcolour)
+void GUIDrawBitmap( int hot_spot, WPI_PRES hdc, int nDrawX, int nDrawY, WPI_COLOUR bkcolour )
 {
     WPI_POINT   src_org;
     WPI_POINT   dst_org;

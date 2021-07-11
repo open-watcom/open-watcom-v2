@@ -62,12 +62,13 @@ static void SetText( gui_window *wnd, WPI_COLOUR fore, WPI_COLOUR back )
 }
 
 static void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
-                            size_t length, int height, const gui_coord *pos,
+                            size_t in_width, int in_height, const gui_coord *pos,
                             WPI_COLOUR fore, WPI_COLOUR back, gui_ord extentx,
                             bool draw_extent, int bitmap )
 {
     int         nDrawX, nDrawY;
-    int         lenx;
+    guix_ord    width;
+    guix_ord    height;
     HBRUSH      brush;
     HBRUSH      old_brush;
     HPEN        pen;
@@ -85,7 +86,7 @@ static void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
 
     if( ( wnd->hdc == NULLHANDLE ) || ( wnd->ps == NULL ) ||
         ( ( text == NULL ) && ( bitmap == 0 ) ) ||
-        ( ( bitmap != 0 ) && ( height == 0 ) ) ) {
+        ( ( bitmap != 0 ) && ( in_height == 0 ) ) ) {
         return;
     }
     old_rop = 0;
@@ -94,9 +95,19 @@ static void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
     old_pen = NULLHANDLE;
     pen = NULLHANDLE;
     GUIGetMetrics( wnd );
-    if( !bitmap ) {
+    if( bitmap == 0 ) {
         height = AVGYCHAR( GUItm );
+        num_chars = strlen( text );
+        if( num_chars > in_width ) {
+            num_chars = in_width;
+        }
+        width = GUIGetTextExtentX( wnd, text, num_chars );
+    } else {
+        /* bitmap size */
+        height = in_height;
+        width = in_width;
     }
+
     rect = wnd->hwnd_client_rect;
     _wpi_getrectvalues( rect, &left, &top, &right, &bottom );
     _wpi_getpaintrect( wnd->ps, &paint_rect );
@@ -110,13 +121,6 @@ static void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
         hscroll_pos = 0;
     }
 
-    if( bitmap == 0 ) {
-        num_chars = strlen( text );
-        if( num_chars > length ) {
-            num_chars = length;
-        }
-    }
-
     nDrawY = GUIScaleToScreenV( pos->y );
     if( GUI_DO_VSCROLL( wnd ) ) {
         nDrawY -= GUIGetScrollPos( wnd, SB_VERT );
@@ -124,23 +128,17 @@ static void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
     nDrawX = left;
     nDrawX += ( GUIScaleToScreenH( pos->x ) - hscroll_pos );
 
-    if( bitmap > 0 ) {
-        lenx = length ;
-    } else {
-        lenx = GUIGetTextExtentX( wnd, text, num_chars );
-    }
-
     if( draw_extent ) {
         /* blanks out some portion of rest of the line */
         if( extentx != GUI_NO_COLUMN ) {
             right = nDrawX + GUIScaleToScreenX( extentx );
         }
     } else {
-        right = nDrawX + lenx;
+        right = nDrawX + width;
     }
     nDrawY = _wpi_cvth_y_size( nDrawY, _wpi_getheightrect(wnd->hwnd_client_rect), height );
 
-    _wpi_setrectvalues( &draw_rect, nDrawX, nDrawY, right, nDrawY+height );
+    _wpi_setrectvalues( &draw_rect, nDrawX, nDrawY, right, nDrawY + height );
     if( GUIIsRectInUpdateRect( wnd, &draw_rect ) ) {
         colour = _wpi_getnearestcolor( wnd->hdc, back );
         brush = _wpi_createsolidbrush( colour );
@@ -188,31 +186,30 @@ static void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
     }
 }
 
-void GUIDrawTextBitmapAttr( gui_window *wnd, const char *text, size_t length,
-                            int height, const gui_coord *pos,
-                            gui_attr attr, gui_ord extentx,
-                            bool draw_extent, int bitmap )
+void GUIDrawBitmapAttr( gui_window *wnd, const guix_coord *size, const gui_coord *pos, gui_attr attr, int bitmap )
 {
     WPI_COLOUR  fore, back;
 
     fore = GUIGetFore( wnd, attr );
     back = GUIGetBack( wnd, attr );
 
-    GUIDrawTextBitmapRGB( wnd, text, length, height, pos, fore, back, extentx,
-                           draw_extent, bitmap );
+    GUIDrawTextBitmapRGB( wnd, NULL, size->x, size->y, pos, fore, back, GUI_NO_COLUMN, false, bitmap );
 }
 
 void GUIXDrawText( gui_window *wnd, const char *text, size_t length, const gui_coord *pos,
                    gui_attr attr, gui_ord extentx, bool draw_extent )
 {
-    GUIDrawTextBitmapAttr( wnd, text, length, 0, pos, attr, extentx, draw_extent, 0 );
+    WPI_COLOUR  fore, back;
+
+    fore = GUIGetFore( wnd, attr );
+    back = GUIGetBack( wnd, attr );
+
+    GUIDrawTextBitmapRGB( wnd, text, length, 0, pos, fore, back, extentx, draw_extent, 0 );
 }
 
 void GUIXDrawTextRGB( gui_window *wnd, const char *text, size_t length, const gui_coord *pos,
-                      gui_rgb fore, gui_rgb back, gui_ord extentx,
-                      bool draw_extent )
+                      gui_rgb fore, gui_rgb back, gui_ord extentx, bool draw_extent )
 {
-    GUIDrawTextBitmapRGB( wnd, text, length, 0, pos, GETRGB(fore), GETRGB(back),
-                          extentx, draw_extent, 0 );
+    GUIDrawTextBitmapRGB( wnd, text, length, 0, pos, GETRGB(fore), GETRGB(back), extentx, draw_extent, 0 );
 }
 
