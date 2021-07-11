@@ -73,8 +73,6 @@
 #define REGISTER_STYLE          CS_DBLCLKS
 #define REGISTER_DIALOG_STYLE   CS_PARENTDC
 
-#define SENDPOINTGUIEVENT(w, gm, wp, lp)    SendPointEvent( wp, lp, w, gm, true )
-
 typedef struct wmcreate_info {
     int                 size;
     gui_window          *wnd;
@@ -637,8 +635,8 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *p
     return( wnd != NULL );
 }
 
-bool SendPointEvent( WPI_PARAM1 wparam, WPI_PARAM2 lparam,
-                     gui_window *wnd, gui_event gui_ev, bool force_current )
+bool SendPointEvent( gui_window *wnd, gui_event gui_ev, WPI_PARAM1 wparam,
+                        WPI_PARAM2 lparam, bool force_current )
 {
     WPI_POINT   currentpoint;
     gui_point   point;
@@ -1163,7 +1161,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
         if( ( currentpoint.x != prevpoint.x ) || ( currentpoint.y != prevpoint.y ) ) {
             prevpoint.x = currentpoint.x;
             prevpoint.y = currentpoint.y;
-            SENDPOINTGUIEVENT( wnd, GUI_MOUSEMOVE, wparam, lparam );
+            SendPointEvent( wnd, GUI_MOUSEMOVE, wparam, lparam, true );
         }
         break;
 #ifndef __OS2_PM__
@@ -1176,7 +1174,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
     case WM_RBUTTONDOWN:
         _wpi_setcapture( hwnd );
         CheckDoFront( wnd );
-        SENDPOINTGUIEVENT( wnd, GUI_RBUTTONDOWN, wparam, lparam );
+        SendPointEvent( wnd, GUI_RBUTTONDOWN, wparam, lparam, true );
         break;
 #else
     case WM_RBUTTONDOWN :
@@ -1190,32 +1188,32 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
         } else {
             _wpi_setcapture( hwnd );
             CheckDoFront( wnd );
-            SENDPOINTGUIEVENT( wnd, GUI_RBUTTONDOWN, wparam, lparam );
+            SendPointEvent( wnd, GUI_RBUTTONDOWN, wparam, lparam, true );
         }
         break;
 #endif
     case WM_LBUTTONDOWN:
         _wpi_setcapture( hwnd );
         CheckDoFront( wnd );
-        SENDPOINTGUIEVENT( wnd, GUI_LBUTTONDOWN, wparam, lparam );
+        SendPointEvent( wnd, GUI_LBUTTONDOWN, wparam, lparam, true );
         use_defproc = true;
         break;
     case WM_LBUTTONUP:
         _wpi_releasecapture();
-        SENDPOINTGUIEVENT( wnd, GUI_LBUTTONUP, wparam, lparam );
+        SendPointEvent( wnd, GUI_LBUTTONUP, wparam, lparam, true );
         use_defproc = true;
         break;
     case WM_RBUTTONUP:
         _wpi_releasecapture();
-        SENDPOINTGUIEVENT( wnd, GUI_RBUTTONUP, wparam, lparam );
+        SendPointEvent( wnd, GUI_RBUTTONUP, wparam, lparam, true );
         break;
     case WM_LBUTTONDBLCLK:
         CheckDoFront( wnd );
-        SENDPOINTGUIEVENT( wnd, GUI_LBUTTONDBLCLK, wparam, lparam );
+        SendPointEvent( wnd, GUI_LBUTTONDBLCLK, wparam, lparam, true );
         break;
     case WM_RBUTTONDBLCLK:
         CheckDoFront( wnd );
-        SENDPOINTGUIEVENT( wnd, GUI_RBUTTONDBLCLK, wparam, lparam );
+        SendPointEvent( wnd, GUI_RBUTTONDBLCLK, wparam, lparam, true );
         break;
     case WM_SYSCOMMAND:
         id = _wpi_getid( wparam );

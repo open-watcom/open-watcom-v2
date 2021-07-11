@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,9 +37,7 @@
 extern WPI_INST     GUIMainHInst;
 extern gui_window   *GUICurrWnd;
 
-extern bool SendPointEvent( WPI_PARAM1 wparam, WPI_PARAM2 lparam,
-                            gui_window *wnd, gui_event gui_ev,
-                            bool force_current );
+extern bool SendPointEvent( gui_window *wnd, gui_event gui_ev, WPI_PARAM1 wparam, WPI_PARAM2 lparam, bool force_current );
 extern void GUIResizeBackground( gui_window *wnd, bool force_msg );
 extern void GUIDoResize( gui_window *wnd, HWND hwnd, gui_coord *size );
 

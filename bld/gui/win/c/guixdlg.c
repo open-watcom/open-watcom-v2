@@ -56,8 +56,6 @@
 #endif
 
 
-#define SENDPOINTGUIEVENT(w, gm, wp, lp)    !SendPointEvent( wp, lp, w, gm, false )
-
 extern  controls_struct GUIControls[];
 extern  bool            EditControlHasFocus;
 
@@ -392,7 +390,7 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
             }
         }
         if( item == NULL || item->id == 0 ) {
-            msg_processed |= SENDPOINTGUIEVENT( wnd, GUI_RBUTTONDOWN, wparam, lparam );
+            msg_processed |= !SendPointEvent( wnd, GUI_RBUTTONDOWN, wparam, lparam, false );
         }
         break;
 #else
@@ -408,23 +406,23 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
         }
         break;
     case WM_RBUTTONDOWN:
-        msg_processed = SENDPOINTGUIEVENT( wnd, GUI_RBUTTONDOWN, wparam, lparam );
+        msg_processed = !SendPointEvent( wnd, GUI_RBUTTONDOWN, wparam, lparam, false );
         break;
 #endif
     case WM_RBUTTONUP:
-        msg_processed = SENDPOINTGUIEVENT( wnd, GUI_RBUTTONUP, wparam, lparam );
+        msg_processed = !SendPointEvent( wnd, GUI_RBUTTONUP, wparam, lparam, false );
         break;
     case WM_RBUTTONDBLCLK:
-        msg_processed = SENDPOINTGUIEVENT( wnd, GUI_RBUTTONDBLCLK, wparam, lparam );
+        msg_processed = !SendPointEvent( wnd, GUI_RBUTTONDBLCLK, wparam, lparam, false );
         break;
     case WM_LBUTTONDOWN:
-        msg_processed = SENDPOINTGUIEVENT( wnd, GUI_LBUTTONDOWN, wparam, lparam );
+        msg_processed = !SendPointEvent( wnd, GUI_LBUTTONDOWN, wparam, lparam, false );
         break;
     case WM_LBUTTONUP:
-        msg_processed = SENDPOINTGUIEVENT( wnd, GUI_LBUTTONUP, wparam, lparam );
+        msg_processed = !SendPointEvent( wnd, GUI_LBUTTONUP, wparam, lparam, false );
         break;
     case WM_LBUTTONDBLCLK:
-        msg_processed = SENDPOINTGUIEVENT( wnd, GUI_LBUTTONDBLCLK, wparam, lparam );
+        msg_processed = !SendPointEvent( wnd, GUI_LBUTTONDBLCLK, wparam, lparam, false );
         break;
     case WM_COMMAND :
         escape_pressed = false;
