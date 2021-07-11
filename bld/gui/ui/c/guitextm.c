@@ -34,7 +34,8 @@
 #include "guiwind.h"
 #include "guiscale.h"
 
-void GUIGetTextMetrics( gui_window * wnd, gui_text_metrics * metrics )
+
+void GUIGetTextMetrics( gui_window *wnd, gui_text_metrics *metrics )
 {
     /* unused parameters */ (void)wnd;
 

@@ -38,24 +38,24 @@
 #include "guiscale.h"
 #include <string.h>
 
-static bool SetStatusArea( gui_window *wnd, gui_ord x, gui_ord height,
-                           SAREA *area )
+static bool SetStatusArea( gui_window *wnd, gui_ord x, gui_ord height, SAREA *area )
 {
-    SAREA               sarea;
-    gui_coord           dim;
+    SAREA           sarea;
+    guix_ord        dim_x;
+    guix_ord        dim_y;
 
     GUIGetClientSAREA( wnd, &sarea );
 
-    dim.x = GUIScaleToScreenH( x );
-    dim.y = GUIScaleToScreenV( height );
-    if( dim.y == 0 ) {
-        dim.y = 1;
+    dim_x = GUIScaleToScreenH( x );
+    dim_y = GUIScaleToScreenV( height );
+    if( dim_y == 0 ) {
+        dim_y = 1;
     }
 
-    area->row = sarea.height - dim.y;
-    area->col = dim.x;
-    area->height = dim.y;
-    area->width = sarea.width - dim.x;
+    area->row = sarea.height - dim_y;
+    area->col = dim_x;
+    area->height = dim_y;
+    area->width = sarea.width - dim_x;
 
     return( true );
 }

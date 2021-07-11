@@ -34,6 +34,7 @@
 #include "guiwind.h"
 #include "guiscale.h"
 
+
 void GUITruncToPixel( gui_coord * coord )
 {
     if( coord != NULL ) {

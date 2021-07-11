@@ -221,11 +221,9 @@ static void ResizeGadget( p_gadget gadget, ORD length, ORD anchor,
  *            to do so
  */
 
-static bool SizeWnd( gui_window *wnd, SAREA *area, gui_flags flag,
-                     resize_dir dir )
+static bool SizeWnd( gui_window *wnd, SAREA *area, gui_flags flag, resize_dir dir )
 {
     SAREA       new;
-    gui_coord   newsize;
     SAREA       save;
     gui_window  *child;
     bool        was_minimized;
@@ -275,6 +273,8 @@ static bool SizeWnd( gui_window *wnd, SAREA *area, gui_flags flag,
     wnd->flags |= NEEDS_RESIZE_REDRAW;
     wnd->flags &= ~DONT_SEND_PAINT;
     if( flag != MINIMIZED ) {
+        gui_coord   newsize;
+
         newsize.x = GUIScreenToScaleH( wnd->use.width );
         newsize.y = GUIScreenToScaleV( wnd->use.height );
         GUIEVENT( wnd, GUI_RESIZE, &newsize );
@@ -613,15 +613,16 @@ void GUIZoomWnd( gui_window *wnd, gui_create_styles action )
 
 bool GUIResizeWindow( gui_window *wnd, gui_rect *rect )
 {
-    SAREA       area;
-    bool        ret;
-    bool        hidden;
-    gui_coord   newsize;
+    SAREA               area;
+    bool                ret;
+    bool                hidden;
 
     if( !GUISetArea( &area, rect, wnd->parent, true, GUI_IS_DIALOG( wnd ) ) ) {
         return( false );
     }
     if( GUI_IS_DIALOG( wnd ) ) {
+        gui_coord   newsize;
+
         ret = GUIResizeDialog( wnd, &area );
         newsize.x = GUIScreenToScaleH( wnd->use.width );
         newsize.y = GUIScreenToScaleV( wnd->use.height );

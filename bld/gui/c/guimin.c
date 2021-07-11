@@ -35,6 +35,7 @@
 #include "guimin.h"
 #include "guiscale.h"
 
+
 bool GUIGetMinSize( gui_coord *size )
 {
     if( size == NULL ) {
