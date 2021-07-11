@@ -548,7 +548,7 @@ LONG GUISetControlStyle( gui_control_info *ctl_info )
     return( ret_style );
 }
 
-static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent, gui_coord pos, gui_coord size )
+static HWND CreateControl( gui_control_info *ctl_info, const gui_window *parent, const guix_coord *scr_pos, const guix_coord *scr_size )
 {
     DWORD       style;
     HWND        hwnd;
@@ -592,12 +592,12 @@ static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent, gui_c
 
 #if defined( __OS2_PM__ )
     _wpi_createanywindow( GUIControls[ctl_info->control_class].classname,
-                  new_text, style, pos.x, pos.y, size.x, size.y,
+                  new_text, style, scr_pos->x, scr_pos->y, scr_size->x, scr_size->y,
                   parent->hwnd, (HMENU)ctl_info->id, GUIMainHInst,
                   pctldata, &hwnd, ctl_info->id, &hwnd );
 #elif defined( __WINDOWS__ )
     hwnd = CreateWindow( GUIControls[ctl_info->control_class].classname,
-                  new_text, style, pos.x, pos.y, size.x, size.y,
+                  new_text, style, scr_pos->x, scr_pos->y, scr_size->x, scr_size->y,
                   parent->hwnd, (HMENU)ctl_info->id, GUIMainHInst, NULL );
 #else
     // We do this crud to get 3d edges on edit controls, listboxes, and
@@ -611,7 +611,7 @@ static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent, gui_c
   #endif
 
     hwnd = CreateWindowEx( xstyle, GUIControls[ctl_info->control_class].classname,
-        new_text, style, pos.x, pos.y, size.x, size.y, parent->hwnd,
+        new_text, style, scr_pos->x, scr_pos->y, scr_size->x, scr_size->y, parent->hwnd,
         (HMENU)ctl_info->id, GUIMainHInst, NULL );
 
     /* From here to #else, new by RR 2003.12.05 */
@@ -662,7 +662,7 @@ bool GUIAddControl( gui_control_info *ctl_info, gui_colour_set *plain, gui_colou
     standout = standout;
     parent = ctl_info->parent;
     GUICalcLocation( &ctl_info->rect, &scr_pos, &scr_size, parent->hwnd );
-    hwnd = CreateControl( ctl_info, parent, scr_pos, scr_size );
+    hwnd = CreateControl( ctl_info, parent, &scr_pos, &scr_size );
     if( hwnd == NULLHANDLE ) {
         return( false );
     }
