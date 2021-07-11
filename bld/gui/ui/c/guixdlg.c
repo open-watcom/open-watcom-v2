@@ -80,7 +80,7 @@ static a_field_type ui_types[GUI_NUM_CONTROL_CLASSES] = {
 
 static  dialog_node     *MyDialog       = NULL;
 
-void GUISetJapanese( void )
+void GUIAPI GUISetJapanese( void )
 {
 }
 
@@ -898,7 +898,7 @@ void GUIFreeDialog( a_dialog *ui_dlg_info, VFIELD *fields, char *title, bool col
  * GUICloseDialog -- close the given dialog box
  */
 
-void GUICloseDialog( gui_window *wnd )
+void GUIAPI GUICloseDialog( gui_window *wnd )
 {
 //    VFIELD      *fields;
 //    a_dialog    *ui_dlg_info;

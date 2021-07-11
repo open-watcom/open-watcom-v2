@@ -66,7 +66,7 @@ static void SetRange( gui_window *wnd, int bar, gui_ord range, gui_ord text_rang
  * GUISetHScrollRangeCols
  */
 
-void GUISetHScrollRangeCols( gui_window *wnd, gui_text_ord text_range )
+void GUIAPI GUISetHScrollRangeCols( gui_window *wnd, gui_text_ord text_range )
 {
     wnd->flags |= HRANGE_COL;
     SetRange( wnd, SB_HORZ, GUIFromTextX( text_range, wnd ), text_range );
@@ -76,7 +76,7 @@ void GUISetHScrollRangeCols( gui_window *wnd, gui_text_ord text_range )
  * GUISetVScrollRangeRows
  */
 
-void GUISetVScrollRangeRows( gui_window *wnd, gui_text_ord text_range )
+void GUIAPI GUISetVScrollRangeRows( gui_window *wnd, gui_text_ord text_range )
 {
     wnd->flags |= VRANGE_ROW;
     SetRange( wnd, SB_VERT, GUIFromTextY( text_range, wnd ), text_range );
@@ -86,7 +86,7 @@ void GUISetVScrollRangeRows( gui_window *wnd, gui_text_ord text_range )
  * GUISetHScrollRange
  */
 
-void GUISetHScrollRange( gui_window *wnd, gui_ord range )
+void GUIAPI GUISetHScrollRange( gui_window *wnd, gui_ord range )
 {
     guix_ord    scr_range;
 
@@ -99,7 +99,7 @@ void GUISetHScrollRange( gui_window *wnd, gui_ord range )
  * GUISetVScrollRange
  */
 
-void GUISetVScrollRange( gui_window *wnd, gui_ord range )
+void GUIAPI GUISetVScrollRange( gui_window *wnd, gui_ord range )
 {
     guix_ord    scr_range;
 
@@ -112,7 +112,7 @@ void GUISetVScrollRange( gui_window *wnd, gui_ord range )
  * GUIGetHScrollRange
  */
 
-gui_ord GUIGetHScrollRange( gui_window *wnd )
+gui_ord GUIAPI GUIGetHScrollRange( gui_window *wnd )
 {
     return( GUIScreenToScaleH( GUIGetScrollRange( wnd, SB_HORZ ) ) );
 }
@@ -121,7 +121,7 @@ gui_ord GUIGetHScrollRange( gui_window *wnd )
  * GUIGetVScrollRange
  */
 
-gui_ord GUIGetVScrollRange( gui_window *wnd )
+gui_ord GUIAPI GUIGetVScrollRange( gui_window *wnd )
 {
     return( GUIScreenToScaleV( GUIGetScrollRange( wnd, SB_VERT ) ) );
 }
@@ -130,7 +130,7 @@ gui_ord GUIGetVScrollRange( gui_window *wnd )
  * GUIGetVScrollRangeRows
  */
 
-gui_text_ord GUIGetVScrollRangeRows( gui_window *wnd )
+gui_text_ord GUIAPI GUIGetVScrollRangeRows( gui_window *wnd )
 {
     gui_ord     range;
 
@@ -146,7 +146,7 @@ gui_text_ord GUIGetVScrollRangeRows( gui_window *wnd )
  * GUIGetHScrollRangeCols
  */
 
-gui_text_ord GUIGetHScrollRangeCols( gui_window *wnd )
+gui_text_ord GUIAPI GUIGetHScrollRangeCols( gui_window *wnd )
 {
     gui_ord     range;
 

@@ -86,7 +86,7 @@ static void DoResizeStatus( gui_window *wnd )
 static void CalcStatusRect( gui_window *wnd, gui_ord x, gui_ord height, WPI_RECT *rect )
 {
     gui_text_metrics    metrics;
-    gui_ord             size_y;
+    guix_ord            size_y;
 
     if( height == 0 ) {
         GUIGetTextMetrics( wnd, &metrics );
@@ -106,7 +106,7 @@ static void CalcStatusRect( gui_window *wnd, gui_ord x, gui_ord height, WPI_RECT
  *                          Tie the rest to the parent window.
  */
 
-bool GUICreateStatusWindow( gui_window *wnd, gui_ord x, gui_ord height,
+bool GUIAPI GUICreateStatusWindow( gui_window *wnd, gui_ord x, gui_ord height,
                             gui_colour_set *colour )
 {
     WPI_RECT            status_rect;
@@ -132,7 +132,7 @@ bool GUICreateStatusWindow( gui_window *wnd, gui_ord x, gui_ord height,
     return( true );
 }
 
-bool GUIDrawStatusText( gui_window *wnd, const char *text )
+bool GUIAPI GUIDrawStatusText( gui_window *wnd, const char *text )
 {
     WPI_PRES    pres;
     const char  *out_text;
@@ -154,13 +154,13 @@ bool GUIDrawStatusText( gui_window *wnd, const char *text )
     return( true );
 }
 
-bool GUIHasStatus( gui_window *wnd )
+bool GUIAPI GUIHasStatus( gui_window *wnd )
 {
     return( wnd->status != NULLHANDLE );
 }
 
 
-bool GUICloseStatusWindow( gui_window *wnd )
+bool GUIAPI GUICloseStatusWindow( gui_window *wnd )
 {
     HWND        status;
     if( !GUIHasStatus( wnd ) ) {
@@ -173,7 +173,7 @@ bool GUICloseStatusWindow( gui_window *wnd )
     return( true );
 }
 
-bool GUIResizeStatusWindow( gui_window *wnd, gui_ord x, gui_ord height )
+bool GUIAPI GUIResizeStatusWindow( gui_window *wnd, gui_ord x, gui_ord height )
 {
     WPI_RECT    status;
     GUI_RECTDIM left, top, right, bottom;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,17 +42,17 @@ typedef struct {
 #endif
 } controls_struct;
 
-extern control_item *GUIGetControlByID( gui_window *parent, gui_ctl_id id );
-extern control_item *GUIGetControlByHwnd( gui_window *parent, HWND control );
+extern control_item *GUIGetControlByID( gui_window *parent_wnd, gui_ctl_id id );
+extern control_item *GUIGetControlByHwnd( gui_window *parent_wnd, HWND control );
 extern control_item *GUIControlInsert( gui_window *parent_wnd, gui_control_class control_class,
                               HWND control, gui_control_info *ctl_info,
                               WPI_WNDPROC win_call_back );
-extern control_item *GUIControlInsertByHWND( HWND hwnd, gui_window *parent );
+extern control_item *GUIControlInsertByHWND( HWND hwnd, gui_window *parent_wnd );
 extern void GUIControlDelete( gui_window *wnd, gui_ctl_id id );
 extern void GUIControlDeleteAll( gui_window *wnd );
 extern void GUIChangeHWnd( HWND, HWND );
 extern gui_window *GUIGetParentWnd( HWND );
-extern bool GUIAddParent( HWND, gui_window * );
+extern bool GUIAddParent( HWND, gui_window *wnd );
 extern WPI_WNDPROC GUIDoSubClass( HWND, gui_control_class );
 extern bool GUIInsertCtrlWnd( gui_window *wnd );
 extern gui_window *GUIGetCtrlWnd( HWND hwnd );

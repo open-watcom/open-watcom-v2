@@ -39,37 +39,37 @@
 #include "clibext.h"
 
 
-gui_ord GUIGetExtentX( gui_window *wnd, const char *text, size_t length )
+gui_ord GUIAPI GUIGetExtentX( gui_window *wnd, const char *text, size_t length )
 {
-    gui_ord     ord;
+    guix_ord    scr_x;
 
     /* unused parameters */ (void)wnd;
 
-    if( text ) {
-        ord = strlen( text );
-        if( ord > length )
-            ord = length;
-        return( GUIScreenToScaleH( ord ) );
+    if( text != NULL ) {
+        scr_x = strlen( text );
+        if( scr_x > length )
+            scr_x = length;
+        return( GUIScreenToScaleH( scr_x ) );
     } else {
         return( 0 );
     }
 }
 
-gui_ord GUIGetExtentY( gui_window * wnd, const char * text )
+gui_ord GUIAPI GUIGetExtentY( gui_window * wnd, const char * text )
 {
     /* unused parameters */ (void)wnd; (void)text;
 
     return( GUIScreenToScaleV( 1 ) );
 }
 
-gui_ord GUIGetControlExtentX( gui_window * wnd, gui_ctl_id id, const char * text, size_t length )
+gui_ord GUIAPI GUIGetControlExtentX( gui_window * wnd, gui_ctl_id id, const char * text, size_t length )
 {
     /* unused parameters */ (void)id;
 
     return( GUIGetExtentX( wnd, text, length ) );
 }
 
-gui_ord GUIGetControlExtentY( gui_window * wnd, gui_ctl_id id, const char * text )
+gui_ord GUIAPI GUIGetControlExtentY( gui_window * wnd, gui_ctl_id id, const char * text )
 {
     /* unused parameters */ (void)id;
 

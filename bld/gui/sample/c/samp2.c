@@ -224,7 +224,7 @@ static bool StatusGUIEventProc( gui_window * wnd, gui_event gui_ev, void * param
     return( false );
 }
 
-void GUImain( void )
+void GUIAPI GUImain( void )
 {
     GUIWndInit( 250 /* ms */, GUI_GMOUSE );
     GUISetScale( &Scale );

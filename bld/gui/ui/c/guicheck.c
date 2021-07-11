@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,7 @@
  * GUIIsChecked -- find out if the given control is checked
  */
 
-unsigned GUIIsChecked( gui_window *wnd, gui_ctl_id id )
+unsigned GUIAPI GUIIsChecked( gui_window *wnd, gui_ctl_id id )
 {
     VFIELD      *field;
     a_radio     *radio;
@@ -69,7 +70,7 @@ unsigned GUIIsChecked( gui_window *wnd, gui_ctl_id id )
  * GUISetChecked -- set the given control as checked or not checked
  */
 
-bool GUISetChecked( gui_window *wnd, gui_ctl_id id, unsigned checked )
+bool GUIAPI GUISetChecked( gui_window *wnd, gui_ctl_id id, unsigned checked )
 {
     VFIELD      *field;
     a_radio     *radio;

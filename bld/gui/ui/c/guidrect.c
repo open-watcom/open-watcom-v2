@@ -40,7 +40,7 @@
  *                   contents of window wnd are bad.
  */
 
-void GUIAPI GUIWndDirtyRect( gui_window * wnd, gui_rect * rect )
+void GUIAPI GUIWndDirtyRect( gui_window *wnd, const gui_rect *rect )
 {
     SAREA       area;
 

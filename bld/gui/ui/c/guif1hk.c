@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,10 +34,10 @@
 
 
 /* Hooking the F1 key */
-void GUIHookF1( void )
+void GUIAPI GUIHookF1( void )
 {
 }
 
-void GUIUnHookF1( void )
+void GUIAPI GUIUnHookF1( void )
 {
 }

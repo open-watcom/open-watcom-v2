@@ -39,7 +39,7 @@
  * GUISetCursorPos
  */
 
-bool GUISetCursorPos( gui_window *wnd, gui_point *point )
+bool GUIAPI GUISetCursorPos( gui_window *wnd, const gui_point *point )
 {
     guix_ord    scr_x;
     guix_ord    scr_y;
@@ -62,7 +62,7 @@ bool GUISetCursorPos( gui_window *wnd, gui_point *point )
     return( false );
 }
 
-bool GUIGetCursorPos( gui_window *wnd, gui_point *point )
+bool GUIAPI GUIGetCursorPos( gui_window *wnd, gui_point *point )
 {
     guix_ord    scr_x;
     guix_ord    scr_y;
@@ -83,7 +83,7 @@ bool GUIGetCursorPos( gui_window *wnd, gui_point *point )
     return( true );
 }
 
-bool GUIGetCursorType( gui_window *wnd, gui_cursor_type *cursor )
+bool GUIAPI GUIGetCursorType( gui_window *wnd, gui_cursor_type *cursor )
 {
     if( (wnd->style & GUI_CURSOR) == 0 || ( cursor == NULL ) ) {
         return( false );
@@ -104,7 +104,7 @@ bool GUIGetCursorType( gui_window *wnd, gui_cursor_type *cursor )
     return( true );
 }
 
-bool GUISetCursorType( gui_window *wnd, gui_cursor_type cursor )
+bool GUIAPI GUISetCursorType( gui_window *wnd, gui_cursor_type cursor )
 {
     CURSOR_TYPE type;
 

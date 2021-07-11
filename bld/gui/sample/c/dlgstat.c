@@ -216,9 +216,9 @@ static void CheckNumControls( gui_window *wnd, int act_num )
     }
 }
 
-static void InitDialog( gui_window *parent )
+static void InitDialog( gui_window *parent_wnd )
 {
-    parent = parent;
+    parent_wnd = parent_wnd;
 }
 
 /*
@@ -293,7 +293,7 @@ bool StaticDialogWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param
         GUISetText( wnd, EDIT_CONTROL, "default" );
         //GUISelectAll( wnd, EDIT_CONTROL, true );
         GUISetFocus( wnd, EDIT_CONTROL );
-        DlgWin.parent = gui;
+        DlgWin.parent = wnd;
         SetWidthHeight( &DlgWin.rect, DlgWin.parent != NULL );
         GUICreateWindow( &DlgWin );
         return( true );
@@ -459,13 +459,13 @@ void StaticDialogInit( void )
     }
 }
 
-void StaticDialogCreate( gui_window *parent )
+void StaticDialogCreate( gui_window *parent_wnd )
 {
     int i;
 
     Controls[STATIC_CONTROL_IDX].text = OldValue;
     Controls[EDIT_CONTROL_IDX].text = OldValue;
-    DialogControl.parent = parent;
+    DialogControl.parent = parent_wnd;
 
     if( !DialogScaled ) {
         SetWidthHeight( &DialogControl.rect, DialogControl.parent != NULL );

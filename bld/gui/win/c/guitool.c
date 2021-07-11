@@ -211,7 +211,7 @@ static bool guiToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM
  *  GUIXCreateToolBarWithTips -- create a tool bar, possibly with tooltips
  */
 
-bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
+bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord in_height,
                                 const gui_toolbar_items *toolinfo,
                                 bool excl, gui_colour_set *plain,
                                 gui_colour_set *standout, gui_rect *float_pos,
@@ -224,10 +224,11 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
     toolbarinfo         *tbar;
     int                 i;
     TOOLITEMINFO        info;
-    int                 fixed_height;
-    int                 fixed_width;
-    int                 adjust_amount;
-    int                 width;
+    guix_ord            fixed_height;
+    guix_ord            fixed_width;
+    guix_ord            adjust_amount;
+    guix_ord            width;
+    guix_ord            height;
     int                 new_right;
     int                 bm_h;
     int                 bm_w;
@@ -262,7 +263,7 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
     }
     for( i = 0; i < num_items; i++ ) {
         tbar->bitmaps[i] = _wpi_loadbitmap( GUIResHInst, MAKEINTRESOURCE( toolinfo->toolbar[i].bitmap ) );
-        if( height == 0 ) {
+        if( in_height == 0 ) {
             _wpi_getbitmapdim( tbar->bitmaps[i], &bm_w, &bm_h );
             if( bm_h > fixed_height ) {
                 fixed_height = bm_h;
@@ -275,13 +276,13 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
     tbar->info.border_size.x = BORDER_AMOUNT;
     tbar->info.border_size.y = BORDER_AMOUNT;
     /* space for border and space before border */
-    adjust_amount = 2*(_wpi_getsystemmetrics( SM_CYBORDER )+BORDER_AMOUNT);
-    if( height == 0 ) { /* maintian # of pixels in bitmap */
+    adjust_amount = 2 * ( _wpi_getsystemmetrics( SM_CYBORDER ) + BORDER_AMOUNT );
+    if( in_height == 0 ) { /* maintian # of pixels in bitmap */
         height = fixed_height + adjust_amount + OUTLINE_AMOUNT;
         width = fixed_width + OUTLINE_AMOUNT;
     } else {
         /* only height of windows given, make bitmaps square */
-        width = height = GUIScaleToScreenV( height - 2 );
+        width = height = GUIScaleToScreenV( in_height - 2 );
     }
 
     _wpi_getrectvalues( tbar->fixedrect, &left, &top, &right, &bottom );
@@ -301,7 +302,7 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
     bottom -= 2;
 #endif
     new_right = width * num_items -
-                (num_items - 1) * tbar->info.border_size.x +
+                ( num_items - 1 ) * tbar->info.border_size.x +
                 left + 2 * _wpi_getsystemmetrics( SM_CXFRAME ) +
                 BORDER_AMOUNT * 2;
     if( new_right < right ) {
@@ -402,12 +403,12 @@ void GUIResizeToolBar( gui_window *wnd )
     }
 }
 
-bool GUIHasToolBar( gui_window *wnd )
+bool GUIAPI GUIHasToolBar( gui_window *wnd )
 {
     return( wnd->tbar != NULL );
 }
 
-bool GUIChangeToolBar( gui_window *wnd )
+bool GUIAPI GUIChangeToolBar( gui_window *wnd )
 {
     gui_event   gui_ev;
     toolbarinfo *tbar;
@@ -447,7 +448,7 @@ bool GUIChangeToolBar( gui_window *wnd )
     return( true );
 }
 
-bool GUIToolBarFixed( gui_window *wnd )
+bool GUIAPI GUIToolBarFixed( gui_window *wnd )
 {
     if( GUIHasToolBar( wnd ) ) {
         return( wnd->tbar->info.is_fixed );

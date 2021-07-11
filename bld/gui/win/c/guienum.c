@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -78,7 +78,7 @@ BOOL CALLBACK GUIEnumChildWindowsEnumFunc( HWND hwnd, WPI_PARAM2 lparam )
     return( TRUE );
 }
 
-void GUIEnumChildWindows( gui_window *wnd, ENUMCALLBACK *func, void *param )
+void GUIAPI GUIEnumChildWindows( gui_window *wnd, ENUMCALLBACK *func, void *param )
 {
     enum_info       info;
 #ifdef __OS2_PM__

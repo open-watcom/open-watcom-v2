@@ -38,28 +38,28 @@ void GUIAPI GUISetBetweenTitles( int between_titles )
     between_titles = between_titles;
 }
 
-bool GUIGetCursorPos( gui_window *wnd, gui_point *point )
+bool GUIAPI GUIGetCursorPos( gui_window *wnd, gui_point *point )
 {
     wnd = wnd;
     point = point;
     return( false );
 }
 
-bool GUISetCursorPos( gui_window *wnd, gui_point *point )
+bool GUIAPI GUISetCursorPos( gui_window *wnd, const gui_point *point )
 {
     wnd = wnd;
     point = point;
     return( false );
 }
 
-bool GUIGetCursorType( gui_window *wnd, gui_cursor_type *cursor )
+bool GUIAPI GUIGetCursorType( gui_window *wnd, gui_cursor_type *cursor )
 {
     wnd = wnd;
     cursor = cursor;
     return( false );
 }
 
-bool GUISetCursorType( gui_window *wnd, gui_cursor_type cursor )
+bool GUIAPI GUISetCursorType( gui_window *wnd, gui_cursor_type cursor )
 {
     wnd = wnd;
     cursor = cursor;

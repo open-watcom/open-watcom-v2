@@ -358,7 +358,7 @@ void XChangeTitle( gui_window *wnd )
     /* unused parameters */ (void)wnd;
 }
 
-bool GUICascadeWindows( void )
+bool GUIAPI GUICascadeWindows( void )
 {
     return( ProcessEvent( ID2EV( GUI_MDI_CASCADE ) ) );
 }

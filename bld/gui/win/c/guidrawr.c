@@ -41,10 +41,10 @@
 static bool DrawRect( gui_window *wnd, const gui_rect *rect, WPI_COLOUR colour, bool fill, bool outline )
 {
     WPI_RECT    wnd_rect;
-    guix_ord  	pos_x;
-    guix_ord  	pos_y;
-    guix_ord  	size_x;
-    guix_ord  	size_y;
+    guix_ord    pos_x;
+    guix_ord    pos_y;
+    guix_ord    size_x;
+    guix_ord    size_y;
     HBRUSH      brush;
     guix_ord    win_height;
     gui_ord     pos;
@@ -95,22 +95,22 @@ static bool DrawRect( gui_window *wnd, const gui_rect *rect, WPI_COLOUR colour, 
     return( true );
 }
 
-bool GUIFillRect( gui_window *wnd, const gui_rect *rect, gui_attr attr )
+bool GUIAPI GUIFillRect( gui_window *wnd, const gui_rect *rect, gui_attr attr )
 {
     return( DrawRect( wnd, rect, GUIGetFore( wnd, attr ), true, false ) );
 }
 
-bool GUIDrawRect( gui_window *wnd, const gui_rect *rect, gui_attr attr )
+bool GUIAPI GUIDrawRect( gui_window *wnd, const gui_rect *rect, gui_attr attr )
 {
     return( DrawRect( wnd, rect, GUIGetFore( wnd, attr ), false, true ) );
 }
 
-bool GUIFillRectRGB( gui_window *wnd, const gui_rect *rect, gui_rgb rgb )
+bool GUIAPI GUIFillRectRGB( gui_window *wnd, const gui_rect *rect, gui_rgb rgb )
 {
     return( DrawRect( wnd, rect, GETRGB( rgb ), true, false ) );
 }
 
-bool GUIDrawRectRGB( gui_window *wnd, const gui_rect *rect, gui_rgb rgb )
+bool GUIAPI GUIDrawRectRGB( gui_window *wnd, const gui_rect *rect, gui_rgb rgb )
 {
     return( DrawRect( wnd, rect, GETRGB( rgb ), false, true ) );
 }
@@ -118,8 +118,8 @@ bool GUIDrawRectRGB( gui_window *wnd, const gui_rect *rect, gui_rgb rgb )
 static bool DrawLine( gui_window *wnd, const gui_point *start, const gui_point *end,
                       gui_line_styles style, gui_ord thickness, WPI_COLOUR colour )
 {
-    guix_ord  	scr_start_x;
-    guix_ord  	scr_start_y;
+    guix_ord    scr_start_x;
+    guix_ord    scr_start_y;
     guix_ord    scr_end_x;
     guix_ord    scr_end_y;
     HPEN        pen;
@@ -164,13 +164,13 @@ static bool DrawLine( gui_window *wnd, const gui_point *start, const gui_point *
 
     if( GUI_DO_HSCROLL( wnd ) ) {
         scroll = GUIGetScrollPos( wnd, SB_HORZ );
-    	scr_start_x -= scroll;
-    	scr_end_x -= scroll;
+        scr_start_x -= scroll;
+        scr_end_x -= scroll;
     }
     if( GUI_DO_VSCROLL( wnd ) ) {
         scroll = GUIGetScrollPos( wnd, SB_VERT );
-    	scr_start_y -= scroll;
-    	scr_end_y -= scroll;
+        scr_start_y -= scroll;
+        scr_end_y -= scroll;
     }
 
     win_height = _wpi_getheightrect( wnd->hwnd_client_rect );
@@ -195,13 +195,13 @@ static bool DrawLine( gui_window *wnd, const gui_point *start, const gui_point *
     return( true );
 }
 
-bool GUIDrawLine( gui_window *wnd, const gui_point *start, const gui_point *end,
+bool GUIAPI GUIDrawLine( gui_window *wnd, const gui_point *start, const gui_point *end,
                   gui_line_styles style, gui_ord thickness, gui_attr attr )
 {
     return( DrawLine( wnd, start, end, style, thickness, GUIGetFore( wnd, attr ) ) );
 }
 
-bool GUIDrawLineRGB( gui_window *wnd, const gui_point *start, const gui_point *end,
+bool GUIAPI GUIDrawLineRGB( gui_window *wnd, const gui_point *start, const gui_point *end,
                      gui_line_styles style, gui_ord thickness, gui_rgb rgb )
 {
     return( DrawLine( wnd, start, end, style, thickness, GETRGB( rgb ) ) );

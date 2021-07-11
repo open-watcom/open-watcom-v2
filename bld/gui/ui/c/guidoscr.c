@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -95,22 +95,22 @@ static void DoScroll( gui_window *wnd, int diff, a_gadget_direction dir, int sta
     GUIWndUpdate( wnd );
 }
 
-void GUIDoHScroll( gui_window *wnd, int cols )
+void GUIAPI GUIDoHScroll( gui_window *wnd, int cols )
 {
     DoScroll( wnd, cols, HORIZONTAL, -1, -1 );
 }
 
-void GUIDoVScroll( gui_window *wnd, int rows )
+void GUIAPI GUIDoVScroll( gui_window *wnd, int rows )
 {
     DoScroll( wnd, rows, VERTICAL, -1, -1 );
 }
 
-void GUIDoHScrollClip( gui_window *wnd, int cols, int start, int end )
+void GUIAPI GUIDoHScrollClip( gui_window *wnd, int cols, int start, int end )
 {
     DoScroll( wnd, cols, HORIZONTAL, start, end );
 }
 
-void GUIDoVScrollClip( gui_window *wnd, int rows, int start, int end )
+void GUIAPI GUIDoVScrollClip( gui_window *wnd, int rows, int start, int end )
 {
     DoScroll( wnd, rows, VERTICAL, start, end );
 }

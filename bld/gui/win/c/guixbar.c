@@ -39,17 +39,17 @@
 #define SHADOW_OFFSET   3
 #define BAR_INSET       2
 
-static bool DrawSimpleBar( gui_window *wnd, gui_rect *rect, WPI_COLOUR colour,
+static bool DrawSimpleBar( gui_window *wnd, guix_rect *rect, WPI_COLOUR colour,
                     bool selected, bool full_bar )
 {
     WPI_RECT    wnd_rect;
-    gui_coord   pos;
-    gui_coord   size;
+    guix_coord  pos;
+    guix_coord  size;
     HBRUSH      interior_brush;
     HBRUSH      frame_brush;
     int         hscroll;
     int         vscroll;
-    int         win_height;
+    guix_ord    win_height;
 
     if( ( rect->width == 0 ) || ( rect->height == 0 ) ) {
         return( false );
@@ -108,19 +108,19 @@ static bool DrawSimpleBar( gui_window *wnd, gui_rect *rect, WPI_COLOUR colour,
     return( true );
 }
 
-static bool DrawShadowBar( gui_window *wnd, gui_rect *rect, WPI_COLOUR colour,
+static bool DrawShadowBar( gui_window *wnd, guix_rect *rect, WPI_COLOUR colour,
                     bool selected )
 {
     WPI_RECT    bar_rect;
     WPI_RECT    shadow_rect;
-    gui_coord   pos;
-    gui_coord   size;
-    gui_ord     shadow_offset;
+    guix_coord  pos;
+    guix_coord  size;
+    guix_ord    shadow_offset;
     HBRUSH      interior_brush;
     HBRUSH      shadow_brush;
     int         hscroll;
     int         vscroll;
-    int         win_height;
+    guix_ord    win_height;
 
     if( ( rect->width == 0 ) || ( rect->height == 0 ) ) {
         return( false );
@@ -196,11 +196,11 @@ static bool DrawShadowBar( gui_window *wnd, gui_rect *rect, WPI_COLOUR colour,
     return( true );
 }
 
-bool GUIDrawBar( gui_window *wnd, gui_text_ord row, gui_ord start, gui_ord width,
+bool GUIAPI GUIDrawBar( gui_window *wnd, gui_text_ord row, gui_ord start, gui_ord width,
                  gui_bar_styles bstyle, gui_attr attr, bool selected )
 {
     bool                ret;
-    gui_rect            rect;
+    guix_rect           rect;
     gui_text_metrics    metrics;
     WPI_COLOUR          colour;
 
@@ -241,7 +241,7 @@ bool GUIDrawBar( gui_window *wnd, gui_text_ord row, gui_ord start, gui_ord width
 }
 
 
-bool GUIDrawBarGroup( gui_window *wnd, gui_text_ord row, gui_ord start,
+bool GUIAPI GUIDrawBarGroup( gui_window *wnd, gui_text_ord row, gui_ord start,
                       gui_ord width1, gui_ord width2, gui_bar_styles bstyle,
                       gui_attr attr1, gui_attr attr2, bool selected )
 {

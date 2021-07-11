@@ -34,8 +34,7 @@
 #include "guiwind.h"
 #include "guiscale.h"
 
-
-void GUIGetTextMetrics( gui_window *wnd, gui_text_metrics *metrics )
+void GUIAPI GUIGetTextMetrics( gui_window *wnd, gui_text_metrics *metrics )
 {
     /* unused parameters */ (void)wnd;
 
@@ -47,12 +46,12 @@ void GUIGetTextMetrics( gui_window *wnd, gui_text_metrics *metrics )
     }
 }
 
-void GUIGetDlgTextMetrics( gui_text_metrics * metrics )
+void GUIAPI GUIGetDlgTextMetrics( gui_text_metrics *metrics )
 {
     GUIGetTextMetrics( NULL, metrics );
 }
 
-void GUIGetMaxDialogSize( gui_coord * size )
+void GUIAPI GUIGetMaxDialogSize( gui_coord *size )
 {
     gui_rect rect;
 

@@ -93,12 +93,12 @@ static void CheckNumControls( gui_window *wnd, int act_num )
     }
 }
 
-static void InitDialog( gui_window *parent )
+static void InitDialog( gui_window *parent_wnd )
 {
     int i;
 
     for( i = 0; i < NUM_CONTROLS; i++ ) {
-        Controls[i].parent = parent;
+        Controls[i].parent = parent_wnd;
         if( !ControlsScaled ) {
             SetWidthHeight( &Controls[i].rect, Controls[i].parent != NULL );
         }
@@ -316,13 +316,13 @@ static bool DynamicDialogWndGUIEventProc( gui_window *wnd, gui_event gui_ev, voi
     return( false );
 }
 
-void DynamicDialogCreate( gui_window *parent )
+void DynamicDialogCreate( gui_window *parent_wnd )
 {
     int i;
 
     Controls[STATIC_CONTROL_IDX].text = OldValue;
     Controls[EDIT_CONTROL_IDX].text = OldValue;
-    DialogControl.parent = parent;
+    DialogControl.parent = parent_wnd;
 
     if( !DialogScaled ) {
         SetWidthHeight( &DialogControl.rect, DialogControl.parent != NULL );

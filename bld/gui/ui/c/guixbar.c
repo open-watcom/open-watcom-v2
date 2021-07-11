@@ -35,7 +35,7 @@
 #include "guiscale.h"
 #include "guixutil.h"
 
-bool GUIDrawBar( gui_window *wnd, gui_text_ord row, gui_ord start, gui_ord width,
+bool GUIAPI GUIDrawBar( gui_window *wnd, gui_text_ord row, gui_ord start, gui_ord width,
                  gui_bar_styles bstyle, gui_attr attr, bool selected )
 {
     gui_text_metrics    metrics;
@@ -68,7 +68,7 @@ bool GUIDrawBar( gui_window *wnd, gui_text_ord row, gui_ord start, gui_ord width
 }
 
 
-bool GUIDrawBarGroup( gui_window *wnd, gui_text_ord row, gui_ord start,
+bool GUIAPI GUIDrawBarGroup( gui_window *wnd, gui_text_ord row, gui_ord start,
                       gui_ord width1, gui_ord width2, gui_bar_styles bstyle,
                       gui_attr attr1, gui_attr attr2, bool selected )
 {

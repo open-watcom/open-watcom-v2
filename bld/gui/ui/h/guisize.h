@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,6 +45,6 @@ extern void GUICheckResizeAreaForParent( gui_window *wnd, SAREA *area,
                                          resize_dir dir );
 extern void GUICheckMove( gui_window *wnd, int *row_diff, int *col_diff );
 extern void GUICheckArea( SAREA *area, resize_dir dir );
-extern void GUICalcIconArea( int num, gui_window *parent, SAREA *new );
+extern void GUICalcIconArea( int num, gui_window *parent_wnd, SAREA *new );
 
 #endif // _GUISIZE_H_

@@ -34,7 +34,7 @@
 #include "guiwind.h"
 
 
-char *GUIGetWindowClassName( void )
+char * GUIAPI GUIGetWindowClassName( void )
 {
     return( NULL );
 }

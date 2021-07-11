@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +39,7 @@
  * GUISetWindowText - set the title text of a window
  */
 
-bool GUISetWindowText( gui_window *wnd, const char *data )
+bool GUIAPI GUISetWindowText( gui_window *wnd, const char *data )
 {
 #if defined( __OS2__ ) && defined( _M_I86 )
      _wpi_setwindowtext( GUIGetParentFrameHWND( wnd ), (char *)data );
@@ -53,12 +54,12 @@ bool GUISetWindowText( gui_window *wnd, const char *data )
  * GUIGetWindowText - get the window text
  */
 
-size_t GUIGetWindowText( gui_window *wnd, char *buff, size_t buff_len )
+size_t GUIAPI GUIGetWindowText( gui_window *wnd, char *buff, size_t buff_len )
 {
     return( _wpi_getwindowtext( GUIGetParentFrameHWND( wnd ), buff, buff_len ) );
 }
 
-size_t GUIGetWindowTextLength( gui_window *wnd )
+size_t GUIAPI GUIGetWindowTextLength( gui_window *wnd )
 {
     return( _wpi_getwindowtextlength( GUIGetParentFrameHWND( wnd ) ) );
 }

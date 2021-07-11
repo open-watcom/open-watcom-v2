@@ -45,7 +45,7 @@ void GUISetMetrics( gui_text_metrics *metrics, WPI_TEXTMETRIC *tm )
     metrics->max.y = GUIScreenToScaleV( MAXYCHAR( *tm ) );
 }
 
-void GUIGetTextMetrics( gui_window *wnd, gui_text_metrics *metrics )
+void GUIAPI GUIGetTextMetrics( gui_window *wnd, gui_text_metrics *metrics )
 {
     if( metrics != NULL ) {
         GUIGetMetrics( wnd );

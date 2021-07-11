@@ -41,24 +41,23 @@
  *                    contents of window wnd are bad.
  */
 
-void GUIAPI GUIWndDirtyRect( gui_window *wnd, gui_rect *rect )
+void GUIAPI GUIWndDirtyRect( gui_window *wnd, const gui_rect *rect )
 {
-    gui_rect    my_rect;
+    guix_rect   scr_rect;
     WPI_RECT    win_rect;
     int         left, top, right, bottom;
 
-    my_rect = *rect;
-    GUIScaleToScreenRect( &my_rect, &my_rect );
-    left = my_rect.x;
+    GUIScaleToScreenRect( rect, &scr_rect );
+    left = scr_rect.x;
     if( GUI_DO_HSCROLL( wnd ) ) {
         left -= GUIGetScrollPos( wnd, SB_HORZ );
     }
-    top = my_rect.y;
+    top = scr_rect.y;
     if( GUI_DO_VSCROLL( wnd ) ) {
         top -= GUIGetScrollPos( wnd, SB_VERT );
     }
-    right = left + my_rect.width;
-    bottom = top + my_rect.height;
+    right = left + scr_rect.width;
+    bottom = top + scr_rect.height;
     _wpi_setwrectvalues( &win_rect, left, top, right, bottom );
     _wpi_cvtc_rect_plus1( wnd->hwnd, &win_rect );
     //GUIInvalidatePaintHandles( wnd );

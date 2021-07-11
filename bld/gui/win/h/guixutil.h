@@ -36,7 +36,7 @@
 
 extern bool GUIIsOpen( gui_window *wnd );
 extern bool GUISetupStruct( gui_window *wnd, gui_create_info *, guix_coord *scr_pos, guix_coord *scr_size, HWND parent, HMENU * );
-extern void GUICalcLocation( gui_rect *rect, guix_coord *scr_pos, guix_coord *scr_size, HWND parent );
+extern void GUICalcLocation( const gui_rect *rect, guix_coord *scr_pos, guix_coord *scr_size, HWND parent );
 extern void GUIError( const char *err_str );
 extern bool GUIScrollOn( gui_window *wnd, int bar );
 extern void GUISetRowCol( gui_window *wnd, gui_coord *size );
@@ -58,8 +58,8 @@ extern HWND GUIGetTopParentHWND( HWND hwnd );
 extern gui_window *GUIGetTopGUIWindow( HWND hwnd );
 extern bool GUIBringNewToFront( gui_window *prev );
 extern WPI_FONT GUIGetSystemFont( void );
-extern gui_window *GUIFindFirstChild( gui_window *parent );
-extern void GUIDestroyAllChildren( gui_window *parent );
+extern gui_window *GUIFindFirstChild( gui_window *parent_wnd );
+extern void GUIDestroyAllChildren( gui_window *parent_wnd );
 extern void GUIDestroyAllPopupsWithNoParent( void );
 extern bool GUIParentHasFlags( gui_window *wnd, gui_flags flags );
 extern bool GUIIsRectInUpdateRect( gui_window *wnd, WPI_RECT *rect );

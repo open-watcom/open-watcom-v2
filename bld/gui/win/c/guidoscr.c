@@ -131,23 +131,23 @@ static void DoScroll( gui_window *wnd, int rows, int cols, int start, int end, b
     _wpi_updatewindow( hwnd );
 }
 
-void GUIDoVScroll( gui_window *wnd, int rows )
+void GUIAPI GUIDoVScroll( gui_window *wnd, int rows )
 {
     DoScroll( wnd, rows, 0, -1, -1, true );
 }
 
-void GUIDoHScroll( gui_window *wnd, int cols )
+void GUIAPI GUIDoHScroll( gui_window *wnd, int cols )
 {
     DoScroll( wnd, 0, cols, -1, -1, true );
 }
 
 
-void GUIDoVScrollClip( gui_window *wnd, int rows, int start, int end )
+void GUIAPI GUIDoVScrollClip( gui_window *wnd, int rows, int start, int end )
 {
     DoScroll( wnd, rows, 0, start, end, true );
 }
 
-void GUIDoHScrollClip( gui_window *wnd, int cols, int start, int end )
+void GUIAPI GUIDoHScrollClip( gui_window *wnd, int cols, int start, int end )
 {
     DoScroll( wnd, 0, cols, start, end, true );
 }

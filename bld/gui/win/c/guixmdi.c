@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -399,7 +400,7 @@ static void Cascade( gui_window *root, int num_windows, gui_rect *rect,
     GUIEnumChildWindows( root, &GUIInternalCascadeWindows, &info );
 }
 
-bool GUICascadeWindows( void )
+bool GUIAPI GUICascadeWindows( void )
 {
     gui_rect            rect;
     int                 num_windows;

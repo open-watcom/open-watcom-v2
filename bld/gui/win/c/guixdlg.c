@@ -70,7 +70,7 @@ static  gui_coord       SizeScreen      = { 0, 0 };     /* of test dialog       
 /* Local Window callback functions prototypes */
 WINEXPORT WPI_DLGRESULT CALLBACK GUIInitDialogFuncDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 
-void GUISetJapanese( void )
+void GUIAPI GUISetJapanese( void )
 {
 #ifndef __OS2_PM__
     char *  newfont;
@@ -577,7 +577,7 @@ static void AdjustForFrame( guix_coord *scr_pos, guix_coord *scr_size )
 #endif
 }
 
-static void GUIDlgCalcLocation( gui_rect *rect, guix_coord *scr_pos, guix_coord *scr_size )
+static void GUIDlgCalcLocation( const gui_rect *rect, guix_coord *scr_pos, guix_coord *scr_size )
 {
     scr_pos->x = GUIScaleToScreenH( rect->x );
     scr_pos->y = GUIScaleToScreenV( rect->y );
@@ -710,7 +710,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
  * GUICloseDialog -- close the given dialog, freeing all associated memory
  */
 
-void GUICloseDialog( gui_window * wnd )
+void GUIAPI GUICloseDialog( gui_window * wnd )
 {
     GUISendMessage( wnd->hwnd, WM_CLOSE, (WPI_PARAM1)0, (WPI_PARAM2)0 );
 }
@@ -838,7 +838,7 @@ static void ScaleGrow( gui_coord * coord )
  * GUIGetDlgTextMetrics -- get the metrics of the text used in dialog boxes
  */
 
-void GUIGetDlgTextMetrics( gui_text_metrics * metrics )
+void GUIAPI GUIGetDlgTextMetrics( gui_text_metrics * metrics )
 {
     if( metrics != NULL ) {
         GUISetMetrics( metrics, &GUIDialogtm );

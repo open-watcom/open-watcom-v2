@@ -39,11 +39,11 @@
  * GUIGetStringPos
  */
 
-gui_text_ord GUIGetStringPos( gui_window *wnd, gui_ord indent, const char *string, gui_ord mouse_x )
+gui_text_ord GUIAPI GUIGetStringPos( gui_window *wnd, gui_ord indent, const char *string, gui_ord mouse_x )
 {
-    gui_text_ord    pos;
-    gui_text_ord    start;
-    gui_text_ord    mouse;
+    guix_ord    pos;
+    guix_ord    start;
+    guix_ord    mouse;
 
     /* unused parameters */ (void)wnd;
 

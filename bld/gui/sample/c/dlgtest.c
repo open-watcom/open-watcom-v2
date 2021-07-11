@@ -159,13 +159,13 @@ static void TestDialogInit( void )
 }
 #endif
 
-void TestDialogCreate( gui_window *parent )
+void TestDialogCreate( gui_window *parent_wnd )
 {
     int         i;
     char        *text;
     char        *ep;
 
-    DialogControl.parent = parent;
+    DialogControl.parent = parent_wnd;
 
     if( !DialogScaled ) {
         SetWidthHeight( &DialogControl.rect, DialogControl.parent != NULL );
@@ -232,7 +232,7 @@ static gui_create_info ResDialog = {
     NULL                            // Menu Resource
 };
 
-void ResDialogCreate( gui_window *parent )
+void ResDialogCreate( gui_window *parent_wnd )
 {
     res_name_or_id  dlg_id;
     char            *text;
@@ -253,6 +253,6 @@ void ResDialogCreate( gui_window *parent )
         }
     }
 
-    ResDialog.parent = parent;
+    ResDialog.parent = parent_wnd;
     GUICreateResDialog( &ResDialog, dlg_id );
 }

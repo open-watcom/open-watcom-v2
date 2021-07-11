@@ -90,7 +90,7 @@ void GUIGetRelRect( HWND hwnd, gui_rect *rect, bool ispopup )
  *               relative to parent if window has a parent
  */
 
-void GUIGetRect( gui_window *wnd, gui_rect *rect )
+void GUIAPI GUIGetRect( gui_window *wnd, gui_rect *rect )
 {
     GUIGetRelRect( GUIGetParentFrameHWND( wnd ), rect, (wnd->style & GUI_POPUP) != 0 );
 }

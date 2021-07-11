@@ -137,7 +137,7 @@ LRESULT CALLBACK F1Proc( int code, WPARAM dummy, LPARAM msg_param )
 #endif
 }
 
-void GUIHookF1( void )
+void GUIAPI GUIHookF1( void )
 {
     if( F1Hooked == 0 ) {
 #ifndef __OS2_PM__
@@ -162,7 +162,7 @@ void GUIHookF1( void )
     F1Hooked++;
 }
 
-void GUIUnHookF1( void )
+void GUIAPI GUIUnHookF1( void )
 {
     if( F1Hooked == 1 ) {
 #ifndef __OS2_PM__

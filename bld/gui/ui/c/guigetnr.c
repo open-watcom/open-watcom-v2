@@ -33,7 +33,8 @@
 
 #include "guiwind.h"
 
-gui_text_ord GUIGetNumRows( gui_window * wnd )
+
+gui_text_ord GUIAPI GUIGetNumRows( gui_window * wnd )
 {
     return( wnd->use.height );
 }

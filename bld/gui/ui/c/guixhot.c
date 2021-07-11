@@ -61,12 +61,12 @@ bool GUIXInitHotSpots( int num, gui_resource *hot )
 }
 
 
-void GUIAPI GUIDrawHotSpot( gui_window *wnd, int hot_spot, gui_text_ord row,
+void GUIAPI GUIDrawHotSpot( gui_window *wnd, int hotspot_no, gui_text_ord row,
                      gui_ord indent, gui_attr attr )
 {
-    if( ( hot_spot > 0 ) && ( hot_spot <= GUINumHotSpots ) ) {
-        GUIDrawText( wnd, GUIHotSpots[hot_spot-1].text,
-                     GUIHotSpots[hot_spot-1].size.x, row, indent, attr );
+    if( ( hotspot_no > 0 ) && ( hotspot_no <= GUINumHotSpots ) ) {
+        GUIDrawText( wnd, GUIHotSpots[hotspot_no - 1].text,
+                     GUIHotSpots[hotspot_no - 1].size.x, row, indent, attr );
     }
 }
 

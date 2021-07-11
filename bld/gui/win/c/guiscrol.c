@@ -127,7 +127,7 @@ static void SetScroll( gui_window *wnd, int bar, int pos )
  * GUISetVScrollRow -- Set the vertical scrolling position for the window
  */
 
-void GUISetVScrollRow( gui_window *wnd, gui_text_ord vscroll_pos )
+void GUIAPI GUISetVScrollRow( gui_window *wnd, gui_text_ord vscroll_pos )
 {
     SetScroll( wnd, SB_VERT, GUIFromTextY( vscroll_pos, wnd ) );
 }
@@ -136,7 +136,7 @@ void GUISetVScrollRow( gui_window *wnd, gui_text_ord vscroll_pos )
  * GUISetHScrollCol -- Set the horizontal scrolling position for the window
  */
 
-void GUISetHScrollCol( gui_window *wnd, gui_text_ord hscroll_pos )
+void GUIAPI GUISetHScrollCol( gui_window *wnd, gui_text_ord hscroll_pos )
 {
     SetScroll( wnd, SB_HORZ, GUIFromTextX( hscroll_pos, wnd ) );
 }
@@ -146,15 +146,15 @@ void GUISetHScrollCol( gui_window *wnd, gui_text_ord hscroll_pos )
  *                  call by user in user scale
  */
 
-void GUISetVScroll( gui_window *wnd, gui_ord vscroll_pos )
+void GUIAPI GUISetVScroll( gui_window *wnd, gui_ord vscroll_pos )
 {
-    gui_ord     ord;
+    guix_ord    scr_y;
 
-    ord = GUIScaleToScreenV( vscroll_pos );
-    if( ( vscroll_pos != 0 ) && ( ord == 0 ) ) {
-        ord++;
+    scr_y = GUIScaleToScreenV( vscroll_pos );
+    if( ( vscroll_pos != 0 ) && ( scr_y == 0 ) ) {
+        scr_y++;
     }
-    SetScroll( wnd, SB_VERT, ord );
+    SetScroll( wnd, SB_VERT, scr_y );
 }
 
 /*
@@ -162,15 +162,15 @@ void GUISetVScroll( gui_window *wnd, gui_ord vscroll_pos )
  *                  call by user in user scale
  */
 
-void GUISetHScroll( gui_window *wnd, gui_ord hscroll_pos )
+void GUIAPI GUISetHScroll( gui_window *wnd, gui_ord hscroll_pos )
 {
-    gui_ord     ord;
+    guix_ord    scr_x;
 
-    ord = GUIScaleToScreenH( hscroll_pos );
-    if( ( hscroll_pos != 0 ) && ( ord == 0 ) ) {
-        ord++;
+    scr_x = GUIScaleToScreenH( hscroll_pos );
+    if( ( hscroll_pos != 0 ) && ( scr_x == 0 ) ) {
+        scr_x++;
     }
-    SetScroll( wnd, SB_HORZ, ord );
+    SetScroll( wnd, SB_HORZ, scr_x );
 }
 
 /*

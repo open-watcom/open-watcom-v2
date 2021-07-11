@@ -35,18 +35,19 @@
 #include "guixutil.h"
 #include "guiscale.h"
 
-void GUIGetAbsRect( gui_window *wnd, gui_rect *rect )
+void GUIAPI GUIGetAbsRect( gui_window *wnd, gui_rect *rect )
 {
     HWND        hwnd;
     WPI_RECT    win;
     GUI_RECTDIM left, top, right, bottom;
+    guix_rect   scr_rect;
 
     hwnd = GUIGetParentFrameHWND( wnd );
     _wpi_getwindowrect( hwnd, &win );
     _wpi_getwrectvalues( win, &left, &top, &right, &bottom );
-    rect->width = _wpi_getwidthrect( win );
-    rect->height = _wpi_getheightrect( win );
-    rect->x = left;
-    rect->y = _wpi_cvtc_y_plus1( HWND_DESKTOP, top );
-    GUIScreenToScaleRect( rect, rect );
+    scr_rect.width = _wpi_getwidthrect( win );
+    scr_rect.height = _wpi_getheightrect( win );
+    scr_rect.x = left;
+    scr_rect.y = _wpi_cvtc_y_plus1( HWND_DESKTOP, top );
+    GUIScreenToScaleRect( &scr_rect, rect );
 }

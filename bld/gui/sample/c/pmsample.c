@@ -71,7 +71,7 @@ static gui_create_info Child = {
     NULL                            // Menu Resource
 };
 
-void GUImain( void )
+void GUIAPI GUImain( void )
 {
     GUIWndInit( 300 /* ms */, GUI_GMOUSE );
     GUISetScale( &Scale );

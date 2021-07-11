@@ -34,6 +34,6 @@
 #ifndef _GUIXDRAW_H_
 #define _GUIXDRAW_H_
 
-extern void GUIDrawBitmapAttr( gui_window *wnd, const guix_coord *size, const guix_coord *pos, gui_attr attr, int bitmap );
+extern void GUIDrawBitmapAttr( gui_window *wnd, const guix_coord *size, const gui_coord *pos, gui_attr attr, int hotspot_no );
 
 #endif // _GUIXDRAW_H_

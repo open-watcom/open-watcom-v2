@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +40,7 @@
  * GUISetWindowText - set the title text of a window
  */
 
-bool GUISetWindowText( gui_window *wnd, const char *title )
+bool GUIAPI GUISetWindowText( gui_window *wnd, const char *title )
 {
     if( GUIJustSetWindowText( wnd, title ) ) {
         GUIRedrawTitle( wnd );
@@ -56,7 +56,7 @@ bool GUISetWindowText( gui_window *wnd, const char *title )
  * GUIGetWindowTextLength - get the length of the title of a window
  */
 
-size_t GUIGetWindowTextLength( gui_window *wnd )
+size_t GUIAPI GUIGetWindowTextLength( gui_window *wnd )
 {
     if( wnd->vs.title == NULL ) {
         return( 0 );
@@ -70,7 +70,7 @@ size_t GUIGetWindowTextLength( gui_window *wnd )
  *                    max_length characters
  */
 
-size_t GUIGetWindowText( gui_window *wnd, char *buff, size_t buff_len )
+size_t GUIAPI GUIGetWindowText( gui_window *wnd, char *buff, size_t buff_len )
 {
     size_t len;
 

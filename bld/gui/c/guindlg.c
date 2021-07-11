@@ -147,7 +147,7 @@ static void DlgSetCtlSizes( gui_control_info *controls_info,
     }
 }
 
-static void DlgSetSize( gui_window *parent, gui_create_info *dlg_info, gui_text_ord rows,
+static void DlgSetSize( gui_window *parent_wnd, gui_create_info *dlg_info, gui_text_ord rows,
                         gui_text_ord cols, gui_coord *charuse )
 {
     gui_rect            max_size;
@@ -171,14 +171,14 @@ static void DlgSetSize( gui_window *parent, gui_create_info *dlg_info, gui_text_
     }
     dlg_info->rect.x = max_size.x + ( max_size.width - dlg_info->rect.width ) / 2;
     dlg_info->rect.y = max_size.y + ( max_size.height - dlg_info->rect.height ) / 2;
-    if( parent != NULL ) {
-        GUIGetClientRect( parent, &rect );
+    if( parent_wnd != NULL ) {
+        GUIGetClientRect( parent_wnd, &rect );
         dlg_info->rect.x -= rect.x;
         dlg_info->rect.y -= rect.y;
     }
 }
 
-static void doDlgOpen( gui_window *parent, const char *title, gui_text_ord rows, gui_text_ord cols,
+static void doDlgOpen( gui_window *parent_wnd, const char *title, gui_text_ord rows, gui_text_ord cols,
                      gui_control_info *controls_info, int num_controls,
                      GUICALLBACK *gui_call_back, void *extra, bool sys )
 {
@@ -189,7 +189,7 @@ static void doDlgOpen( gui_window *parent, const char *title, gui_text_ord rows,
     DlgControl.title = title;
     DlgControl.gui_call_back = gui_call_back;
     DlgControl.extra = extra;
-    DlgControl.parent = parent;
+    DlgControl.parent = parent_wnd;
     GUIGetDlgTextMetrics( &metrics );
     charspace.x = metrics.max.x;
     charspace.y = metrics.max.y;
@@ -202,7 +202,7 @@ static void doDlgOpen( gui_window *parent, const char *title, gui_text_ord rows,
     charuse.y = ( 7 * metrics.avg.y ) / 4;
 #endif
     GUITruncToPixel( &charuse );
-    DlgSetSize( parent, &DlgControl, rows, cols, &charuse );
+    DlgSetSize( parent_wnd, &DlgControl, rows, cols, &charuse );
     DlgSetCtlSizes( controls_info, num_controls, &charuse, &charspace );
     if( sys || DlgModal ) {
         GUICreateSysModalDialog( &DlgControl, num_controls, controls_info );
@@ -211,7 +211,7 @@ static void doDlgOpen( gui_window *parent, const char *title, gui_text_ord rows,
     }
 }
 
-void GUISetModalDlgs( bool modal )
+void GUIAPI GUISetModalDlgs( bool modal )
 {
     DlgModal = modal;
 }
@@ -222,11 +222,11 @@ void GUIDlgOpen( const char *title, gui_text_ord rows, gui_text_ord cols, gui_co
     doDlgOpen( NULL, title, rows, cols, controls_info, num_controls, gui_call_back, extra, false );
 }
 
-void GUIModalDlgOpen( gui_window *parent, const char *title, gui_text_ord rows, gui_text_ord cols,
+void GUIModalDlgOpen( gui_window *parent_wnd, const char *title, gui_text_ord rows, gui_text_ord cols,
                       gui_control_info *controls_info, int num_controls,
                       GUICALLBACK *gui_call_back, void *extra )
 {
-    doDlgOpen( parent, title, rows, cols, controls_info, num_controls, gui_call_back, extra, false );
+    doDlgOpen( parent_wnd, title, rows, cols, controls_info, num_controls, gui_call_back, extra, false );
 }
 
 void GUISysModalDlgOpen( const char *title, gui_text_ord rows, gui_text_ord cols,

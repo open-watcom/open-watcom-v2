@@ -49,13 +49,13 @@ static gui_text_ord DoReturn( gui_text_ord ret, gui_window *wnd, bool got_new )
  * GUIGetStringPos
  */
 
-gui_text_ord GUIGetStringPos( gui_window *wnd, gui_ord indent, const char *string, gui_ord mouse_x )
+gui_text_ord GUIAPI GUIGetStringPos( gui_window *wnd, gui_ord indent, const char *string, gui_ord mouse_x )
 {
-    gui_ord         diff_x;
+    guix_ord        diff_x;
     gui_text_ord    guess;
     gui_text_ord    length;
-    gui_ord         curr;
-    gui_ord         new_curr;
+    guix_ord        curr;
+    guix_ord        new_curr;
     bool            got_new;
 
     if( indent > mouse_x ) {

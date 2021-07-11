@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -138,10 +138,10 @@ void GUISetMDIResetMenus( void (*func)( gui_window *, gui_window *, const gui_me
     fReset = func;
 }
 
-void GUIMDIResetMenus( gui_window *wnd, gui_window *parent, const gui_menu_items *menus )
+void GUIMDIResetMenus( gui_window *wnd, gui_window *parent_wnd, const gui_menu_items *menus )
 {
     if( fReset != NULL ) {
-        (*fReset)( wnd, parent, menus );
+        (*fReset)( wnd, parent_wnd, menus );
     }
 }
 

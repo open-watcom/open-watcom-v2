@@ -120,7 +120,7 @@ static void CheckChildResize( SAREA *child, SAREA *area, resize_dir dir )
     }
 }
 
-void GUISetCheckResizeAreaForChildren( gui_window *wnd, bool check )
+void GUIAPI GUISetCheckResizeAreaForChildren( gui_window *wnd, bool check )
 {
     if( wnd ) {
         if( check ) {
@@ -443,38 +443,38 @@ bool GUIWndMoveSize( gui_window *wnd, SAREA *new, gui_flags flag,
     return( true );
 }
 
-static void CalcIconsDim( gui_window *parent, int *icons_per_row,
+static void CalcIconsDim( gui_window *parent_wnd, int *icons_per_row,
                           int *max_rows, SAREA *bound  )
 {
-    if( parent == NULL ) {
+    if( parent_wnd == NULL ) {
         GUIGetScreenArea( bound );
     } else {
-        COPYAREA( parent->use, *bound );
-        bound->row += parent->vs.area.row;
-        bound->col += parent->vs.area.col;
+        COPYAREA( parent_wnd->use, *bound );
+        bound->row += parent_wnd->vs.area.row;
+        bound->col += parent_wnd->vs.area.col;
     }
     *icons_per_row = ( bound->width + 1 ) / ( MIN_WIDTH + 1 );
     *max_rows = ( bound->height + 1 ) / ( MIN_HEIGHT + 1 );
 }
 
-static int GetMaxIcons( gui_window *parent )
+static int GetMaxIcons( gui_window *parent_wnd )
 {
     int         icons_per_row;
     int         max_rows;
     SAREA       bound;
 
-    CalcIconsDim( parent, &icons_per_row, &max_rows, &bound );
+    CalcIconsDim( parent_wnd, &icons_per_row, &max_rows, &bound );
     return( icons_per_row * max_rows );
 }
 
-void GUICalcIconArea( int num, gui_window *parent, SAREA *new )
+void GUICalcIconArea( int num, gui_window *parent_wnd, SAREA *new )
 {
     int         icon_row;
     int         icons_per_row;
     SAREA       bound;
     int         max_rows;
 
-    CalcIconsDim( parent, &icons_per_row, &max_rows, &bound );
+    CalcIconsDim( parent_wnd, &icons_per_row, &max_rows, &bound );
 
     icon_row = ( num - 1 ) / icons_per_row;
     new->col = bound.col +
@@ -488,15 +488,15 @@ void GUICalcIconArea( int num, gui_window *parent, SAREA *new )
     new->height = MIN_HEIGHT;
 }
 
-static bool IconPosUsed( gui_window *curr, int num, gui_window *parent )
+static bool IconPosUsed( gui_window *curr, int num, gui_window *parent_wnd )
 {
     SAREA       new;
 
-    GUICalcIconArea( num, parent, &new );
+    GUICalcIconArea( num, parent_wnd, &new );
     return( GUIOverlap( &new, &curr->vs.area ) );
 }
 
-static void GetIconPos( gui_window *parent, SAREA *new )
+static void GetIconPos( gui_window *parent_wnd, SAREA *new )
 {
     gui_window  *curr;
     bool        found;
@@ -506,18 +506,18 @@ static void GetIconPos( gui_window *parent, SAREA *new )
     int         times_used;
 
     num = 1;
-    if( parent != NULL ) {
+    if( parent_wnd != NULL ) {
         num_mod = 0;
         found = false;
-        max_icons = GetMaxIcons( parent );
+        max_icons = GetMaxIcons( parent_wnd );
         while( !found ) {
             if( num - num_mod * max_icons > max_icons ) {
                 num_mod++;
             }
             times_used = 0;
-            for( curr = parent->child; curr != NULL; curr = curr->sibling ) {
+            for( curr = parent_wnd->child; curr != NULL; curr = curr->sibling ) {
                 if( GUI_WND_MINIMIZED( curr ) ) {
-                    if( IconPosUsed( curr, num, parent ) ) {
+                    if( IconPosUsed( curr, num, parent_wnd ) ) {
                         times_used++;
                         if( times_used > num_mod ) {
                             break;
@@ -532,17 +532,17 @@ static void GetIconPos( gui_window *parent, SAREA *new )
             }
         }
     }
-    GUICalcIconArea( num, parent, new );
+    GUICalcIconArea( num, parent_wnd, new );
 }
 
-static void InitMaxArea( gui_window *parent, SAREA *new )
+static void InitMaxArea( gui_window *parent_wnd, SAREA *new )
 {
-    if( parent == NULL ) {
+    if( parent_wnd == NULL ) {
         GUIGetScreenArea( new );
     } else {
-        COPYAREA( parent->use, *new );
-        new->row += parent->vs.area.row;
-        new->col += parent->vs.area.col;
+        COPYAREA( parent_wnd->use, *new );
+        new->row += parent_wnd->vs.area.row;
+        new->col += parent_wnd->vs.area.col;
     }
 }
 
@@ -611,7 +611,7 @@ void GUIZoomWnd( gui_window *wnd, gui_create_styles action )
     }
 }
 
-bool GUIResizeWindow( gui_window *wnd, gui_rect *rect )
+bool GUIAPI GUIResizeWindow( gui_window *wnd, gui_rect *rect )
 {
     SAREA               area;
     bool                ret;
@@ -643,7 +643,7 @@ bool GUIResizeWindow( gui_window *wnd, gui_rect *rect )
     return( ret );
 }
 
-void GUISetRestoredSize( gui_window *wnd, gui_rect *rect )
+void GUIAPI GUISetRestoredSize( gui_window *wnd, gui_rect *rect )
 {
     SAREA       area;
 
@@ -656,7 +656,7 @@ void GUISetRestoredSize( gui_window *wnd, gui_rect *rect )
     }
 }
 
-bool GUIGetRestoredSize( gui_window *wnd, gui_rect *rect )
+bool GUIAPI GUIGetRestoredSize( gui_window *wnd, gui_rect *rect )
 {
     SAREA       pos;
 
@@ -668,43 +668,43 @@ bool GUIGetRestoredSize( gui_window *wnd, gui_rect *rect )
     return ( GUIScreenToScaleRect( &pos, rect ) );
 }
 
-void GUIMinimizeWindow( gui_window * wnd )
+void GUIAPI GUIMinimizeWindow( gui_window * wnd )
 {
     if( !GUI_WND_MINIMIZED( wnd ) ) {
         GUIZoomWnd( wnd, GUI_MINIMIZE );
     }
 }
 
-void GUIMaximizeWindow( gui_window * wnd )
+void GUIAPI GUIMaximizeWindow( gui_window * wnd )
 {
     if( !GUI_WND_MAXIMIZED( wnd ) ) {
         GUIZoomWnd( wnd, GUI_MAXIMIZE );
     }
 }
 
-void GUIHideWindow( gui_window *wnd )
+void GUIAPI GUIHideWindow( gui_window *wnd )
 {
     uivhide( &wnd->vs );
 }
 
-bool GUIIsWindowVisible( gui_window *wnd )
+bool GUIAPI GUIIsWindowVisible( gui_window *wnd )
 {
     return( ( wnd->vs.flags & V_HIDDEN ) == 0 );
 }
 
-void GUIRestoreWindow( gui_window * wnd )
+void GUIAPI GUIRestoreWindow( gui_window * wnd )
 {
     if( GUI_WND_MINIMIZED( wnd ) || GUI_WND_MAXIMIZED( wnd ) ) {
         GUIZoomWnd( wnd, GUI_NONE );
     }
 }
 
-bool GUIIsMaximized( gui_window *wnd )
+bool GUIAPI GUIIsMaximized( gui_window *wnd )
 {
     return( (wnd->flags & MAXIMIZED) != 0 );
 }
 
-bool GUIIsMinimized( gui_window *wnd )
+bool GUIAPI GUIIsMinimized( gui_window *wnd )
 {
     return( (wnd->flags & MINIMIZED) != 0 );
 }

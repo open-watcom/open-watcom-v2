@@ -35,7 +35,7 @@
 #include "guixutil.h"
 
 
-bool GUIGetMousePosn( gui_window *wnd, gui_point *point )
+bool GUIAPI GUIGetMousePosn( gui_window *wnd, gui_point *point )
 {
     WPI_POINT   scr_point;
 

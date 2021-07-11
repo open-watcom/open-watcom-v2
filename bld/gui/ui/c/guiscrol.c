@@ -129,7 +129,7 @@ static void ScrlText( p_gadget gadget, guix_ord scroll_pos, void (*fn)( p_gadget
  * GUIInitHScroll - init the horizontal scroll position
  */
 
-void GUIInitHScroll( gui_window * wnd, gui_ord hscroll_pos )
+void GUIAPI GUIInitHScroll( gui_window * wnd, gui_ord hscroll_pos )
 {
     Scrl( wnd->hgadget, hscroll_pos, &InitScroll );
 }
@@ -138,7 +138,7 @@ void GUIInitHScroll( gui_window * wnd, gui_ord hscroll_pos )
  * GUIInitHScrollCol - init the horizontal scroll position
  */
 
-void GUIInitHScrollCol( gui_window * wnd, gui_text_ord hscroll_pos )
+void GUIAPI GUIInitHScrollCol( gui_window * wnd, gui_text_ord hscroll_pos )
 {
     ScrlText( wnd->hgadget, hscroll_pos, &InitScroll );
 }
@@ -147,7 +147,7 @@ void GUIInitHScrollCol( gui_window * wnd, gui_text_ord hscroll_pos )
  * GUIInitVScroll - init the vertical scroll position
  */
 
-void GUIInitVScroll( gui_window * wnd, gui_ord vscroll_pos )
+void GUIAPI GUIInitVScroll( gui_window * wnd, gui_ord vscroll_pos )
 {
     Scrl( wnd->vgadget, vscroll_pos, &InitScroll );
 }
@@ -156,7 +156,7 @@ void GUIInitVScroll( gui_window * wnd, gui_ord vscroll_pos )
  * GUIInitVScrollRow - init the vertical scroll position
  */
 
-void GUIInitVScrollRow( gui_window * wnd, gui_text_ord vscroll_pos )
+void GUIAPI GUIInitVScrollRow( gui_window * wnd, gui_text_ord vscroll_pos )
 {
     ScrlText( wnd->vgadget, vscroll_pos, &InitScroll );
 }
@@ -165,7 +165,7 @@ void GUIInitVScrollRow( gui_window * wnd, gui_text_ord vscroll_pos )
  * GUISetHScroll - set the horizontal scroll position
  */
 
-void GUISetHScroll( gui_window * wnd, gui_ord hscroll_pos )
+void GUIAPI GUISetHScroll( gui_window * wnd, gui_ord hscroll_pos )
 {
     Scrl( wnd->hgadget, hscroll_pos, &SetScroll );
 }
@@ -174,7 +174,7 @@ void GUISetHScroll( gui_window * wnd, gui_ord hscroll_pos )
  * GUISetHScrollCol - set the horizontal scroll position
  */
 
-void GUISetHScrollCol( gui_window * wnd, gui_text_ord hscroll_pos )
+void GUIAPI GUISetHScrollCol( gui_window * wnd, gui_text_ord hscroll_pos )
 {
     ScrlText( wnd->hgadget, hscroll_pos, &SetScroll );
 }
@@ -183,7 +183,7 @@ void GUISetHScrollCol( gui_window * wnd, gui_text_ord hscroll_pos )
  * GUISetVScroll - set the vertical scroll position
  */
 
-void GUISetVScroll( gui_window * wnd, gui_ord vscroll_pos )
+void GUIAPI GUISetVScroll( gui_window * wnd, gui_ord vscroll_pos )
 {
     Scrl( wnd->vgadget, vscroll_pos, &SetScroll );
 }
@@ -192,7 +192,7 @@ void GUISetVScroll( gui_window * wnd, gui_ord vscroll_pos )
  * GUISetVScrollRow - set the vertical scroll position
  */
 
-void GUISetVScrollRow( gui_window * wnd, gui_text_ord vscroll_pos )
+void GUIAPI GUISetVScrollRow( gui_window * wnd, gui_text_ord vscroll_pos )
 {
     ScrlText( wnd->vgadget, vscroll_pos, &SetScroll );
 }

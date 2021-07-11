@@ -48,7 +48,7 @@ static int GetPos( gui_window *wnd, int bar )
  * GUIGetHScrollCol --
  */
 
-gui_text_ord GUIGetHScrollCol( gui_window *wnd )
+gui_text_ord GUIAPI GUIGetHScrollCol( gui_window *wnd )
 {
     return( GUIToTextX( GetPos( wnd, SB_HORZ ), wnd ) );
 }
@@ -57,7 +57,7 @@ gui_text_ord GUIGetHScrollCol( gui_window *wnd )
  * GUIGetVScrollRow --
  */
 
-gui_text_ord GUIGetVScrollRow( gui_window *wnd )
+gui_text_ord GUIAPI GUIGetVScrollRow( gui_window *wnd )
 {
     return( GUIToTextY( GetPos( wnd, SB_VERT ), wnd ) );
 }
@@ -79,7 +79,7 @@ static gui_ord GetScroll( gui_window *wnd, int bar )
  * GUIGetHScroll --
  */
 
-gui_ord GUIGetHScroll( gui_window *wnd )
+gui_ord GUIAPI GUIGetHScroll( gui_window *wnd )
 {
     return( GetScroll( wnd, SB_HORZ ) );
 }
@@ -88,7 +88,7 @@ gui_ord GUIGetHScroll( gui_window *wnd )
  * GUIGetVScroll --
  */
 
-gui_ord GUIGetVScroll( gui_window *wnd )
+gui_ord GUIAPI GUIGetVScroll( gui_window *wnd )
 {
     return( GetScroll( wnd, SB_VERT ) );
 }

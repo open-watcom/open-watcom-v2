@@ -60,8 +60,7 @@ static bool SetStatusArea( gui_window *wnd, gui_ord x, gui_ord height, SAREA *ar
     return( true );
 }
 
-bool GUICreateStatusWindow( gui_window *wnd, gui_ord x, gui_ord height,
-                            gui_colour_set *colour )
+bool GUIAPI GUICreateStatusWindow( gui_window *wnd, gui_ord x, gui_ord height, gui_colour_set *colour )
 {
     statusinfo  *stat_info;
 
@@ -84,7 +83,7 @@ bool GUICreateStatusWindow( gui_window *wnd, gui_ord x, gui_ord height,
     return( true );
 }
 
-bool GUIResizeStatusWindow( gui_window *wnd, gui_ord x, gui_ord height )
+bool GUIAPI GUIResizeStatusWindow( gui_window *wnd, gui_ord x, gui_ord height )
 {
     SAREA       area;
 
@@ -120,7 +119,7 @@ void GUIDrawStatus( gui_window *wnd )
     }
 }
 
-bool GUIDrawStatusText( gui_window *wnd, const char *text )
+bool GUIAPI GUIDrawStatusText( gui_window *wnd, const char *text )
 {
     bool        ok;
 
@@ -138,7 +137,7 @@ bool GUIDrawStatusText( gui_window *wnd, const char *text )
     return( ok );
 }
 
-bool GUIHasStatus( gui_window *wnd )
+bool GUIAPI GUIHasStatus( gui_window *wnd )
 {
     return( wnd->status != NULL );
 }
@@ -162,7 +161,7 @@ void GUIResizeStatus( gui_window *wnd )
     }
 }
 
-bool GUICloseStatusWindow( gui_window *wnd )
+bool GUIAPI GUICloseStatusWindow( gui_window *wnd )
 {
     SAREA       area;
 

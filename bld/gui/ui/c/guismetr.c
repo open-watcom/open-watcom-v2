@@ -33,7 +33,7 @@
 
 #include "guiwind.h"
 
-void GUIGetSystemMetrics( gui_system_metrics *pmetrics )
+void GUIAPI GUIGetSystemMetrics( gui_system_metrics *pmetrics )
 {
     gui_text_metrics    metrics;
 

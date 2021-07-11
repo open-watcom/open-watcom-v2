@@ -38,15 +38,15 @@
 #include "guiscale.h"
 
 
-gui_text_ord GUIGetRow( gui_window *wnd, gui_point *in_pos )
+gui_text_ord GUIAPI GUIGetRow( gui_window *wnd, const gui_point *in_pos )
 {
     GUIGetMetrics( wnd );
     return( GUIScaleToScreenV( in_pos->y ) / AVGYCHAR( GUItm ) );
 }
 
-gui_text_ord GUIGetCol( gui_window *wnd, const char *text, gui_point *in_pos )
+gui_text_ord GUIAPI GUIGetCol( gui_window *wnd, const char *text, const gui_point *in_pos )
 {
-    gui_text_ord    width;
+    guix_ord        width;
     guix_ord        scr_x;
     bool            got_new;
 

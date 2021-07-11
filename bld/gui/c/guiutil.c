@@ -125,7 +125,7 @@ void GUIStoreArgs( char **argv, int argc )
     ArgsSet  = true;
 }
 
-bool GUIGetArgs( char ***argv, int *argc )
+bool GUIAPI GUIGetArgs( char ***argv, int *argc )
 {
     if( ArgsSet && argv && argc ) {
         *argv = GUI_argv;

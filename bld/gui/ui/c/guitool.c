@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -97,13 +97,13 @@ bool GUIXCreateFixedToolbar( gui_window *wnd )
 
 static bool FixToolbar( gui_window *wnd )
 {
-    gui_window  *parent;
+    gui_window  *parent_wnd;
 
-    parent = wnd->parent;
+    parent_wnd = wnd->parent;
     wnd->parent->tbar->switching = true;
     GUICloseWnd( wnd );
-    parent->tbar->switching = false;
-    return( GUIXCreateFixedToolbar( parent ) );
+    parent_wnd->tbar->switching = false;
+    return( GUIXCreateFixedToolbar( parent_wnd ) );
 }
 
 static bool ToolbarGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
@@ -182,12 +182,12 @@ bool GUIXCloseToolBar( gui_window *wnd )
     return( true );
 }
 
-bool GUIHasToolBar( gui_window *wnd )
+bool GUIAPI GUIHasToolBar( gui_window *wnd )
 {
     return( wnd->tbar != NULL );
 }
 
-bool GUIToolBarFixed( gui_window *wnd )
+bool GUIAPI GUIToolBarFixed( gui_window *wnd )
 {
     if( GUIHasToolBar( wnd ) ) {
         return( wnd->tbar->fixed );
@@ -349,7 +349,7 @@ static bool FloatToolbar( gui_window *wnd )
     return( CreateFloatingToolbar( wnd, 0 ) );
 }
 
-bool GUIChangeToolBar( gui_window *wnd )
+bool GUIAPI GUIChangeToolBar( gui_window *wnd )
 {
     if( GUIHasToolBar( wnd ) ) {
         if( GUIToolBarFixed( wnd ) ) {

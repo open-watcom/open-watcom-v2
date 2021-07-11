@@ -122,22 +122,22 @@ static bool DrawRect( gui_window *wnd, const gui_rect *rect, gui_attr attr,
     return( true );
 }
 
-bool GUIDrawRect( gui_window *wnd, const gui_rect *rect, gui_attr attr )
+bool GUIAPI GUIDrawRect( gui_window *wnd, const gui_rect *rect, gui_attr attr )
 {
     return( DrawRect( wnd, rect, attr, false, true, DRAW( BLOCK ) ) );
 }
 
-bool GUIFillRect( gui_window *wnd, const gui_rect *rect, gui_attr attr )
+bool GUIAPI GUIFillRect( gui_window *wnd, const gui_rect *rect, gui_attr attr )
 {
     return( DrawRect( wnd, rect, attr, true, false, DRAW( BLOCK ) ) );
 }
 
-bool GUIFillBar( gui_window *wnd, const gui_rect *rect, gui_attr attr )
+bool GUIAPI GUIFillBar( gui_window *wnd, const gui_rect *rect, gui_attr attr )
 {
     return( DrawRect( wnd, rect, attr, true, false, DRAW( TOP_HALF ) ) );
 }
 
-bool GUIDrawLine( gui_window *wnd, const gui_point *start, const gui_point *end,
+bool GUIAPI GUIDrawLine( gui_window *wnd, const gui_point *start, const gui_point *end,
                   gui_line_styles style, gui_ord thickness, gui_attr attr )
 {
     guix_ord    scr_start_x;
@@ -174,21 +174,21 @@ bool GUIDrawLine( gui_window *wnd, const gui_point *start, const gui_point *end,
     return( true );
 }
 
-bool GUIFillRectRGB( gui_window *wnd, const gui_rect *rect, gui_rgb rgb )
+bool GUIAPI GUIFillRectRGB( gui_window *wnd, const gui_rect *rect, gui_rgb rgb )
 {
     /* unused parameters */ (void)wnd; (void)rect; (void)rgb;
 
     return( false );
 }
 
-bool GUIDrawRectRGB( gui_window *wnd, const gui_rect *rect, gui_rgb rgb )
+bool GUIAPI GUIDrawRectRGB( gui_window *wnd, const gui_rect *rect, gui_rgb rgb )
 {
     /* unused parameters */ (void)wnd; (void)rect; (void)rgb;
 
     return( false );
 }
 
-bool GUIDrawLineRGB( gui_window *wnd, const gui_point *start, const gui_point *end,
+bool GUIAPI GUIDrawLineRGB( gui_window *wnd, const gui_point *start, const gui_point *end,
                      gui_line_styles style, gui_ord thickness, gui_rgb rgb )
 {
     /* unused parameters */ (void)wnd; (void)start; (void)end; (void)style; (void)thickness; (void)rgb;

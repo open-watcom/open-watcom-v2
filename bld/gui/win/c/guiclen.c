@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -108,7 +109,7 @@ static void MBInit( void )
 
 }
 
-int GUICharLen( int ch )
+int GUIAPI GUICharLen( int ch )
 {
     if( !Init ) {
         MBInit();
@@ -117,7 +118,7 @@ int GUICharLen( int ch )
     return( __CharLenTable[ch] );
 }
 
-bool GUIIsDBCS( void )
+bool GUIAPI GUIIsDBCS( void )
 {
     if( !Init ) {
         MBInit();

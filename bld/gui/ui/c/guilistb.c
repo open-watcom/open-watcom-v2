@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -318,21 +319,21 @@ bool GUIListBoxSetTopIndex( a_list *list, int choice )
 
 /* NYI */
 
-bool GUIDropDown( gui_window *wnd, gui_ctl_id id, bool drop )
+bool GUIAPI GUIDropDown( gui_window *wnd, gui_ctl_id id, bool drop )
 {
     /* unused parameters */ (void)wnd; (void)id; (void)drop;
 
     return( false );
 }
 
-bool GUISetListItemData( gui_window *wnd, gui_ctl_id id, int choice, void *data )
+bool GUIAPI GUISetListItemData( gui_window *wnd, gui_ctl_id id, int choice, void *data )
 {
     /* unused parameters */ (void)wnd; (void)id; (void)choice; (void)data;
 
     return( false );
 }
 
-void *GUIGetListItemData( gui_window *wnd, gui_ctl_id id, int choice )
+void * GUIAPI GUIGetListItemData( gui_window *wnd, gui_ctl_id id, int choice )
 {
     /* unused parameters */ (void)wnd; (void)id; (void)choice;
 

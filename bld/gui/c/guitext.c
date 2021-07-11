@@ -35,7 +35,7 @@
 #include <string.h>
 
 
-size_t GUIDlgBuffGetText( gui_window *wnd, gui_ctl_id id, char *buff, size_t buff_len )
+size_t GUIAPI GUIDlgBuffGetText( gui_window *wnd, gui_ctl_id id, char *buff, size_t buff_len )
 {
     char        *str;
     size_t      len;

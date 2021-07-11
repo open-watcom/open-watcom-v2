@@ -129,7 +129,7 @@ static void GUISetWindowClassName( void )
     GUIClass[GUI_CLASSNAME_MAX] = '\0';
 }
 
-void GUIWantPartialRows( gui_window *wnd, bool want )
+void GUIAPI GUIWantPartialRows( gui_window *wnd, bool want )
 {
     if( wnd != NULL ) {
         if( want ) {
@@ -140,7 +140,7 @@ void GUIWantPartialRows( gui_window *wnd, bool want )
     }
 }
 
-void GUISetCheckResizeAreaForChildren( gui_window *wnd, bool check )
+void GUIAPI GUISetCheckResizeAreaForChildren( gui_window *wnd, bool check )
 {
     /* unused parameters */ (void)wnd; (void)check;
 }
@@ -341,7 +341,7 @@ static void ShowWnd( HWND hwnd )
     }
 }
 
-void GUIShowWindow( gui_window *wnd )
+void GUIAPI GUIShowWindow( gui_window *wnd )
 {
     GUIInvalidatePaintHandles( wnd );
     if( wnd->root != NULLHANDLE ) {
@@ -352,7 +352,7 @@ void GUIShowWindow( gui_window *wnd )
     }
 }
 
-void GUIShowWindowNA( gui_window *wnd )
+void GUIAPI GUIShowWindowNA( gui_window *wnd )
 {
     int flags;
 
@@ -1419,7 +1419,7 @@ void GUISetF10Menus( bool setting )
     setting = setting;
 }
 
-bool GUIIsFirstInstance( void )
+bool GUIAPI GUIIsFirstInstance( void )
 {
     return( FirstInstance );
 }

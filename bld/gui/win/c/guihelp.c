@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -202,17 +203,17 @@ static bool DisplayHelpKeyHH( gui_help_instance inst, HWND hwnd, const char *fil
 #endif
 
 
-gui_help_instance GUIHelpInit( gui_window *wnd, const char *file, const char *title )
+gui_help_instance GUIAPI GUIHelpInit( gui_window *wnd, const char *file, const char *title )
 {
     return( InitHelp( wnd->hwnd, GUIMainHInst, title, file ) );
 }
 
-void GUIHelpFini( gui_help_instance inst, gui_window *wnd, const char *file )
+void GUIAPI GUIHelpFini( gui_help_instance inst, gui_window *wnd, const char *file )
 {
     FiniHelp( inst, wnd->hwnd, file );
 }
 
-bool GUIShowHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act,
+bool GUIAPI GUIShowHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act,
                   const char *file, const char *topic )
 {
     bool        ret;
@@ -240,7 +241,7 @@ bool GUIShowHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act,
     return( ret );
 }
 
-bool GUIShowHtmlHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act, const char *file, const char *topic )
+bool GUIAPI GUIShowHtmlHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act, const char *file, const char *topic )
 {
     bool        ret;
 
@@ -270,7 +271,7 @@ bool GUIShowHtmlHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions 
     return( ret );
 }
 
-bool GUIDisplayHelp( gui_window *wnd, const char *file, const char *topic )
+bool GUIAPI GUIDisplayHelp( gui_window *wnd, const char *file, const char *topic )
 {
 #ifdef __OS2_PM__
     wnd = wnd;
@@ -286,7 +287,7 @@ bool GUIDisplayHelp( gui_window *wnd, const char *file, const char *topic )
 #endif
 }
 
-bool GUIDisplayHelpWin4( gui_window *wnd, const char *file, const char *topic )
+bool GUIAPI GUIDisplayHelpWin4( gui_window *wnd, const char *file, const char *topic )
 {
 #ifdef __OS2_PM__
     wnd = wnd;
@@ -316,7 +317,7 @@ bool GUIDisplayHelpWin4( gui_window *wnd, const char *file, const char *topic )
 #endif
 }
 
-bool GUIDisplayHelpId( gui_window *wnd, const char *file, gui_hlp_id id )
+bool GUIAPI GUIDisplayHelpId( gui_window *wnd, const char *file, gui_hlp_id id )
 {
 #ifdef __OS2_PM__
     wnd = wnd;

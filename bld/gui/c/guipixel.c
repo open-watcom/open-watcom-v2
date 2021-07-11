@@ -34,8 +34,7 @@
 #include "guiwind.h"
 #include "guiscale.h"
 
-
-void GUITruncToPixel( gui_coord * coord )
+void GUIAPI GUITruncToPixel( gui_coord * coord )
 {
     if( coord != NULL ) {
         coord->x = GUIScreenToScaleH( GUIScaleToScreenH( coord->x ) );

@@ -45,7 +45,7 @@ extern gui_text_ord GUIToTextY( gui_ord ord, gui_window *wnd );
 
 extern void GUIGetUpdateRows( gui_window *, HWND, gui_text_ord *, gui_text_ord * );
 
-extern void GUIGetMetrics( gui_window * );
+extern void GUIGetMetrics( gui_window *wnd );
 extern bool GUIGetTheDC( gui_window *wnd );
 extern void GUIReleaseTheDC( gui_window *wnd );
 

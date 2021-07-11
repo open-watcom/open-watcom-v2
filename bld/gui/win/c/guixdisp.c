@@ -59,9 +59,8 @@ static MessageTypes Types[] = {
  *                      return user's response.
  */
 
-gui_message_return GUIDisplayMessage( gui_window *wnd,
-                                      const char *message, const char *title,
-                                      gui_message_type type )
+gui_message_return GUIAPI GUIDisplayMessage( gui_window *wnd, const char *message,
+                                      const char *title, gui_message_type type )
 {
     UINT                style;
     int                 ret;

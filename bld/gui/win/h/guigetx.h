@@ -34,8 +34,8 @@
 #ifndef _GUIGETX_H_
 #define _GUIGETX_H_
 
-extern gui_ord  GUIGetTextExtentX( gui_window *wnd, const char *, gui_text_ord );
-extern gui_ord  GUIGetTextExtentY( gui_window *wnd, const char *, gui_text_ord );
-extern void     GUIGetTextExtent( gui_window *wnd, const char *, gui_text_ord, int *, int * );
+extern guix_ord     GUIGetTextExtentX( gui_window *wnd, const char *, gui_text_ord );
+extern guix_ord     GUIGetTextExtentY( gui_window *wnd, const char *, gui_text_ord );
+extern void         GUIGetTextExtent( gui_window *wnd, const char *, gui_text_ord, guix_ord *, guix_ord * );
 
 #endif // _GUIGETX_H_

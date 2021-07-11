@@ -99,7 +99,7 @@ bool GUISetupStruct( gui_window *wnd, gui_create_info *dlg_info, bool dialog )
 /*
  * GUISetRedraw -- set the redraw flag for a given window
  */
-bool GUISetRedraw( gui_window *wnd, bool redraw )
+bool GUIAPI GUISetRedraw( gui_window *wnd, bool redraw )
 {
     /* unused parameters */ (void)wnd; (void)redraw;
 
@@ -140,13 +140,13 @@ void GUISetUseWnd( gui_window *wnd )
     GUISetUseArea( wnd, &wnd->vs.area, &wnd->use );
 }
 
-bool GUIPtInRect( SAREA *area, ORD row, ORD col )
+bool GUIPtInRect( const SAREA *area, ORD row, ORD col )
 {
     return( ( col >= area->col ) && ( col < ( area->col + area->width ) ) &&
             ( row >= area->row ) && ( row < ( area->row + area->height ) ) );
 }
 
-static bool CheckOverlap( SAREA *one, SAREA *two )
+static bool CheckOverlap( const SAREA *one, const SAREA *two )
 {
     if( GUIPtInRect( two, one->row, one->col ) ) {
         return( true );
@@ -164,7 +164,7 @@ static bool CheckOverlap( SAREA *one, SAREA *two )
     return( false );
 }
 
-bool GUIOverlap( SAREA *one, SAREA *two )
+bool GUIOverlap( const SAREA *one, const SAREA *two )
 {
     if( CheckOverlap( one, two ) ) {
         return( true );
@@ -173,17 +173,16 @@ bool GUIOverlap( SAREA *one, SAREA *two )
     }
 }
 
-bool GUISetDialogArea( gui_window *wnd, SAREA *area, gui_rect *rect,
-                       SAREA *parent )
+bool GUISetDialogArea( gui_window *wnd, SAREA *area, const gui_rect *rect, const SAREA *parent_area )
 {
     GUIScaleToScreenRectR( rect, area );
     if( !GUI_IS_DIALOG( wnd ) ) {
         area->row++;
         area->col++;
     }
-    return( ( area->row <= ( parent->height - 2 ) ) &&
-            ( area->col <= ( parent->width - 2 ) ) &&
-            ( ( area->col + area->width ) <= ( parent->width - 2 ) ) );
+    return( ( area->row <= ( parent_area->height - 2 ) ) &&
+            ( area->col <= ( parent_area->width - 2 ) ) &&
+            ( ( area->col + area->width ) <= ( parent_area->width - 2 ) ) );
     /* can have pop down list boxes so don't force height to fit in dialog */
 }
 
@@ -221,7 +220,7 @@ void GUIGetClientSAREA( gui_window *wnd, SAREA *sarea )
  *                If dialog is true, the screen bounds not the parent.
  */
 
-bool GUISetArea( SAREA *area, gui_rect *rect, gui_window *parent,
+bool GUISetArea( SAREA *area, const gui_rect *rect, gui_window *parent_wnd,
                  bool check_min, bool dialog )
 {
     bool        valid;
@@ -231,11 +230,11 @@ bool GUISetArea( SAREA *area, gui_rect *rect, gui_window *parent,
     gui_rect    act_rect;
     SAREA       parent_area;
 
-    if( dialog || ( parent == NULL ) ) {
+    if( dialog || ( parent_wnd == NULL ) ) {
         GUIGetScreenArea( &bounding );
     } else {
-        COPYAREA( parent->use, bounding );
-        GUIGetSAREA( parent, &parent_area );
+        COPYAREA( parent_wnd->use, bounding );
+        GUIGetSAREA( parent_wnd, &parent_area );
         bounding.row += parent_area.row;
         bounding.col += parent_area.col;
     }
@@ -243,8 +242,8 @@ bool GUISetArea( SAREA *area, gui_rect *rect, gui_window *parent,
     act_rect.y = rect->y;
     act_rect.width = rect->width;
     act_rect.height = rect->height;
-    if( parent != NULL ) {
-        GUIGetClientRect( parent, &parent_rect );
+    if( parent_wnd != NULL ) {
+        GUIGetClientRect( parent_wnd, &parent_rect );
         act_rect.x += parent_rect.x;
         act_rect.y += parent_rect.y;
     }
@@ -436,13 +435,13 @@ bool GUISetCursor( gui_window *wnd )
     return( false );
 }
 
-static void DeleteChild( gui_window *parent, gui_window *child )
+static void DeleteChild( gui_window *parent_wnd, gui_window *child )
 {
     gui_window  *curr;
     gui_window  *prev;
 
     prev = NULL;
-    for( curr = parent->child; curr != NULL; curr=curr->sibling ) {
+    for( curr = parent_wnd->child; curr != NULL; curr = curr->sibling ) {
         if( curr == child ) {
             break;
         }
@@ -452,12 +451,12 @@ static void DeleteChild( gui_window *parent, gui_window *child )
         if( prev != NULL ) {
             prev->sibling = curr->sibling;
         } else {
-            parent->child = curr->sibling;
+            parent_wnd->child = curr->sibling;
         }
     }
 }
 
-void GUIWantPartialRows( gui_window *wnd, bool want )
+void GUIAPI GUIWantPartialRows( gui_window *wnd, bool want )
 {
     /* unused parameters */ (void)wnd; (void)want;
 }

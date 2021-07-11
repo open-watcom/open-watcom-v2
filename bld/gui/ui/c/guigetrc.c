@@ -39,7 +39,7 @@
  * GUIGetRow - get the row that the mouse is on
  */
 
-gui_text_ord GUIGetRow( gui_window *wnd, gui_point *in_pt )
+gui_text_ord GUIAPI GUIGetRow( gui_window *wnd, const gui_point *in_pt )
 {
     /* unused parameters */ (void)wnd;
 
@@ -50,7 +50,7 @@ gui_text_ord GUIGetRow( gui_window *wnd, gui_point *in_pt )
  * GUIGetCol - get the column that the mouse is on
  */
 
-gui_text_ord GUIGetCol( gui_window *wnd, const char *text, gui_point *in_pt )
+gui_text_ord GUIAPI GUIGetCol( gui_window *wnd, const char *text, const gui_point *in_pt )
 {
     /* unused parameters */ (void)wnd; (void)text;
 

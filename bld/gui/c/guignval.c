@@ -125,7 +125,7 @@ static bool GetNewValGUIEventProc( gui_window *wnd, gui_event gui_ev, void *para
  * GUIGetNewVal --
  */
 
-gui_message_return GUIGetNewVal( const char *title, const char *old, char **new_val )
+gui_message_return GUIAPI GUIGetNewVal( const char *title, const char *old, char **new_val )
 {
     int             length;
     int             disp_length;

@@ -114,7 +114,7 @@ bool GUIIsRectInUpdateRect( gui_window *wnd, WPI_RECT *rect )
     return( true );
 }
 
-void GUICalcLocation( gui_rect *rect, guix_coord *scr_pos, guix_coord *scr_size, HWND parent )
+void GUICalcLocation( const gui_rect *rect, guix_coord *scr_pos, guix_coord *scr_size, HWND parent )
 {
     WPI_RECT    r;
     GUI_RECTDIM left, top, right, bottom;
@@ -214,7 +214,7 @@ bool GUIIsGUIChild( HWND hwnd )
 /*
  * GUISetRedraw -- set the redraw flag for a given window
  */
-bool GUISetRedraw( gui_window *wnd, bool redraw )
+bool GUIAPI GUISetRedraw( gui_window *wnd, bool redraw )
 {
     _wpi_setredraw( wnd->hwnd, ( redraw ) ? TRUE : FALSE );
     return( true );
@@ -252,12 +252,12 @@ gui_window *GUIXGetRootWindow( void )
     return( NULL );
 }
 
-gui_window *GUIFindFirstChild( gui_window *parent )
+gui_window *GUIFindFirstChild( gui_window *parent_wnd )
 {
     gui_window *wnd;
 
     for( wnd = GUIGetFront(); wnd != NULL; wnd = GUIGetNextWindow( wnd ) ) {
-        if( wnd->parent == parent && (wnd->flags & UTILITY_BIT) == 0 ) {
+        if( wnd->parent == parent_wnd && (wnd->flags & UTILITY_BIT) == 0 ) {
             return( wnd );
         }
     }
@@ -278,23 +278,23 @@ static gui_window *GUIFindFirstPopupWithNoParent( void )
     return( NULL );
 }
 
-static void GUIMarkChildrenWithFlag( gui_window *parent, gui_flags flag )
+static void GUIMarkChildrenWithFlag( gui_window *parent_wnd, gui_flags flag )
 {
     gui_window *wnd;
 
     for( wnd = GUIGetFront(); wnd != NULL; wnd = GUIGetNextWindow( wnd ) ) {
-        if( wnd->parent == parent ) {
+        if( wnd->parent == parent_wnd ) {
             wnd->flags |= flag;
         }
     }
 }
 
-void GUIDestroyAllChildren( gui_window *parent )
+void GUIDestroyAllChildren( gui_window *parent_wnd )
 {
     gui_window  *wnd;
 
-    GUIMarkChildrenWithFlag( parent, DOING_DESTROY );
-    while( (wnd = GUIFindFirstChild( parent )) != NULL ) {
+    GUIMarkChildrenWithFlag( parent_wnd, DOING_DESTROY );
+    while( (wnd = GUIFindFirstChild( parent_wnd )) != NULL ) {
         wnd->flags |= UTILITY_BIT;
         GUIDestroyWnd( wnd );
     }
@@ -673,18 +673,18 @@ bool GUIParentHasFlags( gui_window *wnd, gui_flags flags )
 
 gui_window * GUIAPI GUIGetFirstSibling( gui_window *wnd )
 {
-    gui_window  *parent;
+    gui_window  *parent_wnd;
 
     if( wnd == NULL ) {
         return( NULL );
     }
 
-    parent = wnd->parent;
-    if( ( parent == NULL ) || GUI_IS_DIALOG( parent ) ) {
+    parent_wnd = wnd->parent;
+    if( ( parent_wnd == NULL ) || GUI_IS_DIALOG( parent_wnd ) ) {
         return( NULL );
     }
 
-    return( GUIFindFirstChild( parent ) );
+    return( GUIFindFirstChild( parent_wnd ) );
 }
 
 WPI_FONT GUIGetSystemFont( void )

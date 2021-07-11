@@ -654,8 +654,8 @@ extern bool     GUIAPI GUIGetColourFromUser( const char *title, gui_colour *init
 
 extern bool     GUIAPI GUIInitHotSpots( int num_hot_spots, gui_resource *hot );
 extern int      GUIAPI GUIGetNumHotSpots( void );
-extern bool     GUIAPI GUIGetHotSpotSize( int hot_spot, gui_coord *size );
-extern void     GUIAPI GUIDrawHotSpot( gui_window *wnd, int hot_spot, gui_text_ord row,
+extern bool     GUIAPI GUIGetHotSpotSize( int hotspot_no, gui_coord *size );
+extern void     GUIAPI GUIDrawHotSpot( gui_window *wnd, int hotspot_no, gui_text_ord row,
                                 gui_ord indent, gui_attr attr );
 
 /* Window Functions */
@@ -667,7 +667,7 @@ extern void     GUIAPI GUIDestroyWnd( gui_window *wnd );
 extern void     GUIAPI GUIWndDirty( gui_window *wnd );
 extern void     GUIAPI GUIControlDirty( gui_window *wnd, gui_ctl_id id );
 extern void     GUIAPI GUIWndDirtyRow( gui_window *wnd, gui_text_ord row );
-extern void     GUIAPI GUIWndDirtyRect( gui_window *wnd, gui_rect *rect );
+extern void     GUIAPI GUIWndDirtyRect( gui_window *wnd, const gui_rect *rect );
 extern void     GUIAPI GUIRefresh( void );
 extern void     GUIAPI GUIWndUpdate( gui_window *wnd );
 extern bool     GUIAPI GUISetBackgroundChar( gui_window *wnd, char background );
@@ -706,7 +706,7 @@ extern void     GUIAPI GUISetCheckResizeAreaForChildren( gui_window *wnd, bool c
 /* Cursor Functions */
 
 extern bool     GUIAPI GUIGetCursorPos( gui_window *wnd, gui_point *point );
-extern bool     GUIAPI GUISetCursorPos( gui_window *wnd, gui_point *point );
+extern bool     GUIAPI GUISetCursorPos( gui_window *wnd, const gui_point *point );
 extern bool     GUIAPI GUIGetCursorType( gui_window *wnd, gui_cursor_type *cursor );
 extern bool     GUIAPI GUISetCursorType( gui_window *wnd, gui_cursor_type cursor );
 
@@ -764,8 +764,8 @@ extern bool     GUIAPI GUIDrawBarGroup( gui_window *wnd, gui_text_ord row, gui_o
 extern bool     GUIAPI GUISetWindowText( gui_window *wnd, const char *data );
 extern size_t   GUIAPI GUIGetWindowTextLength( gui_window *wnd );
 extern size_t   GUIAPI GUIGetWindowText( gui_window *wnd, char *buff, size_t buff_len );
-extern gui_text_ord GUIAPI GUIGetRow( gui_window *wnd, gui_point *pos );
-extern gui_text_ord GUIAPI GUIGetCol( gui_window *wnd, const char *text, gui_point *pos );
+extern gui_text_ord GUIAPI GUIGetRow( gui_window *wnd, const gui_point *pos );
+extern gui_text_ord GUIAPI GUIGetCol( gui_window *wnd, const char *text, const gui_point *pos );
 extern gui_text_ord GUIAPI GUIGetStringPos( gui_window *wnd, gui_ord indent, const char *string, gui_ord mouse_x );
 extern gui_ord  GUIAPI GUIGetExtentX( gui_window *wnd, const char *text, size_t length );
 extern gui_ord  GUIAPI GUIGetExtentY( gui_window *wnd, const char *text );
@@ -780,10 +780,10 @@ extern void     GUIAPI GUIGetPoint( gui_window *wnd, gui_ord extent, gui_text_or
 
 extern const gui_menu_items     NoMenu;
 
-extern bool     GUIAPI GUICreateFloatingPopup( gui_window *wnd, gui_point *location,
+extern bool     GUIAPI GUICreateFloatingPopup( gui_window *wnd, const gui_point *location,
                                         const gui_menu_items *menus,
                                         gui_mouse_track track, gui_ctl_id *curr_id );
-extern bool     GUIAPI GUITrackFloatingPopup( gui_window *wnd, gui_point *location,
+extern bool     GUIAPI GUITrackFloatingPopup( gui_window *wnd, const gui_point *location,
                                    gui_mouse_track track, gui_ctl_id *curr_id );
 extern bool     GUIAPI GUIEnableMenuItem( gui_window *wnd, gui_ctl_id id, bool enabled, bool floating );
 extern bool     GUIAPI GUICheckMenuItem( gui_window *wnd, gui_ctl_id id, bool check, bool floating );

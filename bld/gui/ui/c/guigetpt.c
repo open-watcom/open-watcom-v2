@@ -35,10 +35,10 @@
 #include "guiscale.h"
 
 /*
- * GUIGetPoint -- Get the point in win at extent in row
+ * GUIGetPoint -- Get the point in win at extentx in row
  */
 
-void GUIGetPoint( gui_window *wnd, gui_ord extentx, gui_text_ord row, gui_point *point )
+void GUIAPI GUIGetPoint( gui_window *wnd, gui_ord extentx, gui_text_ord row, gui_point *point )
 {
     /* unused parameters */ (void)wnd;
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,19 +39,19 @@
 #include "guievent.h"
 
 
-gui_help_instance GUIHelpInit( gui_window *wnd, const char *file, const char *title )
+gui_help_instance GUIAPI GUIHelpInit( gui_window *wnd, const char *file, const char *title )
 {
     /* unused parameters */ (void)wnd; (void)file; (void)title;
 
     return( (gui_help_instance)true );
 }
 
-void GUIHelpFini( gui_help_instance inst, gui_window *wnd, const char *file )
+void GUIAPI GUIHelpFini( gui_help_instance inst, gui_window *wnd, const char *file )
 {
     /* unused parameters */ (void)inst; (void)wnd; (void)file;
 }
 
-bool GUIShowHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act, const char *file, const char *topic )
+bool GUIAPI GUIShowHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act, const char *file, const char *topic )
 {
     bool        ret;
 
@@ -78,14 +78,14 @@ bool GUIShowHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act,
     return( ret );
 }
 
-bool GUIShowHtmlHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act, const char *file, const char *topic )
+bool GUIAPI GUIShowHtmlHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act, const char *file, const char *topic )
 {
     /* unused parameters */ (void)inst; (void)wnd; (void)act; (void)file; (void)topic;
 
     return( false );
 }
 
-bool GUIDisplayHelp( gui_window *wnd, const char *file, const char *topic )
+bool GUIAPI GUIDisplayHelp( gui_window *wnd, const char *file, const char *topic )
 {
     bool colours_set;
     const char *helpfiles[2] = { NULL, NULL };
@@ -105,7 +105,7 @@ bool GUIDisplayHelp( gui_window *wnd, const char *file, const char *topic )
     return( true );
 }
 
-bool GUIDisplayHelpId( gui_window *wnd, const char *file, gui_hlp_id id )
+bool GUIAPI GUIDisplayHelpId( gui_window *wnd, const char *file, gui_hlp_id id )
 {
     /* unused parameters */ (void)wnd; (void)file; (void)id;
 

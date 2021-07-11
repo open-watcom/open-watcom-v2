@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -160,7 +161,7 @@ bool GUIDisplayHintText( gui_window *wnd_with_status, gui_window *wnd,
     return( false );
 }
 
-bool GUISetMenuHintText( gui_window *wnd, gui_ctl_id id, const char *text )
+bool GUIAPI GUISetMenuHintText( gui_window *wnd, gui_ctl_id id, const char *text )
 {
     return( HintTextSet( &wnd->hintsinfo, id, MENU_HINT, text ) );
 }

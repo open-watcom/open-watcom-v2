@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,7 +73,7 @@ static void SetScrollThumb( p_gadget gadget, int percent, bool range_set )
  * GUISetHScrollThumb
  */
 
-void GUISetHScrollThumb( gui_window * wnd, int percent )
+void GUIAPI GUISetHScrollThumb( gui_window * wnd, int percent )
 {
     if( wnd != NULL ) {
         SetScrollThumb( wnd->hgadget, percent, GUI_HRANGE_SET( wnd ) );
@@ -84,7 +85,7 @@ void GUISetHScrollThumb( gui_window * wnd, int percent )
  * GUISetVScrollThumb
  */
 
-void GUISetVScrollThumb( gui_window * wnd, int percent )
+void GUIAPI GUISetVScrollThumb( gui_window * wnd, int percent )
 {
     if( wnd != NULL ) {
         SetScrollThumb( wnd->vgadget, percent, GUI_VRANGE_SET( wnd ) );

@@ -33,11 +33,12 @@
 
 #include "guiwind.h"
 
+
 /*
  * GUIGetNumRows --
  */
 
-gui_text_ord GUIGetNumRows( gui_window * wnd )
+gui_text_ord GUIAPI GUIGetNumRows( gui_window * wnd )
 {
     return( wnd->num_rows );
 }

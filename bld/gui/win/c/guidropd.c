@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,7 @@
 #include "guiwind.h"
 #include "guicutil.h"
 
-bool GUIDropDown( gui_window *wnd, gui_ctl_id id, bool drop )
+bool GUIAPI GUIDropDown( gui_window *wnd, gui_ctl_id id, bool drop )
 {
     gui_control_class control_class;
 

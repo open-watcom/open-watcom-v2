@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,7 @@
 #include "guiwind.h"
 #include "guiscale.h"
 
-void GUIGetClientRect( gui_window *wnd, gui_rect *client )
+void GUIAPI GUIGetClientRect( gui_window *wnd, gui_rect *client )
 {
     WPI_RECT    rect;
     GUI_RECTDIM left, top, right, bottom;
@@ -49,7 +50,7 @@ void GUIGetClientRect( gui_window *wnd, gui_rect *client )
     GUIClientToScaleRect( client );
 }
 
-bool GUIGetPaintRect( gui_window *wnd, gui_rect *paint )
+bool GUIAPI GUIGetPaintRect( gui_window *wnd, gui_rect *paint )
 {
     WPI_RECT    rect;
     GUI_RECTDIM left, top, right, bottom;

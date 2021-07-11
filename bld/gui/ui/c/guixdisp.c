@@ -401,7 +401,7 @@ static void CentreButtons( gui_text_ord cols, int num_buttons, gui_control_info 
  * GUIDisplayMessage -- display the message, return the user's response
  */
 
-gui_message_return GUIDisplayMessage( gui_window *wnd, const char *message,
+gui_message_return GUIAPI GUIDisplayMessage( gui_window *wnd, const char *message,
                                       const char *title, gui_message_type type )
 {
     gui_text_ord        rows;

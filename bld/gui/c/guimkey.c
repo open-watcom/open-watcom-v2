@@ -155,7 +155,7 @@ gui_key GUIMapKey( gui_key key )
     return( key );
 }
 
-void GUIGetKeyState( gui_keystate *state )
+void GUIAPI GUIGetKeyState( gui_keystate *state )
 {
     if( state != NULL ) {
         GUISetKeyState();

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -89,7 +90,7 @@ WPI_MRESULT GUIToComboList( gui_window *wnd, gui_ctl_id id, WPI_MSG lb_msg, WPI_
     return( my_ret );
 }
 
-bool GUIGetControlClass( gui_window *wnd, gui_ctl_id id, gui_control_class *control_class )
+bool GUIAPI GUIGetControlClass( gui_window *wnd, gui_ctl_id id, gui_control_class *control_class )
 {
     control_item        *item;
 

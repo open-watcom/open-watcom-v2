@@ -1587,7 +1587,7 @@ void SetWidthHeight( gui_rect *rect, bool has_parent )
  * main - main function for application - called by GUI library
  */
 
-void GUImain( void )
+void GUIAPI GUImain( void )
 {
     gui_window          *parent_wnd;
     gui_system_metrics  metrics;
@@ -1770,12 +1770,12 @@ void GUImain( void )
 //    GUIInsertMenuToPopup( MainWnd, MENU_MODIFY_COLOUR, 0, &ChildMenu, false );
 }
 
-bool GUIDeath ( void )
+bool GUIAPI GUIDeath ( void )
 {
     return( true );
 }
 
-char *GUIGetWindowClassName( void )
+char * GUIAPI GUIGetWindowClassName( void )
 {
     return( "foobar" );
 }

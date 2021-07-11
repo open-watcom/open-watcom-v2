@@ -1157,7 +1157,7 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
 
 } /* GUIGetFileName */
 
-void GUIHookFileDlg( bool hook )
+void GUIAPI GUIHookFileDlg( bool hook )
 {
     /* unused parameters */ (void)hook;
 }
