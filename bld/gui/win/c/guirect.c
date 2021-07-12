@@ -42,38 +42,29 @@ void DoGetRelRect( HWND hwnd, const WPI_RECT *wpi_rect, gui_rect *rect, bool isp
     WPI_RECT    parent_wpi_rect;
     HWND        parent;
     gui_coord   pos;
-    gui_coord   size;
     GUI_RECTDIM left, top, right, bottom;
 
     _wpi_getrectvalues( *wpi_rect, &left, &top, &right, &bottom );
+    rect->width = GUIScreenToScaleH( right - left );
+    rect->height = GUIScreenToScaleV( bottom - top );
+
     pos.x = left;
-    pos.y = top;
-    size.x = right;
-    size.y = bottom;
-
-    size.x -= pos.x;
-    size.y -= pos.y;
 #ifdef __OS2_PM__
-    pos.y += size.y - 1;
+    pos.y = bottom - 1;
+#else
+    pos.y = top;
 #endif
-
     parent = _wpi_getparent( hwnd );
     if( parent != HWND_DESKTOP && !ispopup ) {
         _wpi_getclientrect( parent, &parent_wpi_rect );
         _wpi_mapwindowpoints( parent, HWND_DESKTOP, (WPI_LPPOINT)&parent_wpi_rect, 2 );
         _wpi_getrectvalues( parent_wpi_rect, &left, &top, &right, &bottom );
-        pos.x -= left;
-        pos.y -= top;
-        pos.y = _wpi_cvth_y( pos.y, bottom - top );
-        rect->x = GUIScreenToScaleH( pos.x );
-        rect->y = GUIScreenToScaleV( pos.y );
+        rect->x = GUIScreenToScaleH( pos.x - left );
+        rect->y = GUIScreenToScaleV( _wpi_cvth_y( pos.y - top, bottom - top ) );
     } else {
-        pos.y = _wpi_cvts_y( pos.y );
         rect->x = GUIScreenToScaleX( pos.x );
-        rect->y = GUIScreenToScaleY( pos.y );
+        rect->y = GUIScreenToScaleY( _wpi_cvts_y( pos.y ) );
     }
-    rect->width = GUIScreenToScaleH( size.x );
-    rect->height = GUIScreenToScaleV( size.y );
 }
 
 void GUIGetRelRect( HWND hwnd, gui_rect *rect, bool ispopup )

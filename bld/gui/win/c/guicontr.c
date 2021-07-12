@@ -36,7 +36,6 @@
 #include <stdlib.h>
 #include "guistyle.h"
 #include "guixutil.h"
-#include "guiscale.h"
 #include "guicontr.h"
 #include "guixwind.h"
 #include "guicombo.h"

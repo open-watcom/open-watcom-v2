@@ -37,7 +37,6 @@
 #include "guixloop.h"
 #include "guiwhole.h"
 #include "guicontr.h"
-#include "guiscale.h"
 #include "guifloat.h"
 #include "guixkey.h"
 #include "guisysme.h"

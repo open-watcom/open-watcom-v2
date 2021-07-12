@@ -35,7 +35,6 @@
 #include "guixdraw.h"
 #include "guixutil.h"
 #include "guicontr.h"
-#include "guiscale.h"
 #include "uiattrs.h"
 #include "guigadgt.h"
 #include "guiicon.h"

@@ -180,7 +180,7 @@ void GUISetMenu( gui_window *wnd, HMENU hmenu )
 {
     HWND        frame;
     WPI_RECT    wpi_rect;
-    gui_coord   size;
+    guix_coord  scr_size;
     int         height;
 #ifndef __OS2_PM__
     HMENU       hmenu2;
@@ -194,9 +194,10 @@ void GUISetMenu( gui_window *wnd, HMENU hmenu )
     height = _wpi_getheightrect( wpi_rect );
     _wpi_setmenu( frame, hmenu );
     _wpi_getclientrect( frame, &wpi_rect );
-    if( height != ( size.y = _wpi_getheightrect( wpi_rect ) ) ) {
-        size.x = _wpi_getwidthrect( wpi_rect );
-        GUIDoResize( wnd, GUIGetParentHWND( wnd ), &size );
+    scr_size.y = _wpi_getheightrect( wpi_rect );
+    if( height != scr_size.y ) {
+        scr_size.x = _wpi_getwidthrect( wpi_rect );
+        GUIDoResize( wnd, GUIGetParentHWND( wnd ), &scr_size );
     }
 #ifndef __OS2_PM__
     if( hmenu2 != NULLHANDLE ) {

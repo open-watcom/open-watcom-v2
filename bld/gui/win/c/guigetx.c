@@ -34,7 +34,7 @@
 #include "guiwind.h"
 #include <stdlib.h>
 #include "guigetx.h"
-#include "guiscale.h"
+
 
 /*
  * GUIGetTextExtentX -- get the width of the given text

@@ -32,8 +32,8 @@
 
 
 #include "guiwind.h"
-#include "guiscale.h"
 #include "guixutil.h"
+
 
 bool GUIAPI GUIDrawBar( gui_window *wnd, gui_text_ord row, gui_ord start, gui_ord width,
                  gui_bar_styles bstyle, gui_attr attr, bool selected )

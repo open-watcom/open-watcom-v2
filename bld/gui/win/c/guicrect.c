@@ -43,9 +43,8 @@ void GUIAPI GUIGetClientRect( gui_window *wnd, gui_rect *rect )
     wpi_rect = wnd->hwnd_client_rect;
     _wpi_mapwindowpoints( wnd->hwnd, HWND_DESKTOP, (WPI_LPPOINT)&wpi_rect, 2 );
     _wpi_getwrectvalues( wpi_rect, &left, &top, &right, &bottom );
-    top = _wpi_cvts_y( top );
     client.s_x = left;
-    client.s_y = top;
+    client.s_y = _wpi_cvts_y( top );
     client.s_width = right - left;
     client.s_height = _wpi_getheightrect( wpi_rect );
     GUIClientToScaleRect( &client, rect );
@@ -63,9 +62,8 @@ bool GUIAPI GUIGetPaintRect( gui_window *wnd, gui_rect *rect )
 
     _wpi_getpaintrect( wnd->ps, &wpi_rect );
     _wpi_getrectvalues( wpi_rect, &left, &top, &right, &bottom );
-    top = _wpi_cvtc_y_plus1( wnd->hwnd, top );
     client.s_x = left;
-    client.s_y = top;
+    client.s_y = _wpi_cvtc_y_plus1( wnd->hwnd, top );
     client.s_width = right - left;
     client.s_height = _wpi_getheightrect( wpi_rect );
     GUIClientToScaleRect( &client, rect );

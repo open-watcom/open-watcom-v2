@@ -664,7 +664,6 @@ void GUIResizeBackground( gui_window *wnd, bool force_msg )
     WPI_RECT    wpi_rect;
     int         tbar_height, status_height;
     GUI_RECTDIM left, top, right, bottom;
-    gui_coord   size;
 
     if( wnd->root == NULLHANDLE ) {
         if( wnd->hwnd != NULLHANDLE ) {
@@ -705,6 +704,8 @@ void GUIResizeBackground( gui_window *wnd, bool force_msg )
     _wpi_getclientrect( wnd->hwnd, &wnd->hwnd_client_rect );
 
     if( force_msg && (wnd->flags & SENT_INIT) ) {
+        gui_coord   size;
+
         size.x = GUIScreenToScaleH( right - left );
         size.y = GUIScreenToScaleV( bottom - top );
         GUIEVENT( wnd, GUI_RESIZE, &size );
@@ -735,7 +736,7 @@ static bool SetFocusToParent( void )
 }
 #endif
 
-void GUIDoResize( gui_window *wnd, HWND hwnd, gui_coord *screen_size )
+void GUIDoResize( gui_window *wnd, HWND hwnd, const guix_coord *scr_size )
 {
     hwnd = hwnd;
     if( wnd->style & GUI_CHANGEABLE_FONT ) {
@@ -749,14 +750,14 @@ void GUIDoResize( gui_window *wnd, HWND hwnd, gui_coord *screen_size )
     if( (wnd->flags & NEEDS_RESIZE_REDRAW) == 0 ) {
         wnd->old_rows = wnd->num_rows;
     }
-    GUISetRowCol( wnd, screen_size );
+    GUISetRowCol( wnd, scr_size );
     wnd->flags |= NEEDS_RESIZE_REDRAW;
     GUISetScroll( wnd );
     if( wnd->flags & SENT_INIT ) {
         gui_coord   size;
 
-        size.x = GUIScreenToScaleH( screen_size->x );
-        size.y = GUIScreenToScaleV( screen_size->y );
+        size.x = GUIScreenToScaleH( scr_size->x );
+        size.y = GUIScreenToScaleV( scr_size->y );
         GUIEVENT( wnd, GUI_RESIZE, &size );
     }
     GUIInvalidatePaintHandles( wnd );
@@ -830,7 +831,6 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
     gui_ctl_id          id;
     WPI_POINT           wpi_point;
     gui_coord           point;
-    gui_coord           size;
     WPI_MRESULT         ret;
     WPI_RECT            wpi_rect;
     HWND                parent;
@@ -909,9 +909,11 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
         switch( msg ) {
         case WM_SIZE :
             if( !_wpi_isiconic( _wpi_getframe( hwnd ) ) ) {
-                size.x = _wpi_getwmsizex( wparam, lparam );
-                size.y = _wpi_getwmsizey( wparam, lparam );
-                GUIDoResize( wnd, hwnd, &size );
+                guix_coord  scr_size;
+
+                scr_size.x = _wpi_getwmsizex( wparam, lparam );
+                scr_size.y = _wpi_getwmsizey( wparam, lparam );
+                GUIDoResize( wnd, hwnd, &scr_size );
             }
             /* fall through */
         case WM_MOVE :
@@ -1136,10 +1138,12 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
                     GUIBringNewToFront( wnd );
                 }
             } else {
+                guix_coord  scr_size;
+
                 wnd->flags &= ~IS_MINIMIZED;
-                size.x = _wpi_getwmsizex( wparam, lparam );
-                size.y = _wpi_getwmsizey( wparam, lparam );
-                GUIDoResize( wnd, hwnd, &size );
+                scr_size.x = _wpi_getwmsizex( wparam, lparam );
+                scr_size.y = _wpi_getwmsizey( wparam, lparam );
+                GUIDoResize( wnd, hwnd, &scr_size );
                 if( wnd->flags & IS_ROOT ) {
                     win = GUIGetParentFrameHWND( wnd );
                     if( !_wpi_isiconic( win ) ) {

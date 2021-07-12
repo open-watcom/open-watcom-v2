@@ -331,21 +331,21 @@ void GUIMakeRelative( gui_window *wnd, const guix_point *scr_point, gui_point *p
 {
     SAREA       area;
     SAREA       use;
-    guix_ord    screen_x;
-    guix_ord    screen_y;
+    guix_ord    scr_x;
+    guix_ord    scr_y;
 
     GUIGetSAREA( wnd, &area );
     GUISetUseArea( wnd, &area, &use );
-    screen_x = scr_point->x - use.col - area.col;
-    screen_y = scr_point->y - use.row - area.row;
+    scr_x = scr_point->x - use.col - area.col;
+    scr_y = scr_point->y - use.row - area.row;
     if( ( wnd->hgadget != NULL ) && !GUI_HSCROLL_EVENTS_SET( wnd ) ) {
-        screen_x += wnd->hgadget->pos;
+        scr_x += wnd->hgadget->pos;
     }
     if( ( wnd->vgadget != NULL ) && !GUI_VSCROLL_EVENTS_SET( wnd ) ) {
-        screen_y += wnd->vgadget->pos;
+        scr_y += wnd->vgadget->pos;
     }
-    point->x = GUIScreenToScaleH( screen_x );
-    point->y = GUIScreenToScaleV( screen_y );
+    point->x = GUIScreenToScaleH( scr_x );
+    point->y = GUIScreenToScaleV( scr_y );
 }
 
 /*

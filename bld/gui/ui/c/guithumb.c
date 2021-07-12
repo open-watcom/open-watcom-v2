@@ -32,7 +32,6 @@
 
 
 #include "guiwind.h"
-#include "guiscale.h"
 #include "guigadgt.h"
 
 /*

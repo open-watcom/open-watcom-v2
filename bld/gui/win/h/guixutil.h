@@ -39,7 +39,7 @@ extern bool GUISetupStruct( gui_window *wnd, gui_create_info *, guix_coord *scr_
 extern void GUICalcLocation( const gui_rect *rect, guix_coord *scr_pos, guix_coord *scr_size, HWND parent );
 extern void GUIError( const char *err_str );
 extern bool GUIScrollOn( gui_window *wnd, int bar );
-extern void GUISetRowCol( gui_window *wnd, guix_coord *size );
+extern void GUISetRowCol( gui_window *wnd, const guix_coord *size );
 extern void GUIInvalidateResize( gui_window *wnd );
 extern WPI_MRESULT GUISendMessage( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 extern WPI_MRESULT GUISendDlgItemMessage( HWND hwnd, gui_ctl_id id, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );

@@ -34,7 +34,7 @@
 #ifndef _GUIRECT_H_
 #define _GUIRECT_H_
 
-extern void DoGetRelRect( HWND hwnd, WPI_RECT *wpi_rect, gui_rect *rect, bool ispopup );
+extern void DoGetRelRect( HWND hwnd, const WPI_RECT *wpi_rect, gui_rect *rect, bool ispopup );
 extern void GUIGetRelRect( HWND hwnd, gui_rect *rect, bool ispopup );
 
 #endif

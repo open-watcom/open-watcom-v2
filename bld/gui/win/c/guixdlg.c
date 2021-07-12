@@ -299,7 +299,6 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
     gui_window          *wnd;
     bool                msg_processed;
     bool                ret;
-    gui_coord           size;
     WPI_POINT           wpi_point;
     HWND                child;
     HWND                hfocus;
@@ -330,11 +329,16 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
     switch( message ) {
     case WM_SIZE :
         if( wnd != NULL ) {
+            guix_coord  scr_size;
+            gui_coord   size;
+
             _wpi_getclientrect( hwnd, &wnd->hwnd_client_rect );
             wnd->root_client_rect = wnd->hwnd_client_rect;
-            size.x = GUIScreenToScaleH( _wpi_getwmsizex( wparam, lparam ) );
-            size.y = GUIScreenToScaleV( _wpi_getwmsizey( wparam, lparam ) );
-            GUISetRowCol( wnd, &size );
+            scr_size.x = _wpi_getwmsizex( wparam, lparam );
+            scr_size.y = _wpi_getwmsizey( wparam, lparam );
+            GUISetRowCol( wnd, &scr_size );
+            size.x = GUIScreenToScaleH( scr_size.x );
+            size.y = GUIScreenToScaleV( scr_size.y );
             GUIEVENT( wnd, GUI_RESIZE, &size );
         }
         break;

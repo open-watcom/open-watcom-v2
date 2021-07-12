@@ -103,7 +103,7 @@ static void EndMaxRestore( HWND hwnd )
 {
     gui_window  *wnd;
     WPI_RECT    wpi_rect;
-    gui_coord   size;
+    guix_coord  scr_size;
 
     wnd = GUIGetWindow( hwnd );
     if( GUI_HSCROLL_ON( wnd ) ) {
@@ -114,9 +114,9 @@ static void EndMaxRestore( HWND hwnd )
     }
     DoingMaxRestore = false;
     _wpi_getwindowrect( hwnd, &wpi_rect );
-    size.x = _wpi_getwidthrect( wpi_rect );
-    size.y = _wpi_getheightrect( wpi_rect );
-    GUIDoResize( wnd, hwnd, &size );
+    scr_size.x = _wpi_getwidthrect( wpi_rect );
+    scr_size.y = _wpi_getheightrect( wpi_rect );
+    GUIDoResize( wnd, hwnd, &scr_size );
 }
 
 static void SetWindowTitle( HWND hwnd )

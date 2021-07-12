@@ -391,19 +391,20 @@ bool GUIScrollOn( gui_window *wnd, int bar )
     return( false );
 }
 
-void GUISetRowCol( gui_window *wnd, guix_coord *size )
+void GUISetRowCol( gui_window *wnd, const guix_coord *scr_size )
 {
-    guix_coord  my_size;
+    guix_ord    size_x;
+    guix_ord    size_y;
 
-    if( size == NULL ) {
-        my_size.y = _wpi_getheightrect( wnd->hwnd_client_rect );
-        my_size.x = _wpi_getwidthrect( wnd->hwnd_client_rect );
+    if( scr_size == NULL ) {
+        size_x = _wpi_getwidthrect( wnd->hwnd_client_rect );
+        size_y = _wpi_getheightrect( wnd->hwnd_client_rect );
     } else {
-        my_size = *size;
+        size_x = scr_size->x;
+        size_y = scr_size->y;
     }
-
-    wnd->num_rows = GUIToTextY( my_size.y, wnd );
-    wnd->num_cols = GUIToTextX( my_size.x, wnd );
+    wnd->num_cols = GUIToTextX( size_x, wnd );
+    wnd->num_rows = GUIToTextY( size_y, wnd );
 }
 
 /*
