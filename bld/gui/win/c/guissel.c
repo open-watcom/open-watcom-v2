@@ -49,10 +49,10 @@ static bool GUISelect( gui_window *wnd, gui_ctl_id id, bool set, WPI_PARAM2 lpar
     case GUI_EDIT:
         msg = ( set ) ? EM_SETSEL : EM_GETSEL;
         break;
-    case GUI_EDIT_COMBOBOX :
+    case GUI_EDIT_COMBOBOX:
         msg = ( set ) ? CB_SETEDITSEL : CB_GETEDITSEL;
         break;
-    default :
+    default:
         return( false );
     }
 #ifdef __OS2_PM__

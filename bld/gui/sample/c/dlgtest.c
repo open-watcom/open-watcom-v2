@@ -67,12 +67,12 @@ static bool TestDialogWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *
     int         num;
 
     switch( gui_ev ) {
-    case GUI_INIT_DIALOG :
+    case GUI_INIT_DIALOG:
         return( true );
-    case GUI_CONTROL_NOT_ACTIVE :
+    case GUI_CONTROL_NOT_ACTIVE:
         GUI_GETID( param, id );
         switch( id ) {
-        case LISTBOX_CONTROL :
+        case LISTBOX_CONTROL:
             num = -1;
             GUIGetCurrSelect( wnd, LISTBOX_CONTROL, &num );
             text = GUIGetListItem( wnd, LISTBOX_CONTROL, num );
@@ -80,22 +80,22 @@ static bool TestDialogWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *
             GUISetListItemData( wnd, LISTBOX_CONTROL, num, (void *)num );
             num = (int)GUIGetListItemData( wnd, LISTBOX_CONTROL, num );
             break;
-        case EDIT_CONTROL :
+        case EDIT_CONTROL:
             new = GUIGetText( wnd, EDIT_CONTROL );
             GUIMemFree( new );
             break;
         }
         return( true );
-    case GUI_CONTROL_RCLICKED :
+    case GUI_CONTROL_RCLICKED:
         GUI_GETID( param, id );
         text = GUIGetText( wnd, id );
         GUIDisplayMessage( wnd, text, text, GUI_ABORT_RETRY_IGNORE );
         GUIMemFree( text );
         return( true );
-    case GUI_CONTROL_DCLICKED :
+    case GUI_CONTROL_DCLICKED:
         GUI_GETID( param, id );
         switch( id ) {
-        case LISTBOX_CONTROL :
+        case LISTBOX_CONTROL:
             num = -1;
             GUIGetCurrSelect( wnd, LISTBOX_CONTROL, &num );
             text = GUIGetListItem( wnd, LISTBOX_CONTROL, num );
@@ -103,11 +103,11 @@ static bool TestDialogWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *
             return( true );
         }
         break;
-    case GUI_CONTROL_CLICKED :
+    case GUI_CONTROL_CLICKED:
         GUIGetFocus( wnd, &id );
         GUI_GETID( param, id );
         switch( id ) {
-        case LISTBOX_CONTROL :
+        case LISTBOX_CONTROL:
             text = GUIGetText( wnd, LISTBOX_CONTROL );
             GUIMemFree( text );
             num = -1;
@@ -115,7 +115,7 @@ static bool TestDialogWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *
             text = GUIGetListItem( wnd, LISTBOX_CONTROL, num );
             GUIMemFree( text );
             return( true );
-        case OKBUTTON_CONTROL :
+        case OKBUTTON_CONTROL:
             num = CHECKBOX_CONTROL2;
             if( wnd == DialogWindow ) {
                 GUIDestroyWnd( wnd );
@@ -128,22 +128,22 @@ static bool TestDialogWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *
                 }
             }
             return( true );
-        case CANCELBUTTON_CONTROL :
+        case CANCELBUTTON_CONTROL:
             GUICloseDialog( wnd );
             return( true );
-        case EDIT_CONTROL :
+        case EDIT_CONTROL:
             GUIDisplayMessage( wnd, "Edit Control", "Got dialog item : ", GUI_QUESTION );
             return( true );
-        case STATIC_CONTROL :
+        case STATIC_CONTROL:
             GUIDisplayMessage( wnd, "Static Control", "Got dialog item : ", GUI_STOP );
             return( true );
-        case ADDBUTTON_CONTROL :
+        case ADDBUTTON_CONTROL:
             return( true );
-        case CLEARBUTTON_CONTROL :
+        case CLEARBUTTON_CONTROL:
             return( true );
         }
         break;
-    default :
+    default:
         break;
     }
     return( false );

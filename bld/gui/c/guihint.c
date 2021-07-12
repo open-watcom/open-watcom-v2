@@ -38,19 +38,19 @@
 static bool SetStructNum( hints_info *hintsinfo, hint_type type, const gui_hint_items *hints )
 {
     switch( type ) {
-    case MENU_HINT :
+    case MENU_HINT:
         hintsinfo->menu = *hints;
         return( true );
-    case TOOL_HINT :
+    case TOOL_HINT:
         hintsinfo->tool = *hints;
         return( true );
-    case FLOAT_HINT :
+    case FLOAT_HINT:
         hintsinfo->floating = *hints;
         return( true );
-    case GUI_HINT :
+    case GUI_HINT:
         hintsinfo->gui = *hints;
         return( true );
-    default :
+    default:
         return( false );
     }
 }
@@ -58,19 +58,19 @@ static bool SetStructNum( hints_info *hintsinfo, hint_type type, const gui_hint_
 static bool GetStructNum( hints_info *hintsinfo, hint_type type, gui_hint_items *hints )
 {
     switch( type ) {
-    case MENU_HINT :
+    case MENU_HINT:
         *hints = hintsinfo->menu;
         return( true );
-    case TOOL_HINT :
+    case TOOL_HINT:
         *hints = hintsinfo->tool;
         return( true );
-    case FLOAT_HINT :
+    case FLOAT_HINT:
         *hints = hintsinfo->floating;
         return( true );
-    case GUI_HINT :
+    case GUI_HINT:
         *hints = hintsinfo->gui;
         return( true );
-    default :
+    default:
         return( false );
     }
 }

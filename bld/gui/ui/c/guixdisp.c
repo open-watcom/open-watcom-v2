@@ -148,7 +148,7 @@ static void InitMessageControls( void )
         case CTLT_STOP:
             MessageControls[j].ctl_info.text = LIT( Stop_Bang );
             break;
-        default :
+        default:
             break;
         }
     }
@@ -165,24 +165,24 @@ static bool DisplayMessageGUIEventProc( gui_window *wnd, gui_event gui_ev, void 
 
     ret = GUIGetExtra( wnd );
     switch( gui_ev ) {
-    case GUI_CONTROL_CLICKED :
+    case GUI_CONTROL_CLICKED:
         GUI_GETID( param, id );
         switch( id ) {
-        case GUI_RET_ABORT :
-        case GUI_RET_CANCEL :
-        case GUI_RET_IGNORE :
-        case GUI_RET_NO :
-        case GUI_RET_OK :
-        case GUI_RET_RETRY :
-        case GUI_RET_YES :
+        case GUI_RET_ABORT:
+        case GUI_RET_CANCEL:
+        case GUI_RET_IGNORE:
+        case GUI_RET_NO:
+        case GUI_RET_OK:
+        case GUI_RET_RETRY:
+        case GUI_RET_YES:
             *ret = (gui_message_return)id;
             GUICloseDialog( wnd );
             return( true );
-        default :
+        default:
             break;
         }
         break;
-    default :
+    default:
         break;
     }
     return( false );
@@ -350,15 +350,15 @@ static int AdjustVert( gui_text_ord *cols, control_types controls_to_use,
         if( ( i < num_controls ) && ( controls_to_use & MessageControls[j].type ) ) {
             memcpy( &controls_info[i], &MessageControls[j].ctl_info, sizeof( gui_control_info ) );
             switch( controls_info[i].control_class ) {
-            case GUI_PUSH_BUTTON :
-            case GUI_DEFPUSH_BUTTON :
+            case GUI_PUSH_BUTTON:
+            case GUI_DEFPUSH_BUTTON:
                 num_buttons ++;
                 controls_info[i].rect.y = DLG_ROW( BUTTON_ROW + num_string_controls  - 1 );
                 break;
-            case GUI_STATIC :
+            case GUI_STATIC:
                 controls_info[i].rect.y = DLG_ROW( ICON_ROW + ( num_string_controls - 1 ) / 2 );
                 break;
-            default :
+            default:
                 break;
             }
             *cols = UpdateCols( &controls_info[i], *cols );
@@ -385,13 +385,13 @@ static void CentreButtons( gui_text_ord cols, int num_buttons, gui_control_info 
     }
     for( i = 0; i < num_controls; i++ ) {
         switch( controls_info[i].control_class ) {
-        case GUI_PUSH_BUTTON :
-        case GUI_DEFPUSH_BUTTON :
+        case GUI_PUSH_BUTTON:
+        case GUI_DEFPUSH_BUTTON:
             button_number++;
             controls_info[i].rect.x = DLG_COL( space_per_button
               * button_number - ( ( space_per_button + BUTTON_WIDTH ) / 2 ) );
             break;
-        default :
+        default:
             break;
         }
     }

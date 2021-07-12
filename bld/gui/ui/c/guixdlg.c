@@ -282,12 +282,12 @@ a_list *GUIGetList( VFIELD *field )
 
     list = NULL;
     switch( field->typ ) {
-    case FLD_PULLDOWN :
-    case FLD_LISTBOX :
+    case FLD_PULLDOWN:
+    case FLD_LISTBOX:
     case FLD_EDIT_MLE:
         list = field->u.list;
         break;
-    case FLD_COMBOBOX :
+    case FLD_COMBOBOX:
         combo_box = field->u.combo;
         list = &combo_box->list;
         break;
@@ -353,10 +353,10 @@ void GUIDoFreeField( VFIELD *field, a_radio_group **group )
     a_combo_box *combo_box;
 
     switch( field->typ ) {
-    case FLD_HOT :
+    case FLD_HOT:
         GUIFreeHotSpot( field->u.hs );
         break;
-    case FLD_RADIO :
+    case FLD_RADIO:
         radio = field->u.radio;
         if( ( group != NULL ) && ( *group != radio->group ) ) {
             *group = radio->group;
@@ -364,28 +364,28 @@ void GUIDoFreeField( VFIELD *field, a_radio_group **group )
         }
         GUIFreeRadio( radio );
         break;
-    case FLD_CHECK :
+    case FLD_CHECK:
         GUIFreeCheck( field->u.check );
         break;
-    case FLD_COMBOBOX :
+    case FLD_COMBOBOX:
         combo_box = field->u.combo;
         GUIFreeList( &combo_box->list, false );
         FreeEdit( &combo_box->edit, false, true );
         GUIMemFree( combo_box );
         break;
-    case FLD_EDIT :
+    case FLD_EDIT:
         FreeEdit( field->u.edit, true, false );
         break;
-    case FLD_INVISIBLE_EDIT :
+    case FLD_INVISIBLE_EDIT:
         FreeEdit( field->u.edit, true, true );
         break;
     case FLD_EDIT_MLE:
-    case FLD_LISTBOX :
-    case FLD_PULLDOWN :
+    case FLD_LISTBOX:
+    case FLD_PULLDOWN:
         GUIFreeList( field->u.list, true );
         break;
-    case FLD_FRAME :
-    case FLD_TEXT :
+    case FLD_FRAME:
+    case FLD_TEXT:
         if( field->u.str != NULL ) {
             GUIMemFree( field->u.str );
         }
@@ -456,12 +456,12 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
     }
 
     switch( field->typ ) {
-    case FLD_HOT :
+    case FLD_HOT:
         if( !GUICreateHot( ctl_info, field ) ) {
             return( false );
         }
         break;
-    case FLD_RADIO :
+    case FLD_RADIO:
         radio = (a_radio *)GUIMemAlloc( sizeof( a_radio ) );
         field->u.radio = radio;
         ok = false;
@@ -481,7 +481,7 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
             RadioGroup->value = radio->value;
         }
         break;
-    case FLD_CHECK :
+    case FLD_CHECK:
         check = (a_check *)GUIMemAlloc( sizeof( a_check ) );
         field->u.check = check;
         ok = false;
@@ -497,7 +497,7 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
             check->def = false;
         }
         break;
-    case FLD_COMBOBOX :
+    case FLD_COMBOBOX:
         combo_box = (a_combo_box *)GUIMemAlloc( sizeof( a_combo_box ) );
         if( combo_box == NULL ) {
             return( false );
@@ -515,8 +515,8 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
         }
         combo_box->perm = false;
         break;
-    case FLD_EDIT :
-    case FLD_INVISIBLE_EDIT :
+    case FLD_EDIT:
+    case FLD_INVISIBLE_EDIT:
         edit_control = (an_edit_control *)GUIMemAlloc( sizeof( an_edit_control ) );
         if( edit_control == NULL ) {
             return( false );
@@ -525,8 +525,8 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
         edit_control->buffer = NULL;
         GUISetEditText( edit_control, ctl_info->text, field->typ != FLD_EDIT );
         break;
-    case FLD_PULLDOWN :
-    case FLD_LISTBOX :
+    case FLD_PULLDOWN:
+    case FLD_LISTBOX:
         field->u.list = (a_list *)GUICreateListBox();
         if( field->u.list == NULL ) {
             return( false );
@@ -538,14 +538,14 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
             return( false );
         }
         break;
-    case FLD_TEXT :
-    case FLD_FRAME :
+    case FLD_TEXT:
+    case FLD_FRAME:
         field->u.str = GUIStrDup( ctl_info->text, &ok );
         if( !ok ) {
             return( false );
         }
         break;
-    default :
+    default:
         return( false );
         break;
     }
@@ -653,8 +653,8 @@ static void EditNotify( gui_key key, a_dialog *ui_dlg_info, gui_window *wnd )
 
     if( ui_dlg_info->curr != NULL ) {
         switch( ui_dlg_info->curr->typ ) {
-        case FLD_EDIT :
-        case FLD_INVISIBLE_EDIT :
+        case FLD_EDIT:
+        case FLD_INVISIBLE_EDIT:
             key_control.key_state.key = key;
             GUIGetKeyState( &key_control.key_state.state );
             key_control.id = GUIGetControlId( wnd, ui_dlg_info->curr );
@@ -701,16 +701,16 @@ static void ListNotify( ui_event ui_ev, a_dialog *ui_dlg_info, gui_window *wnd )
         id = GUIGetControlId( wnd, ui_dlg_info->curr );
         if( id != 0 ) {
             switch( ui_ev ) {
-            case EV_LIST_BOX_CHANGED :
+            case EV_LIST_BOX_CHANGED:
                 gui_ev = GUI_CONTROL_CLICKED;
                 break;
-            case EV_LIST_BOX_DCLICK :
+            case EV_LIST_BOX_DCLICK:
                 gui_ev = GUI_CONTROL_DCLICKED;
                 break;
-            case EV_LIST_BOX_CLOSED :
+            case EV_LIST_BOX_CLOSED:
                 gui_ev = GUI_CONTROL_CLICKED;
                 break;
-            default :
+            default:
                 return;
             }
             GUIEVENT( wnd, gui_ev, &id );
@@ -729,12 +729,12 @@ void GUIFocusChangeNotify( a_dialog *ui_dlg_info )
         wnd = dlg_node->wnd;
         if( ( ui_dlg_info->other != NULL ) && ( wnd != NULL ) ) {
             switch( ui_dlg_info->other->typ ) {
-            case FLD_EDIT :
-            case FLD_INVISIBLE_EDIT :
-            case FLD_PULLDOWN :
-            case FLD_LISTBOX :
-            case FLD_COMBOBOX :
-            case FLD_EDIT_MLE :
+            case FLD_EDIT:
+            case FLD_INVISIBLE_EDIT:
+            case FLD_PULLDOWN:
+            case FLD_LISTBOX:
+            case FLD_COMBOBOX:
+            case FLD_EDIT_MLE:
                 id = GUIGetControlId( wnd, ui_dlg_info->other );
                 GUIEVENT( wnd, GUI_CONTROL_NOT_ACTIVE, &id );
             }
@@ -747,21 +747,21 @@ ui_event GUIProcessControlNotify( ui_event ui_ev, a_dialog *ui_dlg_info, gui_win
     gui_ctl_id  id;
 
     switch( ui_ev ) {
-    case EV_CHECK_BOX_CLICK :
+    case EV_CHECK_BOX_CLICK:
         CheckNotify( ui_dlg_info, wnd );
         return( EV_NO_EVENT );
-    case EV_LIST_BOX_DCLICK :
-    case EV_LIST_BOX_CHANGED :
-    case EV_LIST_BOX_CLOSED :
+    case EV_LIST_BOX_DCLICK:
+    case EV_LIST_BOX_CHANGED:
+    case EV_LIST_BOX_CLOSED:
         ListNotify( ui_ev, ui_dlg_info, wnd );
         return( EV_NO_EVENT );
-    case EV_CURSOR_UP :
+    case EV_CURSOR_UP:
         EditNotify( GUI_KEY_UP, ui_dlg_info, wnd );
         return( EV_NO_EVENT );
-    case EV_CURSOR_DOWN :
+    case EV_CURSOR_DOWN:
         EditNotify( GUI_KEY_DOWN, ui_dlg_info, wnd );
         return( EV_NO_EVENT );
-    default :
+    default:
         if( IS_CTLEVENT( ui_ev ) ) {
             id = EV2ID( ui_ev );
             GUIEVENT( wnd, GUI_CONTROL_CLICKED, &id );
@@ -870,7 +870,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
             GUIEVENT( wnd, GUI_DIALOG_ESCAPE, NULL );
             GUICloseDialog( wnd );
             break;
-        default :
+        default:
             GUIProcessControlNotify( ui_ev, ui_dlg_info, wnd );
         }
     }

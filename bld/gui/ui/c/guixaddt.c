@@ -55,10 +55,10 @@ static bool RefreshListCombobox( VFIELD *field, gui_window *wnd, gui_ctl_id id )
     a_dialog    *ui_dlg_info;
 
     switch( field->typ ) {
-    case FLD_COMBOBOX :
+    case FLD_COMBOBOX:
         uiupdatecombobox( field->u.combo );
         /* meant to fall through */
-    case FLD_PULLDOWN :
+    case FLD_PULLDOWN:
         ui_dlg_info = GUIGetDialog( wnd );
         if( ui_dlg_info == NULL ) {
             return( false );

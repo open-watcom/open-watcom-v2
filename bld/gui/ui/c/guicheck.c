@@ -49,13 +49,13 @@ unsigned GUIAPI GUIIsChecked( gui_window *wnd, gui_ctl_id id )
     field = GUIGetField( wnd, id );
     if( field != NULL ) {
         switch( field->typ ) {
-        case FLD_RADIO :
+        case FLD_RADIO:
             radio = field->u.radio;
             if( radio->group->value == ID2EV( id ) ) {
                 ret = GUI_CHECKED;
             }
             break;
-        case FLD_CHECK :
+        case FLD_CHECK:
             check = field->u.check;
             if( _checked( check ) ) {
                 ret = GUI_CHECKED;
@@ -87,7 +87,7 @@ bool GUIAPI GUISetChecked( gui_window *wnd, gui_ctl_id id, unsigned checked )
         checked = GUI_NOT_CHECKED;
     }
     switch( field->typ ) {
-    case FLD_RADIO :
+    case FLD_RADIO:
         radio = field->u.radio;
         prev_radio_id = EV2ID( radio->group->value );
         if( checked ) {
@@ -99,11 +99,11 @@ bool GUIAPI GUISetChecked( gui_window *wnd, gui_ctl_id id, unsigned checked )
         }
         GUIRefreshControl( wnd, prev_radio_id );
         break;
-    case FLD_CHECK :
+    case FLD_CHECK:
         check = field->u.check;
         check->val = checked;
         break;
-    default :
+    default:
         return( false );
     }
     GUIRefreshControl( wnd, id );

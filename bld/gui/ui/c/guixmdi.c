@@ -272,13 +272,13 @@ static void Arrange( ui_event ui_ev )
         rect.height -= min_size.y;
     }
     switch( ui_ev ) {
-    case GUI_MDI_CASCADE :
+    case GUI_MDI_CASCADE:
         Cascade( root, num_windows, &rect, &min_size );
         break;
-    case GUI_MDI_TILE_HORZ :
+    case GUI_MDI_TILE_HORZ:
         Tile( root, num_windows, &rect, &min_size, true );
         break;
-    case GUI_MDI_TILE_VERT :
+    case GUI_MDI_TILE_VERT:
         Tile( root, num_windows, &rect, &min_size, false );
         break;
     }
@@ -315,19 +315,19 @@ static bool ProcessEvent( ui_event ui_ev )
 
     id = EV2ID( ui_ev );
     switch( id ) {
-    case GUI_MDI_CASCADE :
-    case GUI_MDI_TILE_HORZ :
-    case GUI_MDI_TILE_VERT :
+    case GUI_MDI_CASCADE:
+    case GUI_MDI_TILE_HORZ:
+    case GUI_MDI_TILE_VERT:
         Icons();
         Arrange( id );
         break;
-    case GUI_MDI_ARRANGE_ICONS :
+    case GUI_MDI_ARRANGE_ICONS:
         Icons();
         break;
-    case GUI_MDI_MORE_WINDOWS :
+    case GUI_MDI_MORE_WINDOWS:
         GUIMDIMoreWindows();
         break;
-    default :
+    default:
         if( IS_MDIWIN( id ) ) {
             wnd = GUIMDIGetWindow( id );
             if( wnd != NULL ) {

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -352,12 +353,12 @@ typedef struct {
 
 /*
  **************************************************************
- * GUI_KEYUP :
- * GUI_KEYDOWN :
+ * GUI_KEYUP:
+ * GUI_KEYDOWN:
  *      1 parameter  - gui_key               : GUI_GET_KEY
  *      2 parameters - gui_key, gui_keystate : GUI_GET_KEY_STATE
  **************************************************************
- * GUI_KEY_CONTROL :
+ * GUI_KEY_CONTROL:
  * 2 parameters - unsigned, gui_key                : GUI_GET_KEY_CONTROL
  * 3 parameters - unsigned, gui_key, gui_key_state : GUI_GET_KEY_STATE_CONTROL
  **************************************************************

@@ -94,15 +94,15 @@ static void sendPointGUIEvent( gui_window *wnd, gui_event gui_ev, const guix_poi
 
     down_sent = ( ButtonDownSent == wnd );
     switch( gui_ev ) {
-    case GUI_LBUTTONDOWN :
-    case GUI_RBUTTONDOWN :
+    case GUI_LBUTTONDOWN:
+    case GUI_RBUTTONDOWN:
         ButtonDownSent = wnd;
         break;
-    case GUI_LBUTTONUP :
-    case GUI_RBUTTONUP :
+    case GUI_LBUTTONUP:
+    case GUI_RBUTTONUP:
         ButtonDownSent = NULL;
         break;
-    default :
+    default:
         break;
     }
     /* if the mouse event is not on the border, or if it is a mouse up on
@@ -154,17 +154,17 @@ static void ProcessMouseReleaseDrag( ui_event ui_ev, gui_event gui_ev, ORD row, 
     wnd_row = row - GUIMouseWnd->vs.area.row;
     wnd_col = col - GUIMouseWnd->vs.area.col;
     switch( MouseState ) {
-    case MOUSE_RESTORE_START :
+    case MOUSE_RESTORE_START:
         if( ValidMaxRestore( GUIMouseWnd, wnd_row, wnd_col ) && ( gui_ev == GUI_LBUTTONUP ) ) {
             GUIZoomWnd( GUIMouseWnd, GUI_NONE );
         }
         break;
-    case MOUSE_MAX_START :
+    case MOUSE_MAX_START:
         if( ValidMaxRestore( GUIMouseWnd, wnd_row, wnd_col ) && ( gui_ev == GUI_LBUTTONUP ) ) {
             GUIZoomWnd( GUIMouseWnd, GUI_MAXIMIZE );
         }
         break;
-    case MOUSE_MIN_START :
+    case MOUSE_MIN_START:
         if( ValidMin( GUIMouseWnd, wnd_row, wnd_col ) && ( gui_ev == GUI_LBUTTONUP ) ) {
             GUIZoomWnd( GUIMouseWnd, GUI_MINIMIZE );
         }
@@ -180,7 +180,7 @@ static void ProcessMouseReleaseDrag( ui_event ui_ev, gui_event gui_ev, ORD row, 
         }
         GUIDoMoveResize( GUIMouseWnd, row, col, ui_ev, NULL );
         break;
-    default :
+    default:
         if( GUIMouseWnd != NULL ) {
             guix_point  scr_point;
 
@@ -234,17 +234,17 @@ ui_event GUICreatePopup( gui_window *wnd, const guix_coord *point )
 static void ProcessMinimizedMouseEvent( ui_event ui_ev, ORD row, ORD col )
 {
     switch( ui_ev ) {
-    case EV_MOUSE_PRESS :
+    case EV_MOUSE_PRESS:
         if( GUIStartMoveResize( GUIMouseWnd, row, col, RESIZE_NONE ) ) {
             MouseState = MOUSE_MOVE;
         }
         MinimizedMoved = false;
         break;
-    case EV_MOUSE_DRAG :
+    case EV_MOUSE_DRAG:
         MinimizedMoved = true;
         GUIDoMoveResize( GUIMouseWnd, row, col, ui_ev, NULL );
         break;
-    case EV_MOUSE_RELEASE :
+    case EV_MOUSE_RELEASE:
         if( MouseState == MOUSE_MOVE ) {
             GUIDoMoveResize( GUIMouseWnd, row, col, ui_ev, NULL );
             MouseState = MOUSE_FREE;
@@ -259,7 +259,7 @@ static void ProcessMinimizedMouseEvent( ui_event ui_ev, ORD row, ORD col )
             }
         }
         break;
-    case EV_MOUSE_DCLICK :
+    case EV_MOUSE_DCLICK:
         GUIZoomWnd( GUICurrWnd, GUI_NONE );
         break;
     }
@@ -370,49 +370,49 @@ static void ProcessScrollEvent( ui_event ui_ev  )
     gui_event   notify;
 
     switch( ui_ev ) {
-    case EV_SCROLL_UP :
+    case EV_SCROLL_UP:
         events = ( (GUICurrWnd->style & GUI_VSCROLL_EVENTS) != 0 );
         gui_ev = GUI_SCROLL_UP;
         diff = -1;
         gadget = GUICurrWnd->vgadget;
         break;
-    case EV_SCROLL_DOWN :
+    case EV_SCROLL_DOWN:
         events = ( (GUICurrWnd->style & GUI_VSCROLL_EVENTS) != 0 );
         gui_ev = GUI_SCROLL_DOWN;
         diff = 1;
         gadget = GUICurrWnd->vgadget;
         break;
-    case EV_SCROLL_PAGE_UP :
+    case EV_SCROLL_PAGE_UP:
         events = ( (GUICurrWnd->style & GUI_VSCROLL_EVENTS) != 0 );
         gui_ev = GUI_SCROLL_PAGE_UP;
         diff = -GUICurrWnd->use.height;
         gadget = GUICurrWnd->vgadget;
         break;
-    case EV_SCROLL_PAGE_DOWN :
+    case EV_SCROLL_PAGE_DOWN:
         events = ( (GUICurrWnd->style & GUI_VSCROLL_EVENTS) != 0 );
         gui_ev = GUI_SCROLL_PAGE_DOWN;
         diff = GUICurrWnd->use.height;
         gadget = GUICurrWnd->vgadget;
         break;
-    case EV_SCROLL_LEFT :
+    case EV_SCROLL_LEFT:
         events = ( (GUICurrWnd->style & GUI_HSCROLL_EVENTS) != 0 );
         gui_ev = GUI_SCROLL_LEFT;
         diff = -1;
         gadget = GUICurrWnd->hgadget;
         break;
-    case EV_SCROLL_RIGHT :
+    case EV_SCROLL_RIGHT:
         events = ( (GUICurrWnd->style & GUI_HSCROLL_EVENTS) != 0 );
         gui_ev = GUI_SCROLL_RIGHT;
         diff = 1;
         gadget = GUICurrWnd->hgadget;
         break;
-    case EV_SCROLL_LEFT_PAGE :
+    case EV_SCROLL_LEFT_PAGE:
         events = ( (GUICurrWnd->style & GUI_HSCROLL_EVENTS) != 0 );
         gui_ev = GUI_SCROLL_PAGE_LEFT;
         diff = -GUICurrWnd->use.width;
         gadget = GUICurrWnd->hgadget;
         break;
-    case EV_SCROLL_RIGHT_PAGE :
+    case EV_SCROLL_RIGHT_PAGE:
         events = ( (GUICurrWnd->style & GUI_HSCROLL_EVENTS) != 0 );
         gui_ev = GUI_SCROLL_PAGE_RIGHT;
         diff = GUICurrWnd->use.width;
@@ -433,20 +433,20 @@ static void ProcessScrollEvent( ui_event ui_ev  )
 static bool SetCurrWnd( ui_event ui_ev, gui_window *curr )
 {
     switch( ui_ev ) {
-    case EV_MOUSE_DCLICK_R :
-    case EV_MOUSE_PRESS_R :
-    case EV_MOUSE_PRESS :
-    case EV_MOUSE_DCLICK :
-    case EV_SCROLL_UP :
-    case EV_SCROLL_DOWN :
-    case EV_SCROLL_PAGE_UP :
-    case EV_SCROLL_PAGE_DOWN :
-    case EV_SCROLL_LEFT :
-    case EV_SCROLL_RIGHT :
-    case EV_PAGE_LEFT :
-    case EV_PAGE_RIGHT :
-    case EV_SCROLL_VERTICAL :
-    case EV_SCROLL_HORIZONTAL :
+    case EV_MOUSE_DCLICK_R:
+    case EV_MOUSE_PRESS_R:
+    case EV_MOUSE_PRESS:
+    case EV_MOUSE_DCLICK:
+    case EV_SCROLL_UP:
+    case EV_SCROLL_DOWN:
+    case EV_SCROLL_PAGE_UP:
+    case EV_SCROLL_PAGE_DOWN:
+    case EV_SCROLL_LEFT:
+    case EV_SCROLL_RIGHT:
+    case EV_PAGE_LEFT:
+    case EV_PAGE_RIGHT:
+    case EV_SCROLL_VERTICAL:
+    case EV_SCROLL_HORIZONTAL:
         if( ( curr != GUICurrWnd ) && ( curr != NULL ) ) {
             GUIBringToFront( curr );
             return( true );
@@ -498,7 +498,7 @@ static void DoScrollDrag( p_gadget gadget, int prev, int diff )
 }
 
 /*
- * CheckPrevEvent -- this routine causes the sequence of mouse events :
+ * CheckPrevEvent -- this routine causes the sequence of mouse events:
  *                   P-U-D-U-D-U-D-U to come out P-U-D-U P-U-D-U
  *                   where P is Press, U is Up and D is dclick.
  *                   This is for consistency with windows.
@@ -507,17 +507,17 @@ static void DoScrollDrag( p_gadget gadget, int prev, int diff )
 static ui_event CheckPrevEvent( ui_event ui_ev )
 {
     switch( ui_ev ) {
-    case EV_MOUSE_PRESS :
-    case EV_MOUSE_PRESS_R :
+    case EV_MOUSE_PRESS:
+    case EV_MOUSE_PRESS_R:
         PrevMouseEvent = ui_ev;
         break;
-    case EV_MOUSE_DCLICK :
+    case EV_MOUSE_DCLICK:
         if( ui_ev == PrevMouseEvent ) {
             ui_ev = EV_MOUSE_PRESS;
         }
         PrevMouseEvent = ui_ev;
         break;
-    case EV_MOUSE_DCLICK_R :
+    case EV_MOUSE_DCLICK_R:
         if( ui_ev == PrevMouseEvent ) {
             ui_ev = EV_MOUSE_PRESS_R;
         }
@@ -529,22 +529,22 @@ static ui_event CheckPrevEvent( ui_event ui_ev )
 static ui_event MapMiddleToRight( ui_event ui_ev )
 {
     switch( ui_ev ) {
-    case EV_MOUSE_PRESS_M :
+    case EV_MOUSE_PRESS_M:
         ui_ev = EV_MOUSE_PRESS_R;
         break;
-    case EV_MOUSE_DRAG_M :
+    case EV_MOUSE_DRAG_M:
         ui_ev = EV_MOUSE_DRAG_R;
         break;
-    case EV_MOUSE_RELEASE_M :
+    case EV_MOUSE_RELEASE_M:
         ui_ev = EV_MOUSE_RELEASE_R;
         break;
-    case EV_MOUSE_DCLICK_M :
+    case EV_MOUSE_DCLICK_M:
         ui_ev = EV_MOUSE_DCLICK_R;
         break;
-    case EV_MOUSE_REPEAT_M :
+    case EV_MOUSE_REPEAT_M:
         ui_ev = EV_MOUSE_REPEAT_R;
         break;
-    case EV_MOUSE_HOLD_M :
+    case EV_MOUSE_HOLD_M:
         ui_ev = EV_MOUSE_HOLD_R;
         break;
     }
@@ -592,16 +592,16 @@ bool GUIProcessEvent( ui_event ui_ev )
         }
         if( GUI_WND_MINIMIZED( GUIMouseWnd ) ) {
             switch( ui_ev ) {
-            case EV_MOUSE_DCLICK :
-            case EV_MOUSE_RELEASE :
-            case EV_MOUSE_DRAG :
+            case EV_MOUSE_DCLICK:
+            case EV_MOUSE_RELEASE:
+            case EV_MOUSE_DRAG:
                 ProcessMinimizedMouseEvent( ui_ev, row, col );
             }
         } else {
             switch( ui_ev ) {
-            case EV_MOUSE_RELEASE :
-            case EV_MOUSE_DRAG :
-            case EV_MOUSE_DRAG_R :
+            case EV_MOUSE_RELEASE:
+            case EV_MOUSE_DRAG:
+            case EV_MOUSE_DRAG_R:
                 ProcessMouseReleaseDrag( ui_ev, GUI_LBUTTONUP, row, col );
             }
         }
@@ -618,9 +618,9 @@ bool GUIProcessEvent( ui_event ui_ev )
         /* ignore event if mouse not in minimized current window */
         if( GUICurrWnd == wnd ) {
             switch( ui_ev ) {
-            case EV_MOUSE_PRESS :
-            case EV_MOUSE_DCLICK :
-            case EV_MOUSE_RELEASE :
+            case EV_MOUSE_PRESS:
+            case EV_MOUSE_DCLICK:
+            case EV_MOUSE_RELEASE:
                 GUIMouseWnd = GUICurrWnd;
                 ProcessMinimizedMouseEvent( ui_ev, row, col );
                 break;
@@ -643,74 +643,74 @@ bool GUIProcessEvent( ui_event ui_ev )
     }
     ui_ev = GUIMapKeys( ui_ev );
     switch( ui_ev ) {
-    case EV_MOUSE_DCLICK_R :
+    case EV_MOUSE_DCLICK_R:
         ProcessMousePos( GUI_RBUTTONDBLCLK, row, col, wnd );
         return( true );
-    case EV_MOUSE_RELEASE_R :
+    case EV_MOUSE_RELEASE_R:
         ProcessMouseReleaseDrag( ui_ev, GUI_RBUTTONUP, row, col );
         return( true );
-    case EV_MOUSE_DRAG_R :
+    case EV_MOUSE_DRAG_R:
         if( GUICurrWnd != GUIMouseWnd ) {
             /* got drag without press first */
             ProcessMousePress( EV_MOUSE_PRESS_R, GUI_LBUTTONDOWN, row, col, new_curr_wnd );
         }
         /* fall through */
-    case EV_MOUSE_MOVE :
+    case EV_MOUSE_MOVE:
         ProcessMousePos( GUI_MOUSEMOVE, row, col, wnd );
         return( true );
-    case EV_MOUSE_RELEASE :
+    case EV_MOUSE_RELEASE:
         ProcessMouseReleaseDrag( ui_ev, GUI_LBUTTONUP, row, col );
         return( true );
-    case EV_MOUSE_DRAG :
+    case EV_MOUSE_DRAG:
         if( GUICurrWnd != GUIMouseWnd ) {
             /* got drag without press first */
             ProcessMousePress( EV_MOUSE_PRESS, GUI_LBUTTONDOWN, row, col, new_curr_wnd );
         }
         ProcessMouseReleaseDrag( ui_ev, GUI_MOUSEMOVE, row, col );
         return( true );
-    case EV_MOUSE_PRESS_R :
+    case EV_MOUSE_PRESS_R:
         ProcessMousePress( ui_ev, GUI_RBUTTONDOWN, row, col, new_curr_wnd );
         return( true );
-    case EV_MOUSE_PRESS :
+    case EV_MOUSE_PRESS:
         ProcessMousePress( ui_ev, GUI_LBUTTONDOWN, row, col, new_curr_wnd );
         return( true );
-    case EV_MOUSE_DCLICK :
+    case EV_MOUSE_DCLICK:
         ProcessMousePress( ui_ev, GUI_LBUTTONDBLCLK, row, col, new_curr_wnd );
         return( true );
-    case EV_NO_EVENT :
+    case EV_NO_EVENT:
         break;
-    case EV_SCROLL_UP :
-    case EV_SCROLL_DOWN :
-    case EV_SCROLL_PAGE_UP :
-    case EV_SCROLL_PAGE_DOWN :
-    case EV_SCROLL_LEFT :
-    case EV_SCROLL_RIGHT :
-    case EV_SCROLL_LEFT_PAGE :
-    case EV_SCROLL_RIGHT_PAGE :
+    case EV_SCROLL_UP:
+    case EV_SCROLL_DOWN:
+    case EV_SCROLL_PAGE_UP:
+    case EV_SCROLL_PAGE_DOWN:
+    case EV_SCROLL_LEFT:
+    case EV_SCROLL_RIGHT:
+    case EV_SCROLL_LEFT_PAGE:
+    case EV_SCROLL_RIGHT_PAGE:
         if( GUICurrWnd != NULL ) {
             ProcessScrollEvent( ui_ev );
             return( true );
         }
         break;
-    case EV_SCROLL_VERTICAL :
+    case EV_SCROLL_VERTICAL:
         if( GUI_VSCROLL_EVENTS_SET( GUICurrWnd ) ) {
             DoScrollDrag( GUICurrWnd->vgadget, prev, diff );
         } else {
             GUIWholeWndDirty( GUICurrWnd );
         }
         return( true );
-    case EV_SCROLL_HORIZONTAL :
+    case EV_SCROLL_HORIZONTAL:
         if( GUI_HSCROLL_EVENTS_SET( GUICurrWnd ) ) {
             DoScrollDrag( GUICurrWnd->hgadget, prev, diff );
         } else {
             GUIWholeWndDirty( GUICurrWnd );
         }
         return( true );
-    case EV_MENU_INITPOPUP :
+    case EV_MENU_INITPOPUP:
         ProcessInitPopupEvent();
         return( true );
 #if 0
-    case EV_BACKGROUND_RESIZE :
+    case EV_BACKGROUND_RESIZE:
         {
             gui_window          *root;
             root = GUIGetRootWindow();
@@ -720,7 +720,7 @@ bool GUIProcessEvent( ui_event ui_ev )
         }
         return( true );
 #endif
-    default :
+    default:
         if( IS_CTLEVENT( ui_ev ) ) {
             if( !GUIMDIProcessEvent( ui_ev ) ) {
                 menu_window = GUIGetMenuWindow();

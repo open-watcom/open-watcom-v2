@@ -99,9 +99,9 @@ bool GUIAPI GUISetText( gui_window *wnd, gui_ctl_id id, const char *text )
         ret = GUISetHotSpotText( field->u.hs, text );
         break;
 
-    case FLD_CHECK :
-    case FLD_RADIO :
-    case FLD_TEXT :
+    case FLD_CHECK:
+    case FLD_RADIO:
+    case FLD_TEXT:
         {
             char    **fldtext;
             char    *new_str;
@@ -120,15 +120,15 @@ bool GUIAPI GUISetText( gui_window *wnd, gui_ctl_id id, const char *text )
         }
         break;
 
-    case FLD_EDIT :
-    case FLD_INVISIBLE_EDIT :
+    case FLD_EDIT:
+    case FLD_INVISIBLE_EDIT:
         edit = (an_edit_control *)field->u.edit;
         break;
-    case FLD_COMBOBOX :
+    case FLD_COMBOBOX:
         combo_box = field->u.combo;
         edit = &combo_box->edit;
         break;
-    default :
+    default:
         return( false );   /* without redrawing field */
     }
     if( ( edit != NULL ) && ( ui_dlg_info != NULL ) ) {

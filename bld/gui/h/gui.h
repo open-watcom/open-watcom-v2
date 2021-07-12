@@ -538,31 +538,31 @@ typedef void            *gui_mcursor_handle;
 
 /*
  *************************************************************************
- * GUI_MOUSEMOVE :
- * GUI_LBUTTONUDOWN :
- * GUI_LBUTTONUP :
- * GUI_LBUTTONDBLCLK :
- * GUI_RBUTTONUDOWN :
- * GUI_RBUTTONUP :
- * GUI_RBUTTONDBLCLK : 1 parameter - gui_point : GUI_GET_POINT
+ * GUI_MOUSEMOVE:
+ * GUI_LBUTTONUDOWN:
+ * GUI_LBUTTONUP:
+ * GUI_LBUTTONDBLCLK:
+ * GUI_RBUTTONUDOWN:
+ * GUI_RBUTTONUP:
+ * GUI_RBUTTONDBLCLK: 1 parameter - gui_point : GUI_GET_POINT
  *************************************************************************
- * GUI_PAINT : 2 parameters - gui_text_ord, gui_text_ord : GUI_GET_ROWS
+ * GUI_PAINT: 2 parameters - gui_text_ord, gui_text_ord : GUI_GET_ROWS
  *************************************************************************
- * GUI_ENDSESSION :
- * GUI_QUERYENDSESSION : 2 parameters - bool, bool : GUI_GET_ENDSESSION
+ * GUI_ENDSESSION:
+ * GUI_QUERYENDSESSION: 2 parameters - bool, bool : GUI_GET_ENDSESSION
  *************************************************************************
- * GUI_CONTROL_NOT_ACTIVE :
- * GUI_CLICKED :
- * GUI_CONTROL_CLICKED
- * GUI_CONTROL_DCLICKED : 1 parameter - gui_ctl_id : GUI_GETID
+ * GUI_CONTROL_NOT_ACTIVE:
+ * GUI_CLICKED:
+ * GUI_CONTROL_CLICKED:
+ * GUI_CONTROL_DCLICKED: 1 parameter - gui_ctl_id : GUI_GETID
  *************************************************************************
- * GUI_RESIZE : 1 parameter - gui_coord : GUI_GET_SIZE
+ * GUI_RESIZE: 1 parameter - gui_coord : GUI_GET_SIZE
  *************************************************************************
- * GUI_SCROLL_VERTICAL :
- * GUI_SCROLL_HORIZONTAL : 1 parametr - int : GUI_GET_SCROLL
+ * GUI_SCROLL_VERTICAL:
+ * GUI_SCROLL_HORIZONTAL: 1 parametr - int : GUI_GET_SCROLL
  *************************************************************************
- * GUI_ACTIVATEAPP :
- * GUI_CONTEXTHELP : 1 parametr - bool : GUI_GET_BOOL
+ * GUI_ACTIVATEAPP:
+ * GUI_CONTEXTHELP: 1 parametr - bool : GUI_GET_BOOL
  *************************************************************************
  *
  *

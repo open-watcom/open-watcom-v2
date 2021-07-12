@@ -221,7 +221,7 @@ static gui_control_styles GetControlStyles( DialogBoxControl *ctl, gui_control_c
             styles |= GUI_STYLE_CONTROL_WANTRETURN;
         }
         break;
-    default :
+    default:
         break;
     }
 

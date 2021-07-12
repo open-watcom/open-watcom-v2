@@ -139,7 +139,7 @@ static void DlgSetCtlSizes( gui_control_info *controls_info,
                 controls_info->rect.width -= half.x;
                 controls_info->rect.height -= half.y;
                 break;
-            default :
+            default:
                 break;
             }
         }

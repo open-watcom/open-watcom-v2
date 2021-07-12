@@ -230,7 +230,7 @@ static bool MDIProcessMessage( gui_window *wnd, HWND hwnd, WPI_MSG msg, WPI_PARA
     if( wnd->root == hwnd ) {
         /* message for root window */
         switch( msg ) {
-        case WM_DESTROY :
+        case WM_DESTROY:
             MDIClearMaximizedMenuConfig();
             break;
 #ifndef __OS2_PM__
@@ -241,7 +241,7 @@ static bool MDIProcessMessage( gui_window *wnd, HWND hwnd, WPI_MSG msg, WPI_PARA
             }
             break;
 #endif
-        case WM_COMMAND :
+        case WM_COMMAND:
             if( DoneMDIInit && MDIIsSysCommand( hwnd, msg, wparam, lparam ) ) {
                 *ret = 0;
                 return( true );
@@ -249,24 +249,24 @@ static bool MDIProcessMessage( gui_window *wnd, HWND hwnd, WPI_MSG msg, WPI_PARA
             id = _wpi_getid( wparam );
             if( _wpi_ismenucommand( wparam, lparam ) && IS_MDIMENU( id ) ) {
                 switch( id ) {
-                case GUI_MDI_CASCADE :
+                case GUI_MDI_CASCADE:
                     MDICascade();
                     break;
-                case GUI_MDI_TILE_HORZ :
+                case GUI_MDI_TILE_HORZ:
                     MDITile( true );
                     break;
-                case GUI_MDI_TILE_VERT :
+                case GUI_MDI_TILE_VERT:
                     MDITile( false );
                     break;
-                case GUI_MDI_ARRANGE_ICONS :
+                case GUI_MDI_ARRANGE_ICONS:
                     ArrangeIcons = true;
                     MDICascade();
                     ArrangeIcons = false;
                     break;
-                case GUI_MDI_MORE_WINDOWS :
+                case GUI_MDI_MORE_WINDOWS:
                     GUIMDIMoreWindows();
                     break;
-                default :
+                default:
                     if( IS_MDIWIN( id ) ) {
                         /* window selected */
                         GUIMDIBringToFront( GUIMDIGetWindow( id ) );
@@ -279,7 +279,7 @@ static bool MDIProcessMessage( gui_window *wnd, HWND hwnd, WPI_MSG msg, WPI_PARA
         /* child window */
         switch( msg ) {
 #ifndef __OS2_PM__
-        case WM_WINDOWPOSCHANGING :
+        case WM_WINDOWPOSCHANGING:
             if( ArrangeIcons ) {
                 /* arrange icons is really a cascade but don't allow
                    no-iconic windows to move */
@@ -292,32 +292,32 @@ static bool MDIProcessMessage( gui_window *wnd, HWND hwnd, WPI_MSG msg, WPI_PARA
             }
             break;
         case WM_SYSCHAR:
-        case WM_SYSKEYDOWN :
-        case WM_SYSKEYUP :
+        case WM_SYSKEYDOWN:
+        case WM_SYSKEYUP:
             *ret = GUISendMessage( GUIGetTopParentHWND( hwnd ), msg, wparam, lparam );
             return( true );
             break;
 #endif
-        case WM_MOVE :
-        case WM_SIZE :
+        case WM_MOVE:
+        case WM_SIZE:
             if( DoingMaxRestore ) {
                 *ret = 0;
                 return( true );
             }
             break;
 #ifndef __OS2_PM__
-        case WM_MOUSEACTIVATE :
+        case WM_MOUSEACTIVATE:
             SetFocus( hwnd );
             *ret = MA_ACTIVATE;
             return( true );
 #else
-        case WM_ACTIVATE :
+        case WM_ACTIVATE:
             if( wparam ) {
                 SetFocus( hwnd );
                 return( true );
             }
 #endif
-        case WM_GETMINMAXINFO :
+        case WM_GETMINMAXINFO:
             /* don't want app to fool with this */
             *ret = _wpi_defwindowproc( hwnd, msg, wparam, lparam );
             return( true );
@@ -328,7 +328,7 @@ static bool MDIProcessMessage( gui_window *wnd, HWND hwnd, WPI_MSG msg, WPI_PARA
     } else if( wnd->hwnd == hwnd ) {
         /* container window */
         switch( msg ) {
-        case WM_SIZE :
+        case WM_SIZE:
             MDIContainerResized();
             break;
         }

@@ -66,91 +66,91 @@ ui_event GUIMapKeys( ui_event ui_ev )
 
     KeyState = GUI_KS_NONE;
     switch( ui_ev ) {
-    case EV_TAB_FORWARD :
-    case EV_CTRL_TAB :
-    case EV_TAB_BACKWARD :
+    case EV_TAB_FORWARD:
+    case EV_CTRL_TAB:
+    case EV_TAB_BACKWARD:
         key = GUI_KEY_TAB;
         break;
-    case EV_RUB_OUT :
+    case EV_RUB_OUT:
         key = GUI_KEY_BACKSPACE;
         break;
-    case EV_CTRL_BACKSPACE :
+    case EV_CTRL_BACKSPACE:
         key = GUI_KEY_CTRL_BACKSPACE;
         break;
-    case EV_ESCAPE :
+    case EV_ESCAPE:
         key = GUI_KEY_ESCAPE;
         break;
-    case EV_ENTER : /* Same as EV_RETURN */
+    case EV_ENTER:  /* Same as EV_RETURN */
         key = GUI_KEY_ENTER;
         break;
-    case EV_ALT_HOME :
-    case EV_CTRL_HOME :
-    case EV_SHIFT_HOME :
-    case EV_HOME :
+    case EV_ALT_HOME:
+    case EV_CTRL_HOME:
+    case EV_SHIFT_HOME:
+    case EV_HOME:
         key = GUI_KEY_HOME;
         break;
-    case EV_ALT_END :
-    case EV_CTRL_END :
-    case EV_SHIFT_END :
-    case EV_END :
+    case EV_ALT_END:
+    case EV_CTRL_END:
+    case EV_SHIFT_END:
+    case EV_END:
         key = GUI_KEY_END;
         break;
-    case EV_CTRL_CURSOR_UP :
-    case EV_SHIFT_CURSOR_UP :
-    case EV_CURSOR_UP :
+    case EV_CTRL_CURSOR_UP:
+    case EV_SHIFT_CURSOR_UP:
+    case EV_CURSOR_UP:
         key = GUI_KEY_UP;
         break;
-    case EV_CTRL_CURSOR_DOWN :
-    case EV_CURSOR_DOWN :
-    case EV_SHIFT_CURSOR_DOWN :
+    case EV_CTRL_CURSOR_DOWN:
+    case EV_CURSOR_DOWN:
+    case EV_SHIFT_CURSOR_DOWN:
         key = GUI_KEY_DOWN;
         break;
-    case EV_CTRL_CURSOR_LEFT :
-    case EV_SHIFT_CURSOR_LEFT :
-    case EV_CURSOR_LEFT :
+    case EV_CTRL_CURSOR_LEFT:
+    case EV_SHIFT_CURSOR_LEFT:
+    case EV_CURSOR_LEFT:
         key = GUI_KEY_LEFT;
         break;
-    case EV_CTRL_CURSOR_RIGHT :
-    case EV_SHIFT_CURSOR_RIGHT :
-    case EV_CURSOR_RIGHT :
+    case EV_CTRL_CURSOR_RIGHT:
+    case EV_SHIFT_CURSOR_RIGHT:
+    case EV_CURSOR_RIGHT:
         key = GUI_KEY_RIGHT;
         break;
-    case EV_INSERT :
-    case EV_CTRL_INSERT :
-    case EV_ALT_INSERT :
+    case EV_INSERT:
+    case EV_CTRL_INSERT:
+    case EV_ALT_INSERT:
         key = GUI_KEY_INSERT;
         break;
-    case EV_CTRL_DELETE :
-    case EV_ALT_DELETE :
-    case EV_DELETE :
+    case EV_CTRL_DELETE:
+    case EV_ALT_DELETE:
+    case EV_DELETE:
         key = GUI_KEY_DELETE;
         break;
-    case EV_ALT_PAGE_UP :
-    case EV_CTRL_PAGE_UP :
-    case EV_SHIFT_PAGE_UP :
-    case EV_PAGE_UP :
+    case EV_ALT_PAGE_UP:
+    case EV_CTRL_PAGE_UP:
+    case EV_SHIFT_PAGE_UP:
+    case EV_PAGE_UP:
         key = GUI_KEY_PAGEUP;
         break;
-    case EV_CTRL_PAGE_DOWN :
-    case EV_ALT_PAGE_DOWN :
-    case EV_SHIFT_PAGE_DOWN :
-    case EV_PAGE_DOWN :
+    case EV_CTRL_PAGE_DOWN:
+    case EV_ALT_PAGE_DOWN:
+    case EV_SHIFT_PAGE_DOWN:
+    case EV_PAGE_DOWN:
         key = GUI_KEY_PAGEDOWN;
         break;
-    case EV_ALT_SPACE :
-    case ' ' :
+    case EV_ALT_SPACE:
+    case ' ':
         key = GUI_KEY_SPACE;
         break;
-    case EV_F11 :
-    case EV_ALT_F11 :
-    case EV_CTRL_F11 :
-    case EV_SHIFT_F11 :
+    case EV_F11:
+    case EV_ALT_F11:
+    case EV_CTRL_F11:
+    case EV_SHIFT_F11:
         key = GUI_KEY_F11;
         break;
-    case EV_F12 :
-    case EV_ALT_F12 :
-    case EV_CTRL_F12 :
-    case EV_SHIFT_F12 :
+    case EV_F12:
+    case EV_ALT_F12:
+    case EV_CTRL_F12:
+    case EV_SHIFT_F12:
         key = GUI_KEY_F12;
         break;
     default:
@@ -161,43 +161,43 @@ ui_event GUIMapKeys( ui_event ui_ev )
         }
     }
     switch( ui_ev ) {
-    case EV_TAB_BACKWARD :
-    case EV_SHIFT_HOME :
-    case EV_SHIFT_CURSOR_UP :
-    case EV_SHIFT_CURSOR_DOWN :
-    case EV_SHIFT_END :
-    case EV_SHIFT_CURSOR_LEFT :
-    case EV_SHIFT_CURSOR_RIGHT :
-    case EV_SHIFT_PAGE_UP :
-    case EV_SHIFT_PAGE_DOWN :
-    case EV_SHIFT_F11 :
-    case EV_SHIFT_F12 :
+    case EV_TAB_BACKWARD:
+    case EV_SHIFT_HOME:
+    case EV_SHIFT_CURSOR_UP:
+    case EV_SHIFT_CURSOR_DOWN:
+    case EV_SHIFT_END:
+    case EV_SHIFT_CURSOR_LEFT:
+    case EV_SHIFT_CURSOR_RIGHT:
+    case EV_SHIFT_PAGE_UP:
+    case EV_SHIFT_PAGE_DOWN:
+    case EV_SHIFT_F11:
+    case EV_SHIFT_F12:
         SET_KS_SHIFT;
         break;
-    case EV_CTRL_TAB :
-    case EV_CTRL_HOME :
-    case EV_CTRL_END :
-    case EV_CTRL_CURSOR_UP :
-    case EV_CTRL_CURSOR_DOWN :
-    case EV_CTRL_CURSOR_LEFT :
-    case EV_CTRL_CURSOR_RIGHT :
-    case EV_CTRL_INSERT :
-    case EV_CTRL_DELETE :
-    case EV_CTRL_PAGE_UP :
-    case EV_CTRL_PAGE_DOWN :
-    case EV_CTRL_F11 :
-    case EV_CTRL_F12 :
+    case EV_CTRL_TAB:
+    case EV_CTRL_HOME:
+    case EV_CTRL_END:
+    case EV_CTRL_CURSOR_UP:
+    case EV_CTRL_CURSOR_DOWN:
+    case EV_CTRL_CURSOR_LEFT:
+    case EV_CTRL_CURSOR_RIGHT:
+    case EV_CTRL_INSERT:
+    case EV_CTRL_DELETE:
+    case EV_CTRL_PAGE_UP:
+    case EV_CTRL_PAGE_DOWN:
+    case EV_CTRL_F11:
+    case EV_CTRL_F12:
         SET_KS_CTRL;
         break;
-    case EV_ALT_HOME :
-    case EV_ALT_END :
-    case EV_ALT_INSERT :
-    case EV_ALT_DELETE :
-    case EV_ALT_PAGE_UP :
-    case EV_ALT_PAGE_DOWN :
-    case EV_ALT_SPACE :
-    case EV_ALT_F11 :
-    case EV_ALT_F12 :
+    case EV_ALT_HOME:
+    case EV_ALT_END:
+    case EV_ALT_INSERT:
+    case EV_ALT_DELETE:
+    case EV_ALT_PAGE_UP:
+    case EV_ALT_PAGE_DOWN:
+    case EV_ALT_SPACE:
+    case EV_ALT_F11:
+    case EV_ALT_F12:
         SET_KS_ALT;
         break;
     default:

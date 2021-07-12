@@ -283,21 +283,21 @@ static  gui_colour_set  StatusColour    = { GUI_BR_WHITE, GUI_CYAN };
 static void HandlePopup( gui_window *wnd, gui_rect *rect, gui_ctl_id id )
 {
     switch( id ) {
-    case MENU_CHANGE :
+    case MENU_CHANGE:
         GUISetMenuText( MainWnd, MENU_REDRAW, "&New", false );
         GUISetMenuText( MainWnd, MENU_RESTORE, "&Restore\talso tabbed", false );
         GUISetMenuText( MainWnd, MENU_RESIZE, "&Newer and very very very very very very very very very very very very very long\ttabbed", false );
         break;
-    case MENU_RESIZE :
+    case MENU_RESIZE:
         GUIResizeWindow( wnd, rect );
         break;
-    case MENU_MINIMIZE :
+    case MENU_MINIMIZE:
         GUIMinimizeWindow( wnd );
         break;
-    case MENU_MAXIMIZE :
+    case MENU_MAXIMIZE:
         GUIMaximizeWindow( wnd );
         break;
-    case MENU_RESTORE :
+    case MENU_RESTORE:
         GUIRestoreWindow( wnd );
         GUIDrawStatusText( wnd, "Restore has happened" );
         break;
@@ -337,73 +337,73 @@ static bool DisplayKey( gui_key key, char *Buffer )
 
     ret = false;
     switch( key ) {
-    case GUI_KEY_PAGEUP :
+    case GUI_KEY_PAGEUP:
         strcpy( Buffer, "Got key down and up page up" );
         break;
-    case GUI_KEY_PAGEDOWN :
+    case GUI_KEY_PAGEDOWN:
         strcpy( Buffer, "Got key down and up page down" );
         break;
-    case GUI_KEY_CTRL_PAGEUP :
+    case GUI_KEY_CTRL_PAGEUP:
         strcpy( Buffer, "Got key down and up ctrl page up" );
         break;
-    case GUI_KEY_CTRL_PAGEDOWN :
+    case GUI_KEY_CTRL_PAGEDOWN:
         strcpy( Buffer, "Got key down and up ctrl page down" );
         break;
-    case GUI_KEY_ALT_EXT_PAGEUP :
+    case GUI_KEY_ALT_EXT_PAGEUP:
         strcpy( Buffer, "Got key down and up alt page up" );
         break;
-    case GUI_KEY_ALT_EXT_PAGEDOWN :
+    case GUI_KEY_ALT_EXT_PAGEDOWN:
         strcpy( Buffer, "Got key down and up alt page down" );
         break;
-    case GUI_KEY_TAB :
+    case GUI_KEY_TAB:
         strcpy( Buffer, "Got key down and up tab" );
         break;
-    case GUI_KEY_SHIFT_TAB :
+    case GUI_KEY_SHIFT_TAB:
         strcpy( Buffer, "Got key down and up shift tab" );
         break;
-    case GUI_KEY_ALT_TAB :
+    case GUI_KEY_ALT_TAB:
         strcpy( Buffer, "Got key down and up alt tab" );
         break;
-    case GUI_KEY_CTRL_TAB :
+    case GUI_KEY_CTRL_TAB:
         strcpy( Buffer, "Got key down and up ctrl tab" );
         break;
-    case GUI_KEY_F10 :
+    case GUI_KEY_F10:
         strcpy( Buffer, "Got key down and up pf-10" );
         break;
-    case GUI_KEY_F11 :
+    case GUI_KEY_F11:
         strcpy( Buffer, "Got key down and up pf-11" );
         break;
-    case GUI_KEY_F12 :
+    case GUI_KEY_F12:
         strcpy( Buffer, "Got key down and up pf-12" );
         break;
-    case GUI_KEY_CTRL_F10 :
+    case GUI_KEY_CTRL_F10:
         strcpy( Buffer, "Got key down and up ctrl_pf-10" );
         break;
-    case GUI_KEY_CTRL_F11 :
+    case GUI_KEY_CTRL_F11:
         strcpy( Buffer, "Got key down and up ctrl_pf-11" );
         break;
-    case GUI_KEY_CTRL_F12 :
+    case GUI_KEY_CTRL_F12:
         strcpy( Buffer, "Got key down and up ctrl_pf-12" );
         break;
-    case GUI_KEY_ALT_F10 :
+    case GUI_KEY_ALT_F10:
         strcpy( Buffer, "Got key down and up alt_pf-10" );
         break;
-    case GUI_KEY_ALT_F11 :
+    case GUI_KEY_ALT_F11:
         strcpy( Buffer, "Got key down and up alt_pf-11" );
         break;
-    case GUI_KEY_ALT_F12 :
+    case GUI_KEY_ALT_F12:
         strcpy( Buffer, "Got key down and up alt_pf-12" );
         break;
-    case GUI_KEY_SHIFT_F10 :
+    case GUI_KEY_SHIFT_F10:
         strcpy( Buffer, "Got key down and up shift_pf-10" );
         break;
-    case GUI_KEY_SHIFT_F11 :
+    case GUI_KEY_SHIFT_F11:
         strcpy( Buffer, "Got key down and up shift_pf-11" );
         break;
-    case GUI_KEY_SHIFT_F12 :
+    case GUI_KEY_SHIFT_F12:
         strcpy( Buffer, "Got key down and up shift_pf-12" );
         break;
-    default :
+    default:
         if( ( key >= GUI_KEY_CTRL_A ) && ( key <= GUI_KEY_CTRL_Z ) ) {
             sprintf( Buffer, "Got key down and up ctrl-%c",
                     (char)( key - GUI_KEY_CTRL_A + GUI_KEY_a ) );
@@ -479,13 +479,13 @@ bool MainWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
 #endif
 
     switch( gui_ev ) {
-    case GUI_CLOSE :
+    case GUI_CLOSE:
         GUIHelpFini( help_inst, HelpWindow, help_file );
         return( true );
-    case GUI_PAINT :
+    case GUI_PAINT:
         GUIGetPaintRect( wnd, &client );
         return( true );
-    case GUI_STATUS_CLEARED :
+    case GUI_STATUS_CLEARED:
         GUIDrawStatusText( wnd, "Ready!" );
         client.x = 700;
         client.y = 700;
@@ -493,7 +493,7 @@ bool MainWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
         client.height = 100;
         GUIWndDirtyRect( wnd, &client );
         return( true );
-    case GUI_INIT_WINDOW :
+    case GUI_INIT_WINDOW:
         if( MainWnd == NULL ) {
 #if dynamic_menus
             int     i;
@@ -527,10 +527,10 @@ bool MainWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
         scroll.y = GUIGetVScrollRow( wnd );
         numrows = GUIGetNumRows( wnd );
         return( true );
-    case GUI_FONT_CHANGED :
+    case GUI_FONT_CHANGED:
         GUIResizeStatusWindow( wnd, 0, 0 );
         return( true );
-    case GUI_CONTROL_RCLICKED :
+    case GUI_CONTROL_RCLICKED:
 #ifndef __OS2_PM__
 //        WinExec( "g:\\lang\\binw\\viw.exe foobar", 1 );
 //        WinExec( "f:\\src\\win\\wre.exe", 1 );
@@ -540,7 +540,7 @@ bool MainWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
         GUIDisplayMessage( wnd, text, text, GUI_ABORT_RETRY_IGNORE );
         GUIMemFree( text );
         return( true );
-    case GUI_RBUTTONUP :
+    case GUI_RBUTTONUP:
         if( wnd != MainWnd ) {
             GUI_GET_POINT( param, point );
 #if 0
@@ -558,15 +558,15 @@ bool MainWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
         }
 //        GUISetFocus( Child3Wnd, COMBOBOX_CONTROL );
         return( true );
-    case GUI_SCROLL_UP :
+    case GUI_SCROLL_UP:
         Percent--;
         GUISetVScrollThumb( wnd, Percent );
         return( true );
-    case GUI_SCROLL_DOWN :
+    case GUI_SCROLL_DOWN:
         Percent++;
         GUISetVScrollThumb( wnd, Percent );
         return( true );
-    case GUI_DESTROY :
+    case GUI_DESTROY:
         GUIMemFree( OldValue );
         OldValue = NULL;
         text = GUIGetText( wnd, EDITWINDOW_CONTROL );
@@ -578,41 +578,41 @@ bool MainWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
             Child3Wnd = NULL;
         }
         return( true );
-    case GUI_TOOLBAR_FLOATING :
-    case GUI_TOOLBAR_FIXED :
+    case GUI_TOOLBAR_FLOATING:
+    case GUI_TOOLBAR_FIXED:
         SetFixedFloat( wnd );
         return( true );
-    case GUI_TOOLBAR_DESTROYED :
+    case GUI_TOOLBAR_DESTROYED:
         SetFixedFloat( wnd );
         SetToolbarCreate( wnd );
         return( true );
-    case GUI_CONTROL_CLICKED :
+    case GUI_CONTROL_CLICKED:
         return( StaticDialogWndGUIEventProc( wnd, gui_ev, param ) );
-    case GUI_CLICKED :
+    case GUI_CLICKED:
         GUI_GETID( param, id );
         switch( id ) {
-        case MENU_RESIZE :
-        case MENU_MINIMIZE :
-        case MENU_MAXIMIZE :
-        case MENU_RESTORE :
-        case MENU_CHANGE :
+        case MENU_RESIZE:
+        case MENU_MINIMIZE:
+        case MENU_MAXIMIZE:
+        case MENU_RESTORE:
+        case MENU_CHANGE:
             if( wnd == MainWnd ) {
                 HandlePopup( wnd, &Parent.rect, id );
             } else {
                 HandlePopup( wnd, &Child3.rect, id );
             }
             break;
-        case MENU_STATIC_DIALOG :
+        case MENU_STATIC_DIALOG:
             GUIGetRestoredSize( Child2Wnd, &client );
             StaticDialogCreate( MainWnd );
             break;
-        case MENU_DYNAMIC_DIALOG :
+        case MENU_DYNAMIC_DIALOG:
             DynamicDialogCreate( MainWnd );
             break;
-        case MENU_TEST_DIALOG :
+        case MENU_TEST_DIALOG:
             TestDialogCreate( MainWnd );
             break;
-        case MENU_RES_DIALOG :
+        case MENU_RES_DIALOG:
             ResDialogCreate( MainWnd );
             {
                 gui_menu_items  menus;
@@ -627,27 +627,27 @@ bool MainWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
                 }
             }
             break;
-        case MENU_GETNEWVAL :
+        case MENU_GETNEWVAL:
             if( GUIGetNewVal( "Please enter new value :", OldValue, &new ) ==
                 GUI_RET_OK ) {
                 GUIMemFree( OldValue );
                 OldValue = new;
             }
             break;
-        case MENU_QUIT :
+        case MENU_QUIT:
             GUIDestroyWnd( wnd );
             GUIDestroyWnd( NULL );
             break;
-        case MENU_EXIT :
+        case MENU_EXIT:
             GUIDestroyWnd( wnd );
             GUIDestroyWnd( NULL );
             break;
-        case MENU_SPAWN :
+        case MENU_SPAWN:
 #ifndef __OS2_PM__
 //            WinExec( "g:\\lang\\binw\\viw.exe foobar", 1 );
 #endif
             break;
-        case MENU_REPLACE_COLOURS :
+        case MENU_REPLACE_COLOURS:
             if( Child3Wnd != NULL ) {
                 num = GUIGetNumWindowColours( Child3Wnd );
                 colours = GUIGetWindowColours( Child3Wnd );
@@ -657,7 +657,7 @@ bool MainWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
 #endif
             }
             break;
-        case MENU_SHOW_WINDOW :
+        case MENU_SHOW_WINDOW:
             if( Child1Wnd != NULL ) {
                 {
                     gui_ord x;
@@ -670,11 +670,11 @@ bool MainWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
                 }
             }
             break;
-        case MENU_REDRAW :
+        case MENU_REDRAW:
             GUIWndDirty( NULL );
             break;
-        case MENU_FIXED_TOOLBAR :
-        case MENU_FLOATING_TOOLBAR :
+        case MENU_FIXED_TOOLBAR:
+        case MENU_FLOATING_TOOLBAR:
             if( GUICreateToolBar( wnd, ( id == MENU_FIXED_TOOLBAR ), 0,
                                   &tb_ToolBar, true,
                                   &ToolPlain, &ToolStandout ) ) {
@@ -682,14 +682,14 @@ bool MainWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
                 SetToolbarCreate( wnd );
             }
             break;
-        case MENU_CHANGE_TOOLBAR :
+        case MENU_CHANGE_TOOLBAR:
             GUIChangeToolBar( wnd );
             SetFixedFloat( wnd );
             break;
-        case MENU_CLOSE_TOOLBAR :
+        case MENU_CLOSE_TOOLBAR:
             GUICloseToolBar( wnd );
             break;
-        case MENU_STATUS_WND :
+        case MENU_STATUS_WND:
             if( GUIHasStatus( wnd ) ) {
                 GUICloseStatusWindow( wnd );
                 GUICheckMenuItem( wnd, MENU_STATUS_WND, false, false );
@@ -717,13 +717,13 @@ bool MainWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
         case MENU_HELP_KEY:
             GUIShowHelp( help_inst, HelpWindow, GUI_HELP_KEY, help_file, "Starting_the_Browser" );
             break;
-        case MENU_HELP :
+        case MENU_HELP:
             GUIDisplayHelp( wnd, "c:\\win31\\winhelp.hlp", "help" );
             break;
-        case MENU_CASCADE1 :
+        case MENU_CASCADE1:
             GUICascadeWindows();
             break;
-        case MENU_SWITCH_FONT :
+        case MENU_SWITCH_FONT:
             if( Child1Wnd != NULL && Child2Wnd != NULL ) {
                 fontinfo = GUIGetFontInfo( Child1Wnd );
                 if( fontinfo != NULL ) {
@@ -735,19 +735,19 @@ bool MainWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
                 }
             }
             break;
-        case MENU_RESIZE_STATUS :
+        case MENU_RESIZE_STATUS:
             GUIGetTextMetrics( wnd, &text_metrics );
             GUIResizeStatusWindow( wnd, 0, 2 * text_metrics.max.y );
             break;
-        case MENU_FLIP_MOUSE_ON :
+        case MENU_FLIP_MOUSE_ON:
             GUIGMouseOn();
             break;
-        case MENU_FLIP_MOUSE_OFF :
+        case MENU_FLIP_MOUSE_OFF:
             GUIGMouseOff();
-        case MENU_SET_MENU :
+        case MENU_SET_MENU:
             GUIResetMenus( wnd, &menu_NewMainMenu );
             GUIResetMenus( Child1Wnd, &menu_NewMainMenu );
-        case MENU_TEST_RESIZE :
+        case MENU_TEST_RESIZE:
             if( GUIIsMaximized( Child1Wnd ) ) {
                 GUIRestoreWindow( Child1Wnd );
             } else {
@@ -760,11 +760,11 @@ bool MainWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
             client.width /= 2;
             GUISetRestoredSize( Child1Wnd, &client );
             break;
-        case MENU_RESET_MENU :
+        case MENU_RESET_MENU:
             GUIResetMenus( wnd, &menu_MainMenu );
             GUIResetMenus( Child1Wnd, &menu_ChildMenu );
             break;
-        case MENU_MODIFY_COLOUR :
+        case MENU_MODIFY_COLOUR:
             if( GUIGetColourFromUser( "Choose colour to modify",
                                        NULL, &colour ) ) {
                 GUIGetRGB( colour, &rgb );
@@ -773,7 +773,7 @@ bool MainWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
                 }
             }
             break;
-        case COMBOOKAY_CONTROL :
+        case COMBOOKAY_CONTROL:
             new = GUIGetText( wnd, EDITWINDOW_CONTROL );
             GUIDisplayMessage( MainWnd, new, "Issue Command:", GUI_RETRY_CANCEL );
             GUIClearText( wnd, EDITWINDOW_CONTROL );
@@ -781,7 +781,7 @@ bool MainWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
             break;
         }
         return( true );
-    case GUI_KEY_CONTROL :
+    case GUI_KEY_CONTROL:
         GUI_GET_KEY_CONTROL( param, id, key );
         if( key == GUI_KEY_ENTER ) {
             new = GUIGetText( wnd, id );
@@ -790,13 +790,13 @@ bool MainWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
             GUIClearText( wnd, id );
         }
         return( true );
-    case GUI_KEYDOWN :
+    case GUI_KEYDOWN:
         KeyDown = true;
 #if parent_keys
         GUI_GET_KEY( param, KeyDownKey );
 #endif
         break;
-    case GUI_KEYUP :
+    case GUI_KEYUP:
 #if parent_keys
         {
             bool    ret;
@@ -812,7 +812,7 @@ bool MainWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
 #else
         break;
 #endif
-    default :
+    default:
         break;
     }
     return( false );
@@ -869,33 +869,33 @@ bool ControlWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
     change_struct       *change;
 
     switch( gui_ev ) {
-    case GUI_INIT_WINDOW :
+    case GUI_INIT_WINDOW:
         change = (change_struct *)GUIGetExtra( wnd );
         change->parent = gui;
         DialogWindow = gui;
         gui_ev = GUI_INIT_DIALOG;
         break;
-    case GUI_CLOSE :
+    case GUI_CLOSE:
         return( true );
-    case GUI_DESTROY :
+    case GUI_DESTROY:
         change = GUIGetExtra( wnd );
         GUIMemFree( change );
         GUISetExtra( wnd, NULL );
         DialogWindow = NULL;
         break;
-    case GUI_CONTROL_CLICKED :
+    case GUI_CONTROL_CLICKED:
         GUI_GETID( param, id );
         switch( id ) {
-        case CANCELBUTTON_CONTROL :
+        case CANCELBUTTON_CONTROL:
             DoCancel( wnd );
             return( true );
-        case OKBUTTON_CONTROL :
+        case OKBUTTON_CONTROL:
             DoOkay( wnd );
             return( true );
-        default :
+        default:
             break;
         }
-    default :
+    default:
         break;
     }
     return( StaticDialogWndGUIEventProc( wnd, gui_ev, param ) );
@@ -964,19 +964,19 @@ static void ProcessCursor( gui_window *wnd, gui_key key )
     GUIGetCursorPos( wnd, &point );
     GUIGetTextMetrics( wnd, &metrics );
     switch( key ) {
-    case GUI_KEY_LEFT :
+    case GUI_KEY_LEFT:
         point.x -= metrics.avg.x;
         break;
-    case GUI_KEY_RIGHT :
+    case GUI_KEY_RIGHT:
         point.x += metrics.avg.x;
         break;
-    case GUI_KEY_UP :
+    case GUI_KEY_UP:
         point.y -= metrics.avg.y;
         break;
-    case GUI_KEY_DOWN :
+    case GUI_KEY_DOWN:
         point.y += metrics.avg.y;
         break;
-    default :
+    default:
         return;
     }
     GUISetCursorPos( wnd, &point );
@@ -1106,7 +1106,7 @@ bool Child1WndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
     char                Buffer[80];
 
     switch( gui_ev ) {
-    case GUI_INIT_WINDOW :
+    case GUI_INIT_WINDOW:
         GUIGetClientRect( wnd, &client );
         GUISetVScrollRangeRows( wnd, NUM_CHILD1_ROWS );
         GUIInitVScrollRow( wnd, 1 );
@@ -1117,107 +1117,107 @@ bool Child1WndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
         InitIndent( wnd, NUM_CHILD1_ROWS, GUIGetExtra( wnd ) );
         GUIAppendMenuToPopup( wnd, MENU_MORE, &MenuMore[0], false );
         return( true );
-    case GUI_PAINT :
+    case GUI_PAINT:
         GUI_GET_ROWS( param, row, num );
         PaintWindow( wnd, row, num, GUIGetVScrollRow( wnd ), GUIGetHScrollCol( wnd ) );
         return( true );
-    case GUI_FONT_CHANGED :
-    case GUI_RESIZE :
+    case GUI_FONT_CHANGED:
+    case GUI_RESIZE:
         GUISetVScrollRangeRows( wnd, NUM_CHILD1_ROWS );
         GUISetHScrollRangeCols( wnd, Child1HScrollRange );
         return( true );
-    case GUI_SCROLL_UP :
+    case GUI_SCROLL_UP:
         VScroll( wnd, -1 );
         return( true );
-    case GUI_SCROLL_DOWN :
+    case GUI_SCROLL_DOWN:
         VScroll( wnd, 1 );
         return( true );
-    case GUI_SCROLL_LEFT :
+    case GUI_SCROLL_LEFT:
         HScroll( wnd, -1 );
         return( true );
-    case GUI_SCROLL_RIGHT :
+    case GUI_SCROLL_RIGHT:
         HScroll( wnd, 1 );
         return( true );
-    case GUI_SCROLL_PAGE_UP :
+    case GUI_SCROLL_PAGE_UP:
         VScroll( wnd, -GUIGetNumRows( wnd ) );
         return( true );
-    case GUI_SCROLL_PAGE_DOWN :
+    case GUI_SCROLL_PAGE_DOWN:
         VScroll( wnd, GUIGetNumRows( wnd ) );
         return( true );
-    case GUI_SCROLL_PAGE_LEFT :
+    case GUI_SCROLL_PAGE_LEFT:
         GUIGetClientRect( wnd, &client );
         GUIGetTextMetrics( wnd, &metrics );
         HScroll( wnd, -( client.width / metrics.avg.x ) );
         return( true );
-    case GUI_SCROLL_PAGE_RIGHT :
+    case GUI_SCROLL_PAGE_RIGHT:
         GUIGetClientRect( wnd, &client );
         GUIGetTextMetrics( wnd, &metrics );
         HScroll( wnd, client.width / metrics.avg.x );
         return( true );
-    case GUI_SCROLL_VERTICAL :
+    case GUI_SCROLL_VERTICAL:
         GUI_GET_SCROLL( param, diff );
         VScroll( wnd, diff );
         return( true );
-    case GUI_SCROLL_HORIZONTAL :
+    case GUI_SCROLL_HORIZONTAL:
         GUI_GET_SCROLL( param, diff );
         HScroll( wnd, diff );
         return( true );
-    case GUI_LBUTTONDOWN :
-    case GUI_RBUTTONDOWN :
+    case GUI_LBUTTONDOWN:
+    case GUI_RBUTTONDOWN:
         GUI_GET_POINT( param, point );
         GUISetCursorPos( wnd, &point );
         if( GUIGetCursorType( wnd, &cursor ) ) {
             switch( cursor ) {
-            case GUI_NO_CURSOR :
+            case GUI_NO_CURSOR:
                cursor = GUI_NORMAL_CURSOR;
                break;
-            case GUI_NORMAL_CURSOR :
+            case GUI_NORMAL_CURSOR:
                cursor = GUI_INSERT_CURSOR;
                break;
-            case GUI_INSERT_CURSOR :
+            case GUI_INSERT_CURSOR:
                cursor = GUI_NO_CURSOR;
                break;
             }
             GUISetCursorType( wnd, cursor );
         }
         return( true );
-    case GUI_KEYDOWN :
+    case GUI_KEYDOWN:
         GUI_GET_KEY( param, key );
         switch( key ) {
-        case GUI_KEY_LEFT :
-        case GUI_KEY_RIGHT :
-        case GUI_KEY_UP :
-        case GUI_KEY_DOWN :
+        case GUI_KEY_LEFT:
+        case GUI_KEY_RIGHT:
+        case GUI_KEY_UP:
+        case GUI_KEY_DOWN:
             GUILoadString( 1041, Buffer, sizeof( Buffer ) );
             GUIDisplayMessage( wnd, Buffer, "Load String", GUI_INFORMATION );
             ProcessCursor( wnd, key );
             break;
-        case GUI_KEY_PAGEUP :
+        case GUI_KEY_PAGEUP:
             Child1WndGUIEventProc( wnd, GUI_SCROLL_PAGE_UP, NULL );
             break;
-        case GUI_KEY_PAGEDOWN :
+        case GUI_KEY_PAGEDOWN:
             Child1WndGUIEventProc( wnd, GUI_SCROLL_PAGE_DOWN, NULL );
             break;
-        default :
+        default:
             break;
         }
         return( true );
-    case GUI_KEYUP :
+    case GUI_KEYUP:
 #if keys
         GUI_GET_KEY( param, key );
         return( DisplayKey( key, Buffer ) );
 #else
         return( true );
 #endif
-    case GUI_CLICKED :
+    case GUI_CLICKED:
         GUI_GETID( param, id );
         switch( id ) {
-        case MENU_RESET_MENU :
+        case MENU_RESET_MENU:
             GUIResetMenus( MainWnd, &menu_MainMenu );
             GUIResetMenus( Child1Wnd, &menu_ChildMenu );
         }
         return( true );
-    default :
+    default:
         return( Child2WndGUIEventProc( wnd, gui_ev, param ) );
     }
 }
@@ -1233,10 +1233,10 @@ bool Child3WndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
     gui_text_metrics    text_metrics;
 
     switch( gui_ev ) {
-    case GUI_LBUTTONDOWN :
+    case GUI_LBUTTONDOWN:
         GUI_GET_POINT( param, StartRectPoint );
         return( true );
-    case GUI_LBUTTONUP :
+    case GUI_LBUTTONUP:
         GUI_GET_POINT( param, point );
         SFillRect.x = StartRectPoint.x;
         SFillRect.y = StartRectPoint.y;
@@ -1244,14 +1244,14 @@ bool Child3WndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
         SFillRect.height = point.y - StartRectPoint.y;
         GUIWndDirty( wnd );
         return( true );
-    case GUI_RBUTTONDOWN :
+    case GUI_RBUTTONDOWN:
         GUI_GET_POINT( param, StartPoint );
         return( true );
-    case GUI_RBUTTONUP :
+    case GUI_RBUTTONUP:
         GUI_GET_POINT( param, EndPoint );
         GUIWndDirty( wnd );
         return( true );
-    case GUI_PAINT :
+    case GUI_PAINT:
         GUIGetTextMetrics( wnd, &text_metrics );
 //      GUIDrawLine( wnd, &StartPoint, &EndPoint, GUI_PEN_SOLID,
 //                  text_metrics.avg.x, GUI_FIRST_UNUSED );
@@ -1270,7 +1270,7 @@ bool Child3WndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
         GUIDrawBar( wnd, 10, 1, 30, GUI_BAR_SHADOW, GUI_FRAME_ACTIVE, true );
         GUIDrawBar( wnd, 11, 1, 50, GUI_BAR_SHADOW, GUI_FRAME_ACTIVE, false );
         return( true );
-    default :
+    default:
         return( MainWndGUIEventProc( wnd, gui_ev, param ) );
     }
 }
@@ -1330,16 +1330,16 @@ bool Child2WndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
 
     vscroll = 0;
     switch( gui_ev ) {
-    case GUI_CLOSE :
+    case GUI_CLOSE:
         return( true );
-    case GUI_INIT_WINDOW :
+    case GUI_INIT_WINDOW:
         GUIGetClientRect( wnd, &client );
         GUIGetTextMetrics( wnd, &metrics );
         GUISetHScrollRangeCols( wnd, client.width / metrics.avg.x );
         GUISetVScrollRangeRows( wnd, NUM_CHILD2_ROWS );
         InitIndent( wnd, NUM_CHILD2_ROWS, GUIGetExtra( wnd ) );
         return( true );
-    case GUI_LBUTTONDOWN :
+    case GUI_LBUTTONDOWN:
         if( wnd == Child2Wnd ) {
             GUISetMouseCursor( GUI_HOURGLASS_CURSOR );
 #if swap_enable
@@ -1348,18 +1348,18 @@ bool Child2WndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
 #endif
         }
         return( true );
-    case GUI_LBUTTONUP :
+    case GUI_LBUTTONUP:
         if( wnd == Child2Wnd ) {
             GUISetMouseCursor( GUI_ARROW_CURSOR );
         }
         return( true );
-    case GUI_ICONIFIED :
+    case GUI_ICONIFIED:
         GUIBringToFront( MainWnd );
         return( true );
-    case GUI_RESIZE :
+    case GUI_RESIZE:
         GUI_GET_SIZE( param, size );
         return( true );
-    case GUI_DESTROY :
+    case GUI_DESTROY:
         out = GUIGetExtra( wnd );
         for( i = 0; i < out->numrows; i++ ) {
             for( currattr = out->display[i].attr_list; currattr != NULL; currattr = nextattr ) {
@@ -1374,11 +1374,11 @@ bool Child2WndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
             Child2Wnd = NULL;
         }
         return( true );
-    case GUI_PAINT :
+    case GUI_PAINT:
         GUI_GET_ROWS( param, row, num );
         PaintWindow( wnd, row, num, 0, 0 );
         return( true );
-    case GUI_MOUSEMOVE :
+    case GUI_MOUSEMOVE:
         if( Highlight ) {
             GUI_GET_POINT( param, point );
             row = GUIGetRow( wnd, &point );
@@ -1408,7 +1408,7 @@ bool Child2WndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
             }
         }
         return( true );
-    case GUI_RBUTTONUP :
+    case GUI_RBUTTONUP:
         Highlight = false;
         GUI_GET_POINT( param, point );
         GUIGetMousePosn( wnd, &point );
@@ -1420,7 +1420,7 @@ bool Child2WndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
         GUICreateFloatingPopup( wnd, &point, &menu_PopupMenu, true, &CurrPopupItem );
 #endif
         return( true );
-    case GUI_RBUTTONDOWN :
+    case GUI_RBUTTONDOWN:
         GUI_GET_POINT( param, point );
         Highlight = true;
         row = GUIGetRow( wnd, &point );
@@ -1459,7 +1459,7 @@ bool Child2WndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
             }
         }
         return( true );
-    case GUI_LBUTTONDBLCLK :
+    case GUI_LBUTTONDBLCLK:
         GUI_GET_POINT( param, point );
         row = GUIGetRow( wnd, &point );
         style = GUIGetCreateStyle( wnd );
@@ -1488,30 +1488,30 @@ bool Child2WndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
             }
         }
         return( true );
-    case GUI_CLICKED :
+    case GUI_CLICKED:
         GUI_GETID( param, id );
         switch( id ) {
-        case MENU_RESIZE :
-        case MENU_MINIMIZE :
-        case MENU_MAXIMIZE :
-        case MENU_RESTORE :
-        case MENU_CHANGE :
+        case MENU_RESIZE:
+        case MENU_MINIMIZE:
+        case MENU_MAXIMIZE:
+        case MENU_RESTORE:
+        case MENU_CHANGE:
             if( wnd == Child2Wnd ) {
                 HandlePopup( wnd, &Child2.rect, id );
             } else {
                 HandlePopup( wnd, &Child1.rect, id );
             }
             break;
-        case MENU_BRING_MAIN_TO_FRONT  :
+        case MENU_BRING_MAIN_TO_FRONT:
             GUIBringToFront( MainWnd );
             break;
-        case MENU_GET_CLIENT :
+        case MENU_GET_CLIENT:
             GUIGetClientRect( wnd, &client );
             sprintf( Buffer, "Got client : %d %d %d %d", client.x,
                      client.y, client.width, client.height );
             GUIDisplayMessage( wnd, Buffer, "SAMPLE PROGRAM", GUI_INFORMATION );
             break;
-        case MENU_GET_RECT :
+        case MENU_GET_RECT:
             GUIGetRect( wnd, &client );
             sprintf( Buffer, "Got Rect : %d %d %d %d", client.x,
                      client.y, client.width, client.height );
@@ -1521,7 +1521,7 @@ bool Child2WndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
                      client.y, client.width, client.height );
             GUIDisplayMessage( wnd, Buffer, "SAMPLE PROGRAM", GUI_INFORMATION );
             break;
-        case MENU_GET_ABS_RECT :
+        case MENU_GET_ABS_RECT:
             GUIGetAbsRect( wnd, &client );
             sprintf( Buffer, "Got Rect : %d %d %d %d", client.x,
                      client.y, client.width, client.height );
@@ -1529,7 +1529,7 @@ bool Child2WndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
             break;
         }
         return( true );
-    case GUI_KEYDOWN :
+    case GUI_KEYDOWN:
         KeyDown = true;
 #if keys
         GUI_GET_KEY( param, KeyDownKey );
@@ -1542,7 +1542,7 @@ bool Child2WndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
         }
 #endif
         return( true );
-    case GUI_KEYUP :
+    case GUI_KEYUP:
 #if keys
         {
             bool    ret;
@@ -1558,7 +1558,7 @@ bool Child2WndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
 #else
         break;
 #endif
-    default :
+    default:
         break;
     }
     return( false );

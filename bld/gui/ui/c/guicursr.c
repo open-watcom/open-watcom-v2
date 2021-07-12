@@ -89,16 +89,16 @@ bool GUIAPI GUIGetCursorType( gui_window *wnd, gui_cursor_type *cursor )
         return( false );
     }
     switch( wnd->vs.cursor_type ) {
-    case C_OFF :
+    case C_OFF:
         *cursor = GUI_NO_CURSOR;
         break;
-    case C_NORMAL :
+    case C_NORMAL:
         *cursor = GUI_NORMAL_CURSOR;
         break;
-    case C_INSERT :
+    case C_INSERT:
         *cursor = GUI_INSERT_CURSOR;
         break;
-    default :
+    default:
         return( false );
     }
     return( true );
@@ -109,16 +109,16 @@ bool GUIAPI GUISetCursorType( gui_window *wnd, gui_cursor_type cursor )
     CURSOR_TYPE type;
 
     switch( cursor ) {
-    case GUI_NO_CURSOR :
+    case GUI_NO_CURSOR:
         type = C_OFF;
         break;
-    case GUI_NORMAL_CURSOR :
+    case GUI_NORMAL_CURSOR:
         type = C_NORMAL;
         break;
-    case GUI_INSERT_CURSOR :
+    case GUI_INSERT_CURSOR:
         type = C_INSERT;
         break;
-    default :
+    default:
         return( false );
     }
     wnd->vs.cursor_type = type;

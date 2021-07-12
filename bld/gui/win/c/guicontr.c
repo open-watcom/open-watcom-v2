@@ -290,16 +290,16 @@ WPI_MRESULT CALLBACK GUIEditFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam,
     win_call_back = info->win_call_back;
     switch( message ) {
 #ifndef __OS2_PM__
-    case WM_SETFOCUS :
+    case WM_SETFOCUS:
         EditControlHasFocus = true;
         break;
-    case WM_KILLFOCUS :
+    case WM_KILLFOCUS:
         EditControlHasFocus = false;
         break;
-    case WM_MOUSEACTIVATE :
+    case WM_MOUSEACTIVATE:
         return( true );
         break;
-    case WM_CHAR :
+    case WM_CHAR:
         if( EditControlHasFocus ) {
             if( GUIWindowsMapKey( wparam, lparam, &key_control.key_state.key ) ) {
                 GUIGetKeyState( &key_control.key_state.state );
@@ -316,12 +316,12 @@ WPI_MRESULT CALLBACK GUIEditFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam,
             //}
         }
         break;
-    case WM_KEYDOWN :
+    case WM_KEYDOWN:
         if( EditControlHasFocus ) {
             if( GUIWindowsMapKey( wparam, lparam, &key_control.key_state.key ) ) {
                 switch( key_control.key_state.key ) {
-                case GUI_KEY_UP :
-                case GUI_KEY_DOWN :
+                case GUI_KEY_UP:
+                case GUI_KEY_DOWN:
                     key_control.id = info->id;
                     GUIGetKeyState( &key_control.key_state.state );
                     GUIEVENT( wnd, GUI_KEY_CONTROL, &key_control );
@@ -334,13 +334,13 @@ WPI_MRESULT CALLBACK GUIEditFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam,
         }
         break;
 #else
-    case WM_CHAR :
+    case WM_CHAR:
         if( EditControlHasFocus ) {
             if( !IS_KEY_UP( wparam ) && GUIWindowsMapKey( wparam, lparam, &key_control.key_state.key ) ) {
                 switch( key_control.key_state.key ) {
-                //case GUI_KEY_ENTER :
-                case GUI_KEY_UP :
-                case GUI_KEY_DOWN :
+                //case GUI_KEY_ENTER:
+                case GUI_KEY_UP:
+                case GUI_KEY_DOWN:
                     key_control.id = info->id;
                     GUIGetKeyState( &key_control.key_state.state );
                     if( GUIEVENT( wnd, GUI_KEY_CONTROL, &key_control ) ) {
@@ -409,7 +409,7 @@ WPI_WNDPROC GUIDoSubClass( HWND hwnd, gui_control_class control_class )
     //CvrCtl3dSubclassCtl( hwnd );
 
     switch( control_class ) {
-    case GUI_EDIT_COMBOBOX :
+    case GUI_EDIT_COMBOBOX:
         return( GUISubClassEditCombobox( hwnd ) );
     case GUI_EDIT:
     case GUI_EDIT_MLE:
@@ -430,7 +430,7 @@ WPI_WNDPROC GUIDoSubClass( HWND hwnd, gui_control_class control_class )
         SET_WNDPROC( hwnd, (LONG_PTR)MakeProcInstance_WND( GUIGroupBoxFunc, GUIMainHInst ) );
 #endif
         return( old );
-    default :
+    default:
         return( NULL );
     }
 }
@@ -493,7 +493,7 @@ LONG GUISetControlStyle( gui_control_info *ctl_info )
     }
 
     switch( ctl_info->control_class ) {
-    case GUI_LISTBOX :
+    case GUI_LISTBOX:
         if( ctl_info->style & GUI_STYLE_CONTROL_NOINTEGRALHEIGHT ) {
             ret_style |= LBS_NOINTEGRALHEIGHT;
         }
@@ -511,8 +511,8 @@ LONG GUISetControlStyle( gui_control_info *ctl_info )
         }
 #endif
         break;
-    case GUI_COMBOBOX :
-    case GUI_EDIT_COMBOBOX :
+    case GUI_COMBOBOX:
+    case GUI_EDIT_COMBOBOX:
         if( ctl_info->style & GUI_STYLE_CONTROL_NOINTEGRALHEIGHT ) {
             ret_style |= CBS_NOINTEGRALHEIGHT;
         }
@@ -565,7 +565,7 @@ static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent_wnd, c
     style = GUISetControlStyle( ctl_info );
     if( ctl_info->text != NULL ) {
         switch( ctl_info->control_class ) {
-        case GUI_LISTBOX :
+        case GUI_LISTBOX:
             style |= WS_CAPTION;
             break;
         }

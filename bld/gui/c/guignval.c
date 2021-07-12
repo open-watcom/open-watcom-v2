@@ -96,26 +96,26 @@ static bool GetNewValGUIEventProc( gui_window *wnd, gui_event gui_ev, void *para
 
     info = GUIGetExtra( wnd );
     switch( gui_ev ) {
-    case GUI_INIT_DIALOG :
+    case GUI_INIT_DIALOG:
         info->ret_val = GUI_RET_CANCEL;
         return( true );
-    case GUI_CONTROL_CLICKED :
+    case GUI_CONTROL_CLICKED:
         GUI_GETID( param, id );
         switch( id ) {
-        case CTL_CANCEL :
+        case CTL_CANCEL:
             GUICloseDialog( wnd );
             info->ret_val = GUI_RET_CANCEL;
             return( true );
-        case CTL_OK :
+        case CTL_OK:
             info->text = GUIGetText( wnd, CTL_EDIT );
             GUICloseDialog( wnd );
             info->ret_val = GUI_RET_OK;
             return( true );
-        default :
+        default:
             break;
         }
         break;
-    default :
+    default:
         break;
     }
     return( false );

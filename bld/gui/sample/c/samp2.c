@@ -136,15 +136,15 @@ static bool GetNewGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
     gui_ctl_id  id;
 
     switch( gui_ev ) {
-    case GUI_INIT_DIALOG :
+    case GUI_INIT_DIALOG:
         ret_val = GUI_RET_CANCEL;
         return( true );
-    case GUI_DESTROY :
+    case GUI_DESTROY:
         if( Status != NULL ) {
             GUIDestroyWnd( Status );
         }
         return( true );
-    case GUI_CLICKED :
+    case GUI_CLICKED:
         GUI_GETID( param, id );
         switch( id ) {
         case CTL_CANCEL:
@@ -185,7 +185,7 @@ static bool StatusGUIEventProc( gui_window * wnd, gui_event gui_ev, void * param
     param = param;
 
     switch( gui_ev ) {
-    case GUI_INIT_WINDOW :
+    case GUI_INIT_WINDOW:
         Row = GUIGetNumRows( wnd ) / 2;
         GUIGetTextMetrics( wnd, &metrics );
         GUIGetClientRect( wnd, &Rect );
@@ -204,9 +204,9 @@ static bool StatusGUIEventProc( gui_window * wnd, gui_event gui_ev, void * param
             Strlen[i] *= metrics.max.x;
         }
         return( true );
-    case GUI_DESTROY :
+    case GUI_DESTROY:
         return( true );
-    case GUI_PAINT :
+    case GUI_PAINT:
         GUIDrawRect( wnd, &Rect, GUI_FIRST_UNUSED );
         for( i = 0; i < NUM_TEXT; i++ ) {
             pos = ( i * Width / 4 ) - Strlen[i] + Rect.x;

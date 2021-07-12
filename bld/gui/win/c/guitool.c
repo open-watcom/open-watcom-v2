@@ -133,36 +133,36 @@ static bool guiToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM
         return( false );
     }
     switch( msg ) {
-    case WM_CREATE :
+    case WM_CREATE:
         hwnd = _wpi_getframe( hwnd );
         hsysmenu = _wpi_getsystemmenu( hwnd );
         GUIAppendSystemMenuItem( hsysmenu, GUI_MENU_IDX( GUI_FIX_TOOLBAR ) );
         break;
 #ifdef __OS2_PM__
-    case WM_CHAR :
-    case WM_TRANSLATEACCEL :
+    case WM_CHAR:
+    case WM_TRANSLATEACCEL:
 #else
-    case WM_SYSKEYDOWN :
-    case WM_SYSKEYUP :
-    case WM_KEYUP :
-    case WM_KEYDOWN :
+    case WM_SYSKEYDOWN:
+    case WM_SYSKEYUP:
+    case WM_KEYUP:
+    case WM_KEYDOWN:
 #endif
         return( GUIProcesskey( hwnd, msg, wparam, lparam ) != 0 );
-    case WM_MENUSELECT :
+    case WM_MENUSELECT:
         GUIProcessMenuSelect( wnd, hwnd, msg, wparam, lparam );
         return( true );
-    case WM_SYSCOMMAND :
+    case WM_SYSCOMMAND:
         id = _wpi_getid( wparam );
         switch( id ) {
-        case GUI_FIX_TOOLBAR :
+        case GUI_FIX_TOOLBAR:
             GUIChangeToolBar( wnd );
         }
         break;
 #ifndef __OS2_PM__
-    case WM_NCLBUTTONDBLCLK :
+    case WM_NCLBUTTONDBLCLK:
 #endif
-    case WM_RBUTTONDBLCLK :
-    case WM_LBUTTONDBLCLK :
+    case WM_RBUTTONDBLCLK:
+    case WM_LBUTTONDBLCLK:
         /* flip the current state of the toolbar -
          * if we are fixed then start to float or vice versa
          */
@@ -200,7 +200,7 @@ static bool guiToolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM
                 ( tbar->info.border_size.y + _wpi_getsystemmetrics( SM_CYFRAME ) ) * 2 + tbar->info.button_size.y + _wpi_getsystemmetrics( SM_CYCAPTION ) );
         }
         break;
-    case WM_CLOSE :
+    case WM_CLOSE:
         GUICloseToolBar( wnd );
         return( true );
     }

@@ -943,10 +943,10 @@ static void ProcessOKorDClick( gui_window *wnd, gui_ctl_id id  )
     if( id == CTL_OK ) { /* hit enter or clicked ok */
         GUIGetFocus( wnd, &focusid );
         switch( focusid ) {
-        case CTL_DIR_LIST  :
+        case CTL_DIR_LIST:
             id = focusid;
             break;
-        case CTL_FILE_LIST :
+        case CTL_FILE_LIST:
             ptr = GUIGetText( wnd, CTL_FILE_LIST );
             GUISetText( wnd, CTL_EDIT, ptr );
             GUIMemFree( ptr );
@@ -954,8 +954,8 @@ static void ProcessOKorDClick( gui_window *wnd, gui_ctl_id id  )
         }
     }
     switch( id ) {
-    case CTL_FILE_LIST :
-    case CTL_OK :
+    case CTL_FILE_LIST:
+    case CTL_OK:
         prc = processFileName( wnd );
         if( prc == PROCESS_TRUE ) {
             dlg->dialogRC = FN_RC_FILE_SELECTED;
@@ -965,7 +965,7 @@ static void ProcessOKorDClick( gui_window *wnd, gui_ctl_id id  )
             GUICloseDialog( wnd );
         }
         break;
-    case CTL_DIR_LIST :
+    case CTL_DIR_LIST:
         sel = -1;
         GUIGetCurrSelect( wnd, id, &sel );
 #if defined( __UNIX__ ) || defined( __NETWARE__ )
@@ -1080,7 +1080,7 @@ static bool GetFileNameGUIEventProc( gui_window *wnd, gui_event gui_ev, void *pa
             GUIMemFree( ptr );
             return( true );
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
-        case CTL_DRIVES :
+        case CTL_DRIVES:
             sel = -1;
             GUIGetCurrSelect( wnd, id, &sel );
             strcpy( path, GetDriveTextList()[sel] );

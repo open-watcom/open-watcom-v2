@@ -111,38 +111,38 @@ static bool ToolbarGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param 
     gui_ctl_id  id;
 
     switch( gui_ev ) {
-    case GUI_INIT_WINDOW :
+    case GUI_INIT_WINDOW:
         GUIEVENT( wnd->parent, GUI_TOOLBAR_FLOATING, NULL );
         return( true );
-    case GUI_KEYDOWN :
-    case GUI_KEYUP :
+    case GUI_KEYDOWN:
+    case GUI_KEYUP:
         GUIEVENT( wnd->parent, gui_ev, param );
         return( true );
-    case GUI_CLICKED :
+    case GUI_CLICKED:
         GUI_GETID( param, id );
         if( id == FIX_TOOLBAR ) {
             FixToolbar( wnd );
         }
         return( true );
-    case GUI_CONTROL_CLICKED :
+    case GUI_CONTROL_CLICKED:
         GUI_GETID( param, id );
         id = EV2ID( id );
         GUIEVENT( wnd->parent, GUI_CLICKED, &id );
         return( true );
-    case GUI_LBUTTONDBLCLK :
+    case GUI_LBUTTONDBLCLK:
         FixToolbar( wnd );
         return( true );
-    case GUI_DESTROY :
+    case GUI_DESTROY:
         /* didn't get close first */
         if( wnd->parent->tbar->floattoolbar != NULL ) {
             wnd->parent->tbar->floattoolbar = NULL;
         }
         GUICloseToolBar( wnd->parent );
         return( true );
-    case GUI_CLOSE :
+    case GUI_CLOSE:
         wnd->parent->tbar->floattoolbar = NULL;
         return( true );
-    default :
+    default:
         break;
     }
     return( false );

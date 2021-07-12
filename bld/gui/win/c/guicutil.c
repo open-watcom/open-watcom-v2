@@ -77,14 +77,14 @@ WPI_MRESULT GUIToComboList( gui_window *wnd, gui_ctl_id id, WPI_MSG lb_msg, WPI_
     }
     my_ret = ret;
     switch( control_class ) {
-    case GUI_LISTBOX :
+    case GUI_LISTBOX:
         GUIToComboListControl( wnd, id, lb_msg, wparam, lparam, &my_ret );
         break;
-    case GUI_COMBOBOX :
-    case GUI_EDIT_COMBOBOX :
+    case GUI_COMBOBOX:
+    case GUI_EDIT_COMBOBOX:
         GUIToComboListControl( wnd, id, cb_msg, wparam, lparam, &my_ret );
         break;
-    default :
+    default:
         return( ret );
     }
     return( my_ret );

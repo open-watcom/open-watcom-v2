@@ -110,7 +110,7 @@ void GUIProcessMenuCurr( UIMENUITEM *menuitem )
     top_wnd = GUIGetMenuWindow();
     menu_wnd = NULL;
     switch( MenuState ) {
-    case MENU_NONE :
+    case MENU_NONE:
         menu_wnd = top_wnd;
         if( top_wnd != NULL && GUIHasToolBar( top_wnd ) && GUIToolBarFixed( top_wnd ) ) {
             if( GUIHasHintText( menu_wnd, id, TOOL_HINT ) ) {
@@ -118,10 +118,10 @@ void GUIProcessMenuCurr( UIMENUITEM *menuitem )
             }
         }
         break;
-    case MENU_FLOAT :
+    case MENU_FLOAT:
         type = FLOAT_HINT;
         /* fall through */
-    case MENU_SYS :
+    case MENU_SYS:
         menu_wnd = MenuWnd;
     }
     if( ( top_wnd != NULL ) && ( menu_wnd != NULL ) ) {

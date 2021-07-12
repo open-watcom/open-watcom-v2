@@ -131,23 +131,23 @@ static bool DrawLine( gui_window *wnd, const gui_point *start, const gui_point *
     WPI_POINT   wpi_point;
 
     switch( style ) {
-    case GUI_PEN_SOLID :
+    case GUI_PEN_SOLID:
         win_style = PS_SOLID;
         pen_thickness = GUIScaleToScreenH( thickness );
         break;
-    case GUI_PEN_DASH :
+    case GUI_PEN_DASH:
         pen_thickness = 1;
         win_style = PS_DASH;
         break;
-    case GUI_PEN_DOT :
+    case GUI_PEN_DOT:
         pen_thickness = 1;
         win_style = PS_DOT;
         break;
-    case GUI_PEN_DASHDOT :
+    case GUI_PEN_DASHDOT:
         pen_thickness = 1;
         win_style = PS_DASHDOT;
         break;
-    case GUI_PEN_DASHDOTDOT :
+    case GUI_PEN_DASHDOTDOT:
         pen_thickness = 1;
         win_style = PS_DASHDOTDOT;
         break;

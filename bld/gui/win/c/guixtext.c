@@ -209,12 +209,12 @@ char * GUIAPI GUIGetText( gui_window *wnd, gui_ctl_id id )
         return( NULL );
     }
     switch( control_class ) {
-    case GUI_LISTBOX :
+    case GUI_LISTBOX:
         if( !GUIGetCurrSelect( wnd, id, &choice ) ) {
             return( NULL );
         }
         return( GUIGetListItem( wnd, id, choice ) );
-    default :
+    default:
         hwnd = _wpi_getdlgitem( wnd->hwnd, id );
         if( hwnd == NULLHANDLE ) {
             return( NULL );

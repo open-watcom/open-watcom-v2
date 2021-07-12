@@ -774,7 +774,7 @@ static void ProcessMenu( gui_window *wnd, gui_ctl_id id )
         GUIEVENT( wnd, GUI_CLICKED, &id );
     } else {
         switch( id ) {
-        case GUI_CHANGE_FONT :
+        case GUI_CHANGE_FONT:
             GUIChangeFont( wnd );
             break;
         }
@@ -893,7 +893,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
     if( wnd->root == hwnd ) {
         /* message for root window */
         switch( msg ) {
-        case WM_CREATE :
+        case WM_CREATE:
             ret = 0L;
 #ifdef __OS2_PM__
             wnd->root_pinfo.normal_pres = _wpi_createos2normpres( GUIMainHInst, hwnd );
@@ -907,7 +907,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
     } else if( ( wnd->root != NULLHANDLE ) && ( hwnd == wnd->hwnd ) ) {
         /* message for container window */
         switch( msg ) {
-        case WM_SIZE :
+        case WM_SIZE:
             if( !_wpi_isiconic( _wpi_getframe( hwnd ) ) ) {
                 guix_coord  scr_size;
 
@@ -916,10 +916,10 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
                 GUIDoResize( wnd, hwnd, &scr_size );
             }
             /* fall through */
-        case WM_MOVE :
-        case WM_VSCROLL :
-        case WM_HSCROLL :
-        case WM_CLOSE :
+        case WM_MOVE:
+        case WM_VSCROLL:
+        case WM_HSCROLL:
+        case WM_CLOSE:
             return( _wpi_defwindowproc( hwnd, msg, wparam, lparam ) );
         }
     }
@@ -927,7 +927,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
     use_defproc = false;
     ret = 0L;
     switch( msg ) {
-    case WM_CREATE :
+    case WM_CREATE:
 #ifdef __OS2_PM__
         wnd->hwnd_pinfo.normal_pres = _wpi_createos2normpres( GUIMainHInst, hwnd );
 #endif
@@ -956,11 +956,11 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
         GUIBringToFront( wnd );
         break;
 #if defined(__NT__)
-    case WM_CTLCOLORBTN :
-    case WM_CTLCOLORDLG :
-    //case WM_CTLCOLORLISTBOX :
-    case WM_CTLCOLORSTATIC :
-    //case WM_CTLCOLOREDIT :
+    case WM_CTLCOLORBTN:
+    case WM_CTLCOLORDLG:
+    //case WM_CTLCOLORLISTBOX:
+    case WM_CTLCOLORSTATIC:
+    //case WM_CTLCOLOREDIT:
         ret = (WPI_MRESULT)CvrCtl3dCtlColorEx( msg, wparam, lparam );
         if( ret == (WPI_MRESULT)NULL ) {
             SetBkColor( (HDC)wparam, GetNearestColor( (HDC)wparam, GUIGetBack( wnd, GUI_BACKGROUND ) ) );
@@ -968,14 +968,14 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
         }
         break;
 #elif !defined( __OS2_PM__ )
-    case WM_CTLCOLOR :
+    case WM_CTLCOLOR:
         switch( HIWORD( lparam ) ) {
-        case CTLCOLOR_BTN :
-        case CTLCOLOR_DLG :
-        case CTLCOLOR_EDIT :
-        case CTLCOLOR_LISTBOX :
-        case CTLCOLOR_MSGBOX :
-        case CTLCOLOR_STATIC :
+        case CTLCOLOR_BTN:
+        case CTLCOLOR_DLG:
+        case CTLCOLOR_EDIT:
+        case CTLCOLOR_LISTBOX:
+        case CTLCOLOR_MSGBOX:
+        case CTLCOLOR_STATIC:
             ret = (WPI_MRESULT)CvrCtl3dCtlColorEx( msg, wparam, lparam );
             if( ret == (WPI_MRESULT)NULL ) {
                 SetBkColor( (HDC)wparam, GetNearestColor( (HDC)wparam, GUIGetBack( wnd, GUI_BACKGROUND ) ) );
@@ -986,14 +986,14 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
         break;
 #endif
 #ifndef __OS2_PM__
-    case WM_INITMENUPOPUP :
+    case WM_INITMENUPOPUP:
         ret = GUIProcessInitMenuPopup( wnd, hwnd, msg, wparam, lparam );
         break;
-    case WM_MENUSELECT :
+    case WM_MENUSELECT:
         ret = GUIProcessMenuSelect( wnd, hwnd, msg, wparam, lparam );
         break;
 #endif
-    case WM_GETMINMAXINFO :
+    case WM_GETMINMAXINFO:
         {
 #ifdef __WINDOWS_386__
             WPI_MINMAXINFO __far *minmax= (WPI_MINMAXINFO __far *)MK_FP32( (void *)lparam );
@@ -1022,7 +1022,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
 #endif
         break;
 #if !defined(__OS2_PM__)
-    case WM_PAINTICON :
+    case WM_PAINTICON:
         {
             HICON   old;
 
@@ -1059,13 +1059,13 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
 #if 0
     // this repaints the nc client area when the window loses focus to
     // a window that is not a descendant of a GUI window
-    case WM_KILLFOCUS :
+    case WM_KILLFOCUS:
         if( !GUIIsGUIChild( (HWND)wparam ) ) {
             ActivateNC( wnd, false );
         }
         break;
 #endif
-    case WM_SETFOCUS :
+    case WM_SETFOCUS:
         if( !_wpi_ismsgsetfocus( msg, lparam ) ) {
             use_defproc = true;
         } else if( !EditControlHasFocus ) {
@@ -1073,12 +1073,12 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
         }
         break;
 #endif
-    case WM_VSCROLL :
-    case WM_HSCROLL :
+    case WM_VSCROLL:
+    case WM_HSCROLL:
         GUIProcessScrollMsg( wnd, msg, wparam, lparam );
         break;
 #ifdef __NT__
-    case WM_MOUSEWHEEL :
+    case WM_MOUSEWHEEL:
         {
             // Try to handle mousewheel messages...
             // Fake them into GUIProcessScrollMsg()
@@ -1117,7 +1117,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
         }
         break;
 #endif
-    case WM_MOVE :
+    case WM_MOVE:
         use_defproc = true;
         if( (wnd->flags & DOING_CLOSE) == 0 ) {
             if( !GUIParentHasFlags( wnd, IS_MINIMIZED ) ) {
@@ -1169,9 +1169,9 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
         }
         break;
 #ifndef __OS2_PM__
-    case WM_NCLBUTTONDOWN :
-    case WM_NCMBUTTONDOWN :
-    case WM_NCRBUTTONDOWN :
+    case WM_NCLBUTTONDOWN:
+    case WM_NCMBUTTONDOWN:
+    case WM_NCRBUTTONDOWN:
         CheckDoFront( wnd );
         use_defproc = true;
         break;
@@ -1181,7 +1181,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
         SendPointEvent( wnd, GUI_RBUTTONDOWN, wparam, lparam, true );
         break;
 #else
-    case WM_RBUTTONDOWN :
+    case WM_RBUTTONDOWN:
         WPI_MAKEPOINT( wparam, lparam, wpi_point );
         win = PM1632WinWindowFromPoint( hwnd, &wpi_point, false );
         if( ( win != NULLHANDLE ) && ( win != hwnd ) ) {
@@ -1222,13 +1222,13 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
     case WM_SYSCOMMAND:
         id = _wpi_getid( wparam );
         switch( id ) {
-        case SC_NEXTWINDOW :
+        case SC_NEXTWINDOW:
             if( GUIMDI ) {
                 NextWndToFront( hwnd );
                 break;
             }
             /* fall through */
-        default :
+        default:
             if( (id & 0xf000) == (SC_NEXTWINDOW & 0xf000) ) {
                 /* top value same for all SC_* values */
                 use_defproc = true;
@@ -1239,7 +1239,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
         }
         break;
 #ifdef __OS2_PM__
-    case WM_CONTROL :
+    case WM_CONTROL:
         GUIProcessControlNotification( SHORT1FROMMP( wparam ), SHORT2FROMMP( wparam ), wnd );
         break;
 #else
@@ -1263,7 +1263,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
             }
         }
         break;
-    case WM_ENDSESSION :
+    case WM_ENDSESSION:
         {
             gui_end_session     es;
 
@@ -1272,7 +1272,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
             GUIEVENT( wnd, GUI_ENDSESSION, &es );
         }
         break;
-    case WM_QUERYENDSESSION :
+    case WM_QUERYENDSESSION:
         {
             gui_end_session     es;
 
@@ -1295,7 +1295,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
         use_defproc = true;
         break;
 #ifndef __OS2_PM__
-    case WM_VKEYTOITEM :
+    case WM_VKEYTOITEM:
         ret = (WPI_MRESULT)-1;
         GUIGetKeyState( &key_state.state );
         if( GUIWindowsMapKey( wparam, lparam, &key_state.key ) ) {
@@ -1304,18 +1304,18 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
         break;
 #endif
 #ifdef __OS2_PM__
-    case WM_CHAR :
-    case WM_TRANSLATEACCEL :
+    case WM_CHAR:
+    case WM_TRANSLATEACCEL:
 #else
-    case WM_MENUCHAR :
-    case WM_SYSKEYDOWN :
-    case WM_SYSKEYUP :
-    case WM_KEYUP :
-    case WM_KEYDOWN :
+    case WM_MENUCHAR:
+    case WM_SYSKEYDOWN:
+    case WM_SYSKEYUP:
+    case WM_KEYUP:
+    case WM_KEYDOWN:
 #endif
         ret = (WPI_MRESULT)GUIProcesskey( hwnd, msg, wparam, lparam );
         break;
-    case WM_CLOSE :
+    case WM_CLOSE:
         if( wnd->flags & DOING_CLOSE ) {
             use_defproc = true;
         } else if( wnd->style & GUI_CLOSEABLE ) {
@@ -1331,11 +1331,11 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
         break;
 #ifdef __NT__
     // Message to deal with tray icons (Win 95 and NT 4.0 ).
-    case WM_TRAYCALLBACK :
+    case WM_TRAYCALLBACK:
         TrayCallBack( hwnd, wparam, lparam );
         break;
 #endif
-    case WM_DESTROY :
+    case WM_DESTROY:
         wnd->flags |= DOING_DESTROY;
         NumWindows--;
         GUIEVENT( wnd, GUI_DESTROY, NULL );
@@ -1387,7 +1387,7 @@ WPI_MRESULT CALLBACK GUIFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WP
             break;
         case WM_CHAR:
             return( GUIProcesskey( hwnd, msg, wparam, lparam ) );
-        case WM_INITMENUPOPUP :
+        case WM_INITMENUPOPUP:
             return( GUIProcessInitMenuPopup( wnd, hwnd, msg, wparam, lparam ) );
         case WM_MENUSELECT:
             return( GUIProcessMenuSelect( wnd, hwnd, msg, wparam, lparam ) );
@@ -1406,8 +1406,8 @@ WPI_MRESULT CALLBACK GUIFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WP
         case WM_RBUTTONDOWN:
             CheckDoFront( wnd );
             break;
-        case WM_VSCROLL :
-        case WM_HSCROLL :
+        case WM_VSCROLL:
+        case WM_HSCROLL:
             GUIProcessScrollMsg( wnd, msg, wparam, lparam );
             return( 0L );
         }

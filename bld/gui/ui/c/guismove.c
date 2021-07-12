@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -220,26 +220,26 @@ bool GUIDoKeyboardMoveResize( ui_event ui_ev )
     finish = false;
     cancel = false;
     switch( ui_ev ) {
-    case EV_CURSOR_UP :
+    case EV_CURSOR_UP:
         MoveSizeChange.y--;
         break;
-    case EV_CURSOR_DOWN :
+    case EV_CURSOR_DOWN:
         MoveSizeChange.y++;
         break;
-    case EV_CURSOR_RIGHT :
+    case EV_CURSOR_RIGHT:
         MoveSizeChange.x++;
         break;
-    case EV_CURSOR_LEFT :
+    case EV_CURSOR_LEFT:
         MoveSizeChange.x--;
         break;
-    case EV_ESCAPE :
+    case EV_ESCAPE:
         MoveResizeCancel();
         cancel = true;
         /* fall through */
-    case EV_ENTER :
+    case EV_ENTER:
         finish = true;
         break;
-    default :
+    default:
         return( true );
     }
     if( !cancel ) {
@@ -277,13 +277,13 @@ bool GUIDoMoveResize( gui_window *wnd, int row, int col, ui_event ui_ev, gui_poi
 bool GUIDoMoveResizeCheck( gui_window * wnd, ui_event ui_ev, ORD row, ORD col )
 {
     switch( ui_ev ) {
-    case EV_ENTER :
+    case EV_ENTER:
         GUIDoMoveResize( wnd, row, col, ui_ev, NULL );
         break;
-    case EV_ESCAPE :
+    case EV_ESCAPE:
         MoveResizeCancel();
         break;
-    default :
+    default:
         return( false );
     }
     return( true );

@@ -77,9 +77,9 @@ char * GUIAPI GUIGetFontFromUser( char *fontinfo )
 gui_mcursor_handle GUIAPI GUISetMouseCursor( gui_mcursor_type type )
 {
     switch( type ) {
-    case GUI_ARROW_CURSOR :
-    case GUI_HOURGLASS_CURSOR :
-    case GUI_CROSS_CURSOR :
+    case GUI_ARROW_CURSOR:
+    case GUI_HOURGLASS_CURSOR:
+    case GUI_CROSS_CURSOR:
         return( (void *)"" );
     default:
         return( NULL );

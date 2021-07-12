@@ -256,7 +256,7 @@ void GUIProcessScrollMsg( gui_window *wnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_P
             GUIVScroll( diff, wnd, GUI_SCROLL_BOTTOM );
             break;
 #endif
-        case SB_THUMBPOSITION :
+        case SB_THUMBPOSITION:
             if( wnd->scroll & GUI_VDRAG ) {
                 param = GET_WM_VSCROLL_POS( wparam, lparam );
                 diff = param - GUIGetScrollPos( wnd, bar );
@@ -270,7 +270,7 @@ void GUIProcessScrollMsg( gui_window *wnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_P
                 GUIVScroll( diff, wnd, GUI_SCROLL_VERTICAL );
             }
             break;
-        case SB_ENDSCROLL :
+        case SB_ENDSCROLL:
             GUIRedrawScroll( wnd, bar, false );
             break;
         }
@@ -315,7 +315,7 @@ void GUIProcessScrollMsg( gui_window *wnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_P
                 GUIHScroll( diff, wnd, GUI_SCROLL_HORIZONTAL );
             }
             break;
-        case SB_ENDSCROLL :
+        case SB_ENDSCROLL:
             GUIRedrawScroll( wnd, bar, false );
             break;
         }

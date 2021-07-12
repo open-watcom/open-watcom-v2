@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -145,25 +145,25 @@ static bool discard_this_vk( WORD vk )
     switch( vk ) {
     case VK_SHIFT:
     case VK_CONTROL:
-    case VK_CAPITAL :
+    case VK_CAPITAL:
 #ifndef __OS2_PM__
     case VK_MENU:
 #endif
-    case VK_NUMLOCK :
-    case VK_PAUSE :
-    case VK_LBUTTON :
-    case VK_RBUTTON :
-    case VK_MBUTTON :
-    case VK_SNAPSHOT :
+    case VK_NUMLOCK:
+    case VK_PAUSE:
+    case VK_LBUTTON:
+    case VK_RBUTTON:
+    case VK_MBUTTON:
+    case VK_SNAPSHOT:
 #ifdef __OS2_PM__
-    case VK_ALT :
+    case VK_ALT:
 #else
-    case VK_CLEAR :
-    case VK_SELECT :
-    case VK_CANCEL :
-    case VK_EXECUTE :
-    case VK_HELP :
-    case VK_SEPARATOR :
+    case VK_CLEAR:
+    case VK_SELECT:
+    case VK_CANCEL:
+    case VK_EXECUTE:
+    case VK_HELP:
+    case VK_SEPARATOR:
 #endif
         discard = true;
         break;
@@ -336,43 +336,43 @@ static bool GUIConvertVirtKeyToGUIKey( WORD vk, gui_key *key )
         case VK_NEXT:
             *key= GUIMapKey( GUI_KEY_PAGEDOWN );
             break;
-        case VK_SPACE :
+        case VK_SPACE:
             *key = GUIMapKey( GUI_KEY_SPACE );
             break;
-        case VK_F1 :
+        case VK_F1:
             *key = GUIMapKey( GUI_KEY_F1 );
             break;
-        case VK_F2 :
+        case VK_F2:
             *key = GUIMapKey( GUI_KEY_F2 );
             break;
-        case VK_F3 :
+        case VK_F3:
             *key = GUIMapKey( GUI_KEY_F3 );
             break;
-        case VK_F4 :
+        case VK_F4:
             *key = GUIMapKey( GUI_KEY_F4 );
             break;
-        case VK_F5 :
+        case VK_F5:
             *key = GUIMapKey( GUI_KEY_F5 );
             break;
-        case VK_F6 :
+        case VK_F6:
             *key = GUIMapKey( GUI_KEY_F6 );
             break;
-        case VK_F7 :
+        case VK_F7:
             *key = GUIMapKey( GUI_KEY_F7 );
             break;
-        case VK_F8 :
+        case VK_F8:
             *key = GUIMapKey( GUI_KEY_F8 );
             break;
-        case VK_F9 :
+        case VK_F9:
             *key = GUIMapKey( GUI_KEY_F9 );
             break;
-        case VK_F10 :
+        case VK_F10:
             *key = GUIMapKey( GUI_KEY_F10 );
             break;
-        case VK_F11 :
+        case VK_F11:
             *key = GUIMapKey( GUI_KEY_F11 );
             break;
-        case VK_F12 :
+        case VK_F12:
             *key = GUIMapKey( GUI_KEY_F12 );
             break;
 #ifdef __OS2_PM__
@@ -383,16 +383,16 @@ static bool GUIConvertVirtKeyToGUIKey( WORD vk, gui_key *key )
         case VK_DECIMAL:
             *key = GUIMapKey( GUI_KEY_KP_PERIOD );
             break;
-        case VK_ADD :
+        case VK_ADD:
             *key = GUIMapKey( GUI_KEY_KP_PLUS );
             break;
-        case VK_SUBTRACT :
+        case VK_SUBTRACT:
             *key = GUIMapKey( GUI_KEY_KP_MINUS );
             break;
-        case VK_DIVIDE :
+        case VK_DIVIDE:
             *key = GUIMapKey( GUI_KEY_KP_SLASH );
             break;
-        case VK_MULTIPLY :
+        case VK_MULTIPLY:
             *key = GUIMapKey( GUI_KEY_KP_ASTERISK );
             break;
 #endif
@@ -464,7 +464,7 @@ WPI_MRESULT GUIProcesskey( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2
     HWND                low_l;
 
     switch( msg ) {
-    case WM_MENUCHAR :
+    case WM_MENUCHAR:
         low_l = GET_WM_COMMAND_HWND( wparam, lparam );
         if( low_l == 0 && RetTrue ) {
             /* app used last WM_SYSMENU key and there are no menus open,
@@ -486,8 +486,8 @@ WPI_MRESULT GUIProcesskey( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2
             return( _wpi_defwindowproc( hwnd, msg, wparam, lparam ) );
 #endif
         }
-    case WM_SYSKEYDOWN :
-    case WM_SYSKEYUP :
+    case WM_SYSKEYDOWN:
+    case WM_SYSKEYUP:
         if( GUICurrWnd != NULL ) {
             GUIGetKeyState( &key_state.state );
             if( GUIWindowsMapKey( wparam, 0, &key_state.key ) ) {
@@ -499,7 +499,7 @@ WPI_MRESULT GUIProcesskey( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2
             }
         }
         return( _wpi_defwindowproc( hwnd, msg, wparam, lparam ) );
-    case WM_KEYUP :
+    case WM_KEYUP:
         if( ( GUICurrWnd != NULL ) && !EditControlHasFocus ) {
             GUIGetKeyState( &key_state.state );
             if( GUIWindowsMapKey( wparam, lparam, &key_state.key ) ) {
@@ -507,7 +507,7 @@ WPI_MRESULT GUIProcesskey( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2
             }
         }
         break;
-    case WM_KEYDOWN :
+    case WM_KEYDOWN:
         if( ( GUICurrWnd != NULL ) && !EditControlHasFocus ) {
             GUIGetKeyState( &key_state.state );
             if( GUIWindowsMapKey( wparam, lparam, &key_state.key ) ) {

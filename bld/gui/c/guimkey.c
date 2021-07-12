@@ -65,91 +65,91 @@ gui_keystate    KeyState = GUI_KS_NONE;
 gui_key GUIMapKey( gui_key key )
 {
     switch( key ) {
-    case GUI_KEY_TAB :
+    case GUI_KEY_TAB:
         ALT_CTRL_SHIFT( TAB, key );
         break;
-    case GUI_KEY_BACKSPACE :
+    case GUI_KEY_BACKSPACE:
         ALT_CTRL( BACKSPACE, key );
         break;
-    case GUI_KEY_ESCAPE :
+    case GUI_KEY_ESCAPE:
         ALTorCTRL( ESCAPE, key );
         break;
-    case GUI_KEY_ENTER :
+    case GUI_KEY_ENTER:
         ALT_CTRL( ENTER, key );
         break;
-    case GUI_KEY_HOME :
+    case GUI_KEY_HOME:
         EXTALT_CTRL( HOME, key );
         break;
-    case GUI_KEY_END :
+    case GUI_KEY_END:
         EXTALT_CTRL( END, key );
         break;
-    case GUI_KEY_UP :
+    case GUI_KEY_UP:
         EXTALT_CTRL( UP, key );
         break;
-    case GUI_KEY_DOWN :
+    case GUI_KEY_DOWN:
         EXTALT_CTRL( DOWN, key );
         break;
-    case GUI_KEY_LEFT :
+    case GUI_KEY_LEFT:
         EXTALT_CTRL( LEFT, key );
         break;
-    case GUI_KEY_RIGHT :
+    case GUI_KEY_RIGHT:
         EXTALT_CTRL( RIGHT, key );
         break;
-    case GUI_KEY_INSERT :
+    case GUI_KEY_INSERT:
         EXTALT_CTRL( INSERT, key );
         break;
-    case GUI_KEY_DELETE :
+    case GUI_KEY_DELETE:
         EXTALT_CTRL( DELETE, key );
         break;
-    case GUI_KEY_PAGEUP :
+    case GUI_KEY_PAGEUP:
         EXTALT_CTRL( PAGEUP, key );
         break;
-    case GUI_KEY_PAGEDOWN :
+    case GUI_KEY_PAGEDOWN:
         EXTALT_CTRL( PAGEDOWN, key );
         break;
-    case GUI_KEY_F1 :
+    case GUI_KEY_F1:
         ALT_CTRL_SHIFT( F1, key );
         break;
-    case GUI_KEY_F2 :
+    case GUI_KEY_F2:
         ALT_CTRL_SHIFT( F2, key );
         break;
-    case GUI_KEY_F3 :
+    case GUI_KEY_F3:
         ALT_CTRL_SHIFT( F3, key );
         break;
-    case GUI_KEY_F4 :
+    case GUI_KEY_F4:
         ALT_CTRL_SHIFT( F4, key );
         break;
-    case GUI_KEY_F5 :
+    case GUI_KEY_F5:
         ALT_CTRL_SHIFT( F5, key );
         break;
-    case GUI_KEY_F6 :
+    case GUI_KEY_F6:
         ALT_CTRL_SHIFT( F6, key );
         break;
-    case GUI_KEY_F7 :
+    case GUI_KEY_F7:
         ALT_CTRL_SHIFT( F7, key );
         break;
-    case GUI_KEY_F8 :
+    case GUI_KEY_F8:
         ALT_CTRL_SHIFT( F8, key );
         break;
-    case GUI_KEY_F9 :
+    case GUI_KEY_F9:
         ALT_CTRL_SHIFT( F9, key );
         break;
-    case GUI_KEY_F10 :
+    case GUI_KEY_F10:
         ALT_CTRL_SHIFT( F10, key );
         break;
-    case GUI_KEY_F11 :
+    case GUI_KEY_F11:
         ALT_CTRL_SHIFT( F11, key );
         break;
-    case GUI_KEY_F12 :
+    case GUI_KEY_F12:
         ALT_CTRL_SHIFT( F12, key );
         break;
-    case GUI_KEY_KP_MINUS :
+    case GUI_KEY_KP_MINUS:
         ALT_CTRL( KP_MINUS, key );
         break;
-    case GUI_KEY_KP_PLUS :
+    case GUI_KEY_KP_PLUS:
         ALT_CTRL( KP_PLUS, key );
         break;
-    default :
+    default:
         break;  // keeps GCC happy
     }
     return( key );

@@ -39,13 +39,13 @@ gui_mcursor_handle GUIAPI GUISetMouseCursor( gui_mcursor_type type )
     HCURSOR     cursor;
 
     switch( type ) {
-    case GUI_ARROW_CURSOR :
+    case GUI_ARROW_CURSOR:
         cursor = _wpi_getsyscursor( IDC_ARROW );
         break;
-    case GUI_HOURGLASS_CURSOR :
+    case GUI_HOURGLASS_CURSOR:
         cursor = _wpi_getsyscursor( IDC_WAIT );
         break;
-    case GUI_CROSS_CURSOR :
+    case GUI_CROSS_CURSOR:
         cursor = _wpi_getsyscursor( IDC_CROSS );
         break;
     default:
