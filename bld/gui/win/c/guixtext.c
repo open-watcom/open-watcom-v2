@@ -129,13 +129,13 @@ int GUIAPI GUIGetTopIndex( gui_window *wnd, gui_ctl_id id )
  * GUISetHorizontalExtent -- set the width of items in the list box
  */
 
-bool GUIAPI GUISetHorizontalExtent( gui_window *wnd, gui_ctl_id id, int extent )
+bool GUIAPI GUISetHorizontalExtent( gui_window *wnd, gui_ctl_id id, int extentx )
 {
 #ifndef __OS2_PM__
-    GUIToComboList( wnd, id, LB_SETHORIZONTALEXTENT, LB_SETHORIZONTALEXTENT, GUIScaleToScreenH( extent ), (WPI_PARAM2)0, (WPI_MRESULT)0 );
+    GUIToComboList( wnd, id, LB_SETHORIZONTALEXTENT, LB_SETHORIZONTALEXTENT, GUIScaleToScreenH( extentx ), (WPI_PARAM2)0, (WPI_MRESULT)0 );
     return( true );
 #else
-    /* unused parameters */ (void)wnd; (void)id; (void)extent;
+    /* unused parameters */ (void)wnd; (void)id; (void)extentx;
 
     return( false );
 #endif

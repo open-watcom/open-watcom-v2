@@ -774,7 +774,7 @@ extern gui_ord  GUIAPI GUIGetControlExtentY( gui_window *wnd, gui_ctl_id id, con
 extern void     GUIAPI GUIGetTextMetrics( gui_window *wnd, gui_text_metrics *metrics );
 extern void     GUIAPI GUIGetDlgTextMetrics( gui_text_metrics *metrics );
 extern void     GUIAPI GUIGetMaxDialogSize( gui_coord *size );
-extern void     GUIAPI GUIGetPoint( gui_window *wnd, gui_ord extent, gui_text_ord row, gui_point *point );
+extern void     GUIAPI GUIGetPoint( gui_window *wnd, gui_ord extentx, gui_text_ord row, gui_point *point );
 
 /* Menu Functions */
 
@@ -934,7 +934,7 @@ extern bool     GUIAPI GUIAddTextList( gui_window *wnd, gui_ctl_id id, int num_i
 extern bool     GUIAPI GUIInsertText( gui_window *wnd, gui_ctl_id id, int choice, const char *text );
 extern bool     GUIAPI GUISetTopIndex( gui_window *wnd, gui_ctl_id id, int choice );
 extern int      GUIAPI GUIGetTopIndex( gui_window *wnd, gui_ctl_id id );
-extern bool     GUIAPI GUISetHorizontalExtent( gui_window *wnd, gui_ctl_id id, int extent );
+extern bool     GUIAPI GUISetHorizontalExtent( gui_window *wnd, gui_ctl_id id, gui_ord extentx );
 extern bool     GUIAPI GUIClearList( gui_window *wnd, gui_ctl_id id );
 extern bool     GUIAPI GUIDeleteItem( gui_window *wnd, gui_ctl_id id, int choice );
 extern int      GUIAPI GUIGetListSize( gui_window *wnd, gui_ctl_id id );

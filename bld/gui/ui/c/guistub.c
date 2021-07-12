@@ -100,7 +100,7 @@ void GUIAPI GUI3DDialogFini( void )
 {
 }
 
-bool GUIAPI GUISetHorizontalExtent( gui_window *wnd, gui_ctl_id id, int extentx )
+bool GUIAPI GUISetHorizontalExtent( gui_window *wnd, gui_ctl_id id, gui_ord extentx )
 {
     /* unused parameters */ (void)wnd; (void)id; (void)extentx;
 
