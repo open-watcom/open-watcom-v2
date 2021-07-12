@@ -210,4 +210,3 @@ gui_ord GUIScreenToScaleY( guix_ord screen_ord )
 {
     return( ConvertFromScreenV( screen_ord - screen_data.y ) + scale_data.y );
 }
-

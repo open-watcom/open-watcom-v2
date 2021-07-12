@@ -131,8 +131,7 @@ void GUIAPI GUISetCheckResizeAreaForChildren( gui_window *wnd, bool check )
     }
 }
 
-void GUICheckResizeAreaForChildren( gui_window *wnd, SAREA *area,
-                                    resize_dir dir )
+void GUICheckResizeAreaForChildren( gui_window *wnd, SAREA *area, resize_dir dir )
 {
     gui_window  *child_wnd;
     SAREA       *child;
@@ -165,8 +164,7 @@ void GUICheckResizeAreaForChildren( gui_window *wnd, SAREA *area,
     }
 }
 
-void GUICheckResizeAreaForParent( gui_window *wnd, SAREA *area,
-                                  resize_dir dir )
+void GUICheckResizeAreaForParent( gui_window *wnd, SAREA *area, resize_dir dir )
 {
     SAREA       parent;
     int         diff;
@@ -206,8 +204,7 @@ void GUICheckResizeAreaForParent( gui_window *wnd, SAREA *area,
     }
 }
 
-static void ResizeGadget( p_gadget gadget, ORD length, ORD anchor,
-                          bool set_range )
+static void ResizeGadget( p_gadget gadget, ORD length, ORD anchor, bool set_range )
 {
     GUIInitGadget( gadget, gadget->start, length, anchor );
     if( !set_range ) {
@@ -328,8 +325,8 @@ static void MoveWnd( gui_window *wnd, int row_diff, int col_diff )
     gui_window  *curr;
 
     GUICheckMove( wnd, &row_diff, &col_diff );
-    uivmove( &wnd->vs, (ORD)( row_diff + (int)wnd->vs.area.row),
-             (ORD)(col_diff + (int)wnd->vs.area.col ) );
+    uivmove( &wnd->vs, (ORD)( row_diff + (int)wnd->vs.area.row ),
+             (ORD)( col_diff + (int)wnd->vs.area.col ) );
     GUISetUseWnd( wnd );
     GUIEVENT( wnd, GUI_MOVE, NULL );
     if( !GUI_WND_MINIMIZED( wnd ) ) {
@@ -417,8 +414,7 @@ void GUICheckArea( SAREA *area, resize_dir dir )
  * GUIWndMoveSize
  */
 
-bool GUIWndMoveSize( gui_window *wnd, SAREA *new, gui_flags flag,
-                     resize_dir dir )
+bool GUIWndMoveSize( gui_window *wnd, SAREA *new, gui_flags flag, resize_dir dir )
 {
 
     GUICheckArea( new, dir );
@@ -444,7 +440,7 @@ bool GUIWndMoveSize( gui_window *wnd, SAREA *new, gui_flags flag,
 }
 
 static void CalcIconsDim( gui_window *parent_wnd, int *icons_per_row,
-                          int *max_rows, SAREA *bound  )
+                          int *max_rows, SAREA *bound )
 {
     if( parent_wnd == NULL ) {
         GUIGetScreenArea( bound );
@@ -689,7 +685,7 @@ void GUIAPI GUIHideWindow( gui_window *wnd )
 
 bool GUIAPI GUIIsWindowVisible( gui_window *wnd )
 {
-    return( ( wnd->vs.flags & V_HIDDEN ) == 0 );
+    return( (wnd->vs.flags & V_HIDDEN) == 0 );
 }
 
 void GUIAPI GUIRestoreWindow( gui_window * wnd )

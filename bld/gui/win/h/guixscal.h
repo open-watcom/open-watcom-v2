@@ -36,7 +36,7 @@
 
 extern WPI_TEXTMETRIC   GUItm;
 
-extern void GUIClientToScaleRect( guix_rect *client, gui_rect *rect );
+extern void GUIClientToScaleRect( const guix_rect *client, gui_rect *rect );
 
 extern guix_ord GUIFromTextX( gui_text_ord text_ord, gui_window *wnd );
 extern guix_ord GUIFromTextY( gui_text_ord text_ord, gui_window *wnd );

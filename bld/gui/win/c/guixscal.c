@@ -38,7 +38,7 @@
 
 WPI_TEXTMETRIC GUItm;
 
-void GUIClientToScaleRect( guix_rect *client, gui_rect *rect )
+void GUIClientToScaleRect( const guix_rect *client, gui_rect *rect )
 {
     GUIScreenToScaleRect( client, rect );
 }

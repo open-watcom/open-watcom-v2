@@ -53,7 +53,7 @@ static void DoFreeStatus( void )
     StatusWndFini();
 }
 
-static void SetStatusRect( HWND parent, WPI_RECT *status_wpi_rect, int x, int height )
+static void SetStatusRect( HWND parent, WPI_RECT *status_wpi_rect, guix_ord x, guix_ord height )
 {
     WPI_RECT    wpi_rect;
     GUI_RECTDIM left, right, top, bottom;
@@ -90,12 +90,10 @@ static void CalcStatusRect( gui_window *wnd, gui_ord x, gui_ord height, WPI_RECT
 
     if( height == 0 ) {
         GUIGetTextMetrics( wnd, &metrics );
-        size_y = GUIScaleToScreenV( metrics.max.y );
+        /* windows is 2 pixels higher than client */
+        size_y = GUIScaleToScreenV( metrics.max.y ) + TOTAL_VERT + 2;
     } else {
         size_y = GUIScaleToScreenV( height );
-    }
-    if( height == 0 ) {
-        size_y += TOTAL_VERT + 2; /* windows is 2 pixels higher than client */
     }
     SetStatusRect( wnd->root, wpi_rect, GUIScaleToScreenH( x ), size_y );
 }
