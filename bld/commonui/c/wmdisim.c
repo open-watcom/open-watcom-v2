@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -117,7 +117,7 @@ void MDIInitMenu( void )
 /*
  * MDISetOrigSize
  */
-void MDISetOrigSize( HWND hwnd, WPI_RECT *rect )
+void MDISetOrigSize( HWND hwnd, const WPI_RECT *rect )
 {
     mdi_data    *md;
 
@@ -134,7 +134,7 @@ static void doMaximize( HWND hwnd )
 {
     DWORD               style;
     mdi_data            *md;
-    WPI_RECT            r;
+    WPI_RECT            rect;
     bool                iconic;
     WPI_RECTDIM         left;
     WPI_RECTDIM         top;
@@ -167,20 +167,20 @@ static void doMaximize( HWND hwnd )
     }
     _wpi_setscrollrange( hwnd, SB_VERT, 1, 1, TRUE );
     _wpi_setscrollrange( hwnd, SB_HORZ, 1, 1, TRUE );
-    _wpi_getwindowrect( mdiInfo.container, &r );
+    _wpi_getwindowrect( mdiInfo.container, &rect );
 
-    _wpi_getrectvalues( r, &left, &top, &right, &bottom );
+    _wpi_getrectvalues( rect, &left, &top, &right, &bottom );
 
     if( !iconic ) {
         _wpi_offsetrect( mdiInfo.hinstance, &md->orig_size, -left, -top );
     }
 
-    _wpi_setrectvalues( &r, 0, 0, right-left+1, bottom-top+1 );
+    _wpi_setrectvalues( &rect, 0, 0, right - left + 1, bottom - top + 1 );
 
     if( iconic ) {
-        _wpi_setrestoredrect( hwnd, &r );
+        _wpi_setrestoredrect( hwnd, &rect );
     } else {
-        _wpi_getrectvalues( r, &left, &top, &right, &bottom );
+        _wpi_getrectvalues( rect, &left, &top, &right, &bottom );
         _wpi_movewindow( hwnd, left, top, right, bottom, TRUE );
     }
 
