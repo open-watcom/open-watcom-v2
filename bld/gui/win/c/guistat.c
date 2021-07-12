@@ -53,37 +53,37 @@ static void DoFreeStatus( void )
     StatusWndFini();
 }
 
-static void SetStatusRect( HWND parent, WPI_RECT *status, int x, int height )
+static void SetStatusRect( HWND parent, WPI_RECT *status_wpi_rect, int x, int height )
 {
-    WPI_RECT    client;
+    WPI_RECT    wpi_rect;
     GUI_RECTDIM left, right, top, bottom;
     int         y, h;
 
-    _wpi_getclientrect( parent, &client );
-    _wpi_getrectvalues( client, &left, &top, &right, &bottom );
+    _wpi_getclientrect( parent, &wpi_rect );
+    _wpi_getrectvalues( wpi_rect, &left, &top, &right, &bottom );
     y = _wpi_cvth_y_plus1( bottom - height, bottom - top );
     h = _wpi_cvth_y_plus1( bottom - top, bottom - top );
-    _wpi_setwrectvalues( status, x, y, right - left, h );
+    _wpi_setwrectvalues( status_wpi_rect, x, y, right - left, h );
 }
 
 static void DoResizeStatus( gui_window *wnd )
 {
-    WPI_RECT    status;
+    WPI_RECT    wpi_rect;
     GUI_RECTDIM left, top, right, bottom;
 
     if( GUIHasStatus( wnd ) ) {
-        _wpi_getwindowrect( wnd->status, &status );
-        _wpi_mapwindowpoints( HWND_DESKTOP, wnd->root, (WPI_LPPOINT)&status, 2 );
-        _wpi_getrectvalues( status, &left, &top, &right, &bottom );
+        _wpi_getwindowrect( wnd->status, &wpi_rect );
+        _wpi_mapwindowpoints( HWND_DESKTOP, wnd->root, (WPI_LPPOINT)&wpi_rect, 2 );
+        _wpi_getrectvalues( wpi_rect, &left, &top, &right, &bottom );
         /* maintain height and left position of status window -- tie the
            rest to the client are of the parent */
-        SetStatusRect( wnd->root, &status, left, bottom - top );
-        _wpi_getrectvalues( status, &left, &top, &right, &bottom );
+        SetStatusRect( wnd->root, &wpi_rect, left, bottom - top );
+        _wpi_getrectvalues( wpi_rect, &left, &top, &right, &bottom );
         _wpi_movewindow( wnd->status, left, top, right - left, bottom - top, TRUE );
     }
 }
 
-static void CalcStatusRect( gui_window *wnd, gui_ord x, gui_ord height, WPI_RECT *rect )
+static void CalcStatusRect( gui_window *wnd, gui_ord x, gui_ord height, WPI_RECT *wpi_rect )
 {
     gui_text_metrics    metrics;
     guix_ord            size_y;
@@ -97,7 +97,7 @@ static void CalcStatusRect( gui_window *wnd, gui_ord x, gui_ord height, WPI_RECT
     if( height == 0 ) {
         size_y += TOTAL_VERT + 2; /* windows is 2 pixels higher than client */
     }
-    SetStatusRect( wnd->root, rect, GUIScaleToScreenH( x ), size_y );
+    SetStatusRect( wnd->root, wpi_rect, GUIScaleToScreenH( x ), size_y );
 }
 
 /*
@@ -109,7 +109,7 @@ static void CalcStatusRect( gui_window *wnd, gui_ord x, gui_ord height, WPI_RECT
 bool GUIAPI GUICreateStatusWindow( gui_window *wnd, gui_ord x, gui_ord height,
                             gui_colour_set *colour )
 {
-    WPI_RECT            status_rect;
+    WPI_RECT    wpi_rect;
 
     colour = colour;
     if( wnd->root == NULLHANDLE ) {
@@ -121,9 +121,8 @@ bool GUIAPI GUICreateStatusWindow( gui_window *wnd, gui_ord x, gui_ord height,
         return( false );
     }
     GUIStatusWnd = StatusWndStart();
-    CalcStatusRect( wnd, x, height, &status_rect );
-    wnd->status = StatusWndCreate( GUIStatusWnd, wnd->root, &status_rect,
-                                   GUIMainHInst, NULL );
+    CalcStatusRect( wnd, x, height, &wpi_rect );
+    wnd->status = StatusWndCreate( GUIStatusWnd, wnd->root, &wpi_rect, GUIMainHInst, NULL );
     if( wnd->status == NULLHANDLE ) {
         return( false );
     }
@@ -175,14 +174,14 @@ bool GUIAPI GUICloseStatusWindow( gui_window *wnd )
 
 bool GUIAPI GUIResizeStatusWindow( gui_window *wnd, gui_ord x, gui_ord height )
 {
-    WPI_RECT    status;
+    WPI_RECT    wpi_rect;
     GUI_RECTDIM left, top, right, bottom;
 
     if( !GUIHasStatus( wnd ) ) {
         return( false );
     }
-    CalcStatusRect( wnd, x, height, &status );
-    _wpi_getrectvalues( status, &left, &top, &right, &bottom );
+    CalcStatusRect( wnd, x, height, &wpi_rect );
+    _wpi_getrectvalues( wpi_rect, &left, &top, &right, &bottom );
     _wpi_movewindow( wnd->status, left, top, right - left, bottom - top, TRUE );
     GUIResizeBackground( wnd, true );
     return( true );

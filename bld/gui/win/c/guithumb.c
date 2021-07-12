@@ -42,8 +42,8 @@
 
 static void SetScrollThumb( gui_window * wnd, int percent, int bar )
 {
-    int         old;
-    int         new;
+    guix_ord    old;
+    guix_ord    new;
     bool        range_set;
 
     if( GUIScrollOn( wnd, bar ) ) {

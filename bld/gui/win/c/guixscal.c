@@ -38,16 +38,16 @@
 
 WPI_TEXTMETRIC GUItm;
 
-void GUIClientToScaleRect( gui_rect *rect )
+void GUIClientToScaleRect( guix_rect *client, gui_rect *rect )
 {
-    GUIScreenToScaleRect( rect, rect );
+    GUIScreenToScaleRect( client, rect );
 }
 
 /*
  *  GUIToTextX -- divide by character width, height
  */
 
-gui_text_ord GUIToTextX( gui_ord ord, gui_window *wnd )
+gui_text_ord GUIToTextX( guix_ord ord, gui_window *wnd )
 {
     GUIGetMetrics( wnd );
     return( GUIMulDiv( gui_text_ord, ord, 1, AVGXCHAR( GUItm ) ) );
@@ -57,7 +57,7 @@ gui_text_ord GUIToTextX( gui_ord ord, gui_window *wnd )
  *  GUIToTextY -- divide by character width, height
  */
 
-gui_text_ord GUIToTextY( gui_ord ord, gui_window *wnd )
+gui_text_ord GUIToTextY( guix_ord ord, gui_window *wnd )
 {
     GUIGetMetrics( wnd );
     return( GUIMulDiv( gui_text_ord, ord, 1, AVGYCHAR( GUItm ) ) );
@@ -144,7 +144,7 @@ void GUIGetMetrics( gui_window *wnd )
 
 void GUIGetUpdateRows( gui_window *wnd, HWND hwnd, gui_text_ord *start, gui_text_ord *num )
 {
-    WPI_RECT    rect;
+    WPI_RECT    wpi_rect;
     int         avgy;
     GUI_RECTDIM left;
     GUI_RECTDIM top;
@@ -155,8 +155,8 @@ void GUIGetUpdateRows( gui_window *wnd, HWND hwnd, gui_text_ord *start, gui_text
 
     _wpi_gettextmetrics( wnd->hdc, &GUItm );
     avgy = AVGYCHAR( GUItm );
-    _wpi_getpaintrect( wnd->ps, &rect );
-    _wpi_getrectvalues( rect, &left, &top, &right, &bottom );
+    _wpi_getpaintrect( wnd->ps, &wpi_rect );
+    _wpi_getrectvalues( wpi_rect, &left, &top, &right, &bottom );
 
     top    = _wpi_cvtc_y_plus1( hwnd, top );
     bottom = _wpi_cvtc_y_plus1( hwnd, bottom );

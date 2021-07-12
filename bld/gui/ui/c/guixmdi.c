@@ -131,7 +131,7 @@ static void TileWindows( gui_window *wnd, void *param )
     }
 }
 
-static void Tile( gui_window *root, int num_windows, gui_rect *rect,
+static void Tile( gui_window *root, int num_windows, const gui_rect *rect,
                   gui_coord *min_size, bool horz )
 {
     tile_info   info;
@@ -224,7 +224,7 @@ static void CascadeWindows( gui_window *wnd, void *param )
     info->num = info->num % info->mod;
 }
 
-static void Cascade( gui_window *root, int num_windows, gui_rect *rect,
+static void Cascade( gui_window *root, int num_windows, const gui_rect *rect,
                      gui_coord *min_size )
 {
     cascade_info        info;

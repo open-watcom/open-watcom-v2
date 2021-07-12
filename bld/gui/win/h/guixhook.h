@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,9 +45,9 @@ extern void GUISetMDINewWindow( bool (*func)(HWND) );
 extern bool GUIMDINewWindow( HWND );
 extern void GUISetMDIMaximize( void (*func)(bool, gui_window *) );
 extern void GUIMDIMaximize( bool max, gui_window *wnd );
-extern void GUISetSetMDIRestoredSize( void (*func)(HWND, WPI_RECT *) );
-extern void GUISetMDIRestoredSize( HWND hwnd, WPI_RECT *);
-extern void GUISetIsMDIChildWindow( bool (*func)( gui_window *) );
+extern void GUISetSetMDIRestoredSize( void (*func)(HWND, const WPI_RECT *) );
+extern void GUISetMDIRestoredSize( HWND hwnd, const WPI_RECT * );
+extern void GUISetIsMDIChildWindow( bool (*func)( gui_window * ) );
 extern bool GUIIsMDIChildWindow( gui_window *wnd );
 
 #endif // _GUIXHOOK_H_

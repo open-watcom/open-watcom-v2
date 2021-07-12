@@ -49,7 +49,7 @@ void GUIPaint( gui_window *wnd, HWND hwnd, bool isdlg )
     PAINTSTRUCT *prev_ps;
     gui_row_num row_num;
     PAINTSTRUCT ps;
-    WPI_RECT    fill_area;
+    WPI_RECT    wpi_rect;
 #ifdef __OS2_PM__
     ULONG       flags;
     RECTL       client;
@@ -64,18 +64,17 @@ void GUIPaint( gui_window *wnd, HWND hwnd, bool isdlg )
     wnd->ps = &ps;
     wnd->hdc = _wpi_beginpaint( hwnd, NULLHANDLE, wnd->ps );
     _wpi_torgbmode( wnd->hdc );
-    _wpi_getpaintrect( wnd->ps, &fill_area );
+    _wpi_getpaintrect( wnd->ps, &wpi_rect );
 #ifdef __OS2_PM__
-    fill_area = *(wnd->ps);
+    wpi_rect = *(wnd->ps);
     if( isdlg ) {
-        _wpi_inflaterect( GUIMainHInst, &fill_area, 10, 10);
+        _wpi_inflaterect( GUIMainHInst, &wpi_rect, 10, 10);
     }
-    WinFillRect( wnd->hdc, &fill_area, GUIGetBack( wnd, GUI_BACKGROUND ) );
+    WinFillRect( wnd->hdc, &wpi_rect, GUIGetBack( wnd, GUI_BACKGROUND ) );
 #endif
 #if defined( __NT__ )
     if( isdlg ) {
-        _wpi_fillrect( wnd->hdc, &fill_area, GUIGetBack( wnd, GUI_BACKGROUND ),
-                       wnd->bk_brush );
+        _wpi_fillrect( wnd->hdc, &wpi_rect, GUIGetBack( wnd, GUI_BACKGROUND ), wnd->bk_brush );
     }
 #endif
     if( wnd->font != NULL ) {

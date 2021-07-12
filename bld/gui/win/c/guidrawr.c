@@ -40,7 +40,7 @@
 
 static bool DrawRect( gui_window *wnd, const gui_rect *rect, WPI_COLOUR colour, bool fill, bool outline )
 {
-    WPI_RECT    wnd_rect;
+    WPI_RECT    wpi_rect;
     guix_ord    pos_x;
     guix_ord    pos_y;
     guix_ord    size_x;
@@ -81,14 +81,14 @@ static bool DrawRect( gui_window *wnd, const gui_rect *rect, WPI_COLOUR colour, 
     }
     pos_y  = _wpi_cvth_y_size_plus1( pos_y, win_height, size_y );
 
-    _wpi_setrectvalues( &wnd_rect, pos_x, pos_y, pos_x + size_x, pos_y + size_y );
-    if( GUIIsRectInUpdateRect( wnd, &wnd_rect ) ) {
+    _wpi_setrectvalues( &wpi_rect, pos_x, pos_y, pos_x + size_x, pos_y + size_y );
+    if( GUIIsRectInUpdateRect( wnd, &wpi_rect ) ) {
         brush = _wpi_createsolidbrush( colour );
         if( fill ) {
-            _wpi_fillrect( wnd->hdc, &wnd_rect, colour, brush );
+            _wpi_fillrect( wnd->hdc, &wpi_rect, colour, brush );
         }
         if( outline ) {
-            _wpi_borderrect( wnd->hdc, &wnd_rect, brush, colour, colour );
+            _wpi_borderrect( wnd->hdc, &wpi_rect, brush, colour, colour );
         }
         _wpi_deletebrush( brush );
     }
@@ -128,7 +128,7 @@ static bool DrawLine( gui_window *wnd, const gui_point *start, const gui_point *
     guix_ord    win_height;
     HPEN        old_pen;
     int         scroll;
-    WPI_POINT   pt;
+    WPI_POINT   wpi_point;
 
     switch( style ) {
     case GUI_PEN_SOLID :
@@ -178,13 +178,13 @@ static bool DrawLine( gui_window *wnd, const gui_point *start, const gui_point *
     pen = _wpi_createpen( win_style, pen_thickness, colour );
     old_pen = _wpi_selectpen( wnd->hdc, pen );
 
-    pt.x = scr_start_x;
-    pt.y = _wpi_cvth_y_plus1( scr_start_y, win_height );
-    _wpi_movetoex( wnd->hdc, &pt, &pt );
+    wpi_point.x = scr_start_x;
+    wpi_point.y = _wpi_cvth_y_plus1( scr_start_y, win_height );
+    _wpi_movetoex( wnd->hdc, &wpi_point, &wpi_point );
 
-    pt.x = scr_end_x;
-    pt.y = _wpi_cvth_y_plus1( scr_end_y, win_height );
-    _wpi_lineto( wnd->hdc, &pt );
+    wpi_point.x = scr_end_x;
+    wpi_point.y = _wpi_cvth_y_plus1( scr_end_y, win_height );
+    _wpi_lineto( wnd->hdc, &wpi_point );
 
     if( old_pen != NULLHANDLE ) {
         _wpi_getoldpen( wnd->hdc, old_pen );

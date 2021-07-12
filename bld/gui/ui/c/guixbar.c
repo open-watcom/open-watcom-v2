@@ -80,7 +80,7 @@ bool GUIAPI GUIDrawBarGroup( gui_window *wnd, gui_text_ord row, gui_ord start,
         ret = GUIDrawBar( wnd, row, start, width1, bstyle, attr1, selected );
     }
     if( ret ) {
-        ret = GUIDrawBar( wnd, row, start+width1, width2, bstyle, attr2, selected );
+        ret = GUIDrawBar( wnd, row, start + width1, width2, bstyle, attr2, selected );
     }
     return( ret );
 }

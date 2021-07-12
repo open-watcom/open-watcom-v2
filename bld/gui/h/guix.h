@@ -95,10 +95,10 @@ extern bool         GUIXCreateFloatingPopup( gui_window *wnd, const gui_point *l
                         const gui_menu_items *menus, gui_mouse_track track, gui_ctl_id *curr_id );
 extern bool         GUIXCreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
                         const gui_toolbar_items *toolinfo, bool excl, gui_colour_set *plain,
-                        gui_colour_set *standout, gui_rect *rect );
+                        gui_colour_set *standout, const gui_rect *float_pos );
 extern bool         GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
                         const gui_toolbar_items *toolinfo, bool excl, gui_colour_set *plain,
-                        gui_colour_set *standout, gui_rect *rect, bool use_tips );
+                        gui_colour_set *standout, const gui_rect *float_pos, bool use_tips );
 
 extern bool         GUIXCloseToolBar( gui_window *wnd );
 

@@ -44,24 +44,24 @@
 void GUIAPI GUIWndDirtyRect( gui_window *wnd, const gui_rect *rect )
 {
     guix_rect   scr_rect;
-    WPI_RECT    win_rect;
+    WPI_RECT    wpi_rect;
     int         left, top, right, bottom;
 
     GUIScaleToScreenRect( rect, &scr_rect );
-    left = scr_rect.x;
+    left = scr_rect.s_x;
     if( GUI_DO_HSCROLL( wnd ) ) {
         left -= GUIGetScrollPos( wnd, SB_HORZ );
     }
-    top = scr_rect.y;
+    top = scr_rect.s_y;
     if( GUI_DO_VSCROLL( wnd ) ) {
         top -= GUIGetScrollPos( wnd, SB_VERT );
     }
-    right = left + scr_rect.width;
-    bottom = top + scr_rect.height;
-    _wpi_setwrectvalues( &win_rect, left, top, right, bottom );
-    _wpi_cvtc_rect_plus1( wnd->hwnd, &win_rect );
+    right = left + scr_rect.s_width;
+    bottom = top + scr_rect.s_height;
+    _wpi_setwrectvalues( &wpi_rect, left, top, right, bottom );
+    _wpi_cvtc_rect_plus1( wnd->hwnd, &wpi_rect );
     //GUIInvalidatePaintHandles( wnd );
-    _wpi_invalidaterect( wnd->hwnd, &win_rect, TRUE );
+    _wpi_invalidaterect( wnd->hwnd, &wpi_rect, TRUE );
     _wpi_updatewindow( wnd->hwnd );
 }
 

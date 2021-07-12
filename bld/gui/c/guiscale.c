@@ -58,7 +58,7 @@ static struct {
  * GUISetScale -- Set the user defined scale
  */
 
-void GUIAPI GUISetScale( gui_rect *rect )
+void GUIAPI GUISetScale( const gui_rect *rect )
 {
     COPYRECT( *rect, scale_data );
 }

@@ -41,7 +41,7 @@
 #include "guimdi.h"
 
 
-bool GUIAPI GUIResizeWindow( gui_window *wnd, gui_rect *rect )
+bool GUIAPI GUIResizeWindow( gui_window *wnd, const gui_rect *rect )
 {
     guix_coord  scr_pos;
     guix_coord  scr_size;
@@ -49,7 +49,7 @@ bool GUIAPI GUIResizeWindow( gui_window *wnd, gui_rect *rect )
     HWND        frame;
     HWND        phwnd;
     HWND        rphwnd;
-    WPI_POINT   pt;
+    WPI_POINT   wpi_point;
 
     GUIInvalidatePaintHandles( wnd );
     if( wnd->hwnd != NULLHANDLE ) {
@@ -63,11 +63,11 @@ bool GUIAPI GUIResizeWindow( gui_window *wnd, gui_rect *rect )
         if( GUI_IS_DIALOG( wnd ) ) {
             // dialogs are owned by, but not children of, phwnd
             // so lets map pos to its real parent
-            pt.x = scr_pos.x;
-            pt.y = scr_pos.y;
+            wpi_point.x = scr_pos.x;
+            wpi_point.y = scr_pos.y;
             rphwnd = _wpi_getparent( frame );
-            _wpi_mapwindowpoints( phwnd, rphwnd, &pt, 1 );
-            _wpi_movewindow( frame, pt.x, pt.y, scr_size.x, scr_size.y, TRUE );
+            _wpi_mapwindowpoints( phwnd, rphwnd, &wpi_point, 1 );
+            _wpi_movewindow( frame, wpi_point.x, wpi_point.y, scr_size.x, scr_size.y, TRUE );
 
 // The following is a bandaid 'till I find out why WM_SIZE's aren't
 // generated for PM GUI dialogs by this fuction
@@ -92,14 +92,14 @@ bool GUIAPI GUIResizeWindow( gui_window *wnd, gui_rect *rect )
     return( true );
 }
 
-void GUIAPI GUISetRestoredSize( gui_window *wnd, gui_rect *rect )
+void GUIAPI GUISetRestoredSize( gui_window *wnd, const gui_rect *rect )
 {
     guix_coord          scr_pos;
     guix_coord          scr_size;
     gui_window          *parent_wnd;
     HWND                frame;
     HWND                phwnd;
-    WPI_RECT            new_rect;
+    WPI_RECT            wpi_rect;
 
     if( GUIIsMaximized( wnd ) || GUIIsMinimized( wnd ) ) {
         if( wnd->hwnd != NULLHANDLE ) {
@@ -110,12 +110,12 @@ void GUIAPI GUISetRestoredSize( gui_window *wnd, gui_rect *rect )
                 phwnd = parent_wnd->hwnd;
             }
             GUICalcLocation( rect, &scr_pos, &scr_size, phwnd );
-            _wpi_setrectvalues( &new_rect, scr_pos.x, scr_pos.y,
+            _wpi_setrectvalues( &wpi_rect, scr_pos.x, scr_pos.y,
                     scr_pos.x + scr_size.x, scr_pos.y + scr_size.y );
             if( GUIMDIMaximized( wnd ) ) {
-                GUISetMDIRestoredSize( frame, &new_rect );
+                GUISetMDIRestoredSize( frame, &wpi_rect );
             } else {
-                _wpi_setrestoredrect( frame, &new_rect );
+                _wpi_setrestoredrect( frame, &wpi_rect );
             }
         }
     } else {
@@ -127,14 +127,14 @@ bool GUIAPI GUIGetRestoredSize( gui_window *wnd, gui_rect *rect )
 {
     HWND                top_hwnd;
     HWND                parent;
-    WPI_RECT            new_rect;
+    WPI_RECT            wpi_rect;
 
     if( wnd->hwnd != NULLHANDLE ) {
         top_hwnd = GUIGetParentFrameHWND( wnd );
         parent = _wpi_getparent( top_hwnd );
-        _wpi_getrestoredrect( top_hwnd, &new_rect );
-        _wpi_mapwindowpoints( parent, HWND_DESKTOP, (WPI_LPPOINT)&new_rect, 2 );
-        DoGetRelRect( top_hwnd, &new_rect, rect, (wnd->style & GUI_POPUP) );
+        _wpi_getrestoredrect( top_hwnd, &wpi_rect );
+        _wpi_mapwindowpoints( parent, HWND_DESKTOP, (WPI_LPPOINT)&wpi_rect, 2 );
+        DoGetRelRect( top_hwnd, &wpi_rect, rect, (wnd->style & GUI_POPUP) );
         return( true );
     }
 

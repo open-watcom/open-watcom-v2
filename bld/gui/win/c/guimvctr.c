@@ -36,7 +36,7 @@
 #include "guixutil.h"
 #include "guirect.h"
 
-bool GUIAPI GUIResizeControl( gui_window *wnd, gui_ctl_id id, gui_rect *rect )
+bool GUIAPI GUIResizeControl( gui_window *wnd, gui_ctl_id id, const gui_rect *rect )
 {
     guix_coord  scr_pos;
     guix_coord  scr_size;

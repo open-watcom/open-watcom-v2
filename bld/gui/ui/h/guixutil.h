@@ -38,7 +38,7 @@ extern void GUISetUseWnd( gui_window *wnd );
 extern bool GUIPtInRect( const SAREA *, ORD, ORD );
 extern bool GUIOverlap( const SAREA *one, const SAREA *two );
 extern bool GUISetArea( SAREA *, const gui_rect *, gui_window *parent_wnd, bool check_min, bool adjust );
-extern bool GUISetDialogArea( gui_window *wnd, SAREA *area, const gui_rect *ect, const SAREA *parent_area );
+extern bool GUISetDialogArea( gui_window *wnd, SAREA *area, const gui_rect *rect, const SAREA *parent_area );
 extern bool GUIIsOpen( gui_window *wnd );
 extern char *GUIMakeEditCopy( char *buffer, int length );
 extern void GUIRedrawTitle( gui_window *wnd );

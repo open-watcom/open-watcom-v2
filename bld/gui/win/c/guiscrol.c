@@ -37,7 +37,7 @@
 #include "guiscrol.h"
 #include "guidoscr.h"
 
-int GUIGetScrollScreenSize( gui_window *wnd, int bar )
+guix_ord GUIGetScrollScreenSize( gui_window *wnd, int bar )
 {
     GUI_RECTDIM left, top, right, bottom;
 
@@ -54,7 +54,7 @@ int GUIGetScrollScreenSize( gui_window *wnd, int bar )
     }
 }
 
-int GUIGetScrollInc( gui_window *wnd, int bar )
+guix_ord GUIGetScrollInc( gui_window *wnd, int bar )
 {
     if( bar == SB_HORZ ) {
         if( GUI_HSCROLL_COLS( wnd ) ) {
@@ -73,10 +73,10 @@ int GUIGetScrollInc( gui_window *wnd, int bar )
 
 void GUIScroll( gui_window *wnd, int bar, int change )
 {
-    int         new;
-    int         old;
-    int         range;
-    int         screen_size;
+    guix_ord    new;
+    guix_ord    old;
+    guix_ord    range;
+    guix_ord    screen_size;
 
     old = GUIGetScrollPos( wnd, bar );
     new = old + change;
@@ -109,7 +109,7 @@ void GUIScroll( gui_window *wnd, int bar, int change )
     }
 }
 
-static void SetScroll( gui_window *wnd, int bar, int pos )
+static void SetScroll( gui_window *wnd, int bar, guix_ord pos )
 {
     if( bar == SB_VERT ) {
         if( GUI_VSCROLL_ON( wnd ) ) {
@@ -323,11 +323,11 @@ void GUIProcessScrollMsg( gui_window *wnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_P
 }
 
 static void DoSetScroll( gui_window *wnd, int bar, bool range_set,
-                         bool chars, unsigned int *p_range )
+                         bool chars, unsigned *p_range )
 {
-    unsigned int        range;
-    int                 pos;
-    int                 screen_size;
+    guix_ord        range;
+    guix_ord        pos;
+    guix_ord        screen_size;
 
     screen_size = GUIGetScrollScreenSize( wnd, bar );
     if( range_set ) { /* app explicitly set scroll range        */

@@ -290,7 +290,7 @@ bool GUIAPI GUIGetControlRect( gui_window *wnd, gui_ctl_id id, gui_rect *rect )
     return( false );
 }
 
-bool GUIAPI GUIResizeControl( gui_window *wnd, gui_ctl_id id, gui_rect *rect )
+bool GUIAPI GUIResizeControl( gui_window *wnd, gui_ctl_id id, const gui_rect *rect )
 {
     SAREA       area;
     a_dialog    *ui_dlg_info;

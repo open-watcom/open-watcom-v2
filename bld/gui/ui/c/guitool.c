@@ -273,7 +273,7 @@ static bool CreateFloatingToolbar( gui_window *wnd, gui_ord height )
 bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
                        const gui_toolbar_items *toolinfo, bool excl,
                        gui_colour_set *plain, gui_colour_set *standout,
-                       gui_rect *float_pos, bool use_tips )
+                       const gui_rect *float_pos, bool use_tips )
 {
     int                 size;
     int                 i;
@@ -336,7 +336,7 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
 bool GUIXCreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
                                 const gui_toolbar_items *toolinfo, bool excl,
                                 gui_colour_set *plain, gui_colour_set *standout,
-                                gui_rect *float_pos )
+                                const gui_rect *float_pos )
 {
     return( GUIXCreateToolBarWithTips( wnd, fixed, height, toolinfo, excl, plain, standout, float_pos, false ) );
 }

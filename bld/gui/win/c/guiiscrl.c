@@ -39,10 +39,10 @@
  * InitScroll -- Init the scrolling position for the window
  */
 
-static void InitScroll( gui_window *wnd, int bar, int pos )
+static void InitScroll( gui_window *wnd, int bar, guix_ord pos )
 {
-    int old;
-    int max;
+    guix_ord old;
+    guix_ord max;
 
     if( GUIScrollOn( wnd, bar ) ) {
         if( pos >= 0 ) {

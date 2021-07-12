@@ -375,7 +375,7 @@ WPI_MRESULT CALLBACK GUIGroupBoxFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wpa
     control_item        *info;
     WPI_WNDPROC         win_call_back;
     WPI_PRES            hdc;
-    WPI_RECT            rect;
+    WPI_RECT            wpi_rect;
     HWND                parent;
     gui_window          *wnd;
 
@@ -392,8 +392,8 @@ WPI_MRESULT CALLBACK GUIGroupBoxFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wpa
     switch( message ) {
     case WM_ERASEBKGND:
         hdc = _wpi_getpres( hwnd );
-        _wpi_getupdaterect( hwnd, &rect );
-        _wpi_fillrect( hdc, &rect, (WPI_COLOUR)0, wnd->bk_brush );
+        _wpi_getupdaterect( hwnd, &wpi_rect );
+        _wpi_fillrect( hdc, &wpi_rect, (WPI_COLOUR)0, wnd->bk_brush );
         _wpi_releasepres( hwnd, hdc );
         break;
     }

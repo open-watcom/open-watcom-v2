@@ -37,10 +37,10 @@
 bool GUIAPI GUICreateFloatToolBar( gui_window *wnd, bool fixed, gui_ord height,
                             const gui_toolbar_items *toolinfo,
                             bool excl, gui_colour_set *plain,
-                            gui_colour_set *standout, gui_rect *rect )
+                            gui_colour_set *standout, const gui_rect *float_pos )
 {
     if( toolinfo->num_items > 0 ) {
-        if( GUIXCreateToolBar( wnd, fixed, height, toolinfo, excl, plain, standout, rect ) ) {
+        if( GUIXCreateToolBar( wnd, fixed, height, toolinfo, excl, plain, standout, float_pos ) ) {
             GUIInitToolbarHint( wnd, toolinfo );
             return( true );
         }

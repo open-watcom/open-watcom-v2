@@ -95,8 +95,8 @@ typedef struct wnd_colour {
 typedef struct toolbarinfo {
     toolbar             *hdl;
     TOOLDISPLAYINFO     info;
-    WPI_RECT            floatrect;
-    WPI_RECT            fixedrect;
+    WPI_RECT            float_wpi_rect;
+    WPI_RECT            fixed_wpi_rect;
     int                 num_items;
     HBITMAP             *bitmaps;
 } toolbarinfo;
@@ -152,8 +152,8 @@ struct gui_window {
     gui_text_ord        num_rows;
     gui_text_ord        old_rows;
     gui_text_ord        num_cols;
-    unsigned int        hscroll_range;
-    unsigned int        vscroll_range;
+    unsigned            hscroll_range;
+    unsigned            vscroll_range;
     GUICALLBACK         *gui_call_back;
     void                *extra;
     HWND                status;

@@ -611,7 +611,7 @@ void GUIZoomWnd( gui_window *wnd, gui_create_styles action )
     }
 }
 
-bool GUIAPI GUIResizeWindow( gui_window *wnd, gui_rect *rect )
+bool GUIAPI GUIResizeWindow( gui_window *wnd, const gui_rect *rect )
 {
     SAREA               area;
     bool                ret;
@@ -643,7 +643,7 @@ bool GUIAPI GUIResizeWindow( gui_window *wnd, gui_rect *rect )
     return( ret );
 }
 
-void GUIAPI GUISetRestoredSize( gui_window *wnd, gui_rect *rect )
+void GUIAPI GUISetRestoredSize( gui_window *wnd, const gui_rect *rect )
 {
     SAREA       area;
 

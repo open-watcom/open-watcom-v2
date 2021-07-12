@@ -36,10 +36,10 @@
 #include "guixutil.h"
 #include "guiscrol.h"
 
-static void SetRange( gui_window *wnd, int bar, gui_ord range, gui_ord text_range )
+static void SetRange( gui_window *wnd, int bar, guix_ord range, guix_ord text_range )
 {
     int new_range;
-    int screen_size;
+    guix_ord screen_size;
 
     screen_size = GUIGetScrollScreenSize( wnd, bar );
     if( bar == SB_HORZ ) {
@@ -132,7 +132,7 @@ gui_ord GUIAPI GUIGetVScrollRange( gui_window *wnd )
 
 gui_text_ord GUIAPI GUIGetVScrollRangeRows( gui_window *wnd )
 {
-    gui_ord     range;
+    guix_ord    range;
 
     range = GUIGetScrollRange( wnd, SB_VERT );
     if( range == GUI_NO_ROW ) {
@@ -148,7 +148,7 @@ gui_text_ord GUIAPI GUIGetVScrollRangeRows( gui_window *wnd )
 
 gui_text_ord GUIAPI GUIGetHScrollRangeCols( gui_window *wnd )
 {
-    gui_ord     range;
+    guix_ord    range;
 
     range = GUIGetScrollRange( wnd, SB_HORZ );
     if( range == GUI_NO_COLUMN ) {

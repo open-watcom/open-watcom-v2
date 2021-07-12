@@ -102,7 +102,7 @@ static void SetStyle( HWND hwnd, bool max )
 static void EndMaxRestore( HWND hwnd )
 {
     gui_window  *wnd;
-    WPI_RECT    rect;
+    WPI_RECT    wpi_rect;
     gui_coord   size;
 
     wnd = GUIGetWindow( hwnd );
@@ -113,9 +113,9 @@ static void EndMaxRestore( HWND hwnd )
         GUISetRangePos( wnd, SB_VERT );
     }
     DoingMaxRestore = false;
-    _wpi_getwindowrect( hwnd, &rect );
-    size.x = _wpi_getwidthrect( rect );
-    size.y = _wpi_getheightrect( rect );
+    _wpi_getwindowrect( hwnd, &wpi_rect );
+    size.x = _wpi_getwidthrect( wpi_rect );
+    size.y = _wpi_getheightrect( wpi_rect );
     GUIDoResize( wnd, hwnd, &size );
 }
 
@@ -172,9 +172,9 @@ static void MDIMaximize( bool max, gui_window *wnd )
 #endif
 }
 
-static void SetMDIRestoredSize( HWND hwnd, WPI_RECT *rect )
+static void SetMDIRestoredSize( HWND hwnd, const WPI_RECT *wpi_rect )
 {
-    MDISetOrigSize( hwnd, rect );
+    MDISetOrigSize( hwnd, wpi_rect );
 }
 
 static bool IsMDIChildWindow( gui_window *wnd )

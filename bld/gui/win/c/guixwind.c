@@ -437,8 +437,8 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *p
     ULONG               frame_flags;
     ULONG               flags;
     ULONG               show_flags;
-    WPI_RECT            rect;
-    WPI_RECT            parent_client_rect;
+    WPI_RECT            wpi_rect;
+    WPI_RECT            parent_client_wpi_rect;
 #else
     DWORD               exstyle;
 #endif
@@ -574,7 +574,7 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *p
     if( frame_hwnd != NULLHANDLE ) {
         oldFrameProc = _wpi_subclasswindow( frame_hwnd, GUIFrameProc );
         _wpi_setmenu( frame_hwnd, hmenu );
-        _wpi_getclientrect( parent_hwnd, &parent_client_rect );
+        _wpi_getclientrect( parent_hwnd, &parent_client_wpi_rect );
         show_flags = SWP_SIZE | SWP_MOVE;
         WinSetWindowPos( frame_hwnd, HWND_TOP, pos.x, pos.y, size.x, size.y, show_flags );
         hwnd = frame_hwnd;
@@ -583,12 +583,12 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *p
         } else {
             wnd->hwnd_frame = frame_hwnd;
         }
-        _wpi_getclientrect( frame_hwnd, &rect );
+        _wpi_getclientrect( frame_hwnd, &wpi_rect );
         client_hwnd = WinCreateWindow( frame_hwnd, class_name, NULL,
                                        WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
-                                       rect.xLeft, rect.yBottom,
-                                       rect.xRight-rect.xLeft,
-                                       rect.yTop-rect.yBottom,
+                                       wpi_rect.xLeft, wpi_rect.yBottom,
+                                       wpi_rect.xRight - wpi_rect.xLeft,
+                                       wpi_rect.yTop - wpi_rect.yBottom,
                                        frame_hwnd, HWND_TOP, FID_CLIENT,
                                        &wmcreateinfo, NULL );
         if( client_hwnd == NULLHANDLE ) {
@@ -638,20 +638,20 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *p
 bool SendPointEvent( gui_window *wnd, gui_event gui_ev, WPI_PARAM1 wparam,
                         WPI_PARAM2 lparam, bool force_current )
 {
-    WPI_POINT   currentpoint;
+    WPI_POINT   wpi_point;
     gui_point   point;
 
     if( force_current || !EditControlHasFocus ) {
         wparam = wparam;
         lparam = lparam;
-        currentpoint.x = GET_WM_MOUSEMOVE_POSX( wparam, lparam );
-        currentpoint.y = GET_WM_MOUSEMOVE_POSY( wparam, lparam );
+        wpi_point.x = GET_WM_MOUSEMOVE_POSX( wparam, lparam );
+        wpi_point.y = GET_WM_MOUSEMOVE_POSY( wparam, lparam );
         if( force_current && ( GUICurrWnd != wnd ) && ( GUICurrWnd != NULL ) ) {
             //wnd = GUICurrWnd;
         }
-        currentpoint.y = _wpi_cvtc_y( wnd->hwnd, currentpoint.y );
-        _wpi_clienttoscreen( wnd->hwnd, &currentpoint );
-        GUIMakeRelative( wnd, &currentpoint, &point );
+        wpi_point.y = _wpi_cvtc_y( wnd->hwnd, wpi_point.y );
+        _wpi_clienttoscreen( wnd->hwnd, &wpi_point );
+        GUIMakeRelative( wnd, &wpi_point, &point );
         GUIEVENT( wnd, gui_ev, &point );
         return( true );
     }
@@ -661,7 +661,7 @@ bool SendPointEvent( gui_window *wnd, gui_event gui_ev, WPI_PARAM1 wparam,
 
 void GUIResizeBackground( gui_window *wnd, bool force_msg )
 {
-    WPI_RECT    status;
+    WPI_RECT    wpi_rect;
     int         tbar_height, status_height;
     GUI_RECTDIM left, top, right, bottom;
     gui_coord   size;
@@ -677,12 +677,12 @@ void GUIResizeBackground( gui_window *wnd, bool force_msg )
     status_height = 0;
 
     if( ( wnd->tbar != NULL ) && ( wnd->tbar->info.is_fixed ) ) {
-        tbar_height = _wpi_getheightrect( wnd->tbar->fixedrect );
+        tbar_height = _wpi_getheightrect( wnd->tbar->fixed_wpi_rect );
     }
 
     if( wnd->status != NULLHANDLE ) {
-        _wpi_getwindowrect( wnd->status, &status );
-        status_height = _wpi_getheightrect( status );
+        _wpi_getwindowrect( wnd->status, &wpi_rect );
+        status_height = _wpi_getheightrect( wpi_rect );
     }
 
     _wpi_getclientrect( wnd->root_frame, &wnd->root_client_rect );
@@ -819,7 +819,7 @@ static bool IsToolBarCommand( gui_window *wnd, WPI_PARAM1 wparam, WPI_PARAM2 lpa
 #endif
 }
 
-static WPI_POINT prevpoint = { -1, -1 };
+static WPI_POINT prev_wpi_point = { -1, -1 };
 
 /*  Procedure to control windows */
 
@@ -828,11 +828,11 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
     gui_window          *wnd;
     gui_window          *root;
     gui_ctl_id          id;
-    WPI_POINT           currentpoint;
+    WPI_POINT           wpi_point;
     gui_coord           point;
     gui_coord           size;
     WPI_MRESULT         ret;
-    WPI_RECT            rect;
+    WPI_RECT            wpi_rect;
     HWND                parent;
 #ifdef __WINDOWS_386__
     wmcreate_info __far *wmcreateinfo;
@@ -1001,9 +1001,9 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
             ret = _wpi_defwindowproc( hwnd, msg, wparam, lparam );
             if( wnd->root == NULLHANDLE ) {
                 parent = _wpi_getparent( hwnd );
-                _wpi_getclientrect( parent, &rect );
+                _wpi_getclientrect( parent, &wpi_rect );
                 _wpi_setmaxposition( minmax, 0, 0 );
-                _wpi_setmaxtracksize( minmax, _wpi_getwidthrect( rect ), _wpi_getheightrect( rect ) );
+                _wpi_setmaxtracksize( minmax, _wpi_getwidthrect( wpi_rect ), _wpi_getheightrect( wpi_rect ) );
             }
             break;
         }
@@ -1154,13 +1154,13 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
         }
         break;
     case WM_MOUSEMOVE:
-        currentpoint.x = GET_WM_MOUSEMOVE_POSX( wparam, lparam );
-        currentpoint.y = GET_WM_MOUSEMOVE_POSY( wparam, lparam );
-        point.x = GUIScreenToScaleH( currentpoint.x );
-        point.y = GUIScreenToScaleV( currentpoint.y );
-        if( ( currentpoint.x != prevpoint.x ) || ( currentpoint.y != prevpoint.y ) ) {
-            prevpoint.x = currentpoint.x;
-            prevpoint.y = currentpoint.y;
+        wpi_point.x = GET_WM_MOUSEMOVE_POSX( wparam, lparam );
+        wpi_point.y = GET_WM_MOUSEMOVE_POSY( wparam, lparam );
+        point.x = GUIScreenToScaleH( wpi_point.x );
+        point.y = GUIScreenToScaleV( wpi_point.y );
+        if( ( wpi_point.x != prev_wpi_point.x ) || ( wpi_point.y != prev_wpi_point.y ) ) {
+            prev_wpi_point.x = wpi_point.x;
+            prev_wpi_point.y = wpi_point.y;
             SendPointEvent( wnd, GUI_MOUSEMOVE, wparam, lparam, true );
         }
         break;
@@ -1178,8 +1178,8 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
         break;
 #else
     case WM_RBUTTONDOWN :
-        WPI_MAKEPOINT( wparam, lparam, currentpoint );
-        win = PM1632WinWindowFromPoint( hwnd, &currentpoint, false );
+        WPI_MAKEPOINT( wparam, lparam, wpi_point );
+        win = PM1632WinWindowFromPoint( hwnd, &wpi_point, false );
         if( ( win != NULLHANDLE ) && ( win != hwnd ) ) {
             id = _wpi_getdlgctrlid( win );
             if( id != 0 ) {
@@ -1248,9 +1248,9 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
             }
         }
         if( LOWORD(wparam) == WM_RBUTTONDOWN ) {
-            WPI_MAKEPOINT( wparam, lparam, currentpoint );
-            MapWindowPoints( hwnd, NULLHANDLE, &currentpoint, 1 );
-            win = _wpi_windowfrompoint( currentpoint );
+            WPI_MAKEPOINT( wparam, lparam, wpi_point );
+            MapWindowPoints( hwnd, NULLHANDLE, &wpi_point, 1 );
+            win = _wpi_windowfrompoint( wpi_point );
             id = _wpi_getdlgctrlid( win );
             if( id != 0 ) {
                 if( _wpi_getparent( win ) == hwnd ) {

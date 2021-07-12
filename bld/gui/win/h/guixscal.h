@@ -36,12 +36,12 @@
 
 extern WPI_TEXTMETRIC   GUItm;
 
-extern void GUIClientToScaleRect( gui_rect *rect );
+extern void GUIClientToScaleRect( guix_rect *client, gui_rect *rect );
 
-extern gui_ord GUIFromTextX( gui_text_ord text_ord, gui_window *wnd );
-extern gui_ord GUIFromTextY( gui_text_ord text_ord, gui_window *wnd );
-extern gui_text_ord GUIToTextX( gui_ord ord, gui_window *wnd );
-extern gui_text_ord GUIToTextY( gui_ord ord, gui_window *wnd );
+extern guix_ord GUIFromTextX( gui_text_ord text_ord, gui_window *wnd );
+extern guix_ord GUIFromTextY( gui_text_ord text_ord, gui_window *wnd );
+extern gui_text_ord GUIToTextX( guix_ord ord, gui_window *wnd );
+extern gui_text_ord GUIToTextY( guix_ord ord, gui_window *wnd );
 
 extern void GUIGetUpdateRows( gui_window *, HWND, gui_text_ord *, gui_text_ord * );
 

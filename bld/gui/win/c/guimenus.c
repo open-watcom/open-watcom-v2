@@ -179,7 +179,7 @@ bool GUIIsMenuItemEnabled( gui_window *wnd, gui_ctl_id id )
 void GUISetMenu( gui_window *wnd, HMENU hmenu )
 {
     HWND        frame;
-    WPI_RECT    rect;
+    WPI_RECT    wpi_rect;
     gui_coord   size;
     int         height;
 #ifndef __OS2_PM__
@@ -190,12 +190,12 @@ void GUISetMenu( gui_window *wnd, HMENU hmenu )
     hmenu2 = GUIGetHMENU( wnd );
 #endif
     frame = GUIGetParentFrameHWND( wnd );
-    _wpi_getclientrect( frame, &rect );
-    height = _wpi_getheightrect( rect );
+    _wpi_getclientrect( frame, &wpi_rect );
+    height = _wpi_getheightrect( wpi_rect );
     _wpi_setmenu( frame, hmenu );
-    _wpi_getclientrect( frame, &rect );
-    if( height != ( size.y = _wpi_getheightrect( rect ) ) ) {
-        size.x = _wpi_getwidthrect( rect );
+    _wpi_getclientrect( frame, &wpi_rect );
+    if( height != ( size.y = _wpi_getheightrect( wpi_rect ) ) ) {
+        size.x = _wpi_getwidthrect( wpi_rect );
         GUIDoResize( wnd, GUIGetParentHWND( wnd ), &size );
     }
 #ifndef __OS2_PM__

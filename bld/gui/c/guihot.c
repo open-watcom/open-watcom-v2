@@ -77,11 +77,12 @@ int GUIAPI GUIGetNumHotSpots( void )
 
 bool GUIAPI GUIGetHotSpotSize( int hotspot_no, gui_coord *size )
 {
-    if( ( size == NULL ) || ( hotspot_no > GUINumHotSpots ) ||
-        ( hotspot_no < 1 ) ) {
-        return( false );
+    if( size != NULL ) {
+        if( hotspot_no > 0 && hotspot_no <= GUINumHotSpots ) {
+            size->x = GUIScreenToScaleH( GUIHotSpots[hotspot_no - 1].size.x );
+            size->y = GUIScreenToScaleV( GUIHotSpots[hotspot_no - 1].size.y );
+            return( true );
+        }
     }
-    size->x = GUIScreenToScaleH( GUIHotSpots[hotspot_no-1].size.x );
-    size->y = GUIScreenToScaleV( GUIHotSpots[hotspot_no-1].size.y );
-    return( true );
+    return( false );
 }

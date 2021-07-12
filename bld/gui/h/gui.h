@@ -627,7 +627,7 @@ extern bool     GUIAPI GUI3DDialogInit( void );
 extern void     GUIAPI GUI3DDialogFini( void );
 extern void     GUIAPI GUISetBetweenTitles( int between_titles );
 extern void     GUIAPI GUIGetRoundScale( gui_coord *scale );
-extern void     GUIAPI GUISetScale( gui_rect *scale );
+extern void     GUIAPI GUISetScale( const gui_rect *scale );
 extern void     GUIAPI GUIGetScale( gui_rect *scale );
 extern void     GUIAPI GUIGetScreen( gui_rect *screen );
 extern void     GUIAPI GUISetDClickRate( unsigned dclick_ms );
@@ -684,7 +684,7 @@ extern bool     GUIAPI GUIIsValidWindow( gui_window *wnd );
 extern bool     GUIAPI GUISetFocus( gui_window *wnd, gui_ctl_id id );
 extern bool     GUIAPI GUIGetFocus( gui_window *wnd, gui_ctl_id *id );
 
-extern bool     GUIAPI GUIResizeWindow( gui_window *wnd, gui_rect *rect );
+extern bool     GUIAPI GUIResizeWindow( gui_window *wnd, const gui_rect *rect );
 extern bool     GUIAPI GUIIsMinimized( gui_window *wnd );
 extern bool     GUIAPI GUIIsMaximized( gui_window *wnd );
 extern void     GUIAPI GUIMaximizeWindow( gui_window *wnd );
@@ -694,7 +694,7 @@ extern void     GUIAPI GUIHideWindow( gui_window *wnd );
 extern void     GUIAPI GUIShowWindow( gui_window *wnd );
 extern void     GUIAPI GUIShowWindowNA( gui_window *wnd );
 extern bool     GUIAPI GUIIsWindowVisible( gui_window *wnd );
-extern void     GUIAPI GUISetRestoredSize( gui_window *wnd, gui_rect *rect );
+extern void     GUIAPI GUISetRestoredSize( gui_window *wnd, const gui_rect *rect );
 extern bool     GUIAPI GUIGetRestoredSize( gui_window *wnd, gui_rect *rect );
 extern bool     GUIAPI GUISetIcon( gui_window *wnd, gui_resource *res );
 extern bool     GUIAPI GUISetRedraw( gui_window *wnd, bool redraw );
@@ -812,7 +812,7 @@ extern const gui_toolbar_items  NoToolbar;
 extern bool     GUIAPI GUICreateFloatToolBar( gui_window *wnd, bool fixed, gui_ord height,
                                         const gui_toolbar_items *toolinfo,
                                         bool excl, gui_colour_set *plain,
-                                        gui_colour_set *standout, gui_rect *rect );
+                                        gui_colour_set *standout, const gui_rect *float_pos );
 extern bool     GUIAPI GUICreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
                                   const gui_toolbar_items *toolinfo,
                                   bool excl, gui_colour_set *plain,
@@ -915,7 +915,7 @@ extern void     GUIAPI GUISetModalDlgs( bool );
 
 extern bool     GUIAPI GUIAddControl( gui_control_info *ctl_info, gui_colour_set *plain, gui_colour_set *standout );
 extern bool     GUIAPI GUIDeleteControl( gui_window *wnd, gui_ctl_id id );
-extern bool     GUIAPI GUIResizeControl( gui_window *wnd, gui_ctl_id id, gui_rect *rect );
+extern bool     GUIAPI GUIResizeControl( gui_window *wnd, gui_ctl_id id, const gui_rect *rect );
 extern bool     GUIAPI GUIEnableControl( gui_window *wnd, gui_ctl_id id, bool enable );
 extern bool     GUIAPI GUIIsControlEnabled( gui_window *wnd, gui_ctl_id id );
 extern bool     GUIAPI GUIGetControlRect( gui_window *wnd, gui_ctl_id id, gui_rect *rect );
@@ -963,8 +963,8 @@ extern void     GUIAPI GUIFlushKeys( void );
 extern void     GUIAPI GUIDrainEvents( void );
 extern void     GUIAPI GUISetExtra( gui_window *wnd, void *extra );
 extern void     * GUIAPI GUIGetExtra( gui_window *wnd );
-extern void     GUIAPI GUIGetClientRect( gui_window *wnd, gui_rect *client );
-extern bool     GUIAPI GUIGetPaintRect( gui_window *wnd, gui_rect *paint );
+extern void     GUIAPI GUIGetClientRect( gui_window *wnd, gui_rect *rect );
+extern bool     GUIAPI GUIGetPaintRect( gui_window *wnd, gui_rect *rect );
 extern void     GUIAPI GUIGetAbsRect( gui_window *wnd, gui_rect *rect );
 extern void     GUIAPI GUIGetRect( gui_window *wnd, gui_rect *rect );
 extern gui_scroll_styles GUIAPI GUIGetScrollStyle( gui_window *wnd );

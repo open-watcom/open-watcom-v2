@@ -300,7 +300,7 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
     bool                msg_processed;
     bool                ret;
     gui_coord           size;
-    WPI_POINT           pnt;
+    WPI_POINT           wpi_point;
     HWND                child;
     HWND                hfocus;
     control_item        *item;
@@ -380,8 +380,8 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
         GUIProcessControlNotification( SHORT1FROMMP( wparam ), SHORT2FROMMP( wparam ), wnd );
         break;
     case WM_RBUTTONDOWN :
-        WPI_MAKEPOINT( wparam, lparam, pnt );
-        child = PM1632WinWindowFromPoint( hwnd, &pnt, false );
+        WPI_MAKEPOINT( wparam, lparam, wpi_point );
+        child = PM1632WinWindowFromPoint( hwnd, &wpi_point, false );
         item = NULL;
         if( child ) {
             item = GUIGetControlByHwnd( wnd, child );
@@ -396,9 +396,9 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
 #else
     case WM_PARENTNOTIFY :
         if( LOWORD(wparam) == WM_RBUTTONDOWN ) {
-            WPI_MAKEPOINT( wparam, lparam, pnt );
-            _wpi_mapwindowpoints( hwnd, HWND_DESKTOP, &pnt, 1 );
-            child = _wpi_windowfrompoint( pnt );
+            WPI_MAKEPOINT( wparam, lparam, wpi_point );
+            _wpi_mapwindowpoints( hwnd, HWND_DESKTOP, &wpi_point, 1 );
+            child = _wpi_windowfrompoint( wpi_point );
             item = GUIGetControlByHwnd( wnd, child );
             if( item != NULL && item->id != 0 && ( _wpi_getparent( child ) == hwnd ) ) {
                 msg_processed = GUIEVENT( wnd, GUI_CONTROL_RCLICKED, &item->id );
@@ -728,7 +728,7 @@ static WPI_FONT         DlgFont;
 WPI_DLGRESULT CALLBACK GUIInitDialogFuncDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     WPI_PRES            hdc;
-    WPI_RECT            rect;
+    WPI_RECT            wpi_rect;
     bool                ret;
 
     lparam = lparam;
@@ -750,9 +750,9 @@ WPI_DLGRESULT CALLBACK GUIInitDialogFuncDlgProc( HWND hwnd, WPI_MSG message, WPI
         _wpi_gettextmetrics( hdc, &GUIDialogtm );
         _wpi_releasepres( hwnd, hdc );
 
-        _wpi_getclientrect( hwnd, &rect );
-        SizeScreen.x = _wpi_getwidthrect( rect );
-        SizeScreen.y = _wpi_getheightrect( rect );
+        _wpi_getclientrect( hwnd, &wpi_rect );
+        SizeScreen.x = _wpi_getwidthrect( wpi_rect );
+        SizeScreen.y = _wpi_getheightrect( wpi_rect );
         _wpi_enddialog( hwnd, TRUE );
         break;
 #ifdef __OS2_PM__

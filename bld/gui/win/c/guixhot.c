@@ -94,7 +94,7 @@ void GUIXCleanupHotSpots( void )
 void GUIAPI GUIDrawHotSpot( gui_window *wnd, int hotspot_no, gui_text_ord row, gui_ord indent, gui_attr attr )
 {
     gui_text_metrics    metrics;
-    guix_coord          pos;
+    gui_coord           pos;
 
     if( ( hotspot_no > 0 ) && ( hotspot_no <= GUINumHotSpots ) ) {
         GUIGetTextMetrics( wnd, &metrics );
@@ -106,9 +106,9 @@ void GUIAPI GUIDrawHotSpot( gui_window *wnd, int hotspot_no, gui_text_ord row, g
 
 void GUIDrawBitmap( int hotspot_no, WPI_PRES hdc, int nDrawX, int nDrawY, WPI_COLOUR bkcolour )
 {
-    WPI_POINT   src_org;
-    WPI_POINT   dst_org;
-    WPI_POINT   size;
+    WPI_POINT   src_wpi_point;
+    WPI_POINT   dst_wpi_point;
+    WPI_POINT   size_wpi_point;
     WPI_PRES    memDC;
     HBITMAP     old_bmp;
     HBITMAP     bitmap;
@@ -125,24 +125,24 @@ void GUIDrawBitmap( int hotspot_no, WPI_PRES hdc, int nDrawX, int nDrawY, WPI_CO
 #endif
 
     bitmap = GUIHotSpots[hotspot_no - 1].bitmap;
-    size.x = GUIHotSpots[hotspot_no - 1].size.x;
-    size.y = GUIHotSpots[hotspot_no - 1].size.y;
+    size_wpi_point.x = GUIHotSpots[hotspot_no - 1].size.x;
+    size_wpi_point.y = GUIHotSpots[hotspot_no - 1].size.y;
 
-    src_org.x = 0;
-    src_org.y = 0;
-    dst_org.x = nDrawX;
-    dst_org.y = nDrawY;
+    src_wpi_point.x = 0;
+    src_wpi_point.y = 0;
+    dst_wpi_point.x = nDrawX;
+    dst_wpi_point.y = nDrawY;
 
-    _wpi_dptolp( hdc, &size, 1 );
-    _wpi_dptolp( hdc, &dst_org, 1 );
-    _wpi_dptolp( hdc, &src_org, 1 );
+    _wpi_dptolp( hdc, &size_wpi_point, 1 );
+    _wpi_dptolp( hdc, &dst_wpi_point, 1 );
+    _wpi_dptolp( hdc, &src_wpi_point, 1 );
 
     memDC = _wpi_createcompatiblepres( hdc, GUIMainHInst, &new_hdc );
     old_bmp = _wpi_selectbitmap( memDC, bitmap );
 
 #ifdef __NT__
     /* Skip transparency for huge bitmaps, only splashes and such... */
-    if( size.x < 50 && size.y < 50) {
+    if( size_wpi_point.x < 50 && size_wpi_point.y < 50) {
         /* New, on WIN32 platforms, use TB_TransparentBlt() */
         mem2 = _wpi_createcompatiblepres( hdc, GUIMainHInst, &new_hdc2 );
         if( bitmap2 == NULL)
@@ -155,24 +155,24 @@ void GUIDrawBitmap( int hotspot_no, WPI_PRES hdc, int nDrawX, int nDrawY, WPI_CO
         // SetBkColor( mem2, GetSysColor(COLOR_BTNFACE) );
         SetBkColor( mem2, bkcolour );
 
-        TB_TransparentBlt( mem2, src_org.x, src_org.y, size.x, size.y, memDC, cr );
+        TB_TransparentBlt( mem2, src_wpi_point.x, src_wpi_point.y, size_wpi_point.x, size_wpi_point.y, memDC, cr );
 
-        _wpi_bitblt( hdc, dst_org.x, dst_org.y, size.x, size.y, mem2,
-                     src_org.x, src_org.y, SRCCOPY );
+        _wpi_bitblt( hdc, dst_wpi_point.x, dst_wpi_point.y, size_wpi_point.x, size_wpi_point.y, mem2,
+                     src_wpi_point.x, src_wpi_point.y, SRCCOPY );
 
         /* Clean up */
         _wpi_selectbitmap( mem2, oldbmp2 );
         _wpi_deletecompatiblepres( mem2, hdc );
     } else {
         // Normal for large bitmaps...
-        _wpi_bitblt( hdc, dst_org.x, dst_org.y, size.x, size.y, memDC,
-                     src_org.x, src_org.y, SRCCOPY );
+        _wpi_bitblt( hdc, dst_wpi_point.x, dst_wpi_point.y, size_wpi_point.x, size_wpi_point.y, memDC,
+                     src_wpi_point.x, src_wpi_point.y, SRCCOPY );
     }
 
 #else
 
-    _wpi_bitblt( hdc, dst_org.x, dst_org.y, size.x, size.y, memDC,
-                 src_org.x, src_org.y, SRCCOPY );
+    _wpi_bitblt( hdc, dst_wpi_point.x, dst_wpi_point.y, size_wpi_point.x, size_wpi_point.y, memDC,
+                 src_wpi_point.x, src_wpi_point.y, SRCCOPY );
 
 #endif
 

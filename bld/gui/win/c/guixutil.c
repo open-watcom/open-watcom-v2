@@ -91,23 +91,23 @@ bool GUIIsParentADialog( gui_window *wnd )
     return( false );
 }
 
-bool GUIIsRectInUpdateRect( gui_window *wnd, WPI_RECT *rect )
+bool GUIIsRectInUpdateRect( gui_window *wnd, WPI_RECT *wpi_rect )
 {
-    WPI_RECT    update_rect;
-    WPI_RECT    intersect;
+    WPI_RECT    update_wpi_rect;
+    WPI_RECT    intersect_wpi_rect;
 
-    if( !wnd || !wnd->ps || !rect ) {
+    if( !wnd || !wnd->ps || !wpi_rect ) {
         return( true );
     }
 
 #ifdef __OS2_PM__
-    update_rect = *(wnd->ps);
+    update_wpi_rect = *(wnd->ps);
 #else
-    _wpi_getpaintrect( wnd->ps, &update_rect );
+    _wpi_getpaintrect( wnd->ps, &update_wpi_rect );
 #endif
-    _wpi_intersectrect( GUIMainHInst, &intersect, &update_rect, rect );
+    _wpi_intersectrect( GUIMainHInst, &intersect_wpi_rect, &update_wpi_rect, wpi_rect );
 
-    if( _wpi_isrectempty( GUIMainHInst, &intersect ) ) {
+    if( _wpi_isrectempty( GUIMainHInst, &intersect_wpi_rect ) ) {
         return( false );
     }
 
@@ -116,7 +116,7 @@ bool GUIIsRectInUpdateRect( gui_window *wnd, WPI_RECT *rect )
 
 void GUICalcLocation( const gui_rect *rect, guix_coord *scr_pos, guix_coord *scr_size, HWND parent )
 {
-    WPI_RECT    r;
+    WPI_RECT    wpi_rect;
     GUI_RECTDIM left, top, right, bottom;
 
     if( parent == NULLHANDLE ) {
@@ -128,8 +128,8 @@ void GUICalcLocation( const gui_rect *rect, guix_coord *scr_pos, guix_coord *scr
         scr_pos->x = GUIScaleToScreenX( rect->x );
         scr_pos->y = GUIScaleToScreenY( rect->y );
     } else {
-        _wpi_getclientrect( parent, &r );
-        _wpi_getrectvalues( r, &left, &top, &right, &bottom );
+        _wpi_getclientrect( parent, &wpi_rect );
+        _wpi_getrectvalues( wpi_rect, &left, &top, &right, &bottom );
         scr_pos->x = GUIScaleToScreenH( rect->x ) + left;
         scr_pos->y = GUIScaleToScreenV( rect->y ) + top;
     }
@@ -391,9 +391,9 @@ bool GUIScrollOn( gui_window *wnd, int bar )
     return( false );
 }
 
-void GUISetRowCol( gui_window *wnd, gui_coord *size )
+void GUISetRowCol( gui_window *wnd, guix_coord *size )
 {
-    gui_coord   my_size;
+    guix_coord  my_size;
 
     if( size == NULL ) {
         my_size.y = _wpi_getheightrect( wnd->hwnd_client_rect );
@@ -413,7 +413,7 @@ void GUISetRowCol( gui_window *wnd, gui_coord *size )
 
 void GUIInvalidateResize( gui_window *wnd )
 {
-    WPI_RECT    rect;
+    WPI_RECT    wpi_rect;
     GUI_RECTDIM left, top, right, bottom;
 
     if( (wnd->flags & NEEDS_RESIZE_REDRAW) && ( wnd->old_rows != wnd->num_rows ) ) {
@@ -426,8 +426,8 @@ void GUIInvalidateResize( gui_window *wnd )
             /* window shrunk */
             top = wnd->num_rows * AVGYCHAR( GUItm );
         }
-        _wpi_setrectvalues( &rect, left, top, right, bottom );
-        _wpi_invalidaterect( wnd->hwnd, &rect, TRUE );
+        _wpi_setrectvalues( &wpi_rect, left, top, right, bottom );
+        _wpi_invalidaterect( wnd->hwnd, &wpi_rect, TRUE );
         wnd->flags &= ~NEEDS_RESIZE_REDRAW;
     }
     wnd->old_rows = wnd->num_rows;
@@ -454,28 +454,28 @@ WPI_MRESULT GUISendDlgItemMessage( HWND parent, gui_ctl_id id, WPI_MSG msg, WPI_
     }
 }
 
-void GUIMakeRelative( gui_window *wnd, WPI_POINT *screen_point, gui_point *point )
+void GUIMakeRelative( gui_window *wnd, WPI_POINT *wpi_point, gui_point *point )
 {
-    WPI_RECT    rect;
+    WPI_RECT    wpi_rect;
     GUI_RECTDIM left, top, right, bottom;
-    gui_ord     screen_x;
-    gui_ord     screen_y;
+    gui_ord     scr_x;
+    gui_ord     scr_y;
 
-    rect = wnd->hwnd_client_rect;
-    _wpi_mapwindowpoints( wnd->hwnd, HWND_DESKTOP, (WPI_LPPOINT)&rect, 2 );
-    _wpi_getrectvalues( rect, &left, &top, &right, &bottom );
-    screen_x = screen_point->x - left;
-    screen_y = screen_point->y - top;
+    wpi_rect = wnd->hwnd_client_rect;
+    _wpi_mapwindowpoints( wnd->hwnd, HWND_DESKTOP, (WPI_LPPOINT)&wpi_rect, 2 );
+    _wpi_getrectvalues( wpi_rect, &left, &top, &right, &bottom );
+    scr_x = wpi_point->x - left;
+    scr_y = wpi_point->y - top;
     if( GUI_DO_HSCROLL( wnd ) || GUI_DO_VSCROLL( wnd ) ) {
         if( GUI_DO_HSCROLL( wnd ) ) {
-            screen_x += GUIGetScrollPos( wnd, SB_HORZ );
+            scr_x += GUIGetScrollPos( wnd, SB_HORZ );
         }
         if( GUI_DO_VSCROLL( wnd ) ) {
-            screen_y += GUIGetScrollPos( wnd, SB_VERT );
+            scr_y += GUIGetScrollPos( wnd, SB_VERT );
         }
     }
-    point->x = GUIScreenToScaleH( screen_x );
-    point->y = GUIScreenToScaleV( screen_y );
+    point->x = GUIScreenToScaleH( scr_x );
+    point->y = GUIScreenToScaleV( scr_y );
 }
 
 HWND GUIGetScrollHWND( gui_window *wnd )
@@ -489,7 +489,7 @@ HWND GUIGetScrollHWND( gui_window *wnd )
     return( wnd->hwnd );
 }
 
-static bool ChangeScrollPos( gui_window *wnd, int bar, int new )
+static bool ChangeScrollPos( gui_window *wnd, int bar, guix_ord new )
 {
     if( bar == SB_HORZ ) {
         if( wnd->hpos == new )
@@ -503,14 +503,14 @@ static bool ChangeScrollPos( gui_window *wnd, int bar, int new )
     return( true );
 }
 
-void GUISetScrollPos( gui_window *wnd, int bar, int new, bool redraw )
+void GUISetScrollPos( gui_window *wnd, int bar, guix_ord new, bool redraw )
 {
     if( ChangeScrollPos( wnd, bar, new ) ) {
         _wpi_setscrollpos( GUIGetParentFrameHWND( wnd ), bar, new, ( redraw ) ? TRUE : FALSE );
     }
 }
 
-int GUIGetScrollPos( gui_window *wnd, int bar )
+guix_ord GUIGetScrollPos( gui_window *wnd, int bar )
 {
     if( bar == SB_HORZ ) {
         return( wnd->hpos );
@@ -519,7 +519,7 @@ int GUIGetScrollPos( gui_window *wnd, int bar )
     }
 }
 
-static bool ChangeScrollRange( gui_window *wnd, int bar, int new )
+static bool ChangeScrollRange( gui_window *wnd, int bar, guix_ord new )
 {
     if( bar == SB_HORZ ) {
         if( wnd->hrange == new )
@@ -545,7 +545,7 @@ void GUISetScrollRange( gui_window *wnd, int bar, int min, int max, bool redraw 
     }
 }
 
-int GUIGetScrollRange( gui_window *wnd, int bar )
+guix_ord GUIGetScrollRange( gui_window *wnd, int bar )
 {
     if( bar == SB_HORZ ) {
         return( wnd->hrange );
@@ -556,8 +556,8 @@ int GUIGetScrollRange( gui_window *wnd, int bar )
 
 void GUISetRangePos( gui_window *wnd, int bar )
 {
-    int range;
-    int pos;
+    guix_ord    range;
+    guix_ord    pos;
 
     range = GUIGetScrollRange( wnd, bar );
     pos = GUIGetScrollPos( wnd, bar );
@@ -567,26 +567,26 @@ void GUISetRangePos( gui_window *wnd, int bar )
 
 void GUIRedrawScroll( gui_window *wnd, int bar, bool redraw_now )
 {
-    WPI_RECT    rect;
-    WPI_RECT    client;
+    WPI_RECT    wpi_rect;
+    WPI_RECT    client_wpi_rect;
     HWND        hwnd;
     GUI_RECTDIM left, top, right, bottom;
     GUI_RECTDIM clleft, cltop, clright, clbottom;
 
     hwnd = GUIGetParentFrameHWND( wnd );
-    _wpi_getwindowrect( hwnd, &rect );
-    _wpi_getclientrect( hwnd, &client );
-    _wpi_mapwindowpoints( HWND_DESKTOP, hwnd, (WPI_LPPOINT)&rect, 2 );
-    _wpi_getrectvalues( rect, &left, &top, &right, &bottom );
-    _wpi_getrectvalues( client, &clleft, &cltop, &clright, &clbottom );
+    _wpi_getwindowrect( hwnd, &wpi_rect );
+    _wpi_getclientrect( hwnd, &client_wpi_rect );
+    _wpi_mapwindowpoints( HWND_DESKTOP, hwnd, (WPI_LPPOINT)&wpi_rect, 2 );
+    _wpi_getrectvalues( wpi_rect, &left, &top, &right, &bottom );
+    _wpi_getrectvalues( client_wpi_rect, &clleft, &cltop, &clright, &clbottom );
     if( bar == SB_HORZ ) {
         top = clbottom;
     } else {
         left = clright;
     }
-    _wpi_setrectvalues( &rect, left, top, right, bottom );
+    _wpi_setrectvalues( &wpi_rect, left, top, right, bottom );
     GUIInvalidatePaintHandles( wnd );
-    _wpi_invalidaterect( hwnd, &rect, TRUE );
+    _wpi_invalidaterect( hwnd, &wpi_rect, TRUE );
     if( redraw_now && (wnd->flags & NEEDS_RESIZE_REDRAW) == 0 ) {
         _wpi_updatewindow( hwnd );
     }

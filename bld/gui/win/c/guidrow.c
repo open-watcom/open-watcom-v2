@@ -44,24 +44,24 @@
 
 void GUIAPI GUIWndDirtyRow( gui_window *wnd, gui_text_ord row )
 {
-    WPI_RECT    rect;
+    WPI_RECT    wpi_rect;
     int         height;
     int         h;
     GUI_RECTDIM left, top, right, bottom;
 
     height = GUIFromTextY( 1, wnd );
-    rect = wnd->hwnd_client_rect;
-    h = _wpi_getheightrect( rect);
-    _wpi_getrectvalues( rect, &left, &top, &right, &bottom );
+    wpi_rect = wnd->hwnd_client_rect;
+    h = _wpi_getheightrect( wpi_rect );
+    _wpi_getrectvalues( wpi_rect, &left, &top, &right, &bottom );
     top = row * height;
     if( GUI_DO_VSCROLL( wnd ) )  {
         top -= GUIGetScrollPos( wnd, SB_VERT );
     }
     bottom = top + height;
     top--; // experimental kludge type stuff
-    _wpi_setwrectvalues( &rect, left, top, right, bottom );
-    _wpi_cvth_rect_plus1( &rect, h );
+    _wpi_setwrectvalues( &wpi_rect, left, top, right, bottom );
+    _wpi_cvth_rect_plus1( &wpi_rect, h );
     //GUIInvalidatePaintHandles( wnd );
-    _wpi_invalidaterect( wnd->hwnd, &rect, TRUE );
+    _wpi_invalidaterect( wnd->hwnd, &wpi_rect, TRUE );
     _wpi_updatewindow( wnd->hwnd );
 }

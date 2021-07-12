@@ -37,15 +37,15 @@
 #include "guirect.h"
 
 
-void DoGetRelRect( HWND hwnd, WPI_RECT *win, gui_rect *rect, bool ispopup )
+void DoGetRelRect( HWND hwnd, const WPI_RECT *wpi_rect, gui_rect *rect, bool ispopup )
 {
-    WPI_RECT    parent_rect;
+    WPI_RECT    parent_wpi_rect;
     HWND        parent;
     gui_coord   pos;
     gui_coord   size;
     GUI_RECTDIM left, top, right, bottom;
 
-    _wpi_getrectvalues( *win, &left, &top, &right, &bottom );
+    _wpi_getrectvalues( *wpi_rect, &left, &top, &right, &bottom );
     pos.x = left;
     pos.y = top;
     size.x = right;
@@ -59,9 +59,9 @@ void DoGetRelRect( HWND hwnd, WPI_RECT *win, gui_rect *rect, bool ispopup )
 
     parent = _wpi_getparent( hwnd );
     if( parent != HWND_DESKTOP && !ispopup ) {
-        _wpi_getclientrect( parent, &parent_rect );
-        _wpi_mapwindowpoints( parent, HWND_DESKTOP, (WPI_LPPOINT)&parent_rect, 2 );
-        _wpi_getrectvalues( parent_rect, &left, &top, &right, &bottom );
+        _wpi_getclientrect( parent, &parent_wpi_rect );
+        _wpi_mapwindowpoints( parent, HWND_DESKTOP, (WPI_LPPOINT)&parent_wpi_rect, 2 );
+        _wpi_getrectvalues( parent_wpi_rect, &left, &top, &right, &bottom );
         pos.x -= left;
         pos.y -= top;
         pos.y = _wpi_cvth_y( pos.y, bottom - top );
@@ -78,11 +78,11 @@ void DoGetRelRect( HWND hwnd, WPI_RECT *win, gui_rect *rect, bool ispopup )
 
 void GUIGetRelRect( HWND hwnd, gui_rect *rect, bool ispopup )
 {
-    WPI_RECT    win;
+    WPI_RECT    wpi_rect;
 
-    _wpi_getwindowrect( hwnd, &win );
+    _wpi_getwindowrect( hwnd, &wpi_rect );
 
-    DoGetRelRect( hwnd, &win, rect, ispopup );
+    DoGetRelRect( hwnd, &wpi_rect, rect, ispopup );
 }
 
 /*
