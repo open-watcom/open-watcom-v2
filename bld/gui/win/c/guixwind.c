@@ -425,8 +425,8 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *p
 {
     DWORD               style;
     HMENU               hmenu;
-    gui_coord           pos;
-    gui_coord           size;
+    guix_coord          scr_pos;
+    guix_coord          scr_size;
     HWND                parent_hwnd;
     LPSTR               class_name;
     HWND                hwnd;
@@ -465,7 +465,7 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *p
         }
     }
     hmenu = NULLHANDLE;
-    if( !GUISetupStruct( wnd, dlg_info, &pos, &size, parent_hwnd, &hmenu ) ) {
+    if( !GUISetupStruct( wnd, dlg_info, &scr_pos, &scr_size, parent_hwnd, &hmenu ) ) {
         return( false );
     }
     if( (wnd->style & GUI_NOFRAME) == 0 ) {
@@ -576,7 +576,7 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *p
         _wpi_setmenu( frame_hwnd, hmenu );
         _wpi_getclientrect( parent_hwnd, &parent_client_wpi_rect );
         show_flags = SWP_SIZE | SWP_MOVE;
-        WinSetWindowPos( frame_hwnd, HWND_TOP, pos.x, pos.y, size.x, size.y, show_flags );
+        WinSetWindowPos( frame_hwnd, HWND_TOP, scr_pos.x, scr_pos.y, scr_size.x, scr_size.y, show_flags );
         hwnd = frame_hwnd;
         if( parent_hwnd == HWND_DESKTOP ) {
             wnd->root_frame = frame_hwnd;
@@ -605,8 +605,8 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *p
         style &= ~WS_BORDER;
     }
 #endif
-    hwnd = _wpi_createwindow_ex( exstyle, class_name, dlg_info->title, style, 0, 0, pos.x,
-                                 pos.y, size.x, size.y, parent_hwnd, hmenu, GUIMainHInst,
+    hwnd = _wpi_createwindow_ex( exstyle, class_name, dlg_info->title, style, 0, 0, scr_pos.x,
+                                 scr_pos.y, scr_size.x, scr_size.y, parent_hwnd, hmenu, GUIMainHInst,
                                  &wmcreateinfo, &frame_hwnd );
 #endif
     if( hwnd == NULLHANDLE ) {
