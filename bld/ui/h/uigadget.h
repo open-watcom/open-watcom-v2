@@ -37,17 +37,6 @@
 #include "uichars.h"
 
 
-#define UP_ARROW                {CHAR_VALUE( PC_arrowup ),0}
-#define DOWN_ARROW              {CHAR_VALUE( PC_arrowdown ),0}
-#define RIGHT_ARROW             {CHAR_VALUE( PC_arrowright ),0}
-#define LEFT_ARROW              {CHAR_VALUE( PC_arrowleft ),0}
-#define UP_POINT                {CHAR_VALUE( PC_triangup ),0}
-#define DOWN_POINT              {CHAR_VALUE( PC_triangdown ),0}
-#define RIGHT_POINT             {CHAR_VALUE( PC_triangright ),0}
-#define LEFT_POINT              {CHAR_VALUE( PC_triangleft ),0}
-#define SCROLL_FRAME            {CHAR_VALUE( PC_sparseblock ),0}
-#define SLIDER_CHAR             {CHAR_VALUE( PC_solid ),0}
-
 extern char VertScrollFrame[2];
 extern char HorzScrollFrame[2];
 extern char SliderChar[2];

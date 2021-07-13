@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,16 +39,21 @@
 #define _ATTR_BAR               (UIData->attrs[ATTR_SCROLL_BAR])
 #define _ATTR_SLIDER            (UIData->attrs[ATTR_SCROLL_BAR])
 
-#define row( g, i )     (g->dir == HORIZONTAL ? g->anchor : i)
-#define col( g, i )     (g->dir == HORIZONTAL ? i : g->anchor)
+#define row( g, i )             (g->dir == HORIZONTAL ? g->anchor : i)
+#define col( g, i )             (g->dir == HORIZONTAL ? i : g->anchor)
 
-char            VertScrollFrame[2]  = SCROLL_FRAME;
-char            HorzScrollFrame[2]  = SCROLL_FRAME;
-char            SliderChar[2]       = SLIDER_CHAR;
-char            LeftPoint[2]        = LEFT_POINT;
-char            RightPoint[2]       = RIGHT_POINT;
-char            UpPoint[2]          = UP_POINT;
-char            DownPoint[2]        = DOWN_POINT;
+#define UP_ARROW                {CHAR_VALUE( PC_arrowup ),0}
+#define DOWN_ARROW              {CHAR_VALUE( PC_arrowdown ),0}
+#define RIGHT_ARROW             {CHAR_VALUE( PC_arrowright ),0}
+#define LEFT_ARROW              {CHAR_VALUE( PC_arrowleft ),0}
+
+char        VertScrollFrame[2]  = {CHAR_VALUE( PC_sparseblock ),0};
+char        HorzScrollFrame[2]  = {CHAR_VALUE( PC_sparseblock ),0};
+char        SliderChar[2]       = {CHAR_VALUE( PC_solid ),0};
+char        LeftPoint[2]        = {CHAR_VALUE( PC_triangleft ),0};
+char        RightPoint[2]       = {CHAR_VALUE( PC_triangright ),0};
+char        UpPoint[2]          = {CHAR_VALUE( PC_triangup ),0};
+char        DownPoint[2]        = {CHAR_VALUE( PC_triangdown ),0};
 
 static  p_gadget        Pressed         = NULL;   /* pointer to gadget where mouse pressed  */
 static  bool            Drag            = false;
