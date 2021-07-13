@@ -439,8 +439,7 @@ static bool DisplayKey( gui_key key, char *Buffer )
 }
 #endif
 
-static change_struct *MakeChangeStruct( char *str, size_t length,
-                                        gui_window *wnd )
+static change_struct *MakeChangeStruct( char *str, size_t length, gui_window *wnd )
 {
     change_struct       *old;
 
@@ -449,7 +448,7 @@ static change_struct *MakeChangeStruct( char *str, size_t length,
     old->length = length;
     old->parent = 0;
     old->edit_contr = EDIT_CONTROL;
-    old->wnd_to_update = gui;
+    old->wnd_to_update = wnd;
     return( old );
 }
 
@@ -871,8 +870,8 @@ bool ControlWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
     switch( gui_ev ) {
     case GUI_INIT_WINDOW:
         change = (change_struct *)GUIGetExtra( wnd );
-        change->parent = gui;
-        DialogWindow = gui;
+        change->parent = wnd;
+        DialogWindow = wnd;
         gui_ev = GUI_INIT_DIALOG;
         break;
     case GUI_CLOSE:
@@ -920,7 +919,7 @@ static void HScroll( gui_window *wnd, int diff )
 
     old = GUIGetHScrollCol( wnd );
     new = old + diff;
-    if( new < 0 ) {
+    if( old < diff ) {
         new = 0;
         diff = -old;
     }
@@ -941,10 +940,11 @@ static void VScroll( gui_window *wnd, int diff )
     gui_text_ord    range;
 
     old = GUIGetVScrollRow( wnd );
-    new = old + diff;
-    if( new < 0 ) {
+    if( old < -diff ) {
         new = 0;
         diff = -old;
+    } else {
+        new = old + diff;
     }
     range = GUIGetVScrollRangeRows( wnd );
     if( new > range ) {
@@ -1388,7 +1388,8 @@ bool Child2WndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
                 row += vscroll;
             }
             out = GUIGetExtra( wnd );
-            if( row < out->numrows && row >= 0 ) {
+//            if( row < out->numrows && row >= 0 ) {
+            if( row < out->numrows ) {
                 col = GUIGetCol( wnd, out->display[row].data, &point );
                 if( ( style & GUI_HSCROLL_EVENTS ) != 0 ) {
                     col += GUIGetHScrollCol( wnd );

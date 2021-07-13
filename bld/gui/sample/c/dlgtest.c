@@ -213,7 +213,7 @@ void TestDialogCreate( gui_window *parent_wnd )
 
 static bool DummyWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
 {
-    /* unused parameters */ (void)gui; (void)gui_ev; (void)param;
+    /* unused parameters */ (void)wnd; (void)gui_ev; (void)param;
 
     return( false );
 }
