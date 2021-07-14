@@ -30,14 +30,10 @@
 ****************************************************************************/
 
 
-#define DRAW( x ) DrawingChars[DRAW_##x]
+#define DRAWC1(x)   DrawingChars[GUI_##x]
 
-enum {
-    #define pick( a,b,c,d,e ) DRAW_##a,
-    #include "_guidraw.h"
-    #undef pick
-    DRAW_LAST
-};
+#define DRAWC(x,i)  DrawingChars[GUI_##x + i]
+
 
 extern char     DrawingChars[];
 

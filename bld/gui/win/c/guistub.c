@@ -35,41 +35,41 @@
 
 void GUIAPI GUISetBetweenTitles( int between_titles )
 {
-    between_titles = between_titles;
+    (void)between_titles;
 }
 
 bool GUIAPI GUIGetCursorPos( gui_window *wnd, gui_point *point )
 {
-    wnd = wnd;
-    point = point;
+    (void)wnd;
+    (void)point;
     return( false );
 }
 
 bool GUIAPI GUISetCursorPos( gui_window *wnd, const gui_point *point )
 {
-    wnd = wnd;
-    point = point;
+    (void)wnd;
+    (void)point;
     return( false );
 }
 
 bool GUIAPI GUIGetCursorType( gui_window *wnd, gui_cursor_type *cursor )
 {
-    wnd = wnd;
-    cursor = cursor;
+    (void)wnd;
+    (void)cursor;
     return( false );
 }
 
 bool GUIAPI GUISetCursorType( gui_window *wnd, gui_cursor_type cursor )
 {
-    wnd = wnd;
-    cursor = cursor;
+    (void)wnd;
+    (void)cursor;
     return( false );
 }
 
 bool GUIAPI GUISetBackgroundChar( gui_window *wnd, char background )
 {
-    wnd = wnd;
-    background = background;
+    (void)wnd;
+    (void)background;
     return( false );
 }
 
@@ -83,27 +83,27 @@ void GUIAPI GUIGMouseOff( void )
 
 void GUIAPI GUISetBackgroundColour( gui_colour_set *colour )
 {
-    colour = colour;
+    (void)colour;
 }
 
 void GUIAPI GUISetDialogColours( gui_colour_set *colours )
 {
-    colours = colours;
+    (void)colours;
 }
 
 void GUIAPI GUIGetDialogColours( gui_colour_set *colours )
 {
-    colours = colours;
+    (void)colours;
 }
 
 void GUIAPI GUISetCharacter( gui_draw_char draw_char, int new )
 {
-    draw_char = draw_char;
-    new = new;
+    (void)draw_char;
+    (void)new;
 }
 
 int GUIAPI GUIGetCharacter( gui_draw_char draw_char )
 {
-    draw_char = draw_char;
+    (void)draw_char;
     return( ' ');
 }

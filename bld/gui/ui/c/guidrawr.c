@@ -124,17 +124,17 @@ static bool DrawRect( gui_window *wnd, const gui_rect *rect, gui_attr attr,
 
 bool GUIAPI GUIDrawRect( gui_window *wnd, const gui_rect *rect, gui_attr attr )
 {
-    return( DrawRect( wnd, rect, attr, false, true, DRAW( BLOCK ) ) );
+    return( DrawRect( wnd, rect, attr, false, true, DRAWC1( RECT_AREA ) ) );
 }
 
 bool GUIAPI GUIFillRect( gui_window *wnd, const gui_rect *rect, gui_attr attr )
 {
-    return( DrawRect( wnd, rect, attr, true, false, DRAW( BLOCK ) ) );
+    return( DrawRect( wnd, rect, attr, true, false, DRAWC1( RECT_AREA ) ) );
 }
 
 bool GUIAPI GUIFillBar( gui_window *wnd, const gui_rect *rect, gui_attr attr )
 {
-    return( DrawRect( wnd, rect, attr, true, false, DRAW( TOP_HALF ) ) );
+    return( DrawRect( wnd, rect, attr, true, false, DRAWC1( BAR_AREA ) ) );
 }
 
 bool GUIAPI GUIDrawLine( gui_window *wnd, const gui_point *start, const gui_point *end,
@@ -160,10 +160,10 @@ bool GUIAPI GUIDrawLine( gui_window *wnd, const gui_point *start, const gui_poin
     area.width = scr_end_x - scr_start_x + 1;
 
     if( scr_start_x == scr_end_x ) {
-        to_use = DRAW( VERT_FRAME );
+        to_use = DRAWC1( LINE_VERT );
     } else {
         if( scr_start_y == scr_end_y ) {
-            to_use = DRAW( HOR_FRAME );
+            to_use = DRAWC1( LINE_HOR );
         } else {
             return( false );
         }

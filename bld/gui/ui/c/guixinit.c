@@ -76,9 +76,9 @@ bool GUIAPI GUIWndInit( unsigned dclick_ms, gui_window_styles style )
         UiGChar[UI_BOX_BOTTOM_RIGHT] = ' ';
         UiGChar[UI_BOX_BOTTOM_LEFT] = ' ';
         UiGChar[UI_BOX_TOP_LINE] = ' ';
-        UiGChar[UI_BOX_RIGHT_LINE] = DRAW( LEFT_HALF );
+        UiGChar[UI_BOX_RIGHT_LINE] = DRAWC1( BOX_RIGHT );
         UiGChar[UI_BOX_BOTTOM_LINE] = ' ';
-        UiGChar[UI_BOX_LEFT_LINE] = DRAW( RIGHT_HALF );
+        UiGChar[UI_BOX_LEFT_LINE] = DRAWC1( BOX_LEFT );
     }
     GUIInitialized = true;
     return( true );

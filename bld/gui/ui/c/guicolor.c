@@ -37,6 +37,7 @@
 #include "guicolor.h"
 #include "guiwnclr.h"
 #include "guixdlg.h"
+#include "guidraw.h"
 #include <string.h>
 
 static gui_colour_set IBMDialColours[] = {
@@ -191,9 +192,9 @@ bool GUISetDialColours( void )
     dlg_attr_curr_hotspot       = uisetattr( ATTR_CURR_HOTSPOT,     MAKEDLGATTR( GUI_DLG_BUTTON_ACTIVE ) );
     dlg_attr_curr_hotspot_key   = uisetattr( ATTR_CURR_HOTSPOT_KEY, MAKEDLGATTR( GUI_DLG_BUTTON_ACTIVE_STANDOUT ) );
 #endif
-    SliderChar[0] = GUIGetCharacter( GUI_DIAL_SCROLL_SLIDER );
-    UpPoint[0]    = GUIGetCharacter( GUI_DIAL_UP_SCROLL_ARROW );
-    DownPoint[0]  = GUIGetCharacter( GUI_DIAL_DOWN_SCROLL_ARROW );
+    SliderChar[0] = DRAWC1( DIAL_SCROLL_SLIDER );
+    UpPoint[0]    = DRAWC1( DIAL_UP_SCROLL_ARROW );
+    DownPoint[0]  = DRAWC1( DIAL_DOWN_SCROLL_ARROW );
     return( true );
 }
 
