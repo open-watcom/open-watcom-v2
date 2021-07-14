@@ -100,7 +100,7 @@ void GUIInitDrawingChars( bool dbcs )
 int GUIAPI GUIGetCharacter( gui_draw_char draw_char )
 {
     if( draw_char < GUI_NUM_DRAW_CHARS ) {
-        return( UCHAR_VALUE( DrawingChars[draw_char] ) );
+        return( (unsigned char)DrawingChars[draw_char] );
     }
     return( 0 );
 }

@@ -34,6 +34,6 @@
 #ifndef _GUIXSCAL_H_
 #define _GUIXSCAL_H_
 
-extern void GUIGetScreenArea( SAREA *area );
+extern void     GUIGetScreenArea( SAREA *area );
 
 #endif // _GUIXSCAL_H_

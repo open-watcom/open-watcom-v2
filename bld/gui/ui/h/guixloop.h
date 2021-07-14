@@ -31,6 +31,6 @@
 ****************************************************************************/
 
 
-extern bool GUIProcessEvent( ui_event );
-extern ui_event GUICreatePopup( gui_window *wnd, const guix_coord *scr_point );
-extern gui_window *GUIGetMenuWindow( void );
+extern bool         GUIProcessEvent( ui_event );
+extern ui_event     GUICreatePopup( gui_window *wnd, const guix_coord *scr_point );
+extern gui_window   *GUIGetMenuWindow( void );

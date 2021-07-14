@@ -35,8 +35,6 @@
 
 #define GUIEVENT( wnd, event, param )   ((*wnd->gui_call_back)(wnd, event, param))
 
-#define UCHAR_VALUE( c )                (unsigned char)(c)
-
 typedef struct guix_coord {
     guix_ord            x;
     guix_ord            y;

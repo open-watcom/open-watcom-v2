@@ -37,8 +37,8 @@
 extern WPI_INST     GUIMainHInst;
 extern gui_window   *GUICurrWnd;
 
-extern bool SendPointEvent( gui_window *wnd, gui_event gui_ev, WPI_PARAM1 wparam, WPI_PARAM2 lparam, bool force_current );
-extern void GUIResizeBackground( gui_window *wnd, bool force_msg );
-extern void GUIDoResize( gui_window *wnd, HWND hwnd, const guix_coord *scr_size );
+extern bool         SendPointEvent( gui_window *wnd, gui_event gui_ev, WPI_PARAM1 wparam, WPI_PARAM2 lparam, bool force_current );
+extern void         GUIResizeBackground( gui_window *wnd, bool force_msg );
+extern void         GUIDoResize( gui_window *wnd, HWND hwnd, const guix_coord *scr_size );
 
 #endif // GUIXWIND_H_

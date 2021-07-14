@@ -34,27 +34,27 @@
 #ifndef _GUIXUTIL_H_
 #define _GUIXUTIL_H_
 
-extern void GUISetUseWnd( gui_window *wnd );
-extern bool GUIPtInRect( const SAREA *, ORD, ORD );
-extern bool GUIOverlap( const SAREA *one, const SAREA *two );
-extern bool GUISetArea( SAREA *, const gui_rect *, gui_window *parent_wnd, bool check_min, bool adjust );
-extern bool GUISetDialogArea( gui_window *wnd, SAREA *area, const gui_rect *rect, const SAREA *parent_area );
-extern bool GUIIsOpen( gui_window *wnd );
-extern char *GUIMakeEditCopy( char *buffer, int length );
-extern void GUIRedrawTitle( gui_window *wnd );
-extern void GUIMakeRelative( gui_window *wnd, const guix_point *scr_point, gui_point *point );
-extern bool GUIJustSetWindowText( gui_window *wnd, const char *title );
-extern bool GUIInArea( ORD row, ORD col, SAREA *area );
-extern void GUISetUseArea( gui_window *wnd, SAREA *area, SAREA *use );
-extern void GUIDirtyArea( gui_window *wnd, SAREA *area );
-extern gui_window *GUIGetTopWnd( gui_window *wnd );
-extern bool GUISetCursor( gui_window *wnd );
-extern void GUIAdjustDialogArea( SAREA *area, int mult );
-extern void GUIGetSAREA( gui_window *wnd, SAREA *area );
-extern void GUIGetClientSAREA( gui_window *wnd, SAREA *sarea );
-extern bool GUISetupStruct( gui_window *wnd, gui_create_info *, bool dialog );
+extern void         GUISetUseWnd( gui_window *wnd );
+extern bool         GUIPtInRect( const SAREA *, ORD, ORD );
+extern bool         GUIOverlap( const SAREA *one, const SAREA *two );
+extern bool         GUISetArea( SAREA *, const gui_rect *, gui_window *parent_wnd, bool check_min, bool adjust );
+extern bool         GUISetDialogArea( gui_window *wnd, SAREA *area, const gui_rect *rect, const SAREA *parent_area );
+extern bool         GUIIsOpen( gui_window *wnd );
+extern char         *GUIMakeEditCopy( char *buffer, int length );
+extern void         GUIRedrawTitle( gui_window *wnd );
+extern void         GUIMakeRelative( gui_window *wnd, const guix_point *scr_point, gui_point *point );
+extern bool         GUIJustSetWindowText( gui_window *wnd, const char *title );
+extern bool         GUIInArea( ORD row, ORD col, SAREA *area );
+extern void         GUISetUseArea( gui_window *wnd, SAREA *area, SAREA *use );
+extern void         GUIDirtyArea( gui_window *wnd, SAREA *area );
+extern gui_window   *GUIGetTopWnd( gui_window *wnd );
+extern bool         GUISetCursor( gui_window *wnd );
+extern void         GUIAdjustDialogArea( SAREA *area, int mult );
+extern void         GUIGetSAREA( gui_window *wnd, SAREA *area );
+extern void         GUIGetClientSAREA( gui_window *wnd, SAREA *sarea );
+extern bool         GUISetupStruct( gui_window *wnd, gui_create_info *, bool dialog );
 
-extern void GUIDestroyDialog( gui_window *wnd );
-extern bool GUICloseWnd( gui_window *wnd );
+extern void         GUIDestroyDialog( gui_window *wnd );
+extern bool         GUICloseWnd( gui_window *wnd );
 
 #endif // _GUIXUTIL_H_
