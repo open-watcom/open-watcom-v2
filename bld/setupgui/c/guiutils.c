@@ -320,7 +320,6 @@ bool SetupPreInit( int argc, char **argv )
 
     /* Initialize enough of the GUI lib to let us show message boxes etc. */
     GUIWndInit( 300 /* ms */, GUI_PLAIN ); // 300 uS mouse dbl click rate, no char remapping
-    GUISetCharacter( GUI_SCROLL_SLIDER, 177 );
     GUISetBetweenTitles( 2 );
     GUIScale.x = WND_APPROX_SIZE;
     GUIScale.y = WND_APPROX_SIZE;
