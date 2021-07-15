@@ -1,27 +1,4 @@
 # UTF-8 encoding, ¥
-name=InsertDisk
-static_text=\
-    //1"@ needs the following diskette:"\
-    //2"@ は以下のディスケットを必要とします。"\
-    //0
-dynamic_text=DiskDesc,""
-static_text=
-static_text=\
-    //1"Please insert or specify new path"\
-    //2"ディスクを入れるか新しいパスを指定してください"\
-    //0
-edit_control=SrcDir,,\
-    //1"Source Directory:"\
-    //2"コピー元ディレクトリ:"\
-    //0
-static_text=
-push_button=+"&OK"
-push_button=^\
-    //1"&Cancel"\
-    //2"キャンセル(&C)"\
-    //0
-
-[Dialog]
 name=Modify
 static_text=
 dynamic_text=AutoText,""
@@ -626,7 +603,7 @@ IDS_REGERROR=\
 IDS_REG_ODBC_ERROR=\
     //1"Information about ODBC was expected in the registry, but not found."\
     //2"レジストリから ODBC の情報を取得しようとしましたが、みつかりませんでした。"\
-    //0     
+    //0
 IDS_FAILED_MODIFYING_FILE=\
     //1"Could not modify the configuration file:\n%s&\nDo you wish to continue?"\
     //2"設定ファイル '%s' を更新できません。\n処理を続けますか?\
@@ -819,7 +796,7 @@ IDS_NID_ACCESSDENIED=\
     //1"The destination file '%s' exists already and cannot be written to.\nThe file is probably being used by another application right now.\nMake sure that no applications that could use this file are running (like your Web server), and try this program again."\
     //2"送信先ファイル '%s' は、すでに存在し、書込むことができません。\nこのファイルは、別のアプリケーションが使用しています。このファイルを使用しているアプリケーション( Web Server など )を終了して、再度このプログラムを実行してください。"\
     //0
-        
+
 [SetupErrorMessage]
 IDS_WRITEERROR=\
     //1"Error writing to destination file"\
