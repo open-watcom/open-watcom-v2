@@ -279,7 +279,7 @@ bool GUIAPI GUIGetControlRect( gui_window *wnd, gui_ctl_id id, gui_rect *rect )
 
     field = GUIGetField( wnd, id );
     if( field != NULL ) {
-        COPYAREA( field->area, area  );
+        COPYRECTX( field->area, area  );
         if( !GUI_IS_DIALOG( wnd ) ) {
             area.row--;
             area.col--;
@@ -308,7 +308,7 @@ bool GUIAPI GUIResizeControl( gui_window *wnd, gui_ctl_id id, const gui_rect *re
         if( !GUISetDialogArea( wnd, &new_area, rect, &area ) ) {
             return( false );
         }
-        COPYAREA( new_area, field->area );
+        COPYRECTX( new_area, field->area );
         if( !GUI_IS_DIALOG( wnd ) ) {
             GUIWndDirtyRect( wnd, &old_rect );
             GUIRefreshControl( wnd, id );

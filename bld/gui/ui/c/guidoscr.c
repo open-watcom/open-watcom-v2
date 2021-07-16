@@ -43,7 +43,7 @@ static void DoScroll( gui_window *wnd, int diff, a_gadget_direction dir, int sta
     int             xdiff;
     int             ydiff;
 
-    COPYAREA( wnd->use, area );
+    COPYRECTX( wnd->use, area );
     if( dir == VERTICAL ) {
         min = &area.row;
         max = &area.height;
@@ -91,7 +91,7 @@ static void DoScroll( gui_window *wnd, int diff, a_gadget_direction dir, int sta
         }
     }
     wnd->flags |= CONTENTS_INVALID;
-    COPYAREA( area, wnd->dirty );
+    COPYRECTX( area, wnd->dirty );
     GUIWndUpdate( wnd );
 }
 

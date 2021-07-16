@@ -35,6 +35,14 @@
 
 #define GUIEVENT( wnd, event, param )   ((*wnd->gui_call_back)(wnd, event, param))
 
+#define COPYRECT( old, new ) { \
+    (new).x = (old).x; (new).y = (old).y; \
+    (new).width = (old).width; (new).height = (old).height; }
+
+#define COPYRECTX( old, new ) { \
+    (new).s_x = (old).s_x; (new).s_y = (old).s_y; \
+    (new).s_width = (old).s_width; (new).s_height = (old).s_height; }
+
 typedef struct guix_coord {
     guix_ord            x;
     guix_ord            y;

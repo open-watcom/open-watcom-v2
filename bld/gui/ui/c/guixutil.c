@@ -117,7 +117,7 @@ bool GUIIsOpen( gui_window *wnd )
 
 void GUISetUseArea( gui_window *wnd, SAREA *area, SAREA *use )
 {
-    COPYAREA( *area, *use );
+    COPYRECTX( *area, *use );
     use->row = 0;
     use->col = 0;
     if( (wnd->style & GUI_VISIBLE) && (wnd->style & GUI_NOFRAME) == 0 ) {
@@ -200,7 +200,7 @@ void GUIGetSAREA( gui_window *wnd, SAREA *area )
     if( GUI_IS_DIALOG( wnd ) ) {
         GUIGetDlgRect( wnd, area );
     } else {
-        COPYAREA( wnd->vs.area, *area );
+        COPYRECTX( wnd->vs.area, *area );
     }
 }
 
@@ -233,7 +233,7 @@ bool GUISetArea( SAREA *area, const gui_rect *rect, gui_window *parent_wnd,
     if( dialog || ( parent_wnd == NULL ) ) {
         GUIGetScreenArea( &bounding );
     } else {
-        COPYAREA( parent_wnd->use, bounding );
+        COPYRECTX( parent_wnd->use, bounding );
         GUIGetSAREA( parent_wnd, &parent_area );
         bounding.row += parent_area.row;
         bounding.col += parent_area.col;

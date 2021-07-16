@@ -170,7 +170,7 @@ ui_event GUICreateMenuPopup( gui_window *wnd, guix_point *scr_location, UIMENUIT
         ui_ev = ID2EV( *curr_id );
     }
     top = GUIGetTopWnd( wnd );
-    COPYAREA( top->use, area );
+    COPYRECTX( top->use, area );
     area.row += top->vs.area.row;
     area.col += top->vs.area.col;
     ok = uiposfloatingpopup( menuitems, &desc, wnd->vs.area.row + scr_location->y,

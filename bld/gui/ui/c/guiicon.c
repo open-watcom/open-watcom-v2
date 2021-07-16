@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +43,7 @@ void GUIDrawIcon( gui_window * wnd )
     ATTR        attr;
     const char  *str;
 
-    COPYAREA( wnd->vs.area, area );
+    COPYRECTX( wnd->vs.area, area );
     area.row = 0;
     area.col = 0;
     attr = WNDATTR( wnd, GUI_ICON );

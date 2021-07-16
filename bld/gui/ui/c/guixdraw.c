@@ -358,7 +358,7 @@ void GUIWndRfrshArea( gui_window *wnd, SAREA *area )
             if( ( wnd->vgadget != NULL ) && !GUI_VSCROLL_EVENTS_SET( wnd ) ) {
                 vscroll = wnd->vgadget->pos;
             }
-            COPYAREA( *area, wnd->dirty );
+            COPYRECTX( *area, wnd->dirty );
             if( ( wnd->dirty.col + wnd->dirty.width ) >
                 ( wnd->vs.area.col + wnd->vs.area.width ) ) {
                 wnd->dirty.width = wnd->vs.area.col + wnd->vs.area.width -

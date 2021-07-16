@@ -47,7 +47,7 @@ bool GUIAPI GUIGetPaintRect( gui_window *wnd, gui_rect *rect )
 {
     SAREA       area;
 
-    COPYAREA( wnd->dirty, area );
+    COPYRECTX( wnd->dirty, area );
     GUIScreenToScaleRect( &area, rect );
     return( true );
 }

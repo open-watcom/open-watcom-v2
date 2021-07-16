@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1111,7 +1111,7 @@ extern void _wpi_getoldpen( WPI_PRES pres, HPEN oldobj );
     #define _wpi_ptvisible( pres, pt ) GpiPtVisible( pres, pt )
 
 extern void _wpi_gettextextent( WPI_PRES pres, LPCSTR string, int len_string,
-                                                    int *width, int *height );
+                                    WPI_RECTDIM *width, WPI_RECTDIM *height );
 extern int _wpi_setrop2( WPI_PRES pres, int mode );
 
     #define _wpi_defwindowproc(hwnd, msg, mp1, mp2) \

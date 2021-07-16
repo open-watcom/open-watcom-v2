@@ -37,8 +37,8 @@
 #include "guixutil.h"
 #include "guiscale.h"
 #include "guigetx.h"
-#include "guixdraw.h"
 #include "guixhot.h"
+#include "guixdraw.h"
 #include "guistr.h"
 #include "guicolor.h"
 
@@ -184,7 +184,7 @@ static void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
     }
 }
 
-void GUIDrawBitmapAttr( gui_window *wnd, const guix_coord *size, const gui_coord *pos, gui_attr attr, int hotspot_no )
+void GUIDrawBitmapAttr( gui_window *wnd, const bitmap_size *size, const gui_coord *pos, gui_attr attr, int hotspot_no )
 {
     WPI_COLOUR  fore, back;
 

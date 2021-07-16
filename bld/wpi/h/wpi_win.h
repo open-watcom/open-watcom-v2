@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -901,7 +901,7 @@ extern void _wpi_setbmphdrvalues( WPI_BITMAPINFOHEADER *bmih, ULONG size,
     #define _wpi_ptvisible( pres, pt ) PtVisible( pres, pt )
 
 extern void _wpi_gettextextent( WPI_PRES pres, LPCSTR string, int len_string,
-                                                    int *width, int *height );
+                                    WPI_RECTDIM *width, WPI_RECTDIM *height );
 
     #define _wpi_arc( pres, x1, y1, x2, y2, x3, y3, x4, y4 ) \
         Arc( pres, x1, y1, x2, y2, x3, y3, x4, y4 )

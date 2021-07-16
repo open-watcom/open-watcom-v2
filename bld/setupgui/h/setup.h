@@ -68,7 +68,6 @@
 #include "bool.h"
 #include "vhandle.h"
 #include "gui.h"
-#include "guitypes.h"
 #include "strvbuf.h"
 
 

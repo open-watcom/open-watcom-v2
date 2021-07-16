@@ -36,7 +36,7 @@
 #define s_width         width
 #define s_height        height
 
-typedef int             guix_ord;
+#define guix_ord        GUI_RECTDIM
 
 typedef struct guix_rect {
     guix_ord            x;

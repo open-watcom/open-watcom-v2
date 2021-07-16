@@ -929,7 +929,7 @@ bool GUIGetDlgRect( gui_window *wnd, SAREA *area )
         if( ui_dlg_info != NULL ) {
             uigetdialogarea( ui_dlg_info, area );
         } else {
-            COPYAREA( wnd->vs.area, *area );
+            COPYRECTX( wnd->vs.area, *area );
         }
         GUIAdjustDialogArea( area, +1 );
         return( true );

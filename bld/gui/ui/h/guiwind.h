@@ -93,15 +93,6 @@ typedef enum {
 #define GUI_RESIZE_GADGETS_USEABLE( wnd ) ( wnd->vs.area.width >= MINMAX_WIDTH )
 #define GUI_IS_DIALOG( wnd ) ( ( wnd->flags & DIALOG ) != 0 )
 
-#define COPYAREA( old, new ) { (new).row = (old).row; (new).height = (old).height; \
-                               (new).col = (old).col; (new).width = (old).width; }
-
-#define COPYTOAREA( src, dst ) { (dst).row = (src).x; (dst).height = (src).height; \
-                               (dst).col = (src).y; (dst).width = (src).width; }
-
-#define COPYFROMAREA( src, dst ) { (dst).y = (src).row; (dst).height = (src).height; \
-                               (dst).x = (src).col; (dst).width = (src).width; }
-
 #define EMPTY_AREA( sarea ) ( ( (sarea).width == 0 ) || ( (sarea).height == 0 ) )
 
 typedef struct gui_control gui_control;

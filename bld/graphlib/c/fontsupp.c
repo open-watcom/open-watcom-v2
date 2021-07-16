@@ -980,25 +980,27 @@ _WCRTLINK short _WCI86FAR _CGRAPH _getgtextextent( char _WCI86FAR *text )
 //============================================================
 /*  Calculates the width of 'text' in pixels.  */
 {
-    int                 width;
 #if defined( _DEFAULT_WINDOWS )
     WPI_PRES            dc;
     HFONT               old_font;
-    int                 height;
+    WPI_RECTDIM         width;
+    WPI_RECTDIM         height;
 
     dc = _Mem_dc;
     old_font  = _MySelectFont( dc, _CurFnt );
     _wpi_gettextextent( dc, text, StrLen( text ), &width, &height );
-    height= height;
+    (void)height;
     _MyGetOldFont( dc, old_font );
 #else
+    int                 width;
+
     width = 0;
     while( *text != '\0' ) {
         width += _charwidth( (unsigned char)*text );
         ++text;
     }
 #endif
-    return( width );
+    return( (short)width );
 }
 
 Entry1( _GETGTEXTEXTENT, _getgtextextent ) // alternate entry-point
@@ -1200,8 +1202,8 @@ _WCRTLINK void _WCI86FAR _CGRAPH _outgtext( char _WCI86FAR *str )
     WPI_PRES            dc;
     HFONT               old_font;
     HFONT               original_font;
-    int                 width;
-    int                 height;
+    WPI_RECTDIM         width;
+    WPI_RECTDIM         height;
     WPI_COLOUR          old_color;
     WPI_COLOUR          old_bkcolor;
     int                 x1, y1, x2, y2, outy;
@@ -1235,12 +1237,15 @@ _WCRTLINK void _WCI86FAR _CGRAPH _outgtext( char _WCI86FAR *str )
     dc = _Mem_dc;
 #if defined( __WINDOWS__ )
     switch( _XVecDir ) {
-        case 1  : escape = YVec2Degs( _YVecDir );
-                  break;
-        case 0  : escape = YVec2Degs( _YVecDir ) * 2;
-                  break;
-        case -1 : escape = 1800 - YVec2Degs( _YVecDir );
-                  break;
+    case 1:
+        escape = YVec2Degs( _YVecDir );
+        break;
+    case 0:
+        escape = YVec2Degs( _YVecDir ) * 2;
+        break;
+    case -1:
+        escape = 1800 - YVec2Degs( _YVecDir );
+        break;
     }
 #else
     angle.x = _XVecDir;

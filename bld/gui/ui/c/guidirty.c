@@ -45,7 +45,7 @@ void GUIAPI GUIWndDirty( gui_window *wnd )
 
     if( wnd != NULL ) {
         wnd->flags |= CONTENTS_INVALID;
-        COPYAREA( wnd->use, wnd->dirty );
+        COPYRECTX( wnd->use, wnd->dirty );
         wnd->flags &= ~NEEDS_RESIZE_REDRAW;
         GUIWndUpdate( wnd );
     } else {

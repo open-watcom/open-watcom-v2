@@ -94,7 +94,7 @@ bool GUIAPI GUIResizeStatusWindow( gui_window *wnd, gui_ord x, gui_ord height )
         return( false );
     } else {
         area.row += wnd->status->area.height;
-        COPYAREA( area, wnd->status->area );
+        COPYRECTX( area, wnd->status->area );
     }
     GUISetUseWnd( wnd );
     GUIDrawStatus( wnd );
@@ -166,7 +166,7 @@ bool GUIAPI GUICloseStatusWindow( gui_window *wnd )
     SAREA       area;
 
     if( GUIHasStatus( wnd ) ) {
-        COPYAREA( wnd->status->area, area );
+        COPYRECTX( wnd->status->area, area );
         GUIFreeStatus( wnd );
         GUISetUseWnd( wnd );
         GUIDirtyArea( wnd, &area );

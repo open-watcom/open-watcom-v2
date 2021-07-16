@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -2832,11 +2832,11 @@ void _wpi_deletesysmenupos( HMENU hmenu, SHORT pos )
 } /* _wpi_deletesysmenupos */
 
 void _wpi_gettextextent( WPI_PRES pres, LPCSTR string, int len_string,
-                                                    int *width, int *height )
+                                    WPI_RECTDIM *width, WPI_RECTDIM *height )
 /***************************************************************************/
 {
     WPI_POINT           pts[TXTBOX_COUNT];
-    int                 t_max, t_min;
+    WPI_RECTDIM         t_max, t_min;
 
     GpiQueryTextBox( pres, (LONG)len_string, (PCH)string, TXTBOX_COUNT, pts );
 

@@ -35,10 +35,6 @@
 #include "guiscale.h"
 
 
-#define COPYRECT( old, new ) {                                  \
-        (new).x = (old).x; (new).y = (old).y;                   \
-        (new).width = (old).width; (new).height = (old).height; }
-
 static struct {
     gui_ord         x;
     gui_ord         y;

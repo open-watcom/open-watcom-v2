@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -383,15 +383,15 @@ void _wpi_setbmphdrvalues( WPI_BITMAPINFOHEADER *bmih, ULONG size,
 } /* _wpi_setbmphdrvalues */
 
 void _wpi_gettextextent( WPI_PRES pres, LPCSTR string, int len_string,
-                                                    int *width, int *height )
+                                    WPI_RECTDIM *width, WPI_RECTDIM *height )
 /***************************************************************************/
 {
     SIZE        size;
 
     GetTextExtentPoint( pres, string, len_string, &size );
 
-    *width = (int)size.cx;
-    *height = (int)size.cy;
+    *width = size.cx;
+    *height = size.cy;
 } /* _wpi_gettextextent */
 
 void _wpi_getrestoredrect( HWND hwnd, WPI_RECT *prect )

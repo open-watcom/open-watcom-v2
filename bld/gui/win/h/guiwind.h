@@ -51,10 +51,10 @@
 #endif
 
 #include "gui.h"
-#include "guitypes.h"
-#include "commonui.h"
 #include "wpi.h"
 #include "guiwpi.h"
+#include "guitypes.h"
+#include "commonui.h"
 #include "toolbr.h"
 #include "guihint.h"
 
