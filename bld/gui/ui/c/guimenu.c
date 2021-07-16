@@ -75,10 +75,9 @@ static bool IsChecked( UIMENUITEM *menuitem )
 static bool MenuConvert( const char *text, unsigned short *flags, char **new, bool checked )
 {
     char        *end;
-    int         length;
-    int         end_length;
+    size_t      length;
+    size_t      end_length;
     char        *new_str;
-    int         char_offset;
 
     if( flags != NULL ) {
         *flags &= ~ITEM_CHAR_OFFSET; /* cancel prev info */
@@ -98,8 +97,7 @@ static bool MenuConvert( const char *text, unsigned short *flags, char **new, bo
         end_length = strlen( end );
     }
     if( flags != NULL ) {
-        char_offset = length - end_length;
-        *flags |= char_offset & ITEM_CHAR_OFFSET;
+        *flags |= ( length - end_length ) & ITEM_CHAR_OFFSET;
     }
     if( end == NULL ) {
         length++; /* no & so need room for NULL as it doesn't replace & */
