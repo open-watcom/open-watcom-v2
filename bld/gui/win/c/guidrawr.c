@@ -127,7 +127,7 @@ static bool DrawLine( gui_window *wnd, const gui_point *start, const gui_point *
     guix_ord    pen_thickness;
     guix_ord    win_height;
     HPEN        old_pen;
-    int         scroll;
+    guix_ord    scroll;
     WPI_POINT   wpi_point;
 
     switch( style ) {

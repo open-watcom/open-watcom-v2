@@ -146,10 +146,7 @@ void GUIGetUpdateRows( gui_window *wnd, HWND hwnd, gui_text_ord *start, gui_text
 {
     WPI_RECT    wpi_rect;
     int         avgy;
-    GUI_RECTDIM left;
-    GUI_RECTDIM top;
-    GUI_RECTDIM right;
-    GUI_RECTDIM bottom;
+    GUI_RECTDIM left, top, right, bottom;
 
     hwnd = hwnd;
 

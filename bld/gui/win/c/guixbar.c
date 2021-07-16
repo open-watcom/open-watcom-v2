@@ -55,16 +55,14 @@ static bool DrawSimpleBar( gui_window *wnd, const guix_rect *rect, WPI_COLOUR co
         return( false );
     }
 
+    vscroll = 0;
     if( GUI_DO_VSCROLL( wnd ) ) {
         vscroll = GUIGetScrollPos( wnd, SB_VERT );
-    } else {
-        vscroll = 0;
     }
 
+    hscroll = 0;
     if( GUI_DO_HSCROLL( wnd ) ) {
         hscroll = GUIGetScrollPos( wnd, SB_HORZ );
-    } else {
-        hscroll = 0;
     }
 
     win_height = _wpi_getheightrect( wnd->hwnd_client_rect );
@@ -117,24 +115,22 @@ static bool DrawShadowBar( gui_window *wnd, const guix_rect *rect, WPI_COLOUR co
     guix_ord    shadow_offset;
     HBRUSH      interior_brush;
     HBRUSH      shadow_brush;
-    int         hscroll;
-    int         vscroll;
+    guix_ord    hscroll;
+    guix_ord    vscroll;
     guix_ord    win_height;
 
     if( ( rect->s_width == 0 ) || ( rect->s_height == 0 ) ) {
         return( false );
     }
 
+    vscroll = 0;
     if( GUI_DO_VSCROLL( wnd ) ) {
         vscroll = GUIGetScrollPos( wnd, SB_VERT );
-    } else {
-        vscroll = 0;
     }
 
+    hscroll = 0;
     if( GUI_DO_HSCROLL( wnd ) ) {
         hscroll = GUIGetScrollPos( wnd, SB_HORZ );
-    } else {
-        hscroll = 0;
     }
 
     win_height = _wpi_getheightrect( wnd->hwnd_client_rect );
