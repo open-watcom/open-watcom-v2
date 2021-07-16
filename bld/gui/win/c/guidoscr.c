@@ -44,7 +44,7 @@ static void DoScroll( gui_window *wnd, int rows, int cols, int start, int end, b
     int         dx, dy;
     WPI_RECT    wpi_rect;
     HWND        hwnd;
-    int         multx, multy;
+    guix_ord    multx, multy;
     GUI_RECTDIM left, top, right, bottom;
 #ifdef __OS2_PM__
     int         bottom_adjust;

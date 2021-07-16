@@ -36,6 +36,6 @@
 
 extern guix_ord     GUIGetTextExtentX( gui_window *wnd, const char *, gui_text_ord );
 extern guix_ord     GUIGetTextExtentY( gui_window *wnd, const char *, gui_text_ord );
-extern void         GUIGetTextExtent( gui_window *wnd, const char *, gui_text_ord, guix_ord *, guix_ord * );
+extern void         GUIGetTextExtent( gui_window *wnd, const char *, gui_text_ord, GUI_RECTDIM *, GUI_RECTDIM * );
 
 #endif // _GUIGETX_H_

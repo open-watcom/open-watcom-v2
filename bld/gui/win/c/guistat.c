@@ -57,7 +57,8 @@ static void SetStatusRect( HWND parent, WPI_RECT *status_wpi_rect, guix_ord x, g
 {
     WPI_RECT    wpi_rect;
     GUI_RECTDIM left, right, top, bottom;
-    int         y, h;
+    guix_ord    y;
+    guix_ord    h;
 
     _wpi_getclientrect( parent, &wpi_rect );
     _wpi_getrectvalues( wpi_rect, &left, &top, &right, &bottom );

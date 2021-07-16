@@ -158,8 +158,8 @@ void GUIGetUpdateRows( gui_window *wnd, HWND hwnd, gui_text_ord *start, gui_text
     top    = _wpi_cvtc_y_plus1( hwnd, top );
     bottom = _wpi_cvtc_y_plus1( hwnd, bottom );
 
-    *start = ( gui_ord )( top / avgy );
-    *num = ( bottom + avgy - 1 ) / avgy - *start;
+    *start = (gui_text_ord)( top / avgy );
+    *num = (gui_text_ord)( ( bottom + avgy - 1 ) / avgy ) - *start;
     if( ( *start + *num ) > wnd->num_rows ) {
         *num = wnd->num_rows - *start;
     }
