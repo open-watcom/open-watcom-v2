@@ -647,7 +647,7 @@ extern int      GUIAPI GUIGetNumWindowColours( gui_window *wnd );
 extern gui_colour_set * GUIAPI GUIGetWindowColours( gui_window *wnd );
 extern void     GUIAPI GUIDestroyWnd( gui_window *wnd );
 extern void     GUIAPI GUIWndDirty( gui_window *wnd );
-extern void     GUIAPI GUIControlDirty( gui_window *wnd, gui_ctl_id id );
+extern void     GUIAPI GUIWndDirtyControl( gui_window *wnd, gui_ctl_id id );
 extern void     GUIAPI GUIWndDirtyRow( gui_window *wnd, gui_text_ord row );
 extern void     GUIAPI GUIWndDirtyRect( gui_window *wnd, const gui_rect *rect );
 extern void     GUIAPI GUIRefresh( void );

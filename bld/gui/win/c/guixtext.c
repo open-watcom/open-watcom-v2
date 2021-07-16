@@ -87,7 +87,7 @@ bool GUIAPI GUIAddTextList( gui_window *wnd, gui_ctl_id id, int num_items, const
         GUIAddText( wnd, id, (*getstring)( data_handle, i ) );
     }
     GUIControlSetRedraw( wnd, id, true );
-    GUIControlDirty( wnd, id );
+    GUIWndDirtyControl( wnd, id );
     return( true );
 }
 
