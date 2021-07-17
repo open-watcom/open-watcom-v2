@@ -239,7 +239,8 @@ typedef enum gui_control_styles {
     GUI_STYLE_CONTROL_3STATE            = 0x00004000,
     GUI_STYLE_CONTROL_WANTKEYINPUT      = 0x00008000,
     GUI_STYLE_CONTROL_READONLY          = 0x00010000,
-    GUI_STYLE_CONTROL_BORDER            = 0x00020000
+    GUI_STYLE_CONTROL_BORDER            = 0x00020000,
+    GUI_STYLE_CONTROL_CHARCOORD         = 0x00040000
 } gui_control_styles;
 
 typedef enum gui_line_styles {
