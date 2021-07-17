@@ -127,8 +127,8 @@ typedef enum {
 
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
 #define DLGFILE_DRV_CTLS() \
-    pick_p3(   DRIVES_TITLE,      DLG_STRING,     DIR_START,                    11, 20 ) \
-    pick_p4id( DRIVES,            DLG_COMBO_BOX,  DIR_START,                    12, 2 + BOX_WIDTH + 3,            15 )
+    pick_p3(   DRIVES_TITLE,      DLG_STRING,     DIR_START,                    11, DIR_START + 8 ) \
+    pick_p4id( DRIVES,            DLG_COMBO_BOX,  DIR_START,                    12, DIR_START + BOX_WIDTH + 3,    15 )
 #endif
 
 enum {
