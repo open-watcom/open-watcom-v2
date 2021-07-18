@@ -85,13 +85,13 @@ typedef struct string_info {
 
 /* control definition for each control that can be in the dialog */
 static control_pairs MessageControls[] = {
- {  DLG_BUTTON( NULL,           GUI_RET_ABORT,  0, 0, BUTTON_WIDTH ),   CTLT_ABORT       },
- {  DLG_BUTTON( NULL,           GUI_RET_CANCEL, 0, 0, BUTTON_WIDTH ),   CTLT_CANCEL      },
- {  DLG_BUTTON( NULL,           GUI_RET_IGNORE, 0, 0, BUTTON_WIDTH ),   CTLT_IGNORE      },
- {  DLG_BUTTON( NULL,           GUI_RET_NO,     0, 0, BUTTON_WIDTH ),   CTLT_NO          },
- {  DLG_DEFBUTTON( NULL,        GUI_RET_OK,     0, 0, BUTTON_WIDTH ),   CTLT_OK          },
- {  DLG_BUTTON( NULL,           GUI_RET_RETRY,  0, 0, BUTTON_WIDTH ),   CTLT_RETRY       },
- {  DLG_BUTTON( NULL,           GUI_RET_YES,    0, 0, BUTTON_WIDTH ),   CTLT_YES         },
+ {  DLG_BUTTON( NULL,           GUI_RET_ABORT,  0, 0, BUTTON_WIDTH + 1 ),   CTLT_ABORT       },
+ {  DLG_BUTTON( NULL,           GUI_RET_CANCEL, 0, 0, BUTTON_WIDTH + 1 ),   CTLT_CANCEL      },
+ {  DLG_BUTTON( NULL,           GUI_RET_IGNORE, 0, 0, BUTTON_WIDTH + 1 ),   CTLT_IGNORE      },
+ {  DLG_BUTTON( NULL,           GUI_RET_NO,     0, 0, BUTTON_WIDTH + 1 ),   CTLT_NO          },
+ {  DLG_DEFBUTTON( NULL,        GUI_RET_OK,     0, 0, BUTTON_WIDTH + 1 ),   CTLT_OK          },
+ {  DLG_BUTTON( NULL,           GUI_RET_RETRY,  0, 0, BUTTON_WIDTH + 1 ),   CTLT_RETRY       },
+ {  DLG_BUTTON( NULL,           GUI_RET_YES,    0, 0, BUTTON_WIDTH + 1 ),   CTLT_YES         },
  {  DLG_STRING( "!",                            0, 0, 1 ),              CTLT_EXCLAMATION },
  {  DLG_STRING( "?",                            0, 0, 1 ),              CTLT_QUESTION    },
  {  DLG_STRING( "i",                            0, 0, 1 ),              CTLT_INFORMATION },

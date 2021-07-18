@@ -52,8 +52,8 @@
     pick_p4(   STATIC,  DLG_STRING,     NULL,   START_STATIC, TEXT_ROW,   0 ) \
     pick_p4(   EQUAL,   DLG_STRING,     "=",    0,            TEXT_ROW,   1 ) \
     pick_p4id( EDIT,    DLG_EDIT,       NULL,   0,            TEXT_ROW,   0 ) \
-    pick_p4id( CANCEL,  DLG_BUTTON,     NULL,   0,            BUTTON_ROW, BUTTON_WIDTH ) \
-    pick_p4id( OK,      DLG_DEFBUTTON,  NULL,   0,            BUTTON_ROW, BUTTON_WIDTH )
+    pick_p4id( CANCEL,  DLG_BUTTON,     NULL,   0,            BUTTON_ROW, BUTTON_WIDTH + 1 ) \
+    pick_p4id( OK,      DLG_DEFBUTTON,  NULL,   0,            BUTTON_ROW, BUTTON_WIDTH + 1 )
 
 enum {
     DUMMY_ID = 100,

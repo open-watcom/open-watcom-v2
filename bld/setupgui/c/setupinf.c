@@ -863,7 +863,7 @@ static bool dialog_static( char *next, DIALOG_PARSER_INFO *parse_dlg )
             len = VbufLen( &text );
         }
         set_dlg_dynamstring( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1,
-            VbufString( &text ), VarGetId( var_handle ), parse_dlg->col_num, parse_dlg->row_num, parse_dlg->col_num + len );
+            VbufString( &text ), VarGetId( var_handle ), parse_dlg->col_num, parse_dlg->row_num, len );
         if( len > 0 ) {
             if( parse_dlg->max_width < parse_dlg->col_num + len ) {
                 parse_dlg->max_width = parse_dlg->col_num + len;
@@ -1034,13 +1034,14 @@ static bool dialog_textwindow( char *next, DIALOG_PARSER_INFO *parse_dlg, bool l
             // dummy_var allows control to have an id - used by dynamic visibility feature
             var_handle = MakeDummyVar();
             set_dlg_textwindow( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1,
-                text, VarGetId( var_handle ), C0, parse_dlg->row_num, parse_dlg->max_width + 2,
-                rows, GUI_VSCROLL );
+                text, VarGetId( var_handle ), C0, parse_dlg->row_num, parse_dlg->max_width + 2 - C0,
+                rows - parse_dlg->row_num, GUI_VSCROLL );
+#if defined( __DOS__ )
+            parse_dlg->curr_dialog->rows += rows + 2;
+            parse_dlg->row_num += rows + 2;
+#else
             parse_dlg->curr_dialog->rows += rows;
             parse_dlg->row_num += rows;
-#if defined( __DOS__ )
-            parse_dlg->curr_dialog->rows += 2;
-            parse_dlg->row_num += 2;
 #endif
         } else {
             rc = false;
@@ -1085,8 +1086,7 @@ static bool dialog_dynamic( char *next, DIALOG_PARSER_INFO *parse_dlg )
         if( parse_dlg->max_width < 60 )
             parse_dlg->max_width = 60;
         set_dlg_dynamstring( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1,
-                             text, VarGetId( var_handle ), C0, parse_dlg->row_num,
-                             C0 + parse_dlg->max_width );
+                             text, VarGetId( var_handle ), C0, parse_dlg->row_num, parse_dlg->max_width );
     } else {
         rc = false;
     }
@@ -1220,7 +1220,7 @@ static bool dialog_edit_button( char *next, DIALOG_PARSER_INFO *parse_dlg )
         // condition for visibility (dynamic)
         parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls + 1].pVisibilityConds = GUIStrDup( line, NULL );
         set_dlg_edit( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1, VbufString( &buff ),
-                      VarGetId( var_handle ), C0, parse_dlg->row_num, C0 + BW - 1 );
+                      VarGetId( var_handle ), C0, parse_dlg->row_num, BW );
         if( VbufLen( &buff ) > 0 ) {
             BumpDlgArrays( parse_dlg );
             // condition for visibility (dynamic)
@@ -1228,7 +1228,7 @@ static bool dialog_edit_button( char *next, DIALOG_PARSER_INFO *parse_dlg )
             // dummy_var allows control to have an id - used by dynamic visibility feature
             var_handle = MakeDummyVar();
             set_dlg_dynamstring( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1, VbufString( &buff ),
-                                 VarGetId( var_handle ), C0, parse_dlg->row_num, C0 + VbufLen( &buff ) );
+                                 VarGetId( var_handle ), C0, parse_dlg->row_num, VbufLen( &buff ) );
         }
         if( parse_dlg->max_width < 2 * VbufLen( &buff ) ) {
             parse_dlg->max_width = 2 * VbufLen( &buff );
@@ -1343,7 +1343,7 @@ static bool dialog_radiobutton( char *next, DIALOG_PARSER_INFO *parse_dlg )
         // condition for visibility (dynamic)
         parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
         set_dlg_radio( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1,
-                       parse_dlg->num_radio_buttons, text, VarGetId( var_handle ), C0, parse_dlg->row_num, C0 + len );
+                       parse_dlg->num_radio_buttons, text, VarGetId( var_handle ), C0, parse_dlg->row_num, len );
         if( parse_dlg->max_width < len ) {
             parse_dlg->max_width = len;
         }
@@ -1400,8 +1400,7 @@ static bool dialog_checkbox( char *next, DIALOG_PARSER_INFO *parse_dlg, bool det
         // condition for visibility (dynamic)
         parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
         set_dlg_check( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1, text,
-                       VarGetId( var_handle ), parse_dlg->col_num, parse_dlg->row_num,
-                       parse_dlg->col_num + len );
+                       VarGetId( var_handle ), parse_dlg->col_num, parse_dlg->row_num, len );
         if( parse_dlg->col_num == C0 ) {
             // 1st check-box on line
             if( parse_dlg->max_width < len )
@@ -1506,7 +1505,7 @@ static bool dialog_editcontrol( char *next, DIALOG_PARSER_INFO *parse_dlg )
         // condition for visibility (dynamic)
         parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = GUIStrDup( line, NULL );
         set_dlg_edit( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1,
-                      VbufString( &buff ), VarGetId( var_handle ), C0, parse_dlg->row_num, C0 + W - 1 );
+                      VbufString( &buff ), VarGetId( var_handle ), C0, parse_dlg->row_num, W );
         if( VbufLen( &buff ) > 0 ) {
             BumpDlgArrays( parse_dlg );
             // condition for visibility (dynamic)
@@ -1514,7 +1513,7 @@ static bool dialog_editcontrol( char *next, DIALOG_PARSER_INFO *parse_dlg )
             // dummy_var allows control to have an id - used by dynamic visibility feature
             var_handle = MakeDummyVar();
             set_dlg_dynamstring( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1, VbufString( &buff ),
-                                 VarGetId( var_handle ), C0, parse_dlg->row_num, C0 + VbufLen( &buff ) );
+                                 VarGetId( var_handle ), C0, parse_dlg->row_num, VbufLen( &buff ) );
         }
         if( parse_dlg->max_width < 2 * VbufLen( &buff ) ) {
             parse_dlg->max_width = 2 * VbufLen( &buff );

@@ -44,8 +44,8 @@
 
 #define DLGPICK_CTLS() \
     pick_p4id( LIST,     DLG_LIST_BOX,   1,  1,  29, 10 ) \
-    pick_p3id( OK,       DLG_DEFBUTTON,  2,  12, 12 ) \
-    pick_p3id( CANCEL,   DLG_BUTTON,     18, 12, 28 )
+    pick_p3id( OK,       DLG_DEFBUTTON,  2,  12, 11 ) \
+    pick_p3id( CANCEL,   DLG_BUTTON,     18, 12, 11 )
 
 enum {
     #define pick_p3id(id,m,p1,p2,p3)    id ## _IDX,
