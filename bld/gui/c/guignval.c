@@ -52,8 +52,8 @@
     pick_p4(   STATIC,  DLG_STRING,     NULL,   START_STATIC, TEXT_ROW,   0 ) \
     pick_p4(   EQUAL,   DLG_STRING,     "=",    0,            TEXT_ROW,   1 ) \
     pick_p4id( EDIT,    DLG_EDIT,       NULL,   0,            TEXT_ROW,   0 ) \
-    pick_p4id( CANCEL,  DLG_BUTTON,     NULL,   0,            BUTTON_ROW, BUTTON_WIDTH + 1 ) \
-    pick_p4id( OK,      DLG_DEFBUTTON,  NULL,   0,            BUTTON_ROW, BUTTON_WIDTH + 1 )
+    pick_p4id( CANCEL,  DLG_BUTTON,     NULL,   0,            BUTTON_ROW, BUTTON_WIDTH ) \
+    pick_p4id( OK,      DLG_DEFBUTTON,  NULL,   0,            BUTTON_ROW, BUTTON_WIDTH )
 
 enum {
     DUMMY_ID = 100,
@@ -146,27 +146,23 @@ gui_message_return GUIAPI GUIGetNewVal( const char *title, const char *old, char
         disp_length = MAX_LENGTH;
     }
 
-    GetNew[CANCEL_IDX].text = LIT( Cancel );
-    GetNew[OK_IDX].text = LIT( OK );
-
-    GetNew[EDIT_IDX].style |= GUI_STYLE_CONTROL_FOCUS;
-
-    GetNew[STATIC_IDX].rect.width = DLG_COL( disp_length );
-    GetNew[STATIC_IDX].text = old;
-
-    GetNew[EQUAL_IDX].rect.x = DLG_COL( START_EQUAL + disp_length );
-
-    GetNew[EDIT_IDX].rect.x = DLG_COL( START_EDIT + disp_length );
-    GetNew[EDIT_IDX].rect.width = DLG_COL( disp_length );
-    GetNew[EDIT_IDX].text = old;
-
     cols = START_EDIT + disp_length * 2 + START_STATIC;
 
-    GetNew[OK_IDX].rect.x = DLG_COL( ( cols / 2 ) -
-                         ( ( cols / 2 - BUTTON_WIDTH ) / 2 ) - BUTTON_WIDTH );
-    GetNew[CANCEL_IDX].rect.x = DLG_COL( cols -
-                         ( ( cols / 2 - BUTTON_WIDTH ) / 2 ) - BUTTON_WIDTH );
+    GetNew[STATIC_IDX].rect.width = disp_length;
+    GetNew[STATIC_IDX].text = old;
 
+    GetNew[EQUAL_IDX].rect.x = START_EQUAL + disp_length;
+
+    GetNew[EDIT_IDX].style |= GUI_STYLE_CONTROL_FOCUS;
+    GetNew[EDIT_IDX].rect.x = START_EDIT + disp_length;
+    GetNew[EDIT_IDX].rect.width = disp_length;
+    GetNew[EDIT_IDX].text = old;
+
+    GetNew[CANCEL_IDX].text = LIT( Cancel );
+    GetNew[CANCEL_IDX].rect.x = cols - ( ( cols / 2 - BUTTON_WIDTH ) / 2 ) - BUTTON_WIDTH;
+
+    GetNew[OK_IDX].text = LIT( OK );
+    GetNew[OK_IDX].rect.x = ( cols / 2 ) - ( ( cols / 2 - BUTTON_WIDTH ) / 2 ) - BUTTON_WIDTH;
 
     GUIDlgOpen( title, NUM_ROWS, cols, GetNew, GUI_ARRAY_SIZE( GetNew ), &GetNewValGUIEventProc, &info );
     *new_val = info.text;

@@ -33,40 +33,28 @@
 
 #define GUI_NO_ID   ((gui_ctl_id)-1)
 
-enum {
-    DLG_ROW_0 = 30000,
-    DLG_ROW_n = DLG_ROW_0 + 100,
-    DLG_COL_0,
-    DLG_COL_n = DLG_COL_0 + 100
-};
-
-#define DLG_ROW( n ) ( (n) + DLG_ROW_0 )
-#define DLG_COL( n ) ( (n) + DLG_COL_0 )
-
 #define DLG_SET_RECT( r, x1, y1, width1, height1 ) \
-      { (r).rect.x = DLG_COL( x1 ); \
-        (r).rect.y = DLG_ROW( y1 ); \
-        (r).rect.width = DLG_COL( width1 ); \
-        (r).rect.height = DLG_ROW( height1 ); }
+      { (r).rect.x = x1; \
+        (r).rect.y = y1; \
+        (r).rect.width = width1; \
+        (r).rect.height = height1; }
 #define DLG_SET_RECT_1( r, x1, y1, width1 ) \
-      { (r).rect.x = DLG_COL( x1 ); \
-        (r).rect.y = DLG_ROW( y1 ); \
-        (r).rect.width = DLG_COL( width1 ); \
-        (r).rect.height = DLG_ROW( 1 ); }
+      { (r).rect.x = x1; \
+        (r).rect.y = y1; \
+        (r).rect.width = width1; \
+        (r).rect.height = 1; }
 
 #define DLG_RECT( x1, y1, width1, height1 ) \
-      { DLG_COL( x1 ), DLG_ROW( y1 ), \
-        DLG_COL( width1 ), DLG_ROW( height1 ) }
+      { x1, y1, width1, height1 }
 #define DLG_RECT_1( x1, y1, width1 ) \
-      { DLG_COL( x1 ), DLG_ROW( y1 ), \
-        DLG_COL( width1 ), DLG_ROW( 1 ) }
+      { x1, y1, width1, 1 }
 
 #define DLG_BOX( s, x1, y1, width1, height1 ) \
     { GUI_GROUPBOX, s, \
       DLG_RECT( x1, y1, width1, height1 ), \
       NULL, \
       GUI_NOSCROLL, \
-      GUI_STYLE_CONTROL_AUTOMATIC, \
+      GUI_STYLE_CONTROL_CHARCOORD | GUI_STYLE_CONTROL_AUTOMATIC, \
       GUI_NO_ID }
 
 #define DLG_DYNSTRING( s, id, x1, y1, width1 ) \
@@ -74,7 +62,7 @@ enum {
       DLG_RECT_1( x1, y1, width1 ), \
       NULL, \
       GUI_NOSCROLL, \
-      GUI_STYLE_CONTROL_NOPREFIX | GUI_STYLE_CONTROL_AUTOMATIC, \
+      GUI_STYLE_CONTROL_CHARCOORD | GUI_STYLE_CONTROL_NOPREFIX | GUI_STYLE_CONTROL_AUTOMATIC, \
       id }
 
 #define DLG_STRING( s, x1, y1, width1 ) \
@@ -85,7 +73,7 @@ enum {
       DLG_RECT_1( x1, y1, width1 ), \
       NULL, \
       GUI_NOSCROLL, \
-      GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_AUTOMATIC, \
+      GUI_STYLE_CONTROL_CHARCOORD | GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_AUTOMATIC, \
       id }
 
 #define DLG_BUTTON( s, id, x1, y1, width1 ) \
@@ -99,7 +87,7 @@ enum {
     DLG_RECT_1( x1, y1, width1 ), \
     NULL, \
     GUI_NOSCROLL, \
-    GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_AUTOMATIC, \
+    GUI_STYLE_CONTROL_CHARCOORD | GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_AUTOMATIC, \
     id }
 
 #define DLG_DORADIO( g, s, id, x1, y1, width1 ) \
@@ -107,7 +95,7 @@ enum {
     DLG_RECT_1( x1, y1, width1 ), \
     NULL, \
     GUI_NOSCROLL, \
-    g | GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_AUTOMATIC, \
+    GUI_STYLE_CONTROL_CHARCOORD | GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_AUTOMATIC | (g), \
     id }
 
 #define DLG_RADIO_START( s, id, x1, y1, width1 ) \
@@ -124,7 +112,7 @@ enum {
     DLG_RECT_1( x1, y1, width1 ), \
     NULL, \
     GUI_NOSCROLL, \
-    GUI_STYLE_CONTROL_TAB_GROUP + (v), \
+    GUI_STYLE_CONTROL_CHARCOORD | GUI_STYLE_CONTROL_TAB_GROUP + (v), \
     id }
 
 #define DLG_EDIT( s, id, x1, y1, width1 ) \
@@ -138,7 +126,7 @@ enum {
       DLG_RECT( x1, y1, width1, height1 ), \
       NULL, \
       GUI_NOSCROLL, \
-      GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_AUTOMATIC, \
+      GUI_STYLE_CONTROL_CHARCOORD | GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_AUTOMATIC, \
       id }
 
 #define DLG_COMBO_BOX( s, id, x1, y1, width1, height1 ) \
@@ -146,7 +134,7 @@ enum {
       DLG_RECT( x1, y1, width1, height1 ), \
       NULL, \
       GUI_NOSCROLL, \
-      GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_AUTOMATIC, \
+      GUI_STYLE_CONTROL_CHARCOORD | GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_AUTOMATIC, \
       id }
 
 extern void GUIDlgOpen( const char *title, gui_text_ord rows, gui_text_ord cols, gui_control_info *controls_info,

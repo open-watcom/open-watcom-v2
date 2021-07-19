@@ -69,27 +69,6 @@ static gui_create_info DlgControl = {
 
 static bool DlgModal = false;
 
-static bool DlgRelocNum( gui_ord *pnum, int adjust, gui_coord *charuse )
-{
-    gui_ord     num;
-
-    num = *pnum;
-    if( num >= DLG_ROW_0 && num <= DLG_ROW_n ) {
-        num -= DLG_ROW( 0 );
-        num += adjust;
-        num *= charuse->y;
-    } else if( num >= DLG_COL_0 && num <= DLG_COL_n ) {
-        num -= DLG_COL( 0 );
-        num += adjust;
-        num *= charuse->x;
-    } else {
-        return( false );
-    }
-    *pnum = num;
-    return( true );
-}
-
-
 static void GetHalfAndAdjust( gui_coord *charuse,
                               gui_coord *half, gui_ord *char_ui_adjust )
 {
@@ -108,26 +87,22 @@ static void DlgSetCtlSizes( gui_control_info *controls_info,
 {
     gui_coord   half;
     gui_ord     char_ui_adjust;
-    bool        reloc;
 
     /* unused parameters */ (void)charspace;
 
     GetHalfAndAdjust( charuse, &half, &char_ui_adjust );
     while( --num >= 0 ) {
-        if( DlgRelocNum( &controls_info->rect.x, 1, charuse ) ) {
-            controls_info->rect.x += half.x;
-        }
-        if( DlgRelocNum( &controls_info->rect.y, 0, charuse ) ) {
-            controls_info->rect.y += half.y + char_ui_adjust;
-        }
-        reloc = false;
-        if( DlgRelocNum( &controls_info->rect.width, 0, charuse ) ) {
-            reloc = true;
-        }
-        if( DlgRelocNum( &controls_info->rect.height, 0, charuse ) ) {
-            reloc = true;
-        }
-        if( reloc ) {
+        if( controls_info->style & GUI_STYLE_CONTROL_CHARCOORD ) {
+            controls_info->rect.x = ( controls_info->rect.x + 1 ) * charuse->x + half.x;
+            controls_info->rect.y = controls_info->rect.y * charuse->y + half.y + char_ui_adjust;
+            switch( controls_info->control_class ) {
+            case GUI_GROUPBOX:
+                controls_info->rect.width = controls_info->rect.width * charuse->x - half.x;
+                break;
+            default:
+                controls_info->rect.width = controls_info->rect.width * charuse->x;
+                break;
+            }
             switch( controls_info->control_class ) {
 #ifdef __OS2_PM__
             // brutal hack to get OS/2 and Windows dialogs to look the same.
@@ -136,12 +111,13 @@ static void DlgSetCtlSizes( gui_control_info *controls_info,
                 break;
 #endif
             case GUI_GROUPBOX:
-                controls_info->rect.width -= half.x;
-                controls_info->rect.height -= half.y;
+                controls_info->rect.height = controls_info->rect.height * charuse->y - half.y;
                 break;
             default:
+                controls_info->rect.height = controls_info->rect.height * charuse->y;
                 break;
             }
+            controls_info->style &= ~GUI_STYLE_CONTROL_CHARCOORD;
         }
         ++controls_info;
     }
@@ -159,7 +135,7 @@ static void DlgSetSize( gui_window *parent_wnd, gui_create_info *dlg_info, gui_t
     GetHalfAndAdjust( charuse, &half, &char_ui_adjust );
     GUIGetSystemMetrics( &metrics );
     GUIGetScale( &max_size );
-    dlg_info->rect.width = (cols+3) * charuse->x + metrics.dialog_top_left_size.x +
+    dlg_info->rect.width = ( cols + 3 ) * charuse->x + metrics.dialog_top_left_size.x +
                       metrics.dialog_bottom_right_size.x;
     dlg_info->rect.height= rows * charuse->y + metrics.dialog_top_left_size.y +
                       metrics.dialog_bottom_right_size.y + char_ui_adjust;
