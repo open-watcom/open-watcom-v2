@@ -103,17 +103,17 @@ static gui_control_info StaticMessage = DLG_STRING( NULL, TEXT_START_COL, TEXT_R
 
 /* information about the controls needed for each gui_message_type */
 static message_types ControlsNeeded[] = {
-  { GUI_ABORT_RETRY_IGNORE,     3,      CTLT_ABORT | CTLT_IGNORE | CTLT_RETRY   },
-  { GUI_EXCLAMATION,            1,      CTLT_EXCLAMATION | CTLT_OK              },
-  { GUI_INFORMATION,            1,      CTLT_INFORMATION | CTLT_OK              },
-  { GUI_QUESTION,               1,      CTLT_QUESTION | CTLT_OK                 },
-  { GUI_STOP,                   1,      CTLT_STOP | CTLT_OK                     },
-  { GUI_OK,                     1,      CTLT_OK                                 },
-  { GUI_OK_CANCEL,              2,      CTLT_OK | CTLT_CANCEL                   },
-  { GUI_RETRY_CANCEL,           2,      CTLT_RETRY | CTLT_CANCEL                },
-  { GUI_YES_NO,                 2,      CTLT_YES | CTLT_NO                      },
-  { GUI_YES_NO_CANCEL,          3,      CTLT_YES | CTLT_NO | CTLT_CANCEL        },
-  { GUI_SYSTEMMODAL,            0,      CTLT_NO_CONTROL                         }
+    { GUI_ABORT_RETRY_IGNORE,   3,  CTLT_ABORT | CTLT_IGNORE | CTLT_RETRY   },
+    { GUI_EXCLAMATION,          1,  CTLT_EXCLAMATION | CTLT_OK              },
+    { GUI_INFORMATION,          1,  CTLT_INFORMATION | CTLT_OK              },
+    { GUI_QUESTION,             1,  CTLT_QUESTION | CTLT_OK                 },
+    { GUI_STOP,                 1,  CTLT_STOP | CTLT_OK                     },
+    { GUI_OK,                   1,  CTLT_OK                                 },
+    { GUI_OK_CANCEL,            2,  CTLT_OK | CTLT_CANCEL                   },
+    { GUI_RETRY_CANCEL,         2,  CTLT_RETRY | CTLT_CANCEL                },
+    { GUI_YES_NO,               2,  CTLT_YES | CTLT_NO                      },
+    { GUI_YES_NO_CANCEL,        3,  CTLT_YES | CTLT_NO | CTLT_CANCEL        },
+    { GUI_SYSTEMMODAL,          0,  CTLT_NO_CONTROL                         }
 };
 
 static bool MessagesInitialized = false;

@@ -69,8 +69,7 @@ static gui_create_info DlgControl = {
 
 static bool DlgModal = false;
 
-static void GetHalfAndAdjust( gui_coord *charuse,
-                              gui_coord *half, gui_ord *char_ui_adjust )
+static void GetHalfAndAdjust( gui_coord *charuse, gui_coord *half, gui_ord *char_ui_adjust )
 {
     half->x = charuse->x / 2;
     half->y = charuse->y / 2;
