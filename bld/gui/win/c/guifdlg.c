@@ -129,7 +129,7 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
         fdlg.fl |= FDS_MULTIPLESEL;
     }
 
-    fdlg.pszTitle = ofn->title;
+    fdlg.pszTitle = (char *)ofn->title;
 
     if( ofn->file_name != NULL ) {
         strncpy( fdlg.szFullFile, ofn->file_name, CCHMAXPATH );

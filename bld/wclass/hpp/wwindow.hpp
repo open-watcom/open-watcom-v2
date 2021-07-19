@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -288,13 +289,13 @@ public:
     virtual WWindow * switchChild( WWindow *currChild, bool forward );
     virtual bool WEXPORT processMsg( gui_event gui_ev, void *parm );
     virtual int WEXPORT getTextExtentX( const char *text, size_t len ) {
-        return( GUIGetExtentX( _handle, (char *)text, len ) );
+        return( GUIGetExtentX( _handle, text, len ) );
     }
     virtual int WEXPORT getTextExtentX( const char *text ) {
-        return( GUIGetExtentX( _handle, (char *)text, strlen( text ) ) );
+        return( GUIGetExtentX( _handle, text, strlen( text ) ) );
     }
     virtual int WEXPORT getTextExtentY( const char *text ) {
-        return( GUIGetExtentY( _handle, (char *)text ) );
+        return( GUIGetExtentY( _handle, text ) );
     }
     virtual void displayFloatingPopup( WPopupMenu * );
     virtual WOrdinal WEXPORT frameWidth( void ) {

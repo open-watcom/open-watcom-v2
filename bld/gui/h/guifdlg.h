@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -113,7 +114,7 @@ typedef struct
     int                 max_file_name;
     char                *base_file_name;
     int                 max_base_file_name;
-    char                *title;
+    const char          *title;
     fn_flags            flags;
     char                *initial_dir;
     char                *last_path;

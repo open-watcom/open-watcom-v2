@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,7 +85,7 @@ void WFileDialog::makeDialog( const char *filter ) {
     if( filter == NULL ) {
         filter = FilterList;
     }
-    _ofn.filter_list = (char *)filter;
+    _ofn.filter_list = filter;
     _ofn.filter_index = 1;
     _ofn.file_name = _fileName;
     _ofn.max_file_name = WFileBufSize;
@@ -108,7 +109,7 @@ void WFileDialog::init( const char *fn, const char *title ) {
 /***********************************************************/
 
     if( title != NULL ) {
-        _ofn.title = (char *)title;
+        _ofn.title = title;
     }
     if( fn == NULL ) {
         fn = "";

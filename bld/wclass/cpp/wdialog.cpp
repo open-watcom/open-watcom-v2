@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -170,8 +171,7 @@ void WDialog::doDialog( WWindow *parent ) {
     if( parent != NULL ) {
         hparent = parent->handle();
     }
-    const char *ctext = _text;
-    create_info.title = (char *)ctext;
+    create_info.title = (const char *)_text;
     create_info.rect.x = r.x();
     create_info.rect.y = r.y();
     create_info.rect.width = r.w();

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -107,11 +108,11 @@ bool    WndSetPoint( a_window wnd, void *parm, bool exact,
                 return( true );
             }
         } else {
-            gui_ord     guipos;
+            gui_text_ord    text_pos;
 
-            guipos = GUIGetStringPos( wnd->gui, line.indent, line.text, point.x );
-            if( guipos != GUI_NO_COLUMN ) { // clicked within this piece
-                colidx = (wnd_colidx)guipos;
+            text_pos = GUIGetStringPos( wnd->gui, line.indent, line.text, point.x );
+            if( text_pos != GUI_TEXT_NO_COLUMN ) { // clicked within this piece
+                colidx = (wnd_colidx)text_pos;
                 if( !doing_select && last_extended_tab_piece != WND_NO_PIECE ) {
                     spot->piece = last_extended_tab_piece;
                     spot->colidx = last_extended_tab_colidx;
