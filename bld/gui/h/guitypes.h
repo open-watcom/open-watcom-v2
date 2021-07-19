@@ -43,6 +43,10 @@
     (new).s_x = (old).s_x; (new).s_y = (old).s_y; \
     (new).s_width = (old).s_width; (new).s_height = (old).s_height; }
 
+#define GUI_STYLE_CONTROL_CHARCOORD \
+    (GUI_STYLE_CONTROL_CHARCOORD_X | GUI_STYLE_CONTROL_CHARCOORD_Y \
+    | GUI_STYLE_CONTROL_CHARCOORD_H | GUI_STYLE_CONTROL_CHARCOORD_V)
+
 typedef struct guix_coord {
     guix_ord            x;
     guix_ord            y;
