@@ -732,10 +732,10 @@ static void AdjustDialogControls( a_dialog_header *dlg )
                 control->rect.width = ( width / num_push_buttons ) - C0 - 1;
 #if defined( __NT__ ) && defined( GUI_IS_GUI )
                 but_pos = WIN_BUTTON_POS( curr_button + 1, NORMAL_CHECKMARKS, width, WIN_BW );
-                control->rect.x = but_pos;
 #else
-                control->rect.x = C0 + ( width / num_push_buttons ) * curr_button;
+                but_pos = C0 + ( width / num_push_buttons ) * curr_button;
 #endif
+                control->rect.x = but_pos;
                 ++curr_button;
                 ++i;
                 ++control;
@@ -764,16 +764,14 @@ static void AdjustDialogControls( a_dialog_header *dlg )
                         max_width = WIN_BW;
                     }
                     but_pos = WIN_BUTTON_POS( curr_button, num_push_buttons, width, WIN_BW );
-                    control->rect.x = but_pos;
-                    control->rect.width = max_width;
 #else
                     if( max_width < BW ) {
                         max_width = BW;
                     }
                     but_pos = BUTTON_POS( curr_button, num_push_buttons, width, BW );
+#endif
                     control->rect.x = but_pos;
                     control->rect.width = max_width;
-#endif
                     ++control;
                 }
             } else {
@@ -783,18 +781,16 @@ static void AdjustDialogControls( a_dialog_header *dlg )
                     max_width = WIN_BW;
                 }
                 but_pos = WIN_BUTTON_POS( NORMAL_BUTTONS, NORMAL_BUTTONS, width, WIN_BW );
-                control->rect.x = but_pos;
                 /* The dynamic system does not handle buttons too wide for dialog. */
-                control->rect.width = max_width;
                 /* control->rect.width = WIN_BW; */
 #else
                 if( max_width < BW ) {
                     max_width = BW;
                 }
                 but_pos = BUTTON_POS( NORMAL_BUTTONS, MAX_CTRL_PER_LINE, width, BW );
+#endif
                 control->rect.x = but_pos;
                 control->rect.width = max_width;
-#endif
             }
             break;
 
@@ -826,7 +822,7 @@ static void AdjustDialogControls( a_dialog_header *dlg )
                     }
                 }
             }
-            if( control->id == -1 || dlg->controls_ext[i].pVisibilityConds != NULL ) {
+            if( control->id == GUI_NO_ID || dlg->controls_ext[i].pVisibilityConds != NULL ) {
                 if( control->rect.width > width ) {
                     control->rect.width = width;
                 }

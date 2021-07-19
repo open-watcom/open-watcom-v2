@@ -163,7 +163,8 @@ char *TrimQuote( char *text )
 
     if( *text == '"' ) {
         ++text;
-        for( p = text; *p != '"'; ++p ) ;
+        for( p = text; *p != '"'; ++p )
+            ;
         *p = '\0';
     }
     return( text );
