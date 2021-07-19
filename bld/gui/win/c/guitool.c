@@ -265,10 +265,10 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord in_height,
         tbar->bitmaps[i] = _wpi_loadbitmap( GUIResHInst, MAKEINTRESOURCE( toolinfo->toolbar[i].bitmap ) );
         if( in_height == 0 ) {
             _wpi_getbitmapdim( tbar->bitmaps[i], &bm_w, &bm_h );
-            if( bm_h > fixed_height ) {
+            if( fixed_height < bm_h ) {
                 fixed_height = bm_h;
             }
-            if( bm_w > fixed_width ) {
+            if( fixed_width < bm_w ) {
                 fixed_width = bm_w;
             }
         }

@@ -35,8 +35,8 @@
 #define _GUIXHOT_H_
 
 typedef struct hotspot_info {
-    guix_coord  size;
-    char        *text;
+    guix_coord      size;
+    char            *text;
 } hotspot_info;
 
 #endif // _GUIXHOT_H_

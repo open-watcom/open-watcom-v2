@@ -62,7 +62,7 @@ static void SetText( gui_window *wnd, WPI_COLOUR fore, WPI_COLOUR back )
 }
 
 static void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
-                            guix_ord in_width, guix_ord in_height, const gui_coord *pos,
+                            unsigned in_width, unsigned in_height, const gui_coord *pos,
                             WPI_COLOUR fore, WPI_COLOUR back, gui_ord extentx,
                             bool draw_extent, int hotspot_no )
 {
@@ -184,7 +184,7 @@ static void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
     }
 }
 
-void GUIDrawBitmapAttr( gui_window *wnd, const bitmap_size *size, const gui_coord *pos, gui_attr attr, int hotspot_no )
+void GUIDrawBitmapAttr( gui_window *wnd, const guix_coord *size, const gui_coord *pos, gui_attr attr, int hotspot_no )
 {
     WPI_COLOUR  fore, back;
 
