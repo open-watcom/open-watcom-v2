@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,8 +49,7 @@ typedef struct {
     USHORT      id;
     USHORT      children;
     ULONG       style;
-    ULONG       nclass;
-    char        *cclass;
+    PSZ         cclass;
     char        *text;
     char        *presparms;
     void        *ctldata;
@@ -77,31 +76,31 @@ typedef struct {
 static itemdata _getint[] = {
 {   12,  45, 215, 45, DID_SLBC_DLG, 6,
     FS_DLGBORDER | WS_CLIPSIBLINGS | WS_VISIBLE | WS_SAVEBITS,
-    (ULONG)WC_FRAME, NULL , "Set Number Of Lines Between Clears", "",
+    WC_FRAME, "Set Number Of Lines Between Clears", "",
     NULL, FCF_SYSMENU | FCF_TITLEBAR },
 {   4,  29, 150, 8, 101, 0,
     SS_TEXT | DT_LEFT,
-    (ULONG)WC_STATIC, NULL, "Number Of Lines Between Clears:", "" ,
+    WC_STATIC, "Number Of Lines Between Clears:", "" ,
     "", 0 },
 {   157,  29, 47, 8, DID_SLBC_FIELD, 0,
     ES_RIGHT | ES_MARGIN | WS_TABSTOP,
-    (ULONG)WC_ENTRYFIELD, NULL, "10000", "" ,
+    WC_ENTRYFIELD, "10000", "" ,
     "", 0 },
 {   4,  4, 40, 14, DID_OK, 0,
     BS_PUSHBUTTON | BS_AUTOSIZE | WS_TABSTOP,
-    (ULONG)WC_BUTTON, NULL, "~OK", "" ,
+    WC_BUTTON, "~OK", "" ,
     "", 0 },
 {   58,  4, 40, 14, DID_DEFAULT, 0,
     BS_PUSHBUTTON | BS_AUTOSIZE | WS_TABSTOP,
-    (ULONG)WC_BUTTON, NULL, "~Default", "" ,
+    WC_BUTTON, "~Default", "" ,
     "", 0 },
 {   112,  4, 40, 14, DID_CANCEL, 0,
     BS_PUSHBUTTON | BS_AUTOSIZE | WS_TABSTOP,
-    (ULONG)WC_BUTTON, NULL, "Cancel", "" ,
+    WC_BUTTON, "Cancel", "" ,
     "", 0 },
 {   166,  4, 40, 14, DID_HELP, 0,
     BS_HELP | BS_NOPOINTERFOCUS | WS_TABSTOP,
-    (ULONG)WC_BUTTON, NULL, "Help", "" ,
+    WC_BUTTON, "Help", "" ,
     "", 0 },
 };
 
@@ -224,8 +223,8 @@ void _GetAutoClearInterval( void )
     for( i = 0; i < MAX_INT_ITEMS; i++ ) {
         new_dlgtemplate = _AddControl( old_dlgtemplate, _getint[i].style,
                 _getint[i].x, _getint[i].y, _getint[i].cx, _getint[i].cy,
-                _getint[i].id, _getint[i].children, _getint[i].nclass,
-                _getint[i].cclass, _getint[i].text, _getint[i].presparms,
+                _getint[i].id, _getint[i].children, _getint[i].cclass,
+                _getint[i].text, _getint[i].presparms,
                 _getint[i].ctldata, _getint[i].ctldatalen );
         if( new_dlgtemplate == NULL  ) {
             free( old_dlgtemplate );

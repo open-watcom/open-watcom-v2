@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,8 +84,8 @@ TEMPLATE_HANDLE _DialogTemplate( USHORT temptype, USHORT codepage, USHORT focus 
  */
 TEMPLATE_HANDLE _AddControl( TEMPLATE_HANDLE old_dlgtemplate, ULONG style,
                         int x, int y, int cx, int cy,
-                        USHORT id, USHORT children, ULONG nclass,
-                        const char *classname, const char *captiontext, const char *presparms,
+                        USHORT id, USHORT children, PSZ classname,
+                        const char *captiontext, const char *presparms,
                         const void *ctldata, ULONG ctldatalen )
 {
     TEMPLATE_HANDLE     new_dlgtemplate;
@@ -99,9 +99,13 @@ TEMPLATE_HANDLE _AddControl( TEMPLATE_HANDLE old_dlgtemplate, ULONG style,
     /*
      * compute size of block, reallocate block to hold this stuff
      */
-    classlen = SLEN( classname );
-    if( classlen ) {
-        classlen++;
+    if( SHORT2FROMMP( classname ) == 0xffff ) {
+        classlen = 0;
+    } else {
+        classlen = SLEN( classname );
+        if( classlen ) {
+            classlen++;
+        }
     }
     textlen = SLEN( captiontext );
     if( textlen ) {
@@ -147,7 +151,7 @@ TEMPLATE_HANDLE _AddControl( TEMPLATE_HANDLE old_dlgtemplate, ULONG style,
     if( classlen ) {
         dit->offClassName = dataSegLen + textlen;
     } else {
-        dit->offClassName = nclass & 0xffff;
+        dit->offClassName = SHORT1FROMMP( classname );
     }
     dit->x = (short)x;
     dit->y = (short)y;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,7 +57,7 @@ extern TEMPLATE_HANDLE  DialogTemplate( DWORD dtStyle, int x, int y, int cx, int
                                 const char *menuname, const char *classname, const char *captiontext,
                                 WORD pointsize, const char *facename, size_t *templatelen );
 extern TEMPLATE_HANDLE  AddControl( TEMPLATE_HANDLE dlgtemplate, int x, int y, int cx, int cy, WORD id, DWORD style,
-                                const char *classname, const char *captiontext,
+                                PSZ classname, const char *captiontext,
                                 const void *infodata, BYTE infodatalen, size_t *templatelen );
 extern TEMPLATE_HANDLE  DoneAddingControls ( TEMPLATE_HANDLE dlgtemplate );
 extern int              DynamicDialogBox( PFNWP fn, WPI_INST inst, HWND hwnd, TEMPLATE_HANDLE dlgtemplate, MPARAM lparam );

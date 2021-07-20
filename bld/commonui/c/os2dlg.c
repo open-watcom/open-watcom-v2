@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +43,7 @@
 static TEMPLATE_HANDLE  PMDialogTemplate( USHORT temptype, USHORT codepage, USHORT focus );
 static TEMPLATE_HANDLE  PMDoneAddingControls( TEMPLATE_HANDLE dlgtemplate );
 static TEMPLATE_HANDLE  PMAddControl( TEMPLATE_HANDLE dlgtemplate, DWORD style, USHORT x, USHORT y, USHORT cx, USHORT cy,
-                            USHORT id, USHORT children, ULONG nclass, const char *classname,
+                            USHORT id, USHORT children, PSZ classname,
                             const char *captiontext, PVOID presparms, ULONG presparmslen,
                             const void *ctldata, ULONG ctldatalen );
 static int              PMDynamicDialogBox( PFNWP fn, HWND hwnd, TEMPLATE_HANDLE dlgtemplate, PVOID dlgdata );
@@ -94,7 +94,7 @@ TEMPLATE_HANDLE PMDialogTemplate( USHORT temptype, USHORT codepage, USHORT focus
  */
 TEMPLATE_HANDLE PMAddControl( TEMPLATE_HANDLE old_dlgtemplate, DWORD style, USHORT x,
                               USHORT y, USHORT cx, USHORT cy, USHORT id,
-                              USHORT children, ULONG nclass, const char *classname,
+                              USHORT children, PSZ classname,
                               const char *captiontext, PVOID presparms, ULONG presparmslen,
                               const void *ctldata, ULONG ctldatalen )
 {
@@ -110,9 +110,13 @@ TEMPLATE_HANDLE PMAddControl( TEMPLATE_HANDLE old_dlgtemplate, DWORD style, USHO
     /*
      * compute size of block, reallocate block to hold this stuff
      */
-    classlen = SLEN( classname );
-    if( classlen ) {
-        classlen++;
+    if( SHORT2FROMMP( classname ) == 0xffff ) {
+        classlen = 0;
+    } else {
+        classlen = SLEN( classname );
+        if( classlen ) {
+            classlen++;
+        }
     }
     textlen  = SLEN( new_text ) + 1;
 
@@ -158,7 +162,7 @@ TEMPLATE_HANDLE PMAddControl( TEMPLATE_HANDLE old_dlgtemplate, DWORD style, USHO
     if( classlen ) {
         dit->offClassName = dataSegLen + textlen;
     } else {
-        dit->offClassName = nclass & 0xffff;
+        dit->offClassName = SHORT1FROMMP( classname );
     }
 
     if( !children ) {
@@ -336,9 +340,8 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
     frame_flags = style & 0x0000ffff;
     style = (style & 0xffff0000) | WS_SAVEBITS | FS_NOBYTEALIGN | FS_DLGBORDER;
 
-    new_dlgtemplate = PMAddControl( old_dlgtemplate, style, x, y, cx, cy,
-                        0, 1, (ULONG)WC_FRAME, NULL, captiontext, pdata,
-                        psize, NULL, frame_flags );
+    new_dlgtemplate = PMAddControl( old_dlgtemplate, style, x, y, cx, cy, 0, 1,
+                        WC_FRAME, captiontext, pdata, psize, NULL, frame_flags );
 
     if( pdata != NULL ) {
         PMfree( pdata );
@@ -353,20 +356,14 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
 
 TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE old_dlgtemplate, int x, int y,
                              int cx, int cy, WORD id, DWORD style,
-                             const char *classname, const char *captiontext,
+                             PSZ classname, const char *captiontext,
                              const void *infodata, BYTE infodatalen, size_t *templatelen )
 {
     TEMPLATE_HANDLE     new_dlgtemplate;
-    ULONG               nclass;
 
     templatelen = templatelen;
-    nclass = 0;
-    if( ((ULONG)classname & 0xffff0000) == 0xffff0000 ) {
-        nclass = (ULONG)classname;
-        classname = NULL;
-    }
 
-    new_dlgtemplate = PMAddControl( old_dlgtemplate, style, x, y, cx, cy, id, 0, nclass, classname, captiontext, NULL, 0, infodata, infodatalen );
+    new_dlgtemplate = PMAddControl( old_dlgtemplate, style, x, y, cx, cy, id, 0, classname, captiontext, NULL, 0, infodata, infodatalen );
 
     if( new_dlgtemplate == NULL ) {
         PMfree( old_dlgtemplate );

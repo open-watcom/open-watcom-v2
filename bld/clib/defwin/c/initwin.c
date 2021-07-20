@@ -46,8 +46,8 @@ _WCRTLINK extern void __FiniDefaultWin( void );
 
 #if defined(__SW_BR)
     // need a thunking layer
-    void __tnk__InitDefaultWin( void ) { __InitDefaultWin(); }
-    void __tnk__FiniDefaultWin( void ) { __FiniDefaultWin(); }
+static void __tnk__InitDefaultWin( void ) { __InitDefaultWin(); }
+static void __tnk__FiniDefaultWin( void ) { __FiniDefaultWin(); }
     AXI( __tnk__InitDefaultWin, INIT_PRIORITY_LIBRARY )
     AYI( __tnk__FiniDefaultWin, INIT_PRIORITY_LIBRARY )
 #else
