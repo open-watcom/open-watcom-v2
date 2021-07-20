@@ -45,9 +45,7 @@
 #else
     #define INCLUDE_COMMDLG_H
     #define NOCOMM
-    #define WIN32_LEAN_AND_MEAN
     #include <wwindows.h>   /* NULL value */
-    #include <commdlg.h>
 #endif
 
 #include "gui.h"

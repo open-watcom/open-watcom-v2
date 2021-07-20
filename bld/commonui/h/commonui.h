@@ -40,13 +40,8 @@
     #include <wos2.h>
     #include "winexprt.h"
 #elif defined( __WINDOWS__ ) || defined( __NT__ )
-    #ifdef __WINDOWS__
-        #define INCLUDE_TOOLHELP_H
-        #define INCLUDE_COMMDLG_H
-    #endif
+    #define INCLUDE_TOOLHELP_H
+    #define INCLUDE_COMMDLG_H
     #define OEMRESOURCE
     #include <wwindows.h>
-    #ifdef __NT__
-        #include <commdlg.h>
-    #endif
 #endif

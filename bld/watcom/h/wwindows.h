@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,19 @@
 #define WWINDOWS_H_INCLUDED
 
 #include <stddef.h>     /* NULL value */
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#ifdef __NT__
+  #ifdef INCLUDE_COMMDLG_H
+    #include <commdlg.h>
+  #endif
+  #ifdef INCLUDE_DDEML_H
+    #include <ddeml.h>
+  #endif
+  #ifdef INCLUDE_SHELLAPI_H
+    #include <shellapi.h>
+  #endif
+#endif
 #include "wi163264.h"
 #include "winexprt.h"
 
