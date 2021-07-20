@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,11 @@
 #include "guirdlg.h"
 #include "guixwind.h"
 #include "wclbproc.h"
+#ifdef __NT__
+    #undef _WIN32_IE
+    #define _WIN32_IE   0x0400
+    #include <commctrl.h>
+#endif
 
 
 /* Local Window callback functions prototypes */
@@ -46,7 +51,7 @@ WPI_INST                        GUIResHInst;
 
 typedef struct GetClassMap {
     gui_control_class   control_class;
-    char                *classname;
+    const char          *classname;
     DWORD               style;
     DWORD               mask;
 } GetClassMap;
@@ -55,37 +60,37 @@ typedef struct GetClassMap {
 // note: the order of entries this table is important
 static GetClassMap Map[] =
 {
-    { GUI_RADIO_BUTTON,         "#3",   BS_RADIOBUTTON,         0xf             }
-,   { GUI_CHECK_BOX,            "#3",   BS_CHECKBOX,            0xf             }
-,   { GUI_DEFPUSH_BUTTON,       "#3",   BS_DEFAULT,             BS_DEFAULT      }
-,   { GUI_PUSH_BUTTON,          "#3",   0xffff,                 0xffff          }
-,   { GUI_GROUPBOX,             "#5",   SS_GROUPBOX,            SS_GROUPBOX     }
-,   { GUI_STATIC,               "#5",   0xffff,                 0xffff          }
-,   { GUI_EDIT_COMBOBOX,        "#2",   CBS_DROPDOWN,           CBS_DROPDOWN    }
-,   { GUI_EDIT_COMBOBOX,        "#2",   CBS_SIMPLE,             CBS_SIMPLE      }
-,   { GUI_COMBOBOX,             "#2",   0xffff,                 0xffff          }
-,   { GUI_EDIT,                 "#6",   0xffff,                 0xffff          }
-,   { GUI_EDIT_MLE,             "#10",  0xffff,                 0xffff          }
-,   { GUI_LISTBOX,              "#7",   0xffff,                 0xffff          }
-,   { GUI_SCROLLBAR,            "#8",   0xffff,                 0xffff          }
+    { GUI_RADIO_BUTTON,     "#3",           BS_RADIOBUTTON,     0xf             }
+,   { GUI_CHECK_BOX,        "#3",           BS_CHECKBOX,        0xf             }
+,   { GUI_DEFPUSH_BUTTON,   "#3",           BS_DEFAULT,         BS_DEFAULT      }
+,   { GUI_PUSH_BUTTON,      "#3",           0xffff,             0xffff          }
+,   { GUI_GROUPBOX,         "#5",           SS_GROUPBOX,        SS_GROUPBOX     }
+,   { GUI_STATIC,           "#5",           0xffff,             0xffff          }
+,   { GUI_EDIT_COMBOBOX,    "#2",           CBS_DROPDOWN,       CBS_DROPDOWN    }
+,   { GUI_EDIT_COMBOBOX,    "#2",           CBS_SIMPLE,         CBS_SIMPLE      }
+,   { GUI_COMBOBOX,         "#2",           0xffff,             0xffff          }
+,   { GUI_EDIT,             "#6",           0xffff,             0xffff          }
+,   { GUI_EDIT_MLE,         "#10",          0xffff,             0xffff          }
+,   { GUI_LISTBOX,          "#7",           0xffff,             0xffff          }
+,   { GUI_SCROLLBAR,        "#8",           0xffff,             0xffff          }
 };
 #else
 // note: the order of entries this table is important
 static GetClassMap Map[] =
 {
-    { GUI_GROUPBOX,             "button",       BS_GROUPBOX,            BS_GROUPBOX             }
-,   { GUI_RADIO_BUTTON,         "button",       BS_RADIOBUTTON,         BS_RADIOBUTTON          }
-,   { GUI_CHECK_BOX,            "button",       BS_CHECKBOX,            BS_CHECKBOX             }
-,   { GUI_DEFPUSH_BUTTON,       "button",       BS_DEFPUSHBUTTON,       BS_DEFPUSHBUTTON        }
-,   { GUI_PUSH_BUTTON,          "button",       0xffff,                 0xffff                  }
-,   { GUI_COMBOBOX,             "combobox",     CBS_DROPDOWNLIST,       CBS_DROPDOWNLIST        }
-,   { GUI_EDIT_COMBOBOX,        "combobox",     CBS_DROPDOWN,           CBS_DROPDOWN            }
-,   { GUI_EDIT_COMBOBOX,        "combobox",     0xffff,                 0xffff                  }
-,   { GUI_EDIT_MLE,             "edit",         ES_MULTILINE,           ES_MULTILINE            }
-,   { GUI_EDIT,                 "edit",         0xffff,                 0xffff                  }
-,   { GUI_LISTBOX,              "listbox",      0xffff,                 0xffff                  }
-,   { GUI_SCROLLBAR,            "scrollbar",    0xffff,                 0xffff                  }
-,   { GUI_STATIC,               "static",       0xffff,                 0xffff                  }
+    { GUI_GROUPBOX,         WC_BUTTON,      BS_GROUPBOX,        BS_GROUPBOX         }
+,   { GUI_RADIO_BUTTON,     WC_BUTTON,      BS_RADIOBUTTON,     BS_RADIOBUTTON      }
+,   { GUI_CHECK_BOX,        WC_BUTTON,      BS_CHECKBOX,        BS_CHECKBOX         }
+,   { GUI_DEFPUSH_BUTTON,   WC_BUTTON,      BS_DEFPUSHBUTTON,   BS_DEFPUSHBUTTON    }
+,   { GUI_PUSH_BUTTON,      WC_BUTTON,      0xffff,             0xffff              }
+,   { GUI_COMBOBOX,         WC_COMBOBOX,    CBS_DROPDOWNLIST,   CBS_DROPDOWNLIST    }
+,   { GUI_EDIT_COMBOBOX,    WC_COMBOBOX,    CBS_DROPDOWN,       CBS_DROPDOWN        }
+,   { GUI_EDIT_COMBOBOX,    WC_COMBOBOX,    0xffff,             0xffff              }
+,   { GUI_EDIT_MLE,         WC_EDIT,        ES_MULTILINE,       ES_MULTILINE        }
+,   { GUI_EDIT,             WC_EDIT,        0xffff,             0xffff              }
+,   { GUI_LISTBOX,          WC_LISTBOX,     0xffff,             0xffff              }
+,   { GUI_SCROLLBAR,        WC_SCROLLBAR,   0xffff,             0xffff              }
+,   { GUI_STATIC,           WC_STATIC,      0xffff,             0xffff              }
 };
 #endif
 

@@ -108,12 +108,12 @@
 #define GET_WM_PARENTNOTIFY_HANDLE(wp,lp)       LOWORD(lp)
 #define GET_WM_PARENTNOTIFY_POINT(wp,lp)        (lp)
 
-#define WC_BUTTON                               "button"
-#define WC_COMBOBOX                             "combobox"
-#define WC_EDIT                                 "edit"
-#define WC_LISTBOX                              "listbox"
-#define WC_SCROLLBAR                            "scrollbar"
-#define WC_STATIC                               "static"
+#define WC_BUTTON                               "Button"
+#define WC_COMBOBOX                             "ComboBox"
+#define WC_EDIT                                 "Edit"
+#define WC_LISTBOX                              "ListBox"
+#define WC_SCROLLBAR                            "ScrollBar"
+#define WC_STATIC                               "Static"
 
 #else /* __NT__ */
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,8 +43,3 @@ pick( GUI_STATIC,         FLD_TEXT,     WC_STATIC,        "#5",     STATIC_STYLE
 pick( GUI_GROUPBOX,       FLD_FRAME,    WC_GROUPBOX,      "#5",     GROUPBOX_STYLE,       0 )
 pick( GUI_EDIT_COMBOBOX,  FLD_COMBOBOX, WC_COMBOBOX,      "#2",     EDIT_COMBOBOX_STYLE,  WS_EX_CLIENTEDGE )
 pick( GUI_EDIT_MLE,       FLD_EDIT_MLE, WC_MLE,           "#10",    EDIT_MLE_STYLE,       WS_EX_CLIENTEDGE )
-
-
-
-
-
