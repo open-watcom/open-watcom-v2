@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +43,7 @@
 /* Window callback functions prototypes */
 WINEXPORT INT_PTR CALLBACK MarkDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
-static void     (*WriteFn)( char * );
+static void     (*WriteFn)( const char * );
 
 /*
  * MarkDlgProc - handle messages from the mark dialog
@@ -114,7 +115,7 @@ INT_PTR CALLBACK MarkDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
 /*
  * ProcessMark - start a mark dialog
  */
-void ProcessMark( HWND owner, HANDLE instance, void (*func)( char * ) )
+void ProcessMark( HWND owner, HANDLE instance, void (*func)( const char * ) )
 {
     DLGPROC     dlgproc;
 

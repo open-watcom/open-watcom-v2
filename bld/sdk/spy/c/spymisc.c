@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -214,7 +214,7 @@ void DumpToComboBox( char *str, HWND cb )
 /*
  * FormatSpyMessage - make a spy message string
  */
-void FormatSpyMessage( char *msg, LPMSG pmsg, char *res )
+void FormatSpyMessage( const char *msg, LPMSG pmsg, char *res )
 {
     memset( res,' ', SPYOUT_LENGTH );
     memcpy( res, msg, strlen( msg ) );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -142,7 +142,7 @@ LBoxHdl *CreateListBox( HWND parent ) {
 /*
  * doLBPrintf - printf to a list box
  */
-static int doLBPrintf( LBoxHdl *lb, char *str, va_list al )
+static int doLBPrintf( LBoxHdl *lb, const char *str, va_list al )
 {
     char        tmp[256];
     HDC         dc;
@@ -190,7 +190,7 @@ int LBPrintf( LBoxHdl *lb, msg_id msgid, ... )
     return( ret );
 }
 
-int LBStrPrintf( LBoxHdl *lb, char *str, ... )
+int LBStrPrintf( LBoxHdl *lb, const char *str, ... )
 {
     int         ret;
     va_list     al;

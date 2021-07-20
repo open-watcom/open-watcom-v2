@@ -70,7 +70,7 @@ static bool isListView( HWND list )
 
     len = GetClassName( list, tmp, sizeof( tmp ) );
     tmp[len] = '\0';
-    return( strcmp( tmp, WC_LISTVIEW ) == 0 );
+    return( stricmp( tmp, WC_LISTVIEW ) == 0 );
 #endif
 }
 

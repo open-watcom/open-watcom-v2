@@ -90,7 +90,7 @@ static void setCharSize( HWND parent )
 /*
  * SpyOut - display spy message
  */
-void SpyOut( char *msg, LPMSG pmsg, char *class_name )
+void SpyOut( const char *msg, LPMSG pmsg, const char *class_name )
 {
     int             i;
     char            res[SPYOUT_LENGTH + 1 + 80];
@@ -132,7 +132,7 @@ void SpyOut( char *msg, LPMSG pmsg, char *class_name )
             GetHexStr( lparam_str, pmsg->lParam, SPYOUT_LPARAM_LEN );
             lparam_str[SPYOUT_LPARAM_LEN] = '\0';
             lvi.iSubItem = 0;
-            lvi.pszText = msg;
+            lvi.pszText = strcpy( res, msg );
             SendMessage( SpyListBox, LVM_SETITEMTEXT, i, (LPARAM)&lvi );
             lvi.iSubItem = 1;
             lvi.pszText = hwnd_str;

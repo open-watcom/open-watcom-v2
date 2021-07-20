@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,8 +36,8 @@
 #include "mark.rh"
 
 
-#define MARK_LEN        100
+#define MARK_LEN        200
 
-void    ProcessMark( HWND owner, HANDLE instance, void (*fn)( char * ) );
+void    ProcessMark( HWND owner, HANDLE instance, void (*fn)( const char * ) );
 
 #endif /* _MARK_H_INCLUDED */

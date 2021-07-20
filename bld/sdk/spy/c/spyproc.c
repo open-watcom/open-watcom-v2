@@ -208,7 +208,7 @@ static void showHintBar( HWND hwnd )
     }
 }
 
-static void markCallback( char *res )
+static void markCallback( const char *res )
 {
     SpyOut( res, NULL, "" );
 }

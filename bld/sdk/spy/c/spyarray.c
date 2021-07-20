@@ -1095,11 +1095,11 @@ static message _NEAR ComboListBoxMessageArray[] = {
 
 class_messages _NEAR ClassMessages[] = {
     { "",                   MessageArray,               MESSAGEARRAYSIZE               },
-    { "edit",               EditMessageArray,           EDITMESSAGEARRAYSIZE           },
-    { "button",             ButtonMessageArray,         BUTTONMESSAGEARRAYSIZE         },
-    { "static",             StaticMessageArray,         STATICMESSAGEARRAYSIZE         },
-    { "listbox",            ListBoxMessageArray,        LISTBOXMESSAGEARRAYSIZE        },
-    { "combobox",           ComboBoxMessageArray,       COMBOBOXMESSAGEARRAYSIZE       },
+    { WC_EDIT,              EditMessageArray,           EDITMESSAGEARRAYSIZE           },
+    { WC_BUTTON,            ButtonMessageArray,         BUTTONMESSAGEARRAYSIZE         },
+    { WC_STATIC,            StaticMessageArray,         STATICMESSAGEARRAYSIZE         },
+    { WC_LISTBOX,           ListBoxMessageArray,        LISTBOXMESSAGEARRAYSIZE        },
+    { WC_COMBOBOX,          ComboBoxMessageArray,       COMBOBOXMESSAGEARRAYSIZE       },
 #ifdef __NT__
     { "scrollbar",          ScrollBarMessageArray,      SCROLLBARMESSAGEARRAYSIZE      },
     { WC_HEADER,            HeaderMessageArray,         HEADERMESSAGEARRAYSIZE         },
@@ -1532,11 +1532,11 @@ static style_info _NEAR TreeViewStyleArray[] = {
 #endif
 
 class_styles _NEAR ClassStyles[] = {
-    { "button",             ButtonStyleArray,       BUTTONSTYLEARRAYSIZE      },
-    { "edit",               EditStyleArray,         EDITSTYLEARRAYSIZE        },
-    { "static",             StaticStyleArray,       STATICSTYLEARRAYSIZE      },
-    { "listbox",            ListBoxStyleArray,      LISTBOXSTYLEARRAYSIZE     },
-    { "combobox",           ComboBoxStyleArray,     COMBOBOXSTYLEARRAYSIZE    },
+    { WC_BUTTON,            ButtonStyleArray,       BUTTONSTYLEARRAYSIZE      },
+    { WC_EDIT,              EditStyleArray,         EDITSTYLEARRAYSIZE        },
+    { WC_STATIC,            StaticStyleArray,       STATICSTYLEARRAYSIZE      },
+    { WC_LISTBOX,            ListBoxStyleArray,      LISTBOXSTYLEARRAYSIZE     },
+    { WC_COMBOBOX,          ComboBoxStyleArray,     COMBOBOXSTYLEARRAYSIZE    },
     { "#32770",             DialogStyleArray,       DIALOGSTYLEARRAYSIZE      },
 #ifdef __NT__
     { ANIMATE_CLASS,        AnimateStyleArray,      ANIMATESTYLEARRAYSIZE     },
