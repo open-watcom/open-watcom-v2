@@ -205,8 +205,8 @@ static lb_data ResizeList( a_list *list, unsigned num_to_add, int *choice )
 
 static bool AddString( lb_data data, const char *text, int choice )
 {
-    int length;
-    char *str;
+    size_t  length;
+    char    *str;
 
     if( text != NULL ) {
         length = strlen( text );

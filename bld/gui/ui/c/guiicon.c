@@ -39,7 +39,7 @@
 void GUIDrawIcon( gui_window * wnd )
 {
     SAREA       area;
-    int         length;
+    size_t      length;
     ATTR        attr;
     const char  *str;
 

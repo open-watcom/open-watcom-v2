@@ -72,7 +72,7 @@ bool GUIXCreateFixedToolbar( gui_window *wnd )
         with_excl = NULL;
         menu.label = tbar->toolinfo.toolbar[i].label;
         if( menu.label != NULL ) {
-            with_excl = (char *)GUIMemAlloc( strlen( menu.label ) + 2 );
+            with_excl = (char *)GUIMemAlloc( strlen( menu.label ) + strlen( LIT( Exclamation ) ) + 1 );
             if( with_excl != NULL ) {
                 strcpy( with_excl, menu.label );
                 strcat( with_excl, LIT( Exclamation ) );

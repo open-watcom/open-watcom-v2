@@ -104,6 +104,7 @@ bool GUIAPI GUITrackFloatingPopup( gui_window *wnd, const gui_point *location,
         *curr_id = CurrId;
     }
     CurrId = 0;
+
     GUIDeleteFloatingPopups( wnd );
     return( true );
 }

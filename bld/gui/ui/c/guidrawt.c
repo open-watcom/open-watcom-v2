@@ -128,7 +128,7 @@ void GUIXDrawText( gui_window *wnd, const char *text, size_t length, const gui_c
                 char        *p;
                 const char  *cp;
 
-                for( cp = text; cp < text+col; cp += uicharlen( *(unsigned char *)cp ) )
+                for( cp = text; cp < text + col; cp += uicharlen( *(unsigned char *)cp ) )
                     ;
                 if( cp != text + col ) {
                     p = alloca( length );

@@ -214,17 +214,17 @@ static bool ProcessMousePos( gui_event gui_ev, ORD row, ORD col, gui_window * wn
     return( true );
 }
 
-ui_event GUICreatePopup( gui_window *wnd, const guix_coord *point )
+ui_event GUICreatePopup( gui_window *wnd, const guix_coord *scr_point )
 {
     ui_event    ui_ev;
-    guix_point  scr_point;
+    guix_coord  scr_location;
 
-    scr_point.x = point->x - wnd->vs.area.col;
-    scr_point.y = point->y - (wnd->vs.area.row - 1);
+    scr_location.x = scr_point->x - wnd->vs.area.col;
+    scr_location.y = scr_point->y - (wnd->vs.area.row - 1);
     uipushlist( NULL );
     uipushlist( GUIInternalEvents );
     uipushlist( GUIUserEvents );
-    ui_ev = GUICreateMenuPopup( wnd, &scr_point, wnd->menu, GUI_TRACK_LEFT, NULL );
+    ui_ev = GUICreateMenuPopup( wnd, &scr_location, wnd->menu, GUI_TRACK_LEFT, NULL );
     uipoplist( /* GUIUserEvents */ );
     uipoplist( /* GUIInternalEvents */ );
     uipoplist( /* NULL */ );

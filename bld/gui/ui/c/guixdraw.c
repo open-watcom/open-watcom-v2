@@ -51,6 +51,7 @@ char DrawingChars[GUI_NUM_DRAW_CHARS];
 #define TITLE_EXTRA_AMOUNT      4
 #define GADGET_WIDTH            3
 
+
 void GUIInitDrawingChars( bool dbcs )
 {
 #ifdef __LINUX__
@@ -112,12 +113,12 @@ void GUIAPI GUISetCharacter( gui_draw_char draw_char, int ch )
     }
 }
 
-static void DrawChar( gui_window *wnd, int row, int col, ATTR attr, char chr )
+static void DrawChar( gui_window *wnd, ORD row, ORD col, ATTR attr, char chr )
 {
     uivtextput( &wnd->vs, row, col, attr, &chr, 1 );
 }
 
-static void DrawText( gui_window *wnd, int row, int col, ATTR attr, const char *buff, int length )
+static void DrawText( gui_window *wnd, ORD row, ORD col, ATTR attr, const char *buff, size_t length )
 {
     if( length > 0 ) {
         uivtextput( &wnd->vs, row, col, attr, buff, length );
@@ -134,16 +135,17 @@ static void DrawFrame( gui_window *wnd )
     ATTR        attr, title_attr;
     char        *buffer;
     char        *buff;
-    int         width;
-    int         str_length;
-    int         indent;
-    int         title_extra, closer_amount;
+    size_t      width;
+    size_t      str_length;
+    size_t      indent;
+    size_t      title_extra;
+    int         closer_amount;
     char        lgadget;
     char        mgadget;
     char        rgadget;
     int         inact;
     bool        inact_gadgets;
-    int         len;
+    size_t      len;
 
     if( (wnd->style & GUI_NOFRAME) || !( (wnd->flags & FRAME_INVALID) || (wnd->flags & TITLE_INVALID) ) ) {
         return;
@@ -276,8 +278,7 @@ static void DrawFrame( gui_window *wnd )
         }
         len = ( width - str_length - title_extra ) / 2;
         if( title_extra != 0 ) {
-            buff[len] = DRAWC( LEFT_TITLE_MARK, inact );
-            len++;
+            buff[len++] = DRAWC( LEFT_TITLE_MARK, inact );
         }
         if( len > 0 ) {
             DrawText( wnd, 0, wnd->use.col + closer_amount, attr, buffer, len );
@@ -286,24 +287,21 @@ static void DrawFrame( gui_window *wnd )
         buff += len;
         len = 0;
         if( title_extra != 0 ) {
-            buff[len] = DRAWC( TITLE_SPACE, inact );
-            len++;
+            buff[len++] = DRAWC( TITLE_SPACE, inact );
         }
         memcpy( buff + len, wnd->vs.title, str_length );
         len += str_length;
         if( title_extra != 0 ) {
-            buff[len] = DRAWC( TITLE_SPACE, inact );
-            len++;
+            buff[len++] = DRAWC( TITLE_SPACE, inact );
         }
         if( len > 0 ) {
-            DrawText( wnd, 0, wnd->use.col + closer_amount + indent, title_attr, buff, len) ;
+            DrawText( wnd, 0, wnd->use.col + closer_amount + indent, title_attr, buff, len ) ;
         }
         indent += len;
         buff += len;
         len = 0;
         if( title_extra != 0 ) {
-            buff[len] = DRAWC( RIGHT_TITLE_MARK, inact );
-            len++;
+            buff[len++] = DRAWC( RIGHT_TITLE_MARK, inact );
         }
         if( width - indent > 0 ) {
             DrawText( wnd, 0, wnd->use.col + closer_amount + indent, attr, buff, width - indent );

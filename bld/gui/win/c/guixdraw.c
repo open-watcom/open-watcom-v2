@@ -124,7 +124,7 @@ static void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
     if( GUI_DO_VSCROLL( wnd ) ) {
         nDrawY -= GUIGetScrollPos( wnd, SB_VERT );
     }
-    nDrawX = left + ( GUIScaleToScreenH( pos->x ) - hscroll_pos );
+    nDrawX = left + GUIScaleToScreenH( pos->x ) - hscroll_pos;
 
     if( draw_extent ) {
         /* blanks out some portion of rest of the line */
@@ -149,7 +149,7 @@ static void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
 #ifdef __OS2_PM__
         _wpi_rectangle( wnd->hdc, nDrawX, nDrawY + 1, right, nDrawY + height - 1 );
 #else
-        _wpi_rectangle( wnd->hdc, nDrawX, nDrawY, right, nDrawY + height);
+        _wpi_rectangle( wnd->hdc, nDrawX, nDrawY, right, nDrawY + height );
 #endif
 
         /* if visible even with scrolling */

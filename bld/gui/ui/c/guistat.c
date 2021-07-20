@@ -103,7 +103,7 @@ bool GUIAPI GUIResizeStatusWindow( gui_window *wnd, gui_ord x, gui_ord height )
 
 void GUIDrawStatus( gui_window *wnd )
 {
-    int length;
+    size_t  length;
 
     if( GUIHasStatus( wnd ) && !GUI_WND_MINIMIZED( wnd ) ) {
         uivfill( &wnd->vs, wnd->status->area, wnd->status->attr, ' ' );

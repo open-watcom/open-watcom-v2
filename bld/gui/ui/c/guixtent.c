@@ -55,21 +55,21 @@ gui_ord GUIAPI GUIGetExtentX( gui_window *wnd, const char *text, size_t length )
     }
 }
 
-gui_ord GUIAPI GUIGetExtentY( gui_window * wnd, const char * text )
+gui_ord GUIAPI GUIGetExtentY( gui_window *wnd, const char *text )
 {
     /* unused parameters */ (void)wnd; (void)text;
 
     return( GUIScreenToScaleV( 1 ) );
 }
 
-gui_ord GUIAPI GUIGetControlExtentX( gui_window * wnd, gui_ctl_id id, const char * text, size_t length )
+gui_ord GUIAPI GUIGetControlExtentX( gui_window *wnd, gui_ctl_id id, const char *text, size_t length )
 {
     /* unused parameters */ (void)id;
 
     return( GUIGetExtentX( wnd, text, length ) );
 }
 
-gui_ord GUIAPI GUIGetControlExtentY( gui_window * wnd, gui_ctl_id id, const char * text )
+gui_ord GUIAPI GUIGetControlExtentY( gui_window *wnd, gui_ctl_id id, const char *text )
 {
     /* unused parameters */ (void)id;
 

@@ -196,18 +196,20 @@ static bool DisplayMessageGUIEventProc( gui_window *wnd, gui_event gui_ev, void 
 
 static char *tabFilter( const char *message )
 {
-    char *new_message;
-    char *start;
-    int  tab_pos;
+    char    *new_message;
+    char    *start;
+    size_t  tab_pos;
+    size_t  len;
 
     /* allocate another chunk of memory since */
     /* reallocating space for string literals is a no no */
     new_message = (char *)GUIStrDup( message, NULL );
     for( ;; ) {
         tab_pos = strcspn( new_message, "\t" );
-        if( tab_pos == strlen( new_message ) )
+        len = strlen( new_message );
+        if( tab_pos == len )
             break;      /* no more tabs */
-        new_message = (char *)GUIMemRealloc( new_message, strlen( new_message ) + TAB_SIZE + 1 );
+        new_message = (char *)GUIMemRealloc( new_message, len + TAB_SIZE + 1 );
         /* don't forget the NULL */
         start = new_message + tab_pos;
         memmove( start + TAB_SIZE, start + 1, strlen( start + 1 ) + 1 );
@@ -407,19 +409,10 @@ gui_message_return GUIAPI GUIDisplayMessage( gui_window *wnd, const char *messag
     gui_message_return  ret;
     int                 i;
     control_types       controls_to_use;
-//    int                 mess_length;
     string_info         *strings;
     int                 num_buttons;
 
     /* unused parameters */ (void)wnd;
-
-/*
-    if( message != NULL ) {
-        mess_length = strlen( message );
-    } else {
-        mess_length = 0;
-    }
-*/
 
     /* figure out the number of icon and button controls and which ones */
     num_controls = 0;
