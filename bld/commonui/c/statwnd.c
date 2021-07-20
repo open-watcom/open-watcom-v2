@@ -39,6 +39,9 @@
 #include "cguimem.h"
 #include "loadcc.h"
 #include "wclbproc.h"
+#ifdef __NT__
+    #include <commctrl.h>
+#endif
 
 
 /* Window callback functions prototypes */

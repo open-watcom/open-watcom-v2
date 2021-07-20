@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +33,9 @@
 #include "spy.h"
 #include "loadcc.h"
 #include "log.h"
-
+#ifdef __NT__
+    #include <commctrl.h>
+#endif
 
 #ifdef __WINDOWS__
     #define LISTBOX_X       10

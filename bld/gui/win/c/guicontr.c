@@ -45,6 +45,11 @@
 #include "ctl3dcvr.h"
 #include "guirdlg.h"
 #include "wclbproc.h"
+#ifdef __NT__
+    #undef _WIN32_IE
+    #define _WIN32_IE   0x0400
+    #include <commctrl.h>
+#endif
 
 
 typedef struct dialog_wnd_node {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -187,24 +187,9 @@
         HWND            hwndSubMenu;
         unsigned long   hItem;
     } WPI_MENUITEM;
-    #ifndef WC_BUTTON
-        #define WC_BUTTON               "button"
-    #endif
-    #ifndef WC_COMBOBOX
-        #define WC_COMBOBOX             "combobox"
-    #endif
-    #define WC_MLE                      "edit"
-    #define WC_ENTRYFIELD               "edit"
-    #ifndef WC_LISTBOX
-        #define WC_LISTBOX              "listbox"
-    #endif
-    #ifndef WC_SCROLLBAR
-        #define WC_SCROLLBAR            "scrollbar"
-    #endif
-    #ifndef WC_STATIC
-        #define WC_STATIC               "static"
-    #endif
-    #define WC_GROUPBOX                 "button"
+    #define WC_MLE                      WC_EDIT
+    #define WC_ENTRYFIELD               WC_EDIT
+    #define WC_GROUPBOX                 WC_BUTTON
 #endif
 
 /*******************************/

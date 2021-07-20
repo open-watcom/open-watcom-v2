@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +39,9 @@
 #include "toolbr.h"
 #include "loadcc.h"
 #include "wclbproc.h"
+#ifdef __NT__
+    #include <commctrl.h>
+#endif
 
 
 /* Window callback functions prototypes */

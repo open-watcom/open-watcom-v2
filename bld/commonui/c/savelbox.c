@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,6 +47,11 @@
 #include "uistr.gh"
 #include "wclbproc.h"
 #include "pathgrp2.h"
+#ifdef __NT__
+    #undef _WIN32_IE
+    #define _WIN32_IE   0x0400
+    #include <commctrl.h>
+#endif
 
 #include "clibext.h"
 
