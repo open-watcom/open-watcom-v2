@@ -84,7 +84,7 @@ TEMPLATE_HANDLE _DialogTemplate( USHORT temptype, USHORT codepage, USHORT focus 
  */
 TEMPLATE_HANDLE _AddControl( TEMPLATE_HANDLE old_dlgtemplate, ULONG style,
                         int x, int y, int cx, int cy,
-                        USHORT id, USHORT children, PSZ classname,
+                        USHORT id, USHORT children, const char FAR *classname,
                         const char *captiontext, const char *presparms,
                         const void *ctldata, ULONG ctldatalen )
 {

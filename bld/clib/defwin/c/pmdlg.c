@@ -49,7 +49,7 @@ typedef struct {
     USHORT      id;
     USHORT      children;
     ULONG       style;
-    PSZ         cclass;
+    const char  FAR *classname;
     char        *text;
     char        *presparms;
     void        *ctldata;
@@ -223,7 +223,7 @@ void _GetAutoClearInterval( void )
     for( i = 0; i < MAX_INT_ITEMS; i++ ) {
         new_dlgtemplate = _AddControl( old_dlgtemplate, _getint[i].style,
                 _getint[i].x, _getint[i].y, _getint[i].cx, _getint[i].cy,
-                _getint[i].id, _getint[i].children, _getint[i].cclass,
+                _getint[i].id, _getint[i].children, _getint[i].classname,
                 _getint[i].text, _getint[i].presparms,
                 _getint[i].ctldata, _getint[i].ctldatalen );
         if( new_dlgtemplate == NULL  ) {

@@ -43,7 +43,7 @@
 static TEMPLATE_HANDLE  PMDialogTemplate( USHORT temptype, USHORT codepage, USHORT focus );
 static TEMPLATE_HANDLE  PMDoneAddingControls( TEMPLATE_HANDLE dlgtemplate );
 static TEMPLATE_HANDLE  PMAddControl( TEMPLATE_HANDLE dlgtemplate, DWORD style, USHORT x, USHORT y, USHORT cx, USHORT cy,
-                            USHORT id, USHORT children, PSZ classname,
+                            USHORT id, USHORT children, const char FAR *classname,
                             const char *captiontext, PVOID presparms, ULONG presparmslen,
                             const void *ctldata, ULONG ctldatalen );
 static int              PMDynamicDialogBox( PFNWP fn, HWND hwnd, TEMPLATE_HANDLE dlgtemplate, PVOID dlgdata );
@@ -94,7 +94,7 @@ TEMPLATE_HANDLE PMDialogTemplate( USHORT temptype, USHORT codepage, USHORT focus
  */
 TEMPLATE_HANDLE PMAddControl( TEMPLATE_HANDLE old_dlgtemplate, DWORD style, USHORT x,
                               USHORT y, USHORT cx, USHORT cy, USHORT id,
-                              USHORT children, PSZ classname,
+                              USHORT children, const char FAR *classname,
                               const char *captiontext, PVOID presparms, ULONG presparmslen,
                               const void *ctldata, ULONG ctldatalen )
 {
@@ -356,7 +356,7 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
 
 TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE old_dlgtemplate, int x, int y,
                              int cx, int cy, WORD id, DWORD style,
-                             PSZ classname, const char *captiontext,
+                             const char FAR *classname, const char *captiontext,
                              const void *infodata, BYTE infodatalen, size_t *templatelen )
 {
     TEMPLATE_HANDLE     new_dlgtemplate;

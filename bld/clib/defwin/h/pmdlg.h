@@ -50,7 +50,7 @@
 extern TEMPLATE_HANDLE  _DialogTemplate( USHORT temptype, USHORT codepage, USHORT focus );
 extern TEMPLATE_HANDLE  _AddControl( TEMPLATE_HANDLE dlgtemplate, ULONG style,
                             int x, int y, int cx, int cy, USHORT id, USHORT children,
-                            PSZ classname, const char *captiontext, const char *presparms,
+                            const char FAR *classname, const char *captiontext, const char *presparms,
                             const void *ctldata, ULONG ctldatalen );
 extern TEMPLATE_HANDLE  _DoneAddingControls( TEMPLATE_HANDLE dlgtemplate );
 extern int              _DynamicDialogBox( PFNWP fn, HWND hwnd, TEMPLATE_HANDLE dlgtemplate );
