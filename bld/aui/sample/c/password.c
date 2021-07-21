@@ -46,9 +46,9 @@
 #define DLG_SIZE_DATA   4,      W,      70
 
 #define DLGPASSWORD_CTLS() \
-    pick_p4id( EDIT,    DLG_INVISIBLE_EDIT, "",         C0, R0, W - C0 ) \
-    pick_p4id( OK,      DLG_DEFBUTTON,      "OK",       B1, R1, BW + 1 ) \
-    pick_p4id( CANCEL,  DLG_BUTTON,         "Cancel",   B2, R1, BW + 1 )
+    pick_p4id( EDIT,    GUI_CTL_INVISIBLE_EDIT, "",         C0, R0, W - C0 ) \
+    pick_p4id( OK,      GUI_CTL_DEFBUTTON,      "OK",       B1, R1, BW + 1 ) \
+    pick_p4id( CANCEL,  GUI_CTL_BUTTON,         "Cancel",   B2, R1, BW + 1 )
 
 enum {
     DUMMY_ID = 100,

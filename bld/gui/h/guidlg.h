@@ -49,7 +49,7 @@
 #define DLG_RECT_1( x1, y1, width1 ) \
       { x1, y1, width1, 1 }
 
-#define DLG_BOX( s, x1, y1, width1, height1 ) \
+#define GUI_CTL_BOX( s, x1, y1, width1, height1 ) \
     { GUI_GROUPBOX, s, \
       DLG_RECT( x1, y1, width1, height1 ), \
       NULL, \
@@ -57,7 +57,7 @@
       GUI_STYLE_CONTROL_CHARCOORD | GUI_STYLE_CONTROL_AUTOMATIC, \
       GUI_NO_ID }
 
-#define DLG_DYNSTRING( s, id, x1, y1, width1 ) \
+#define GUI_CTL_DYNSTRING( s, id, x1, y1, width1 ) \
     { GUI_STATIC, s, \
       DLG_RECT_1( x1, y1, width1 ), \
       NULL, \
@@ -65,10 +65,10 @@
       GUI_STYLE_CONTROL_CHARCOORD | GUI_STYLE_CONTROL_NOPREFIX | GUI_STYLE_CONTROL_AUTOMATIC, \
       id }
 
-#define DLG_STRING( s, x1, y1, width1 ) \
-    DLG_DYNSTRING( s, GUI_NO_ID, x1, y1, width1 )
+#define GUI_CTL_STRING( s, x1, y1, width1 ) \
+    GUI_CTL_DYNSTRING( s, GUI_NO_ID, x1, y1, width1 )
 
-#define DLG_DOBUTTON( g, s, id, x1, y1, width1 ) \
+#define GUI_CTL_DOBUTTON( g, s, id, x1, y1, width1 ) \
     { g, s, \
       DLG_RECT_1( x1, y1, width1 ), \
       NULL, \
@@ -76,13 +76,13 @@
       GUI_STYLE_CONTROL_CHARCOORD | GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_AUTOMATIC, \
       id }
 
-#define DLG_BUTTON( s, id, x1, y1, width1 ) \
-    DLG_DOBUTTON( GUI_PUSH_BUTTON, s, id, x1, y1, width1 )
+#define GUI_CTL_BUTTON( s, id, x1, y1, width1 ) \
+    GUI_CTL_DOBUTTON( GUI_PUSH_BUTTON, s, id, x1, y1, width1 )
 
-#define DLG_DEFBUTTON( s, id, x1, y1, width1 ) \
-    DLG_DOBUTTON( GUI_DEFPUSH_BUTTON, s, id, x1, y1, width1 )
+#define GUI_CTL_DEFBUTTON( s, id, x1, y1, width1 ) \
+    GUI_CTL_DOBUTTON( GUI_DEFPUSH_BUTTON, s, id, x1, y1, width1 )
 
-#define DLG_CHECK( s, id, x1, y1, width1 ) \
+#define GUI_CTL_CHECK( s, id, x1, y1, width1 ) \
   { GUI_CHECK_BOX, s, \
     DLG_RECT_1( x1, y1, width1 ), \
     NULL, \
@@ -90,7 +90,7 @@
     GUI_STYLE_CONTROL_CHARCOORD | GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_AUTOMATIC, \
     id }
 
-#define DLG_DORADIO( g, s, id, x1, y1, width1 ) \
+#define GUI_CTL_DORADIO( g, s, id, x1, y1, width1 ) \
   { GUI_RADIO_BUTTON, s, \
     DLG_RECT_1( x1, y1, width1 ), \
     NULL, \
@@ -98,16 +98,16 @@
     GUI_STYLE_CONTROL_CHARCOORD | GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_AUTOMATIC | (g), \
     id }
 
-#define DLG_RADIO_START( s, id, x1, y1, width1 ) \
-    DLG_DORADIO( GUI_STYLE_CONTROL_GROUP, s, id, x1, y1, width1 )
+#define GUI_CTL_RADIO_START( s, id, x1, y1, width1 ) \
+    GUI_CTL_DORADIO( GUI_STYLE_CONTROL_GROUP, s, id, x1, y1, width1 )
 
-#define DLG_RADIO( s, id, x1, y1, width1 ) \
-    DLG_DORADIO( GUI_STYLE_CONTROL_NOSTYLE, s, id, x1, y1, width1 )
+#define GUI_CTL_RADIO( s, id, x1, y1, width1 ) \
+    GUI_CTL_DORADIO( GUI_STYLE_CONTROL_NOSTYLE, s, id, x1, y1, width1 )
 
-#define DLG_RADIO_END( s, id, x1, y1, width1 ) \
-    DLG_DORADIO( GUI_STYLE_CONTROL_GROUP, s, id, x1, y1, width1 )
+#define GUI_CTL_RADIO_END( s, id, x1, y1, width1 ) \
+    GUI_CTL_DORADIO( GUI_STYLE_CONTROL_GROUP, s, id, x1, y1, width1 )
 
-#define DLG_DOEDIT( s, id, x1, y1, width1, v ) \
+#define GUI_CTL_DOEDIT( s, id, x1, y1, width1, v ) \
   { GUI_EDIT, s, \
     DLG_RECT_1( x1, y1, width1 ), \
     NULL, \
@@ -115,13 +115,13 @@
     GUI_STYLE_CONTROL_CHARCOORD | GUI_STYLE_CONTROL_TAB_GROUP + (v), \
     id }
 
-#define DLG_EDIT( s, id, x1, y1, width1 ) \
-    DLG_DOEDIT( s, id, x1, y1, width1, 0 )
+#define GUI_CTL_EDIT( s, id, x1, y1, width1 ) \
+    GUI_CTL_DOEDIT( s, id, x1, y1, width1, 0 )
 
-#define DLG_INVISIBLE_EDIT( s, id, x1, y1, width1 ) \
-    DLG_DOEDIT( s, id, x1, y1, width1, GUI_STYLE_CONTROL_EDIT_INVISIBLE )
+#define GUI_CTL_INVISIBLE_EDIT( s, id, x1, y1, width1 ) \
+    GUI_CTL_DOEDIT( s, id, x1, y1, width1, GUI_STYLE_CONTROL_EDIT_INVISIBLE )
 
-#define DLG_LIST_BOX( s, id, x1, y1, width1, height1 ) \
+#define GUI_CTL_LIST_BOX( s, id, x1, y1, width1, height1 ) \
     { GUI_LISTBOX, s, \
       DLG_RECT( x1, y1, width1, height1 ), \
       NULL, \
@@ -129,7 +129,7 @@
       GUI_STYLE_CONTROL_CHARCOORD | GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_AUTOMATIC, \
       id }
 
-#define DLG_COMBO_BOX( s, id, x1, y1, width1, height1 ) \
+#define GUI_CTL_COMBO_BOX( s, id, x1, y1, width1, height1 ) \
     { GUI_COMBOBOX, s, \
       DLG_RECT( x1, y1, width1, height1 ), \
       NULL, \

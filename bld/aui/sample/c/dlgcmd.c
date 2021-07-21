@@ -42,11 +42,11 @@ typedef struct pmt_window {
 #define DLG_CMD_COLS    35
 
 #define DLGNEW_CTLS() \
-    pick_p4id( EDIT,    DLG_EDIT,       "",             1,  0, 29 ) \
-    pick_p5id( HISTORY, DLG_LIST_BOX,   NULL,           1,  2, 29, 4 ) \
-    pick_p4id( OK,      DLG_BUTTON,     "&OK",          2,  7, 11 ) \
-    pick_p4id( CANCEL,  DLG_DEFBUTTON,  "&Cancel",      18, 7, 11 ) \
-    pick_p4id( CHECK,   DLG_CHECK,      "C&heck Me",    1,  9, 28 )
+    pick_p4id( EDIT,    GUI_CTL_EDIT,       "",             1,  0, 29 ) \
+    pick_p5id( HISTORY, GUI_CTL_LIST_BOX,   NULL,           1,  2, 29, 4 ) \
+    pick_p4id( OK,      GUI_CTL_BUTTON,     "&OK",          2,  7, 11 ) \
+    pick_p4id( CANCEL,  GUI_CTL_DEFBUTTON,  "&Cancel",      18, 7, 11 ) \
+    pick_p4id( CHECK,   GUI_CTL_CHECK,      "C&heck Me",    1,  9, 28 )
 
 enum {
     #define pick_p4id(id,m,p1,p2,p3,p4)     CTL_ ## id,

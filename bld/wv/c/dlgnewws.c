@@ -53,10 +53,10 @@
 #define DLG_SIZE_DATA   4,      W,      70
 
 #define DLGNEW_CTLS() \
-    pick( EDIT,     DLG_EDIT,       "",     C0, R0, W - C0 ) \
-    pick( OK,       DLG_DEFBUTTON,  NULL,   B1, R1, BW + 1 ) \
-    pick( SYMBOL,   DLG_BUTTON,     NULL,   B2, R1, BW + 1 ) \
-    pick( CANCEL,   DLG_BUTTON,     NULL,   B3, R1, BW + 1 )
+    pick( EDIT,     GUI_CTL_EDIT,       "",     C0, R0, W - C0 ) \
+    pick( OK,       GUI_CTL_DEFBUTTON,  NULL,   B1, R1, BW + 1 ) \
+    pick( SYMBOL,   GUI_CTL_BUTTON,     NULL,   B2, R1, BW + 1 ) \
+    pick( CANCEL,   GUI_CTL_BUTTON,     NULL,   B3, R1, BW + 1 )
 
 enum {
     DUMMY_ID = 100,

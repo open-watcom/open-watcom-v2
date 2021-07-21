@@ -49,9 +49,9 @@
 #define DLG_SIZE_DATA   4,      W,      70
 
 #define DLGNEW_CTLS() \
-    pick_p4id( EDIT,    DLG_EDIT,       "",   C0, R0, W - C0 ) \
-    pick_p4id( OK,      DLG_DEFBUTTON,  NULL, B1, R1, BW + 1 ) \
-    pick_p4id( CANCEL,  DLG_BUTTON,     NULL, B2, R1, BW + 1 )
+    pick_p4id( EDIT,    GUI_CTL_EDIT,       "",   C0, R0, W - C0 ) \
+    pick_p4id( OK,      GUI_CTL_DEFBUTTON,  NULL, B1, R1, BW + 1 ) \
+    pick_p4id( CANCEL,  GUI_CTL_BUTTON,     NULL, B2, R1, BW + 1 )
 
 enum {
     DUMMY_ID = 100,

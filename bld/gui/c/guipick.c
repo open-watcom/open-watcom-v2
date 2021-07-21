@@ -43,9 +43,9 @@
 #define DLG_MAX_COLS    75
 
 #define DLGPICK_CTLS() \
-    pick_p4id( LIST,     DLG_LIST_BOX,   1,  1,  29, 10 ) \
-    pick_p3id( OK,       DLG_DEFBUTTON,  2,  12, 11 ) \
-    pick_p3id( CANCEL,   DLG_BUTTON,     18, 12, 11 )
+    pick_p4id( LIST,     GUI_CTL_LIST_BOX,   1,  1,  29, 10 ) \
+    pick_p3id( OK,       GUI_CTL_DEFBUTTON,  2,  12, 11 ) \
+    pick_p3id( CANCEL,   GUI_CTL_BUTTON,     18, 12, 11 )
 
 enum {
     #define pick_p3id(id,m,p1,p2,p3)    id ## _IDX,

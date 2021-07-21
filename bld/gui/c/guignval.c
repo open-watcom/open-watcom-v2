@@ -49,11 +49,11 @@
 /* all 0 values are set in the code */
 
 #define DLGNEW_CTLS() \
-    pick_p4(   STATIC,  DLG_STRING,     NULL,   START_STATIC, TEXT_ROW,   0 ) \
-    pick_p4(   EQUAL,   DLG_STRING,     "=",    0,            TEXT_ROW,   1 ) \
-    pick_p4id( EDIT,    DLG_EDIT,       NULL,   0,            TEXT_ROW,   0 ) \
-    pick_p4id( CANCEL,  DLG_BUTTON,     NULL,   0,            BUTTON_ROW, BUTTON_WIDTH ) \
-    pick_p4id( OK,      DLG_DEFBUTTON,  NULL,   0,            BUTTON_ROW, BUTTON_WIDTH )
+    pick_p4(   STATIC,  GUI_CTL_STRING,     NULL,   START_STATIC, TEXT_ROW,   0 ) \
+    pick_p4(   EQUAL,   GUI_CTL_STRING,     "=",    0,            TEXT_ROW,   1 ) \
+    pick_p4id( EDIT,    GUI_CTL_EDIT,       NULL,   0,            TEXT_ROW,   0 ) \
+    pick_p4id( CANCEL,  GUI_CTL_BUTTON,     NULL,   0,            BUTTON_ROW, BUTTON_WIDTH ) \
+    pick_p4id( OK,      GUI_CTL_DEFBUTTON,  NULL,   0,            BUTTON_ROW, BUTTON_WIDTH )
 
 enum {
     DUMMY_ID = 100,

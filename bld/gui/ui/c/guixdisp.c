@@ -85,21 +85,21 @@ typedef struct string_info {
 
 /* control definition for each control that can be in the dialog */
 static control_pairs MessageControls[] = {
-    { DLG_BUTTON( NULL,     GUI_RET_ABORT,  0, 0, BUTTON_WIDTH ),   CTLT_ABORT       },
-    { DLG_BUTTON( NULL,     GUI_RET_CANCEL, 0, 0, BUTTON_WIDTH ),   CTLT_CANCEL      },
-    { DLG_BUTTON( NULL,     GUI_RET_IGNORE, 0, 0, BUTTON_WIDTH ),   CTLT_IGNORE      },
-    { DLG_BUTTON( NULL,     GUI_RET_NO,     0, 0, BUTTON_WIDTH ),   CTLT_NO          },
-    { DLG_DEFBUTTON( NULL,  GUI_RET_OK,     0, 0, BUTTON_WIDTH ),   CTLT_OK          },
-    { DLG_BUTTON( NULL,     GUI_RET_RETRY,  0, 0, BUTTON_WIDTH ),   CTLT_RETRY       },
-    { DLG_BUTTON( NULL,     GUI_RET_YES,    0, 0, BUTTON_WIDTH ),   CTLT_YES         },
-    { DLG_STRING( "!",                      0, 0, 1 ),              CTLT_EXCLAMATION },
-    { DLG_STRING( "?",                      0, 0, 1 ),              CTLT_QUESTION    },
-    { DLG_STRING( "i",                      0, 0, 1 ),              CTLT_INFORMATION },
-    { DLG_STRING( NULL,                     0, 0, 5 ),              CTLT_STOP        }
+    { GUI_CTL_BUTTON( NULL,     GUI_RET_ABORT,  0, 0, BUTTON_WIDTH ),   CTLT_ABORT       },
+    { GUI_CTL_BUTTON( NULL,     GUI_RET_CANCEL, 0, 0, BUTTON_WIDTH ),   CTLT_CANCEL      },
+    { GUI_CTL_BUTTON( NULL,     GUI_RET_IGNORE, 0, 0, BUTTON_WIDTH ),   CTLT_IGNORE      },
+    { GUI_CTL_BUTTON( NULL,     GUI_RET_NO,     0, 0, BUTTON_WIDTH ),   CTLT_NO          },
+    { GUI_CTL_DEFBUTTON( NULL,  GUI_RET_OK,     0, 0, BUTTON_WIDTH ),   CTLT_OK          },
+    { GUI_CTL_BUTTON( NULL,     GUI_RET_RETRY,  0, 0, BUTTON_WIDTH ),   CTLT_RETRY       },
+    { GUI_CTL_BUTTON( NULL,     GUI_RET_YES,    0, 0, BUTTON_WIDTH ),   CTLT_YES         },
+    { GUI_CTL_STRING( "!",                      0, 0, 1 ),              CTLT_EXCLAMATION },
+    { GUI_CTL_STRING( "?",                      0, 0, 1 ),              CTLT_QUESTION    },
+    { GUI_CTL_STRING( "i",                      0, 0, 1 ),              CTLT_INFORMATION },
+    { GUI_CTL_STRING( NULL,                     0, 0, 5 ),              CTLT_STOP        }
 };
 
 /* static text controls used for displaying message */
-static gui_control_info StaticMessage = DLG_STRING( NULL, TEXT_START_COL, TEXT_ROW, 0 );
+static gui_control_info StaticMessage = GUI_CTL_STRING( NULL, TEXT_START_COL, TEXT_ROW, 0 );
 
 /* information about the controls needed for each gui_message_type */
 static message_types ControlsNeeded[] = {
