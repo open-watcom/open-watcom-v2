@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -272,11 +272,6 @@ extern MRESULT EXPENTRY _MainDriver( HWND, USHORT, MPARAM, MPARAM );
 extern WINEXPORT LRESULT CALLBACK _MainDriver( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam );
 #endif
 
-#if defined( __OS2__ )
-/* pmmain.c */
-extern void     _SelectFont( HPS );
-#endif
-
 /* windisp.c */
 extern void     _DisplayAllLines( LPWDATA, int );
 extern void     _ResizeWin( LPWDATA, int, int, int, int );
@@ -337,6 +332,7 @@ extern DWORD    _GetLastLineNumber( LPWDATA w );
 extern HFONT    _SetMyDC( HDC, DWORD, DWORD ) ;
 #else
 extern void     _Error( HWND hwndDlg, char *caption, char *msg );
+extern void     _ResizeWindows( void );
 #endif
 extern int      _MessageLoop( BOOL );
 extern int      _BlockingMessageLoop( BOOL );
@@ -362,6 +358,10 @@ extern void     _MoveToLine( LPWDATA, DWORD, BOOL );
 extern unsigned _NewWindow( const char *name, ... );
 extern int      _CloseWindow( LPWDATA );
 extern void     _ReleaseWindowResources( LPWDATA w );
+#if defined( __OS2__ )
+extern void     _SetWinMenuHandle( HWND hmenu );
+extern HWND     _GetWinMenuHandle( void );
+#endif
 
 /* winpaint.c */
 #if defined( __OS2__ )
@@ -370,7 +370,16 @@ extern void     _RepaintWindow( LPWDATA, PRECT, HPS );
 extern void     _RepaintWindow( LPWDATA, PRECT, HDC );
 #endif
 
+/* pmmain.c */
+#if defined( __OS2__ )
+extern void     _SelectFont( HPS );
+extern void     _CreateFont( LPWDATA );
+#endif
+
+/* winmain.c */
 #if defined( __WINDOWS__ ) || defined( __NT__ )
+extern int      main( int, char ** );
+
 extern int      PASCAL DefaultWinMain( HINSTANCE inst, HINSTANCE previnst,
                         LPSTR cmd, int show, int (*pmain)( int, char ** ) );
 extern int      PASCAL WinMain( HINSTANCE inst, HINSTANCE previnst, LPSTR cmd, int show );

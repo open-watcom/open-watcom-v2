@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,18 +33,19 @@
 
 #include "variety.h"
 #include <stddef.h>
-#include <windows.h>
+#include <wwindows.h>
 #include "rtinit.h"
+#include "win.h"
 
 
 static HANDLE __WinLines_sem;
 
-void __InitWinLinesSem( void )
+static void __InitWinLinesSem( void )
 {
     __WinLines_sem = CreateMutex( NULL, FALSE, NULL );
 }
 
-void __FiniWinLinesSem( void )
+static void __FiniWinLinesSem( void )
 {
     CloseHandle( __WinLines_sem );
 }

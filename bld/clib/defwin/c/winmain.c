@@ -42,6 +42,8 @@
 #include "initarg.h"
 #include "defwin.h"
 #include "wclbproc.h"
+#include "initwin.h"
+#include "wintitle.h"
 
 
 #ifdef __WINDOWS__
@@ -52,7 +54,6 @@ char    __init_default_win;
 #ifdef DEFAULT_WINDOWING
 
 static char *mainClass;
-extern char __WinTitleBar[20];          /* Text for window title bar */
 
 static BOOL firstInstance( HANDLE );
 static int windowsInit( HANDLE, int );
@@ -61,7 +62,7 @@ static void windowsFini( void );
 
 #if defined( __NT__ )
 
-_WCRTLINK int   __InitDefaultWin( void )
+_WCRTLINK void  __InitDefaultWin( void )
 {
     char        *str;
     HANDLE      inst;
@@ -73,11 +74,13 @@ _WCRTLINK int   __InitDefaultWin( void )
         str++;
     inst = GetModuleHandle( NULL );
     if( !firstInstance( inst ) )
-        return( FALSE );
+//        return( FALSE );
+        return;
     if( !windowsInit( inst, SW_SHOWDEFAULT ) )
-        return( FALSE );
+//        return( FALSE );
+        return;
     _InitFunctionPointers();
-    return( TRUE );
+//    return( TRUE );
 }
 
 _WCRTLINK void  __FiniDefaultWin( void )

@@ -37,8 +37,6 @@
 #include "win.h"
 
 
-extern int main( int, char ** );
-
 int PASCAL WinMain( HINSTANCE inst, HINSTANCE previnst, LPSTR cmd, int show)
 {
         return( DefaultWinMain( inst, previnst, cmd, show, &main ) );
