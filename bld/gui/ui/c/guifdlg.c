@@ -118,17 +118,17 @@ typedef enum {
     pick_p3(   DIRECTORIES_TITLE, DLG_STRING,     DIR_START,                    0,  13 ) \
     pick_p3id( EDIT,              DLG_EDIT,       2,                            1,  BOX_WIDTH + 2 ) \
     pick_p3id( DIR_NAME,          DLG_DYNSTRING,  DIR_START,                    1,  DLG_FILE_COLS - DIR_START ) \
-    pick_p4id( FILE_LIST,         DLG_LIST_BOX,   2,                            3,  BOX_WIDTH + 1,                9 ) \
-    pick_p4id( DIR_LIST,          DLG_LIST_BOX,   DIR_START,                    3,  BOX_WIDTH2 + 1,               9 ) \
+    pick_p4id( FILE_LIST,         DLG_LIST_BOX,   2,                            3,  BOX_WIDTH + 1,   7 ) \
+    pick_p4id( DIR_LIST,          DLG_LIST_BOX,   DIR_START,                    3,  BOX_WIDTH2 + 1,  7 ) \
     pick_p3id( OK,                DLG_DEFBUTTON,  (DIR_START + BOX_WIDTH2 + 4), 4,  11 ) \
     pick_p3id( CANCEL,            DLG_BUTTON,     (DIR_START + BOX_WIDTH2 + 4), 6,  11 ) \
     pick_p3(   FILE_TYPES_TITLE,  DLG_STRING,     2,                            11, 19 ) \
-    pick_p4id( FILE_TYPES,        DLG_COMBO_BOX,  2,                            12, BOX_WIDTH + 4,                15 )
+    pick_p4id( FILE_TYPES,        DLG_COMBO_BOX,  2,                            12, BOX_WIDTH + 4,   4 )
 
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
 #define DLGFILE_DRV_CTLS() \
-    pick_p3(   DRIVES_TITLE,      DLG_STRING,     DIR_START,                    11, 9 ) \
-    pick_p4id( DRIVES,            DLG_COMBO_BOX,  DIR_START,                    12, BOX_WIDTH + 4,                15 )
+    pick_p3(   DRIVES_TITLE,      DLG_STRING,     DIR_START + 2,                11, 7 ) \
+    pick_p4id( DRIVES,            DLG_COMBO_BOX,  DIR_START + 2,                12, BOX_WIDTH + 4,   4 )
 #endif
 
 enum {
