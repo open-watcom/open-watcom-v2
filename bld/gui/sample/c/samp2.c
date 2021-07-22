@@ -68,7 +68,7 @@ static gui_ord Width = 0;
 #define NUM_TEXT 5
 
 static char Text[][NUM_TEXT] = { {"0%"}, {"25%"}, {"50%"}, {"75%"}, {"100%"} };
-static int Strlen[NUM_TEXT] = { 2, 3, 3, 3, 4 };
+static gui_ord Strlen[NUM_TEXT] = { 2, 3, 3, 3, 4 };
 
 static GUICALLBACK GetNewGUIEventProc;
 static GUICALLBACK StatusGUIEventProc;
@@ -82,13 +82,13 @@ static gui_create_info DialogWnd = {
     GUI_NO_MENU,                    // Menu array
     GUI_NO_COLOUR,                  // Colour attribute array
     &GetNewGUIEventProc,            // GUI Event Callback function
-    NULL,
-    NULL,
+    NULL,                           // Extra
+    NULL,                           // Icon
     NULL                            // Menu Resource
 };
 
 static gui_rect Rect;
-static int Row;
+static gui_text_ord Row;
 static int NumEnters = 0;
 
 static gui_colour_set StatusColours[GUI_NUM_ATTRS + 1] = {
@@ -112,8 +112,8 @@ static gui_create_info StatusWnd = {
     GUI_NO_MENU,                            // Menu array
     { GUI_NUM_ATTRS + 1, StatusColours },   // Colour attribute array
     &StatusGUIEventProc,                    // GUI Event Callback function
-    NULL,
-    NULL,
+    NULL,                                   // Extra
+    NULL,                                   // Icon
     NULL                                    // Menu Resource
 };
 
@@ -156,7 +156,7 @@ static bool GetNewGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
             if( Status == NULL ) {
                 Status = GUICreateWindow( &StatusWnd );
             } else {
-                NumEnters ++;
+                NumEnters++;
                 Rect.width = ( NumEnters * Width ) / 4;
                 if( NumEnters > 4 ) {
                     GUICloseDialog( wnd );
@@ -179,7 +179,7 @@ static bool GetNewGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
 static bool StatusGUIEventProc( gui_window * wnd, gui_event gui_ev, void * param )
 {
     int              i;
-    int              pos;
+    gui_ord          pos;
     gui_text_metrics metrics;
 
     param = param;
@@ -210,7 +210,7 @@ static bool StatusGUIEventProc( gui_window * wnd, gui_event gui_ev, void * param
         GUIDrawRect( wnd, &Rect, GUI_FIRST_UNUSED );
         for( i = 0; i < NUM_TEXT; i++ ) {
             pos = ( i * Width / 4 ) - Strlen[i] + Rect.x;
-            if( pos < (int)Rect.x ) {
+            if( pos < Rect.x ) {
                 pos = Rect.x;
             }
             if( ( i > NumEnters ) || ( i == 0 ) && ( NumEnters == 0 ) ) {

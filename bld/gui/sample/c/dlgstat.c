@@ -59,8 +59,8 @@ gui_create_info DlgWin = {
     GUI_NO_MENU,                    // Menu array
     GUI_NO_COLOUR,                  // Colour attribute array
     &Child1WndGUIEventProc,         // GUI Event Callback function
-    &Child1_Out,
-    &DlgWinIcon,
+    &Child1_Out,                    // Extra
+    &DlgWinIcon,                    // Icon
     NULL                            // Menu Resource
 };
 

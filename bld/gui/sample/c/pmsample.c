@@ -52,8 +52,8 @@ static gui_create_info Parent = {
     GUI_NO_MENU,                    // Menu array
     GUI_NO_COLOUR,                  // Colour attribute array
     &MainWndGUIEventProc,           // GUI Event Callback function
-    NULL,
-    NULL,
+    NULL,                           // Extra
+    NULL,                           // Icon
     NULL                            // Menu Resource
 };
 
@@ -66,8 +66,8 @@ static gui_create_info Child = {
     GUI_NO_MENU,                    // Menu array
     GUI_NO_COLOUR,                  // Colour attribute array
     &MainWndGUIEventProc,           // GUI Event Callback function
-    NULL,
-    NULL,
+    NULL,                           // Extra
+    NULL,                           // Icon
     NULL                            // Menu Resource
 };
 

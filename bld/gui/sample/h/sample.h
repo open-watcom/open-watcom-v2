@@ -70,9 +70,9 @@ typedef struct {
 } disp_entry;
 
 typedef struct {
-    int          numrows;
-    gui_ord      start_row;
-    disp_entry * display;
+    gui_text_ord    numrows;
+    gui_text_ord    start_row;
+    disp_entry      *display;
 } out_info;
 
 extern GUICALLBACK     MainWndGUIEventProc;

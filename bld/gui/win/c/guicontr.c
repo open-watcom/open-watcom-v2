@@ -595,7 +595,7 @@ static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent_wnd, c
     }
 
 #if defined( __OS2_PM__ )
-    _wpi_createanywindow( GUIControls[ctl_info->control_class].classname,
+    _wpi_createanywindow( (PSZ)GUIControls[ctl_info->control_class].classname,
                   new_text, style, scr_pos->x, scr_pos->y, scr_size->x, scr_size->y,
                   parent_wnd->hwnd, (HMENU)ctl_info->id, GUIMainHInst,
                   pctldata, &hwnd, ctl_info->id, &hwnd );

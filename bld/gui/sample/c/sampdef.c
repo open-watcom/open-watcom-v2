@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -305,8 +305,8 @@ gui_create_info Parent = {
     GUI_COLOUR_ARRAY( ParentColours ),  // Colour attribute array
 #endif
     &MainWndGUIEventProc,               // GUI Event Callback function
-    NULL,
-    &MainIcon,
+    NULL,                               // Extra
+    &MainIcon,                          // Icon
     NULL                                // Menu Resource
 };
 
@@ -323,8 +323,8 @@ gui_create_info Child1 = {
     GUI_COLOUR_ARRAY( ChildColours ),   // Colour attribute array
 #endif
     &Child1WndGUIEventProc,             // GUI Event Callback function
-    &Child1_Out,
-    &Win1Icon,
+    &Child1_Out,                        // Extra
+    &Win1Icon,                          // Icon
     NULL                                // Menu Resource
 };
 
@@ -347,8 +347,8 @@ gui_create_info Child2 = {
     GUI_COLOUR_ARRAY( ChildColours ),   // Colour attribute array
 #endif
     &Child2WndGUIEventProc,             // GUI Event Callback function
-    &Child2_Out,
-    &Win2Icon,
+    &Child2_Out,                        // Extra
+    &Win2Icon,                          // Icon
     NULL                                // Menu Resource
 };
 
@@ -365,8 +365,8 @@ gui_create_info Child3 = {
     GUI_COLOUR_ARRAY( ChildColours ),   // Colour attribute array
 #endif
     Child3WndGUIEventProc,              // GUI Event Callback function
-    NULL,
-    &Win3Icon,
+    NULL,                               // Extra
+    &Win3Icon,                          // Icon
     NULL                                // Menu Resource
 };
 
@@ -379,8 +379,8 @@ gui_create_info Child4 = {
     GUI_NO_MENU,                        // Menu array
     GUI_NO_COLOUR,                      // Colour attribute array
     &Child1WndGUIEventProc,             // GUI Event Callback function
-    &Child1_Out,
-    &Win1Icon,
+    &Child1_Out,                        // Extra
+    &Win1Icon,                          // Icon
     NULL                                // Menu Resource
 };
 
@@ -448,8 +448,8 @@ gui_create_info DialogWndControl = {
     GUI_COLOUR_ARRAY( DialogColours ),  // Colour attribute array
 #endif
     &ControlWndGUIEventProc,            // GUI Event Callback function
-    NULL,
-    &DlgIcon,
+    NULL,                               // Extra
+    &DlgIcon,                           // Icon
     NULL                                // Menu Resource
 };
 

@@ -266,7 +266,7 @@ static  bool            KeyDown         = false;
 static  bool            WndScaled       = false;
 static  char            *FloatHelp      = "Float Toolbar";
 static  char            *FixHelp        = "Fix Toolbar";
-static  int             Child1HScrollRange      = 0;
+static  gui_text_ord    Child1HScrollRange      = 0;
 static  gui_point       StartPoint      = { 0, 0 };
 static  gui_point       EndPoint        = { 0, 0 };
 static  gui_point       StartRectPoint  = { 0, 0 };
@@ -1000,7 +1000,7 @@ static void InitIndent( gui_window *wnd, gui_text_ord num_rows, out_info *out )
     }
 }
 
-static gui_text_ord GetStringIndent( int *indent, gui_ord hscroll, gui_text_metrics *metrics )
+static gui_text_ord GetStringIndent( gui_ord *indent, gui_text_ord hscroll, gui_text_metrics *metrics )
 {
     gui_text_ord string_indent;
 
@@ -1014,7 +1014,7 @@ static gui_text_ord GetStringIndent( int *indent, gui_ord hscroll, gui_text_metr
     return( string_indent );
 }
 
-static void PaintWindow( gui_window *wnd, gui_text_ord row, gui_text_ord num, int vscroll, int hscroll )
+static void PaintWindow( gui_window *wnd, gui_text_ord row, gui_text_ord num, gui_text_ord vscroll, gui_text_ord hscroll )
 {
     out_info            *out;
     gui_text_ord        numrows;
@@ -1326,7 +1326,7 @@ bool Child2WndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
     attr_entry          *nextattr;
     attr_entry          *currattr;
     gui_create_styles   style;
-    int                 vscroll;
+    gui_text_ord        vscroll;
 
     vscroll = 0;
     switch( gui_ev ) {
