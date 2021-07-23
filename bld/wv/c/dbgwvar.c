@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -138,7 +138,7 @@ static void     VarSetWidth( a_window wnd )
 
     var->last_width = WndWidth( wnd );
     if( VarRowTotal( &var->i ) <= WndRows( wnd ) ) {
-        var->last_width -= WndVScrollWidth( wnd );
+        var->last_width -= WndScrollBarWidth( wnd );
     }
     var->last_width -= WndAvgCharX( wnd ) / 2;
 

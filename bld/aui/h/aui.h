@@ -438,7 +438,7 @@ extern bool                 WndTabRight( a_window wnd, bool wrap );
 extern void                 WndCursorStart( a_window wnd );
 extern void                 WndCursorEnd( a_window wnd );
 
-extern gui_ord              WndVScrollWidth( a_window wnd );
+extern gui_ord              WndScrollBarWidth( a_window wnd );
 extern void                 WndResetScroll( a_window wnd );
 extern void                 WndPageDown( a_window wnd );
 extern void                 WndPageUp( a_window wnd );
