@@ -38,7 +38,7 @@ bool    WndAtTop( a_window wnd )
 {
     if( !WndHasCurrent( wnd ) )
         return( false );
-    if( wnd->current.row > wnd->title_size )
+    if( wnd->current.row > wnd->title_rows )
         return( false );
     return( true );
 }
@@ -279,7 +279,7 @@ void WndCursorRight( a_window wnd )
 void WndScrollTop( a_window wnd )
 {
     WndDirtyCurr( wnd );
-    WndVScrollAbs( wnd, -wnd->title_size );
+    WndVScrollAbs( wnd, -wnd->title_rows );
     WndFirstCurrent( wnd );
 }
 

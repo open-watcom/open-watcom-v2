@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -195,10 +196,10 @@ void WndPaintDirty( a_window wnd )
                 wnd->hscroll_pending = -1;
                 wnd->vscroll_pending = 0;
             } else {
-                for( i = 0; i < wnd->title_size; ++i ) {
+                for( i = 0; i < wnd->title_rows; ++i ) {
                     GUIDrawTextExtent( wnd->gui, " ", 1, i, 0, GUI_BACKGROUND, GUI_NO_COLUMN );
                 }
-                GUIDoVScrollClip( wnd->gui, wnd->vscroll_pending, wnd->title_size, wnd->rows - 1 );
+                GUIDoVScrollClip( wnd->gui, wnd->vscroll_pending, wnd->title_rows, wnd->rows - 1 );
                 wnd->vscroll_pending = 0;
             }
         }

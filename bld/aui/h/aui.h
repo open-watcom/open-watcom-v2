@@ -107,8 +107,8 @@
 #define WndSetTop( w, x )           (w)->top = (x)
 #define WndHasClass( w )            ((w)->wndclass != WND_NO_CLASS)
 #define WndClass( w )               (w)->wndclass
-#define WndTitleSize( w )           (w)->title_size
-#define WndRows( w )                ((w)->rows - (w)->title_size)
+#define WndTitleRows( w )           (w)->title_rows
+#define WndRows( w )                ((w)->rows - (w)->title_rows)
 #define WndMaxRow( w )              (w)->max_row
 #define WndGui( w )                 (w)->gui
 #define WndWidth( w )               (w)->width
@@ -177,7 +177,7 @@ typedef struct wnd_create_struct {
     gui_scroll_styles   scroll;
     gui_colour_set      *colour;
     gui_rect            rect;
-    wnd_row             title_size;
+    wnd_row             title_rows;
 } wnd_create_struct;
 
 typedef struct wnd_posn {
@@ -246,7 +246,7 @@ typedef struct _a_window {
     int                     hscroll_pending;
     wnd_row                 max_row;
     const char              *select_chars;
-    wnd_row                 title_size;
+    wnd_row                 title_rows;
     gui_ord                 avg_char_x;
     gui_ord                 mid_char_x;
     gui_ctl_id              last_popup;
@@ -511,7 +511,7 @@ extern void                 WndEndSessionHook( void );
 extern void                 WndResizeHook( a_window );
 extern void                 WndFontHook( a_window );
 
-extern void                 WndSetTitleSize( a_window, int );
+extern void                 WndSetTitleRows( a_window, int );
 extern void                 WndForcePaint( a_window wnd );
 
 extern bool                 WndDoingSearch;

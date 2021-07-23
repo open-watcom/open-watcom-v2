@@ -421,7 +421,7 @@ STATIC void *sampleCreateWin( void )
     info.info = &WPSampleInfo;
     info.extra = CurrSIOData;
 //    info.colour = GetWndColours( class );
-    info.title_size = STATUS_ROW + 1;
+    info.title_rows = STATUS_ROW + 1;
     info.style |= GUI_INIT_INVISIBLE;
     wnd = WndCreateWithStruct( &info );
     if( wnd == NULL )

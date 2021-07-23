@@ -66,7 +66,7 @@ bool    WndSetPoint( a_window wnd, void *parm, bool exact,
         row = GUIGetRow( wnd->gui, &point );
     if( row > wnd->rows )
         return( false );
-    if( row < wnd->title_size ) {
+    if( row < wnd->title_rows ) {
         row -= wnd->top;
     }
     last_piece = WND_NO_PIECE;
@@ -201,7 +201,7 @@ bool    WndNextCurrent( a_window wnd, bool wrap )
         piece = wnd->current.piece + 1;
         row = wnd->current.row;
     } else {
-        row = wnd->title_size;
+        row = wnd->title_rows;
         piece = 0;
     }
     WndNextRow( wnd, WND_NO_ROW, WND_SAVE_ROW );
@@ -267,9 +267,9 @@ bool WndPrevCurrent( a_window wnd, bool wrap )
         }
         if( found_piece != WND_NO_PIECE ) {
             WndDirtyCurr( wnd );
-            if( row < wnd->title_size ) {
-                WndVScroll( wnd, row - wnd->title_size );
-                row = wnd->title_size;
+            if( row < wnd->title_rows ) {
+                WndVScroll( wnd, row - wnd->title_rows );
+                row = wnd->title_rows;
             }
             wnd->current.row = row;
             wnd->current.piece = found_piece;

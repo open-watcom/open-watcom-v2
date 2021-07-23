@@ -195,7 +195,7 @@ bool    WndSearch( a_window wnd, bool from_top, int direction )
                 rows = WndNumRows( wnd );
                 if( rows == -1 ) {
                     WndSetRepaint( wnd );
-                    WndVScrollAbs( wnd, -wnd->title_size );
+                    WndVScrollAbs( wnd, -wnd->title_rows );
                     rows = WndVScrollAbs( wnd, WND_MAX_ROW ) + WndRows( wnd );
                 }
                 curr.row = rows - 1;
@@ -266,7 +266,7 @@ bool    WndSearch( a_window wnd, bool from_top, int direction )
                 if( curr.row > wnd->rows / 2 ) {
                     WndVScrollAbs( wnd, curr.row - wnd->rows / 2 );
                 } else {
-                    WndVScrollAbs( wnd, -wnd->title_size );
+                    WndVScrollAbs( wnd, -wnd->title_rows );
                 }
             } else if( curr.row >= WndVirtualBottom( wnd ) ) {
                 WndSetRepaint( wnd );

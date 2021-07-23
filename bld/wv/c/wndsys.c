@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -535,7 +535,7 @@ void WndSetOpenNoShow( void )
 a_window DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
                                     wnd_class_wv wndclass, void *extra,
                                     gui_resource *icon,
-                                    int title_size, bool vdrag )
+                                    int title_rows, bool vdrag )
 {
     a_window            wnd;
     wnd_create_struct   info;
@@ -571,7 +571,7 @@ a_window DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
     info.wndclass = wndclass;
     info.extra = extra;
     info.colour = GetWndColours( wndclass );
-    info.title_size = title_size;
+    info.title_rows = title_rows;
     info.style |= GUI_INIT_INVISIBLE;
 #if defined( GUI_IS_GUI ) && defined( __OS2__ )
     info.style &= ~GUI_CHANGEABLE_FONT;

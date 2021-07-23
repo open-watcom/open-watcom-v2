@@ -192,7 +192,7 @@ static void    WndPaintRows( a_window wnd, wnd_row start_row, int num )
     prev_attr = 0;
     for( row = start_row; row < start_row + num; ++row ) {
         for( piece = 0; ; ++piece ) {
-            if( row < wnd->title_size ) {
+            if( row < wnd->title_rows ) {
                 row_to_get = row - wnd->top;
             } else {
                 row_to_get = row;

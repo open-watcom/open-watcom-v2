@@ -134,7 +134,7 @@ int WndVScroll( a_window wnd, int lines )
         if( lines != 0 ) {
             if( WndSwitchOff( wnd, WSW_REPAINT ) ) {
                 WndAdjustDirty( wnd, -lines );
-                GUIDoVScrollClip( wnd->gui, lines, wnd->title_size, wnd->rows - 1 );
+                GUIDoVScrollClip( wnd->gui, lines, wnd->title_rows, wnd->rows - 1 );
             }
         }
     } else {

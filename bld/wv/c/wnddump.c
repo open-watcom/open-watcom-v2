@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -93,7 +94,7 @@ static void DoWndDump( a_window wnd, WRITERTN *rtn, file_handle fh )
     }
     *p = NULLCHAR;
     rtn( fh, TxtBuff );
-    for( row = -WndTitleSize( wnd );; ++row ) {
+    for( row = -WndTitleRows( wnd );; ++row ) {
         p = buff;
         chars_written = 0;
         for( piece = 0; ; ++piece ) {

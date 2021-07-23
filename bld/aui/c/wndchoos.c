@@ -119,7 +119,7 @@ static  bool    DoWndKeyChoose( a_window wnd, int ch )
     scrolled = 0;
     if( wnd->keyindex == 0 ) {
         WndDirtyCurr( wnd );
-        scrolled = WndVScrollAbs( wnd, -wnd->title_size );
+        scrolled = WndVScrollAbs( wnd, -wnd->title_rows );
         WndNoCurrent( wnd );
     }
     if( !WndHasCurrent( wnd ) ) {
