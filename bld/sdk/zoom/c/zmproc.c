@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -474,6 +475,9 @@ LRESULT CALLBACK ZOOMMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
         DrawScreen( info->screen, NULL, &Origin, &info->wndsize, &Origin, &info->magsize );
         break;
     case WM_HSCROLL:
+        DoScroll( GET_WM_HSCROLL_HWND( wparam, lparam ),
+                  GET_WM_HSCROLL_CODE( wparam, lparam ), info );
+        break;
     case WM_VSCROLL:
         DoScroll( GET_WM_VSCROLL_HWND( wparam, lparam ),
                   GET_WM_VSCROLL_CODE( wparam, lparam ), info );

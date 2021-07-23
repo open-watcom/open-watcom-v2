@@ -1091,6 +1091,8 @@ extern void _wpi_getbitmapparms( HBITMAP bitmap, int *width, int *height,
 
     #define GET_WM_INITMENU_MENU( parm1, parm2 ) (HMENU) parm1
 
+    #define GET_WM_HSCROLL_CMD( wp, lp ) GET_WM_HSCROLL_CODE( wp, lp )
+
     #define GET_WM_VSCROLL_CMD( wp, lp ) GET_WM_VSCROLL_CODE( wp, lp )
 
     #define SHORT1FROMMP( parm1 ) LOWORD( parm1 )
