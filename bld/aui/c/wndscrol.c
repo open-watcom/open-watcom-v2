@@ -95,7 +95,7 @@ void WndSetThumb( a_window wnd )
             if( WndHasCurrent( wnd ) ) {
                 WndDirtyCurr( wnd );
             }
-            scrolled = WndScroll( wnd, -bottom_blank );
+            scrolled = WndVScroll( wnd, -bottom_blank );
             if( WndHasCurrent( wnd ) ) {
                 wnd->current.row += bottom_blank;
                 WndDirtyCurr( wnd );
@@ -116,7 +116,7 @@ void WndSetThumb( a_window wnd )
     }
 }
 
-int WndScroll( a_window wnd, int lines )
+int WndVScroll( a_window wnd, int lines )
 {
     wnd_row         new_top;
     wnd_row         total_rows;
@@ -130,7 +130,7 @@ int WndScroll( a_window wnd, int lines )
     WndDirtyCurr( wnd );
     if( !WndHasNumRows( wnd ) ) {
         WndKillCacheLines( wnd );
-        lines = wnd->info->scroll( wnd, lines );
+        lines = wnd->info->vscroll( wnd, lines );
         if( lines != 0 ) {
             if( WndSwitchOff( wnd, WSW_REPAINT ) ) {
                 WndAdjustDirty( wnd, -lines );
@@ -161,9 +161,9 @@ int WndScroll( a_window wnd, int lines )
     return( lines );
 }
 
-int WndScrollAbs( a_window wnd, int line )
+int WndVScrollAbs( a_window wnd, int line )
 {
-    return( WndScroll( wnd, WndScreenRow( wnd, line ) ) );
+    return( WndVScroll( wnd, WndScreenRow( wnd, line ) ) );
 }
 
 void    WndSetHScroll( a_window wnd, gui_ord indent )

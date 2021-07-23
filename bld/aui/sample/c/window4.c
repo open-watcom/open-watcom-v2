@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -192,7 +193,7 @@ static void W4MenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piec
         W1Open();
         break;
     case MENU_W2_TOP:
-        WndScrollAbs( wnd, 0 );
+        WndVScrollAbs( wnd, 0 );
         break;
     }
 }
@@ -202,7 +203,7 @@ static wnd_info W4Info = {
     W4Refresh,
     W4GetLine,
     W4MenuItem,
-    NoScroll,
+    NoVScroll,
     NoBegPaint,
     NoEndPaint,
     W4Modify,

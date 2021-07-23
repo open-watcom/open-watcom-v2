@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -165,7 +165,7 @@ static address GetRowAddr( file_window *file, wnd_row row, bool exact )
 static void Centre( a_window wnd, unsigned line )
 {
     WndZapped( wnd );
-    WndScroll( wnd, line - ( WndRows( wnd ) / 2 ) - WndTop( wnd ) );
+    WndVScroll( wnd, line - ( WndRows( wnd ) / 2 ) - WndTop( wnd ) );
 }
 
 
@@ -615,13 +615,13 @@ static void FileTrack( a_window wnd, cue_handle *cueh )
     end_line = WndTop( wnd ) + WndRows( wnd ) - 1;
     if( old_active == NOT_ACTIVE || active > end_line ) {
         WndZapped( wnd );
-        WndScroll( wnd, active - slack - WndTop( wnd ) );
+        WndVScroll( wnd, active - slack - WndTop( wnd ) );
     } else if( active > end_line - slack ) {
         WndRowDirtyImmed( wnd, old_active );
-        WndScroll( wnd, WndRows( wnd ) - 2 * slack );
+        WndVScroll( wnd, WndRows( wnd ) - 2 * slack );
     } else if( active < WndTop( wnd ) ) {
         WndRowDirtyImmed( wnd, old_active );
-        WndScroll( wnd, active - WndTop( wnd ) - slack );
+        WndVScroll( wnd, active - WndTop( wnd ) - slack );
     } else {
         WndRowDirty( wnd, old_active );
     }
@@ -643,7 +643,7 @@ bool    SrcMoveDot( a_window wnd, address addr )
     if( file->mod == NO_MOD && !file->track )
         return( false );
     if( IS_NIL_ADDR( addr ) ) {
-        WndScrollAbs( wnd, 0 );
+        WndVScrollAbs( wnd, 0 );
         return( false );
     }
     DeAliasAddrMod( addr, &mod );
@@ -659,7 +659,7 @@ bool    SrcMoveDot( a_window wnd, address addr )
         FileTrack( wnd, cueh );
     }
     --line;
-    WndScrollAbs( wnd, line ); //
+    WndVScrollAbs( wnd, line ); //
     WndMoveCurrent( wnd, line, PIECE_SOURCE );
     FileSetDotAddr( wnd, addr );
     FileSetTitle( wnd, DIPCueMod( cueh ) );

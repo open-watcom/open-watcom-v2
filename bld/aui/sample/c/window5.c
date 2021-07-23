@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -102,8 +103,8 @@ a_window W5Open( void )
 
     wnd = WndCreate( "Just some more text", &W5Info, 0, NULL );
     WndSetRepaint( wnd );
-    WndScrollAbs( wnd, 0 );
-    WndScrollAbs( wnd, NUM_ROWS );
-    WndScrollAbs( wnd, NUM_ROWS / 2 );
+    WndVScrollAbs( wnd, 0 );
+    WndVScrollAbs( wnd, NUM_ROWS );
+    WndVScrollAbs( wnd, NUM_ROWS / 2 );
     return( wnd );
 }

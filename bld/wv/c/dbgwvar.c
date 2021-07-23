@@ -752,10 +752,10 @@ static void VarRestoreWndFromScope( a_window wnd )
 
     wnd_data = var->i.s->wnd_data;
     if( wnd_data == NULL || wnd_data->row == WND_NO_ROW ) {
-        WndScrollAbs( wnd, 0 );
+        WndVScrollAbs( wnd, 0 );
         WndFirstCurrent( wnd );
     } else {
-        WndScrollAbs( wnd, wnd_data->scroll );
+        WndVScrollAbs( wnd, wnd_data->scroll );
         WndNewCurrent( wnd, wnd_data->row, wnd_data->piece );
     }
 }
@@ -1055,7 +1055,7 @@ wnd_info VarInfo = {
     VarRefresh,
     VarGetLine,
     VarMenuItem,
-    NoScroll,
+    NoVScroll,
     VarBegPaint,
     VarEndPaint,
     VarModify,

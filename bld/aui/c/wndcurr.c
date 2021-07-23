@@ -160,9 +160,9 @@ void WndMoveCurrent( a_window wnd, wnd_row row, wnd_piece piece )
 {
     WndDirtyCurr( wnd );
     if( row < WndTop( wnd ) ) {
-        WndScroll( wnd, row - WndTop( wnd ) );
+        WndVScroll( wnd, row - WndTop( wnd ) );
     } else if( row >= WndTop( wnd ) + WndRows( wnd ) ) {
-        WndScroll( wnd, row - WndTop( wnd ) - WndRows( wnd ) + 1 );
+        WndVScroll( wnd, row - WndTop( wnd ) - WndRows( wnd ) + 1 );
     }
     WndNewCurrent( wnd, row, piece );
 }
@@ -212,7 +212,7 @@ bool    WndNextCurrent( a_window wnd, bool wrap )
             if( line.tabstop ) {
                 WndDirtyCurr( wnd );
                 if( row >= wnd->rows ) {
-                    WndScroll( wnd, row - wnd->rows + 1 );
+                    WndVScroll( wnd, row - wnd->rows + 1 );
                     row = wnd->rows - 1;
                 }
                 wnd->current.row = row;
@@ -268,7 +268,7 @@ bool WndPrevCurrent( a_window wnd, bool wrap )
         if( found_piece != WND_NO_PIECE ) {
             WndDirtyCurr( wnd );
             if( row < wnd->title_size ) {
-                WndScroll( wnd, row - wnd->title_size );
+                WndVScroll( wnd, row - wnd->title_size );
                 row = wnd->title_size;
             }
             wnd->current.row = row;
@@ -314,7 +314,7 @@ void     WndCheckCurrentValid( a_window wnd )
         WndLastCurrent( wnd );
     } else {
         if( wnd->current.row >= wnd->rows ) {
-            WndScroll( wnd, wnd->current.row - wnd->rows + 1 );
+            WndVScroll( wnd, wnd->current.row - wnd->rows + 1 );
         }
     }
 }

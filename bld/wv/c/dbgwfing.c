@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +42,7 @@
 #include "fingmsg.h"
 
 
-#define AboutSize	GetAboutSizeFull()
+#define AboutSize       GetAboutSizeFull()
 
 #define TOP_BLANK( wnd ) ( GUIIsGUI() ? 2 : ( ( WndRows(wnd) - AboutSize ) / 2 ) )
 
@@ -129,7 +129,7 @@ static wnd_info FingInfo = {
     NoRefresh,
     FingGetLine,
     NoMenuItem,
-    NoScroll,
+    NoVScroll,
     NoBegPaint,
     NoEndPaint,
     NoModify,

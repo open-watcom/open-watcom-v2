@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -194,8 +195,8 @@ bool    WndSearch( a_window wnd, bool from_top, int direction )
                 rows = WndNumRows( wnd );
                 if( rows == -1 ) {
                     WndSetRepaint( wnd );
-                    WndScrollAbs( wnd, -wnd->title_size );
-                    rows = WndScrollAbs( wnd, WND_MAX_ROW ) + WndRows( wnd );
+                    WndVScrollAbs( wnd, -wnd->title_size );
+                    rows = WndVScrollAbs( wnd, WND_MAX_ROW ) + WndRows( wnd );
                 }
                 curr.row = rows - 1;
                 curr.colidx = 0;
@@ -263,13 +264,13 @@ bool    WndSearch( a_window wnd, bool from_top, int direction )
             if( curr.row < WndVirtualTop( wnd ) ) {
                 WndSetRepaint( wnd );
                 if( curr.row > wnd->rows / 2 ) {
-                    WndScrollAbs( wnd, curr.row - wnd->rows / 2 );
+                    WndVScrollAbs( wnd, curr.row - wnd->rows / 2 );
                 } else {
-                    WndScrollAbs( wnd, -wnd->title_size );
+                    WndVScrollAbs( wnd, -wnd->title_size );
                 }
             } else if( curr.row >= WndVirtualBottom( wnd ) ) {
                 WndSetRepaint( wnd );
-                WndScrollAbs( wnd, curr.row - wnd->rows / 2 );
+                WndVScrollAbs( wnd, curr.row - wnd->rows / 2 );
             }
             wnd->sel_start.row = WndScreenRow( wnd, curr.row );
             wnd->sel_start.piece = next_occurence.piece;
