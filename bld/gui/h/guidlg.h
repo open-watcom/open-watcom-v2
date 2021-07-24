@@ -33,25 +33,22 @@
 
 #define GUI_NO_ID   ((gui_ctl_id)-1)
 
-#define DLG_SET_RECT( r, x1, y1, width1, height1 ) \
+#define DLG_SET_RECT_CHARCOORD( r, x1, y1, width1, height1 ) \
       { (r).rect.x = x1; \
         (r).rect.y = y1; \
         (r).rect.width = width1; \
-        (r).rect.height = height1; }
-#define DLG_SET_RECT_1( r, x1, y1, width1 ) \
+        (r).rect.height = height1; \
+        (r).style |= GUI_STYLE_CONTROL_CHARCOORD; }
+#define DLG_SET_RECT_CHARCOORD_1( r, x1, y1, width1 ) \
       { (r).rect.x = x1; \
         (r).rect.y = y1; \
         (r).rect.width = width1; \
-        (r).rect.height = 1; }
-
-#define DLG_RECT( x1, y1, width1, height1 ) \
-      { x1, y1, width1, height1 }
-#define DLG_RECT_1( x1, y1, width1 ) \
-      { x1, y1, width1, 1 }
+        (r).rect.height = 1; \
+        (r).style |= GUI_STYLE_CONTROL_CHARCOORD; }
 
 #define GUI_CTL_BOX( s, x1, y1, width1, height1 ) \
     { GUI_GROUPBOX, s, \
-      DLG_RECT( x1, y1, width1, height1 ), \
+      { x1, y1, width1, height1 }, \
       NULL, \
       GUI_NOSCROLL, \
       GUI_STYLE_CONTROL_CHARCOORD | GUI_STYLE_CONTROL_AUTOMATIC, \
@@ -59,7 +56,7 @@
 
 #define GUI_CTL_DYNSTRING( s, id, x1, y1, width1 ) \
     { GUI_STATIC, s, \
-      DLG_RECT_1( x1, y1, width1 ), \
+      { x1, y1, width1, 1 }, \
       NULL, \
       GUI_NOSCROLL, \
       GUI_STYLE_CONTROL_CHARCOORD | GUI_STYLE_CONTROL_NOPREFIX | GUI_STYLE_CONTROL_AUTOMATIC, \
@@ -70,7 +67,7 @@
 
 #define GUI_CTL_DOBUTTON( g, s, id, x1, y1, width1 ) \
     { g, s, \
-      DLG_RECT_1( x1, y1, width1 ), \
+      { x1, y1, width1, 1 }, \
       NULL, \
       GUI_NOSCROLL, \
       GUI_STYLE_CONTROL_CHARCOORD | GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_AUTOMATIC, \
@@ -84,7 +81,7 @@
 
 #define GUI_CTL_CHECK( s, id, x1, y1, width1 ) \
   { GUI_CHECK_BOX, s, \
-    DLG_RECT_1( x1, y1, width1 ), \
+    { x1, y1, width1, 1 }, \
     NULL, \
     GUI_NOSCROLL, \
     GUI_STYLE_CONTROL_CHARCOORD | GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_AUTOMATIC, \
@@ -92,7 +89,7 @@
 
 #define GUI_CTL_DORADIO( g, s, id, x1, y1, width1 ) \
   { GUI_RADIO_BUTTON, s, \
-    DLG_RECT_1( x1, y1, width1 ), \
+    { x1, y1, width1, 1 }, \
     NULL, \
     GUI_NOSCROLL, \
     GUI_STYLE_CONTROL_CHARCOORD | GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_AUTOMATIC | (g), \
@@ -109,7 +106,7 @@
 
 #define GUI_CTL_DOEDIT( s, id, x1, y1, width1, v ) \
   { GUI_EDIT, s, \
-    DLG_RECT_1( x1, y1, width1 ), \
+    { x1, y1, width1, 1 }, \
     NULL, \
     GUI_NOSCROLL, \
     GUI_STYLE_CONTROL_CHARCOORD | GUI_STYLE_CONTROL_TAB_GROUP + (v), \
@@ -123,7 +120,7 @@
 
 #define GUI_CTL_LIST_BOX( s, id, x1, y1, width1, height1 ) \
     { GUI_LISTBOX, s, \
-      DLG_RECT( x1, y1, width1, height1 ), \
+      { x1, y1, width1, height1 }, \
       NULL, \
       GUI_NOSCROLL, \
       GUI_STYLE_CONTROL_CHARCOORD | GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_AUTOMATIC, \
@@ -131,7 +128,7 @@
 
 #define GUI_CTL_COMBO_BOX( s, id, x1, y1, width1, height1 ) \
     { GUI_COMBOBOX, s, \
-      DLG_RECT( x1, y1, width1, height1 ), \
+      { x1, y1, width1, height1 }, \
       NULL, \
       GUI_NOSCROLL, \
       GUI_STYLE_CONTROL_CHARCOORD | GUI_STYLE_CONTROL_TAB_GROUP | GUI_STYLE_CONTROL_AUTOMATIC, \

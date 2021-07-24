@@ -49,32 +49,32 @@
 /* all 0 values are set in the code */
 
 #define DLGNEW_CTLS() \
-    pick_p4(   STATIC,  GUI_CTL_STRING,     NULL,   START_STATIC, TEXT_ROW,   0 ) \
-    pick_p4(   EQUAL,   GUI_CTL_STRING,     "=",    0,            TEXT_ROW,   1 ) \
-    pick_p4id( EDIT,    GUI_CTL_EDIT,       NULL,   0,            TEXT_ROW,   0 ) \
-    pick_p4id( CANCEL,  GUI_CTL_BUTTON,     NULL,   0,            BUTTON_ROW, BUTTON_WIDTH ) \
-    pick_p4id( OK,      GUI_CTL_DEFBUTTON,  NULL,   0,            BUTTON_ROW, BUTTON_WIDTH )
+    pick_p4(   STATIC,  GUI_CTL_STRING,     DLG_SET_RECT_CHARCOORD_1,   NULL,   START_STATIC, TEXT_ROW,   0 ) \
+    pick_p4(   EQUAL,   GUI_CTL_STRING,     DLG_SET_RECT_CHARCOORD_1,   "=",    0,            TEXT_ROW,   1 ) \
+    pick_p4id( EDIT,    GUI_CTL_EDIT,       DLG_SET_RECT_CHARCOORD_1,   NULL,   0,            TEXT_ROW,   0 ) \
+    pick_p4id( CANCEL,  GUI_CTL_BUTTON,     DLG_SET_RECT_CHARCOORD_1,   NULL,   0,            BUTTON_ROW, BUTTON_WIDTH ) \
+    pick_p4id( OK,      GUI_CTL_DEFBUTTON,  DLG_SET_RECT_CHARCOORD_1,   NULL,   0,            BUTTON_ROW, BUTTON_WIDTH )
 
 enum {
     DUMMY_ID = 100,
-    #define pick_p4(id,m,p1,p2,p3,p4)   CTL_ ## id,
-    #define pick_p4id(id,m,p1,p2,p3,p4) CTL_ ## id,
+    #define pick_p4(id,m,s,p1,p2,p3,p4)   CTL_ ## id,
+    #define pick_p4id(id,m,s,p1,p2,p3,p4) CTL_ ## id,
     DLGNEW_CTLS()
     #undef pick_p4id
     #undef pick_p4
 };
 
 enum {
-    #define pick_p4(id,m,p1,p2,p3,p4)   id ## _IDX,
-    #define pick_p4id(id,m,p1,p2,p3,p4) id ## _IDX,
+    #define pick_p4(id,m,s,p1,p2,p3,p4)   id ## _IDX,
+    #define pick_p4id(id,m,s,p1,p2,p3,p4) id ## _IDX,
     DLGNEW_CTLS()
     #undef pick_p4id
     #undef pick_p4
 };
 
 static gui_control_info GetNew[] = {
-    #define pick_p4(id,m,p1,p2,p3,p4)   m(p1,p2,p3,p4),
-    #define pick_p4id(id,m,p1,p2,p3,p4) m(p1,CTL_ ## id,p2,p3,p4),
+    #define pick_p4(id,m,s,p1,p2,p3,p4)   m(p1,p2,p3,p4),
+    #define pick_p4id(id,m,s,p1,p2,p3,p4) m(p1,CTL_ ## id,p2,p3,p4),
     DLGNEW_CTLS()
     #undef pick_p4id
     #undef pick_p4
@@ -145,6 +145,13 @@ gui_message_return GUIAPI GUIGetNewVal( const char *title, const char *old, char
     if( disp_length > MAX_LENGTH ) {
         disp_length = MAX_LENGTH;
     }
+
+    /* reset dialog character coordinates */
+    #define pick_p4(id,m,s,p1,p2,p3,p4)   s(GetNew[id ## _IDX],p2,p3,p4);
+    #define pick_p4id(id,m,s,p1,p2,p3,p4) s(GetNew[id ## _IDX],p2,p3,p4);
+    DLGNEW_CTLS()
+    #undef pick_p4id
+    #undef pick_p4
 
     cols = START_EDIT + disp_length * 2 + START_STATIC;
 
