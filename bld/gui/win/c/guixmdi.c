@@ -78,10 +78,10 @@ static void SetStyle( HWND hwnd, bool max )
         style |= WS_VSCROLL+WS_HSCROLL;
         style &= ~( COMMON_STYLES | WS_THICKFRAME | WS_CAPTION );
     } else {
-        if( wnd->scroll & GUI_HSCROLL ) {
+        if( wnd->scroll_style & GUI_HSCROLL ) {
             style |= WS_HSCROLL;
         }
-        if( wnd->scroll & GUI_VSCROLL ) {
+        if( wnd->scroll_style & GUI_VSCROLL ) {
             style |= WS_VSCROLL;
         }
         if( wnd->style & GUI_RESIZEABLE ) {

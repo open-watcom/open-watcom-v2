@@ -479,10 +479,10 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *p
     if( dlg_info->style & GUI_RESIZEABLE ) {
         style |= WS_THICKFRAME;
     }
-    if( dlg_info->scroll & GUI_HSCROLL ) {
+    if( dlg_info->scroll_style & GUI_HSCROLL ) {
         style |= WS_HSCROLL;
     }
-    if( dlg_info->scroll & GUI_VSCROLL ) {
+    if( dlg_info->scroll_style & GUI_VSCROLL ) {
         style |= WS_VSCROLL;
     }
     if( wnd->flags & HAS_CAPTION ) {
@@ -550,10 +550,10 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *p
             //flags |= FCF_MENU;
         }
     }
-    if( dlg_info->scroll & GUI_HSCROLL ) {
+    if( dlg_info->scroll_style & GUI_HSCROLL ) {
         flags |= FCF_HORZSCROLL;
     }
-    if( dlg_info->scroll & GUI_VSCROLL ) {
+    if( dlg_info->scroll_style & GUI_VSCROLL ) {
         flags |= FCF_VERTSCROLL;
     }
     if( dlg_info->style & GUI_DIALOG_LOOK ) {

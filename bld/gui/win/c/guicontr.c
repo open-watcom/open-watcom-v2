@@ -453,14 +453,14 @@ LONG GUISetControlStyle( gui_control_info *ctl_info )
      * everything is in a group of one, except GUI_STYLE_CONTROL_GROUPs, which are
      * grouped properly.
      */
-    if( !( ctl_info->scroll & GUI_INIT_INVISIBLE ) ) {
+    if( !( ctl_info->style & GUI_INIT_INVISIBLE ) ) {
         ret_style |= WS_VISIBLE;
     }
 #ifndef __OS2_PM__
-    if( ctl_info->scroll & GUI_VSCROLL ) {
+    if( ctl_info->scroll_style & GUI_VSCROLL ) {
         ret_style |= WS_VSCROLL;
     }
-    if( ctl_info->scroll & GUI_HSCROLL ) {
+    if( ctl_info->scroll_style & GUI_HSCROLL ) {
         ret_style |= WS_HSCROLL;
     }
 #endif
@@ -511,7 +511,7 @@ LONG GUISetControlStyle( gui_control_info *ctl_info )
         }
 #endif
 #ifdef __OS2_PM__
-        if( ctl_info->scroll & GUI_HSCROLL ) {
+        if( ctl_info->scroll_style & GUI_HSCROLL ) {
             ret_style |= LS_HORZSCROLL;
         }
 #endif

@@ -78,15 +78,15 @@ bool GUISetupStruct( gui_window *wnd, gui_create_info *dlg_info, bool dialog )
         return( false );
     }
     GUISetUseWnd( wnd );
-    if( dlg_info->scroll & GUI_VSCROLL ) {
+    if( dlg_info->scroll_style & GUI_VSCROLL ) {
         if( !GUICreateGadget( wnd, VERTICAL, wnd->use.width, wnd->use.row,
-                           wnd->use.height, &wnd->vgadget, dlg_info->scroll ) ) {
+                           wnd->use.height, &wnd->vgadget, dlg_info->scroll_style ) ) {
             return( false );
         }
     }
-    if( dlg_info->scroll & GUI_HSCROLL ) {
+    if( dlg_info->scroll_style & GUI_HSCROLL ) {
         if( !GUICreateGadget( wnd, HORIZONTAL, wnd->use.height, wnd->use.col,
-                           wnd->use.width, &wnd->hgadget, dlg_info->scroll ) ) {
+                           wnd->use.width, &wnd->hgadget, dlg_info->scroll_style ) ) {
             return( false );
         }
     }

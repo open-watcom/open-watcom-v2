@@ -579,7 +579,7 @@ a_window DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
     if( _IsOn( SW_DETACHABLE_WINDOWS ) )
         info.style |= GUI_POPUP;
     if( !vdrag )
-        info.scroll &= ~GUI_VDRAG;
+        info.scroll_style &= ~GUI_VDRAG;
     wnd = WndCreateWithStruct( &info );
     if( wnd == NULL )
         return( wnd );

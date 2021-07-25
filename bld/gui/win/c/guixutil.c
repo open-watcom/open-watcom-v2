@@ -149,7 +149,7 @@ bool GUISetupStruct( gui_window *wnd, gui_create_info *dlg_info, guix_coord *scr
     if( wnd != NULL ) {
         if( !GUI_IS_DIALOG( wnd ) ) {
             wnd->style = dlg_info->style;
-            wnd->scroll = dlg_info->scroll;
+            wnd->scroll_style = dlg_info->scroll_style;
         }
         if( !GUISetColours( wnd, dlg_info->colours.num_items, dlg_info->colours.colour ) ) {
             return( false );

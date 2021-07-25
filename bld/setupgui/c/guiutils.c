@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -342,13 +342,12 @@ bool SetupInit( void )
     GUIGetScale( &rect );
     memset( &init, 0, sizeof( init ) );
     init.rect = rect;
-    init.scroll = 0;
-    init.style = 0;
+    init.scroll_style = GUI_NOSCROLL;
     init.title = "";
     if( Invisible ) {
-        init.style |= GUI_INIT_INVISIBLE;
+        init.style = GUI_INIT_INVISIBLE;
     } else {
-        init.style |= GUI_VISIBLE | GUI_MAXIMIZE | GUI_MINIMIZE;
+        init.style = GUI_VISIBLE | GUI_MAXIMIZE | GUI_MINIMIZE;
     }
 #if !defined( GUI_IS_GUI )
     init.style |= GUI_NOFRAME;

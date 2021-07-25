@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -91,7 +92,7 @@ void WStatDialog::doDialog( WWindow *parent ) {
     create_info.rect.width = 0;
     create_info.rect.height = 0;
 
-    create_info.scroll = GUI_NOSCROLL;
+    create_info.scroll_style = GUI_NOSCROLL;
     create_info.style = GUI_NONE;
     create_info.parent = hparent;
     create_info.menus = NoMenu;

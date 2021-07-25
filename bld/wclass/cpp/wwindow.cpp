@@ -370,7 +370,7 @@ void WWindow::makeWindow( const char *title, WStyle style, WExStyle exstyle )
     create_info.rect.y = r.y();
     create_info.rect.width = r.w();
     create_info.rect.height = r.h();
-    create_info.scroll = _WStyleToScrollStyle( style );
+    create_info.scroll_style = _WStyleToScrollStyle( style );
     create_info.style = (gui_create_styles)( _WStyleToCreateStyle( style ) | exstyle | GUI_INIT_INVISIBLE | GUI_VISIBLE );
     create_info.parent = hparent;
     create_info.menus = NoMenu;

@@ -176,7 +176,7 @@ void WDialog::doDialog( WWindow *parent ) {
     create_info.rect.y = r.y();
     create_info.rect.width = r.w();
     create_info.rect.height = r.h();
-    create_info.scroll = GUI_NOSCROLL;
+    create_info.scroll_style = GUI_NOSCROLL;
     create_info.style = GUI_NONE;
     create_info.parent = hparent;
     create_info.menus = NoMenu;

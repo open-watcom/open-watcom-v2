@@ -172,7 +172,7 @@ void FingOpen( void )
     info.rect.width = Width;
     info.rect.height = Height;
     info.style |= GUI_POPUP | GUI_NOFRAME;
-    info.scroll = GUI_NOSCROLL;
+    info.scroll_style = GUI_NOSCROLL;
     WndFing = WndCreateWithStruct( &info );
     if( WndFing != NULL ) {
         WndSetRepaint( WndFing );

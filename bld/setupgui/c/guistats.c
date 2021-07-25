@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -358,7 +358,7 @@ static bool OpenStatusWindow( const char *title )
         init.rect.y = rect.height - init.rect.height;
     }
     init.rect.x = (GUIScale.x - init.rect.width) / 2;
-    init.scroll = GUI_NOSCROLL;
+    init.scroll_style = GUI_NOSCROLL;
     init.style = GUI_VISIBLE | GUI_SYSTEM_MENU;
     init.parent = MainWnd;
     init.colours.num_items = GUI_ARRAY_SIZE( StatusColours );

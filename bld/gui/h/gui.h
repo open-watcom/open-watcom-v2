@@ -472,7 +472,7 @@ typedef struct gui_control_info {
     const char              *text;
     gui_rect                rect;
     gui_window              *parent;
-    gui_scroll_styles       scroll;
+    gui_scroll_styles       scroll_style;
     gui_control_styles      style;
     gui_ctl_id              id;
 } gui_control_info;
@@ -489,7 +489,7 @@ typedef const char *(GUIAPICALLBACK GUIPICKGETTEXT)( const void *data_handle, in
 typedef struct gui_create_info {
     const char          *title;
     gui_rect            rect;
-    gui_scroll_styles   scroll;
+    gui_scroll_styles   scroll_style;
     gui_create_styles   style;
     gui_window          *parent;
     gui_menu_items      menus;

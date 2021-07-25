@@ -175,7 +175,7 @@ void GUIInitGadget( p_gadget gadget, ORD start, ORD length, ORD anchor )
 
 bool GUICreateGadget( gui_window *wnd, a_gadget_direction dir,
                       ORD anchor, ORD start, ORD length,
-                      p_gadget *gadget_ptr, gui_scroll_styles style )
+                      p_gadget *gadget_ptr, gui_scroll_styles scroll_style )
 {
     p_gadget    gadget;
 
@@ -199,12 +199,12 @@ bool GUICreateGadget( gui_window *wnd, a_gadget_direction dir,
         gadget->backward = EV_SCROLL_UP;
         gadget->pageforward = EV_SCROLL_PAGE_DOWN;
         gadget->pagebackward = EV_SCROLL_PAGE_UP;
-        if( style & GUI_VDRAG ) {
+        if( scroll_style & GUI_VDRAG ) {
             gadget->slider = EV_SCROLL_VERTICAL;
         } else {
             gadget->slider = EV_NO_EVENT;
         }
-        if( style & GUI_VTRACK ) {
+        if( scroll_style & GUI_VTRACK ) {
             gadget->flags = GADGET_TRACK;
         } else {
             gadget->flags = GADGET_NONE;
@@ -214,12 +214,12 @@ bool GUICreateGadget( gui_window *wnd, a_gadget_direction dir,
         gadget->backward = EV_SCROLL_LEFT;
         gadget->pageforward = EV_SCROLL_RIGHT_PAGE;
         gadget->pagebackward = EV_SCROLL_LEFT_PAGE;
-        if( style & GUI_HDRAG ) {
+        if( scroll_style & GUI_HDRAG ) {
             gadget->slider = EV_SCROLL_HORIZONTAL;
         } else {
             gadget->slider = EV_NO_EVENT;
         }
-        if( style & GUI_HTRACK ) {
+        if( scroll_style & GUI_HTRACK ) {
             gadget->flags = GADGET_TRACK;
         } else {
             gadget->flags = GADGET_NONE;

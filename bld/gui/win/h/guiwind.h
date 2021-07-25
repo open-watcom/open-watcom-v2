@@ -143,7 +143,7 @@ struct gui_window {
     PAINTSTRUCT         *ps;
     toolbarinfo         *tbar;
     gui_create_styles   style;
-    gui_scroll_styles   scroll;
+    gui_scroll_styles   scroll_style;
     gui_flags           flags;
     int                 num_attrs;
     gui_colour_set      *attrs;
@@ -173,14 +173,14 @@ struct gui_window {
     gui_paint_info      hwnd_pinfo;
 };
 
-#define GUI_DO_HSCROLL( wnd )   ( ( (wnd->scroll & GUI_HSCROLL) != 0 ) && \
+#define GUI_DO_HSCROLL( wnd )   ( ( (wnd->scroll_style & GUI_HSCROLL) != 0 ) && \
                                   ( (wnd->style & GUI_HSCROLL_EVENTS) == 0 ) )
-#define GUI_DO_VSCROLL( wnd )   ( ( (wnd->scroll & GUI_VSCROLL) != 0 ) && \
+#define GUI_DO_VSCROLL( wnd )   ( ( (wnd->scroll_style & GUI_VSCROLL) != 0 ) && \
                                   ( (wnd->style & GUI_VSCROLL_EVENTS) == 0 ) )
-#define GUI_VSCROLL_ON( wnd )   ( (wnd->scroll & GUI_VSCROLL) != 0 )
-#define GUI_HSCROLL_ON( wnd )   ( (wnd->scroll & GUI_HSCROLL) != 0 )
-#define GUI_HSCROLL_COLS( wnd ) ( (wnd->scroll & GUI_HCOLS) != 0 )
-#define GUI_VSCROLL_ROWS( wnd ) ( (wnd->scroll & GUI_VROWS) != 0 )
+#define GUI_VSCROLL_ON( wnd )   ( (wnd->scroll_style & GUI_VSCROLL) != 0 )
+#define GUI_HSCROLL_ON( wnd )   ( (wnd->scroll_style & GUI_HSCROLL) != 0 )
+#define GUI_HSCROLL_COLS( wnd ) ( (wnd->scroll_style & GUI_HCOLS) != 0 )
+#define GUI_VSCROLL_ROWS( wnd ) ( (wnd->scroll_style & GUI_VROWS) != 0 )
 
 #define AVGXCHAR( tm ) ( _wpi_metricavecharwidth(tm) + _wpi_metricoverhang( tm ) )
 #define AVGYCHAR( tm ) ( _wpi_metricheight(tm) + _wpi_metricexleading(tm) )

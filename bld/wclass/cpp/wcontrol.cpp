@@ -58,7 +58,7 @@ WEXPORT WControl::WControl( WWindow* parent, gui_control_class control_class,
     control_info.rect.width = rr.w();
     control_info.rect.height = rr.h();
     control_info.parent = parent->handle();
-    control_info.scroll = _WStyleToScrollStyle( style );
+    control_info.scroll_style = _WStyleToScrollStyle( style );
     control_style = (gui_control_styles)( _WStyleToControlStyle( style ) | GUI_STYLE_CONTROL_INIT_INVISIBLE );
     if( (control_class != GUI_STATIC) && (control_class != GUI_GROUPBOX) ) {
         control_style = (gui_control_styles)( control_style | GUI_STYLE_CONTROL_TAB_GROUP );

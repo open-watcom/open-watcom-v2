@@ -35,11 +35,11 @@
 extern void set_dlg_textwindow( gui_control_info *gui_controls,
                           int num_controls, const char *s,
                           gui_ctl_id id,
-                          gui_ord x1,                   //top-left x
-                          gui_ord y1,                   //top-left y
-                          gui_ord width,                //width
-                          gui_ord height,               //height, number of lines
-                          gui_scroll_styles scroll );   // scroll style )
+                          gui_ord x1,                       //top-left x
+                          gui_ord y1,                       //top-left y
+                          gui_ord width,                    //width
+                          gui_ord height,                   //height, number of lines
+                          gui_scroll_styles scroll_style ); // scroll style )
 
 extern void set_dlg_dynamstring( gui_control_info *gui_controls,
                                  int num_controls, const char *s,

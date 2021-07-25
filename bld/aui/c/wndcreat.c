@@ -111,7 +111,7 @@ static a_window WndCreateWithStructBody( wnd_create_struct *info, gui_create_inf
         init->rect.width = info->rect.width;
         init->rect.height = info->rect.height;
     }
-    init->scroll = info->scroll;
+    init->scroll_style = info->scroll_style;
     init->style = info->style;
     init->style |= GUI_VSCROLL_EVENTS;
     init->style &= ~GUI_HSCROLL_EVENTS;
@@ -122,7 +122,7 @@ static a_window WndCreateWithStructBody( wnd_create_struct *info, gui_create_inf
         init->menus = NoMenu;
     } else {
         init->style &= ~GUI_VISIBLE;
-        init->scroll = GUI_NOSCROLL;
+        init->scroll_style = GUI_NOSCROLL;
         init->menus = *WndMainMenuPtr;
         init->parent = NULL;
     }
@@ -172,9 +172,7 @@ void WndInitCreateStruct( wnd_create_struct *info )
     info->title = "";
     info->wndclass = WND_NO_CLASS;
     info->style = ( GUI_GADGETS & ~GUI_CURSOR ) | GUI_CHANGEABLE_FONT;
-    info->scroll = GUI_HSCROLL+GUI_VSCROLL+
-                   GUI_HDRAG+GUI_VDRAG+
-                   GUI_VROWS+GUI_HCOLS;
+    info->scroll_style = GUI_HSCROLL | GUI_VSCROLL | GUI_HDRAG | GUI_VDRAG | GUI_VROWS | GUI_HCOLS;
     info->colour = WndColours;
 }
 

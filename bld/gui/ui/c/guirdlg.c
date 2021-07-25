@@ -310,12 +310,12 @@ static bool DialogBoxControl2GUI( DialogBoxControl *ctl, gui_control_info *ctl_i
         ctl_info->id = ctl->ID;
 
         // set the scroll styles
-        ctl_info->scroll = GUI_NOSCROLL;
+        ctl_info->scroll_style = GUI_NOSCROLL;
         if( ctl->Style & WS_HSCROLL ) {
-            ctl_info->scroll = GUI_HSCROLL;
+            ctl_info->scroll_style |= GUI_HSCROLL;
         }
         if( ctl->Style & WS_VSCROLL ) {
-            ctl_info->scroll = GUI_VSCROLL;
+            ctl_info->scroll_style |= GUI_VSCROLL;
         }
 
         // set the control postion
@@ -374,12 +374,12 @@ static gui_create_info *DialogBoxHeader2GUI( DialogBoxHeader *hdr )
 
     if( ok ) {
         // set the scroll styles
-        dlg_info->scroll = GUI_NOSCROLL;
+        dlg_info->scroll_style = GUI_NOSCROLL;
         if( hdr->Style & WS_HSCROLL ) {
-            dlg_info->scroll = GUI_HSCROLL;
+            dlg_info->scroll_style |= GUI_HSCROLL;
         }
         if( hdr->Style & WS_VSCROLL ) {
-            dlg_info->scroll = GUI_VSCROLL;
+            dlg_info->scroll_style |= GUI_VSCROLL;
         }
         // set the window styles
         dlg_info->style = GUI_NONE;

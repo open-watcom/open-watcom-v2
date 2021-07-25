@@ -174,7 +174,7 @@ typedef struct wnd_create_struct {
     wnd_class           wndclass;
     void                *extra;
     gui_create_styles   style;
-    gui_scroll_styles   scroll;
+    gui_scroll_styles   scroll_style;
     gui_colour_set      *colour;
     gui_rect            rect;
     wnd_row             title_rows;
