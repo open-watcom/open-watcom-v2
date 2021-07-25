@@ -86,6 +86,8 @@ typedef enum {
 #define GUI_VRANGE_SET( wnd ) ( ( wnd->vgadget != NULL ) && ( ( wnd->flags & SETVRANGE ) != 0 ) )
 #define GUI_HSCROLL_EVENTS_SET( wnd ) ( ( wnd->hgadget != NULL ) && ( ( wnd->style & GUI_HSCROLL_EVENTS ) != 0 ) )
 #define GUI_VSCROLL_EVENTS_SET( wnd ) ( ( wnd->vgadget != NULL ) && ( ( wnd->style & GUI_VSCROLL_EVENTS ) != 0 ) )
+#define GUI_NO_HSCROLL_EVENTS_SET( wnd ) ( ( wnd->hgadget != NULL ) && ( ( wnd->style & GUI_HSCROLL_EVENTS ) == 0 ) )
+#define GUI_NO_VSCROLL_EVENTS_SET( wnd ) ( ( wnd->vgadget != NULL ) && ( ( wnd->style & GUI_VSCROLL_EVENTS ) == 0 ) )
 #define GUI_WND_MINIMIZED( wnd ) ( wnd->flags & MINIMIZED )
 #define GUI_WND_MAXIMIZED( wnd ) ( wnd->flags & MAXIMIZED )
 #define GUI_WND_VISIBLE( wnd )   ( wnd->style & GUI_VISIBLE )

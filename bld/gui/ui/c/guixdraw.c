@@ -350,10 +350,10 @@ void GUIWndRfrshArea( gui_window *wnd, SAREA *area )
         hscroll = 0;
         vscroll = 0;
         if( GUI_WND_VISIBLE( wnd ) ) {
-            if( ( wnd->hgadget != NULL ) && !GUI_HSCROLL_EVENTS_SET( wnd ) ) {
+            if( GUI_NO_HSCROLL_EVENTS_SET( wnd ) ) {
                 hscroll = wnd->hgadget->pos;
             }
-            if( ( wnd->vgadget != NULL ) && !GUI_VSCROLL_EVENTS_SET( wnd ) ) {
+            if( GUI_NO_VSCROLL_EVENTS_SET( wnd ) ) {
                 vscroll = wnd->vgadget->pos;
             }
             COPYRECTX( *area, wnd->dirty );
