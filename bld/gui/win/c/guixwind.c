@@ -386,7 +386,7 @@ static bool CreateBackgroundWnd( gui_window *wnd, gui_create_info *dlg_info )
     DWORD               style;
     wmcreate_info       wmcreateinfo;
     HWND                frame_hwnd;
-    GUI_RECTDIM         left, top, right, bottom;
+    WPI_RECTDIM         left, top, right, bottom;
 
     _wpi_getclientrect( wnd->root, &wnd->hwnd_client_rect );
     _wpi_getrectvalues( wnd->hwnd_client_rect, &left, &top, &right, &bottom );
@@ -663,7 +663,7 @@ void GUIResizeBackground( gui_window *wnd, bool force_msg )
 {
     WPI_RECT    wpi_rect;
     int         tbar_height, status_height;
-    GUI_RECTDIM left, top, right, bottom;
+    WPI_RECTDIM left, top, right, bottom;
 
     if( wnd->root == NULLHANDLE ) {
         if( wnd->hwnd != NULLHANDLE ) {

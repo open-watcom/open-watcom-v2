@@ -117,7 +117,7 @@ bool GUIIsRectInUpdateRect( gui_window *wnd, WPI_RECT *wpi_rect )
 void GUICalcLocation( const gui_rect *rect, guix_coord *scr_pos, guix_coord *scr_size, HWND parent )
 {
     WPI_RECT    wpi_rect;
-    GUI_RECTDIM left, top, right, bottom;
+    WPI_RECTDIM left, top, right, bottom;
 
     if( parent == NULLHANDLE ) {
         parent = HWND_DESKTOP;
@@ -415,7 +415,7 @@ void GUISetRowCol( gui_window *wnd, const guix_coord *scr_size )
 void GUIInvalidateResize( gui_window *wnd )
 {
     WPI_RECT    wpi_rect;
-    GUI_RECTDIM left, top, right, bottom;
+    WPI_RECTDIM left, top, right, bottom;
 
     if( (wnd->flags & NEEDS_RESIZE_REDRAW) && ( wnd->old_rows != wnd->num_rows ) ) {
         _wpi_getrectvalues( wnd->hwnd_client_rect, &left, &top, &right, &bottom );
@@ -458,7 +458,7 @@ WPI_MRESULT GUISendDlgItemMessage( HWND parent, gui_ctl_id id, WPI_MSG msg, WPI_
 void GUIMakeRelative( gui_window *wnd, WPI_POINT *wpi_point, gui_point *point )
 {
     WPI_RECT    wpi_rect;
-    GUI_RECTDIM left, top, right, bottom;
+    WPI_RECTDIM left, top, right, bottom;
     gui_ord     scr_x;
     gui_ord     scr_y;
 
@@ -571,8 +571,8 @@ void GUIRedrawScroll( gui_window *wnd, int bar, bool redraw_now )
     WPI_RECT    wpi_rect;
     WPI_RECT    client_wpi_rect;
     HWND        hwnd;
-    GUI_RECTDIM left, top, right, bottom;
-    GUI_RECTDIM clleft, cltop, clright, clbottom;
+    WPI_RECTDIM left, top, right, bottom;
+    WPI_RECTDIM clleft, cltop, clright, clbottom;
 
     hwnd = GUIGetParentFrameHWND( wnd );
     _wpi_getwindowrect( hwnd, &wpi_rect );

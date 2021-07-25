@@ -42,7 +42,7 @@ void DoGetRelRect( HWND hwnd, const WPI_RECT *wpi_rect, gui_rect *rect, bool isp
     WPI_RECT    parent_wpi_rect;
     HWND        parent;
     gui_coord   pos;
-    GUI_RECTDIM left, top, right, bottom;
+    WPI_RECTDIM left, top, right, bottom;
 
     _wpi_getrectvalues( *wpi_rect, &left, &top, &right, &bottom );
     rect->width = GUIScreenToScaleH( right - left );

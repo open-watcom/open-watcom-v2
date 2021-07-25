@@ -79,8 +79,8 @@ static void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
     WPI_RECT    wpi_rect;
     guix_ord    hscroll_pos;
     WPI_COLOUR  colour;
-    GUI_RECTDIM left, top, right, bottom;
-    GUI_RECTDIM paint_left, paint_top, paint_right, paint_bottom;
+    WPI_RECTDIM left, top, right, bottom;
+    WPI_RECTDIM paint_left, paint_top, paint_right, paint_bottom;
     //draw_cache        dcache;
 
     if( ( wnd->hdc == NULLHANDLE ) || ( wnd->ps == NULL ) ||

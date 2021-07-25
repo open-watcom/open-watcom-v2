@@ -56,7 +56,7 @@ static void DoFreeStatus( void )
 static void SetStatusRect( HWND parent, WPI_RECT *status_wpi_rect, guix_ord x, guix_ord height )
 {
     WPI_RECT    wpi_rect;
-    GUI_RECTDIM left, right, top, bottom;
+    WPI_RECTDIM left, right, top, bottom;
     guix_ord    y;
     guix_ord    h;
 
@@ -70,7 +70,7 @@ static void SetStatusRect( HWND parent, WPI_RECT *status_wpi_rect, guix_ord x, g
 static void DoResizeStatus( gui_window *wnd )
 {
     WPI_RECT    wpi_rect;
-    GUI_RECTDIM left, top, right, bottom;
+    WPI_RECTDIM left, top, right, bottom;
 
     if( GUIHasStatus( wnd ) ) {
         _wpi_getwindowrect( wnd->status, &wpi_rect );
@@ -174,7 +174,7 @@ bool GUIAPI GUICloseStatusWindow( gui_window *wnd )
 bool GUIAPI GUIResizeStatusWindow( gui_window *wnd, gui_ord x, gui_ord height )
 {
     WPI_RECT    wpi_rect;
-    GUI_RECTDIM left, top, right, bottom;
+    WPI_RECTDIM left, top, right, bottom;
 
     if( !GUIHasStatus( wnd ) ) {
         return( false );

@@ -39,7 +39,7 @@
 
 guix_ord GUIGetScrollScreenSize( gui_window *wnd, int bar )
 {
-    GUI_RECTDIM left, top, right, bottom;
+    WPI_RECTDIM left, top, right, bottom;
 
     _wpi_getclientrect( wnd->hwnd, &wnd->hwnd_client_rect );
     _wpi_getrectvalues( wnd->hwnd_client_rect, &left, &top, &right, &bottom );

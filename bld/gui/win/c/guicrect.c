@@ -37,7 +37,7 @@
 void GUIAPI GUIGetClientRect( gui_window *wnd, gui_rect *rect )
 {
     WPI_RECT    wpi_rect;
-    GUI_RECTDIM left, top, right, bottom;
+    WPI_RECTDIM left, top, right, bottom;
     guix_rect   client;
 
     wpi_rect = wnd->hwnd_client_rect;
@@ -53,7 +53,7 @@ void GUIAPI GUIGetClientRect( gui_window *wnd, gui_rect *rect )
 bool GUIAPI GUIGetPaintRect( gui_window *wnd, gui_rect *rect )
 {
     WPI_RECT    wpi_rect;
-    GUI_RECTDIM left, top, right, bottom;
+    WPI_RECTDIM left, top, right, bottom;
     guix_rect   client;
 
     if( ( wnd->hdc == NULLHANDLE ) || ( wnd->ps == NULL ) ) {

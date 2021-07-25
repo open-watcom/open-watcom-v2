@@ -42,8 +42,8 @@
 
 guix_ord GUIGetTextExtentX( gui_window *wnd, const char *str, gui_text_ord cnt )
 {
-    GUI_RECTDIM extentx;
-    GUI_RECTDIM extenty;
+    WPI_RECTDIM extentx;
+    WPI_RECTDIM extenty;
 
     _wpi_gettextextent( wnd->hdc, str, cnt, &extentx, &extenty );
 
@@ -56,8 +56,8 @@ guix_ord GUIGetTextExtentX( gui_window *wnd, const char *str, gui_text_ord cnt )
 
 guix_ord GUIGetTextExtentY( gui_window *wnd, const char *str, gui_text_ord cnt )
 {
-    GUI_RECTDIM extentx;
-    GUI_RECTDIM extenty;
+    WPI_RECTDIM extentx;
+    WPI_RECTDIM extenty;
 
     _wpi_gettextextent( wnd->hdc, str, cnt, &extentx, &extenty );
 
@@ -68,7 +68,7 @@ guix_ord GUIGetTextExtentY( gui_window *wnd, const char *str, gui_text_ord cnt )
  * GUIGetTextExtent -- get the width & height of the given text
  */
 
-void GUIGetTextExtent( gui_window *wnd, const char *str, gui_text_ord cnt, GUI_RECTDIM *extentx, GUI_RECTDIM *extenty )
+void GUIGetTextExtent( gui_window *wnd, const char *str, gui_text_ord cnt, WPI_RECTDIM *extentx, WPI_RECTDIM *extenty )
 {
     _wpi_gettextextent( wnd->hdc, str, cnt, extentx, extenty );
 }

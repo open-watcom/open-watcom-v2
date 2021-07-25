@@ -232,7 +232,7 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord in_height,
     int                 new_right;
     int                 bm_h;
     int                 bm_w;
-    GUI_RECTDIM         left, top, right, bottom;
+    WPI_RECTDIM         left, top, right, bottom;
     int                 h;
     int                 num_items;
 
@@ -378,9 +378,9 @@ bool GUIXCreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
 void GUIResizeToolBar( gui_window *wnd )
 {
     WPI_RECT    wpi_rect;
-    GUI_RECTDIM left, top, right, bottom;
-    GUI_RECTDIM height;
-    GUI_RECTDIM t, h;
+    WPI_RECTDIM left, top, right, bottom;
+    WPI_RECTDIM height;
+    WPI_RECTDIM t, h;
     toolbarinfo *tbar;
 
     tbar = wnd->tbar;
@@ -414,7 +414,7 @@ bool GUIAPI GUIChangeToolBar( gui_window *wnd )
     toolbarinfo *tbar;
     HWND        toolhwnd;
     int         t;
-    GUI_RECTDIM left, top, right, bottom;
+    WPI_RECTDIM left, top, right, bottom;
 
     tbar = wnd->tbar;
     if( !tbar->info.is_fixed ) {
