@@ -162,7 +162,7 @@ typedef struct wnd_line_piece {
     unsigned    draw_hook       : 1;    // default off
     unsigned    draw_line_hook  : 1;    // default off
     size_t      length;                 // INTERNAL -- do not use
-    char        *hint;                  // set for Hint Text
+    const char  *hint;                  // set for Hint Text
 } wnd_line_piece;
 
 #define WND_NO_EXTEND   0
