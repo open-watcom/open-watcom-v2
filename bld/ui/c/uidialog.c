@@ -177,9 +177,11 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
     case FLD_TEXT :
     case FLD_LABEL :
         attr = UIData->attrs[ATTR_NORMAL];
-        strncpy( ctrlbuf, field->u.str, CTRL_BUF_LEN );
-        ctrlbuf[CTRL_BUF_LEN] = '\0';
-        ctrlbuf_len = strlen( ctrlbuf );
+        if( field->u.str != NULL ) {
+            strncpy( ctrlbuf, field->u.str, CTRL_BUF_LEN );
+            ctrlbuf[CTRL_BUF_LEN] = '\0';
+            ctrlbuf_len = strlen( ctrlbuf );
+        }
         if( field->typ == FLD_LABEL ) {
             if( ctrlbuf_len < CTRL_BUF_LEN ) {
                 ctrlbuf[ctrlbuf_len++] = ':';
