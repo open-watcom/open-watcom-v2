@@ -50,7 +50,7 @@ void GUIAPI GUIWndDirty( gui_window *wnd )
         GUIWndUpdate( wnd );
     } else {
         for( wnd = GUIGetFront(); wnd != NULL; wnd = GUIGetNextWindow( wnd ) ) {
-            GUIWholeWndDirty( wnd );
+            GUIDirtyWhole( wnd );
         }
         screen.row = 0; /* leave this 0! */
         screen.col = 0;

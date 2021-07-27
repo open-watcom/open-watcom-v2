@@ -158,7 +158,7 @@ void GUIAPI GUISetWindowColours( gui_window *wnd, int num_attrs, gui_colour_set 
     for( control = wnd->controls; control != NULL; control = control->sibling ) {
         GUIRefreshControl( control->parent, control->id );
     }
-    GUIWholeWndDirty( wnd );
+    GUIDirtyWhole( wnd );
 }
 
 static bool ColoursSet = false;

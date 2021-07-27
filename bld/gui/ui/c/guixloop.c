@@ -696,14 +696,14 @@ bool GUIProcessEvent( ui_event ui_ev )
         if( GUI_VSCROLL_EVENTS_SET( GUICurrWnd ) ) {
             DoScrollDrag( GUICurrWnd->vgadget, prev, diff );
         } else {
-            GUIWholeWndDirty( GUICurrWnd );
+            GUIDirtyWhole( GUICurrWnd );
         }
         return( true );
     case EV_SCROLL_HORIZONTAL:
         if( GUI_HSCROLL_EVENTS_SET( GUICurrWnd ) ) {
             DoScrollDrag( GUICurrWnd->hgadget, prev, diff );
         } else {
-            GUIWholeWndDirty( GUICurrWnd );
+            GUIDirtyWhole( GUICurrWnd );
         }
         return( true );
     case EV_MENU_INITPOPUP:

@@ -245,7 +245,7 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *p
             return( false );
         }
         GUIBringToFront( wnd );
-        GUIWholeWndDirty( wnd );
+        GUIDirtyWhole( wnd );
         uisetmouse( wnd->vs.area.row, wnd->vs.area.col );
         return( true );
     } else {

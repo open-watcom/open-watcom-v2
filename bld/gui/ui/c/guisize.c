@@ -65,7 +65,7 @@ static void RedrawResize( gui_window *wnd, SAREA *old )
 {
     if( ( ( wnd->use.width > old->width )  &&
           ( wnd->use.height > old->height ) ) || GUI_WND_MINIMIZED( wnd ) ) {
-        GUIWholeWndDirty( wnd );
+        GUIDirtyWhole( wnd );
     } else {
         if( wnd->flags & NEEDS_RESIZE_REDRAW ) {
             if( wnd->use.width > old->width ) {
@@ -262,7 +262,7 @@ static bool SizeWnd( gui_window *wnd, SAREA *area, gui_flags flag, resize_dir di
     wnd->flags |= DONT_SEND_PAINT+NEEDS_RESIZE_REDRAW;
     if( was_minimized ) {
         uivsetactive( &wnd->vs );
-        GUIWholeWndDirty( wnd );
+        GUIDirtyWhole( wnd );
     } else {
         wnd->flags |= NON_CLIENT_INVALID;
         RedrawResize( wnd, &save );

@@ -35,10 +35,10 @@
 #include "guiwhole.h"
 
 /*
- * GUIWholeWndDirty -- contents and frame are dirty
+ * GUIDirtyWhole -- contents and frame are dirty
  */
 
-void GUIWholeWndDirty( gui_window * wnd )
+void GUIDirtyWhole( gui_window * wnd )
 {
     if( wnd != NULL ) {
         wnd->flags |= WHOLE_WND_INVALID;
