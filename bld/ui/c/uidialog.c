@@ -926,7 +926,7 @@ static ui_event uitabkey( ui_event ui_ev, a_dialog *ui_dlg_info )
     ui_event        new_ui_ev;
 
     if( ui_dlg_info->first == NULL )
-        return( false );
+        return( ui_ev );
     curr = ui_dlg_info->curr;
     new_ui_ev = ui_ev;
     switch( ui_ev ) {
