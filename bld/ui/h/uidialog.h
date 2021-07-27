@@ -176,9 +176,9 @@ extern void             uiprinthotspots( VSCREEN *, VFIELD * );
 extern void             uioffhotspots( VSCREEN *, VFIELD * );
 extern ui_event         uihotkeyfilter( a_dialog *, ui_event );
 extern ui_event         uihotspotfilter( VSCREEN *, VFIELD *, ui_event );
-extern char             uihotspot( VSCREEN *, char *str, SAREA *parea, a_hot_spot_flags flags );
+extern char             uihotspot( VSCREEN *, const char *str, SAREA *parea, a_hot_spot_flags flags );
 extern void             uidisplayhotspot( VSCREEN *w, VFIELD *vfield );
-extern char             uidrawhottext( VSCREEN *, char *str, SAREA *parea, ATTR attr, ATTR hotattr, bool hidden, bool no_hotkey, bool centre_text );
+extern char             uidrawhottext( VSCREEN *, const char *str, SAREA *parea, ATTR attr, ATTR hotattr, bool hidden, bool no_hotkey, bool centre_text );
 
 extern unsigned         ui_split_line( char **, char *, unsigned );
 extern VSCREEN          *uiinitdialog( const char *title, ATTR, char **, uisize, uisize, int, int );
