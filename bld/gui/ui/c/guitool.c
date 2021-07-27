@@ -290,7 +290,7 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
     if( tbar == NULL ) {
         return( false );
     }
-    if( toolinfo->num_items ) {
+    if( toolinfo->num_items == 0 ) {
         tbar->toolinfo = NoToolbar;
     } else {
         size = sizeof( gui_toolbar_struct ) * toolinfo->num_items;
