@@ -47,13 +47,15 @@
 #define RIGHT_ARROW             {CHAR_VALUE( PC_arrowright ),0}
 #define LEFT_ARROW              {CHAR_VALUE( PC_arrowleft ),0}
 
-char        VertScrollFrame[2]  = {CHAR_VALUE( PC_sparseblock ),0};
-char        HorzScrollFrame[2]  = {CHAR_VALUE( PC_sparseblock ),0};
-char        SliderChar[2]       = {CHAR_VALUE( PC_solid ),0};
-char        LeftPoint[2]        = {CHAR_VALUE( PC_triangleft ),0};
-char        RightPoint[2]       = {CHAR_VALUE( PC_triangright ),0};
-char        UpPoint[2]          = {CHAR_VALUE( PC_triangup ),0};
-char        DownPoint[2]        = {CHAR_VALUE( PC_triangdown ),0};
+#define LongMulDiv(a,b,c,d)       ((a)(((long)b * (long)c) / (long)d))
+
+char    VertScrollFrame[2]  = {CHAR_VALUE( PC_sparseblock ),0};
+char    HorzScrollFrame[2]  = {CHAR_VALUE( PC_sparseblock ),0};
+char    SliderChar[2]       = {CHAR_VALUE( PC_solid ),0};
+char    LeftPoint[2]        = {CHAR_VALUE( PC_triangleft ),0};
+char    RightPoint[2]       = {CHAR_VALUE( PC_triangright ),0};
+char    UpPoint[2]          = {CHAR_VALUE( PC_triangup ),0};
+char    DownPoint[2]        = {CHAR_VALUE( PC_triangdown ),0};
 
 static  p_gadget        Pressed         = NULL;   /* pointer to gadget where mouse pressed  */
 static  bool            Drag            = false;
@@ -99,9 +101,7 @@ static void setlinear( p_gadget g )
     } else if( g->pos >= ( g->total_size - g->page_size ) ) {
         g->linear = g->end - 1;
     } else {
-        g->linear = g->start + 1 +
-                    (int)((long)g->pos * (long)( g->end - g->start - 1 ) /
-                          (long)( g->total_size - g->page_size ) );
+        g->linear = g->start + 1 + LongMulDiv( int, g->pos, g->end - g->start - 1, g->total_size - g->page_size );
     }
     if( g->linear > ( g->end - 1 ) ) {
         g->linear = g->end - 1;
@@ -161,21 +161,26 @@ void uifinigadget( p_gadget g )
 
 ui_event uigadgetfilter( ui_event ui_ev, p_gadget g )
 {
-    int         m_anchor, m_linear;
+    int         m_anchor;
+    int         m_linear;
     int         tmp;
     ui_event    newev;
     ORD         start;
     int         length;
     int         pos = 0;
+    int         mrow;
+    int         mcol;
 
     if( uimouseinstalled() ) {
         uiunprotect( g->vs );
-        uimousepos( g->vs, &m_anchor, &m_linear );
+        uimousepos( g->vs, &mrow, &mcol );
         uiprotect( g->vs );
         if( g->dir == VERTICAL ) {
-            tmp = m_linear;
-            m_linear = m_anchor;
-            m_anchor = tmp;
+            m_linear = mrow;
+            m_anchor = mcol;
+        } else {
+            m_linear = mcol;
+            m_anchor = mrow;
         }
         if( ( ui_ev == EV_MOUSE_PRESS ) || ( ui_ev == EV_MOUSE_DCLICK ) ) {
             if( ( m_anchor != g->anchor ) || ( m_linear < g->start ) ||
@@ -270,9 +275,7 @@ ui_event uigadgetfilter( ui_event ui_ev, p_gadget g )
                             m_linear = g->end - 1;
                             pos = g->total_size - g->page_size;
                          } else {
-                            pos = (int)((long)( m_linear - g->start ) *
-                                        (long)( g->total_size - g->page_size ) /
-                                        (long)length);
+                            pos = LongMulDiv( int, m_linear - g->start, g->total_size - g->page_size, length );
                          }
                     }
                 }
