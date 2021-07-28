@@ -72,7 +72,7 @@ typedef enum {
     GUI_SCROLL_PAGE_RIGHT,
     GUI_SCROLL_FULL_RIGHT,
     GUI_SCROLL_HORIZONTAL,
-    GUI_CLICKED,                /* menu clicked */
+    GUI_CLICKED,                /* menu or control clicked */
     GUI_CONTROL_DCLICKED,       /* control double clicked */
     GUI_LBUTTONDOWN,            /* mouse messages */
     GUI_LBUTTONUP,
