@@ -191,20 +191,20 @@ void GUIAPI GUISetModalDlgs( bool modal )
     DlgModal = modal;
 }
 
-void GUIDlgOpen( const char *title, gui_text_ord rows, gui_text_ord cols, gui_control_info *controls_info,
+void GUIAPI GUIDlgOpen( const char *title, gui_text_ord rows, gui_text_ord cols, gui_control_info *controls_info,
                  int num_controls, GUICALLBACK *gui_call_back, void *extra )
 {
     doDlgOpen( NULL, title, rows, cols, controls_info, num_controls, gui_call_back, extra, false );
 }
 
-void GUIModalDlgOpen( gui_window *parent_wnd, const char *title, gui_text_ord rows, gui_text_ord cols,
+void GUIAPI GUIModalDlgOpen( gui_window *parent_wnd, const char *title, gui_text_ord rows, gui_text_ord cols,
                       gui_control_info *controls_info, int num_controls,
                       GUICALLBACK *gui_call_back, void *extra )
 {
     doDlgOpen( parent_wnd, title, rows, cols, controls_info, num_controls, gui_call_back, extra, false );
 }
 
-void GUISysModalDlgOpen( const char *title, gui_text_ord rows, gui_text_ord cols,
+void GUIAPI GUISysModalDlgOpen( const char *title, gui_text_ord rows, gui_text_ord cols,
                          gui_control_info *controls_info, int num_controls,
                          GUICALLBACK *gui_call_back, void *extra )
 {
