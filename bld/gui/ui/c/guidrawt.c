@@ -73,11 +73,11 @@ void GUIXDrawText( gui_window *wnd, const char *text, size_t length, const gui_c
 
     /* adjust for scrolling */
     vscroll = 0;
-    if( GUI_NO_VSCROLL_EVENTS_SET( wnd ) ) {
+    if( GUI_DO_VSCROLL( wnd ) ) {
         vscroll = wnd->vgadget->pos;
     }
     hscroll = 0;
-    if( GUI_NO_HSCROLL_EVENTS_SET( wnd ) ) {
+    if( GUI_DO_HSCROLL( wnd ) ) {
         hscroll = wnd->hgadget->pos;
     }
 

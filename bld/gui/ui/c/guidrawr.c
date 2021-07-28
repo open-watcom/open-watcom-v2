@@ -73,7 +73,7 @@ static bool IntersectRect( SAREA *area, SAREA *bound )
 
 static bool AdjustRect( gui_window *wnd, SAREA *area )
 {
-    if( GUI_NO_HSCROLL_EVENTS_SET( wnd ) ) {
+    if( GUI_DO_HSCROLL( wnd ) ) {
         if( ( area->col + area->width ) < wnd->hgadget->pos ) {
             return( false );
         } else {
@@ -85,7 +85,7 @@ static bool AdjustRect( gui_window *wnd, SAREA *area )
             }
         }
     }
-    if( GUI_NO_VSCROLL_EVENTS_SET( wnd ) ) {
+    if( GUI_DO_VSCROLL( wnd ) ) {
         if( ( area->row + area->height ) < wnd->vgadget->pos ) {
             return( false );
         } else {

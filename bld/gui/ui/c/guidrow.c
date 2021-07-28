@@ -44,7 +44,7 @@ void GUIAPI GUIWndDirtyRow( gui_window * wnd, gui_text_ord row )
     SAREA area;
 
     area.row = row + wnd->use.row;
-    if( GUI_NO_VSCROLL_EVENTS_SET( wnd ) ) {
+    if( GUI_DO_VSCROLL( wnd ) ) {
         area.row -= wnd->vgadget->pos;
     }
     area.col = wnd->use.col;

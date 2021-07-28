@@ -57,7 +57,7 @@ void GUIAPI GUISetHScrollRange( gui_window *wnd, gui_ord range )
 {
     if( wnd != NULL ) {
         SetScrollRange( wnd->hgadget, GUIScaleToScreenH( range ) );
-        wnd->flags |= SETHRANGE;
+        wnd->flags |= HRANGE_SET;
     }
 }
 
@@ -69,7 +69,7 @@ void GUIAPI GUISetVScrollRange( gui_window *wnd, gui_ord range )
 {
     if( wnd != NULL ) {
         SetScrollRange( wnd->vgadget, GUIScaleToScreenV( range ) );
-        wnd->flags |= SETVRANGE;
+        wnd->flags |= VRANGE_SET;
     }
 }
 
@@ -81,7 +81,7 @@ void GUIAPI GUISetHScrollRangeCols( gui_window *wnd, gui_text_ord range )
 {
     if( wnd != NULL ) {
         SetScrollRange( wnd->hgadget, range );
-        wnd->flags |= SETHRANGE;
+        wnd->flags |= HRANGE_SET;
     }
 }
 
@@ -94,7 +94,7 @@ void GUIAPI GUISetVScrollRangeRows( gui_window *wnd, gui_text_ord range )
 
     if( wnd != NULL ) {
         SetScrollRange( wnd->vgadget, range );
-        wnd->flags |= SETVRANGE;
+        wnd->flags |= VRANGE_SET;
     }
 }
 

@@ -338,10 +338,10 @@ void GUIMakeRelative( gui_window *wnd, const guix_point *scr_point, gui_point *p
     GUISetUseArea( wnd, &area, &use );
     scr_x = scr_point->x - use.col - area.col;
     scr_y = scr_point->y - use.row - area.row;
-    if( GUI_NO_HSCROLL_EVENTS_SET( wnd ) ) {
+    if( GUI_DO_HSCROLL( wnd ) ) {
         scr_x += wnd->hgadget->pos;
     }
-    if( GUI_NO_VSCROLL_EVENTS_SET( wnd ) ) {
+    if( GUI_DO_VSCROLL( wnd ) ) {
         scr_y += wnd->vgadget->pos;
     }
     point->x = GUIScreenToScaleH( scr_x );

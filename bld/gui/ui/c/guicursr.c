@@ -47,10 +47,10 @@ bool GUIAPI GUISetCursorPos( gui_window *wnd, const gui_point *point )
     if( wnd->style & GUI_CURSOR ) {
         scr_x = GUIScaleToScreenH( point->x );
         scr_y = GUIScaleToScreenV( point->y );
-        if( GUI_NO_HSCROLL_EVENTS_SET( wnd ) ) {
+        if( GUI_DO_HSCROLL( wnd ) ) {
             scr_x -= wnd->hgadget->pos;
         }
-        if( GUI_NO_VSCROLL_EVENTS_SET( wnd ) ) {
+        if( GUI_DO_VSCROLL( wnd ) ) {
             scr_y -= wnd->vgadget->pos;
         }
         if( ( scr_y < wnd->use.height ) && ( scr_x < wnd->use.width ) ) {
@@ -72,10 +72,10 @@ bool GUIAPI GUIGetCursorPos( gui_window *wnd, gui_point *point )
     }
     scr_x = wnd->vs.cursor_col - wnd->use.col;
     scr_y = wnd->vs.cursor_row - wnd->use.col;
-    if( GUI_NO_HSCROLL_EVENTS_SET( wnd ) ) {
+    if( GUI_DO_HSCROLL( wnd ) ) {
         scr_x += wnd->hgadget->pos;
     }
-    if( GUI_NO_VSCROLL_EVENTS_SET( wnd ) ) {
+    if( GUI_DO_VSCROLL( wnd ) ) {
         scr_y += wnd->vgadget->pos;
     }
     point->x = GUIScreenToScaleH( scr_x );

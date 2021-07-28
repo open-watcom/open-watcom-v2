@@ -76,7 +76,7 @@ void GUIAPI GUISetHScrollThumb( gui_window * wnd, int percent )
 {
     if( wnd != NULL ) {
         SetScrollThumb( wnd->hgadget, percent, GUI_HRANGE_SET( wnd ) );
-        wnd->flags |= SETHRANGE;
+        wnd->flags |= HRANGE_SET;
     }
 }
 
@@ -88,6 +88,6 @@ void GUIAPI GUISetVScrollThumb( gui_window * wnd, int percent )
 {
     if( wnd != NULL ) {
         SetScrollThumb( wnd->vgadget, percent, GUI_VRANGE_SET( wnd ) );
-        wnd->flags |= SETVRANGE;
+        wnd->flags |= VRANGE_SET;
     }
 }

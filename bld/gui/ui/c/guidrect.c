@@ -47,7 +47,7 @@ void GUIAPI GUIWndDirtyRect( gui_window *wnd, const gui_rect *rect )
     GUIScaleToScreenRectR( rect, &area );
 
     /* adjust for scrolling */
-    if( GUI_NO_VSCROLL_EVENTS_SET( wnd ) ) {
+    if( GUI_DO_VSCROLL( wnd ) ) {
         if( area.row < wnd->vgadget->pos ) {
             if( ( area.row + area.height ) < wnd->vgadget->pos ) {
                 return; // rect entirely above visible area;
@@ -60,7 +60,7 @@ void GUIAPI GUIWndDirtyRect( gui_window *wnd, const gui_rect *rect )
             area.row -= wnd->vgadget->pos;
         }
     }
-    if( GUI_NO_HSCROLL_EVENTS_SET( wnd ) ) {
+    if( GUI_DO_HSCROLL( wnd ) ) {
         if( area.col < wnd->hgadget->pos ) {
             if( ( area.col + area.width ) < wnd->hgadget->pos ) {
                 return; // rect entirely to left of visible area;

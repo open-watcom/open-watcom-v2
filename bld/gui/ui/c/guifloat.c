@@ -65,10 +65,10 @@ static void MapLocation( gui_window *wnd, const gui_point *point, guix_point *sc
 
     scr_x = GUIScaleToScreenH( point->x );
     scr_y = GUIScaleToScreenV( point->y );
-    if( GUI_NO_HSCROLL_EVENTS_SET( wnd ) ) {
+    if( GUI_DO_HSCROLL( wnd ) ) {
         scr_x -= wnd->hgadget->pos;
     }
-    if( GUI_NO_VSCROLL_EVENTS_SET( wnd ) ) {
+    if( GUI_DO_VSCROLL( wnd ) ) {
         scr_y -= wnd->vgadget->pos;
     }
     scr_point->x = scr_x + wnd->use.col + 1;
