@@ -55,7 +55,7 @@ static void SetScrollThumb( p_gadget gadget, int percent, bool range_set )
         if( !range_set ) {
             gadget->total_size = 2 * gadget->page_size;
         }
-        pos = GUIMulDiv( gadget->total_size - gadget->page_size, percent, 100 );
+        pos = GUIMulDiv( int, gadget->total_size - gadget->page_size, percent, 100 );
         if( ( pos == 0 ) && ( percent != 0 ) &&
             ( gadget->total_size > gadget->page_size ) ) {
             pos++;
