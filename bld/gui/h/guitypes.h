@@ -35,6 +35,8 @@
 
 #define GUIEVENT( wnd, event, param )   ((*wnd->gui_call_back)(wnd, event, param))
 
+#define GUIMulDiv(a,b,c,d) ((a)(((long)b * (long)c) / (long)d))
+
 #define COPYRECT( old, new ) { \
     (new).x = (old).x; (new).y = (old).y; \
     (new).width = (old).width; (new).height = (old).height; }

@@ -36,8 +36,6 @@
 
 #include "guixscal.h"
 
-#define GUIMulDiv(a,b,c,d) ((a)(((long)b * (long)c) / (long)d))
-
 extern void GUISetScreen( gui_ord xmin, gui_ord ymin, gui_ord width, gui_ord height );
 
 extern guix_ord GUIScaleToScreenH( gui_ord ord );
