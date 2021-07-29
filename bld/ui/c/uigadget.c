@@ -163,7 +163,6 @@ ui_event uigadgetfilter( ui_event ui_ev, p_gadget g )
 {
     int         m_anchor;
     int         m_linear;
-    int         tmp;
     ui_event    newev;
     ORD         start;
     int         length;
