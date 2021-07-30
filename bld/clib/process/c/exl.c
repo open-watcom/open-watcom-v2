@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,9 +58,6 @@ _WCRTLINK int __F_NAME((execl),_wexecl)( const CHAR_TYPE *path, const CHAR_TYPE 
     return( _wexecve( path, (const CHAR_TYPE**)ap[0],
             (const CHAR_TYPE **)_RWD_wenviron ) );
  #else
-  #ifdef __RDOS__
-    return( execv( path, (const CHAR_TYPE**)ap[0] ) );
-  #else
     return( execve( path, (const CHAR_TYPE**)ap[0],
             (const CHAR_TYPE **)_RWD_environ ) );
   #endif
