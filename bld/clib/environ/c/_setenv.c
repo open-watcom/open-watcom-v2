@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,12 +59,12 @@
 #ifndef __NETWARE__
 static int __F_NAME(addenv,waddenv)( int index, const CHAR_TYPE *name, const CHAR_TYPE *newvalue )
 {
-    int                 len;
-    CHAR_TYPE           *env_str;
-    const CHAR_TYPE     *old_val;
-    const CHAR_TYPE     **envp;
+    int             len;
+    CHAR_TYPE       *env_str;
+    CHAR_TYPE       *old_val;
+    CHAR_TYPE       **envp;
 
-    envp = (const CHAR_TYPE **)__F_NAME(_RWD_environ,_RWD_wenviron);
+    envp = __F_NAME(_RWD_environ,_RWD_wenviron);
     len = __F_NAME(strlen,wcslen)( name );
     old_val = _RWD_env_mask[index] ? envp[index] : NULL;
     env_str = lib_realloc( (void *)old_val, ( len + __F_NAME(strlen,wcslen)( newvalue ) + 2 ) * sizeof( CHAR_TYPE ) );
@@ -94,7 +94,7 @@ int __F_NAME(__setenv,__wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE *newval
 
     return( -1 );
 #else
-    int     rc;
+    int     index;
 
     /* unused parameters */ (void)overwrite;
 
@@ -103,10 +103,13 @@ int __F_NAME(__setenv,__wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE *newval
         __create_wide_environment();
     }
   #endif
-    rc = __F_NAME(__findenv,__wfindenv)( name, ( newvalue == NULL ) );
-    if( rc > 0 ) {
-        rc = __F_NAME(addenv,waddenv)( rc - 1, name, newvalue );
+    if( newvalue == NULL ) {
+        return( __F_NAME(__findenvdel,__wfindenvdel)( name ) );
     }
-    return( rc );
+    index = __F_NAME(__findenvadd,__wfindenvadd)( name );
+    if( index < 0 ) {
+        return( -1 );
+    }
+    return( __F_NAME(addenv,waddenv)( index, name, newvalue ) );
 #endif
 }

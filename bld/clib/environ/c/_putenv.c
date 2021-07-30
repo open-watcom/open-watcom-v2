@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,7 +64,6 @@ int __F_NAME(__putenv,__wputenv)( const CHAR_TYPE *env_string )
 #else
     int                 index = -1;
     const CHAR_TYPE     *p;
-    int                 delete_var;
 
     if( env_string == NULL || _TCSTERM( env_string ) )
         return( index );
@@ -76,19 +75,17 @@ int __F_NAME(__putenv,__wputenv)( const CHAR_TYPE *env_string )
     }
     if( _TCSTERM( p ) )
         return( index ); /* <name> with no '=' is illegal */
-    delete_var = ( _TCSTERM( _TCSINC( p ) ) );
-    index = __F_NAME(__findenv,__wfindenv)( env_string, delete_var );
-    if( delete_var )
-        return( 0 );
-    if( index == -1 ) {
-        return( index );
+    if( _TCSTERM( _TCSINC( p ) ) ) {
+        return( __F_NAME(__findenvdel,__wfindenvdel)( env_string ) );
     }
-    if( index > 0 ) {
-        ((const CHAR_TYPE **)__F_NAME(_RWD_environ,_RWD_wenviron))[index - 1] = env_string;
+    index = __F_NAME(__findenvadd,__wfindenvadd)( env_string );
+    if( index < 0 ) {
+        return( -1 );
+    }
+    ((const CHAR_TYPE **)__F_NAME(_RWD_environ,_RWD_wenviron))[index] = env_string;
   #ifndef __WIDECHAR__
-        _RWD_env_mask[index - 1] = 0;     /* indicate not alloc'd */
+    _RWD_env_mask[index] = 0;     /* indicate not alloc'd */
   #endif
-    }
     return( 0 );
 #endif
 }

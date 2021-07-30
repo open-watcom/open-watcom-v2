@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,13 +57,22 @@
 #define _TCSLEN(__p)        _mbslen((unsigned char *)__p)
 #endif
 
+/* wide environment doesn't use alloc'd mask */
+#ifdef __WIDECHAR__
+#define ENVARR_SIZE(x)      ((x) * sizeof( wchar_t * ) + sizeof( wchar_t * ))
+#else
+#define ENVARR_SIZE(x)      ((x) * (sizeof( char * ) + sizeof( char )) + sizeof( char * ))
+#endif
+
 /*
  * These routines are used internally only, so should not
  * have a _WCRTLINK modifier.
  */
 extern void     __create_wide_environment( void );
-extern int      __findenv( const char *name, int delete_var );
-extern int      __wfindenv( const wchar_t *name, int delete_var );
+extern int      __findenvadd( const char *name );
+extern int      __wfindenvadd( const wchar_t *name );
+extern int      __findenvdel( const char *name );
+extern int      __wfindenvdel( const wchar_t *name );
 extern int      __putenv( const char *env_string );
 extern int      __wputenv( const wchar_t *env_string );
 extern int      __setenv( const char *name, const char *newvalue, int overwrite );
