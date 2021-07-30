@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,8 +43,6 @@ _WCRTLINK int __F_NAME(execvp,_wexecvp)( const CHAR_TYPE *file, const CHAR_TYPE 
 #ifdef __WIDECHAR__
     if( _RWD_wenviron == NULL )
         __create_wide_environment();
-    return( _wexecvpe( file, argv, (const CHAR_TYPE **)_RWD_wenviron ) );
-#else
-    return( execvpe( file, argv, (const CHAR_TYPE **)_RWD_environ ) );
 #endif
+    return( __F_NAME(execvpe,_wexecvpe)( file, argv, (const CHAR_TYPE **)__F_NAME(_RWD_environ,_RWD_wenviron) ) );
 }
