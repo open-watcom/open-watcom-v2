@@ -129,8 +129,7 @@ static void SetupArgs( struct _proc_spawn *cmd )
 
     envc = cmd->envc;
 
-    environ = cpp = (char **)malloc( (envc + 1) * sizeof( char * ) +
-                    envc * sizeof( char ) );
+    environ = cpp = (char **)malloc( ENVARR_SIZE( envc ) );
     if( environ == NULL ) {
         _Not_Enough_Memory();
         // never return
