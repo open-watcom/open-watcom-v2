@@ -67,7 +67,7 @@ static int __F_NAME(addenv,waddenv)( int index, const CHAR_TYPE *name, const CHA
     envp = __F_NAME(_RWD_environ,_RWD_wenviron);
     len = __F_NAME(strlen,wcslen)( name );
     old_val = _RWD_env_mask[index] ? envp[index] : NULL;
-    env_str = lib_realloc( (void *)old_val, ( len + __F_NAME(strlen,wcslen)( newvalue ) + 2 ) * sizeof( CHAR_TYPE ) );
+    env_str = lib_realloc( old_val, ( len + 1 + __F_NAME(strlen,wcslen)( newvalue ) + 1 ) * sizeof( CHAR_TYPE ) );
     if( env_str == NULL )
         return( -1 );
     memcpy( env_str, name, len * sizeof( CHAR_TYPE ) );

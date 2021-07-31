@@ -36,6 +36,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stddef.h>
+#include <limits.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #ifdef __NT__

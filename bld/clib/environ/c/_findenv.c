@@ -89,10 +89,12 @@ static int __F_NAME(findenv,wfindenv)( const CHAR_TYPE *name, int delete_var )
                     lib_free( *envp );
                 }
 #endif
+                /* shift string array entries */
                 for( tmp_envp = envp; *tmp_envp != NULL; tmp_envp++ ) {
                     *tmp_envp = *(tmp_envp + 1);
                 }
 #ifndef __WIDECHAR__
+                /* shift flag array entries */
                 envm = (char *)tmp_envp;
                 while( len-- > 0 ) {
                     *envm++ = *_RWD_env_mask++;
@@ -116,7 +118,8 @@ static int __F_NAME(findenv,wfindenv)( const CHAR_TYPE *name, int delete_var )
             }
         }
     }
-    return( __F_NAME(_RWD_environ,_RWD_wenviron) - envp );  /* not found */
+    /* not found */
+    return( __F_NAME(_RWD_environ,_RWD_wenviron) - envp );
 }
 
 int __F_NAME(__findenvadd,__wfindenvadd)( const CHAR_TYPE *env_string )

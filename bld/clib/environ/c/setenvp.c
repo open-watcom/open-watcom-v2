@@ -104,11 +104,12 @@ void __setenvp( void )
     while( *argep != NULL )
         argep++;
     count = argep - _Envptr;
-    argep = lib_malloc( ENVARR_SIZE( count ) );
-    memcpy( argep, _Envptr, ( count + 1 ) * sizeof( char * ) );
-    _RWD_environ = argep;
-    _RWD_env_mask = (char *)&argep[count + 1];
-    memset( _RWD_env_mask, 0, count );
+    _RWD_environ = lib_malloc( ENVARR_SIZE( count ) );
+    if( _RWD_environ != NULL ) {
+        _RWD_env_mask = (char *)&_RWD_environ[count + 1];
+        memcpy( _RWD_environ, _Envptr, ( count + 1 ) * sizeof( char * ) );
+        memset( _RWD_env_mask, 0, count );
+    }
 #else
   #if defined(__WINDOWS_386__) || defined(__DOS_386__)
     char    _WCFAR *startp;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,6 +52,7 @@
 #include "rtdata.h"
 #include "fltsupp.h"
 #include "slibqnx.h"
+#include "_environ.h"
 
 
 #if defined( _M_I86 )
@@ -77,10 +78,10 @@ char    **_argv;                            /* argument vector */
 
 pid_t                   _my_pid;        /* some sort of POSIX dodad */
 struct  _proc_spawn     *__cmd;         /* address of spawn msg */
-char                    *__near __env_mask;
 int (__far * (__far *__f))();           /* Shared library jump table    */
 extern  void __user_init( void );
 #define __user_init() ((int(__far *)(void)) __f[1])()
+
 #endif
 
 static void _WCI86FAR __null_FPE_rtn( int fpe_type )

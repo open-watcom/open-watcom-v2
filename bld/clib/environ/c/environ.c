@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,9 +36,10 @@
 #include "rtinit.h"
 #include "_environ.h"
 
-_WCRTDATA char ** _WCDATA environ;      /* pointer to environment table */
-_WCRTDATA wchar_t ** _WCDATA _wenviron; /* pointer to wide char environment */
-char * _WCNEAR __env_mask;              /* ptr to char array of flags */
+
+_WCRTDATA char      ** _WCDATA environ;     /* pointer to environment table */
+_WCRTDATA wchar_t   ** _WCDATA _wenviron;   /* pointer to wide char environment */
+char                * _WCNEAR __env_mask;   /* ptr to char array of flags */
 
 AXI( __setenvp, INIT_PRIORITY_LIBRARY )
 

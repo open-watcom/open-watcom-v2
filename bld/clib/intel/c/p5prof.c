@@ -36,6 +36,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
+#include <limits.h>
 #include "rtinit.h"
 #include "p5prof.h"
 #include "pathgrp2.h"
