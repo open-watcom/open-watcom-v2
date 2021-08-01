@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,22 +40,22 @@
 _WCRTLINK size_t _NEARFAR(mbsrtowcs,_fmbsrtowcs)( wchar_t _FFAR *dst, const char _FFAR * _FFAR *src, size_t len, mbstate_t _FFAR *ps )
 {
     wchar_t             wc;
-    int                 charsConverted = 0;
+    size_t              charsConverted = 0;
     const char _FFAR *  mbcPtr = *src;
-    int                 rc;
+    size_t              rc;
 
     /*** Process the characters, one by one ***/
     if( dst != NULL ) {
         while( len-- > 0 ) {
             rc = _NEARFAR(mbrtowc,_fmbrtowc)( &wc, mbcPtr, MB_LEN_MAX, ps );
-            if( rc > 0 ) {
-                *dst++ = wc;
-                mbcPtr += rc;
-                charsConverted++;
+            if( rc == (size_t)-1 || rc == (size_t)-2 ) {
+                return( (size_t)-1 );
             } else if( rc == 0 ) {
                 break;
             } else {
-                return( (size_t)-1 );
+                *dst++ = wc;
+                mbcPtr += rc;
+                charsConverted++;
             }
         }
         if( rc == 0 ) {
@@ -65,13 +66,13 @@ _WCRTLINK size_t _NEARFAR(mbsrtowcs,_fmbsrtowcs)( wchar_t _FFAR *dst, const char
     } else {
         for( ;; ) {
             rc = _NEARFAR(mbrtowc,_fmbrtowc)( &wc, mbcPtr, MB_LEN_MAX, ps );
-            if( rc > 0 ) {
-                mbcPtr += rc;
-                charsConverted++;
+            if( rc == (size_t)-1 || rc == (size_t)-2 ) {
+                return( (size_t)-1 );
             } else if( rc == 0 ) {
                 break;
             } else {
-                return( (size_t)-1 );
+                mbcPtr += rc;
+                charsConverted++;
             }
         }
     }

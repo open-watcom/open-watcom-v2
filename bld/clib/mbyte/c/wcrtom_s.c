@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -75,7 +75,7 @@ _WCRTLINK errno_t _NEARFAR(wcrtomb_s,_fwcrtomb_s)( size_t _FFAR * __restrict ret
                 /*** Check for a valid wide character ***/
                 ret = _NEARFAR(wctomb,_fwctomb)( s, wc );
                 if( ret == -1 ) {                            //encoding error
-                    *retval = -1;
+                    *retval = (size_t)-1;
                 } else {
                     *retval = min( ret, n );
                     rc = 0;
@@ -83,13 +83,13 @@ _WCRTLINK errno_t _NEARFAR(wcrtomb_s,_fwcrtomb_s)( size_t _FFAR * __restrict ret
             }
         }
     }
-    if(msg != NULL) {
+    if( msg != NULL ) {
         // Runtime-constraints found
         // set s[0] to nullchar and *retval to -1
-        if((s != NULL) && (smax > 0) && __lte_rsizmax( smax ))
+        if( ( s != NULL ) && ( smax > 0 ) && __lte_rsizmax( smax ) )
             *s = '\0';
-        if(retval != NULL)
-            *retval = -1;
+        if( retval != NULL )
+            *retval = (size_t)-1;
         // Now call the handler
         __rtct_fail( __func__, msg, NULL );
     }

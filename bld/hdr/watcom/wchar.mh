@@ -180,8 +180,8 @@ _WCRTLINK extern int        fwprintf( FILE *__strm, const wchar_t *__format, ...
 _WCRTLINK extern int        fwscanf( FILE *__strm, const wchar_t *__format, ... );
 _WCRTLINK extern wint_t     getwc( FILE *__strm );
 _WCRTLINK extern wint_t     getwchar( void );
-_WCRTLINK extern int        mbrlen( const char *__s, size_t __n, mbstate_t *__ps );
-_WCRTLINK extern int        mbrtowc( wchar_t *__pwc, const char *__s, size_t __n, mbstate_t *__ps );
+_WCRTLINK extern size_t     mbrlen( const char *__s, size_t __n, mbstate_t *__ps );
+_WCRTLINK extern size_t     mbrtowc( wchar_t *__pwc, const char *__s, size_t __n, mbstate_t *__ps );
 _WCRTLINK extern int        mbsinit( const mbstate_t *__ps );
 _WCRTLINK extern size_t     mbsrtowcs( wchar_t *__dst, const char **__src, size_t __n, mbstate_t *__ps );
 _WCRTLINK extern wint_t     putwc( wint_t __wc, FILE *__strm );
@@ -195,7 +195,7 @@ _WCRTLINK extern int        vswprintf( wchar_t *__s, size_t __n, const wchar_t *
 _WCRTLINK extern int        vswscanf( const wchar_t *__s, const wchar_t *__format, va_list __arg );
 _WCRTLINK extern int        vwprintf( const wchar_t *__format, va_list __arg );
 _WCRTLINK extern int        vwscanf( const wchar_t *, __va_list );
-_WCRTLINK extern int        wcrtomb( char *__s, wchar_t __wc, mbstate_t *__ps );
+_WCRTLINK extern size_t     wcrtomb( char *__s, wchar_t __wc, mbstate_t *__ps );
 _WCRTLINK extern wchar_t    *wcscat( wchar_t *__s1, const wchar_t *__s2 );
 _WCRTLINK extern wchar_t    *wcschr( const wchar_t *__s, wint_t __wc );
 _WCRTLINK extern int        wcscmp( const wchar_t *__s1, const wchar_t *__s2 );
@@ -250,10 +250,10 @@ _WCRTLINK extern int        sisinit( const __w_mbstate_t *__ps );
 
 :segment BITS16
 :include far2.sp
-_WCRTLINK extern int        _fmbrlen( const char _WCFAR *__s, __w_size_t __n, __w_mbstate_t _WCFAR *__ps );
-_WCRTLINK extern int        _fmbrtowc( wchar_t _WCFAR *__pwc, const char _WCFAR *__s, __w_size_t __n, __w_mbstate_t _WCFAR *__ps );
+_WCRTLINK extern __w_size_t _fmbrlen( const char _WCFAR *__s, __w_size_t __n, __w_mbstate_t _WCFAR *__ps );
+_WCRTLINK extern __w_size_t _fmbrtowc( wchar_t _WCFAR *__pwc, const char _WCFAR *__s, __w_size_t __n, __w_mbstate_t _WCFAR *__ps );
 _WCRTLINK extern __w_size_t _fmbsrtowcs( wchar_t _WCFAR *__dst, const char _WCFAR * _WCFAR *__src, __w_size_t __n, __w_mbstate_t _WCFAR *__ps );
-_WCRTLINK extern int        _fwcrtomb( char _WCFAR *__s, wchar_t __wc, __w_mbstate_t _WCFAR *__ps );
+_WCRTLINK extern __w_size_t _fwcrtomb( char _WCFAR *__s, wchar_t __wc, __w_mbstate_t _WCFAR *__ps );
 _WCRTLINK extern __w_size_t _fwcsrtombs( char _WCFAR *__dst, const wchar_t _WCFAR * _WCFAR *__src, __w_size_t __n, __w_mbstate_t _WCFAR *__ps );
 :include farepi.sp
 :endsegment

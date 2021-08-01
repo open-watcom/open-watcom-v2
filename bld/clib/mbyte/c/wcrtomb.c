@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,25 +45,24 @@
 #include "thread.h"
 
 
-_WCRTLINK int _NEARFAR(wcrtomb,_fwcrtomb)( char _FFAR *s, wchar_t wc, mbstate_t _FFAR *ps )
+_WCRTLINK size_t _NEARFAR(wcrtomb,_fwcrtomb)( char _FFAR *s, wchar_t wc, mbstate_t _FFAR *ps )
 {
     int                 rc;
 
     /* unused parameters */ (void)ps;
 
     /*** Check the simple cases ***/
-    if( s == NULL )  return( 0 );           /* always in initial state */
+    if( s == NULL )
+        return( 0 );           /* always in initial state */
 
     /*** Check for a valid wide character ***/
     rc = _NEARFAR(wctomb,_fwctomb)( s, wc );
-    if( rc != -1 ) {
-        if( rc != 0 ) {
-            return( rc );
-        } else {
-            return( 1 );
-        }
-    } else {
+    if( rc == -1 ) {
         _RWD_errno = EILSEQ;
-        return( -1 );
+        return( (size_t)-1 );
     }
+    if( rc == 0 ) {
+        return( 1 );
+    }
+    return( rc );
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,16 +39,18 @@
 
 _WCRTLINK size_t _NEARFAR(wcsrtombs,_fwcsrtombs)( char _FFAR *dst, const wchar_t _FFAR * _FFAR *src, size_t len, mbstate_t _FFAR *ps )
 {
-    int                     bytesConverted = 0;
+    size_t                  bytesConverted = 0;
     const wchar_t _FFAR *   wcPtr = *src;
     unsigned char           mbc[MB_LEN_MAX+1];
-    int                     rc;
+    size_t                  rc;
 
     /*** Process the characters, one by one ***/
     if( dst != NULL ) {
         while( len > 0 ) {
             rc = _NEARFAR(wcrtomb,_fwcrtomb)( (char *)mbc, *wcPtr, ps );
-            if( rc > 0 ) {
+            if( rc == (size_t)-1 ) {
+                return( rc );
+            } else {
                 if( *mbc != '\0' ) {
                     if( len >= rc ) {
                         _NEARFAR(_mbccpy,_fmbccpy)( (unsigned char _FFAR *)dst, mbc );
@@ -61,8 +64,6 @@ _WCRTLINK size_t _NEARFAR(wcsrtombs,_fwcsrtombs)( char _FFAR *dst, const wchar_t
                 } else {
                     break;
                 }
-            } else {
-                return( (size_t)-1 );
             }
         }
         if( *dst == '\0' ) {
@@ -73,15 +74,15 @@ _WCRTLINK size_t _NEARFAR(wcsrtombs,_fwcsrtombs)( char _FFAR *dst, const wchar_t
     } else {
         for( ;; ) {
             rc = _NEARFAR(wcrtomb,_fwcrtomb)( (char *)mbc, *wcPtr, ps );
-            if( rc > 0 ) {
+            if( rc == (size_t)-1 ) {
+                return( rc );
+            } else {
                 if( *mbc != '\0' ) {
                     wcPtr++;
                     bytesConverted += rc;
                 } else {
                     break;
                 }
-            } else {
-                return( (size_t)-1 );
             }
         }
     }
