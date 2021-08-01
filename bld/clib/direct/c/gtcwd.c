@@ -81,7 +81,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(getcwd,_wgetcwd)( CHAR_TYPE *buf, size_t size )
 
     /*** Copy the pathname into a buffer and quit ***/
 #ifdef __WIDECHAR__
-    if( mbstowcs( buf, cwd, size ) == -1 ) {
+    if( mbstowcs( buf, cwd, size ) == (size_t)-1 ) {
         return( NULL );
     }
     return( buf );

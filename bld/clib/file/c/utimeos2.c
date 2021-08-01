@@ -60,7 +60,7 @@ _WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fn, struct utimbuf const
 #ifdef __WIDECHAR__
     char        mbPath[MB_CUR_MAX * _MAX_PATH]; /* single-byte char */
 
-    if( wcstombs( mbPath, fn, sizeof( mbPath ) ) == -1 ) {
+    if( wcstombs( mbPath, fn, sizeof( mbPath ) ) == (size_t)-1 ) {
         mbPath[0] = '\0';
     }
 #endif

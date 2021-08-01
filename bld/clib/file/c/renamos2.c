@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,10 +46,10 @@ _WCRTLINK int __F_NAME(rename,_wrename)( const CHAR_TYPE *old, const CHAR_TYPE *
     char        mbOld[MB_CUR_MAX * _MAX_PATH];  /* single-byte char */
     char        mbNew[MB_CUR_MAX * _MAX_PATH];  /* single-byte char */
 
-    if( wcstombs( mbOld, old, sizeof( mbOld ) ) == -1 ) {
+    if( wcstombs( mbOld, old, sizeof( mbOld ) ) == (size_t)-1 ) {
         mbOld[0] = '\0';
     }
-    if( wcstombs( mbNew, new, sizeof( mbNew ) ) == -1 ) {
+    if( wcstombs( mbNew, new, sizeof( mbNew ) ) == (size_t)-1 ) {
         mbNew[0] = '\0';
     }
 #endif

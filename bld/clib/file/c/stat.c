@@ -178,7 +178,7 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct stat *buf )
 #if defined(__WIDECHAR__)
         char    mbPath[MB_CUR_MAX * _MAX_PATH];
 
-        if( wcstombs( mbPath, path, sizeof( mbPath ) ) == -1 ) {
+        if( wcstombs( mbPath, path, sizeof( mbPath ) ) == (size_t)-1 ) {
             mbPath[0] = '\0';
         }
 #endif

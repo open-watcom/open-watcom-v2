@@ -115,7 +115,7 @@
  #ifdef __WIDECHAR__
     char            mbFilespec[MB_CUR_MAX * _MAX_PATH];
 
-    if( wcstombs( mbFilespec, filespec, sizeof( mbFilespec ) ) == -1 ) {
+    if( wcstombs( mbFilespec, filespec, sizeof( mbFilespec ) ) == (size_t)-1 ) {
         mbFilespec[0] = '\0';
     }
  #endif

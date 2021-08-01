@@ -73,7 +73,7 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, uns
         ++name;
 #ifdef __WIDECHAR__
     /*** If necessary, convert the wide filename to multibyte form ***/
-    if( wcstombs( mbName, name, sizeof( mbName ) ) == -1 ) {
+    if( wcstombs( mbName, name, sizeof( mbName ) ) == (size_t)-1 ) {
         mbName[0] = '\0';
     }
 #endif

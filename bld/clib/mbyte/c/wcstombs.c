@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,14 +47,16 @@ _WCRTLINK size_t _NEARFAR(wcstombs,_fwcstombs)( char _FFAR *s, const wchar_t _FF
 {
     unsigned char       mbc[MB_LEN_MAX+1];
     size_t              numBytes = 0;
-    size_t              rc;
+    int                 rc;
 
     if( s != NULL ) {
         while( n > 0 ) {                /* convert the string */
             if( *pwcs != L'\0' ) {
                 rc = wctomb( (char *)mbc, *pwcs );
-                if( rc == -1 )  return( -1 );
-                if( rc > n )  break;
+                if( rc == -1 )
+                    return( (size_t)-1 );
+                if( rc > n )
+                    break;
                 _NEARFAR(memcpy,_fmemcpy)( s, mbc, rc );
                 s += rc;
                 n -= rc;
@@ -68,7 +71,8 @@ _WCRTLINK size_t _NEARFAR(wcstombs,_fwcstombs)( char _FFAR *s, const wchar_t _FF
         for( ;; ) {
             if( *pwcs != L'\0' ) {
                 rc = wctomb( (char *)mbc, *pwcs );
-                if( rc == -1 )  return( -1 );
+                if( rc == -1 )
+                    return( (size_t)-1 );
                 numBytes += rc;
                 pwcs++;
             } else {

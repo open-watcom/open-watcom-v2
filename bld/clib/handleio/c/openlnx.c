@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +53,7 @@ _WCRTLINK int __F_NAME(open,_wopen)( const CHAR_TYPE *name, int oflag, ... )
 #ifdef __WIDECHAR__
     char        mbName[MB_CUR_MAX * _MAX_PATH]; /* single-byte char */
 
-    if( wcstombs( mbName, name, sizeof( mbName ) ) == -1 ) {
+    if( wcstombs( mbName, name, sizeof( mbName ) ) == (size_t)-1 ) {
         mbName[0] = '\0';
     }
 #endif
@@ -70,7 +71,7 @@ _WCRTLINK int __F_NAME(sopen,_wsopen)( const CHAR_TYPE *name, int oflag, int shf
 #ifdef __WIDECHAR__
     char        mbName[MB_CUR_MAX * _MAX_PATH]; /* single-byte char */
 
-    if( wcstombs( mbName, name, sizeof( mbName ) ) == -1 ) {
+    if( wcstombs( mbName, name, sizeof( mbName ) ) == (size_t)-1 ) {
         mbName[0] = '\0';
     }
 #endif

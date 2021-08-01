@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,7 +64,6 @@ _WCRTLINK int __exec_wide_to_mbcs( CWCPTR wcPath,       // i: path
 /*************************************************/
 {
     size_t              bytes;
-    size_t              rc;
     unsigned            count;
 
     /*** Set pointers to NULL for easy freeing later if error occurs ***/
@@ -75,9 +75,9 @@ _WCRTLINK int __exec_wide_to_mbcs( CWCPTR wcPath,       // i: path
     if( wcPath != NULL ) {
         bytes = (wcslen(wcPath)+1) * MB_CUR_MAX;
         *mbPath = lib_malloc( bytes );
-        if( *mbPath == NULL )  return( 0 );
-        rc = wcstombs( *mbPath, wcPath, bytes );
-        if( rc == -1 ) {
+        if( *mbPath == NULL )
+            return( 0 );
+        if( wcstombs( *mbPath, wcPath, bytes ) == (size_t)-1 ) {
             lib_free( mbPath );
             return( 0 );
         }
@@ -90,7 +90,8 @@ _WCRTLINK int __exec_wide_to_mbcs( CWCPTR wcPath,       // i: path
         while( wcArgv[count] != NULL )  count++;    // count the arguments
         bytes = (count+1) * sizeof(char*);          // how much do we need?
         *mbArgv = lib_malloc( bytes );              // allocate it
-        if( *mbArgv == NULL )  GO_HOME;
+        if( *mbArgv == NULL )
+            GO_HOME;
         memset( *mbArgv, 0, bytes );                // make all pointers NULL
 
         /*** Convert them, one by one ***/
@@ -98,9 +99,10 @@ _WCRTLINK int __exec_wide_to_mbcs( CWCPTR wcPath,       // i: path
         while( wcArgv[count] != NULL ) {
             bytes = (wcslen(wcArgv[count])+1) * MB_CUR_MAX; // how much?
             (*mbArgv)[count] = lib_malloc( bytes );         // allocate it
-            if( (*mbArgv)[count] == NULL )  GO_HOME;
-            rc = wcstombs( (*mbArgv)[count], wcArgv[count], bytes ); // convert
-            if( rc == -1 )  GO_HOME;
+            if( (*mbArgv)[count] == NULL )
+                GO_HOME;
+            if( wcstombs( (*mbArgv)[count], wcArgv[count], bytes ) == (size_t)-1 )
+                GO_HOME;
             count++;
         }
     }
@@ -112,7 +114,8 @@ _WCRTLINK int __exec_wide_to_mbcs( CWCPTR wcPath,       // i: path
         while( wcEnvp[count] != NULL )  count++;    // count the strings
         bytes = (count+1) * sizeof(char*);          // how much do we need?
         *mbEnvp = lib_malloc( bytes );              // allocate it
-        if( *mbEnvp == NULL )  GO_HOME;
+        if( *mbEnvp == NULL )
+            GO_HOME;
         memset( *mbEnvp, 0, bytes );                // make all pointers NULL
 
         /*** Convert them, one by one ***/
@@ -120,9 +123,10 @@ _WCRTLINK int __exec_wide_to_mbcs( CWCPTR wcPath,       // i: path
         while( wcEnvp[count] != NULL ) {
             bytes = (wcslen(wcEnvp[count])+1) * MB_CUR_MAX; // how much?
             (*mbEnvp)[count] = lib_malloc( bytes );         // allocate it
-            if( (*mbEnvp)[count] == NULL )  GO_HOME;
-            rc = wcstombs( (*mbEnvp)[count], wcEnvp[count], bytes ); // convert
-            if( rc == -1 )  GO_HOME;
+            if( (*mbEnvp)[count] == NULL )
+                GO_HOME;
+            if( wcstombs( (*mbEnvp)[count], wcEnvp[count], bytes ) == (size_t)-1 )
+                GO_HOME;
             count++;
         }
     }

@@ -128,7 +128,7 @@ _WCRTLINK int __F_NAME(unlink,_wunlink)( const CHAR_TYPE *filename )
 #ifdef __WIDECHAR__
     char    mbFilename[MB_CUR_MAX * _MAX_PATH]; /* single-byte char */
 
-    if( wcstombs( mbFilename, filename, sizeof( mbFilename ) ) == -1 ) {
+    if( wcstombs( mbFilename, filename, sizeof( mbFilename ) ) == (size_t)-1 ) {
         mbFilename[0] = '\0';
     }
     return( unlink( mbFilename ) );

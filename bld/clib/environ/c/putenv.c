@@ -166,7 +166,7 @@ _WCRTLINK int __F_NAME(putenv,_wputenv)( const CHAR_TYPE *env_string )
         _RWD_errno = ENOMEM;
         return( -1 );
     }
-    if( __F_NAME(mbstowcs,wcstombs)( otherStr, env_string, otherStrLen * fact ) == -1 ) {
+    if( __F_NAME(mbstowcs,wcstombs)( otherStr, env_string, otherStrLen * fact ) == (size_t)-1 ) {
         lib_free( otherStr );
         _RWD_errno = ERANGE;
         return( -1 );
