@@ -38,30 +38,28 @@
 #include <stdarg.h>
 #include <process.h>
 #include "_process.h"
+#include "_environ.h"
 
 
 _WCRTLINK int __F_NAME(execle,_wexecle)( const CHAR_TYPE *path, const CHAR_TYPE *arg0, ... )
-    {
-        va_list ap;
-        CHAR_TYPE ** env;
-        CHAR_TYPE *p;
+{
+    va_list         ap;
+    ARGS_TYPE_ARR   args;
+    ARGS_TYPE_ARR   env;
 
-        arg0 = arg0;
-        /* scan until NULL in parm list */
-        for( va_start( ap, path ); (p = va_arg( ap, CHAR_TYPE* )) != NULL;  )
-            ;
-        /* point to environ parm */
-        env = va_arg( ap, CHAR_TYPE** );
-        va_end( ap );
+    /* unused parameters */ (void)arg0;
 
-        va_start( ap, path );
-        #if defined(__AXP__) || defined(__MIPS__)
-            return( __F_NAME(execve,_wexecve)( path,
-                (const CHAR_TYPE**)ap.__base,
-                (const CHAR_TYPE**)env ) );
-        #else
-            return( __F_NAME(execve,_wexecve)( path,
-                (const CHAR_TYPE**)ap[0],
-                (const CHAR_TYPE**)env ) );
-        #endif
-    }
+    va_start( ap, path );
+#if defined(__AXP__) || defined(__MIPS__)
+    args = (ARGS_TYPE_ARR)ap.__base;
+#else
+    args = (ARGS_TYPE_ARR)ap[0];
+#endif
+    /* scan until NULL in parm list */
+    while( va_arg( ap, ARGS_TYPE ) != NULL )
+        ;
+    /* point to environ parm */
+    env = va_arg( ap, ARGS_TYPE_ARR );
+    va_end( ap );
+    return( __F_NAME(execve,_wexecve)( path, args, env ) );
+}

@@ -98,11 +98,7 @@ int __F_NAME(__setenv,__wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE *newval
 
     /* unused parameters */ (void)overwrite;
 
-  #ifdef __WIDECHAR__
-    if( _RWD_wenviron == NULL ) {
-        __create_wide_environment();
-    }
-  #endif
+    CHECK_WIDE_ENV();
     if( newvalue == NULL ) {
         return( __F_NAME(__findenvdel,__wfindenvdel)( name ) );
     }

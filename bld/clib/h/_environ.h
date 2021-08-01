@@ -60,8 +60,14 @@
 /* wide environment doesn't use alloc'd mask */
 #ifdef __WIDECHAR__
 #define ENVARR_SIZE(x)      ((x) * sizeof( wchar_t * ) + sizeof( wchar_t * ))
+#define CHECK_WIDE_ENV()    if( _RWD_wenviron == NULL ) __create_wide_environment()
+#define ARGS_TYPE           const wchar_t *
+#define ARGS_TYPE_ARR       const wchar_t * const *
 #else
 #define ENVARR_SIZE(x)      ((x) * (sizeof( char * ) + sizeof( char )) + sizeof( char * ))
+#define CHECK_WIDE_ENV()
+#define ARGS_TYPE           const char *
+#define ARGS_TYPE_ARR       const char * const *
 #endif
 
 /*

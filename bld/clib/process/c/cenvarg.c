@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -88,10 +88,7 @@ int __F_NAME(__cenvarg,__wcenvarg)(
     exec = exec;
 #endif
     if( envp == NULL ) {
-#ifdef __WIDECHAR__
-        if( _RWD_wenviron == NULL )
-            __create_wide_environment();
-#endif
+        CHECK_WIDE_ENV();
         envp = (const CHAR_TYPE * const *)__F_NAME(_RWD_environ,_RWD_wenviron);
     }
     length = 0;

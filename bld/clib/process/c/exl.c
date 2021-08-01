@@ -38,19 +38,22 @@
 #include <process.h>
 #include "rtdata.h"
 #include "_process.h"
+#include "_environ.h"
 
 
 _WCRTLINK int __F_NAME((execl),_wexecl)( const CHAR_TYPE *path, const CHAR_TYPE *arg0, ... )
 {
-    va_list ap;
+    va_list         ap;
+    ARGS_TYPE_ARR   args;
 
-    arg0 = arg0;
+    /* unused parameters */ (void)arg0;
+
     va_start( ap, path );
 #if defined(__AXP__) || defined(__MIPS__)
-    return( __F_NAME(execve,_wexecve)( path, (const CHAR_TYPE**)ap.__base,
-            (const CHAR_TYPE **)__F_NAME(_RWD_environ,_RWD_wenviron) ) );
+    args = (ARGS_TYPE_ARR)ap.__base;
 #else
-    return( __F_NAME(execve,_wexecve)( path, (const CHAR_TYPE**)ap[0],
-            (const CHAR_TYPE **)__F_NAME(_RWD_environ,_RWD_wenviron) ) );
+    args = (ARGS_TYPE_ARR)ap[0];
 #endif
+    va_end( ap );
+    return( __F_NAME(execve,_wexecve)( path, args, (ARGS_TYPE_ARR)__F_NAME(_RWD_environ,_RWD_wenviron) ) );
 }

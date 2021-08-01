@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -127,11 +127,7 @@ _WCRTLINK int __F_NAME(setenv,_wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE 
 #endif
 
     /*** Update the (__WIDECHAR__ ? wide : MBCS) environment ***/
-#ifdef __WIDECHAR__
-    if( _RWD_wenviron == NULL ) {
-        __create_wide_environment();
-    }
-#endif
+    CHECK_WIDE_ENV();
     rc = __F_NAME(__setenv,__wsetenv)( name, newvalue, overwrite );
     if( rc == -1 ) {
         return( -1 );

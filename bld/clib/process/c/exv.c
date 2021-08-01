@@ -39,11 +39,9 @@
 #include "_environ.h"
 #include "_process.h"
 
+
 _WCRTLINK int __F_NAME(execv,_wexecv)( const CHAR_TYPE *path, const CHAR_TYPE * const *argv )
 {
-#ifdef __WIDECHAR__
-    if( _RWD_wenviron == NULL )
-        __create_wide_environment();
-#endif
-    return( __F_NAME(execve,_wexecve)( path, argv, (const CHAR_TYPE **)__F_NAME(_RWD_environ,_RWD_wenviron) ) );
+    CHECK_WIDE_ENV();
+    return( __F_NAME(execve,_wexecve)( path, argv, (ARGS_TYPE_ARR)__F_NAME(_RWD_environ,_RWD_wenviron) ) );
 }

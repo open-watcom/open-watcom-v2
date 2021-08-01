@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,60 +50,35 @@
 _WCRTLINK int __F_NAME(spawnl,_wspawnl)( int mode, const CHAR_TYPE *path, const CHAR_TYPE *arg0, ... )
 {
     va_list             ap;
+    ARGS_TYPE_ARR       args;
 #if defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
-    va_list             bp;
-    CHAR_TYPE const     **a;
-    CHAR_TYPE const     **tmp;
+    ARGS_TYPE           *tmp;
     int                 num;
 #endif
 
-    arg0 = arg0;
+    /* unused parameters */ (void)arg0;
+
     va_start( ap, path );
-
 #if defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
-    memcpy( &bp, &ap, sizeof( ap ) );
+    num = 1;
+    while( va_arg( ap, ARGS_TYPE ) != NULL )
+        num++;
+    va_end( ap );
 
-    for( num = 1; va_arg(ap, CHAR_TYPE*); ++num )
-        ;
-
-    a = (const CHAR_TYPE **)alloca( num * sizeof( CHAR_TYPE * ) );
-    if( a == NULL ) {
+    args = tmp = alloca( num * sizeof( ARGS_TYPE ) );
+    if( args == NULL ) {
         _RWD_errno = ENOMEM;
         return( -1 );
     }
 
-    for( tmp = a; num > 0; --num )
-        *tmp++ = (CHAR_TYPE *)va_arg( bp, CHAR_TYPE * );
-
-#ifdef __WIDECHAR__
-    if( _RWD_wenviron == NULL )
-        __create_wide_environment();
-    return( _wspawnve( mode,
-                       path,
-                       a,
-                       (wchar_t const * const *)_RWD_wenviron ) );
+    va_start( ap, path );
+    while( num-- > 0 )
+        *tmp++ = va_arg( ap, ARGS_TYPE );
 #else
-    return( spawnve( mode,
-                     path,
-                     a,
-                     (char const * const *)_RWD_environ ) );
+    args = (ARGS_TYPE_ARR)ap[0];
 #endif
+    va_end( ap );
 
-#else
-
-#ifdef __WIDECHAR__
-    if( _RWD_wenviron == NULL )
-        __create_wide_environment();
-    return( _wspawnve( mode,
-                       path,
-                       (wchar_t const * const *)ap[0],
-                       (wchar_t const * const *)_RWD_wenviron ) );
-#else
-    return( spawnve( mode,
-                     path,
-                     (char const * const *)ap[0],
-                     (char const * const *)_RWD_environ ) );
-#endif
-
-#endif
+    CHECK_WIDE_ENV();
+    return( __F_NAME(spawnve,_wspawnve)( mode, path, args, (ARGS_TYPE_ARR)__F_NAME(_RWD_environ,_RWD_wenviron) ) );
 }
