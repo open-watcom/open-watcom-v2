@@ -122,9 +122,11 @@ _WCRTLINK unsigned _controlfp(unsigned new, unsigned mask)
 
     return cw;
 #elif defined(__PPC__)
+    /* unused parameters */ (void)new; (void)mask;
     // No idea yet
     return( 0 );
 #elif defined(__MIPS__)
+    /* unused parameters */ (void)new; (void)mask;
     // No idea yet either
     return( 0 );
 #endif
