@@ -17,9 +17,12 @@ ufstawnt.obj : ../../../c/ufstawnt.c ../../../c/fstatwnt.c
 u64fswnt.obj : ../../../c/u64fswnt.c ../../../c/ufstawnt.c ../../../c/fstatwnt.c
 
 uopen.obj    : ../../../c/uopen.c    ../../../c/open.c
+uopenlnx.obj : ../../../c/uopenlnx.c ../../../c/openlnx.c
 uopenos2.obj : ../../../c/uopenos2.c ../../../c/openos2.c
 uopenwnt.obj : ../../../c/uopenwnt.c ../../../c/openwnt.c
 
 uunln.obj    : ../../../c/uunln.c    ../../../c/unlnk.c
 uunlnos2.obj : ../../../c/uunlnos2.c ../../../c/unlnkos2.c
 uunlnwnt.obj : ../../../c/uunlnwnt.c ../../../c/unlnkwnt.c
+
+umkfilst.obj : ../../../c/umkfilst.c ../../../c/mkfilstr.c

@@ -1,1 +1,2 @@
 qsort.obj    : ../../../c/qsort.c    ../../../c/qsortrtn.c
+qsort_s.obj  : ../../../c/qsort_s.c  ../../../c/qsortr_s.c

@@ -1,0 +1,6 @@
+umemchr.obj  : ../../../c/umemchr.c  ../../../c/memchr.c
+umemcmp.obj  : ../../../c/umemcmp.c  ../../../c/memcmp.c
+umemcpy.obj  : ../../../c/umemcpy.c  ../../../c/memcpy.c
+umemcp_s.obj : ../../../c/umemcp_s.c ../../../c/memcpy_s.c
+umemmv_s.obj : ../../../c/umemmv_s.c ../../../c/memmov_s.c
+umemset.obj  : ../../../c/umemset.c  ../../../c/memset.c

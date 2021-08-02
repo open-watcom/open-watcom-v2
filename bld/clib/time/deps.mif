@@ -1,4 +1,6 @@
 uasctime.obj : ../../../c/uasctime.c ../../../c/asctime.c
+uasctm_s.obj : ../../../c/uasctm_s.c ../../../c/asctim_s.c
+uctime_s.obj : ../../../c/uctime_s.c ../../../c/ctime_s.c
 ustrdate.obj : ../../../c/ustrdate.c ../../../c/strdate.c
-ustrtime.obj : ../../../c/ustrtime.c ../../../c/strtime.c
 ustrftim.obj : ../../../c/ustrftim.c ../../../c/strftime.c
+ustrtime.obj : ../../../c/ustrtime.c ../../../c/strtime.c
