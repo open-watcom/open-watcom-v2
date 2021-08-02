@@ -58,6 +58,10 @@
 
 #ifndef __NETWARE__
 static int __F_NAME(addenv,waddenv)( int index, const CHAR_TYPE *name, const CHAR_TYPE *value )
+/*
+ * return 0 if succeded
+ * otherwise return -1
+ */
 {
     int             len;
     CHAR_TYPE       *env_str;
@@ -81,12 +85,14 @@ static int __F_NAME(addenv,waddenv)( int index, const CHAR_TYPE *name, const CHA
 }
 #endif
 
+int __F_NAME(__setenv,__wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE *value, int overwrite )
 /*
  * if value == NULL then find all matching entries and delete them
  * if value != NULL then find first matching entry in evironment list and setup new value
+ *
+ * return 0 if succeded
+ * otherwise return -1
  */
-
-int __F_NAME(__setenv,__wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE *value, int overwrite )
 {
 #ifdef __NETWARE__
 

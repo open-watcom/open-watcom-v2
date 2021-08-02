@@ -67,7 +67,7 @@ _WCRTLINK int (clearenv)( void )
             _RWD_env_mask = (char *)&_RWD_environ[1];
         }
     }
-  #if !defined( __UNIX__ ) && !defined( __RDOS__ ) && !defined( __RDOSDEV__ )
+  #ifdef CLIB_USE_OTHER_ENV
     if( _RWD_wenviron != NULL ) {
         index = 0;
         while( _RWD_wenviron[index] != NULL ) {
@@ -75,7 +75,12 @@ _WCRTLINK int (clearenv)( void )
             index++;
         }
         lib_free( _RWD_wenviron );
-        _RWD_wenviron = NULL;
+        _RWD_wenviron = lib_malloc( ENVARR_SIZE( 0 ) );
+        if( _RWD_wenviron == NULL ) {
+            rc = -1;
+        } else {
+            _RWD_wenviron[0] = NULL;
+        }
     }
   #endif
     return( rc );

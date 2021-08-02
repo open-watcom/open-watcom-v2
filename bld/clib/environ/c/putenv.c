@@ -59,11 +59,14 @@
 #include "thread.h"
 
 
-#ifdef USE_OTHER_ENV
+#ifdef CLIB_USE_OTHER_ENV
 
 static int __other_env_update( const CHAR_TYPE *in_env_string )
 /*
  * it updates counterpart environment data (wide or narrow)
+ *
+ * following definitions have reversed near/wide character pointers
+ * for narrow/wide environment synchronization
  */
 {
     __F_NAME(wchar_t,char)  *env_string;
@@ -86,7 +89,7 @@ static int __other_env_update( const CHAR_TYPE *in_env_string )
 
 #endif
 
-#ifdef UPDATE_OS_ENV
+#ifdef CLIB_UPDATE_OS_ENV
 
 static int __os_env_update( const CHAR_TYPE *env_string )
 {
@@ -146,7 +149,7 @@ _WCRTLINK int __F_NAME(putenv,_wputenv)( const CHAR_TYPE *env_string )
 
     /*** Update the OS process environment ***/
 
-#ifdef UPDATE_OS_ENV
+#ifdef CLIB_UPDATE_OS_ENV
     if( __os_env_update( env_string ) ) {
         return( -1 );
     }
@@ -160,7 +163,7 @@ _WCRTLINK int __F_NAME(putenv,_wputenv)( const CHAR_TYPE *env_string )
 
     /*** Update the other environment ***/
 
-#ifdef USE_OTHER_ENV
+#ifdef CLIB_USE_OTHER_ENV
     if( rc == 0 ) {
         rc = __other_env_update( env_string );
     }

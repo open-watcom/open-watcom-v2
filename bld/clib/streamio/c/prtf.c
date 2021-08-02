@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,10 +30,6 @@
 ****************************************************************************/
 
 
-#if !defined( __NETWARE__ ) && !defined( __UNIX__ ) && !defined(__RDOS__) && !defined(__RDOSDEV__)
-    #define USE_MBCS_TRANSLATION
-#endif
-
 #include "variety.h"
 #include "widechar.h"
 #ifdef SAFE_PRINTF
@@ -44,7 +40,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#if defined( __WIDECHAR__ ) || defined( USE_MBCS_TRANSLATION )
+#if defined( __WIDECHAR__ ) || defined( CLIB_USE_MBCS_TRANSLATION )
     #include <mbstring.h>
 #endif
 #include "prtscncf.h"
@@ -243,7 +239,7 @@ static int far_other_strlen( FAR_STRING s, int precision )
 #else
     int                 len = 0;
     _OTHER_FAR_STRING   ptr = (_OTHER_FAR_STRING)s;
-  #if !defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
+  #if !defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
     char                mbBuf[MB_CUR_MAX];
     int                 chBytes;
 
@@ -436,7 +432,7 @@ static void SetZeroPad( SPECS __SLIB *specs )
 }
 
 
-#if !defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
+#if !defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
 static void write_wide_string( FAR_WIDE_STRING str, SPECS *specs,
                                slib_callback_t *out_putc )
 {
@@ -462,7 +458,7 @@ static void write_wide_string( FAR_WIDE_STRING str, SPECS *specs,
 #endif
 
 
-#if defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
+#if defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
 static void write_skinny_string( FAR_ASCII_STRING str, SPECS *specs,
                                  slib_callback_t *out_putc )
 {
@@ -502,7 +498,7 @@ static FAR_STRING formstring( CHAR_TYPE *buffer, my_va_list *pargs,
 #if defined( __FAR_SUPPORT__ )
     unsigned int            seg_value;
 #endif
-#if !defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
+#if !defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
     int                     bytes;
 #endif
 
@@ -795,7 +791,7 @@ processNumericTypes:
         break;
 
     case STRING( 'c' ):
-#if defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
+#if defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
         if( specs->_flags & SPF_SHORT ) {
             char *      mbPtr;
             char        mbBuf[MB_CUR_MAX];
@@ -813,7 +809,7 @@ processNumericTypes:
             buffer[0] = va_arg( pargs->v, int );
         }
         specs->_n1 = 1;
-#elif !defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
+#elif !defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
         specs->_n1 = 1;
         if( specs->_flags & SPF_LONG ) {
             char        mbBuf[MB_CUR_MAX];
@@ -836,7 +832,7 @@ processNumericTypes:
 #endif
         break;
 
-#if !defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
+#if !defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
     case STRING( 'C' ):
         bytes = wctomb( buffer, va_arg( pargs->v, int ) );
 //      if( bytes != -1  &&  bytes <= specs->_prec ) {
@@ -1016,11 +1012,11 @@ int __F_NAME(__prtf,__wprtf)( void __SLIB *dest, const CHAR_TYPE *format, va_lis
                     --specs._nz0;
                 }
                 if( specs._character == STRING( 's' ) ) {
-#if defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
+#if defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
                     if( specs._flags & SPF_SHORT ) {
                         write_skinny_string( (FAR_ASCII_STRING)arg, &specs, out_putc );
                     } else
-#elif !defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
+#elif !defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
                     if( specs._flags & SPF_LONG ) {
                         write_wide_string( (FAR_WIDE_STRING)arg, &specs, out_putc );
                     } else
@@ -1032,7 +1028,7 @@ int __F_NAME(__prtf,__wprtf)( void __SLIB *dest, const CHAR_TYPE *format, va_lis
                         }
                     }
                 }
-#if !defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
+#if !defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
                 else if( specs._character == WIDE_CHAR_STRING ) {
                     write_wide_string( (FAR_WIDE_STRING)arg, &specs, out_putc );
                 } else

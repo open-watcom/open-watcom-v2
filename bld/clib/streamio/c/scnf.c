@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,10 +30,6 @@
 ****************************************************************************/
 
 
-#if !defined( __NETWARE__ ) && !defined( __UNIX__ ) && !defined( __RDOS__ ) && !defined( __RDOSDEV__ )
-    #define USE_MBCS_TRANSLATION
-#endif
-
 #include "variety.h"
 #include "widechar.h"
 #ifdef SAFE_SCANF
@@ -51,7 +47,7 @@
 #include "scanf.h"
 #include "prtscncf.h"
 #include "fixpoint.h"
-#if defined( __WIDECHAR__ ) || defined( USE_MBCS_TRANSLATION )
+#if defined( __WIDECHAR__ ) || defined( CLIB_USE_MBCS_TRANSLATION )
     #include <mbstring.h>
 #endif
 #include "setbits.h"
@@ -258,7 +254,7 @@ static int scan_char( PTR_SCNF_SPECS specs, my_va_list *arg )
         --width;
         if( specs->assign ) {
             CHECK_ELEMS( maxelem, nelem, -1 );
-#if defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
+#if defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
             if( specs->short_var ) {
                 // target is MBCS and source is WIDE
                 // MBCS <- WIDE
@@ -280,7 +276,7 @@ static int scan_char( PTR_SCNF_SPECS specs, my_va_list *arg )
                 // WIDE <- WIDE
                 *str++ = c;
             }
-#elif defined( USE_MBCS_TRANSLATION )
+#elif defined( CLIB_USE_MBCS_TRANSLATION )
             if( specs->long_var ) {
                 // target is WIDE and source is MBCS
                 // WIDE <- MBCS
@@ -377,7 +373,7 @@ static int scan_string( PTR_SCNF_SPECS specs, my_va_list *arg )
         if( specs->assign ) {
             CHECK_ELEMS( maxelem, nelem, -1 );
             if( chsize == 1 ) {
-#if defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
+#if defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
                 // target is MBCS and source is WIDE
                 // WIDE <- MBCS
                 char        mbBuf[MB_CUR_MAX];
@@ -397,7 +393,7 @@ static int scan_string( PTR_SCNF_SPECS specs, my_va_list *arg )
                 *str++ = TO_ASCII( c );
 #endif
             } else {
-#if !defined( __WIDECHAR__ ) && defined( USE_MBCS_TRANSLATION )
+#if !defined( __WIDECHAR__ ) && defined( CLIB_USE_MBCS_TRANSLATION )
                 // target is WIDE and source is MBCS
                 // WIDE <- MBCS
                 wchar_t     wc;

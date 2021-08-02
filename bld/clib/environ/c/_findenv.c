@@ -166,6 +166,9 @@ int __F_NAME(__findenvadd,__wfindenvadd)( const CHAR_TYPE *env_string )
 int __F_NAME(__findenvdel,__wfindenvdel)( const CHAR_TYPE *env_string )
 /*
  * find all entries and delete them
+ *
+ * return 0 if succeded
+ * otherwise return -1
  */
 {
     if( __F_NAME(_RWD_environ,_RWD_wenviron) != NULL )

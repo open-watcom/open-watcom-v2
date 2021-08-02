@@ -35,14 +35,7 @@
 
 #include <ctype.h>
 
-#if !defined( __UNIX__ ) && !defined( __RDOS__ ) && !defined( __RDOSDEV__ )
-#define USE_OTHER_ENV
-#endif
-#if defined( __NT__ ) || defined( __RDOS__ ) || defined( __RDOSDEV__ )
-#define UPDATE_OS_ENV
-#endif
-
-#if defined( __WIDECHAR__ ) || defined( __NETWARE__ ) || !defined( USE_OTHER_ENV )
+#if defined( __WIDECHAR__ ) || defined( __NETWARE__ ) || !defined( CLIB_USE_OTHER_ENV )
 // single-byte or wide-char
 #define _TCSDEC(__p)        (__p - 1)
 #define _TCSINC(__p)        (__p + 1)
@@ -96,7 +89,7 @@ extern void     __setenvp( void );
 extern void     __freeenvp( void );
 #endif
 
-#ifdef UPDATE_OS_ENV
+#ifdef CLIB_UPDATE_OS_ENV
 #if defined( __NT__ )
 extern int      __os_env_update_wide( const wchar_t *name, const wchar_t *value );
 #endif

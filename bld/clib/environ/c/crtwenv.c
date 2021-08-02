@@ -42,11 +42,12 @@
 void __create_wide_environment( void )
 /************************************/
 {
-    char                **envp = _RWD_environ;
+    char                **envp;
     char                *p;
     size_t              len;
     wchar_t             *wcs;
 
+    envp = _RWD_environ;
     if( envp == NULL )
         return;
     while( (p = *envp++) != NULL ) {

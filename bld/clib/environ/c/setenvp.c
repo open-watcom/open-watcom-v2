@@ -255,6 +255,12 @@ void __freeenvp( void )
         lib_free( _RWD_environ );
         _RWD_environ = NULL;
     }
+  #if defined( CLIB_USE_WIDE_ENV )
+    if( _RWD_wenviron != NULL ) {
+        lib_free( _RWD_wenviron );
+        _RWD_wenviron = NULL;
+    }
+  #endif
   #if !defined(__LINUX__)
     if( _free_ep != NULL ) {
         lib_free( _free_ep );

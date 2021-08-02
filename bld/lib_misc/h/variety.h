@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,13 +38,23 @@
 //       included before any of the runtime header files.
 //
 
+#if !defined( __UNIX__ ) && !defined(__RDOS__) && !defined(__RDOSDEV__) && !defined( __NETWARE__ )
+    #define CLIB_USE_MBCS_TRANSLATION
+#endif
+#if !defined( __UNIX__ ) && !defined( __RDOS__ ) && !defined( __RDOSDEV__ )
+    #define CLIB_USE_OTHER_ENV
+#endif
+#if defined( __NT__ ) || defined( __RDOS__ ) || defined( __RDOSDEV__ )
+    #define CLIB_UPDATE_OS_ENV
+#endif
+
 #ifndef __WATCOMC__
     // when building with other tools, only include clibext.h
     #include "clibext.h"
 #else
 
 #ifndef __COMDEF_H_INCLUDED
-     #include <_comdef.h>
+    #include <_comdef.h>
 #endif
 
 // specialized data reference macro

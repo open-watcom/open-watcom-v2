@@ -57,16 +57,20 @@
 
 
 int __F_NAME(__putenv,__wputenv)( const CHAR_TYPE *env_string )
+/*
+ * return 0 if succeded
+ * otherwise return -1
+ */
 {
 #ifdef __NETWARE__
     env_string = env_string;
     return( -1 );
 #else
-    int                 index = -1;
+    int                 index;
     const CHAR_TYPE     *p;
 
     if( env_string == NULL || _TCSTERM( env_string ) )
-        return( index );
+        return( -1 );
     // handle NAME=STRING
     for( p = _TCSINC( env_string ); !_TCSTERM( p ); p = _TCSINC( p ) ) {    // (used under NT)
         if( _TCSNEXTC( p ) == STRING( '=' ) ) {
@@ -74,7 +78,7 @@ int __F_NAME(__putenv,__wputenv)( const CHAR_TYPE *env_string )
         }
     }
     if( _TCSTERM( p ) )
-        return( index ); /* <name> with no '=' is illegal */
+        return( -1 ); /* <name> with no '=' is illegal */
     if( _TCSTERM( _TCSINC( p ) ) ) {
         return( __F_NAME(__findenvdel,__wfindenvdel)( env_string ) );
     }
