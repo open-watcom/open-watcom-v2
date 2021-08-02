@@ -25,53 +25,50 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Narrow/Wide character version of OS Environment update function.
 *
 ****************************************************************************/
 
 
 #include "variety.h"
+#include "widechar.h"
 #include <stddef.h>
-#include <mbstring.h>
-#include <windows.h>
-#include "liballoc.h"
-#include "libwin32.h"
-#include "osver.h"
-#include "cvtwc2mb.h"
+#if defined( __NT__ )
+    #include <windows.h>
+#elif defined( __RDOS__ ) || defined( __RDOSDEV__ )
+    #include <rdos.h>
+#endif
+#ifdef __NT__
+    #include "libwin32.h"
+#endif
+#include "_environ.h"
 
 
-BOOL __lib_SetEnvironmentVariableW( LPCWSTR lpName, LPCWSTR lpValue )
-/*******************************************************************/
+int __F_NAME(__os_env_update_narrow,__os_env_update_wide)( const CHAR_TYPE *name, const CHAR_TYPE *value )
 {
-    if( WIN32_IS_NT ) {                                 /* NT */
-        return( SetEnvironmentVariableW( lpName, lpValue ) );
-    } else {                                            /* Win95 or Win32s */
-        char *          mbName;
-        char *          mbValue;
-        BOOL            osrc;
-
-        /*** Prepare to call the OS ***/
-        mbName = __lib_cvt_wcstombs( lpName );
-        if( mbName == NULL ) {
-            return( FALSE );
-        }
-
-        if( lpValue == NULL ) {
-            mbValue = NULL;
-        } else {
-            mbValue = __lib_cvt_wcstombs( lpValue );
-            if( mbValue == NULL ) {
-                lib_free( mbName );
-                return( FALSE );
-            }
-        }
-
-        /*** Call the OS ***/
-        osrc = SetEnvironmentVariableA( mbName, mbValue );
-        lib_free( mbName );
-        if( mbValue != NULL )
-            lib_free( mbValue );
-        return( osrc );
+#ifdef __NT__
+    /*** Update the process environment if using Win32 ***/
+    if( __lib_SetEnvironmentVariable( name, value ) == FALSE ) {
+        return( -1 );
     }
+#elif defined( __RDOS__ )
+    /*** Update the process environment if using RDOS ***/
+    int handle;
+
+    handle = RdosOpenProcessEnv();
+    RdosDeleteEnvVar( handle, name );
+    if( value != NULL && *value != NULLCHAR )
+        RdosAddEnvVar( handle, name, value );
+    RdosCloseEnv( handle );
+#elif defined( __RDOSDEV__ )
+    /*** Update the process environment if using RDOSDEV ***/
+    int handle;
+
+    handle = RdosOpenSysEnv();
+    RdosDeleteEnvVar( handle, name );
+    if( value != NULL && *value != NULLCHAR )
+        RdosAddEnvVar( handle, name, value );
+    RdosCloseEnv( handle );
+#endif
+    return( 0 );
 }

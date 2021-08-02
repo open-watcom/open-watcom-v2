@@ -55,41 +55,47 @@
 #endif
 #include "liballoc.h"
 #include "_environ.h"
+#include "_cvtstr.h"
 #include "thread.h"
 
 
-// _wputenv and putenv are implemented this way so that each can call the
-// other without having the other call it, which would call the other, and
-// so on, making bad things happen.  This inter-calling is necessary to keep
-// the wide and MBCS environments consistent.  Also, with this method
-// __create_wide_environment can call __wputenv, without having the function
-// it calls call __create_wide_environment, causing similar bad things.
-_WCRTLINK int __F_NAME(putenv,_wputenv)( const CHAR_TYPE *env_string )
+#ifdef USE_OTHER_ENV
+
+static int __other_env_update( const CHAR_TYPE *in_env_string )
+/*
+ * it updates counterpart environment data (wide or narrow)
+ */
 {
-#if !defined( __UNIX__ ) && !defined( __RDOS__ ) && !defined( __RDOSDEV__ )
-  #ifdef __WIDECHAR__
-    char                *otherStr;
-    const size_t        charsize = sizeof(wchar_t);
-    const size_t        fact = MB_CUR_MAX;
-  #else
-    wchar_t             *otherStr;
-    const size_t        charsize = MB_CUR_MAX;
-    const size_t        fact = 1;
+    __F_NAME(wchar_t,char)  *env_string;
+    int                     rc;
+
+  #ifndef __WIDECHAR__
+    if( _RWD_wenviron == NULL )
+        return( 0 );    // _wenviron uninitialized
   #endif
-    size_t              otherStrLen;
+    env_string = __F_NAME(__lib_cvt_mbstowcs_errno,__lib_cvt_wcstombs_errno)( in_env_string );
+    if( env_string == NULL ) {
+        return( -1 );
+    }
+    rc = __F_NAME(__wputenv,__putenv)( env_string );
+    if( rc ) {
+        lib_free( env_string );
+    }
+    return( rc );
+}
+
 #endif
-#if defined( __NT__ ) || defined( __RDOS__ ) || defined( __RDOSDEV__ )
+
+#ifdef UPDATE_OS_ENV
+
+static int __os_env_update( const CHAR_TYPE *env_string )
+{
     CHAR_TYPE           *name;
     CHAR_TYPE           *value;
     CHAR_TYPE           *p;
     size_t              len;
-  #if defined( __NT__ )
-    BOOL                osRc;
-  #else
-    int                 handle;
-  #endif
+    int                 rc;
 
-    /*** Update the process environment if using Win32 ***/
     /*** Validate the input string ***/
     p = _TCSCHR( env_string, STRING( '=' ) );
     if( p == NULL || p == env_string )
@@ -104,7 +110,7 @@ _WCRTLINK int __F_NAME(putenv,_wputenv)( const CHAR_TYPE *env_string )
     name[len] = NULLCHAR;
 
     /*** Extract the new value, if any ***/
-    p++;                                    /* point past the '=' */
+    p++;                        /* point past the '=' */
     len = _TCSLEN( p );
     if( len != 0 ) {
         value = lib_malloc( ( len + 1 ) * CHARSIZE );
@@ -115,62 +121,49 @@ _WCRTLINK int __F_NAME(putenv,_wputenv)( const CHAR_TYPE *env_string )
         memcpy( value, p, len * CHARSIZE );
         value[len] = NULLCHAR;
     } else {
-        value = NULL;               /* don't need a buffer to delete */
+        value = NULL;           /* don't need a buffer to delete */
     }
-  #ifdef __NT__
-    /*** Tell the OS about the change ***/
-    osRc = __lib_SetEnvironmentVariable( name, value );
-  #elif defined( __RDOS__ )
-    handle = RdosOpenProcessEnv();
-    RdosDeleteEnvVar( handle, name );
-    RdosAddEnvVar( handle, name, value );
-    RdosCloseEnv( handle );
-  #elif defined( __RDOSDEV__ )
-    handle = RdosOpenSysEnv();
-    RdosDeleteEnvVar( handle, name );
-    RdosAddEnvVar( handle, name, value );
-    RdosCloseEnv( handle );
-  #endif
+
+    /*** Update the OS process environment ***/
+    rc = __F_NAME(__os_env_update_narrow,__os_env_update_wide)( name, value );
+
     lib_free( name );
     lib_free( value );
-  #ifdef __NT__
-    if( osRc == FALSE ) {
-        if( value == NULL ) {
-            // we couldn't find the envvar but since we are deleting it,
-            // the putenv() is successful
-            return( 0 );
-        }
-        return( -1 );
-    }
-  #endif
+    return( rc );
+}
+
 #endif
 
-    /*** Update the (__WIDECHAR__ ? wide : MBCS) environment ***/
+// _wputenv and putenv are implemented this way so that each can call the
+// other without having the other call it, which would call the other, and
+// so on, making bad things happen.  This inter-calling is necessary to keep
+// the wide and MBCS environments consistent.  Also, with this method
+// __create_wide_environment can call __wputenv, without having the function
+// it calls call __create_wide_environment, causing similar bad things.
+_WCRTLINK int __F_NAME(putenv,_wputenv)( const CHAR_TYPE *env_string )
+{
+    int     rc;
+
+    /*** Update the OS process environment ***/
+
+#ifdef UPDATE_OS_ENV
+    if( __os_env_update( env_string ) ) {
+        return( -1 );
+    }
+#endif
+
+    /*** Update the current environment (wide or MBCS) ***/
 
     CHECK_WIDE_ENV();
 
-#if defined( __UNIX__ ) || defined( __RDOS__ ) || defined( __RDOSDEV__ )
-    return( __F_NAME(__putenv,__wputenv)( env_string ) );
-#else
-    if( __F_NAME(__putenv,__wputenv)( env_string ) != 0 )
-        return( -1 );
+    rc = __F_NAME(__putenv,__wputenv)( env_string );
 
     /*** Update the other environment ***/
-  #ifndef __WIDECHAR__
-    if( _RWD_wenviron == NULL )
-        return( 0 );    // _wenviron uninitialized
-  #endif
-    otherStrLen = _TCSLEN( env_string ) + 1;
-    otherStr = lib_malloc( otherStrLen * charsize );
-    if( otherStr == NULL ) {
-        _RWD_errno = ENOMEM;
-        return( -1 );
+
+#ifdef USE_OTHER_ENV
+    if( rc == 0 ) {
+        rc = __other_env_update( env_string );
     }
-    if( __F_NAME(mbstowcs,wcstombs)( otherStr, env_string, otherStrLen * fact ) == (size_t)-1 ) {
-        lib_free( otherStr );
-        _RWD_errno = ERANGE;
-        return( -1 );
-    }
-    return( __F_NAME(__wputenv,__putenv)( otherStr ) );
 #endif
+    return( rc );
 }

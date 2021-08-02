@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +38,8 @@
 #include "liballoc.h"
 #include "libwin32.h"
 #include "osver.h"
+#include "cvtwc2mb.h"
+
 
 DWORD __lib_GetFullPathNameW( LPCWSTR lpFileName, DWORD nBufferLength,
                               LPWSTR lpBuffer, LPWSTR *lpFilePart )
@@ -54,21 +57,14 @@ DWORD __lib_GetFullPathNameW( LPCWSTR lpFileName, DWORD nBufferLength,
         size_t          cvt;
 
         /*** Allocate some memory ***/
-        len = wcslen( lpFileName ) * MB_CUR_MAX + 1;
-        mbFileName = lib_malloc( len );
-        if( mbFileName == NULL ) {
-            return( 0 );
-        }
         mbBuffer = lib_malloc( _MAX_PATH * MB_CUR_MAX );
         if( mbBuffer == NULL ) {
-            lib_free( mbFileName );
             return( 0 );
         }
 
         /*** Prepare to call the OS ***/
-        cvt = wcstombs( mbFileName, lpFileName, len );
-        if( cvt == (size_t)-1 ) {
-            lib_free( mbFileName );
+        mbFileName = __lib_cvt_wcstombs( lpFileName );
+        if( mbFileName == NULL ) {
             lib_free( mbBuffer );
             return( 0 );
         }

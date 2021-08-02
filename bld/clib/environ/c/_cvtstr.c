@@ -25,53 +25,45 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  wide<->mbcs string conversion function with allocation.
 *
 ****************************************************************************/
 
 
 #include "variety.h"
-#include <stddef.h>
+#include "widechar.h"
+#include <wchar.h>
 #include <mbstring.h>
-#include <windows.h>
+#if defined( __NT__ )
+    #include <windows.h>
+#elif defined( __OS2__ )
+    #include <wos2.h>
+#endif
+#include "thread.h"
+#include "rtdata.h"
+#include "rterrno.h"
 #include "liballoc.h"
-#include "libwin32.h"
-#include "osver.h"
-#include "cvtwc2mb.h"
+#include "_environ.h"
+#include "_cvtstr.h"
 
 
-BOOL __lib_SetEnvironmentVariableW( LPCWSTR lpName, LPCWSTR lpValue )
-/*******************************************************************/
+__F_NAME(wchar_t,char) *__F_NAME(__lib_cvt_mbstowcs_errno,__lib_cvt_wcstombs_errno)( const CHAR_TYPE *in_string )
 {
-    if( WIN32_IS_NT ) {                                 /* NT */
-        return( SetEnvironmentVariableW( lpName, lpValue ) );
-    } else {                                            /* Win95 or Win32s */
-        char *          mbName;
-        char *          mbValue;
-        BOOL            osrc;
+    __F_NAME(wchar_t,char)  *string;
+    size_t                  len;
 
-        /*** Prepare to call the OS ***/
-        mbName = __lib_cvt_wcstombs( lpName );
-        if( mbName == NULL ) {
-            return( FALSE );
+    len = _TCSLEN( in_string ); // length (in characters, not bytes)
+    string = lib_malloc( len * __F_NAME(sizeof(wchar_t),MB_CUR_MAX) + __F_NAME(sizeof(wchar_t),1) );
+    if( string != NULL ) {
+        if( __F_NAME(mbstowcs,wcstombs)( string, in_string, len * __F_NAME(1,MB_CUR_MAX) + 1 ) != (size_t)-1 ) {
+            return( string );
         }
-
-        if( lpValue == NULL ) {
-            mbValue = NULL;
-        } else {
-            mbValue = __lib_cvt_wcstombs( lpValue );
-            if( mbValue == NULL ) {
-                lib_free( mbName );
-                return( FALSE );
-            }
-        }
-
-        /*** Call the OS ***/
-        osrc = SetEnvironmentVariableA( mbName, mbValue );
-        lib_free( mbName );
-        if( mbValue != NULL )
-            lib_free( mbValue );
-        return( osrc );
+        lib_free( string );
     }
+    if( string != NULL ) {
+        _RWD_errno = ERANGE;
+    } else {
+        _RWD_errno = ENOMEM;
+    }
+    return( NULL );
 }

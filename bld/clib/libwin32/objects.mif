@@ -3,6 +3,7 @@
 !inject creatdir.obj                nt
 !inject creatfil.obj                nt
 !inject crtproc.obj                 nt
+!inject cvtwc2mb.obj                nt
 !inject delfile.obj                 nt
 !inject fffrstfi.obj                nt
 !inject ffnextfi.obj                nt

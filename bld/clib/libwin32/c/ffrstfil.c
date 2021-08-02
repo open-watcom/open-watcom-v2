@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +38,8 @@
 #include "liballoc.h"
 #include "libwin32.h"
 #include "osver.h"
+#include "cvtwc2mb.h"
+
 
 HANDLE __lib_FindFirstFileW( LPCWSTR lpFileName, LPWIN32_FIND_DATAW lpFindFileData )
 /**********************************************************************************/
@@ -45,24 +48,15 @@ HANDLE __lib_FindFirstFileW( LPCWSTR lpFileName, LPWIN32_FIND_DATAW lpFindFileDa
     HANDLE              osrc;
     WIN32_FIND_DATAA    mbFindFileData;
     size_t              cvt;
-    size_t              len;
 
     if( WIN32_IS_NT ) { /* NT */
         return( FindFirstFileW( lpFileName, lpFindFileData ) );
     }
     /* Win95 or Win32s */
 
-    /*** Allocate some memory ***/
-    len = wcslen( lpFileName ) * MB_CUR_MAX + 1;
-    mbFileName = lib_malloc( len );
-    if( mbFileName == NULL ) {
-        return( INVALID_HANDLE_VALUE );
-    }
-
     /*** Prepare to call the OS ***/
-    cvt = wcstombs( mbFileName, lpFileName, len );
-    if( cvt == (size_t)-1 ) {
-        lib_free( mbFileName );
+    mbFileName = __lib_cvt_wcstombs( lpFileName );
+    if( mbFileName == NULL ) {
         return( INVALID_HANDLE_VALUE );
     }
 

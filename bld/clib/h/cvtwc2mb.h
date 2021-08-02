@@ -25,53 +25,9 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  wide->mbcs string conversion function (with allocation).
 *
 ****************************************************************************/
 
 
-#include "variety.h"
-#include <stddef.h>
-#include <mbstring.h>
-#include <windows.h>
-#include "liballoc.h"
-#include "libwin32.h"
-#include "osver.h"
-#include "cvtwc2mb.h"
-
-
-BOOL __lib_SetEnvironmentVariableW( LPCWSTR lpName, LPCWSTR lpValue )
-/*******************************************************************/
-{
-    if( WIN32_IS_NT ) {                                 /* NT */
-        return( SetEnvironmentVariableW( lpName, lpValue ) );
-    } else {                                            /* Win95 or Win32s */
-        char *          mbName;
-        char *          mbValue;
-        BOOL            osrc;
-
-        /*** Prepare to call the OS ***/
-        mbName = __lib_cvt_wcstombs( lpName );
-        if( mbName == NULL ) {
-            return( FALSE );
-        }
-
-        if( lpValue == NULL ) {
-            mbValue = NULL;
-        } else {
-            mbValue = __lib_cvt_wcstombs( lpValue );
-            if( mbValue == NULL ) {
-                lib_free( mbName );
-                return( FALSE );
-            }
-        }
-
-        /*** Call the OS ***/
-        osrc = SetEnvironmentVariableA( mbName, mbValue );
-        lib_free( mbName );
-        if( mbValue != NULL )
-            lib_free( mbValue );
-        return( osrc );
-    }
-}
+extern char     *__lib_cvt_wcstombs( const wchar_t *in_string );

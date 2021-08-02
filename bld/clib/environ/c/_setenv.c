@@ -57,7 +57,7 @@
 
 
 #ifndef __NETWARE__
-static int __F_NAME(addenv,waddenv)( int index, const CHAR_TYPE *name, const CHAR_TYPE *newvalue )
+static int __F_NAME(addenv,waddenv)( int index, const CHAR_TYPE *name, const CHAR_TYPE *value )
 {
     int             len;
     CHAR_TYPE       *env_str;
@@ -67,12 +67,12 @@ static int __F_NAME(addenv,waddenv)( int index, const CHAR_TYPE *name, const CHA
     envp = __F_NAME(_RWD_environ,_RWD_wenviron);
     len = __F_NAME(strlen,wcslen)( name );
     old_val = _RWD_env_mask[index] ? envp[index] : NULL;
-    env_str = lib_realloc( old_val, ( len + 1 + __F_NAME(strlen,wcslen)( newvalue ) + 1 ) * sizeof( CHAR_TYPE ) );
+    env_str = lib_realloc( old_val, ( len + 1 + __F_NAME(strlen,wcslen)( value ) + 1 ) * sizeof( CHAR_TYPE ) );
     if( env_str == NULL )
         return( -1 );
     memcpy( env_str, name, len * sizeof( CHAR_TYPE ) );
     env_str[len] = STRING( '=' );
-    __F_NAME(strcpy,wcscpy)( &env_str[len + 1], newvalue );
+    __F_NAME(strcpy,wcscpy)( &env_str[len + 1], value );
     envp[index] = env_str;
 #ifndef __WIDECHAR__
     _RWD_env_mask[index] = 1;     /* indicate string alloc'd */
@@ -82,15 +82,15 @@ static int __F_NAME(addenv,waddenv)( int index, const CHAR_TYPE *name, const CHA
 #endif
 
 /*
- * if newvalue == NULL then find all matching entries and delete them
- * if newvalue != NULL then find first matching entry in evironment list and setup new value
+ * if value == NULL then find all matching entries and delete them
+ * if value != NULL then find first matching entry in evironment list and setup new value
  */
 
-int __F_NAME(__setenv,__wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE *newvalue, int overwrite )
+int __F_NAME(__setenv,__wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE *value, int overwrite )
 {
 #ifdef __NETWARE__
 
-    /* unused parameters */ (void)name; (void)newvalue; (void)overwrite;
+    /* unused parameters */ (void)name; (void)value; (void)overwrite;
 
     return( -1 );
 #else
@@ -99,13 +99,13 @@ int __F_NAME(__setenv,__wsetenv)( const CHAR_TYPE *name, const CHAR_TYPE *newval
     /* unused parameters */ (void)overwrite;
 
     CHECK_WIDE_ENV();
-    if( newvalue == NULL ) {
+    if( value == NULL ) {
         return( __F_NAME(__findenvdel,__wfindenvdel)( name ) );
     }
     index = __F_NAME(__findenvadd,__wfindenvadd)( name );
     if( index < 0 ) {
         return( -1 );
     }
-    return( __F_NAME(addenv,waddenv)( index, name, newvalue ) );
+    return( __F_NAME(addenv,waddenv)( index, name, value ) );
 #endif
 }

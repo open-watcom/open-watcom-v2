@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +38,8 @@
 #include "liballoc.h"
 #include "libwin32.h"
 #include "osver.h"
+#include "cvtwc2mb.h"
+
 
 BOOL __lib_MoveFileW( LPCWSTR lpExistingFileName, LPCWSTR lpNewFileName )
 /***********************************************************************/
@@ -47,34 +50,15 @@ BOOL __lib_MoveFileW( LPCWSTR lpExistingFileName, LPCWSTR lpNewFileName )
         char *          mbExistingFileName;
         char *          mbNewFileName;
         BOOL            osrc;
-        size_t          cvt;
-        size_t          lenExisting;
-        size_t          lenNew;
 
-        /*** Allocate some memory ***/
-        lenExisting = wcslen( lpExistingFileName ) * MB_CUR_MAX + 1;
-        mbExistingFileName = lib_malloc( lenExisting );
+        /*** Prepare to call the OS ***/
+        mbExistingFileName = __lib_cvt_wcstombs( lpExistingFileName );
         if( mbExistingFileName == NULL ) {
             return( FALSE );
         }
-        lenNew = wcslen( lpNewFileName ) * MB_CUR_MAX + 1;
-        mbNewFileName = lib_malloc( lenNew );
+        mbNewFileName = __lib_cvt_wcstombs( lpNewFileName );
         if( mbNewFileName == NULL ) {
             lib_free( mbExistingFileName );
-            return( FALSE );
-        }
-
-        /*** Prepare to call the OS ***/
-        cvt = wcstombs( mbExistingFileName, lpExistingFileName, lenExisting );
-        if( cvt == (size_t)-1 ) {
-            lib_free( mbExistingFileName );
-            lib_free( mbNewFileName );
-            return( FALSE );
-        }
-        cvt = wcstombs( mbNewFileName, lpNewFileName, lenNew );
-        if( cvt == (size_t)-1 ) {
-            lib_free( mbExistingFileName );
-            lib_free( mbNewFileName );
             return( FALSE );
         }
 

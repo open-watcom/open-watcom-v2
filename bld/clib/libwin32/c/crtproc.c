@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +38,8 @@
 #include "liballoc.h"
 #include "libwin32.h"
 #include "osver.h"
+#include "cvtwc2mb.h"
+
 
 /*
  * The Win32 CreateProcessW actually has a few other parameters, but the
@@ -69,14 +72,8 @@ BOOL __lib_CreateProcessW( LPWSTR lpCommandLine,
         char *          p;
 
         /*** Convert lpCommandLine to MBCS ***/
-        len = wcslen( lpCommandLine ) * MB_CUR_MAX + 1;
-        mbCommandLine = lib_malloc( len );
+        mbCommandLine = __lib_cvt_wcstombs( lpCommandLine );
         if( mbCommandLine == NULL ) {
-            return( FALSE );
-        }
-        cvt = wcstombs( mbCommandLine, lpCommandLine, len );
-        if( cvt == (size_t)-1 ) {
-            lib_free( mbCommandLine );
             return( FALSE );
         }
 

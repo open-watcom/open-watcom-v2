@@ -25,53 +25,32 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  wide->mbcs string conversion function (with allocation).
 *
 ****************************************************************************/
 
 
 #include "variety.h"
-#include <stddef.h>
+#include "widechar.h"
+#include <wchar.h>
 #include <mbstring.h>
-#include <windows.h>
 #include "liballoc.h"
-#include "libwin32.h"
-#include "osver.h"
+#include "_environ.h"
 #include "cvtwc2mb.h"
 
 
-BOOL __lib_SetEnvironmentVariableW( LPCWSTR lpName, LPCWSTR lpValue )
-/*******************************************************************/
+char *__lib_cvt_wcstombs( const wchar_t *in_string )
 {
-    if( WIN32_IS_NT ) {                                 /* NT */
-        return( SetEnvironmentVariableW( lpName, lpValue ) );
-    } else {                                            /* Win95 or Win32s */
-        char *          mbName;
-        char *          mbValue;
-        BOOL            osrc;
+    char        *string;
+    size_t      len;
 
-        /*** Prepare to call the OS ***/
-        mbName = __lib_cvt_wcstombs( lpName );
-        if( mbName == NULL ) {
-            return( FALSE );
+    len = wcslen( in_string ) * MB_CUR_MAX + 1;
+    string = lib_malloc( len );
+    if( string != NULL ) {
+        if( wcstombs( string, in_string, len ) != (size_t)-1 ) {
+            return( string );
         }
-
-        if( lpValue == NULL ) {
-            mbValue = NULL;
-        } else {
-            mbValue = __lib_cvt_wcstombs( lpValue );
-            if( mbValue == NULL ) {
-                lib_free( mbName );
-                return( FALSE );
-            }
-        }
-
-        /*** Call the OS ***/
-        osrc = SetEnvironmentVariableA( mbName, mbValue );
-        lib_free( mbName );
-        if( mbValue != NULL )
-            lib_free( mbValue );
-        return( osrc );
+        lib_free( string );
     }
+    return( NULL );
 }

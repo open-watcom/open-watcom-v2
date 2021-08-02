@@ -25,53 +25,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Wide character version of OS Environment update function.
 *
 ****************************************************************************/
 
 
-#include "variety.h"
-#include <stddef.h>
-#include <mbstring.h>
-#include <windows.h>
-#include "liballoc.h"
-#include "libwin32.h"
-#include "osver.h"
-#include "cvtwc2mb.h"
-
-
-BOOL __lib_SetEnvironmentVariableW( LPCWSTR lpName, LPCWSTR lpValue )
-/*******************************************************************/
-{
-    if( WIN32_IS_NT ) {                                 /* NT */
-        return( SetEnvironmentVariableW( lpName, lpValue ) );
-    } else {                                            /* Win95 or Win32s */
-        char *          mbName;
-        char *          mbValue;
-        BOOL            osrc;
-
-        /*** Prepare to call the OS ***/
-        mbName = __lib_cvt_wcstombs( lpName );
-        if( mbName == NULL ) {
-            return( FALSE );
-        }
-
-        if( lpValue == NULL ) {
-            mbValue = NULL;
-        } else {
-            mbValue = __lib_cvt_wcstombs( lpValue );
-            if( mbValue == NULL ) {
-                lib_free( mbName );
-                return( FALSE );
-            }
-        }
-
-        /*** Call the OS ***/
-        osrc = SetEnvironmentVariableA( mbName, mbValue );
-        lib_free( mbName );
-        if( mbValue != NULL )
-            lib_free( mbValue );
-        return( osrc );
-    }
-}
+// this file should remain an indirected file
+// it is done this way to support the reuse of the source file
+#define __WIDECHAR__
+#undef __INLINE_FUNCTIONS__
+#include "_osenv.c"
