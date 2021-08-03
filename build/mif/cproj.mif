@@ -624,28 +624,26 @@ inc_dirs_lang_dos  =
 !else
 
 inc_dirs_sys_os2_386 = -I"$(os2api_dir)/os2386/h"
-inc_dirs_sys_os2_286 = -I"$(os2api_dir)/os2286/h"
-inc_dirs_sys_os2_086 = -I"$(os2api_dir)/os2286/h"
 inc_dirs_sys_os2_i86 = -I"$(os2api_dir)/os2286/h"
 inc_dirs_sys_os2_ppc = -I"$(%WATCOM)/h/os2ppc"
+inc_dirs_sys_os2     = $(inc_dirs_sys_os2_$(host_cpu))
 inc_dirs_sys_nt      = -I"$(w32api_dir)/nt"
 inc_dirs_sys_win     = -I"$(w16api_dir)/wini86"
-inc_dirs_sys_os2     = $(inc_dirs_sys_os2_$(host_cpu))
 inc_dirs_sys_dos     =
 inc_dirs_sys_nov     =
 inc_dirs_sys_qnx     =
 inc_dirs_sys_linux   =
 inc_dirs_sys_nto     =
-inc_dirs_sys_zdos    = -I"$(hdr_dir)/dos/zdos"
 inc_dirs_sys_rdos    =
 inc_dirs_sys_rdosdev =
+inc_dirs_sys_zdos    = -I"$(hdr_dir)/dos/zdos"
 
 inc_dirs_lang_dos     = -I"$(hdr_dir)/dos/h"
 inc_dirs_lang_qnx     = -I"$(hdr_dir)/qnx/h"
 inc_dirs_lang_linux   = -I"$(hdr_dir)/linux/h"
-inc_dirs_lang_netware = -I"$(nwoss_dir)/common/h"
 inc_dirs_lang_nto     = -I"$(hdr_dir)/nto"
 inc_dirs_lang_rdos    = -I"$(hdr_dir)/rdos/h"
+inc_dirs_lang_netware = -I"$(nwoss_dir)/common/h"
 
 !endif
 

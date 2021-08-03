@@ -4,7 +4,7 @@ include_watcom = -I"$(watcom_dir)/h"
 # include_c_(system)
 include_c_msdos    = $(inc_dirs_lang_dos)
 include_c_netware  = $(inc_dirs_lang_dos) -I"$(lib_misc_dir)/h"
-include_c_os2      = $(inc_dirs_lang_dos) $(inc_dirs_sys_os2_$(flib_$(processor)))
+include_c_os2      = $(inc_dirs_lang_dos) $(inc_dirs_sys_os2)
 include_c_qnx      = $(inc_dirs_lang_qnx)
 include_c_linux    = $(inc_dirs_lang_linux)
 include_c_windows  = $(inc_dirs_sys_win) $(inc_dirs_lang_dos)

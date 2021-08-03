@@ -9,7 +9,7 @@ include_c_nw_clibl = $(inc_dirs_lang_netware) $(inc_dirs_lang_dos)
 # we need to include libc path below
 include_c_nw_libc  = $(inc_dirs_lang_dos)
 include_c_nw_libcl = $(inc_dirs_lang_dos)
-include_c_os2      = $(inc_dirs_lang_dos) $(inc_dirs_sys_os2_$(processor))
+include_c_os2      = $(inc_dirs_lang_dos) $(inc_dirs_sys_os2)
 include_c_qnx      = $(inc_dirs_lang_qnx)
 include_c_linux    = $(inc_dirs_lang_linux)
 include_c_windows  = $(inc_dirs_lang_dos) $(inc_dirs_sys_win)
