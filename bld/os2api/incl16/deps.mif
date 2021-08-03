@@ -1,21 +1,21 @@
-mh_dir	    	= $(incl_dir_$(hdr_cpu))
+mh_dir          = $(incl_dir_$(targ_cpu))
 crwatcnt_sp     = $(hdr_dir)/crwatcnt.sp $(crwatpro_gsp) $(hdr_dir)/crwatepi.sp
 owhdr           = $(crwatcnt_sp) $(hdr_dir)/readonly.sp #$(hdr_dir)/owrtlink.sp
-cplus	    	= $(hdr_dir)/cpluspro.sp $(hdr_dir)/cplusepi.sp
+cplus           = $(hdr_dir)/cpluspro.sp $(hdr_dir)/cplusepi.sp
 
-bse.h : 	$(mh_dir)/bse.mh $(owhdr)
-bsedev.h : 	$(mh_dir)/bsedev.mh $(owhdr) $(cplus)
-bsedos.h : 	$(mh_dir)/bsedos.mh $(owhdr) $(cplus)
-bseerr.h : 	$(mh_dir)/bseerr.mh $(owhdr)
-bsesub.h : 	$(mh_dir)/bsesub.mh $(owhdr) $(cplus)
-os2.h :		$(mh_dir)/os2.mh $(owhdr)
-os2def.h : 	$(mh_dir)/os2def.mh $(owhdr) $(cplus) $(hdr_dir)/null.sp
-pm.h : 		$(mh_dir)/pm.mh $(owhdr)
-pmbitmap.h : 	$(mh_dir)/pmbitmap.mh $(owhdr) $(cplus)
-pmdev.h : 	$(mh_dir)/pmdev.mh $(owhdr) $(cplus)
-pmerr.h : 	$(mh_dir)/pmerr.mh $(owhdr)
-pmgpi.h : 	$(mh_dir)/pmgpi.mh $(owhdr) $(cplus)
-pmhelp.h : 	$(mh_dir)/pmhelp.mh $(owhdr) $(cplus)
-pmmle.h : 	$(mh_dir)/pmmle.mh $(owhdr)
-pmshl.h : 	$(mh_dir)/pmshl.mh $(owhdr) $(cplus)
-pmwin.h : 	$(mh_dir)/pmwin.mh $(owhdr) $(cplus)
+h/bse.h :         $(mh_dir)/bse.mh $(owhdr)
+h/bsedev.h :      $(mh_dir)/bsedev.mh $(owhdr) $(cplus)
+h/bsedos.h :      $(mh_dir)/bsedos.mh $(owhdr) $(cplus)
+h/bseerr.h :      $(mh_dir)/bseerr.mh $(owhdr)
+h/bsesub.h :      $(mh_dir)/bsesub.mh $(owhdr) $(cplus)
+h/os2.h :         $(mh_dir)/os2.mh $(owhdr)
+h/os2def.h :      $(mh_dir)/os2def.mh $(owhdr) $(cplus) $(hdr_dir)/null.sp
+h/pm.h :          $(mh_dir)/pm.mh $(owhdr)
+h/pmbitmap.h :    $(mh_dir)/pmbitmap.mh $(owhdr) $(cplus)
+h/pmdev.h :       $(mh_dir)/pmdev.mh $(owhdr) $(cplus)
+h/pmerr.h :       $(mh_dir)/pmerr.mh $(owhdr)
+h/pmgpi.h :       $(mh_dir)/pmgpi.mh $(owhdr) $(cplus)
+h/pmhelp.h :      $(mh_dir)/pmhelp.mh $(owhdr) $(cplus)
+h/pmmle.h :       $(mh_dir)/pmmle.mh $(owhdr)
+h/pmshl.h :       $(mh_dir)/pmshl.mh $(owhdr) $(cplus)
+h/pmwin.h :       $(mh_dir)/pmwin.mh $(owhdr) $(cplus)

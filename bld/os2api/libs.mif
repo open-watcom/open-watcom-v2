@@ -1,145 +1,50 @@
-proj_name =  os2api
+#-------------------------------------------
+#                           libs286 libs386
+#-------------------------------------------
+!inject lib/os2.lib         libs286
+!inject lib/os2386.lib              libs386
+!inject lib/rexx.lib                libs386
+!inject lib/tcpip32.lib             libs386
+!inject lib/ftpapi.lib              libs386
+!inject lib/opengl.lib              libs386
+!inject lib/glut.lib                libs386
+!inject lib/libtk.lib               libs386
+!inject lib/libaux.lib              libs386
+!inject lib/mmpm2.lib               libs386
+!inject lib/rtmidi.lib              libs386
+!inject lib/upm32.lib               libs386
+!inject lib/libuls.lib              libs386
+!inject lib/libconv.lib             libs386
 
-os2api_autodepends = .AUTODEPEND
-
-os2api_distrib_lib = 1
-
-!include cproj.mif
-!include defrule.mif
-
-wsplice_opts = -i"$(hdr_dir)" $[@ $@
-
-.EXTENSIONS : .lbc .def
-
-libs286 =            &
-        os2.lib
-
-libs386 =            &
-        os2386.lib   &
-        rexx.lib     &
-        tcpip32.lib  &
-        ftpapi.lib   &
-        opengl.lib   &
-        glut.lib     &
-        libtk.lib    &
-        libaux.lib   &
-        mmpm2.lib    &
-        rtmidi.lib   &
-        upm32.lib    &
-        libuls.lib   &
-        libconv.lib
-
-components286 =      &
-        ansicall.lbc &
-        doscalls.lbc &
-        kbdcalls.lbc &
-        moncalls.lbc &
-        moucalls.lbc &
-        msg.lbc      &
-        nampipes.lbc &
-        nls.lbc      &
-        os2sm.lbc    &
-        pmgpi.lbc    &
-        pmshapi.lbc  &
-        pmviop.lbc   &
-        pmwin.lbc    &
-        quecalls.lbc &
-        sesmgr.lbc   &
-        viocalls.lbc
-
-components386 =      &
-        bdcalls.lbc  &
-        doscalls.lbc &
-        helpmgr.lbc  &
-        kbdcalls.lbc &
-        moncalls.lbc &
-        moucalls.lbc &
-        msg.lbc      &
-        nampipes.lbc &
-        nls.lbc      &
-        pmctls.lbc   &
-        pmdrag.lbc   &
-        pmgpi.lbc    &
-        pmspl.lbc    &
-        pmshapi.lbc  &
-        pmviop.lbc   &
-        pmwin.lbc    &
-        pmwp.lbc     &
-        quecalls.lbc &
-        sesmgr.lbc   &
-        viocalls.lbc
-
-componentsrexx =     &
-        rexx.lbc     &
-        rexxapi.lbc
-
-componentsmmpm2 =    &
-        dive.lbc     &
-        mciapi.lbc   &
-        mdm.lbc      &
-        mmio.lbc     &
-        sw.lbc
-
-!ifeq host_cpu i86
-libs = $(libs286)
-libdir = lib286
-!else
-libs = $(libs386)
-libdir = lib386
-!endif
-
-all : $(libs) .SYMBOLIC
-
-.def .asm: ../../$(libdir)
-
-.def.lbc: $(__MAKEFILES__)
-    $(sed) -f ../../def2lbc.sed ../../$(libdir)/$[. > $@
-
-.lbc.lib: $(__MAKEFILES__)
-    @%make echo_lib
-    $(librarian) $(libflags) @$[@
-
-.obj.lib: $(__MAKEFILES__)
-    @%make echo_lib
-    $(librarian) $(libflags) $[@
-
-os2.lib: lib286.lbc msgseg.obj $(__MAKEFILES__)
-    @%make echo_lib
-    $(librarian) $(libflags) @$[@ +msgseg.obj
-
-lib286.lbc: $(components286) $(__MAKEFILES__)
-    @for %l in ($(components286)) do @%append $@ @%l
-
-os2386.lib: lib386.lbc msgseg32.obj $(__MAKEFILES__)
-    @%make echo_lib
-    $(librarian) $(libflags) @$[@ +msgseg32.obj
-
-lib386.lbc: $(components386) $(__MAKEFILES__)
-    @for %l in ($(components386)) do @%append $@ @%l
-
-rexx.lib: rexxall.lbc $(__MAKEFILES__)
-    @%make echo_lib
-    $(librarian) $(libflags) @$[@
-
-rexxall.lbc: $(componentsrexx) $(__MAKEFILES__)
-    @for %l in ($(componentsrexx)) do @%append $@ @%l
-
-mmpm2.lib: mmpm2all.lbc $(__MAKEFILES__)
-    @%make echo_lib
-    $(librarian) $(libflags) @$[@
-
-mmpm2all.lbc: $(componentsmmpm2) $(__MAKEFILES__)
-    @for %l in ($(componentsmmpm2)) do @%append $@ @%l
-
-libuls.lib: libuni.lbc $(__MAKEFILES__)
-    @%make echo_lib
-    $(librarian) $(libflags) @$[@
-
-libconv.lib: uconv.lbc $(__MAKEFILES__)
-    @%make echo_lib
-    $(librarian) $(libflags) @$[@
-
-clean : .SYMBOLIC
-        rm -f *.lbc
-        rm -f *.lib
-        rm -f *.obj
+#--------------------------------------------------------------
+#                           comp286 comp386 comprexx compmmpm2
+#--------------------------------------------------------------
+!inject ansicall.lbc        comp286
+!inject bdcalls.lbc                 comp386
+!inject doscalls.lbc        comp286 comp386
+!inject helpmgr.lbc                 comp386
+!inject kbdcalls.lbc        comp286 comp386
+!inject moncalls.lbc        comp286 comp386
+!inject moucalls.lbc        comp286 comp386
+!inject msg.lbc             comp286 comp386
+!inject nampipes.lbc        comp286 comp386
+!inject nls.lbc             comp286 comp386
+!inject os2sm.lbc           comp286
+!inject pmctls.lbc                  comp386
+!inject pmdrag.lbc                  comp386
+!inject pmgpi.lbc           comp286 comp386
+!inject pmspl.lbc                   comp386
+!inject pmshapi.lbc         comp286 comp386
+!inject pmviop.lbc          comp286 comp386
+!inject pmwin.lbc           comp286 comp386
+!inject pmwp.lbc                    comp386
+!inject quecalls.lbc        comp286 comp386
+!inject sesmgr.lbc          comp286 comp386
+!inject viocalls.lbc        comp286 comp386
+!inject rexx.lbc                            comprexx
+!inject rexxapi.lbc                         comprexx
+!inject dive.lbc                                     compmmpm2
+!inject mciapi.lbc                                   compmmpm2
+!inject mdm.lbc                                      compmmpm2
+!inject mmio.lbc                                     compmmpm2
+!inject sw.lbc                                       compmmpm2
