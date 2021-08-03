@@ -47,27 +47,27 @@ time_deps     = time.mh $(owhdr) ../systypes.sp $(cplus) $(packll) ../wchar_t.sp
 wchar_deps    = wchar.mh $(owhdr) $(extension) $(cplus) ../wchar_t.sp ../wint_t.sp ../wctype_t.sp ../size_t.sp $(saferc) ../null.sp $(ns_std) ../weof.sp $(wctype_sp) ../tm.sp ../file.sp ../mbstatet.sp ../time_t.sp ../far2.sp ../farepi.sp
 wctype_deps   = wctype.mh $(owhdr) $(extension) $(c99ext)  $(cplus) ../wint_t.sp ../wctype_t.sp ../wctranst.sp $(ns_std) ../weof.sp $(wctype_sp)
 
-cassert      : cassert.mh ../cpponly.sp $(assert_deps)
-cctype       : cctype.mh ../cpponly.sp $(ctype_deps)
-cerrno       : cerrno.mh ../cpponly.sp $(errno_deps)
-cfloat       : cfloat.mh ../cpponly.sp $(float_deps)
-ciso646      : ciso646.mh ../cpponly.sp $(iso646_deps)
-climits      : climits.mh ../cpponly.sp $(limits_deps)
-clocale      : clocale.mh ../cpponly.sp $(locale_deps)
-cmath        : cmath.mh ../cpponly.sp $(math_deps)
-cinttype     : cinttype.mh ../cpponly.sp $(inttypes_deps)
-csetjmp      : csetjmp.mh ../cpponly.sp $(setjmp_deps)
-csignal      : csignal.mh ../cpponly.sp $(signal_deps)
-cstdarg      : cstdarg.mh ../cpponly.sp $(stdarg_deps)
-cstdbool     : cstdbool.mh ../cpponly.sp $(stdbool_deps)
-cstddef      : cstddef.mh ../cpponly.sp $(stddef_deps)
-cstdint      : cstdint.mh ../cpponly.sp $(stdint_deps)
-cstdio       : cstdio.mh ../cpponly.sp $(stdio_deps)
-cstdlib      : cstdlib.mh ../cpponly.sp $(stdlib_deps)
-cstring      : cstring.mh ../cpponly.sp $(string_deps)
-ctime        : ctime.mh ../cpponly.sp $(time_deps)
-cwchar       : cwchar.mh ../cpponly.sp $(wchar_deps)
-cwctype      : cwctype.mh ../cpponly.sp $(wctype_deps)
+h/cassert      : cassert.mh ../cpponly.sp $(assert_deps)
+h/cctype       : cctype.mh ../cpponly.sp $(ctype_deps)
+h/cerrno       : cerrno.mh ../cpponly.sp $(errno_deps)
+h/cfloat       : cfloat.mh ../cpponly.sp $(float_deps)
+h/ciso646      : ciso646.mh ../cpponly.sp $(iso646_deps)
+h/climits      : climits.mh ../cpponly.sp $(limits_deps)
+h/clocale      : clocale.mh ../cpponly.sp $(locale_deps)
+h/cmath        : cmath.mh ../cpponly.sp $(math_deps)
+h/cinttype     : cinttype.mh ../cpponly.sp $(inttypes_deps)
+h/csetjmp      : csetjmp.mh ../cpponly.sp $(setjmp_deps)
+h/csignal      : csignal.mh ../cpponly.sp $(signal_deps)
+h/cstdarg      : cstdarg.mh ../cpponly.sp $(stdarg_deps)
+h/cstdbool     : cstdbool.mh ../cpponly.sp $(stdbool_deps)
+h/cstddef      : cstddef.mh ../cpponly.sp $(stddef_deps)
+h/cstdint      : cstdint.mh ../cpponly.sp $(stdint_deps)
+h/cstdio       : cstdio.mh ../cpponly.sp $(stdio_deps)
+h/cstdlib      : cstdlib.mh ../cpponly.sp $(stdlib_deps)
+h/cstring      : cstring.mh ../cpponly.sp $(string_deps)
+h/ctime        : ctime.mh ../cpponly.sp $(time_deps)
+h/cwchar       : cwchar.mh ../cpponly.sp $(wchar_deps)
+h/cwctype      : cwctype.mh ../cpponly.sp $(wctype_deps)
 
 # These dependency lists are for the IOStreams headers.
 
@@ -82,16 +82,16 @@ sstream_deps = sstream.mh $(owhdr) ../cpponly.sp $(ns_std) ../nyi.sp
 streambu_deps = streambu.mh $(owhdr) ../cpponly.sp ../cpplock.sp $(packll) $(ns_std)
 strstrea_deps = strstrea.mh $(owhdr) ../cpponly.sp $(packll) $(ns_std)
 
-fstream      : $(fstream_deps)
-iomanip      : $(iomanip_deps)
-ios          : $(ios_deps)
-iosfwd       : $(iosfwd_deps)
-iostream     : $(iostream_deps)
-istream      : $(istream_deps)
-ostream      : $(ostream_deps)
-sstream      : $(sstream_deps)
-streambu     : $(streambu_deps)
-strstrea     : $(strstrea_deps)
+h/fstream      : $(fstream_deps)
+h/iomanip      : $(iomanip_deps)
+h/ios          : $(ios_deps)
+h/iosfwd       : $(iosfwd_deps)
+h/iostream     : $(iostream_deps)
+h/istream      : $(istream_deps)
+h/ostream      : $(ostream_deps)
+h/sstream      : $(sstream_deps)
+h/streambu     : $(streambu_deps)
+h/strstrea     : $(strstrea_deps)
 
 # These dependency lists are for other C++ library headers.
 
@@ -135,47 +135,47 @@ utility_deps   = utility.mh $(owhdrcnt) ../cpponly.sp $(ns_std)
 valarray_deps  = valarray.mh $(owhdrcnt) ../cpponly.sp $(ns_std) ../nyi.sp
 vector_deps    = vector.mh $(owhdrcnt) ../cpponly.sp $(ns_std)
 
-algorith     : $(algorith_deps)
-array        : $(array_deps)
-atomic       : $(atomic_deps)
-bitset       : $(bitset_deps)
-codecvt      : $(codecvt_deps)
-complex      : $(complex_deps)
-conditio     : $(conditio_deps)
-deque        : $(deque_deps)
-exceptio     : $(exception_deps)
-forward_     : $(forward_deps)
-function     : $(function_deps)
-future       : $(future_deps)
-initiali     : $(initiali_deps)
-iterator     : $(iterator_deps)
-limits       : $(limits_deps)
-list         : $(list_deps)
-locale       : $(locale_deps)
-map          : $(map_deps)
-memory       : $(memory_deps)
-mutex        : $(mutex_deps)
-new          : $(new_deps)
-numeric      : $(numeric_deps)
-queue        : $(queue_deps)
-random       : $(random_deps)
-ratio        : $(ratio_deps)
-regex        : $(regex_deps)
-set          : $(set_deps)
-stack        : $(stack_deps)
-stdexcep     : $(stdexcept_deps)
-string       : $(string_deps)
-system_e     : $(system_e_deps)
-thread       : $(thread_deps)
-tuple        : $(tuple_deps)
-typeinde     : $(typeinde_deps)
-typeinfo     : $(typeinfo_deps)
-type_tra     : $(type_tra_deps)
-unorderm     : $(unorderm_deps)
-unorders     : $(unorders_deps)
-utility      : $(utility_deps)
-valarray     : $(valarray_deps)
-vector       : $(vector_deps)
+h/algorith     : $(algorith_deps)
+h/array        : $(array_deps)
+h/atomic       : $(atomic_deps)
+h/bitset       : $(bitset_deps)
+h/codecvt      : $(codecvt_deps)
+h/complex      : $(complex_deps)
+h/conditio     : $(conditio_deps)
+h/deque        : $(deque_deps)
+h/exceptio     : $(exception_deps)
+h/forward_     : $(forward_deps)
+h/function     : $(function_deps)
+h/future       : $(future_deps)
+h/initiali     : $(initiali_deps)
+h/iterator     : $(iterator_deps)
+h/limits       : $(limits_deps)
+h/list         : $(list_deps)
+h/locale       : $(locale_deps)
+h/map          : $(map_deps)
+h/memory       : $(memory_deps)
+h/mutex        : $(mutex_deps)
+h/new          : $(new_deps)
+h/numeric      : $(numeric_deps)
+h/queue        : $(queue_deps)
+h/random       : $(random_deps)
+h/ratio        : $(ratio_deps)
+h/regex        : $(regex_deps)
+h/set          : $(set_deps)
+h/stack        : $(stack_deps)
+h/stdexcep     : $(stdexcept_deps)
+h/string       : $(string_deps)
+h/system_e     : $(system_e_deps)
+h/thread       : $(thread_deps)
+h/tuple        : $(tuple_deps)
+h/typeinde     : $(typeinde_deps)
+h/typeinfo     : $(typeinfo_deps)
+h/type_tra     : $(type_tra_deps)
+h/unorderm     : $(unorderm_deps)
+h/unorders     : $(unorders_deps)
+h/utility      : $(utility_deps)
+h/valarray     : $(valarray_deps)
+h/vector       : $(vector_deps)
 
 # The follow describe the dependences for the various *.h files.
 
@@ -188,238 +188,238 @@ sys_stat_deps  = $(owhdr) ../lfndos.sp $(cplus) $(packll) $(packlnxk) ../incdir.
 sys_time_deps  = $(owhdrcnt) ../owrtlink.sp $(cplus) $(packll) $(packlnxk) ../time_t.sp ../timeval.sp
 sys_types_deps = $(owhdr) $(cplus) $(packll) $(packlnxk) ../loff_t.sp ../incdir.sp ../time_t.sp ../size_t.sp ../exactint.sp ../ssize_t.sp ../pid_t.sp ../off_t.sp ../timer_t.sp ../clockidt.sp ../schedp.sp ../dev_t.sp ../ino_t.sp ../mode_t.sp ../nlink_t.sp ../uid_t.sp ../gid_t.sp ../id_t.sp ../schedp.sp ../sem_t.sp ../pthread1.sp ../pthread2.sp $(extension)
 
-_algmut.h       : _algmut.mh $(owhdrcnt) $(ns_std)
-_algnmod.h      : _algnmod.mh $(owhdrcnt) $(ns_std)
-_algsort.h      : _algsort.mh $(owhdrcnt) $(ns_std)
-_comdef.h       : _comdef.mh $(owhdr)
-_hash.h         : _hash.mh $(owhdrcnt) ../cpponly.sp $(ns_std) ../nyi.sp
-_meta.h         : _meta.mh $(owhdrcnt) ../cpponly.sp
-_preincl.h      : _preincl.mh $(owhdrcnt)
-_rbtree.h       : _rbtree.mh $(owhdrcnt) ../cpponly.sp $(ns_std)
-_strdef.h       : _strdef.mh $(owhdrcnt) ../cpponly.sp $(ns_std)
-alloca.h        : alloca.mh $(owhdr) ../size_t.sp ../null.sp $(cplus) ../alloca.sp
-assert.h        : $(assert_deps)
-bios.h          : bios.mh $(owhdr) $(cplus) $(packll) $(extension)
-bios98.h        : bios98.mh $(owhdr) $(cplus) $(packll) $(extension)
-common.cnv      : common.mh $(crwat_sp)
-complex.h       : $(complex_deps)
-conio.h         : conio.mh $(owhdr) $(cplus) ../_valist.sp
-crtdbg.h        : crtdbg.mh $(owhdr) $(cplus)
-ctype.h         : $(ctype_deps)
-direct.h        : direct.mh $(owhdr) ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../wchar_t.sp $(maxpath_sp) ../dskfreet.sp
-dos.h           : dos.mh $(owhdr) ../lfndos.sp $(cplus) $(packll) ../wchar_t.sp $(maxpath_sp) ../dskfreet.sp ../delay.sp
-dosfunc.h       : dosfunc.mh $(owhdr)
-eh.h            : eh.mh $(owhdr) ../cpponly.sp
-env.h           : env.mh $(owhdr) $(cplus) ../wchar_t.sp $(posixext)
-errno.h         : $(errno_deps)
-except.h        : except.mh $(owhdr) ../cpponly.sp  ../cpppfv.sp ../watexc.sp ../except.sp
-exceptio.h      : $(exception_deps)
-excpt.h         : excpt.mh $(owhdr) $(cplus)
-fcntl.h         : fcntl.mh $(fcntl_deps)
-fenv.h          : fenv.mh $(owhdr) $(packll)
-float.h         : $(float_deps)
-fnmatch.h       : fnmatch.mh $(owhdr) $(extension) $(cplus)
-fstream.h       : $(fstream_deps)
-generic.h       : generic.mh $(owhdr) ../cpponly.sp
-graph.h         : graph.mh $(graph_deps)
-graph2.h        : graph2.mh graph.mh $(graph_deps)
-i86.h           : i86.mh $(owhdr) $(cplus) $(packll) ../delay.sp
-inttypes.h      : $(inttypes_deps)
-io.h            : io.mh $(owhdr) ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../time_t.sp ../wchar_t.sp $(maxpath_sp) ../intptr_t.sp ../access.sp ../seekpos.sp $(extension)
-iomanip.h       : $(iomanip_deps)
-ios.h           : $(ios_deps)
-iosfwd.h        : $(iosfwd_deps)
-iostream.h      : $(iostream_deps)
-iso646.h        : $(iso646_deps)
-istream.h       : $(istream_deps)
-jctype.h        : jctype.mh $(owhdr) $(cplus)
-jstring.h       : jstring.mh $(owhdr) $(cplus) ../size_t.sp ../null.sp
-jtime.h         : jtime.mh $(owhdr) $(cplus)
-langinfo.h      : langinfo.mh $(owhdr) $(cplus)
-libgen.h        : libgen.mh $(owhdr) $(cplus)
-limits.h        : $(limits_deps)
-locale.h        : $(locale_deps)
-malloc.h        : malloc.mh $(owhdr) $(cplus) $(packll) ../size_t.sp ../null.sp ../alloca.sp ../windowsx.sp ../far1.sp ../farepi.sp
-math.h          : $(math_deps)
-mbctype.h       : mbctype.mh $(owhdr) $(cplus) ../size_t.sp ../null.sp ../mbcurmax.sp ../mblenmax.sp
-mbstring.h      : mbstring.mh $(owhdr) $(cplus) ../size_t.sp ../wchar_t.sp ../null.sp ../nlserror.sp ../mbcurmax.sp ../mblenmax.sp $(extension) ../far2.sp ../farepi.sp
-mem.h           : mem.mh $(owhdr) ../ptrdifft.sp
-memory.h        : $(memory_deps)
-mmintrin.h      : mmintrin.mh $(owhdr) $(cplus)
-new.h           : $(new_deps)
-ostream.h       : $(ostream_deps)
-pgchart.h       : pgchart.mh $(pgchart_deps)
-process.h       : process.mh $(process_deps)
-search.h        : search.mh $(owhdr) $(cplus)
-setjmp.h        : $(setjmp_deps)
-setjmpex.h      : setjmpex.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp $(cplus)
-share.h         : share.mh $(owhdr) $(extension)
-signal.h        : $(signal_deps)
-sstream.h       : $(sstream_deps)
-stdarg.h        : $(stdarg_deps)
-stdbool.h       : $(stdbool_deps)
-stddef.h        : $(stddef_deps)
-stdexcep.h      : $(stdexcept_deps)
-stdint.h        : $(stdint_deps)
-stdio.h         : $(stdio_deps)
-stdiobuf.h      : stdiobuf.mh $(owhdr) ../cpponly.sp $(packll)
-stdlib.h        : $(stdlib_deps)
-stdnoret.h      : $(stdnoret_deps)
-streambu.h      : $(streambu_deps)
-string.h        : $(string_deps)
-string.hpp      : string.mhp $(owhdr) ../cpponly.sp
-strings.h       : strings.mh $(owhdr) $(cplus) ../size_t.sp
-strstrea.h      : $(strstrea_deps)
-tchar.h         : tchar.mh $(owhdr) ../null.sp $(cplus) $(extension)
-time.h          : $(time_deps)
-typeinfo.h      : $(typeinfo_deps)
-unistd.h        : unistd.mh $(unistd_deps)
-utime.h         : utime.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp $(cplus) $(packll) ../time_t.sp ../wchar_t.sp ../utime.sp
-varargs.h       : varargs.mh $(owhdr) $(cplus)
-wcdefs.h        : wcdefs.mh $(owhdr) ../cpponly.sp ../size_t.sp
-wcexcept.h      : wcexcept.mh $(owhdr) ../cpponly.sp $(packll)
-wchar.h         : $(wchar_deps)
-wchash.h        : wchash.mh $(owhdr) ../cpponly.sp $(redefnew)
-wchbase.h       : wchbase.mh $(owhdr) ../cpponly.sp $(redefnew)
-wchiter.h       : wchiter.mh $(owhdr) ../cpponly.sp
-wclbase.h       : wclbase.mh $(owhdr) ../cpponly.sp $(redefnew)
-wclcom.h        : wclcom.mh $(owhdr) ../cpponly.sp
-wclibase.h      : wclibase.mh $(owhdr) ../cpponly.sp
-wclist.h        : wclist.mh $(owhdr) ../cpponly.sp
-wclistit.h      : wclistit.mh $(owhdr) ../cpponly.sp
-wcqueue.h       : wcqueue.mh $(owhdr) ../cpponly.sp
-wcsbase.h       : wcsbase.mh $(owhdr) ../cpponly.sp $(redefnew)
-wcsibase.h      : wcsibase.mh $(owhdr) ../cpponly.sp
-wcskip.h        : wcskip.mh $(owhdr) ../cpponly.sp
-wcskipit.h      : wcskipit.mh $(owhdr) ../cpponly.sp
-wcstack.h       : wcstack.mh $(owhdr) ../cpponly.sp
-wctype.h        : $(wctype_deps)
-wcvbase.h       : wcvbase.mh $(owhdr) ../cpponly.sp $(redefnew)
-wcvector.h      : wcvector.mh $(owhdr) ../cpponly.sp $(redefnew)
-wdefwin.h       : wdefwin.mh $(owhdr) $(cplus)
-wsample.h       : wsample.mh $(owhdr) $(cplus)
+h/_algmut.h       : _algmut.mh $(owhdrcnt) $(ns_std)
+h/_algnmod.h      : _algnmod.mh $(owhdrcnt) $(ns_std)
+h/_algsort.h      : _algsort.mh $(owhdrcnt) $(ns_std)
+h/_comdef.h       : _comdef.mh $(owhdr)
+h/_hash.h         : _hash.mh $(owhdrcnt) ../cpponly.sp $(ns_std) ../nyi.sp
+h/_meta.h         : _meta.mh $(owhdrcnt) ../cpponly.sp
+h/_preincl.h      : _preincl.mh $(owhdrcnt)
+h/_rbtree.h       : _rbtree.mh $(owhdrcnt) ../cpponly.sp $(ns_std)
+h/_strdef.h       : _strdef.mh $(owhdrcnt) ../cpponly.sp $(ns_std)
+h/alloca.h        : alloca.mh $(owhdr) ../size_t.sp ../null.sp $(cplus) ../alloca.sp
+h/assert.h        : $(assert_deps)
+h/bios.h          : bios.mh $(owhdr) $(cplus) $(packll) $(extension)
+h/bios98.h        : bios98.mh $(owhdr) $(cplus) $(packll) $(extension)
+h/common.cnv      : common.mh $(crwat_sp)
+h/complex.h       : $(complex_deps)
+h/conio.h         : conio.mh $(owhdr) $(cplus) ../_valist.sp
+h/crtdbg.h        : crtdbg.mh $(owhdr) $(cplus)
+h/ctype.h         : $(ctype_deps)
+h/direct.h        : direct.mh $(owhdr) ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../wchar_t.sp $(maxpath_sp) ../dskfreet.sp
+h/dos.h           : dos.mh $(owhdr) ../lfndos.sp $(cplus) $(packll) ../wchar_t.sp $(maxpath_sp) ../dskfreet.sp ../delay.sp
+h/dosfunc.h       : dosfunc.mh $(owhdr)
+h/eh.h            : eh.mh $(owhdr) ../cpponly.sp
+h/env.h           : env.mh $(owhdr) $(cplus) ../wchar_t.sp $(posixext)
+h/errno.h         : $(errno_deps)
+h/except.h        : except.mh $(owhdr) ../cpponly.sp  ../cpppfv.sp ../watexc.sp ../except.sp
+h/exceptio.h      : $(exception_deps)
+h/excpt.h         : excpt.mh $(owhdr) $(cplus)
+h/fcntl.h         : fcntl.mh $(fcntl_deps)
+h/fenv.h          : fenv.mh $(owhdr) $(packll)
+h/float.h         : $(float_deps)
+h/fnmatch.h       : fnmatch.mh $(owhdr) $(extension) $(cplus)
+h/fstream.h       : $(fstream_deps)
+h/generic.h       : generic.mh $(owhdr) ../cpponly.sp
+h/graph.h         : graph.mh $(graph_deps)
+h/graph2.h        : graph2.mh graph.mh $(graph_deps)
+h/i86.h           : i86.mh $(owhdr) $(cplus) $(packll) ../delay.sp
+h/inttypes.h      : $(inttypes_deps)
+h/io.h            : io.mh $(owhdr) ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../time_t.sp ../wchar_t.sp $(maxpath_sp) ../intptr_t.sp ../access.sp ../seekpos.sp $(extension)
+h/iomanip.h       : $(iomanip_deps)
+h/ios.h           : $(ios_deps)
+h/iosfwd.h        : $(iosfwd_deps)
+h/iostream.h      : $(iostream_deps)
+h/iso646.h        : $(iso646_deps)
+h/istream.h       : $(istream_deps)
+h/jctype.h        : jctype.mh $(owhdr) $(cplus)
+h/jstring.h       : jstring.mh $(owhdr) $(cplus) ../size_t.sp ../null.sp
+h/jtime.h         : jtime.mh $(owhdr) $(cplus)
+h/langinfo.h      : langinfo.mh $(owhdr) $(cplus)
+h/libgen.h        : libgen.mh $(owhdr) $(cplus)
+h/limits.h        : $(limits_deps)
+h/locale.h        : $(locale_deps)
+h/malloc.h        : malloc.mh $(owhdr) $(cplus) $(packll) ../size_t.sp ../null.sp ../alloca.sp ../windowsx.sp ../far1.sp ../farepi.sp
+h/math.h          : $(math_deps)
+h/mbctype.h       : mbctype.mh $(owhdr) $(cplus) ../size_t.sp ../null.sp ../mbcurmax.sp ../mblenmax.sp
+h/mbstring.h      : mbstring.mh $(owhdr) $(cplus) ../size_t.sp ../wchar_t.sp ../null.sp ../nlserror.sp ../mbcurmax.sp ../mblenmax.sp $(extension) ../far2.sp ../farepi.sp
+h/mem.h           : mem.mh $(owhdr) ../ptrdifft.sp
+h/memory.h        : $(memory_deps)
+h/mmintrin.h      : mmintrin.mh $(owhdr) $(cplus)
+h/new.h           : $(new_deps)
+h/ostream.h       : $(ostream_deps)
+h/pgchart.h       : pgchart.mh $(pgchart_deps)
+h/process.h       : process.mh $(process_deps)
+h/search.h        : search.mh $(owhdr) $(cplus)
+h/setjmp.h        : $(setjmp_deps)
+h/setjmpex.h      : setjmpex.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp $(cplus)
+h/share.h         : share.mh $(owhdr) $(extension)
+h/signal.h        : $(signal_deps)
+h/sstream.h       : $(sstream_deps)
+h/stdarg.h        : $(stdarg_deps)
+h/stdbool.h       : $(stdbool_deps)
+h/stddef.h        : $(stddef_deps)
+h/stdexcep.h      : $(stdexcept_deps)
+h/stdint.h        : $(stdint_deps)
+h/stdio.h         : $(stdio_deps)
+h/stdiobuf.h      : stdiobuf.mh $(owhdr) ../cpponly.sp $(packll)
+h/stdlib.h        : $(stdlib_deps)
+h/stdnoret.h      : $(stdnoret_deps)
+h/streambu.h      : $(streambu_deps)
+h/string.h        : $(string_deps)
+h/string.hpp      : string.mhp $(owhdr) ../cpponly.sp
+h/strings.h       : strings.mh $(owhdr) $(cplus) ../size_t.sp
+h/strstrea.h      : $(strstrea_deps)
+h/tchar.h         : tchar.mh $(owhdr) ../null.sp $(cplus) $(extension)
+h/time.h          : $(time_deps)
+h/typeinfo.h      : $(typeinfo_deps)
+h/unistd.h        : unistd.mh $(unistd_deps)
+h/utime.h         : utime.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp $(cplus) $(packll) ../time_t.sp ../wchar_t.sp ../utime.sp
+h/varargs.h       : varargs.mh $(owhdr) $(cplus)
+h/wcdefs.h        : wcdefs.mh $(owhdr) ../cpponly.sp ../size_t.sp
+h/wcexcept.h      : wcexcept.mh $(owhdr) ../cpponly.sp $(packll)
+h/wchar.h         : $(wchar_deps)
+h/wchash.h        : wchash.mh $(owhdr) ../cpponly.sp $(redefnew)
+h/wchbase.h       : wchbase.mh $(owhdr) ../cpponly.sp $(redefnew)
+h/wchiter.h       : wchiter.mh $(owhdr) ../cpponly.sp
+h/wclbase.h       : wclbase.mh $(owhdr) ../cpponly.sp $(redefnew)
+h/wclcom.h        : wclcom.mh $(owhdr) ../cpponly.sp
+h/wclibase.h      : wclibase.mh $(owhdr) ../cpponly.sp
+h/wclist.h        : wclist.mh $(owhdr) ../cpponly.sp
+h/wclistit.h      : wclistit.mh $(owhdr) ../cpponly.sp
+h/wcqueue.h       : wcqueue.mh $(owhdr) ../cpponly.sp
+h/wcsbase.h       : wcsbase.mh $(owhdr) ../cpponly.sp $(redefnew)
+h/wcsibase.h      : wcsibase.mh $(owhdr) ../cpponly.sp
+h/wcskip.h        : wcskip.mh $(owhdr) ../cpponly.sp
+h/wcskipit.h      : wcskipit.mh $(owhdr) ../cpponly.sp
+h/wcstack.h       : wcstack.mh $(owhdr) ../cpponly.sp
+h/wctype.h        : $(wctype_deps)
+h/wcvbase.h       : wcvbase.mh $(owhdr) ../cpponly.sp $(redefnew)
+h/wcvector.h      : wcvector.mh $(owhdr) ../cpponly.sp $(redefnew)
+h/wdefwin.h       : wdefwin.mh $(owhdr) $(cplus)
+h/wsample.h       : wsample.mh $(owhdr) $(cplus)
 
-sys/locking.h   : sys/locking.mh $(owhdr) $(cplus)
-sys/timeb.h     : sys/timeb.mh $(owhdr) $(cplus) ../time_t.sp $(packll)
-sys/types.h     : sys/types.mh $(sys_types_deps)
-sys/utime.h     : sys/utime.mh $(owhdr) $(cplus) $(packll) ../time_t.sp ../wchar_t.sp ../utime.sp
+h/sys/locking.h   : sys/locking.mh $(owhdr) $(cplus)
+h/sys/timeb.h     : sys/timeb.mh $(owhdr) $(cplus) ../time_t.sp $(packll)
+h/sys/types.h     : sys/types.mh $(sys_types_deps)
+h/sys/utime.h     : sys/utime.mh $(owhdr) $(cplus) $(packll) ../time_t.sp ../wchar_t.sp ../utime.sp
 
-netdb.h         : netdb.mh $(owhdr) $(cplus) $(packlnxk)
-arpa/inet.h     : arpa/inet.mh $(owhdr) ../systypes.sp $(cplus) $(packlnxk)
-netinet/in.h    : netinet/in.mh $(owhdr) ../systypes.sp ../syssock.sp $(cplus) $(packlnxk)
-netinet/tcp.h   : netinet/tcp.mh $(owhdr) $(cplus) $(packlnxk)
-sys/socket.h    : sys/socket.mh $(owhdr) $(cplus) $(packlnxk) ../incdir.sp ../unistd.sp
+h/netdb.h         : netdb.mh $(owhdr) $(cplus) $(packlnxk)
+h/arpa/inet.h     : arpa/inet.mh $(owhdr) ../systypes.sp $(cplus) $(packlnxk)
+h/netinet/in.h    : netinet/in.mh $(owhdr) ../systypes.sp ../syssock.sp $(cplus) $(packlnxk)
+h/netinet/tcp.h   : netinet/tcp.mh $(owhdr) $(cplus) $(packlnxk)
+h/sys/socket.h    : sys/socket.mh $(owhdr) $(cplus) $(packlnxk) ../incdir.sp ../unistd.sp
 
 # The follow describe the system specific dependencies
 
 !ifeq system dos
 
-sys/_lfndos.h   : dos/sys/_lfndos.mh $(owhdrcnt)
-sys/stat.h      : sys/stat.mh $(sys_stat_deps)
+h/sys/_lfndos.h   : dos/sys/_lfndos.mh $(owhdrcnt)
+h/sys/stat.h      : sys/stat.mh $(sys_stat_deps)
 
 !else ifeq system linux
 
-dirent.h        : linux/dirent.mh $(owhdr) ../ino_t.sp ../off_t.sp $(cplus) $(packll)
-grp.h           : grp.mh $(crwatqnx_sp) ../readonly.sp ../size_t.sp ../gid_t.sp $(cplus) $(packll)
-pthread.h       : pthread.mh $(owhdr) ../sem_t.sp $(cplus) $(packll) ../pthread1.sp ../pthread2.sp
-pwd.h           : pwd.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packll)
-sched.h         : sched.mh $(owhdrcnt) ../owrtlink.sp $(cplus) ../pid_t.sp ../time_t.sp ../timespec.sp ../schedp.sp
-semaphor.h      : semaphor.mh $(owhdrcnt) ../owrtlink.sp $(cplus) ../time_t.sp ../timespec.sp ../sem_t.sp
-termios.h       : linux/termios.mh $(owhdr) $(cplus) $(packlnxk) ../pid_t.sp
+h/dirent.h        : linux/dirent.mh $(owhdr) ../ino_t.sp ../off_t.sp $(cplus) $(packll)
+h/grp.h           : grp.mh $(crwatqnx_sp) ../readonly.sp ../size_t.sp ../gid_t.sp $(cplus) $(packll)
+h/pthread.h       : pthread.mh $(owhdr) ../sem_t.sp $(cplus) $(packll) ../pthread1.sp ../pthread2.sp
+h/pwd.h           : pwd.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packll)
+h/sched.h         : sched.mh $(owhdrcnt) ../owrtlink.sp $(cplus) ../pid_t.sp ../time_t.sp ../timespec.sp ../schedp.sp
+h/semaphor.h      : semaphor.mh $(owhdrcnt) ../owrtlink.sp $(cplus) ../time_t.sp ../timespec.sp ../sem_t.sp
+h/termios.h       : linux/termios.mh $(owhdr) $(cplus) $(packlnxk) ../pid_t.sp
 
-sys/ioctl.h     : linux/sys/ioctl.mh $(owhdr) $(cplus) $(packlnxk) ../incdir.sp
-sys/mman.h      : linux/sys/mman.mh $(owhdr) ../systypes.sp $(cplus) $(packlnxk)
-sys/mount.h     : linux/sys/mount.mh $(owhdr) $(cplus) $(packlnxk)
-sys/ptrace.h    : linux/sys/ptrace.mh $(owhdr) $(cplus) $(packlnxk)
-sys/resource.h  : linux/sys/resource.mh $(owhdr) $(cplus) $(packlnxk)
-sys/sendfile.h  : linux/sys/sendfile.mh $(owhdr) ../systypes.sp $(cplus) $(packlnxk)
-sys/stat.h      : sys/stat.mh $(sys_stat_deps)
-sys/sysinfo.h   : linux/sys/sysinfo.mh $(owhdr) $(cplus) $(packlnxk)
-sys/sysmips.h   : linux/sys/sysmips.mh $(owhdr) $(cplus)
-sys/time.h      : sys/time.mh $(sys_time_deps)
-sys/times.h     : linux/sys/times.mh $(owhdr) $(cplus) $(packlnxk)
-sys/uio.h       : linux/sys/uio.mh $(owhdr) ../systypes.sp $(cplus) $(packlnxk)
-sys/un.h        : linux/sys/un.mh $(owhdr) $(cplus) $(packlnxk)
-sys/utsname.h   : linux/sys/utsname.mh $(owhdr) $(cplus) $(packlnxk)
-sys/wait.h      : linux/sys/wait.mh $(owhdr) $(cplus) $(packlnxk)
+h/sys/ioctl.h     : linux/sys/ioctl.mh $(owhdr) $(cplus) $(packlnxk) ../incdir.sp
+h/sys/mman.h      : linux/sys/mman.mh $(owhdr) ../systypes.sp $(cplus) $(packlnxk)
+h/sys/mount.h     : linux/sys/mount.mh $(owhdr) $(cplus) $(packlnxk)
+h/sys/ptrace.h    : linux/sys/ptrace.mh $(owhdr) $(cplus) $(packlnxk)
+h/sys/resource.h  : linux/sys/resource.mh $(owhdr) $(cplus) $(packlnxk)
+h/sys/sendfile.h  : linux/sys/sendfile.mh $(owhdr) ../systypes.sp $(cplus) $(packlnxk)
+h/sys/stat.h      : sys/stat.mh $(sys_stat_deps)
+h/sys/sysinfo.h   : linux/sys/sysinfo.mh $(owhdr) $(cplus) $(packlnxk)
+h/sys/sysmips.h   : linux/sys/sysmips.mh $(owhdr) $(cplus)
+h/sys/time.h      : sys/time.mh $(sys_time_deps)
+h/sys/times.h     : linux/sys/times.mh $(owhdr) $(cplus) $(packlnxk)
+h/sys/uio.h       : linux/sys/uio.mh $(owhdr) ../systypes.sp $(cplus) $(packlnxk)
+h/sys/un.h        : linux/sys/un.mh $(owhdr) $(cplus) $(packlnxk)
+h/sys/utsname.h   : linux/sys/utsname.mh $(owhdr) $(cplus) $(packlnxk)
+h/sys/wait.h      : linux/sys/wait.mh $(owhdr) $(cplus) $(packlnxk)
 
-arch/i386/err_no.h       : linux/arch/i386/err_no.mh $(crwatcnt_sp)
-arch/i386/fcntl.h        : linux/arch/i386/fcntl.mh $(crwatcnt_sp) ../mode_t.sp
-arch/i386/siginfo.h      : linux/arch/i386/siginfo.mh $(crwatcnt_sp) ../clock_t.sp
-arch/i386/signal.h       : linux/arch/i386/signal.mh $(crwatcnt_sp)
-arch/i386/sigposix.h     : linux/arch/i386/sigposix.mh $(crwatcnt_sp)
-arch/i386/sys/ioctl.h    : linux/arch/i386/sys/ioctl.mh $(crwatcnt_sp)
-arch/i386/sys/resource.h : linux/arch/i386/sys/resource.mh $(crwatcnt_sp)
-arch/i386/sys/socket.h   : linux/arch/i386/sys/socket.mh $(crwatcnt_sp)
-arch/i386/sys/stat.h     : linux/arch/i386/sys/stat.mh $(crwatcnt_sp) ../dev_t.sp ../ino_t.sp ../mode_t.sp ../nlink_t.sp ../uid_t.sp ../gid_t.sp ../blksizet.sp ../blkcnt_t.sp
-arch/i386/sys/types.h    : linux/arch/i386/sys/types.mh $(crwatcnt_sp) ../dev_t.sp ../ino_t.sp ../mode_t.sp ../nlink_t.sp ../uid_t.sp ../gid_t.sp ../blksizet.sp ../blkcnt_t.sp ../id_t.sp
-arch/mips/err_no.h       : linux/arch/mips/err_no.mh $(crwatcnt_sp)
-arch/mips/fcntl.h        : linux/arch/mips/fcntl.mh $(crwatcnt_sp) ../mode_t.sp
-arch/mips/siginfo.h      : linux/arch/mips/siginfo.mh $(crwatcnt_sp) ../clock_t.sp
-arch/mips/signal.h       : linux/arch/mips/signal.mh $(crwatcnt_sp)
-arch/mips/sigposix.h     : linux/arch/mips/sigposix.mh $(crwatcnt_sp)
-arch/mips/sys/ioctl.h    : linux/arch/mips/sys/ioctl.mh $(crwatcnt_sp)
-arch/mips/sys/resource.h : linux/arch/mips/sys/resource.mh $(crwatcnt_sp)
-arch/mips/sys/socket.h   : linux/arch/mips/sys/socket.mh $(crwatcnt_sp)
-arch/mips/sys/stat.h     : linux/arch/mips/sys/stat.mh $(crwatcnt_sp) ../dev_t.sp ../ino_t.sp ../mode_t.sp ../nlink_t.sp ../uid_t.sp ../gid_t.sp ../blksizet.sp ../blkcnt_t.sp
-arch/mips/sys/types.h    : linux/arch/mips/sys/types.mh $(crwatcnt_sp) ../dev_t.sp ../ino_t.sp ../mode_t.sp ../nlink_t.sp ../uid_t.sp ../gid_t.sp ../blksizet.sp ../blkcnt_t.sp ../id_t.sp
+h/arch/i386/err_no.h       : linux/arch/i386/err_no.mh $(crwatcnt_sp)
+h/arch/i386/fcntl.h        : linux/arch/i386/fcntl.mh $(crwatcnt_sp) ../mode_t.sp
+h/arch/i386/siginfo.h      : linux/arch/i386/siginfo.mh $(crwatcnt_sp) ../clock_t.sp
+h/arch/i386/signal.h       : linux/arch/i386/signal.mh $(crwatcnt_sp)
+h/arch/i386/sigposix.h     : linux/arch/i386/sigposix.mh $(crwatcnt_sp)
+h/arch/i386/sys/ioctl.h    : linux/arch/i386/sys/ioctl.mh $(crwatcnt_sp)
+h/arch/i386/sys/resource.h : linux/arch/i386/sys/resource.mh $(crwatcnt_sp)
+h/arch/i386/sys/socket.h   : linux/arch/i386/sys/socket.mh $(crwatcnt_sp)
+h/arch/i386/sys/stat.h     : linux/arch/i386/sys/stat.mh $(crwatcnt_sp) ../dev_t.sp ../ino_t.sp ../mode_t.sp ../nlink_t.sp ../uid_t.sp ../gid_t.sp ../blksizet.sp ../blkcnt_t.sp
+h/arch/i386/sys/types.h    : linux/arch/i386/sys/types.mh $(crwatcnt_sp) ../dev_t.sp ../ino_t.sp ../mode_t.sp ../nlink_t.sp ../uid_t.sp ../gid_t.sp ../blksizet.sp ../blkcnt_t.sp ../id_t.sp
+h/arch/mips/err_no.h       : linux/arch/mips/err_no.mh $(crwatcnt_sp)
+h/arch/mips/fcntl.h        : linux/arch/mips/fcntl.mh $(crwatcnt_sp) ../mode_t.sp
+h/arch/mips/siginfo.h      : linux/arch/mips/siginfo.mh $(crwatcnt_sp) ../clock_t.sp
+h/arch/mips/signal.h       : linux/arch/mips/signal.mh $(crwatcnt_sp)
+h/arch/mips/sigposix.h     : linux/arch/mips/sigposix.mh $(crwatcnt_sp)
+h/arch/mips/sys/ioctl.h    : linux/arch/mips/sys/ioctl.mh $(crwatcnt_sp)
+h/arch/mips/sys/resource.h : linux/arch/mips/sys/resource.mh $(crwatcnt_sp)
+h/arch/mips/sys/socket.h   : linux/arch/mips/sys/socket.mh $(crwatcnt_sp)
+h/arch/mips/sys/stat.h     : linux/arch/mips/sys/stat.mh $(crwatcnt_sp) ../dev_t.sp ../ino_t.sp ../mode_t.sp ../nlink_t.sp ../uid_t.sp ../gid_t.sp ../blksizet.sp ../blkcnt_t.sp
+h/arch/mips/sys/types.h    : linux/arch/mips/sys/types.mh $(crwatcnt_sp) ../dev_t.sp ../ino_t.sp ../mode_t.sp ../nlink_t.sp ../uid_t.sp ../gid_t.sp ../blksizet.sp ../blkcnt_t.sp ../id_t.sp
 
 !else ifeq system qnx
 
-dirent.h        : ../quantum/dirent.mh $(packll)
-cdrom.h         : ../quantum/cdrom.mh $(packll)
-grp.h           : ../quantum/grp.mh $(packll)
-pwd.h           : ../quantum/pwd.mh $(packll)
-regex.h         : ../quantum/regex.mh $(packll)
-semaphor.h      : ../quantum/semaphor.mh $(packll)
-sgtty.h         : ../quantum/sgtty.mh $(packll)
-sys/console.h   : ../quantum/sys/console.mh $(packll)
-sys/con_msg.h   : ../quantum/sys/con_msg.mh $(packll)
-sys/dev.h       : ../quantum/sys/dev.mh $(packll)
-sys/dev_msg.h   : ../quantum/sys/dev_msg.mh $(packll)
-sys/dir.h       : ../quantum/sys/dir.mh $(packll)
-sys/disk.h      : ../quantum/sys/disk.mh $(packll)
-sys/dumper.h    : ../quantum/sys/dumper.mh $(packll)
-sys/fd.h        : ../quantum/sys/fd.mh $(packll)
-sys/fsys.h      : ../quantum/sys/fsys.mh $(packll)
-sys/fsysinfo.h  : ../quantum/sys/fsysinfo.mh $(packll)
-sys/fsys_msg.h  : ../quantum/sys/fsys_msg.mh $(packll)
-sys/ioctl.h     : ../quantum/sys/ioctl.mh $(packll)
-sys/io_msg.h    : ../quantum/sys/io_msg.mh $(packll)
-sys/irqinfo.h   : ../quantum/sys/irqinfo.mh $(packll)
-sys/lmf.h       : ../quantum/sys/lmf.mh $(packll)
-sys/magic.h     : ../quantum/sys/magic.mh $(packll)
-sys/mman.h      : ../quantum/sys/mman.mh $(packll)
-sys/mouse.h     : ../quantum/sys/mouse.mh $(packll)
-sys/mous_msg.h  : ../quantum/sys/mous_msg.mh $(packll)
-sys/name.h      : ../quantum/sys/name.mh $(packll)
-sys/osinfo.h    : ../quantum/sys/osinfo.mh $(packll)
-sys/osstat.h    : ../quantum/sys/osstat.mh $(packll)
-sys/proc_msg.h  : ../quantum/sys/proc_msg.mh $(packll)
-sys/psinfo.h    : ../quantum/sys/psinfo.mh $(packll)
-sys/qioctl.h    : ../quantum/sys/qioctl.mh $(packll)
-sys/qnxterm.h   : ../quantum/sys/qnxterm.mh $(packll)
-sys/qnx_glob.h  : ../quantum/sys/qnx_glob.mh $(packll)
-sys/sched.h     : ../quantum/sys/sched.mh $(packll)
-sys/seginfo.h   : ../quantum/sys/seginfo.mh $(packll)
-sys/sendmx.h    : ../quantum/sys/sendmx.mh $(packll)
-sys/ser_msg.h   : ../quantum/sys/ser_msg.mh $(packll)
-sys/sidinfo.h   : ../quantum/sys/sidinfo.mh $(packll)
-sys/stat.h      : ../quantum/sys/stat.mh $(packll)
-sys/statfs.h    : ../quantum/sys/statfs.mh $(packll)
-sys/sys_msg.h   : ../quantum/sys/sys_msg.mh $(packll)
-sys/termio.h    : ../quantum/sys/termio.mh $(packll)
-sys/time.h      : ../quantum/sys/sys_time.mh $(packll)
-sys/timers.h    : ../quantum/sys/timers.mh $(packll)
-sys/times.h     : ../quantum/sys/times.mh $(packll)
-sys/trace.h     : ../quantum/sys/trace.mh $(packll)
-#sys/types.h     : ../quantum/sys/types.mh $(packll)
-sys/uio.h       : ../quantum/sys/uio.mh $(packll)
-sys/utsname.h   : ../quantum/sys/utsname.mh $(packll)
-sys/vc.h        : ../quantum/sys/vc.mh $(packll)
-term.h          : ../quantum/term.mh $(packll)
-termios.h       : ../quantum/termios.mh $(packll)
-unix.h          : ../quantum/unix.mh $(packll)
-ustat.h         : ../quantum/ustat.mh $(packll)
+h/dirent.h        : ../quantum/dirent.mh $(packll)
+h/cdrom.h         : ../quantum/cdrom.mh $(packll)
+h/grp.h           : ../quantum/grp.mh $(packll)
+h/pwd.h           : ../quantum/pwd.mh $(packll)
+h/regex.h         : ../quantum/regex.mh $(packll)
+h/semaphor.h      : ../quantum/semaphor.mh $(packll)
+h/sgtty.h         : ../quantum/sgtty.mh $(packll)
+h/sys/console.h   : ../quantum/sys/console.mh $(packll)
+h/sys/con_msg.h   : ../quantum/sys/con_msg.mh $(packll)
+h/sys/dev.h       : ../quantum/sys/dev.mh $(packll)
+h/sys/dev_msg.h   : ../quantum/sys/dev_msg.mh $(packll)
+h/sys/dir.h       : ../quantum/sys/dir.mh $(packll)
+h/sys/disk.h      : ../quantum/sys/disk.mh $(packll)
+h/sys/dumper.h    : ../quantum/sys/dumper.mh $(packll)
+h/sys/fd.h        : ../quantum/sys/fd.mh $(packll)
+h/sys/fsys.h      : ../quantum/sys/fsys.mh $(packll)
+h/sys/fsysinfo.h  : ../quantum/sys/fsysinfo.mh $(packll)
+h/sys/fsys_msg.h  : ../quantum/sys/fsys_msg.mh $(packll)
+h/sys/ioctl.h     : ../quantum/sys/ioctl.mh $(packll)
+h/sys/io_msg.h    : ../quantum/sys/io_msg.mh $(packll)
+h/sys/irqinfo.h   : ../quantum/sys/irqinfo.mh $(packll)
+h/sys/lmf.h       : ../quantum/sys/lmf.mh $(packll)
+h/sys/magic.h     : ../quantum/sys/magic.mh $(packll)
+h/sys/mman.h      : ../quantum/sys/mman.mh $(packll)
+h/sys/mouse.h     : ../quantum/sys/mouse.mh $(packll)
+h/sys/mous_msg.h  : ../quantum/sys/mous_msg.mh $(packll)
+h/sys/name.h      : ../quantum/sys/name.mh $(packll)
+h/sys/osinfo.h    : ../quantum/sys/osinfo.mh $(packll)
+h/sys/osstat.h    : ../quantum/sys/osstat.mh $(packll)
+h/sys/proc_msg.h  : ../quantum/sys/proc_msg.mh $(packll)
+h/sys/psinfo.h    : ../quantum/sys/psinfo.mh $(packll)
+h/sys/qioctl.h    : ../quantum/sys/qioctl.mh $(packll)
+h/sys/qnxterm.h   : ../quantum/sys/qnxterm.mh $(packll)
+h/sys/qnx_glob.h  : ../quantum/sys/qnx_glob.mh $(packll)
+h/sys/sched.h     : ../quantum/sys/sched.mh $(packll)
+h/sys/seginfo.h   : ../quantum/sys/seginfo.mh $(packll)
+h/sys/sendmx.h    : ../quantum/sys/sendmx.mh $(packll)
+h/sys/ser_msg.h   : ../quantum/sys/ser_msg.mh $(packll)
+h/sys/sidinfo.h   : ../quantum/sys/sidinfo.mh $(packll)
+h/sys/stat.h      : ../quantum/sys/stat.mh $(packll)
+h/sys/statfs.h    : ../quantum/sys/statfs.mh $(packll)
+h/sys/sys_msg.h   : ../quantum/sys/sys_msg.mh $(packll)
+h/sys/termio.h    : ../quantum/sys/termio.mh $(packll)
+h/sys/time.h      : ../quantum/sys/sys_time.mh $(packll)
+h/sys/timers.h    : ../quantum/sys/timers.mh $(packll)
+h/sys/times.h     : ../quantum/sys/times.mh $(packll)
+h/sys/trace.h     : ../quantum/sys/trace.mh $(packll)
+#h/sys/types.h     : ../quantum/sys/types.mh $(packll)
+h/sys/uio.h       : ../quantum/sys/uio.mh $(packll)
+h/sys/utsname.h   : ../quantum/sys/utsname.mh $(packll)
+h/sys/vc.h        : ../quantum/sys/vc.mh $(packll)
+h/term.h          : ../quantum/term.mh $(packll)
+h/termios.h       : ../quantum/termios.mh $(packll)
+h/unix.h          : ../quantum/unix.mh $(packll)
+h/ustat.h         : ../quantum/ustat.mh $(packll)
 
 !endif

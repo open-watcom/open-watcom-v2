@@ -15,34 +15,26 @@ set PROJDIR=<CWD>
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================
-    <CCCMD> dos/*                   <OWRELROOT>/h/
-    <CCCMD> dos/sys/*               <OWRELROOT>/h/sys/
-    rm -f <OWRELROOT>/h/makefile
-    rm -f <OWRELROOT>/h/crwatpro.gsp
+    <CCCMD> dos/h/*                   <OWRELROOT>/h/
+    <CCCMD> dos/h/sys/*               <OWRELROOT>/h/sys/
 
-    <CCCMD> rdos/*                  <OWRELROOT>/rh/
-    <CCCMD> rdos/sys/*              <OWRELROOT>/rh/sys/
-    <CCCMD> rdos/arpa/*             <OWRELROOT>/rh/arpa/
-    <CCCMD> rdos/netinet/*          <OWRELROOT>/rh/netinet/
-    rm -f <OWRELROOT>/rh/makefile
-    rm -f <OWRELROOT>/rh/crwatpro.gsp
+    <CCCMD> rdos/h/*                  <OWRELROOT>/rh/
+    <CCCMD> rdos/h/sys/*              <OWRELROOT>/rh/sys/
+    <CCCMD> rdos/h/arpa/*             <OWRELROOT>/rh/arpa/
+    <CCCMD> rdos/h/netinet/*          <OWRELROOT>/rh/netinet/
 
-    <CCCMD> linux/*                 <OWRELROOT>/lh/
-    <CCCMD> linux/arpa/*            <OWRELROOT>/lh/arpa/
-    <CCCMD> linux/sys/*             <OWRELROOT>/lh/sys/
-#    <CCCMD> linux/net/*             <OWRELROOT>/lh/net/
-    <CCCMD> linux/netinet/*         <OWRELROOT>/lh/netinet/
-    <CCCMD> linux/arch/i386/*       <OWRELROOT>/lh/arch/i386/
-    <CCCMD> linux/arch/i386/sys/*   <OWRELROOT>/lh/arch/i386/sys/
-    <CCCMD> linux/arch/mips/*       <OWRELROOT>/lh/arch/mips/
-    <CCCMD> linux/arch/mips/sys/*   <OWRELROOT>/lh/arch/mips/sys/
-    rm -f <OWRELROOT>/lh/makefile
-    rm -f <OWRELROOT>/lh/crwatpro.gsp
+    <CCCMD> linux/h/*                 <OWRELROOT>/lh/
+    <CCCMD> linux/h/arpa/*            <OWRELROOT>/lh/arpa/
+    <CCCMD> linux/h/sys/*             <OWRELROOT>/lh/sys/
+#    <CCCMD> linux/h/net/*             <OWRELROOT>/lh/net/
+    <CCCMD> linux/h/netinet/*         <OWRELROOT>/lh/netinet/
+    <CCCMD> linux/h/arch/i386/*       <OWRELROOT>/lh/arch/i386/
+    <CCCMD> linux/h/arch/i386/sys/*   <OWRELROOT>/lh/arch/i386/sys/
+    <CCCMD> linux/h/arch/mips/*       <OWRELROOT>/lh/arch/mips/
+    <CCCMD> linux/h/arch/mips/sys/*   <OWRELROOT>/lh/arch/mips/sys/
 
-    <CCCMD> qnx/*                   <OWRELROOT>/qh/
-    <CCCMD> qnx/sys/*               <OWRELROOT>/qh/sys/
-    rm -f <OWRELROOT>/qh/makefile
-    rm -f <OWRELROOT>/qh/crwatpro.gsp
+    <CCCMD> qnx/h/*                   <OWRELROOT>/qh/
+    <CCCMD> qnx/h/sys/*               <OWRELROOT>/qh/sys/
 
 [ BLOCK . . ]
 

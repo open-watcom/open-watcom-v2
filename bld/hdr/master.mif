@@ -25,10 +25,10 @@ wsplice_opts_mips = $(wsplice_extra_opts) -i.. -kARCHMIPS $($(system)_options) .
 # multi level tree must be created from top to bottom
 # DOS can create only simple sub-directory in existing directory
 # you must create parent before child directory
-dos_dirs   = sys
-linux_dirs = sys netinet arpa arch arch/i386 arch/i386/sys arch/mips arch/mips/sys
-qnx_dirs   = sys
-rdos_dirs  = sys netinet arpa
+dos_dirs   = h h/sys
+linux_dirs = h h/sys h/netinet h/arpa h/arch h/arch/i386 h/arch/i386/sys h/arch/mips h/arch/mips/sys
+qnx_dirs   = h h/sys
+rdos_dirs  = h h/sys h/netinet h/arpa
 
 dos_path   = ../watcom
 linux_path = ../watcom
@@ -36,9 +36,6 @@ qnx_path   = ../quantum;../watcom
 rdos_path  = ../watcom
 
 crwatpro_gsp = crwatpro.gsp
-
-additional_clean = $(crwatpro_gsp) $(noext) *.h *.hpp common.cnv
-additional_clean_subdirs = $($(system)_dirs)
 
 .EXTENSIONS
 .EXTENSIONS : . .h .hpp .cnv .gsp .sp .mh .mhp
@@ -49,63 +46,67 @@ all : $($(system)_dirs) $($(system)_files) .symbolic
 .mh:  $($(system)_path)
 .mhp: $($(system)_path)
 
-.mhp.hpp:
+.mhp{h}.hpp:
     @%make echo_wsplice
     $(wsplice) $(wsplice_opts)
 
-.mh.h:
+.mh{h}.h:
     @%make echo_wsplice
     $(wsplice) $(wsplice_opts_c)
 
-{dos}.mh.h:
+{dos}.mh{h}.h:
     @%make echo_wsplice
     $(wsplice) $(wsplice_opts)
 
-{linux}.mh.h:
+{linux}.mh{h}.h:
     @%make echo_wsplice
     $(wsplice) $(wsplice_opts)
 
-{rdos}.mh.h:
+{rdos}.mh{h}.h:
     @%make echo_wsplice
     $(wsplice) $(wsplice_opts)
 
-{sys}.mh{sys}.h:
+{qnx}.mh{h}.h:
     @%make echo_wsplice
     $(wsplice) $(wsplice_opts)
 
-{arpa}.mh{arpa}.h:
+{sys}.mh{h/sys}.h:
     @%make echo_wsplice
     $(wsplice) $(wsplice_opts)
 
-{netinet}.mh{netinet}.h:
+{arpa}.mh{h/arpa}.h:
     @%make echo_wsplice
     $(wsplice) $(wsplice_opts)
 
-{dos/sys}.mh{sys}.h:
+{netinet}.mh{h/netinet}.h:
     @%make echo_wsplice
     $(wsplice) $(wsplice_opts)
 
-{linux/sys}.mh{sys}.h:
+{dos/sys}.mh{h/sys}.h:
     @%make echo_wsplice
     $(wsplice) $(wsplice_opts)
 
-{linux/netinet}.mh{netinet}.h:
+{linux/sys}.mh{h/sys}.h:
     @%make echo_wsplice
     $(wsplice) $(wsplice_opts)
 
-{linux/arch/i386}.mh{arch/i386}.h:
+{linux/netinet}.mh{h/netinet}.h:
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts)
+
+{linux/arch/i386}.mh{h/arch/i386}.h:
     @%make echo_wsplice
     $(wsplice) $(wsplice_opts_i386)
 
-{linux/arch/i386/sys}.mh{arch/i386/sys}.h:
+{linux/arch/i386/sys}.mh{h/arch/i386/sys}.h:
     @%make echo_wsplice
     $(wsplice) $(wsplice_opts_i386)
 
-{linux/arch/mips}.mh{arch/mips}.h:
+{linux/arch/mips}.mh{h/arch/mips}.h:
     @%make echo_wsplice
     $(wsplice) $(wsplice_opts_mips)
 
-{linux/arch/mips/sys}.mh{arch/mips/sys}.h:
+{linux/arch/mips/sys}.mh{h/arch/mips/sys}.h:
     @%make echo_wsplice
     $(wsplice) $(wsplice_opts_mips)
 
@@ -170,7 +171,5 @@ $($(system)_dirs): .EXPLICIT
 !include ../deps.mif
 
 clean: .SYMBOLIC
-    rm -f *.h *.hpp common.cnv
-    rm -f $(noext)
-    rm -f $(additional_clean)
-    rm -rf $(additional_clean_subdirs)
+    rm -f $(crwatpro_gsp)
+    rm -rf h

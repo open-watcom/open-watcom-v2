@@ -1,317 +1,317 @@
-#                        noext cpp  dos  lnx  qnx  rdos
-#-------------------------------------------------------
-!inject _algmut.h              hcpp
-!inject _algnmod.h             hcpp
-!inject _algsort.h             hcpp
-!inject _comdef.h                   hdos hlnx hqnx hrdos
-!inject _hash.h                hcpp
-!inject _meta.h                hcpp
-!inject _preincl.h                  hdos hlnx hqnx hrdos
-!inject _rbtree.h              hcpp
-!inject _strdef.h              hcpp
-!inject algorith         noext hcpp
-!inject alloca.h                    hdos hlnx hqnx hrdos
-!inject arpa/inet.h                      hlnx      hrdos
-!inject array            noext hcpp
-!inject assert.h                    hdos hlnx hqnx hrdos
-!inject atomic           noext hcpp
-!inject bios.h                      hdos
-!inject bios98.h                    hdos
-!inject bitset           noext hcpp
-!inject cassert          noext hcpp
-!inject cctype           noext hcpp
-!inject cerrno           noext hcpp
-!inject cfloat           noext hcpp
-!inject chrono           noext hcpp
-!inject cinttype         noext hcpp
-!inject ciso646          noext hcpp
-!inject climits          noext hcpp
-!inject clocale          noext hcpp
-!inject cmath            noext hcpp
-!inject codecvt          noext hcpp
-!inject common.cnv                  hdos
-!inject complex          noext hcpp
-!inject complex.h              hcpp
-!inject conditio         noext hcpp
-!inject conio.h                     hdos hlnx hqnx hrdos
-!inject crtdbg.h                    hdos hlnx hqnx hrdos
-!inject csetjmp          noext hcpp
-!inject csignal          noext hcpp
-!inject cstdarg          noext hcpp
-!inject cstdbool         noext hcpp
-!inject cstddef          noext hcpp
-!inject cstdint          noext hcpp
-!inject cstdio           noext hcpp
-!inject cstdlib          noext hcpp
-!inject cstring          noext hcpp
-!inject ctime            noext hcpp
-!inject ctype.h                     hdos hlnx hqnx hrdos
-!inject curses.h                              hqnx
-!inject cwctype          noext hcpp
-!inject cwchar           noext hcpp
-!inject deque            noext hcpp
-!inject direct.h                    hdos           hrdos
-!inject dirent.h                         hlnx hqnx
-!inject dos.h                       hdos
-!inject dosfunc.h                   hdos
-!inject eh.h                        hdos
-!inject env.h                       hdos hlnx hqnx hrdos
-!inject errno.h                     hdos hlnx hqnx hrdos
-!inject except.h               hcpp
-!inject exceptio         noext hcpp
-!inject exceptio.h             hcpp
-!inject excpt.h                     hdos hlnx hqnx hrdos
-!inject fcntl.h                     hdos hlnx hqnx hrdos
-!inject fenv.h                      hdos hlnx hqnx hrdos
-!inject float.h                     hdos hlnx hqnx hrdos
-!inject fnmatch.h                   hdos hlnx hqnx hrdos
-!inject form.h                                hqnx
-!inject forward_         noext hcpp
-!inject fstream          noext hcpp
-!inject fstream.h              hcpp
-!inject ftw.h                                 hqnx
-!inject function         noext hcpp
-!inject future           noext hcpp
-!inject generic.h              hcpp
-!inject graph.h                     hdos      hqnx
-!inject graph2.h                    hdos      hqnx
-!inject grp.h                            hlnx hqnx
-!inject i86.h                       hdos hlnx hqnx hrdos
-!inject initiali         noext hcpp
-!inject inttypes.h                  hdos hlnx hqnx hrdos
-!inject io.h                        hdos           hrdos
-!inject iomanip          noext hcpp
-!inject iomanip.h              hcpp
-!inject ios              noext hcpp
-!inject ios.h                  hcpp
-!inject iosfwd           noext hcpp
-!inject iosfwd.h               hcpp
-!inject iostream         noext hcpp
-!inject iostream.h             hcpp
-!inject iso646.h                    hdos hlnx hqnx hrdos
-!inject istream          noext hcpp
-!inject istream.h              hcpp
-!inject iterator         noext hcpp
-!inject jctype.h                    hdos hlnx hqnx hrdos
-!inject jstring.h                   hdos hlnx hqnx hrdos
-!inject jtime.h                     hdos hlnx hqnx hrdos
-!inject langinfo.h                       hlnx
-!inject libc.h                                hqnx
-!inject libgen.h                    hdos hlnx hqnx hrdos
-!inject limits           noext hcpp
-!inject limits.h                    hdos hlnx hqnx hrdos
-!inject list             noext hcpp
-!inject locale           noext hcpp
-!inject locale.h                    hdos hlnx hqnx hrdos
-!inject malloc.h                    hdos hlnx hqnx hrdos
-!inject map              noext hcpp
-!inject math.h                      hdos hlnx hqnx hrdos
-!inject mbctype.h                   hdos hlnx hqnx
-!inject mbstring.h                  hdos hlnx hqnx
-!inject mem.h                       hdos hlnx hqnx hrdos
-!inject memory           noext hcpp
-!inject memory.h                    hdos
-!inject mig.h                                 hqnx
-!inject mmintrin.h                  hdos hlnx hqnx hrdos
-!inject mqueue.h                              hqnx
-!inject mutex            noext hcpp
-!inject netdb.h                          hlnx      hrdos
-!inject netinet/in.h                     hlnx      hrdos
-!inject netinet/tcp.h                    hlnx      hrdos
-!inject new              noext hcpp
-!inject new.h                  hcpp
-!inject numeric          noext hcpp
-!inject ostream          noext hcpp
-!inject ostream.h              hcpp
-!inject pgchart.h                   hdos      hqnx
-!inject process.h                   hdos hlnx hqnx hrdos
-!inject pthread.h                        hlnx
-!inject pwd.h                            hlnx hqnx
-!inject queue            noext hcpp
-!inject queue.h                               hqnx
-!inject random           noext hcpp
-!inject ratio            noext hcpp
-!inject regex            noext hcpp
-!inject regex.h                               hqnx
-!inject sched.h                          hlnx
-!inject search.h                    hdos hlnx hqnx hrdos
-!inject semaphor.h                       hlnx hqnx
-!inject set              noext hcpp
-!inject setjmp.h                    hdos hlnx hqnx hrdos
-!inject setjmpex.h                  hdos
-!inject sgtty.h                               hqnx
-!inject shadow.h                              hqnx
-!inject share.h                     hdos hlnx hqnx hrdos
-!inject signal.h                    hdos hlnx hqnx hrdos
-!inject sstream          noext hcpp
-!inject sstream.h              hcpp
-!inject stack            noext hcpp
-!inject stdarg.h                    hdos hlnx hqnx hrdos
-!inject stdbool.h                   hdos hlnx hqnx hrdos
-!inject stddef.h                    hdos hlnx hqnx hrdos
-!inject stdexcep         noext hcpp
-!inject stdexcep.h             hcpp
-!inject stdint.h                    hdos hlnx hqnx hrdos
-!inject stdio.h                     hdos hlnx hqnx hrdos
-!inject stdiobuf.h             hcpp
-!inject stdlib.h                    hdos hlnx hqnx hrdos
-!inject stdnoret.h                  hdos hlnx hqnx hrdos
-!inject streambu         noext hcpp
-!inject streambu.h             hcpp
-!inject string           noext hcpp
-!inject string.h                    hdos hlnx hqnx hrdos
-!inject string.hpp                  hdos hlnx hqnx hrdos
-!inject strings.h                   hdos hlnx hqnx hrdos
-!inject strstrea         noext hcpp
-!inject strstrea.h             hcpp
-!inject sys/_lfndos.h               hdos
-!inject sys/cdrom.h                           hqnx
-!inject sys/con_msg.h                         hqnx
-!inject sys/console.h                         hqnx
-!inject sys/debug.h                           hqnx
-!inject sys/dev.h                             hqnx
-!inject sys/dev_msg.h                         hqnx
-!inject sys/dir.h                             hqnx
-!inject sys/disk.h                            hqnx
-!inject sys/dumper.h                          hqnx
-!inject sys/fd.h                              hqnx
-!inject sys/feedback.h                        hqnx
-!inject sys/file.h                            hqnx
-!inject sys/fsys.h                            hqnx
-!inject sys/fsys_msg.h                        hqnx
-!inject sys/fsysinfo.h                        hqnx
-!inject sys/inline.h                          hqnx
-!inject sys/interact.h                        hqnx
-!inject sys/io_msg.h                          hqnx
-!inject sys/ioctl.h                      hlnx hqnx
-!inject sys/irqinfo.h                         hqnx
-!inject sys/kernel.h                          hqnx
-!inject sys/keyboard.h                        hqnx
-!inject sys/lmf.h                             hqnx
-!inject sys/locking.h               hdos hlnx hqnx hrdos
-!inject sys/magic.h                           hqnx
-!inject sys/mman.h                       hlnx hqnx
-!inject sys/mount.h                      hlnx
-!inject sys/mous_msg.h                        hqnx
-!inject sys/mouse.h                           hqnx
-!inject sys/name.h                            hqnx
-!inject sys/osinfo.h                          hqnx
-!inject sys/osstat.h                          hqnx
-!inject sys/param.h                           hqnx
-!inject sys/pci.h                             hqnx
-!inject sys/pointer.h                         hqnx
-!inject sys/prfx.h                            hqnx
-!inject sys/proc_msg.h                        hqnx
-!inject sys/proxy.h                           hqnx
-!inject sys/psinfo.h                          hqnx
-!inject sys/ptrace.h                     hlnx
-!inject sys/qioctl.h                          hqnx
-!inject sys/qnx_glob.h                        hqnx
-!inject sys/qnxterm.h                         hqnx
-!inject sys/resource.h                   hlnx
-!inject sys/seginfo.h                         hqnx
-!inject sys/select.h                          hqnx
-!inject sys/sendfile.h                   hlnx
-!inject sys/sendmx.h                          hqnx
-!inject sys/ser_msg.h                         hqnx
-!inject sys/sched.h                           hqnx
-!inject sys/sidinfo.h                         hqnx
-!inject sys/sigconte.h                        hqnx
-!inject sys/slib16.h                          hqnx
-!inject sys/socket.h                     hlnx      hrdos
-!inject sys/stat.h                  hdos hlnx hqnx hrdos
-!inject sys/statfs.h                          hqnx
-!inject sys/sys_msg.h                         hqnx
-!inject sys/sysi86.h                          hqnx
-!inject sys/sysinfo.h                    hlnx
-!inject sys/sysmips.h                    hlnx
-!inject sys/term.h                            hqnx
-!inject sys/termio.h                          hqnx
-!inject sys/time.h                       hlnx hqnx hrdos
-!inject sys/timeb.h                 hdos hlnx hqnx hrdos
-!inject sys/timers.h                          hqnx
-!inject sys/times.h                      hlnx hqnx
-!inject sys/trace.h                           hqnx
-!inject sys/tracecod.h                        hqnx
-!inject sys/types.h                 hdos hlnx hqnx hrdos
-!inject sys/uio.h                        hlnx hqnx
-!inject sys/un.h                         hlnx
-!inject sys/uscsi.h                           hqnx
-!inject sys/utime.h                 hdos
-!inject sys/utsname.h                    hlnx hqnx
-!inject sys/vc.h                              hqnx
-!inject sys/wait.h                       hlnx hqnx
-!inject syslog.h                              hqnx
-!inject system_e         noext hcpp
-!inject tar.h                                 hqnx
-!inject tchar.h                     hdos hlnx hqnx hrdos
-!inject term.h                                hqnx
-!inject termcap.h                             hqnx
-!inject termios.h                        hlnx hqnx
-!inject thread           noext hcpp
-!inject time.h                      hdos hlnx hqnx hrdos
-!inject tuple            noext hcpp
-!inject type_tra         noext hcpp
-!inject typeinde         noext hcpp
-!inject typeinfo         noext hcpp
-!inject typeinfo.h             hcpp
-!inject unistd.h                    hdos hlnx hqnx hrdos
-!inject unix.h                                hqnx
-!inject unorderm         noext hcpp
-!inject unorders         noext hcpp
-!inject ustat.h                               hqnx
-!inject utility          noext hcpp
-!inject utime.h                     hdos hlnx hqnx hrdos
-!inject utmp.h                                hqnx
-!inject valarray         noext hcpp
-!inject varargs.h                   hdos hlnx hqnx hrdos
-!inject vector           noext hcpp
-!inject wcdefs.h               hcpp
-!inject wcexcept.h             hcpp
-!inject wclbase.h              hcpp
-!inject wclcom.h               hcpp
-!inject wclibase.h             hcpp
-!inject wclist.h               hcpp
-!inject wclistit.h             hcpp
-!inject wcqueue.h              hcpp
-!inject wcsbase.h              hcpp
-!inject wcsibase.h             hcpp
-!inject wcskip.h               hcpp
-!inject wcskipit.h             hcpp
-!inject wcstack.h              hcpp
-!inject wctype.h                    hdos hlnx hqnx
-!inject wcvbase.h              hcpp
-!inject wcvector.h             hcpp
-!inject wdefwin.h                   hdos
-!inject wchar.h                     hdos hlnx hqnx
-!inject wchash.h               hcpp
-!inject wchbase.h              hcpp
-!inject wchiter.h              hcpp
-!inject wsample.h                   hdos hlnx hqnx hrdos
-
-
-#                                noext cpp  dos  lnx  qnx  rdos
-#---------------------------------------------------------------
-!inject arch/i386/err_no.h                       hlnx
-!inject arch/i386/fcntl.h                        hlnx
-!inject arch/i386/siginfo.h                      hlnx
-!inject arch/i386/signal.h                       hlnx
-!inject arch/i386/sigposix.h                     hlnx
-!inject arch/i386/sys/ioctl.h                    hlnx
-!inject arch/i386/sys/resource.h                 hlnx
-!inject arch/i386/sys/socket.h                   hlnx
-!inject arch/i386/sys/stat.h                     hlnx
-!inject arch/i386/sys/types.h                    hlnx
-!inject arch/mips/err_no.h                       hlnx
-!inject arch/mips/fcntl.h                        hlnx
-!inject arch/mips/siginfo.h                      hlnx
-!inject arch/mips/signal.h                       hlnx
-!inject arch/mips/sigposix.h                     hlnx
-!inject arch/mips/sys/ioctl.h                    hlnx
-!inject arch/mips/sys/resource.h                 hlnx
-!inject arch/mips/sys/socket.h                   hlnx
-!inject arch/mips/sys/stat.h                     hlnx
-!inject arch/mips/sys/types.h                    hlnx
+#------------------------------------------------------------
+#                                   cpp  dos  lnx  qnx  rdos
+#------------------------------------------------------------
+!inject h/_algmut.h                 hcpp
+!inject h/_algnmod.h                hcpp
+!inject h/_algsort.h                hcpp
+!inject h/_comdef.h                      hdos hlnx hqnx hrdos
+!inject h/_hash.h                   hcpp
+!inject h/_meta.h                   hcpp
+!inject h/_preincl.h                     hdos hlnx hqnx hrdos
+!inject h/_rbtree.h                 hcpp
+!inject h/_strdef.h                 hcpp
+!inject h/algorith                  hcpp
+!inject h/alloca.h                       hdos hlnx hqnx hrdos
+!inject h/array                     hcpp
+!inject h/assert.h                       hdos hlnx hqnx hrdos
+!inject h/atomic                    hcpp
+!inject h/bios.h                         hdos
+!inject h/bios98.h                       hdos
+!inject h/bitset                    hcpp
+!inject h/cassert                   hcpp
+!inject h/cctype                    hcpp
+!inject h/cerrno                    hcpp
+!inject h/cfloat                    hcpp
+!inject h/chrono                    hcpp
+!inject h/cinttype                  hcpp
+!inject h/ciso646                   hcpp
+!inject h/climits                   hcpp
+!inject h/clocale                   hcpp
+!inject h/cmath                     hcpp
+!inject h/codecvt                   hcpp
+!inject h/common.cnv                     hdos
+!inject h/complex                   hcpp
+!inject h/complex.h                 hcpp
+!inject h/conditio                  hcpp
+!inject h/conio.h                        hdos hlnx hqnx hrdos
+!inject h/crtdbg.h                       hdos hlnx hqnx hrdos
+!inject h/csetjmp                   hcpp
+!inject h/csignal                   hcpp
+!inject h/cstdarg                   hcpp
+!inject h/cstdbool                  hcpp
+!inject h/cstddef                   hcpp
+!inject h/cstdint                   hcpp
+!inject h/cstdio                    hcpp
+!inject h/cstdlib                   hcpp
+!inject h/cstring                   hcpp
+!inject h/ctime                     hcpp
+!inject h/ctype.h                        hdos hlnx hqnx hrdos
+!inject h/curses.h                                 hqnx
+!inject h/cwctype                   hcpp
+!inject h/cwchar                    hcpp
+!inject h/deque                     hcpp
+!inject h/direct.h                       hdos           hrdos
+!inject h/dirent.h                            hlnx hqnx
+!inject h/dos.h                          hdos
+!inject h/dosfunc.h                      hdos
+!inject h/eh.h                           hdos
+!inject h/env.h                          hdos hlnx hqnx hrdos
+!inject h/errno.h                        hdos hlnx hqnx hrdos
+!inject h/except.h                  hcpp
+!inject h/exceptio                  hcpp
+!inject h/exceptio.h                hcpp
+!inject h/excpt.h                        hdos hlnx hqnx hrdos
+!inject h/fcntl.h                        hdos hlnx hqnx hrdos
+!inject h/fenv.h                         hdos hlnx hqnx hrdos
+!inject h/float.h                        hdos hlnx hqnx hrdos
+!inject h/fnmatch.h                      hdos hlnx hqnx hrdos
+!inject h/form.h                                   hqnx
+!inject h/forward_                  hcpp
+!inject h/fstream                   hcpp
+!inject h/fstream.h                 hcpp
+!inject h/ftw.h                                    hqnx
+!inject h/function                  hcpp
+!inject h/future                    hcpp
+!inject h/generic.h                 hcpp
+!inject h/graph.h                        hdos      hqnx
+!inject h/graph2.h                       hdos      hqnx
+!inject h/grp.h                               hlnx hqnx
+!inject h/i86.h                          hdos hlnx hqnx hrdos
+!inject h/initiali                  hcpp
+!inject h/inttypes.h                     hdos hlnx hqnx hrdos
+!inject h/io.h                           hdos           hrdos
+!inject h/iomanip                   hcpp
+!inject h/iomanip.h                 hcpp
+!inject h/ios                       hcpp
+!inject h/ios.h                     hcpp
+!inject h/iosfwd                    hcpp
+!inject h/iosfwd.h                  hcpp
+!inject h/iostream                  hcpp
+!inject h/iostream.h                hcpp
+!inject h/iso646.h                       hdos hlnx hqnx hrdos
+!inject h/istream                   hcpp
+!inject h/istream.h                 hcpp
+!inject h/iterator                  hcpp
+!inject h/jctype.h                       hdos hlnx hqnx hrdos
+!inject h/jstring.h                      hdos hlnx hqnx hrdos
+!inject h/jtime.h                        hdos hlnx hqnx hrdos
+!inject h/langinfo.h                          hlnx
+!inject h/libc.h                                   hqnx
+!inject h/libgen.h                       hdos hlnx hqnx hrdos
+!inject h/limits                    hcpp
+!inject h/limits.h                       hdos hlnx hqnx hrdos
+!inject h/list                      hcpp
+!inject h/locale                    hcpp
+!inject h/locale.h                       hdos hlnx hqnx hrdos
+!inject h/malloc.h                       hdos hlnx hqnx hrdos
+!inject h/map                       hcpp
+!inject h/math.h                         hdos hlnx hqnx hrdos
+!inject h/mbctype.h                      hdos hlnx hqnx
+!inject h/mbstring.h                     hdos hlnx hqnx
+!inject h/mem.h                          hdos hlnx hqnx hrdos
+!inject h/memory                    hcpp
+!inject h/memory.h                       hdos
+!inject h/mig.h                                    hqnx
+!inject h/mmintrin.h                     hdos hlnx hqnx hrdos
+!inject h/mqueue.h                                 hqnx
+!inject h/mutex                     hcpp
+!inject h/netdb.h                             hlnx      hrdos
+!inject h/new                       hcpp
+!inject h/new.h                     hcpp
+!inject h/numeric                   hcpp
+!inject h/ostream                   hcpp
+!inject h/ostream.h                 hcpp
+!inject h/pgchart.h                      hdos      hqnx
+!inject h/process.h                      hdos hlnx hqnx hrdos
+!inject h/pthread.h                           hlnx
+!inject h/pwd.h                               hlnx hqnx
+!inject h/queue                     hcpp
+!inject h/queue.h                                  hqnx
+!inject h/random                    hcpp
+!inject h/ratio                     hcpp
+!inject h/regex                     hcpp
+!inject h/regex.h                                  hqnx
+!inject h/sched.h                             hlnx
+!inject h/search.h                       hdos hlnx hqnx hrdos
+!inject h/semaphor.h                          hlnx hqnx
+!inject h/set                       hcpp
+!inject h/setjmp.h                       hdos hlnx hqnx hrdos
+!inject h/setjmpex.h                     hdos
+!inject h/sgtty.h                                  hqnx
+!inject h/shadow.h                                 hqnx
+!inject h/share.h                        hdos hlnx hqnx hrdos
+!inject h/signal.h                       hdos hlnx hqnx hrdos
+!inject h/sstream                   hcpp
+!inject h/sstream.h                 hcpp
+!inject h/stack                     hcpp
+!inject h/stdarg.h                       hdos hlnx hqnx hrdos
+!inject h/stdbool.h                      hdos hlnx hqnx hrdos
+!inject h/stddef.h                       hdos hlnx hqnx hrdos
+!inject h/stdexcep                  hcpp
+!inject h/stdexcep.h                hcpp
+!inject h/stdint.h                       hdos hlnx hqnx hrdos
+!inject h/stdio.h                        hdos hlnx hqnx hrdos
+!inject h/stdiobuf.h                hcpp
+!inject h/stdlib.h                       hdos hlnx hqnx hrdos
+!inject h/stdnoret.h                     hdos hlnx hqnx hrdos
+!inject h/streambu                  hcpp
+!inject h/streambu.h                hcpp
+!inject h/string                    hcpp
+!inject h/string.h                       hdos hlnx hqnx hrdos
+!inject h/string.hpp                     hdos hlnx hqnx hrdos
+!inject h/strings.h                      hdos hlnx hqnx hrdos
+!inject h/strstrea                  hcpp
+!inject h/strstrea.h                hcpp
+!inject h/syslog.h                                 hqnx
+!inject h/system_e                  hcpp
+!inject h/tar.h                                    hqnx
+!inject h/tchar.h                        hdos hlnx hqnx hrdos
+!inject h/term.h                                   hqnx
+!inject h/termcap.h                                hqnx
+!inject h/termios.h                           hlnx hqnx
+!inject h/thread                    hcpp
+!inject h/time.h                         hdos hlnx hqnx hrdos
+!inject h/tuple                     hcpp
+!inject h/type_tra                  hcpp
+!inject h/typeinde                  hcpp
+!inject h/typeinfo                  hcpp
+!inject h/typeinfo.h                hcpp
+!inject h/unistd.h                       hdos hlnx hqnx hrdos
+!inject h/unix.h                                   hqnx
+!inject h/unorderm                  hcpp
+!inject h/unorders                  hcpp
+!inject h/ustat.h                                  hqnx
+!inject h/utility                   hcpp
+!inject h/utime.h                        hdos hlnx hqnx hrdos
+!inject h/utmp.h                                   hqnx
+!inject h/valarray                  hcpp
+!inject h/varargs.h                      hdos hlnx hqnx hrdos
+!inject h/vector                    hcpp
+!inject h/wcdefs.h                  hcpp
+!inject h/wcexcept.h                hcpp
+!inject h/wclbase.h                 hcpp
+!inject h/wclcom.h                  hcpp
+!inject h/wclibase.h                hcpp
+!inject h/wclist.h                  hcpp
+!inject h/wclistit.h                hcpp
+!inject h/wcqueue.h                 hcpp
+!inject h/wcsbase.h                 hcpp
+!inject h/wcsibase.h                hcpp
+!inject h/wcskip.h                  hcpp
+!inject h/wcskipit.h                hcpp
+!inject h/wcstack.h                 hcpp
+!inject h/wctype.h                       hdos hlnx hqnx
+!inject h/wcvbase.h                 hcpp
+!inject h/wcvector.h                hcpp
+!inject h/wdefwin.h                      hdos
+!inject h/wchar.h                        hdos hlnx hqnx
+!inject h/wchash.h                  hcpp
+!inject h/wchbase.h                 hcpp
+!inject h/wchiter.h                 hcpp
+!inject h/wsample.h                      hdos hlnx hqnx hrdos
+#------------------------------------------------------------
+#                                   cpp  dos  lnx  qnx  rdos
+#------------------------------------------------------------
+!inject h/arch/i386/err_no.h                  hlnx
+!inject h/arch/i386/fcntl.h                   hlnx
+!inject h/arch/i386/siginfo.h                 hlnx
+!inject h/arch/i386/signal.h                  hlnx
+!inject h/arch/i386/sigposix.h                hlnx
+!inject h/arch/i386/sys/ioctl.h               hlnx
+!inject h/arch/i386/sys/resource.h            hlnx
+!inject h/arch/i386/sys/socket.h              hlnx
+!inject h/arch/i386/sys/stat.h                hlnx
+!inject h/arch/i386/sys/types.h               hlnx
+!inject h/arch/mips/err_no.h                  hlnx
+!inject h/arch/mips/fcntl.h                   hlnx
+!inject h/arch/mips/siginfo.h                 hlnx
+!inject h/arch/mips/signal.h                  hlnx
+!inject h/arch/mips/sigposix.h                hlnx
+!inject h/arch/mips/sys/ioctl.h               hlnx
+!inject h/arch/mips/sys/resource.h            hlnx
+!inject h/arch/mips/sys/socket.h              hlnx
+!inject h/arch/mips/sys/stat.h                hlnx
+!inject h/arch/mips/sys/types.h               hlnx
+!inject h/arpa/inet.h                         hlnx      hrdos
+!inject h/netinet/in.h                        hlnx      hrdos
+!inject h/netinet/tcp.h                       hlnx      hrdos
+!inject h/sys/_lfndos.h                  hdos
+!inject h/sys/cdrom.h                              hqnx
+!inject h/sys/con_msg.h                            hqnx
+!inject h/sys/console.h                            hqnx
+!inject h/sys/debug.h                              hqnx
+!inject h/sys/dev.h                                hqnx
+!inject h/sys/dev_msg.h                            hqnx
+!inject h/sys/dir.h                                hqnx
+!inject h/sys/disk.h                               hqnx
+!inject h/sys/dumper.h                             hqnx
+!inject h/sys/fd.h                                 hqnx
+!inject h/sys/feedback.h                           hqnx
+!inject h/sys/file.h                               hqnx
+!inject h/sys/fsys.h                               hqnx
+!inject h/sys/fsys_msg.h                           hqnx
+!inject h/sys/fsysinfo.h                           hqnx
+!inject h/sys/inline.h                             hqnx
+!inject h/sys/interact.h                           hqnx
+!inject h/sys/io_msg.h                             hqnx
+!inject h/sys/ioctl.h                         hlnx hqnx
+!inject h/sys/irqinfo.h                            hqnx
+!inject h/sys/kernel.h                             hqnx
+!inject h/sys/keyboard.h                           hqnx
+!inject h/sys/lmf.h                                hqnx
+!inject h/sys/locking.h                  hdos hlnx hqnx hrdos
+!inject h/sys/magic.h                              hqnx
+!inject h/sys/mman.h                          hlnx hqnx
+!inject h/sys/mount.h                         hlnx
+!inject h/sys/mous_msg.h                           hqnx
+!inject h/sys/mouse.h                              hqnx
+!inject h/sys/name.h                               hqnx
+!inject h/sys/osinfo.h                             hqnx
+!inject h/sys/osstat.h                             hqnx
+!inject h/sys/param.h                              hqnx
+!inject h/sys/pci.h                                hqnx
+!inject h/sys/pointer.h                            hqnx
+!inject h/sys/prfx.h                               hqnx
+!inject h/sys/proc_msg.h                           hqnx
+!inject h/sys/proxy.h                              hqnx
+!inject h/sys/psinfo.h                             hqnx
+!inject h/sys/ptrace.h                        hlnx
+!inject h/sys/qioctl.h                             hqnx
+!inject h/sys/qnx_glob.h                           hqnx
+!inject h/sys/qnxterm.h                            hqnx
+!inject h/sys/resource.h                      hlnx
+!inject h/sys/seginfo.h                            hqnx
+!inject h/sys/select.h                             hqnx
+!inject h/sys/sendfile.h                      hlnx
+!inject h/sys/sendmx.h                             hqnx
+!inject h/sys/ser_msg.h                            hqnx
+!inject h/sys/sched.h                              hqnx
+!inject h/sys/sidinfo.h                            hqnx
+!inject h/sys/sigconte.h                           hqnx
+!inject h/sys/slib16.h                             hqnx
+!inject h/sys/socket.h                        hlnx      hrdos
+!inject h/sys/stat.h                     hdos hlnx hqnx hrdos
+!inject h/sys/statfs.h                             hqnx
+!inject h/sys/sys_msg.h                            hqnx
+!inject h/sys/sysi86.h                             hqnx
+!inject h/sys/sysinfo.h                       hlnx
+!inject h/sys/sysmips.h                       hlnx
+!inject h/sys/term.h                               hqnx
+!inject h/sys/termio.h                             hqnx
+!inject h/sys/time.h                          hlnx hqnx hrdos
+!inject h/sys/timeb.h                    hdos hlnx hqnx hrdos
+!inject h/sys/timers.h                             hqnx
+!inject h/sys/times.h                         hlnx hqnx
+!inject h/sys/trace.h                              hqnx
+!inject h/sys/tracecod.h                           hqnx
+!inject h/sys/types.h                    hdos hlnx hqnx hrdos
+!inject h/sys/uio.h                           hlnx hqnx
+!inject h/sys/un.h                            hlnx
+!inject h/sys/uscsi.h                              hqnx
+!inject h/sys/utime.h                    hdos
+!inject h/sys/utsname.h                       hlnx hqnx
+!inject h/sys/vc.h                                 hqnx
+!inject h/sys/wait.h                          hlnx hqnx
 
 dos_files   = $(hcpp) $(hdos)
 linux_files = $(hcpp) $(hlnx)
