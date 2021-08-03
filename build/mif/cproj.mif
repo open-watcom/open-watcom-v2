@@ -640,12 +640,12 @@ inc_dirs_sys_zdos    = -I"$(hdr_dir)/dos/zdos"
 inc_dirs_sys_rdos    =
 inc_dirs_sys_rdosdev =
 
-inc_dirs_lang_dos     = -I"$(hdr_dir)/dos"
-inc_dirs_lang_qnx     = -I"$(hdr_dir)/qnx"
-inc_dirs_lang_linux   = -I"$(hdr_dir)/linux"
+inc_dirs_lang_dos     = -I"$(hdr_dir)/dos/h"
+inc_dirs_lang_qnx     = -I"$(hdr_dir)/qnx/h"
+inc_dirs_lang_linux   = -I"$(hdr_dir)/linux/h"
 inc_dirs_lang_netware = -I"$(nwoss_dir)/common/h"
 inc_dirs_lang_nto     = -I"$(hdr_dir)/nto"
-inc_dirs_lang_rdos    = -I"$(hdr_dir)/rdos"
+inc_dirs_lang_rdos    = -I"$(hdr_dir)/rdos/h"
 
 !endif
 
