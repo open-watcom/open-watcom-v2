@@ -177,17 +177,14 @@ c_dbg_flags = -DNDEBUG
 a_dbg_flags = -DNDEBUG
 !endif
 
-plib_c_inc_dirs_generic =-I"$(hdr_dir)/dos"
-plib_c_inc_dirs_netware =-I"$(hdr_dir)/dos"
-plib_c_inc_dirs_windows =-I"$(hdr_dir)/dos" -I"$(w16api_dir)/wini86"
-plib_c_inc_dirs_os2_086 =-I"$(os2api_dir)/os2286/h"
-plib_c_inc_dirs_os2_286 =-I"$(os2api_dir)/os2286/h"
-plib_c_inc_dirs_os2_386 =-I"$(os2api_dir)/os2386/h"
-plib_c_inc_dirs_os2     =-I"$(hdr_dir)/dos" $(plib_c_inc_dirs_os2_$(plib_$(processor)))
-plib_c_inc_dirs_winnt   =-I"$(hdr_dir)/dos" -I"$(w32api_dir)/nt"
-plib_c_inc_dirs_qnx     =-I"$(hdr_dir)/qnx"
-plib_c_inc_dirs_rdos    =-I"$(hdr_dir)/rdos"
-plib_c_inc_dirs_linux   =-I"$(hdr_dir)/linux"
+plib_c_inc_dirs_generic =$(inc_dirs_lang_dos)
+plib_c_inc_dirs_netware =$(inc_dirs_lang_dos)
+plib_c_inc_dirs_windows =$(inc_dirs_lang_dos) $(inc_dirs_sys_win)
+plib_c_inc_dirs_os2     =$(inc_dirs_lang_dos) $(inc_dirs_sys_os2_$(plib_$(processor)))
+plib_c_inc_dirs_winnt   =$(inc_dirs_lang_dos) $(inc_dirs_sys_nt)
+plib_c_inc_dirs_qnx     =$(inc_dirs_lang_qnx)
+plib_c_inc_dirs_rdos    =$(inc_dirs_lang_rdos)
+plib_c_inc_dirs_linux   =$(inc_dirs_lang_linux)
 
 plib_inc_dirs = -I"$(lib_misc_dir)/h" -I"../../h" -I"$(plusplus_dir)/h" -I"$(cpplib_dir)/runtime/h" $(plib_c_inc_dirs_$(system)) -I"$(watcom_dir)/h" -I"$(comp_cfg_dir)/h"
 

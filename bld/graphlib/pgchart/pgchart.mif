@@ -35,7 +35,7 @@ memory_model_i86 = l
 #
 .c: ../c
 
-inc_dirs = -I. -I"../h" -I"../../h" -I"$(mathlib_dir)/h" -I"$(watcom_dir)/h" -I"$(hdr_dir)/dos"
+inc_dirs = -I. -I"../h" -I"../../h" -I"$(mathlib_dir)/h" -I"$(watcom_dir)/h" $(inc_dirs_lang_dos)
 
 extra_cpp_flags = -D_ENABLE_AUTODEPEND -D_FARD=
 

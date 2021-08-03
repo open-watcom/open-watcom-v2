@@ -1036,12 +1036,12 @@ targ_bld_was_lnxmps = -bt=linux
 # targ_bld_cxx  build options (e.g., -bt=dos)
 #
 !ifdef buildtest
-incl_sys_dos    = -I"$(hdr_dir)/dos"
-incl_sys_linux  = -I"$(hdr_dir)/linux"
-incl_sys_nt     = -I"$(w32api_dir)/nt"
-incl_sys_os2286 = -I"$(os2api_dir)/os2286/h"
-incl_sys_os2386 = -I"$(os2api_dir)/os2386/h"
-incl_sys_win    = -I"$(w16api_dir)/wini86"
+incl_sys_dos    = $(inc_dirs_lang_dos)
+incl_sys_linux  = $(inc_dirs_lang_linux)
+incl_sys_nt     = $(inc_dirs_sys_nt)
+incl_sys_os2286 = $(inc_dirs_sys_os2_i86)
+incl_sys_os2386 = $(inc_dirs_sys_os2_386)
+incl_sys_win    = $(inc_dirs_sys_win)
 !else
 incl_sys_dos    = -I"$(watcom_root)/h"
 incl_sys_linux  = -I"$(watcom_root)/lh"
@@ -1189,13 +1189,13 @@ librarian = $(wlib_any) $(lib_any) -n -b
 
 !ifdef buildtest
 !ifdef __OS2__
-bld_incl    = -I"$(hdr_dir)/dos" -I"$(os2api_dir)/os2386/h"
+bld_incl    = $(inc_dirs_lang_dos) $(inc_dirs_sys_os2_386)
 !else ifdef __MSDOS__
-bld_incl    = -I"$(hdr_dir)/dos"
+bld_incl    = $(inc_dirs_lang_dos)
 !else ifdef __NT__
-bld_incl    = -I"$(hdr_dir)/dos" -I"$(w32api_dir)/nt"
+bld_incl    = $(inc_dirs_lang_dos) $(inc_dirs_sys_nt)
 !else ifdef __LINUX__
-bld_incl    = -I"$(hdr_dir)/linux"
+bld_incl    = $(inc_dirs_lang_linux)
 !endif
 !endif
 
