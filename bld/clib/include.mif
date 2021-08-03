@@ -15,7 +15,7 @@ include_c_linux    = $(inc_dirs_lang_linux)
 include_c_windows  = $(inc_dirs_lang_dos) $(inc_dirs_sys_win)
 include_c_winnt    = $(inc_dirs_lang_dos) $(inc_dirs_sys_nt)
 include_c_rdos     = $(inc_dirs_lang_rdos)
-include_c_rdosdev  = $(inc_dirs_lang_rdosdev)
+include_c_rdosdev  = $(inc_dirs_lang_rdos)
 
 include_c_path = $(include_default) $(include_c_$(system)) $(include_watcom)
 
