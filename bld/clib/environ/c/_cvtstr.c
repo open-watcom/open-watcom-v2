@@ -33,6 +33,7 @@
 #include "variety.h"
 #include "widechar.h"
 #include <wchar.h>
+#include <string.h>
 #include <mbstring.h>
 #if defined( __NT__ )
     #include <windows.h>
