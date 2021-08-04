@@ -1,4 +1,4 @@
-.EXTENSIONS : .lbc .def
+.EXTENSIONS : .lbc .def .gdf .mh
 
 proj_name = w32api
 
@@ -156,8 +156,14 @@ all : $(dirs) $(libs) .SYMBOLIC
     @%null
 
 .def: ../lib
-
 .c: ../lib
+.mh: ../lib
+
+.mh.gdf:
+    $(wsplice) -k$(host_cpu) $[@ $@
+
+.gdf.lbc:
+    $(awk) -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=$^. $[@
 
 .def.lbc:
     $(awk) -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=$^. $[@
