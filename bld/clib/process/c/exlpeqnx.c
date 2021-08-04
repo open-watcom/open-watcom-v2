@@ -50,7 +50,7 @@ _WCRTLINK int (execlpe)( const char *file, const char *arg )
     ARGS_TYPE_ARR   env;
 
     va_start( ap, file );
-    while( va_arg( ap, char * ) != NULL )
+    while( va_arg( ap, ARGS_TYPE ) != NULL )
         ;
     env = va_arg( ap, ARGS_TYPE_ARR );
     va_end( ap );

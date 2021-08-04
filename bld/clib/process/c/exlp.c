@@ -52,5 +52,6 @@ _WCRTLINK int __F_NAME(execlp,_wexeclp)( const CHAR_TYPE *path, const CHAR_TYPE 
     args = (ARGS_TYPE_ARR)ap[0];
 #endif
     va_end( ap );
+
     return( __F_NAME(execvp,_wexecvp)( path, args ) );
 }

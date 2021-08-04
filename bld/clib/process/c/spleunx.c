@@ -45,7 +45,7 @@ _WCRTLINK int (spawnle)( int mode, const char *path, const char *arg, ... )
     ARGS_TYPE_ARR   env;
 
     va_start( ap, path );
-    while( va_arg( ap, char * ) != NULL )
+    while( va_arg( ap, ARGS_TYPE ) != NULL )
         ;
     env = va_arg( ap, ARGS_TYPE_ARR );
     va_end( ap );
