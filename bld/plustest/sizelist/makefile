@@ -14,7 +14,7 @@ test_flags_386 = -zp4-ms
 test_flags_i86 = -zp2-ml
 test_flags_axp = -zp8
 
-!include testenv1.mif
+!include testenv.mif
 
 stack_386=opt stack=8k
 stack_i86=opt stack=4k

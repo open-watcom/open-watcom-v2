@@ -8,7 +8,7 @@ test_flags = -ox-d1
 alt_error=00
 !endif
 
-!include testenv1.mif
+!include testenv.mif
 
 stack_386=opt stack=8k
 stack_i86=opt stack=4k

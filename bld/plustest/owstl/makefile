@@ -38,7 +38,7 @@ test_flags_386 += -wx-wcd433-fpi87-fp5-mf
 test_flags_i86 += -wx-wcd433-fpi87-fp5-ml-zm
 test_flags_axp += -wx-wcd433
 
-!include testenv1.mif
+!include testenv.mif
 
 !ifeq alt_error 02
 test_flags += $(br_opt)

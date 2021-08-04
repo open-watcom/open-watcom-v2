@@ -20,7 +20,7 @@ test_flags_i86 = -mm -zm
 
 exec_chk_i86 = execi86.chk
 
-!include testenv1.mif
+!include testenv.mif
 
 extra_run_istmit1 = <istmit1.in
 

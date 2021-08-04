@@ -3,7 +3,7 @@ plustest_name = preproc
 
 alt_error=00
 
-!include testenv1.mif
+!include testenv.mif
 
 .c.i:
     %append $(%ERROR_FILE) @@@ $@ @@@

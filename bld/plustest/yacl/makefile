@@ -20,7 +20,7 @@ test_flags += -ei -I.. -w0 -D__OS2__
 
 test_flags_i86 = -ml
 
-!include testenv1.mif
+!include testenv.mif
 !include base/lib.mif
 !include io/lib.mif
 

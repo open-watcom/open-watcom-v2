@@ -1,6 +1,6 @@
 plustest_name = mscompat
 
-!include testenv1.mif
+!include testenv.mif
 
 files_err = &
 diag0011$(ext) &

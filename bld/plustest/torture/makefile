@@ -14,7 +14,7 @@ test_flags_386 = -mf
 test_flags_i86 = -ml -fi=noinline.h
 test_flags_axp =
 
-!include testenv1.mif
+!include testenv.mif
 
 objs = &
     assert.obj &

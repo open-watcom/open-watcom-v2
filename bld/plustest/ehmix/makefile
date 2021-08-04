@@ -30,7 +30,7 @@ exec_chk_386 = linux386.chk
 exec_chk_386 = nt386.chk
 !endif
 
-!include testenv1.mif
+!include testenv.mif
 
 !ifeq alt_error 00
 test_flags += $(br_opt)

@@ -26,7 +26,7 @@ test_flags_axp =
 dos_exec_chk_i86 = execdos.chk
 dos_exec_chk_386 = execdos.chk
 
-!include testenv1.mif
+!include testenv.mif
 
 !ifeq alt_error 00
 add_br_ = $(br_opt)

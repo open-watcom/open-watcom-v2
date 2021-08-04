@@ -37,7 +37,7 @@ test_flags_386 += -3s-mf
 test_flags_i86 += -3-ml -fi="source/noinline.h"
 test_flags_axp += -si
 
-!include testenv1.mif
+!include testenv.mif
 
 opt_memchk = -zl -wcd=887
 

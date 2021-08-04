@@ -1,6 +1,6 @@
 alt_error = 00
 
-!include testenv1.mif
+!include testenv.mif
 
 test : .symbolic start start_test $(dis_objs) $(objs) test_set_result
     $(noecho)%make common_set_result_check

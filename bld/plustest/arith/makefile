@@ -38,7 +38,7 @@ test_flags_386 += -fpi87-fp5-mf
 test_flags_i86 += -fpi87-fp5-ml
 test_flags_axp +=
 
-!include testenv1.mif
+!include testenv.mif
 
 !ifeq alt_error 02
 test_flags += $(br_opt)

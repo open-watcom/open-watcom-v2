@@ -21,7 +21,7 @@ opt_link_spltest = FILE { splash.obj regex.obj }
 opt_link_splassoc = FILE { splash.obj regex.obj }
 opt_link_justify = FILE { splash.obj regex.obj }
 
-!include testenv1.mif
+!include testenv.mif
 
 objs = &
 assoc.obj &

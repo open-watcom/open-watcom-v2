@@ -18,7 +18,7 @@ test_flags += -w0 -I../source
 
 test_flags_i86 = -mm -zm
 
-!include testenv1.mif
+!include testenv.mif
 
 stack_386=opt stack=128k
 stack_i86=opt stack=32k

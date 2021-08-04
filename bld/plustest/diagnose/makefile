@@ -6,7 +6,7 @@ exec_chk_i86 = diagi86.chk
 exec_chk_386 = diag386.chk
 exec_chk_axp = diagaxp.chk
 
-!include testenv1.mif
+!include testenv.mif
 !include source/diagnose.mif
 
 diagnose_opts += -ew -we -wx -e1000 -eq

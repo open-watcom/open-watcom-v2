@@ -2,7 +2,7 @@ ctest_name = diagnose
 
 alt_error=00
 
-!include testenv1.mif
+!include testenv.mif
 !include ../diagnose.mif
 
 diagnose_opts += -we -wx -e1000 -eq

@@ -1,6 +1,6 @@
 ftest_name = result
 
-!include testenv1.mif
+!include testenv.mif
 
 test : ./chktest.exe .symbolic
     set FTEST_LOG_FILE=$(log_file)

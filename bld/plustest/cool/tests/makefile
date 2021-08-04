@@ -20,7 +20,7 @@ test_flags_i86 = -ml -zm
 
 exec_chk_i86 = execi86.chk
 
-!include testenv1.mif
+!include testenv.mif
 !include ../lib.mif
 
 exes = &

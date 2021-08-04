@@ -12,7 +12,7 @@ test_flags_i86 = -s -os -wx -we
 alt_error = 00
 !endif
 
-!include testenv1.mif
+!include testenv.mif
 !include ../inline.mif
 
 .src: $(wasmtest_dir)/inline

@@ -18,7 +18,7 @@ opt_link_perltest = FILE { perlclas.obj regex.obj }
 opt_link_perlasso = FILE { perlclas.obj regex.obj }
 opt_link_tstio = FILE { perlclas.obj regex.obj }
 
-!include testenv1.mif
+!include testenv.mif
 
 stack_386=opt stack=32k
 stack_i86=opt stack=16k

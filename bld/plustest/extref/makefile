@@ -24,7 +24,7 @@ test_flags += -zv
 !endif
 test_flags += -I"../positive/source"
 
-!include testenv1.mif
+!include testenv.mif
 
 !ifneq arch axp
 # until we implement it under AXP

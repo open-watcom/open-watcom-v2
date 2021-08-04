@@ -4,7 +4,7 @@ alt_error=00
 
 test_flags = -ox-d1-w0
 
-!include testenv1.mif
+!include testenv.mif
 
 exes = &
 idata01.$(exe) &

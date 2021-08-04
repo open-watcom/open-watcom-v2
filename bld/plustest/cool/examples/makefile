@@ -18,7 +18,7 @@ test_flags += -I.. -I"../source" -w0 -fi=../__ialias.h
 
 test_flags_i86 = -ml -zm
 
-!include testenv1.mif
+!include testenv.mif
 !include ../lib.mif
 
 exes = &

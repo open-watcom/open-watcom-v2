@@ -76,7 +76,7 @@ opt_EH_yes = -xst
 alt_error = 00
 !endif
 
-!include testenv1.mif
+!include testenv.mif
 !include source/positive.mif
 
 !ifeq alt_error 00

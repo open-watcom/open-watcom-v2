@@ -34,7 +34,7 @@ test_flags += -w0 -Isource -fi=source/pch.h -fh
 
 exec_chk_i86 = execi86.chk
 
-!include testenv1.mif
+!include testenv.mif
 
 !ifeq alt_error 04
 test_flags += $(br_opt)

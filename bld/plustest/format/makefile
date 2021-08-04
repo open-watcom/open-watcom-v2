@@ -15,7 +15,7 @@ test_flags_i86 = -mc
 opt_link_testi = FILE iformat.obj
 opt_link_testf = FILE fformat.obj
 
-!include testenv1.mif
+!include testenv.mif
 
 stack_386=opt stack=16k
 stack_i86=opt stack=8k

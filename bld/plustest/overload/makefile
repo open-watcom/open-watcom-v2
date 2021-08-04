@@ -13,7 +13,7 @@ alt_error=00
 
 exec_chk_i86 = execi86.chk
 
-!include testenv1.mif
+!include testenv.mif
 
 exes = &
 addr01.$(exe) &

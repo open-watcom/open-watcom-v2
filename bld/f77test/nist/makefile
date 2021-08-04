@@ -52,7 +52,7 @@ fflags_axp = -ox-d1
 alt_error = 00
 !endif
 
-!include testenv1.mif
+!include testenv.mif
 !include source/positive.mif
 
 fflags_386 += -INCPath=source #-we-w0

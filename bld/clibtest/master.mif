@@ -98,7 +98,7 @@ test_flags_386 = -hd -fpc
 test_flags_axp = -hc
 
 !include tools.mif
-!include testenv1.mif
+!include testenv.mif
 
 .extensions:
 .extensions: .exe .rex .exp .obj .c .asm

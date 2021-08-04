@@ -14,7 +14,7 @@ test_flags_386 =
 test_flags_i86 = -mm -zm
 test_flags_axp =
 
-!include testenv1.mif
+!include testenv.mif
 
 objs = &
     compmat.obj &

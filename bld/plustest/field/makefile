@@ -30,7 +30,7 @@ opt_link_test1 = FILE field.obj
 opt_link_test2 = FILE field.obj
 opt_link_test3 = FILE field.obj
 
-!include testenv1.mif
+!include testenv.mif
 
 stack_386=opt stack=16k
 stack_i86=opt stack=8k

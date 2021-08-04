@@ -34,7 +34,7 @@ alt_error=00
 
 test_flags += -w0
 
-!include testenv1.mif
+!include testenv.mif
 
 !ifeq alt_error 08
 add_br_ = $(br_opt)

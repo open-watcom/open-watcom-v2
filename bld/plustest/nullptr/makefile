@@ -20,7 +20,7 @@ test_flags =
 alt_error=00
 !endif
 
-!include testenv1.mif
+!include testenv.mif
 
 exes = nullptr.$(exe)
 

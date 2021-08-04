@@ -64,7 +64,7 @@ test_flags_axp = -ox-d1
 alt_error = 00
 !endif
 
-!include testenv1.mif
+!include testenv.mif
 !include ../codegen.mif
 
 test_flags_386 += -I"$(codegen_dir)" $(run_quietly)

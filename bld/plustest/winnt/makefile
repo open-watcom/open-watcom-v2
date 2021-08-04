@@ -16,7 +16,7 @@ alt_error=00
 
 test_flags += -w0
 
-!include testenv1.mif
+!include testenv.mif
 
 test_flags += $(incl_sys_nt)
 

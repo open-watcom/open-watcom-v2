@@ -16,7 +16,7 @@ test_flags_axp =
 
 opt_link_testftor = FILE assert.obj
 
-!include testenv1.mif
+!include testenv.mif
 
 stack_386=opt stack=8k
 stack_i86=opt stack=4k

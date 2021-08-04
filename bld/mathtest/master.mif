@@ -100,7 +100,7 @@ ext=
 !endif
 
 !include tools.mif
-!include testenv1.mif
+!include testenv.mif
 
 .extensions:
 .extensions: .exe .rex .exp .obj .c .asm

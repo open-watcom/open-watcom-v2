@@ -56,7 +56,7 @@ alt_error = 00
 
 sav_file_2 = x$(arch)_$(alt_error).sav
 
-!include testenv1.mif
+!include testenv.mif
 !include ../callconv.mif
 
 .c: source

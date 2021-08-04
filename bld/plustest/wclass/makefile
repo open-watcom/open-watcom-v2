@@ -21,7 +21,7 @@ test_flags = -zq -I"$(%WATCOM)/h"
 
 test_flags_i86 += -zw -bt=windows -DSTRICT
 
-!include testenv1.mif
+!include testenv.mif
 
 test_flags_i86 += $(incl_sys_win)
 test_flags_386 += $(incl_sys_nt)
