@@ -30,10 +30,12 @@ linux_dirs = h h/sys h/netinet h/arpa h/arch h/arch/i386 h/arch/i386/sys h/arch/
 qnx_dirs   = h h/sys
 rdos_dirs  = h h/sys h/netinet h/arpa
 
-dos_path   = ../watcom
-linux_path = ../watcom
-qnx_path   = ../quantum;../watcom
-rdos_path  = ../watcom
+mh_dir = ../watcom
+
+dos_path   = $(mh_dir)
+linux_path = $(mh_dir)
+qnx_path   = ../quantum;$(mh_dir)
+rdos_path  = $(mh_dir)
 
 crwatpro_gsp = crwatpro.gsp
 
@@ -168,7 +170,7 @@ $($(system)_dirs): .EXPLICIT
     mkdir -p $@
 !endif
 
-!include ../deps.mif
+!include $(mh_dir)/deps.mif
 
 clean: .SYMBOLIC
     rm -f $(crwatpro_gsp)
