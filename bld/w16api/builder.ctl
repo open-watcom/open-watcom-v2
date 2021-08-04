@@ -15,9 +15,8 @@ set PROJDIR=<CWD>
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================
-    <CCCMD> wini86/*.lib                <OWRELROOT>/lib286/win/
-    <CCCMD> wini86/*.h                  <OWRELROOT>/h/win/
-#    <CCCMD> <OWSRCDIR>/sdk/misc/ctl3d.h   <OWRELROOT>/h/win/
+    <CCCMD> wini86/lib/*                <OWRELROOT>/lib286/win/
+    <CCCMD> wini86/h/*                  <OWRELROOT>/h/win/
 
 [ BLOCK . . ]
 

@@ -1038,10 +1038,10 @@ targ_bld_was_lnxmps = -bt=linux
 !ifdef buildtest
 incl_sys_dos    = -I"$(hdr_dir)/dos/h"
 incl_sys_linux  = -I"$(hdr_dir)/linux/h"
-incl_sys_nt     = -I"$(w32api_dir)/nt"
+incl_sys_nt     = -I"$(w32api_dir)/nt/h"
 incl_sys_os2286 = -I"$(os2api_dir)/os2286/h"
 incl_sys_os2386 = -I"$(os2api_dir)/os2386/h"
-incl_sys_win    = -I"$(w16api_dir)/wini86"
+incl_sys_win    = -I"$(w16api_dir)/wini86/h"
 !else
 incl_sys_dos    = -I"$(watcom_root)/h"
 incl_sys_linux  = -I"$(watcom_root)/lh"
@@ -1193,7 +1193,7 @@ bld_incl    = -I"$(hdr_dir)/dos/h" -I"$(os2api_dir)/os2386/h"
 !else ifdef __MSDOS__
 bld_incl    = -I"$(hdr_dir)/dos/h"
 !else ifdef __NT__
-bld_incl    = -I"$(hdr_dir)/dos/h" -I"$(w32api_dir)/nt"
+bld_incl    = -I"$(hdr_dir)/dos/h" -I"$(w32api_dir)/nt/h"
 !else ifdef __LINUX__
 bld_incl    = -I"$(hdr_dir)/linux/h"
 !endif

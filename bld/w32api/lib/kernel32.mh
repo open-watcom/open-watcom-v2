@@ -868,6 +868,11 @@ ResumeThread@4
 RtlCaptureContext@4
 RtlCaptureStackBackTrace@16
 RtlUnwind@16
+:segment axp
+RtlLookupFunctionEntry@4
+RtlUnwindRfp@16
+RtlVirtualUnwind@24
+:endsegment
 ScrollConsoleScreenBufferA@20
 ScrollConsoleScreenBufferW@20
 SearchPathA@24

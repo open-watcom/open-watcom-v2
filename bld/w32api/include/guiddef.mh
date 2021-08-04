@@ -6,12 +6,7 @@
 
 :include readonly.sp
 
-/* Macro used to specify extern "C" */
-#ifdef __cplusplus
-    #define EXTERN_C    extern "C"
-#else
-    #define EXTERN_C    extern
-#endif
+:include extern_c.sp
 
 /* Macro to define a GUID */
 #ifdef DEFINE_GUID

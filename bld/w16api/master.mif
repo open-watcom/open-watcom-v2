@@ -3,6 +3,8 @@ proj_name = w16api
 w16api_autodepends = .autodepend
 w16api_distrib_lib = 1
 
+.EXTENSIONS : .lbc .gsp .sp .def .mh
+
 !include cproj.mif
 !include defrule.mif
 
@@ -10,75 +12,75 @@ crwatpro_gsp = crwatpro.gsp
 
 additional_clean = $(crwatpro_gsp) depends.dep
 
-incl_dir = ../include
+mh_dir  = ../include
 
 !ifeq release 1
 wsplice_extra_opts =
 !else
 wsplice_extra_opts = -d"depends.dep"
 !endif
-wsplice_opts = $(wsplice_extra_opts) -i".." -i"$(hdr_dir)" -i"$(incl_dir)" $[@ $@
+wsplice_opts = $(wsplice_extra_opts) -i".." -i"$(hdr_dir)" -i"$(mh_dir)" $[@ $@
 
-.EXTENSIONS : .lbc .gsp .sp .def .mh
+dirs = h lib
 
 headers =        &
-    _win386.h    &
-    cderr.h      &
-    cobjps.h     &
-    coguid.h     &
-    commdlg.h    &
-    compobj.h    &
-    ctl3d.h      &
-    custcntl.h   &
-    dde.h        &
-    ddeml.h      &
-    dispatch.h   &
-    dlgs.h       &
-    drivinit.h   &
-    dvobj.h      &
-    initguid.h   &
-    lzexpand.h   &
-    mmsystem.h   &
-    moniker.h    &
-    ole.h        &
-    ole2.h       &
-    ole2dbg.h    &
-    ole2ver.h    &
-    oleguid.h    &
-    olenls.h     &
-    scode.h      &
-    shellapi.h   &
-    storage.h    &
-    stress.h     &
-    toolhelp.h   &
-    variant.h    &
-    ver.h        &
-    win16.h      &
-    win386.h     &
-    windows.h    &
-    winsock.h
+    h/_win386.h    &
+    h/cderr.h      &
+    h/cobjps.h     &
+    h/coguid.h     &
+    h/commdlg.h    &
+    h/compobj.h    &
+    h/ctl3d.h      &
+    h/custcntl.h   &
+    h/dde.h        &
+    h/ddeml.h      &
+    h/dispatch.h   &
+    h/dlgs.h       &
+    h/drivinit.h   &
+    h/dvobj.h      &
+    h/initguid.h   &
+    h/lzexpand.h   &
+    h/mmsystem.h   &
+    h/moniker.h    &
+    h/ole.h        &
+    h/ole2.h       &
+    h/ole2dbg.h    &
+    h/ole2ver.h    &
+    h/oleguid.h    &
+    h/olenls.h     &
+    h/scode.h      &
+    h/shellapi.h   &
+    h/storage.h    &
+    h/stress.h     &
+    h/toolhelp.h   &
+    h/variant.h    &
+    h/ver.h        &
+    h/win16.h      &
+    h/win386.h     &
+    h/windows.h    &
+    h/winsock.h
 
 libs =           &
-    commdlg.lib  &
-    compobj.lib  &
-    ctl3d.lib    &
-    ctl3dv2.lib  &
-    ddeml.lib    &
-    lzexpand.lib &
-    mmsystem.lib &
-    ole2.lib     &
-    ole2disp.lib &
-    ole2nls.lib  &
-    olecli.lib   &
-    olesvr.lib   &
-    shell.lib    &
-    storage.lib  &
-    stress.lib   &
-    toolhelp.lib &
-    typelib.lib  &
-    ver.lib      &
-    windows.lib  &
-    winsock.lib
+    lib/commdlg.lib  &
+    lib/compobj.lib  &
+    lib/ctl3d.lib    &
+    lib/ctl3dv2.lib  &
+    lib/ddeml.lib    &
+    lib/lzexpand.lib &
+    lib/mmsystem.lib &
+    lib/ole2.lib     &
+    lib/ole2disp.lib &
+    lib/ole2nls.lib  &
+    lib/olecli.lib   &
+    lib/olesvr.lib   &
+    lib/shell.lib    &
+    lib/storage.lib  &
+    lib/stress.lib   &
+    lib/toolhelp.lib &
+    lib/typelib.lib  &
+    lib/ver.lib      &
+    lib/windows.lib  &
+    lib/winsock.lib
 
 winlibs =        &
     gdi.lbc      &
@@ -88,11 +90,12 @@ winlibs =        &
     user.lbc     &
     win87em.lbc
 
-all : $(headers) $(libs) .SYMBOLIC
+all : $(dirs) $(headers) $(libs) .SYMBOLIC
 
 .def: ../lib
 .asm: ../asm
-.mh: $(incl_dir)
+.mh: $(mh_dir)
+.sp: $(hdr_dir)
 
 .def.lbc:
     $(awk) -f ../def16lbc.awk -v OUTFILE=$^. $[@
@@ -101,27 +104,29 @@ all : $(headers) $(libs) .SYMBOLIC
     @%make echo_lib
     $(librarian) $(libflags) @$[@
 
-.mh.h:
+.lbc{lib}.lib: $(__MAKEFILES__)
+    @%make echo_lib
+    $(librarian) $(libflags) @$[@
+
+.mh{h}.h:
     @%make echo_wsplice
     $(wsplice) $(wsplice_opts)
 
-{$(hdr_dir)}.sp.gsp:
+.sp.gsp:
     $(awk) -f $(hdr_dir)/cpyyear.awk -v CPYYEAR=$(curr_year) -v OUTFILE=$@ $[@
-
-$(libs):
 
 windows.lbc : $(winlibs)
     @for %i in ($(winlibs)) do @%append $@ @ %i
 
-windows.lib: windows.lbc profc.obj $(__MAKEFILES__)
+lib/windows.lib: windows.lbc profc.obj $(__MAKEFILES__)
     @%make echo_lib
     $(librarian) $(libflags) @$[@ profc.obj
 
-!include $(incl_dir)/deps.mif
+!include $(mh_dir)/deps.mif
+
+$(dirs):
+    mkdir $@
 
 clean : .SYMBOLIC
-    rm -f *.h
-    rm -f *.lbc
-    rm -f *.lib
-    rm -f *.obj
-    rm -f $(additional_clean)
+    rm -f *.lbc *.obj $(additional_clean)
+    rm -rf $(dirs)

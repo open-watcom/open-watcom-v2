@@ -4,13 +4,6 @@
 #define STDAPICALLTYPE      __stdcall
 #define STDAPIVCALLTYPE     __cdecl
 
-/* Macro used to specify extern "C" */
-#ifdef __cplusplus
-    #define EXTERN_C    extern "C"
-#else
-    #define EXTERN_C    extern
-#endif
-
 /* Standard method implementation and API declaration macros */
 #define STDAPI                      EXTERN_C HRESULT STDAPICALLTYPE
 #define STDAPI_( x )                EXTERN_C x STDAPICALLTYPE

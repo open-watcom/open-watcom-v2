@@ -31,11 +31,7 @@ qnx_dirs   = h h/sys
 rdos_dirs  = h h/sys h/netinet h/arpa
 
 mh_dir = ../watcom
-
-dos_path   = $(mh_dir)
-linux_path = $(mh_dir)
-qnx_path   = ../quantum;$(mh_dir)
-rdos_path  = $(mh_dir)
+qnx_mh_dir = ../quantum
 
 crwatpro_gsp = crwatpro.gsp
 
@@ -45,8 +41,9 @@ crwatpro_gsp = crwatpro.gsp
 all : $($(system)_dirs) $($(system)_files) .symbolic
     @%null
 
-.mh:  $($(system)_path)
-.mhp: $($(system)_path)
+.mh: $($(system)_mh_dir);$(mh_dir)
+.mhp: $(mh_dir)
+.sp: $(hdr_dir)
 
 .mhp{h}.hpp:
     @%make echo_wsplice
@@ -116,7 +113,7 @@ all : $($(system)_dirs) $($(system)_files) .symbolic
     @%make echo_wsplice
     $(wsplice) $(wsplice_opts)
 
-{$(hdr_dir)}.sp.gsp:
+.sp.gsp:
     $(awk) -f $(hdr_dir)/cpyyear.awk -v CPYYEAR=$(curr_year) -v OUTFILE=$@ $[@
 
 #

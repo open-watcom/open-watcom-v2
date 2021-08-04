@@ -13,6 +13,8 @@
 
 :include cpluspro.sp
 
+:include extern_c.sp
+
 :include stdapi.sp
 
 :include intrface.sp

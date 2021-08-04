@@ -65,7 +65,7 @@ system begin windows
     libpath %OWSRCDIR%/mathlib/library/windows.287/ml
     libpath %OWSRCDIR%/cpplib/library/windows.086/mc
     libpath %OWSRCDIR%/cpplib/library/windows.086/ml
-    libpath %OWSRCDIR%/w16api/wini86
+    libpath %OWSRCDIR%/w16api/wini86/lib
     library windows
     option nocaseexact
     option stack=8k, heapsize=1k
@@ -83,7 +83,7 @@ system begin windows_dll
     libpath %OWSRCDIR%/mathlib/library/windows.286/ml
     libpath %OWSRCDIR%/mathlib/library/windows.287/ml
     libpath %OWSRCDIR%/cpplib/library/windows.086/ml
-    libpath %OWSRCDIR%/w16api/wini86
+    libpath %OWSRCDIR%/w16api/wini86/lib
     library windows
     option nocaseexact
     option stack=8k, heapsize=1k
@@ -359,7 +359,7 @@ system begin nt
     libpath %OWSRCDIR%/f77/f77lib/winnt.386/mf_s
     libpath %OWSRCDIR%/f77/f77lib/winnt.387/mf_r
     libpath %OWSRCDIR%/f77/f77lib/winnt.387/mf_s
-    libpath %OWSRCDIR%/w32api/nt386
+    libpath %OWSRCDIR%/w32api/nt386/lib
     library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
     format windows nt ^
     runtime console=4.0
@@ -370,7 +370,7 @@ system begin ntaxp
     libpath %OWSRCDIR%/clib/library/winnt.axp/_s
     libpath %OWSRCDIR%/mathlib/library/winnt.axp/_s
     libpath %OWSRCDIR%/cpplib/library/winnt.axp/_s
-    libpath %OWSRCDIR%/w32api/ntaxp
+    libpath %OWSRCDIR%/w32api/ntaxp/lib
     library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
     format windows nt ^
     runtime console=4.0
@@ -381,7 +381,7 @@ system begin ntaxp_win
     libpath %OWSRCDIR%/clib/library/winnt.axp/_s
     libpath %OWSRCDIR%/mathlib/library/winnt.axp/_s
     libpath %OWSRCDIR%/cpplib/library/winnt.axp/_s
-    libpath %OWSRCDIR%/w32api/ntaxp
+    libpath %OWSRCDIR%/w32api/ntaxp/lib
     library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
     format windows nt ^
     runtime windows=4.0
@@ -422,7 +422,7 @@ system begin nt_win
     libpath %OWSRCDIR%/f77/f77lib/winnt.386/mf_s
     libpath %OWSRCDIR%/f77/f77lib/winnt.387/mf_r
     libpath %OWSRCDIR%/f77/f77lib/winnt.387/mf_s
-    libpath %OWSRCDIR%/w32api/nt386
+    libpath %OWSRCDIR%/w32api/nt386/lib
     library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
     format windows nt ^
     runtime windows=4.0
@@ -455,7 +455,7 @@ system begin nt_dll
     libpath %OWSRCDIR%/f77/f77lib/winnt.386/mf_s
     libpath %OWSRCDIR%/f77/f77lib/winnt.387/mf_r
     libpath %OWSRCDIR%/f77/f77lib/winnt.387/mf_s
-    libpath %OWSRCDIR%/w32api/nt386
+    libpath %OWSRCDIR%/w32api/nt386/lib
     library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
     format windows nt dll ^
     runtime console=4.0
@@ -466,7 +466,7 @@ system begin ntaxp_dll
     libpath %OWSRCDIR%/clib/library/winnt.axp/_s
     libpath %OWSRCDIR%/mathlib/library/winnt.axp/_s
     libpath %OWSRCDIR%/cpplib/library/winnt.axp/_s
-    libpath %OWSRCDIR%/w32api/ntaxp
+    libpath %OWSRCDIR%/w32api/ntaxp/lib
     library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
     format windows nt dll ^
     runtime console=4.0

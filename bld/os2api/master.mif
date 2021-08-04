@@ -10,6 +10,8 @@ targ_cpu = 286
 targ_cpu = $(host_cpu)
 !endif
 
+.EXTENSIONS : .lbc .def .gsp .sp .mh
+
 !include cproj.mif
 !include defrule.mif
 
@@ -20,6 +22,7 @@ incl_dir_386 = ../incl32
 lib_dir_286 = ../lib286
 lib_dir_386 = ../lib386
 
+mh_dir = $(incl_dir_$(targ_cpu))
 
 !ifeq release 1
 wsplice_extra_opts =
@@ -27,8 +30,6 @@ wsplice_extra_opts =
 wsplice_extra_opts = -d"depends.dep"
 !endif
 wsplice_opts = $(wsplice_extra_opts) -kIBMTOOLKIT -i"$(hdr_dir)" $[@ $@
-
-.EXTENSIONS : .lbc .def .gsp .sp .mh
 
 #                       dirs286     dirs386
 #-------------------------------------------
@@ -47,9 +48,10 @@ wsplice_opts = $(wsplice_extra_opts) -kIBMTOOLKIT -i"$(hdr_dir)" $[@ $@
 
 all : $(dirs$(targ_cpu)) $(hdrs$(targ_cpu)) $(libs$(targ_cpu)) .SYMBOLIC
 
-.mh: $(incl_dir_$(targ_cpu))
+.mh: $(mh_dir)
 .def: $(lib_dir_$(targ_cpu))
 .asm: $(lib_dir_$(targ_cpu))
+.sp: $(hdr_dir)
 
 .mh{h}.h:
     @%make echo_wsplice
@@ -83,10 +85,10 @@ all : $(dirs$(targ_cpu)) $(hdrs$(targ_cpu)) $(libs$(targ_cpu)) .SYMBOLIC
     @%make echo_wsplice
     $(wsplice) $(wsplice_opts)
 
-{$(hdr_dir)}.sp.gsp:
+.sp.gsp:
     $(awk) -f $(hdr_dir)/cpyyear.awk -v CPYYEAR=$(curr_year) -v OUTFILE=$@ $[@
 
-{$(lib_dir_$(targ_cpu))}.def.lbc: $(__MAKEFILES__)
+.def.lbc: $(__MAKEFILES__)
     $(sed) -f ../def2lbc.sed $(lib_dir_$(targ_cpu))/$[. > $@
 
 .lbc.lib: $(__MAKEFILES__)
@@ -134,12 +136,12 @@ lib/libconv.lib: uconv.lbc $(__MAKEFILES__)
     $(librarian) $(libflags) @$[@
 
 !ifdef dirs$(targ_cpu)
-$(dirs$(targ_cpu)): .EXPLICIT
+$(dirs$(targ_cpu)):
     mkdir $@
 !endif
 
-!include $(incl_dir_$(targ_cpu))/deps.mif
+!include $(mh_dir)/deps.mif
 
 clean : .SYMBOLIC
     rm -f *.lbc *.obj $(crwatpro_gsp) depends.dep
-    rm -rf $(dirs$(targ_cpu))
+    rm -rf h lib

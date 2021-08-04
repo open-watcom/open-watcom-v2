@@ -1,4 +1,3 @@
-mh_dir          = $(incl_dir_$(targ_cpu))
 readonly_sp     = $(hdr_dir)/readonly.sp
 crwatcnt_sp     = $(hdr_dir)/crwatcnt.sp $(crwatpro_gsp) $(hdr_dir)/crwatepi.sp
 owhdr           = $(crwatcnt_sp) $(readonly_sp) #$(hdr_dir)/owrtlink.sp
