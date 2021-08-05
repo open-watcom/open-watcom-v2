@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,4 @@
 ****************************************************************************/
 
 
-#define DID_SLBC_DLG                100
-#define DID_SLBC_FIELD              102
-#define DID_DEFAULT                 103
-#define DID_HELP                    104
+#define DLG1_EDIT       100

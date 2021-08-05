@@ -124,14 +124,6 @@ extern void _ReleaseWinLines( void );
  * macros etc
  */
 #define MAX_BUFF        128
-#define MSG_EXIT        1
-#define MSG_FLUSH       2
-#define MSG_WRITE       3
-#define MSG_COPY        4
-#define MSG_SETCLEARINT 5
-#define MSG_ABOUT       6
-#define DLG1_EDIT       10
-#define MSG_WINDOWS     200
 
 #define CTRL_V          'V'-'A'+1
 #define CTRL_U          'U'-'A'+1

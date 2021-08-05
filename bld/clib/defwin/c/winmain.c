@@ -44,6 +44,7 @@
 #include "wclbproc.h"
 #include "initwin.h"
 #include "wintitle.h"
+#include "winmenu.rh"
 
 
 #ifdef __WINDOWS__

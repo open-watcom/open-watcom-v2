@@ -36,6 +36,7 @@
 #define INCLUDE_COMMDLG_H
 #include <wwindows.h>
 #include "win.h"
+#include "winmenu.rh"
 
 
 /*

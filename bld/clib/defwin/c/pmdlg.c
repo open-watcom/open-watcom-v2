@@ -36,7 +36,7 @@
 #define INCL_WIN
 #include <wos2.h>
 #include "win.h"
-#include "pmdlgid.h"
+#include "pmdlg.rh"
 
 
 #define MAX_INTEGER_FIELD       11
