@@ -186,6 +186,7 @@
 !inject y0.obj       d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
 !inject y1.obj       d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
 !inject yn.obj       d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
+!inject zbuf2ld.obj  d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
 !inject zmatherr.obj d16c d16i d32c d32i n32c n32i winc wini nta ntp opc
 
 !include $(mathlib_dir)/objlist.mif

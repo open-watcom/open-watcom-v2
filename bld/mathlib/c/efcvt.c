@@ -60,7 +60,7 @@ static char *fixup( char *p, int n )
     return( start );
 }
 
-_WMRTLINK CHAR_TYPE *__F_NAME(ecvt,_wecvt)( double value,int ndigits, int *dec, int *sign )
+_WMRTLINK CHAR_TYPE *__F_NAME(ecvt,_wecvt)( double value, int ndigits, int *dec, int *sign )
 {
     /* ndigits represents the number of significant digits */
     char    *buf;

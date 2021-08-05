@@ -37,7 +37,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include <inttypes.h>
 #ifdef __WIDECHAR__
     #include <wchar.h>
 #endif
@@ -85,115 +84,6 @@ enum {
     #error MAX_SIG_DIG is too small
 #endif
 
-#if !(defined(_LONG_DOUBLE_) || defined(__WIDECHAR__))
-void __ZBuf2LD( buf_stk_ptr buf, ld_stk_ptr ld )
-{
-    int             i;
-    int             n;
-    long            high;
-    long            low;
-    const CHAR_TYPE *s;
-
-    s = (CHAR_TYPE *)buf;
-    n = __F_NAME(strlen,wcslen)( s );
-    high = 0;
-    #define DWORD_MAX_DIGITS    9
-    for( i = 0; i < DWORD_MAX_DIGITS; i++ ) {   // collect high 9 significant digits
-        if( n <= DWORD_MAX_DIGITS )
-            break;
-        --n;
-        high = high * 10 + (*s++ - '0');
-    }
-    low = 0;
-    for( i = 0; i < DWORD_MAX_DIGITS; i++ ) {   // collect low 9 significant digits
-        if( n == 0 )
-            break;
-        --n;
-        low = low * 10 + (*s++ - '0');
-    }
-    #undef DWORD_MAX_DIGITS
-    if( high == 0 && low == 0 ) {
-        ld->u.value = 0.0;
-    } else {
-        ld->u.value = (double)high * 1e9 + (double)low;
-    }
-}
-#endif
-
-static unsigned char xdigit2bin( CHAR_TYPE chr )
-{
-    unsigned char   value;
-
-    value = chr - '0';
-    if( value > 9 ) {
-        value = chr - 'A' + 10;
-        if( value > 15 ) {
-            value = chr - 'a' + 10;
-        }
-    }
-    return( value );
-}
-
-static void __ZXBuf2LD( buf_stk_ptr buf, ld_stk_ptr ld, int *exponent )
-{
-    int             i;
-    int             n;
-    int32_t         exp;
-    uint32_t        high;
-    uint32_t        low;
-    const CHAR_TYPE *s;
-
-    s = (const CHAR_TYPE *)buf;
-    n = __F_NAME(strlen,wcslen)( s );
-    exp = *exponent;
-    high = 0;
-    #define DWORD_MAX_DIGITS    8
-    for( i = 0; i < DWORD_MAX_DIGITS; i++ ) {   /* collect high 8 significant hex digits */
-        if( n == 0 )
-            break;
-        --n;
-        high |= xdigit2bin( *s++ ) << (28 - i * 4);
-        exp += 4;
-    }
-    low = 0;
-    for( i = 0; i < DWORD_MAX_DIGITS; i++ ) {   /* collect low 8 significant hex digits */
-        if( n == 0 )
-            break;
-        --n;
-        low |= xdigit2bin( *s++ ) << (28 - i * 4);
-        exp += 4;
-    }
-    #undef DWORD_MAX_DIGITS
-
-    /* Flush significand to the left */
-    while( !(high & 0x80000000) ) {
-        high <<= 1;
-        if( low & 0x80000000 )
-            high |= 1;
-        low <<= 1;
-        --exp;
-    }
-
-    /* Perform final conversion to binary */
-    --exp;
-#ifdef _LONG_DOUBLE_
-    ld->low_word  = low;
-    ld->high_word = high;
-    ld->exponent  = 0x3FFF + exp;                   /* bias is 16383 (0x3FFF) */
-#else
-    /* The msb is implied and not stored. Shift the significand left once more */
-    high <<= 1;
-    if( low & 0x80000000 )
-        high |= 1;
-    low <<= 1;
-
-    ld->u.word[I64LO32]  = (high << (32 - 12)) | (low >> 12);
-    ld->u.word[I64HI32]  = high >> 12;
-    ld->u.word[I64HI32] |= (0x3FF + exp) << (32 - 12); /* bias is 1023 (0x3FF) */
-#endif
-    *exponent = exp;
-}
-
 /* Determine what sort of subject sequence, if any, is provided, and parse
  * NaNs and Infinity.
  */
@@ -203,51 +93,51 @@ static flt_flags subject_seq( const CHAR_TYPE *s, const CHAR_TYPE **endptr )
     flt_flags           flags = 0;
 
     /* Skip whitespace */
-    for( chr = *s; isspace( chr ); chr = *++s )
+    for( chr = *s; __F_NAME(isspace,iswspace)( chr ); chr = *++s )
         ;
 
     /* Parse optional sign */
-    if( chr == '+' ) {
+    if( chr == STRING( '+' ) ) {
         ++s;
-    } else if( chr == '-' ) {
+    } else if( chr == STRING( '-' ) ) {
         flags |= NEGATIVE_NUMBER;
         ++s;
     }
 
-    if( *s == 'n' || *s == 'N' ) {
+    if( *s == STRING( 'n' ) || *s == STRING( 'N' ) ) {
         /* Could be a NaN */
-        if( (*++s == 'a' || *s == 'A')
-          && (*++s == 'n' || *s == 'N') ) {
+        if( (*++s == STRING( 'a' ) || *s == STRING( 'A' ))
+          && (*++s == STRING( 'n' ) || *s == STRING( 'N' )) ) {
             /* Yup, it is. Skip the optional digit/nondigit sequence */
             flags |= NAN_FOUND;
-            if( *++s == '(' ) {
+            if( *++s == STRING( '(' ) ) {
                 const CHAR_TYPE *p;
 
                 p = ++s;
-                while( isalnum( *p ) || *p == '_' )
+                while( __F_NAME(isalnum,iswalnum)( *p ) || *p == STRING( '_' ) )
                     ++p;
 
-                if( *p == ')' ) {
+                if( *p == STRING( ')' ) ) {
                     s = ++p;    /* only update s if valid sequence found */
                 }
             }
         } else {
             flags = INVALID_SEQ;
         }
-    } else if ( *s == 'i' || *s == 'I' ) {
+    } else if ( *s == STRING( 'i' ) || *s == STRING( 'I' ) ) {
         /* Could be infinity */
-        if( (*++s == 'n' || *s == 'N')
-          && (*++s == 'f' || *s == 'F') ) {
+        if( (*++s == STRING( 'n' ) || *s == STRING( 'N' ))
+          && (*++s == STRING( 'f' ) || *s == STRING( 'F' )) ) {
             const CHAR_TYPE     *p;
 
             /* Yup, it is. See if it's the long form */
             flags |= INFINITY_FOUND;
             p = s;
-            if( (*++p == 'i' || *p == 'I')
-              && (*++p == 'n' || *p == 'N')
-              && (*++p == 'i' || *p == 'I')
-              && (*++p == 't' || *p == 'T')
-              && (*++p == 'y' || *p == 'Y') ) {
+            if( (*++p == STRING( 'i' ) || *p == STRING( 'I' ))
+              && (*++p == STRING( 'n' ) || *p == STRING( 'N' ))
+              && (*++p == STRING( 'i' ) || *p == STRING( 'I' ))
+              && (*++p == STRING( 't' ) || *p == STRING( 'T' ))
+              && (*++p == STRING( 'y' ) || *p == STRING( 'Y' )) ) {
 
                 s = p;
             }
@@ -255,7 +145,7 @@ static flt_flags subject_seq( const CHAR_TYPE *s, const CHAR_TYPE **endptr )
         } else {
             flags = INVALID_SEQ;
         }
-    } else if( s[0] == '0' && (s[1] == 'x' || s[1] == 'X') ) {
+    } else if( s[0] == STRING( '0' ) && (s[1] == STRING( 'x' ) || s[1] == STRING( 'X' )) ) {
         /* We've been hexed! */
         flags |= HEX_FOUND;
         s += 2;
@@ -278,23 +168,23 @@ static flt_flags parse_float( char hex, const CHAR_TYPE *input, CHAR_TYPE *buffe
     int                 sigdigits = 0;
     int                 fdigits   = 0;
     int                 exponent  = 0;
-    CHAR_TYPE           digitflag = '0';
+    CHAR_TYPE           digitflag = STRING( '0' );
     const CHAR_TYPE     *s = input;
 
     /* Parse the mantissa */
     for( ;; ) {
         chr = *s++;
-        if( chr == '.' ) {  // <- needs changing for locale support
+        if( chr == STRING( '.' ) ) {  // <- needs changing for locale support
             if( flags & DOT_FOUND )
                 break;
             flags |= DOT_FOUND;
         } else {
             if( hex ) {
-                if( !isxdigit( chr ) ) {
+                if( !__F_NAME(isxdigit,iswxdigit)( chr ) ) {
                     break;
                 }
             } else {
-                if( !isdigit( chr ) ) {
+                if( !__F_NAME(isdigit,iswdigit)( chr ) ) {
                     break;
                 }
             }
@@ -302,7 +192,7 @@ static flt_flags parse_float( char hex, const CHAR_TYPE *input, CHAR_TYPE *buffe
                 ++fdigits;
             }
             digitflag |= chr;
-            if( digitflag != '0' ) {        /* if a significant digit */
+            if( digitflag != STRING( '0' ) ) {        /* if a significant digit */
                 if( sigdigits < MAX_SIG_DIG ) {
                     buffer[sigdigits] = chr;
                 }
@@ -318,15 +208,15 @@ static flt_flags parse_float( char hex, const CHAR_TYPE *input, CHAR_TYPE *buffe
         int     max_exponent;
         int     max_digits;
 
-        if( !hex && ( chr == 'e' || chr == 'E' )
-          || hex && ( chr == 'p' || chr == 'P' ) ) {
+        if( !hex && ( chr == STRING( 'e' ) || chr == STRING( 'E' ) )
+          || hex && ( chr == STRING( 'p' ) || chr == STRING( 'P' ) ) ) {
             const CHAR_TYPE *p;
 
             p = s - 1;
             chr = *s;
-            if( chr == '+' ) {
+            if( chr == STRING( '+' ) ) {
                 ++s;
-            } else if( chr == '-' ) {
+            } else if( chr == STRING( '-' ) ) {
                 flags |= NEGATIVE_EXPONENT;
                 ++s;
             }
@@ -334,10 +224,10 @@ static flt_flags parse_float( char hex, const CHAR_TYPE *input, CHAR_TYPE *buffe
             max_exponent = ( hex ) ? 10000 : 2000;
             for( ;; ) {
                 chr = *s;                   /* don't increment s yet */
-                if( !isdigit( chr ) )
+                if( !__F_NAME(isdigit,iswdigit)( chr ) )
                     break;
                 if( exponent < max_exponent ) {
-                    exponent = exponent * 10 + chr - '0';
+                    exponent = exponent * 10 + chr - STRING( '0' );
                 }
                 flags |= DIGITS_PRESENT;
                 ++s;
@@ -363,7 +253,7 @@ static flt_flags parse_float( char hex, const CHAR_TYPE *input, CHAR_TYPE *buffe
         }
 
         while( sigdigits > 0 ) {
-            if( buffer[sigdigits - 1] != '0' )
+            if( buffer[sigdigits - 1] != STRING( '0' ) )
                 break;
             exponent += digit_exp_size;
             --sigdigits;
@@ -458,11 +348,11 @@ _WMRTLINK int __F_NAME(__Strtold,__wStrtold)( const CHAR_TYPE *bufptr,
 #ifdef __WIDECHAR__
         char    tmp[MAX_SIG_DIG + 1];
 #endif
-        buffer[sigdigits] = '\0';
+        buffer[sigdigits] = STRING( '\0' );
 #ifdef __WIDECHAR__
         // convert wide string of digits to skinny string of digits
         wcstombs( tmp, buffer, sizeof( tmp ) );
-        tmpbuf = &tmp;
+        tmpbuf = tmp;
 #else
         tmpbuf = &buffer;
 #endif
