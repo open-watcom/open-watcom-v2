@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +50,7 @@ _WCRTLINK errno_t _NEARFAR(wcstombs_s,_fwcstombs_s)( size_t _FFAR * __restrict r
 {
     unsigned char       mbc[MB_LEN_MAX+1];
     size_t              numBytes = 0;
-    size_t              ret = 0;
+    int                 ret = 0;
 
     errno_t             rc = -1;
     const char          *msg = NULL;
@@ -69,10 +70,11 @@ _WCRTLINK errno_t _NEARFAR(wcstombs_s,_fwcstombs_s)( size_t _FFAR * __restrict r
             if(__check_constraint_a_gt_b_msg( msg, dstmax, 0 )) {
                 for( ;; ) {
                     if( *src != L'\0' ) {
-                        if(srcend < src) break;               //no null found
+                        if(srcend < src)
+                            break;               //no null found
                         ret = wctomb( (char *)mbc, *src );
                         if( ret == -1 )  {
-                            *retval = -1;
+                            *retval = (size_t)-1;
                             break;                           //encoding error
                         }
                         numBytes += ret;
@@ -82,8 +84,8 @@ _WCRTLINK errno_t _NEARFAR(wcstombs_s,_fwcstombs_s)( size_t _FFAR * __restrict r
                     }
                 }
                 if( ret != -1 ) {                         //no encoding error
-                  *retval = numBytes;
-                  rc = 0;
+                    *retval = numBytes;
+                    rc = 0;
                 }
             }
         } else {                                    /* convert the string */
@@ -97,10 +99,11 @@ _WCRTLINK errno_t _NEARFAR(wcstombs_s,_fwcstombs_s)( size_t _FFAR * __restrict r
                 for( maxlen = min(len, dstmax); maxlen > 0; maxlen-- ) {
 
                     if( *src != L'\0' ) {
-                        if(srcend < src) break;               //no null found
+                        if(srcend < src)
+                            break;               //no null found
                         ret = wctomb( (char *)mbc, *src );
                         if( ret == -1 )  {
-                            *retval = -1;
+                            *retval = (size_t)-1;
                             break;               //encoding error
                         }
                         _NEARFAR(memcpy,_fmemcpy)( dst, mbc, ret );
@@ -114,8 +117,8 @@ _WCRTLINK errno_t _NEARFAR(wcstombs_s,_fwcstombs_s)( size_t _FFAR * __restrict r
                 *dst = '\0';            // terminate string
                 if(__check_constraint_a_gt_b_msg( msg, src, srcend )) {
                     if( ret != -1 ) {                         //no encoding error
-                      *retval = numBytes;
-                      rc = 0;
+                        *retval = numBytes;
+                        rc = 0;
                     }
                 }
             }
@@ -127,7 +130,7 @@ _WCRTLINK errno_t _NEARFAR(wcstombs_s,_fwcstombs_s)( size_t _FFAR * __restrict r
         if((dst != NULL) && (dstmax > 0) && __lte_rsizmax( dstmax ))
             *dststart  = '\0';
         if(retval != NULL)
-            *retval = -1;
+            *retval = (size_t)-1;
         // Now call the handler
         __rtct_fail( __func__, msg, NULL );
     }

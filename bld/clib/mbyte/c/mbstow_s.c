@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +47,7 @@ _WCRTLINK errno_t _NEARFAR(mbstowcs_s,_fmbstowcs_s)( size_t _FFAR * __restrict r
                                                      const char _FFAR * __restrict src,
                                                      rsize_t len )
 {
-    int                 numChars = 0;
+    size_t              numChars = 0;
     int                 ret;
     errno_t             rc = -1;
     const char          *msg = NULL;
@@ -69,7 +70,7 @@ _WCRTLINK errno_t _NEARFAR(mbstowcs_s,_fmbstowcs_s)( size_t _FFAR * __restrict r
                         if(srcend < src) break;               //no null found
                         ret = _NEARFAR(mbtowc,_fmbtowc)( NULL, src, MB_LEN_MAX );
                         if( ret == -1 )  {
-                            *retval = -1;
+                            *retval = (size_t)-1;
                             break;               //encoding error
                         }
                         src = (char _FFAR *)_NEARFAR(_mbsinc,_fmbsinc)( (unsigned char _FFAR *)src );
@@ -96,7 +97,7 @@ _WCRTLINK errno_t _NEARFAR(mbstowcs_s,_fmbstowcs_s)( size_t _FFAR * __restrict r
                         if(srcend < src) break;               //no null found
                         ret = _NEARFAR(mbtowc,_fmbtowc)( dst, src, MB_LEN_MAX );
                         if( ret == -1 )  {
-                            *retval = -1;
+                            *retval = (size_t)-1;
                             break;               //encoding error
                         }
                         src = (char _FFAR *)_NEARFAR(_mbsinc,_fmbsinc)( (unsigned char _FFAR *)src );
@@ -126,7 +127,7 @@ _WCRTLINK errno_t _NEARFAR(mbstowcs_s,_fmbstowcs_s)( size_t _FFAR * __restrict r
         if((dst != NULL) && (dstmax > 0) && __lte_rsizmax( dstmax ))
             *dststart = L'\0';
         if(retval != NULL)
-            *retval = -1;
+            *retval = (size_t)-1;
         // Now call the handler
         __rtct_fail( __func__, msg, NULL );
     }
