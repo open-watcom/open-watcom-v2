@@ -33,7 +33,6 @@ wsplice_opts = $(wsplice_extra_opts) -kIBMTOOLKIT -i"$(hdr_dir)" $[@ $@
 
 #                       dirs286     dirs386
 #-------------------------------------------
-!inject h               dirs286     dirs386
 !inject h/arpa                      dirs386
 !inject h/GL                        dirs386
 !inject h/machine                   dirs386
@@ -41,12 +40,13 @@ wsplice_opts = $(wsplice_extra_opts) -kIBMTOOLKIT -i"$(hdr_dir)" $[@ $@
 !inject h/netinet                   dirs386
 !inject h/protocol                  dirs386
 !inject h/sys                       dirs386
-!inject lib             dirs286     dirs386
+
+dirs = h lib $(dirs$(targ_cpu))
 
 !include ../incl.mif
 !include ../libs.mif
 
-all : $(dirs$(targ_cpu)) $(hdrs$(targ_cpu)) $(libs$(targ_cpu)) .SYMBOLIC
+all : $(dirs) $(hdrs$(targ_cpu)) $(libs$(targ_cpu)) .SYMBOLIC
 
 .mh: $(mh_dir)
 .def: $(lib_dir_$(targ_cpu))
@@ -135,13 +135,11 @@ lib/libconv.lib: uconv.lbc $(__MAKEFILES__)
     @%make echo_lib
     $(librarian) $(libflags) @$[@
 
-!ifdef dirs$(targ_cpu)
-$(dirs$(targ_cpu)):
+$(dirs):
     mkdir $@
-!endif
 
 !include $(mh_dir)/deps.mif
 
 clean : .SYMBOLIC
     rm -f *.lbc *.obj $(crwatpro_gsp) depends.dep
-    rm -rf h lib
+    rm -rf $(dirs)
