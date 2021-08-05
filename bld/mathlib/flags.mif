@@ -121,10 +121,6 @@ mlib_a_flags = $(sw_a_common) $(sw_a_$(linkage)) $(sw_a_$(mlib_$(processor))_$(m
 !ifeq release 0
 c_dbg_flags = -d2
 a_dbg_flags = -d1
-!ifdef debug
-c_dbg_flags += -D$(debug)
-a_dbg_flags += -D$(debug)
-!endif
 !else
 c_dbg_flags = -DNDEBUG
 a_dbg_flags = -DNDEBUG
