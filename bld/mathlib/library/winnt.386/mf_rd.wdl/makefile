@@ -7,6 +7,6 @@ convention      = register
 linkage         = dynamic
 export_only=1
 
-mathlib_release = 0
+debug = 1
 
 !include $(mathlib_dir)/mrglib.mif

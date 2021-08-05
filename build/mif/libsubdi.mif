@@ -29,7 +29,7 @@ libsubdir_suffix +=p
 !endif
 !endif
 
-!ifeq release 0
+!ifdef debug
 libsubdir_suffix +=d
 !endif
 libsubdir = $(model)$(libsubdir_suffix)

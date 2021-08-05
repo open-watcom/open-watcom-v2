@@ -10,6 +10,6 @@ linkage    = dynamic
 export_only=1
 mthreaded  = 1
 fs_registration = yes
-cpplib_release = 0
+debug = 1
 
 !include $(cpplib_dir)/contain/contain.mif

@@ -6,6 +6,6 @@ system          = os2
 convention      = register
 linkage         = dynamic
 
-mathlib_release = 0
+debug = 1
 
 !include $(mathlib_dir)/mklib.mif

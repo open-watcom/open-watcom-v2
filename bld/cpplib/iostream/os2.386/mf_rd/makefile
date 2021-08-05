@@ -9,6 +9,6 @@ convention = register
 linkage    = static
 fs_registration = yes
 
-cpplib_release  = 0
+debug = 1
 
 !include $(cpplib_dir)/iostream/iostream.mif

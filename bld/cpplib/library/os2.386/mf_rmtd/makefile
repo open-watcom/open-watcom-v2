@@ -7,6 +7,6 @@ convention = register
 linkage    = static
 mthreaded  = 1
 
-cpplib_release = 0
+debug = 1
 
 !include $(cpplib_dir)/mrglib.mif

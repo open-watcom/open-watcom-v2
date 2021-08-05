@@ -5,6 +5,6 @@ model      = mf
 convention = register
 linkage    = static
 
-cpplib_release = 0
+debug = 1
 
 !include $(cpplib_dir)/mrglib.mif

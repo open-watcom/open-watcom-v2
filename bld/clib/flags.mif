@@ -4,6 +4,9 @@ default_windowing = 1
 !ifeq default_windowing 1
 def_windowing = -DDEFWIN
 !endif
+!ifdef debug
+release = 0
+!endif
 
 #######################
 # C PREPROCESSOR SETINGS

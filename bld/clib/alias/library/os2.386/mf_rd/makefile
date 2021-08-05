@@ -5,6 +5,6 @@ model      = mf
 system     = os2
 linkage    = dynamic
 
-clib_release = 0
+debug = 1
 
 !include $(clib_dir)/mklib.mif

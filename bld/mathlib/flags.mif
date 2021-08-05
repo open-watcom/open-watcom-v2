@@ -1,3 +1,7 @@
+!ifdef debug
+release = 0
+!endif
+
 !ifeq release 0
 sw_c_common = $(watcom_common_cflags)-j-za99-we-x-xx-zam-oax-zl-wpx
 !else
