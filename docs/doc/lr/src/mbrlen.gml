@@ -1,9 +1,9 @@
 .func mbrlen _fmbrlen
 .synop begin
 #include <wchar.h>
-int mbrlen( const char *s, size_t n, mbstate_t *ps );
+size_t mbrlen( const char *s, size_t n, mbstate_t *ps );
 .if &farfnc ne 0 .do begin
-int _fmbrlen( const char far *s, size_t n, mbstate_t far *ps );
+size_t _fmbrlen( const char far *s, size_t n, mbstate_t far *ps );
 .do end
 .synop end
 .desc begin
@@ -17,7 +17,7 @@ The
 .id &funcb.
 function is equivalent to the following call:
 .millust begin
-mbrtowc((wchar_t *)0, s, n, ps != 0 ? ps : &internal)
+mbrtowc(NULL, s, n, ps != NULL ? ps : &internal)
 .millust end
 where
 .mono &internal
@@ -30,49 +30,7 @@ function.
 .im mbcrstrt
 .desc end
 .return begin
-The
-.id &funcb.
-function returns a value between -2 and
-.arg n
-.ct , inclusive.
-The
-.id &funcb.
-function returns the first of the following that applies:
-.begnote
-.notehd1 Value
-.notehd2 Meaning
-.note 0
-if the next
-.arg n
-or fewer bytes form the multibyte character that corresponds to the
-null wide character.
-.note >0
-if the next
-.arg n
-or fewer bytes form a valid multibyte character; the value returned is
-the number of bytes that constitute that multibyte character.
-.note -2
-if the next
-.arg n
-bytes form an incomplete (but potentially valid) multibyte character,
-and all
-.arg n
-bytes have been processed; it is unspecified whether this can occur
-when the value of
-.arg n
-is less than that of the
-.kw MB_CUR_MAX
-macro.
-.note -1
-if an encoding error occurs (when the next
-.arg n
-or fewer bytes do not form a complete and valid multibyte character);
-the value of the macro
-.kw EILSEQ
-will be stored in
-.kw errno
-.ct , but the conversion state will be unchanged.
-.endnote
+.im _mbsret2
 .return end
 .see begin
 .im seembc

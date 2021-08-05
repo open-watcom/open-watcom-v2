@@ -1,10 +1,10 @@
 .func mbrtowc _fmbrtowc
 .synop begin
 #include <wchar.h>
-int mbrtowc( wchar_t *pwc, const char *s,
+size_t mbrtowc( wchar_t *pwc, const char *s,
              size_t n, mbstate_t *ps );
 .if &farfnc ne 0 .do begin
-int _fmbrtowc( wchar_t __far *pwc, const char __far *s,
+size_t _fmbrtowc( wchar_t __far *pwc, const char __far *s,
                size_t n, mbstate_t __far *ps );
 .do end
 .synop end
@@ -40,57 +40,7 @@ resulting state described will be the initial conversion state.
 .im mbcrstrt
 .desc end
 .return begin
-If
-.arg s
-is a null pointer, the
-.id &funcb.
-function returns the number of bytes
-necessary to enter the initial shift state.
-The value returned will not be greater than that of the
-.kw MB_CUR_MAX
-macro.
-.np
-If
-.arg s
-is not a null pointer, the
-.id &funcb.
-function returns the first of the
-following that applies:
-.begnote
-.notehd1 Value
-.notehd2 Meaning
-.note 0
-if the next
-.arg n
-or fewer bytes form the multibyte character that corresponds to the
-null wide character.
-.note >0
-if the next
-.arg n
-or fewer bytes form a valid multibyte character; the value returned is
-the number of bytes that constitute that multibyte character.
-.note -2
-if the next
-.arg n
-bytes form an incomplete (but potentially valid) multibyte character,
-and all
-.arg n
-bytes have been processed; it is unspecified whether this can occur
-when the value of
-.arg n
-is less than that of the
-.kw MB_CUR_MAX
-macro.
-.note -1
-if an encoding error occurs (when the next
-.arg n
-or fewer bytes do not form a complete and valid multibyte character);
-the value of the macro
-.kw EILSEQ
-will be stored in
-.kw errno
-.ct , but the conversion state will be unchanged.
-.endnote
+.im _mbsret2
 .return end
 .see begin
 .im seembc

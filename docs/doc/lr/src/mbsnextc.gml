@@ -6,8 +6,7 @@ unsigned int _mbsnextc( const unsigned char *string );
 .ixfunc2 '&String' &mfunc
 .ixfunc2 '&Multibyte' &mfunc
 .if &farfnc ne 0 .do begin
-unsigned int _fmbsnextc(
-                    const unsigned char __far *string );
+unsigned int _fmbsnextc( const unsigned char __far *string );
 .ixfunc2 '&String' &fmfunc
 .ixfunc2 '&Multibyte' &fmfunc
 .do end

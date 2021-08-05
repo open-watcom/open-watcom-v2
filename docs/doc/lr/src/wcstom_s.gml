@@ -57,13 +57,9 @@ reached or because an encoding error occurred.
 .np
 If there is a runtime-constraint violation, then
 .id &funcb.
-does the following. If
-.arg retval
-is not a null pointer,then
-.id &funcb.
-sets
-.arg *retval
-to (size_t)(-1). If
+does the following.
+.im _mbsret6
+If
 .arg dst
 is not a null pointer and
 .arg dstmax
@@ -133,12 +129,8 @@ call to the wcrtomb function.
 Regardless of whether
 .arg dst
 is or is not a null pointer, if the input conversion encounters a
-wide character that does not correspond to a valid multibyte character,
-an encoding error
-occurs: the
-.id &funcb.
-function stores the value (size_t)(-1) into
-.arg *retval
+wide character that does not correspond to
+.im _mbsret4
 .period
 Otherwise, the
 .id &funcb.

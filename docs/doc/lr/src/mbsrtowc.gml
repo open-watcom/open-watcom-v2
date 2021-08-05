@@ -62,15 +62,8 @@ initial conversion state.
 .desc end
 .return begin
 If the input string does not begin with a valid multibyte character, an
-encoding error occurs: The
-.id &funcb.
-function stores the value of the macro
-.kw EILSEQ
-in
-.kw errno
-and returns
-.mono (size_t)&minus.1,
-but the conversion state will be unchanged.
+encoding error occurs:
+.im _mbsret1
 Otherwise, it returns the number of multibyte characters successfully
 converted, which is the same as the number of array elements modified
 when

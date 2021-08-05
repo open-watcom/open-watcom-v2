@@ -1215,6 +1215,12 @@ objs_lr2 = &
 ../doc/lr/src/_lrotl.gml &
 ../doc/lr/src/_lrotr.gml &
 ../doc/lr/src/_makepat.gml &
+../doc/lr/src/_mbsret1.gml &
+../doc/lr/src/_mbsret2.gml &
+../doc/lr/src/_mbsret3.gml &
+../doc/lr/src/_mbsret4.gml &
+../doc/lr/src/_mbsret5.gml &
+../doc/lr/src/_mbsret6.gml &
 ../doc/lr/src/_memavl.gml &
 ../doc/lr/src/_memmax.gml &
 ../doc/lr/src/_msize.gml &

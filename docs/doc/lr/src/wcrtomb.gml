@@ -1,11 +1,11 @@
 .func wcrtomb _fwcrtomb
 .synop begin
 #include <wchar.h>
-int wcrtomb( char *s, wchar_t wc, mbstate_t *ps );
+size_t wcrtomb( char *s, wchar_t wc, mbstate_t *ps );
 .ixfunc2 '&Wide' &funcb
 .ixfunc2 '&Multibyte' &funcb
 .if &farfnc ne 0 .do begin
-int _fwcrtomb( char __far *s, wchar_t wc, mbstate_t __far *ps );
+size_t _fwcrtomb( char __far *s, wchar_t wc, mbstate_t __far *ps );
 .ixfunc2 '&Wide' &ffunc
 .ixfunc2 '&Multibyte' &ffunc
 .do end
@@ -65,13 +65,8 @@ stored in the array object (including any shift sequences) when
 .arg wc
 is a valid wide character; otherwise (when
 .arg wc
-is not a valid wide character), an encoding error occurs, the value
-of the macro
-.kw EILSEQ
-will be stored in
-.kw errno
-and &minus.1 will be returned, but the conversion state will be
-unchanged.
+is not a valid wide character), an encoding error occurs:
+.im _mbsret1
 .return end
 .see begin
 .im seembc
