@@ -154,6 +154,7 @@ _WMRTLINK extern int __wStrtold(
 #endif
 extern  int     __LDClass( long_double * );
 extern  void    __ZBuf2LD( buf_stk_ptr, ld_stk_ptr );
+extern  void    __ZXBuf2LD( buf_stk_ptr buf, ld_stk_ptr ld, int *exponent );
 extern  void    _LDScale10x( ld_stk_ptr, int );
 #ifdef _LONG_DOUBLE_
 extern  void    __iLDFD( ld_stk_ptr, dbl_stk_ptr );
