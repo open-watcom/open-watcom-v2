@@ -21,7 +21,7 @@
   #define r_ds       ds
   #define r_es       es
 
-  #define GEN_RM_INTERRUPT(i,r)	 _dx_real_int ((UINT)i, r);
+  #define GEN_RM_INTERRUPT(i,r)  _dx_real_int ((UINT)i, r);
 #elif (DOSX & DJGPP)
   #define IREGS      __dpmi_regs
   #define r_flags    x.flags
@@ -34,15 +34,15 @@
   #define r_ds       x.ds
   #define r_es       x.es
 
-  #define GEN_RM_INTERRUPT(i,r)	 __dpmi_int ((int)i, r);
+  #define GEN_RM_INTERRUPT(i,r)  __dpmi_int ((int)i, r);
 #elif (DOSX & DOS4GW)
   #define IREGS      struct DPMI_regs  /* in wdpmi.h */
 
-  #define GEN_RM_INTERRUPT(i,r)	 dpmi_real_interrupt ((int)i, r);
+  #define GEN_RM_INTERRUPT(i,r)  dpmi_real_interrupt ((int)i, r);
 #elif (DOSX & WDOSX)
   #define IREGS      struct DPMI_regs  /* in wdpmi.h */
 
-  #define GEN_RM_INTERRUPT(i,r)	 dpmi_real_interrupt2 ((int)i, r);
+  #define GEN_RM_INTERRUPT(i,r)  dpmi_real_interrupt2 ((int)i, r);
 #elif (DOSX & POWERPAK)     /* to-do !! */
   typedef struct IREGS {    /* just for now */
           WORD  r_ax;
@@ -56,7 +56,7 @@
           WORD  r_es;
           WORD  r_flags;
         } IREGS;
-  #define GEN_RM_INTERRUPT(i,r)	 UNFINISHED()
+  #define GEN_RM_INTERRUPT(i,r)  UNFINISHED()
 
 #else  /* r-mode targets */
 
@@ -75,7 +75,7 @@
     #define r_ds       w.ds
     #define r_es       w.es
 
-    #define GEN_RM_INTERRUPT(i,r)	intr ((int)i, r)
+    #define GEN_RM_INTERRUPT(i,r)       intr ((int)i, r)
   #elif defined(_MSC_VER)
     typedef struct IREGS {
           union REGS    r;
@@ -91,11 +91,11 @@
     #define r_ds       s.ds
     #define r_es       s.es
 
-    #define GEN_RM_INTERRUPT(i,r)	int86x ((int)i, &r->r, &r->r, &r->s)
+    #define GEN_RM_INTERRUPT(i,r)       int86x ((int)i, &r->r, &r->r, &r->s)
   #else
     #define IREGS      struct REGPACK
 
-    #define GEN_RM_INTERRUPT(i,r)	intr ((int)i, r)
+    #define GEN_RM_INTERRUPT(i,r)       intr ((int)i, r)
   #endif
 #endif
 

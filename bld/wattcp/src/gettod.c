@@ -15,6 +15,7 @@
 #include <dos.h>
 
 #include "wattcp.h"
+#include "wdpmi.h"
 #include "misc.h"
 #include "gettod.h"
 #include "iregs.h"
