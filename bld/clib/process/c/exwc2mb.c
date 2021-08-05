@@ -35,6 +35,7 @@
 #include <mbstring.h>
 #include <string.h>
 #include "liballoc.h"
+#include "cvtwc2mb.h"
 #include "exwc2mb.h"
 
 // Used by __exec_wide_to_mbcs to free all allocated memory in case of error
@@ -67,18 +68,17 @@ _WCRTLINK int __exec_wide_to_mbcs( CWCPTR wcPath,       // i: path
     unsigned            count;
 
     /*** Set pointers to NULL for easy freeing later if error occurs ***/
-    if( mbPath != NULL )  *mbPath = NULL;
-    if( mbArgv != NULL )  *mbArgv = NULL;
-    if( mbEnvp != NULL )  *mbEnvp = NULL;
+    if( mbPath != NULL )
+        *mbPath = NULL;
+    if( mbArgv != NULL )
+        *mbArgv = NULL;
+    if( mbEnvp != NULL )
+        *mbEnvp = NULL;
 
     /*** Convert the path ***/
     if( wcPath != NULL ) {
-        bytes = (wcslen(wcPath)+1) * MB_CUR_MAX;
-        *mbPath = lib_malloc( bytes );
-        if( *mbPath == NULL )
-            return( 0 );
-        if( wcstombs( *mbPath, wcPath, bytes ) == (size_t)-1 ) {
-            lib_free( mbPath );
+        *mbPath = __lib_cvt_wcstombs( wcPath );
+        if( *mbPath == NULL ) {
             return( 0 );
         }
     }
@@ -87,8 +87,9 @@ _WCRTLINK int __exec_wide_to_mbcs( CWCPTR wcPath,       // i: path
     if( wcArgv != NULL ) {
         /*** Allocate memory for converted arguments ***/
         count = 0;
-        while( wcArgv[count] != NULL )  count++;    // count the arguments
-        bytes = (count+1) * sizeof(char*);          // how much do we need?
+        while( wcArgv[count] != NULL )
+            count++;                                // count the arguments
+        bytes = (count+1) * sizeof( char * );       // how much do we need?
         *mbArgv = lib_malloc( bytes );              // allocate it
         if( *mbArgv == NULL )
             GO_HOME;
@@ -97,11 +98,8 @@ _WCRTLINK int __exec_wide_to_mbcs( CWCPTR wcPath,       // i: path
         /*** Convert them, one by one ***/
         count = 0;
         while( wcArgv[count] != NULL ) {
-            bytes = (wcslen(wcArgv[count])+1) * MB_CUR_MAX; // how much?
-            (*mbArgv)[count] = lib_malloc( bytes );         // allocate it
+            (*mbArgv)[count] = __lib_cvt_wcstombs( wcArgv[count] );
             if( (*mbArgv)[count] == NULL )
-                GO_HOME;
-            if( wcstombs( (*mbArgv)[count], wcArgv[count], bytes ) == (size_t)-1 )
                 GO_HOME;
             count++;
         }
@@ -111,8 +109,9 @@ _WCRTLINK int __exec_wide_to_mbcs( CWCPTR wcPath,       // i: path
     if( wcEnvp != NULL ) {
         /*** Allocate memory for converted environment strings ***/
         count = 0;
-        while( wcEnvp[count] != NULL )  count++;    // count the strings
-        bytes = (count+1) * sizeof(char*);          // how much do we need?
+        while( wcEnvp[count] != NULL )
+            count++;                                // count the strings
+        bytes = (count+1) * sizeof( char * );       // how much do we need?
         *mbEnvp = lib_malloc( bytes );              // allocate it
         if( *mbEnvp == NULL )
             GO_HOME;
@@ -121,11 +120,8 @@ _WCRTLINK int __exec_wide_to_mbcs( CWCPTR wcPath,       // i: path
         /*** Convert them, one by one ***/
         count = 0;
         while( wcEnvp[count] != NULL ) {
-            bytes = (wcslen(wcEnvp[count])+1) * MB_CUR_MAX; // how much?
-            (*mbEnvp)[count] = lib_malloc( bytes );         // allocate it
+            (*mbEnvp)[count] = __lib_cvt_wcstombs( wcEnvp[count] );
             if( (*mbEnvp)[count] == NULL )
-                GO_HOME;
-            if( wcstombs( (*mbEnvp)[count], wcEnvp[count], bytes ) == (size_t)-1 )
                 GO_HOME;
             count++;
         }
@@ -143,7 +139,8 @@ _WCRTLINK void __exec_wide_to_mbcs_cleanup( CPTR mbPath,
     int                 count;
 
     /*** Free the path ***/
-    if( mbPath != NULL )  lib_free( mbPath );
+    if( mbPath != NULL )
+        lib_free( mbPath );
 
     /*** Free the argument strings ***/
     if( mbArgv != NULL ) {
