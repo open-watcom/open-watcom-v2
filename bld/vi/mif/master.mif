@@ -8,7 +8,7 @@ vi_autodepends = .AUTODEPEND
 
 vi_trmem = 1
 
-#vi_dos_extender = causeway
+vi_dos_extender = causeway
 
 .EXTENSIONS: .vi .dat
 
