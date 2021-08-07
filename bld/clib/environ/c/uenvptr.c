@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,17 +25,13 @@
 *
 *  ========================================================================
 *
-* Description:  Accessor function for '_wenviron' global variable.
+* Description:  Wide accessor function for 'wenviron' global variable.
 *
 ****************************************************************************/
 
 
-#include "variety.h"
-#include <stdlib.h>
-#include "rtdata.h"
-
-
-_WCRTLINK wchar_t ** (*__get_wenviron_ptr( void ))
-{
-    return( &_RWD_wenviron );
-}
+// this file should remain an indirected file
+// it is done this way to support the reuse of the source file
+#define __WIDECHAR__
+#undef __INLINE_FUNCTIONS__
+#include "envptr.c"

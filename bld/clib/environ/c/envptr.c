@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,17 +25,18 @@
 *
 *  ========================================================================
 *
-* Description:  Accessor function for 'environ' global variable.
+* Description:  Accessor function for '(w)environ' global variable.
 *
 ****************************************************************************/
 
 
 #include "variety.h"
+#include "widechar.h"
 #include <stdlib.h>
 #include "rtdata.h"
 
 
-_WCRTLINK char ** (*__get_environ_ptr( void ))
+_WCRTLINK CHAR_TYPE ** (*__F_NAME(__get_environ_ptr,__get_wenviron_ptr)( void ))
 {
-    return( &_RWD_environ );
+    return( &__F_NAME(_RWD_environ,_RWD_wenviron) );
 }
