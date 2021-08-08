@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +39,8 @@
 #include "spillio.h"
 #include "loadfile.h"
 #include "overlays.h"
+#include "exeflat.h"
+
 
 /* note: if either of these two structures get any bigger, the magic constants
  * in the RLIDX_* macros will have to change to ensure that no allocation > 64k
@@ -192,16 +194,15 @@ void WriteReloc( group_entry *group, offset off, void *reloc, size_t size )
         }
         idx = ( off - group->grp_addr.off ) >> OSF_PAGE_SHIFT;
         header = &pagelist[OSF_RLIDX_HIGH( idx )][OSF_RLIDX_LOW( idx )].externals;
-        switch( ((os2_flat_reloc_item *)reloc)->fmt.nr_flags & OSF_TARGET_MASK )  {
-        case INTERNAL_REFERENCE:
-            switch( ((os2_flat_reloc_item *)reloc)->fmt.nr_stype ) {
-            case OFFSET_ONLY:
-            case OFFSET48_ONLY:
-            case OFFSET48_RELATIVE:
+        switch( ((os2_flat_reloc_item *)reloc)->nr_flags & OSF_TARGET_MASK )  {
+        case OSF_TARGET_INTERNAL:
+            switch( ((os2_flat_reloc_item *)reloc)->nr_stype ) {
+            case OSF_SOURCE_OFF_16:
+            case OSF_SOURCE_OFF_32:
+            case OSF_SOURCE_OFF_32_REL:
                 //NYI: don't have to write this out if we can figure out
                 // how to tell the loader that we're doing it.
-                header =
-                   &pagelist[OSF_RLIDX_HIGH( idx )][OSF_RLIDX_LOW( idx )].internals;
+                header = &pagelist[OSF_RLIDX_HIGH( idx )][OSF_RLIDX_LOW( idx )].internals;
                 break;
             }
             break;

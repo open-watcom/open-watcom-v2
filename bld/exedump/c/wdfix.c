@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +44,7 @@ static unsigned_32 internal_ref( unsigned_8 flags, unsigned_8 src, unsigned_32 o
 /**********************************************************************************/
 {
     Wdputs( "   object #    = " );
-    if( flags & OSF_OBJ_ORD ) {
+    if( flags & OSF_TFLAG_OBJ_MOD_16BIT ) {
         unsigned_16 object;
         Wread( &object, sizeof( object ) );
         Puthex( object, 2 * sizeof( object ) );
@@ -55,8 +56,8 @@ static unsigned_32 internal_ref( unsigned_8 flags, unsigned_8 src, unsigned_32 o
         off += sizeof( object );
     }
     Wdputs( "   target off       = " );
-    if( (src & 0xf) != SELECTOR_FIX ) {
-        if( flags & OSF_TARGET_OFF ) {
+    if( (src & OSF_SOURCE_MASK) != OSF_SOURCE_SEG ) {
+        if( flags & OSF_TFLAG_OFF_32BIT ) {
             unsigned_32 taroff;
             Wread( &taroff, sizeof( taroff ) );
             Puthex( taroff, 2 * sizeof( taroff ) );
@@ -78,7 +79,7 @@ static unsigned_32 imp_ord_ref( unsigned_8 flags, unsigned_32 off )
 /*****************************************************************/
 {
     Wdputs( "   mod ord #   = " );
-    if( flags & OSF_OBJ_ORD ) {
+    if( flags & OSF_TFLAG_OBJ_MOD_16BIT ) {
         unsigned_16 object;
         Wread( &object, sizeof( object ) );
         Puthex( object, 2 * sizeof( object ) );
@@ -90,12 +91,12 @@ static unsigned_32 imp_ord_ref( unsigned_8 flags, unsigned_32 off )
         off += sizeof( object );
     }
     Wdputs( "   import ord #     = " );
-    if( flags & OSF_ORD_FLAG ) {
+    if( flags & OSF_TFLAG_ORDINAL_8BIT ) {
         unsigned_8  add_ord;
         Wread( &add_ord, sizeof( add_ord ) );
         Puthex( add_ord, 2 * sizeof( add_ord ) );
         off += sizeof( add_ord );
-    } else if( flags & OSF_TARGET_OFF ) {
+    } else if( flags & OSF_TFLAG_OFF_32BIT ) {
         unsigned_32 add_ord;
         Wread( &add_ord, sizeof( add_ord ) );
         Puthex( add_ord, 2 * sizeof( add_ord ) );
@@ -106,9 +107,9 @@ static unsigned_32 imp_ord_ref( unsigned_8 flags, unsigned_32 off )
         Puthex( add_ord, 2 * sizeof( add_ord ) );
         off += sizeof( add_ord );
     }
-    if( flags & OSF_ADD_FIX ) {
+    if( flags & OSF_TFLAG_ADDITIVE_VAL ) {
         Wdputslc( "\n          additive = " );
-        if( flags & OSF_ADD_FIX_32 ) {
+        if( flags & OSF_TFLAG_ADD_32BIT ) {
             unsigned_32 add_ord;
             Wread( &add_ord, sizeof( add_ord ) );
             Puthex( add_ord, 2 * sizeof( add_ord ) );
@@ -130,7 +131,7 @@ static unsigned_32 imp_name_ref( unsigned_8 flags, unsigned_32 off )
 /******************************************************************/
 {
     Wdputs( "   mod ord #   = " );
-    if( flags & OSF_OBJ_ORD ) {
+    if( flags & OSF_TFLAG_OBJ_MOD_16BIT ) {
         unsigned_16 object;
         Wread( &object, sizeof( object ) );
         Puthex( object, 2 * sizeof( object ) );
@@ -142,7 +143,7 @@ static unsigned_32 imp_name_ref( unsigned_8 flags, unsigned_32 off )
         off += sizeof( object );
     }
     Wdputs( "   proc name offset = " );
-    if( flags & OSF_TARGET_OFF ) {
+    if( flags & OSF_TFLAG_OFF_32BIT ) {
         unsigned_32 add_off;
         Wread( &add_off, sizeof( add_off ) );
         Puthex( add_off, 2 * sizeof( add_off ) );
@@ -153,9 +154,9 @@ static unsigned_32 imp_name_ref( unsigned_8 flags, unsigned_32 off )
         Puthex( add_off, 2 * sizeof( add_off ) );
         off += sizeof( add_off );
     }
-    if( flags & OSF_ADD_FIX ) {
+    if( flags & OSF_TFLAG_ADDITIVE_VAL ) {
         Wdputslc( "\n          additive = " );
-        if( flags & OSF_ADD_FIX_32 ) {
+        if( flags & OSF_TFLAG_ADD_32BIT ) {
             unsigned_32 add_off;
             Wread( &add_off, sizeof( add_off ) );
             Puthex( add_off, 2 * sizeof( add_off ) );
@@ -177,7 +178,7 @@ static unsigned_32 int_ent_ref( unsigned_8 flags, unsigned_32 off )
 /*****************************************************************/
 {
     Wdputs( "   entry ord # = " );
-    if( flags & OSF_OBJ_ORD ) {
+    if( flags & OSF_TFLAG_OBJ_MOD_16BIT ) {
         unsigned_16 object;
         Wread( &object, sizeof( object ) );
         Puthex( object, 2 * sizeof( object ) );
@@ -188,9 +189,9 @@ static unsigned_32 int_ent_ref( unsigned_8 flags, unsigned_32 off )
         Puthex( object, 2 * sizeof( object ) );
         off += sizeof( object );
     }
-    if( flags & OSF_ADD_FIX ) {
+    if( flags & OSF_TFLAG_ADDITIVE_VAL ) {
         Wdputs( "   additive         = " );
-        if( flags & OSF_ADD_FIX_32 ) {
+        if( flags & OSF_TFLAG_ADD_32BIT ) {
             unsigned_32 addfix;
             Wread( &addfix, sizeof( addfix ) );
             Puthex( addfix, 2 * sizeof( addfix ) );
@@ -263,7 +264,7 @@ void Dmp_fixrec_tab( unsigned_32 fix_off )
         Puthex( source, 2 * sizeof( source ) );
         Wdputs( "    " );
         Puthex( flags, 2 * sizeof( flags ) );
-        if( source & OSF_SOURCE_LIST ) {
+        if( source & OSF_SFLAG_LIST ) {
             Wread( &cnt, sizeof( cnt ) );
             Wdputs( "   count   = " );
             Puthex( cnt, 2 * sizeof( cnt ) );
@@ -275,13 +276,13 @@ void Dmp_fixrec_tab( unsigned_32 fix_off )
             Puthex( srcoff, 2 * sizeof( srcoff ) );
             fix_off += sizeof( srcoff );
         }
-        if( (flags & 0x03) == OSF_INTERNAL_REF ) {
+        if( (flags & OSF_TARGET_MASK) == OSF_TARGET_INTERNAL ) {
             fix_off = internal_ref( flags, source, fix_off );
-        } else if( (flags & 0x03) == OSF_IMP_ORD_REF ) {
+        } else if( (flags & OSF_TARGET_MASK) == OSF_TARGET_EXT_ORD ) {
             fix_off = imp_ord_ref( flags, fix_off );
-        } else if( (flags & 0x03) == OSF_IMP_NAME_REF ) {
+        } else if( (flags & OSF_TARGET_MASK) == OSF_TARGET_EXT_NAME ) {
             fix_off = imp_name_ref( flags, fix_off );
-        } else if( (flags & 0x03) == OSF_INT_ENT_REF ) {
+        } else if( (flags & OSF_TARGET_MASK) == OSF_TARGET_INT_VIA_ENTRY ) {
             fix_off = int_ent_ref( flags, fix_off );
         }
         if( cnt != 0 ) {

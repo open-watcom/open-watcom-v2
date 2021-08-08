@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -673,7 +673,7 @@ static void DumpReloc( base_reloc *breloc )
              * stupid relocation has been split across two
              * pages, have to duplicate the entry
              */
-            breloc->item.os2f.fmt.r32_soff -= OSF_PAGE_SIZE;
+            breloc->item.os2f.r32_soff -= OSF_PAGE_SIZE;
             WriteReloc( CurrRec.seg->u.leader->group, breloc->fix_off + OSF_PAGE_SIZE, &breloc->item, breloc->rel_size );
         }
     }
@@ -719,18 +719,23 @@ static void MakeQNXFloatReloc( fix_relo_data *fix )
 
 #ifdef _OS2
 
-/* 00h = Byte fixup (8-bits).
-   01h = (undefined).
-   02h = 16-bit Selector fixup (16-bits).
-   03h = 16:16 Pointer fixup (32-bits).
-   04h = (undefined).
-   05h = 16-bit Offset fixup (16-bits).
-   06h = 16:32 Pointer fixup (48-bits).
-   07h = 32-bit Offset fixup (32-bits).
-*/
+static byte OS2OffsetFixTypeMap[] = {
+    OSF_SOURCE_UNDEFINED,
+    OSF_SOURCE_BYTE,
+    OSF_SOURCE_OFF_16,
+    OSF_SOURCE_UNDEFINED,
+    OSF_SOURCE_OFF_32,
+    OSF_SOURCE_UNDEFINED
+};
 
-static byte OS2OffsetFixTypeMap[] = { 1, 0, 5, 1, 7, 1};
-static byte OS2SegmentedFixTypeMap[] = { 2, 1, 3, 1, 6, 1};
+static byte OS2SegmentedFixTypeMap[] = {
+    OSF_SOURCE_SEG,
+    OSF_SOURCE_UNDEFINED,
+    OSF_SOURCE_PTR_32,
+    OSF_SOURCE_UNDEFINED,
+    OSF_SOURCE_PTR_48,
+    OSF_SOURCE_UNDEFINED
+};
 
 static unsigned MapOS2FixType( fix_type type )
 /********************************************/
@@ -1377,12 +1382,12 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
         bool            freedll;
         ordinal_t       int_ordinal;
 
-        fixptr = breloc->item.os2f.buff;
+        fixptr = breloc->item.os2f.u.buff;
         freedll = false;
         int_ordinal = 0;
         dll = NULL;
         if( fix->type & FIX_REL ) {
-            fixtype = OSF_32BIT_SELF_REL;
+            fixtype = OSF_SOURCE_OFF_32_REL;
             if( fix->os2_selfrel && (tthread->type & FIX_FRAME_EXT) ) {
                 freedll = FindOS2ExportSym( tthread->u.sym, &dll );
                 if( dll != NULL ) {
@@ -1399,16 +1404,16 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
         }
         if( ( targseg != NULL ) && !targseg->is32bit ) {
             switch( fixtype ) {
-            case 2:     // 16-bit selector
-            case 6:     // 16:32 pointer
+            case OSF_SOURCE_SEG:        // 16-bit selector
+            case OSF_SOURCE_PTR_48:     // 16:32 pointer
                 if( FIX_GET_FRAME( fix->type ) == FIX_FRAME_FLAT ) {
                     break;
                 }
                 /* fall through */
-            case 3:     // 16:16 pointer           NOTE the fall through
-                fixtype |= OSF_FIXUP_TO_ALIAS;  // YET more fall through
+            case OSF_SOURCE_PTR_32:     // 16:16 pointer
+                fixtype |= OSF_SFLAG_FIXUP_TO_ALIAS;  // YET more fall through
                 /* fall through */
-            case 5:     // 16-bit offset
+            case OSF_SOURCE_OFF_16:     // 16-bit offset
                 for( grp = Groups; grp != NULL; grp = grp->next_group ) {
                     if( grp->grp_addr.seg == target.seg ) {
                         break;
@@ -1422,90 +1427,90 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
             }
         }
         // ALWAYS set the alias flag for 16:16 pointers!
-        if( fixtype == 3 )
-            fixtype |= OSF_FIXUP_TO_ALIAS;
+        if( fixtype == OSF_SOURCE_PTR_32 )
+            fixtype |= OSF_SFLAG_FIXUP_TO_ALIAS;
 
-        PUT_U8( fixptr, fixtype );
         flags = 0;
-        fixptr += 2;       /* skip flags for now */
+        breloc->item.os2f.nr_stype = fixtype;
+        breloc->item.os2f.nr_flags = flags;
         grp = seg->u.leader->group;
-        PUT_U16( fixptr, ( fix->loc_addr.off - grp->grp_addr.off ) & OSF_PAGE_MASK );
-        fixptr += 2;
+        breloc->item.os2f.r32_soff = ( fix->loc_addr.off - grp->grp_addr.off ) & OSF_PAGE_MASK;
         if( int_ordinal ) {
             // Fixups to an IOPL segment must be done through a call gate
             // and not directly. There is a special fixup type just for this.
-            flags = OSF_INT_ENT_REF;
+            flags = OSF_TARGET_INT_VIA_ENTRY;
             if( int_ordinal > 0xFF ) {
                 PUT_U16( fixptr, int_ordinal );
-                fixptr += 1;
+                fixptr += 2;
             } else {
-                flags |= OSF_IMPORD_8BITS;
+                flags |= OSF_TFLAG_ORDINAL_8BIT;
                 PUT_U8( fixptr, int_ordinal );
+                fixptr += 1;
             }
-            fixptr += 1;
         } else if( !fix->imported ) {
             if( !fix->os2_selfrel ) {
                 target.off += fix->value;
             }
-            flags = OSF_INTERNAL_REF;
+            flags = OSF_TARGET_INTERNAL;
             if( target.seg > 0xFF ) {
-                flags |= OSF_OBJMOD_16BITS;
+                flags |= OSF_TFLAG_OBJ_MOD_16BIT;
                 PUT_U16( fixptr, target.seg );
-                fixptr += 1;
+                fixptr += 2;
             } else {
                 PUT_U8( fixptr, target.seg );
+                fixptr += 1;
             }
-            fixptr += 1;
             grp = FindGroup( target.seg );
             target.off -= grp->grp_addr.off;
             if( ftype != FIX_BASE ) {
                 if( target.off > 0xFFFF ) {
-                    flags |= OSF_TARGOFF_32BITS;
+                    flags |= OSF_TFLAG_OFF_32BIT;
                     PUT_U32( fixptr, target.off );
-                    fixptr += 2;
+                    fixptr += 4;
                 } else {
                     PUT_U16( fixptr, target.off );
+                    fixptr += 2;
                 }
-                fixptr += 2;
             }
         } else {
             if( dll == NULL ) {
                 dll = tthread->u.sym->p.import;
             }
-            if( !dll->isordinal ) {
-                flags = OSF_IMP_NAME_REF;
+            if( dll->isordinal ) {
+                flags = OSF_TARGET_EXT_ORD;
             } else {
-                flags = OSF_IMP_ORD_REF;
+                flags = OSF_TARGET_EXT_NAME;
             }
             if( dll->m.modnum == NULL ) {
                 PUT_U8( fixptr, 0 );
-            } else if( dll->m.modnum->num > 0xFF ) {
-                flags |= OSF_OBJMOD_16BITS;
-                PUT_U16( fixptr, dll->m.modnum->num );
                 fixptr += 1;
+            } else if( dll->m.modnum->num > 0xFF ) {
+                flags |= OSF_TFLAG_OBJ_MOD_16BIT;
+                PUT_U16( fixptr, dll->m.modnum->num );
+                fixptr += 2;
             } else {
                 PUT_U8( fixptr, dll->m.modnum->num );
+                fixptr += 1;
             }
-            fixptr += 1;
             if( !dll->isordinal ) {
                 if( dll->u.entry->num > 0xFFFF ) {
-                    flags |= OSF_TARGOFF_32BITS;
+                    flags |= OSF_TFLAG_OFF_32BIT;
                     PUT_U32( fixptr, dll->u.entry->num );
-                    fixptr += 3;
+                    fixptr += 4;
                 } else {
                     PUT_U16( fixptr, dll->u.entry->num );
-                    fixptr += 1;
+                    fixptr += 2;
                 }
             } else if( dll->u.ordinal > 0xFF ) {
                 PUT_U16( fixptr, dll->u.ordinal );
-                fixptr += 1;
+                fixptr += 2;
             } else {
-                flags |= OSF_IMPORD_8BITS;
+                flags |= OSF_TFLAG_ORDINAL_8BIT;
                 PUT_U8( fixptr, dll->u.ordinal );
+                fixptr += 1;
             }
-            fixptr += 1;
             if( fix->additive ) {
-                flags |= OSF_ADD_FIX;
+                flags |= OSF_TFLAG_ADDITIVE_VAL;
                 switch( fix->type & FIX_OFFSET_MASK ) {
                 case FIX_OFFSET_8:
                     PUT_U8( fix->data, 0 );
@@ -1518,19 +1523,19 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
                     break;
                 }
                 if( fix->value > 0x7fff ) {
-                    flags |= OSF_ADD_FIX_32;
+                    flags |= OSF_TFLAG_ADD_32BIT;
                     PUT_U32( fixptr, fix->value );
-                    fixptr += 2;
+                    fixptr += 4;
                 } else {
                     PUT_U16( fixptr, fix->value );
+                    fixptr += 2;
                 }
-                fixptr += 2;
             }
         }
         if( freedll )
             _LnkFree( dll );
-        breloc->rel_size = fixptr - breloc->item.os2f.buff;
-        breloc->item.os2f.fmt.nr_flags = flags;
+        breloc->rel_size = fixptr - (byte *)&breloc->item;
+        breloc->item.os2f.nr_flags = flags;
         return( true );
     }
 #endif
@@ -1543,8 +1548,7 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
         off = fix->loc_addr.off;
         if( fix->imported ) {
             save = false;
-            AddNovImpReloc( tthread->u.sym, off, (fix->type & FIX_REL) != 0,
-                             fix->loc_addr.seg == DATA_SEGMENT );
+            AddNovImpReloc( tthread->u.sym, off, (fix->type & FIX_REL) != 0, fix->loc_addr.seg == DATA_SEGMENT );
         } else {
             if( fix->loc_addr.seg != DATA_SEGMENT ) {
                 off |= NOV_OFFSET_CODE_RELOC;

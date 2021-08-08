@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -78,13 +78,6 @@
 #define OSF_PAGE_SHIFT          12
 #define OSF_PAGE_SIZE           (1 << OSF_PAGE_SHIFT)
 #define OSF_PAGE_MASK           (OSF_PAGE_SIZE-1)
-#define OSF_FIXUP_TO_ALIAS      0x10
-#define OSF_SOURCE_MASK         0x0f
-#define OSF_TARGET_MASK         0x03
-#define OSF_OBJMOD_16BITS       0x40
-#define OSF_TARGOFF_32BITS      0x10
-#define OSF_IMPORD_8BITS        0x80
-#define OSF_32BIT_SELF_REL      8
 #define OSF_PAGE_COUNT( size )  (((size)+OSF_PAGE_MASK)>>OSF_PAGE_SHIFT)
 
 
@@ -142,27 +135,29 @@ typedef struct {
     unsigned_32 reloc_offset;
 } zdos_reloc_item;
 
-typedef union {
-    byte        buff[12];
-    struct {
-        unsigned_8          nr_stype;
-        unsigned_8          nr_flags;
-        signed_16           r32_soff;
-        unsigned_16         r32_objmod;
-        union {
-            unsigned_32     intref;
+typedef struct {
+    unsigned_8          nr_stype;
+    unsigned_8          nr_flags;
+    signed_16           r32_soff;
+    union {
+        byte            buff[12];
+        struct {
+            unsigned_16         r32_objmod;
             union {
-                unsigned_32 proc;
-                unsigned_32 ord;
-            }               extref;
-            struct {
-                unsigned_16 entry;
-                unsigned_32 addval;
-            }               addfix;
-        }                   r32_target;
-        unsigned_16         r32_srccount;
-        unsigned_16         r32_chain;
-    }           fmt;
+                unsigned_32     intref;
+                union {
+                    unsigned_32 proc;
+                    unsigned_32 ord;
+                }               extref;
+                struct {
+                    unsigned_16 entry;
+                    unsigned_32 addval;
+                }               addfix;
+            }                   r32_target;
+            unsigned_16         r32_srccount;
+            unsigned_16         r32_chain;
+        }           fmt;
+    } u;
 } os2_flat_reloc_item;
 
 /* PE fixup table structure */

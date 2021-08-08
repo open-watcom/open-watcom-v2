@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -100,19 +101,19 @@ typedef struct os2_flat_header {
     } r;
 } os2_flat_header;
 
-#define OSF_DEF_PAGE_SIZE  4096
-#define OSF_FLAT_SIGNATURE 0x454C        // 'LE'
-#define OSF_FLAT_LX_SIGNATURE 0x584C     // 'LX'
-#define OSF_386_BYTE_ORDER 0
-#define OSF_386_WORD_ORDER 0
-#define OSF_EXE_LEVEL      0
+#define OSF_DEF_PAGE_SIZE       4096
+#define OSF_FLAT_SIGNATURE      0x454C      // 'LE'
+#define OSF_FLAT_LX_SIGNATURE   0x584C      // 'LX'
+#define OSF_386_BYTE_ORDER      0
+#define OSF_386_WORD_ORDER      0
+#define OSF_EXE_LEVEL           0
 
-#define OSF_CPU_286        1
-#define OSF_CPU_386        2
-#define OSF_CPU_486        3
+#define OSF_CPU_286             1
+#define OSF_CPU_386             2
+#define OSF_CPU_486             3
 
-#define OSF_OS_LEVEL       1    // OS/2
-#define OSF_WIN386_LEVEL   4    // Windows 386 (VxD)
+#define OSF_OS_LEVEL            1    // OS/2
+#define OSF_WIN386_LEVEL        4    // Windows 386 (VxD)
 
 /******************************************************************************
  *
@@ -294,18 +295,35 @@ typedef struct flat_res_table {
 
 #include "poppck.h"
 
-/* fixup record flags */
+/* fixup record source flags */
 
-#define OSF_SOURCE_LIST     0x20
-#define OSF_INTERNAL_REF    0x00
-#define OSF_IMP_ORD_REF     0x01
-#define OSF_IMP_NAME_REF    0x02
-#define OSF_INT_ENT_REF     0x03
-#define OSF_ADD_FIX         0x04
-#define OSF_TARGET_OFF      0x10
-#define OSF_ADD_FIX_32      0x20
-#define OSF_OBJ_ORD         0x40
-#define OSF_ORD_FLAG        0x80
+#define OSF_SOURCE_MASK             0x0F
+#define OSF_SOURCE_BYTE             0x00
+#define OSF_SOURCE_UNDEFINED        0x01
+#define OSF_SOURCE_SEG              0x02
+#define OSF_SOURCE_PTR_32           0x03
+//#define OSF_SOURCE_UNDEFINED        0x04
+#define OSF_SOURCE_OFF_16           0x05
+#define OSF_SOURCE_PTR_48           0x06
+#define OSF_SOURCE_OFF_32           0x07
+#define OSF_SOURCE_OFF_32_REL       0x08
+
+#define OSF_SFLAG_FIXUP_TO_ALIAS    0x10
+#define OSF_SFLAG_LIST              0x20
+
+/* fixup record target flags */
+
+#define OSF_TARGET_MASK             0x03
+#define OSF_TARGET_INTERNAL         0x00
+#define OSF_TARGET_EXT_ORD          0x01
+#define OSF_TARGET_EXT_NAME         0x02
+#define OSF_TARGET_INT_VIA_ENTRY    0x03
+
+#define OSF_TFLAG_ADDITIVE_VAL      0x04
+#define OSF_TFLAG_INT_CHAIN         0x08
+#define OSF_TFLAG_OFF_32BIT         0x10
+#define OSF_TFLAG_ADD_32BIT         0x20
+#define OSF_TFLAG_OBJ_MOD_16BIT     0x40
+#define OSF_TFLAG_ORDINAL_8BIT      0x80
 
 #endif
-
