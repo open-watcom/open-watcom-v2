@@ -654,7 +654,7 @@ static orl_return ProcSymbol( orl_symbol_handle symhdl )
                 if( binding == ORL_SYM_BINDING_ALIAS ) {
                     MakeSymAlias( sym->name.u.ptr, strlen( sym->name.u.ptr ), name, namelen );
                 } else {
-                    assocsym = SymOp( ST_REFERENCE_SYM, name, namelen );
+                    assocsym = SymOp( ST_CREATE_REFERENCE, name, namelen );
                     DefineLazyExtdef( sym, assocsym, isweak );
                     newnode->isweak = true;
                 }

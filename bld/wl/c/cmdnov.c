@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -299,7 +299,7 @@ static bool GetSymbolImportExport( bool import )
         prefixlen = strlen( prefix );
     }
     if( import ) {
-        sym = SymOpNWPfx( ST_DEFINE_SYM, name, namelen, prefix, prefixlen );
+        sym = SymOpNWPfx( ST_CREATE_DEFINE_NOALIAS, name, namelen, prefix, prefixlen );
         if( sym == NULL || sym->p.import != NULL ) {
             return( true );
         }
@@ -310,7 +310,7 @@ static bool GetSymbolImportExport( bool import )
         sym->info |= SYM_DCE_REF;   // make sure we don't try to get rid of these.
         SetNovImportSymbol( sym );
     } else {
-        sym = SymOpNWPfx( ST_REFERENCE_SYM, name, namelen, prefix, prefixlen );
+        sym = SymOpNWPfx( ST_CREATE_REFERENCE, name, namelen, prefix, prefixlen );
         sym->info |= SYM_DCE_REF | SYM_EXPORTED;
         AddNameTable( name, namelen, true, &FmtData.u.nov.exp.export );
     }

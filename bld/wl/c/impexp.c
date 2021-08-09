@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -237,9 +237,9 @@ void MSExportKeyword( const length_name *expname, const length_name *intname, un
     if( flags & EXPDEF_RESIDENT )
         exp->isresident = true;
     if( intname->len != 0 ) {
-        exp->sym = SymOp( ST_REFERENCE_SYM, intname->name, intname->len );
+        exp->sym = SymOp( ST_CREATE_REFERENCE, intname->name, intname->len );
     } else {
-        exp->sym = SymOp( ST_REFERENCE_SYM, expname->name, expname->len );
+        exp->sym = SymOp( ST_CREATE_REFERENCE, expname->name, expname->len );
     }
     if( LinkFlags & LF_STRIP_CODE ) {
         DataRef( exp->sym );    // make sure it isn't removed.

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -475,6 +475,7 @@ static void ProcPubdef( bool static_sym )
     size_t          sym_len;
     unsigned_16     frame;
     unsigned_16     segidx;
+    sym_flags       symop;
 
     DEBUG(( DBG_OLD, "ProcPubdef" ));
     SkipIdx();
@@ -488,6 +489,10 @@ static void ProcPubdef( bool static_sym )
         ObjBuff += sizeof( unsigned_16 );
     }
     DEBUG(( DBG_OLD, "segidx = %d", segidx ));
+    symop = ST_CREATE_DEFINE_NOALIAS;
+    if( static_sym ) {
+        symop |= ST_STATIC;
+    }
     while( ObjBuff < EOObjRec ) {
         sym_len = *ObjBuff++;
         if( sym_len == 0 ) {
@@ -502,11 +507,7 @@ static void ProcPubdef( bool static_sym )
             _TargU16toHost( _GetU16UN( ObjBuff ), off );
             ObjBuff += sizeof( unsigned_16 );
         }
-        if( static_sym ) {
-            sym = SymOp( ST_DEFINE_SYM | ST_STATIC, sym_name, sym_len );
-        } else {
-            sym = SymOp( ST_DEFINE_SYM, sym_name, sym_len );
-        }
+        sym = SymOp( symop, sym_name, sym_len );
         DefineSymbol( sym, seg, off, frame );
         SkipIdx();   /* skip type index */
     }
@@ -623,12 +624,12 @@ static void UseSymbols( bool static_sym, bool iscextdef )
     size_t              sym_len;
     extnode             *newnode;
     symbol              *sym;
-    sym_flags           flags;
+    sym_flags           symop;
 
     DEBUG(( DBG_OLD, "UseSymbols()" ));
-    flags = ST_REFERENCE_SYM;
+    symop = ST_CREATE_REFERENCE;
     if( static_sym ) {
-        flags |= ST_STATIC;
+        symop |= ST_STATIC;
     }
     while( ObjBuff < EOObjRec ) {
         if( iscextdef ) {
@@ -639,7 +640,7 @@ static void UseSymbols( bool static_sym, bool iscextdef )
             if( sym_len == 0 ) {
                 BadObject();
             }
-            sym = SymOp( flags, (char *)ObjBuff, sym_len );
+            sym = SymOp( symop, (char *)ObjBuff, sym_len );
             ObjBuff += sym_len;
         }
         newnode = AllocNode( ExtNodes );

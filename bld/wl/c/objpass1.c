@@ -249,14 +249,14 @@ static void DoIncSymbol( void *_sym )
     symbol      *sym = _sym;
     symbol      *mainsym;
     void        *data;
-    sym_flags   flags;
+    sym_flags   symop;
 
     if( sym->info & SYM_IS_ALTDEF ) {
-        flags = ST_REFERENCE_SYM;
+        symop = ST_CREATE_REFERENCE;
         if( sym->info & SYM_STATIC ) {
-            flags |= ST_STATIC;
+            symop |= ST_STATIC;
         }
-        mainsym = SymOp( flags, sym->name.u.ptr, strlen( sym->name.u.ptr ) );
+        mainsym = SymOp( symop, sym->name.u.ptr, strlen( sym->name.u.ptr ) );
         if( IS_SYM_NICOMDEF( sym ) ) {
             MakeCommunalSym( mainsym, sym->p.cdefsize, (sym->info & SYM_FAR_COMMUNAL) != 0, IS_SYM_COMM32( sym ) );
         } else if( IS_SYM_COMDAT( sym ) ) {
@@ -1319,7 +1319,7 @@ static void ExportSymbol( const length_name *expname )
 {
     symbol      *sym;
 
-    sym = SymOp( ST_REFERENCE_SYM, expname->name, expname->len );
+    sym = SymOp( ST_CREATE_REFERENCE, expname->name, expname->len );
     sym->info |= SYM_EXPORTED;
 #ifdef _NOVELL
     if( FmtData.type & MK_NOVELL ) {

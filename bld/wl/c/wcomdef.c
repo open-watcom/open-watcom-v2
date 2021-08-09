@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -201,11 +201,11 @@ void ProcComdef( bool isstatic )
     unsigned_32         size;
     symbol *            sym;
     extnode *           ext;
-    sym_flags           flags;
+    sym_flags           symop;
 
-    flags = ST_REFERENCE_SYM;
+    symop = ST_CREATE_REFERENCE;
     if( isstatic ) {
-        flags |= ST_STATIC;
+        symop |= ST_STATIC;
     }
     while( ObjBuff < EOObjRec ) {
         sym_len = *ObjBuff++;
@@ -217,7 +217,7 @@ void ProcComdef( bool isstatic )
         if( kind == COMDEF_FAR ) {
             size *= GetLeaf();
         }
-        sym = SymOp( flags, sym_name, sym_len );
+        sym = SymOp( symop, sym_name, sym_len );
         sym = MakeCommunalSym( sym, size, kind == COMDEF_FAR, is32bit );
         ext = AllocNode( ExtNodes );
         ext->entry = sym;
@@ -404,7 +404,7 @@ static bool CheckSameComdat( void *info, void *sym )
 }
 #endif
 
-#define ST_COMDAT (ST_REFERENCE_SYM | ST_NOALIAS)
+#define ST_COMDAT (ST_CREATE_REFERENCE | ST_NOALIAS)
 
 void ProcComdat( void )
 /****************************/
@@ -424,6 +424,7 @@ void ProcComdat( void )
     unsigned            alloc;
     unsigned            segidx;
     bool                usealign;
+    sym_flags           symop;
 
     flags = *ObjBuff++;
     attr = *ObjBuff++;
@@ -462,11 +463,11 @@ void ProcComdat( void )
     piece = AllocCDatPiece();
     symname = FindName( GetIdx() );
     namelen = strlen( symname->name );
+    symop = ST_COMDAT;
     if( flags & CDAT_STATIC ) {
-        sym = SymOp( ST_COMDAT | ST_STATIC, symname->name, namelen );
-    } else {
-        sym = SymOp( ST_COMDAT, symname->name, namelen );
+        symop |= ST_STATIC;
     }
+    sym = SymOp( symop, symname->name, namelen );
     if( flags & CDAT_ITERATED ) {
         piece->length = CalcLIDataLength();
     } else {

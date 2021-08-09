@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,22 +32,17 @@
 
 typedef enum {
 
-// These constants define action to take with undefined symbols
-
-    WRITE_WARNS         = 0,
-    WRITE_IMPORTS       = 1,
-
 // These constants define action to take with the symbol table
 
-    ST_STATIC           = 0x01,         // this is a static symbol
-    ST_CREATE           = 0x02,         // create the symbol if not found
-    ST_NOALIAS          = 0x04,         // don't expand aliases
-    ST_FIND             = 0x08,         // just looking for the symbol
-    ST_REFERENCE        = 0x10,         // mark symbol as referenced
-    ST_DEFINE           = 0x20,         // mark symbol as defined
-    ST_NONUNIQUE        = 0x40,         // duplicate names allowed
-    ST_DEFINE_SYM       = ST_CREATE | ST_DEFINE | ST_NOALIAS,
-    ST_REFERENCE_SYM    = ST_CREATE | ST_REFERENCE
+    ST_STATIC                = 0x01,         // this is a static symbol
+    ST_CREATE                = 0x02,         // create the symbol if not found
+    ST_NOALIAS               = 0x04,         // don't expand aliases
+    ST_FIND                  = 0x08,         // just looking for the symbol
+    ST_REFERENCE             = 0x10,         // mark symbol as referenced
+    ST_DEFINE                = 0x20,         // mark symbol as defined
+    ST_NONUNIQUE             = 0x40,         // duplicate names allowed
+    ST_CREATE_DEFINE_NOALIAS = ST_CREATE | ST_DEFINE | ST_NOALIAS,
+    ST_CREATE_REFERENCE      = ST_CREATE | ST_REFERENCE
 } sym_flags;
 
 typedef enum {

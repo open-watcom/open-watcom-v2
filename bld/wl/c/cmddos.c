@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -460,7 +460,7 @@ static bool AddNoVector( void )
 {
     symbol      *sym;
 
-    sym = SymOp( ST_REFERENCE_SYM, Token.this, Token.len );
+    sym = SymOp( ST_CREATE_REFERENCE, Token.this, Token.len );
     sym->u.d.ovlstate |= ( OVL_FORCE | OVL_NO_VECTOR );
     return( true );
 }
@@ -479,7 +479,7 @@ bool ProcNoVector( void )
 static bool AddVector( void )
 /***************************/
 {
-    OvlVectorize( SymOp( ST_REFERENCE_SYM, Token.this, Token.len ) );
+    OvlVectorize( SymOp( ST_CREATE_REFERENCE, Token.this, Token.len ) );
     return( true );
 }
 
@@ -499,7 +499,7 @@ static bool AddForceVector( void )
 {
     symbol  *sym;
 
-    sym = SymOp( ST_REFERENCE_SYM, Token.this, Token.len );
+    sym = SymOp( ST_CREATE_REFERENCE, Token.this, Token.len );
     OvlVectorize( sym );
     sym->u.d.ovlstate |= OVL_ALWAYS;
     return(true);

@@ -827,7 +827,7 @@ void ClearSymUnion( symbol * sym )
 symbol *RefISymbol( const char *name )
 /************************************/
 {
-    return( SymOp( ST_REFERENCE_SYM, name, strlen( name ) ) );
+    return( SymOp( ST_CREATE_REFERENCE, name, strlen( name ) ) );
 }
 
 symbol *DefISymbol( const char *name )
@@ -849,12 +849,12 @@ symbol *FindISymbol( const char *name )
     return( SymOp( ST_FIND | ST_REFERENCE, name, strlen( name ) ) );
 }
 
-symbol *SymOpNWPfx( sym_flags op, const char *name, size_t length, const char *prefix, size_t prefixlen )
-/*******************************************************************************************************/
+symbol *SymOpNWPfx( sym_flags symop, const char *name, size_t length, const char *prefix, size_t prefixlen )
+/**********************************************************************************************************/
 {
     symbol  *sym;
 
-    if( NULL == (sym = SymOp( op, name, length )) )
+    if( NULL == (sym = SymOp( symop, name, length )) )
         return( NULL );
 
     if( ( NULL != prefix ) && ( 0 != prefixlen ) ) {
@@ -981,8 +981,8 @@ static unsigned GlobalHashFn( const char *name, size_t len )
     return( value % GLOBAL_TABSIZE );
 }
 
-static symbol *DoSymOp( sym_flags op, const char *symname, size_t length )
-/************************************************************************/
+static symbol *DoSymOp( sym_flags symop, const char *symname, size_t length )
+/***************************************************************************/
 {
     unsigned    hash;
     symbol      *sym;
@@ -992,16 +992,16 @@ static symbol *DoSymOp( sym_flags op, const char *symname, size_t length )
 
     DUPSTR_STACK( symname_dbg, symname, length );
 #endif
-    DEBUG(( DBG_OLD, "SymOp( %d, %s, %d )", op, symname_dbg, length ));
+    DEBUG(( DBG_OLD, "SymOp( %d, %s, %d )", symop, symname_dbg, length ));
     if( NameLen != 0 && NameLen < length ) {
         searchlen = NameLen;
     } else {
         searchlen = length;
     }
-    if( op & ST_STATIC ) {
+    if( symop & ST_STATIC ) {
         hash = StaticHashFn( symname, searchlen );
         /* If symbol isn't unique, don't look for duplicates. */
-        if( (op & (ST_CREATE | ST_STATIC | ST_NONUNIQUE)) ==
+        if( (symop & (ST_CREATE | ST_STATIC | ST_NONUNIQUE)) ==
                   (ST_CREATE | ST_STATIC | ST_NONUNIQUE) ) {
             sym = NULL;
         } else {
@@ -1017,12 +1017,12 @@ static symbol *DoSymOp( sym_flags op, const char *symname, size_t length )
         DEBUG(( DBG_OLD, " - handle = %h", sym ));
         return( sym );
     }
-    if( (op & ST_FIND) == 0 ) {
+    if( (symop & ST_FIND) == 0 ) {
         sym = AddSym();
         sym->name.u.ptr = AddSymbolStringTable( &PermStrings, symname, length );
         sym->namelen_cmp = searchlen;
 
-        if( op & ST_STATIC ) {
+        if( symop & ST_STATIC ) {
             sym->info |= SYM_STATIC;
             sym->hash = StaticSymPtrs[hash];
             StaticSymPtrs[hash] = sym;
@@ -1038,12 +1038,12 @@ static symbol *DoSymOp( sym_flags op, const char *symname, size_t length )
     return( sym );
 }
 
-symbol *UnaliasSym( sym_flags op, symbol *sym )
-/*****************************************************/
+symbol *UnaliasSym( sym_flags symop, symbol *sym )
+/************************************************/
 {
     symbol *orig_sym = sym;
     while( sym != NULL && IS_SYM_ALIAS( sym ) ) {
-        sym = DoSymOp( op, sym->p.alias.u.ptr, sym->u.aliaslen );
+        sym = DoSymOp( symop, sym->p.alias.u.ptr, sym->u.aliaslen );
         /* circular ref, may be a weak symbol ! */
         if( sym == orig_sym ) {
             break;
@@ -1052,25 +1052,25 @@ symbol *UnaliasSym( sym_flags op, symbol *sym )
     return( sym );
 }
 
-symbol *SymOp( sym_flags op, const char *symname, size_t length )
-/***************************************************************/
+symbol *SymOp( sym_flags symop, const char *symname, size_t length )
+/******************************************************************/
 /* search for symbols, handling aliases */
 {
     symbol *    sym;
 
-    sym = DoSymOp( op, symname, length );
-    if( (op & ST_NOALIAS) == 0 ) {
-        sym = UnaliasSym( op, sym );
+    sym = DoSymOp( symop, symname, length );
+    if( (symop & ST_NOALIAS) == 0 ) {
+        sym = UnaliasSym( symop, sym );
     }
     if( sym != NULL ) {
-        if( op & ST_DEFINE ) {
+        if( symop & ST_DEFINE ) {
             if( IS_SYM_ALIAS( sym ) && (sym->info & SYM_FREE_ALIAS) ) {
                 _LnkFree( sym->p.alias.u.ptr );
                 sym->info &= ~SYM_FREE_ALIAS;
             }
             sym->info |= SYM_DEFINED;
         }
-        if( op & ST_REFERENCE ) {
+        if( symop & ST_REFERENCE ) {
             sym->info |= SYM_REFERENCED;
         }
     }
