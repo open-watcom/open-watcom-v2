@@ -638,7 +638,7 @@ static orl_return       expandPrevLIData( omf_file_handle ofh )
      */
     while( ofh->lidata->new_fixup != NULL ) {
         ftr = ofh->lidata->new_fixup;
-        return_val = OmfAddFixupp( ofh, ftr->is32, ftr->mode, ftr->location, ftr->offset,
+        return_val = OmfAddFixupp( ofh, ftr->is32, ftr->mode, ftr->fix_loc, ftr->offset,
                             ftr->fmethod, ftr->fidx, ftr->tmethod, ftr->tidx, ftr->disp );
         if( return_val != ORL_OKAY )
             break;
@@ -1090,7 +1090,7 @@ orl_return OmfAddBakpat( omf_file_handle ofh, unsigned_8 loctype, omf_sec_offset
 }
 
 
-orl_return OmfAddFixupp( omf_file_handle ofh, bool is32, int mode, int location, omf_sec_offset offset,
+orl_return OmfAddFixupp( omf_file_handle ofh, bool is32, int mode, omf_fix_loc fix_loc, omf_sec_offset offset,
                             int fmethod, omf_idx fidx, int tmethod, omf_idx tidx, omf_sec_addend disp )
 {
     omf_tmp_fixup           ftr;
@@ -1116,7 +1116,7 @@ orl_return OmfAddFixupp( omf_file_handle ofh, bool is32, int mode, int location,
 
         ftr->is32 = is32;
         ftr->mode = mode;
-        ftr->location = location;
+        ftr->fix_loc = fix_loc;
         ftr->offset = offset;
         ftr->fmethod = fmethod;
         ftr->fidx = fidx;
@@ -1138,7 +1138,7 @@ orl_return OmfAddFixupp( omf_file_handle ofh, bool is32, int mode, int location,
         return( ORL_OUT_OF_MEMORY );
     memset( orel, 0, ORL_STRUCT_SIZEOF( orl_reloc ) );
 
-    switch( location ) {
+    switch( fix_loc ) {
     case( LOC_OFFSET_LO ):              /* relocate lo byte of offset   */
         /* should be 8 rather then 16, fix later
          */

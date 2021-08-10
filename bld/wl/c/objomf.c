@@ -74,19 +74,19 @@ static unsigned long ProcObj( file_list *file, unsigned long loc, void (*procrtn
 /*****************************************************************************************/
 /* Process an object file. */
 {
-    obj_record          *rec;
+    omf_record          *rec;
     byte                cmd;
     unsigned_16         len;
 
     RecNum = 0;
     do {
         ObjFormat &= ~FMT_MS_386;   // assume not a Microsoft 386 .obj file
-        rec = CacheRead( file, loc, sizeof( obj_record ) );
+        rec = CacheRead( file, loc, sizeof( omf_record ) );
         if( rec == NULL ) {
             EarlyEOF();
             break;
         }
-        loc += sizeof( obj_record );
+        loc += sizeof( omf_record );
         len = rec->length;
         cmd = rec->command;
         if( procrtn != NULL ) {
@@ -136,14 +136,14 @@ bool IsOMF( file_list *list, unsigned long loc )
 char *GetOMFName( file_list *list, unsigned long *loc )
 /*****************************************************/
 {
-    obj_record  *rec;
+    omf_record  *rec;
     char        *name;
     unsigned    len;
 
-    rec = CacheRead( list, *loc, sizeof( obj_record ) );
+    rec = CacheRead( list, *loc, sizeof( omf_record ) );
     if( rec == NULL )
         return( NULL );
-    *loc += sizeof( obj_record );
+    *loc += sizeof( omf_record );
     len = rec->length;
     name = CacheRead( list, *loc, rec->length );
     *loc += len;

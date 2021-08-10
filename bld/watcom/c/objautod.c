@@ -61,8 +61,8 @@ enum {
 static int verifyOBJFile( int fh )
 {
     struct {
-        obj_record      header;
-        obj_name        name;
+        omf_record      header;
+        omf_name        name;
     } theadr;
 
     if( lseek( fh, 0, SEEK_SET ) == -1L ) {
@@ -108,7 +108,7 @@ walk_status WalkOBJAutoDep( const char *file_name, rtn_status (*rtn)( time_t, ch
     time_t DOS_stamp_time;
     int fh;
     unsigned len;
-    obj_record header;
+    omf_record header;
     struct {
         uint_8          bits;
         uint_8          type;

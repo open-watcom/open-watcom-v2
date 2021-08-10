@@ -157,7 +157,6 @@ void DoRelocs( void )
 {
     fix_type    fixtype;
     unsigned    typ;
-    unsigned    omftype;
     offset      place_to_fix;
     unsigned    loc;
     offset      addend;
@@ -172,16 +171,15 @@ void DoRelocs( void )
     }
     do {
         typ = *ObjBuff++;
-        omftype = (typ >> 2) & 0x0F;
         if( (typ & 0x80) == 0 ) {   /*  thread */
             if( typ & 0x40 ) {      /*  frame */
-                GetFrame( omftype, &FrameThreads[typ & 3] );
+                GetFrame( (typ >> 2) & 7, &FrameThreads[typ & 3] );
             } else {                /*  target */
-                GetTarget( omftype, &TargThreads[typ & 3] );
+                GetTarget( (typ >> 2) & 7, &TargThreads[typ & 3] );
             }
         } else {                    /* fixup */
             fixtype = 0;
-            switch( omftype ) {
+            switch( (omf_fix_loc)((typ >> 2) & 0x0F) ) {
             case LOC_OFFSET_LO:
                 fixtype = FIX_OFFSET_8;
                 break;
@@ -201,7 +199,7 @@ void DoRelocs( void )
                 if( ObjFormat & FMT_EASY_OMF ) {
                     fixtype = FIX_OFFSET_32;                    /* Pharlap only */
                 } else {
-                    fixtype = FIX_OFFSET_16 | FIX_LOADER_RES;   /* others */
+                    fixtype = FIX_OFFSET_16 | FIX_LOADER_RES;   /* OMF standard */
                 }
                 break;
             case LOC_PHARLAP_BASE_OFFSET_32:

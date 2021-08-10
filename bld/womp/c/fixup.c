@@ -161,10 +161,10 @@ void FixGetLRef( fixinfo *info, obj_rec *objr, logref *log ) {
 
 fixup *FixGetFix( fixinfo *info, obj_rec *objr ) {
 /**********************************************/
-    uint_8  byte;
-    uint_8  method;
-    uint_8  trd_num;
-    fixup   *fix;
+    uint_8          byte;
+    uint_8          method;
+    uint_8          trd_num;
+    fixup           *fix;
 
 /**/myassert( info != NULL );
 /**/myassert( objr != NULL );
@@ -175,14 +175,21 @@ fixup *FixGetFix( fixinfo *info, obj_rec *objr ) {
         fix->next = NULL;
         fix->loader_resolved = 0;
         fix->self_relative = ( byte & 0x40 ) == 0;
-        method = ( byte >> 2 ) & 0x0f;
-        switch( method ) {
+        switch( (omf_fix_loc)(( byte >> 2 ) & 0x0f) ) {
         case LOC_OFFSET_LO:     /* note fall through */
+            fix->loc_method = FIX_LO_BYTE;
+            break;
         case LOC_OFFSET:
+            fix->loc_method = FIX_OFFSET;
+            break;
         case LOC_BASE:
+            fix->loc_method = FIX_BASE;
+            break;
         case LOC_BASE_OFFSET:
+            fix->loc_method = FIX_POINTER;
+            break;
         case LOC_OFFSET_HI:
-            fix->loc_method = method;
+            fix->loc_method = FIX_HI_BYTE;
             break;
         case LOC_OFFSET_LOADER:
             if( objr->is_phar ) {
@@ -379,7 +386,9 @@ uint_16 FixGenFix( fixup *fix, uint_8 *buf, int type )
     p = buf;
     byte = fix->self_relative ? 0x80 : 0xc0;    /* explicit fixup */
     switch( fix->loc_method ) {
-    case FIX_LO_BYTE:   byte |= ( LOC_OFFSET_LO << 2 );     break;
+    case FIX_LO_BYTE:
+        byte |= ( LOC_OFFSET_LO << 2 );
+        break;
     case FIX_OFFSET:
         if( fix->loader_resolved ) {
             if( type == FIX_GEN_PHARLAP ) {
@@ -395,9 +404,15 @@ uint_16 FixGenFix( fixup *fix, uint_8 *buf, int type )
             byte |= ( LOC_OFFSET << 2 );
         }
         break;
-    case FIX_BASE:      byte |= ( LOC_BASE << 2 );          break;
-    case FIX_POINTER:   byte |= ( LOC_BASE_OFFSET << 2 );   break;
-    case FIX_HI_BYTE:   byte |= ( LOC_OFFSET_HI << 2 );     break;
+    case FIX_BASE:
+        byte |= ( LOC_BASE << 2 );
+        break;
+    case FIX_POINTER:
+        byte |= ( LOC_BASE_OFFSET << 2 );
+        break;
+    case FIX_HI_BYTE:
+        byte |= ( LOC_OFFSET_HI << 2 );
+        break;
     case FIX_OFFSET386:
         if( type == FIX_GEN_PHARLAP ) {
 #if _WOMP_OPT & _WOMP_EXTRAS

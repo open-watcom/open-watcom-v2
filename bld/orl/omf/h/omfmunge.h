@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +47,7 @@ extern orl_return       OmfAddLEData( omf_file_handle ofh, bool is32,
                                       omf_bytes buffer, omf_rec_size len, bool comdat );
 
 extern orl_return       OmfAddFixupp( omf_file_handle ofh, bool is32, int mode,
-                                      int location, omf_sec_offset offset,
+                                      omf_fix_loc fix_loc, omf_sec_offset offset,
                                       int fmethod, omf_idx fidx, int tmethod,
                                       omf_idx tidx, omf_sec_addend disp );
 

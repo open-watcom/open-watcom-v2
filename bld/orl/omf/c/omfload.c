@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +39,7 @@
 #include "omfload.h"
 #include "omfmunge.h"
 #include "omforl.h"
+
 
 /* Local definitions
  */
@@ -216,7 +217,7 @@ static orl_return       processExplicitFixup( omf_file_handle ofh, bool is32, om
     omf_bytes           buf;
     omf_rec_size        len;
     unsigned_8          m;
-    int                 location;
+    omf_fix_loc         fix_loc;
     int                 offset;
     unsigned_8          fmethod;
     omf_idx             fidx = 0;
@@ -241,7 +242,7 @@ static orl_return       processExplicitFixup( omf_file_handle ofh, bool is32, om
 
     datum = buf[0];
     m = ( (datum & 0x40) != 0 );
-    location = ( datum >> 2 ) & 0x0f;
+    fix_loc = (omf_fix_loc)(( datum >> 2 ) & 0x0f);
     offset = ( (datum & 0x03) << 8 ) | buf[1];
     datum = buf[2];
     buf += 3;
@@ -293,7 +294,7 @@ static orl_return       processExplicitFixup( omf_file_handle ofh, bool is32, om
 
     *buffer = buf;
     *cur = len;
-    return( OmfAddFixupp( ofh, is32, m, location, offset, fmethod, fidx, tmethod, tidx, disp ) );
+    return( OmfAddFixupp( ofh, is32, m, fix_loc, offset, fmethod, fidx, tmethod, tidx, disp ) );
 }
 
 

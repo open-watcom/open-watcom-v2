@@ -1205,31 +1205,59 @@ static void threadFixup( byte typ )
     Output( CRLF );
 }
 
+static void OutputFixup( byte typ, bool indent )
+{
+    byte    num;
+
+    num = ( typ >> 4 ) & 0x07;
+    if( indent ) {
+        Output( INDENT "Frame: " );
+    } else {
+        Output( "  Frame: " );
+    }
+    if( typ & FIXDAT_FTHREAD ) {
+        Output( "THREAD %u", num );
+    } else {
+        doFrame( num );
+    }
+    num = typ & 0x03;
+    Output( "  Target: " );
+    if( typ & FIXDAT_TTHREAD ) {
+        Output( "THREAD %u", num );
+    } else {
+        doTarget( num );
+    }
+    if( typ & 0x04 ) {
+        Output( CRLF );
+    } else {
+        Output( ",%X" CRLF, GetEither() );
+    }
+}
+
 static void explicitFixup( byte typ )
 {
-    byte        loc;
-    unsigned_16 offset;
-    byte        frame;
-    data_ptr    RecPtrsave;
-    data_ptr    RecPtrsave1;
-    bool        needcrlf = false;
-    size_t      printpos;
+    omf_fix_loc     fix_loc;
+    unsigned_16     offset;
+    data_ptr        RecPtrsave;
+    data_ptr        RecPtrsave1;
+    bool            needcrlf = false;
+    size_t          printpos;
 
     offset = ( ( typ & 0x03 ) << 8 ) + GetByte();
     Output( INDENT "%x %s", offset, ( typ & FIXDAT_MBIT ) ? "Seg " : "Self" );
-    loc = ( ( typ >> 2 ) & 0x0f );
+    fix_loc = ( typ >> 2 ) & 0x0f;
     if( IsPharLap ) {
-        if( loc > LOC_PHARLAP_BASE_OFFSET_32 ) {
+        if( fix_loc > LOC_PHARLAP_BASE_OFFSET_32 ) {
             Output( BAILOUT "Unknown loc, type = %b" CRLF, typ );
             longjmp( BailOutJmp, 1 );
-        } else if( loc == LOC_PHARLAP_OFFSET_32 ) {
-            loc = LOC_OFFSET_32;
+        } else if( fix_loc == LOC_PHARLAP_OFFSET_32 ) {
+            fix_loc = LOC_OFFSET_32;
         }
-    } else if( loc == LOC_PHARLAP_BASE_OFFSET_32 ) {
+    } else if( fix_loc == LOC_PHARLAP_BASE_OFFSET_32 ) {
         Output( BAILOUT "Unknown loc, type = %b" CRLF, typ );
         longjmp( BailOutJmp, 1 );
     }
-    switch( loc ) {
+    switch( fix_loc ) {
     case LOC_OFFSET_LO:         Output( "  LOBYTE     " );   break;
     case LOC_OFFSET:            Output( "  OFFSET     " );   break;
     case LOC_BASE:              Output( "  BASE       " );   break;
@@ -1250,34 +1278,16 @@ static void explicitFixup( byte typ )
     } else {
         RecPtrsave = NULL;      // shut up gcc
     }
-    frame = ( typ >> 4 ) & 0x07;
-    Output( "  Frame: " );
-    if( typ & FIXDAT_FTHREAD ) {
-        Output( "THREAD %u", frame );
-    } else {
-        doFrame( frame );
-    }
-    loc = typ & 0x03;
-    Output( "  Target: " );
-    if( typ & FIXDAT_TTHREAD ) {
-        Output( "THREAD %u", loc );
-    } else {
-        doTarget( loc );
-    }
-    if( typ & 0x04 ) {
-        Output( CRLF );
-    } else {
-        Output( ",%X" CRLF, GetEither() );
-    }
+    OutputFixup( typ, false );
     if( TranslateIndex ) {
         RecPtrsave1 = RecPtr;
         RecPtr = RecPtrsave;
         printpos = 0;
         if( ! (typ & FIXDAT_FTHREAD) ) {
-            needcrlf |= doFrameTranslateIndex( frame, &printpos );
+            needcrlf |= doFrameTranslateIndex( ( typ >> 4 ) & 0x07, &printpos );
         }
         if( ! (typ & FIXDAT_TTHREAD) ) {
-            needcrlf |= doTargetTranslateIndex( loc, &printpos );
+            needcrlf |= doTargetTranslateIndex( typ & 0x03, &printpos );
         }
         if( needcrlf ) {
             Output( CRLF );
@@ -1312,8 +1322,6 @@ void ProcModEnd( void )
 {
     byte        mod_type;
     byte        typ;
-    byte        frame;
-    byte        loc;
 
     mod_type = GetByte();
     Output( INDENT "mod type:%smain module %s" CRLF,
@@ -1322,25 +1330,7 @@ void ProcModEnd( void )
     );
     if( mod_type & 0x1 && !EndRec() ) {
         typ = GetByte();
-        frame = ( typ >> 4 ) & 0x07;
-        Output( INDENT "Frame: " );
-        if( typ & FIXDAT_FTHREAD ) {
-            Output( "THREAD %u", frame );
-        } else {
-            doFrame( frame );
-        }
-        loc = typ & 0x03;
-        Output( "  Target: " );
-        if( typ & FIXDAT_TTHREAD ) {
-            Output( "THREAD %u", loc & 0x03 );
-        } else {
-            doTarget( loc );
-        }
-        if( typ & 0x04 ) {
-            Output( CRLF );
-        } else {
-            Output( ",%X" CRLF, GetEither() );
-        }
+        OutputFixup( typ, true );
     }
 }
 

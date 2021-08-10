@@ -226,9 +226,9 @@ typedef enum {
     CMD_VERNUM          = 0xcc,     /* TIS version number record        */
     CMD_VENDEXT         = 0xce,     /* TIS vendor extension record      */
     CMD_MAX_CMD         = 0xce      /* maximum cmd enum                 */
-}cmd_omf;
+} omf_cmd;
 
-enum {
+typedef enum omf_fix_loc {
     LOC_OFFSET_LO        = 0,       /* relocate lo byte of offset           */
     LOC_OFFSET           = 1,       /* relocate offset                      */
     LOC_BASE             = 2,       /* relocate segment                     */
@@ -238,19 +238,19 @@ enum {
     LOC_OFFSET_32        = 9,       /* relocate 32-bit offset               */
     LOC_BASE_OFFSET_32   = 11,      /* relocate 48-bit pointer              */
     LOC_OFFSET_32_LOADER = 13       /* like OFFSET_32 but loader resolved   */
-};
+} omf_fix_loc;
 #define LOC_PHARLAP_OFFSET_32       LOC_OFFSET_LOADER       /* Pharlap, relocate 32-bit offset  */
 #define LOC_PHARLAP_BASE_OFFSET_32  (LOC_OFFSET_LOADER + 1) /* Pharlap, relocate segment and 32-bit offset */
 
-typedef struct obj_record {
+typedef struct omf_record {
     uint_8      command;
     uint_16     length;
-} obj_record;
+} omf_record;
 
-typedef struct obj_name {
+typedef struct omf_name {
     uint_8      len;
     char        name[ 1 ];
-} obj_name;
+} omf_name;
 /*
     Comment Type
 */

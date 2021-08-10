@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +32,8 @@
 
 #ifndef OMF_TYPE_INCLUDED
 #define OMF_TYPE_INCLUDED
+
+#include "pcobj.h"
 
 #define OMFENTRY
 
@@ -131,7 +133,7 @@ ORL_STRUCT( omf_tmp_fixup ) {
     omf_tmp_fixup       next;
     bool                is32;
     int                 mode;
-    int                 location;
+    omf_fix_loc         fix_loc;
     omf_sec_offset      offset;
     int                 fmethod;
     omf_idx             fidx;
