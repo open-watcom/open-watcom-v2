@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,17 +65,6 @@ static bakpat_list      *BakPats;
 
 static frame_spec       FrameThreads[MAX_THREADS];
 static target_spec      TargThreads[MAX_THREADS];
-
-static fix_type RelocTypeMap[] = {
-    FIX_OFFSET_8,       // LOC_OFFSET_LO
-    FIX_OFFSET_16,      // LOC_OFFSET
-    FIX_BASE,           // LOC_BASE
-    FIX_BASE_OFFSET_16, // LOC_BASE_OFFSET
-    FIX_HIGH_OFFSET_8,  // LOC_OFFSET_HI
-    FIX_OFFSET_32,      // LOC_OFFSET_32
-    FIX_BASE_OFFSET_32, // LOC_BASE_OFFSET_32
-    FIX_OFFSET_16 | FIX_LOADER_RES      // modified loader resolved off_16
-};
 
 void ResetOMFReloc( void )
 /*******************************/
@@ -183,7 +172,7 @@ void DoRelocs( void )
     }
     do {
         typ = *ObjBuff++;
-        omftype = (typ >> 2) & 7;
+        omftype = (typ >> 2) & 0x0F;
         if( (typ & 0x80) == 0 ) {   /*  thread */
             if( typ & 0x40 ) {      /*  frame */
                 GetFrame( omftype, &FrameThreads[typ & 3] );
@@ -191,21 +180,48 @@ void DoRelocs( void )
                 GetTarget( omftype, &TargThreads[typ & 3] );
             }
         } else {                    /* fixup */
-            if( typ & 0x20 ) {      // used in 32-bit microsoft fixups.
-                switch( omftype ) {
-                case LOC_OFFSET:
-                case LOC_MS_LINK_OFFSET:
-                    omftype = LOC_OFFSET_32;
-                    break;
-                case LOC_BASE_OFFSET:
-                    omftype = LOC_BASE_OFFSET_32;
-                    break;
+            fixtype = 0;
+            switch( omftype ) {
+            case LOC_OFFSET_LO:
+                fixtype = FIX_OFFSET_8;
+                break;
+            case LOC_OFFSET:
+                fixtype = FIX_OFFSET_16;
+                break;
+            case LOC_BASE:
+                fixtype = FIX_BASE;
+                break;
+            case LOC_BASE_OFFSET:
+                fixtype = FIX_BASE_OFFSET_16;
+                break;
+            case LOC_OFFSET_HI:
+                fixtype = FIX_HIGH_OFFSET_8;
+                break;
+            case LOC_OFFSET_LOADER:
+                if( ObjFormat & FMT_EASY_OMF ) {
+                    fixtype = FIX_OFFSET_32;                    /* Pharlap only */
+                } else {
+                    fixtype = FIX_OFFSET_16 | FIX_LOADER_RES;   /* others */
                 }
-            } else if( omftype == LOC_MS_LINK_OFFSET && (ObjFormat & FMT_32BIT_REC) == 0 ) {
-                omftype = LOC_BASE_OFFSET_32 + 1; // index of special table.
+                break;
+            case LOC_PHARLAP_BASE_OFFSET_32:
+                if( ObjFormat & FMT_EASY_OMF ) {
+                    fixtype = FIX_BASE_OFFSET_32;               /* Pharlap only */
+                }
+                break;
+            case LOC_OFFSET_32:
+                fixtype = FIX_OFFSET_32;
+                break;
+            case LOC_BASE_OFFSET_32:
+                fixtype = FIX_BASE_OFFSET_32;
+                break;
+            case LOC_OFFSET_32_LOADER:
+                fixtype = FIX_OFFSET_32; //| FIX_LOADER_RES;
+                break;
+            default:
+                break;
             }
-            fixtype = RelocTypeMap[omftype];
-            if( (typ & 0x40) == 0 ) {
+            if( fixtype && (typ & 0x40) == 0 ) {
                 fixtype |= FIX_REL;
             }
             place_to_fix = ((typ & 3) << 8) + *ObjBuff++;

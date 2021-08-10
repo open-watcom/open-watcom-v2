@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1218,17 +1219,15 @@ static void explicitFixup( byte typ )
     Output( INDENT "%x %s", offset, ( typ & FIXDAT_MBIT ) ? "Seg " : "Self" );
     loc = ( ( typ >> 2 ) & 0x0f );
     if( IsPharLap ) {
-        if( loc > LOC_BASE_OFFSET_32 ) {
+        if( loc > LOC_PHARLAP_BASE_OFFSET_32 ) {
             Output( BAILOUT "Unknown loc, type = %b" CRLF, typ );
             longjmp( BailOutJmp, 1 );
-        } else if( loc == LOC_MS_LINK_OFFSET ) {
-            loc = LOC_MS_OFFSET_32;
+        } else if( loc == LOC_PHARLAP_OFFSET_32 ) {
+            loc = LOC_OFFSET_32;
         }
-    } else if( IsIntel ) {
-        if( loc > LOC_MS_LINK_OFFSET ) {
-            Output( BAILOUT "Unknown loc, type = %b" CRLF, typ );
-            longjmp( BailOutJmp, 1 );
-        }
+    } else if( loc == LOC_PHARLAP_BASE_OFFSET_32 ) {
+        Output( BAILOUT "Unknown loc, type = %b" CRLF, typ );
+        longjmp( BailOutJmp, 1 );
     }
     switch( loc ) {
     case LOC_OFFSET_LO:         Output( "  LOBYTE     " );   break;
@@ -1236,11 +1235,11 @@ static void explicitFixup( byte typ )
     case LOC_BASE:              Output( "  BASE       " );   break;
     case LOC_BASE_OFFSET:       Output( "  POINTER    " );   break;
     case LOC_OFFSET_HI:         Output( "  HIBYTE     " );   break;
-    case LOC_MS_LINK_OFFSET:    Output( "  LROFFSET   " );   break;
-    case LOC_BASE_OFFSET_32:    /* fall through */
-    case LOC_MS_BASE_OFFSET_32: Output( "  POINTER386 " );   break;
-    case LOC_MS_OFFSET_32:      Output( "  OFFSET386  " );   break;
-    case LOC_MS_LINK_OFFSET_32: Output( "  LROFFSET386" );   break;
+    case LOC_OFFSET_LOADER:     Output( "  LROFFSET   " );   break;
+    case LOC_PHARLAP_BASE_OFFSET_32:    /* fall through */
+    case LOC_BASE_OFFSET_32:    Output( "  POINTER386 " );   break;
+    case LOC_OFFSET_32:         Output( "  OFFSET386  " );   break;
+    case LOC_OFFSET_32_LOADER:  Output( "  LROFFSET386" );   break;
     default:
         Output( BAILOUT "Unknown loc, type = %b" CRLF, typ );
         longjmp( BailOutJmp, 1 );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1171,17 +1172,35 @@ orl_return OmfAddFixupp( omf_file_handle ofh, bool is32, int mode, int location,
             orel->type = ORL_RELOC_TYPE_REL_HI_8;
         }
         break;
-    case( LOC_OFFSET_32 ):              /* relocate 32-bit offset       */
-    case( LOC_MS_OFFSET_32 ):           /* MS 32-bit offset             */
-    case( LOC_MS_LINK_OFFSET_32 ):      /* like OFFSET_32, ldr resolved */
+    case( LOC_OFFSET_LOADER ):
+        if( ofh->status & OMF_STATUS_EASY_OMF ) {
+            if( mode ) {                /* Pharlap, relocate 32-bit offset  */
+                orel->type = ORL_RELOC_TYPE_WORD_32;
+            } else {
+                orel->type = ORL_RELOC_TYPE_REL_32;
+            }
+            break;
+        }
+        if( mode ) {                    /* relocate offset, ldr resolved    */
+            orel->type = ORL_RELOC_TYPE_WORD_16;
+        } else {
+            orel->type = ORL_RELOC_TYPE_REL_16;
+        }
+        break;
+    case( LOC_OFFSET_32 ):              /* relocate 32-bit offset           */
+    case( LOC_OFFSET_32_LOADER ):       /* like OFFSET_32, ldr resolved     */
         if( mode ) {
             orel->type = ORL_RELOC_TYPE_WORD_32;
         } else {
             orel->type = ORL_RELOC_TYPE_REL_32;
         }
         break;
-    case( LOC_BASE_OFFSET_32 ):         /* relocate seg and 32bit offset*/
-    case( LOC_MS_BASE_OFFSET_32 ):      /* MS 48-bit pointer            */
+    case( LOC_PHARLAP_BASE_OFFSET_32 ): /* Pharlap, relocate seg and 32bit offset */
+        if( (ofh->status & OMF_STATUS_EASY_OMF) == 0 ) {
+            return( ORL_ERROR );
+        }
+        /* fall through */
+    case( LOC_BASE_OFFSET_32 ):         /* relocate 48-bit pointer            */
         if( mode ) {
             orel->type = ORL_RELOC_TYPE_WORD_32_SEG;
         } else {

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -228,18 +229,18 @@ typedef enum {
 }cmd_omf;
 
 enum {
-    LOC_OFFSET_LO       = 0,        /* relocate lo byte of offset       */
-    LOC_OFFSET          = 1,        /* relocate offset                  */
-    LOC_BASE            = 2,        /* relocate segment                 */
-    LOC_BASE_OFFSET     = 3,        /* relocate segment and offset      */
-    LOC_OFFSET_HI       = 4,        /* relocate hi byte of offset       */
-    LOC_MS_LINK_OFFSET  = 5,        /* like OFFSET but loader resolved  */
-    LOC_OFFSET_32       = 5,        /* relocate 32-bit offset           */
-    LOC_BASE_OFFSET_32  = 6,        /* relocate segment and 32-bit offset*/
-    LOC_MS_OFFSET_32    = 9,        /* MS 32-bit offset                 */
-    LOC_MS_BASE_OFFSET_32= 11,      /* MS 48-bit pointer                */
-    LOC_MS_LINK_OFFSET_32= 13       /* like OFFSET_32 but loader resolved*/
+    LOC_OFFSET_LO        = 0,       /* relocate lo byte of offset           */
+    LOC_OFFSET           = 1,       /* relocate offset                      */
+    LOC_BASE             = 2,       /* relocate segment                     */
+    LOC_BASE_OFFSET      = 3,       /* relocate segment and offset          */
+    LOC_OFFSET_HI        = 4,       /* relocate hi byte of offset           */
+    LOC_OFFSET_LOADER    = 5,       /* like OFFSET but loader resolved      */
+    LOC_OFFSET_32        = 9,       /* relocate 32-bit offset               */
+    LOC_BASE_OFFSET_32   = 11,      /* relocate 48-bit pointer              */
+    LOC_OFFSET_32_LOADER = 13       /* like OFFSET_32 but loader resolved   */
 };
+#define LOC_PHARLAP_OFFSET_32       LOC_OFFSET_LOADER       /* Pharlap, relocate 32-bit offset  */
+#define LOC_PHARLAP_BASE_OFFSET_32  (LOC_OFFSET_LOADER + 1) /* Pharlap, relocate segment and 32-bit offset */
 
 typedef struct obj_record {
     uint_8      command;

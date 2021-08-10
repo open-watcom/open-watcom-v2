@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -355,9 +356,16 @@ static  void  FixupFix( uint_16 locat )
     M = ( locat & 0x40 ) << 1;
     /* we take 4-bits as if every record is a Microsoft Fixup rec */
     LOC = ( locat >> 2 ) & 0x0f;
-    if( IsPharLap && LOC > LOC_BASE_OFFSET_32 ) {
-        Error( ERR_INV_FIXUP_LOC, false );
-        return;
+    if( IsPharLap ) {
+        if( LOC > LOC_PHARLAP_BASE_OFFSET_32 ) {
+            Error( ERR_INV_FIXUP_LOC, false );
+            return;
+        }
+    } else {
+        if( LOC == LOC_PHARLAP_BASE_OFFSET_32 ) {
+            Error( ERR_INV_FIXUP_LOC, false );
+            return;
+        }
     }
     DataOffset = ( ( locat & 3 ) << 8 ) | GetByte();
     fix = FixField( LOC, 1, M );
@@ -383,13 +391,13 @@ static  fixup  *FixField( char LOC, int is_valid_loc, char M )
     char                TARGT;
     char                FRAME;
 
-    if( ! IsPharLap && is_valid_loc ) {
+    if( !IsPharLap && is_valid_loc ) {
         /* we want PharLap OMF fixup LOC's... so we'll just translate here */
         switch( LOC ) {
-        case LOC_MS_LINK_OFFSET:        LOC = LOC_OFFSET;           break;
-        case LOC_MS_OFFSET_32:      /* fall through */
-        case LOC_MS_LINK_OFFSET_32:     LOC = LOC_OFFSET_32;        break;
-        case LOC_MS_BASE_OFFSET_32:     LOC = LOC_BASE_OFFSET_32;   break;
+        case LOC_OFFSET_LOADER:         LOC = LOC_OFFSET;                   break;
+        case LOC_OFFSET_32:             /* fall through */
+        case LOC_OFFSET_32_LOADER:      LOC = LOC_PHARLAP_OFFSET_32;        break;
+        case LOC_BASE_OFFSET_32:        LOC = LOC_PHARLAP_BASE_OFFSET_32;   break;
         }
     }
     fix_dat = GetByte();
@@ -435,13 +443,13 @@ static  fixup  *FixField( char LOC, int is_valid_loc, char M )
             fix->imp_address += Addr( DataOffset );
             fix->seg_address += Addr( DataOffset + 2 );
             break;
-        case LOC_OFFSET_32:
+        case LOC_PHARLAP_OFFSET_32:
             fix->imp_address += Addr32( DataOffset );
             break;
         case LOC_OFFSET_HI:
             fix->imp_address += Addr( DataOffset ) >> 8;
             break;
-        case LOC_BASE_OFFSET_32:
+        case LOC_PHARLAP_BASE_OFFSET_32:
             fix->imp_address += Addr32( DataOffset );
             fix->seg_address += Addr( DataOffset + 4 );
             break;
