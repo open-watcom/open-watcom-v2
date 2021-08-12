@@ -1,3 +1,5 @@
+.POSIX
+
 # This makefile ought to be POSIX compatible, ie. maximally simple. No vendor
 # specific extensions, no 'clever' tricks here. That means the stupid hard
 # tabs, too!
