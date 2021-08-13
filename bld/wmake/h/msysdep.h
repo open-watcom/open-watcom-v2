@@ -176,7 +176,8 @@ typedef enum {
 
 typedef struct EnvTracker {
     struct EnvTracker   *next;
-    char                value[1];
+    char                *value;
+    char                name[1];
 } ENV_TRACKER;
 
 extern int          SwitchChar( void );
@@ -191,10 +192,10 @@ extern void         CheckForBreak( void );
 extern void         InitSignals( void );
 extern void         DLLFini( void );
 extern char         *GetEnvExt( const char *str );
-extern int          PutEnvExt( char *str );
-extern int          PutEnvSafe( ENV_TRACKER *env );
+extern int          SetEnvExt( ENV_TRACKER *env );
+extern int          SetEnvSafe( const char *name, const char *value );
 #if !defined(NDEBUG) || defined(DEVELOPMENT)
-extern void         PutEnvFini( void );
+extern void         SetEnvFini( void );
 #endif
 
 #endif

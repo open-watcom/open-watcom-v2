@@ -937,8 +937,7 @@ STATIC RET_T handleSet( char *cmd )
     char        *p;         /* we walk cmd with this        */
     char        *name;      /* beginning of variable name   */
     char        *endname;   /* end of name                  */
-    ENV_TRACKER *env;       /* space allocated for envvar   */
-    int         retcode;    /* from putenv                  */
+    int         retcode;    /* from setenv                  */
 
     assert( cmd != NULL );
 
@@ -965,15 +964,10 @@ STATIC RET_T handleSet( char *cmd )
         PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_SET] );
         return( RET_ERROR );
     }
-
     *endname = NULLCHAR;        /* null terminate name */
-
     ++p;                        /* advance to character after '=' */
 
-    /* +1 for '=' (already +1 for NULLCHAR in ENV_TRACKER) */
-    env = MallocSafe( sizeof( *env ) + 1 + ( endname - name ) + strlen( p ) );
-    FmtStr( env->value, "%s=%s", name, p );
-    retcode = PutEnvSafe( env );
+    retcode = SetEnvSafe( name, p );
     if( retcode != 0 ) {
         return( RET_ERROR );
     }
@@ -1856,45 +1850,40 @@ STATIC UINT16 makeTmpEnv( char *arg )
  */
 {
     UINT16      tmp;
-    char        buf[20];    /* " @WMAKE%d" */
+    char        name[20];   /* " @WMAKE%d" */
     size_t      len;
     size_t      len1;
-    ENV_TRACKER *env;
 
     tmp = 1;
     for( ;; ) {
-        FmtStr( buf, " @WMAKE%d", tmp );
-        if( getenv( buf ) == NULL ) {
+        FmtStr( name, " @WMAKE%d", tmp );
+        if( getenv( name + 2 ) == NULL ) {
             break;
         }
         ++tmp;
     }
-    len1 = strlen( buf );
+    len1 = strlen( name );
     len = strlen( arg );
-    if( len < len1 ) {  /* need room for " @WMAKE%d" in arg */
+    if( len < len1 ) {      /* need room for " @WMAKE%d" in arg */
         return( 0 );
     }
-                        /* "WMAKE%d=" + arg + NULLCHAR */
-    env = MallocSafe( sizeof( ENV_TRACKER ) + len1 - 2 + 1 + len + 1 );
-    FmtStr( env->value, "%s=%s", buf + 2, arg );
-    if( PutEnvSafe( env ) != 0 ) {
+    if( SetEnvSafe( name + 2, arg ) != 0 ) {
         return( 0 );
     }
-    strcpy( arg, buf );
+    strcpy( arg, name );    /* copy " @WMAKE%d" to arg */
     return( tmp );
 }
 
 STATIC void killTmpEnv( UINT16 tmp )
 /**********************************/
 {
-    ENV_TRACKER *env;
+    char        name[20];    /* "WMAKE%d" */
 
     if( tmp == 0 ) {
         return;
     }
-    env = MallocSafe( sizeof( ENV_TRACKER ) + 20 );
-    FmtStr( env->value, "WMAKE%d=", tmp );
-    PutEnvSafe( env );
+    FmtStr( name, "WMAKE%d", tmp );
+    SetEnvSafe( name, NULL );
 }
 #else
 STATIC UINT16 makeTmpEnv( const char *cmd )

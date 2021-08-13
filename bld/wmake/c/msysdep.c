@@ -473,32 +473,40 @@ char *GetEnvExt( const char *str )
     return( getenv( str ) );
 }
 
-int PutEnvExt( char *str )
+int SetEnvExt( ENV_TRACKER *env )
 {
 #if defined( __OS2__ )
-    int rc;
+    int     rc;
 
     rc = -1;
-    if( strncmp( str, BEGPATHNAME "=", sizeof( BEGPATHNAME "=" ) - 1 ) == 0 ) {
+    if( strcmp( env->name, BEGPATHNAME ) == 0 ) {
         if( ensure_loaded( ORD_DOS32SETEXTLIBPATH, (PFN *)&fnDosSetExtLIBPATH ) ) {
-            strcpy( os2BegLibPath, str + sizeof( BEGPATHNAME "=" ) - 1 );
+            if( env->value == NULL )
+                env->value = "";
+            strcpy( os2BegLibPath, env->value );
             rc = fnDosSetExtLIBPATH( os2BegLibPath, BEGIN_LIBPATH );
         }
         return( rc );
     }
-    if( strncmp( str, ENDPATHNAME "=", sizeof( ENDPATHNAME "=" ) - 1 ) == 0 ) {
+    if( strcmp( env->name, ENDPATHNAME ) == 0 ) {
         if( ensure_loaded( ORD_DOS32SETEXTLIBPATH, (PFN *)&fnDosSetExtLIBPATH ) ) {
-            strcpy( os2EndLibPath, str + sizeof( ENDPATHNAME "=" ) - 1 );
+            if( env->value == NULL )
+                env->value = "";
+            strcpy( os2EndLibPath, env->value );
             rc = fnDosSetExtLIBPATH( os2EndLibPath, END_LIBPATH );
         }
         return( rc );
     }
 #endif
-    return( putenv( str ) );
+#ifdef _MSC_VER
+    return( putenv( env->name ) );
+#else
+    return( setenv( env->name, env->value, true ) );
+#endif
 }
 
-int PutEnvSafe( ENV_TRACKER *env )
-/****************************************
+int SetEnvSafe( const char *name, const char *value )
+/****************************************************
  * This function takes over responsibility for freeing env
  */
 {
@@ -507,20 +515,42 @@ int PutEnvSafe( ENV_TRACKER *env )
     ENV_TRACKER *old;
     int         rc;
     size_t      len;
+    ENV_TRACKER *env;
 
-    p = env->value;
-                                    // upper case the name
-    while( *p != '=' && *p != NULLCHAR ) {
-        *p = ctoupper( *p );
-        ++p;
+    len = strlen( name );
+    env = MallocSafe( sizeof( ENV_TRACKER ) + len + strlen( value ) + 1 );
+    // upper case the name
+    p = env->name;
+    while( *name != NULLCHAR ) {
+        *p++ = ctoupper( *name++ );
     }
-    rc = PutEnvExt( env->value );   // put into environment
-    if( p[0] == '=' && p[1] == NULLCHAR ) {
+#ifdef _MSC_VER
+    *p++ = '=';
+#else
+    *p++ = NULLCHAR;
+#endif
+    if( value == NULL || *value == NULLCHAR ) {
+#ifdef _MSC_VER
+        *p = NULLCHAR;
+#endif
+        env->value = NULL;
+    } else {
+        env->value = p;
+        strcpy( env->value, value );
+    }
+    rc = SetEnvExt( env );          // put into environment
+    if( env->value == NULL ) {
         rc = 0;                     // we are deleting the envvar, ignore errors
     }
-    len = p - env->value + 1;       // len including '='
+#ifdef _MSC_VER
+    len++;
+#endif
     for( walk = &envList; *walk != NULL; walk = &(*walk)->next ) {
-        if( strncmp( (*walk)->value, env->value, len ) == 0 ) {
+#ifdef _MSC_VER
+        if( strncmp( (*walk)->name, env->name, len ) == 0 ) {
+#else
+        if( strcmp( (*walk)->name, env->name ) == 0 ) {
+#endif
             break;
         }
     }
@@ -529,7 +559,7 @@ int PutEnvSafe( ENV_TRACKER *env )
         *walk = old->next;          // unlink from chain
         FreeSafe( old );
     }
-    if( p[1] != NULLCHAR ) {        // we're giving it a new value
+    if( env->value != NULL ) {      // we're giving it a new value
         env->next = envList;        // save the memory since putenv keeps a
         envList = env;              // pointer to it...
     } else {                        // we're deleting an old value
@@ -540,7 +570,7 @@ int PutEnvSafe( ENV_TRACKER *env )
 
 
 #if !defined(NDEBUG) || defined(DEVELOPMENT)
-void PutEnvFini( void )
+void SetEnvFini( void )
 /****************************/
 {
     ENV_TRACKER *cur;
