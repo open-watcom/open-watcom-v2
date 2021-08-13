@@ -1856,29 +1856,31 @@ STATIC UINT16 makeTmpEnv( char *arg )
  */
 {
     UINT16      tmp;
-    char        buf[20];    /* "WMAKExxxxx=" + NULLCHAR = 11 + room for FmtStr */
+    char        buf[20];    /* " @WMAKE%d" */
     size_t      len;
+    size_t      len1;
     ENV_TRACKER *env;
 
     tmp = 1;
     for( ;; ) {
-        FmtStr( buf, "WMAKE%d", tmp );
+        FmtStr( buf, " @WMAKE%d", tmp );
         if( getenv( buf ) == NULL ) {
             break;
         }
         ++tmp;
     }
+    len1 = strlen( buf );
     len = strlen( arg );
-    if( len < 13 ) {     /* need room for " @WMAKExxxxx" */
+    if( len < len1 ) {  /* need room for " @WMAKE%d" in arg */
         return( 0 );
     }
-                        /* "WMAKExxxxx=" + arg + NULLCHAR */
-    env = MallocSafe( sizeof( ENV_TRACKER ) + len + 12 );
-    FmtStr( env->value, "WMAKE%d=%s", tmp, arg );
+                        /* "WMAKE%d=" + arg + NULLCHAR */
+    env = MallocSafe( sizeof( ENV_TRACKER ) + len1 - 2 + 1 + len + 1 );
+    FmtStr( env->value, "%s=%s", buf + 2, arg );
     if( PutEnvSafe( env ) != 0 ) {
         return( 0 );
     }
-    FmtStr( arg, " @WMAKE%d", tmp );
+    strcpy( arg, buf );
     return( tmp );
 }
 
