@@ -49,6 +49,8 @@
     #define _XPG4_2         /* Required on Solaris... */
     #include <strings.h>    /* for str*case* functions */
     #undef _XPG4_2          /* ...but causes trouble */
+#elif defined(__UNIX__)
+    #include <strings.h>    /* for str*case* functions */
 #endif
 #ifdef __UNIX__
     #include <sys/wait.h>
