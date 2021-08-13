@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,10 +32,6 @@
 
 #ifndef _MISC_H
 #define _MISC_H  1
-typedef struct EnvTracker {
-    struct EnvTracker   *next;
-    char                value[1];
-} ENV_TRACKER;
 
 extern char         *FixName( char *name );
 extern bool         FNameEq( const char *a, const char *b );
@@ -49,9 +46,5 @@ extern int          KWCompare( const void *p1, const void *p2 );
 extern char         *SkipWS( const char *p );
 extern char         *FindNextWS( const char *str );
 extern char         *FindNextWSorEqual( const char *str );
-extern int          PutEnvSafe( ENV_TRACKER *env );
-#if !defined(NDEBUG) || defined(DEVELOPMENT)
-extern void         PutEnvFini( void );
-#endif
 
 #endif

@@ -31,6 +31,7 @@
 
 
 #include "make.h"
+#include <ctype.h>
 #include "wio.h"
 #include "mcache.h"
 #include "mmemory.h"
@@ -81,6 +82,7 @@ extern void __far *_DOS_list_of_lists( void );
 
 #endif
 
+static ENV_TRACKER  *envList;
 
 #if defined( __DOS__ )
 
@@ -494,3 +496,58 @@ int PutEnvExt( char *str )
 #endif
     return( putenv( str ) );
 }
+
+int PutEnvSafe( ENV_TRACKER *env )
+/****************************************
+ * This function takes over responsibility for freeing env
+ */
+{
+    char        *p;
+    ENV_TRACKER **walk;
+    ENV_TRACKER *old;
+    int         rc;
+    size_t      len;
+
+    p = env->value;
+                                    // upper case the name
+    while( *p != '=' && *p != NULLCHAR ) {
+        *p = ctoupper( *p );
+        ++p;
+    }
+    rc = PutEnvExt( env->value );   // put into environment
+    if( p[0] == '=' && p[1] == NULLCHAR ) {
+        rc = 0;                     // we are deleting the envvar, ignore errors
+    }
+    len = p - env->value + 1;       // len including '='
+    for( walk = &envList; *walk != NULL; walk = &(*walk)->next ) {
+        if( strncmp( (*walk)->value, env->value, len ) == 0 ) {
+            break;
+        }
+    }
+    old = *walk;
+    if( old != NULL ) {
+        *walk = old->next;          // unlink from chain
+        FreeSafe( old );
+    }
+    if( p[1] != NULLCHAR ) {        // we're giving it a new value
+        env->next = envList;        // save the memory since putenv keeps a
+        envList = env;              // pointer to it...
+    } else {                        // we're deleting an old value
+        FreeSafe( env );
+    }
+    return( rc );
+}
+
+
+#if !defined(NDEBUG) || defined(DEVELOPMENT)
+void PutEnvFini( void )
+/****************************/
+{
+    ENV_TRACKER *cur;
+
+    while( (cur = envList) != NULL ) {
+        envList = cur->next;
+        FreeSafe( cur );
+    }
+}
+#endif

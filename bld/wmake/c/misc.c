@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,8 +60,6 @@
 /* UNIX: no changes */
 #define FIX_CHAR(c) (c)
 #endif
-
-static ENV_TRACKER  *envList;
 
 char *SkipWS( const char *p )
 /*****************************
@@ -378,59 +376,3 @@ int KWCompare( const void *p1, const void *p2 )     /* for bsearch */
 {
     return( stricmp( *(const char **)p1, *(const char **)p2 ) );
 }
-
-
-int PutEnvSafe( ENV_TRACKER *env )
-/****************************************
- * This function takes over responsibility for freeing env
- */
-{
-    char        *p;
-    ENV_TRACKER **walk;
-    ENV_TRACKER *old;
-    int         rc;
-    size_t      len;
-
-    p = env->value;
-                                    // upper case the name
-    while( *p != '=' && *p != NULLCHAR ) {
-        *p = ctoupper( *p );
-        ++p;
-    }
-    rc = PutEnvExt( env->value );   // put into environment
-    if( p[0] == '=' && p[1] == NULLCHAR ) {
-        rc = 0;                     // we are deleting the envvar, ignore errors
-    }
-    len = p - env->value + 1;       // len including '='
-    for( walk = &envList; *walk != NULL; walk = &(*walk)->next ) {
-        if( strncmp( (*walk)->value, env->value, len ) == 0 ) {
-            break;
-        }
-    }
-    old = *walk;
-    if( old != NULL ) {
-        *walk = old->next;          // unlink from chain
-        FreeSafe( old );
-    }
-    if( p[1] != NULLCHAR ) {        // we're giving it a new value
-        env->next = envList;        // save the memory since putenv keeps a
-        envList = env;              // pointer to it...
-    } else {                        // we're deleting an old value
-        FreeSafe( env );
-    }
-    return( rc );
-}
-
-
-#if !defined(NDEBUG) || defined(DEVELOPMENT)
-void PutEnvFini( void )
-/****************************/
-{
-    ENV_TRACKER *cur;
-
-    while( (cur = envList) != NULL ) {
-        envList = cur->next;
-        FreeSafe( cur );
-    }
-}
-#endif
