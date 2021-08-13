@@ -404,7 +404,7 @@ void InitSignals( void )
     signal( SIGINT, breakHandler );
 }
 
-#if defined( __OS2__ ) && !defined( _M_I86 )
+#if defined( __OS2__ )
 
 /* Older versions of OS/2 did not support BEGIN/ENDLIBPATH.
  * Dynamically query the API entrypoints to prevent load failures.
@@ -441,7 +441,7 @@ static bool ensure_loaded( ULONG ord, PFN *fn )
 
 char *GetEnvExt( const char *str )
 {
-#if defined( __OS2__ ) && !defined( _M_I86 )
+#if defined( __OS2__ )
     char    *rc;
 
     rc = NULL;
@@ -473,7 +473,7 @@ char *GetEnvExt( const char *str )
 
 int PutEnvExt( char *str )
 {
-#if defined( __OS2__ ) && !defined( _M_I86 )
+#if defined( __OS2__ )
     int rc;
 
     rc = -1;
