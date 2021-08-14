@@ -221,7 +221,7 @@ static orl_return       processExplicitFixup( omf_file_handle ofh, bool is32, om
     int                 offset;
     unsigned_8          fmethod;
     omf_idx             fidx = 0;
-    unsigned_8          thred;
+    unsigned_8          thread;
     unsigned_8          tmethod;
     omf_idx             tidx;
     unsigned_8          datum;
@@ -249,9 +249,9 @@ static orl_return       processExplicitFixup( omf_file_handle ofh, bool is32, om
     len -= 3;
 
     if( 0x80 & datum ) {
-        thred = ( datum >> 4 ) & 0x03;
-        fmethod = ofh->frame_thred[thred].method;
-        fidx = ofh->frame_thred[thred].idx;
+        thread = ( datum >> 4 ) & 0x03;
+        fmethod = ofh->frame_thread[thread].method;
+        fidx = ofh->frame_thread[thread].idx;
     } else {
         fmethod = ( datum >> 4 ) & 0x07;
         switch( fmethod ) {
@@ -270,9 +270,9 @@ static orl_return       processExplicitFixup( omf_file_handle ofh, bool is32, om
     }
 
     if( 0x08 & datum ) {
-        thred = datum & 0x03;
-        tmethod = ofh->target_thred[thred].method;
-        tidx = ofh->target_thred[thred].idx;
+        thread = datum & 0x03;
+        tmethod = ofh->target_thread[thread].method;
+        tidx = ofh->target_thread[thread].idx;
     } else {
         tmethod = datum & 0x03;
         tidx = loadIndex( &buf, &len );
@@ -304,9 +304,9 @@ static orl_return       processThreadFixup( omf_file_handle ofh, omf_bytes *buff
     omf_rec_size        len;
     unsigned_8          d;
     unsigned_8          method;
-    unsigned_8          thred;
+    unsigned_8          thread;
     unsigned_8          datum;
-    omf_thred_fixup     thredp;
+    omf_thread_fixup    threadp;
 
     assert( ofh );
     assert( buffer );
@@ -321,22 +321,22 @@ static orl_return       processThreadFixup( omf_file_handle ofh, omf_bytes *buff
     datum = buf[0];
     d = ( (datum & 0x40) != 0 );
     method = ( datum >> 2 ) & 0x07;
-    thred = datum & 0x03;
+    thread = datum & 0x03;
     buf++;
     len--;
 
     if( d ) {
-        thredp = &ofh->frame_thred[thred];
+        threadp = &ofh->frame_thread[thread];
     } else {
-        thredp = &ofh->target_thred[thred];
+        threadp = &ofh->target_thread[thread];
     }
 
-    thredp->method = method;
+    threadp->method = method;
 
     /* If Index expected
      */
     if( !d || ( method < 3 ) ) {
-        thredp->idx = loadIndex( &buf, &len );
+        threadp->idx = loadIndex( &buf, &len );
     }
 
     *buffer = buf;

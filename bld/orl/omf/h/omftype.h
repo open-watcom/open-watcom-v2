@@ -161,9 +161,9 @@ ORL_STRUCT( omf_handle ) {
     omf_file_handle     first_file_hnd;
 };
 
-TYPEDEF_LOCAL_TYPE( omf_thred_fixup );
+TYPEDEF_LOCAL_TYPE( omf_thread_fixup );
 
-ORL_STRUCT( omf_thred_fixup ) {
+ORL_STRUCT( omf_thread_fixup ) {
     omf_idx             idx;
     unsigned char       method;
 };
@@ -181,8 +181,8 @@ ORL_STRUCT( omf_file_handle ) {
     omf_sec_handle      relocs;
     omf_sec_handle      comments;
 
-    ORL_STRUCT( omf_thred_fixup )   frame_thred[4];
-    ORL_STRUCT( omf_thred_fixup )   target_thred[4];
+    ORL_STRUCT( omf_thread_fixup )   frame_thread[4];
+    ORL_STRUCT( omf_thread_fixup )   target_thread[4];
 
     omf_sec_handle      first_sec;
     omf_sec_handle      last_sec;
