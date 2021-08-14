@@ -497,6 +497,7 @@ static bool FCB_Alloc( FILE *fp, const char *filename, src_file_type typ )
         srcfcb->src_buf = src_buffer;
         src_buffer[0] = '\0';
         flist = AddFlist( filename );
+        FNameFullPath( flist );
         srcfcb->src_name = flist->name;
         srcfcb->src_line_cnt = 0;
         srcfcb->src_loc.line = 0;

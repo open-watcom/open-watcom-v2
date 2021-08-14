@@ -606,8 +606,19 @@ static FNAMEPTR FindFlist( char const *filename )
 static bool IsFNameOnce( char const *filename )
 {
     FNAMEPTR    flist;
+    char        fullfilename[_MAX_PATH];
+    char        *fullpath;
 
-    flist = FindFlist( filename );
+    fullpath = SrcFullPath( filename, fullfilename, sizeof( fullfilename ) );
+    if( fullpath == NULL )
+        return( false );
+    for( flist = FNames; flist != NULL; flist = flist->next ) {
+        if( flist->fullpath != NULL ) {
+            if( FNAMECMPSTR( fullpath, flist->fullpath ) == 0 ) {
+                break;
+            }
+        }
+    }
     if( flist == NULL )
         return( false );
     return( flist->once );
