@@ -498,9 +498,11 @@ int SetEnvExt( ENV_TRACKER *env )
         return( rc );
     }
 #endif
-#ifdef _MSC_VER
+#if defined( _MSC_VER )
     return( putenv( env->name ) );
 #else
+    if( env->value == NULL )
+        return( unsetenv( env->name ) );
     return( setenv( env->name, env->value, true ) );
 #endif
 }
