@@ -501,8 +501,10 @@ int SetEnvExt( ENV_TRACKER *env )
 #if defined( _MSC_VER )
     return( putenv( env->name ) );
 #else
+  #if !defined( __WATCOMC__ )
     if( env->value == NULL )
         return( unsetenv( env->name ) );
+  #endif
     return( setenv( env->name, env->value, true ) );
 #endif
 }
