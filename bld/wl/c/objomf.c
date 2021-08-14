@@ -295,7 +295,7 @@ static void ProcModuleEnd( void )
         }
         targetidx = GetIdx();
         switch( target ) {
-        case TARGET_SEGWD:
+        case TARGET_SEG:
             if( StartInfo.type != START_UNDEFED ) {
                 LnkMsg( LOC+MILD_ERR+MSG_MULT_START_ADDRS, "12", StartInfo.mod->f.source->infile->name, StartInfo.mod->name );
                 return;                 // <-------- NOTE: premature return
@@ -308,12 +308,12 @@ static void ProcModuleEnd( void )
             }
             StartInfo.mod = CurrMod;
             break;
-        case TARGET_EXTWD:
+        case TARGET_EXT:
             ext = (extnode *)FindNode( ExtNodes, targetidx );
             SetStartSym( ext->entry->name.u.ptr );
             break;
-        case TARGET_ABSWD:
-        case TARGET_GRPWD:
+        case TARGET_ABS:
+        case TARGET_GRP:
             BadObject();        // no one does these, right???
             break;
         }

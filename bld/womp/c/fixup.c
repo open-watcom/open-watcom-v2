@@ -108,7 +108,7 @@ STATIC uint_16 frameDatum( obj_rec *objr, uint_8 method ) {
 STATIC uint_16 targetDatum( obj_rec *objr, uint_8 method ) {
 
 /**/myassert( objr != NULL );
-    if( ( method & 0x03 ) == TARGET_ABSWD ) {
+    if( ( method & 0x03 ) == TARGET_ABS ) {
         return( ObjGet16( objr ) );
     }
     return( ObjGetIndex( objr ) );
@@ -305,7 +305,7 @@ STATIC uint_8 *putFrameDatum( uint_8 *p, uint_8 method, uint_16 datum ) {
 STATIC uint_8 *putTargetDatum( uint_8 *p, uint_8 method, uint_16 datum ) {
 
 /**/myassert( p != NULL );
-    if( ( method & 0x03 ) == TARGET_ABSWD ) {
+    if( ( method & 0x03 ) == TARGET_ABS ) {
         return( put16( p, datum ) );
     }
     return( putIndex( p, datum ) );

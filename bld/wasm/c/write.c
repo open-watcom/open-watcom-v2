@@ -645,7 +645,7 @@ static struct fixup *CreateFixupRecModend( struct asmfixup *fixup )
         return( NULL );
     case SYM_EXTERNAL:
         if( sym->mem_type == MT_NEAR || sym->mem_type == MT_FAR || sym->mem_type == MT_SHORT ) {
-            fixnode->lr.target = TARGET_EXTWD;
+            fixnode->lr.target = TARGET_EXT;
             fixnode->lr.target_datum = ((dir_node *)sym)->e.extinfo->idx;
             get_frame( fixnode, fixup );
             return( fixnode );
@@ -655,7 +655,7 @@ static struct fixup *CreateFixupRecModend( struct asmfixup *fixup )
         }
     default:
         /**/myassert( sym->segment != NULL );
-        fixnode->lr.target = TARGET_SEGWD;
+        fixnode->lr.target = TARGET_SEG;
         fixnode->lr.target_datum = ((dir_node *)sym->segment)->e.seginfo->idx;
         fixnode->lr.frame = FRAME_TARG;
         fixnode->lr.frame_datum = 0;
@@ -830,7 +830,7 @@ static struct fixup *CreateFixupRec( unsigned long offset, struct asmfixup *fixu
         AsmErr( SYMBOL_NOT_DEFINED, sym->name );
         return( NULL );
     case SYM_GRP:
-        fixnode->lr.target = TARGET_NO_DISPL( TARGET_GRPWD );
+        fixnode->lr.target = TARGET_NO_DISPL( TARGET_GRP );
         fixnode->lr.target_datum = ((dir_node *)sym)->e.grpinfo->idx;
         if( fixup->frame == NULL ) {
             fixnode->lr.frame = FRAME_GRP;
@@ -840,7 +840,7 @@ static struct fixup *CreateFixupRec( unsigned long offset, struct asmfixup *fixu
         }
         break;
     case SYM_SEG:
-        fixnode->lr.target = TARGET_NO_DISPL( TARGET_SEGWD );
+        fixnode->lr.target = TARGET_NO_DISPL( TARGET_SEG );
         fixnode->lr.target_datum = ((dir_node *)sym)->e.seginfo->idx;
         if( fixup->frame == NULL ) {
             fixnode->lr.frame = FRAME_SEG;
@@ -850,13 +850,13 @@ static struct fixup *CreateFixupRec( unsigned long offset, struct asmfixup *fixu
         }
         break;
     case SYM_EXTERNAL:
-        fixnode->lr.target = TARGET_NO_DISPL( TARGET_EXTWD );
+        fixnode->lr.target = TARGET_NO_DISPL( TARGET_EXT );
         fixnode->lr.target_datum = ((dir_node *)sym)->e.extinfo->idx;
         get_frame( fixnode, fixup );
         break;
     default:
         /**/myassert( sym->segment != NULL );
-        fixnode->lr.target = TARGET_NO_DISPL( TARGET_SEGWD );
+        fixnode->lr.target = TARGET_NO_DISPL( TARGET_SEG );
         fixnode->lr.target_datum = ((dir_node *)sym->segment)->e.seginfo->idx;
         get_frame( fixnode, fixup );
         break;
@@ -866,7 +866,7 @@ static struct fixup *CreateFixupRec( unsigned long offset, struct asmfixup *fixu
     /* Optimize the fixup */
     /*--------------------*/
 
-    if( fixnode->lr.frame == ( fixnode->lr.target - TARGET_NO_DISPL( TARGET_SEGWD ) ) ) {
+    if( fixnode->lr.frame == ( fixnode->lr.target - TARGET_NO_DISPL( TARGET_SEG ) ) ) {
         fixnode->lr.frame = FRAME_TARG;
     }
     return( fixnode );

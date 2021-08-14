@@ -1252,24 +1252,24 @@ orl_return OmfAddFixupp( omf_file_handle ofh, bool is32, int mode, omf_fix_loc f
     }
 
     switch( tmethod ) {
-    case( TARGET_SEGWD ):            /* segment index      */
+    case TARGET_SEG:            /* segment index      */
         sh = findSegment( ofh, tidx );
         if( sh == NULL )
             return( ORL_ERROR );
         orel->symbol = (orl_symbol_handle)(sh->assoc.seg.sym);
         break;
-    case( TARGET_GRPWD ):            /* group index        */
+    case TARGET_GRP:            /* group index        */
         grp = findGroup( ofh, tidx );
         if( grp == NULL )
             return( ORL_ERROR );
         orel->symbol = (orl_symbol_handle)(grp->sym);
         break;
-    case( TARGET_EXTWD ):            /* external index     */
+    case TARGET_EXT:            /* external index     */
         orel->symbol = (orl_symbol_handle)(findExtDefSym( ofh, tidx ));
         if( orel->symbol == NULL )
             return( ORL_ERROR );
         break;
-    case( TARGET_ABSWD ):            /* abs frame num      */
+    case TARGET_ABS:            /* abs frame num      */
         break;
     default:
         return( ORL_ERROR );

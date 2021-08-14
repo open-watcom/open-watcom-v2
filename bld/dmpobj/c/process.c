@@ -1060,13 +1060,13 @@ void ProcLedata( void )
 static void doFrame( byte frame )
 {
     switch( frame ) {
-    case FRAME_SEG:     Output( "SI(%u)%<", GetIndex(), 8 );     break;
-    case FRAME_GRP:     Output( "GI(%u)%<", GetIndex(), 8 );     break;
-    case FRAME_EXT:     Output( "EI(%u)%<", GetIndex(), 8 );     break;
-    case FRAME_ABS:     Output( "%x%<", GetUInt(), 8 );          break;
-    case FRAME_LOC:     Output( "LOCATION" );                    break;
-    case FRAME_TARG:    Output( "TARGET  " );                    break;
-    case FRAME_NONE:    Output( "NONE    " );                    break;
+    case FRAME_SEG:     Output( "SI(%u)%<", GetIndex(), 8 );    break;
+    case FRAME_GRP:     Output( "GI(%u)%<", GetIndex(), 8 );    break;
+    case FRAME_EXT:     Output( "EI(%u)%<", GetIndex(), 8 );    break;
+    case FRAME_ABS:     Output( "%x%<", GetUInt(), 8 );         break;
+    case FRAME_LOC:     Output( "LOCATION" );                   break;
+    case FRAME_TARG:    Output( "TARGET  " );                   break;
+    case FRAME_NONE:    Output( "NONE    " );                   break;
     default:
         Output( BAILOUT "Unknown frame(%b)" CRLF, frame );
         longjmp( BailOutJmp, 1 );
@@ -1076,10 +1076,10 @@ static void doFrame( byte frame )
 static void doTarget( byte target )
 {
     switch( target & 0x03 ) {
-    case TARGET_SEGWD:   Output( "SI(%u)", GetIndex() );         break;
-    case TARGET_GRPWD:   Output( "GI(%u)", GetIndex() );         break;
-    case TARGET_EXTWD:   Output( "EI(%u)", GetIndex() );         break;
-    case TARGET_ABSWD:   Output( "%x", GetUInt() );              break;
+    case TARGET_SEG:    Output( "SI(%u)", GetIndex() );         break;
+    case TARGET_GRP:    Output( "GI(%u)", GetIndex() );         break;
+    case TARGET_EXT:    Output( "EI(%u)", GetIndex() );         break;
+    case TARGET_ABS:    Output( "%x", GetUInt() );              break;
     }
 }
 
@@ -1157,7 +1157,7 @@ static bool doTargetTranslateIndex( byte target, size_t *printpos )
         deltacol = 0;
     }
     switch( target & 0x03 ) {
-    case TARGET_SEGWD:
+    case TARGET_SEG:
         idx = GetIndex();
         sd = GetSegdef( idx );
         if( sd != NULL ) {
@@ -1165,7 +1165,7 @@ static bool doTargetTranslateIndex( byte target, size_t *printpos )
             needcrlf = true;
         }
         break;
-    case TARGET_GRPWD:
+    case TARGET_GRP:
         idx = GetIndex();
         gd = GetGrpdef( idx );
         if( gd != NULL ) {
@@ -1173,14 +1173,14 @@ static bool doTargetTranslateIndex( byte target, size_t *printpos )
             needcrlf = true;
         }
         break;
-    case TARGET_EXTWD:
+    case TARGET_EXT:
         idx = GetIndex();
         if( TranslateIndex ) {
             *printpos = Output( "%<- '%s'", deltacol, GetXname( idx ) );
             needcrlf = true;
         }
         break;
-    case TARGET_ABSWD:
+    case TARGET_ABS:
         GetUInt();
 //        Output( "%x", GetUInt() );
         break;

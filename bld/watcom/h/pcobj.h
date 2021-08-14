@@ -121,10 +121,10 @@ enum {
  *  INTEL Target Specifiers
  */
 
-    TARGET_SEGWD        = 0,        /* segment index with displacement  */
-    TARGET_GRPWD        = 1,        /* group index with displacement    */
-    TARGET_EXTWD        = 2,        /* external index with displacement */
-    TARGET_ABSWD        = 3,        /* abs frame num with displacement  */
+    TARGET_SEG          = 0,        /* segment index with displacement  */
+    TARGET_GRP          = 1,        /* group index with displacement    */
+    TARGET_EXT          = 2,        /* external index with displacement */
+    TARGET_ABS          = 3,        /* abs frame num with displacement  */
 
 /*
  *  INTEL Group Specifiers

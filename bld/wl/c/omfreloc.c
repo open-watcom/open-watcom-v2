@@ -128,22 +128,22 @@ static void GetTarget( unsigned type, target_spec *target )
     segnode             *seg;
 
     switch( type ) {
-    case TARGET_SEGWD:
+    case TARGET_SEG:
         seg = (segnode *) FindNode( SegNodes, GetIdx() );
         target->u.sdata = seg->entry;
         target->type = FIX_TARGET_SEG;
         break;
-    case TARGET_GRPWD:
+    case TARGET_GRP:
         group = (grpnode *) FindNode( GrpNodes, GetIdx() );
         target->u.group = group->entry;
         target->type = FIX_TARGET_GRP;
         break;
-    case TARGET_EXTWD:
+    case TARGET_EXT:
         ext = (extnode *) FindNode( ExtNodes, GetIdx() );
         target->u.sym = ext->entry;
         target->type = FIX_TARGET_EXT;
         break;
-    case TARGET_ABSWD:
+    case TARGET_ABS:
         _TargU16toHost( _GetU16UN( ObjBuff ), target->u.abs );
         ObjBuff += sizeof( unsigned_16 );
         target->type = FIX_TARGET_ABS;
