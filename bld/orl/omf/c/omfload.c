@@ -281,13 +281,17 @@ static orl_return       processExplicitFixup( omf_file_handle ofh, bool is32, om
     datum = buf[2];
     buf += 3;
     len -= 3;
-    /* frame processing */
+    /*
+     * frame processing
+     */
     if( 0x80 & datum ) {
         fthread = ofh->frame_thread[( datum >> 4 ) & 3];
     } else {
         GetFrame( ( datum >> 4 ) & 7, &fthread, &buf, &len );
     }
-    /* target processing */
+    /*
+     * target processing
+     */
     if( 0x08 & datum ) {
         tthread = ofh->target_thread[datum & 3];
     } else {
@@ -298,7 +302,9 @@ static orl_return       processExplicitFixup( omf_file_handle ofh, bool is32, om
             fthread = tthread;
         }
     }
-    /* frame displacement processing */
+    /*
+     * target displacement processing
+     */
     if( datum & 0x04 ) {
         disp = 0;
     } else {
@@ -334,10 +340,14 @@ static orl_return       processThreadFixup( omf_file_handle ofh, omf_bytes *buff
     len--;
 
     if( datum & 0x40 ) {
-        /* frame thread processing */
+        /*
+         * frame thread processing
+         */
         GetFrame( ( datum >> 2 ) & 7, &ofh->frame_thread[datum & 3], &buf, &len );
     } else {
-        /* target thread processing */
+        /*
+         * target thread processing
+         */
         GetTarget( ( datum >> 2 ) & 3, &ofh->target_thread[datum & 3], &buf, &len );
     }
 
@@ -819,6 +829,9 @@ static orl_return       doSEGDEF( omf_file_handle ofh, omf_rectyp typ )
         } else {
             frame = loadFrameNumber( &buffer, &len );
         }
+        /*
+         * skip one byte
+         */
         buffer += 1;
         len -= 1;
         if( len < ( wordsize + 3 ) ) {

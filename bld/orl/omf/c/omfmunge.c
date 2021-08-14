@@ -1246,11 +1246,6 @@ orl_return OmfAddFixupp( omf_file_handle ofh, bool is32, int mode, omf_fix_loc f
     orel->section = (orl_sec_handle)(ofh->work_sec);
     orel->addend = disp;
 
-    if( fmethod == FRAME_LOC ) {
-        fmethod = FRAME_SEG;
-        fidx = ofh->work_sec->assoc.seg.seg_id;
-    }
-
     switch( tmethod ) {
     case TARGET_SEG:            /* segment index      */
         sh = findSegment( ofh, tidx );
@@ -1273,6 +1268,11 @@ orl_return OmfAddFixupp( omf_file_handle ofh, bool is32, int mode, omf_fix_loc f
         break;
     default:
         return( ORL_ERROR );
+    }
+
+    if( fmethod == FRAME_LOC ) {
+        fmethod = FRAME_SEG;
+        fidx = ofh->work_sec->assoc.seg.seg_id;
     }
 
     switch( fmethod ) {

@@ -72,27 +72,22 @@ void ResetOMFReloc( void )
     BakPats = NULL;
 }
 
-static void GetFrame( unsigned type, frame_spec *frame )
-/******************************************************/
+static void GetFrame( unsigned method, frame_spec *frame )
+/********************************************************/
 /* Get frame for fixup. */
 {
     extnode     *ext;
     grpnode     *group;
     segnode     *seg;
-    unsigned    index;
 
-    index = 0;
-    if( type < FRAME_LOC ) {
-        index = GetIdx();
-    }
-    switch( type ) {
+    switch( method ) {
     case FRAME_SEG:
-        seg = (segnode *) FindNode( SegNodes, index );
+        seg = (segnode *) FindNode( SegNodes, GetIdx() );
         frame->u.sdata = seg->entry;
         frame->type = FIX_FRAME_SEG;
         break;
     case FRAME_GRP:
-        group = (grpnode *) FindNode( GrpNodes, index );
+        group = (grpnode *) FindNode( GrpNodes, GetIdx() );
         if( group->entry == NULL ) {
             frame->type = FIX_FRAME_FLAT;
         } else {
@@ -101,7 +96,7 @@ static void GetFrame( unsigned type, frame_spec *frame )
         }
         break;
     case FRAME_EXT:
-        ext = (extnode *) FindNode( ExtNodes, index );
+        ext = (extnode *) FindNode( ExtNodes, GetIdx() );
         if( IS_SYM_IMPORTED( ext->entry ) ) {
             frame->type = FIX_FRAME_TARG;
         } else {
@@ -109,25 +104,30 @@ static void GetFrame( unsigned type, frame_spec *frame )
             frame->type = FIX_FRAME_EXT;
         }
         break;
-    case FRAME_TARG:
-        frame->type = FIX_FRAME_TARG;
+    case FRAME_ABS:
+        _TargU16toHost( _GetU16UN( ObjBuff ), frame->u.abs );
+        ObjBuff += sizeof( unsigned_16 );
+        frame->type = FIX_FRAME_ABS;
         break;
     case FRAME_LOC:
         frame->type = FIX_FRAME_LOC;
+        break;
+    case FRAME_TARG:
+        frame->type = FIX_FRAME_TARG;
         break;
     default:
         BadObject();
     }
 }
 
-static void GetTarget( unsigned type, target_spec *target )
-/*********************************************************/
+static void GetTarget( unsigned method, target_spec *target )
+/***********************************************************/
 {
     extnode             *ext;
     grpnode             *group;
     segnode             *seg;
 
-    switch( type ) {
+    switch( method ) {
     case TARGET_SEG:
         seg = (segnode *) FindNode( SegNodes, GetIdx() );
         target->u.sdata = seg->entry;
@@ -170,13 +170,21 @@ void DoRelocs( void )
     }
     do {
         typ = *ObjBuff++;
-        if( (typ & 0x80) == 0 ) {   /*  thread */
-            if( typ & 0x40 ) {      /*  frame */
+        if( (typ & 0x80) == 0 ) {
+            /*
+             * thread
+             */
+            if( typ & 0x40 ) {
+                /*  frame */
                 GetFrame( (typ >> 2) & 7, &FrameThreads[typ & 3] );
-            } else {                /*  target */
+            } else {
+                /*  target */
                 GetTarget( (typ >> 2) & 3, &TargThreads[typ & 3] );
             }
-        } else {                    /* fixup */
+        } else {
+            /*
+             * fixup
+             */
             fixtype = 0;
             switch( (typ >> 2) & 0x0F ) {
             case LOC_OFFSET_LO:
@@ -223,16 +231,25 @@ void DoRelocs( void )
             }
             location = ((typ & 3) << 8) + *ObjBuff++;
             typ = *ObjBuff++;
+            /*
+             * frame processing
+             */
             if( typ & 0x80 ) {
                 fthread = FrameThreads[( typ >> 4 ) & 3];
             } else {
                 GetFrame( ( typ >> 4 ) & 7, &fthread );
             }
+            /*
+             * target processing
+             */
             if( typ & 8 ) {
                 tthread = TargThreads[typ & 3];
             } else {
                 GetTarget( typ & 3, &tthread );
             }
+            /*
+             * target addend processing
+             */
             addend = 0;
             if( (typ & 4) == 0 ) {
                 if( ObjFormat & FMT_32BIT_REC ) {

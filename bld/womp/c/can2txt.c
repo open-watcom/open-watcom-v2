@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,13 +61,13 @@ STATIC const char *locMethods[] = {
 };
 
 STATIC const char *frameMethods[] = {
-/*FRAME_SEG, TARGET_SEGWD */  "SI",
-/*FRAME_GRP, TARGET_GRPWD */  "GI",
-/*FRAME_EXT, TARGET_EXTWD */  "EI",
-/*FRAME_ABS, TARGET_ABSWD */  "",
-/*FRAME_LOC               */  "LOCATION",
-/*FRAME_TARG              */  "TARGET",
-/*FRAME_NONE              */  "NONE"
+/*FRAME_SEG, TARGET_SEG */  "SI",
+/*FRAME_GRP, TARGET_GRP */  "GI",
+/*FRAME_EXT, TARGET_EXT */  "EI",
+/*FRAME_ABS, TARGET_ABS */  "",
+/*FRAME_LOC             */  "LOCATION",
+/*FRAME_TARG            */  "TARGET",
+/*FRAME_NONE            */  "NONE"
 };
 
 STATIC void printAddrHdl( const char *prefix, addr_handle hdl ) {
@@ -97,7 +97,7 @@ STATIC void printAddrHdl( const char *prefix, addr_handle hdl ) {
             fix->loader_resolved ? "LR" : empty,
             locMethods[ fix->loc_method ],
             frameMethods[ fix->lr.frame ] );
-/**/    myassert( fix->lr.frame <= FRAME_NONE && fix->lr.target <= TARGET_ABSWD );
+/**/    myassert( fix->lr.frame <= FRAME_NONE && fix->lr.target <= TARGET_ABS );
         if( fix->lr.frame < FRAME_LOC ) {
             PrtFmt( "(%x)", fix->lr.frame_datum );
         }
