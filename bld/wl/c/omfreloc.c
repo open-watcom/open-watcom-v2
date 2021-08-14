@@ -127,7 +127,7 @@ static void GetTarget( unsigned type, target_spec *target )
     grpnode             *group;
     segnode             *seg;
 
-    switch( type & 3 ) {
+    switch( type ) {
     case TARGET_SEGWD:
         seg = (segnode *) FindNode( SegNodes, GetIdx() );
         target->u.sdata = seg->entry;
@@ -158,8 +158,6 @@ void DoRelocs( void )
     fix_type    fixtype;
     unsigned    typ;
     offset      location;
-    unsigned    ftype;
-    unsigned    ttype;
     offset      addend;
     frame_spec  fthread;
     target_spec tthread;
@@ -174,15 +172,13 @@ void DoRelocs( void )
         typ = *ObjBuff++;
         if( (typ & 0x80) == 0 ) {   /*  thread */
             if( typ & 0x40 ) {      /*  frame */
-                ftype = (typ >> 2) & 7;
-                GetFrame( ftype, &FrameThreads[typ & 3] );
+                GetFrame( (typ >> 2) & 7, &FrameThreads[typ & 3] );
             } else {                /*  target */
-                ttype = (typ >> 2) & 7;
-                GetTarget( ttype, &TargThreads[typ & 3] );
+                GetTarget( (typ >> 2) & 3, &TargThreads[typ & 3] );
             }
         } else {                    /* fixup */
             fixtype = 0;
-            switch( (omf_fix_loc)((typ >> 2) & 0x0F) ) {
+            switch( (typ >> 2) & 0x0F ) {
             case LOC_OFFSET_LO:
                 fixtype = FIX_OFFSET_8;
                 break;
@@ -227,17 +223,15 @@ void DoRelocs( void )
             }
             location = ((typ & 3) << 8) + *ObjBuff++;
             typ = *ObjBuff++;
-            ftype = ( typ >> 4 ) & 7;
             if( typ & 0x80 ) {
                 fthread = FrameThreads[( typ >> 4 ) & 3];
             } else {
-                GetFrame( ftype, &fthread );
+                GetFrame( ( typ >> 4 ) & 7, &fthread );
             }
-            ttype = typ & 7;
             if( typ & 8 ) {
                 tthread = TargThreads[typ & 3];
             } else {
-                GetTarget( ttype, &tthread );
+                GetTarget( typ & 3, &tthread );
             }
             addend = 0;
             if( (typ & 4) == 0 ) {

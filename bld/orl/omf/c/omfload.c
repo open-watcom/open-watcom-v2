@@ -274,12 +274,12 @@ static orl_return       processExplicitFixup( omf_file_handle ofh, bool is32, om
         tmethod = ofh->target_thred[thred].method;
         tidx = ofh->target_thred[thred].idx;
     } else {
-        tmethod = datum & 0x07;
+        tmethod = datum & 0x03;
         tidx = loadIndex( &buf, &len );
         if( fmethod == FRAME_TARG ) {
             /* fmethod becomes the same as tmethod (1 of first 3)
              */
-            fmethod = tmethod & 0x03;
+            fmethod = tmethod;
             fidx = tidx;
         }
     }
