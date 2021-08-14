@@ -553,7 +553,7 @@ static orl_return   writeAndFixupLIData( omf_file_handle ofh, omf_sec_handle sh,
 
                 /* insert into new fixup queue
                  */
-                if( ofh->lidata->new_fixup ) {
+                if( ofh->lidata->new_fixup != NULL ) {
                     ofh->lidata->last_fixup->next = ntr;
                 } else {
                     ofh->lidata->new_fixup = ntr;
@@ -1139,8 +1139,9 @@ orl_return OmfAddFixupp( omf_file_handle ofh, bool is32, int mode, omf_fix_loc f
     memset( orel, 0, ORL_STRUCT_SIZEOF( orl_reloc ) );
 
     switch( fix_loc ) {
-    case( LOC_OFFSET_LO ):              /* relocate lo byte of offset   */
-        /* should be 8 rather then 16, fix later
+    case( LOC_OFFSET_LO ):
+        /*
+         * relocate lo byte of offset
          */
         if( mode ) {
             orel->type = ORL_RELOC_TYPE_WORD_8;
@@ -1148,24 +1149,36 @@ orl_return OmfAddFixupp( omf_file_handle ofh, bool is32, int mode, omf_fix_loc f
             orel->type = ORL_RELOC_TYPE_REL_8;
         }
         break;
-    case( LOC_OFFSET ):                 /* relocate offset              */
+    case( LOC_OFFSET ):
+        /*
+         * relocate 16-bit offset
+         */
         if( mode ) {
             orel->type = ORL_RELOC_TYPE_WORD_16;
         } else {
             orel->type = ORL_RELOC_TYPE_REL_16;
         }
         break;
-    case( LOC_BASE ):                   /* relocate segment             */
-            orel->type = ORL_RELOC_TYPE_SEGMENT;
+    case( LOC_BASE ):
+        /*
+         * relocate segment
+         */
+        orel->type = ORL_RELOC_TYPE_SEGMENT;
         break;
-    case( LOC_BASE_OFFSET ):            /* relocate segment and offset  */
+    case( LOC_BASE_OFFSET ):
+        /*
+         * relocate segment and 16-bit offset
+         */
         if( mode ) {
             orel->type = ORL_RELOC_TYPE_WORD_16_SEG;
         } else {
             orel->type = ORL_RELOC_TYPE_REL_16_SEG;
         }
         break;
-    case( LOC_OFFSET_HI ):              /* relocate hi byte of offset   */
+    case( LOC_OFFSET_HI ):
+        /*
+         * relocate hi byte of offset
+         */
         if( mode ) {
             orel->type = ORL_RELOC_TYPE_WORD_HI_8;
         } else {
@@ -1174,28 +1187,41 @@ orl_return OmfAddFixupp( omf_file_handle ofh, bool is32, int mode, omf_fix_loc f
         break;
     case( LOC_OFFSET_LOADER ):
         if( ofh->status & OMF_STATUS_EASY_OMF ) {
-            if( mode ) {                /* Pharlap, relocate 32-bit offset  */
+            /*
+             * Pharlap, relocate 32-bit offset
+             */
+            if( mode ) {
                 orel->type = ORL_RELOC_TYPE_WORD_32;
             } else {
                 orel->type = ORL_RELOC_TYPE_REL_32;
             }
             break;
         }
-        if( mode ) {                    /* relocate offset, ldr resolved    */
+        /*
+         * relocate 16-bit offset, loader resolved
+         */
+        if( mode ) {
             orel->type = ORL_RELOC_TYPE_WORD_16;
         } else {
             orel->type = ORL_RELOC_TYPE_REL_16;
         }
         break;
-    case( LOC_OFFSET_32 ):              /* relocate 32-bit offset           */
-    case( LOC_OFFSET_32_LOADER ):       /* like OFFSET_32, ldr resolved     */
+    case( LOC_OFFSET_32 ):
+    case( LOC_OFFSET_32_LOADER ):
+        /*
+         * relocate 32-bit offset
+         * relocate 32-bit offset, loader resolved
+         */
         if( mode ) {
             orel->type = ORL_RELOC_TYPE_WORD_32;
         } else {
             orel->type = ORL_RELOC_TYPE_REL_32;
         }
         break;
-    case( LOC_PHARLAP_BASE_OFFSET_32 ): /* Pharlap, relocate seg and 32bit offset */
+    case( LOC_PHARLAP_BASE_OFFSET_32 ):
+        /*
+         * Pharlap, relocate segment and 32-bit offset
+         */
         if( (ofh->status & OMF_STATUS_EASY_OMF) == 0 ) {
             return( ORL_ERROR );
         }
@@ -1210,8 +1236,8 @@ orl_return OmfAddFixupp( omf_file_handle ofh, bool is32, int mode, omf_fix_loc f
     default:
         return( ORL_ERROR );
     }
-
-    /* no section for fixups to refer to
+    /*
+     * no section for fixups to refer to
      */
     if( ofh->work_sec == NULL )
         return( ORL_ERROR );

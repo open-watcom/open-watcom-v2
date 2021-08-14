@@ -67,13 +67,13 @@ static frame_spec       FrameThreads[MAX_THREADS];
 static target_spec      TargThreads[MAX_THREADS];
 
 void ResetOMFReloc( void )
-/*******************************/
+/************************/
 {
     BakPats = NULL;
 }
 
-static void GetFrame( unsigned frame, frame_spec *refframe )
-/**********************************************************/
+static void GetFrame( unsigned type, frame_spec *frame )
+/******************************************************/
 /* Get frame for fixup. */
 {
     extnode     *ext;
@@ -82,52 +82,52 @@ static void GetFrame( unsigned frame, frame_spec *refframe )
     unsigned    index;
 
     index = 0;
-    if( frame < FRAME_LOC ) {
+    if( type < FRAME_LOC ) {
         index = GetIdx();
     }
-    switch( frame ) {
+    switch( type ) {
     case FRAME_SEG:
         seg = (segnode *) FindNode( SegNodes, index );
-        refframe->u.sdata = seg->entry;
-        refframe->type = FIX_FRAME_SEG;
+        frame->u.sdata = seg->entry;
+        frame->type = FIX_FRAME_SEG;
         break;
     case FRAME_GRP:
         group = (grpnode *) FindNode( GrpNodes, index );
         if( group->entry == NULL ) {
-            refframe->type = FIX_FRAME_FLAT;
+            frame->type = FIX_FRAME_FLAT;
         } else {
-            refframe->u.group = group->entry;
-            refframe->type = FIX_FRAME_GRP;
+            frame->u.group = group->entry;
+            frame->type = FIX_FRAME_GRP;
         }
         break;
     case FRAME_EXT:
         ext = (extnode *) FindNode( ExtNodes, index );
         if( IS_SYM_IMPORTED( ext->entry ) ) {
-            refframe->type = FIX_FRAME_TARG;
+            frame->type = FIX_FRAME_TARG;
         } else {
-            refframe->u.sym = ext->entry;
-            refframe->type = FIX_FRAME_EXT;
+            frame->u.sym = ext->entry;
+            frame->type = FIX_FRAME_EXT;
         }
         break;
     case FRAME_TARG:
-        refframe->type = FIX_FRAME_TARG;
+        frame->type = FIX_FRAME_TARG;
         break;
     case FRAME_LOC:
-        refframe->type = FIX_FRAME_LOC;
+        frame->type = FIX_FRAME_LOC;
         break;
     default:
         BadObject();
     }
 }
 
-static void GetTarget( unsigned loc, target_spec *target )
-/********************************************************/
+static void GetTarget( unsigned type, target_spec *target )
+/*********************************************************/
 {
     extnode             *ext;
     grpnode             *group;
     segnode             *seg;
 
-    switch( loc & 3 ) {
+    switch( type & 3 ) {
     case TARGET_SEGWD:
         seg = (segnode *) FindNode( SegNodes, GetIdx() );
         target->u.sdata = seg->entry;
@@ -157,8 +157,9 @@ void DoRelocs( void )
 {
     fix_type    fixtype;
     unsigned    typ;
-    offset      place_to_fix;
-    unsigned    loc;
+    offset      location;
+    unsigned    ftype;
+    unsigned    ttype;
     offset      addend;
     frame_spec  fthread;
     target_spec tthread;
@@ -173,9 +174,11 @@ void DoRelocs( void )
         typ = *ObjBuff++;
         if( (typ & 0x80) == 0 ) {   /*  thread */
             if( typ & 0x40 ) {      /*  frame */
-                GetFrame( (typ >> 2) & 7, &FrameThreads[typ & 3] );
+                ftype = (typ >> 2) & 7;
+                GetFrame( ftype, &FrameThreads[ftype & 3] );
             } else {                /*  target */
-                GetTarget( (typ >> 2) & 7, &TargThreads[typ & 3] );
+                ttype = (typ >> 2) & 7;
+                GetTarget( ttype, &TargThreads[ttype & 3] );
             }
         } else {                    /* fixup */
             fixtype = 0;
@@ -222,22 +225,22 @@ void DoRelocs( void )
             if( fixtype && (typ & 0x40) == 0 ) {
                 fixtype |= FIX_REL;
             }
-            place_to_fix = ((typ & 3) << 8) + *ObjBuff++;
+            location = ((typ & 3) << 8) + *ObjBuff++;
             typ = *ObjBuff++;
-            loc = typ >> 4 & 7;
+            ftype = ( typ >> 4 ) & 7;
             if( typ & 0x80 ) {
-                fthread = FrameThreads[loc & 3];
+                fthread = FrameThreads[ftype & 3];
             } else {
-                GetFrame( loc, &fthread );
+                GetFrame( ftype, &fthread );
             }
-            loc = typ & 7;
+            ttype = typ & 7;
             if( typ & 8 ) {
-                tthread = TargThreads[loc & 3];
+                tthread = TargThreads[ttype & 3];
             } else {
-                GetTarget( loc, &tthread );
+                GetTarget( ttype, &tthread );
             }
             addend = 0;
-            if( loc <= TARGET_ABSWD ) {  /*  if( (loc & 4) == 0 )then */
+            if( ttype & 4 ) {
                 if( ObjFormat & FMT_32BIT_REC ) {
                     addend = GET_U32_UN( ObjBuff );
                     ObjBuff += sizeof( unsigned_32 );
@@ -246,7 +249,7 @@ void DoRelocs( void )
                     ObjBuff += sizeof( unsigned_16 );
                 }
             }
-            StoreFixup( place_to_fix, fixtype, &fthread, &tthread, addend );
+            StoreFixup( location, fixtype, &fthread, &tthread, addend );
         }
     } while( ObjBuff < EOObjRec );
 }

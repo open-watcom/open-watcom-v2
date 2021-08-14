@@ -575,7 +575,7 @@ int SetEnvSafe( const char *name, const char *value )
 
 #if !defined(NDEBUG) || defined(DEVELOPMENT)
 void SetEnvFini( void )
-/****************************/
+/*********************/
 {
     ENV_TRACKER *cur;
 
