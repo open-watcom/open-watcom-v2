@@ -175,10 +175,10 @@ void DoRelocs( void )
         if( (typ & 0x80) == 0 ) {   /*  thread */
             if( typ & 0x40 ) {      /*  frame */
                 ftype = (typ >> 2) & 7;
-                GetFrame( ftype, &FrameThreads[ftype & 3] );
+                GetFrame( ftype, &FrameThreads[typ & 3] );
             } else {                /*  target */
                 ttype = (typ >> 2) & 7;
-                GetTarget( ttype, &TargThreads[ttype & 3] );
+                GetTarget( ttype, &TargThreads[typ & 3] );
             }
         } else {                    /* fixup */
             fixtype = 0;
@@ -229,18 +229,18 @@ void DoRelocs( void )
             typ = *ObjBuff++;
             ftype = ( typ >> 4 ) & 7;
             if( typ & 0x80 ) {
-                fthread = FrameThreads[ftype & 3];
+                fthread = FrameThreads[( typ >> 4 ) & 3];
             } else {
                 GetFrame( ftype, &fthread );
             }
             ttype = typ & 7;
             if( typ & 8 ) {
-                tthread = TargThreads[ttype & 3];
+                tthread = TargThreads[typ & 3];
             } else {
                 GetTarget( ttype, &tthread );
             }
             addend = 0;
-            if( ttype & 4 ) {
+            if( (typ & 4) == 0 ) {
                 if( ObjFormat & FMT_32BIT_REC ) {
                     addend = GET_U32_UN( ObjBuff );
                     ObjBuff += sizeof( unsigned_32 );
