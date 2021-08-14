@@ -227,10 +227,13 @@ static void GetFrame( unsigned char method, ORL_STRUCT( omf_thread_fixup ) *thre
     case FRAME_GRP:                 /* group index                  */
     case FRAME_EXT:                 /* external index               */
         thread->idx = loadIndex( buffer, len );
+        break;
     case FRAME_ABS:                 /* absolute frame number        */
         thread->idx = loadFrameNumber( buffer, len );
+        break;
     default:
         thread->idx = 0;
+        break;
     }
 }
 
@@ -242,10 +245,13 @@ static void GetTarget( unsigned char method, ORL_STRUCT( omf_thread_fixup ) *thr
     case TARGET_GRP:                /* group index                  */
     case TARGET_EXT:                /* external index               */
         thread->idx = loadIndex( buffer, len );
+        break;
     case TARGET_ABS:                /* absolute frame number        */
         thread->idx = loadFrameNumber( buffer, len );
+        break;
     default:
         thread->idx = 0;
+        break;
     }
 }
 
