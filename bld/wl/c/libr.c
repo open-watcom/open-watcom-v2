@@ -342,7 +342,7 @@ int CheckLibraryType( file_list *list, unsigned long *loc, bool makedict )
     int                 reclength;
 
     reclength = 0;
-    header = CacheRead( list, *loc, sizeof( lib_header ) );
+    header = CacheRead( list, *loc, sizeof( omf_lib_header ) );
     if( header[0] == 0xf0 && header[1] == 0x01 ) {
         // COFF object for PPC
     } else if( header[0] == LIB_HEADER_REC ) {   // reading from a library
@@ -351,7 +351,7 @@ int CheckLibraryType( file_list *list, unsigned long *loc, bool makedict )
         if( reclength < 0 ) {
             return( -1 );
         }
-        *loc += ROUND_UP( sizeof( lib_header ), reclength );
+        *loc += ROUND_UP( sizeof( omf_lib_header ), reclength );
     } else if( memcmp( header, AR_IDENT, AR_IDENT_LEN ) == 0 ) {
         list->flags |= STAT_AR_LIB;
         reclength = 2;

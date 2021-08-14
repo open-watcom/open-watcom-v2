@@ -40,18 +40,18 @@
 /*
  * Library stuff
  */
-typedef struct lib_header {
+typedef struct omf_lib_header {
     uint_8      cmd;
     uint_16     length;
     uint_32     dict_start;
     uint_16     dict_size;
-} lib_header;
+} omf_lib_header;
 
 enum {
-    LIB_FULL_PAGE       = 0xff,
     LIB_NOT_FOUND       = 0,
     LIB_HEADER_REC      = 0xf0,
-    LIB_TRAILER_REC     = 0xf1
+    LIB_TRAILER_REC     = 0xf1,
+    LIB_FULL_PAGE       = 0xff
 };
 
 #define DIC_REC_SIZE    512U        /* record size of dictionary entry */
@@ -59,7 +59,7 @@ enum {
 /*
  *  INTEL Segment Alignment Specifiers - A field
  */
- enum {
+enum {
     ALIGN_ABS           = 0,        /* absolute segment - no alignment  */
     ALIGN_BYTE          = 1,        /* relocatable seg - byte aligned   */
     ALIGN_WORD          = 2,        /* relocatable seg - word aligned   */
@@ -315,7 +315,7 @@ typedef struct {
     char    mem_model;
     char    unknown;
     char    emulation;
-} cpu_data;
+} omf_cpu_data;
 
 /*
     Linker directives (mostly WLINK directives)
