@@ -91,7 +91,7 @@ enum {
 #define SEGATTR_A( a )  (ALIGN_##a << 5)
 #define SEGATTR_C( a )  (COMB_##a << 2)
 enum {
-      SEGATTR_BIG  =   1<< 1,   // exactly 64k or 2**32
+      SEGATTR_BIG  =   1 << 1,  // exactly 64k or 2**32
       SEGATTR_P    =   1,       // use 32
 };
 /*  Bits in FIXUPP records          TAI */
@@ -137,7 +137,7 @@ enum {
     GRP_ADDR            = 0xfa,     /* load time addr for the group     */
 };
 
-#define TARGET_NO_DISPL(x)  (x | 4) /* frame without displacement       */
+#define TARGET_NO_DISPL(x)  ((x) | 4) /* frame without displacement       */
 
 /*
  *  INTEL Object Record Types
