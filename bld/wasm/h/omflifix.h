@@ -30,18 +30,24 @@
 *
 ****************************************************************************/
 
-#ifndef _FATAL_H_
-#define _FATAL_H_
 
-enum {
-    #define pick( cmd, number, msg, act, ret )  cmd,
-    #include "fatald.h"
-    #undef pick
+#ifndef LIFIX_H
+#define LIFIX_H
+
+typedef struct lifix_munge  lifix;
+struct lifix_munge {
+    lifix   *next;
+    uint_16 lower_bound;
+    int_16  delta;
 };
 
-/* number = number of arguments that follow; ret = return value */
+typedef struct {
+    lifix   *head;
+} lifix_list;
 
-extern void   Fatal( unsigned msg, ... );
-extern void   AsmShutDown( void );
+extern void LifixInit( lifix_list *lif );
+extern int_16 LifixDelta( lifix_list *lif, uint_16 old_offset );
+extern void LifixDestroy( lifix_list *lif );
+extern void LifixAdd( lifix_list *lif, uint_16 lower_bound, int_16 delta );
 
 #endif

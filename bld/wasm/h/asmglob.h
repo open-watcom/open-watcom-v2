@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,15 +40,11 @@
 #include <time.h>
 #include "watcom.h"
 #include "bool.h"
+#include "asmconst.h"
+#include "asmerr.h"
+#include "asmins.h"
+#include "asmdefs.h"
 
-#ifdef _M_I86
-#define ASMFAR __far
-#else
-#define ASMFAR
-#endif
-
-#define RC_ERROR                true
-#define RC_OK                   false
 
 #define EXIT_ERROR              1
 
@@ -58,19 +54,6 @@
 #define SCRAP_INSTRUCTION       3
 #define INDIRECT_JUMP           4
 
-#define MAX_TOKEN               100     // there is no restriction for this number
-#define MAX_LINE_LEN            512     // there is no restriction for this number
-#define MAX_TOK_LEN             256
-#define MAX_FILE_NAME           30
-#define MAX_ID_LEN              247
-#define MAX_MEMORY              1024
-#define MAX_LINE                1024
-#define MAX_LEDATA_THRESHOLD    1012
-#define MAX_PUB_SIZE            100     // max # of entries in pubdef record
-#define MAX_EXT_LENGTH          0x400   // max length ( in chars ) of extdef
-
-/* max_ledata_threshold = 1024 - 6 for the header, -6 for space for fixups */
-
 #define CMPLIT(s,c)     memcmp( s, c, sizeof( c ) )
 #define CMPLITBEG(s,c)  memcmp( s, c, sizeof( c ) - 1 )
 #define CMPLITEND(s,c)  memcmp( s - ( sizeof( c ) - 1 ), c, sizeof( c ) - 1 )
@@ -79,12 +62,15 @@
 #define CATLIT(s,c)     (char *)memcpy( s, c, sizeof( c ) - 1 ) + sizeof( c ) - 1
 #define CATSTR(s,c,l)   (char *)memcpy( s, c, l ) + l
 
-#include "asmerr.h"
-#include "asmins.h"
-#include "asmdefs.h"
+#define ReadU16(p)      GET_LE_16(*(uint_16*)(p))
+#define ReadU32(p)      GET_LE_32(*(uint_32*)(p))
+#define ReadS16(p)      GET_LE_16(*(int_16*)(p))
+#define ReadS32(p)      GET_LE_32(*(int_32*)(p))
 
-#define NULLC                   '\0'
-#define NULLS                   "\0"
+#define WriteU16(p,n)   (*(uint_16*)(p) = GET_LE_16((uint_16)(n)))
+#define WriteU32(p,n)   (*(uint_32*)(p) = GET_LE_32((uint_32)(n)))
+#define WriteS16(p,n)   (*(int_16*)(p) = GET_LE_16((int_16)(n)))
+#define WriteS32(p,n)   (*(int_32*)(p) = GET_LE_32((int_32)(n)))
 
 #define BIT_012                 0x07
 #define BIT_345                 0x38

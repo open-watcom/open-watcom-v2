@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,4 +31,59 @@
 ****************************************************************************/
 
 
-#define _WOMP_OPT       ( _WOMP_WRITE | _WOMP_EXTRAS | _WOMP_WASM  )
+#include <stddef.h>
+#include "asmglob.h"
+#include "omfqueue.h"
+#include "myassert.h"
+
+
+void QInit( qdesc *q )
+/********************/
+{
+    q->head = NULL;
+    q->tail = NULL;
+}
+
+void QEnqueue( qdesc *q, void *item )
+/***********************************/
+{
+    if( q->head == NULL ) {
+        q->head = q->tail = item;
+    } else {
+/**/    myassert( q->tail != NULL );
+        *(void **)q->tail = item;
+        q->tail = item;
+    }
+    *(void**)item = NULL;
+}
+
+void QJoinQueue( qdesc *dest, qdesc *src )
+/****************************************/
+{
+    if( dest->head == NULL ) {
+        dest->head = src->head;
+    } else if( src->head == NULL ) {
+        return;
+    } else {
+/**/    myassert( dest->tail != NULL );
+        *((void **)dest->tail) = src->head;
+    }
+    dest->tail = src->tail;
+    *(void **)src->tail = NULL;
+}
+
+void *QDequeue( qdesc *q )
+/************************/
+{
+    void *item;
+
+    if( q->head == NULL ) {
+        return( NULL );
+    }
+    item = q->head;
+    q->head = *(void**)item;
+    if( q->head == NULL ) {
+        q->tail = NULL;
+    }
+    return( item );
+}

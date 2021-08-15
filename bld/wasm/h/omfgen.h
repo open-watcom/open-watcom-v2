@@ -30,18 +30,14 @@
 *
 ****************************************************************************/
 
-#ifndef _FATAL_H_
-#define _FATAL_H_
 
-enum {
-    #define pick( cmd, number, msg, act, ret )  cmd,
-    #include "fatald.h"
-    #undef pick
-};
+#ifndef GENOMF_H
+#define GENOMF_H
 
-/* number = number of arguments that follow; ret = return value */
+#include "omfobjre.h"
 
-extern void   Fatal( unsigned msg, ... );
-extern void   AsmShutDown( void );
+
+extern void write_record( obj_rec *objr, bool kill );
 
 #endif
+

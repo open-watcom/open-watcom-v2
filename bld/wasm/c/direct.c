@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,6 +47,7 @@
 #include "myassert.h"
 #include "asmdefs.h"
 #include "pathgrp2.h"
+#include "pcobj.h"
 
 #include "clibext.h"
 
@@ -2474,8 +2475,8 @@ bool SetAssume( token_idx i )
     return( RC_OK );
 }
 
-extern struct asm_sym *GetGrp( struct asm_sym *sym )
-/**************************************************/
+struct asm_sym *GetGrp( struct asm_sym *sym )
+/*******************************************/
 /* get ptr to sym's group sym */
 {
     dir_node            *curr;
@@ -4058,8 +4059,8 @@ bool Ret( token_idx i, token_idx count, bool flag_iret )
     return( RC_OK );
 }
 
-extern void GetSymInfo( struct asm_sym *sym )
-/*******************************************/
+void GetSymInfo( struct asm_sym *sym )
+/************************************/
 {
     sym->segment = &GetCurrSeg()->sym;
     sym->offset = GetCurrAddr();

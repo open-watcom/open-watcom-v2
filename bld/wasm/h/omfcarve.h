@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,4 +31,20 @@
 ****************************************************************************/
 
 
-extern void PrtMsg( unsigned msgnum, ... );
+#ifndef CARVE_H
+#define CARVE_H
+
+#include <stddef.h>
+
+typedef void *carve_t;
+
+extern carve_t CarveCreate( size_t elm_size, size_t blk_size );
+extern void CarveDestroy( carve_t cv );
+
+extern void *CarveAlloc( carve_t cv );
+extern void CarveFree( carve_t cv, void *elm );
+
+#endif
+
+
+

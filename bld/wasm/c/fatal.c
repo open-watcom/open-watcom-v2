@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,11 +32,11 @@
 
 #include "asmglob.h"
 #include <stdarg.h>
-
-#include "objprs.h"
 #include "asmalloc.h"
-#include "womputil.h"
 #include "fatal.h"
+#include "omfgenio.h"
+#include "omfobjre.h"
+
 
 typedef void (*err_act)( void );
 
@@ -47,7 +48,7 @@ typedef struct {
 } Msg_Struct;
 
 static const Msg_Struct Fatal_Msg[] = {
-    #define pick( cmd, number, msg, act, ret )    { number, msg, act, ret }
+    #define pick( cmd, number, msg, act, ret )    { number, msg, act, ret },
     #include "fatald.h"
     #undef pick
 };
@@ -65,8 +66,7 @@ void AsmShutDown( void )
     }
 
     /* close OBJ file */
-    ObjWriteClose( pobjState.file_out );
-
+    ObjWriteFini( false );
     ObjRecFini();
     if( !write_to_file || Options.error_count > 0 ) {
         remove( AsmFiles.fname[OBJ] );

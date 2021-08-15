@@ -205,8 +205,8 @@ pick( MSG_INTERNAL_ERROR,
                                 "Internal error in %s(%u)" ,
                                 "%s(%u) で内部エラーが起こりました\n" )
 pick( OBJECT_WRITE_ERROR,
-                                "OBJECT WRITE ERROR !!" ,
-                                "オブジェクト書込みエラー !!\n" )
+                                "Object file error - " ,
+                                "Object file error - " )
 pick( NO_LOR_PHARLAP,
                                 "NO LOR PHARLAP !!" ,
                                 "LOR PHARLAPではありません!!\n" )

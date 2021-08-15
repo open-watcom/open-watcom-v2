@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,15 +38,14 @@
 #include "asmalloc.h"
 #include "fatal.h"
 #include "asmexpnd.h"
-#include "objprs.h"
-#include "genmsomf.h"
-#include "womputil.h"
 #include "swchar.h"
 #include "asminput.h"
 #include "banner.h"
 #include "directiv.h"
 #include "standalo.h"
 #include "pathgrp2.h"
+#include "omfgenio.h"
+#include "omfobjre.h"
 
 #include "clibext.h"
 
@@ -55,7 +54,6 @@ extern void             Fatal( unsigned msg, ... );
 extern void             DelErrFile( void );
 
 File_Info               AsmFiles;       // files information
-pobj_state              pobjState;      // object file information for WOMP
 
 struct  option {
     char        *option;
@@ -712,14 +710,12 @@ static void main_init( void )
         AsmFiles.fname[i] = NULL;
     }
     ObjRecInit();
-    GenMSOmfInit();
 }
 
 static void main_fini( void )
 /***************************/
 {
     free_names();
-    GenMSOmfFini();
     AsmShutDown();
 }
 
@@ -734,11 +730,7 @@ static void open_files( void )
     }
 
     /* open OBJ file */
-    pobjState.file_out = ObjWriteOpen( AsmFiles.fname[OBJ] );
-    if( pobjState.file_out == NULL ) {
-        Fatal( MSG_CANNOT_OPEN_FILE, AsmFiles.fname[OBJ] );
-    }
-    pobjState.pass = POBJ_WRITE_PASS;
+    ObjWriteInit();
 
     /* delete any existing ERR file */
     DelErrFile();

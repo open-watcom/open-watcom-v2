@@ -30,18 +30,29 @@
 *
 ****************************************************************************/
 
-#ifndef _FATAL_H_
-#define _FATAL_H_
 
-enum {
-    #define pick( cmd, number, msg, act, ret )  cmd,
-    #include "fatald.h"
-    #undef pick
-};
+#ifndef GENOMFIO_H
+#define GENOMFIO_H
 
-/* number = number of arguments that follow; ret = return value */
+#include <stddef.h>
 
-extern void   Fatal( unsigned msg, ... );
-extern void   AsmShutDown( void );
+
+#define OBJ_BUFFER_SIZE 0x1000      /* 4k (must be less than 64k) */
+#define OBJ_MAX_REC     0x1000      /* maximum record size (<64k) */
+
+#if OBJ_MAX_REC > OBJ_BUFFER_SIZE
+#error "OBJ_MAX_REC must be smaller than OBJ_BUFFER_SIZE"
+#endif
+
+extern void         ObjWriteInit( void );
+extern void         ObjWriteFini( bool del );
+extern void         ObjWBegRec( uint_8 command );
+extern void         ObjWEndRec( void );
+extern void         ObjWrite8( uint_8 byte );
+extern void         ObjWrite16( uint_16 word );
+extern void         ObjWrite32( uint_32 dword );
+extern void         ObjWriteIndex( uint_16 index );
+extern void         ObjWrite( const uint_8 *buffer, uint_16 len );
+extern void         ObjWriteRec( uint_8 command, uint_16 length, const uint_8 *contents );
 
 #endif

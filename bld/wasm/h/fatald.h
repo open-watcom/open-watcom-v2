@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,9 +29,10 @@
 *
 ****************************************************************************/
 
-pick( MSG_OUT_OF_MEMORY, 0, OUT_OF_MEMORY, AsmShutDown, EXIT_SUCCESS ),
-pick( MSG_CANNOT_OPEN_FILE, 1, CANNOT_OPEN_FILE, NULL, EXIT_ERROR ),
-pick( MSG_CANNOT_CLOSE_FILE, 1, CANNOT_CLOSE_FILE, NULL, EXIT_ERROR ),
-pick( MSG_CANNOT_GET_START_OF_SOURCE_FILE, 0, CANNOT_GET_FILE, AsmShutDown, EXIT_ERROR ),
-pick( MSG_CANNOT_SET_TO_START_OF_SOURCE_FILE, 0, CANNOT_SET_FILE, AsmShutDown, EXIT_ERROR ),
-pick( MSG_TOO_MANY_FILES, 0, TOO_MANY_FILES, NULL, EXIT_ERROR ),
+pick( MSG_OUT_OF_MEMORY, 0, OUT_OF_MEMORY, AsmShutDown, EXIT_SUCCESS )
+pick( MSG_CANNOT_OPEN_FILE, 1, CANNOT_OPEN_FILE, NULL, EXIT_ERROR )
+pick( MSG_CANNOT_CLOSE_FILE, 1, CANNOT_CLOSE_FILE, NULL, EXIT_ERROR )
+pick( MSG_CANNOT_GET_START_OF_SOURCE_FILE, 0, CANNOT_GET_FILE, AsmShutDown, EXIT_ERROR )
+pick( MSG_CANNOT_SET_TO_START_OF_SOURCE_FILE, 0, CANNOT_SET_FILE, AsmShutDown, EXIT_ERROR )
+pick( MSG_TOO_MANY_FILES, 0, TOO_MANY_FILES, NULL, EXIT_ERROR )
+pick( MSG_OBJECT_WRITE_ERROR, 1, OBJECT_WRITE_ERROR, NULL, EXIT_ERROR )

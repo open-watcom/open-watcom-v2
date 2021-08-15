@@ -30,18 +30,20 @@
 *
 ****************************************************************************/
 
-#ifndef _FATAL_H_
-#define _FATAL_H_
 
-enum {
-    #define pick( cmd, number, msg, act, ret )  cmd,
-    #include "fatald.h"
-    #undef pick
-};
+#ifndef QUEUE_H
+#define QUEUE_H
 
-/* number = number of arguments that follow; ret = return value */
+typedef struct {
+    void *head;
+    void *tail;
+} qdesc;
 
-extern void   Fatal( unsigned msg, ... );
-extern void   AsmShutDown( void );
+extern void QInit( qdesc *q );
+extern void QEnqueue( qdesc *q, void *item );
+extern void QJoinQueue( qdesc *dest, qdesc *src );
+extern void *QDequeue( qdesc *q );
 
 #endif
+
+

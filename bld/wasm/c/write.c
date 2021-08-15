@@ -38,21 +38,21 @@
 #include "asmalloc.h"
 #include "fatal.h"
 #include "asmeval.h"
-#include "womp.h"
-#include "objprs.h"
-#include "fixup.h"
+#include "pcobj.h"
 #include "autodept.h"
 #include "dostimet.h"
 #include "mangle.h"
 #include "directiv.h"
 #include "queues.h"
-#include "womputil.h"
 #include "asmlabel.h"
 #include "asminput.h"
 #include "asmfixup.h"
 #include "condasm.h"
 #include "myassert.h"
 #include "standalo.h"
+#include "omfgen.h"
+#include "omfgenio.h"
+#include "asmerr.h"
 
 #include "clibext.h"
 
@@ -1275,13 +1275,8 @@ void WriteObjModule( void )
 #ifdef DEBUG_OUT
         write_modend();
 #endif
-        ObjWriteClose( pobjState.file_out );
-        /* This remove works around an NT networking bug */
-        remove( AsmFiles.fname[OBJ] );
-        pobjState.file_out = ObjWriteOpen( AsmFiles.fname[OBJ] );
-        if( pobjState.file_out == NULL ) {
-            Fatal( MSG_CANNOT_OPEN_FILE, AsmFiles.fname[OBJ] );
-        }
+        ObjWriteFini( true );
+        ObjWriteInit();
         prev_total = curr_total;
     }
     if( write_to_file && Options.error_count == 0 )

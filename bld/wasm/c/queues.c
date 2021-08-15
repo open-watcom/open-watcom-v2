@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,11 +33,12 @@
 #include "asmalloc.h"
 #include "mangle.h"
 #include "directiv.h"
+#include "omfqueue.h"
 #include "queues.h"
-#include "objprs.h"
-#include "namemgr.h"
-#include "womputil.h"
+#include "pcobj.h"
+#include "omfgen.h"
 #include "myassert.h"
+
 
 typedef struct queuenode {
     void *next;

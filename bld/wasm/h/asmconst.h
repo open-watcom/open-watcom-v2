@@ -25,23 +25,34 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  WASM header file with global macros definition.
 *
 ****************************************************************************/
 
-#ifndef _FATAL_H_
-#define _FATAL_H_
 
-enum {
-    #define pick( cmd, number, msg, act, ret )  cmd,
-    #include "fatald.h"
-    #undef pick
-};
-
-/* number = number of arguments that follow; ret = return value */
-
-extern void   Fatal( unsigned msg, ... );
-extern void   AsmShutDown( void );
-
+#ifdef _M_I86
+#define ASMFAR __far
+#else
+#define ASMFAR
 #endif
+
+#define RC_ERROR                true
+#define RC_OK                   false
+
+#define MAX_TOKEN               100     // there is no restriction for this number
+#define MAX_LINE_LEN            512     // there is no restriction for this number
+#define MAX_TOK_LEN             256
+#define MAX_FILE_NAME           30
+#define MAX_ID_LEN              247
+#define MAX_MEMORY              1024
+#define MAX_LINE                1024
+#define MAX_PUB_SIZE            100     // max # of entries in pubdef record
+#define MAX_EXT_LENGTH          0x400   // max length ( in chars ) of extdef
+
+/* max_ledata_threshold = 1024 - 6 for the header, -6 for space for fixups */
+#define MAX_LEDATA_LEN          1024
+#define MAX_LEDATA_THRESHOLD        (MAX_LEDATA_LEN - 12)
+
+#define NULLC                   '\0'
+#define NULLS                   "\0"
+

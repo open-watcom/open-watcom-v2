@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,16 +37,9 @@
     #define MSG_SHARE_BASE      0
 
 enum {
-    MSG_WOMP_BASE = MSG_SHARE_BASE
+    MSG_WASM_BASE = MSG_SHARE_BASE
     #define pick(c,e,j) + 1
     #include "../h/wasmc.msg"
-    #undef pick
-};
-
-enum {
-    MSG_WASM_BASE = MSG_WOMP_BASE
-    #define pick(c,e,j) + 1
-    #include "../h/womp.msg"
     #undef pick
 };
 

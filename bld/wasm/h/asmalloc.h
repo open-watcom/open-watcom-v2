@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,12 +35,16 @@
 #include "asalloc.h"
 
 #if defined( _STANDALONE_ )
+
   #include "walloca.h"
-  #include "memutil.h"  // WOMP memory routines declaration
 
   #define AsmTmpAlloc( amount )   alloca( amount )
 
+extern void MemInit( void );
+extern void MemFini( void );
+
 extern  void    *AsmStrDup( const char *str );
+
 #endif
 
 #endif

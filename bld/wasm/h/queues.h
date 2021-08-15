@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +32,7 @@
 #ifndef _QUEUES_H_
 #define _QUEUES_H_
 
-#include "objrec.h"
+#include "omfobjre.h"
 
 typedef struct line_num_info {
     unsigned_16 number;
@@ -51,5 +52,7 @@ extern bool     GetPublicData( void );
 extern int      GetLinnumData( int limit, struct linnum_data **ldata, bool *need32 );
 
 extern void     FreeAllQueues( void );
+
+extern const char *NameGet( name_handle hdl );
 
 #endif

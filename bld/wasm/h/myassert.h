@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,17 +25,20 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Internal error handling macros.
 *
 ****************************************************************************/
 
-#ifndef _UTIL_H_
-#define _UTIL_H_
 
-extern pobj_state       pobjState;
+#ifndef MYASSERT_H
+#define MYASSERT_H
 
-extern void write_record( obj_rec *objr, bool kill );
-extern void ObjWriteError( void );
+#ifdef NDEBUG
+#   define never_reach()    ((void)0)
+#   define myassert(expr)   ((void)0)
+#else
+#   define never_reach()    InternalError(__FILE__,__LINE__)
+#   define myassert(expr)   ((void)((expr)?0:InternalError(__FILE__,__LINE__)))
+#endif
 
 #endif

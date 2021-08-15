@@ -9,7 +9,6 @@ BEGIN
 
     #include "../h/wasmc.msg"
   #if defined( _STANDALONE_ )
-    #include "../h/womp.msg"
     #include "../h/wasms.msg"
 
     #include "usage.gh"
@@ -21,7 +20,6 @@ BEGIN
 
     #include "../h/wasmc.msg"
   #if defined( _STANDALONE_ )
-    #include "../h/womp.msg"
     #include "../h/wasms.msg"
 
     #include "usage.gh"

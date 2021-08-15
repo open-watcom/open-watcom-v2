@@ -20,9 +20,9 @@ wasm_trmem = 1
 #
 # cflags
 #
-.c : ../c;$(womp_dir)/c;$(trmem_dir);$(watcom_dir)/c
+.c : ../c;$(trmem_dir);$(watcom_dir)/c
 
-inc_dirs  = -I. -I"../h" -I"$(womp_dir)/h" -I"$(fe_misc_dir)/h"
+inc_dirs  = -I. -I"../h" -I"$(fe_misc_dir)/h"
 
 extra_cpp_flags =-D_STANDALONE_
 #extra_cpp_flags += -DINCL_MSGTEXT
@@ -30,8 +30,6 @@ extra_cpp_flags =-D_STANDALONE_
 extra_cpp_flags += -DDEBUG_OUT
 !endif
 
-extra_cpp_flags_genmsomf = -DMSG_WOMP_BASE=200
-extra_cpp_flags_fixup    = -DMSG_WOMP_BASE=200
 extra_cpp_flags_asmalloc = $(trmem_cpp_flags)
 
 extra_c_flags_asmalloc = $(trmem_cover_cflags)
@@ -52,13 +50,12 @@ extra_l_flags_linux = option stack=12k
 #
 # EXE
 #
-exetarg_prebuild_objs = asmops.gh asmopsd.gh usage.gh wompmsg.gh wasmsmsg.gh wasmcmsg.gh
+exetarg_prebuild_objs = asmops.gh asmopsd.gh usage.gh wasmsmsg.gh wasmcmsg.gh
 exetarg_objs = &
     $(extra_objs_$(host_os)_$(host_cpu)) &
     main.obj &
     write.obj &
     fatal.obj &
-    womputil.obj &
     direct.obj &
     posndir.obj &
     asmeval.obj &
@@ -73,13 +70,6 @@ exetarg_objs = &
     asmexpnd.obj &
     mangle.obj &
     for.obj &
-    objio.obj &
-    carve.obj &
-    genmsomf.obj &
-    objrec.obj &
-    queue.obj &
-    fixup.obj &
-    lifix.obj &
     asmins.obj &
     asmscan.obj &
     asmline.obj &
@@ -94,7 +84,15 @@ exetarg_objs = &
     dostimet.obj &
     queues.obj &
     pathlist.obj &
+    omfcarve.obj &
+    omfobjre.obj &
+    omfqueue.obj &
+    omffixup.obj &
+    omflifix.obj &
+    omfgen.obj &
+    omfgenio.obj &
     $(trmem_objs)
+
 exetarg_libs = $(wres_lib)
 exetarg_res_version_nt_386 = exever.res
 exetarg_res_version_nt_x64 = exever.res
@@ -112,19 +110,15 @@ exetarg_name       = wasm
 #
 !include verrc.mif
 
-rcui_inc_dirs  = -I. -I"../h" -I"$(womp_dir)/h"
+rcui_inc_dirs  = -I. -I"../h"
 
-wresui.res : ../h/wasm.rc usage.gh wasmcmsg.gh wasmsmsg.gh wompmsg.gh $(__MAKEFILES__)
+wresui.res : ../h/wasm.rc usage.gh wasmcmsg.gh wasmsmsg.gh $(__MAKEFILES__)
     @%make echo_rc
     $(rcui8) -D_STANDALONE_
 
 wasmsmsg.gh : ../h/wasms.msg $(__MAKEFILES__)
     @%make echo_awk
     $(awk) -v base=MSG_WASM_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
-
-wompmsg.gh : ../h/womp.msg $(__MAKEFILES__)
-    @%make echo_awk
-    $(awk) -v base=MSG_WOMP_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 !ifdef exetarg_qnx_res
 optencod_opt_qnx    = -u $(exetarg_qnx_res)

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +39,13 @@
 
 #include "wasmmsg.h"
 
+#ifndef NDEBUG
+    extern int InternalError( const char *file, unsigned line );
+  #if defined( __WATCOMC__ )
+    #pragma aux InternalError __aborts
+  #endif
+#endif
+
 #ifdef DEBUG_OUT
     extern void DoDebugMsg( const char *format, ... );
     #define DebugMsg( x ) DoDebugMsg x
@@ -47,15 +54,18 @@
 #endif
 // use DebugMsg((....)) to call it
 
-#if !defined( _STANDALONE_ )
-    #define DebugCurrLine()
-    #define AsmIntErr( x )
-#elif DEBUG_OUT
+#if defined( _STANDALONE_ )
+    #define WRN     0x8000
+  #if DEBUG_OUT
     #define DebugCurrLine() printf( "%s\n", CurrString );
     #define AsmIntErr( x ) DebugCurrLine(); printf( "Internal error = %u\n", x )
-#else
+  #else
     #define DebugCurrLine()
     #define AsmIntErr( x ) printf( "Internal error = %u\n", x )
+  #endif
+#else
+    #define DebugCurrLine()
+    #define AsmIntErr( x )
 #endif
 
 #ifdef _STANDALONE_
