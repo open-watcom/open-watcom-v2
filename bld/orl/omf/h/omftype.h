@@ -118,6 +118,13 @@ typedef unsigned_8                      *omf_bytes;
 typedef unsigned_8                      omf_rectyp;
 typedef signed_8                        omf_dbg_style;
 
+TYPEDEF_LOCAL_TYPE( omf_thread_fixup );
+
+ORL_STRUCT( omf_thread_fixup ) {
+    omf_idx             idx;
+    unsigned char       method;
+};
+
 ORL_STRUCT( omf_tmp_lidata ) {
     omf_rec_size        size;
     omf_rec_size        used;
@@ -132,13 +139,11 @@ ORL_STRUCT( omf_tmp_lidata ) {
 ORL_STRUCT( omf_tmp_fixup ) {
     omf_tmp_fixup       next;
     bool                is32;
-    int                 mode;
+    bool                mode;
     omf_fix_loc         fix_loc;
     omf_sec_offset      offset;
-    int                 fmethod;
-    omf_idx             fidx;
-    int                 tmethod;
-    omf_idx             tidx;
+    ORL_STRUCT( omf_thread_fixup ) fthread;
+    ORL_STRUCT( omf_thread_fixup ) tthread;
     omf_sec_addend      disp;
 };
 
@@ -159,13 +164,6 @@ ORL_STRUCT( omf_tmp_bkfix ) {
 ORL_STRUCT( omf_handle ) {
     orl_funcs           *funcs;
     omf_file_handle     first_file_hnd;
-};
-
-TYPEDEF_LOCAL_TYPE( omf_thread_fixup );
-
-ORL_STRUCT( omf_thread_fixup ) {
-    omf_idx             idx;
-    unsigned char       method;
 };
 
 ORL_STRUCT( omf_file_handle ) {

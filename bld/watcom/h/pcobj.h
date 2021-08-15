@@ -98,11 +98,11 @@ enum {
 
 enum {
     FIXUPP_FIXUP        = 0x80,
+    FIXUPP_MBIT         = 0x40,
 
     FIXDAT_FTHREAD      = 0x80,
     FIXDAT_TTHREAD      = 8,
     FIXDAT_PBIT         = 4,
-    FIXDAT_MBIT         = 0x40,
     TRDDAT_DBIT         = 0x40,
 
 /*

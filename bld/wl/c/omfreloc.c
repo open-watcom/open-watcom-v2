@@ -170,18 +170,7 @@ void DoRelocs( void )
     }
     do {
         typ = *ObjBuff++;
-        if( (typ & 0x80) == 0 ) {
-            /*
-             * thread
-             */
-            if( typ & 0x40 ) {
-                /*  frame */
-                GetFrame( (typ >> 2) & 7, &FrameThreads[typ & 3] );
-            } else {
-                /*  target */
-                GetTarget( (typ >> 2) & 3, &TargThreads[typ & 3] );
-            }
-        } else {
+        if( typ & FIXUPP_FIXUP ) {
             /*
              * fixup
              */
@@ -226,7 +215,7 @@ void DoRelocs( void )
             default:
                 break;
             }
-            if( fixtype && (typ & 0x40) == 0 ) {
+            if( fixtype && (typ & FIXUPP_MBIT) == 0 ) {
                 fixtype |= FIX_REL;
             }
             location = ((typ & 3) << 8) + *ObjBuff++;
@@ -234,7 +223,7 @@ void DoRelocs( void )
             /*
              * frame processing
              */
-            if( typ & 0x80 ) {
+            if( typ & FIXDAT_FTHREAD ) {
                 fthread = FrameThreads[( typ >> 4 ) & 3];
             } else {
                 GetFrame( ( typ >> 4 ) & 7, &fthread );
@@ -242,7 +231,7 @@ void DoRelocs( void )
             /*
              * target processing
              */
-            if( typ & 8 ) {
+            if( typ & FIXDAT_TTHREAD ) {
                 tthread = TargThreads[typ & 3];
             } else {
                 GetTarget( typ & 3, &tthread );
@@ -251,7 +240,7 @@ void DoRelocs( void )
              * target addend processing
              */
             addend = 0;
-            if( (typ & 4) == 0 ) {
+            if( (typ & FIXDAT_PBIT) == 0 ) {
                 if( ObjFormat & FMT_32BIT_REC ) {
                     addend = GET_U32_UN( ObjBuff );
                     ObjBuff += sizeof( unsigned_32 );
@@ -261,6 +250,17 @@ void DoRelocs( void )
                 }
             }
             StoreFixup( location, fixtype, &fthread, &tthread, addend );
+        } else {
+            /*
+             * thread
+             */
+            if( typ & 0x40 ) {
+                /*  frame */
+                GetFrame( (typ >> 2) & 7, &FrameThreads[typ & 3] );
+            } else {
+                /*  target */
+                GetTarget( (typ >> 2) & 3, &TargThreads[typ & 3] );
+            }
         }
     } while( ObjBuff < EOObjRec );
 }

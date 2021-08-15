@@ -639,7 +639,7 @@ static orl_return       expandPrevLIData( omf_file_handle ofh )
     while( ofh->lidata->new_fixup != NULL ) {
         ftr = ofh->lidata->new_fixup;
         return_val = OmfAddFixupp( ofh, ftr->is32, ftr->mode, ftr->fix_loc, ftr->offset,
-                            ftr->fmethod, ftr->fidx, ftr->tmethod, ftr->tidx, ftr->disp );
+                            &ftr->fthread, &ftr->tthread, ftr->disp );
         if( return_val != ORL_OKAY )
             break;
         ofh->lidata->new_fixup = ftr->next;
@@ -1090,15 +1090,27 @@ orl_return OmfAddBakpat( omf_file_handle ofh, unsigned_8 loctype, omf_sec_offset
 }
 
 
-orl_return OmfAddFixupp( omf_file_handle ofh, bool is32, int mode, omf_fix_loc fix_loc, omf_sec_offset offset,
-                            int fmethod, omf_idx fidx, int tmethod, omf_idx tidx, omf_sec_addend disp )
+orl_return OmfAddFixupp( omf_file_handle ofh, bool is32, bool mode, omf_fix_loc fix_loc,
+                        omf_sec_offset offset, ORL_STRUCT( omf_thread_fixup ) *fthread,
+                        ORL_STRUCT( omf_thread_fixup ) *tthread, omf_sec_addend disp )
 {
     omf_tmp_fixup           ftr;
     ORL_STRUCT( orl_reloc ) *orel;
     omf_sec_handle          sh;
     omf_grp_handle          grp;
+    ORL_STRUCT( omf_thread_fixup ) frame;
 
     assert( ofh );
+
+    /*
+     * remap FRAME_LOC to FRAME_SEG of curr segment
+     */
+    if( fthread->method == FRAME_LOC ) {
+        frame.method = FRAME_SEG;
+        frame.idx = ofh->work_sec->assoc.seg.seg_id;
+    } else {
+        frame = *fthread;
+    }
 
     if( ofh->status & OMF_STATUS_ADD_LIDATA ) {
         assert( ofh->work_sec );
@@ -1109,19 +1121,12 @@ orl_return OmfAddFixupp( omf_file_handle ofh, bool is32, int mode, omf_fix_loc f
             return( ORL_OUT_OF_MEMORY );
         memset( ftr, 0, ORL_STRUCT_SIZEOF( omf_tmp_fixup ) );
 
-        if( fmethod == FRAME_LOC ) {
-            fmethod = FRAME_SEG;
-            fidx = ofh->work_sec->assoc.seg.seg_id;
-        }
-
         ftr->is32 = is32;
         ftr->mode = mode;
         ftr->fix_loc = fix_loc;
         ftr->offset = offset;
-        ftr->fmethod = fmethod;
-        ftr->fidx = fidx;
-        ftr->tmethod = tmethod;
-        ftr->tidx = tidx;
+        ftr->fthread = frame;
+        ftr->tthread = *tthread;
         ftr->disp = disp;
 
         if( ofh->lidata->last_fixup ) {
@@ -1246,21 +1251,21 @@ orl_return OmfAddFixupp( omf_file_handle ofh, bool is32, int mode, omf_fix_loc f
     orel->section = (orl_sec_handle)(ofh->work_sec);
     orel->addend = disp;
 
-    switch( tmethod ) {
+    switch( tthread->method ) {
     case TARGET_SEG:            /* segment index      */
-        sh = findSegment( ofh, tidx );
+        sh = findSegment( ofh, tthread->idx );
         if( sh == NULL )
             return( ORL_ERROR );
         orel->symbol = (orl_symbol_handle)(sh->assoc.seg.sym);
         break;
     case TARGET_GRP:            /* group index        */
-        grp = findGroup( ofh, tidx );
+        grp = findGroup( ofh, tthread->idx );
         if( grp == NULL )
             return( ORL_ERROR );
         orel->symbol = (orl_symbol_handle)(grp->sym);
         break;
     case TARGET_EXT:            /* external index     */
-        orel->symbol = (orl_symbol_handle)(findExtDefSym( ofh, tidx ));
+        orel->symbol = (orl_symbol_handle)(findExtDefSym( ofh, tthread->idx ));
         if( orel->symbol == NULL )
             return( ORL_ERROR );
         break;
@@ -1270,26 +1275,21 @@ orl_return OmfAddFixupp( omf_file_handle ofh, bool is32, int mode, omf_fix_loc f
         return( ORL_ERROR );
     }
 
-    if( fmethod == FRAME_LOC ) {
-        fmethod = FRAME_SEG;
-        fidx = ofh->work_sec->assoc.seg.seg_id;
-    }
-
-    switch( fmethod ) {
+    switch( frame.method ) {
     case( FRAME_SEG ):                      /* segment index                */
-        sh = findSegment( ofh, fidx );
+        sh = findSegment( ofh, frame.idx );
         if( sh == NULL )
             return( ORL_ERROR );
         orel->frame = (orl_symbol_handle)(sh->assoc.seg.sym);
         break;
     case( FRAME_GRP ):                      /* group index                  */
-        grp = findGroup( ofh, fidx );
+        grp = findGroup( ofh, frame.idx );
         if( grp == NULL )
             return( ORL_ERROR );
         orel->frame = (orl_symbol_handle)(grp->sym);
         break;
     case( FRAME_EXT ):                      /* external index               */
-        orel->frame = (orl_symbol_handle)(findExtDefSym( ofh, fidx ));
+        orel->frame = (orl_symbol_handle)(findExtDefSym( ofh, frame.idx ));
         if( orel->frame == NULL )
             return( ORL_ERROR );
         break;
@@ -1301,6 +1301,9 @@ orl_return OmfAddFixupp( omf_file_handle ofh, bool is32, int mode, omf_fix_loc f
         orel->frame = orel->symbol;
         break;
     case( FRAME_LOC ):                      /* frame containing location    */
+        /*
+         * FRAME_LOC is already remap to FRAME_SEG of curr segment
+         */
         assert( 0 );
     }
 

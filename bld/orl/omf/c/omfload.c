@@ -281,7 +281,7 @@ static orl_return       processExplicitFixup( omf_file_handle ofh, bool is32, om
     len = *cur;
 
     datum = buf[0];
-    m = ( (datum & 0x40) != 0 );
+    m = ( (datum & FIXUPP_MBIT) != 0 );
     fix_loc = (omf_fix_loc)(( datum >> 2 ) & 0x0f);
     offset = ( (datum & 0x03) << 8 ) | buf[1];
     datum = buf[2];
@@ -290,7 +290,7 @@ static orl_return       processExplicitFixup( omf_file_handle ofh, bool is32, om
     /*
      * frame processing
      */
-    if( 0x80 & datum ) {
+    if( datum & FIXDAT_FTHREAD ) {
         fthread = ofh->frame_thread[( datum >> 4 ) & 3];
     } else {
         GetFrame( ( datum >> 4 ) & 7, &fthread, &buf, &len );
@@ -298,7 +298,7 @@ static orl_return       processExplicitFixup( omf_file_handle ofh, bool is32, om
     /*
      * target processing
      */
-    if( 0x08 & datum ) {
+    if( datum & FIXDAT_TTHREAD ) {
         tthread = ofh->target_thread[datum & 3];
     } else {
         GetTarget( datum & 3, &tthread, &buf, &len );
@@ -311,7 +311,7 @@ static orl_return       processExplicitFixup( omf_file_handle ofh, bool is32, om
     /*
      * target displacement processing
      */
-    if( datum & 0x04 ) {
+    if( datum & FIXDAT_PBIT ) {
         disp = 0;
     } else {
         disp = OmfGetSWord( buf, wordsize );
@@ -321,7 +321,7 @@ static orl_return       processExplicitFixup( omf_file_handle ofh, bool is32, om
 
     *buffer = buf;
     *cur = len;
-    return( OmfAddFixupp( ofh, is32, m, fix_loc, offset, fthread.method, fthread.idx, tthread.method, tthread.idx, disp ) );
+    return( OmfAddFixupp( ofh, is32, m, fix_loc, offset, &fthread, &tthread, disp ) );
 }
 
 
@@ -949,7 +949,7 @@ static orl_return       doFIXUPP( omf_file_handle ofh, omf_rectyp typ )
          * and act upon it
          */
         datum = buffer[0];
-        if( datum & 0x80 ) {
+        if( datum & FIXUPP_FIXUP ) {
             return_val = processExplicitFixup( ofh, is32, &buffer, &len );
         } else {
             return_val = processThreadFixup( ofh, &buffer, &len );

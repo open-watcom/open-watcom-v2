@@ -46,10 +46,11 @@ extern orl_return       OmfAddLEData( omf_file_handle ofh, bool is32,
                                       omf_idx seg, omf_sec_offset offset,
                                       omf_bytes buffer, omf_rec_size len, bool comdat );
 
-extern orl_return       OmfAddFixupp( omf_file_handle ofh, bool is32, int mode,
+extern orl_return       OmfAddFixupp( omf_file_handle ofh, bool is32, bool mode,
                                       omf_fix_loc fix_loc, omf_sec_offset offset,
-                                      int fmethod, omf_idx fidx, int tmethod,
-                                      omf_idx tidx, omf_sec_addend disp );
+                                      ORL_STRUCT( omf_thread_fixup ) *fthread,
+                                      ORL_STRUCT( omf_thread_fixup ) *tthread,
+                                      omf_sec_addend disp );
 
 extern orl_return       OmfAddBakpat( omf_file_handle ofh, unsigned_8 loctype,
                                       omf_sec_offset location, omf_idx segidx,
