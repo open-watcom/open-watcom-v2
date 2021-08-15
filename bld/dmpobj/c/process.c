@@ -1227,7 +1227,7 @@ static void OutputFixup( byte typ, bool indent )
     } else {
         doTarget( num );
     }
-    if( typ & 0x04 ) {
+    if( typ & FIXDAT_PBIT ) {
         Output( CRLF );
     } else {
         Output( ",%X" CRLF, GetEither() );
@@ -1244,7 +1244,7 @@ static void explicitFixup( byte typ )
     size_t          printpos;
 
     offset = ( ( typ & 0x03 ) << 8 ) + GetByte();
-    Output( INDENT "%x %s", offset, ( typ & FIXDAT_MBIT ) ? "Seg " : "Self" );
+    Output( INDENT "%x %s", offset, ( typ & FIXUPP_MBIT ) ? "Seg " : "Self" );
     fix_loc = ( typ >> 2 ) & 0x0f;
     if( IsPharLap ) {
         if( fix_loc > LOC_PHARLAP_BASE_OFFSET_32 ) {
