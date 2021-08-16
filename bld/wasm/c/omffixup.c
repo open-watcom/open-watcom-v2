@@ -42,23 +42,27 @@
 
 static carve_t  myCarver;
 
-void FixInit( void ) {
+void FixInit( void )
 /******************/
+{
     myCarver = CarveCreate( sizeof( fixup ), 64 );
 }
 
-void FixFini( void ) {
+void FixFini( void )
 /******************/
+{
     CarveDestroy( myCarver );
 }
 
-fixup *FixNew( void ) {
+fixup *FixNew( void )
 /*******************/
+{
     return( CarveAlloc( myCarver ) );
 }
 
-fixup *FixDup( const fixup *fix ) {
-/*********************************/
+fixup *FixDup( const fixup *fix )
+/*******************************/
+{
     fixup *new;
 
     if( fix == NULL ) {
@@ -69,13 +73,14 @@ fixup *FixDup( const fixup *fix ) {
     return( new );
 }
 
-void FixKill( fixup *fix ) {
+void FixKill( fixup *fix )
 /************************/
+{
     CarveFree( myCarver, fix );
 }
 
-static uint_8 *putIndex( uint_8 *p, uint_16 index ) {
-
+static uint_8 *putIndex( uint_8 *p, uint_16 index )
+{
     if( index > 0x7f ) {
         *p++ = 0x80 | ( index >> 8 );
     }
@@ -83,20 +88,20 @@ static uint_8 *putIndex( uint_8 *p, uint_16 index ) {
     return( p );
 }
 
-static uint_8 *put16( uint_8 *p, uint_16 word ) {
-
+static uint_8 *put16( uint_8 *p, uint_16 word )
+{
     WriteU16( p, word );
     return( p + 2 );
 }
 
-static uint_8 *put32( uint_8 *p, uint_32 dword ) {
-
+static uint_8 *put32( uint_8 *p, uint_32 dword )
+{
     WriteU32( p, dword );
     return( p + 4 );
 }
 
-static uint_8 *putFrameDatum( uint_8 *p, uint_8 method, uint_16 datum ) {
-
+static uint_8 *putFrameDatum( uint_8 *p, uint_8 method, uint_16 datum )
+{
 /**/myassert( p != NULL );
     switch( method ) {
     case FRAME_SEG:
@@ -110,8 +115,8 @@ static uint_8 *putFrameDatum( uint_8 *p, uint_8 method, uint_16 datum ) {
     return( p );
 }
 
-static uint_8 *putTargetDatum( uint_8 *p, uint_8 method, uint_16 datum ) {
-
+static uint_8 *putTargetDatum( uint_8 *p, uint_8 method, uint_16 datum )
+{
 /**/myassert( p != NULL );
     if( ( method & 0x03 ) == TARGET_ABS ) {
         return( put16( p, datum ) );

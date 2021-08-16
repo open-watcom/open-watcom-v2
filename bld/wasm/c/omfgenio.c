@@ -34,15 +34,15 @@
 #include <string.h>
 #include "asmglob.h"
 #include "asmalloc.h"
-#include "myassert.h"
+#include "fatal.h"
 #include "omfgenio.h"
 #include "omfobjre.h"
-#include "fatal.h"
+#include "myassert.h"
 
 
 #define OBJ_BUFFER_SIZE 0x1000      /* 4k (must be less than 64k) */
 
-struct {
+static struct {
     uint_16     length;     /* number of bytes written since rec header     */
     uint_16     in_buf;     /* number of bytes in buffer                    */
     uint_8      checksum;   /* for current record                           */
@@ -89,7 +89,7 @@ void ObjWriteOpen( void )
     }
     pobjState = AsmAlloc( sizeof( *pobjState ) + OBJ_BUFFER_SIZE );
     pobjState->in_buf = 0;
-    pobjState->in_rec = 0;
+    pobjState->in_rec = false;
 }
 
 void ObjWriteClose( bool del )
@@ -106,6 +106,7 @@ void ObjWriteClose( bool del )
     AsmFree( pobjState );
     pobjState = NULL;
     if( del ) {
+        /* This remove works around an NT networking bug */
         remove( AsmFiles.fname[OBJ] );
     }
 }
@@ -121,7 +122,7 @@ void ObjWBegRec( uint_8 command )
     buf[1] = 0;
     buf[2] = 0;
     safeWrite( buf, 3 );
-    pobjState->in_rec = 1;
+    pobjState->in_rec = true;
     pobjState->checksum = command;
     pobjState->in_buf = 0;
     pobjState->length = 0;
@@ -167,7 +168,7 @@ void ObjWEndRec( void )
     safeSeek( -(long)pobjState->length - 2, SEEK_CUR );
     safeWrite( buf, 2 );                   /* write the length */
     safeSeek( 0L, SEEK_END );       /* move to end of file again */
-    pobjState->in_rec = 0;
+    pobjState->in_rec = false;
 }
 
 void ObjWrite8( uint_8 byte )

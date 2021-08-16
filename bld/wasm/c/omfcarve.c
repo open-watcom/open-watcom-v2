@@ -52,8 +52,8 @@ typedef struct {
     void        **free_list;
 } cv_t;
 
-static void newBlk( cv_t *cv ) {
-
+static void newBlk( cv_t *cv )
+{
     blk_t   *newblk;
 
     newblk = AsmAlloc( sizeof( blk_t ) - 1 + cv->blk_top );
@@ -62,8 +62,9 @@ static void newBlk( cv_t *cv ) {
     cv->top_elm = newblk->data + cv->blk_top;
 }
 
-carve_t CarveCreate( size_t elm_size, size_t blk_size ) {
+carve_t CarveCreate( size_t elm_size, size_t blk_size )
 /*****************************************************/
+{
     cv_t    *cv;
 
     cv = AsmAlloc( sizeof( *cv ) );
@@ -76,8 +77,9 @@ carve_t CarveCreate( size_t elm_size, size_t blk_size ) {
     return( cv );
 }
 
-void CarveDestroy( carve_t caller_cv ) {
+void CarveDestroy( carve_t caller_cv )
 /************************************/
+{
     cv_t    *cv;
     blk_t   *cur;
     blk_t   *next;
@@ -93,8 +95,9 @@ void CarveDestroy( carve_t caller_cv ) {
     AsmFree( cv );
 }
 
-void *CarveAlloc( carve_t caller_cv ) {
+void *CarveAlloc( carve_t caller_cv )
 /***********************************/
+{
     cv_t    *cv;
     void    **new;
 
@@ -113,8 +116,9 @@ void *CarveAlloc( carve_t caller_cv ) {
     return( cv->top_elm );
 }
 
-void CarveFree( carve_t caller_cv, void *elm ) {
+void CarveFree( carve_t caller_cv, void *elm )
 /********************************************/
+{
     cv_t    *cv;
 
 /**/myassert( caller_cv != NULL );
@@ -122,4 +126,3 @@ void CarveFree( carve_t caller_cv, void *elm ) {
     *(void**)elm = cv->free_list;
     cv->free_list = (void **)elm;
 }
-

@@ -41,18 +41,21 @@
 
 static carve_t myCarver;
 
-void ObjRecInit( void ) {
+void ObjRecInit( void )
 /*********************/
+{
     myCarver = CarveCreate( sizeof( obj_rec ), 16 );
 }
 
-void ObjRecFini( void ) {
+void ObjRecFini( void )
 /*********************/
+{
     CarveDestroy( myCarver );
 }
 
-obj_rec *ObjNewRec( uint_8 command ) {
+obj_rec *ObjNewRec( uint_8 command )
 /**********************************/
+{
     obj_rec *new;
 
     new = CarveAlloc( myCarver );
@@ -108,24 +111,27 @@ void ObjKillRec( obj_rec *objr )
     CarveFree( myCarver, objr );
 }
 
-void ObjAllocData( obj_rec *objr, uint_16 len ) {
+void ObjAllocData( obj_rec *objr, uint_16 len )
 /*********************************************/
+{
 /**/myassert( objr->data == NULL );
     objr->data = AsmAlloc( len );
     objr->length = len;
     objr->free_data = 1;
 }
 
-void ObjAttachData( obj_rec *objr, uint_8 *data, uint_16 len ) {
+void ObjAttachData( obj_rec *objr, uint_8 *data, uint_16 len )
 /************************************************************/
+{
 /**/myassert( objr->data == NULL );
     objr->data = data;
     objr->length = len;
     objr->free_data = 0;
 }
 
-void ObjDetachData( obj_rec *objr ) {
+void ObjDetachData( obj_rec *objr )
 /*********************************/
+{
 /**/myassert( objr != NULL );
 /**/myassert( objr->data != NULL );
     if( objr->free_data ) {
@@ -135,14 +141,16 @@ void ObjDetachData( obj_rec *objr ) {
     objr->length = 0;
 }
 
-uint_8 ObjGet8( obj_rec *objr ) {
+uint_8 ObjGet8( obj_rec *objr )
 /*****************************/
+{
 /**/myassert( objr != NULL && objr->data != NULL );
     return( objr->data[ objr->curoff++ ] );
 }
 
-uint_16 ObjGet16( obj_rec *objr ) {
+uint_16 ObjGet16( obj_rec *objr )
 /*******************************/
+{
     uint_8  *p;
 
 /**/myassert( objr != NULL && objr->data != NULL );
@@ -150,8 +158,9 @@ uint_16 ObjGet16( obj_rec *objr ) {
     return( ReadU16( p ) );
 }
 
-uint_32 ObjGet32( obj_rec *objr ) {
+uint_32 ObjGet32( obj_rec *objr )
 /*******************************/
+{
     uint_8  *p;
 
 /**/myassert( objr != NULL && objr->data != NULL );
@@ -160,8 +169,9 @@ uint_32 ObjGet32( obj_rec *objr ) {
     return( ReadU32( p ) );
 }
 
-uint_32 ObjGetEither( obj_rec *objr ) {
+uint_32 ObjGetEither( obj_rec *objr )
 /***********************************/
+{
 /**/myassert( objr != NULL );
     if( objr->is_32 ) {
         return( ObjGet32( objr ) );
@@ -170,8 +180,9 @@ uint_32 ObjGetEither( obj_rec *objr ) {
     }
 }
 
-uint_16 ObjGetIndex( obj_rec *objr ) {
+uint_16 ObjGetIndex( obj_rec *objr )
 /**********************************/
+{
     uint_16 index;
 
 /**/myassert( objr != NULL && objr->data != NULL );
@@ -183,8 +194,9 @@ uint_16 ObjGetIndex( obj_rec *objr ) {
     return( index );
 }
 
-uint_8 *ObjGet( obj_rec *objr, uint_16 len ) {
+uint_8 *ObjGet( obj_rec *objr, uint_16 len )
 /******************************************/
+{
     uint_8  *p;
 
 /**/myassert( objr != NULL && objr->data != NULL );
@@ -195,22 +207,25 @@ uint_8 *ObjGet( obj_rec *objr, uint_16 len ) {
     return( p );
 }
 
-void ObjPut8( obj_rec *objr, uint_8 byte ) {
+void ObjPut8( obj_rec *objr, uint_8 byte )
 /****************************************/
+{
 /**/myassert( objr != NULL && objr->data != NULL );
     objr->data[ objr->curoff++ ] = byte;
 }
 
-void ObjPut16( obj_rec *objr, uint_16 word ) {
+void ObjPut16( obj_rec *objr, uint_16 word )
 /******************************************/
+{
 /**/myassert( objr != NULL && objr->data != NULL );
 
     WriteU16( objr->data + objr->curoff, word );
     objr->curoff += 2;
 }
 
-void ObjPut32( obj_rec *objr, uint_32 dword ) {
+void ObjPut32( obj_rec *objr, uint_32 dword )
 /*******************************************/
+{
 /**/myassert( objr != NULL && objr->data != NULL );
 
     WriteU32( objr->data + objr->curoff, dword );
@@ -218,8 +233,9 @@ void ObjPut32( obj_rec *objr, uint_32 dword ) {
 }
 
 #if 0
-void ObjPutEither( obj_rec *objr, uint_32 data ) {
+void ObjPutEither( obj_rec *objr, uint_32 data )
 /**********************************************/
+{
 /**/myassert( objr != NULL && objr->data != NULL );
     if( objr->is_32 ) {
         ObjPut32( objr, data );
@@ -229,8 +245,9 @@ void ObjPutEither( obj_rec *objr, uint_32 data ) {
 }
 #endif
 
-void ObjPutIndex( obj_rec *objr, uint_16 idx ) {
+void ObjPutIndex( obj_rec *objr, uint_16 idx )
 /********************************************/
+{
 /**/myassert( objr != NULL && objr->data != NULL );
     if( idx > 0x7f ) {
         ObjPut8( objr, ( idx >> 8 ) | 0x80 );
@@ -238,15 +255,17 @@ void ObjPutIndex( obj_rec *objr, uint_16 idx ) {
     ObjPut8( objr, idx & 0xff );
 }
 
-void ObjPut( obj_rec *objr, const uint_8 *data, uint_16 len ) {
+void ObjPut( obj_rec *objr, const uint_8 *data, uint_16 len )
 /***********************************************************/
+{
 /**/myassert( objr != NULL && objr->data != NULL );
     memcpy( objr->data + objr->curoff, data, len );
     objr->curoff += len;
 }
 
-void ObjPutName( obj_rec *objr, const char *name, uint_8 len ) {
+void ObjPutName( obj_rec *objr, const char *name, uint_8 len )
 /************************************************************/
+{
 /**/myassert( objr != NULL && objr->data != NULL );
     ObjPut8( objr, len );
     ObjPut( objr, (uint_8 *)name, len );

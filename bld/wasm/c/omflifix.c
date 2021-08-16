@@ -45,17 +45,19 @@
     be applied to any fixup in that range.
 */
 
-void LifixInit( lifix_list *lif ) {
+void LifixInit( lifix_list *lif )
 /*******************************/
+{
     lif->head = NULL;
 }
 
-int_16 LifixDelta( lifix_list *lif, uint_16 old_offset ) {
+int_16 LifixDelta( lifix_list *lif, uint_16 old_offset )
 /******************************************************/
 /*
     Given an offset in the original LIDATA, return the delta to apply to get
     the offset in the new LIDATA.
 */
+{
     lifix   *walk;
 
     walk = lif->head;
@@ -68,8 +70,9 @@ int_16 LifixDelta( lifix_list *lif, uint_16 old_offset ) {
     return( 0 );    /* default delta to apply */
 }
 
-void LifixDestroy( lifix_list *lif ) {
+void LifixDestroy( lifix_list *lif )
 /**********************************/
+{
     lifix   *cur;
     lifix   *next;
 
@@ -83,13 +86,14 @@ void LifixDestroy( lifix_list *lif ) {
 
 
 #if 0
-void LifixAdd( lifix_list *lif, uint_16 lower_bound, int_16 delta ) {
+void LifixAdd( lifix_list *lif, uint_16 lower_bound, int_16 delta )
 /*****************************************************************/
 /*
     This code is too general... we know the lower_bounds will occur in
     strictly increasing order; so we can just implement a stack.  The
     else section just implements a stack.
 */
+{
     lifix   **walk;
     lifix   *new;
 
@@ -107,8 +111,9 @@ void LifixAdd( lifix_list *lif, uint_16 lower_bound, int_16 delta ) {
     *walk = new;
 }
 #else
-void LifixAdd( lifix_list *lif, uint_16 lower_bound, int_16 delta ) {
+void LifixAdd( lifix_list *lif, uint_16 lower_bound, int_16 delta )
 /*****************************************************************/
+{
     lifix *new;
 
     /* this assertion guarantees we are building the list in decreasing order*/
@@ -120,4 +125,3 @@ void LifixAdd( lifix_list *lif, uint_16 lower_bound, int_16 delta ) {
     lif->head = new;
 }
 #endif
-

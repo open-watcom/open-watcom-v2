@@ -45,10 +45,11 @@
 
 static lifix_list   lifList;
 
-static int writeMisc( obj_rec *objr ) {
+static int writeMisc( obj_rec *objr )
 /*
     For 16-bit records which are the same under Intel, PharLap, and MS OMFs
 */
+{
     uint_8  *ptr;
     uint_16 len;
     uint_16 save;
@@ -64,10 +65,11 @@ static int writeMisc( obj_rec *objr ) {
     return( 0 );
 }
 
-static int writeMisc32( obj_rec *objr ) {
+static int writeMisc32( obj_rec *objr )
 /*
     For 32-bit records which are the same under Intel, PharLap, and MS OMFs
 */
+{
     uint_8  *ptr;
     uint_16 len;
     uint_8  cmd;
@@ -88,8 +90,8 @@ static int writeMisc32( obj_rec *objr ) {
     return( 0 );
 }
 
-static int writeComent( obj_rec *objr ) {
-
+static int writeComent( obj_rec *objr )
+{
     uint_8  *ptr;
     uint_16 len;
     uint_16 save;
@@ -108,8 +110,8 @@ static int writeComent( obj_rec *objr ) {
     return( 0 );
 }
 
-static int writeSegdef( obj_rec *objr ) {
-
+static int writeSegdef( obj_rec *objr )
+{
     int         is32;
     uint_8      acbp;
     uint_8      align;
@@ -159,8 +161,8 @@ static int writeSegdef( obj_rec *objr ) {
     return( 0 );
 }
 
-static int writeFixup( obj_rec *objr ) {
-
+static int writeFixup( obj_rec *objr )
+{
     int         is32;
     fixup       *walk;
     uint_8      buf[ FIX_GEN_MAX ];
@@ -196,8 +198,8 @@ static int writeFixup( obj_rec *objr ) {
     return( 0 );
 }
 
-static int writeLedata( obj_rec *objr ) {
-
+static int writeLedata( obj_rec *objr )
+{
     uint_16     save;
     uint_8      *ptr;
     uint_16     len;
@@ -293,8 +295,8 @@ static int writeTheadr( obj_rec *objr )
     return( writeMisc( objr ) );
 }
 
-static int writeModend( obj_rec *objr ) {
-
+static int writeModend( obj_rec *objr )
+{
     uint_16 len;
     int     is32;
     uint_8  buf[ 1 + FIX_GEN_MAX ];
@@ -323,8 +325,8 @@ static int writeModend( obj_rec *objr ) {
     return( 0 );
 }
 
-static void writeBase( obj_rec *objr ) {
-
+static void writeBase( obj_rec *objr )
+{
     uint_16 grp_idx;
     uint_16 seg_idx;
 
@@ -337,8 +339,8 @@ static void writeBase( obj_rec *objr ) {
     }
 }
 
-static int writeComdat( obj_rec *objr ) {
-
+static int writeComdat( obj_rec *objr )
+{
     uint_8      *ptr;
     uint_16     len;
     uint_16     save;
@@ -375,8 +377,8 @@ static int writeComdat( obj_rec *objr ) {
     return( 0 );
 }
 
-static int writePubdef( obj_rec *objr ) {
-
+static int writePubdef( obj_rec *objr )
+{
     int         is32;
     const char  *name;
     size_t       name_len;
@@ -414,8 +416,8 @@ static int writePubdef( obj_rec *objr ) {
     return( 0 );
 }
 
-static void writeLinnumData( obj_rec *objr ) {
-
+static void writeLinnumData( obj_rec *objr )
+{
     int  is32;
     linnum_data *cur;
     linnum_data *stop;
@@ -436,8 +438,8 @@ static void writeLinnumData( obj_rec *objr ) {
     }
 }
 
-static int writeLinnum( obj_rec *objr ) {
-
+static int writeLinnum( obj_rec *objr )
+{
     int         is32;
 
 /**/myassert( objr != NULL );
@@ -450,8 +452,8 @@ static int writeLinnum( obj_rec *objr ) {
     return( 0 );
 }
 
-static int writeLinsym( obj_rec *objr ) {
-
+static int writeLinsym( obj_rec *objr )
+{
     int         is32;
 
 /**/myassert( objr != NULL );
