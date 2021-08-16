@@ -207,9 +207,6 @@ pick( MSG_INTERNAL_ERROR,
 pick( OBJECT_WRITE_ERROR,
                                 "Object file error - " ,
                                 "Object file error - " )
-pick( NO_LOR_PHARLAP,
-                                "NO LOR PHARLAP !!" ,
-                                "LOR PHARLAPではありません!!\n" )
 pick( PARM_REQUIRED,
                                 "Parameter Required" ,
                                 "パラメータが必要です" )

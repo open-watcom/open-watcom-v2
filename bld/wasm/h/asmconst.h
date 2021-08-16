@@ -51,7 +51,7 @@
 
 /* max_ledata_threshold = 1024 - 6 for the header, -6 for space for fixups */
 #define MAX_LEDATA_LEN          1024
-#define MAX_LEDATA_THRESHOLD        (MAX_LEDATA_LEN - 12)
+#define MAX_LEDATA_THRESHOLD    (MAX_LEDATA_LEN - 12)
 
 #define NULLC                   '\0'
 #define NULLS                   "\0"

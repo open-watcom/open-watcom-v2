@@ -83,7 +83,7 @@ void ObjWriteOpen( void )
         Fatal( MSG_CANNOT_OPEN_FILE, AsmFiles.fname[OBJ] );
     }
 */
-    AsmFiles.file[OBJ] = fopen( AsmFiles.fname[OBJ], "w+b" );
+    AsmFiles.file[OBJ] = fopen( AsmFiles.fname[OBJ], "wb" );
     if( AsmFiles.file[OBJ] == NULL ) {
         Fatal( MSG_CANNOT_OPEN_FILE, AsmFiles.fname[OBJ] );
     }

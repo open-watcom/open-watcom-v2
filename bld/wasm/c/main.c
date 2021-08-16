@@ -724,7 +724,6 @@ static void open_files( void )
 {
     /* open ASM file */
     AsmFiles.file[ASM] = fopen( AsmFiles.fname[ASM], "r" );
-
     if( AsmFiles.file[ASM] == NULL ) {
         Fatal( MSG_CANNOT_OPEN_FILE, AsmFiles.fname[ASM] );
     }
