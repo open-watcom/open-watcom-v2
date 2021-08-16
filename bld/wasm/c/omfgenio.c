@@ -60,7 +60,7 @@ static void safeSeek( long offset, int mode )
 /**/myassert( AsmFiles.file[OBJ] != NULL );
 
     if( fseek( AsmFiles.file[OBJ], offset, mode ) ) {
-        Fatal( MSG_OBJECT_WRITE_ERROR, "fseek" );
+        Fatal( MSG_OBJECT_FILE_ERROR, "fseek" );
     }
 }
 
@@ -70,7 +70,7 @@ static void safeWrite( const uint_8 *buf, uint_16 len )
 /**/myassert( AsmFiles.file[OBJ] != NULL );
 
     if( fwrite( buf, 1, len, AsmFiles.file[OBJ] ) != len ) {
-        Fatal( MSG_OBJECT_WRITE_ERROR, "fwrite" );
+        Fatal( MSG_OBJECT_FILE_ERROR, "fwrite" );
     }
 }
 
