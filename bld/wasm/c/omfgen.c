@@ -363,22 +363,11 @@ static int writeComdat( obj_rec *objr ) {
         writeBase( objr );
     }
     ObjWriteIndex( objr->d.comdat.public_name_idx );
-    if( ( objr->d.comdat.flags & COMDAT_ITERATED ) == 0 ){
-        /* record is already in ms omf format */
-        len = ObjRemain( objr );
-        ptr = ObjGet( objr, len );
-/**/    myassert( len <= 1024 );
-        ObjWrite( ptr, len );
-    } else {
-        int_16 delta;
-        uint_16 first_block_offset;
-
-        delta = 0;  /* id32Block needs to play with this */
-        first_block_offset = ObjRTell( objr );
-        while( !ObjEOR( objr ) ) {
-            id32Block( objr, &delta, first_block_offset );
-        }
-    }
+    /* record is already in ms omf format */
+    len = ObjRemain( objr );
+    ptr = ObjGet( objr, len );
+/**/myassert( len <= 1024 );
+    ObjWrite( ptr, len );
     ObjWEndRec();
     ObjRSeek( objr, save );
     return( 0 );
