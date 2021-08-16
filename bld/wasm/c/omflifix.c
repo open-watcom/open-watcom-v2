@@ -36,7 +36,6 @@
 #include "omflifix.h"
 #include "myassert.h"
 
-
 /*
     This file is used by genmsomf.c and genphar.c to handle changes to the
     fixups attached to LIDATAs with the wrong size rpt_count field.

@@ -31,11 +31,8 @@
 ****************************************************************************/
 
 
-#ifndef GENOMF_H
-#define GENOMF_H
-
-#include "omfobjre.h"
-
+#ifndef OMFGEN_H
+#define OMFGEN_H
 
 extern void write_record( obj_rec *objr, bool kill );
 

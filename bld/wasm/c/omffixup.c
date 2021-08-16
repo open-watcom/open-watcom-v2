@@ -152,13 +152,15 @@ uint_16 FixGenLRef( logref *log, uint_8 *buf, int type )
     return( (uint_16)( p - buf ) );
 }
 
-uint_16 FixGenPRef( physref *ref, uint_8 *buf )
-/*********************************************/
+uint_16 FixGenPRef( physref *ref, uint_8 *buf, int type )
+/*******************************************************/
 {
     uint_8  *p;
 
 /**/myassert( ref != NULL );
 /**/myassert( buf != NULL );
+/**/myassert( type == FIX_GEN_INTEL || type == FIX_GEN_MS386 );
+    (void)type;
     p = put16( buf, ref->frame );
     p = put16( p, (uint_16)ref->offset );
     return( (uint_16)( p - buf ) );
@@ -173,7 +175,7 @@ uint_16 FixGenRef( logphys *ref, int is_logical, uint_8 *buf, int type )
     if( is_logical ) {
         return( FixGenLRef( &ref->log, buf, type ) );
     }
-    return( FixGenPRef( &ref->phys, buf ) );
+    return( FixGenPRef( &ref->phys, buf, type ) );
 }
 
 uint_16 FixGenFix( fixup *fix, uint_8 *buf, int type )

@@ -33,11 +33,11 @@
 #include "asmalloc.h"
 #include "mangle.h"
 #include "directiv.h"
+#include "omfobjre.h"
 #include "omfqueue.h"
 #include "queues.h"
-#include "pcobj.h"
-#include "omfgen.h"
 #include "myassert.h"
+#include "omfgen.h"
 
 
 typedef struct queuenode {

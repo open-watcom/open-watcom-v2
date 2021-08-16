@@ -31,8 +31,8 @@
 ****************************************************************************/
 
 
-#ifndef QUEUE_H
-#define QUEUE_H
+#ifndef OMFQUEUE_H
+#define OMFQUEUE_H
 
 typedef struct {
     void *head;

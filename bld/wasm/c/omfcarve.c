@@ -37,7 +37,6 @@
 #include "omfcarve.h"
 #include "myassert.h"
 
-
 typedef struct blk blk_t;
 struct blk {
     blk_t   *next;

@@ -730,7 +730,7 @@ static void open_files( void )
     }
 
     /* open OBJ file */
-    ObjWriteInit();
+    ObjWriteOpen();
 
     /* delete any existing ERR file */
     DelErrFile();

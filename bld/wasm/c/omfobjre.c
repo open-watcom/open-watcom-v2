@@ -34,10 +34,10 @@
 #include <string.h>
 #include "asmglob.h"
 #include "asmalloc.h"
-#include "pcobj.h"
 #include "omfobjre.h"
-#include "omfcarve.h"
+#include "pcobj.h"
 #include "myassert.h"
+#include "omfcarve.h"
 
 static carve_t myCarver;
 

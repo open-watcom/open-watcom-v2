@@ -38,7 +38,8 @@
 #include "asmalloc.h"
 #include "fatal.h"
 #include "asmeval.h"
-#include "pcobj.h"
+#include "asmglob.h"
+#include "omffixup.h"
 #include "autodept.h"
 #include "dostimet.h"
 #include "mangle.h"
@@ -50,9 +51,9 @@
 #include "condasm.h"
 #include "myassert.h"
 #include "standalo.h"
+#include "omfobjre.h"
 #include "omfgen.h"
 #include "omfgenio.h"
-#include "asmerr.h"
 
 #include "clibext.h"
 
@@ -1275,8 +1276,8 @@ void WriteObjModule( void )
 #ifdef DEBUG_OUT
         write_modend();
 #endif
-        ObjWriteFini( true );
-        ObjWriteInit();
+        ObjWriteClose( true );
+        ObjWriteOpen();
         prev_total = curr_total;
     }
     if( write_to_file && Options.error_count == 0 )

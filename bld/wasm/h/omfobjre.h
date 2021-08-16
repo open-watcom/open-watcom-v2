@@ -30,10 +30,12 @@
 ****************************************************************************/
 
 
-#ifndef OBJREC_H
-#define OBJREC_H
+#ifndef OMFOBJRE_H
+#define OMFOBJRE_H
 
+#include "pcobj.h"
 #include "omffixup.h"
+
 
 typedef struct obj_rec      obj_rec;
 
@@ -171,8 +173,7 @@ struct linnum_info {
     No data should be attached to these records.  All necessary information
     is in the lines array.
 */
-
-typedef uint_16             name_handle;
+typedef uint_16     name_handle;
 
 typedef struct pubdef_data {
     name_handle name;           /* name of this public                      */
@@ -385,5 +386,4 @@ extern void         ObjTruncRec( obj_rec *objr );
 #define ObjRemain(objr)         ( (objr)->length - (objr)->curoff )
 #define ObjTruncRec(objr)       (void)( (objr)->length = (objr)->curoff )
 #define ObjCanFree(objr)        (void)( (objr)->free_data = 1 )
-
 #endif

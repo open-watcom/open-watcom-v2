@@ -31,8 +31,8 @@
 ****************************************************************************/
 
 
-#ifndef CARVE_H
-#define CARVE_H
+#ifndef OMFCARVE_H
+#define OMFCARVE_H
 
 #include <stddef.h>
 

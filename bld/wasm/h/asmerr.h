@@ -39,13 +39,6 @@
 
 #include "wasmmsg.h"
 
-#ifndef NDEBUG
-    extern int InternalError( const char *file, unsigned line );
-  #if defined( __WATCOMC__ )
-    #pragma aux InternalError __aborts
-  #endif
-#endif
-
 #ifdef DEBUG_OUT
     extern void DoDebugMsg( const char *format, ... );
     #define DebugMsg( x ) DoDebugMsg x
@@ -55,7 +48,10 @@
 // use DebugMsg((....)) to call it
 
 #if defined( _STANDALONE_ )
-    #define WRN     0x8000
+    extern int InternalError( const char *file, unsigned line );
+  #if defined( __WATCOMC__ )
+    #pragma aux InternalError __aborts
+  #endif
   #if DEBUG_OUT
     #define DebugCurrLine() printf( "%s\n", CurrString );
     #define AsmIntErr( x ) DebugCurrLine(); printf( "Internal error = %u\n", x )

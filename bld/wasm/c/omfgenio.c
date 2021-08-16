@@ -33,152 +33,181 @@
 #include <stdio.h>      /* for SEEK_SET, SEEK_CUR, SEEK_END */
 #include <string.h>
 #include "asmglob.h"
-#include "fatal.h"
+#include "asmalloc.h"
+#include "myassert.h"
 #include "omfgenio.h"
 #include "omfobjre.h"
-#include "myassert.h"
+#include "fatal.h"
 
 
-static struct {
+#define OBJ_BUFFER_SIZE 0x1000      /* 4k (must be less than 64k) */
+
+struct {
     uint_16     length;     /* number of bytes written since rec header     */
     uint_16     in_buf;     /* number of bytes in buffer                    */
     uint_8      checksum;   /* for current record                           */
     uint_8      in_rec : 1; /* a record is open                             */
-    uint_8      buffer[OBJ_BUFFER_SIZE + 1];  /* for writing                                  */
-} pobjState;                /* object file information for WOMP             */
+    uint_8      buffer[1];  /* for writing                                  */
+} *pobjState;               /* object file buffering info                   */
 
 /*
     Routines for buffered writing of an object file
 */
 
-static void safeSeek( long offset, int mode ) {
+static void safeSeek( long offset, int mode )
+{
+/**/myassert( pobjState != NULL );
+/**/myassert( AsmFiles.file[OBJ] != NULL );
 
-    if( fseek( AsmFiles.file[OBJ], offset, mode ) == -1L ) {
-        Fatal( MSG_OBJECT_WRITE_ERROR, "lseek" );
+    if( fseek( AsmFiles.file[OBJ], offset, mode ) ) {
+        Fatal( MSG_OBJECT_WRITE_ERROR, "fseek" );
     }
 }
 
 static void safeWrite( const uint_8 *buf, uint_16 len )
 {
+/**/myassert( pobjState != NULL );
+/**/myassert( AsmFiles.file[OBJ] != NULL );
+
     if( fwrite( buf, 1, len, AsmFiles.file[OBJ] ) != len ) {
-        Fatal( MSG_OBJECT_WRITE_ERROR, "write" );
+        Fatal( MSG_OBJECT_WRITE_ERROR, "fwrite" );
     }
 }
 
-void ObjWriteInit( void )
+void ObjWriteOpen( void )
 /***********************/
 {
-    AsmFiles.file[OBJ] = fopen( AsmFiles.fname[OBJ], "w" );
+/*
+    pobjState.file_out = ObjWriteOpen( AsmFiles.fname[OBJ] );
+    if( pobjState.file_out == NULL ) {
+        Fatal( MSG_CANNOT_OPEN_FILE, AsmFiles.fname[OBJ] );
+    }
+*/
+    AsmFiles.file[OBJ] = fopen( AsmFiles.fname[OBJ], "w+b" );
     if( AsmFiles.file[OBJ] == NULL ) {
         Fatal( MSG_CANNOT_OPEN_FILE, AsmFiles.fname[OBJ] );
     }
-    pobjState.in_buf = 0;
-    pobjState.in_rec = 0;
+    pobjState = AsmAlloc( sizeof( *pobjState ) + OBJ_BUFFER_SIZE );
+    pobjState->in_buf = 0;
+    pobjState->in_rec = 0;
 }
 
-void ObjWriteFini( bool del )
-/***************************/
+void ObjWriteClose( bool del )
+/****************************/
 {
-    if( pobjState.in_rec ) {
+/**/myassert( pobjState != NULL );
+
+    if( pobjState->in_rec ) {
         ObjWEndRec();
     }
-    fclose( AsmFiles.file[OBJ] );
+    if( fclose( AsmFiles.file[OBJ] ) ) {
+        Fatal( MSG_CANNOT_CLOSE_FILE, AsmFiles.fname[OBJ] );
+    }
+    AsmFree( pobjState );
+    pobjState = NULL;
     if( del ) {
-        /* This remove works around an NT networking bug */
         remove( AsmFiles.fname[OBJ] );
     }
 }
 
-void ObjWBegRec( uint_8 command ) {
-/***********************************************/
+void ObjWBegRec( uint_8 command )
+/*******************************/
+{
     uint_8  buf[3];
 
-/**/myassert( !pobjState.in_rec );
+/**/myassert( !pobjState->in_rec );
 
     buf[0] = command;
     buf[1] = 0;
     buf[2] = 0;
     safeWrite( buf, 3 );
-    pobjState.in_rec = 1;
-    pobjState.checksum = command;
-    pobjState.in_buf = 0;
-    pobjState.length = 0;
+    pobjState->in_rec = 1;
+    pobjState->checksum = command;
+    pobjState->in_buf = 0;
+    pobjState->length = 0;
 }
 
-static void objWFlushBuffer( void ) {
-/*******************************************/
+static void objWFlushBuffer( void )
+/*********************************/
+{
     uint_16 len_to_write;
     uint_8  checksum;
     uint_8  *p;
 
-    len_to_write = pobjState.in_buf;
-    if( len_to_write == 0 )  return;
-    checksum = pobjState.checksum;
-    for( p = pobjState.buffer; p < pobjState.buffer + len_to_write; ++p ) {
+    len_to_write = pobjState->in_buf;
+    if( len_to_write == 0 )
+        return;
+    checksum = pobjState->checksum;
+    for( p = pobjState->buffer; p < pobjState->buffer + len_to_write; ++p ) {
         checksum += *p;
     }
-    pobjState.checksum = checksum;
-    pobjState.length += len_to_write;
-    safeWrite( pobjState.buffer, len_to_write );
-    pobjState.in_buf = 0;
+    pobjState->checksum = checksum;
+    pobjState->length += len_to_write;
+    safeWrite( pobjState->buffer, len_to_write );
+    pobjState->in_buf = 0;
 }
 
-void ObjWEndRec( void ) {
-/*******************************/
+void ObjWEndRec( void )
+/*********************/
+{
     uint_8  buf[2];
     uint_8  checksum;
 
-/**/myassert( pobjState.in_rec );
+/**/myassert( pobjState->in_rec );
 
-    if( pobjState.in_buf > 0 ) {
+    if( pobjState->in_buf > 0 ) {
         objWFlushBuffer();
     }
-    ++pobjState.length;                  /* add 1 for checksum byte */
-    WriteU16( buf, pobjState.length );
-    checksum = pobjState.checksum + buf[0] + buf[1];
+    pobjState->length++;                  /* add 1 for checksum byte */
+    WriteU16( buf, pobjState->length );
+    checksum = pobjState->checksum + buf[0] + buf[1];
     checksum = -checksum;
     safeWrite( &checksum, 1 );
         /* back up to length */
-    safeSeek( -(long)pobjState.length - 2, SEEK_CUR );
+    safeSeek( -(long)pobjState->length - 2, SEEK_CUR );
     safeWrite( buf, 2 );                   /* write the length */
     safeSeek( 0L, SEEK_END );       /* move to end of file again */
-    pobjState.in_rec = 0;
+    pobjState->in_rec = 0;
 }
 
-void ObjWrite8( uint_8 byte ) {
-/*******************************************/
-/**/myassert( pobjState.in_rec );
+void ObjWrite8( uint_8 byte )
+/***************************/
+{
+/**/myassert( pobjState->in_rec );
 
-    if( pobjState.in_buf == OBJ_BUFFER_SIZE ) {
+    if( pobjState->in_buf == OBJ_BUFFER_SIZE ) {
         objWFlushBuffer();
     }
-    pobjState.buffer[ pobjState.in_buf++ ] = byte;
+    pobjState->buffer[ pobjState->in_buf++ ] = byte;
 }
 
-void ObjWrite16( uint_16 word ) {
-/*********************************************/
-/**/myassert( pobjState.in_rec );
+void ObjWrite16( uint_16 word )
+/*****************************/
+{
+/**/myassert( pobjState->in_rec );
 
-    if( pobjState.in_buf >= OBJ_BUFFER_SIZE - 1 ) {
+    if( pobjState->in_buf >= OBJ_BUFFER_SIZE - 1 ) {
         objWFlushBuffer();
     }
-    WriteU16( pobjState.buffer + pobjState.in_buf, word );
-    pobjState.in_buf += 2;
+    WriteU16( pobjState->buffer + pobjState->in_buf, word );
+    pobjState->in_buf += 2;
 }
 
-void ObjWrite32( uint_32 dword ) {
-/**********************************************/
-/**/myassert( pobjState.in_rec );
+void ObjWrite32( uint_32 dword )
+/******************************/
+{
+/**/myassert( pobjState->in_rec );
 
-    if( pobjState.in_buf >= OBJ_BUFFER_SIZE - 3 ) {
+    if( pobjState->in_buf >= OBJ_BUFFER_SIZE - 3 ) {
         objWFlushBuffer();
     }
-    WriteU32( pobjState.buffer + pobjState.in_buf, dword );
-    pobjState.in_buf += 4;
+    WriteU32( pobjState->buffer + pobjState->in_buf, dword );
+    pobjState->in_buf += 4;
 }
 
-void ObjWriteIndex( uint_16 index ) {
-/*************************************************/
+void ObjWriteIndex( uint_16 index )
+/*********************************/
+{
     if( index > 0x7f ) {
         ObjWrite8( 0x80 | ( index >> 8 ) );
     }
@@ -186,7 +215,7 @@ void ObjWriteIndex( uint_16 index ) {
 }
 
 void ObjWrite( const uint_8 *buf, uint_16 length )
-/****************************************************************/
+/************************************************/
 {
     const uint_8    *write;
     uint_16         amt;
@@ -195,14 +224,14 @@ void ObjWrite( const uint_8 *buf, uint_16 length )
 
     write = buf;
     for(;;) {
-        amt = OBJ_BUFFER_SIZE - pobjState.in_buf;
+        amt = OBJ_BUFFER_SIZE - pobjState->in_buf;
         if( amt >= length ) {
-            memcpy( &pobjState.buffer[ pobjState.in_buf ], write, length );
-            pobjState.in_buf += length;
+            memcpy( &pobjState->buffer[ pobjState->in_buf ], write, length );
+            pobjState->in_buf += length;
             break;
         } else if( amt > 0 ) {
-            memcpy( &pobjState.buffer[ pobjState.in_buf ], write, amt );
-            pobjState.in_buf += amt;
+            memcpy( &pobjState->buffer[ pobjState->in_buf ], write, amt );
+            pobjState->in_buf += amt;
             write += amt;
             length -= amt;
         }
@@ -210,8 +239,9 @@ void ObjWrite( const uint_8 *buf, uint_16 length )
     }
 }
 
-static uint_8 checkSum( const uint_8 *buf, uint_16 length ) {
-/***********************************************************/
+static uint_8 checkSum( const uint_8 *buf, uint_16 length )
+/*********************************************************/
+{
     uint_8 checksum;
 
     checksum = 0;
@@ -223,15 +253,16 @@ static uint_8 checkSum( const uint_8 *buf, uint_16 length ) {
     return( checksum );
 }
 
-void ObjWriteRec( uint_8 command, uint_16 length, const uint_8 *contents ) {
-/***************************************************************/
+void ObjWriteRec( uint_8 command, uint_16 length, const uint_8 *contents )
+/************************************************************************/
 /*
     Contents and length don't include checksum
 */
+{
     uint_8  buf[3];
     uint_8  checksum;
 
-/**/myassert( !pobjState.in_rec );
+/**/myassert( !pobjState->in_rec );
 
     checksum  = buf[0] = command;
     checksum += buf[1] = ( length + 1 ) & 0xff;

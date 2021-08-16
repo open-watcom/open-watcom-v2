@@ -33,6 +33,8 @@
 #ifndef _DIRECTIV_H_
 #define _DIRECTIV_H_
 
+#include "omfobjre.h"
+
 #define MAX_LNAME       255
 #define LNAME_NULL      0
 

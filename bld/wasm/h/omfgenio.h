@@ -31,21 +31,11 @@
 ****************************************************************************/
 
 
-#ifndef GENOMFIO_H
-#define GENOMFIO_H
+#ifndef OMFGENIO_H
+#define OMFGENIO_H
 
-#include <stddef.h>
-
-
-#define OBJ_BUFFER_SIZE 0x1000      /* 4k (must be less than 64k) */
-#define OBJ_MAX_REC     0x1000      /* maximum record size (<64k) */
-
-#if OBJ_MAX_REC > OBJ_BUFFER_SIZE
-#error "OBJ_MAX_REC must be smaller than OBJ_BUFFER_SIZE"
-#endif
-
-extern void         ObjWriteInit( void );
-extern void         ObjWriteFini( bool del );
+extern void         ObjWriteOpen( void );
+extern void         ObjWriteClose( bool del );
 extern void         ObjWBegRec( uint_8 command );
 extern void         ObjWEndRec( void );
 extern void         ObjWrite8( uint_8 byte );

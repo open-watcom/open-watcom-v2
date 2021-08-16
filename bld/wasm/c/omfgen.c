@@ -32,13 +32,14 @@
 
 #include <string.h>
 #include "asmglob.h"
-#include "pcobj.h"
 #include "omfgenio.h"
-#include "omfgen.h"
-#include "omfobjre.h"
-#include "omflifix.h"
+#include "pcobj.h"
+#include "asmalloc.h"
 #include "directiv.h"
+#include "omfobjre.h"
+#include "omfgen.h"
 #include "queues.h"
+#include "omflifix.h"
 #include "myassert.h"
 
 
@@ -224,11 +225,12 @@ static int writeLedata( obj_rec *objr ) {
     return( 0 );
 }
 
-static void id32Block( obj_rec *objr, int_16 *delta, uint_16 first_block_offset ) {
+static void id32Block( obj_rec *objr, int_16 *delta, uint_16 first_block_offset )
 /*
     Since LIDATAs are different under PharLap and MicroSoft 386 formats,
     we have to do some magic.
 */
+{
     uint_16 rpt_count;
     uint_16 blk_count;
     uint_8  data_count;
@@ -252,8 +254,8 @@ static void id32Block( obj_rec *objr, int_16 *delta, uint_16 first_block_offset 
     }
 }
 
-static int writeLidata( obj_rec *objr ) {
-
+static int writeLidata( obj_rec *objr )
+{
     uint_16     save;
     uint_8      *ptr;
     uint_16     len;
@@ -281,8 +283,8 @@ static int writeLidata( obj_rec *objr ) {
     return( 0 );
 }
 
-static int writeTheadr( obj_rec *objr ) {
-
+static int writeTheadr( obj_rec *objr )
+{
 /**/myassert( objr != NULL );
 /**/myassert( objr->command == CMD_THEADR );
         /* here's our initialization code */
@@ -466,52 +468,49 @@ static int writeLinsym( obj_rec *objr ) {
 void write_record( obj_rec *objr, bool kill )
 /*******************************************/
 {
-    int rc;
-
     /**/myassert( objr != NULL );
-
     ObjRSeek( objr, 0 );
     switch( objr->command ) {
     case CMD_THEADR:
-        rc = writeTheadr( objr );
+        writeTheadr( objr );
         break;
     case CMD_COMENT:
-        rc = writeComent( objr );
+        writeComent( objr );
         break;
     case CMD_MODEND:
-        rc = writeModend( objr );
+        writeModend( objr );
         break;
     case CMD_SEGDEF:
-        rc = writeSegdef( objr );
+        writeSegdef( objr );
         break;
     case CMD_LEDATA:
-        rc = writeLedata( objr );
+        writeLedata( objr );
         break;
     case CMD_FIXUPP:
-        rc = writeFixup( objr );
+        writeFixup( objr );
         break;
     case CMD_PUBDEF:
-        rc = writePubdef( objr );
+        writePubdef( objr );
         break;
     case CMD_LINNUM:
-        rc = writeLinnum( objr );
+        writeLinnum( objr );
         break;
     case CMD_LIDATA:
-        rc = writeLidata( objr );
+        writeLidata( objr );
         break;
     case CMD_STATIC_PUBDEF:
-        rc = writePubdef( objr );
+        writePubdef( objr );
         break;
     case CMD_COMDAT:
-        rc = writeComdat( objr );
+        writeComdat( objr );
         break;
     case CMD_LINSYM:
-        rc = writeLinsym( objr );
+        writeLinsym( objr );
         break;
     case CMD_STATIC_EXTDEF:
     case CMD_BAKPAT:
     case CMD_NBKPAT:
-        rc = writeMisc32( objr );
+        writeMisc32( objr );
         break;
     case CMD_EXTDEF:
     case CMD_LNAMES:
@@ -522,10 +521,7 @@ void write_record( obj_rec *objr, bool kill )
     case CMD_STATIC_COMDEF:
     case CMD_ALIAS:
     case CMD_LLNAMES:
-        rc = writeMisc( objr );
-        break;
-    default:
-        rc = 0;
+        writeMisc( objr );
         break;
     }
     if( kill ) {

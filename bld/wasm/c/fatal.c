@@ -66,11 +66,8 @@ void AsmShutDown( void )
     }
 
     /* close OBJ file */
-    ObjWriteFini( false );
+    ObjWriteClose( !write_to_file || Options.error_count > 0 );
     ObjRecFini();
-    if( !write_to_file || Options.error_count > 0 ) {
-        remove( AsmFiles.fname[OBJ] );
-    }
     AsmFree( AsmFiles.fname[ASM] );
     AsmFree( AsmFiles.fname[ERR] );
     AsmFree( AsmFiles.fname[LST] );

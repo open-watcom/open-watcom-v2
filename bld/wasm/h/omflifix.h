@@ -31,8 +31,8 @@
 ****************************************************************************/
 
 
-#ifndef LIFIX_H
-#define LIFIX_H
+#ifndef OMFLIFIX_H
+#define OMFLIFIX_H
 
 typedef struct lifix_munge  lifix;
 struct lifix_munge {
@@ -51,3 +51,4 @@ extern void LifixDestroy( lifix_list *lif );
 extern void LifixAdd( lifix_list *lif, uint_16 lower_bound, int_16 delta );
 
 #endif
+

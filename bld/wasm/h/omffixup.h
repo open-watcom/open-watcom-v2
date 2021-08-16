@@ -31,12 +31,12 @@
 ****************************************************************************/
 
 
-#ifndef FIXUP_H
-#define FIXUP_H
-
+#ifndef OMFFIXUP_H
+#define OMFFIXUP_H
 /*
     A lot of this file assumes you're familiar with the Intel OMF book...
 */
+
 
 typedef struct {
     uint_16 frame;          /* frame number of physical reference       */
@@ -186,7 +186,7 @@ extern uint_16 FixGenFix( fixup *fix, uint_8 *buf, int type );
 
 
 extern uint_16 FixGenLRef( logref *log, uint_8 *buf, int type );
-extern uint_16 FixGenPRef( physref *phys, uint_8 *buf );
+extern uint_16 FixGenPRef( physref *phys, uint_8 *buf, int type );
 extern uint_16 FixGenRef( logphys *lp, int is_logical, uint_8 *buf, int type );
 /*
     Generate references.  See FixGenFix comment for details.

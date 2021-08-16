@@ -36,17 +36,14 @@
 #include "omfqueue.h"
 #include "myassert.h"
 
-
-void QInit( qdesc *q )
-/********************/
-{
+extern void QInit( qdesc *q ) {
+/***************************/
     q->head = NULL;
     q->tail = NULL;
 }
 
-void QEnqueue( qdesc *q, void *item )
-/***********************************/
-{
+extern void QEnqueue( qdesc *q, void *item ) {
+/******************************************/
     if( q->head == NULL ) {
         q->head = q->tail = item;
     } else {
@@ -57,9 +54,8 @@ void QEnqueue( qdesc *q, void *item )
     *(void**)item = NULL;
 }
 
-void QJoinQueue( qdesc *dest, qdesc *src )
-/****************************************/
-{
+extern void QJoinQueue( qdesc *dest, qdesc *src ) {
+/***********************************************/
     if( dest->head == NULL ) {
         dest->head = src->head;
     } else if( src->head == NULL ) {
@@ -72,9 +68,8 @@ void QJoinQueue( qdesc *dest, qdesc *src )
     *(void **)src->tail = NULL;
 }
 
-void *QDequeue( qdesc *q )
-/************************/
-{
+extern void *QDequeue( qdesc *q ) {
+/*******************************/
     void *item;
 
     if( q->head == NULL ) {
