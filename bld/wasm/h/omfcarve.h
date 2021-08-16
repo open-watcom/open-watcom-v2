@@ -45,6 +45,3 @@ extern void *CarveAlloc( carve_t cv );
 extern void CarveFree( carve_t cv, void *elm );
 
 #endif
-
-
-

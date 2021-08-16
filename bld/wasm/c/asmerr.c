@@ -38,6 +38,7 @@
 #include "errout.h"
 #include "standalo.h"
 
+
 void                    OpenErrFile( void );
 
 //    WngLvls[level] // warning levels associated with warning messages

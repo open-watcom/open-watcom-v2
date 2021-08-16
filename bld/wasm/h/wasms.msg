@@ -204,7 +204,7 @@ pick( MSG_READ_MORE,
 pick( MSG_INTERNAL_ERROR,
                                 "Internal error in %s(%u)" ,
                                 "%s(%u) で内部エラーが起こりました\n" )
-pick( OBJECT_WRITE_ERROR,
+pick( OBJECT_FILE_ERROR,
                                 "Object file error - " ,
                                 "Object file error - " )
 pick( PARM_REQUIRED,
