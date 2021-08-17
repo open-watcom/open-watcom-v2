@@ -519,10 +519,12 @@ int SetEnvSafe( const char *name, const char *value )
     ENV_TRACKER *old;
     int         rc;
     size_t      len;
+    size_t      len1;
     ENV_TRACKER *env;
 
     len = strlen( name );
-    env = MallocSafe( sizeof( ENV_TRACKER ) + len + strlen( value ) + 1 );
+    len1 = ( value == NULL ) ? 0 : strlen( value );
+    env = MallocSafe( sizeof( ENV_TRACKER ) + len + len1 + 1 );
     // upper case the name
     p = env->name;
     while( *name != NULLCHAR ) {
@@ -530,25 +532,21 @@ int SetEnvSafe( const char *name, const char *value )
     }
 #ifdef _MSC_VER
     *p++ = '=';
+    len++;  /* include '=' character to search */
 #else
     *p++ = NULLCHAR;
 #endif
-    if( value == NULL || *value == NULLCHAR ) {
-#ifdef _MSC_VER
-        *p = NULLCHAR;
-#endif
+    if( value == NULL ) {
         env->value = NULL;
+        *p = NULLCHAR;
     } else {
         env->value = p;
         strcpy( env->value, value );
     }
     rc = SetEnvExt( env );          // put into environment
-    if( env->value == NULL ) {
+    if( *p == NULLCHAR ) {
         rc = 0;                     // we are deleting the envvar, ignore errors
     }
-#ifdef _MSC_VER
-    len++;
-#endif
     for( walk = &envList; *walk != NULL; walk = &(*walk)->next ) {
 #ifdef _MSC_VER
         if( strncmp( (*walk)->name, env->name, len ) == 0 ) {
