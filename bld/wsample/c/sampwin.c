@@ -330,7 +330,7 @@ void StartProg( const char *cmd, const char *prog, const char *full_args, char *
     pdata.wEnvSeg = 0;
     pdata.lpCmdLine = (char __far *)full_args;   /* Must be < 120 chars according to SDK */
     pdata.lpCmdShow = (void __far *)&cdata;
-    pdata.dwReserved = 0;
+    pdata.lpReserved = NULL;
 
     SampledProg = LoadModule( prog, (LPVOID)&pdata );
     while( !SharedMemory->TaskEnded ) {

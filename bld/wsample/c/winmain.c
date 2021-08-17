@@ -350,7 +350,7 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE previnst, LPSTR cmd, int show)
         parm.wEnvSeg = 0;
         parm.lpCmdLine = (char __far *)"";
         parm.lpCmdShow = (void __far *)&cmddat;
-        parm.dwReserved = 0;
+        parm.lpReserved = NULL;
         newinst = LoadModule( "wsamplew.exe", (LPVOID)&parm );
         if( newinst < HINSTANCE_ERROR ) {
             WinMessage( GET_MESSAGE( MSG_SAMPLE_15 ) );
