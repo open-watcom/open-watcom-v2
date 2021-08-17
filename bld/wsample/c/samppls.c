@@ -310,7 +310,7 @@ void SysDefaultOptions( void )
     RateChanged = 0;
 }
 
-void SysParseOptions( char c, char **cmd )
+void SysParseOptions( char c, const char **cmd )
 {
     switch( c ) {
     case 'r':

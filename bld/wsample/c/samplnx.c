@@ -288,7 +288,7 @@ void ResetThread( unsigned tid )
 }
 
 
-static void SetPid( char **cmd )
+static void SetPid( const char **cmd )
 {
     SamplePid = GetNumber( 1, INT_MAX, cmd, 10 );
 }
@@ -300,7 +300,7 @@ void InitTimerRate( void )
 }
 
 
-void SetTimerRate( char **cmd )
+void SetTimerRate( const char **cmd )
 {
     SleepTime = GetNumber( 1, 1000, cmd, 10 );
 }
@@ -866,7 +866,7 @@ void SysDefaultOptions( void )
 }
 
 
-void SysParseOptions( char c, char **cmd )
+void SysParseOptions( char c, const char **cmd )
 {
     switch( c ) {
     case 'r':

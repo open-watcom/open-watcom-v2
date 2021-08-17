@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +52,7 @@ void InitTimerRate( void )
     TimerRestoreValue = 0;
 }
 
-void SetTimerRate( char **cmd )
+void SetTimerRate( const char **cmd )
 {
     unsigned            millisec;
 
@@ -64,7 +65,7 @@ void SetTimerRate( char **cmd )
 }
 
 #ifdef __NETWARE__
-extern void SetRestoreRate( char **cmd )
+extern void SetRestoreRate( const char **cmd )
 {
     /*
     //  If someone codes a value of 1 then they are in HUGE trouble!

@@ -253,7 +253,7 @@ void SysDefaultOptions( void )
 }
 
 
-static void SetInterruptWatch( char **cmd )
+static void SetInterruptWatch( const char **cmd )
 {
     unsigned intr_num;
 
@@ -271,7 +271,7 @@ static void SetInterruptWatch( char **cmd )
 }
 
 
-void SysParseOptions( char c, char **cmd )
+void SysParseOptions( char c, const char **cmd )
 {
     switch( c ) {
     case 'r':

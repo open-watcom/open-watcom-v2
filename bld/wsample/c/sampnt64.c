@@ -125,7 +125,7 @@ void InitTimerRate( void )
     sleepTime = 55;
 }
 
-void SetTimerRate( char **cmd )
+void SetTimerRate( const char **cmd )
 {
     sleepTime = GetNumber( 1, 1000, cmd, 10 );
 }
@@ -674,7 +674,7 @@ void StartProg( const char *cmd, const char *prog, const char *full_args, char *
 
 void SysDefaultOptions( void ) { }
 
-void SysParseOptions( char c, char **cmd )
+void SysParseOptions( char c, const char **cmd )
 {
     switch( c ) {
     case 'r':

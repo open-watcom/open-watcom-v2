@@ -114,7 +114,7 @@ extern void             OutputMsg( int msg );
 extern void             OutputMsgNL( int msg );
 extern void             OutputMsgParmNL( int msg, const char FAR_PTR *str );
 extern void             OutputMsgCharNL( int msg, char chr );
-extern unsigned         GetNumber( unsigned, unsigned, char **, unsigned );
+extern unsigned         GetNumber( unsigned, unsigned, const char **, unsigned );
 extern void             StopAndSave( void );
 extern void             WriteCodeLoad( seg_offset, const char *, samp_block_kinds );
 extern void             WriteAddrMap( seg, seg, off );
@@ -143,7 +143,7 @@ extern void             FAR_PTR *my_alloc( size_t size );
 extern void             my_free( void FAR_PTR *chunk );
 
 extern void             InitTimerRate( void );
-extern void             SetTimerRate( char ** );
+extern void             SetTimerRate( const char ** );
 extern unsigned long    TimerRate( void );
 extern unsigned         SafeMargin( void );
 extern unsigned         NextThread( unsigned );
@@ -153,7 +153,7 @@ extern void             SysInit( void );
 extern void             SysOptions( void );
 extern void             SysExplain( void );
 extern void             SysDefaultOptions( void );
-extern void             SysParseOptions( char, char ** );
+extern void             SysParseOptions( char, const char ** );
 
 extern void             GetCommArea( void );
 extern void             GetNextAddr( void );

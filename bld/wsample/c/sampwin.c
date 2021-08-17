@@ -167,7 +167,7 @@ void InitTimerRate( void )
     SleepTime = 55;
 }
 
-void SetTimerRate( char **cmd )
+void SetTimerRate( const char **cmd )
 {
     SleepTime = GetNumber( 1, 1000, cmd, 10 );
 }
@@ -362,7 +362,7 @@ void SysDefaultOptions( void )
 {
 }
 
-void SysParseOptions( char c, char **cmd )
+void SysParseOptions( char c, const char **cmd )
 {
     if( c != 'r' ) {
         OutputMsgCharNL( MSG_INVALID_OPTION, c );

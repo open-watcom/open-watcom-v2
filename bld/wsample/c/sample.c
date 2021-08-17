@@ -355,7 +355,7 @@ static char *skip( const char *ptr )
 }
 
 
-unsigned GetNumber( unsigned min, unsigned max, char **atstr, unsigned base )
+unsigned GetNumber( unsigned min, unsigned max, const char **atstr, unsigned base )
 /* handles command line items of the sort "b=23" (up to base 16) */
 {
     char        *scan;
@@ -448,7 +448,7 @@ static char *Parse( const char *line, char arg[], const char **eoc )
         switch( c ) {
 #ifndef __WINDOWS__
         case 'b':
-            Ceiling = CNV_CEIL( GetNumber( MN_CEIL, MX_CEIL, (char **)&cmd, 10 ) );
+            Ceiling = CNV_CEIL( GetNumber( MN_CEIL, MX_CEIL, &cmd, 10 ) );
             break;
 #endif
         case 'c':
@@ -468,7 +468,7 @@ static char *Parse( const char *line, char arg[], const char **eoc )
             *p = '\0';
             break;
         default:
-            SysParseOptions( c, (char **)&cmd );
+            SysParseOptions( c, &cmd );
             break;
         }
     }

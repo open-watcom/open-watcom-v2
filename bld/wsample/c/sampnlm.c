@@ -77,7 +77,7 @@ extern short GetCS( void );
 void CodeLoad( struct LoadDefinitionStructure *loaded, samp_block_kinds kind );
 #endif
 
-extern void             SetRestoreRate( char **);
+extern void             SetRestoreRate( const char ** );
 extern void             ResolveRateDifferences( void );
 
 extern unsigned long    count_pit0( void );
@@ -419,7 +419,7 @@ static void EstimateRate( void )
     UnRegisterEventNotification( modeSwitch );
 }
 
-void SysParseOptions( char c, char **cmd )
+void SysParseOptions( char c, const char **cmd )
 {
     switch( c ) {
     case 'r':
