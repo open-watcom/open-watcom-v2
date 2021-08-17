@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -189,7 +189,7 @@ static void WakeMeUp( LONG dummy )
 }
 
 
-void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_args )
+void StartProg( const char *cmd, const char *prog, const char *full_args, char *dos_args )
 {
     LONG        events;
 
@@ -303,16 +303,14 @@ int InDOS( void )
     return( true );
 }
 
-void GetProg( char *cmd, char *eoc )
+void GetProg( const char *cmd, size_t len )
 {
-    char        save;
     pgroup2     pg1;
     pgroup2     pg2;
 
-    save = *eoc;
-    *eoc = '\0';
-    _splitpath2( cmd, pg1.buffer, NULL, NULL, &pg1.fname, NULL );
-    *eoc = save;
+    memcpy( pg2.buffer, cmd, len );
+    pg2.buffer[len] = '\0';
+    _splitpath2( pg2.buffer, pg1.buffer, NULL, NULL, &pg1.fname, NULL );
     _splitpath2( SampName, pg2.buffer, &pg2.drive, &pg2.dir, &pg2.fname, &pg2.ext );
     if( pg2.fname[0] == '\0' )
         pg2.fname = pg1.fname;

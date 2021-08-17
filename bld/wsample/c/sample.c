@@ -347,11 +347,11 @@ void Usage( void )
 }
 
 
-static char *skip( char *ptr )
+static char *skip( const char *ptr )
 {
     while( *ptr == ' ' || *ptr == '\t' )
         ++ptr;
-    return( ptr );
+    return( (char *)ptr );
 }
 
 
@@ -395,24 +395,26 @@ unsigned GetNumber( unsigned min, unsigned max, char **atstr, unsigned base )
     return( res );
 }
 
-static bool check_delimiter( char c )
+static char *skip_command( const char *str )
 {
-    switch( c ) {
-    case ' ':
-#ifdef __DOS__
-    case '/':
-    case '-':
-#endif
-    case '\t':
-    case '\0':
-    case '<':
-    case '>':
-    case '|':
-        return( true );
-    default:
-        break;
+    for( ;; ) {
+        switch( *str ) {
+        case ' ':
+    #ifdef __DOS__
+        case '/':
+        case '-':
+    #endif
+        case '\t':
+        case '\0':
+        case '<':
+        case '>':
+        case '|':
+            return( (char *)str );
+        default:
+            str++;
+            break;
+        }
     }
-    return( false );
 }
 
 #define CNV_CEIL( size )    ((size * 1024U                            \
@@ -420,9 +422,11 @@ static bool check_delimiter( char c )
         / sizeof( samp_address ))
 
 
-static char *Parse( char *line, char arg[], char **eoc )
+static char *Parse( const char *line, char arg[], const char **eoc )
 {
-    char        *cmd, *ptr;
+    const char  *cmd;
+    char        *p;
+    const char  *ptr;
     int         c, len;
 
     InitTimerRate();
@@ -456,13 +460,12 @@ static char *Parse( char *line, char arg[], char **eoc )
                 fatal();
             }
             ++cmd;
-            ptr = SampName;
+            p = SampName;
             while( *cmd != '\t' && *cmd != ' ' && *cmd != '\0' ) {
-                *ptr = *cmd;
-                ++ptr;
-                ++cmd;
+                *p++ = *cmd;
+                cmd++;
             }
-            *ptr = '\0';
+            *p = '\0';
             break;
         default:
             SysParseOptions( c, (char **)&cmd );
@@ -477,8 +480,7 @@ static char *Parse( char *line, char arg[], char **eoc )
     Margin = SafeMargin();
 
     /* scan over command name */
-    for( ptr = cmd; !check_delimiter( *ptr ); ++ptr )
-        ;
+    ptr = skip_command( cmd );
     /* collect program arguments - arg will contain DOS-style command tail,
      * possibly truncated (max 126 usable chars).
      */
@@ -494,7 +496,7 @@ static char *Parse( char *line, char arg[], char **eoc )
     }
     arg[len + 1] = '\r';
     arg[0] = len;
-    return( cmd );
+    return( (char *)cmd );
 }
 
 
@@ -532,7 +534,7 @@ int main( int argc, char **argv )
     char        *arg;
     char        *cmd;
     char        *tmp_cmd;
-    char        *eoc;
+    const char  *eoc;
     int         cmdlen;
 
 #if defined( __WINDOWS__ )
@@ -574,7 +576,7 @@ int main( int argc, char **argv )
         ;
     *++tmp_cmd = '\0';
     cmd = Parse( cmd_line, arg, &eoc );    /* will set Ceiling, Margin, TimerMult, cmd, and arg */
-    GetProg( cmd, eoc );
+    GetProg( cmd, eoc - cmd_line );
 
     AllocSamples( 1 );
 

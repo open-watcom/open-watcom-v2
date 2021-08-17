@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -749,7 +750,7 @@ static int GetExeNameFromPid( pid_t pid, char *buffer, int max_len )
 }
 
 
-void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_args )
+void StartProg( const char *cmd, const char *prog, const char *full_args, char *dos_args )
 {
     char            exe_name[PATH_MAX];
     pid_t           save_pgrp;
@@ -771,14 +772,18 @@ void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_ar
         int         num_args;
         size_t      len;
         const char  **argv;
+        char        *args;
 
         Attached = false;
 
         /* massage 'full_args' into argv format */
         len = strlen( full_args );
-        num_args = SplitParms( full_args, NULL, len );
+        /* SplitParms changes input string, use copy of it now */
+        args = alloca( len + 1 );
+        strcpy( args, full_args );
+        num_args = SplitParms( args, NULL, len );
         argv = alloca( ( num_args + 2 ) * sizeof( *argv ) );
-        argv[SplitParms( full_args, argv + 1, len ) + 1] = NULL;
+        argv[SplitParms( args, argv + 1, len ) + 1] = NULL;
         argv[0] = prog;
 
         OutputMsgParmNL( MSG_SAMPLE_1, prog );

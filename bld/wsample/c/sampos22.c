@@ -483,7 +483,7 @@ static void LoadProg( char *cmd, char *cmd_args )
 }
 
 
-void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_args )
+void StartProg( const char *cmd, const char *prog, const char *full_args, char *dos_args )
 {
 
     const char  *src;

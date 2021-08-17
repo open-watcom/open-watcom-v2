@@ -232,7 +232,7 @@ static void internalErrorMsg( int msg )
 /*
  * StartProg - start and execute sampled program
  */
-void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_args )
+void StartProg( const char *cmd, const char *prog, const char *full_args, char *dos_args )
 {
     WORD                timer;
     WORD                mod_count;

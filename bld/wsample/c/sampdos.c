@@ -124,7 +124,7 @@ void StopProg( void )
     RemoveDOSIntercepts();
 }
 
-void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_args )
+void StartProg( const char *cmd, const char *prog, const char *full_args, char *dos_args )
 {
     struct  SREGS       segs;
     seg_offset          ovl_tbl;
