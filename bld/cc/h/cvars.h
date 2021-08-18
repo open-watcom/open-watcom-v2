@@ -79,9 +79,9 @@ global char         *ForcePreInclude;
 #if _CPU == 370
 global char         *AuxName;
 #endif
-global fname_list   *FNames;            /* list of file names processed */
-global rdir_list    *RDirNames;         /* list of read only directorys */
-global ialias_list  *IAliasNames;       /* list of include aliases */
+global FNAMEPTR     FNames;             /* list of file names processed */
+global RDIRPTR      RDirNames;          /* list of read only directorys */
+global IALIASPTR    IAliasNames;        /* list of include aliases */
 global FILE         *ErrFile;           /* error file */
 global FILE         *DefFile;           /* output for func prototypes */
 global FILE         *CppFile;           /* output for preprocessor */
