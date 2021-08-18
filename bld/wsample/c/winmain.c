@@ -312,6 +312,7 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE previnst, LPSTR cmd, int show)
     char                FAR_PTR *cmdline;
     char                filename[_MAX_PATH];
     char                *cmd_line;
+    int                 rc;
 
     /*
      * are we the first? if so, winexec another one of ourselves
@@ -389,12 +390,12 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE previnst, LPSTR cmd, int show)
          * start the sampler - our other half will be re-started
          * once we have loaded the task to be sampled.
          */
-        sample_main( cmd_line );
+        rc = sample_main( cmd_line );
 
-        MsgFini();
         if( cmd_line != NULL ) {
             free( cmd_line );
         }
+        MsgFini();
 
         CloseShop();
         SendMessage( MainWindowHandle, WM_CLOSE, 0, 0 );

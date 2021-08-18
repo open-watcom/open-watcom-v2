@@ -537,7 +537,7 @@ int sample_main( char *cmd_line )
     }
     if( arg == NULL ) {
         OutputMsgNL( MSG_SAMPLE_BUFF );
-        fatal();
+        return( 1 );
     }
 
     tmp_cmd = cmd_line;
@@ -559,13 +559,13 @@ int sample_main( char *cmd_line )
 
     if( !VersionCheck() ) {
         OutputMsgNL( MSG_VERSION );
-        fatal();
+        return( 1 );
     }
 
 #ifndef __WINDOWS__
     if( SampCreate( SampName ) != 0 ) {
         OutputMsgNL( MSG_SAMPLE_FILE );
-        fatal();
+        return( 1 );
     }
 #endif
     SampWrite( PREFIX_STRING, sizeof( PREFIX_STRING ) );
@@ -625,8 +625,11 @@ int main( int argc, char **argv )
 
     rc = sample_main( cmd_line );
 
+    if( cmd_line != NULL ) {
+        free( cmd_line );
+    }
+
     MsgFini();
-    free( cmd_line );
     return( rc );
 }
 #endif
