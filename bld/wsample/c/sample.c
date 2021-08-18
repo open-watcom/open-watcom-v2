@@ -347,18 +347,18 @@ void Usage( void )
 }
 
 
-static char *skip( const char *ptr )
+static const char *skip( const char *ptr )
 {
     while( *ptr == ' ' || *ptr == '\t' )
         ++ptr;
-    return( (char *)ptr );
+    return( ptr );
 }
 
 
 unsigned GetNumber( unsigned min, unsigned max, const char **atstr, unsigned base )
 /* handles command line items of the sort "b=23" (up to base 16) */
 {
-    char        *scan;
+    const char  *scan;
     int         c;
     unsigned    res;
     unsigned    value;
@@ -395,7 +395,7 @@ unsigned GetNumber( unsigned min, unsigned max, const char **atstr, unsigned bas
     return( res );
 }
 
-static char *skip_command( const char *str )
+static const char *skip_command( const char *str )
 {
     for( ;; ) {
         switch( *str ) {
@@ -409,7 +409,7 @@ static char *skip_command( const char *str )
         case '<':
         case '>':
         case '|':
-            return( (char *)str );
+            return( str );
         default:
             str++;
             break;
@@ -422,7 +422,7 @@ static char *skip_command( const char *str )
         / sizeof( samp_address ))
 
 
-static char *Parse( const char *line, char arg[], const char **eoc )
+static const char *Parse( const char *line, char arg[], const char **eoc )
 {
     const char  *cmd;
     char        *p;
@@ -496,7 +496,7 @@ static char *Parse( const char *line, char arg[], const char **eoc )
     }
     arg[len + 1] = '\r';
     arg[0] = len;
-    return( (char *)cmd );
+    return( cmd );
 }
 
 
