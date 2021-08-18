@@ -68,7 +68,6 @@ extern seg_offset       CommonAddr;
 extern samp_save        __far * __near SampSave;
 
 /* somewhere in the common part of the sampler */
-extern int          sample_main( char __far * );
 extern int          MessageLoop( void );
 
 extern void FAR_PTR *alloc( int );

@@ -311,6 +311,7 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE previnst, LPSTR cmd, int show)
     command_data        cmddat;
     char                FAR_PTR *cmdline;
     char                filename[_MAX_PATH];
+    char                *cmd_line;
 
     /*
      * are we the first? if so, winexec another one of ourselves
@@ -378,11 +379,23 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE previnst, LPSTR cmd, int show)
         GetIData( newinst, &MainWindowHandle, sizeof( MainWindowHandle ) );
         GetIData( newinst, &SampSave, sizeof( SampSave) );
 
+        SysInit();
+        cmd_line = malloc( strlen( cmdline ) + 1 );
+        if( cmd_line != NULL ) {
+            _fstrcpy( cmd_line, cmdline );
+        }
+
         /*
          * start the sampler - our other half will be re-started
          * once we have loaded the task to be sampled.
          */
-        sample_main( cmdline );
+        sample_main( cmd_line );
+
+        MsgFini();
+        if( cmd_line != NULL ) {
+            free( cmd_line );
+        }
+
         CloseShop();
         SendMessage( MainWindowHandle, WM_CLOSE, 0, 0 );
         return( FALSE );

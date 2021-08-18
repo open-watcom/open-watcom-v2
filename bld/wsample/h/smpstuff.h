@@ -120,6 +120,7 @@ extern void             WriteCodeLoad( seg_offset, const char *, samp_block_kind
 extern void             WriteAddrMap( seg, seg, off );
 extern void             AllocSamples( unsigned );
 extern void             RecordCGraph( void );
+extern int              sample_main( char * );
 
 extern int              SampCreate( const char * );
 extern int              SampWrite( const void FAR_PTR *, size_t );
