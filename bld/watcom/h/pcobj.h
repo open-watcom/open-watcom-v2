@@ -143,7 +143,7 @@ enum {
  *  INTEL Object Record Types
  */
 
-typedef enum {
+typedef enum omf_cmd {
     CMD_MIN_CMD         = 0x6e,     /* minimum cmd enum                 */
     CMD_RHEADR          = 0x6e,
     CMD_REGINT          = 0x70,
