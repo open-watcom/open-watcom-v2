@@ -532,7 +532,7 @@ int main( int argc, char **argv )
 {
     char        *cmd_line;
     char        *arg;
-    char        *cmd;
+    const char  *cmd;
     char        *tmp_cmd;
     const char  *eoc;
     int         cmdlen;

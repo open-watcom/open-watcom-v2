@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,7 +63,7 @@ static HANDLE_INFO      hInstance = { 0 };
 #endif
 
 #if defined(__WINDOWS__)
-bool MsgInit( HINSTANCE inst )
+static bool MsgReadErrArray( HINSTANCE inst )
 #else
 static bool MsgReadErrArray( void )
 #endif
@@ -74,10 +74,10 @@ static bool MsgReadErrArray( void )
 
     msg_shift = _WResLanguage() * MSG_LANG_SPACING;
     for( i = ERR_FIRST_MESSAGE; i <= ERR_LAST_MESSAGE; i++ ) {
-#if !defined(__WINDOWS__)
-        if( WResLoadString( &hInstance, i + msg_shift, (lpstr)buffer, sizeof( buffer ) ) <= 0 ) {
-#else
+#if defined(__WINDOWS__)
         if( LoadString( inst, i + msg_shift, (LPSTR)buffer, sizeof( buffer ) ) <= 0 ) {
+#else
+        if( WResLoadString( &hInstance, i + msg_shift, (lpstr)buffer, sizeof( buffer ) ) <= 0 ) {
 #endif
             if( i == ERR_FIRST_MESSAGE )
                 return( false );
@@ -95,9 +95,16 @@ static bool MsgReadErrArray( void )
     return( true );
 }
 
-#if !defined(__WINDOWS__)
+#if defined(__WINDOWS__)
+bool MsgInit( HINSTANCE inst )
+#else
 bool MsgInit( void )
+#endif
 {
+#if defined(__WINDOWS__)
+    MsgReadErrArray( inst );
+    return( true );
+#else
     char        buffer[_MAX_PATH];
     bool        rc;
 
@@ -125,8 +132,8 @@ bool MsgInit( void )
     CloseResFile( &hInstance );
     printf( NO_RES_MESSAGE );
     return( false );
-}
 #endif
+}
 
 void MsgFini( void )
 {
