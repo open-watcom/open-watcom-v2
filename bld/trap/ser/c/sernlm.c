@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -137,16 +138,17 @@ int GetByte( void )
     return( data );
 }
 
-int Divisor[] = {
-        AIO_BAUD_115200,
-        AIO_BAUD_57600,
-        AIO_BAUD_38400,
-        AIO_BAUD_19200,
-        AIO_BAUD_9600,
-        AIO_BAUD_4800,
-        AIO_BAUD_2400,
-        AIO_BAUD_1200,
-        0 };
+static int Divisor[] = {
+    AIO_BAUD_115200,
+    AIO_BAUD_57600,
+    AIO_BAUD_38400,
+    AIO_BAUD_19200,
+    AIO_BAUD_9600,
+    AIO_BAUD_4800,
+    AIO_BAUD_2400,
+    AIO_BAUD_1200,
+    0
+};
 
 
 bool Baud( int index )

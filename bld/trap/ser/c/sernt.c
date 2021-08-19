@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -256,7 +256,7 @@ bool TestForBreak( void )
 }
 #endif
 
-int Divisor[] = { 1, 2, 3, 6, 12, 24, 48, 96, 0 };
+static int Divisor[] = { 1, 2, 3, 6, 12, 24, 48, 96, 0 };
 
 bool Baud( int index )
 {
