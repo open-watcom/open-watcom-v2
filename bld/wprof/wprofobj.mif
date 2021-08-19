@@ -42,4 +42,5 @@ objs = &
     wpsrcfil.obj &
     pathlist.obj &
     wpwind.obj &
+    autoenv.obj &
     $(dip_objs) $(mad_objs) $(dig_objs)
