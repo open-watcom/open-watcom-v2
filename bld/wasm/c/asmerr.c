@@ -167,7 +167,7 @@ void AsmWarn( int level, unsigned msgnum, ... )
 
 static void PrtMsg1( char *prefix, unsigned msgnum, va_list args1, va_list args2 )
 /**********************************************p*********************************/
-// print standard WASM messages, no WOMP
+// print standard WASM messages
 {
     PrintBanner();
     if( ErrFile == NULL )

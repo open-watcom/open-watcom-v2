@@ -84,8 +84,9 @@ static long QCount( qdesc *q )
 static char **NameArray;
 
 const char *NameGet( uint_16 hdl )
-/********************************/
-// WOMP callback routine
+/*********************************
+ * OMF output callback routine
+ */
 {
     return( NameArray[hdl] );
 }

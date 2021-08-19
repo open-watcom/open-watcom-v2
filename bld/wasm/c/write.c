@@ -171,13 +171,13 @@ static void write_init( void )
 
     AddLnameData( dir_insert( "", TAB_CLASS_LNAME ) );
     ModuleInit();
-    FixInit();      /* womp init */
+    FixInit();      /* OMF output init */
 }
 
 static void write_fini( void )
 /****************************/
 {
-    FixFini();      /* womp fini */
+    FixFini();      /* OMF output fini */
     ModuleFini();
     FreeFlist();
 }
@@ -618,9 +618,9 @@ static void get_frame( fixup *fixnode, struct asmfixup *fixup )
 
 static struct fixup *CreateFixupRecModend( struct asmfixup *fixup )
 /*****************************************************************/
-/* Create a fixup record for WOMP */
+/* Create a fixup record for OMF output */
 {
-    struct fixup        *fixnode;       // fixup structure from WOMP
+    struct fixup        *fixnode;       // fixup structure from OMF output
     struct asm_sym      *sym;
 
     fixnode = FixNew();
@@ -777,9 +777,9 @@ static void write_linnum( void )
 
 static struct fixup *CreateFixupRec( unsigned long offset, struct asmfixup *fixup )
 /*********************************************************************************/
-/* Create a fixup record for WOMP */
+/* Create a fixup record for OMF output */
 {
-    struct fixup        *fixnode;       // fixup structure from WOMP
+    struct fixup        *fixnode;       // fixup structure from OMF output
     struct asm_sym      *sym;
 
     fixnode = FixNew();

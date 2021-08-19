@@ -39,7 +39,7 @@
 #define LNAME_NULL      0
 
 typedef uint_16 direct_idx; // directive index, such as segment index,
-                            //group index or lname index, etc. follow womp (OMF)
+                            //group index or lname index, etc. follow OMF output
 
 /* Paul Edwards
    Note that there is code that is dependent on the ordering

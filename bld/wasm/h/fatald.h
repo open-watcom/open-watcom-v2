@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Fatal error messages, they are shared with WOMP
+* Description:  Fatal error messages
 *
 ****************************************************************************/
 

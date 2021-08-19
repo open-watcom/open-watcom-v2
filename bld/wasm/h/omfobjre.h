@@ -191,10 +191,10 @@ struct pubdef_info {
     uint_8      processed : 1;  /* for use by dbg_generator (init'd to 0)   */
 };
 /*
-    (This format for PUBDEFs is probably only useful for WOMP.)  No data
-    should be attached to this record.  Everything is described by the
-    pubs array.
-*/
+ * (This format for PUBDEFs is probably only useful for OMF output.)
+ * No data should be attached to this record.
+ * Everything is described by the pubs array.
+ */
 
 
 union objrec_info {
