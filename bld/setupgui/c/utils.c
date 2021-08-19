@@ -2761,11 +2761,10 @@ char *stristr( const char *str, const char *substr, size_t substr_len )
     size_t  str_len;
 
     str_len = strlen( str );
-    while( str_len >= substr_len ) {
+    while( str_len-- >= substr_len ) {
         if( strnicmp( str, substr, substr_len ) == 0 )
             return( (char *)str );
         ++str;
-        --str_len;
     }
     return( NULL );
 }

@@ -101,21 +101,19 @@ static gui_control_class ControlClass( gui_ctl_id id, a_dialog_header *dlg )
 
 
 static void SetDynamic( gui_window *gui, vhandle var_handle, bool *drive_checked )
-/*******************************************************************************/
+/********************************************************************************/
 {
     VBUF        buff;
     const char  *p;
 
-    p = VarGetStrVal( var_handle );
     if( !*drive_checked ) {
-        while( *p != '\0' ) {
+        for( p = VarGetStrVal( var_handle ); *p != '\0'; p++ ) {
             if( *p == '%' ) {
                 if( strnicmp( p + 1, "DriveFree", 9 ) == 0 ) {
                     CheckDrive( false );
                     *drive_checked = true;
                 }
             }
-            ++p;
         }
     }
     VbufInit( &buff );

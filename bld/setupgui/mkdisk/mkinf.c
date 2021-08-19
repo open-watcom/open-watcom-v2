@@ -59,6 +59,9 @@
 
 #define IS_EMPTY(p)     ((p)[0] == '\0' || (p)[0] == '.' && (p)[1] == '\0')
 
+#define IS_WS(c)        ((c) == ' ' || (c) == '\t')
+#define SKIP_WS(p)      while(IS_WS(*(p))) (p)++
+
 #define IS_ASCII(c)     (c < 0x80)
 
 typedef int (*comp_fn)(const void *,const void *);
@@ -259,8 +262,7 @@ static char *mygets( char *buf, int max_len_buf, FILE *fp )
             return( NULL );
         }
         q = p;
-        while( *q == ' ' || *q == '\t' )
-            ++q;
+        SKIP_WS( q );
         got = strlen( q );
         if( p != q )
             memmove( p, q, got + 1 );

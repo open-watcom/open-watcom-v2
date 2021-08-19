@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +48,10 @@
 
 #define RoundUp( size, limit )  ( ( ( size + limit - 1 ) / limit ) * limit )
 
-#define IS_EMPTY(p)     ((p)[0] == '\0' || (p)[0] == '.' && (p)[1] == '\0')
+#define IS_EMPTY(p)         ((p)[0] == '\0' || (p)[0] == '.' && (p)[1] == '\0')
+
+#define IS_WS(c)            ((c) == ' ' || (c) == '\t')
+#define SKIP_WS(p)          while(IS_WS(*(p))) (p)++
 
 typedef struct path_info {
     struct path_info    *next;
@@ -193,8 +196,7 @@ static char *mygets( char *buf, int max_len, FILE *fp )
         if( fgets( p, max_len, fp ) == NULL )
             return( NULL );
         q = p;
-        while( *q == ' ' || *q == '\t' )
-            ++q;
+        SKIP_WS( q );
         got = strlen( q );
         if( p != q )
             memmove( p, q, got + 1 );

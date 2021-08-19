@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -81,11 +81,10 @@ static void flipBackSlashes( const VBUF *old_path, VBUF *new_path )
      * forward or backward, and ziplib requires forward
      * slashes only.
      */
-    s = (char *)VbufString( new_path );
-    while( *s != '\0' ) {
-        if( *s == '\\' )
+    for( s = (char *)VbufString( new_path ); *s != '\0'; s++ ) {
+        if( *s == '\\' ) {
             *s = '/';
-        ++s;
+        }
     }
 }
 #elif defined( USE_LZMA )

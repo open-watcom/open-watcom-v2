@@ -69,6 +69,9 @@
 
 #define IS_EMPTY(p)         ((p)[0] == '\0' || (p)[0] == '.' && (p)[1] == '\0')
 
+#define IS_WS(c)            ((c) == ' ' || (c) == '\t')
+#define SKIP_WS(p)          while(IS_WS(*(p))) (p)++
+
 #define RoundUp( v, r )     (((v) + (r) - 1) & ~(unsigned long)((r)-1))
 
 #define BUF_SIZE            8192
@@ -650,12 +653,12 @@ static char *NextToken( char *buf, char delim )
     if( p != NULL ) {
         *p = '\0';
         q = p - 1;
-        while( q >= buf && (*q == ' ' || *q == '\t') ) {
+        while( q >= buf && IS_WS( *q ) ) {
             *q = '\0';
             --q;
         }
         ++p;
-        while( *p == ' ' || *p == '\t' ) ++p;
+        SKIP_WS( p );
     }
     return( p );
 }
@@ -670,10 +673,9 @@ static char *StripBlanks( char *p )
         return p;
     }
 
-    while( *p == ' ' || *p == '\t' )
-        ++p;
+    SKIP_WS( p );
     q = p + strlen( p ) - 1;
-    while( q >= p && (*q == ' ' || *q == '\t' || *q == '\n') ) {
+    while( q >= p && (IS_WS( *q ) || *q == '\n') ) {
         *q = '\0';
         --q;
     }
@@ -794,7 +796,8 @@ static char *find_break( char *text, DIALOG_PARSER_INFO *parse_dlg, int *chwidth
 
     // Line endings are word breaks already
     s = text;
-    while( *s && (*s != '\r') && (*s != '\n') ) s++;
+    while( *s && (*s != '\r') && (*s != '\n') )
+        s++;
     len = s - text;
 
     winwidth = parse_dlg->wrap_width * CharWidth;
@@ -822,7 +825,7 @@ static char *find_break( char *text, DIALOG_PARSER_INFO *parse_dlg, int *chwidth
         if( width >= winwidth )
             break;
         // is this a good place to break?
-        if( *e == ' ' || *e == '\t' ) { // English
+        if( IS_WS( *e ) ) { // English
             br = n;
         } else if( valid_last_char( e ) && valid_first_char( n ) ) {
             br = n;
@@ -943,9 +946,7 @@ static char *textwindow_wrap( char *text, DIALOG_PARSER_INFO *parse_dlg, bool co
     break_candidate = find_break( orig_index, parse_dlg, &chwidth );
     for( ; *orig_index != '\0'; orig_index++ ) {
         if( new_line ) {
-            while( *orig_index == '\t' || *orig_index == ' ' ) {
-                orig_index++;
-            }
+            SKIP_WS( orig_index );
         }
 
         if( convert_newline && *orig_index == '\\' && *(orig_index + 1) == 'n' ) {
@@ -2276,9 +2277,8 @@ static int PrepareSetupInfo( file_handle fh, pass_type pass )
             // Eliminate leading blanks on continued lines
             if( len > 0 ) {
                 p = ReadBuf + len;
-                while( *p == ' ' || *p == '\t' )
-                    ++p;
-                memmove( ReadBuf + len, p, strlen( p )+1 );
+                SKIP_WS( p );
+                memmove( ReadBuf + len, p, strlen( p ) + 1 );
             }
             len = strlen( ReadBuf );
             if( len == 0 )
@@ -2585,7 +2585,7 @@ long SimFileSize( int parm )
 
     size = 0;
     len = FileInfo[parm].num_files;
-    while( --len >= 0 ) {
+    while( len-- > 0 ) {
         size += FileInfo[parm].files[len].size;
     }
     return( size );
@@ -3109,10 +3109,8 @@ static void MarkUsed( int dir_index )
     int         parent;
 
     DirInfo[dir_index].used = true;
-    parent = DirInfo[dir_index].parent;
-    while( parent != -1 ) {
+    for( parent = DirInfo[dir_index].parent; parent != -1; parent = DirInfo[parent].parent ) {
         DirInfo[parent].used = true;
-        parent = DirInfo[parent].parent;
     }
 }
 
@@ -3725,12 +3723,10 @@ static void ZeroAutoSetValues( void )
 {
     vhandle     var_handle;
 
-    var_handle = NextGlobalVar( NO_VAR );
-    while( var_handle != NO_VAR ) {
+    for( var_handle = NextGlobalVar( NO_VAR ); var_handle != NO_VAR; var_handle = NextGlobalVar( var_handle ) ) {
         if( VarGetAutoSetCond( var_handle ) != NULL ) {
             SetBoolVariableByHandle( var_handle, VarIsRestrictedTrue( var_handle ) );
         }
-        var_handle = NextGlobalVar( var_handle );
     }
 }
 
@@ -3751,10 +3747,8 @@ static void InitAutoSetValues( void )
 {
     vhandle     var_handle;
 
-    var_handle = NextGlobalVar( NO_VAR );
-    while( var_handle != NO_VAR ) {
+    for( var_handle = NextGlobalVar( NO_VAR ); var_handle != NO_VAR; var_handle = NextGlobalVar( var_handle ) ) {
         SetDefaultAutoSetValue( var_handle );
-        var_handle = NextGlobalVar( var_handle );
     }
     NeedInitAutoSetValues = false;
 }

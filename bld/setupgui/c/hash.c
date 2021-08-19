@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -88,19 +89,12 @@ vhandle HashFind( hash_table *ht, hash_key k )
     assert( k );
 
     i = hashKey( ht->size, k );
-    he = ht->table[i];
-
-    while( he != NULL ) {
-        if( !ht->cmp_func( k, he->key ) )
-            break;
-        he = he->next;
+    for( he = ht->table[i]; he != NULL; he = he->next ) {
+        if( !ht->cmp_func( k, he->key ) ) {
+            return( he->data );
+        }
     }
-
-    if( he != NULL ) {
-        return( he->data );
-    } else {
-        return( NO_VAR );
-    }
+    return( NO_VAR );
 }
 
 void HashFini( hash_table *ht )
@@ -108,17 +102,15 @@ void HashFini( hash_table *ht )
 {
     size_t              i;
     hash_element        *he;
-    hash_element        *tmp;
+    hash_element        *next;
 
     assert( ht );
 
     for( i = 0; i < ht->size; i++ ) {
-        he = ht->table[i];
-        while( he != NULL ) {
-            tmp = he;
-            he = he->next;
-            GUIMemFree( (void *)tmp->key );
-            GUIMemFree( tmp );
+        for( he = ht->table[i]; he != NULL; he = next ) {
+            next = he->next;
+            GUIMemFree( (void *)he->key );
+            GUIMemFree( he );
         }
     }
     GUIMemFree( ht );

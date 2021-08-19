@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,6 +48,9 @@
 
 #define DEFCTLNAME      "files.dat"
 #define DEFCTLENV       "FILES_DAT"
+
+#define IS_WS(c)        ((c) == ' ' || (c) == '\t')
+#define SKIP_WS(p)      while(IS_WS(*(p))) (p)++
 
 typedef struct ctl_file {
     struct ctl_file     *next;
@@ -646,7 +649,7 @@ static void ProcessDefault( const char *line )
     SKIP_BLANKS( p );
     q = strtok( p, "]" );
     q += strlen( q ) - 1;
-    while( (q >= p) && ((*q == ' ') || (*q == '\t')) )
+    while( (q >= p) && IS_WS( *q ) )
         --q;
     if( *q == '\"' )
         ++q;
