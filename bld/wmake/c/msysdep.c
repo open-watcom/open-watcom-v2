@@ -558,14 +558,14 @@ int SetEnvSafe( const char *name, const char *value )
     }
     old = *walk;
     if( old != NULL ) {
-        *walk = old->next;          // unlink from chain
-        FreeSafe( old );
+        *walk = old->next;          // unlink old entry from chain
+        FreeSafe( old );            // ...
     }
-    if( env->value != NULL ) {      // we're giving it a new value
-        env->next = envList;        // save the memory since putenv keeps a
-        envList = env;              // pointer to it...
-    } else {                        // we're deleting an old value
-        FreeSafe( env );
+    if( env->value != NULL ) {
+        env->next = envList;        // we put new entry into chain
+        envList = env;              // ...
+    } else {
+        FreeSafe( env );            // we're deleting the entry
     }
     return( rc );
 }

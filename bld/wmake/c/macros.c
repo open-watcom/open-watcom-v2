@@ -1275,7 +1275,7 @@ void DefMacro( const char *name )
     EnvVarValue = NULL;
     EnvOldValue = NULL;
     if( *name != ENVVAR_C ) {
-        unused_value = addMacro( name, value);
+        unused_value = addMacro( name, value );
         if( Glob.compat_nmake ) {
             EnvOldValue = GetEnvExt( name );
         }
