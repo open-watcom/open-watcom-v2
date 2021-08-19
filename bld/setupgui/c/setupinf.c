@@ -78,6 +78,8 @@
 
 #define MAX_WINDOW_WIDTH    90
 
+#define TreeNodeUni(op)     TreeNode(op, NULL, NULL)
+
 #define NONMAGICVARS( x, y ) \
     x( IsDos, y ) \
     x( IsOS2, y ) \
@@ -121,10 +123,13 @@ typedef enum {
 } tree_op;
 
 typedef struct tree_node {
-    union {
-        struct tree_node    *left;
-        vhandle             v;
-    } u;
+    struct {
+        union {
+            struct tree_node    *node;
+            vhandle             var;
+            char                *str;
+        } u;
+    } left;
     struct tree_node        *right;
     tree_op                 op;
 } tree_node;
@@ -357,14 +362,15 @@ static void toBackSlash( char *name )
 /**********************************************************************/
 /*                   EXPRESSION EVALUTORS                             */
 /**********************************************************************/
-static tree_node *TreeNode( tree_op op, void *left, void *right )
-/***************************************************************/
+
+static tree_node *TreeNode( tree_op op, tree_node *left, tree_node *right )
+/*************************************************************************/
 {
     tree_node   *tree;
 
     tree = GUIMemAlloc( sizeof( tree_node ) );
     tree->op = op;
-    tree->u.left = left;
+    tree->left.u.node = left;
     tree->right = right;
     return( tree );
 }
@@ -381,7 +387,7 @@ static tree_node *BuildExprTree( const char *str )
     #define STACK_SIZE  ( sizeof( stack ) / sizeof( *stack ) )
 
     if( str == NULL || IS_EMPTY( str ) ) {
-        return( TreeNode( OP_TRUE, NULL, NULL ) );
+        return( TreeNodeUni( OP_TRUE ) );
     }
     stack_top = -1;
     str2 = GUIStrDup( str, NULL );  // copy string so we can use STRTOK
@@ -410,8 +416,8 @@ static tree_node *BuildExprTree( const char *str )
                 GUIDisplayMessage( MainWnd, "Expression stack overflow!", "Setup script", GUI_OK );
                 stack_top = STACK_SIZE - 1;
             } else {
-                token = GUIStrDup( token + 1, NULL );
-                stack[stack_top] = TreeNode( OP_EXIST, token, NULL );
+                stack[stack_top] = TreeNodeUni( OP_EXIST );
+                stack[stack_top]->left.u.str = GUIStrDup( token + 1, NULL );
             }
         } else {                // push current value
             ++stack_top;
@@ -419,8 +425,8 @@ static tree_node *BuildExprTree( const char *str )
                 GUIDisplayMessage( MainWnd, "Expression stack overflow!", "Setup script", GUI_OK );
                 stack_top = STACK_SIZE - 1;
             } else {
-                stack[stack_top] = TreeNode( OP_VAR, NULL, NULL );
-                stack[stack_top]->u.v = GetTokenHandle( token );
+                stack[stack_top] = TreeNodeUni( OP_VAR );
+                stack[stack_top]->left.u.var = GetTokenHandle( token );
             }
         }
     }
@@ -445,13 +451,13 @@ static bool SameExprTree( tree_node *a, tree_node *b )
     switch( a->op ) {
     case OP_AND:
     case OP_OR:
-        return( SameExprTree( a->u.left, b->u.left ) && SameExprTree( a->right, b->right ) );
+        return( SameExprTree( a->left.u.node, b->left.u.node ) && SameExprTree( a->right, b->right ) );
     case OP_NOT:
-        return( SameExprTree( a->u.left, b->u.left ) );
+        return( SameExprTree( a->left.u.node, b->left.u.node ) );
     case OP_EXIST:
-        return( stricmp( (char *)a->u.left, (char *)b->u.left ) == 0 );
+        return( stricmp( a->left.u.str, b->left.u.str ) == 0 );
     case OP_VAR:
-        return( (vhandle)(pointer_uint)a->u.left == (vhandle)(pointer_uint)b->u.left );
+        return( a->left.u.var == b->left.u.var );
         break;
     case OP_TRUE:
     case OP_FALSE:
@@ -470,10 +476,10 @@ static void BurnTree( tree_node *tree )
         BurnTree( tree->right );
         /* fall through */
     case OP_NOT:
-        BurnTree( tree->u.left );
+        BurnTree( tree->left.u.node );
         break;
     case OP_EXIST:
-        GUIMemFree( tree->u.left );
+        GUIMemFree( tree->left.u.str );
         break;
     case OP_VAR:
     case OP_TRUE:
@@ -553,22 +559,22 @@ static bool EvalExprTree( tree_node *tree )
 
     switch( tree->op ) {
     case OP_AND:
-        value = EvalExprTree( tree->u.left ) & EvalExprTree( tree->right );
+        value = EvalExprTree( tree->left.u.node ) & EvalExprTree( tree->right );
         break;
     case OP_OR:
-        value = EvalExprTree( tree->u.left ) | EvalExprTree( tree->right );
+        value = EvalExprTree( tree->left.u.node ) | EvalExprTree( tree->right );
         break;
     case OP_NOT:
-        value = !EvalExprTree( tree->u.left );
+        value = !EvalExprTree( tree->left.u.node );
         break;
     case OP_EXIST:
         VbufInit( &tmp );
-        ReplaceVars( &tmp, (char *)tree->u.left );
+        ReplaceVars( &tmp, tree->left.u.str );
         value = ( access_vbuf( &tmp, F_OK ) == 0 );
         VbufFree( &tmp );
         break;
     case OP_VAR:
-        value = GetOptionVarValue( (vhandle)(pointer_uint)tree->u.left );
+        value = GetOptionVarValue( tree->left.u.var );
         break;
     case OP_TRUE:
         value = true;
@@ -609,22 +615,22 @@ static void PropagateValue( tree_node *tree, bool value )
     switch( tree->op ) {
     case OP_AND:
         if( value ) {
-            PropagateValue( tree->u.left, true );
+            PropagateValue( tree->left.u.node, true );
             PropagateValue( tree->right, true );
         }
         break;
     case OP_OR:
         if( !value ) {
-            PropagateValue( tree->u.left, false );
+            PropagateValue( tree->left.u.node, false );
             PropagateValue( tree->right, false );
         }
         break;
     case OP_NOT:
-        PropagateValue( tree->u.left, !value );
+        PropagateValue( tree->left.u.node, !value );
         break;
     case OP_VAR:
         if( value ) {
-            var_handle = (vhandle)(pointer_uint)tree->u.left;
+            var_handle = tree->left.u.var;
             if( VarGetAutoSetCond( var_handle ) != NULL ) {
                 if( !VarIsRestrictedFalse( var_handle ) ) {
                     SetBoolVariableByHandle( PreviousInstall, true );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -329,8 +330,8 @@ void SetDefaultGlobalVarList( void )
 #endif
 
     // create global variables for true/false value
-    SetBoolVariableByName( "true",  true );
-    SetBoolVariableByName( "false", false );
+    SetBoolVariableByName(      "true",         true );
+    SetBoolVariableByName(      "false",        false );
 
     // create global variables for each default system
 #if defined( __DOS__ )
