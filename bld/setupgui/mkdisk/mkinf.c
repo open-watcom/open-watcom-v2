@@ -35,6 +35,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <limits.h>
+#include <sys/stat.h>
 #ifndef __UNIX__
     #include <direct.h>
     #include <dos.h>
@@ -43,7 +44,6 @@
     #include <windows.h>
 #endif
 #include "bool.h"
-#include "wio.h"
 #include "iopath.h"
 #include "encodlng.h"
 #include "cvttable.h"
@@ -533,13 +533,14 @@ static int mkdir_nested( const char *path )
 #else
     unsigned    attr;
 #endif
-    char        pathname[FILENAME_MAX];
+    char        pathname[_MAX_PATH + 1];
     char        *p;
     char        *end;
     char        c;
 
     p = pathname;
-    strncpy( pathname, path, FILENAME_MAX );
+    strncpy( pathname, path, _MAX_PATH );
+    pathname[_MAX_PATH] = '\0';
     end = pathname + strlen( pathname );
 
 #ifndef __UNIX__
@@ -599,7 +600,7 @@ static int mkdir_nested( const char *path )
 }
 
 bool AddFile( char *path, char *old_path, char type, char redist, char *file, const char *rel_file, char *dst_var, const char *cond )
-/***********************************************************************************************************************/
+/***********************************************************************************************************************************/
 {
     int                 path_dir, old_path_dir, target;
     FILE_INFO           *newitem, *curr, **owner;
@@ -1274,7 +1275,6 @@ static void CreateScript( long init_size, unsigned padding )
     PATH_INFO           *path;
     LIST                *list;
     LIST                *list2;
-    unsigned            nfiles;
 
     /* unused parameters */ (void)init_size;
 
@@ -1306,7 +1306,6 @@ static void CreateScript( long init_size, unsigned padding )
         fprintf( fp, "%s,%d,%d\n", path->path, path->target, path->parent );
     }
 
-    nfiles = 0;
     fprintf( fp, "\n[Files]\n" );
     for( curr = FileList; curr != NULL; curr = curr->next ) {
         fprintf( fp, "%s,", curr->pack );
@@ -1598,3 +1597,4 @@ int main( int argc, char *argv[] )
     setupFini();
     return( 0 );
 }
+

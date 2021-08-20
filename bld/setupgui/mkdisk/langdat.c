@@ -279,8 +279,7 @@ static bool PopInclude( void )
 static bool GetALine( char *line, int max_len )
 {
     for( ;; ) {
-        fgets( line, max_len, IncludeStk->fp );
-        if( ferror( IncludeStk->fp ) ) {
+        if( fgets( line, max_len, IncludeStk->fp ) == NULL ) {
             Fatal( "Error reading '%s' line %d: %s\n", IncludeStk->name, IncludeStk->lineno, strerror( errno ) );
         }
         if( !feof( IncludeStk->fp ) ) {

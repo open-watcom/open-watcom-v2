@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +49,7 @@ int add_files( struct zip *archive, const char *list_fname, char *dir )
 {
     struct zip_source   *zsrc;
     FILE                *f;
-    char                srcname[FILENAME_MAX];
+    char                srcname[_MAX_PATH];
     int                 retval;
     char                *dir_fname;
 
@@ -95,7 +96,7 @@ int main( int argc, char **argv )
     struct zip          *z;
     int                 zerr;
     char                zerrstr[MAX_ZERR_LENGTH], *zname;
-    char                dir[FILENAME_MAX];
+    char                dir[_MAX_PATH];
 
     if( argc < 3 ) {
         printf( "Usage: uzip <archive> <file_list> [<files dir>]\n" );
@@ -113,7 +114,10 @@ int main( int argc, char **argv )
     if( argc > 3 ) {
         strcpy( dir, argv[3] );
     } else {
-        getcwd( dir, FILENAME_MAX );
+        if( getcwd( dir, _MAX_PATH ) == NULL ) {
+            fprintf( stderr, "failed to get cwd\n" );
+            return( 1 );
+        }
     }
     if( dir[0] != '\0' && ( dir[1] != ':' || dir[2] != '\0' ) ) {
 #if defined( __UNIX__ )
@@ -130,3 +134,4 @@ int main( int argc, char **argv )
     }
     return( 0 );
 }
+
