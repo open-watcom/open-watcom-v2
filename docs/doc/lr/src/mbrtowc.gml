@@ -11,18 +11,6 @@ size_t _fmbrtowc( wchar_t __far *pwc, const char __far *s,
 .desc begin
 If
 .arg s
-is a null pointer, the
-.id &funcb.
-function determines the number of bytes
-necessary to enter the initial shift state (zero if encodings are not
-state-dependent or if the initial conversion state is described).
-In this case, the value of the
-.arg pwc
-argument will be ignored, and the resulting state described will be
-the initial conversion state.
-.np
-If
-.arg s
 is not a null pointer, the
 .id &funcb.
 function determines the number of
@@ -36,6 +24,25 @@ is not a null pointer, stores that value in the object pointed to by
 .period
 If the corresponding wide character is the null wide character, the
 resulting state described will be the initial conversion state.
+.millust begin
+.millust end
+If
+.arg s
+is a null pointer, the
+.id &funcb.
+function is equivalent to call
+.millust begin
+mbrtowc(NULL, "", 1, ps)
+.millust end
+In this case, the values of the parameters
+.arg pwc
+and
+.arg n
+are ignored.
+Function determines the number of bytes necessary to enter
+the initial shift state (zero if encodings are not state-dependent or
+if the initial conversion state is described).
+.np
 .im farparm
 .im mbcrstrt
 .desc end

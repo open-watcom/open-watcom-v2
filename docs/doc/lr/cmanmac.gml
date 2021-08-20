@@ -53,18 +53,20 @@
 .dm debug end
 .*
 .dm widefunc begin
+.sr *fx=&'strip(&*1,'L','_')
 .sr iswidefn=1
-.if '&*1(1:2)' eq '_w' and '&*1(1:7)' ne '_wrapon' and '&*1(1:6)' ne '_write' .me
-.if '&*1(1:2)' eq 'wc' or '&*1(1:4)' eq 'wmem' .me
-.if '&*1(1:3)' eq 'tow' .me
-.if '&*1(1:3)' eq 'isw' .me
-.if '&*1(1:4)' eq 'wasc' .me
-.if '&*1(1:5)' eq '__isw' .me
-.if &'pos('wprintf',&*1) ne 0 .me
-.if &'pos('wscanf',&*1) ne 0 .me
-.if '&'right(&*1,2)' eq 'wc' or '&'right(&*1,2)' eq 'ws' .me
-.if '&'right(&*1,3)' eq 'tow' .me
-.if '&'right(&*1,5)' eq 'wchar' .me
+.* far function
+.if '&*fx(1:1)' eq 'w' and '&*fx(1:6)' ne 'wrapon' and '&*fx(1:5)' ne 'write' .me
+.if '&*fx(1:2)' eq 'wc' or '&*fx(1:4)' eq 'wmem' .me
+.if '&*fx(1:3)' eq 'tow' .me
+.if '&*fx(1:3)' eq 'isw' .me
+.if '&*fx(1:4)' eq 'wasc' .me
+.if &'pos('wprintf',&*fx) ne 0 .me
+.if &'pos('wscanf',&*fx) ne 0 .me
+.if '&*fx(1:3)' ne 'fmb' and '&*fx(1:2)' ne 'mb' and '&'right(&*fx,2)' eq 'wc' .me
+.if '&*fx(1:3)' ne 'fmb' and '&*fx(1:2)' ne 'mb' and '&'right(&*fx,2)' eq 'ws' .me
+.if '&'right(&*fx,4)' eq 'itow' or '&'right(&*fx,4)' eq 'ltow' .me
+.if '&'right(&*fx,5)' eq 'wchar' .me
 .sr iswidefn=0
 .dm widefunc end
 .*
