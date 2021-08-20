@@ -179,16 +179,20 @@ static bool MainSetupWndGUIEventProc( gui_window *gui, gui_event gui_ev, void *p
             if( BitMapSize.y ) {
                 row_count = BitMapSize.y / metrics.max.y;
             } else {
-                /* If there is no bitmap attached - such as virgin.exe - then just
-                 * copyright to upper screen */
+                /*
+                 * If there is no bitmap attached - such as virgin.exe - then just
+                 * copyright to upper screen
+                 */
                 row_count = 3;
                 indent = 16;
             }
 
-            GUIGetRGB( GUI_BR_BLUE, &rgb ); /* background - no effect */
+            GUIGetRGB( GUI_BR_BLUE, &rgb );     /* background - no effect */
             GUIGetRGB( GUI_BLACK, &foreg );     /* foreground */
 
-            /* Start at bottom left of hotspot and use neagtive offset */
+            /*
+             * Start at bottom left of hotspot and use negative offset
+             */
             GUIDrawTextRGB( gui, banner2, sizeof( banner2 ) - 1, row_count - 2, indent, foreg, rgb );
             GUIDrawTextRGB( gui, banner2a( 1984 ), sizeof( banner2a( 1984 ) ) - 1, row_count - 1, indent, foreg, rgb );
 

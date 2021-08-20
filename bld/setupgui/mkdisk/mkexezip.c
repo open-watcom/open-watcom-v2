@@ -209,12 +209,11 @@ int main( int argc, char *argv[] )
              *
              * find end of central directory
              */
-            n = BUFFER_SIZE;
-            if( length < BUFFER_SIZE ) {
-                n = length;
+            if( length > BUFFER_SIZE ) {
+                length = BUFFER_SIZE;
             }
-            fseek( ftarget, -(long)n, SEEK_END );
-            n = fread( buffer, 1, n, ftarget );
+            fseek( ftarget, -length, SEEK_END );
+            n = fread( buffer, 1, length, ftarget );
             rc = 1;
             if( n == 0 ) {
                 fprintf( stderr, "error: failed to read data from end of file '%s'\n", target );
@@ -235,10 +234,7 @@ int main( int argc, char *argv[] )
                     long            off;
 
                     rc = 1;
-                    off  = pos - BUFFER_SIZE;
-                    if( length < BUFFER_SIZE ) {
-                        off  = pos - length;
-                    }
+                    off  = pos - length;
                     fseek( ftarget, off, SEEK_END );
                     if( fread( &eocd, sizeof( eocd ), 1, ftarget ) != 1 ) {
                         fprintf( stderr, "file read error: '%s'\n", target );
@@ -247,9 +243,15 @@ int main( int argc, char *argv[] )
                             fprintf( stderr, "file read error while checking eocd magic: '%s'\n", target );
                         } else {
                             eocd.cd_offset += offset;
-                            fseek( ftarget, off, SEEK_END );
-                            fwrite( &eocd, sizeof( eocd ), 1, ftarget );
-                            rc = 0;
+                            if( fseek( ftarget, off, SEEK_END ) ) {
+                                fprintf( stderr, "file seek error while update eocd: '%s'\n", target );
+                            } else {
+                                if( fwrite( &eocd, sizeof( eocd ), 1, ftarget ) != 1 ) {
+                                    fprintf( stderr, "file write error while update eocd: '%s'\n", target );
+                                } else {
+                                    rc = 0;
+                                }
+                            }
                         }
                     }
                 }
