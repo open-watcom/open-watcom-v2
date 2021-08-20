@@ -432,7 +432,7 @@ static tree_node *BuildExprTree( const char *str )
     }
     // and together whatever is left on stack
     tree = stack[stack_top];
-    while( --stack_top >= 0 ) {
+    while( stack_top-- > 0 ) {
         tree = TreeNode( OP_AND, tree, stack[stack_top] );
     }
     GUIMemFree( str2 );
