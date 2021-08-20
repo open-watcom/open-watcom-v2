@@ -820,23 +820,27 @@ static void ProcessCtlFile( const char *name )
     }
 }
 
-static bool SearchUpDirs( const char *name, char *result, size_t max_len )
+static char *SearchUpDirs( const char *name )
 {
     pgroup2     pg;
     char        *end;
     FILE        *fp;
 
-    _fullpath( result, name, max_len );
+    _fullpath( Line, name, sizeof( Line ) );
     for( ;; ) {
-        fp = fopen( result, "r" );
+        fp = fopen( Line, "r" );
         if( fp != NULL ) {
             fclose( fp );
-            return( true );
+            return( Line );
         }
-        _splitpath2( result, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+        _splitpath2( Line, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
         end = &pg.dir[strlen( pg.dir ) - 1];
-        if( end == pg.dir )
-            return( false );
+        if( end == pg.dir ) {
+            _searchenv( name, "PATH", Line );
+            if( Line[0] == '\0' )
+                return( NULL );
+            return( Line );
+        }
         if( IS_DIR_SEP( *end ) )
             --end;
         for( ;; ) {
@@ -849,7 +853,7 @@ static bool SearchUpDirs( const char *name, char *result, size_t max_len )
             --end;
         }
         *end = '\0';
-        _makepath( result, pg.drive, pg.dir, pg.fname, pg.ext );
+        _makepath( Line, pg.drive, pg.dir, pg.fname, pg.ext );
     }
 }
 
@@ -858,6 +862,7 @@ int main( int argc, char *argv[] )
 {
     ctl_file    *next;
     char        *p;
+    char        *fn;
 
     /* unused parameters */ (void)argc;
 
@@ -871,14 +876,12 @@ int main( int argc, char *argv[] )
         p = getenv( DEFCTLENV );
         if( p == NULL )
             p = DEFCTLNAME;
-        if( !SearchUpDirs( p, Line, sizeof( Line ) ) ) {
-            _searchenv( p, "PATH", Line );
-            if( Line[0] == '\0' ) {
-                MClose();
-                Fatal( "Can not find '%s'\n", p );
-            }
+        fn = SearchUpDirs( p );
+        if( fn == NULL ) {
+            MClose();
+            Fatal( "Can not find '%s'\n", p );
         }
-        AddToList( Line, &CtlList );
+        AddToList( fn, &CtlList );
     }
     while( CtlList != NULL ) {
         ProcessCtlFile( CtlList->name );
