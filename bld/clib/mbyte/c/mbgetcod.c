@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,23 +37,24 @@
 
 
 
-_WCRTLINK unsigned char _FFAR *_NEARFAR(_mbgetcode,_fmbgetcode)( unsigned char _FFAR *p, unsigned int *moji )
+_WCRTLINK unsigned char _FFAR *_NEARFAR(_mbgetcode,_fmbgetcode)( unsigned char _FFAR *p, unsigned int _FFAR *moji )
 {
     if( __IsDBCS ) {
         if( *moji = *p ) {
             p++;
             if( _ismbblead( *moji ) ) {
-                if( *p )
+                if( *p ) {
                     *moji = (*moji << 8) | *p++;
-                else
+                } else {
                     *--p = '\0';
+                }
             }
-        }
-        else
+        } else {
             *moji = 0;
+        }
         return( p );
     } else {
-        *moji = (unsigned int) *p;
+        *moji = (unsigned int)*p;
         return( p + 1 );
     }
 }
