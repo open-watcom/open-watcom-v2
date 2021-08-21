@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,7 +65,7 @@
 *
 **/
 
-_WCRTLINK FJSTRING _WCI86FAR _fjstrupr( JCHAR _WCFAR *str )
+_WCRTLINK FJSTRING _fjstrupr( JCHAR _WCFAR *str )
 {
     JCHAR _WCFAR *dest, _WCFAR *keep = str;
     JMOJI c;
