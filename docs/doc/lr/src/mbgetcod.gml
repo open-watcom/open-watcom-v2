@@ -4,8 +4,8 @@
 unsigned char *_mbgetcode( unsigned char *mbstr,
                            unsigned int *dbchp );
 .if &farfnc ne 0 .do begin
-unsigned char far *_fmbgetcode( unsigned char far *mbstr,
-                                unsigned int *dbchp );
+unsigned char __far *_fmbgetcode( unsigned char __far *mbstr,
+                                  unsigned int __far *dbchp );
 .do end
 .synop end
 .desc begin
