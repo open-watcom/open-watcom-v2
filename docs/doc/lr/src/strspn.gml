@@ -47,9 +47,10 @@ which consists of characters from the string pointed to by
 The terminating null character is not considered to be part of
 .arg charset
 .period
-.im farparm
+.farparm &ffunc. &funcb.
 .im widefun1
-.im mbsffunc
+.im mbsfunc
+.farparm &fmfunc. &mfunc.
 .desc end
 .return begin
 The length, in bytes, of the initial segment is returned.

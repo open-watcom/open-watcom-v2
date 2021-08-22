@@ -50,9 +50,10 @@ of the sequence of characters (excluding the terminating null
 character) in the string pointed to by
 .arg substr
 .period
-.im farfunc
+.farfunc &ffunc. &funcb.
 .im widefun1
-.im mbsffunc
+.im mbsfunc
+.farfunc &fmfunc. &mfunc.
 .desc end
 .return begin
 The

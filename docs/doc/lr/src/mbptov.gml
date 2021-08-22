@@ -13,7 +13,7 @@ function returns the multibyte character at the position in
 the string pointed to by
 .arg string
 .period
-.im farparm
+.farparm &ffunc. &funcb.
 .desc end
 .return begin
 The

@@ -25,7 +25,7 @@ the number of characters in the Kanji string pointed to by
 .arg s
 .period
 A double-byte character is treated as one character.
-.im ffarparm
+.farparm &ffunc. &funcb.
 .desc end
 .return begin
 .if &farfnc eq 0 .do begin

@@ -18,7 +18,7 @@ function copies one multibyte character from
 to
 .arg dest
 .period
-.im farparm
+.farparm &ffunc. &funcb.
 .desc end
 .return begin
 The

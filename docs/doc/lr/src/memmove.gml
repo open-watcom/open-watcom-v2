@@ -38,7 +38,7 @@ Copying of overlapping objects will take place properly.
 See the
 .kw memcpy
 function to copy objects that do not overlap.
-.im farfunc
+.farfunc &ffunc. &funcb.
 .im widefun1
 .if &'length(&wfunc.) ne 0 .do begin
 The argument

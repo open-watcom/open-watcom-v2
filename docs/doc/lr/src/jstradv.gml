@@ -30,7 +30,7 @@ single- or double-byte characters in the Kanji string
 .arg src
 .period
 A pointer to the next character is returned.
-.im ffarfunc
+.farfunc &ffunc. &funcb.
 .desc end
 .return begin
 A pointer to the next character is returned unless the number of

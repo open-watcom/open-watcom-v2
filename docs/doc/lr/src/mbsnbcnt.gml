@@ -33,14 +33,7 @@ multibyte characters of the string
 This function was called
 .kw mtob
 in earlier versions.
-.if &farfnc ne 0 .do begin
-.np
-The
-.id &fmfunc.
-function is a data model independent form of the &funcb
-function that accepts far pointer arguments.
-It is most useful in mixed memory model applications.
-.do end
+.farparm &ffunc. &funcb.
 .np
 The header file
 .hdrfile tchar.h

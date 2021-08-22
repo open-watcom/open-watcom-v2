@@ -9,17 +9,16 @@ errno_t wcstombs_s( size_t * restrict retval,
                     rsize_t dstmax,
                     const wchar_t * restrict src,
                     rsize_t len);
-.ixfunc2 '&Wide' &funcb
-.ixfunc2 '&Multibyte' &funcb
+.ixfunc2 '&Wide' wcstombs_s
+.ixfunc2 '&Multibyte' wcstombs_s
 .if &farfnc ne 0 .do begin
-
 errno_t _fwcstombs_s( size_t __far * restrict retval,
                       char __far * restrict dst,
                       rsize_t dstmax,
                       const wchar_t __far * restrict src,
                       rsize_t len);
-.ixfunc2 '&Wide' &fwfunc
-.ixfunc2 '&Multibyte' &fwfunc
+.ixfunc2 '&Wide' _fwcstombs_s
+.ixfunc2 '&Multibyte' _fwcstombs_s
 .do end
 .synop end
 .*
@@ -151,7 +150,7 @@ returns.
 .np
 If copying takes place between objects that overlap, the objects take on unspecified
 values.
-.im safefarw
+.farparm &ffunc. &funcb.
 .desc end
 .*
 .return begin

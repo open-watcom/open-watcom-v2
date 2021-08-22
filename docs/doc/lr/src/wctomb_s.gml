@@ -8,15 +8,15 @@ errno_t wctomb_s( int * restrict status,
                   char * restrict s,
                   rsize_t smax,
                   wchar_t wc);
-.ixfunc2 '&Wide' &funcb
-.ixfunc2 '&Multibyte' &funcb
+.ixfunc2 '&Wide' wctomb_s
+.ixfunc2 '&Multibyte' wctomb_s
 .if &farfnc ne 0 .do begin
 errno_t _fwctomb_s( int __far * restrict status,
                   char __far * restrict s,
                   rsize_t smax,
                   wchar_t wc);
-.ixfunc2 '&Wide' &fwfunc
-.ixfunc2 '&Multibyte' &fwfunc
+.ixfunc2 '&Wide' _fwctomb_s
+.ixfunc2 '&Multibyte' _fwctomb_s
 .do end
 .synop end
 .*
@@ -116,7 +116,7 @@ In no case will the int pointed to by
 be set to a value greater than the
 .kw MB_CUR_MAX
 macro.
-.im safefarw
+.farparm &ffunc. &funcb.
 .desc end
 .*
 .return begin

@@ -1360,8 +1360,6 @@ objs_lr2 = &
 ../doc/lr/src/exp2.gml &
 ../doc/lr/src/expm1.gml &
 ../doc/lr/src/fabs.gml &
-../doc/lr/src/farfunc.gml &
-../doc/lr/src/farparm.gml &
 ../doc/lr/src/fclose.gml &
 ../doc/lr/src/fcloseal.gml &
 ../doc/lr/src/fcvt.gml &
@@ -1382,8 +1380,6 @@ objs_lr2 = &
 ../doc/lr/src/fesetrnd.gml &
 ../doc/lr/src/fetestex.gml &
 ../doc/lr/src/feupdenv.gml &
-../doc/lr/src/ffarfunc.gml &
-../doc/lr/src/ffarparm.gml &
 ../doc/lr/src/fflush.gml &
 ../doc/lr/src/ffs.gml &
 ../doc/lr/src/fgetc.gml &
@@ -1653,8 +1649,6 @@ objs_lr2 = &
 ../doc/lr/src/mbrlen.gml &
 ../doc/lr/src/mbrtowc.gml &
 ../doc/lr/src/mbsbtype.gml &
-../doc/lr/src/mbsffunc.gml &
-../doc/lr/src/mbsfunc.gml &
 ../doc/lr/src/mbsnbcat.gml &
 ../doc/lr/src/mbsnbcmp.gml &
 ../doc/lr/src/mbsnbcnt.gml &
@@ -1793,9 +1787,6 @@ objs_lr2 = &
 ../doc/lr/src/rmdir.gml &
 ../doc/lr/src/rmnder.gml &
 ../doc/lr/src/round.gml &
-../doc/lr/src/safefar.gml &
-../doc/lr/src/safefarm.gml &
-../doc/lr/src/safefarw.gml &
 ../doc/lr/src/sbrk.gml &
 ../doc/lr/src/scalbn.gml &
 ../doc/lr/src/scanf.gml &

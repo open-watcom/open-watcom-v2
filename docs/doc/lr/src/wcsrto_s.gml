@@ -9,8 +9,8 @@ errno_t wcsrtombs_s( size_t * restrict retval,
                      const wchar_t ** restrict src,
                      rsize_t len,
                      mbstate_t * restrict ps);
-.ixfunc2 '&Wide' &funcb
-.ixfunc2 '&Multibyte' &funcb
+.ixfunc2 '&Wide' wcsrtombs_s
+.ixfunc2 '&Multibyte' wcsrtombs_s
 .if &farfnc ne 0 .do begin
 errno_t _fwcsrtombs_s( size_t __far * restrict retval,
                        char __far * restrict dst,
@@ -18,8 +18,8 @@ errno_t _fwcsrtombs_s( size_t __far * restrict retval,
                        const wchar_t __far * __far * restrict src,
                        rsize_t len,
                        mbstate_t __far * restrict ps);
-.ixfunc2 '&Wide' &fwfunc
-.ixfunc2 '&Multibyte' &fwfunc
+.ixfunc2 '&Wide' _fwcsrtombs_s
+.ixfunc2 '&Multibyte' _fwcsrtombs_s
 .do end
 .synop end
 .*
@@ -49,7 +49,7 @@ pointer, then
 .arg dstmax
 shall equal zero. If
 .arg dst
-is not a null pointer,then
+is not a null pointer, then
 .arg dstmax
 shall
 not equal zero. If
@@ -167,7 +167,7 @@ returns.
 .np
 If copying takes place between objects that overlap, the objects take on unspecified
 values.
-.im safefarw
+.farparm &ffunc. &funcb.
 .desc end
 .*
 .return begin

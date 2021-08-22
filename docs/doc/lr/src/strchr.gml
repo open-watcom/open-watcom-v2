@@ -42,7 +42,7 @@ function locates the first occurrence of
 .arg s
 .period
 The terminating null character is considered to be part of the string.
-.im farfunc
+.farfunc &ffunc. &funcb.
 .im widefun1
 .im mbsfunc
 .desc end

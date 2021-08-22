@@ -3,8 +3,8 @@
 #include <mbstring.h>
 unsigned char *_mbputchar( unsigned char *mbstr,
                            unsigned int dbch );
-unsigned char far *_fmbputchar( unsigned char far *mbstr,
-                                unsigned int dbch );
+unsigned char __far *_fmbputchar( unsigned char __far *mbstr,
+                                  unsigned int dbch );
 .synop end
 .desc begin
 The
@@ -15,7 +15,7 @@ specified by
 at the start of the buffer specified by
 .arg mbstr
 .period
-.im ffarfunc
+.farfunc &ffunc. &funcb.
 .desc end
 .return begin
 The

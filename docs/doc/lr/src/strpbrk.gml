@@ -44,9 +44,10 @@ to by
 of any character from the string pointed to by
 .arg charset
 .period
-.im farfunc
+.farfunc &ffunc. &funcb.
 .im widefun1
-.im mbsffunc
+.im mbsfunc
+.farfunc &fmfunc. &mfunc.
 .desc end
 .return begin
 The

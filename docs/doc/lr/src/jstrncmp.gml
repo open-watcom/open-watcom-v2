@@ -38,7 +38,7 @@ The rule of comparison is:
 .illust begin
 ASCII and numeric characters < Katakana characters < Kanji characters
 .illust end
-.im ffarparm
+.farparm &ffunc. &funcb.
 .desc end
 .return begin
 .if &farfnc eq 0 .do begin

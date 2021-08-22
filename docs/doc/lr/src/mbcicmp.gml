@@ -21,7 +21,7 @@ Uppercase character from
 and
 .arg s2
 are mapped to lowercase for the purposes of doing the comparison.
-.im farparm
+.farparm &ffunc. &funcb.
 .desc end
 .return begin
 The function returns the following values.

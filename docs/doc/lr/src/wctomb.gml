@@ -31,7 +31,7 @@ stored in the array pointed to by
 At most
 .kw MB_CUR_MAX
 characters will be stored.
-.im farparm
+.farparm &ffunc. &funcb.
 .desc end
 .return begin
 If

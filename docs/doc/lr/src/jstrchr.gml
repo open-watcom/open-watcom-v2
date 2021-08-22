@@ -29,7 +29,7 @@ in the Kanji string pointed to by
 .arg s
 .period
 The terminating null character is considered to be part of the string.
-.im ffarfunc
+.farfunc &ffunc. &funcb.
 .desc end
 .return begin
 .if &farfnc eq 0 .do begin

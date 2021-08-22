@@ -112,7 +112,7 @@ the number of bytes (including any shift sequences) stored in the array pointed
 to by
 .arg s
 .period
-.im safefarw
+.farparm &ffunc. &funcb.
 .desc end
 .*
 .return begin

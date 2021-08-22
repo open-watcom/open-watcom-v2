@@ -48,7 +48,7 @@ Copying of overlapping objects is not guaranteed to work properly.
 See the description for the
 .kw memmove
 function to copy objects that overlap.
-.im farfunc
+.farfunc &ffunc. &funcb.
 .im widefun1
 .im mbsfunc
 .desc end

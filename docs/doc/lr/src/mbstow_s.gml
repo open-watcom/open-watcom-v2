@@ -8,13 +8,13 @@ errno_t mbstowcs_s( size_t * restrict retval,
                     wchar_t * restrict dst,
                     rsize_t dstmax,
                     const char * restrict src, rsize_t len);
-.ixfunc2 '&Multibyte' &funcb
+.ixfunc2 '&Multibyte' mbstowcs_s
 .if &farfnc ne 0 .do begin
-.ixfunc2 '&Multibyte' &fmfunc
 errno_t _fmbstowcs_s( size_t __far * restrict retval,
                     wchar_t __far * restrict dst,
                     rsize_t dstmax,
                     const char __far * restrict src, rsize_t len);
+.ixfunc2 '&Multibyte' _fmbstowcs_s
 .do end
 .synop end
 .*
@@ -129,7 +129,7 @@ returns.
 .np
 If copying takes place between objects that overlap, the objects take on unspecified
 values.
-.im safefarm
+.farparm &ffunc. &funcb.
 .desc end
 .*
 .return begin

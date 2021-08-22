@@ -26,7 +26,7 @@ the next single- or double-byte character specified by
 at the start of the buffer specified by
 .arg str
 .period
-.im ffarfunc
+.farfunc &ffunc. &funcb.
 .desc end
 .return begin
 .if &farfnc eq 0 .do begin

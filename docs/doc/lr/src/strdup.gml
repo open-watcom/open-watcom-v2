@@ -65,9 +65,10 @@ function and can be freed using the
 function.
 .do end
 .im ansiconf
-.im farparm
+.farfunc &ffunc. &funcb.
 .im widefun1
-.im mbsffunc
+.im mbsfunc
+.farfunc &fmfunc. &mfunc.
 .desc end
 .return begin
 The

@@ -27,7 +27,7 @@ characters of the object pointed to by
 with the value
 .arg c
 .period
-.im farfunc
+.farfunc &ffunc. &funcb.
 .im widefun1
 .if &'length(&wfunc.) ne 0 .do begin
 The argument

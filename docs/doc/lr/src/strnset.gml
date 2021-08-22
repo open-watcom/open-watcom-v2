@@ -49,13 +49,14 @@ is greater than the length of the string, the entire string is filled.
 Otherwise, that number of characters at the start of the string are set
 to the fill character.
 .im ansiconf
-.im farfunc
+.farfunc &ffunc. &funcb.
 .im widefun1
 For &wfunc, the value of
 .arg count
 is the number of wide characters to fill.
 This is half the number of bytes.
-.im mbsffunc
+.im mbsfunc
+.farfunc &fmfunc. &mfunc.
 .np
 For &mfunc, the value of
 .arg count

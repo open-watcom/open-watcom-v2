@@ -33,7 +33,7 @@ string pointed to by
 The terminating null character is not considered to be part of
 .arg charset
 .period
-.im ffarparm
+.farparm &ffunc. &funcb.
 .desc end
 .return begin
 .if &farfnc eq 0 .do begin

@@ -42,7 +42,7 @@ replaces it in
 .period
 In any case, a terminating null character is always appended to the
 result.
-.im farfunc
+.farfunc &ffunc. &funcb.
 .desc end
 .return begin
 The

@@ -18,7 +18,7 @@ function compares one multibyte character from
 to one multibyte character from
 .arg s2
 .period
-.im farparm
+.farparm &ffunc. &funcb.
 .desc end
 .return begin
 .if &farfnc eq 0 .do begin

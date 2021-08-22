@@ -18,7 +18,7 @@ function stores the multibyte character
 into the string pointed to by
 .arg addr
 .period
-.im farparm
+.farfunc &ffunc. &funcb.
 .desc end
 .return begin
 The

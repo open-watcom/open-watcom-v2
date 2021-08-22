@@ -41,7 +41,7 @@ function compares the string pointed to by
 to the string pointed to by
 .arg s2
 .period
-.im farparm
+.farparm &ffunc. &funcb.
 .im widefun1
 .im mbsfunc
 .desc end

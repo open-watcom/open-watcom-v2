@@ -23,7 +23,7 @@ up to and including the first occurrence of the character
 or until
 .arg cnt
 bytes have been copied, whichever comes first.
-.im farfunc
+.farfunc &ffunc. &funcb.
 .desc end
 .return begin
 The

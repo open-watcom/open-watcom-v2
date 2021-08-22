@@ -78,7 +78,7 @@ Because
 .id &funcb.
 may modify the original string, that string should be
 duplicated if the string is to be re-used.
-.im ffarfunc
+.farfunc &ffunc. &funcb.
 .desc end
 .return begin
 .if &farfnc eq 0 .do begin

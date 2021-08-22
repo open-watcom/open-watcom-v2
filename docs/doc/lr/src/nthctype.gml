@@ -45,7 +45,7 @@ is
 (-1) The byte is not valid as second byte of a double-byte character
 or it is the null character,
 .endterm
-.im ffarparm
+.farparm &ffunc. &funcb.
 .desc end
 .return begin
 If the character is a null character,

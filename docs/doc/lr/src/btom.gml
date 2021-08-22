@@ -33,7 +33,7 @@ A double-byte character is treated as one character.
 Counting stops when either
 .arg nb
 bytes have been processed or a null character is encountered.
-.im ffarparm
+.farparm &ffunc. &funcb.
 .desc end
 .return begin
 .if &farfnc eq 0 .do begin

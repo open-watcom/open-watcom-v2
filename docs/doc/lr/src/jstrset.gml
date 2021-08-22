@@ -49,7 +49,7 @@ ASCII blank (hex '20').
 .np
 The terminating null character in the original string remains
 unchanged.
-.im ffarfunc
+.farfunc &ffunc. &funcb.
 .desc end
 .return begin
 The address of the original string

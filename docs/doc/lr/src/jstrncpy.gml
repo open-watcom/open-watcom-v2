@@ -55,7 +55,7 @@ is longer than
 .arg n
 single- or double-byte characters, then the result will not be
 terminated by a null character.
-.im ffarfunc
+.farfunc &ffunc. &funcb.
 .desc end
 .return begin
 .if &farfnc eq 0 .do begin

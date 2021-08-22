@@ -30,7 +30,7 @@ in the wide character pointed to by
 .period
 If the second-half of a double-byte character is NULL, then the
 returned wide character is NULL.
-.im ffarfunc
+.farfunc &ffunc. &funcb.
 .desc end
 .return begin
 .if &farfnc eq 0 .do begin

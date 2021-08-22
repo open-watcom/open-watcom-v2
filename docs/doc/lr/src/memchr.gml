@@ -27,7 +27,7 @@ function locates the first occurrence of
 characters of the object pointed to by
 .arg buf
 .period
-.im farfunc
+.farfunc &ffunc. &funcb.
 .im widefun1
 .if &'length(&wfunc.) ne 0 .do begin
 The argument

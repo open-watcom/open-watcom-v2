@@ -51,7 +51,7 @@ The first character of
 overwrites the null character at the end of
 .arg dst
 .period
-.im farfunc
+.farfunc &ffunc. &funcb.
 .im widefun1
 .im mbsfunc
 .desc end

@@ -38,7 +38,7 @@ with uppercase characters by invoking the
 .kw toupper
 function for each character in the string.
 .im ansiconf
-.im farfunc
+.farfunc &ffunc. &funcb.
 .im widefun1
 .im mbsfunc
 .desc end

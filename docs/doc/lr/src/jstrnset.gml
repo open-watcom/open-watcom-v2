@@ -55,7 +55,7 @@ If after filling the string with as many single- or double-byte
 characters as possible,
 the next character in the string is the second byte of a double-byte
 character, then that character is set to ASCII blank (hex '20').
-.im ffarfunc
+.farfunc &ffunc. &funcb.
 .desc end
 .return begin
 The address of the original string

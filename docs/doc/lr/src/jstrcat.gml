@@ -35,7 +35,7 @@ The first character of
 overwrites the null character at the end of
 .arg dst
 .period
-.im ffarfunc
+.farfunc &ffunc. &funcb.
 .desc end
 .return begin
 The value of

@@ -28,7 +28,7 @@ All uppercase characters from
 and
 .arg s2
 are mapped to lowercase for the purposes of doing the comparison.
-.im farparm
+.farparm &ffunc. &funcb.
 .desc end
 .return begin
 The function returns an integer less than, equal to, or greater

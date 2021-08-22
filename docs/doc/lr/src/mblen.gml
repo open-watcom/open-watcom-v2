@@ -22,7 +22,7 @@ At most
 bytes of the array pointed to by
 .arg s
 will be examined.
-.im farfunc
+.farparm &ffunc. &funcb.
 .desc end
 .return begin
 If

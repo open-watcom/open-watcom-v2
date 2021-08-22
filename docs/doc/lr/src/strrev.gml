@@ -36,9 +36,10 @@ function replaces the string
 .arg s1
 with a string whose characters are in the reverse order.
 .im ansiconf
-.im farfunc
+.farfunc &ffunc. &funcb.
 .im widefun1
-.im mbsffunc
+.im mbsfunc
+.farfunc &fmfunc. &mfunc.
 .desc end
 .return begin
 The address of the original string

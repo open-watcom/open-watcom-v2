@@ -41,7 +41,7 @@ If the string pointed to by
 is longer than
 .arg n
 characters, then the result will not be terminated by a null character.
-.im farfunc
+.farfunc &ffunc. &funcb.
 .desc end
 .return begin
 The

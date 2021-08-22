@@ -1,27 +1,23 @@
-.func _strdec _wcsdec _mbsdec _fmbsdec
+.func _mbsdec _fmbsdec _strdec _wcsdec
 .synop begin
-#include <tchar.h>
-char *_strdec( const char *start, const char *current );
-.ixfunc2 '&String' &funcb
-.if &'length(&wfunc.) ne 0 .do begin
-wchar_t *_wcsdec( const wchar_t *start,
-                  const wchar_t *current );
-.ixfunc2 '&String' &wfunc
-.ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&mfunc.) ne 0 .do begin
 #include <mbstring.h>
 unsigned char *_mbsdec( const unsigned char *start,
                         const unsigned char *current );
-.ixfunc2 '&String' &mfunc
-.ixfunc2 '&Multibyte' &mfunc
+.ixfunc2 '&String' _mbsdec
+.ixfunc2 '&Multibyte' _mbsdec
+.if &farfnc ne 0 .do begin
+unsigned char __far *_fmbsdec( const unsigned char __far *start,
+                               const unsigned char __far *current );
+.ixfunc2 '&String' _fmbsdec
+.ixfunc2 '&Multibyte' _fmbsdec
 .do end
-.if &'length(&fmfunc.) ne 0 .do begin
-unsigned char *_fmbsdec( const unsigned char __far *start,
-                     const unsigned char __far *current );
-.ixfunc2 '&String' &fmfunc
-.ixfunc2 '&Multibyte' &fmfunc
-.do end
+#include <tchar.h>
+char *_strdec( const char *start, const char *current );
+.ixfunc2 '&String' _strdec
+wchar_t *_wcsdec( const wchar_t *start,
+                  const wchar_t *current );
+.ixfunc2 '&String' _wcsdec
+.ixfunc2 '&Wide' _wcsdec
 .synop end
 .desc begin
 The
@@ -38,9 +34,9 @@ The current character in the string is pointed to by
 You must ensure that
 .arg current
 does not point into the middle of a multibyte or wide character.
-.im farparm
-.im widefun1
-.im mbsfunc
+.farfunc &ffunc. &funcb.
+.sbcsfunc _strdec &funcb.
+.widefunc _wcsdec &funcb.
 .desc end
 .return begin
 The

@@ -43,7 +43,7 @@ Function determines the number of bytes necessary to enter
 the initial shift state (zero if encodings are not state-dependent or
 if the initial conversion state is described).
 .np
-.im farparm
+.farparm &ffunc. &funcb.
 .im mbcrstrt
 .desc end
 .return begin

@@ -58,9 +58,10 @@ overwrites the null character at the end of
 .arg dst
 .period
 A terminating null character is always appended to the result.
-.im farfunc
+.farfunc &ffunc. &funcb.
 .im widefun1
-.im mbsffunc
+.im mbsfunc
+.farfunc &fmfunc. &mfunc.
 .desc end
 .return begin
 The

@@ -30,7 +30,7 @@ of the sequence of single- and double-byte characters (excluding the
 terminating null character) in the Kanji string pointed to by
 .arg substr
 .period
-.im ffarfunc
+.farfunc &ffunc. &funcb.
 .desc end
 .return begin
 .if &farfnc eq 0 .do begin

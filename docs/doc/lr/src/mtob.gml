@@ -32,7 +32,7 @@ A double-byte Kanji character is treated as one character.
 Processing stops when either
 .arg nm
 characters have been processed or a null character is encountered.
-.im ffarparm
+.farparm &ffunc. &funcb.
 .desc end
 .return begin
 .if &farfnc eq 0 .do begin

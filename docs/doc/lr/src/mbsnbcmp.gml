@@ -24,7 +24,7 @@ bytes from the string pointed to by
 to the string pointed to by
 .arg s2
 .period
-.im farparm
+.farparm &ffunc. &funcb.
 .desc end
 .return begin
 The

@@ -24,7 +24,7 @@ functions replace
 all lowercase Roman characters ("a" to "z") in the Kanji string
 .arg s1
 with uppercase characters.
-.im ffarfunc
+.farfunc &ffunc. &funcb.
 .desc end
 .return begin
 The address of the original string

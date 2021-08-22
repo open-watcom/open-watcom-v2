@@ -40,7 +40,7 @@ overwrites the null character at the end of
 .arg dst
 .period
 A terminating null character is always appended to the result.
-.im ffarfunc
+.farfunc &ffunc. &funcb.
 .desc end
 .return begin
 .if &farfnc eq 0 .do begin

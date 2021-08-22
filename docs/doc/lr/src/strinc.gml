@@ -1,25 +1,20 @@
-.func _strinc _wcsinc _mbsinc _fmbsinc
+.func _mbsinc _fmbsinc _strinc _wcsinc
 .synop begin
-#include <tchar.h>
-char *_strinc( const char *current );
-.ixfunc2 '&String' &funcb
-.if &'length(&wfunc.) ne 0 .do begin
-wchar_t *_wcsinc( const wchar_t *current );
-.ixfunc2 '&String' &wfunc
-.ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&mfunc.) ne 0 .do begin
 #include <mbstring.h>
 unsigned char *_mbsinc( const unsigned char *current );
-.ixfunc2 '&String' &mfunc
-.ixfunc2 '&Multibyte' &mfunc
+.ixfunc2 '&String' _mbsinc
+.ixfunc2 '&Multibyte' _mbsinc
+.if &farfnc ne 0 .do begin
+unsigned char __far *_fmbsinc( const unsigned char __far *current );
+.ixfunc2 '&String' _fmbsinc
+.ixfunc2 '&Multibyte' _fmbsinc
 .do end
-.if &'length(&fmfunc.) ne 0 .do begin
-unsigned char *_fmbsinc(
-                    const unsigned char __far *current );
-.ixfunc2 '&String' &fmfunc
-.ixfunc2 '&Multibyte' &fmfunc
-.do end
+#include <tchar.h>
+char *_strinc( const char *current );
+.ixfunc2 '&String' _strinc
+wchar_t *_wcsinc( const wchar_t *current );
+.ixfunc2 '&String' _wcsinc
+.ixfunc2 '&Wide' _wcsinc
 .synop end
 .desc begin
 The
@@ -31,9 +26,9 @@ function returns a pointer to the next character
 You must ensure that
 .arg current
 does not point into the middle of a multibyte or wide character.
-.im farparm
-.im widefun1
-.im mbsfunc
+.farfunc &ffunc. &funcb.
+.sbcsfunc _strinc &funcb.
+.widefunc _wcsinc &funcb.
 .desc end
 .return begin
 The

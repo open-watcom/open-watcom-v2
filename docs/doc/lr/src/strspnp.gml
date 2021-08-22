@@ -54,9 +54,10 @@ The terminating null character is not considered to be part of
 .arg charset
 .period
 .im ansiconf
-.im farparm
+.farfunc &ffunc. &funcb.
 .im widefun1
-.im mbsffunc
+.im mbsfunc
+.farfunc &fmfunc. &mfunc.
 .desc end
 .return begin
 The

@@ -4,7 +4,7 @@
 size_t _mbclen( const unsigned char *ch );
 .ixfunc2 '&Multibyte' &funcb
 .if &farfnc ne 0 .do begin
-size_t far _fmbclen( const unsigned char __far *ch );
+size_t _fmbclen( const unsigned char __far *ch );
 .ixfunc2 '&Multibyte' &ffunc
 .do end
 .synop end
@@ -15,7 +15,7 @@ function determines the number of bytes comprising the
 multibyte character pointed to by
 .arg ch
 .period
-.im farparm
+.farparm &ffunc. &funcb.
 .desc end
 .return begin
 If

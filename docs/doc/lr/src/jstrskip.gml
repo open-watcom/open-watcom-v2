@@ -31,7 +31,7 @@ of a single- or double-byte character that does not appear
 in the Kanji string pointed to by
 .arg charset
 .period
-.im ffarfunc
+.farfunc &ffunc. &funcb.
 .desc end
 .return begin
 .if &farfnc eq 0 .do begin

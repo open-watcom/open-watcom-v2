@@ -647,3 +647,45 @@ command
 .*
 :cmt. include 'Safer C Library' related macros
 :INCLUDE file='safecmac'.
+.*
+.dm farfunc begin
+.if &farfnc ne 0 .do begin
+.pp
+The
+.id &*1.
+function is a code and data model independent form of the
+.id &*2.
+function.
+It accepts far pointer arguments and returns a far pointer.
+It is most useful in mixed memory model applications.
+.do end
+.dm farfunc end
+.*
+.dm farparm begin
+.if &farfnc ne 0 .do begin
+.pp
+The
+.id &*1.
+function is a code and data model independent form of the
+.id &*2.
+function that accepts far pointer arguments.
+It is most useful in mixed memory model applications.
+.do end
+.dm farparm end
+.*
+.dm sbcsfunc begin
+The
+.id &*1.
+function is a single-byte character version of
+.id &*2.
+that operates with single-byte character strings.
+.dm sbcsfunc end
+.*
+.dm widefunc begin
+The
+.id &*1.
+function is a wide-character version of
+.id &*2.
+that operates with wide-character strings.
+.dm widefunc end
+.*

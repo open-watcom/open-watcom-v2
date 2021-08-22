@@ -25,7 +25,7 @@ the Kanji string
 .arg s1
 with a Kanji string whose single- or double-byte characters are in the
 reverse order.
-.im ffarfunc
+.farfunc &ffunc. &funcb.
 .desc end
 .return begin
 The address of the original string

@@ -42,9 +42,10 @@ with the character
 The terminating null character in the original string remains
 unchanged.
 .im ansiconf
-.im farfunc
+.farfunc &ffunc. &funcb.
 .im widefun1
-.im mbsffunc
+.im mbsfunc
+.farfunc &fmfunc. &mfunc.
 .desc end
 .return begin
 The address of the original string
