@@ -46,7 +46,7 @@ of any character from the string pointed to by
 .period
 .farfunc &ffunc. &funcb.
 .im widefun1
-.im mbsfunc
+.mbcsfunc &mfunc. &funcb.
 .farfunc &fmfunc. &mfunc.
 .desc end
 .return begin

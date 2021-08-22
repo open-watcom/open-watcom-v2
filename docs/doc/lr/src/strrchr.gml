@@ -44,7 +44,7 @@ function locates the last occurrence of
 The terminating null character is considered to be part of the string.
 .farfunc &ffunc. &funcb.
 .im widefun1
-.im mbsfunc
+.mbcsfunc &mfunc. &funcb.
 .farfunc &fmfunc. &mfunc.
 .desc end
 .return begin

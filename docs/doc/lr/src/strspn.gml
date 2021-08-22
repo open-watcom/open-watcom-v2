@@ -49,7 +49,7 @@ The terminating null character is not considered to be part of
 .period
 .farfuncp &ffunc. &funcb.
 .im widefun1
-.im mbsfunc
+.mbcsfunc &mfunc. &funcb.
 .farfuncp &fmfunc. &mfunc.
 .desc end
 .return begin

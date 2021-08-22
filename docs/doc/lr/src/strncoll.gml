@@ -37,7 +37,7 @@ The comparison uses the current code page which can be selected by the
 .kw _setmbcp
 function.
 .im widefun1
-.im mbsfunc
+.mbcsfunc &mfunc. &funcb.
 .desc end
 .return begin
 These functions return an integer less than, equal to, or greater than

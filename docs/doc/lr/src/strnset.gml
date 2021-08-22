@@ -55,7 +55,7 @@ For &wfunc, the value of
 .arg count
 is the number of wide characters to fill.
 This is half the number of bytes.
-.im mbsfunc
+.mbcsfunc &mfunc. &funcb.
 .farfunc &fmfunc. &mfunc.
 .np
 For &mfunc, the value of

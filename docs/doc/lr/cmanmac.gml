@@ -673,6 +673,14 @@ It is most useful in mixed memory model applications.
 .do end
 .dm farfuncp end
 .*
+.dm mbcsfunc begin
+The
+.id &*1.
+function is a multi-byte character version of
+.id &*2.
+that operates with multi-byte character strings.
+.dm mbcsfunc end
+.*
 .dm sbcsfunc begin
 The
 .id &*1.

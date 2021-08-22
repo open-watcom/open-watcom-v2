@@ -51,7 +51,7 @@ The terminating null character is not considered part of
 .period
 .farfuncp &ffunc. &funcb.
 .im widefun1
-.im mbsfunc
+.mbcsfunc &mfunc. &funcb.
 .desc end
 .return begin
 The length, in bytes, of the initial segment is returned.

@@ -36,7 +36,7 @@ function when the collating sequence is selected from the
 .mono "C"
 locale.
 .im widefun1
-.im mbsfunc
+.mbcsfunc &mfunc. &funcb.
 .desc end
 .return begin
 The

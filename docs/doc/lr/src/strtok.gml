@@ -155,7 +155,7 @@ is similar to that for the
 .id &funcb.
 function.
 .do end
-.im mbsfunc
+.mbcsfunc &mfunc. &funcb.
 .farfunc &fmfunc. &mfunc.
 .desc end
 .return begin

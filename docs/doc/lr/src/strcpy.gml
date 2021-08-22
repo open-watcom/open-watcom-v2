@@ -50,7 +50,7 @@ See the description for the
 function to copy objects that overlap.
 .farfunc &ffunc. &funcb.
 .im widefun1
-.im mbsfunc
+.mbcsfunc &mfunc. &funcb.
 .desc end
 .return begin
 The value of

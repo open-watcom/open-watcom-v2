@@ -40,7 +40,7 @@ function for each character in the string.
 .im ansiconf
 .farfunc &ffunc. &funcb.
 .im widefun1
-.im mbsfunc
+.mbcsfunc &mfunc. &funcb.
 .farfunc &fmfunc. &mfunc.
 .desc end
 .return begin

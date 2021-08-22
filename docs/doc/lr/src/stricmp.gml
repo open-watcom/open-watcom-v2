@@ -53,7 +53,7 @@ are mapped to lowercase for the purposes of doing the comparison.
 .im ansiconf
 .farfuncp &ffunc. &funcb.
 .im widefun1
-.im mbsfunc
+.mbcsfunc &mfunc. &funcb.
 .farfuncp &fmfunc. &mfunc.
 .desc end
 .return begin

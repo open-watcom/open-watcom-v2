@@ -60,7 +60,7 @@ overwrites the null character at the end of
 A terminating null character is always appended to the result.
 .farfunc &ffunc. &funcb.
 .im widefun1
-.im mbsfunc
+.mbcsfunc &mfunc. &funcb.
 .farfunc &fmfunc. &mfunc.
 .desc end
 .return begin

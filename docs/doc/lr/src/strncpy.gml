@@ -75,7 +75,7 @@ is longer than
 characters, then the result will not be terminated by a null character.
 .farfunc &ffunc. &funcb.
 .im widefun1
-.im mbsfunc
+.mbcsfunc &mfunc. &funcb.
 .farfunc &fmfunc. &mfunc.
 .desc end
 .return begin
