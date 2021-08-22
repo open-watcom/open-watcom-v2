@@ -661,7 +661,7 @@ It is most useful in mixed memory model applications.
 .do end
 .dm farfunc end
 .*
-.dm farparm begin
+.dm farfuncp begin
 .if &farfnc ne 0 .do begin
 .pp
 The
@@ -671,7 +671,7 @@ function is a code and data model independent form of the
 function that accepts far pointer arguments.
 It is most useful in mixed memory model applications.
 .do end
-.dm farparm end
+.dm farfuncp end
 .*
 .dm sbcsfunc begin
 The

@@ -51,10 +51,10 @@ and
 .arg s2
 are mapped to lowercase for the purposes of doing the comparison.
 .im ansiconf
-.farparm &ffunc. &funcb.
+.farfuncp &ffunc. &funcb.
 .im widefun1
 .im mbsfunc
-.farparm &fmfunc. &mfunc.
+.farfuncp &fmfunc. &mfunc.
 .desc end
 .return begin
 The function returns an integer less than, equal to,

@@ -16,7 +16,7 @@ string pointed to by
 .arg ch
 is a null character or a valid lead byte followed by a null
 character.
-.farparm &ffunc. &funcb.
+.farfuncp &ffunc. &funcb.
 .desc end
 .return begin
 The

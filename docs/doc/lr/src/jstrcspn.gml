@@ -36,7 +36,7 @@ A double-byte character is treated as one character.
 The terminating null character is not considered part of
 .arg str
 .period
-.farparm &ffunc. &funcb.
+.farfuncp &ffunc. &funcb.
 .desc end
 .return begin
 The length of the initial segment is returned.

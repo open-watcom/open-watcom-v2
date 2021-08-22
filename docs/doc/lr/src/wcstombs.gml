@@ -36,7 +36,7 @@ At most
 bytes of the array pointed to by
 .arg s
 will be modified.
-.farparm &ffunc. &funcb.
+.farfuncp &ffunc. &funcb.
 .desc end
 .return begin
 .im _mbsret3

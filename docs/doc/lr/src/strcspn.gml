@@ -49,7 +49,7 @@ from the string pointed to by
 The terminating null character is not considered part of
 .arg str
 .period
-.farparm &ffunc. &funcb.
+.farfuncp &ffunc. &funcb.
 .im widefun1
 .im mbsfunc
 .desc end

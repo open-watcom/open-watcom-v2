@@ -150,7 +150,7 @@ returns.
 .np
 If copying takes place between objects that overlap, the objects take on unspecified
 values.
-.farparm &ffunc. &funcb.
+.farfuncp &ffunc. &funcb.
 .desc end
 .*
 .return begin

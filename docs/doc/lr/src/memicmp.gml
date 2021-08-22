@@ -32,7 +32,7 @@ All uppercase characters from
 and
 .arg s2
 are mapped to lowercase for the purposes of doing the comparison.
-.farparm &ffunc. &funcb.
+.farfuncp &ffunc. &funcb.
 .im ansiconf
 .desc end
 .return begin

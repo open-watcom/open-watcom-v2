@@ -60,7 +60,7 @@ and if
 .arg dst
 is not a null pointer, the resulting state described will be the
 initial conversion state.
-.farparm &ffunc. &funcb.
+.farfuncp &ffunc. &funcb.
 .im mbsrstrt
 .desc end
 .return begin

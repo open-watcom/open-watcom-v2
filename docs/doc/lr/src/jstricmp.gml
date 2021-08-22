@@ -27,7 +27,7 @@ The rule of comparison is:
 .illust begin
 ASCII and numeric characters < Katakana characters < Kanji characters
 .illust end
-.farparm &ffunc. &funcb.
+.farfuncp &ffunc. &funcb.
 .desc end
 .return begin
 The function returns an integer less than, equal to,

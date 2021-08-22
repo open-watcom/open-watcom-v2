@@ -33,7 +33,7 @@ multibyte characters of the string
 This function was called
 .kw mtob
 in earlier versions.
-.farparm &ffunc. &funcb.
+.farfuncp &ffunc. &funcb.
 .np
 The header file
 .hdrfile tchar.h

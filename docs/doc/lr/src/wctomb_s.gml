@@ -116,7 +116,7 @@ In no case will the int pointed to by
 be set to a value greater than the
 .kw MB_CUR_MAX
 macro.
-.farparm &ffunc. &funcb.
+.farfuncp &ffunc. &funcb.
 .desc end
 .*
 .return begin

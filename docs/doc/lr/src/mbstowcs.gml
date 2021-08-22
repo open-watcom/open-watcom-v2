@@ -34,7 +34,7 @@ At most
 elements of the array pointed to by
 .arg pwcs
 will be modified.
-.farparm &ffunc. &funcb.
+.farfuncp &ffunc. &funcb.
 .desc end
 .return begin
 .im _mbsret3

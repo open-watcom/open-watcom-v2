@@ -42,7 +42,7 @@ If
 .arg wc
 is a null wide character, the resulting state described will be the
 initial conversion state.
-.farparm &ffunc. &funcb.
+.farfuncp &ffunc. &funcb.
 .im mbcrstrt
 .desc end
 .return begin

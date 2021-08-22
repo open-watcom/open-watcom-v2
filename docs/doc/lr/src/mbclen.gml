@@ -15,7 +15,7 @@ function determines the number of bytes comprising the
 multibyte character pointed to by
 .arg ch
 .period
-.farparm &ffunc. &funcb.
+.farfuncp &ffunc. &funcb.
 .desc end
 .return begin
 If

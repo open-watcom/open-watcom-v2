@@ -26,7 +26,7 @@ is the address of the internal
 object for the
 .id &funcb.
 function.
-.farparm &ffunc. &funcb.
+.farfuncp &ffunc. &funcb.
 .im mbcrstrt
 .desc end
 .return begin

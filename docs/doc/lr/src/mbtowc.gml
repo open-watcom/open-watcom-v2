@@ -35,7 +35,7 @@ The
 function does not examine more than
 .kw MB_CUR_MAX
 bytes.
-.farparm &ffunc. &funcb.
+.farfuncp &ffunc. &funcb.
 .desc end
 .return begin
 If
