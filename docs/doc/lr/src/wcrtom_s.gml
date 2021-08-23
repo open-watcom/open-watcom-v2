@@ -7,15 +7,14 @@
 errno_t wcrtomb_s( size_t * restrict retval,
                    char * restrict s, rsize_t smax,
                    wchar_t wc, mbstate_t * restrict ps);
-.ixfunc2 '&Wide' &funcb
-.ixfunc2 '&Multibyte' &funcb
+.ixfunc2 '&Wide' wcrtomb_s
+.ixfunc2 '&Multibyte' wcrtomb_s
 .if &farfnc ne 0 .do begin
-
-errno_t _wcrtomb_s( size_t __far * restrict retval,
+errno_t _fwcrtomb_s( size_t __far * restrict retval,
                    char __far * restrict s, rsize_t smax,
                    wchar_t wc, mbstate_t __far * restrict ps);
-.ixfunc2 '&Wide' &fwfunc
-.ixfunc2 '&Multibyte' &fwfunc
+.ixfunc2 '&Wide' _fwcrtomb_s
+.ixfunc2 '&Multibyte' _fwcrtomb_s
 .do end
 .synop end
 .*
