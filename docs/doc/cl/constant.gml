@@ -720,9 +720,9 @@ library
 function.
 .pp
 As shown above,
-a wide character constant may also contain a single byte character, since
-an extended character set contains the single byte characters.
-The single byte character is mapped onto the corresponding
+a wide character constant may also contain a single-byte character, since
+an extended character set contains the single-byte characters.
+The single-byte character is mapped onto the corresponding
 wide character code.
 .endlevel
 .*
@@ -941,9 +941,9 @@ library
 function.
 .pp
 As shown above,
-a wide string literal may also contain single byte characters, since
-the extended character set contains the single byte characters.
-The single byte characters are mapped onto the corresponding
+a wide string literal may also contain single-byte characters, since
+the extended character set contains the single-byte characters.
+The single-byte characters are mapped onto the corresponding
 wide character codes.
 .pp
 Adjacent wide string literals will be concatenated by the compiler

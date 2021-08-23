@@ -339,7 +339,7 @@ array of sufficient size to contain the sequence and a terminating
 null character, which is added by the conversion operation.
 .note S
 A sequence of multibyte characters is matched.
-None of the multibyte characters in the sequence may be single byte
+None of the multibyte characters in the sequence may be single-byte
 white-space characters.
 Each multibyte character is converted to a wide character.
 The argument is assumed to point to the first element of an array of

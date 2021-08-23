@@ -11,8 +11,8 @@ The
 function determines whether
 .arg wc
 corresponds to a member of the extended character set whose multibyte
-character representation is as a single byte when in the initial shift
-state.
+character representation is as a single-byte character when in the
+initial shift state.
 .desc end
 .return begin
 The
@@ -22,7 +22,7 @@ function returns
 if
 .arg wc
 does not correspond to a multibyte character with length one;
-otherwise, it returns the single byte representation.
+otherwise, it returns the single-byte character representation.
 .return end
 .see begin
 .im seembc
