@@ -80,45 +80,7 @@ void wintr_disable(void) { on_isr8 = 0; }
     atexit (wintr_shutdown);
   }
 
-#elif (DOSX & DJGPP)
-  #include <sys/time.h>
-
-  static void NewTimer (void)
-  {
-    if (!inside_isr8)
-    {
-      if (on_isr8)
-      {
-        if (wintr_chain)
-          (*wintr_chain)();
-        tcp_tick (NULL);
-      }
-      inside_isr8 = 0;
-    }
-  }
-
-  void wintr_shutdown (void)
-  {
-    struct itimerval tim;
-
-    tim.it_interval.tv_sec  = 0;
-    tim.it_interval.tv_usec = 0;
-    signal (SIGALRM, SIG_DFL);
-    setitimer (ITIMER_REAL, &tim, NULL);
-  }
-
-  void wintr_init (void)
-  {
-    struct itimerval tim;
-
-    tim.it_interval.tv_usec = 54945;  /* 1000000/18.2 */
-    tim.it_interval.tv_sec  = 0;
-    tim.it_value = tim.it_interval;
-    signal (SIGALRM, (void(*)(int))NewTimer);
-    setitimer (ITIMER_REAL, &tim, NULL);
-  }
-
-#elif defined(WATCOM386) && (DOSX & (DOS4GW|WDOSX))
+#elif (DOSX & (DOS4GW|WDOSX)) && defined(__386__)
   static void (__interrupt __far *oldint)(void);
 
   static void __interrupt __far NewTimer (void)
@@ -159,35 +121,11 @@ void wintr_disable(void) { on_isr8 = 0; }
     _dos_setvect (TIMER_INTR, NewTimer);
   }
 
-#elif defined (BORLAND386) && (DOSX == WDOSX)
-  void wintr_shutdown (void)
-  {
-    UNFINISHED();
-  }
-  void wintr_init (void)
-  {
-    UNFINISHED();
-  }
+#elif (DOSX == 0)
 
-#elif (DOSX & POWERPAK)
-  void wintr_shutdown (void)
-  {
-    UNFINISHED();
-  }
-  void wintr_init (void)
-  {
-    UNFINISHED();
-  }
+  void __interrupt (*oldint)(void);
 
-#elif (DOSX == 0) && !defined(NO_INLINE_ASM)
-
-  #ifdef __TURBOC__
-    void interrupt (*oldint)(void);
-  #else
-    void (interrupt *oldint)(void);
-  #endif
-
-  static void interrupt NewTimer(void)
+  static void __interrupt NewTimer(void)
   {
     (*oldint)();    /* chain now */
 
@@ -196,22 +134,8 @@ void wintr_disable(void) { on_isr8 = 0; }
       if (on_isr8)
       {
         static UINT locstack [STK_SIZE];
-  #ifdef __WATCOMC__
         DISABLE();
         stackset (&locstack[STK_SIZE-1]);
-  #else
-        static UINT old_SP;
-        static WORD old_SS;
-        asm  pushf
-        asm  cli
-        asm  mov ax,ss
-        asm  mov old_SS,ax
-        asm  mov ax,sp
-        asm  mov old_SP,ax
-        asm  mov ax,ds
-        asm  mov ss,ax
-        asm  lea sp,locstack[STK_SIZE-1]
-  #endif
         ENABLE();
 
         if (wintr_chain)
@@ -219,14 +143,7 @@ void wintr_disable(void) { on_isr8 = 0; }
         tcp_tick (NULL);
 
         DISABLE();
-  #ifdef __WATCOMC__
         stackrestore();
-  #else
-        asm  mov ax,old_SS
-        asm  mov ss,ax
-        asm  mov ax,old_SP
-        asm  mov sp,ax
-  #endif
         ENABLE();
       }
       inside_isr8 = 0;

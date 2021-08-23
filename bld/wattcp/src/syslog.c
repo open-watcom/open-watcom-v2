@@ -158,14 +158,6 @@ static const char *getlogname (void)
     } else {
         name = NULL;
     }
-#elif defined (__DJGPP__)
-    extern char **__crt0_argv;
-
-    name = strdup (__crt0_argv[0]);
-#elif defined (_MSC_VER)
-    extern char **__argv;
-
-    name = strdup (__argv[0]);
 #else
     extern char **_argv;
 

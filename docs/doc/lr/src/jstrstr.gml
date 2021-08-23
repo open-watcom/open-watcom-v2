@@ -5,8 +5,7 @@ JSTRING jstrstr( const JCHAR *str, const JCHAR *substr );
 .ixfunc2 '&Jstring' &funcb
 .ixfunc2 '&Jsearch' &funcb
 .if &farfnc ne 0 .do begin
-FJSTRING __far _fjstrstr( const JCHAR __far *str,
-                          const JCHAR __far *substr );
+FJSTRING _fjstrstr( const JCHAR __far *str, const JCHAR __far *substr );
 .ixfunc2 '&Jstring' &ffunc
 .ixfunc2 '&Jsearch' &ffunc
 .do end

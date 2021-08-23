@@ -4,7 +4,7 @@
 JSTRING jstrset( JCHAR *s1, JMOJI fill );
 .ixfunc2 '&Jstring' &funcb
 .if &farfnc ne 0 .do begin
-FJSTRING __far _fjstrset( JCHAR __far *s1, JMOJI fill );
+FJSTRING _fjstrset( JCHAR __far *s1, JMOJI fill );
 .ixfunc2 '&Jstring' &ffunc
 .do end
 .synop end

@@ -46,7 +46,7 @@ extern void         GUIMakeRelative( gui_window *wnd, const guix_point *scr_poin
 extern bool         GUIJustSetWindowText( gui_window *wnd, const char *title );
 extern bool         GUIInArea( ORD row, ORD col, SAREA *area );
 extern void         GUISetUseArea( gui_window *wnd, SAREA *area, SAREA *use );
-extern void         GUIDirtyArea( gui_window *wnd, SAREA *area );
+extern void         GUIDirtyArea( gui_window *wnd, const guix_rect *scr_rect );
 extern gui_window   *GUIGetTopWnd( gui_window *wnd );
 extern bool         GUISetCursor( gui_window *wnd );
 extern void         GUIAdjustDialogArea( SAREA *area, int mult );

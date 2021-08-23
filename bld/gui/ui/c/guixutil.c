@@ -375,10 +375,10 @@ bool GUIInArea( ORD row, ORD col, SAREA *area )
               ( col >= area->col ) && ( col < ( area->col+ area->width   ) ) ) );
 }
 
-void GUIDirtyArea( gui_window *wnd, SAREA *area )
+void GUIDirtyArea( gui_window *wnd, const guix_rect *scr_rect )
 {
     wnd->flags |= CONTENTS_INVALID;
-    GUIWndRfrshArea( wnd, area );
+    GUIWndRfrshArea( wnd, scr_rect );
     uirefresh();
 }
 

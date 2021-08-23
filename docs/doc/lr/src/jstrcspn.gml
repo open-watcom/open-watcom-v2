@@ -1,13 +1,11 @@
 .func jstrcspn _fjstrcspn
 .synop begin
 #include <string.h>
-size_t jstrcspn( const JCHAR *str,
-                 const JCHAR *charset );
+size_t jstrcspn( const JCHAR *str, const JCHAR *charset );
 .ixfunc2 '&Jstring' &funcb
 .ixfunc2 '&Jsearch' &funcb
 .if &farfnc ne 0 .do begin
-size_t __far _fjstrcspn( const JCHAR __far *str,
-                         const JCHAR __far *charset );
+size_t _fjstrcspn( const JCHAR __far *str, const JCHAR __far *charset );
 .ixfunc2 '&Jstring' &ffunc
 .ixfunc2 '&Jsearch' &ffunc
 .do end

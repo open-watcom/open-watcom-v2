@@ -74,15 +74,13 @@ const char *icmp_exceed_str [2] = {
       __LANG("Frag ReAsm time exceeded")
     };
 
-#include <sys/packon.h>
-
+#pragma pack(__push,1);
 struct _pkt {
        in_Header  in;
        ICMP_PKT   icmp;
        in_Header  data;
      };
-
-#include <sys/packoff.h>
+#pragma pack(__pop);
 
 static struct {
        char  icmp;
@@ -150,7 +148,7 @@ void *icmp_Format (DWORD host)
    * After first ping this will still be in cache.
    */
   if (!_arp_resolve(host,&dest,0))  /* unable to find address */
-     return (NULL);     
+     return (NULL);
 
   return _eth_formatpacket (&dest, IP_TYPE);
 }

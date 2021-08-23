@@ -1,4 +1,4 @@
-#if !defined(__PCPKT32_H) && (DOSX)
+#ifndef __PCPKT32_H
 #define __PCPKT32_H
 
 #define PM_DRVR_3C501   1  /* 3COM EtherLink I, a real museum piece! */
@@ -15,13 +15,11 @@ typedef struct PM_driver {
         const char *name;
       } PM_driver;
 
-extern int (*_pkt32_drvr)(IREGS*);
-
 extern struct PM_driver pm_driver_list[];
 
 extern int         pkt32_drvr_probe (const PM_driver *drivers);
 extern int         pkt32_drvr_init  (int driver);
 extern const char *pkt32_drvr_name  (int driver);
 
-#endif /* !__PCPKT32_H && DOSX */
+#endif /* !__PCPKT32_H */
 

@@ -1,8 +1,8 @@
 #ifndef __IREGS_H
 #define __IREGS_H
 
-#define hiREG(r,b)  (r) = ((r) & 0xff) | ((unsigned short)(b) << 8)
-#define loREG(r,b)  (r) = ((r) & 0xff00) | (unsigned byte)(b)
+#define hiREG(r)    (((unsigned char *)&(r))[1])
+#define loREG(r)    (((unsigned char *)&(r))[0])
 
 #define CARRY_BIT   1
 
@@ -21,7 +21,7 @@
   #define r_ds       ds
   #define r_es       es
 
-  #define GEN_RM_INTERRUPT(i,r)  _dx_real_int ((UINT)i, r);
+  #define GEN_RM_INTERRUPT(i,r)  _dx_real_int ((UINT)i, r)
 #elif (DOSX & DJGPP)
   #define IREGS      __dpmi_regs
   #define r_flags    x.flags
@@ -34,15 +34,15 @@
   #define r_ds       x.ds
   #define r_es       x.es
 
-  #define GEN_RM_INTERRUPT(i,r)  __dpmi_int ((int)i, r);
+  #define GEN_RM_INTERRUPT(i,r)  __dpmi_int ((int)i, r)
 #elif (DOSX & DOS4GW)
   #define IREGS      struct DPMI_regs  /* in wdpmi.h */
 
-  #define GEN_RM_INTERRUPT(i,r)  dpmi_real_interrupt ((int)i, r);
+  #define GEN_RM_INTERRUPT(i,r)  dpmi_real_interrupt ((int)i, r)
 #elif (DOSX & WDOSX)
   #define IREGS      struct DPMI_regs  /* in wdpmi.h */
 
-  #define GEN_RM_INTERRUPT(i,r)  dpmi_real_interrupt2 ((int)i, r);
+  #define GEN_RM_INTERRUPT(i,r)  dpmi_real_interrupt2 ((int)i, r)
 #elif (DOSX & POWERPAK)     /* to-do !! */
   typedef struct IREGS {    /* just for now */
           WORD  r_ax;

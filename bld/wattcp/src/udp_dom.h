@@ -56,7 +56,7 @@ struct dhead {
 #define DIN       1         /* ARPA internet class                         */
 #define DWILD   255         /* wildcard for several of the classifications */
 
-#include <sys/packon.h>
+#pragma pack(__push,1);
 
 /*
  *  a resource record is made up of a compressed domain name followed by
@@ -78,7 +78,7 @@ struct useek {
        BYTE   x[DOMSIZE];
      };
 
-#include <sys/packoff.h>
+#pragma pack(__pop);
 
 #define defaultdomain    NAMESPACE (defaultdomain)
 #define def_domain       NAMESPACE (def_domain)

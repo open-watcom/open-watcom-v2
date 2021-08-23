@@ -1,8 +1,8 @@
-/*	$NetBSD: if_arc.h,v 1.6 1997/03/15 18:12:30 is Exp $	*/
+/*      $NetBSD: if_arc.h,v 1.6 1997/03/15 18:12:30 is Exp $    */
 
 /*
  * Copyright (c) 1982, 1986, 1993
- *	The Regents of the University of California.  All rights reserved.
+ *      The Regents of the University of California.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,8 +14,8 @@
  *    documentation and/or other materials provided with the distribution.
  * 3. All advertising materials mentioning features or use of this software
  *    must display the following acknowledgement:
- *	This product includes software developed by the University of
- *	California, Berkeley and its contributors.
+ *      This product includes software developed by the University of
+ *      California, Berkeley and its contributors.
  * 4. Neither the name of the University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
@@ -33,87 +33,85 @@
  * SUCH DAMAGE.
  *
  * from: NetBSD: if_ether.h,v 1.10 1994/06/29 06:37:55 cgd Exp
- *       @(#)if_ether.h	8.1 (Berkeley) 6/10/93
+ *       @(#)if_ether.h 8.1 (Berkeley) 6/10/93
  */
 
 #ifndef __NET_IF_ARC_H
 #define __NET_IF_ARC_H
 
-#include <sys/packon.h>
-
 /*
  * Arcnet address - 1 octets
  * don't know who uses this.
  */
+#pragma pack(__push,1);
 struct arc_addr {
-	u_int8_t  arc_addr_octet[1];
+        u_int8_t  arc_addr_octet[1];
 };
 
 /*
  * Structure of a 2.5MB/s Arcnet header.
  * as given to interface code.
  */
-struct	arc_header {
-	u_int8_t  arc_shost;
-	u_int8_t  arc_dhost;
-	u_int8_t  arc_type;
-	/*
-	 * only present for newstyle encoding with LL fragmentation.
-	 * Don't use sizeof(anything), use ARC_HDR{,NEW}LEN instead.
-	 */
-	u_int8_t  arc_flag;
-	u_int16_t arc_seqid;
+struct  arc_header {
+        u_int8_t  arc_shost;
+        u_int8_t  arc_dhost;
+        u_int8_t  arc_type;
+        /*
+         * only present for newstyle encoding with LL fragmentation.
+         * Don't use sizeof(anything), use ARC_HDR{,NEW}LEN instead.
+         */
+        u_int8_t  arc_flag;
+        u_int16_t arc_seqid;
 
-	/*
-	 * only present in exception packets (arc_flag == 0xff)
-	 */
-	u_int8_t  arc_type2;	/* same as arc_type */
-	u_int8_t  arc_flag2;	/* real flag value */
-	u_int16_t arc_seqid2;	/* real seqid value */
+        /*
+         * only present in exception packets (arc_flag == 0xff)
+         */
+        u_int8_t  arc_type2;    /* same as arc_type */
+        u_int8_t  arc_flag2;    /* real flag value */
+        u_int16_t arc_seqid2;   /* real seqid value */
 };
 
-#define	ARC_ADDR_LEN		1
+#define ARC_ADDR_LEN            1
 
-#define	ARC_HDRLEN		3
-#define	ARC_HDRNEWLEN		6
+#define ARC_HDRLEN              3
+#define ARC_HDRNEWLEN           6
 
 /* these lengths are data link layer length - 2*ARC_ADDR_LEN */
-#define	ARC_MIN_LEN		1
-#define	ARC_MIN_FORBID_LEN	254
-#define	ARC_MAX_FORBID_LEN	256
-#define	ARC_MAX_LEN		508
+#define ARC_MIN_LEN             1
+#define ARC_MIN_FORBID_LEN      254
+#define ARC_MAX_FORBID_LEN      256
+#define ARC_MAX_LEN             508
 
 
 /* RFC 1051 */
-#define	ARCTYPE_IP_OLD		240	/* IP protocol */
-#define	ARCTYPE_ARP_OLD		241	/* address resolution protocol */
+#define ARCTYPE_IP_OLD          240     /* IP protocol */
+#define ARCTYPE_ARP_OLD         241     /* address resolution protocol */
 
 /* RFC 1201 */
-#define	ARCTYPE_IP		212	/* IP protocol */
-#define	ARCTYPE_ARP		213	/* address resolution protocol */
-#define	ARCTYPE_REVARP		214	/* reverse addr resolution protocol */
+#define ARCTYPE_IP              212     /* IP protocol */
+#define ARCTYPE_ARP             213     /* address resolution protocol */
+#define ARCTYPE_REVARP          214     /* reverse addr resolution protocol */
 
-#define	ARCTYPE_ATALK		221	/* Appletalk */
-#define	ARCTYPE_BANIAN		247	/* Banyan Vines */
-#define	ARCTYPE_IPX		250	/* Novell IPX */
+#define ARCTYPE_ATALK           221     /* Appletalk */
+#define ARCTYPE_BANIAN          247     /* Banyan Vines */
+#define ARCTYPE_IPX             250     /* Novell IPX */
 
-#define	ARCMTU			507
-#define	ARCMIN			0
+#define ARCMTU                  507
+#define ARCMIN                  0
 
-struct	arccom {
-	struct 	  ifnet ac_if;		/* network-visible interface */
+struct  arccom {
+        struct    ifnet ac_if;          /* network-visible interface */
 
-	u_int16_t ac_seqid;		/* seq. id used by PHDS encap. */
+        u_int16_t ac_seqid;             /* seq. id used by PHDS encap. */
 
-	struct ac_frag {
-		u_int8_t  af_maxflag;	/* from first packet */
-		u_int8_t  af_lastseen;	/* last split flag seen */
-		u_int16_t af_seqid;	
-		struct mbuf *af_packet;
-	} ac_fragtab[256];		/* indexed by sender ll address */
+        struct ac_frag {
+                u_int8_t  af_maxflag;   /* from first packet */
+                u_int8_t  af_lastseen;  /* last split flag seen */
+                u_int16_t af_seqid;
+                struct mbuf *af_packet;
+        } ac_fragtab[256];              /* indexed by sender ll address */
 
 };
-
-#include <sys/packoff.h>
+#pragma pack(__pop);
 
 #endif

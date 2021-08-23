@@ -44,14 +44,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#if defined(_MSC_VER) && (_MSC_VER <= 600)
-/*
- * MSC <= 6.0 has a identifier length of 32. Don't bother
- * rewriting to supress warnings.
- */
-
-#else   /* rest of file */
-
 /* the user's options */
 #include "ufortify.h"
 
@@ -111,25 +103,6 @@
 /*
  * Code to detect and configure for various compilers lives here.
  */
-
-#ifdef __GNUG__
-    /* GCC configuration */
-    #define FORTIFY_PROVIDE_ARRAY_NEW
-    #define FORTIFY_PROVIDE_ARRAY_DELETE
-#endif
-
-#ifdef __HIGHC__
-    /* Metaware HighC configuration */
-    #define FORTIFY_PROVIDE_ARRAY_NEW
-    #define FORTIFY_PROVIDE_ARRAY_DELETE
-#endif
-
-#ifdef __BC45__
-    /* Borland C++ 4.5 configuration */
-    #define FORTIFY_PROVIDE_ARRAY_NEW
-    #define FORTIFY_PROVIDE_ARRAY_DELETE
-    #define FORTIFY_FAIL_ON_ZERO_MALLOC
-#endif
 
 #ifdef __SASC
   /* SAS configuration */
@@ -285,4 +258,3 @@ extern int gbl_FortifyMagic;
 #endif /* USE_FORTIFY || USE_BSD_FORTIFY */
 #endif /* __FORTIFY_C__   */
 #endif /* __FORTIFY_H__   */
-#endif /* _MSC_VER <= 6.0 */

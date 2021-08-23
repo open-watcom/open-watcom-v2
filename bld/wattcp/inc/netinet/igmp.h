@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1988 Stephen Deering.
  * Copyright (c) 1992, 1993
- *	The Regents of the University of California.  All rights reserved.
+ *      The Regents of the University of California.  All rights reserved.
  *
  * This code is derived from software contributed to Berkeley by
  * Stephen Deering of Stanford University.
@@ -16,8 +16,8 @@
  *    documentation and/or other materials provided with the distribution.
  * 3. All advertising materials mentioning features or use of this software
  *    must display the following acknowledgement:
- *	This product includes software developed by the University of
- *	California, Berkeley and its contributors.
+ *      This product includes software developed by the University of
+ *      California, Berkeley and its contributors.
  * 4. Neither the name of the University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
@@ -34,8 +34,8 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	@(#)igmp.h	8.1 (Berkeley) 6/10/93
- *	$Id: igmp.h,v 1.7 1996/03/14 16:59:17 fenner Exp $
+ *      @(#)igmp.h      8.1 (Berkeley) 6/10/93
+ *      $Id: igmp.h,v 1.7 1996/03/14 16:59:17 fenner Exp $
  */
 
 #ifndef __NETINET_IGMP_H
@@ -53,49 +53,47 @@
  * IGMP packet format.
  */
 
-#include <sys/packon.h>
-
+#pragma pack(__push,1);
 struct igmp {
-	u_char		igmp_type;	/* version & type of IGMP message  */
-	u_char		igmp_code;	/* subtype for routing msgs        */
-	u_short		igmp_cksum;	/* IP-style checksum               */
-	struct in_addr	igmp_group;	/* group address being reported    */
-};					/*  (zero for queries)             */
+        u_char          igmp_type;      /* version & type of IGMP message  */
+        u_char          igmp_code;      /* subtype for routing msgs        */
+        u_short         igmp_cksum;     /* IP-style checksum               */
+        struct in_addr  igmp_group;     /* group address being reported    */
+};                                      /*  (zero for queries)             */
+#pragma pack(__pop);
 
-#include <sys/packoff.h>
-
-#define IGMP_MINLEN		     8
+#define IGMP_MINLEN                  8
 
 /*
  * Message types, including version number.
  */
-#define IGMP_MEMBERSHIP_QUERY   	0x11	/* membership query         */
-#define IGMP_V1_MEMBERSHIP_REPORT	0x12	/* Ver. 1 membership report */
-#define IGMP_V2_MEMBERSHIP_REPORT	0x16	/* Ver. 2 membership report */
-#define IGMP_V2_LEAVE_GROUP		0x17	/* Leave-group message	    */
+#define IGMP_MEMBERSHIP_QUERY           0x11    /* membership query         */
+#define IGMP_V1_MEMBERSHIP_REPORT       0x12    /* Ver. 1 membership report */
+#define IGMP_V2_MEMBERSHIP_REPORT       0x16    /* Ver. 2 membership report */
+#define IGMP_V2_LEAVE_GROUP             0x17    /* Leave-group message      */
 
-#define IGMP_DVMRP			0x13	/* DVMRP routing message    */
-#define IGMP_PIM			0x14	/* PIM routing message	    */
+#define IGMP_DVMRP                      0x13    /* DVMRP routing message    */
+#define IGMP_PIM                        0x14    /* PIM routing message      */
 
-#define IGMP_MTRACE_RESP		0x1e  /* traceroute resp.(to sender)*/
-#define IGMP_MTRACE			0x1f  /* mcast traceroute messages  */
+#define IGMP_MTRACE_RESP                0x1e  /* traceroute resp.(to sender)*/
+#define IGMP_MTRACE                     0x1f  /* mcast traceroute messages  */
 
 #define IGMP_MAX_HOST_REPORT_DELAY   10    /* max delay for response to     */
-					   /*  query (in seconds) according */
-					   /*  to RFC1112                   */
+                                           /*  query (in seconds) according */
+                                           /*  to RFC1112                   */
 
 
-#define IGMP_TIMER_SCALE     10		/* denotes that the igmp code field */
-					/* specifies time in 10th of seconds*/
+#define IGMP_TIMER_SCALE     10         /* denotes that the igmp code field */
+                                        /* specifies time in 10th of seconds*/
 
 /*
  * The following four defininitions are for backwards compatibility.
  * They should be removed as soon as all applications are updated to
  * use the new constant names.
  */
-#define IGMP_HOST_MEMBERSHIP_QUERY	IGMP_MEMBERSHIP_QUERY
-#define IGMP_HOST_MEMBERSHIP_REPORT	IGMP_V1_MEMBERSHIP_REPORT
-#define IGMP_HOST_NEW_MEMBERSHIP_REPORT	IGMP_V2_MEMBERSHIP_REPORT
-#define IGMP_HOST_LEAVE_MESSAGE		IGMP_V2_LEAVE_GROUP
+#define IGMP_HOST_MEMBERSHIP_QUERY      IGMP_MEMBERSHIP_QUERY
+#define IGMP_HOST_MEMBERSHIP_REPORT     IGMP_V1_MEMBERSHIP_REPORT
+#define IGMP_HOST_NEW_MEMBERSHIP_REPORT IGMP_V2_MEMBERSHIP_REPORT
+#define IGMP_HOST_LEAVE_MESSAGE         IGMP_V2_LEAVE_GROUP
 
 #endif

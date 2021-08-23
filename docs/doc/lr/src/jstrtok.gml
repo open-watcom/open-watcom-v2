@@ -5,8 +5,7 @@ JSTRING jstrtok( JCHAR *s1, const JCHAR *s2 );
 .ixfunc2 '&Jstring' &funcb
 .ixfunc2 '&Jsearch' &funcb
 .if &farfnc ne 0 .do begin
-FJSTRING __far _fjstrtok( JCHAR __far *s1,
-                          const JCHAR __far *s2 );
+FJSTRING _fjstrtok( JCHAR __far *s1, const JCHAR __far *s2 );
 .ixfunc2 '&Jstring' &ffunc
 .ixfunc2 '&Jsearch' &ffunc
 .do end

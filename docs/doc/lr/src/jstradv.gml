@@ -5,8 +5,7 @@ JSTRING jstradv( const JCHAR *src, size_t n );
 .ixfunc2 '&Jstring' &funcb
 .ixfunc2 '&Jconcat' &funcb
 .if &farfnc ne 0 .do begin
-FJSTRING __far _fjstradv( const JCHAR __far *src,
-                          size_t n );
+FJSTRING _fjstradv( const JCHAR __far *src, size_t n );
 .ixfunc2 '&Jstring' &ffunc
 .ixfunc2 '&Jconcat' &ffunc
 .do end

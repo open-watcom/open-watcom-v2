@@ -5,7 +5,7 @@
 #error Cannot include both <netinet/ip_icmp.h> and pcicmp.h
 #endif
 
-#include <sys/packon.h>
+#pragma pack(__push,1);
 
 struct icmp_unused {
        BYTE      type;
@@ -92,7 +92,7 @@ typedef union icmp_pkt {
         struct icmp_traceroute tracert;
       } ICMP_PKT;
 
-#include <sys/packoff.h>
+#pragma pack(__pop);
 
 extern const char *icmp_type_str [ICMP_MAXTYPE+1];
 extern const char *icmp_unreach_str [16];

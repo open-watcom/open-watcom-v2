@@ -385,10 +385,6 @@ int _vsnprintk (char *buf, int buflen, const char *fmt, va_list args)
 /*
  * Return name for signal 'sig'
  */
-#ifdef __HIGHC__
-#undef SIGABRT   /* = SIGIOT */
-#endif
-
 static const char *str_signal (int sig)
 {
   static char buf[20];
@@ -508,7 +504,7 @@ static const char *str_signal (int sig)
 #endif
 #ifdef SIGXFSZ
     case SIGXFSZ: return ("SIGXFSZ");
-#endif 
+#endif
   }
   strcpy (buf, "Unknown ");
   itoa (sig, buf+8, 10);

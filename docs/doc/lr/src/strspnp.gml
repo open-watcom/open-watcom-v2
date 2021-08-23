@@ -34,7 +34,6 @@ if
 consists entirely of characters
 from
 .arg charset
-(single-byte, wide, or multi-byte)
 .period
 .return end
 .see begin

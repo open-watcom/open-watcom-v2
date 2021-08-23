@@ -73,19 +73,13 @@ static void SetScrollAttrs( gui_window *wnd, ATTR *scroll_bar, ATTR *scroll_icon
 {
     bool                active;
     int                 inactive;
+    ATTR                curr_attr;
 
     active = ( wnd == GUICurrWnd ) || ( wnd->parent == NULL );
-    inactive = 0;
-    if( active ) {
-        *scroll_bar  = uisetattr( ATTR_SCROLL_BAR,  WNDATTR( wnd, GUI_FRAME_ACTIVE ) );
-        *scroll_icon = uisetattr( ATTR_SCROLL_ICON, WNDATTR( wnd, GUI_FRAME_ACTIVE ) );
-    } else {
-        if( (GUIGetWindowStyles() & GUI_INACT_SAME) == 0 ) {
-            inactive = 1;
-        }
-        *scroll_bar  = uisetattr( ATTR_SCROLL_BAR,  WNDATTR( wnd, GUI_FRAME_INACTIVE ) );
-        *scroll_icon = uisetattr( ATTR_SCROLL_ICON, WNDATTR( wnd, GUI_FRAME_INACTIVE ) );
-    }
+    curr_attr = WNDATTR( wnd, ( active ) ? GUI_FRAME_ACTIVE : GUI_FRAME_INACTIVE );
+    *scroll_bar  = uisetattr( ATTR_SCROLL_BAR, curr_attr );
+    *scroll_icon = uisetattr( ATTR_SCROLL_ICON, curr_attr );
+    inactive = ( !active && (GUIGetWindowStyles() & GUI_INACT_SAME) == 0 ) ? 1 : 0;
     VertScrollFrame[0] = DRAWC( VERT_SCROLL, inactive );
     HorzScrollFrame[0] = DRAWC( HOR_SCROLL, inactive );
     SliderChar[0] = DRAWC( SCROLL_SLIDER, inactive );

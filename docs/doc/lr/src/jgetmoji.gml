@@ -4,8 +4,7 @@
 JSTRING jgetmoji( const JCHAR *str, JMOJI *c );
 .ixfunc2 '&Jstring' &funcb
 .if &farfnc ne 0 .do begin
-FJSTRING __far _fjgetmoji( const JCHAR __far *str,
-                           JMOJI __far *c );
+FJSTRING _fjgetmoji( const JCHAR __far *str, JMOJI __far *c );
 .ixfunc2 '&Jstring' &ffunc
 .do end
 .synop end

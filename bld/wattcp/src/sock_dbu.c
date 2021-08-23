@@ -16,7 +16,7 @@ void sock_debugdump (const sock_type *sk)
 #if (DOSX)
     (*_printf) ("next       %08lX\r\n",     (DWORD)sk->next);
 #elif defined(__LARGE__)
-    (*_printf) ("next       %04X:%04X\r\n", FP_SEG(sk->next), FP_OFF(sk->next));
+    (*_printf) ("next       %04X:%04X\r\n", _FP_SEG(sk->next), _FP_OFF(sk->next));
 #else
     (*_printf) ("next       %04X\r\n",      sk->next);
 #endif

@@ -1,8 +1,8 @@
-/*	$NetBSD: if_llc.h,v 1.9 1997/05/02 21:08:54 christos Exp $	*/
+/*      $NetBSD: if_llc.h,v 1.9 1997/05/02 21:08:54 christos Exp $      */
 
 /*
  * Copyright (c) 1988, 1993
- *	The Regents of the University of California.  All rights reserved.
+ *      The Regents of the University of California.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,8 +14,8 @@
  *    documentation and/or other materials provided with the distribution.
  * 3. All advertising materials mentioning features or use of this software
  *    must display the following acknowledgement:
- *	This product includes software developed by the University of
- *	California, Berkeley and its contributors.
+ *      This product includes software developed by the University of
+ *      California, Berkeley and its contributors.
  * 4. Neither the name of the University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
@@ -32,7 +32,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	@(#)if_llc.h	8.1 (Berkeley) 6/10/93
+ *      @(#)if_llc.h    8.1 (Berkeley) 6/10/93
  */
 #ifndef __NET_IF_LLC_H
 #define __NET_IF_LLC_H
@@ -45,71 +45,71 @@
  * compilers.
  */
 
-#include <sys/packon.h>
+#pragma pack(__push,1);
 
 struct llc {
-	u_int8_t llc_dsap;
-	u_int8_t llc_ssap;
-	union {
-	    struct {
-		u_int8_t control;
-		u_int8_t format_id;
-		u_int8_t class;
-		u_int8_t window_x2;
-	    } type_u;
-	    struct {
-		u_int8_t num_snd_x2;
-		u_int8_t num_rcv_x2;
-	    } type_i;
-	    struct {
-		u_int8_t control;
-		u_int8_t num_rcv_x2;
-	    } type_s;
-	    struct {
-	        u_int8_t control;
-		/*
-		 * We cannot put the following fields in a structure because
-		 * the structure rounding might cause padding.
-		 */
-		u_int8_t frmr_rej_pdu0;
-		u_int8_t frmr_rej_pdu1;
-		u_int8_t frmr_control;
-		u_int8_t frmr_control_ext;
-		u_int8_t frmr_cause;
-	    } type_frmr;
-	    struct {
-		u_int8_t  control;
-		u_int8_t  org_code[3];
-		u_int16_t ether_type;
-	    } type_snap;
-	    struct {
-		u_int8_t control;
-		u_int8_t control_ext;
-	    } type_raw;
-	} llc_un;
+        u_int8_t llc_dsap;
+        u_int8_t llc_ssap;
+        union {
+            struct {
+                u_int8_t control;
+                u_int8_t format_id;
+                u_int8_t class;
+                u_int8_t window_x2;
+            } type_u;
+            struct {
+                u_int8_t num_snd_x2;
+                u_int8_t num_rcv_x2;
+            } type_i;
+            struct {
+                u_int8_t control;
+                u_int8_t num_rcv_x2;
+            } type_s;
+            struct {
+                u_int8_t control;
+                /*
+                 * We cannot put the following fields in a structure because
+                 * the structure rounding might cause padding.
+                 */
+                u_int8_t frmr_rej_pdu0;
+                u_int8_t frmr_rej_pdu1;
+                u_int8_t frmr_control;
+                u_int8_t frmr_control_ext;
+                u_int8_t frmr_cause;
+            } type_frmr;
+            struct {
+                u_int8_t  control;
+                u_int8_t  org_code[3];
+                u_int16_t ether_type;
+            } type_snap;
+            struct {
+                u_int8_t control;
+                u_int8_t control_ext;
+            } type_raw;
+        } llc_un;
 };
 
 struct frmrinfo {
-	u_int8_t frmr_rej_pdu0;
-	u_int8_t frmr_rej_pdu1;
-	u_int8_t frmr_control;
-	u_int8_t frmr_control_ext;
-	u_int8_t frmr_cause;
+        u_int8_t frmr_rej_pdu0;
+        u_int8_t frmr_rej_pdu1;
+        u_int8_t frmr_control;
+        u_int8_t frmr_control_ext;
+        u_int8_t frmr_cause;
 };
 
-#include <sys/packoff.h>
+#pragma pack(__pop);
 
-#define	llc_control		llc_un.type_u.control
-#define	llc_control_ext		llc_un.type_raw.control_ext
-#define	llc_fid			llc_un.type_u.format_id
-#define	llc_class		llc_un.type_u.class
-#define	llc_window		llc_un.type_u.window_x2
-#define	llc_frmrinfo 		llc_un.type_frmr.frmr_rej_pdu0
-#define	llc_frmr_pdu0		llc_un.type_frmr.frmr_rej_pdu0
-#define	llc_frmr_pdu1		llc_un.type_frmr.frmr_rej_pdu1
-#define	llc_frmr_control	llc_un.type_frmr.frmr_control
-#define	llc_frmr_control_ext	llc_un.type_frmr.frmr_control_ext
-#define	llc_frmr_cause		llc_un.type_frmr.frmr_cause
+#define llc_control             llc_un.type_u.control
+#define llc_control_ext         llc_un.type_raw.control_ext
+#define llc_fid                 llc_un.type_u.format_id
+#define llc_class               llc_un.type_u.class
+#define llc_window              llc_un.type_u.window_x2
+#define llc_frmrinfo            llc_un.type_frmr.frmr_rej_pdu0
+#define llc_frmr_pdu0           llc_un.type_frmr.frmr_rej_pdu0
+#define llc_frmr_pdu1           llc_un.type_frmr.frmr_rej_pdu1
+#define llc_frmr_control        llc_un.type_frmr.frmr_control
+#define llc_frmr_control_ext    llc_un.type_frmr.frmr_control_ext
+#define llc_frmr_cause          llc_un.type_frmr.frmr_cause
 
 /*
  * Don't use sizeof(struct llc_un) for LLC header sizes
@@ -121,40 +121,40 @@ struct frmrinfo {
 /*
  * Unnumbered LLC format commands
  */
-#define LLC_UI		0x3
-#define LLC_UI_P	0x13
-#define LLC_DISC	0x43
-#define	LLC_DISC_P	0x53
-#define LLC_UA		0x63
-#define LLC_UA_P	0x73
-#define LLC_TEST	0xe3
-#define LLC_TEST_P	0xf3
-#define LLC_FRMR	0x87
-#define	LLC_FRMR_P	0x97
-#define LLC_DM		0x0f
-#define	LLC_DM_P	0x1f
-#define LLC_XID		0xaf
-#define LLC_XID_P	0xbf
-#define LLC_SABME	0x6f
-#define LLC_SABME_P	0x7f
+#define LLC_UI          0x3
+#define LLC_UI_P        0x13
+#define LLC_DISC        0x43
+#define LLC_DISC_P      0x53
+#define LLC_UA          0x63
+#define LLC_UA_P        0x73
+#define LLC_TEST        0xe3
+#define LLC_TEST_P      0xf3
+#define LLC_FRMR        0x87
+#define LLC_FRMR_P      0x97
+#define LLC_DM          0x0f
+#define LLC_DM_P        0x1f
+#define LLC_XID         0xaf
+#define LLC_XID_P       0xbf
+#define LLC_SABME       0x6f
+#define LLC_SABME_P     0x7f
 
 /*
  * Supervisory LLC commands
  */
-#define	LLC_RR		0x01
-#define	LLC_RNR		0x05
-#define	LLC_REJ		0x09
+#define LLC_RR          0x01
+#define LLC_RNR         0x05
+#define LLC_REJ         0x09
 
 /*
  * Info format - dummy only
  */
-#define	LLC_INFO	0x00
+#define LLC_INFO        0x00
 
 /*
  * ISO PDTR 10178 contains among others
  */
-#define LLC_X25_LSAP	0x7e
-#define LLC_SNAP_LSAP	0xaa
-#define LLC_ISO_LSAP	0xfe
+#define LLC_X25_LSAP    0x7e
+#define LLC_SNAP_LSAP   0xaa
+#define LLC_ISO_LSAP    0xfe
 
 #endif

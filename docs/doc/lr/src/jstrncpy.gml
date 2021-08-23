@@ -1,15 +1,11 @@
 .func jstrncpy _fjstrncpy
 .synop begin
 #include <jstring.h>
-JSTRING jstrncpy( JCHAR *dst,
-                  const JCHAR *src,
-                  size_t n );
+JSTRING jstrncpy( JCHAR *dst, const JCHAR *src, size_t n );
 .ixfunc2 '&Jstring' &funcb
 .ixfunc2 '&Jcopy' &funcb
 .if &farfnc ne 0 .do begin
-FJSTRING __far _fjstrncpy( JCHAR __far *dst,
-                           const JCHAR __far *src,
-                           size_t n );
+FJSTRING _fjstrncpy( JCHAR __far *dst, const JCHAR __far *src, size_t n );
 .ixfunc2 '&Jstring' &ffunc
 .ixfunc2 '&Jcopy' &ffunc
 .do end

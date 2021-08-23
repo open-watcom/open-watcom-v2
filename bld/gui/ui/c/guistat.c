@@ -163,13 +163,14 @@ void GUIResizeStatus( gui_window *wnd )
 
 bool GUIAPI GUICloseStatusWindow( gui_window *wnd )
 {
-    SAREA       area;
+//    SAREA       area;
+    guix_rect   scr_rect;
 
     if( GUIHasStatus( wnd ) ) {
-        COPYRECTX( wnd->status->area, area );
+        COPYRECTX( wnd->status->area, scr_rect );
         GUIFreeStatus( wnd );
         GUISetUseWnd( wnd );
-        GUIDirtyArea( wnd, &area );
+        GUIDirtyArea( wnd, &scr_rect );
         return( true );
     }
     return( false );

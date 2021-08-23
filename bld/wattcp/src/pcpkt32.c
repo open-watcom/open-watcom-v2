@@ -20,9 +20,8 @@
 #include "pcpkt.h"
 #include "pcpkt32.h"
 
-#if (DOSX)
 
-int (*_pkt32_drvr)(IREGS*) = NULL;
+#if (DOSX)
 
 struct PM_driver pm_driver_list[] = {
                  { PM_DRVR_3C501,  "3c501"  },

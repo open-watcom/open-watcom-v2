@@ -14,10 +14,6 @@
 
 #if defined(USE_BSD_FUNC)
 
-#ifdef __HIGHC__     /* set warning for stack-usage */
-#pragma stack_size_warn (9200)    /* ~3*MAX_SOCKETS */
-#endif
-
 /*
  * Setup for read/write/except_select()
  */

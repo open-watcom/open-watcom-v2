@@ -50,8 +50,7 @@
 #define ACK     04                      /* acknowledgement */
 #define ERROR   05                      /* error code */
 
-#include <sys/packon.h>
-
+#pragma pack(__push,1);
 struct  tftphdr {
         short   th_opcode;              /* packet type */
         union {
@@ -61,8 +60,7 @@ struct  tftphdr {
         } th_u;
         char    th_data[1];             /* data or error string */
 };
-
-#include <sys/packoff.h>
+#pragma pack(__pop);
 
 #define th_block        th_u.tu_block
 #define th_code         th_u.tu_code

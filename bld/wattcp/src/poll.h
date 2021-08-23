@@ -1,10 +1,6 @@
 #ifndef __POLL_H
 #define __POLL_H
 
-#ifdef __DJGPP__
-#include <sys/config.h>  /* might have HAVE_SYS_POLL_H */
-#endif
-
 #ifdef HAVE_SYS_POLL_H   /* have .h-file and implementation */
   #include <sys/poll.h>
 

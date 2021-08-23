@@ -38,28 +38,41 @@
  * SetScrollThumb
  */
 
-static void SetScrollThumb( p_gadget gadget, int percent, bool range_set )
+static void SetScrollThumb( gui_window *wnd, int percent, int bar )
 {
-    int pos;
+    int         pos;
+    p_gadget    gadget;
+    bool        range_set;
 
-    if( gadget != NULL ) {
-        if( percent < 0 ) {
-            percent = 0;
+    if( wnd != NULL ) {
+        if( bar == SB_HORZ ) {
+            gadget = wnd->hgadget;
+            range_set = GUI_HRANGE_SET( wnd );
+            wnd->flags |= HRANGE_SET;
+        } else {
+            gadget = wnd->vgadget;
+            range_set = GUI_VRANGE_SET( wnd );
+            wnd->flags |= VRANGE_SET;
         }
-        if( percent > 100 ) {
-            percent = 100;
+        if( gadget != NULL ) {
+            if( percent < 0 ) {
+                percent = 0;
+            }
+            if( percent > 100 ) {
+                percent = 100;
+            }
+            if( !range_set ) {
+                gadget->total_size = 2 * gadget->page_size;
+            }
+            pos = GUIMulDiv( int, gadget->total_size - gadget->page_size, percent, 100 );
+            if( ( pos == 0 ) && ( percent != 0 ) && ( gadget->total_size > gadget->page_size ) ) {
+                pos++;
+            }
+            if( ( pos == gadget->total_size ) && ( percent != 100 ) ) {
+                pos--;
+            }
+            GUISetShowGadget( gadget, true, true, pos );
         }
-        if( !range_set ) {
-            gadget->total_size = 2 * gadget->page_size;
-        }
-        pos = GUIMulDiv( int, gadget->total_size - gadget->page_size, percent, 100 );
-        if( ( pos == 0 ) && ( percent != 0 ) && ( gadget->total_size > gadget->page_size ) ) {
-            pos++;
-        }
-        if( ( pos == gadget->total_size ) && ( percent != 100 ) ) {
-            pos--;
-        }
-        GUISetShowGadget( gadget, true, true, pos );
     }
 }
 
@@ -69,10 +82,7 @@ static void SetScrollThumb( p_gadget gadget, int percent, bool range_set )
 
 void GUIAPI GUISetHScrollThumb( gui_window * wnd, int percent )
 {
-    if( wnd != NULL ) {
-        SetScrollThumb( wnd->hgadget, percent, GUI_HRANGE_SET( wnd ) );
-        wnd->flags |= HRANGE_SET;
-    }
+    SetScrollThumb( wnd, percent, SB_HORZ );
 }
 
 /*
@@ -81,8 +91,5 @@ void GUIAPI GUISetHScrollThumb( gui_window * wnd, int percent )
 
 void GUIAPI GUISetVScrollThumb( gui_window * wnd, int percent )
 {
-    if( wnd != NULL ) {
-        SetScrollThumb( wnd->vgadget, percent, GUI_VRANGE_SET( wnd ) );
-        wnd->flags |= VRANGE_SET;
-    }
+    SetScrollThumb( wnd, percent, SB_VERT );
 }

@@ -46,51 +46,7 @@ void sock_sturdy (sock_type *sk, int level)
      sock_abort (sk);
 }
 
-/*
- * Some time/date conversion function only(?) found in Borland libs.
- * Only(?) djgpp besides Borland have "struct time" etc.
- */
-#if defined(__DJGPP__)
-time_t dostounix (struct date *d, struct time *t)
-{
-  struct tm tm;
-
-  if (!d || !t)
-     return (0);
-
-  tm.tm_year  = d->da_year - 1900;
-  tm.tm_mon   = d->da_mon - 1;
-  tm.tm_mday  = d->da_day;
-  tm.tm_isdst = 0;
-  tm.tm_hour  = t->ti_hour;
-  tm.tm_min   = t->ti_min;
-  tm.tm_sec   = t->ti_sec;
-  return mktime (&tm);
-}
-
-void unixtodos (time_t time, struct date *d, struct time *t)
-{
-  struct tm *tm = localtime (&time);
-
-  if (d && tm)
-  {
-    d->da_year = tm->tm_year;
-    d->da_mon  = tm->tm_mon;
-    d->da_day  = tm->tm_mday;
-  }
-  if (t && tm)
-  {
-    t->ti_hour = tm->tm_hour;
-    t->ti_min  = tm->tm_min;
-    t->ti_sec  = tm->tm_sec;
-    t->ti_hund = 0;
-  }
-}
-#endif
-
-
 #if defined(TEST_PROG)
-
 int main (void)
 {
   struct date d;

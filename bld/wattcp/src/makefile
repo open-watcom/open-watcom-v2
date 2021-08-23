@@ -2,7 +2,7 @@
 # Makefile for Waterloo TCP/IP kernel (Watcom 16-bit large model version)
 #
 
-ASM_SOURCE = asmpkt.asm asmpkt4.asm chksum0.asm
+ASM_SOURCE = asmpkt16.asm asmpkt32.asm chksum32.asm
 
 
 KERNEL_SRC = language.c bsdname.c  btree.c    fragment.c misc.c     &
@@ -16,7 +16,7 @@ KERNEL_SRC = language.c bsdname.c  btree.c    fragment.c misc.c     &
              getopt.c   crit.c     country.c  crc.c      pcpkt32.c  &
              pcqueue.c  lookup.c   ip_out.c   tcp_fsm.c  wattcpd.c  &
              fortify.c  tftp.c     timer.c    highc.c    wdpmi.c    &
-             oldstuff.c ports.c    chksum.c   profile.c  settod.c   &
+             oldstuff.c ports.c    chksum16.c profile.c  settod.c   &
              echo.c     pppoe.c
 
 BSD_SOURCE = accept.c   bind.c     bsddbug.c  close.c    connect.c  &
@@ -33,8 +33,8 @@ RES_SOURCE = res_comp.c res_data.c res_debu.c  res_init.c res_loc.c  &
 
 C_SOURCE   = $(KERNEL_SRC) $(BSD_SOURCE) $(RES_SOURCE)
 
-OBJS = $(OBJDIR)asmpkt.obj   $(OBJDIR)asmpkt4.obj   &
-       $(OBJDIR)chksum0.obj  $(OBJDIR)cpumodel.obj  &
+OBJS = $(OBJDIR)asmpkt16.obj $(OBJDIR)asmpkt32.obj  &
+       $(OBJDIR)chksum32.obj  $(OBJDIR)cpumodel.obj  &
        $(OBJDIR)wdpmi.obj    $(OBJDIR)language.obj  &
        $(OBJDIR)bsdname.obj  $(OBJDIR)tftp.obj      &
        $(OBJDIR)btree.obj    $(OBJDIR)fragment.obj  &
@@ -78,7 +78,7 @@ OBJS = $(OBJDIR)asmpkt.obj   $(OBJDIR)asmpkt4.obj   &
        $(OBJDIR)syslog2.obj  $(OBJDIR)printk.obj    &
        $(OBJDIR)nettime.obj  $(OBJDIR)ip_out.obj    &
        $(OBJDIR)tcp_fsm.obj  $(OBJDIR)poll.obj      &
-       $(OBJDIR)timer.obj    $(OBJDIR)chksum.obj    &
+       $(OBJDIR)timer.obj    $(OBJDIR)chksum16.obj  &
        $(OBJDIR)adr2asc.obj  $(OBJDIR)linkaddr.obj  &
        $(OBJDIR)ports.obj    $(OBJDIR)sock_io.obj   &
        $(OBJDIR)echo.obj     $(OBJDIR)res_comp.obj  &
@@ -99,7 +99,7 @@ OBJS = $(OBJDIR)asmpkt.obj   $(OBJDIR)asmpkt4.obj   &
 
 CC     = wcc
 AFLAGS = -0s
-!ifdef __LINUX__
+!ifdef __UNIX__
 CFLAGS = -ml -6 -I../inc;$(%WATCOM)/h
 TARGET = ../lib/wattcpwl.lib
 OBJDIR = watcom/large/
@@ -143,8 +143,8 @@ all: $(TARGET)
 $(TARGET): $(OBJS) $(LIBARG)
       wlib -q -b -c $(TARGET) @$(LIBARG)
 
-$(OBJDIR)asmpkt.obj:  asmpkt.asm
-$(OBJDIR)asmpkt4.obj: asmpkt4.asm
+$(OBJDIR)asmpkt16.obj: asmpkt16.asm
+$(OBJDIR)asmpkt32.obj: asmpkt32.asm
 
 .c{$(OBJDIR)}.obj: .AUTODEPEND
           *$(CC) $[@ $(CFLAGS) -fo=$@

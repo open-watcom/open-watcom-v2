@@ -1,4 +1,4 @@
-/*	$NetBSD: rwhod.h,v 1.4 1996/09/23 05:01:08 mycroft Exp $	*/
+/*      $NetBSD: rwhod.h,v 1.4 1996/09/23 05:01:08 mycroft Exp $        */
 
 /*
  * Copyright (c) 1983 The Regents of the University of California.
@@ -14,8 +14,8 @@
  *    documentation and/or other materials provided with the distribution.
  * 3. All advertising materials mentioning features or use of this software
  *    must display the following acknowledgement:
- *	This product includes software developed by the University of
- *	California, Berkeley and its contributors.
+ *      This product includes software developed by the University of
+ *      California, Berkeley and its contributors.
  * 4. Neither the name of the University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
@@ -32,43 +32,43 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	@(#)rwhod.h	5.6 (Berkeley) 4/3/91
+ *      @(#)rwhod.h     5.6 (Berkeley) 4/3/91
  */
 
 #ifndef __PROTOCOL_RWHOD_H
 #define __PROTOCOL_RWHOD_H
 
-#include <sys/packon.h>
+#pragma pack(__push,1);
 
 /*
  * rwho protocol packet format.
  */
-struct	outmp {
-	char	out_line[8];		/* tty name */
-	char	out_name[8];		/* user id */
-	int32_t	out_time;		/* time on */
+struct  outmp {
+        char    out_line[8];            /* tty name */
+        char    out_name[8];            /* user id */
+        int32_t out_time;               /* time on */
 };
 
-struct	whod {
-	char	wd_vers;		/* protocol version # */
-	char	wd_type;		/* packet type, see below */
-	char	wd_pad[2];
-	int32_t	wd_sendtime;		/* time stamp by sender */
-	int32_t	wd_recvtime;		/* time stamp applied by receiver */
-	char	wd_hostname[32];	/* hosts's name */
-	int32_t	wd_loadav[3];		/* load average as in uptime */
-	int32_t	wd_boottime;		/* time system booted */
-	struct	whoent {
-		struct	outmp we_utmp;	/* active tty info */
-		int32_t	we_idle;	/* tty idle time */
-	} wd_we[1024 / sizeof (struct whoent)];
+struct  whod {
+        char    wd_vers;                /* protocol version # */
+        char    wd_type;                /* packet type, see below */
+        char    wd_pad[2];
+        int32_t wd_sendtime;            /* time stamp by sender */
+        int32_t wd_recvtime;            /* time stamp applied by receiver */
+        char    wd_hostname[32];        /* hosts's name */
+        int32_t wd_loadav[3];           /* load average as in uptime */
+        int32_t wd_boottime;            /* time system booted */
+        struct  whoent {
+                struct  outmp we_utmp;  /* active tty info */
+                int32_t we_idle;        /* tty idle time */
+        } wd_we[1024 / sizeof (struct whoent)];
 };
 
-#include <sys/packoff.h>
+#pragma pack(__pop);
 
-#define	WHODVERSION	1
-#define	WHODTYPE_STATUS	1		/* host status */
+#define WHODVERSION     1
+#define WHODTYPE_STATUS 1               /* host status */
 
-#define	_PATH_RWHODIR	"/var/rwho"
+#define _PATH_RWHODIR   "/var/rwho"
 
 #endif

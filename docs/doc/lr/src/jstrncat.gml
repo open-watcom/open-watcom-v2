@@ -1,15 +1,11 @@
 .func jstrncat _fjstrncat
 .synop begin
 #include <jstring.h>
-JSTRING jstrncat( JCHAR *dst,
-                  const JCHAR *src,
-                  size_t n );
+JSTRING jstrncat( JCHAR *dst, const JCHAR *src, size_t n );
 .ixfunc2 '&String' &funcb
 .ixfunc2 '&Concats' &funcb
 .if &farfnc ne 0 .do begin
-FJSTRING __far _fjstrncat( JCHAR __far *dst,
-                           const JCHAR __far *src,
-                           size_t n );
+FJSTRING _fjstrncat( JCHAR __far *dst, const JCHAR __far *src, size_t n );
 .ixfunc2 '&String' &ffunc
 .ixfunc2 '&Concats' &ffunc
 .do end

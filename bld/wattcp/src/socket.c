@@ -12,13 +12,6 @@
 
 #if defined(USE_BSD_FUNC)
 
-#ifdef __DJGPP__
-  #include <sys/resource.h>
-  #include <sys/fsext.h>
-  #include <dos.h>
-  #include <unistd.h>
-#endif
-
 #include "pcbufsiz.h"
 #include "pchooks.h"
 
@@ -51,7 +44,7 @@ void *_sock_calloc (const char *file, unsigned line, size_t size)
 {
     void *ptr;
 
-#if defined(WATCOM386) && 0  /* find DOS4GW bug! */
+#if defined(__386__) && 0  /* find DOS4GW bug! */
     int rc = _heapset (0xCC);
 
     if (rc != _HEAPOK && rc != _HEAPEMPTY)
@@ -65,7 +58,7 @@ void *_sock_calloc (const char *file, unsigned line, size_t size)
 #endif
 
     if (!ptr) {
-#if defined(WATCOM386) && 0  /* find DOS4GW bug! */
+#if defined(__386__) && 0  /* find DOS4GW bug! */
         struct _heapinfo hi;
         _heapwalk (&hi);
 #endif
@@ -103,23 +96,6 @@ static fd_set inuse [NUM_SOCK_FDSETS];
 
 static int sock_get_fd (void)
 {
-#if defined(__DJGPP__) && defined(USE_FSEXT)
-    extern int _fsext_demux (__FSEXT_Fnumber func,  /* in fsext.c */
-                           int *rv, va_list _args);
-
-    int s = __FSEXT_alloc_fd (_fsext_demux);
-
-    if (s < 0) {
-        SOCK_FATAL (("%s (%u) Fatal: FSEXT_alloc_fd() failed\r\n", __FILE__, __LINE__));
-        return (-1);
-    }
-
-    if (FD_ISSET(s, &inuse[0])) {
-        SOCK_FATAL (("%s (%u) Fatal: Reusing existing socket\n", __FILE__, __LINE__));
-        return (-1);
-    }
-
-#else
     int s;
 
     for (s = S_FIRST; s < s_last; s++) {
@@ -128,8 +104,6 @@ static int sock_get_fd (void)
             break;
         }
     }
-
-#endif /* __DJGPP__ && USE_FSEXT */
 
     if (s < MAX_SOCKETS) {
         if (s == s_last)
@@ -325,14 +299,6 @@ Socket * _sock_del_fd (const char *file, unsigned line, int s)
     FREE_SK (_socket->remote_addr);
     FREE_SK (_socket->ip_opt);
     FREE_SK (_socket->bcast_pool);
-
-#if defined(USE_FSEXT) && defined(__DJGPP__)
-    /* Free the socket from File-System Extension system.
-     * Free the duplicated handle from DOS's System File Table.
-     */
-    __FSEXT_set_function (s, NULL);
-    _close (s);
-#endif
 
     next = socket_list_del (s);  /* delete socket from linked list */
 
@@ -705,17 +671,7 @@ static int InitSockets (void)
     if (sock_init())
         return (0);
 
-#ifdef __DJGPP__
-    {
-        struct rlimit r;
-        getrlimit (RLIMIT_NOFILE, &r);
-        r.rlim_max = MAX_SOCKETS;     /* We don't know this before we try it */
-        setrlimit (RLIMIT_NOFILE, &r);
-    }
-    s_last = MAX_SOCKETS;
-#else
     s_last = S_FIRST;
-#endif  /* __DJGPP__ */
 
     socket_list = NULL;
     memset (&inuse, 0, sizeof(inuse));
@@ -778,15 +734,6 @@ static Socket *socket_list_add (int s, int type, int proto)
         free (_socket);
         return (NULL);
     }
-
-#if defined(USE_FSEXT) && defined(__DJGPP__)
-    if (!__FSEXT_set_data (s, _socket)) {
-        free (proto_sk);
-        free (_socket);
-        SOCK_FATAL (("%s (%d) Fatal: cannot grow FSEXT table\r\n", __FILE__, __LINE__));
-        return (NULL);
-    }
-#endif
 
     switch (proto) {
     case IPPROTO_TCP:

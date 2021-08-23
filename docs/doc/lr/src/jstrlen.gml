@@ -4,7 +4,7 @@
 size_t jstrlen( const JCHAR *s );
 .ixfunc2 '&Jstring' &funcb
 .if &farfnc ne 0 .do begin
-size_t __far _fjstrlen( const JCHAR __far *s );
+size_t _fjstrlen( const JCHAR __far *s );
 .ixfunc2 '&Jstring' &ffunc
 .do end
 .synop end

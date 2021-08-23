@@ -205,7 +205,7 @@
 #define CONV_BADCKSUM   (-3)
 #define CONV_BADBUFLEN  (-4)
 
-#include <sys/packon.h>
+#pragma pack(__push,1);
 
 /*
  * Structure for query header.  The order of the fields is machine- and
@@ -256,8 +256,7 @@ struct rrec {
        char    *r_data;            /* pointer to data */
      };
 
-#include <sys/packoff.h>
-
+#pragma pack(__pop);
 
 __BEGIN_DECLS
 

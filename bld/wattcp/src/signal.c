@@ -14,10 +14,6 @@
 
 #if defined(USE_BSD_FUNC)
 
-#if defined(__HIGHC__)  /* Metaware's HighC have SIGBREAK == SIGQUIT */
-#undef SIGBREAK   
-#endif
-
 /*
  *  Signal handling for most loops where we can be interrupted
  *  by user pressing ^C/^Break (generating SIGINT/SIGBREAK).
@@ -34,15 +30,15 @@ static void (*old_sigalrm)(int);
 
 #if defined(SIGBREAK)
 static void (*old_sigbrk)(int);
-#endif                           
+#endif
 
 #if defined(SIGQUIT)
 static void (*old_sigquit)(int);
 #endif
-              
+
 #if defined(SIGPIPE)
 static void (*old_sigpipe)(int);
-#endif                           
+#endif
 
 static void (*old_sigint)(int);
 
@@ -58,42 +54,16 @@ static int sigpipe_caught = 0;
  * We need to prevent SIGALRM and hence an alarm() handler from
  * messing up our sockets. Not finished!
  */
-#if defined(__DJGPP__) && TRAP_SIGALRM
-
-static sigset_t new_mask, old_mask;
-static int      block_depth = 0;
-
-static __inline void block_sigalrm (void)
-{
-  if (++block_depth == 1)
-  {
-    sigemptyset (&new_mask);
-    sigaddset (&new_mask, SIGALRM);
-    sigprocmask (SIG_BLOCK, &new_mask, &old_mask);
-  }
-}
-
-static __inline void unblock_sigalrm (void)
-{
-  if (block_depth)
-  {
-    block_depth--;
-    if (block_depth == 0)
-       sigprocmask (SIG_SETMASK, &old_mask, NULL);
-  }
-}
-#endif
-
 /*
  * Our signal catcher. Increment proper counter and longjmp()
  */
 static void sig_catch (int sig)
-{     
+{
   switch (sig)
   {
 #if defined(SIGALRM)
     case SIGALRM:
-         sigalrm_caught++;  
+         sigalrm_caught++;
          break;
 #endif
 #if defined(SIGPIPE)
@@ -289,7 +259,7 @@ void _sock_sig_restore (void)
   sigalrm_caught = sigbrk_caught  = 0;
   sigint_caught  = sigquit_caught = 0;
   sigpipe_caught = 0;
-} 
+}
 
 /*
  * Raise SIGPIPE if signal defined.

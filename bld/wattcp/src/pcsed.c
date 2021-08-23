@@ -20,10 +20,6 @@
 #include <string.h>
 #include <dos.h>
 
-#ifdef __HIGHC__
-#include <init.h>  /* _mwenv, PL_ENV */
-#endif
-
 #include "copyrigh.h"
 #include "wattcp.h"
 #include "wdpmi.h"
@@ -251,14 +247,7 @@ int _eth_init (void)
   if (_eth_is_init)
      return (0);
 
-#if defined(__HIGHC__)
-  if (_mwenv != PL_ENV)
-  {
-    outsnl (_LANG("Only Pharlap DOS extender supported"));
-    return (WERR_ILL_DOSX);
-  }
-
-#elif defined(WATCOM386)   /* Watcom386 + DOS4GW style or Pharlap */
+#if defined(__386__)            /* Watcom + DOS4GW or Pharlap */
   if (dpmi_init() < 0)
      return (WERR_ILL_DOSX);
 
@@ -1019,12 +1008,5 @@ int _eth_leave_mcast_group (int entry)
  * Turn off stack-checking because eth_release() might be called from
  * exception handler.
  */
-#if defined(__HIGHC__) || defined(__WATCOMC__)
-#pragma Off(check_stack)
-#endif
 
-#if defined(__BORLANDC__)
-#pragma option -N-
-#endif
-
-
+#pragma off(check_stack)

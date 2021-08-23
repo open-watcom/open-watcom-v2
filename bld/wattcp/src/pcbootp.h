@@ -13,7 +13,7 @@ extern int   _dobootp (void);
 #define BOOTREQUEST   1       /* bootp.bp_op */
 #define BOOTREPLY     2
 
-#include <sys/packon.h>
+#pragma pack(__push,1);
 
 /*
  * structure for send and receives
@@ -65,8 +65,7 @@ struct vend {
        BYTE  v_unused[56];  /* currently unused    */
      };
 
-#include <sys/packoff.h>
-
+#pragma pack(__pop);
 
 #define VM_STANFORD  "STAN"       /* v_magic for Stanford    */
 #define VM_RFC1048   0x63825363L  /* I think this is correct */

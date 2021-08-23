@@ -11,21 +11,14 @@
 #include "language.h"
 #include "strings.h"
 #include "pc_cbrk.h"
+#include "iregs.h"
 
-#ifdef __DJGPP__
-#include <sys/exceptn.h>
-#endif
 
 /* Turn off stack-checking here because stack may be out of bounds.
  * longjmp() hopefully fixes that.
  */
-#if defined(__HIGHC__) || defined(__WATCOMC__)
-#pragma off(check_stack)
-#endif
 
-#if (defined(__TURBOC__) || defined(__BORLANDC__)) && !defined(OLD_TURBOC)
-#pragma option -N-
-#endif
+#pragma off(check_stack)
 
 #ifdef TEST_PROG     /* for djgpp only */
   #include <dos.h>
@@ -81,7 +74,7 @@ static void sig_handler (int sig)
  */
 int set_cbreak (int want_brk)
 {
-#if (DOSX == 0) || defined(__HIGHC__)
+#if (DOSX == 0)
     union REGS reg;
 
     reg.h.ah = 0x33;
@@ -89,34 +82,13 @@ int set_cbreak (int want_brk)
     reg.h.dl = want_brk;
     int86 (0x21, &reg, &reg);
     return (reg.h.dl);
-
-#elif defined (__DJGPP__)
-    /*
-     * After much testing (see .\tests\pc_cbrk.exe), I found the following
-     * to be most reliable for both DOS and Windows-NT. Using any combination
-     * of `cbrkmode' and pressing ^C seems to work in Win-NT, but ^Break still
-     * have problems...
-     */
-    int brk = getcbrk();
-#if 1
-    __djgpp_set_ctrl_c (want_brk);
-    _go32_want_ctrl_break (want_brk); /* don't count ^Breaks; the 0x1B vector  */
-                                      /* isn't always restored at program exit */
 #else
-    setcbrk (want_brk);     /* D. Kaufman suggested this (but crashes DOS-box) */
-#endif
-    return (brk);
+    IREGS regs;
 
-#elif defined(__WATCOMC__) || defined(__BORLANDC__)
-    struct DPMI_regs reg;
-
-    reg.r_ax = 0x3300;
-    reg.r_dx = want_brk;
-    dpmi_real_interrupt (0x21, &reg);
-    return loBYTE (reg.r_dx);
-
-#else
-    #error Help me here!
+    regs.r_ax = 0x3300;
+    regs.r_dx = want_brk;
+    GEN_RM_INTERRUPT (0x21, &regs);
+    return loBYTE (regs.r_dx);
 #endif
 }
 

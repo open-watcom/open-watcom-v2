@@ -1,15 +1,11 @@
 .func jstrncmp _fjstrncmp
 .synop begin
 #include <jstring.h>
-int jstrncmp( const JCHAR *s1,
-              const JCHAR *s2,
-              size_t n );
+int jstrncmp( const JCHAR *s1, const JCHAR *s2, size_t n );
 .ixfunc2 '&Jstring' &funcb
 .ixfunc2 '&Jcompare' &funcb
 .if &farfnc ne 0 .do begin
-int __far _fjstrncmp( const JCHAR __far *s1,
-                      const JCHAR __far *s2,
-                      size_t n );
+int _fjstrncmp( const JCHAR __far *s1, const JCHAR __far *s2, size_t n );
 .ixfunc2 '&Jstring' &ffunc
 .ixfunc2 '&Jcompare' &ffunc
 .do end

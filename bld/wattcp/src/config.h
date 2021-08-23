@@ -27,7 +27,6 @@
 #undef  USE_FRAGMENTS   /* Include IP-fragment handling */
 #undef  USE_STATISTICS  /* Include protocol statistics count */
 #undef  USE_FORTIFY     /* Use Fortify malloc-lib for other allocations */
-#undef  USE_FSEXT       /* Use djgpp's File Extensions for file I/O functions */
 #undef  USE_LOOPBACK    /* Use the simple loopback device */
 #undef  USE_EMBEDDED    /* Make an embeddable (ROM-able) target. See note at end */
 #undef  USE_BUFFERED_IO /* Use buffered I/O in pcconfig.c */
@@ -37,14 +36,30 @@
 #undef  USE_UDP_ONLY    /* Exclude all stuff related to the TCP protocol.
                          * For making small icmp/udp applications.
                          */
-#undef  USE_BIGENDIAN   /* Hard to believe, but someone uses Watt-32 on
-                         * Motorola/PowerPC embedded targets.
-                         */
 
 #undef  USE_MTU_DISC    /* Include support for atch MTU Discovery (not yet) */
 #undef  USE_TCP_SACK    /* Include TCP Selective ACK feature (not yet) */
 #undef  USE_ECHO_DISC   /* Include echo/discard servers */
 #undef  USE_PPPOE       /* PPP-over-Ethernet encapsulation (!experimental) */
+
+#if !defined(OPT_DEFINED)
+  #define USE_DEBUG
+  #define USE_EXCHANDLER
+  #define USE_BOOTP
+  #define USE_DHCP
+  #define USE_LANGUAGE
+  #define USE_FRAGMENTS
+  #define USE_STATISTICS
+  #define USE_BIND
+  #define USE_BSD_FUNC
+  #define USE_BSD_FATAL
+  #define USE_BSD_FORTIFY
+  #define USE_LOOPBACK
+  #define USE_BUFFERED_IO
+  #define USE_TFTP
+  #define USE_MULTICAST
+  #define OPT_DEFINED
+#endif
 
 /*
  * This handle 16-bit real-mode
@@ -62,15 +77,6 @@
 #endif
 
 /*
- * MS's cl 6.0 at least is severly limited in many ways..
- */
-#if defined(_MSC_VER) && defined(__LARGE__)
-  #define USE_EXCHANDLER
-  #define USE_FRAGMENTS
-  #define OPT_DEFINED
-#endif
-
-/*
  * For compact models define these options:
  */
 #if !defined(OPT_DEFINED) && defined(__COMPACT__)
@@ -79,15 +85,6 @@
 //  #define USE_FRAGMENTS
   #define USE_BSD_FUNC
 //  #define USE_BSD_FATAL
-  #define OPT_DEFINED
-#endif
-
-/*
- * So is Turbo-C (2.01 at least)
- */
-#if defined(OLD_TURBOC) && defined(__LARGE__)
-  #define USE_EXCHANDLER
-  #define USE_FRAGMENTS
   #define OPT_DEFINED
 #endif
 
@@ -129,12 +126,6 @@
   #define USE_TFTP
   #define USE_MULTICAST
   #define OPT_DEFINED
-#endif
-
-#if defined(__DJGPP__)
-  #define USE_ECHO_DISC
-  #define USE_NEW_TIMERS
-  #define USE_FSEXT
 #endif
 
 #endif /* DOSX == 0 */

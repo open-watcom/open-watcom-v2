@@ -14,7 +14,7 @@
 #include "wattcp.h"
 #include "wdpmi.h"
 
-#if (defined(WATCOM386) || defined(BORLAND386)) && (DOSX & PHARLAP)
+#if (DOSX & PHARLAP) && defined(__386__)
 #define __EXC_INTERNAL
 #include <mw/exc.h>
 
@@ -191,4 +191,4 @@ REALPTR _dx_alloc_rmode_wrapper_iret (pmodeHook pmHook, int stack_size)
   return _dx_alloc_rmode_wrapper (pmHook, NULL, 0, stack_size, IRET);
 }
 
-#endif /* (WATCOM386 || BORLAND386) && (DOSX & PHARLAP) */
+#endif /* (DOSX & PHARLAP) && defined(__386__) */

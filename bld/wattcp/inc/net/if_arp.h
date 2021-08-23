@@ -1,8 +1,8 @@
-/*	$NetBSD: if_arp.h,v 1.12 1997/09/08 02:06:30 mikel Exp $	*/
+/*      $NetBSD: if_arp.h,v 1.12 1997/09/08 02:06:30 mikel Exp $        */
 
 /*
  * Copyright (c) 1986, 1993
- *	The Regents of the University of California.  All rights reserved.
+ *      The Regents of the University of California.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,8 +14,8 @@
  *    documentation and/or other materials provided with the distribution.
  * 3. All advertising materials mentioning features or use of this software
  *    must display the following acknowledgement:
- *	This product includes software developed by the University of
- *	California, Berkeley and its contributors.
+ *      This product includes software developed by the University of
+ *      California, Berkeley and its contributors.
  * 4. Neither the name of the University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
@@ -32,7 +32,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	@(#)if_arp.h	8.1 (Berkeley) 6/10/93
+ *      @(#)if_arp.h    8.1 (Berkeley) 6/10/93
  */
 
 #ifndef __NET_IF_ARP_H
@@ -48,47 +48,38 @@
  * specified.  Field names used correspond to RFC 826.
  */
 
-#include <sys/packon.h>
-
-struct	arphdr {
-	u_int16_t ar_hrd;	/* format of hardware address */
-#define ARPHRD_ETHER 	1	/* ethernet hardware format */
+#pragma pack(__push,1);
+struct  arphdr {
+        u_int16_t ar_hrd;       /* format of hardware address */
+#define ARPHRD_ETHER    1       /* ethernet hardware format */
 #define ARPHRD_TOKEN    6       /* TokenRing hardware format */
-#define ARPHRD_ARCNET 	7	/* ethernet hardware format */
-#define ARPHRD_FRELAY 	15	/* frame relay hardware format */
-#define ARPHRD_STRIP 	23	/* Ricochet Starmode Radio hardware format */
-	u_int16_t ar_pro;	/* format of protocol address */
-	u_int8_t  ar_hln;	/* length of hardware address */
-	u_int8_t  ar_pln;	/* length of protocol address */
-	u_int16_t ar_op;	/* one of: */
-#define	ARPOP_REQUEST	1	/* request to resolve address */
-#define	ARPOP_REPLY	2	/* response to previous request */
-#define	ARPOP_REVREQUEST 3	/* request protocol address given hardware */
-#define	ARPOP_REVREPLY	4	/* response giving protocol address */
-#define	ARPOP_INVREQUEST 8 	/* request to identify peer */
-#define	ARPOP_INVREPLY	9	/* response identifying peer */
+#define ARPHRD_ARCNET   7       /* ethernet hardware format */
+#define ARPHRD_FRELAY   15      /* frame relay hardware format */
+#define ARPHRD_STRIP    23      /* Ricochet Starmode Radio hardware format */
+        u_int16_t ar_pro;       /* format of protocol address */
+        u_int8_t  ar_hln;       /* length of hardware address */
+        u_int8_t  ar_pln;       /* length of protocol address */
+        u_int16_t ar_op;        /* one of: */
+#define ARPOP_REQUEST   1       /* request to resolve address */
+#define ARPOP_REPLY     2       /* response to previous request */
+#define ARPOP_REVREQUEST 3      /* request protocol address given hardware */
+#define ARPOP_REVREPLY  4       /* response giving protocol address */
+#define ARPOP_INVREQUEST 8      /* request to identify peer */
+#define ARPOP_INVREPLY  9       /* response identifying peer */
 /*
  * The remaining fields are variable in size,
  * according to the sizes above.
  */
 #ifdef COMMENT_ONLY
-	u_int8_t  ar_sha[];	/* sender hardware address */
-	u_int8_t  ar_spa[];	/* sender protocol address */
-	u_int8_t  ar_tha[];	/* target hardware address */
-	u_int8_t  ar_tpa[];	/* target protocol address */
+        u_int8_t  ar_sha[];     /* sender hardware address */
+        u_int8_t  ar_spa[];     /* sender protocol address */
+        u_int8_t  ar_tha[];     /* target hardware address */
+        u_int8_t  ar_tpa[];     /* target protocol address */
 #endif
-#ifdef __GNUC__                 /* only GNU C allows zero arrays */
-        u_int8_t  ar_remain[0]; /* minimum size, normally bigger */
-  #define ar_sha(ap) (((ap)->ar_remain)+0)
-  #define ar_spa(ap) (((ap)->ar_remain)+(ap)->ar_hln)
-  #define ar_tha(ap) (((ap)->ar_remain)+(ap)->ar_hln+(ap)->ar_pln)
-  #define ar_tpa(ap) (((ap)->ar_remain)+2*(ap)->ar_hln+(ap)->ar_pln)
-#else
-  #define ar_sha(ap) (((ap)->ar_op)+2)
-  #define ar_spa(ap) (((ap)->ar_op)+2+(ap)->ar_hln)
-  #define ar_tha(ap) (((ap)->ar_op)+2+(ap)->ar_hln+(ap)->ar_pln)
-  #define ar_tpa(ap) (((ap)->ar_op)+2+2*(ap)->ar_hln+(ap)->ar_pln)
-#endif
+#define ar_sha(ap) (((ap)->ar_op)+2)
+#define ar_spa(ap) (((ap)->ar_op)+2+(ap)->ar_hln)
+#define ar_tha(ap) (((ap)->ar_op)+2+(ap)->ar_hln+(ap)->ar_pln)
+#define ar_tpa(ap) (((ap)->ar_op)+2+2*(ap)->ar_hln+(ap)->ar_pln)
 };
 
 
@@ -96,18 +87,17 @@ struct	arphdr {
  * ARP ioctl request
  */
 struct arpreq {
-	struct	sockaddr arp_pa;		/* protocol address */
-	struct	sockaddr arp_ha;		/* hardware address */
-	int	arp_flags;			/* flags */
+        struct  sockaddr arp_pa;                /* protocol address */
+        struct  sockaddr arp_ha;                /* hardware address */
+        int     arp_flags;                      /* flags */
 };
-
-#include <sys/packoff.h>
+#pragma pack(__pop);
 
 /*  arp_flags and at_flags field values */
-#define	ATF_INUSE	0x01	/* entry in use */
-#define ATF_COM		0x02	/* completed entry (enaddr valid) */
-#define	ATF_PERM	0x04	/* permanent entry */
-#define	ATF_PUBL	0x08	/* publish entry (respond for other host) */
-#define	ATF_USETRAILERS	0x10	/* has requested trailers */
+#define ATF_INUSE       0x01    /* entry in use */
+#define ATF_COM         0x02    /* completed entry (enaddr valid) */
+#define ATF_PERM        0x04    /* permanent entry */
+#define ATF_PUBL        0x08    /* publish entry (respond for other host) */
+#define ATF_USETRAILERS 0x10    /* has requested trailers */
 
 #endif

@@ -25,75 +25,40 @@ char _country_info[35];
 
 int GetCountryCode (void)
 {
-#if (DOSX & DJGPP)    /* _osmajor/_osminor not set in crt0.o */
-  _get_dos_version (0);
-#endif
-
   if (_osmajor >= 3)
   {
-#if (DOSX & DJGPP)
     IREGS regs;
 
-    memset (&regs, 0, sizeof(regs));
-    regs.r_dx = 0;
-    regs.r_ds = __tb / 16;
-    regs.r_ax = 0x3800;
-    GEN_RM_INTERRUPT (0x21, &regs);
-    if (regs.r_flags & CARRY_BIT)
-       return (0);
-    dosmemget (__tb, sizeof(_country_info), &_country_info);
-    return (regs.r_bx);
-
-#elif (DOSX & PHARLAP)
-    IREGS regs;
-
+#if (DOSX & (PHARLAP|DOS4GW|WDOSX))
     if (_watt_dosTbSize < sizeof(_country_info))
        return (0);
-
-    memset (&regs, 0, sizeof(regs));
-    regs.r_dx = RP_OFF (_watt_dosTbr);
-    regs.r_ds = RP_SEG (_watt_dosTbr);
-    regs.r_ax = 0x3800;
-    GEN_RM_INTERRUPT (0x21, &regs);
-    if (regs.r_flags & CARRY_BIT)
-       return (0);
-    ReadRealMem (&_country_info, _watt_dosTbr, sizeof(_country_info));
-    return (regs.r_bx);
-
-#elif (DOSX & (DOS4GW|WDOSX))
-    IREGS  regs;
-
-    if (_watt_dosTbSize < sizeof(_country_info))
-       return (0);
-
-    memset (&regs, 0, sizeof(regs));
-    regs.r_dx = 0;
-    regs.r_ds = _watt_dosTbSeg;
-    regs.r_ax = 0x3800;
-    GEN_RM_INTERRUPT (0x21, &regs);
-    if (regs.r_flags & CARRY_BIT)
-       return (0);
-    memcpy (&_country_info, SEG_OFS_TO_LIN(_watt_dosTbSeg,0), sizeof(_country_info));
-    return (regs.r_bx);
-
-#elif (DOSX & POWERPAK)
-    UNFINISHED();
-
-#elif (DOSX == 0)        /* real-mode */
-    IREGS  regs;
-
-    memset (&regs, 0, sizeof(regs));
-    regs.r_dx = FP_OFF (_country_info);
-    regs.r_ds = FP_SEG (_country_info);
-    regs.r_ax = 0x3800;
-    GEN_RM_INTERRUPT (0x21, &regs);
-    if (regs.r_flags & CARRY_BIT)
-       return (0);
-    return (regs.r_bx);
-
-#else
-  #error Unsupported target
 #endif
+#if (DOSX == 0)        /* real-mode */
+    _fmemset (&regs, 0, sizeof(regs));
+    regs.r_dx = _FP_OFF( _country_info );
+    regs.r_ds  = _FP_SEG( _country_info );
+    regs.r_ax = 0x3800;
+    GEN_RM_INTERRUPT (0x21, &regs);
+#else
+    memset (&regs, 0, sizeof(regs));
+#if (DOSX & PHARLAP)
+    regs.r_dx = RP_OFF (_watt_dosTbr);
+    regs.r_ds  = RP_SEG (_watt_dosTbr);
+#elif (DOSX & (DOS4GW|WDOSX))
+    regs.r_ds   = _watt_dosTbSeg;
+    regs.r_ax = 0x3800;
+#endif
+    if (!GEN_RM_INTERRUPT (0x21, &regs))
+       return (0);
+#endif
+    if (regs.r_flags & CARRY_BIT)
+       return (0);
+#if (DOSX & PHARLAP)
+    ReadRealMem (&_country_info, _watt_dosTbr, sizeof(_country_info));
+#elif (DOSX & (DOS4GW|WDOSX))
+    memcpy (&_country_info, SEG_OFS_TO_LIN(_watt_dosTbSeg,0), sizeof(_country_info));
+#endif
+    return (regs.r_bx);
   }
   return (0);
 }
@@ -102,52 +67,21 @@ int GetCountryCode (void)
 
 int GetCodePage (void)
 {
-#if (DOSX & DJGPP)     /* _osmajor/_osminor not set in crt0.o */
-  _get_dos_version (0);
-#endif
-
   if ((_osmajor << 8) + _osminor >= 0x303)
   {
-#if (DOSX & DJGPP)
+#if (DOSX & (PHARLAP|DOS4GW|WDOSX)) || (DOSX == 0)
     IREGS regs;
 
-    memset (&regs, 0, sizeof(regs));
+  #if (DOSX == 0)
+    _fmemset (&regs, 0, sizeof(regs));
     regs.r_ax = 0x6601;
     GEN_RM_INTERRUPT (0x21, &regs);
-    if (regs.r_flags & CARRY_BIT)
-       return (0);
-    return (regs.r_bx);
-
-#elif (DOSX & PHARLAP)
-    IREGS regs;
-
+  #else
     memset (&regs, 0, sizeof(regs));
     regs.r_ax = 0x6601;
-    GEN_RM_INTERRUPT (0x21, &regs);
-    if (regs.r_flags & CARRY_BIT)
+    if (!GEN_RM_INTERRUPT (0x21, &regs))
        return (0);
-    return (WORD)regs.r_bx;
-
-#elif (DOSX & (DOS4GW|WDOSX))
-    IREGS regs;
-
-    memset (&regs, 0, sizeof(regs));
-    regs.r_ax = 0x6601;
-    if (!dpmi_real_interrupt (0x21, &regs))
-       return (0);
-    if (regs.r_flags & CARRY_BIT)
-       return (0);
-    return (WORD)regs.r_bx;
-
-#elif (DOSX & POWERPAK)
-    UNFINISHED();
-
-#elif (DOSX == 0)       /* real-mode */
-    IREGS regs;
-
-    memset (&regs, 0, sizeof(regs));
-    regs.r_ax = 0x6601;
-    GEN_RM_INTERRUPT (0x21, &regs);
+  #endif
     if (regs.r_flags & CARRY_BIT)
        return (0);
     return (regs.r_bx);

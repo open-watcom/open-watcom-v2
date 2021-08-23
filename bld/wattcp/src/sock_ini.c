@@ -20,10 +20,6 @@
 #include <math.h>
 #include <time.h>
 #include <io.h>
-#if defined (__DJGPP__)
-#include <sys/exceptn.h>
-#include <stubinfo.h>
-#endif
 
 #include "copyrigh.h"
 #include "wattcp.h"
@@ -97,7 +93,7 @@ int _watt_no_config = 0;    /* run with no config file (embedded/diskless) */
 
 int surviverarp = 0;
 
-void (*_watt_post_hook) (void) = NULL;
+void (*_watt_post_hook)(void) = NULL;
 
 int   _watt_is_init     = 0;
 int   _watt_fatal_error = 0;
@@ -107,11 +103,11 @@ int   _tcp_is_init      = 0;
 
 static int old_brk = -1;
 
-static int do_exit (int code)
+static int do_exit( int code )
 {
-    if (_watt_do_exit)
-        exit (code);
-    return (code);
+    if( _watt_do_exit )
+        exit( code );
+    return( code );
 }
 
 /*
@@ -140,39 +136,6 @@ static void ExitFortify (void)
   #define NEEDED_STK  32000UL
 #endif
 
-#if defined (__DJGPP__)
-
-static void CheckStackLimit (void)
-{
-    if (_stubinfo->minstack < NEEDED_STK) {
-        fprintf (stderr,
-             "Stack size (%lu) is too small, %lu bytes needed.\r\n"
-             "Use `STUBEDIT' or `_stklen' to modify\r\n",
-             _stubinfo->minstack, NEEDED_STK);
-        exit (-1);
-    }
-}
-
-#elif defined (__HIGHC__)
-
-static void CheckStackLimit (void)
-{
-    extern DWORD _mwstack_limit[];
-    DWORD  stk;
-
-    if ((DWORD)&stk < NEEDED_STK ||  /* subtract could wrap around */
-      (DWORD)&stk - _mwstack_limit[1] < NEEDED_STK)
-    {
-        fprintf (stderr,
-             "Stack size (%lu) is too small, %lu bytes needed.\r\n"
-             "Recompile with linker-arg `-stack %lu'\r\n",
-             (DWORD)&stk - _mwstack_limit[1], NEEDED_STK, NEEDED_STK);
-        exit (-1);
-    }
-}
-
-#elif defined (__WATCOMC__)
-
 static void CheckStackLimit (void)
 {
     if (stackavail() < NEEDED_STK) {
@@ -184,20 +147,10 @@ static void CheckStackLimit (void)
     }
 }
 
-#elif defined (__BORLANDC__)  /* using WDOSX/PowerPak */
-
-static void CheckStackLimit (void)
-{
-    UNFINISHED();  /* to-do !! */
-}
-#endif
-
 #endif  /* (DOSX) */
 
 
 #if defined(USE_EXCHANDLER)
-
-#if defined(__BORLANDC__) || defined(__WATCOMC__)
 
 static void (*old_sigfpe)(int);
 static void (*old_sigsegv)(int);
@@ -207,32 +160,25 @@ static void (*old_sigsegv)(int);
  */
 static void WattExcHandler (int sig, int code)
 {
-#if defined(__WATCOMC__)
     if (sig == SIGFPE && code == FPE_IOVERFLOW) {
         _fpreset();
         outsnl (_LANG("ignoring SIGFPE (FPE_IOVERFLOW)"));
         return;
     }
-#endif
 
     _watt_fatal_error = 1;
     _eth_release();
 
 #if defined(USE_DEBUG)
     dbug_exit();
-#if defined(USE_BSD_FUNC)
+  #if defined(USE_BSD_FUNC)
     _sock_dbug_exit();
-#endif
+  #endif
 #endif
 
     if (sig == SIGFPE) {
-#if defined(__WATCOMC__)
         outs (_LANG("Trapping SIGFPE code 0x"));
         outhex (code);
-#else
-        outsnl (_LANG("Trapping SIGFPE."));
-        ARGSUSED (code);
-#endif
         if (old_sigfpe && old_sigfpe != SIG_IGN) {
             (*old_sigfpe) (SIGFPE);
         }
@@ -247,46 +193,13 @@ static void WattExcHandler (int sig, int code)
     exit (-1);
 }
 
-#elif defined (__DJGPP__)
-
-void WattExcHandler (int sig)
-{
-    static int been_here = 0;
-    static jmp_buf exc_buf;
-
-    _watt_fatal_error = 1;
-
-    if (been_here) {
-        been_here = 0;
-        signal (sig, SIG_DFL);
-        __djgpp_exception_state_ptr = &exc_buf;
-    } else {      /* save `*jmp_buf' in case of reentry */
-        memcpy (&exc_buf, __djgpp_exception_state_ptr, sizeof(exc_buf));
-        been_here = 1;
-        psignal (sig, "TCP/IP shutdown");
-
-        _eth_release();  /* don't do tcp_shutdown(), socket-list */
-                         /* and data is most certainly damaged.. */
-
-#if defined(USE_DEBUG)
-        dbug_exit();
-#if defined(USE_BSD_FUNC)
-        _sock_dbug_exit();
-#endif
-#endif
-    }
-
-    raise (SIGABRT); /* this doesn't call `atexit()' functions */
-}
-#endif  /* __DJGPP__ */
-
 #endif  /* USE_EXCHANDLER */
 
 
 /*
  * Abort all tcp's and shut down the network driver
  */
-static void tcp_shutdown (void)
+static void tcp_shutdown( void )
 {
     if (!_tcp_is_init)
         return;
@@ -440,13 +353,7 @@ int sock_init (void)
 #if (DOSX & PHARLAP)
         InstallExcHandler ((excHook)_eth_release);
 
-#elif defined(__DJGPP__)
-        signal (SIGSEGV, WattExcHandler);
-        signal (SIGTRAP, WattExcHandler);
-        signal (SIGFPE, WattExcHandler);
-        signal (SIGILL, WattExcHandler);
-
-#elif defined(__BORLANDC__) || defined(__WATCOMC__)
+#else
         /* Watcom v11.0 doesn't support SIGSEGV, but might do sometime...
          */
         old_sigsegv = signal (SIGSEGV,(void(*)(int))WattExcHandler);
@@ -470,9 +377,7 @@ int sock_init (void)
      * but djgpp's C-lib automatically fails critical I/O faults, so
      * it's not needed. Not implemented for bcc32.
      */
-#if !defined(__DJGPP__) && !defined(BORLAND386)
     int24_init();
-#endif
 
     /* Init PKTDRVR, get ether-addr, set config-hook for
      * parsing TCP-values

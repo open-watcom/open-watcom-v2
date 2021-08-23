@@ -3,8 +3,7 @@
 #include <jstring.h>
 JSTRING jstrcat( JCHAR *dst, const JCHAR *src );
 .if &farfnc ne 0 .do begin
-FJSTRING __far _fjstrcat( JCHAR __far *dst,
-                          const JCHAR __far *src );
+FJSTRING _fjstrcat( JCHAR __far *dst, const JCHAR __far *src );
 .do end
 .ixfunc2 '&Jstring' &funcb
 .ixfunc2 '&Jconcat' &funcb

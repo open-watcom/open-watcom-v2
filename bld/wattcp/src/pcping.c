@@ -15,18 +15,17 @@
 #include "pcicmp.h"
 #include "pcping.h"
 
-#include <sys/packon.h>
 
  /*
   * to-do!! make all "struct _pkt" into a union in wattcp.h
   */
+#pragma pack(__push,1);
 struct ping_pkt {
        in_Header        in;
        struct icmp_echo icmp;
     /* BYTE             data[]; */
      };
-
-#include <sys/packoff.h>
+#pragma pack(__pop);
 
 
 int _ping (DWORD host, DWORD countnum, const BYTE *pattern, int len)

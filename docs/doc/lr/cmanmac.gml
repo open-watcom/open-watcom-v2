@@ -653,7 +653,7 @@ command
 .pp
 The
 .id &*1.
-function is a code and data model independent form of the
+function is a data model independent form of the
 .id &*2.
 function.
 It accepts far pointer arguments and returns a far pointer.
@@ -666,7 +666,7 @@ It is most useful in mixed memory model applications.
 .pp
 The
 .id &*1.
-function is a code and data model independent form of the
+function is a data model independent form of the
 .id &*2.
 function that accepts far pointer arguments.
 It is most useful in mixed memory model applications.

@@ -39,16 +39,17 @@
  *                   window wnd are bad.
  */
 
-void GUIAPI GUIWndDirtyRow( gui_window * wnd, gui_text_ord row )
+void GUIAPI GUIWndDirtyRow( gui_window *wnd, gui_text_ord row )
 {
-    SAREA area;
+//    SAREA area;
+    guix_rect   scr_rect;
 
-    area.row = row + wnd->use.row;
+    scr_rect.s_y = row + wnd->use.row;
     if( GUI_DO_VSCROLL( wnd ) ) {
-        area.row -= wnd->vgadget->pos;
+        scr_rect.s_y -= wnd->vgadget->pos;
     }
-    area.col = wnd->use.col;
-    area.width = wnd->use.width;
-    area.height = 1;
-    GUIDirtyArea( wnd, &area );
+    scr_rect.s_x = wnd->use.col;
+    scr_rect.s_width = wnd->use.width;
+    scr_rect.s_height = 1;
+    GUIDirtyArea( wnd, &scr_rect );
 }

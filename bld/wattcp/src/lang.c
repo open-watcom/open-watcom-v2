@@ -59,15 +59,6 @@
 #endif  /* __STDC__ */
 #endif  /* ! __cplusplus */
 
-#ifdef __TURBOC__
- #pragma warn -rch
- #pragma warn -use
-#include <io.h>
-#include <stdlib.h>
-#define YY_USE_CONST
-#define YY_USE_PROTOS
-#endif
-
 #ifdef YY_USE_CONST
 #define yyconst const
 #else
@@ -2132,15 +2123,11 @@ static void Abort (const char *s1, const char *s2)
 {
   if (lang.line > 0)
   {
-#ifdef __DJGPP__
-    (*_printf) ("\r\nline %lu: ", lang.line);
-#else
     char buf [15];
     ltoa (lang.line, buf, 10);
     outs ("\r\nline ");
     outs (buf);
     outs (": ");
-#endif
   }
   else
     outs ("\r\n");
@@ -2157,16 +2144,12 @@ static void Abort (const char *s1, const char *s2)
  */
 static void error (const char *err)
 {
-#ifdef __DJGPP__
-  (*_printf) ("%s at line %lu\r\n", err, lang.line);
-#else
   char buf [15];
   ltoa (lang.line, buf, 10);
   outs (err);
   outs (" at line ");
   outs (buf);
   outs ("\r\n");
-#endif
 }
 
 #if defined(TEST_PROG)

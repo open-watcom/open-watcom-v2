@@ -1,13 +1,11 @@
 .func jstrskip _fjstrskip
 .synop begin
 #include <jstring.h>
-JSTRING jstrskip( const JCHAR *str,
-                  const JCHAR *charset );
+JSTRING jstrskip( const JCHAR *str, const JCHAR *charset );
 .ixfunc2 '&Jstring' &funcb
 .ixfunc2 '&Jsearch' &funcb
 .if &farfnc ne 0 .do begin
-FJSTRING __far _fjstrskip( const JCHAR __far *str,
-                           const JCHAR __far *charset );
+FJSTRING _fjstrskip( const JCHAR __far *str, const JCHAR __far *charset );
 .ixfunc2 '&Jstring' &ffunc
 .ixfunc2 '&Jsearch' &ffunc
 .do end

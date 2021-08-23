@@ -2,10 +2,10 @@
 #define __PC_QUEUE_H
 
 /*
- * asmpkt4.asm depends on '_pkt_inf' beeing packed
+ * asmpkt32.asm depends on '_pkt_inf' beeing packed
  */
 #if (DOSX & DOS4GW)
-#include <sys/packon.h>
+#pragma pack(__push,1);
 #endif
 
 struct pkt_ringbuf {
@@ -18,10 +18,10 @@ struct pkt_ringbuf {
 #if (DOSX & DOS4GW)
        WORD           dos_ofs;    /* offset of pool, used by rmode stub */
 #endif                            /* total size = 26 for DOS4GW/WDOSX */
-     };            
+     };
 
 #if (DOSX & DOS4GW)
-#include <sys/packoff.h>
+#pragma pack(__pop);
 #endif
 
 extern int   pktq_init     (struct pkt_ringbuf *q, int size, int num, char *buf);

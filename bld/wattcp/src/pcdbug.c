@@ -12,10 +12,6 @@
 #include <ctype.h>
 #include <io.h>
 
-#ifdef __DJGPP__
-#include <unistd.h>
-#endif
-
 #include "wattcp.h"
 #include "strings.h"
 #include "udp_dom.h"
@@ -60,21 +56,7 @@ const char *tcpState[] = {
  * routine). That would make debug-dumps / problem-reports difficult.
  */
 
-#ifdef __HIGHC__          /* disable stack-checking here */
-#pragma Off (check_stack)
-#pragma stack_size_warn (220000)
-#endif
-
-#ifdef __WATCOMC__
-#pragma Off (check_stack)
-#endif
-
-#ifdef __TURBOC__
-  #ifndef OLD_TURBOC
-  #pragma option -N-
-  #endif
-extern unsigned _stklen = 20000;
-#endif
+#pragma off (check_stack)
 
 #if (DOSX) && defined(USE_FRAGMENTS)
 #define STK_BUF_SIZE  200000
@@ -86,11 +68,7 @@ extern unsigned _stklen = 20000;
 #define STDOUT_FILENO 1
 #endif
 
-static int db_fprintf (const char *format, ...)
-#ifdef __GNUC__
-  __attribute__((format(printf,1,2)))
-#endif
-;
+static int db_fprintf (const char *format, ...);
 
 static int  db_write    (const char *buf);
 static void db_putc     (int ch);
@@ -1357,19 +1335,13 @@ static int db_fprintf (const char *format, ...)
     if (handle > 0 && op < op_max) {
         va_list arg;
         va_start (arg, format);
-
-#if defined(__HIGHC__) || defined(__WATCOMC__)
-        len = _vbprintf (op, op_max-op-1, format, arg);
+        len = _vbprintf (op, op_max - op - 1, format, arg);
         if (len < 0) {
             op  = op_max;
             len = abs (len);
         } else {
             op += len;
         }
-#else
-        len = vsprintf (op, format, arg);
-        op += len;
-#endif
         va_end (arg);
         CHECK_TRUNCATED();
     }

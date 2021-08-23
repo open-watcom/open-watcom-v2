@@ -23,17 +23,6 @@
 /*
  * Timezone defines for Watcom, Borland <= 3.1 and MSC <= 6.0
  */
-#if defined(__WATCOMC__)
-#define _timezone timezone
-#endif
-
-#if defined(__TURBOC__) && (__TURBOC__ <= 0x410)  /* TCC/BCC <= 3.1 */
-#define _timezone timezone
-#endif
-
-#if defined(_MSC_VER) && (_MSC_VER <= 600)
-#define _timezone timezone
-#endif
 
 static void get_zone (struct timezone *tz, time_t now)
 {
@@ -41,11 +30,7 @@ static void get_zone (struct timezone *tz, time_t now)
 
   if (tm)
   {
-#ifdef __DJGPP__
-    tz->tz_minuteswest = -60 * tm->__tm_gmtoff;
-#else
-    tz->tz_minuteswest = -60 * (int)_timezone;
-#endif
+    tz->tz_minuteswest = -60 * (int)timezone;
     tz->tz_dsttime = tm->tm_isdst;
   }
 }
@@ -56,11 +41,11 @@ int gettimeofday (struct timeval *tv, struct timezone *tz)
   IREGS  regs;
   struct tm   tm;
 
-  if (!tv)
+  if (tv == NULL)
      return (-1);
 
   memset (&regs, 0, sizeof(regs));
-  hiREG(regs.r_ax, 0x2C);
+  hiREG(regs.r_ax) = 0x2C;
   GEN_RM_INTERRUPT (0x21, &regs);
 
   tv->tv_usec = loBYTE (regs.r_dx) * 10000L;
@@ -68,7 +53,7 @@ int gettimeofday (struct timeval *tv, struct timezone *tz)
   tm.tm_min   = loBYTE (regs.r_cx);
   tm.tm_hour  = hiBYTE (regs.r_cx);
 
-  hiREG(regs.r_ax, 0x2A);
+  hiREG(regs.r_ax) = 0x2A;
   GEN_RM_INTERRUPT (0x21, &regs);
 
   tm.tm_mday  = loBYTE (regs.r_dx);
@@ -79,7 +64,7 @@ int gettimeofday (struct timeval *tv, struct timezone *tz)
 
   tv->tv_sec = mktime (&tm);
 
-  if (tz)
+  if (tz != NULL)
      get_zone (tz, tv->tv_sec);
   return (0);
 }
@@ -90,7 +75,7 @@ int gettimeofday (struct timeval *tv, struct timezone *tz)
   IREGS  regs;
   struct tm tm;
 
-  if (!tv)
+  if (tv == NULL)
      return (-1);
 
   memset (&regs, 0, sizeof(regs));
@@ -112,18 +97,18 @@ int gettimeofday (struct timeval *tv, struct timezone *tz)
   tm.tm_isdst = -1;
 
   tv->tv_sec = mktime (&tm);
-  if (tz)
+  if (tz != NULL)
      get_zone (tz, tv->tv_sec);
   return (0);
 }
 
-#elif (DOSX & (DOS4GW|WDOSX)) && !defined(__GNUC__)
+#elif (DOSX & (DOS4GW|WDOSX))
 int gettimeofday (struct timeval *tv, struct timezone *tz)
 {
   IREGS  regs;
   struct tm   tm;
 
-  if (!tv)
+  if (tv == NULL)
      return (-1);
 
   memset (&regs, 0, sizeof(regs));
@@ -145,15 +130,9 @@ int gettimeofday (struct timeval *tv, struct timezone *tz)
   tm.tm_isdst = -1;
 
   tv->tv_sec = mktime (&tm);
-  if (tz)
+  if (tz != NULL)
      get_zone (tz, tv->tv_sec);
   return (0);
-}
-
-#elif (DOSX & POWERPAK)
-int gettimeofday (struct timeval *tv, struct timezone *tz)
-{
-  UNFINISHED();
 }
 
 #endif   /* DOSX == 0 */
@@ -164,7 +143,6 @@ int gettimeofday (struct timeval *tv, struct timezone *tz)
  */
 int gettimeofday2 (struct timeval *tv, struct timezone *tz)
 {
-#if defined(HAVE_UINT64)
   if (has_8254)
   {
     static time_t secs = 0;  /* seconds since epoch until last midnight */
@@ -179,11 +157,10 @@ int gettimeofday2 (struct timeval *tv, struct timezone *tz)
     last = usecs;
     tv->tv_sec  = (usecs / (uint64)1000000) + (uint64)secs;
     tv->tv_usec = (usecs % (uint64)1000000);
-    if (tz)
+    if (tz != NULL)
        get_zone (tz, tv->tv_sec);
     return (0);
   }
-#endif
   return gettimeofday (tv, tz);
 }
 

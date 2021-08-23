@@ -4,7 +4,7 @@
 JSTRING jputmoji( JCHAR *str, JMOJI c );
 .ixfunc2 '&Jstring' &funcb
 .if &farfnc ne 0 .do begin
-FJSTRING __far _fjputmoji( JCHAR __far *str, JMOJI c );
+FJSTRING _fjputmoji( JCHAR __far *str, JMOJI c );
 .ixfunc2 '&Jstring' _f&funcb
 .do end
 .synop end
