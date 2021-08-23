@@ -49,7 +49,7 @@ is greater than the length of the string, the entire string is filled.
 Otherwise, that number of characters at the start of the string are set
 to the fill character.
 .np
-If after filling the string with as many single- or double-byte
+If after filling the string with as many single-byte or double-byte
 characters as possible,
 the next character in the string is the second byte of a double-byte
 character, then that character is set to ASCII blank (hex '20').

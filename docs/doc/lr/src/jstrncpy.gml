@@ -25,7 +25,7 @@ functions copy
 .do end
 no more than
 .arg n
-single- or double-byte characters from the Kanji string pointed to by
+single-byte or double-byte characters from the Kanji string pointed to by
 .arg src
 into the array pointed to by
 .arg dst
@@ -49,7 +49,7 @@ If the Kanji string pointed to by
 .arg src
 is longer than
 .arg n
-single- or double-byte characters, then the result will not be
+single-byte or double-byte characters, then the result will not be
 terminated by a null character.
 .farfunc &ffunc. &funcb.
 .desc end

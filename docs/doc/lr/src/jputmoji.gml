@@ -1,10 +1,10 @@
 .func jputmoji _fjputmoji
 .synop begin
 #include <jstring.h>
-JSTRING jputmoji( JCHAR *str, JMOJI c );
+JSTRING jputmoji( JCHAR *s, JMOJI c );
 .ixfunc2 '&Jstring' &funcb
 .if &farfnc ne 0 .do begin
-FJSTRING _fjputmoji( JCHAR __far *str, JMOJI c );
+FJSTRING _fjputmoji( JCHAR __far *s, JMOJI c );
 .ixfunc2 '&Jstring' _f&funcb
 .do end
 .synop end
@@ -21,10 +21,10 @@ and
 .id &ffunc.
 functions place
 .do end
-the next single- or double-byte character specified by
+the next single-byte or double-byte character specified by
 .arg c
 at the start of the buffer specified by
-.arg str
+.arg s
 .period
 .farfunc &ffunc. &funcb.
 .desc end

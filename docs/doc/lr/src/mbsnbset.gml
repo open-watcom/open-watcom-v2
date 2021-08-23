@@ -1,12 +1,12 @@
 .func _mbsnbset _fmbsnbset
 .synop begin
 #include <mbstring.h>
-unsigned char *_mbsnbset( unsigned char *str,
+unsigned char *_mbsnbset( unsigned char *s,
                           unsigned int fill,
                           size_t count );
 .ixfunc2 '&String' &funcb
 .if &farfnc ne 0 .do begin
-unsigned char __far *_fmbsnbset( unsigned char __far *str,
+unsigned char __far *_fmbsnbset( unsigned char __far *s,
                                  unsigned int fill,
                                  size_t count );
 .ixfunc2 '&String' &ffunc
@@ -16,7 +16,7 @@ unsigned char __far *_fmbsnbset( unsigned char __far *str,
 The
 .id &funcb.
 function fills the string
-.arg str
+.arg s
 with the value of the argument
 .arg fill
 .period
@@ -42,7 +42,7 @@ an ASCII space character.
 .desc end
 .return begin
 The address of the original string
-.arg str
+.arg s
 is returned.
 .return end
 .see begin

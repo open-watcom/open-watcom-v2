@@ -23,7 +23,7 @@ and
 .id &ffunc.
 functions locate
 .do end
-the first occurrence of the single- or double-byte character
+the first occurrence of the single-byte or double-byte character
 .arg c
 in the Kanji string pointed to by
 .arg s

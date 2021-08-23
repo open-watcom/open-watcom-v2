@@ -1,11 +1,11 @@
 .func jstrspn _fjstrspn
 .synop begin
 #include <jstring.h>
-size_t jstrspn( const JCHAR *str, const JCHAR *charset );
+size_t jstrspn( const JCHAR *s, const JCHAR *charset );
 .ixfunc2 '&Jstring' &funcb
 .ixfunc2 '&Jsearch' &funcb
 .if &farfnc ne 0 .do begin
-size_t _fjstrspn( const JCHAR __far *str, const JCHAR __far *charset );
+size_t _fjstrspn( const JCHAR __far *s, const JCHAR __far *charset );
 .ixfunc2 '&Jstring' &ffunc
 .ixfunc2 '&Jsearch' &ffunc
 .do end
@@ -24,8 +24,8 @@ and
 functions compute
 .do end
 the length of the initial segment of the Kanji string pointed to by
-.arg str
-which consists of single- and double-byte characters from the Kanji
+.arg s
+which consists of single-byte and double-byte characters from the Kanji
 string pointed to by
 .arg charset
 .period

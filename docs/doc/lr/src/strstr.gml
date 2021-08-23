@@ -5,19 +5,19 @@
 .func end
 .synop begin
 #include <string.h>
-char *strstr( const char *str,
+char *strstr( const char *s,
               const char *substr );
 .ixfunc2 '&String' &funcb
 .ixfunc2 '&Search' &funcb
 .if &farfnc ne 0 .do begin
-char __far *_fstrstr( const char __far *str,
+char __far *_fstrstr( const char __far *s,
                       const char __far *substr );
 .ixfunc2 '&String' &ffunc
 .ixfunc2 '&Search' &ffunc
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
-wchar_t *wcsstr( const wchar_t *str,
+wchar_t *wcsstr( const wchar_t *s,
                  const wchar_t *substr );
 .ixfunc2 '&String' &wfunc
 .ixfunc2 '&Search' &wfunc
@@ -25,7 +25,7 @@ wchar_t *wcsstr( const wchar_t *str,
 .do end
 .if &'length(&mfunc.) ne 0 .do begin
 #include <mbstring.h>
-unsigned char *_mbsstr( const unsigned char *str,
+unsigned char *_mbsstr( const unsigned char *s,
                         const unsigned char *substr );
 .ixfunc2 '&String' &mfunc
 .ixfunc2 '&Search' &mfunc
@@ -33,7 +33,7 @@ unsigned char *_mbsstr( const unsigned char *str,
 .do end
 .if &'length(&fmfunc.) ne 0 .do begin
 unsigned char __far *_fmbsstr(
-                    const unsigned char __far *str,
+                    const unsigned char __far *s,
                     const unsigned char __far *substr );
 .ixfunc2 '&String' &fmfunc
 .ixfunc2 '&Search' &fmfunc
@@ -45,7 +45,7 @@ The
 .id &funcb.
 function locates the first occurrence in the string pointed
 to by
-.arg str
+.arg s
 of the sequence of characters (excluding the terminating null
 character) in the string pointed to by
 .arg substr

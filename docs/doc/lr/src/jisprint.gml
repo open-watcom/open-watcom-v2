@@ -9,7 +9,7 @@ The
 .id &funcb.
 function tests if the argument
 .arg c
-is a printable single- or double-byte character.
+is a printable single-byte or double-byte character.
 These are any characters for which the following expression is true:
 .millust begin
 isprint( c ) || iskana( c ) || jiszen( c )

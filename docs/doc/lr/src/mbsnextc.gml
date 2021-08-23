@@ -1,18 +1,18 @@
 .func _mbsnextc _fmbsnextc _strnextc _wcsnextc
 .synop begin
 #include <mbstring.h>
-unsigned int _mbsnextc( const unsigned char *string );
+unsigned int _mbsnextc( const unsigned char *s );
 .ixfunc2 '&String' _mbsnextc
 .ixfunc2 '&Multibyte' _mbsnextc
 .if &farfnc ne 0 .do begin
-unsigned int _fmbsnextc( const unsigned char __far *string );
+unsigned int _fmbsnextc( const unsigned char __far *s );
 .ixfunc2 '&String' _fmbsnextc
 .ixfunc2 '&Multibyte' _fmbsnextc
 .do end
 #include <tchar.h>
-unsigned int _strnextc( const char *string );
+unsigned int _strnextc( const char *s );
 .ixfunc2 '&String' _strnextc
-unsigned int _wcsnextc( const wchar_t *string ) {
+unsigned int _wcsnextc( const wchar_t *s ) {
 .ixfunc2 '&String' _wcsnextc
 .ixfunc2 '&Wide' _wcsnextc
 .synop end
@@ -21,7 +21,7 @@ The
 .id &funcb.
 function returns the integer value of the next multi-byte
 character in
-.arg string
+.arg s
 .ct , without advancing the string pointer.
 .id &funcb.
 recognizes multi-byte character sequences according to the
@@ -32,7 +32,7 @@ multi-byte character code page currently in use.
 .return begin
 These functions return the integer value of the next character
 (multi-byte, wide, or single-byte) pointed to by
-.arg string
+.arg s
 .period
 .return end
 .see begin

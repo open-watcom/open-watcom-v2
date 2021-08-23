@@ -9,7 +9,7 @@ unsigned char __far *_fmbputchar( unsigned char __far *mbstr,
 .desc begin
 The
 .id &funcb.
-function places the next single- or double-byte character
+function places the next single-byte or double-byte character
 specified by
 .arg dbch
 at the start of the buffer specified by

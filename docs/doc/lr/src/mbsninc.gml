@@ -1,20 +1,20 @@
 .func _mbsninc _fmbsninc _strninc _wcsninc
 .synop begin
 #include <mbstring.h>
-unsigned char *_mbsninc( const unsigned char *str, size_t count );
+unsigned char *_mbsninc( const unsigned char *s, size_t count );
 .ixfunc2 '&String' _mbsninc
 .ixfunc2 '&Multibyte' _mbsninc
 .if &farfnc ne 0 .do begin
-unsigned char __far *_fmbsninc( const unsigned char __far *str,
+unsigned char __far *_fmbsninc( const unsigned char __far *s,
                                 size_t count );
 .ixfunc2 '&String' _fmbsninc
 .ixfunc2 '&Multibyte' _fmbsninc
 .do end
 #include <tchar.h>
-char *_strninc( const char *str, size_t count );
+char *_strninc( const char *s, size_t count );
 .ixfunc2 '&String' _strninc
 .if &'length(&wfunc.) ne 0 .do begin
-wchar_t *_wcsninc( const wchar_t *str, size_t count );
+wchar_t *_wcsninc( const wchar_t *s, size_t count );
 .ixfunc2 '&String' _wcsninc
 .ixfunc2 '&Wide' _wcsninc
 .do end
@@ -23,7 +23,7 @@ wchar_t *_wcsninc( const wchar_t *str, size_t count );
 The
 .id &funcb.
 function increments
-.arg str
+.arg s
 by
 .arg count
 of multi-byte characters.
@@ -35,13 +35,13 @@ multi-byte character code page currently in use.
 .desc end
 .return begin
 These functions return a pointer to
-.arg str
+.arg s
 after it has been incremented by
 .arg count
 of characters (multi-byte, wide, or single-byte) or
 .kw NULL
 if
-.arg str
+.arg s
 was
 .kw NULL
 .period

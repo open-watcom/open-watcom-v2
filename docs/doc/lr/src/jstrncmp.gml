@@ -25,7 +25,7 @@ functions compare
 .do end
 not more than
 .arg n
-single- or double-byte characters from the Kanji string pointed to by
+single-byte or double-byte characters from the Kanji string pointed to by
 .arg s1
 to the Kanji string pointed to by
 .arg s2

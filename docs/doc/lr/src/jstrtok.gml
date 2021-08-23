@@ -25,8 +25,9 @@ functions are
 .do end
 used to break the Kanji string pointed to by
 .arg s1
-into a sequence of tokens, each of which is delimited by a single- or
-double-byte character from the string pointed to by
+into a sequence of tokens, each of which is delimited by
+a single-byte or double-byte character from the string
+pointed to by
 .arg s2
 .period
 The first call to
@@ -46,8 +47,8 @@ different from one call to the next.
 .np
 The first call in the sequence searches
 .arg s1
-for the first single- or double-byte character that is not contained
-in the current delimiter string
+for the first single-byte or double-byte character that is
+not contained in the current delimiter string
 .arg s2
 .period
 If no such character is found, then there are no tokens in
@@ -59,7 +60,7 @@ If such a character is found, it is the start of the first token.
 .np
 The
 .id &funcb.
-function then searches from there for a single- or
+function then searches from there for a single-byte or
 double-byte character that is contained in the current delimiter
 If no such character is found, the current token extends to the end of
 the string pointed to by

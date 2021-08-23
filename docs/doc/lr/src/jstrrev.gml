@@ -23,7 +23,7 @@ functions replace
 .do end
 the Kanji string
 .arg s1
-with a Kanji string whose single- or double-byte characters are in the
+with a Kanji string whose single-byte or double-byte characters are in the
 reverse order.
 .farfunc &ffunc. &funcb.
 .desc end

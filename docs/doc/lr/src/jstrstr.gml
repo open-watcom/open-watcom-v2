@@ -1,11 +1,11 @@
 .func jstrstr _fjstrstr
 .synop begin
 #include <jstring.h>
-JSTRING jstrstr( const JCHAR *str, const JCHAR *substr );
+JSTRING jstrstr( const JCHAR *s, const JCHAR *substr );
 .ixfunc2 '&Jstring' &funcb
 .ixfunc2 '&Jsearch' &funcb
 .if &farfnc ne 0 .do begin
-FJSTRING _fjstrstr( const JCHAR __far *str, const JCHAR __far *substr );
+FJSTRING _fjstrstr( const JCHAR __far *s, const JCHAR __far *substr );
 .ixfunc2 '&Jstring' &ffunc
 .ixfunc2 '&Jsearch' &ffunc
 .do end
@@ -24,9 +24,9 @@ and
 functions locate
 .do end
 the first occurrence in the Kanji string pointed to by
-.arg str
-of the sequence of single- and double-byte characters (excluding the
-terminating null character) in the Kanji string pointed to by
+.arg s
+of the sequence of single-byte and double-byte characters (excluding
+the terminating null character) in the Kanji string pointed to by
 .arg substr
 .period
 .farfunc &ffunc. &funcb.

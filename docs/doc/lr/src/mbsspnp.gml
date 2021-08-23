@@ -1,26 +1,26 @@
 .func _mbsspnp _fmbsspnp _strspnp _wcsspnp
 .synop begin
 #include <mbstring.h>
-unsigned char *_mbsspnp( const unsigned char *str,
+unsigned char *_mbsspnp( const unsigned char *s,
                          const unsigned char *charset );
 .ixfunc2 '&String' _mbsspnp
 .ixfunc2 '&Search' _mbsspnp
 .ixfunc2 '&Multibyte' _mbsspnp
 .if &farfnc ne 0 .do begin
 unsigned char __far *_fmbsspnp(
-                    const unsigned char __far *str,
+                    const unsigned char __far *s,
                     const unsigned char __far *charset );
 .ixfunc2 '&String' _fmbsspnp
 .ixfunc2 '&Search' _fmbsspnp
 .ixfunc2 '&Multibyte' _fmbsspnp
 .do end
 #include <tchar.h>
-char *_strspnp( const char *str,
+char *_strspnp( const char *s,
                 const char *charset );
 .ixfunc2 '&String' _strspnp
 .ixfunc2 '&Search' _strspnp
 .if &'length(&wfunc.) ne 0 .do begin
-wchar_t *_wcsspnp( const wchar_t *str,
+wchar_t *_wcsspnp( const wchar_t *s,
                    const wchar_t *charset );
 .ixfunc2 '&String' _wcsspnp
 .ixfunc2 '&Search' _wcsspnp
@@ -31,7 +31,7 @@ wchar_t *_wcsspnp( const wchar_t *str,
 The
 .id &funcb.
 function returns a pointer to the first multi-byte character in
-.arg str
+.arg s
 that does not belong to the set of multi-byte characters in
 .arg charset
 .period
@@ -45,7 +45,7 @@ The terminating null character is not considered to be part of
 These functions return
 .mono NULL
 if
-.arg str
+.arg s
 consists entirely of characters (multi-byte, wide, or single-byte)
 from
 .arg charset

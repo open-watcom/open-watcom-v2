@@ -1,34 +1,34 @@
 .func strnset _strnset _fstrnset _wcsnset _mbsnset _fmbsnset
 .synop begin
 #include <string.h>
-char *strnset( char *str, int fill, size_t count );
+char *strnset( char *s, int fill, size_t count );
 .ixfunc2 '&String' &funcb
 .if &'length(&_func.) ne 0 .do begin
-char *_strnset( char *str, int fill, size_t count );
+char *_strnset( char *s, int fill, size_t count );
 .ixfunc2 '&String' &_func
 .do end
 .if &farfnc ne 0 .do begin
-char __far *_fstrnset( char __far *str,
+char __far *_fstrnset( char __far *s,
                        int fill,
                        size_t count );
 .ixfunc2 '&String' &ffunc
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
-wchar_t *_wcsnset( wchar_t *str, int fill, size_t count );
+wchar_t *_wcsnset( wchar_t *s, int fill, size_t count );
 .ixfunc2 '&String' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
 .if &'length(&mfunc.) ne 0 .do begin
 #include <mbstring.h>
-unsigned char *_mbsnset( unsigned char *str,
+unsigned char *_mbsnset( unsigned char *s,
                          unsigned int fill,
                          size_t count );
 .ixfunc2 '&String' &mfunc
 .ixfunc2 '&Multibyte' &mfunc
 .do end
 .if &'length(&fmfunc.) ne 0 .do begin
-unsigned char __far *_fmbsnset( unsigned char __far *str,
+unsigned char __far *_fmbsnset( unsigned char __far *s,
                                 unsigned int fill,
                                 size_t count );
 .ixfunc2 '&String' &fmfunc
@@ -39,7 +39,7 @@ unsigned char __far *_fmbsnset( unsigned char __far *str,
 The
 .id &funcb.
 function fills the string
-.arg str
+.arg s
 with the value of the argument
 .arg fill
 .ct , converted to be a character value.
@@ -68,7 +68,7 @@ an ASCII space character.
 .desc end
 .return begin
 The address of the original string
-.arg str
+.arg s
 is returned.
 .return end
 .see begin

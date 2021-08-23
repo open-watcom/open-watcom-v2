@@ -1,11 +1,11 @@
 .func jstrskip _fjstrskip
 .synop begin
 #include <jstring.h>
-JSTRING jstrskip( const JCHAR *str, const JCHAR *charset );
+JSTRING jstrskip( const JCHAR *s, const JCHAR *charset );
 .ixfunc2 '&Jstring' &funcb
 .ixfunc2 '&Jsearch' &funcb
 .if &farfnc ne 0 .do begin
-FJSTRING _fjstrskip( const JCHAR __far *str, const JCHAR __far *charset );
+FJSTRING _fjstrskip( const JCHAR __far *s, const JCHAR __far *charset );
 .ixfunc2 '&Jstring' &ffunc
 .ixfunc2 '&Jsearch' &ffunc
 .do end
@@ -24,8 +24,8 @@ and
 functions locate
 .do end
 the first occurrence in the Kanji string pointed to by
-.arg str
-of a single- or double-byte character that does not appear
+.arg s
+of a single-byte or double-byte character that does not appear
 in the Kanji string pointed to by
 .arg charset
 .period

@@ -2,12 +2,12 @@
 .synop begin
 #include <stdio.h>
 #include <stdarg.h>
-int vsscanf( const char *in_string,
+int vsscanf( const char *s,
              const char *format,
              va_list arg );
 .ixfunc2 '&String' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
-int vswscanf( const wchar_t *in_string,
+int vswscanf( const wchar_t *s,
               const wchar_t *format,
               va_list arg );
 .ixfunc2 '&String' &wfunc
@@ -21,7 +21,7 @@ int vswscanf( const wchar_t *in_string,
 The
 .id &funcb.
 function scans input from the string designated by
-.arg in_string
+.arg s
 under control of the argument
 .arg format
 .period

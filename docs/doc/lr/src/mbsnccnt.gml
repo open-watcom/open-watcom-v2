@@ -1,19 +1,19 @@
 .func _mbsnccnt _fmbsnccnt _strncnt _wcsncnt
 .synop begin
 #include <mbstring.h>
-size_t _mbsnccnt( const unsigned char *string, size_t n );
+size_t _mbsnccnt( const unsigned char *s, size_t n );
 .ixfunc2 '&String' _mbsnccnt
 .ixfunc2 '&Multibyte' _mbsnccnt
 .if &farfnc ne 0 .do begin
-size_t _fmbsnccnt( const unsigned char __far *string, size_t n );
+size_t _fmbsnccnt( const unsigned char __far *s, size_t n );
 .ixfunc2 '&String' _fmbsnccnt
 .ixfunc2 '&Multibyte' _fmbsnccnt
 .do end
 #include <tchar.h>
-size_t _strncnt( const char *string, size_t n );
+size_t _strncnt( const char *s, size_t n );
 .ixfunc2 '&String' _strncnt
 .if &'length(&wfunc.) ne 0 .do begin
-size_t _wcsncnt( const wchar_t *string, size_t n ) {
+size_t _wcsncnt( const wchar_t *s, size_t n );
 .ixfunc2 '&String' _wcsncnt
 .ixfunc2 '&Wide' _wcsncnt
 .do end
@@ -25,7 +25,7 @@ function counts the number of multi-byte characters in the
 first
 .arg n
 bytes of the string
-.arg string
+.arg s
 .period
 If
 .id &funcb.

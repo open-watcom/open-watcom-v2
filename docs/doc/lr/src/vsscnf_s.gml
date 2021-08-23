@@ -3,14 +3,14 @@
 #define __STDC_WANT_LIB_EXT1__ 1
 #include <stdarg.h>
 #include <stdio.h>
-int vsscanf_s( const char * restrict s,
+int vsscanf_s( const char * restrict str,
                const char * restrict format,
                va_list arg );
 .ixfunc2 '&StrIo' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
 #include <stdarg.h>
 #include <wchar.h>
-int vswscanf_s( const wchar_t * restrict s,
+int vswscanf_s( const wchar_t * restrict str,
                 const wchar_t * restrict format,
                 va_list arg );
 .ixfunc2 '&StrIo' &wfunc
@@ -20,7 +20,7 @@ int vswscanf_s( const wchar_t * restrict s,
 .*
 .rtconst begin
 Neither
-.arg s
+.arg str
 not
 .arg format
 shall be a null pointer.
@@ -59,7 +59,7 @@ function is identical to
 .id &funcb.
 except that it accepts
 wide character string arguments for
-.arg s
+.arg str
 and
 .arg format
 .period
