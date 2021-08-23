@@ -11,8 +11,13 @@
  * Disable stack-checking here cause these functions are handy
  * in interrupt handlers etc.
  */
-
+#if defined(__HIGHC__) || defined(__WATCOMC__)
 #pragma off(check_stack)
+#endif
+
+#if (defined(__TURBOC__) || defined(__BORLANDC__)) && !defined(OLD_TURBOC)
+#pragma option -N-
+#endif
 
 WORD dbg_color = 0x700;
 

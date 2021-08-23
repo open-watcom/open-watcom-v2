@@ -17,7 +17,17 @@
 #include <ctype.h>
 #include <setjmp.h>
 
-//  #include <stdint.h>
+#if defined(_MSC_VER) || defined(__TURBOC__) || defined(__BORLANDC__)
+  #define YY_NO_UNISTD_H
+
+#elif defined(__WATCOMC__)
+  #include <stdint.h>
+
+#elif defined(__BORLANDC__)
+  /*
+   * Refer Makefile.all for the '-DFLEXINT_H=1' etc. hacks.
+   */
+#endif
 
 #define YY_NO_INPUT           1
 #define YY_MAIN               0  /* no main() function */

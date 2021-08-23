@@ -112,18 +112,21 @@ extern int  pkt_dropped_arp (void);
 #endif
 
 /*
- * asmpkt32.asm depends on '_pkt_inf' beeing packed
+ * asmpkt4.asm depends on '_pkt_inf' beeing packed
  */
 #if (DOSX & DOS4GW)
-#pragma pack(__push,1);
+#include <sys/packon.h>
 #endif
 
 /*
  * Placeholder for vital data accessed on packet-driver upcall.
  * Keep it gathered to simplify locking memory at `_pkt_inf'.
- * This structure MUST match same structure in asmpkt32.asm
+ * This structure MUST match same structure in asmpkt4.asm
  */
 struct pkt_info {
+#if (DOSX & DJGPP)
+       _go32_dpmi_seginfo rm_mem;
+#endif
        WORD   ip_handle;               /* Packet-driver handles for   */
        WORD   arp_handle;              /*    IP, ARP and RARP packets */
        WORD   rarp_handle;
@@ -145,7 +148,7 @@ struct pkt_info {
 extern struct pkt_info *_pkt_inf;
 
 #if (DOSX & DOS4GW)
-#pragma pack(__pop);
+#include <sys/packoff.h>
 #endif
 
 /*

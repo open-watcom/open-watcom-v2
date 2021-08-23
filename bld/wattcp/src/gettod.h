@@ -1,7 +1,7 @@
 #ifndef __GETTIMEOFDAY_H
 #define __GETTIMEOFDAY_H
 
-#if !defined(__SYS_WTIME_H)
+#if !defined(__DJGPP__) && !defined(__SYS_WTIME_H)
 struct timeval {
        time_t tv_sec;
        long   tv_usec;

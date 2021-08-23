@@ -389,21 +389,21 @@ extern int _watt_no_config;
 /*
  * Various function-pointer hooks etc.
  */
-extern int  (*_printf)(const char *, ...);  /* only if defined USE_DEBUG */
-extern void (*_outch)(char c);              /* or else user must define it */
-extern int  (*_resolve_hook)(void);
+extern int  (*_printf) (const char *, ...); /* only if defined USE_DEBUG */
+extern void (*_outch)  (char c);            /* or else user must define it */
+extern int  (*_resolve_hook) (void);
 
-extern int  (*tftp_writer)(const void *buf, unsigned length);
-extern int  (*tftp_terminator)(void);
+extern int (*tftp_writer) (const void *buf, unsigned length);
+extern int (*tftp_terminator) (void);
 
-extern void  outs( const char *s );
-extern void  outsnl( const char *s );
-extern void  outsn( const char *s, int n );
-extern void  outhexes( const char *s, int n );
-extern void  outhex( char ch );
+extern void  outs    (const char *s);
+extern void  outsnl  (const char *s);
+extern void  outsn   (const char *s, int n);
+extern void  outhexes(const char *s, int n);
+extern void  outhex  (char ch);
 
-extern int   _ping( DWORD host, DWORD num, const BYTE *pattern, int len );
-extern DWORD _chk_ping( DWORD host, DWORD *ping_num );
+extern int   _ping     (DWORD host, DWORD num, const BYTE *pattern, int len);
+extern DWORD _chk_ping (DWORD host, DWORD *ping_num);
 
 extern void  _eth_init         (void);
 extern void  _eth_release      (void);
@@ -559,6 +559,11 @@ extern void backgroundfn  (void (*func)(void));
 
 extern int ffs    (int mask);
 extern int Random (unsigned a, unsigned b);
+
+#if defined (__HIGHC__)
+  extern int system (const char *cmd);
+  pragma Alias (system, "_mw_watt_system");
+#endif
 
 #ifdef __cplusplus
 };

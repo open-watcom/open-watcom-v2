@@ -789,13 +789,13 @@ static int tcp_ProcessAck (sock_type *sk, tcp_Header *tcp_hdr, long *unacked)
 int _tcp_reset (sock_type *sk, const in_Header *his_ip, tcp_Header *old_tcp_hdr,
                 const char *file, unsigned line)
 {
-#pragma pack(__push,1);
+    #include <sys/packon.h>
     struct packet {
          in_Header  ip;
          tcp_Header tcp_hdr;
          WORD       options[2];
        } *pkt;
-#pragma pack(__pop);
+    #include <sys/packoff.h>
 
     static DWORD next_RST_time = 0UL;
 

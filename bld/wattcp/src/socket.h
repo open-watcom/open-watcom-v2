@@ -9,6 +9,13 @@
 #ifndef __SOCKET_H
 #define __SOCKET_H
 
+#if defined(__TURBOC__) && (__TURBOC__ <= 0x301)
+  /*
+   * Prevent tcc <= 2.01 from even looking at this.
+   */
+  #define BOOL int
+#else
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -133,7 +140,11 @@ typedef struct Socket {
  * Let first socket (non-djgpp) start above 0 in order not to
  * confuse sockets with stdin/stdout/stderr handles.
  */
-#define S_FIRST  3    /* skip handles 0-2 */
+#ifdef __DJGPP__
+  #define S_FIRST  0    /* first socket will always be >3 */
+#else
+  #define S_FIRST  3    /* skip handles 0-2 */
+#endif
 
 
 /*
@@ -215,7 +226,9 @@ typedef struct Socket {
 /*
  * Yielding in connect/select/accept loops reduces CPU-loading.
  */
-#if (DOSX & (DOS4GW|WDOSX))
+#if (DOSX & DJGPP)
+  #define SOCK_YIELD()         __dpmi_yield()
+#elif (DOSX & (DOS4GW|WDOSX))
   #define SOCK_YIELD()         dpmi_dos_yield(), kbhit()
 #else
   #define SOCK_YIELD()         kbhit()
@@ -303,7 +316,11 @@ extern void _sock_enter_scope (void);
 extern void _sock_leave_scope (void);
 extern void bsd_fortify_print (const char *buf);
 
-extern void _sock_debugf (const Socket *socket, const char *fmt, ...);
+extern void _sock_debugf (const Socket *socket, const char *fmt, ...)
+#ifdef __GNUC__
+  __attribute__((format(printf,2,3)))
+#endif
+;
 
 #ifdef USE_DEBUG
   #define SOCK_DEBUGF(x)   _sock_debugf x
@@ -321,4 +338,5 @@ extern int _UDP_open   (Socket *socket, struct in_addr host, WORD loc_port, WORD
 extern int _TCP_listen (Socket *socket, struct in_addr host, WORD loc_port);
 extern int _UDP_listen (Socket *socket, struct in_addr host, WORD port);
 
+#endif  /* old __TURBOC__ */
 #endif  /* __SOCKET_H     */

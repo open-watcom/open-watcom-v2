@@ -7,3 +7,12 @@
 #ifndef __SYS_WERRNO_H
 #include <sys/werrno.h>
 #endif
+
+/*
+ * This only work with gcc's pre-processor
+ *
+ * #ifdef __GNUC__
+ * #include_next <sys/errno.h>
+ * #endif
+ *
+ */

@@ -14,7 +14,7 @@
 #define HW_TYPE_APPLETALK 8
 #define HW_TYPE_FDDI      9   /* correct? */
 
-#pragma pack(__push,1);
+#include <sys/packon.h>  /* align structs on byte boundaries */
 
 /*
  * The Ethernet header
@@ -129,7 +129,7 @@ typedef union link_Packet {
         struct pppoe_Packet pppoe;  /* _pktdevclass = PD_ETHER */
       } link_Packet;
 
-#pragma pack(__pop);
+#include <sys/packoff.h>           /* restore default packing */
 
 
 extern BOOL        _ip_recursion;

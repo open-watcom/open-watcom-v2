@@ -4,6 +4,10 @@
  * Watt-32 sys_errlist replaces vendor's sys_errlist
  */
 
+#ifndef __WATCOMC__
+#error This file is only for use by "__WATCOMC__"
+#endif
+
 char __syserr41[] = "Operation would block (EWOULDBLOCK)";
 char __syserr13[] = "Argument too large (EDOM)";
 char __syserr14[] = "Result too large (ERANGE)";
@@ -99,24 +103,28 @@ char __syserr92[] = "Disc quota exceeded (EDQUOT)";
 char __syserr93[] = "RVD related disk error (EVDBAD)";
 char __syserr94[] = "Out of remote working directory stuctures (ENORMTWD)";
 
+#if __WATCOMC__ > 1290
 char * _WCDATA SYS_ERRLIST[] = {
-    __syserr00,  __syserr01,  __syserr02,  __syserr03,  __syserr04,
-    __syserr05,  __syserr06,  __syserr07,  __syserr08,  __syserr09,
-    __syserr10,  __syserr11,  __syserr12,  __syserr13,  __syserr14,
-    __syserr15,  __syserr16,  __syserr17,  __syserr18,  __syserr19,
-    __syserr20,  __syserr21,  __syserr22,  __syserr23,  __syserr24,
-    __syserr25,  __syserr26,  __syserr27,  __syserr28,  __syserr29,
-    __syserr30,  __syserr31,  __syserr32,  __syserr33,  __syserr34,
-    __syserr35,  __syserr36,  __syserr37,  __syserr38,  __syserr39,
-    __syserr40,  __syserr41,  __syserr42,  __syserr43,  __syserr44,
-    __syserr45,  __syserr46,  __syserr47,  __syserr48,  __syserr49,
-    __syserr50,  __syserr51,  __syserr52,  __syserr53,  __syserr54,
-    __syserr55,  __syserr56,  __syserr57,  __syserr58,  __syserr59,
-    __syserr60,  __syserr61,  __syserr62,  __syserr63,  __syserr64,
-    __syserr65,  __syserr66,  __syserr67,  __syserr68,  __syserr69,
-    __syserr70,  __syserr71,  __syserr72,  __syserr73,  __syserr74,
-    __syserr75,  __syserr76,  __syserr77,  __syserr78,  __syserr79,
-    __syserr80,  __syserr81,  __syserr82,  __syserr83,  __syserr84,
-    __syserr85,  __syserr86,  __syserr87,  __syserr88,  __syserr89,
-    __syserr90,  __syserr91,  __syserr92,  __syserr93,  __syserr94,
+#else
+char *SYS_ERRLIST[] = {
+#endif
+    __syserr00,  __syserr01,  __syserr02,  __syserr03,  __syserr04, 
+    __syserr05,  __syserr06,  __syserr07,  __syserr08,  __syserr09, 
+    __syserr10,  __syserr11,  __syserr12,  __syserr13,  __syserr14, 
+    __syserr15,  __syserr16,  __syserr17,  __syserr18,  __syserr19, 
+    __syserr20,  __syserr21,  __syserr22,  __syserr23,  __syserr24, 
+    __syserr25,  __syserr26,  __syserr27,  __syserr28,  __syserr29, 
+    __syserr30,  __syserr31,  __syserr32,  __syserr33,  __syserr34, 
+    __syserr35,  __syserr36,  __syserr37,  __syserr38,  __syserr39, 
+    __syserr40,  __syserr41,  __syserr42,  __syserr43,  __syserr44, 
+    __syserr45,  __syserr46,  __syserr47,  __syserr48,  __syserr49, 
+    __syserr50,  __syserr51,  __syserr52,  __syserr53,  __syserr54, 
+    __syserr55,  __syserr56,  __syserr57,  __syserr58,  __syserr59, 
+    __syserr60,  __syserr61,  __syserr62,  __syserr63,  __syserr64, 
+    __syserr65,  __syserr66,  __syserr67,  __syserr68,  __syserr69, 
+    __syserr70,  __syserr71,  __syserr72,  __syserr73,  __syserr74, 
+    __syserr75,  __syserr76,  __syserr77,  __syserr78,  __syserr79, 
+    __syserr80,  __syserr81,  __syserr82,  __syserr83,  __syserr84, 
+    __syserr85,  __syserr86,  __syserr87,  __syserr88,  __syserr89, 
+    __syserr90,  __syserr91,  __syserr92,  __syserr93,  __syserr94, 
 };

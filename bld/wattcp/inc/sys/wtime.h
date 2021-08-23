@@ -9,9 +9,18 @@
 
 #include <time.h>
 
+#ifdef __BORLANDC__
+#undef timezone   /* a macro in bcc 5+ */
+#endif
+
 #ifndef __SYS_CDEFS_H
 #include <sys/cdefs.h>
 #endif
+
+#ifdef __DJGPP__
+  #include <sys/time.h>
+  #include <sys/times.h>
+#else
 
   struct timeval {
          time_t tv_sec;
@@ -46,6 +55,8 @@
   extern int gettimeofday (struct timeval *tp, struct timezone *tz);
 
   __END_DECLS
+
+#endif      /* !__DJGPP__ */
 
 #ifndef HZ
 #define HZ 18.2F

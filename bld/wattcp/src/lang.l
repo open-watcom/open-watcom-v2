@@ -343,7 +343,7 @@ static int Compare (const struct Elem *a, const struct Elem *b)
  * Sort the linked list in accending order of CRC value
  */
 static int SortLanguageEntries (DWORD num)
-{
+{ 
   struct Node *lng, *next;
   struct Elem *array = malloc ((size_t)(num * sizeof(*array)));
 
@@ -473,11 +473,15 @@ static void Abort (const char *s1, const char *s2)
 {
   if (lang.line > 0)
   {
+#ifdef __DJGPP__
+    (*_printf) ("\r\nline %lu: ", lang.line);
+#else
     char buf [15];
     ltoa (lang.line, buf, 10);
     outs ("\r\nline ");
     outs (buf);
     outs (": ");
+#endif
   }
   else
     outs ("\r\n");
@@ -494,12 +498,16 @@ static void Abort (const char *s1, const char *s2)
  */
 static void error (const char *err)
 {
+#ifdef __DJGPP__
+  (*_printf) ("%s at line %lu\r\n", err, lang.line);
+#else
   char buf [15];
   ltoa (lang.line, buf, 10);
   outs (err);
   outs (" at line ");
   outs (buf);
   outs ("\r\n");
+#endif
 }
 
 #if defined(TEST_PROG)

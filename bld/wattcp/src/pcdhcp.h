@@ -100,7 +100,7 @@ enum { PAD_OPT                  =  0,
        DHCP_STDA_SRVS           = 76
      };
 
-#pragma pack(__push,1);
+#include <sys/packon.h>
 
 struct dhcp  {
        BYTE  dh_op;         /* packet op code / message type.            */
@@ -130,7 +130,8 @@ struct dhcp  {
 
 #define DHCP_MIN_SIZE (sizeof(struct dhcp) - 64 - 128 - 312)
 
-#pragma pack(__pop);
+#include <sys/packoff.h>
+
 
 struct DHCP_list {
        BYTE *data;

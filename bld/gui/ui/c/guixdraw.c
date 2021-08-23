@@ -325,7 +325,7 @@ static void WndClean( gui_window *wnd )
  * GUIWndRfrshArea -- refresh a portion of the use are of the screen
  */
 
-void GUIWndRfrshArea( gui_window *wnd, const guix_rect *scr_rect )
+void GUIWndRfrshArea( gui_window *wnd, SAREA *area )
 {
     gui_control *control;
     gui_row_num row_num;
@@ -346,7 +346,7 @@ void GUIWndRfrshArea( gui_window *wnd, const guix_rect *scr_rect )
         frame_adjust = 1;
     }
 
-    if( (wnd->flags & CONTENTS_INVALID) && !EMPTY_AREA( *scr_rect ) ) {
+    if( (wnd->flags & CONTENTS_INVALID) && !EMPTY_AREA( *area ) ) {
         hscroll = 0;
         vscroll = 0;
         if( GUI_WND_VISIBLE( wnd ) ) {
@@ -356,7 +356,7 @@ void GUIWndRfrshArea( gui_window *wnd, const guix_rect *scr_rect )
             if( GUI_DO_VSCROLL( wnd ) ) {
                 vscroll = wnd->vgadget->pos;
             }
-            COPYRECTX( *scr_rect, wnd->dirty );
+            COPYRECTX( *area, wnd->dirty );
             if( ( wnd->dirty.col + wnd->dirty.width ) >
                 ( wnd->vs.area.col + wnd->vs.area.width ) ) {
                 wnd->dirty.width = wnd->vs.area.col + wnd->vs.area.width -
@@ -372,8 +372,8 @@ void GUIWndRfrshArea( gui_window *wnd, const guix_rect *scr_rect )
                     wnd->background );
 
         if( GUI_WND_VISIBLE( wnd ) && (wnd->flags & DONT_SEND_PAINT) == 0 ) {
-            row_num.start = vscroll + scr_rect->row - frame_adjust;
-            row_num.num = scr_rect->height;
+            row_num.start = vscroll + area->row - frame_adjust;
+            row_num.num = area->height;
             GUIEVENT( wnd, GUI_PAINT, &row_num );
         }
         for( control = wnd->controls; control != NULL; control = control->sibling ) {

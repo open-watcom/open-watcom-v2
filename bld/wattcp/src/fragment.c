@@ -510,7 +510,7 @@ void chk_timeout_frags (void)
 /*----------------------------------------------------------------------*/
 
 #if defined(TEST_PROG)  /* a small djgpp test program */
-#undef _FP_OFF
+#undef FP_OFF
 #undef enable
 #undef disable
 

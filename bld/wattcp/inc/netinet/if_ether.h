@@ -13,8 +13,8 @@
  *    documentation and/or other materials provided with the distribution.
  * 3. All advertising materials mentioning features or use of this software
  *    must display the following acknowledgement:
- *      This product includes software developed by the University of
- *      California, Berkeley and its contributors.
+ *	This product includes software developed by the University of
+ *	California, Berkeley and its contributors.
  * 4. Neither the name of the University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
@@ -31,14 +31,14 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *      from: @(#)if_ether.h    7.5 (Berkeley) 6/28/90
- *      $Id: if_ether.h,v 1.8 1994/02/02 05:58:54 hpeyerl Exp $
+ *	from: @(#)if_ether.h	7.5 (Berkeley) 6/28/90
+ *	$Id: if_ether.h,v 1.8 1994/02/02 05:58:54 hpeyerl Exp $
  */
 
 #ifndef __NETINET_IF_ETHER_H
 #define __NETINET_IF_ETHER_H
 
-#pragma pack(__push,1);
+#include <sys/packon.h>
 
 /*
  * Ethernet address - 6 octets
@@ -57,21 +57,21 @@ struct ether_header {
        u_short ether_type;
      };
 
-#define ETHERTYPE_PUP           0x0200  /* PUP protocol */
+#define	ETHERTYPE_PUP		0x0200	/* PUP protocol */
 /* the IBM header corrects the following to 0x608 for OS/2 but I believe
- * this is just a dirty hack
+ * this is just a dirty hack 
  */
-#define ETHERTYPE_ARP           0x0806  /* address resolution protocol */
-#define ETHERTYPE_IP            0x0800  /* IP protocol */
-#define ETHERTYPE_REVARP        0x8035  /* reverse addr resolution protocol */
+#define	ETHERTYPE_ARP		0x0806	/* address resolution protocol */
+#define	ETHERTYPE_IP		0x0800	/* IP protocol */
+#define	ETHERTYPE_REVARP	0x8035	/* reverse addr resolution protocol */
 
 /*
  * The ETHERTYPE_NTRAILER packet types starting at ETHERTYPE_TRAIL have
  * (type-ETHERTYPE_TRAIL)*512 bytes of data followed
  * by an ETHER type (as given above) and then the (variable-length) header.
  */
-#define ETHERTYPE_TRAIL         0x1000          /* Trailer packet */
-#define ETHERTYPE_NTRAILER      16
+#define	ETHERTYPE_TRAIL		0x1000		/* Trailer packet */
+#define	ETHERTYPE_NTRAILER	16
 
 #define ETHERMTU                1500
 #define ETHERMIN                (60-14)
@@ -81,9 +81,9 @@ struct ether_header {
  * The high-order 25 bits of the Ethernet address are statically assigned,
  * and the low-order 23 bits are taken from the low end of the IP address.
  */
-#define ETHER_MAP_IP_MULTICAST(ipaddr, enaddr) \
-        /* struct in_addr *ipaddr; */ \
-        /* u_char enaddr[6];       */ \
+#define	ETHER_MAP_IP_MULTICAST(ipaddr, enaddr) \
+	/* struct in_addr *ipaddr; */ \
+	/* u_char enaddr[6];       */ \
         { \
           (enaddr)[0] = 0x01; \
           (enaddr)[1] = 0x00; \
@@ -98,7 +98,7 @@ struct ether_header {
  * Ethernet Address Resolution Protocol.
  *
  * See RFC 826 for protocol description.  Structure below is adapted
- * to resolving internet addresses.  Field names used correspond to
+ * to resolving internet addresses.  Field names used correspond to 
  * RFC 826.
  */
 struct ether_arp {
@@ -108,11 +108,11 @@ struct ether_arp {
        u_char  arp_tha[6];     /* target hardware address */
        u_char  arp_tpa[4];     /* target protocol address */
      };
-#define arp_hrd ea_hdr.ar_hrd
-#define arp_pro ea_hdr.ar_pro
-#define arp_hln ea_hdr.ar_hln
-#define arp_pln ea_hdr.ar_pln
-#define arp_op  ea_hdr.ar_op
+#define	arp_hrd	ea_hdr.ar_hrd
+#define	arp_pro	ea_hdr.ar_pro
+#define	arp_hln	ea_hdr.ar_hln
+#define	arp_pln	ea_hdr.ar_pln
+#define	arp_op	ea_hdr.ar_op
 
 
 /*
@@ -120,7 +120,7 @@ struct ether_arp {
  * the address resolution code.  For example, each ec_softc or il_softc
  * begins with this structure.
  */
-struct  arpcom {
+struct	arpcom {
         struct  ifnet ac_if;               /* network-visible interface */
         u_char  ac_enaddr[6];              /* ethernet hardware address */
         struct in_addr ac_ipaddr;          /* copy of ip address- XXX */
@@ -132,17 +132,17 @@ struct  arpcom {
  * Internet to ethernet address resolution table.
  */
 
-struct  arptab {
-        struct  in_addr at_iaddr;       /* internet address */
-        u_char  at_enaddr[6];           /* ethernet address */
-        u_char  at_timer;               /* minutes since last reference */
-        u_char  at_flags;               /* flags */
-        struct  mbuf *at_hold;          /* last packet until resolved/timeout */
+struct	arptab {
+	struct	in_addr at_iaddr;	/* internet address */
+	u_char	at_enaddr[6];		/* ethernet address */
+	u_char	at_timer;		/* minutes since last reference */
+	u_char	at_flags;		/* flags */
+	struct	mbuf *at_hold;		/* last packet until resolved/timeout */
 /* only os2 */
-        u_short at_rcf;
+	u_short	at_rcf;
         u_short at_rseg[8];
-        u_long at_millisec;
-        int at_interface;
+	u_long at_millisec;
+	int at_interface;
 };
 
 
@@ -177,24 +177,24 @@ struct ether_multistep {
        struct ether_multi  *e_enm;
      };
 
-#pragma pack(__pop);
+#include <sys/packoff.h>
 
 /*
  * Macro for looking up the ether_multi record for a given range of Ethernet
  * multicast addresses connected to a given arpcom structure.  If no matching
  * record is found, "enm" returns NULL.
  */
-#define ETHER_LOOKUP_MULTI(addrlo, addrhi, ac, enm) \
-        /* u_char addrlo[6]; */ \
-        /* u_char addrhi[6]; */ \
-        /* struct arpcom *ac; */ \
-        /* struct ether_multi *enm; */ \
+#define	ETHER_LOOKUP_MULTI(addrlo, addrhi, ac, enm) \
+	/* u_char addrlo[6]; */ \
+	/* u_char addrhi[6]; */ \
+	/* struct arpcom *ac; */ \
+	/* struct ether_multi *enm; */ \
 { \
-        for ((enm) = (ac)->ac_multiaddrs; \
-            (enm) != NULL && \
-            (bcmp((enm)->enm_addrlo, (addrlo), 6) != 0 || \
-             bcmp((enm)->enm_addrhi, (addrhi), 6) != 0); \
-                (enm) = (enm)->enm_next); \
+	for ((enm) = (ac)->ac_multiaddrs; \
+	    (enm) != NULL && \
+	    (bcmp((enm)->enm_addrlo, (addrlo), 6) != 0 || \
+	     bcmp((enm)->enm_addrhi, (addrhi), 6) != 0); \
+		(enm) = (enm)->enm_next); \
 }
 
 /*
@@ -204,21 +204,21 @@ struct ether_multistep {
  * and get the first record.  Both macros return a NULL "enm" when there
  * are no remaining records.
  */
-#define ETHER_NEXT_MULTI(step, enm) \
-        /* struct ether_multistep step; */  \
-        /* struct ether_multi *enm; */  \
+#define	ETHER_NEXT_MULTI(step, enm) \
+	/* struct ether_multistep step; */  \
+	/* struct ether_multi *enm; */  \
 { \
-        if (((enm) = (step).e_enm) != NULL) \
-                (step).e_enm = (enm)->enm_next; \
+	if (((enm) = (step).e_enm) != NULL) \
+		(step).e_enm = (enm)->enm_next; \
 }
 
-#define ETHER_FIRST_MULTI(step, ac, enm) \
-        /* struct ether_multistep step; */ \
-        /* struct arpcom *ac; */ \
-        /* struct ether_multi *enm; */ \
+#define	ETHER_FIRST_MULTI(step, ac, enm) \
+	/* struct ether_multistep step; */ \
+	/* struct arpcom *ac; */ \
+	/* struct ether_multi *enm; */ \
 { \
-        (step).e_enm = (ac)->ac_multiaddrs; \
-        ETHER_NEXT_MULTI((step), (enm)); \
+	(step).e_enm = (ac)->ac_multiaddrs; \
+	ETHER_NEXT_MULTI((step), (enm)); \
 }
 
 #endif

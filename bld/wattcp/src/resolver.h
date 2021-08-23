@@ -77,6 +77,12 @@
 #ifndef __RESOLVER_H_
 #define __RESOLVER_H_
 
+#if defined(__TURBOC__) && (__TURBOC__ <= 0x301)
+  /*
+   * Prevent tcc <= 2.01 from even looking at this.
+   */
+#else
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -118,4 +124,5 @@ extern void res_init0 (void);
 #define ALLOW_T_UNSPEC   0  /* enable the "unspec" RR type for old athena (ucb) */
 #define ALLOW_UPDATES    0  /* 1: enable updating resource records */
 
+#endif  /* old __TURBOC__ */
 #endif  /* __RESOLVER_H_  */

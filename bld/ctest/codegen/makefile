@@ -94,8 +94,6 @@ test_set_result : .symbolic ./chk_exec.exe
     -$]@ exec.out >> error.out
 
 clean : .procedure
-!ifndef debug
     @%make echo_clean
     @%make common_clean
     @if exist failure $(noecho)rm -f failure
-!endif

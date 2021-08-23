@@ -34,6 +34,9 @@
 #include "profile.h"
 #include "pcconfig.h"
 
+#ifdef __BORLANDC__
+#pragma warn -pro
+#endif
 
 int  debug_on          = 0;    /* tcp-state machine debug */
 int  sock_delay        = 30;
@@ -392,12 +395,11 @@ static void do_include_file (const char *value, int len)
 
 static void do_profile (const char *value)
 {
-#if defined(_M_I86)
-  ARGSUSED (value);
-#else
-  if (*value == '1') {
+#if defined(__DJGPP__) || defined(WATCOM386)
+  if (*value == '1')
      profile_init();
-  }
+#else
+  ARGSUSED (value);
 #endif
 }
 
@@ -503,6 +505,10 @@ int tcp_config (const char *path)
 
   if (!path)
   {
+#if (DOSX & DJGPP)     /* 2.02 bug; _osmajor/_osminor not set in crt0.o */
+    (void) _get_dos_version (0);
+#endif
+
     /* First try to open 'WATTCP.CFG' in the directory specified
      * by $(WATTCP.CFG) or $(WATTCP_CFG).
      */
@@ -523,8 +529,31 @@ int tcp_config (const char *path)
     {
       int slash = '\\';
 
+#if defined (__HIGHC__)
+      CONFIG_INF cnf;
+      char      *arg0;
+      extern char *GetArg0 (USHORT sel);     /* except.lib */
+
+      _dx_config_inf (&cnf, (UCHAR*)&cnf);
+      arg0 = GetArg0 (cnf.c_env_sel);
+      if (arg0)
+           strncpy (name, arg0, sizeof(name)-1);
+      else name[0] = 0;
+
+#elif defined (__DJGPP__)
+      extern char **__crt0_argv;
+      if (!__crt0_argv || !__crt0_argv[0])
+           name[0] = 0;
+      else strncpy (name, __crt0_argv[0], sizeof(name)-1);
+      slash = '/';
+
+#elif defined (_MSC_VER)
+      extern char **__argv;
+      strncpy (name, __argv[0], sizeof(name)-1);
+#else
       extern char **_argv;   /* Borland, Watcom */
       strncpy (name, _argv[0], sizeof(name)-1);
+#endif
 
       name [sizeof(name)-1] = '\0';  /* in case strncpy() barfed */
 
@@ -680,3 +709,4 @@ int is_multicast (DWORD ip)
      return (1);
   return (0);
 }
+

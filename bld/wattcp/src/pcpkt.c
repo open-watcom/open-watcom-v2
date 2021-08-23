@@ -30,6 +30,7 @@
 #include "pcpkt.h"
 #include "pcpkt32.h"
 
+/*@-usedef@*/
 
 WORD _pktdevclass = PD_ETHER;     /* Ethernet, Token, FDDI etc.       */
 WORD _pkt_ip_ofs  = 0;            /* ofs from link-layer head to ip   */
@@ -61,6 +62,22 @@ static WORD pkt_interrupt = 0;
   #define RX_BUF()    (TX_BUF() + IP_SIZE)
   #define RDATA_SIZE  (RX_BUF() + IP_SIZE)
 
+#elif (DOSX & DJGPP)
+  static _go32_dpmi_seginfo rm_cb;
+  static __dpmi_regs  rm_reg;
+  static DWORD        rm_base;
+
+  /*
+   * real-data is organised as follows: PKT_TMP at rm_base + 0
+   *                                    TX_BUF  at PKT_TMP + 30
+   *                                    RX_BUF  at TX_BUF  + IP_SIZE
+   */
+  #define PKT_TMP()     0
+  #define TX_BUF()      (PKT_TMP() + 30)
+  #define RX_BUF()      (TX_BUF() + IP_SIZE)
+  #define RDATA_SIZE    (RX_BUF() + IP_SIZE)
+  #define RP_SEG()      _pkt_inf->rm_mem.rm_segment
+
 #elif (DOSX & DOS4GW)         /* All DOS4GW type extenders (not WDOSX) */
 
   static BYTE *rm_base;       /* Linear address (in DOS) for allocated area */
@@ -75,17 +92,17 @@ static WORD pkt_interrupt = 0;
    * in application will most likely hang the machine.
    *
    * Real-mode code/data is organised like this:
-   *   pkt_receiver32_start copied to allocated area at rm_base
-   *   PKT_TMP   at rm_base + (pkt_receiver32_end - pkt_receiver32_start)
+   *   pkt_receiver4_start copied to allocated area at rm_base
+   *   PKT_TMP   at rm_base + (pkt_receiver4_end - pkt_receiver4_start)
    *   TX_BUF    at PKT_TMP + 30
    *   end area  at TX_BUF + IP_SIZE
    *   RX_BUF is in DOS-allocated `_pkt_inf' structure.
    */
-  #define PKT_TMP()     ((DWORD)&pkt_receiver32_end -  \
-                         (DWORD)&pkt_receiver32_start)
+  #define PKT_TMP()     ((DWORD)&pkt_receiver4_end -  \
+                         (DWORD)&pkt_receiver4_start)
   #define TX_BUF()      (PKT_TMP() + 30)
-  #define RCV_OFS()     ((DWORD)&pkt_receiver32_rm - \
-                         (DWORD)&pkt_receiver32_start)
+  #define RCV_OFS()     ((DWORD)&pkt_receiver4_rm - \
+                         (DWORD)&pkt_receiver4_start)
   #define RP_SEG()      rm_base_seg
 
 #elif (DOSX & WDOSX)
@@ -106,16 +123,32 @@ static WORD pkt_interrupt = 0;
   #define RP_SEG()      rm_base_seg
   #define RCV_OFS()     rm_cb.cb_offset
 
+#elif (DOSX & POWERPAK)    /* to-do !! */
+  #define PKT_TMP()     0  /* for now */
+  #define TX_BUF()      (PKT_TMP() + 30)
+  #define RX_BUF()      (TX_BUF() + IP_SIZE)
+  #define RDATA_SIZE    (RX_BUF() + IP_SIZE)
+  #define RP_SEG()      0
+
 #else  /* r-mode targets */
 
+  void (_cdecl _far * pkt_enque_ptr) (BYTE _far *buf, WORD len, WORD handle);
+  void (_cdecl _far *_pkt_enque_ptr) (BYTE _far *buf, WORD len, WORD handle);
+
+  #ifdef _MSC_VER       /* 16-bit Microsoft C compilers (v6+) */
+    #undef  FP_SEG
+    #undef  FP_OFF
+  //#define FP_SEG(p) (WORD)((DWORD)(p) >> 16)
+  //#define FP_OFF(p) (WORD)((DWORD)(p) & 0xFFFF)
+    #define FP_SEG(p) ((unsigned)(_segment)(void _far *)(p))
+    #define FP_OFF(p) ((unsigned)(p))
+  #endif
 #endif
 
 #if (DOSX)
   static int setup_rmode_callback (void);
   static int lock_code_and_data   (void);
   static int unlock_code_and_data (void);
-
-  static int (*_pkt32_drvr)(IREGS*) = NULL;
 #endif
 
 static int  release_handles (BOOL quiet);
@@ -171,7 +204,7 @@ static const char * pkt_errStr (BYTE code)
 }
 
 
-#if (DOSX & DOS4GW) && 0     /* test asmpkt32.asm !! */
+#if (DOSX & DOS4GW) && 0     /* test asmpkt4.asm !! */
 static void dump_asm4 (void)
 {
   BYTE *p = rm_base;
@@ -283,6 +316,23 @@ static int pkt_set_access (void)
   memcpy (&regs5, &regs, sizeof(regs5)); /* make copy for PPPoE type */
   regs5.r_si += sizeof(WORD)*tlen;
 
+#elif (DOSX & DJGPP)
+  if (tlen)
+     dosmemput (types, num_types*tlen, rm_base + PKT_TMP());
+
+  regs.r_ds = RP_SEG();
+  regs.r_si = PKT_TMP();
+  regs.r_es = rm_cb.rm_segment;
+  regs.r_di = rm_cb.rm_offset;
+  memcpy (&regs2, &regs, sizeof(regs2));
+  regs2.r_si += tlen;
+  memcpy (&regs3, &regs, sizeof(regs3));
+  regs3.r_si += sizeof(WORD)*tlen;
+  memcpy (&regs4, &regs, sizeof(regs4));
+  regs4.r_si += sizeof(WORD)*tlen;
+  memcpy (&regs5, &regs, sizeof(regs5));
+  regs5.r_si += sizeof(WORD)*tlen;
+
 #elif (DOSX & DOS4GW)
   if (tlen)
      memcpy ((void*)(rm_base + PKT_TMP()), types, num_types*tlen);
@@ -317,14 +367,17 @@ static int pkt_set_access (void)
   memcpy (&regs5, &regs, sizeof(regs5));
   regs5.r_si += sizeof(WORD)*tlen;
 
+#elif (DOSX & POWERPAK)
+  UNFINISHED();
+
 #else /* real-mode targets */
   if (types)
   {
-    regs.r_ds = _FP_SEG(&types[0]);       /* = global DS */
-    regs.r_si = _FP_OFF(&types[0]);
+    regs.r_ds = FP_SEG (&types[0]);       /* = global DS */
+    regs.r_si = FP_OFF (&types[0]);
   }
-  regs.r_es = _FP_SEG(pkt_receiver_rm);   /* = this CS */
-  regs.r_di = _FP_OFF(pkt_receiver_rm);
+  regs.r_es = FP_SEG (pkt_receiver_rm);   /* = this CS */
+  regs.r_di = FP_OFF (pkt_receiver_rm);
 
   memcpy (&regs2, &regs, sizeof(regs2));
   regs2.r_si += tlen;
@@ -420,6 +473,12 @@ static int pkt_drvr_info (void)
         regs.r_si = PKT_TMP();
         regs.r_es = RP_SEG (rm_base);
         regs.r_di = 0;
+#elif (DOSX & DJGPP)
+        _farpokew (_dos_ds, rm_base + PKT_TMP(), ip_type);
+        regs.r_ds = RP_SEG();
+        regs.r_si = PKT_TMP();
+        regs.r_es = rm_cb.rm_segment;
+        regs.r_di = rm_cb.rm_offset;
 #elif (DOSX & DOS4GW)
         *(WORD*) (rm_base + PKT_TMP()) = ip_type;
         regs.r_ds = RP_SEG();
@@ -432,11 +491,13 @@ static int pkt_drvr_info (void)
         regs.r_si = PKT_TMP();
         regs.r_es = rm_cb.cb_segment;
         regs.r_di = rm_cb.cb_offset;
+#elif (DOSX & POWERPAK)
+        UNFINISHED();
 #else
-        regs.r_ds = _FP_SEG(&ip_type);
-        regs.r_si = _FP_OFF(&ip_type);
-        regs.r_es = _FP_SEG(pkt_receiver_rm);
-        regs.r_di = _FP_OFF(pkt_receiver_rm);
+        regs.r_ds = FP_SEG (&ip_type);
+        regs.r_si = FP_OFF (&ip_type);
+        regs.r_es = FP_SEG (pkt_receiver_rm);
+        regs.r_di = FP_OFF (pkt_receiver_rm);
 #endif
         if (PKT_API(&regs))
            break;
@@ -494,7 +555,8 @@ static int pkt_drvr_info (void)
 
 /**************************************************************************/
 
-#pragma pack(__push,1);
+#include <sys/packon.h>
+
 static struct {
        BYTE  major_rev;      /* Revision of Packet Driver spec */
        BYTE  minor_rev;      /*  this driver conforms to. */
@@ -506,7 +568,8 @@ static struct {
        WORD  xmt_bufs;       /* (# of successive xmits) - 1 */
        WORD  int_num;        /* interrupt for post-EOI processing */
      } pkt_params;
-#pragma pack(__pop);
+
+#include <sys/packoff.h>
 
 static BOOL got_params = FALSE;
 
@@ -525,11 +588,17 @@ static int pkt_get_params (void)
     ReadRealMem (&pkt_params, rp, sizeof(pkt_params));
   }
 
+#elif (DOSX & DJGPP)
+  dosmemget (regs.r_di + (regs.r_es << 4), sizeof(pkt_params), &pkt_params);
+
 #elif (DOSX & (DOS4GW|WDOSX))
   memcpy (&pkt_params, SEG_OFS_TO_LIN(regs.r_es,regs.r_di), sizeof(pkt_params));
 
+#elif (DOSX & POWERPAK)
+  UNFINISHED();
+
 #else
-  _fmemcpy (&pkt_params, _MK_FP(regs.r_es,regs.r_di), sizeof(pkt_params));
+  _fmemcpy (&pkt_params, MK_FP(regs.r_es,regs.r_di), sizeof(pkt_params));
 #endif
 
   got_params = TRUE;
@@ -556,9 +625,6 @@ int pkt_get_drvr_ver (void)
      return ((pkt_params.major_rev << 8) + pkt_params.minor_rev);
   return (-1);
 }
-
-/**************************************************************************/
-
 
 /*
  * pkt_init - Called from pkt_eth_init() to search for PKT-DRVR.
@@ -646,13 +712,25 @@ static int pkt_init (void)
 
 /* Disable stack-checking here
  */
-
+#if defined(__HIGHC__)
 #pragma off(check_stack)
+#pragma off(call_trace)
+#pragma off(prolog_trace)
+#pragma off(epilog_trace)
+#endif
 
-//#if defined(__WATCOMC__) && defined(__386__)
+#if defined(__WATCOMC__)
+#pragma off(check_stack)
+#endif
+
+#if defined(WATCOM386)
 //#pragma option -zu                    /* assume SS != DS (doesn't work) */
 //#pragma aux pkt_release __modify[__ss]; /* !! fix-me (doesn't work) */
-//#endif
+#endif
+
+#if (defined(__TURBOC__) || defined(__BORLANDC__)) && !defined(OLD_TURBOC)
+#pragma option -N-
+#endif
 
 /*
  * Release all allocated protocol handles
@@ -721,6 +799,14 @@ int pkt_release (void)
 #if (DOSX & PHARLAP)
   _dx_free_rmode_wrapper (rm_base);
 
+#elif (DOSX & DJGPP)
+  _go32_dpmi_free_real_mode_callback (&rm_cb);
+  __dpmi_error = 0;
+  _go32_dpmi_free_dos_memory (&_pkt_inf->rm_mem);
+  if (__dpmi_error)                /* !!above free function clears eax */
+    fprintf (stderr, "%s (%u): DPMI/DOS error %04Xh\n",
+             __FILE__, __LINE__, __dpmi_error);
+
 #elif (DOSX & DOS4GW)
   if (pkt_rcv_sel) dpmi_real_free (pkt_rcv_sel);
   if (pkt_inf_sel) dpmi_real_free (pkt_inf_sel);
@@ -732,6 +818,9 @@ int pkt_release (void)
   if (rm_base_sel)
      dpmi_real_free (rm_base_sel);
   rm_base_sel = 0;
+
+#elif (DOSX & POWERPAK)
+  UNFINISHED();
 #endif
 
 #if (DOSX)
@@ -746,10 +835,238 @@ int pkt_release (void)
   return (1);
 }
 
-/* Restore default stack checking and tracing
+#if !(DOSX & DOS4GW) /* Not used for DOS4GW targets;
+                      * This is done in asmpkt4.asm
+                      */
+/*
+ *  Enqueue a received packet into '_pkt_inf->ip_queue' or
+ *  '_pkt_inf->arp_queue'.
+ *
+ *  This routine is called from pkt_receiver_rm/_pm().
+ *  The packet has been copied to rx_buffer (in DOS memory) by the
+ *  packet-driver. We now must copy it to correct queue.
+ *  Interrupts are disabled on entry.
+ *
+ *  Note 1: For real-mode targets SS and SP have been setup to a small
+ *          work stack in asmpkt.asm. The stack can only take 64 pushes,
+ *          hence use few local variables here.
+ *
+ *  Note 2: The C-compiler must be told NOT to use register calling
+ *          for this routine (MUST use _cdecl) because it's called from
+ *          asmpkt.asm via `pkt_enque_ptr' function pointer.
+ *
+ *  Note 3: Watcom/DOS4GW targets doesn't use real->prot mode upcall (RMCB),
+ *          but does the following in asmpkt4.asm instead.
+ *
+ *  Note 4: For DOSX targets, all code from pkt_enqueue() down to pkt_end()
+ *          must be locked in memory.
+ *
+ *  HACK: For real-mode targets this routine is called via the
+ *        `pkt_enque_ptr' function pointer. This was the only way
+ *        I could avoid a fixup error for small-model programs.
  */
 
+#if (DOSX)
+static void pkt_enqueue (unsigned rxBuf, WORD rxLen, WORD handle)
+#else
+static void _cdecl _far pkt_enqueue (BYTE _far *rxBuf, WORD rxLen, WORD handle)
+#endif
+{
+  struct pkt_ringbuf *q;
+  int    index;
+
+  if (handle == _pkt_inf->arp_handle && !_pkt_inf->is_serial)
+       q = &_pkt_inf->arp_queue;    /* ARP only packets */
+  else q = &_pkt_inf->ip_queue;     /* RARP, IP, PPPOE packets */
+
+  /* don't use pktq_in_index() and pktq_in_buf() because they
+   * are not in locked code area.
+   */
+  index = q->in_index + 1;
+  if (index >= q->num_buf)
+      index = 0;
+
+  if (index != q->out_index)
+  {
+    char *head   = q->buf_start + (q->buf_size * q->in_index);
+    int   padLen = q->buf_size - 4 - rxLen;
+
+    if (rxLen > q->buf_size - 4)  /* don't overwrite marker */
+    {
+      rxLen  = q->buf_size - 4;
+      padLen = 0;
+    }
+
+#if (DOSX & PHARLAP)
+    ReadRealMem (head, rm_base + rxBuf, rxLen);
+
+#elif (DOSX & DJGPP)
+    dosmemget (rm_base + rxBuf, rxLen, head);
+
+#elif (DOSX & WDOSX)
+    memcpy (head, rm_base + rxBuf, rxLen);
+
+#elif (DOSX & POWERPAK)
+    UNFINISHED();
+
+#else  /* real-mode targets */
+    _fmemcpy (head, rxBuf, rxLen);
+#endif
+
+    /* To stay on the safe side we zero-fill remaining old
+     * data in this buffer.
+     */
+    head += rxLen;
+    while (padLen--)
+       *head++ = 0;
+    q->in_index = index;   /* update buffer tail-index */
+  }
+  else
+    q->num_drop++;
+}
+
+
+/*
+ * We have allocated a real-mode callback (RMCB) to gain control
+ * here when the packet-driver makes an upcall.
+ *
+ * Entry AL = 0; driver requests a buffer. We return ES:DI of real-mode buffer
+ *       BX = handle (IP, ARP or RARP)
+ *       CX = length of packet
+ * Entry AL = 1; driver has put the data in buffer, we then enqueues the buffer
+ *       BX = handle (IP, ARP or RARP)
+ *       CX = length of packet
+ *
+ * Interrupts are disabled on entry.
+ *
+ * to-do!!: allocate a real-stub that calls the RMCB only on the 2nd upcall.
+ */
+#if (DOSX & PHARLAP)
+  static void pkt_receiver_pm (SWI_REGS *r)
+  {
+    if ((BYTE)r->eax == 0)         /* AL == 0; rx-buffer request */
+    {
+      if (!_pkt_inf || (WORD)r->ecx > ETH_MAX) /* !!should be for current driver */
+      {
+        r->es  = 0;
+        r->edi = 0;
+      }
+      else
+      {
+        r->es  = RP_SEG (rm_base);
+        r->edi = RX_BUF();
+      }
+    }
+    else if ((WORD)r->esi && _pkt_inf)   /* AL != 0; rx-buffer filled */
+            pkt_enqueue (RX_BUF(), (WORD)r->ecx, (WORD)r->ebx);
+  }
+
+#elif (DOSX & DJGPP)
+  static void pkt_receiver_pm (void)
+  {
+    __dpmi_regs *r = &rm_reg;
+
+    if (r->h.al == 0)
+    {
+      if (!_pkt_inf || r->x.cx > ETH_MAX)
+      {
+        r->x.es = 0;
+        r->x.di = 0;
+      }
+      else
+      {
+        r->x.es = RP_SEG();
+        r->x.di = RX_BUF();
+      }
+    }
+    else if (r->x.si && _pkt_inf)
+            pkt_enqueue (RX_BUF(), (WORD)r->x.cx, (WORD)r->x.bx);
+  }
+
+#elif (DOSX & WDOSX)      /* !!fix-me: assumes bcc32 */
+  static void pkt_receiver_pm (void)
+  {
+    static struct DPMI_regs *r; /* static because of "pop ebp" below */
+
+    r = &rm_cb.cb_reg;
+    if ((BYTE)r->r_ax == 0)
+    {
+      if (!_pkt_inf || r->r_cx > ETH_MAX)
+      {
+        r->r_es = 0;
+        r->r_di = 0;
+      }
+      else
+      {
+        r->r_es = RP_SEG();
+        r->r_di = RX_BUF();
+      }
+    }
+    else if (_pkt_inf && r->r_si)
+    {
+      static UINT stack [256];  /* !!fix-me: not locked */
+
+      stackset (stack[256-1]);
+      pkt_enqueue (RX_BUF(), r->r_cx, r->r_bx);
+      stackrestore();
+    }
+    __asm {   /* make IRET from this near function */
+      pop ebp
+      iret
+    }
+    /* not reached */
+  }
+
+#elif (DOSX & POWERPAK)
+  static void pkt_receiver_pm (IREGS *r)
+  {
+    UNFINISHED();
+
+    if ((BYTE)r->r_ax == 0)
+    {
+      if (!_pkt_inf || r->r_cx > ETH_MAX)
+      {
+        r->r_es = 0;
+        r->r_di = 0;
+      }
+      else
+      {
+        r->r_es = RP_SEG();
+        r->r_di = RX_BUF();
+      }
+    }
+    else if (r->r_si && _pkt_inf)
+            pkt_enqueue (RX_BUF(), r->r_cx, r->r_bx);
+  }
+#endif
+
+#if (DOSX & PHARLAP) || (DOSX & DJGPP)
+static void _pkt_end (void) {}
+#endif
+
+#endif  /* !(DOSX & DOS4GW) */
+
+/* Restore default stack checking and tracing
+ */
+#if defined(__HIGHC__)
 #pragma pop(check_stack)
+#pragma pop(call_trace)
+#pragma pop(prolog_trace)
+#pragma pop(epilog_trace)
+#endif
+
+#if defined(__WATCOMC__)
+#pragma pop(check_stack)
+#endif
+
+#if defined(_MSC_VER_)
+#pragma pop(check_stack)
+#endif
+
+#if (defined(__TURBOC__) || defined(__BORLANDC__)) && !defined(OLD_TURBOC)
+#pragma option -N.
+#endif
+
 
 /*
  * Send a link-layer frame. For PPP/SLIP 'tx' contains no MAC-header.
@@ -770,14 +1087,22 @@ int pkt_send (const void *tx, int length)
   ofs = TX_BUF();
   WriteRealMem (rm_base + ofs, (void*)tx, length);
 
+#elif (DOSX & DJGPP)
+  seg = RP_SEG();
+  ofs = TX_BUF();
+  dosmemput (tx, length, rm_base + ofs);
+
 #elif (DOSX & (DOS4GW|WDOSX))
   seg = RP_SEG();
   ofs = TX_BUF();
   memcpy (rm_base + ofs, tx, length);
 
+#elif (DOSX & POWERPAK)
+  UNFINISHED();
+
 #else
-  seg = _FP_SEG(tx);
-  ofs = _FP_OFF(tx);
+  seg = FP_SEG (tx);
+  ofs = FP_OFF (tx);
   /* it's no need to copy anything
    */
 #endif
@@ -817,13 +1142,16 @@ int pkt_get_addr (eth_address *eth)
   regs.r_es = RP_SEG (rm_base);
   regs.r_di = PKT_TMP();
 
-#elif (DOSX & (DOS4GW|WDOSX))
+#elif (DOSX & (DJGPP|DOS4GW|WDOSX))
   regs.r_es = RP_SEG();
   regs.r_di = PKT_TMP();
 
+#elif (DOSX & POWERPAK)
+  UNFINISHED();
+
 #else
-  regs.r_es = _FP_SEG(eth);
-  regs.r_di = _FP_OFF(eth);
+  regs.r_es = FP_SEG (eth);
+  regs.r_di = FP_OFF (eth);
 #endif
 
   if (!PKT_API(&regs))
@@ -835,8 +1163,14 @@ int pkt_get_addr (eth_address *eth)
 #if (DOSX & PHARLAP)
   ReadRealMem (eth, rm_base + PKT_TMP(), sizeof(*eth));
 
+#elif (DOSX & DJGPP)
+  dosmemget (rm_base + PKT_TMP(), sizeof(*eth), eth);
+
 #elif (DOSX & (DOS4GW|WDOSX))
   memcpy (eth, rm_base + PKT_TMP(), sizeof(*eth));
+
+#elif (DOSX & POWERPAK)
+  UNFINISHED();
 #endif
   return (1);
 }
@@ -857,14 +1191,22 @@ int pkt_set_addr (eth_address *eth)
   regs.r_es = RP_SEG (rm_base);
   regs.r_di = PKT_TMP();
 
+#elif (DOSX & DJGPP)
+  dosmemput ((void*)eth, sizeof(*eth), rm_base + PKT_TMP());
+  regs.r_es = RP_SEG();
+  regs.r_di = PKT_TMP();
+
 #elif (DOSX & (DOS4GW|WDOSX))
   memcpy (rm_base + PKT_TMP(), eth, sizeof(*eth));
   regs.r_es = RP_SEG();
   regs.r_di = PKT_TMP();
 
+#elif (DOSX & POWERPAK)
+  UNFINISHED();
+
 #else
-  regs.r_es = _FP_SEG(eth);
-  regs.r_di = _FP_OFF(eth);
+  regs.r_es = FP_SEG (eth);
+  regs.r_di = FP_OFF (eth);
 #endif
 
   if (!PKT_API(&regs))
@@ -1049,6 +1391,29 @@ BOOL pkt_eth_init (eth_address *eth)
     return (0);
   }
 
+#elif (DOSX & DJGPP)
+  static WORD find_vector (int first, int num)
+  {
+    WORD vector;
+
+    for (vector = first; vector < first+num; vector++)
+    {
+      char  temp[16];
+      DWORD rp;
+      __dpmi_raddr realAdr;
+
+      __dpmi_get_real_mode_interrupt_vector (vector, &realAdr);
+      rp = (realAdr.segment << 4) + realAdr.offset16;
+      if (rp)
+      {
+        dosmemget (rp, sizeof(temp), &temp);
+        if (!memcmp(temp+3, &pkt_sign, sizeof(pkt_sign)))
+           return (vector);
+      }
+    }
+    return (0);
+  }
+
 #elif (DOSX & (DOS4GW|WDOSX))
   static WORD find_vector (int first, int num)
   {
@@ -1064,14 +1429,24 @@ BOOL pkt_eth_init (eth_address *eth)
     return (0);
   }
 
+#elif (DOSX & POWERPAK)
+  static WORD find_vector (int first, int num)
+  {
+    UNFINISHED();
+    return (0);
+  }
+
 #else       /* real-mode version */
   static WORD find_vector (int first, int num)
   {
     WORD vector;
 
+     pkt_enque_ptr = pkt_enqueue;
+    _pkt_enque_ptr = pkt_enqueue;
+
     for (vector = first; vector < first+num; vector++)
     {
-      char __far *addr = (char __far *)getvect(vector);
+      char _far *addr = (char _far *)getvect(vector);
 
       if (addr && !_fmemcmp (addr+3, &pkt_sign, sizeof(pkt_sign)))
          return (vector);
@@ -1113,6 +1488,68 @@ BOOL pkt_eth_init (eth_address *eth)
     _dx_ulock_pgsn ((void*)&pkt_enqueue, size);
     _dx_ulock_pgsn ((void*)&ReadRealMem, 100);
     _dx_ulock_pgsn ((void*)_pkt_inf, sizeof(*_pkt_inf));
+    return (0);
+  }
+
+#elif (DOSX & DJGPP)
+  static int setup_rmode_callback (void)
+  {
+    int i;
+
+    rm_cb.pm_offset       = (DWORD) &pkt_receiver_pm;
+    _pkt_inf->rm_mem.size = (RDATA_SIZE + 15) / 16;
+
+    if (_go32_dpmi_allocate_dos_memory(&_pkt_inf->rm_mem))
+       return (-2);
+
+    if (_go32_dpmi_allocate_real_mode_callback_retf(&rm_cb,&rm_reg))
+       return (-1);
+
+    if (_pkt_inf->rm_mem.rm_offset != 0)
+       return (-2);
+
+    rm_base = (_pkt_inf->rm_mem.rm_segment << 4);
+    for (i = 0; i < RDATA_SIZE / 4; i++)
+        _farpokel (_dos_ds, rm_base + 4 * i, 0L);
+
+  #if 0  /* test */
+    (*_printf) ("rm_mem = %04X:%04X  rmode call-back %04X:%04X\r\n",
+                _pkt_inf->rm_mem.rm_segment, _pkt_inf->rm_mem.rm_offset,
+                rm_cb.rm_segment, rm_cb.rm_offset);
+  #endif
+    return (0);
+  }
+
+  static int lock_code_and_data (void)
+  {
+    DWORD size = (DWORD)&_pkt_end - (DWORD)&pkt_enqueue;
+
+    if (_go32_dpmi_lock_code(&pkt_enqueue, size) ||
+        _go32_dpmi_lock_code(&dosmemget, 100)    ||
+        _go32_dpmi_lock_data(_pkt_inf, sizeof(*_pkt_inf)))
+       return (-1);
+    /* rm_reg is already locked */
+    return (0);
+  }
+
+  static int unlock_code_and_data (void)
+  {
+    __dpmi_meminfo mem;
+    DWORD base = 0;
+
+    __dpmi_get_segment_base_address (_my_ds(), &base);
+
+    mem.address = base + (DWORD)&pkt_enqueue;
+    mem.size    = (DWORD)&_pkt_end - (DWORD)&pkt_enqueue;
+    __dpmi_unlock_linear_region (&mem);
+
+    mem.address = base + (DWORD)&dosmemget;
+    mem.size    = 100;
+    __dpmi_unlock_linear_region (&mem);
+
+    mem.address = base + (DWORD)_pkt_inf;
+    mem.size    = sizeof(*_pkt_inf);
+    __dpmi_unlock_linear_region (&mem);
     return (0);
   }
 
@@ -1162,28 +1599,28 @@ BOOL pkt_eth_init (eth_address *eth)
     return (0);
   }
 
-#elif (DOSX & DOS4GW) /* pkt_receiver32_rm() isn't a r->pmode callback,
+#elif (DOSX & DOS4GW) /* pkt_receiver4_rm() isn't a r->pmode callback,
                        * but what the heck...
                        */
   static int setup_rmode_callback (void)
   {
     int length;
 
-    /* test for asmpkt32.asm/pcpkt.h mismatch
+    /* test for asmpkt4.asm/pcpkt.h mismatch
      */
     if (asmpkt_size_chk != sizeof(*_pkt_inf))
     {
 #ifdef USE_DEBUG
       fprintf (stderr,
                "sizeof(pkt_info) = %d pcpkt.h\n"
-               "sizeof(pkt_info) = %d asmpkt32.asm, (diff %d)\r\n",
+               "sizeof(pkt_info) = %d asmpkt4.asm, (diff %d)\r\n",
                sizeof(*_pkt_inf), asmpkt_size_chk,
                sizeof(*_pkt_inf) - asmpkt_size_chk);
 #endif
       return (-3);
     }
 
-    /* Allocate DOS-memory for pkt_receiver32_rm() and temp/Tx buffers.
+    /* Allocate DOS-memory for pkt_receiver4_rm() and temp/Tx buffers.
      */
     length = TX_BUF() + IP_SIZE;
     rm_base_seg = dpmi_real_malloc (length, &pkt_rcv_sel);
@@ -1196,7 +1633,7 @@ BOOL pkt_eth_init (eth_address *eth)
      */
     memset (rm_base, 0, length);
     length = PKT_TMP() - 1;
-    memcpy (rm_base, (void*)&pkt_receiver32_start, length);
+    memcpy (rm_base, (void*)&pkt_receiver4_start, length);
     return (0);
   }
 
@@ -1209,6 +1646,11 @@ BOOL pkt_eth_init (eth_address *eth)
   {
     return (0);
   }
+
+#elif (DOSX & POWERPAK)
+  static int setup_rmode_callback (void) { UNFINISHED(); return (-1); }
+  static int lock_code_and_data (void)   { UNFINISHED(); return (-1); }
+  static int unlock_code_and_data (void) { UNFINISHED(); return (-1); }
 #endif
 
 
@@ -1234,7 +1676,9 @@ static int setup_pkt_inf (void)
    */
   memset (_pkt_inf, 0, sizeof(*_pkt_inf));
 
+#if !defined(OLD_TURBOC)
   assert (ARP_SIZE >= (ARP_MAX - PKT_MARGIN));
+#endif
 
   pktq_init (&_pkt_inf->ip_queue, sizeof(_pkt_inf->ip_buf[0]),
              DIM(_pkt_inf->ip_buf), (char*)&_pkt_inf->ip_buf[0][0]);
@@ -1256,17 +1700,17 @@ static int setup_pkt_inf (void)
  *
  *  Return TRUE if CARRRY is clear, else FALSE.
  */
-static int pkt_api_entry (IREGS *regs, unsigned line)
+static int pkt_api_entry (IREGS *reg, unsigned line)
 {
 #if (DOSX)
  /* Use 32-bit API; accessing card via pmode driver (to-do!!)
   */
   if (_pkt32_drvr)
   {
-    regs->r_flags = 0;
-    if (!(*_pkt32_drvr)(regs))   /* call the pmode interface */
+    reg->r_flags = 0;
+    if (!(*_pkt32_drvr)(reg))   /* call the pmode interface */
     {
-      regs->r_flags |= CARRY_BIT;
+      reg->r_flags |= CARRY_BIT;
       return (0);
     }
     return (1);
@@ -1278,16 +1722,16 @@ static int pkt_api_entry (IREGS *regs, unsigned line)
 #if defined(USE_DEBUG)
     fprintf (stderr, "%s (%d): API called after deinit.\n", __FILE__, line);
 #endif
-    regs->r_flags |= CARRY_BIT;
+    reg->r_flags |= CARRY_BIT;
     ARGSUSED (line);
     return (0);
   }
 
   /* Use the (slower) 16-bit real-mode PKTDRVR API.
    */
-  (void)GEN_RM_INTERRUPT (pkt_interrupt, regs);
+  GEN_RM_INTERRUPT (pkt_interrupt, reg);
 
-  return ((regs->r_flags & CARRY_BIT) == 0);
+  return ((reg->r_flags & CARRY_BIT) == 0);
 }
 
 
@@ -1422,11 +1866,17 @@ int _pkt_get_multicast_list (int len, eth_address *listbuf)
     ReadRealMem ((void*)listbuf, rp, len);
   }
 
+#elif (DOSX & DJGPP)
+  dosmemget (regs.r_di + (regs.r_es << 4), len, (void*)listbuf);
+
 #elif (DOSX & (DOS4GW|WDOSX))
   memcpy (listbuf, SEG_OFS_TO_LIN(regs.r_es,regs.r_di), len);
 
+#elif (DOSX & POWERPAK)
+  UNFINISHED();
+
 #else
-  _fmemcpy (listbuf, _MK_FP(regs.r_es,regs.r_di), len);
+  _fmemcpy (listbuf, MK_FP(regs.r_es,regs.r_di), len);
 #endif
 
   return (len);
@@ -1464,14 +1914,22 @@ int _pkt_set_multicast_list (int len, eth_address *listbuf)
   ofs = PKT_TMP();
   WriteRealMem (rm_base + PKT_TMP(), (void*)listbuf, len);
 
+#elif (DOSX & DJGPP)
+  seg = RP_SEG();
+  ofs = PKT_TMP();
+  dosmemput ((void*)listbuf, len, rm_base + PKT_TMP());
+
 #elif (DOSX & (DOS4GW|WDOSX))
   seg = RP_SEG();
   ofs = PKT_TMP();
   memcpy (rm_base + PKT_TMP(), (void*)listbuf, len);
 
+#elif (DOSX & POWERPAK)
+  UNFINISHED();
+
 #else
-  seg = _FP_SEG(listbuf);
-  ofs = _FP_OFF(listbuf);
+  seg = FP_SEG (listbuf);
+  ofs = FP_OFF (listbuf);
 #endif
 
   regs.r_ax = PD_SET_MULTI;

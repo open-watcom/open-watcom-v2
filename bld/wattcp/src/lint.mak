@@ -29,7 +29,7 @@ SOURCES = language.c bsdname.c  btree.c    fragment.c misc.c     \
           getopt.c   crit.c     country.c  crc.c      pcpkt32.c  \
           pcqueue.c  lookup.c   ip_out.c   tcp_fsm.c  wattcpd.c  \
           fortify.c  tftp.c     timer.c    highc.c    wdpmi.c    \
-          oldstuff.c ports.c    chksum16.c profile.c  settod.c   \
+          oldstuff.c ports.c    chksum.c   profile.c  settod.c   \
           accept.c   bind.c     bsddbug.c  close.c    connect.c  \
           fcntl.c    fsext.c    gethost.c  getname.c  getnet.c   \
           getprot.c  getput.c   getserv.c  geteth.c   ioctl.c    \

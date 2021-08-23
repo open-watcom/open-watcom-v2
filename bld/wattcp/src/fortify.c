@@ -33,9 +33,9 @@
  * If you use this software at all, I'd love to hear from
  * you.  All questions, criticisms, suggestions, praise and
  * postcards are most welcome.
- *
+ * 
  *            email:    sbullen@cybergraphic.com.au
- *
+ * 
  *            snail:    Simon P. Bullen
  *                      PO BOX 12138
  *                      A'Beckett St.
@@ -71,8 +71,8 @@
 #define STATIC
 
 /*
- * struct Header - this structure is used
- * internally by Fortify to manage it's
+ * struct Header - this structure is used 
+ * internally by Fortify to manage it's 
  * own private lists of memory.
  */
 struct Header {

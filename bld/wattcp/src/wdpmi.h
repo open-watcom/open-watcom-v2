@@ -8,6 +8,7 @@
 /*
  * The Watcom stackset() functions are from Dan Kegel's RARP implementation
  */
+#if defined(__WATCOMC__)
 #if defined(_M_I86)  /* 16-bit Watcom */
   extern void stackset (void __far *stack);
   #pragma aux stackset = \
@@ -53,20 +54,37 @@
           __parm [__eax];
 #endif
 
-extern WORD My_CS (void);
-#pragma aux My_CS =  \
-        "mov ax, cs" \
-        __modify [__ax];
+  extern WORD My_CS (void);
+  #pragma aux My_CS =  \
+          "mov ax, cs" \
+          __modify [__ax];
 
-extern WORD My_DS(void);
-#pragma aux My_DS =  \
-        "mov ax, ds" \
-        __modify [__ax];
+  extern WORD My_DS(void);
+  #pragma aux My_DS =  \
+          "mov ax, ds" \
+          __modify [__ax];
+
+#elif defined(BORLAND386) && (DOSX == WDOSX)
+  #define USES_DPMI_API
+
+  #define stackset(stk)  __asm { mov  ax,ss;    \
+                                 mov  ebx, esp; \
+                                 mov  cx,  ds;  \
+                                 mov  ss,  cx;  \
+                                 lea  esp, stk; \
+                                 push eax;      \
+                                 push ebx;      \
+                               }
+  #define stackrestore() __asm { lss esp, [esp] }
+
+#elif defined(__GNUC__) && (DOSX == WDOSX)
+  #define USES_DPMI_API
+#endif
 
 
 #if defined(USES_DPMI_API)
 
-#pragma pack(__push,1);
+  #include <sys/packon.h>
 
   struct DPMI_regs {
          DWORD  r_di;
@@ -83,12 +101,12 @@ extern WORD My_DS(void);
        };
 
   struct DPMI_callback {
-         struct DPMI_regs cb_regs;
+         struct DPMI_regs cb_reg;
          WORD             cb_segment;
          WORD             cb_offset;
        };
 
-#pragma pack(__pop);
+  #include <sys/packoff.h>
 
   #define SEG_OFS_TO_LIN(seg,ofs)  (void*)(((WORD)(seg) << 4) + (WORD)(ofs))
 
@@ -98,10 +116,14 @@ extern WORD My_DS(void);
   extern int   dpmi_lock_region    (void *address, unsigned length);
   extern int   dpmi_unlock_region  (void *address, unsigned length);
   extern void *dpmi_get_real_vector(int intr);
-  extern int   dpmi_real_interrupt (int intr, struct DPMI_regs *regs);
+  extern int   dpmi_real_interrupt (int intr, struct DPMI_regs *reg);
   extern int   dpmi_alloc_callback (void (*func)(void), struct DPMI_callback *cb);
   extern int   dpmi_cpu_type       (void);
   extern int   dpmi_dos_yield      (void);
+
+#ifdef BORLAND386
+  extern int dpmi_real_interrupt2 (int intr, struct DPMI_regs *reg);
+#endif
 
 #endif /* USES_DPMI_API */
 

@@ -284,7 +284,11 @@ int res_send (const u_char *buf, int buflen, u_char *ans, int anssiz)
 
 /*------------------------------------------------------------------------*/
 
-#define ERROR_TYPE int
+#if defined(_MSC_VER)
+  #define ERROR_TYPE int volatile /* because '&errno' is used below */
+#else
+  #define ERROR_TYPE int
+#endif
 
 static int tcp_conn (sock_type *sk, ERROR_TYPE *error, DWORD timeout)
 {

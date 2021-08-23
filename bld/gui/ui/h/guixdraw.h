@@ -30,4 +30,4 @@
 ****************************************************************************/
 
 
-extern void GUIWndRfrshArea( gui_window *, const guix_rect * );
+extern void GUIWndRfrshArea( gui_window *, SAREA * );

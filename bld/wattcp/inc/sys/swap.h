@@ -11,20 +11,52 @@
 
 __BEGIN_DECLS
 
-#undef  ntohs
-#undef  htons
-#undef  ntohl
-#undef  htonl
+#if !defined(__dj_include_netinet_in_h_)
+  #undef  ntohs
+  #undef  htons
+  #undef  ntohl
+  #undef  htonl
+  #define ntohs(x)  intel16(x)
+  #define htons(x)  intel16(x)
+  #define ntohl(x)  intel(x)
+  #define htonl(x)  intel(x)
+#endif
 
-#define ntohs(x)    __ntohs(x)
-#define htons(x)    __ntohs(x)
-#define ntohl(x)    __ntohl(x)
-#define htonl(x)    __ntohl(x)
+ /*
+  * Hard to believe, but someone uses Watt-32 on a
+  * Motorola/PowerPC embedded target.
+  */
+#if defined(BIG_ENDIAN_MACHINE) || defined(USE_BIGENDIAN)
+  #define intel(x)    x
+  #define intel16(x)  x
 
-#define intel(x)    __ntohl(x)
-#define intel16(x)  __ntohs(x)
+#elif defined(__GNUC__)
+  #define intel(x)   __ntohl(x)
+  #define intel16(x) __ntohs(x)
 
-extern unsigned long __ntohl (unsigned long x);
+  /*
+   * Ripped (and adapted) from <linux/include/asm-386/byteorder.h>
+   */
+  /*@unused@*/ static __inline__ unsigned long __ntohl (unsigned long x)
+  {
+    __asm__ ("xchgb %b0, %h0\n\t"   /* swap lower bytes  */
+             "rorl  $16,%0\n\t"     /* swap words        */
+             "xchgb %b0,%h0"        /* swap higher bytes */
+            : "=q" (x) : "0" (x));
+    return (x);
+  }
+
+  /*@unused@*/ static __inline__ unsigned short __ntohs (unsigned short x)
+  {
+    __asm__ ("xchgb %b0, %h0"       /* swap bytes */
+            : "=q" (x) : "0" (x));
+    return (x);
+  }
+
+#elif defined(__WATCOMC__)
+  #define intel(x)   __ntohl(x)
+  #define intel16(x) __ntohs(x)
+  extern unsigned long __ntohl (unsigned long x);
 #if defined(_M_I86) /* Watcom 16-bit */
   #pragma aux  __ntohl =     \
               "xchg al, dh"  \
@@ -39,12 +71,18 @@ extern unsigned long __ntohl (unsigned long x);
               __parm   [__eax]   \
               __modify [__eax];
 #endif
-
-extern unsigned short __ntohs (unsigned short x);
-#pragma aux __ntohs =     \
+  extern unsigned short __ntohs (unsigned short x);
+  #pragma aux __ntohs =     \
               "xchg al, ah" \
               __parm   [__ax]   \
               __modify [__ax];
+#else  /* no inlining possible */
+  #define intel   W32_NAMESPACE (intel)
+  #define intel16 W32_NAMESPACE (intel16)
+
+  extern unsigned long  intel   (unsigned long x);
+  extern unsigned short intel16 (unsigned short x);
+#endif
 
 __END_DECLS
 

@@ -1,8 +1,8 @@
-/*      $NetBSD: routed.h,v 1.10 1997/02/03 22:20:38 christos Exp $     */
+/*	$NetBSD: routed.h,v 1.10 1997/02/03 22:20:38 christos Exp $	*/
 
 /*-
  * Copyright (c) 1983, 1989, 1993
- *      The Regents of the University of California.  All rights reserved.
+ *	The Regents of the University of California.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -14,8 +14,8 @@
  *    documentation and/or other materials provided with the distribution.
  * 3. All advertising materials mentioning features or use of this software
  *    must display the following acknowledgement:
- *      This product includes software developed by the University of
- *      California, Berkeley and its contributors.
+ *	This product includes software developed by the University of
+ *	California, Berkeley and its contributors.
  * 4. Neither the name of the University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
@@ -32,7 +32,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *      @(#)routed.h    8.1 (Berkeley) 6/2/93
+ *	@(#)routed.h	8.1 (Berkeley) 6/2/93
  */
 
 #ifndef __PROTOCOL_ROUTED_H
@@ -46,100 +46,100 @@
  * padding stuff to 32-bit boundaries.
  */
 
-#define RIP_VERSION_0   0
-#define RIP_VERSION_1   1
-#define RIP_VERSION_2   2
+#define RIP_VERSION_0	0
+#define	RIP_VERSION_1	1
+#define	RIP_VERSION_2	2
 
-#define RIPv1           RIP_VERSION_1
-#define RIPv2           RIP_VERSION_2
+#define	RIPv1		RIP_VERSION_1
+#define	RIPv2		RIP_VERSION_2
 #ifndef RIPVERSION
-#define RIPVERSION      RIPv1
+#define	RIPVERSION	RIPv1
 #endif
 
-#define RIP_PORT        520
+#define RIP_PORT	520
 
-#pragma pack(__push,1);
+#include <sys/packon.h>
 
 #if RIPVERSION == 1
 /* We include the V2 fields to get the right size */
 struct netinfo {
-        u_int16_t   rip_family;
-        u_int16_t   rip_tag;
-        u_int32_t   rip_dst;            /* destination net/host */
-        u_int32_t   rip_dst_mask;       /* destination mask (V2 only) */
-        u_int32_t   rip_router;         /* next host (V2 only) */
-        u_int32_t   rip_metric;         /* cost of route */
+	u_int16_t   rip_family;
+	u_int16_t   rip_tag;
+	u_int32_t   rip_dst;		/* destination net/host */
+	u_int32_t   rip_dst_mask;	/* destination mask (V2 only) */
+	u_int32_t   rip_router;		/* next host (V2 only) */
+	u_int32_t   rip_metric;		/* cost of route */
 };
 #else
 struct netinfo {
-        u_int16_t   n_family;
-#define     RIP_AF_INET     htons(AF_INET)
-#define     RIP_AF_UNSPEC   0
-#define     RIP_AF_AUTH     0xffff
-        u_int16_t   n_tag;              /* optional in RIPv2 */
-        u_int32_t   n_dst;              /* destination net or host */
-#define     RIP_DEFAULT     0
-        u_int32_t   n_mask;             /* netmask in RIPv2 */
-        u_int32_t   n_nhop;             /* optional next hop in RIPv2 */
-        u_int32_t   n_metric;           /* cost of route */
+	u_int16_t   n_family;
+#define	    RIP_AF_INET	    htons(AF_INET)
+#define	    RIP_AF_UNSPEC   0
+#define	    RIP_AF_AUTH	    0xffff
+	u_int16_t   n_tag;		/* optional in RIPv2 */
+	u_int32_t   n_dst;		/* destination net or host */
+#define	    RIP_DEFAULT	    0
+	u_int32_t   n_mask;		/* netmask in RIPv2 */
+	u_int32_t   n_nhop;		/* optional next hop in RIPv2 */
+	u_int32_t   n_metric;		/* cost of route */
 };
 #endif
 
 /* RIPv2 authentication */
 struct netauth {
-        u_int16_t   a_family;           /* always RIP_AF_AUTH */
-        u_int16_t   a_type;
-#define     RIP_AUTH_NONE   0
-#define     RIP_AUTH_PW     htons(2)    /* password type */
-#define     RIP_AUTH_MD5    htons(3)    /* Keyed MD5 */
-        union {
-#define     RIP_AUTH_PW_LEN 16
-            u_int8_t    au_pw[RIP_AUTH_PW_LEN];
-            struct a_md5 {
-                int16_t md5_pkt_len;    /* RIP-II packet length */
-                int8_t  md5_keyid;      /* key ID and auth data len */
-                int8_t  md5_auth_len;   /* 16 */
-                u_int32_t md5_seqno;    /* sequence number */
-                u_int32_t rsvd[2];      /* must be 0 */
-#define     RIP_AUTH_MD5_LEN RIP_AUTH_PW_LEN
-            } a_md5;
-        } au;
+	u_int16_t   a_family;		/* always RIP_AF_AUTH */
+	u_int16_t   a_type;
+#define	    RIP_AUTH_NONE   0
+#define	    RIP_AUTH_PW	    htons(2)	/* password type */
+#define	    RIP_AUTH_MD5    htons(3)	/* Keyed MD5 */
+	union {
+#define	    RIP_AUTH_PW_LEN 16
+	    u_int8_t    au_pw[RIP_AUTH_PW_LEN];
+	    struct a_md5 {
+		int16_t	md5_pkt_len;	/* RIP-II packet length */
+		int8_t	md5_keyid;	/* key ID and auth data len */
+		int8_t	md5_auth_len;	/* 16 */
+		u_int32_t md5_seqno;	/* sequence number */
+		u_int32_t rsvd[2];	/* must be 0 */
+#define	    RIP_AUTH_MD5_LEN RIP_AUTH_PW_LEN
+	    } a_md5;
+	} au;
 };
 
 struct rip {
-        u_int8_t    rip_cmd;            /* request/response */
-        u_int8_t    rip_vers;           /* protocol version # */
-        u_int16_t   rip_res1;           /* pad to 32-bit boundary */
-        union {                         /* variable length... */
-            struct netinfo ru_nets[1];
-            int8_t    ru_tracefile[1];
-            struct netauth ru_auth[1];
-        } ripun;
-#define rip_nets        ripun.ru_nets
-#define rip_auths       ripun.ru_auth
-#define rip_tracefile   ripun.ru_tracefile
+	u_int8_t    rip_cmd;		/* request/response */
+	u_int8_t    rip_vers;		/* protocol version # */
+	u_int16_t   rip_res1;		/* pad to 32-bit boundary */
+	union {				/* variable length... */
+	    struct netinfo ru_nets[1];
+	    int8_t    ru_tracefile[1];
+	    struct netauth ru_auth[1];
+	} ripun;
+#define	rip_nets	ripun.ru_nets
+#define rip_auths	ripun.ru_auth
+#define	rip_tracefile	ripun.ru_tracefile
 };
 
-#pragma pack(__pop);
+#include <sys/packoff.h>
 
 /* Packet types.
  */
-#define RIPCMD_REQUEST          1       /* want info */
-#define RIPCMD_RESPONSE         2       /* responding to request */
-#define RIPCMD_TRACEON          3       /* turn tracing on */
-#define RIPCMD_TRACEOFF         4       /* turn it off */
+#define	RIPCMD_REQUEST		1	/* want info */
+#define	RIPCMD_RESPONSE		2	/* responding to request */
+#define	RIPCMD_TRACEON		3	/* turn tracing on */
+#define	RIPCMD_TRACEOFF		4	/* turn it off */
 
 /* Gated extended RIP to include a "poll" command instead of using
  * RIPCMD_REQUEST with (RIP_AF_UNSPEC, RIP_DEFAULT).  RFC 1058 says
  * command 5 is used by Sun Microsystems for its own purposes.
  */
-#define RIPCMD_POLL             5
+#define RIPCMD_POLL		5
 
-#define RIPCMD_MAX              6
+#define	RIPCMD_MAX		6
 
 #ifdef RIPCMDS
 char *ripcmds[RIPCMD_MAX] = {
-        "#0", "REQUEST", "RESPONSE", "TRACEON", "TRACEOFF"
+	"#0", "REQUEST", "RESPONSE", "TRACEON", "TRACEOFF"
 };
 #endif
 
@@ -148,7 +148,7 @@ char *ripcmds[RIPCMD_MAX] = {
 #define NETS_LEN         ((MAXPACKETSIZE-sizeof(struct rip))    \
                           / sizeof(struct netinfo) +1)
 
-#define INADDR_RIP_GROUP (u_int32_t)0xe0000009  /* 224.0.0.9 */
+#define INADDR_RIP_GROUP (u_int32_t)0xe0000009	/* 224.0.0.9 */
 
 
 /* Timer values used in managing the routing table.
@@ -164,12 +164,12 @@ char *ripcmds[RIPCMD_MAX] = {
  * but held onto until GARBAGE_TIME so that others may see it, to
  * "poison" the bad route.
  */
-#define SUPPLY_INTERVAL         30      /* time to supply tables */
-#define MIN_WAITTIME            2       /* min sec until next flash updates */
-#define MAX_WAITTIME            5       /* max sec until flash update */
+#define	SUPPLY_INTERVAL		30	/* time to supply tables */
+#define	MIN_WAITTIME		2	/* min sec until next flash updates */
+#define	MAX_WAITTIME		5	/* max sec until flash update */
 
-#define STALE_TIME              90      /* switch to a new gateway */
-#define EXPIRE_TIME             180     /* time to mark entry invalid */
-#define GARBAGE_TIME            240     /* time to garbage collect */
+#define STALE_TIME		90	/* switch to a new gateway */
+#define	EXPIRE_TIME		180	/* time to mark entry invalid */
+#define	GARBAGE_TIME		240	/* time to garbage collect */
 
 #endif

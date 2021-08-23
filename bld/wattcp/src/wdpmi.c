@@ -1,5 +1,5 @@
 /*
- *  DOS-extender/DPMI interface for Watcom-386.
+ *  DOS-extender/DPMI interface for Watcom-386 and Borland's bcc32.
  *  (possibly useable with gcc and WDOSX also)
  *
  *  Supports Tenberry's DOS4GW, Michael Tippach's WDOSX,
@@ -25,10 +25,10 @@
 #include "language.h"
 #include "pcsed.h"
 #include "sock_ini.h"
-#include "iregs.h"
 
+#ifndef OLD_TURBOC  /* preprocessor in tcc <=2.01 have troubles here */
 
-#if defined(__386__)
+#ifdef WATCOM386
   /*
    * Values for '_Extender'
    */
@@ -55,6 +55,11 @@
   extern char        _Extender;
   extern char        _ExtenderSubtype;
 
+#elif defined(BORLAND386)
+  #undef  FP_SEG
+  #undef  FP_OFF
+  #define FP_SEG(p) _DS
+  #define FP_OFF(p) (DWORD)(p)
 #endif
 
 /*
@@ -78,7 +83,7 @@ WORD dpmi_real_malloc (WORD size, WORD *selector)
   r.x.eax = 0x0100;             /* DPMI allocate DOS memory */
   r.x.ebx = (size + 15) / 16;   /* Number of paragraphs requested */
   int386 (0x31, &r, &r);
-  if (r.w.cflag & CARRY_BIT)
+  if (r.w.cflag & 1)
      return (0);
 
   *selector = r.w.dx;
@@ -105,7 +110,7 @@ int dpmi_lock_region (void *address, unsigned length)
   r.x.esi = (length >> 16);       /* Length in SI:DI */
   r.x.edi = (length & 0xFFFF);
   int386 (0x31, &r, &r);
-  return ((r.w.cflag & CARRY_BIT) == 0);
+  return ((r.w.cflag & 1) == 0);
 }
 
 int dpmi_unlock_region (void *address, unsigned length)
@@ -119,10 +124,10 @@ int dpmi_unlock_region (void *address, unsigned length)
   r.x.esi = (length >> 16);       /* Length in SI:DI */
   r.x.edi = (length & 0xFFFF);
   int386 (0x31, &r, &r);
-  return ((r.w.cflag & CARRY_BIT) == 0);  /* Return 0 if failed */
+  return ((r.w.cflag & 1) == 0);  /* Return 0 if failed */
 }
 
-int dpmi_real_interrupt (int intr, IREGS *regs)
+int dpmi_real_interrupt (int intr, struct DPMI_regs *reg)
 {
   union  REGS  r;
   struct SREGS s;
@@ -132,13 +137,13 @@ int dpmi_real_interrupt (int intr, IREGS *regs)
   r.w.ax  = 0x300;
   r.x.ebx = intr;
   r.w.cx  = 0;
-  s.es    = _FP_SEG(regs);
-  r.x.edi = _FP_OFF(regs);
-  regs->r_flags = 0;
-  regs->r_ss = regs->r_sp = 0;      /* DPMI host provides stack */
+  s.es    = FP_SEG (reg);
+  r.x.edi = FP_OFF (reg);
+  reg->r_flags = 0;
+  reg->r_ss = reg->r_sp = 0;      /* DPMI host provides stack */
 
   int386x (0x31, &r, &r, &s);
-  return ((r.w.cflag & CARRY_BIT) == 0);  /* Return 0 if failed */
+  return ((r.w.cflag & 1) == 0);  /* Return 0 if failed */
 }
 
 int dpmi_alloc_callback (void (*callback)(void), struct DPMI_callback *cb)
@@ -152,9 +157,9 @@ int dpmi_alloc_callback (void (*callback)(void), struct DPMI_callback *cb)
   s.ds    = s.ds;
   r.x.esi = (DWORD) callback;
   s.es    = s.ds;
-  r.x.edi = (DWORD) &cb->cb_regs;
+  r.x.edi = (DWORD) &cb->cb_reg;
   int386x (0x31, &r, &r, &s);
-  if (r.w.cflag & CARRY_BIT)
+  if (r.w.cflag & 1)
      return (0);
 
   cb->cb_segment = r.w.cx;
@@ -168,23 +173,23 @@ int dpmi_cpu_type (void)
 
   r.x.eax = 0x400;              /* Get DPMI Version */
   int386 (0x31, &r, &r);
-  if (r.w.cflag & CARRY_BIT)
+  if (r.w.cflag & 1)
      return (-1);
   return (r.h.cl);
 }
 
 int dpmi_dos_yield (void)
 {
-  IREGS regs;
+  struct DPMI_regs r;
 
-  memset (&regs, 0, sizeof(regs));
-  regs.r_ax = 0x1680;
-  return GEN_RM_INTERRUPT (0x2F, &regs);
+  memset (&r, 0, sizeof(r));
+  r.r_ax = 0x1680;
+  return dpmi_real_interrupt (0x2F, &r);
 }
 #endif /* USES_DPMI_API */
 
 
-#if defined(__386__)
+#if defined(WATCOM386)
   static void unlock_cstart (void)
   {
   #if (DOSX & DOS4GW)
@@ -236,7 +241,7 @@ int dpmi_dos_yield (void)
     return (0);
   }
 
-#if (DOSX == WDOSX)
+#elif defined(BORLAND386) && (DOSX == WDOSX)
   static int is_wdosx (void)
   {
     __asm {
@@ -250,11 +255,110 @@ int dpmi_dos_yield (void)
   not_wdosx:
     return (0);
   }
-#endif /* DOSX == WDOSX */
 
-#endif /* defined(__386__) */
+  int dpmi_init (void)
+  {
+    if (!is_wdosx())
+    {
+      outsnl (_LANG("WDOSX extender not detected"));
+      return (-1);
+    }
+    return (0);
+  }
+
+  int dpmi_real_interrupt2 (int intr, struct DPMI_regs *reg)
+  {
+    __asm {
+        push ebx
+        push edi
+        mov  edi, reg
+        mov  edx, esp        /* save esp */
+        mov  ebx, intr
+        mov  eax, 300h       /* simulate real-int */
+        int  31h             /* es:edi -> regs */
+        mov  esp, edx
+        xor  eax, eax        /* assume ok */
+        pop  edi
+        pop  ebx
+        jc   fail
+        pop  ebp
+        ret
+    }
+  fail:
+    return (-1);
+  }
+
+  int int386 (int intno, union REGS *ireg, union REGS *oreg)
+  {
+    struct SREGS sreg;
+
+    segread (&sreg);
+    return int386x (intno, ireg, oreg, &sreg);
+  }
+
+  int int386x (int intno, union REGS *ireg, union REGS *oreg, struct SREGS *sreg)
+  {
+    static struct DPMI_regs rm_reg;
+
+    rm_reg.r_ss = rm_reg.r_sp = rm_reg.r_flags = 0;
+    rm_reg.r_ax = ireg->x.eax;
+    rm_reg.r_bx = ireg->x.ebx;
+    rm_reg.r_cx = ireg->x.ecx;
+    rm_reg.r_dx = ireg->x.edx;
+    rm_reg.r_si = ireg->x.esi;
+    rm_reg.r_di = ireg->x.edi;
+    rm_reg.r_ds = sreg->ds;
+    rm_reg.r_es = sreg->es;
+
+    if (dpmi_real_interrupt2(intno,&rm_reg) < 0)
+    {
+      oreg->x.cflag |= 1; /* Set carry bit */
+      return (-1);
+    }
+    oreg->x.eax   = rm_reg.r_ax;
+    oreg->x.ebx   = rm_reg.r_bx;
+    oreg->x.ecx   = rm_reg.r_cx;
+    oreg->x.edx   = rm_reg.r_dx;
+    oreg->x.esi   = rm_reg.r_si;
+    oreg->x.edi   = rm_reg.r_di;
+    oreg->x.flags = rm_reg.r_flags;
+    return (int)rm_reg.r_ax;
+  }
+
+  void segread (struct SREGS *sreg)
+  {
+    sreg->ds = _DS;
+    sreg->es = _ES;
+    sreg->ss = _SS;
+    sreg->cs = _CS;
+  }
+
+#elif defined(__GNUC__) && (DOSX == WDOSX)
+  static int is_wdosx (void)
+  {
+    #define SIGNATURE (('W'<<0) + ('D'<<8) + ('S'<<16) + ('X'<<24))
+    __dpmi_regs reg;
+
+    reg.d.eax = 0xEEFF;
+    if (__dpmi_int (0x31, &reg) == 0 && reg.x.eax == SIGNATURE)
+       return (1);
+    return (0);
+  }
+
+  int dpmi_init (void)
+  {
+    if (!is_wdosx())
+    {
+      outsnl (_LANG("WDOSX extender not detected"));
+      return (-1);
+    }
+    return (0);
+  }
+#endif /* WATCOM386 */
 
 #if (DOSX & PHARLAP) && 0    /* test (don't use) */
   unsigned cdecl mwargstack; /* linking Metaware libs with bcc32 app. */
   unsigned cdecl mwgoc;
 #endif
+
+#endif /* OLD_TURBOC */

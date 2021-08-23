@@ -22,12 +22,6 @@
 #include "pcdbug.h"
 #include "pcrarp.h"
 
-#ifdef _M_I86
-typedef struct rarp_Header __far *rarp_hdr_ptr;
-#else
-typedef struct rarp_Header *rarp_hdr_ptr;
-#endif
-
 WORD _rarptimeout = 15;
 
 static int _rarp_request (void)

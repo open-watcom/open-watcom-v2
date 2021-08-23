@@ -1,12 +1,12 @@
 /*
- *      Linux INET6 implementation
+ *	Linux INET6 implementation
  *
- *      Authors:
- *      Pedro Roque             <roque@di.fc.ul.pt>
+ *	Authors:
+ *	Pedro Roque		<roque@di.fc.ul.pt>
  *
- *      $Id: ipv6.h,v 1.6 1997/04/01 02:22:58 davem Exp $
+ *	$Id: ipv6.h,v 1.6 1997/04/01 02:22:58 davem Exp $
  *
- *      This program is free software; you can redistribute it and/or
+ *	This program is free software; you can redistribute it and/or
  *      modify it under the terms of the GNU General Public License
  *      as published by the Free Software Foundation; either version
  *      2 of the License, or (at your option) any later version.
@@ -25,7 +25,7 @@
  *  *under construction*
  */
 
-#pragma pack(__push,1);
+#include <sys/packon.h>
 
 /*
  *  IPv6 fixed header
@@ -103,54 +103,54 @@ struct ipv6_rt0_hdr {
  *  NextHeader field of IPv6 header
  */
 
-#define NEXTHDR_HOP             0       /* Hop-by-hop option header. */
-#define NEXTHDR_TCP             6       /* TCP segment. */
-#define NEXTHDR_UDP             17      /* UDP message. */
-#define NEXTHDR_IPV6            41      /* IPv6 in IPv6 */
-#define NEXTHDR_ROUTING         43      /* Routing header. */
-#define NEXTHDR_FRAGMENT        44      /* Fragmentation/reassembly header. */
-#define NEXTHDR_ESP             50      /* Encapsulating security payload. */
-#define NEXTHDR_AUTH            51      /* Authentication header. */
-#define NEXTHDR_ICMP            58      /* ICMP for IPv6. */
-#define NEXTHDR_NONE            59      /* No next header */
-#define NEXTHDR_DEST            60      /* Destination options header. */
+#define NEXTHDR_HOP		0	/* Hop-by-hop option header. */
+#define NEXTHDR_TCP		6	/* TCP segment. */
+#define NEXTHDR_UDP		17	/* UDP message. */
+#define NEXTHDR_IPV6		41	/* IPv6 in IPv6 */
+#define NEXTHDR_ROUTING		43	/* Routing header. */
+#define NEXTHDR_FRAGMENT	44	/* Fragmentation/reassembly header. */
+#define NEXTHDR_ESP		50	/* Encapsulating security payload. */
+#define NEXTHDR_AUTH		51	/* Authentication header. */
+#define NEXTHDR_ICMP		58	/* ICMP for IPv6. */
+#define NEXTHDR_NONE		59	/* No next header */
+#define NEXTHDR_DEST		60	/* Destination options header. */
 
-#define NEXTHDR_MAX             255
+#define NEXTHDR_MAX		255
 
 
 #define IPV6_DEFAULT_HOPLIMIT   64
-#define IPV6_DEFAULT_MCASTHOPS  1
+#define IPV6_DEFAULT_MCASTHOPS	1
 
 /*
- *      Addr type
- *
- *      type    -       unicast | multicast | anycast
- *      scope   -       local   | site      | global
- *      v4      -       compat
- *      v4mapped
- *      any
- *      loopback
+ *	Addr type
+ *	
+ *	type	-	unicast | multicast | anycast
+ *	scope	-	local	| site	    | global
+ *	v4	-	compat
+ *	v4mapped
+ *	any
+ *	loopback
  */
 
-#define IPV6_ADDR_ANY           0x0000U
+#define IPV6_ADDR_ANY		0x0000U
 
-#define IPV6_ADDR_UNICAST       0x0001U
-#define IPV6_ADDR_MULTICAST     0x0002U
-#define IPV6_ADDR_ANYCAST       0x0004U
+#define IPV6_ADDR_UNICAST      	0x0001U	
+#define IPV6_ADDR_MULTICAST    	0x0002U	
+#define IPV6_ADDR_ANYCAST	0x0004U
 
-#define IPV6_ADDR_LOOPBACK      0x0010U
-#define IPV6_ADDR_LINKLOCAL     0x0020U
-#define IPV6_ADDR_SITELOCAL     0x0040U
+#define IPV6_ADDR_LOOPBACK	0x0010U
+#define IPV6_ADDR_LINKLOCAL	0x0020U
+#define IPV6_ADDR_SITELOCAL	0x0040U
 
-#define IPV6_ADDR_COMPATv4      0x0080U
+#define IPV6_ADDR_COMPATv4	0x0080U
 
-#define IPV6_ADDR_SCOPE_MASK    0x00f0U
+#define IPV6_ADDR_SCOPE_MASK	0x00f0U
 
-#define IPV6_ADDR_MAPPED        0x1000U
-#define IPV6_ADDR_RESERVED      0x2000U /* reserved address space */
+#define IPV6_ADDR_MAPPED	0x1000U
+#define IPV6_ADDR_RESERVED	0x2000U	/* reserved address space */
 
 /*
- *      fragmentation header
+ *	fragmentation header
  */
 
 struct ipv6_fraghdr {
@@ -161,7 +161,7 @@ struct ipv6_fraghdr {
      };
 #define fraghdr ipv6_fraghdr
 
-#pragma pack(__pop);
+#include <sys/packoff.h>
 
 #endif
 

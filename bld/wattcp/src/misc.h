@@ -73,16 +73,44 @@ extern const char *time_str  (DWORD val);
 extern const char *dword_str (DWORD val);
 
 
-union ulong_long {
-    struct {
-        DWORD   hi;
-        DWORD   lo;
-    }           s;
-    uint64      ull;
-};
+#if defined(HAVE_UINT64)
+  union ulong_long {
+          struct {
+            DWORD hi;
+            DWORD lo;
+          } s;
+          uint64 ull;
+        };
 
-#define microsec_clock NAMESPACE (microsec_clock)
-extern uint64 microsec_clock (void);
+  #define microsec_clock NAMESPACE (microsec_clock)
+  extern uint64 microsec_clock (void);
+
+#if defined(__GNUC__) && defined(__i386__) /* also for gcc -m486 and better */
+ /*
+  * This is not used yet since the benefit/drawbacks are unknown.
+  * Define 32-bit multiplication asm macros.
+  *
+  * umul_ppmm (high_prod, low_prod, multiplier, multiplicand)
+  * multiplies two unsigned long integers multiplier and multiplicand,
+  * and generates a two unsigned word product in high_prod and
+  * low_prod.
+  */
+  #define umul_ppmm(w1,w0,u,v)                            \
+          __asm__ __volatile__ (                          \
+                 "mull %3"                                \
+                 : "=a" ((DWORD)(w0)), "=d" ((DWORD)(w1)) \
+                 : "%0" ((DWORD)(u)),  "rm" ((DWORD)(v)))
+
+  #define mul32(u,v) ({ union ulong_long w;               \
+                        umul_ppmm (w.s.hi, w.s.lo, u, v); \
+                        w.ull; })
+  /* Use as:
+   *  DWORD x,y;
+   *  ..
+   *  uint64 z = mul32 (x,y);
+   */
+#endif /* __GNUC__ && __i386__ */
+#endif /* HAVE_UINT64 */
 
 /*
  * Some prototypes not found in lc-lint's libraries

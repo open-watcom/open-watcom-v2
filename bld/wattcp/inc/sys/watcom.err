@@ -7,6 +7,10 @@
  * Watt-32 errnos are after vendor's errnos (1 - 40)
  */
 
+#ifndef __WATCOMC__
+#error This file is only for use by "__WATCOMC__"
+#endif
+
 #define EWOULDBLOCK       41
 #define EDOM              13
 #define ERANGE            14

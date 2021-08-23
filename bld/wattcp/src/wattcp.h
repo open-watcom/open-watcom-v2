@@ -13,7 +13,14 @@ typedef BYTE            ax25_address[7];
 
 #define mac_address eth_address /* our emphasis is no longer on Ethernet */
 
-typedef unsigned __int64 uint64;
+#if defined(__HIGHC__) || defined(__GNUC__)
+  typedef unsigned long long  uint64;
+  #define HAVE_UINT64
+
+#elif defined(__WATCOMC__) && defined(__WATCOM_INT64__)
+  typedef unsigned __int64 uint64;
+  #define HAVE_UINT64
+#endif
 
 /*
  * Until C compilers support C++ namespaces, we use this
@@ -211,7 +218,7 @@ typedef unsigned __int64 uint64;
 #define SOCKCLOSED       4
 
 
-#pragma pack(__push,1);
+#include <sys/packon.h>  /* align structs on byte boundaries */
 
 /*
  * The Internet (ip) Header
@@ -331,7 +338,7 @@ typedef struct arp_Header {
 #define RARP_REPLY     0x0400
 #define ARP_MAX        (sizeof(eth_Header) + sizeof(arp_Header))
 
-#pragma pack(__pop);
+#include <sys/packoff.h>           /* restore default packing */
 
 
 /*

@@ -127,12 +127,21 @@ static DWORD millisec_clock (void)
     lo = clockbits();
   }
   while (hi != peekl(0, BIOS_CLK));   /* tick count changed, try again */
+
+#ifdef HAVE_UINT64
   {
     uint64 x = ((uint64)hi << 16) - lo;
     return (x * 11UL / 13125UL);
   }
+#else   /* Emulating this would be slow. We'd better have a math-processor */
+  {
+    double x = ldexp ((double)hi, 16) - (double)lo;  /* x = hi*2^16 - lo */
+    return (DWORD) (x * 4.0 / 4770.0);
+  }
+#endif
 }
 
+#if defined(HAVE_UINT64)
 /*
  * Return hardware time-of-day in microseconds.
  */
@@ -150,6 +159,7 @@ uint64 microsec_clock (void)
   x = ((uint64)hi << 16) - lo;
   return (x * 4000000 / 4770000);
 }
+#endif
 
 
 /*
@@ -157,7 +167,7 @@ uint64 microsec_clock (void)
  */
 DWORD set_timeout (DWORD msec)
 {
-#if defined(USE_NEW_TIMERS)
+#if defined(USE_NEW_TIMERS) && defined(HAVE_UINT64)
   struct timeval now;
   DWORD  usec = microsec_clock() % 1000;
 
@@ -185,7 +195,7 @@ DWORD set_timeout (DWORD msec)
  */
 int chk_timeout (DWORD value)
 {
-#if defined(USE_NEW_TIMERS)
+#if defined(USE_NEW_TIMERS) && defined(HAVE_UINT64)
   if (value == 0UL)
      return (0);
   return (set_timeout(0) >= value);

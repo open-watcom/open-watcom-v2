@@ -45,9 +45,6 @@
 #include "guihint.h"
 
 
-#define SB_HORZ                 0
-#define SB_VERT                 1
-
 #define BORDER_AMOUNT           2
 #define HALF_BORDER_AMOUNT      1
 #define MENU_AMOUNT             2
@@ -96,7 +93,7 @@ typedef enum {
 #define GUI_RESIZE_GADGETS_USEABLE( wnd ) ( wnd->vs.area.width >= MINMAX_WIDTH )
 #define GUI_IS_DIALOG( wnd ) ( ( wnd->flags & DIALOG ) != 0 )
 
-#define EMPTY_AREA( sarea ) ( ( (sarea).s_width == 0 ) || ( (sarea).s_height == 0 ) )
+#define EMPTY_AREA( sarea ) ( ( (sarea).width == 0 ) || ( (sarea).height == 0 ) )
 
 typedef struct gui_control gui_control;
 

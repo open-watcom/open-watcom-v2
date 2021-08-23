@@ -16,7 +16,7 @@
  * 3. All advertising materials mentioning features or use of this software
  *    must display the following acknowledgement:
  *      This product includes software developed by Charles D. Cranor and
- *      Washington University.
+ *	Washington University.
  * 4. The name of the author may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
  *
@@ -40,49 +40,49 @@
 #define __NET_IF_ATM_H
 
 #if defined(__NetBSD__) || defined(__OpenBSD__) || defined(__bsdi__)
-#define RTALLOC1(A,B)           rtalloc1((A),(B))
+#define RTALLOC1(A,B)		rtalloc1((A),(B))
 #elif defined(__FreeBSD__)
-#define RTALLOC1(A,B)           rtalloc1((A),(B),0UL)
+#define RTALLOC1(A,B)		rtalloc1((A),(B),0UL)
 #endif
 
-#pragma pack(__push,1);
+#include <sys/packon.h>
 
 /*
  * pseudo header for packet transmission
  */
 
 struct atm_pseudohdr {
-  u_int8_t atm_ph[4];   /* flags+VPI+VCI1(msb)+VCI2(lsb) */
+  u_int8_t atm_ph[4];	/* flags+VPI+VCI1(msb)+VCI2(lsb) */
 };
 
-#define ATM_PH_FLAGS(X) ((X)->atm_ph[0])
-#define ATM_PH_VPI(X)   ((X)->atm_ph[1])
-#define ATM_PH_VCI(X)   ((((X)->atm_ph[2]) << 8) | ((X)->atm_ph[3]))
+#define ATM_PH_FLAGS(X)	((X)->atm_ph[0])
+#define ATM_PH_VPI(X)	((X)->atm_ph[1])
+#define ATM_PH_VCI(X)	((((X)->atm_ph[2]) << 8) | ((X)->atm_ph[3]))
 #define ATM_PH_SETVCI(X,V) { \
-        (X)->atm_ph[2] = ((V) >> 8) & 0xff; \
-        (X)->atm_ph[3] = ((V) & 0xff); \
+	(X)->atm_ph[2] = ((V) >> 8) & 0xff; \
+	(X)->atm_ph[3] = ((V) & 0xff); \
 }
 
-#define ATM_PH_AAL5    0x01     /* use AAL5? (0 == aal0) */
-#define ATM_PH_LLCSNAP 0x02     /* use the LLC SNAP encoding (iff aal5) */
+#define ATM_PH_AAL5    0x01	/* use AAL5? (0 == aal0) */
+#define ATM_PH_LLCSNAP 0x02	/* use the LLC SNAP encoding (iff aal5) */
 
-#define ATM_PH_DRIVER7  0x40    /* reserve for driver's use */
-#define ATM_PH_DRIVER8  0x80    /* reserve for driver's use */
+#define ATM_PH_DRIVER7  0x40	/* reserve for driver's use */
+#define ATM_PH_DRIVER8  0x80	/* reserve for driver's use */
 
-#define ATMMTU          9180    /* ATM MTU size for IP */
-                                /* XXX: could be 9188 with LLC/SNAP according
-                                        to comer */
+#define ATMMTU		9180	/* ATM MTU size for IP */
+				/* XXX: could be 9188 with LLC/SNAP according
+					to comer */
 
 /* user's ioctl hook for raw atm mode */
-#define SIOCRAWATM      _IOWR('a', 122, int)    /* set driver's raw mode */
+#define SIOCRAWATM	_IOWR('a', 122, int)	/* set driver's raw mode */
 
 /* atm_pseudoioctl: turns on and off RX VCIs  [for internal use only!] */
 struct atm_pseudoioctl {
   struct atm_pseudohdr aph;
   void *rxhand;
 };
-#define SIOCATMENA      _IOWR('a', 123, struct atm_pseudoioctl) /* enable */
-#define SIOCATMDIS      _IOWR('a', 124, struct atm_pseudoioctl) /* disable */
+#define SIOCATMENA	_IOWR('a', 123, struct atm_pseudoioctl) /* enable */
+#define SIOCATMDIS	_IOWR('a', 124, struct atm_pseudoioctl) /* disable */
 
 /*
  * XXX forget all the garbage in if_llc.h and do it the easy way
@@ -90,17 +90,17 @@ struct atm_pseudoioctl {
 
 #define ATMLLC_HDR "\252\252\3\0\0\0"
 struct atmllc {
-  u_int8_t llchdr[6];   /* aa.aa.03.00.00.00 */
-  u_int8_t type[2];     /* "ethernet" type */
+  u_int8_t llchdr[6];	/* aa.aa.03.00.00.00 */
+  u_int8_t type[2];	/* "ethernet" type */
 };
 
-#pragma pack(__pop);
+#include <sys/packoff.h>
 
 /* ATM_LLC macros: note type code in host byte order */
 #define ATM_LLC_TYPE(X) (((X)->type[0] << 8) | ((X)->type[1]))
 #define ATM_LLC_SETTYPE(X,V) { \
-        (X)->type[1] = ((V) >> 8) & 0xff; \
-        (X)->type[0] = ((V) & 0xff); \
+	(X)->type[1] = ((V) >> 8) & 0xff; \
+	(X)->type[0] = ((V) & 0xff); \
 }
 
 #endif

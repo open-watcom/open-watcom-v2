@@ -29,12 +29,14 @@
 
 #if defined(USE_MULTICAST)
 
-#pragma pack(__push,1);
+#include <sys/packon.h>
+
 struct IGMP_PKT {
        in_Header   in;
        IGMP_packet igmp;
      };
-#pragma pack(__pop);
+
+#include <sys/packoff.h>
 
 
 /*

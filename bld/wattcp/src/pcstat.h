@@ -5,25 +5,32 @@
  * tcc <= 2.01 lacks proper bit-field support.
  * Don't define USE_BSD_FUNC/USE_STATISTICS with this compiler.
  */
-#include <sys/socket.h>
-#include <net/if.h>
-#include <net/if_dl.h>
-#include <net/if_ether.h>
-#include <net/route.h>
-#include <netinet/in.h>
-#include <netinet/in_systm.h>
-#include <netinet/in_var.h>
-#include <netinet/ip.h>
-#include <netinet/ip_var.h>
-#include <netinet/in_pcb.h>
-#include <netinet/tcp.h>
-#include <netinet/tcp_time.h>
-#include <netinet/tcpip.h>
-#include <netinet/udp.h>
-#include <netinet/udp_var.h>
-#include <netinet/tcp_var.h>
-#include <netinet/icmp_var.h>
-#include <netinet/igmp_var.h>
+#if !defined(OLD_TURBOC)
+  #include <sys/socket.h>
+  #include <net/if.h>
+  #include <net/if_dl.h>
+  #include <net/if_ether.h>
+  #include <net/route.h>
+  #include <netinet/in.h>
+  #include <netinet/in_systm.h>
+  #include <netinet/in_var.h>
+  #include <netinet/ip.h>
+  #include <netinet/ip_var.h>
+  #include <netinet/in_pcb.h>
+  #include <netinet/tcp.h>
+  #include <netinet/tcp_time.h>
+  #include <netinet/tcpip.h>
+  #include <netinet/udp.h>
+  #include <netinet/udp_var.h>
+  #include <netinet/tcp_var.h>
+  #include <netinet/icmp_var.h>
+  #include <netinet/igmp_var.h>
+#endif
+
+#if defined(__BORLANDC__)     /* suppress warning */
+  struct proc   { int dummy; };
+  struct socket { int dummy; };
+#endif
 
 /*
  * MAC-layer statistics

@@ -22,7 +22,6 @@ def_fpu_flags_dos_i86 = -fpc
 inc_dirs = -I"../inc"
 
 extra_c_flags = -zm
-extra_c_flags_pcpkt16 = -zu
 
 #
 # aflags
@@ -32,9 +31,9 @@ extra_c_flags_pcpkt16 = -zu
 #
 # LIB
 #
-objs_i86 = asmpkt16.obj pcpkt16.obj chksum16.obj
-objs_386 = asmpkt32.obj chksum32.obj
-objs = wdpmi.obj    language.obj  &
+objs = asmpkt.obj   asmpkt4.obj   &
+       chksum0.obj  cpumodel.obj  &
+       wdpmi.obj    language.obj  &
        bsdname.obj  tftp.obj      &
        btree.obj    fragment.obj  &
        misc.obj     netback.obj   &
@@ -66,7 +65,7 @@ objs = wdpmi.obj    language.obj  &
        getnet.obj   getprot.obj   &
        getput.obj   getserv.obj   &
        geteth.obj   ioctl.obj     &
-                    listen.obj    &
+       fcntl.obj    listen.obj    &
        netaddr.obj  receive.obj   &
        select.obj   bsddbug.obj   &
        socket.obj   sockopt.obj   &
@@ -77,7 +76,7 @@ objs = wdpmi.obj    language.obj  &
        syslog2.obj  printk.obj    &
        nettime.obj  ip_out.obj    &
        tcp_fsm.obj  poll.obj      &
-       timer.obj                  &
+       timer.obj    chksum.obj    &
        adr2asc.obj  linkaddr.obj  &
        ports.obj    sock_io.obj   &
        echo.obj     res_comp.obj  &
@@ -95,7 +94,7 @@ lib_suffix = $(memory_model_$(host_cpu))
 !endif
 !endif
 
-libtarg_objs = $(objs) $(objs_$(host_cpu))
+libtarg_objs = $(objs)
 libtarg_name = wattcp$(lib_suffix)
 !include libtarg.mif
 

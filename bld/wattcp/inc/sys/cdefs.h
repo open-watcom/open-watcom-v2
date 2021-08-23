@@ -47,6 +47,16 @@
   #define __END_DECLS
 #endif
 
+#if defined(_MSC_VER) && (MSC_VER <= 600) /* MSC C <= 6.0 isn't STD-C ? */
+  #undef  __STDC__
+  #define __STDC__
+#endif
+
+#if defined(__CCDL__)  /* Ladsoft C isn't STD-C by default */
+  #undef  __STDC__
+  #define __STDC__
+#endif
+
 struct mbuf {
        struct mbuf  *next;    /* Links mbufs belonging to single packets */
        struct mbuf  *anext;   /* Links packets on queues */
@@ -64,7 +74,7 @@ struct mbuf {
  * in between its arguments.  __CONCAT can also concatenate double-quoted
  * strings produced by the __STRING macro, but this only works with ANSI C.
  */
-#if defined(__STDC__) || defined(__cplusplus)
+#if defined(__STDC__) || defined(__cplusplus) || defined(__TURBOC__)
 
   #define __P(protos)     protos        /* full-blown ANSI C */
   #define __CONCAT(x,y)   x ## y
@@ -76,7 +86,9 @@ struct mbuf {
   #ifdef __cplusplus
     #define __inline      inline        /* convert to C++ keyword */
   #else
-    #define __inline                    /* delete GCC keyword */
+    #ifndef __GNUC__
+      #define __inline                  /* delete GCC keyword */
+    #endif /* !__GNUC__ */
   #endif /* !C++ */
 
 #else
@@ -84,10 +96,11 @@ struct mbuf {
   #define __CONCAT(x,y)   x/**/y
   #define __STRING(x)     "x"
 
-  #define __const                       /* delete pseudo-ANSI C keywords */
-  #define __inline
-  #define __signed
-  #define __volatile
+  #ifndef __GNUC__
+    #define __const                     /* delete pseudo-ANSI C keywords */
+    #define __inline
+    #define __signed
+    #define __volatile
 /*
  * In non-ANSI C environments, new programs will want ANSI-only C keywords
  * deleted from the program and old programs will want them left alone.
@@ -96,12 +109,13 @@ struct mbuf {
  * When using "gcc -traditional", we assume that this is the intent; if
  * __GNUC__ is defined but __STDC__ is not, we leave the new keywords alone.
  */
-  #ifndef NO_ANSI_KEYWORDS
-    #define const                       /* delete ANSI C keywords */
-    #define inline
-    #define signed
-    #define volatile
-  #endif
+    #ifndef NO_ANSI_KEYWORDS
+      #define const                     /* delete ANSI C keywords */
+      #define inline
+      #define signed
+      #define volatile
+    #endif
+  #endif  /* !__GNUC__ */
 #endif  /* !C++ */
 
 /*
@@ -112,8 +126,14 @@ struct mbuf {
  * these work for GNU C++ (modulo a slight glitch in the C++ grammar
  * in the distribution version of 2.5.5).
  */
-#undef  __attribute__
-#define __attribute__(x)        /* delete __attribute__ if non-gcc or gcc1 */
+#if !defined(__GNUC__) || __GNUC__ < 2 || __GNUC_MINOR__ < 5
+  #undef  __attribute__
+  #define __attribute__(x)        /* delete __attribute__ if non-gcc or gcc1 */
+  #if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+    #define __dead          __volatile
+    #define __pure          __const
+  #endif
+#endif
 
 /* Delete pseudo-keywords wherever they are not available or needed.
  */
@@ -130,6 +150,13 @@ struct mbuf {
 /*
  * min() & max() macros
  */
+#ifdef __HIGHC__
+  #undef  min
+  #undef  max
+  #define min(a,b) _min(a,b)  /* intrinsic functions */
+  #define max(a,b) _max(a,b)
+#endif
+
 #ifndef min
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 #endif
@@ -147,10 +174,35 @@ struct mbuf {
 
 #define _C_LABEL(x)     __CONCAT(_,x)
 
-#define __warn_references(sym,msg)
+#ifdef __GNUC__
+  #ifdef __STDC__
+    #define __indr_reference(sym,alias)                \
+            __asm__(".stabs \"_" #alias "\",11,0,0,0");\
+            __asm__(".stabs \"_" #sym "\",1,0,0,0");
 
-#define __IDSTRING(name,string)  \
+    #define __warn_references(sym,msg)                 \
+            __asm__(".stabs \"" msg "\",30,0,0,0");    \
+            __asm__(".stabs \"_" #sym "\",1,0,0,0");
+  #else
+    #define __indr_reference(sym,alias)                \
+            __asm__(".stabs \"_/**/alias\",11,0,0,0"); \
+            __asm__(".stabs \"_/**/sym\",1,0,0,0");
+
+    #define __warn_references(sym,msg)                 \
+            __asm__(".stabs msg,30,0,0,0");            \
+            __asm__(".stabs \"_/**/sym\",1,0,0,0");
+  #endif
+#else
+  #define __warn_references(sym,msg)
+#endif
+
+#ifdef __GNUC__
+  #define __IDSTRING(name,string)  \
+          static const char name[] __attribute__((__unused__)) = string
+#else
+  #define __IDSTRING(name,string)  \
           static const char name[] = string
+#endif
 
 #define __RCSID(_s)                 __IDSTRING(rcsid,_s)
 #define __COPYRIGHT(_s)             __IDSTRING(copyright,_s)

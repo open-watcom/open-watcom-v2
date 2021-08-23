@@ -111,7 +111,7 @@
 #define SO_TYPE         0x1008          /* get socket type */
 
 
-#pragma pack(__push,1);
+#include <sys/packon.h>
 
 /*
  * Structure used for manipulating linger option.
@@ -153,7 +153,7 @@ struct linger {
 #define AF_INET6        24              /* IPv6 address family */
 #define AF_MAX          25
 
-typedef u_short         sa_family_t;
+typedef u_short 	sa_family_t;
 
 /*
  * Structure used by kernel to store most
@@ -262,7 +262,7 @@ struct msghdr {
 /* "Socket"-level control message types: */
 #define SCM_RIGHTS      0x01            /* access rights (array of int) */
 
-#pragma pack(__pop);
+#include <sys/packoff.h>
 
 __BEGIN_DECLS
 

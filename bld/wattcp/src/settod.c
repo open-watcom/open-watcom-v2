@@ -1,16 +1,18 @@
 /*
  *  settimeofday() for non-djgpp targets
  *
- *  The exported prototype used is used is the one specified in the
- *  XOpen/POSIX 1.3 standards and the one used on modern (ie 4.4BSD spec)
+ *  The exported prototype used is used is the one specified in the 
+ *  XOpen/POSIX 1.3 standards and the one used on modern (ie 4.4BSD spec) 
  *  BSDs. ie 'int settimeofday(struct timeval *, ...)', ie the second
  *  arg, if specified, is ignored.
- *
+ *  
  *  Cyrus Patel <cyp@fb14.uni-mainz.de>
  *
  *  May 2001 - Created
  *
  */
+
+#if !defined(__DJGPP__) /* djgpp already has settimeofday */
 
 #include <dos.h>        /* _dos_setdate, _dos_settime, dosdate_t, dostime_t */
 #include <errno.h>      /* EINVAL */
@@ -47,4 +49,6 @@ int settimeofday (struct timeval *tv, ...)
   }
   errno = EINVAL;
   return (-1);
-}
+}  
+
+#endif /* !defined(__DJGPP__) */

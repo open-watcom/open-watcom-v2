@@ -268,7 +268,7 @@ static UINT tcp_rtt_get (sock_type *sk)
     struct tcp_rtt *rtt = &rtt_cache [(WORD)sk->tcp.hisaddr % RTTCACHE];
 
     if (sk->tcp.hisaddr && rtt->ip == sk->tcp.hisaddr && rtt->rto > 0) {
-#if defined(USE_DEBUG)
+#if defined(USE_DEBUG) && !defined(_MSC_VER) /* MSC6 crashes below */
         char buf[20];
         dbug_write_raw ("\r\nRTT-cache: host ");
         dbug_write_raw (_inet_ntoa(buf, rtt->ip));
@@ -1294,13 +1294,13 @@ WORD tcp_tick (sock_type *sk)
  */
 static int udp_write (sock_type *sk, const BYTE *data, int len)
 {
-#pragma pack(__push,1);
+    #include <sys/packon.h>
     struct udp_pkt {
          in_Header  in;
          udp_Header udp_hdr;
       /* BYTE       data[]; */
        } *pkt;
-#pragma pack(__pop);
+    #include <sys/packoff.h>
 
     tcp_PseudoHeader  tcp_phdr;
     in_Header         *ip;
@@ -1693,12 +1693,12 @@ static __inline int tcp_do_options (sock_type *sk, BYTE *opt, BOOL is_syn)
  */
 int _tcp_send (sock_type *sk, char *file, unsigned line)
 {
-#pragma pack(__push,1);
+    #include <sys/packon.h>
     struct tcp_pkt {
          in_Header  in;
          tcp_Header tcp_hdr;
        } *pkt;
-#pragma pack(__pop);
+    #include <sys/packoff.h>
 
     tcp_PseudoHeader  tcp_phdr;
 

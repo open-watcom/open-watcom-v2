@@ -3,8 +3,16 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+
+#if defined(__DJGPP__) || defined(__HIGHC__) || defined(__WATCOMC__)
 #include <unistd.h>
+#else
 #include <process.h>
+#endif
+
+#if defined(__WATCOMC__)
+#include <process.h>
+#endif
 
 #ifdef __WATTCP_H  /* if included after wattcp.h (Watt-32 compile) */
   #define _printk_safe   NAMESPACE (_printk_safe)

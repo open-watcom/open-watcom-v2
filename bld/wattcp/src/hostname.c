@@ -11,7 +11,6 @@
 #include "pctcp.h"
 #include "wdpmi.h"     /* for DOS4GW/WDOSX */
 #include "misc.h"
-#include "iregs.h"
 #include "hostname.h"
 
 /*
@@ -189,44 +188,65 @@ int _get_machine_name (char *buf, size_t buflen)
 {
     char *h, dosbuf[16];
     size_t len;
-    IREGS regs;
 
-#if (DOSX & PHARLAP)
+#if (DOSX & DJGPP)
+    __dpmi_regs r;
+
+    r.x.ax = 0x5E00;
+    r.h.ch = 0;         /* Try to detect overloading of 0x5e00 */
+    r.x.dx = __tb & 15;
+    r.x.ds = __tb / 16;
+    __dpmi_int (0x21, &r);
+    if ((r.x.flags & 1) || r.h.ch == 0)
+        return (-1);
+
+    dosmemget (__tb, sizeof(dosbuf), dosbuf);
+
+#elif (DOSX & PHARLAP)
+    SWI_REGS r;
+
     if (_watt_dosTbSize < sizeof(dosbuf) || !_watt_dosTbr)
         return (-1);
 
-    memset (&regs, 0, sizeof(regs));
-    regs.r_dx = RP_OFF (_watt_dosTbr);
-    regs.r_ds  = RP_SEG (_watt_dosTbr);
-    regs.r_ax = 0x5E00;
-    if (!GEN_RM_INTERRUPT (0x21, &regs))
-        return (-1);
-    if ((regs.r_flags & CARRY_BIT) || hiBYTE(regs.r_cx) == 0) /* Carry set or CH == 0 */
+    r.edx = RP_OFF (_watt_dosTbr);
+    r.ds  = RP_SEG (_watt_dosTbr);
+    r.eax = 0x5E00;
+    r.ecx = 0;
+    _dx_real_int (0x21, &r);
+    if ((r.flags & 1) || hiBYTE(r.ecx) == 0) /* Carry set or CH == 0 */
         return (-1);
 
     ReadFarMem ((void*)&dosbuf, _watt_dosTbp, sizeof(dosbuf));
 
 #elif (DOSX & (DOS4GW|WDOSX))
+    struct DPMI_regs r;
+
     if (_watt_dosTbSize < sizeof(dosbuf) || !_watt_dosTbSeg)
         return (-1);
 
-    memset (&regs, 0, sizeof(regs));
-    regs.r_ds = _watt_dosTbSeg;
-    regs.r_ax = 0x5E00;
-    if (!GEN_RM_INTERRUPT (0x21, &regs))
-        return (-1);
-    if ((regs.r_flags & CARRY_BIT) || hiBYTE(regs.r_cx) == 0) /* Carry set or CH == 0 */
+    r.r_ds = _watt_dosTbSeg;
+    r.r_dx = 0;
+    r.r_ax = 0x5E00;
+    r.r_cx = 0;
+    if (!dpmi_real_interrupt(0x21, &r) || hiBYTE(r.r_cx) == 0)
         return (-1);
 
     memcpy (&dosbuf, SEG_OFS_TO_LIN(_watt_dosTbSeg,0), sizeof(dosbuf));
 
+#elif (DOSX & POWERPAK)
+    UNFINISHED();
+    strcpy (dosbuf, "random-pc");
+
 #elif (DOSX == 0)
-    memset (&regs, 0, sizeof(regs));
-    regs.r_ax = 0x5E00;
-    regs.r_dx = _FP_OFF( dosbuf );
-    regs.r_ds = _FP_SEG( dosbuf );
-    GEN_RM_INTERRUPT (0x21, &regs);
-    if ((regs.r_flags & CARRY_BIT) || hiBYTE(regs.r_cx) == 0) /* Carry set or CH == 0 */
+    union  REGS  r;
+    struct SREGS s;
+
+    r.x.ax = 0x5E00;
+    r.h.ch = 0;
+    r.x.dx = FP_OFF (dosbuf);
+    s.ds   = FP_SEG (dosbuf);
+    int86x (0x21, &r, &r, &s);
+    if (r.x.cflag || r.h.ch == 0)
         return (-1);
 
 #else

@@ -1,4 +1,4 @@
-/*      $NetBSD: talkd.h,v 1.5 1995/03/04 07:59:30 cgd Exp $    */
+/*	$NetBSD: talkd.h,v 1.5 1995/03/04 07:59:30 cgd Exp $	*/
 
 /*
  * Copyright (c) 1983 Regents of the University of California.
@@ -14,8 +14,8 @@
  *    documentation and/or other materials provided with the distribution.
  * 3. All advertising materials mentioning features or use of this software
  *    must display the following acknowledgement:
- *      This product includes software developed by the University of
- *      California, Berkeley and its contributors.
+ *	This product includes software developed by the University of
+ *	California, Berkeley and its contributors.
  * 4. Neither the name of the University nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
@@ -32,7 +32,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *      @(#)talkd.h     5.7 (Berkeley) 4/3/91
+ *	@(#)talkd.h	5.7 (Berkeley) 4/3/91
  */
 
 #ifndef __PROTOCOL_TALKD_H
@@ -56,65 +56,65 @@
  * stream connection through which the conversation takes place.
  */
 
-#pragma pack(__push,1);
+#include <sys/packon.h>
 
 /*
  * Client->server request message format.
  */
 typedef struct {
-        u_char    vers;                 /* protocol version */
-        u_char    type;                 /* request type, see below */
-        u_char    answer;               /* not used */
-        u_char    pad;
-        u_int32_t id_num;               /* message id */
-        struct    osockaddr addr;       /* old (4.3) style */
-        struct    osockaddr ctl_addr;   /* old (4.3) style */
-        int32_t   pid;                  /* caller's process id */
-#define NAME_SIZE       12
-        char      l_name[NAME_SIZE];    /* caller's name */
-        char      r_name[NAME_SIZE];    /* callee's name */
-#define TTY_SIZE        16
-        char      r_tty[TTY_SIZE];      /* callee's tty name */
+	u_char	  vers;			/* protocol version */
+	u_char	  type;			/* request type, see below */
+	u_char	  answer;		/* not used */
+	u_char	  pad;
+	u_int32_t id_num;		/* message id */
+	struct	  osockaddr addr;	/* old (4.3) style */
+	struct	  osockaddr ctl_addr;	/* old (4.3) style */
+	int32_t	  pid;			/* caller's process id */
+#define	NAME_SIZE	12
+	char	  l_name[NAME_SIZE];	/* caller's name */
+	char	  r_name[NAME_SIZE];	/* callee's name */
+#define	TTY_SIZE	16
+	char	  r_tty[TTY_SIZE];	/* callee's tty name */
 } CTL_MSG;
 
 /*
  * Server->client response message format.
  */
 typedef struct {
-        u_char    vers;         /* protocol version */
-        u_char    type;         /* type of request message, see below */
-        u_char    answer;       /* respose to request message, see below */
-        u_char    pad;
-        u_int32_t id_num;       /* message id */
-        struct    osockaddr addr; /* address for establishing conversation */
+	u_char	  vers;		/* protocol version */
+	u_char	  type;		/* type of request message, see below */
+	u_char	  answer;	/* respose to request message, see below */
+	u_char	  pad;
+	u_int32_t id_num;	/* message id */
+	struct	  osockaddr addr; /* address for establishing conversation */
 } CTL_RESPONSE;
 
-#pragma pack(__pop);
+#include <sys/packoff.h>
 
-#define TALK_VERSION    1               /* protocol version */
+#define	TALK_VERSION	1		/* protocol version */
 
 /* message type values */
-#define LEAVE_INVITE    0       /* leave invitation with server */
-#define LOOK_UP         1       /* check for invitation by callee */
-#define DELETE          2       /* delete invitation by caller */
-#define ANNOUNCE        3       /* announce invitation by caller */
+#define LEAVE_INVITE	0	/* leave invitation with server */
+#define LOOK_UP		1	/* check for invitation by callee */
+#define DELETE		2	/* delete invitation by caller */
+#define ANNOUNCE	3	/* announce invitation by caller */
 
 /* answer values */
-#define SUCCESS         0       /* operation completed properly */
-#define NOT_HERE        1       /* callee not logged in */
-#define FAILED          2       /* operation failed for unexplained reason */
-#define MACHINE_UNKNOWN 3       /* caller's machine name unknown */
-#define PERMISSION_DENIED 4     /* callee's tty doesn't permit announce */
-#define UNKNOWN_REQUEST 5       /* request has invalid type value */
-#define BADVERSION      6       /* request has invalid protocol version */
-#define BADADDR         7       /* request has invalid addr value */
-#define BADCTLADDR      8       /* request has invalid ctl_addr value */
+#define SUCCESS		0	/* operation completed properly */
+#define NOT_HERE	1	/* callee not logged in */
+#define FAILED		2	/* operation failed for unexplained reason */
+#define MACHINE_UNKNOWN	3	/* caller's machine name unknown */
+#define PERMISSION_DENIED 4	/* callee's tty doesn't permit announce */
+#define UNKNOWN_REQUEST	5	/* request has invalid type value */
+#define	BADVERSION	6	/* request has invalid protocol version */
+#define	BADADDR		7	/* request has invalid addr value */
+#define	BADCTLADDR	8	/* request has invalid ctl_addr value */
 
 /*
  * Operational parameters.
  */
-#define MAX_LIFE        60      /* max time daemon saves invitations */
+#define MAX_LIFE	60	/* max time daemon saves invitations */
 /* RING_WAIT should be 10's of seconds less than MAX_LIFE */
-#define RING_WAIT       30      /* time to wait before resending invitation */
+#define RING_WAIT	30	/* time to wait before resending invitation */
 
 #endif
