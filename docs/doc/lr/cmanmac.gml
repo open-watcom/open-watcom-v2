@@ -650,7 +650,7 @@ command
 .*
 .dm farfunc begin
 .if &farfnc ne 0 .do begin
-.pp
+.pc
 The
 .id &*1.
 function is a data model independent form of the
@@ -663,7 +663,7 @@ It is most useful in mixed memory model applications.
 .*
 .dm farfuncp begin
 .if &farfnc ne 0 .do begin
-.pp
+.pc
 The
 .id &*1.
 function is a data model independent form of the
@@ -674,6 +674,7 @@ It is most useful in mixed memory model applications.
 .dm farfuncp end
 .*
 .dm mbcsfunc begin
+.pc
 The
 .id &*1.
 function is a multi-byte character version of
@@ -682,6 +683,7 @@ that operates with multi-byte character strings.
 .dm mbcsfunc end
 .*
 .dm sbcsfunc begin
+.pc
 The
 .id &*1.
 function is a single-byte character version of
@@ -690,6 +692,7 @@ that operates with single-byte character strings.
 .dm sbcsfunc end
 .*
 .dm widefunc begin
+.pc
 The
 .id &*1.
 function is a wide character version of
@@ -698,7 +701,7 @@ that operates with wide character strings.
 .dm widefunc end
 .*
 .dm tcsfunc begin
-.pp
+.pc
 The header file
 .hdrfile tchar.h
 defines the generic-text macro
@@ -734,7 +737,7 @@ should not be used otherwise.
 .dm tcsfunc end
 .*
 .dm tcsfunc1 begin
-.pp
+.pc
 The header file
 .hdrfile tchar.h
 defines the generic-text macros

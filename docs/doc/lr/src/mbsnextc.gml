@@ -31,7 +31,7 @@ multi-byte character code page currently in use.
 .desc end
 .return begin
 These functions return the integer value of the next character
-(single-byte, wide, or multi-byte) pointed to by
+(multi-byte, wide, or single-byte) pointed to by
 .arg string
 .period
 .return end

@@ -31,7 +31,7 @@ does not point into the middle of a multi-byte or wide character.
 .desc end
 .return begin
 These functions return a pointer to the next character
-(single-byte, wide, or multi-byte).
+(multi-byte, wide, or single-byte).
 .return end
 .see begin
 .seelist _strdec _strinc _strninc

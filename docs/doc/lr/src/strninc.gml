@@ -38,7 +38,7 @@ These functions return a pointer to
 .arg str
 after it has been incremented by
 .arg count
-of characters (single-byte, wide, or multi-byte) or
+of characters (multi-byte, wide, or single-byte) or
 .kw NULL
 if
 .arg str

@@ -41,7 +41,7 @@ in earlier versions.
 .desc end
 .return begin
 These functions return the number of characters
-(single-byte, wide, or multi-byte) from the beginning
+(multi-byte, wide, or single-byte) from the beginning
 of the string to byte
 .arg n
 .period

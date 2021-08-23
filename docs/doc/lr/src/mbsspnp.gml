@@ -46,10 +46,10 @@ These functions return
 .mono NULL
 if
 .arg str
-consists entirely of characters (single-byte, wide, or multi-byte)
+consists entirely of characters (multi-byte, wide, or single-byte)
 from
 .arg charset
-(single-byte, wide, or multi-byte)
+(multi-byte, wide, or single-byte)
 .period
 .return end
 .see begin
