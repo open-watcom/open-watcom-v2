@@ -697,3 +697,99 @@ function is a wide-character version of
 that operates with wide-character strings.
 .dm widefunc end
 .*
+.dm tcsfunc begin
+The header file
+.hdrfile tchar.h
+defines the generic-text macro
+.kw &*1.
+.period
+.br
+This macro maps to
+.id &*2.
+if
+.kw _MBCS
+has been defined, or to the
+.id &*4.
+macro if
+.kw _UNICODE
+has been defined.
+Otherwise
+.kw &*1.
+maps to
+.id &*3.
+macro.
+.br
+.id &*3.
+and
+.id &*4.
+are single-byte character string and wide-character
+string versions of
+.id &*2.
+.period
+.br
+The
+.id &*3.
+and
+.id &*4.
+macros are provided only for this mapping and
+should not be used otherwise.
+.dm tcsfunc end
+.*
+.dm tcsfunc1 begin
+.np
+The header file
+.hdrfile tchar.h
+defines the generic-text macros
+.kw &*1.
+and
+.kw &*3.
+.period
+.br
+The
+.id &*1.
+macro maps to
+.id &*2.
+if
+.kw _MBCS
+has been defined, or to the
+.id &*6.
+macro if
+.kw _UNICODE
+has been defined.
+Otherwise
+.kw &*1.
+maps to
+.id &*5.
+macro.
+.br
+The
+.id &*3.
+macro maps to
+.id &*4.
+if
+.kw _MBCS
+has been defined, or to the
+.id &*6.
+macro if
+.kw _UNICODE
+has been defined.
+Otherwise
+.kw &*3.
+maps to
+.id &*5.
+macro.
+.br
+.id &*5.
+and
+.id &*6.
+are single-byte character string and wide-character
+string versions.
+.br
+The
+.id &*5.
+and
+.id &*6.
+macros are provided only for this mapping and
+should not be used otherwise.
+.dm tcsfunc1 end
+.*
