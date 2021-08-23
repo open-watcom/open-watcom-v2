@@ -80,7 +80,7 @@ characters from the temporary array are copied into the object pointed to by
 See the
 .arg memcpy_s
 function if you wish to copy objects that do not overlap.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .if &'length(&wfunc.) ne 0 .do begin
 The arguments
 .arg s1max

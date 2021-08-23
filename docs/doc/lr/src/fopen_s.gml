@@ -209,7 +209,7 @@ function or to a file positioning function (
 Similarly, reading may not be followed by writing without an
 intervening call to a file positioning function, unless the read
 resulted in end-of-file.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .return begin
 The

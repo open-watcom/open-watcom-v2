@@ -118,7 +118,7 @@ This pointer is used internally by the function for subsequent
 calls to perform tokenizing without relying on internal state
 within the function.
 .farfunc &ffunc. &funcb.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .if &'length(&wfunc.) ne 0 .do begin
 The third argument
 .arg ptr

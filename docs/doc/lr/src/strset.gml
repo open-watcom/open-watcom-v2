@@ -43,7 +43,7 @@ The terminating null character in the original string remains
 unchanged.
 .im ansiconf
 .farfunc &ffunc. &funcb.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .mbcsfunc &mfunc. &funcb.
 .farfunc &fmfunc. &mfunc.
 .desc end

@@ -51,7 +51,7 @@ for read permission anyway, since a later version of DOS may support
 write-only files.
 .do end
 .im ansiconf
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .return begin
 The

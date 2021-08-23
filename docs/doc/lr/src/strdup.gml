@@ -66,7 +66,7 @@ function.
 .do end
 .im ansiconf
 .farfunc &ffunc. &funcb.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .mbcsfunc &mfunc. &funcb.
 .farfunc &fmfunc. &mfunc.
 .desc end

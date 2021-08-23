@@ -50,7 +50,7 @@ The terminating null character is not considered part of
 .arg str
 .period
 .farfuncp &ffunc. &funcb.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .mbcsfunc &mfunc. &funcb.
 .desc end
 .return begin

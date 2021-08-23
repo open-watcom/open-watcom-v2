@@ -76,7 +76,7 @@ struct _finddatai64_t {
     char        name[_MAX_PATH];
 };
 .millust end
-.im widefun1
+.widefunc &wfunc. &funcb.
 .if &'length(&wfunc.) ne 0 .do begin
 .millust begin
 struct _wfinddata_t {

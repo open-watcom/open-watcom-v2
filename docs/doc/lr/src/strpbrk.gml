@@ -45,7 +45,7 @@ of any character from the string pointed to by
 .arg charset
 .period
 .farfunc &ffunc. &funcb.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .mbcsfunc &mfunc. &funcb.
 .farfunc &fmfunc. &mfunc.
 .desc end

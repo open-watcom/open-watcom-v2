@@ -21,7 +21,7 @@ It is equivalent to
 .millust begin
 strtod( ptr, (char **)NULL )
 .millust end
-.im widefun1
+.widefunc &wfunc. &funcb.
 .if &'length(&wfunc.) ne 0 .do begin
 It is equivalent to
 .millust begin

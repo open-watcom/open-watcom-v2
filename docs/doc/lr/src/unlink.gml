@@ -24,7 +24,7 @@ This function is equivalent to the
 .kw remove
 function.
 .im ansiconf
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .return begin
 The &funcb

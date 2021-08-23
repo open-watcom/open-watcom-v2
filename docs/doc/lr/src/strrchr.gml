@@ -43,7 +43,7 @@ function locates the last occurrence of
 .period
 The terminating null character is considered to be part of the string.
 .farfunc &ffunc. &funcb.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .mbcsfunc &mfunc. &funcb.
 .farfunc &fmfunc. &mfunc.
 .desc end

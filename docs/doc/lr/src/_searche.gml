@@ -43,7 +43,7 @@ buffer should be at least _MAX_PATH characters long to accommodate
 the full length of the constructed path name.
 Otherwise, _searchenv might overrun the pathname buffer and cause
 unexpected behavior.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .return begin
 The

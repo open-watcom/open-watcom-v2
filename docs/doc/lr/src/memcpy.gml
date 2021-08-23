@@ -39,7 +39,7 @@ See the
 .kw memmove
 function if you wish to copy objects that overlap.
 .farfunc &ffunc. &funcb.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .if &'length(&wfunc.) ne 0 .do begin
 The argument
 .arg length

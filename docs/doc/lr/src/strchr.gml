@@ -43,7 +43,7 @@ function locates the first occurrence of
 .period
 The terminating null character is considered to be part of the string.
 .farfunc &ffunc. &funcb.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .mbcsfunc &mfunc. &funcb.
 .desc end
 .return begin

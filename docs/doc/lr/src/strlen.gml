@@ -35,7 +35,7 @@ function computes the length of the string pointed to by
 .arg s
 .period
 .farfuncp &ffunc. &funcb.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .mbcsfunc &mfunc. &funcb.
 .farfuncp &fmfunc. &mfunc.
 .desc end

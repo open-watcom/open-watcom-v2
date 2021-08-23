@@ -57,7 +57,7 @@ or points to a null string ("") then the current working directory is
 returned in
 .arg buffer
 .period
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .return begin
 The

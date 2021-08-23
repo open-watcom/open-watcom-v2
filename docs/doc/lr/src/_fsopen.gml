@@ -199,7 +199,7 @@ _fsopen( filename, mode, SH_COMPAT );
 You should consult the technical documentation for the DOS system that
 you are using for more detailed information about these sharing modes.
 .do end
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .return begin
 The

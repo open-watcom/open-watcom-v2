@@ -77,7 +77,7 @@ will be set to the value of stream. Otherwise, the pointer to FILE
 pointed to by
 .arg newstreamptr
 will be set to a null pointer.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .*
 .return begin

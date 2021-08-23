@@ -35,7 +35,7 @@ The argument
 is described in the description of the
 .kw fopen
 function.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .return begin
 The

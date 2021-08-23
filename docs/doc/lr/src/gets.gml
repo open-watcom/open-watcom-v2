@@ -21,7 +21,7 @@ and stores them in the array pointed to by
 until end-of-file is encountered or a new-line character is read.
 Any new-line character is discarded, and a null character is placed
 immediately after the last character read into the array.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .if &'length(&wfunc.) ne 0 .do begin
 The
 .id &wfunc.

@@ -53,7 +53,7 @@ The full pathname
 is placed in the buffer pointed to by the argument
 .arg path
 .period
-.im widefun1
+.widefunc &wfunc. &funcb.
 .np
 The maximum size required for each buffer is specified by the manifest
 constants

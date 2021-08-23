@@ -95,7 +95,7 @@ assignments:
     INCLUDE=C:\WATCOM\H
 .millust end
 .do end
-.im widefun1
+.widefunc &wfunc. &funcb.
 :CMT. .if &'length(&wfunc.) ne 0 .do begin
 :CMT. The
 :CMT. .kw _wenviron

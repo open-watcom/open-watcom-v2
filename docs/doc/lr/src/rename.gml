@@ -17,7 +17,7 @@ function causes the file whose name is indicated by the string
 to be renamed to the name given by the string
 .arg new
 .period
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .return begin
 The

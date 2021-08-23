@@ -36,7 +36,7 @@ to the string pointed to by
 The comparison uses the current code page which can be selected by the
 .kw _setmbcp
 function.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .mbcsfunc &mfunc. &funcb.
 .desc end
 .return begin

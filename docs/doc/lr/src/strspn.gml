@@ -48,7 +48,7 @@ The terminating null character is not considered to be part of
 .arg charset
 .period
 .farfuncp &ffunc. &funcb.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .mbcsfunc &mfunc. &funcb.
 .farfuncp &fmfunc. &mfunc.
 .desc end

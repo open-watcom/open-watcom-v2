@@ -110,7 +110,7 @@ By comparing the "end" pointer with
 the
 .id &funcb.
 function.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .*
 .return begin

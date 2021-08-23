@@ -90,7 +90,7 @@ as if printed using the fprintf format "%4d".
 :li. The character new line.
 :li. The null character.
 :eol.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .*
 .return begin

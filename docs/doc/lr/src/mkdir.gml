@@ -72,7 +72,7 @@ fields of the directory that contains the new entry are marked for
 update.
 .do end
 .im ansiconf
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .*
 .return begin

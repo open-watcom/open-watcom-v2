@@ -86,7 +86,7 @@ characters pointed to by
 take unspecified values when
 .kw strncpy_s
 returns.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .*
 .return begin

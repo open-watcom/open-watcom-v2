@@ -27,7 +27,7 @@ to stderr.
 This is followed by a colon (":"), a space, the string returned by
 .mono strerror(errno)
 .ct , and a newline character.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .return begin
 The

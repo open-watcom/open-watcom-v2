@@ -42,7 +42,7 @@ to the string pointed to by
 .arg s2
 .period
 .farfuncp &ffunc. &funcb.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .mbcsfunc &mfunc. &funcb.
 .desc end
 .return begin

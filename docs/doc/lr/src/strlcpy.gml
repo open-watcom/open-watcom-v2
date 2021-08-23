@@ -37,7 +37,7 @@ is longer than
 characters, then only
 .arg n
 - 1 characters will be copied and the result will be null terminated.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .return begin
 The

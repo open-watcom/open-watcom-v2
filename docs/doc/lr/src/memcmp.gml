@@ -32,7 +32,7 @@ to the object pointed to by
 .arg s2
 .period
 .farfuncp &ffunc. &funcb.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .if &'length(&wfunc.) ne 0 .do begin
 The argument
 .arg length

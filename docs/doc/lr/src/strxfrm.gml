@@ -47,7 +47,7 @@ characters)
 when the collating sequence is selected from the
 .mono "C"
 locale.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .if &'length(&wfunc.) ne 0 .do begin
 For &wfunc, after the string transformation, a call to
 .kw wcscmp

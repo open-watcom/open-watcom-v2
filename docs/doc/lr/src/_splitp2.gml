@@ -135,7 +135,7 @@ This function reduces the amount of memory space required when
 compared to the
 .kw splitpath
 function.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .return begin
 The

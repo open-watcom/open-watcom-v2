@@ -95,7 +95,7 @@ characters pointed to by
 take unspecified values when
 .id &funcb.
 returns.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .*
 .return begin

@@ -55,7 +55,7 @@ and
 fields of the parent directory.
 .do end
 .im ansiconf
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .*
 .return begin

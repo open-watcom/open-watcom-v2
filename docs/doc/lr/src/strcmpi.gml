@@ -28,7 +28,7 @@ The
 function is identical to the
 .kw stricmp
 function.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .return begin
 The function returns an integer less than, equal to,

@@ -23,7 +23,7 @@ function calculates the length of the string pointed to by
 .arg s
 .period
 
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .*
 .return begin

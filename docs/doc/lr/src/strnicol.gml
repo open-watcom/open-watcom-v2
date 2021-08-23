@@ -41,7 +41,7 @@ All uppercase characters from
 and
 .arg s2
 are mapped to lowercase for the purposes of doing the comparison.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .mbcsfunc &mfunc. &funcb.
 .desc end
 .return begin

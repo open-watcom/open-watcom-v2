@@ -51,7 +51,7 @@ to contain the name of the current working directory.
 This string may be freed using the
 .kw free
 function.
-.im widefun1
+.widefunc &wfunc. &funcb.
 .if &'length(&wfunc.) ne 0 .do begin
 The
 .arg maxlen

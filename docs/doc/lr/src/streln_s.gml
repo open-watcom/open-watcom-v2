@@ -24,7 +24,7 @@ function maps to
 .arg errnum
 .period
 
-.im widefun1
+.widefunc &wfunc. &funcb.
 .desc end
 .*
 .return begin
