@@ -1,45 +1,15 @@
-.func strspnp _strspnp _fstrspnp _wcsspnp _mbsspnp _fmbsspnp
+.func strspnp _fstrspnp
 .synop begin
 #include <string.h>
 char *strspnp( const char *str,
                const char *charset );
-.ixfunc2 '&String' &funcb
-.ixfunc2 '&Search' &funcb
-.if &'length(&_func.) ne 0 .do begin
-char *_strspnp( const char *str,
-                const char *charset );
-.ixfunc2 '&String' &_func
-.ixfunc2 '&Search' &_func
-.do end
+.ixfunc2 '&String' strspnp
+.ixfunc2 '&Search' strspnp
 .if &farfnc ne 0 .do begin
 char __far *_fstrspnp( const char __far *str,
                        const char __far *charset );
-.ixfunc2 '&String' &ffunc
-.ixfunc2 '&Search' &ffunc
-.do end
-.if &'length(&wfunc.) ne 0 .do begin
-#include <tchar.h>
-wchar_t *_wcsspnp( const wchar_t *str,
-                   const wchar_t *charset );
-.ixfunc2 '&String' &wfunc
-.ixfunc2 '&Search' &wfunc
-.ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&mfunc.) ne 0 .do begin
-#include <mbstring.h>
-unsigned char *_mbsspnp( const unsigned char *str,
-                         const unsigned char *charset );
-.ixfunc2 '&String' &mfunc
-.ixfunc2 '&Search' &mfunc
-.ixfunc2 '&Multibyte' &mfunc
-.do end
-.if &'length(&fmfunc.) ne 0 .do begin
-unsigned char __far *_fmbsspnp(
-                    const unsigned char __far *str,
-                    const unsigned char __far *charset );
-.ixfunc2 '&String' &fmfunc
-.ixfunc2 '&Search' &fmfunc
-.ixfunc2 '&Multibyte' &fmfunc
+.ixfunc2 '&String' _fstrspnp
+.ixfunc2 '&Search' _fstrspnp
 .do end
 .synop end
 .desc begin
@@ -53,21 +23,18 @@ that does not belong to the set of characters in
 The terminating null character is not considered to be part of
 .arg charset
 .period
-.im ansiconf
+.np
 .farfunc &ffunc. &funcb.
-.im widefun1
-.mbcsfunc &mfunc. &funcb.
-.farfunc &fmfunc. &mfunc.
 .desc end
 .return begin
-The
-.id &funcb.
-function returns
+These functions return
 .mono NULL
 if
 .arg str
-consists entirely of characters from
+consists entirely of characters
+from
 .arg charset
+(single-byte, wide, or multi-byte)
 .period
 .return end
 .see begin

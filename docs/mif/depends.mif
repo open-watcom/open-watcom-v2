@@ -1660,6 +1660,7 @@ objs_lr2 = &
 ../doc/lr/src/mbsrstrt.gml &
 ../doc/lr/src/mbsrto_s.gml &
 ../doc/lr/src/mbsrtowc.gml &
+../doc/lr/src/mbsspnp.gml &
 ../doc/lr/src/mbstow_s.gml &
 ../doc/lr/src/mbstowcs.gml &
 ../doc/lr/src/mbterm.gml &

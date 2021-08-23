@@ -824,6 +824,10 @@
 .fnn _fmbsrtowcs                mbsrtowc.gml    DOS       WIN32
 .fnc mbsrtowcs_s                mbsrto_s.gml    DOS       WIN32
 .fnm _fmbsrtowcs_s              mbsrto_s.gml    DOS       WIN32
+.fnm _mbsspnp                   mbsspnp.gml     DOS       WIN32
+.fnn _fmbsspnp                  mbsspnp.gml     DOS       WIN32
+.fnm _strspnp                   mbsspnp.gml     DOS QNX W WIN32
+.fnw _wcsspnp                   mbsspnp.gml     DOS QNX W WIN32
 .fnc mbstowcs                   mbstowcs.gml    DOS QNX W WIN32 TEST
 .fnn _fmbstowcs                 mbstowcs.gml    DOS       WIN32 TEST
 .fnc mbstowcs_s                 mbstow_s.gml    DOS QNX W WIN32 TEST
@@ -1477,11 +1481,7 @@
 .fnm _mbsspn                    strspn.gml      DOS       WIN32
 .fnn _fmbsspn                   strspn.gml      DOS       WIN32
 .fn7 strspnp                    strspnp.gml     DOS QNX W WIN32
-.fn7 _strspnp                   strspnp.gml     DOS QNX W WIN32
 .fnf _fstrspnp                  strspnp.gml     DOS QNX W WIN32
-.fnw _wcsspnp                   strspnp.gml     DOS QNX W WIN32
-.fnm _mbsspnp                   strspnp.gml     DOS       WIN32
-.fnn _fmbsspnp                  strspnp.gml     DOS       WIN32
 .fnc strstr                     strstr.gml      DOS QNX W WIN32
 .fnf _fstrstr                   strstr.gml      DOS QNX W WIN32
 .fnw wcsstr                     strstr.gml      DOS QNX W WIN32

@@ -1,70 +1,38 @@
 .func _mbsnextc _fmbsnextc _strnextc _wcsnextc
 .synop begin
-.sr func=_strnextc
 #include <mbstring.h>
 unsigned int _mbsnextc( const unsigned char *string );
-.ixfunc2 '&String' &mfunc
-.ixfunc2 '&Multibyte' &mfunc
+.ixfunc2 '&String' _mbsnextc
+.ixfunc2 '&Multibyte' _mbsnextc
 .if &farfnc ne 0 .do begin
 unsigned int _fmbsnextc( const unsigned char __far *string );
-.ixfunc2 '&String' &fmfunc
-.ixfunc2 '&Multibyte' &fmfunc
+.ixfunc2 '&String' _fmbsnextc
+.ixfunc2 '&Multibyte' _fmbsnextc
 .do end
 #include <tchar.h>
 unsigned int _strnextc( const char *string );
-.ixfunc2 '&String' &funcb
+.ixfunc2 '&String' _strnextc
 unsigned int _wcsnextc( const wchar_t *string ) {
-.ixfunc2 '&String' &wfunc
-.ixfunc2 '&Wide' &wfunc
+.ixfunc2 '&String' _wcsnextc
+.ixfunc2 '&Wide' _wcsnextc
 .synop end
 .desc begin
 The
-.id &mfunc.
-function returns the integer value of the next
-multibyte-character in
+.id &funcb.
+function returns the integer value of the next character in
 .arg string
 .ct , without advancing the string pointer.
-.id &mfunc.
-recognizes multibyte character sequences according to the
-multibyte code page currently in use.
+.id &funcb.
+recognizes multi-byte character sequences according to the
+multi-byte character code page currently in use.
 .np
-The header file
-.hdrfile tchar.h
-defines the generic-text routine
-.kw _tcsnextc
-.period
-This macro maps to
-.id &mfunc.
-if
-.kw _MBCS
-has been defined, or to
-.id &wfunc.
-if
-.kw _UNICODE
-has been defined.
-Otherwise
-.kw _tcsnextc
-maps to &funcb..
-.id &funcb.
-and
-.id &wfunc.
-are single-byte character string and wide-character
-string versions of &mfunc..
-.id &funcb.
-and
-.id &wfunc.
-are provided only for this mapping and should not be
-used otherwise.
-.id &funcb.
-returns the integer value of the next single-byte character in
-the string.
-.id &wfunc.
-returns the integer value of the next wide character in the
-string.
+.farfuncp &ffunc. &funcb.
+.np
+.tcsfunc _tcsnextc &funcb. _strnextc &wfunc.
 .desc end
 .return begin
 These functions return the integer value of the next character
-(single-byte, wide, or multibyte) pointed to by
+(single-byte, wide, or multi-byte) pointed to by
 .arg string
 .period
 .return end

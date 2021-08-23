@@ -1,28 +1,27 @@
 .func _mbsnbcnt _fmbsnbcnt _strncnt _wcsncnt
 .synop begin
-.sr func=_strncnt
 #include <mbstring.h>
 size_t _mbsnbcnt( const unsigned char *string, size_t n );
-.ixfunc2 '&String' &mfunc
-.ixfunc2 '&Multibyte' &mfunc
+.ixfunc2 '&String' _mbsnbcnt
+.ixfunc2 '&Multibyte' _mbsnbcnt
 .if &farfnc ne 0 .do begin
 size_t _fmbsnbcnt( const unsigned char __far *string,
                    size_t n );
-.ixfunc2 '&String' &fmfunc
-.ixfunc2 '&Multibyte' &fmfunc
+.ixfunc2 '&String' _fmbsnbcnt
+.ixfunc2 '&Multibyte' _fmbsnbcnt
 .do end
 #include <tchar.h>
 size_t _strncnt( const char *string, size_t n );
-.ixfunc2 '&String' &funcb
+.ixfunc2 '&String' _strncnt
 .if &'length(&wfunc.) ne 0 .do begin
 size_t _wcsncnt( const wchar_t *string, size_t n ) {
-.ixfunc2 '&String' &wfunc
-.ixfunc2 '&Wide' &wfunc
+.ixfunc2 '&String' _wcsncnt
+.ixfunc2 '&Wide' _wcsncnt
 .do end
 .synop end
 .desc begin
 The
-.id &mfunc.
+.id &funcb.
 function counts the number of bytes in the first
 .arg n
 multibyte characters of the string
@@ -33,64 +32,15 @@ multibyte characters of the string
 This function was called
 .kw mtob
 in earlier versions.
+.np
 .farfuncp &ffunc. &funcb.
 .np
-The header file
-.hdrfile tchar.h
-defines the generic-text routine
-.kw _tcsnbcnt
-.period
-This macro maps to
-.id &mfunc.
-if
-.kw _MBCS
-has been defined, or to the
-.id &wfunc.
-macro if
-.kw _UNICODE
-has been defined.
-Otherwise
-.kw _tcsnbcnt
-maps to &funcb..
-.id &funcb.
-and
-.id &wfunc.
-are single-byte character string and wide-character
-string versions of &mfunc..
-The
-.id &funcb.
-and
-.id &wfunc.
-macros are provided only for this mapping and
-should not be used otherwise.
-.np
-The
-.id &funcb.
-function returns the number of characters (i.e.,
-.arg n
-.ct )
-in the first
-.arg n
-bytes of the single-byte string
-.arg string
-.period
-The
-.id &wfunc.
-function returns the number of bytes (i.e., 2 *
-.arg n
-.ct )
-in the first
-.arg n
-wide characters of the wide-character string
-.arg string
-.period
+.tcsfunc _tcsnbcnt &funcb. _strncnt &wfunc.
 .desc end
 .return begin
-The
-.id &funcb.
-functions return the number of bytes in the string up to the
-specified number of characters or until a null character is
-encountered.
+These functions return the number of bytes in the string up to the
+specified number of characters (single-byte, wide, or multi-byte)
+or until a null character is encountered.
 The null character is not included in the count.
 If the character preceding the null character was a lead byte, the lead
 byte is not included in the count.

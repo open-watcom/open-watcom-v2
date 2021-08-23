@@ -26,15 +26,14 @@ function returns a pointer to the next character
 You must ensure that
 .arg current
 does not point into the middle of a multibyte or wide character.
+.np
 .farfunc &ffunc. &funcb.
-.sbcsfunc _strinc &funcb.
-.widefunc _wcsinc &funcb.
+.np
+.tcsfunc _tcsinc &funcb. _strinc &wfunc.
 .desc end
 .return begin
-The
-.id &funcb.
-function returns a pointer to the next character
-(single-byte, wide, or multibyte depending on the function used).
+These functions return a pointer to the next character
+(single-byte, wide, or multi-byte).
 .return end
 .see begin
 .seelist _strdec _strinc _strninc

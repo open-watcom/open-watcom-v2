@@ -1,75 +1,46 @@
-.func _strninc _wcsninc _mbsninc _fmbsninc
+.func _mbsninc _fmbsninc _strninc _wcsninc
 .synop begin
-#ninclude <tchar.h>
+#include <mbstring.h>
+unsigned char *_mbsninc( const unsigned char *str, size_t count );
+.ixfunc2 '&String' _mbsninc
+.ixfunc2 '&Multibyte' _mbsninc
+.if &farfnc ne 0 .do begin
+unsigned char __far *_fmbsninc( const unsigned char __far *str,
+                                size_t count );
+.ixfunc2 '&String' _fmbsninc
+.ixfunc2 '&Multibyte' _fmbsninc
+.do end
+#include <tchar.h>
 char *_strninc( const char *str, size_t count );
-.ixfunc2 '&String' &funcb
+.ixfunc2 '&String' _strninc
 .if &'length(&wfunc.) ne 0 .do begin
 wchar_t *_wcsninc( const wchar_t *str, size_t count );
-.ixfunc2 '&String' &wfunc
-.ixfunc2 '&Wide' &wfunc
-.do end
-.if &'length(&mfunc.) ne 0 .do begin
-#ninclude <mbstring.h>
-unsigned char *_mbsninc( const unsigned char *str,
-                         size_t count );
-.ixfunc2 '&String' &mfunc
-.ixfunc2 '&Multibyte' &mfunc
-.do end
-.if &'length(&fmfunc.) ne 0 .do begin
-unsigned char __far *_fmbsninc(
-                        const unsigned char __far *str,
-                        size_t count );
-.ixfunc2 '&String' &fmfunc
-.ixfunc2 '&Multibyte' &fmfunc
+.ixfunc2 '&String' _wcsninc
+.ixfunc2 '&Wide' _wcsninc
 .do end
 .synop end
 .desc begin
 The
-.id &mfunc.
+.id &funcb.
 function increments
 .arg str
 by
 .arg count
 multibyte characters.
-.id &mfunc.
+.id &funcb.
 recognizes multibyte-character sequences according to the
 multibyte code page currently in use.
-The header file
-.hdrfile tchar.h
-defines the generic-text routine
-.kw _tcsninc
-.period
-This macro maps to
-.id &mfunc.
-if
-.kw _MBCS
-has been defined, or to
-.id &wfunc.
-if
-.kw _UNICODE
-has been defined.
-Otherwise
-.kw _tcsninc
-maps to &funcb..
-.id &funcb.
-and
-.id &wfunc.
-are single-byte-character string and wide-character
-string versions of &mfunc..
-.id &wfunc.
-and
-.id &funcb.
-are provided only for this mapping and should not be
-used otherwise.
+.np
+.farfunc &ffunc. &funcb.
+.np
+.tcsfunc _tcsninc &funcb. _strninc &wfunc.
 .desc end
 .return begin
-The
-.id &funcb.
-function returns a pointer to
+These functions return a pointer to
 .arg str
 after it has been incremented by
 .arg count
-characters or
+characters (single-byte, wide, or multi-byte) or
 .kw NULL
 if
 .arg str
@@ -85,9 +56,9 @@ undefined.
 .seelist _strdec _strinc _strninc
 .see end
 .exmp begin
-#ninclude <stdio.h>
-#ninclude <mbctype.h>
-#ninclude <mbstring.h>
+#include <stdio.h>
+#include <mbctype.h>
+#include <mbstring.h>
 
 const unsigned char chars[] = {
     ' ',

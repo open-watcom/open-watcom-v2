@@ -1,6 +1,5 @@
 .func _mbsnccnt _fmbsnccnt _strncnt _wcsncnt
 .synop begin
-.sr func=_strncnt
 #include <mbstring.h>
 size_t _mbsnccnt( const unsigned char *string, size_t n );
 .ixfunc2 '&String' _mbsnccnt
@@ -37,72 +36,14 @@ character, the first (lead) byte is not included in the count.
 This function was called
 .kw btom
 in earlier versions.
+.np
 .farfuncp &ffunc. &funcb.
 .np
-The header file
-.hdrfile tchar.h
-defines the generic-text routine
-.kw _tcsnccnt
-.period
-This macro maps to
-.id &funcb.
-if
-.kw _MBCS
-has been defined, or to the
-.id &wfunc.
-macro if
-.kw _UNICODE
-has been defined.
-Otherwise
-.kw _tcsnccnt
-maps to _strncnt.
-.id _strncnt
-and
-.id &wfunc.
-are single-byte character string and wide-character
-string versions of &funcb.
-.period
-The
-.id _strncnt
-and
-.id &wfunc.
-macros are provided only for this mapping and
-should not be used otherwise.
-.np
-The
-.id &funcb.
-function returns the number of characters (i.e.,
-.arg n
-.ct )
-in the first
-.arg n
-bytes of the single-byte string
-.arg string
-.period
-The
-.id &wfunc.
-function returns the number of bytes (i.e., 2 *
-.arg n
-.ct )
-in the first
-.arg n
-wide characters of the wide-character string
-.arg string
-.period
+.tcsfunc _tcsnccnt &funcb. _strncnt &wfunc.
 .desc end
 .return begin
-.id &funcb.
-returns the number of characters from the beginning
-of the string to byte
-.arg n
-.period
-.id &wfunc.
-returns the number of wide characters from the beginning
-of the string to byte
-.arg n
-.period
-.id &funcb.
-returns the number of multibyte characters from the beginning
+These functions return the number of characters
+(single-byte, wide, or multi-byte) from the beginning
 of the string to byte
 .arg n
 .period

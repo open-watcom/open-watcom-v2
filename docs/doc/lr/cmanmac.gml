@@ -712,10 +712,7 @@ has been defined, or to the
 .id &*4.
 macro if
 .kw _UNICODE
-has been defined.
-Otherwise
-.kw &*1.
-maps to
+has been defined, otherwise it maps to
 .id &*3.
 macro.
 .br
