@@ -30,7 +30,7 @@ The
 .id &wfunc.
 function returns a non-zero value when
 .arg c
-is a wide-character representation of a letter, underscore or
+is a wide character representation of a letter, underscore or
 digit character.
 .do end
 .return end

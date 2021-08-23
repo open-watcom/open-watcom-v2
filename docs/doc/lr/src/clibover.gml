@@ -650,7 +650,7 @@ regardless of which memory model your program has been compiled for.
 .fd *fun="wcsncmp" compare two strings up to maximum length
 .fd *fun="_wcsncnt" count the number of characters in the first "n" bytes
 .fd *fun="wcsncpy" copy a string, up to a maximum length
-.fd *fun="_wcsnextc" return integer value of the next multibyte-character in string
+.fd *fun="_wcsnextc" return integer value of the next multi-byte character in string
 .fd *fun="_wcsnicmp" compare two strings with case insensitivity up to a maximum length
 .fd *fun="_wcsninc" increment wide character pointer by "n" characters
 .fd *fun="_wcsnset" fill string with character to a maximum length
@@ -692,7 +692,7 @@ The functions that begin with "_f" accept
 pointers as their arguments allowing manipulation of any memory location
 regardless of which memory model your program has been compiled for.
 .fdbeg
-.fd *fun="btowc" return wide-character version of single-byte character
+.fd *fun="btowc" return wide character version of single-byte character
 .fd *fun="_fmbscat" concatenate two far strings
 .fd *fun="_fmbschr" locate character in far string
 .fd *fun="_fmbscmp" compare two far strings
@@ -714,7 +714,7 @@ regardless of which memory model your program has been compiled for.
 .fd *fun="_fmbsnccnt" count the number of characters in the first "n" bytes
 .fd *fun="_fmbsncmp" compare two far strings up to maximum length
 .fd *fun="_fmbsncpy" copy a far string, up to a maximum length
-.fd *fun="_fmbsnextc" return integer value of the next multibyte-character in far string
+.fd *fun="_fmbsnextc" return integer value of the next multi-byte character in far string
 .fd *fun="_fmbsnicmp" compare two far strings with case insensitivity up to a maximum length
 .fd *fun="_fmbsninc" increment wide character far pointer by "n" characters
 .fd *fun="_fmbsnset" fill far string with character to a maximum length
@@ -758,7 +758,7 @@ regardless of which memory model your program has been compiled for.
 .fd *fun="_mbsnccnt" count the number of characters in the first "n" bytes
 .fd *fun="_mbsncmp" compare two strings up to maximum length
 .fd *fun="_mbsncpy" copy a string, up to a maximum length
-.fd *fun="_mbsnextc" return integer value of the next multibyte-character in string
+.fd *fun="_mbsnextc" return integer value of the next multi-byte character in string
 .fd *fun="_mbsnicmp" compare two strings with case insensitivity up to a maximum length
 .fd *fun="_mbsninc" increment wide character pointer by "n" characters
 .fd *fun="_mbsnset" fill string with up to "n" multibyte characters

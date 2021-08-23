@@ -30,9 +30,9 @@ of multibyte characters (if present) from the input stream pointed to
 by
 .kw stdin
 .ct , converts them to wide characters, and stores them in the
-wide-character array pointed to by
+wide character array pointed to by
 .arg buf
-until end-of-file is encountered or a wide-character new-line
+until end-of-file is encountered or a wide character new-line
 character is read.
 .do end
 .np

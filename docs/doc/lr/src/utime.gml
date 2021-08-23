@@ -86,7 +86,7 @@ function is identical to
 .id &funcb.
 except that
 .arg path
-points to a wide-character string.
+points to a wide character string.
 .do end
 .desc end
 .return begin

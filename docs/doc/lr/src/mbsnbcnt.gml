@@ -24,7 +24,7 @@ The
 .id &funcb.
 function counts the number of bytes in the first
 .arg n
-multibyte characters of the string
+multi-byte characters of the string
 .arg string
 .period
 .np

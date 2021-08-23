@@ -22,18 +22,18 @@ wchar_t *_wcsdec( const wchar_t *start,
 .desc begin
 The
 .id &funcb.
-function returns a pointer to the previous character
-(single-byte, wide, or multibyte) in the string pointed to by
+function returns a pointer to the previous multi-byte character
+in the multi-byte character string pointed to by
 .arg start
 which must precede
 .arg current
 .period
-The current character in the string is pointed to by
+The current multi-byte character in the string is pointed to by
 .arg current
 .period
 You must ensure that
 .arg current
-does not point into the middle of a multibyte or wide character.
+does not point into the middle of a multi-byte or wide character.
 .farfunc &ffunc. &funcb.
 .tcsfunc _tcsdec &funcb. _strdec &wfunc.
 .desc end

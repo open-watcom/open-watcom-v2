@@ -58,7 +58,7 @@ The
 function is identical to
 .id &funcb.
 except that it accepts
-wide-character string arguments for
+wide character string arguments for
 .arg s
 and
 .arg format

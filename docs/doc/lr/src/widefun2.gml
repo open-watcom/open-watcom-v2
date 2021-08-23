@@ -2,7 +2,7 @@
 .np
 The
 .id &wfunc.
-function is a wide-character version of
+function is a wide character version of
 .id &funcb.
-that operates with wide-character argument.
+that operates with wide character argument.
 .do end

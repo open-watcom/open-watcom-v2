@@ -65,7 +65,7 @@ functions are identical to their
 .kw asctime
 and
 .kw _asctime
-counterparts except that they deal with wide-character strings.
+counterparts except that they deal with wide character strings.
 .do end
 .desc end
 .return begin

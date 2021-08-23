@@ -692,9 +692,9 @@ that operates with single-byte character strings.
 .dm widefunc begin
 The
 .id &*1.
-function is a wide-character version of
+function is a wide character version of
 .id &*2.
-that operates with wide-character strings.
+that operates with wide character strings.
 .dm widefunc end
 .*
 .dm tcsfunc begin
@@ -720,7 +720,7 @@ macro.
 .id &*3.
 and
 .id &*4.
-are single-byte character string and wide-character
+are single-byte character string and wide character
 string versions of
 .id &*2.
 .period
@@ -780,7 +780,7 @@ macro.
 .id &*5.
 and
 .id &*6.
-are single-byte character string and wide-character
+are single-byte character string and wide character
 string versions.
 .br
 The

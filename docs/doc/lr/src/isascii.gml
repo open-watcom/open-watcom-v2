@@ -32,7 +32,7 @@ The
 .id &wfunc.
 function returns a non-zero value when
 .arg c
-is a wide-character representation of an ASCII character.
+is a wide character representation of an ASCII character.
 .do end
 .return end
 .see begin

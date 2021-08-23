@@ -17,8 +17,8 @@ function creates a unique filename by modifying the
 .arg template
 argument.
 .id &funcb.
-automatically handles multibyte-character string arguments as
-appropriate, recognizing multibyte-character sequences according to
+automatically handles multi-byte character string arguments as
+appropriate, recognizing multi-byte character sequences according to
 the multibyte code page currently in use by the run-time system.
 .im widefun1
 .np

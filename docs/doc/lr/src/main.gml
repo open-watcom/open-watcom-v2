@@ -99,8 +99,8 @@ function to do so.
 .np
 The
 .id &wfunc.
-function is a user-defined wide-character version of &funcb
-that operates with wide-character strings.
+function is a user-defined wide character version of &funcb
+that operates with wide character strings.
 If this function is present in the application, then it will be called
 by the run-time system startup code (and the
 .id &funcb.
@@ -124,7 +124,7 @@ function is called by the system as the initial entry point for a
 Windows-based application.
 The
 .kw wWinMain
-function is a wide-character version of
+function is a wide character version of
 .kw WinMain
 .period
 .begterm 10

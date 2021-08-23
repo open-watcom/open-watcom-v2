@@ -19,13 +19,13 @@ wchar_t *_wcsinc( const wchar_t *current );
 .desc begin
 The
 .id &funcb.
-function returns a pointer to the next character
-(single-byte, wide, or multibyte) in the string pointed to by
+function returns a pointer to the next multi-byte character
+in the string pointed to by
 .arg current
 .period
 You must ensure that
 .arg current
-does not point into the middle of a multibyte or wide character.
+does not point into the middle of a multi-byte or wide character.
 .farfunc &ffunc. &funcb.
 .tcsfunc _tcsinc &funcb. _strinc &wfunc.
 .desc end

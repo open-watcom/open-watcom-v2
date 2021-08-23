@@ -26,10 +26,10 @@ function increments
 .arg str
 by
 .arg count
-multibyte characters.
+of multi-byte characters.
 .id &funcb.
-recognizes multibyte-character sequences according to the
-multibyte code page currently in use.
+recognizes multi-byte character sequences according to the
+multi-byte character code page currently in use.
 .farfunc &ffunc. &funcb.
 .tcsfunc _tcsninc &funcb. _strninc &wfunc.
 .desc end
@@ -38,7 +38,7 @@ These functions return a pointer to
 .arg str
 after it has been incremented by
 .arg count
-characters (single-byte, wide, or multi-byte) or
+of characters (single-byte, wide, or multi-byte) or
 .kw NULL
 if
 .arg str

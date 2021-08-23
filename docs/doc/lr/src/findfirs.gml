@@ -83,8 +83,8 @@ struct _wfinddata_t {
 };
 .millust end
 .np
-The wide-character &wfunc64 function is similar to the &func64
-function but operates on wide-character strings.
+The wide character &wfunc64 function is similar to the &func64
+function but operates on wide character strings.
 It differs from the
 .id &wfunc.
 function in that it returns a 64-bit file

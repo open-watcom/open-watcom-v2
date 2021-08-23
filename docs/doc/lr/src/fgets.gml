@@ -40,7 +40,7 @@ of multibyte characters (if present) from the input stream pointed to
 by
 .arg fp
 .ct , converts them to wide characters, and stores them in the
-wide-character array pointed to by
+wide character array pointed to by
 .arg buf
 .period
 In this case,

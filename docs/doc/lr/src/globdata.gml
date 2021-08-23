@@ -445,8 +445,8 @@ passed to
 .proto stdlib.h
 This
 .id wchar_t ** __near
-data item is a pointer to an array of wide-character pointers to the
-wide-character equivalents of the environment strings.
+data item is a pointer to an array of wide character pointers to the
+wide character equivalents of the environment strings.
 .df __win_alloc_flags
 .proto stdlib.h
 This

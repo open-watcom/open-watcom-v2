@@ -3,5 +3,5 @@
 The
 .id &wfunc.&grpsfx
 functions are similar to their counterparts but operate on
-wide-character strings.
+wide character strings.
 .do end

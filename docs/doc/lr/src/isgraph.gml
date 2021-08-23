@@ -32,7 +32,7 @@ character (except a space).
 The
 .id &wfunc.
 function returns a non-zero value when the argument is a
-printable wide character (except a wide-character space).
+printable wide character (except a wide character space).
 .do end
 Otherwise, zero is returned.
 .return end

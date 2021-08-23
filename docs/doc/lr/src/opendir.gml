@@ -70,7 +70,7 @@ The
 function is identical to
 .id &funcb.
 except that it accepts a
-wide-character string argument and returns a pointer to a
+wide character string argument and returns a pointer to a
 .kw _wdirent
 structure that can be used with the
 .kw _wreaddir

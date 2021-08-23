@@ -77,13 +77,13 @@ space remaining to store an additional value.
 .np
 The
 .id &wfunc.
-function is a wide-character version of
+function is a wide character version of
 .id &funcb.
 the
 .arg env_name
 argument to
 .id &wfunc.
-is a wide-character string.
+is a wide character string.
 .np
 .id &funcb.
 and

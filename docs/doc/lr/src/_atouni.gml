@@ -8,7 +8,7 @@ The
 .id &funcb.
 function converts the string pointed to by
 .arg sbcs
-to a wide-character string and places it in the buffer
+to a wide character string and places it in the buffer
 pointed to by
 .arg wcs
 .period

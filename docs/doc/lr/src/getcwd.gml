@@ -55,7 +55,7 @@ function.
 .if &'length(&wfunc.) ne 0 .do begin
 The
 .arg maxlen
-is the length in wide-characters (wchar_t).
+is the length in wide characters (wchar_t).
 .do end
 .desc end
 .return begin

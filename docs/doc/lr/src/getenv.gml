@@ -99,20 +99,20 @@ assignments:
 :CMT. .if &'length(&wfunc.) ne 0 .do begin
 :CMT. The
 :CMT. .kw _wenviron
-:CMT. global variable is a wide-character version of
+:CMT. global variable is a wide character version of
 :CMT. .kw _environ
 :CMT. .period
 :CMT. .np
 :CMT. In an MBCS program (for example, in an SBCS ASCII program),
 :CMT. .kw _wenviron
 :CMT. is initially NULL because the environment is composed of
-:CMT. multibyte-character strings.
+:CMT. multi-byte character strings.
 :CMT. Then, on the first call to
 :CMT. .kw _wputenv
 :CMT. .ct , or on the first call to
 :CMT. .kw _wgetenv
 :CMT. if an (MBCS) environment already exists, a corresponding
-:CMT. wide-character string environment is created and is then
+:CMT. wide character string environment is created and is then
 :CMT. pointed to by
 :CMT. .kw _wenviron
 :CMT. .period

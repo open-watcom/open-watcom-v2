@@ -44,8 +44,8 @@ returned.
 .if &'length(&wfunc.) ne 0 .do begin
 The
 .id &wfunc.
-function returns the corresponding wide-character lowercase
-letter when the argument is a wide-character uppercase letter;
+function returns the corresponding wide character lowercase
+letter when the argument is a wide character uppercase letter;
 otherwise, the original wide character is returned.
 .do end
 .np

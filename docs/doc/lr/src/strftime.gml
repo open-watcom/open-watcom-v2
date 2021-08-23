@@ -46,7 +46,7 @@ function is identical to
 .id &wfunc.
 except that the
 .arg format
-is not a wide-character string.
+is not a wide character string.
 .do end
 .np
 The

@@ -22,23 +22,14 @@ size_t _wcsncnt( const wchar_t *string, size_t n );
 .desc begin
 The
 .id &funcb.
-function counts the number of characters in the first
-.arg n
-bytes of
-.arg string
-.period
-.np
-The
-.id &funcb.
-function counts the number of multibyte characters in the
-first
+function counts the number of multi-byte characters in the first
 .arg n
 bytes of
 .arg string
 .period
 If
 .id &funcb.
-finds a null byte as the second byte of a double-byte
+finds a null byte as the second byte of a multi-byte
 character, the first (lead) byte is not included in the count.
 .np
 .us Note:

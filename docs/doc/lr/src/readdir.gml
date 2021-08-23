@@ -61,7 +61,7 @@ The
 function is identical to
 .id &funcb.
 except that it reads a
-directory of wide-character filenames.
+directory of wide character filenames.
 .im _wdirent
 .do end
 .desc end

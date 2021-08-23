@@ -49,7 +49,7 @@ The
 function is identical to
 .id &funcb.
 except that it rewinds a
-directory of wide-character filenames opened by
+directory of wide character filenames opened by
 .kw _wopendir
 .period
 .do end
