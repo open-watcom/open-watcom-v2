@@ -25,9 +25,7 @@ function returns the integer value of the next character in
 .id &funcb.
 recognizes multi-byte character sequences according to the
 multi-byte character code page currently in use.
-.np
 .farfuncp &ffunc. &funcb.
-.np
 .tcsfunc _tcsnextc &funcb. _strnextc &wfunc.
 .desc end
 .return begin

@@ -23,7 +23,6 @@ that does not belong to the set of characters in
 The terminating null character is not considered to be part of
 .arg charset
 .period
-.np
 .farfunc &ffunc. &funcb.
 .desc end
 .return begin

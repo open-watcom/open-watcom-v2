@@ -38,9 +38,7 @@ that does not belong to the set of characters in
 The terminating null character is not considered to be part of
 .arg charset
 .period
-.np
 .farfunc &ffunc. &funcb.
-.np
 .tcsfunc _tcsspnp &funcb. _strspnp &wfunc.
 .desc end
 .return begin

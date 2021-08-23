@@ -32,9 +32,7 @@ multibyte characters of the string
 This function was called
 .kw mtob
 in earlier versions.
-.np
 .farfuncp &ffunc. &funcb.
-.np
 .tcsfunc _tcsnbcnt &funcb. _strncnt &wfunc.
 .desc end
 .return begin

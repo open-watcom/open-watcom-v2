@@ -45,9 +45,7 @@ character, the first (lead) byte is not included in the count.
 This function was called
 .kw btom
 in earlier versions.
-.np
 .farfunc &ffunc. &funcb.
-.np
 .tcsfunc _tcsnccnt &funcb. _strncnt &wfunc.
 .desc end
 .return begin

@@ -698,6 +698,7 @@ that operates with wide-character strings.
 .dm widefunc end
 .*
 .dm tcsfunc begin
+.pp
 The header file
 .hdrfile tchar.h
 defines the generic-text macro
@@ -733,7 +734,7 @@ should not be used otherwise.
 .dm tcsfunc end
 .*
 .dm tcsfunc1 begin
-.np
+.pp
 The header file
 .hdrfile tchar.h
 defines the generic-text macros

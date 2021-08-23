@@ -34,9 +34,7 @@ The current character in the string is pointed to by
 You must ensure that
 .arg current
 does not point into the middle of a multibyte or wide character.
-.np
 .farfunc &ffunc. &funcb.
-.np
 .tcsfunc _tcsdec &funcb. _strdec &wfunc.
 .desc end
 .return begin

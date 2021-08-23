@@ -30,9 +30,7 @@ multibyte characters.
 .id &funcb.
 recognizes multibyte-character sequences according to the
 multibyte code page currently in use.
-.np
 .farfunc &ffunc. &funcb.
-.np
 .tcsfunc _tcsninc &funcb. _strninc &wfunc.
 .desc end
 .return begin

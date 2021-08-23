@@ -26,9 +26,7 @@ function returns a pointer to the next character
 You must ensure that
 .arg current
 does not point into the middle of a multibyte or wide character.
-.np
 .farfunc &ffunc. &funcb.
-.np
 .tcsfunc _tcsinc &funcb. _strinc &wfunc.
 .desc end
 .return begin
