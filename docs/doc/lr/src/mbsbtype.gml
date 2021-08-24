@@ -17,12 +17,13 @@ The function examines only the byte at offset
 .arg count
 in
 .arg mbstr
-.ct , ignoring invalid characters before the specified byte
+.ct , ignoring invalid characters before the specified byte.
 .np
 .us Note:
 A similar function was called
 .kw nthctype
 in earlier versions.
+.farparm &ffunc. &funcb.
 .desc end
 .return begin
 The

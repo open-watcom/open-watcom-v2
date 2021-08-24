@@ -51,6 +51,7 @@ function to copy objects that overlap.
 .farfunc &ffunc. &funcb.
 .widefunc &wfunc. &funcb.
 .mbcsfunc &mfunc. &funcb.
+.farfuncp &fmfunc. &mfunc.
 .desc end
 .return begin
 The value of
