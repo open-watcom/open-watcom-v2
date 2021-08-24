@@ -185,30 +185,26 @@ static bool parse_base_from_file(OPT_STRING **p, char *str)
     keylen = s - keyword;
 
     stream = fopen(buffer, "r");
-    if( !stream )
-    {
+    if( stream == NULL ) {
         FreeMem(buffer);
         FatalError("/BASE:@{filename} requires a valid filename");
         return( false );
     }
 
-    while( fgets(buffer, MAX_LEN, stream) )
-    {
+    while( fgets(buffer, MAX_LEN, stream) != NULL ) {
         s = buffer;
         skip_white(s);
 
         if( *s == ';' || *s == '\0' )
             continue;
 
-        if( !strnicmp(s, keyword, keylen) && isspace(s[keylen]))
-        {
+        if( strnicmp(s, keyword, keylen) == 0 && isspace( s[keylen] ) ) {
             s += keylen + 1;
             skip_white(s);
 
-            if( !*s )
-            {
-                FreeMem(buffer);
-                fclose(stream);
+            if( *s == '\0' ) {
+                FreeMem( buffer );
+                fclose( stream );
                 FatalError("/BASE file contains invalid offset");
                 return( false );
             }

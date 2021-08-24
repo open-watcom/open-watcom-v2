@@ -215,10 +215,9 @@ static wpackfile *ProcFileName( char **argv )
     for( ; *argv != NULL ; ++argv ) {
         if( **argv == '@' ) {
             io = fopen( ++(*argv), "r" );
-            fgets( buff, sizeof( buff ), io );
-            while( !feof( io ) ) {
+            while( fgets( buff, sizeof( buff ), io ) != NULL ) {
                 curr = strrchr( buff, '\n' );
-                if( curr ) {
+                if( curr != NULL ) {
                     *curr = '\0';
                     if( strlen( buff ) > 0 ) {
                         newlist = AddFileName( newlist, buff, &newlistlen );
@@ -226,7 +225,6 @@ static wpackfile *ProcFileName( char **argv )
                 } else {
                     Error( -1, "invalid line in directive file\n" );
                 }
-                fgets( buff, sizeof( buff ), io );
             }
             fclose( io );
         } else {
