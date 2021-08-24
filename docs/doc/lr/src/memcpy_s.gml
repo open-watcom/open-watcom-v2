@@ -7,13 +7,6 @@ errno_t memcpy_s( void * restrict s1,
                   const void * restrict s2,
                   rsize_t n );
 .ixfunc2 '&Copy' &funcb
-.if &'length(&ffunc.) ne 0 .do begin
-errno_t _fmemcpy_s( void __far * restrict s1,
-                    rsize_t s1max,
-                    const void __far * restrict s2,
-                    size_t n );
-.ixfunc2 '&Copy' &ffunc
-.do end
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
 errno_t wmemcpy_s( wchar_t * restrict s1,

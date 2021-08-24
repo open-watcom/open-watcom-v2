@@ -52,6 +52,7 @@ The terminating null character is not considered part of
 .farfuncp &ffunc. &funcb.
 .widefunc &wfunc. &funcb.
 .mbcsfunc &mfunc. &funcb.
+.farfuncp &fmfunc. &mfunc.
 .desc end
 .return begin
 The length, in bytes, of the initial segment is returned.

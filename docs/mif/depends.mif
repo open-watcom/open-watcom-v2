@@ -1990,6 +1990,7 @@ objs_lr2 = &
 ../doc/lr/src/widefun2.gml &
 ../doc/lr/src/widefun3.gml &
 ../doc/lr/src/widefun4.gml &
+../doc/lr/src/widefun5.gml &
 ../doc/lr/src/write.gml &
 ../doc/lr/src/zentohan.gml
 
