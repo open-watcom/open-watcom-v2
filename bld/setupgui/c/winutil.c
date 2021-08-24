@@ -281,7 +281,7 @@ static bool ZapKey( const VBUF *app_name, const char *old, const char *new,
     io = fopen_vbuf( hive, "r+t" );
     if( io == NULL )
         return( false );
-    while( fgets( buff, sizeof( buff ), io ) ) {
+    while( fgets( buff, sizeof( buff ), io ) != NULL ) {
         if( buff[0] == '[' ) {
             if( in_sect )
                 break;

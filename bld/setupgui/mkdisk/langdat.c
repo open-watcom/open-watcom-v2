@@ -280,7 +280,9 @@ static bool GetALine( char *line, int max_len )
 {
     for( ;; ) {
         if( fgets( line, max_len, IncludeStk->fp ) == NULL ) {
-            Fatal( "Error reading '%s' line %d: %s\n", IncludeStk->name, IncludeStk->lineno, strerror( errno ) );
+            if( ferror( IncludeStk->fp ) ) {
+                Fatal( "Error reading '%s' line %d: %s\n", IncludeStk->name, IncludeStk->lineno, strerror( errno ) );
+            }
         }
         if( !feof( IncludeStk->fp ) ) {
             IncludeStk->lineno++;
@@ -894,3 +896,4 @@ int main( int argc, char *argv[] )
     MClose();
     return( 0 );
 }
+
