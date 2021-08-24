@@ -401,7 +401,7 @@ void main() {
 
     printf( "Ready\n" );
 
-    while( fgets( buf, sizeof( buf ), stdin ) ) {
+    while( fgets( buf, sizeof( buf ), stdin ) != NULL ) {
         buf[ strlen( buf ) - 1 ] = '\0';
         die = tree.find( buf );
         printf( "%s -- %s:%s\n", buf, (die) ? "found" : "not found",
