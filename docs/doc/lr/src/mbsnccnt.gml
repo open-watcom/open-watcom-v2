@@ -31,7 +31,7 @@ If
 .id &funcb.
 finds a null byte as the second byte of a double-byte
 character, the first (lead) byte is not included in the count.
-.np
+.br
 .us Note:
 This function was called
 .kw btom
@@ -50,8 +50,7 @@ If these functions find a null character before byte
 .ct , they return the number of characters before the null character.
 If the string consists of fewer than
 .arg n
-characters, these functions return the number of characters in the
-string.
+bytes, these functions return the number of characters in the string.
 .return end
 .see begin
 .seelist _mbsnbcat _mbsnbcnt _mbsnccnt
