@@ -812,20 +812,18 @@
 .fnn _fmbsnbcat                 mbsnbcat.gml    DOS       WIN32
 .fnm _mbsnbcmp                  mbsnbcmp.gml    DOS       WIN32
 .fnn _fmbsnbcmp                 mbsnbcmp.gml    DOS       WIN32
-.fnm _mbsnbcnt                  mbsnbcnt.gml    DOS       WIN32
-.fnn _fmbsnbcnt                 mbsnbcnt.gml    DOS       WIN32
-.fnm _strncnt                   mbsnbcnt.gml    DOS QNX W WIN32
-.fnw _wcsncnt                   mbsnbcnt.gml    DOS QNX W WIN32
 .fnm _mbsnbcpy                  mbsnbcpy.gml    DOS       WIN32
 .fnn _fmbsnbcpy                 mbsnbcpy.gml    DOS       WIN32
 .fnm _mbsnbicmp                 mbsnbicm.gml    DOS       WIN32
 .fnn _fmbsnbicmp                mbsnbicm.gml    DOS       WIN32
 .fnm _mbsnbset                  mbsnbset.gml    DOS       WIN32
 .fnn _fmbsnbset                 mbsnbset.gml    DOS       WIN32
-.fnm _mbsnccnt                  mbsnccnt.gml    DOS       WIN32
-.fnn _fmbsnccnt                 mbsnccnt.gml    DOS       WIN32
-.fnm _strncnt                   mbsnccnt.gml    DOS QNX W WIN32
-.fnw _wcsncnt                   mbsnccnt.gml    DOS QNX W WIN32
+.fnm _mbsnbcnt                  mbsncnt.gml     DOS       WIN32
+.fnn _fmbsnbcnt                 mbsncnt.gml     DOS       WIN32
+.fnm _mbsnccnt                  mbsncnt.gml     DOS       WIN32
+.fnn _fmbsnccnt                 mbsncnt.gml     DOS       WIN32
+.fnm _strncnt                   mbsncnt.gml     DOS QNX W WIN32
+.fnw _wcsncnt                   mbsncnt.gml     DOS QNX W WIN32
 .fnm _mbsnextc                  mbsnextc.gml    DOS       WIN32
 .fnn _fmbsnextc                 mbsnextc.gml    DOS       WIN32
 .fnm _strnextc                  mbsnextc.gml    DOS QNX W WIN32
