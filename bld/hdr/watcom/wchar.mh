@@ -230,18 +230,16 @@ _WCRTLINK extern int        wprintf( const wchar_t *__format, ... );
 _WCRTLINK extern int        wscanf( const wchar_t *__format, ... );
 :include nsstdepi.sp
 
-_WCRTLINK extern wchar_t    *_wcsdup( const wchar_t * );
-_WCRTLINK extern int        _wcsicmp( const wchar_t *, const wchar_t * );
-_WCRTLINK extern wchar_t    *_wcslwr( wchar_t * );
-_WCRTLINK extern int        _wcsnicmp( const wchar_t *, const wchar_t *, __w_size_t );
-_WCRTLINK extern wchar_t    *_wcsnset( wchar_t *, int, __w_size_t );
-_WCRTLINK extern wchar_t    *_wcsupr( wchar_t * );
-_WCRTLINK extern wchar_t    *_wcsrev( wchar_t * );
-_WCRTLINK extern wchar_t    *_wcsset( wchar_t *, wchar_t );
 :keep WIDE
+:include msstring.sp
+
 :include mktemp.sp
 :include tempnam.sp
 :remove WIDE
+:: POSIX prototypes
+/* POSIX */
+_WCRTLINK extern wchar_t    *wcsdup( const wchar_t * );
+::
 
 :include ext.sp
 
@@ -265,6 +263,12 @@ _WCRTLINK extern int        _vswprintf( wchar_t *__s, const wchar_t *__format, s
 :elsesegment
 _WCRTLINK extern int        _vswprintf( wchar_t *__s, const wchar_t *__format, va_list __arg );
 :endsegment
+
+/* BSD 'safe' wide character string copy functions */
+
+:: Wide character version
+_WCRTLINK extern __w_size_t wcslcat( wchar_t *__s1, const wchar_t *__s2, __w_size_t __n );
+_WCRTLINK extern __w_size_t wcslcpy( wchar_t *__s1, const wchar_t *__s2, __w_size_t __n );
 
 :include extepi.sp
 

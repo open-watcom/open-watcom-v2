@@ -134,6 +134,9 @@ inline wchar_t *_tcstok( wchar_t *__p1, const wchar_t *__p2 ) {
 #define _tcstok(__p1,__p2)      wcstok((__p1),(__p2),NULL)
 #endif
 
+#define _tcserror       _wcserror
+#define __tcserror      __wcserror
+
 #define _tcsdup         _wcsdup
 #define _tcsnset        _wcsnset
 #define _tcsrev         _wcsrev
@@ -217,6 +220,7 @@ inline wchar_t *_tcstok( wchar_t *__p1, const wchar_t *__p2 ) {
 #define _tfreopen       _wfreopen
 #define _tperror        _wperror
 #define _ttmpnam        _wtmpnam
+#define _ttempnam       _wtempnam
 
 /* Io functions */
 
@@ -350,15 +354,6 @@ using std::wcstol;
 using std::wcstoul;
 #endif
 
-_WCRTLINK extern int _wcsicmp( const wchar_t *, const wchar_t * );
-_WCRTLINK extern int _wcsnicmp( const wchar_t *, const wchar_t *, size_t );
-_WCRTLINK extern wchar_t *_wcsdup( const wchar_t * );
-_WCRTLINK extern wchar_t *_wcslwr( wchar_t * );
-_WCRTLINK extern wchar_t *_wcsupr( wchar_t * );
-_WCRTLINK extern wchar_t *_wcsset( wchar_t *, wchar_t );
-_WCRTLINK extern wchar_t *_wcsnset( wchar_t *, int, size_t );
-_WCRTLINK extern wchar_t *_wcsrev( wchar_t * );
-
 #else
 // **************************** SBCS and MBCS ********************************
 
@@ -426,6 +421,9 @@ _WCRTLINK extern wchar_t *_wcsrev( wchar_t * );
 #define _tcsxfrm        strxfrm
 #define _tcsdup         _strdup
 
+#define _tcserror       strerror
+#define __tcserror      _strerror
+
 /* Execute functions */
 
 #define _texecl         execl
@@ -490,6 +488,7 @@ _WCRTLINK extern wchar_t *_wcsrev( wchar_t * );
 #define _tfreopen       freopen
 #define _tperror        perror
 #define _ttmpnam        tmpnam
+#define _ttempnam       _tempnam
 
 /* Io functions */
 
@@ -886,16 +885,16 @@ typedef char            TCHAR;
 #define _tcsstr         strstr
 #define _tcstok         strtok
 
-#define _tcsnset        strnset
-#define _tcsrev         strrev
-#define _tcsset         strset
+#define _tcsnset        _strnset
+#define _tcsrev         _strrev
+#define _tcsset         _strset
 
 #define _tcscmp         strcmp
-#define _tcsicmp        stricmp
+#define _tcsicmp        _stricmp
 #define _tcsnccmp       strncmp
 #define _tcsncmp        strncmp
-#define _tcsncicmp      strnicmp
-#define _tcsnicmp       strnicmp
+#define _tcsncicmp      _strnicmp
+#define _tcsnicmp       _strnicmp
 
 #define _tcscoll        strcoll
 #define _tcsicoll       _stricoll
@@ -909,7 +908,7 @@ typedef char            TCHAR;
 #define _tcsclen        strlen
 #define _tcsnccat       strncat
 #define _tcsnccpy       strncpy
-#define _tcsncset       strnset
+#define _tcsncset       _strnset
 
 #define _tcsdec         _strdec
 #define _tcsinc         _strinc
@@ -919,8 +918,8 @@ typedef char            TCHAR;
 #define _tcsninc        _strninc
 #define _tcsspnp        _strspnp
 
-#define _tcslwr         strlwr
-#define _tcsupr         strupr
+#define _tcslwr         _strlwr
+#define _tcsupr         _strupr
 #define _tcsxfrm        strxfrm
 
 #if defined(__cplusplus) && defined(__INLINE_FUNCTIONS__)
