@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,7 +74,7 @@ BOOL TryAlias( HWND hwnd, WORD msg, LONG *lparam )
     /*
      * combo box messages
      */
-    if( stricmp( class, "COMBOBOX" ) == 0 ) {
+    if( _stricmp( class, "COMBOBOX" ) == 0 ) {
         switch( msg ) {
         case CB_ADDSTRING:
         case CB_DIR:
@@ -91,7 +92,7 @@ BOOL TryAlias( HWND hwnd, WORD msg, LONG *lparam )
     /*
      * edit control messages
      */
-    if( stricmp( class, "EDIT" ) == 0 ) {
+    if( _stricmp( class, "EDIT" ) == 0 ) {
         switch( msg ) {
         case EM_GETLINE:
         case EM_GETRECT:
@@ -108,7 +109,7 @@ BOOL TryAlias( HWND hwnd, WORD msg, LONG *lparam )
     /*
      * list box messages
      */
-    if( stricmp( class, "LISTBOX" ) == 0 ) {
+    if( _stricmp( class, "LISTBOX" ) == 0 ) {
         switch( msg ) {
         case LB_ADDSTRING:
         case LB_DIR:

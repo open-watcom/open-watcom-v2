@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of strnset() and _wcsnset().
+* Description:  Implementation of _strnset() and _wcsnset().
 *
 ****************************************************************************/
 
@@ -38,7 +39,7 @@
 #if defined(__RISCSTR__) && defined(__WIDECHAR__)
  CHAR_TYPE *__simple__wcsnset( CHAR_TYPE *str, int c, size_t len )
 #else
- _WCRTLINK CHAR_TYPE *__F_NAME(strnset,_wcsnset)( CHAR_TYPE *str, int c, size_t len )
+ _WCRTLINK CHAR_TYPE *__F_NAME(_strnset,_wcsnset)( CHAR_TYPE *str, int c, size_t len )
 #endif
 {
     CHAR_TYPE   *p;

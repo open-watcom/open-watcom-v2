@@ -122,7 +122,7 @@ static CHAR_TYPE *__F_NAME(_sys_fullpath,_sys_wfullpath)
     CHAR_TYPE       *filepart;
     DWORD           rc;
 
-    if( __F_NAME(stricmp,_wcsicmp)( path, STRING( "con" ) ) == 0 ) {
+    if( __F_NAME(_stricmp,_wcsicmp)( path, STRING( "con" ) ) == 0 ) {
         _WILL_FIT( 3 );
         return( __F_NAME(strcpy,wcscpy)( buff, STRING( "con" ) ) );
     }

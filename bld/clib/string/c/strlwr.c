@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of strlwr() and _wcslwr().
+* Description:  Implementation of _strlwr() and _wcslwr().
 *
 ****************************************************************************/
 
@@ -39,7 +40,7 @@
 #if defined(__RISCSTR__) && defined(__WIDECHAR__)
  CHAR_TYPE *__simple__wcslwr( CHAR_TYPE *str ) {
 #else
- _WCRTLINK CHAR_TYPE *__F_NAME(strlwr,_wcslwr)( CHAR_TYPE *str ) {
+ _WCRTLINK CHAR_TYPE *__F_NAME(_strlwr,_wcslwr)( CHAR_TYPE *str ) {
 #endif
     CHAR_TYPE    *p;
     UCHAR_TYPE   c;

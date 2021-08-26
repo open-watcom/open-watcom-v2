@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +39,7 @@
 
 /****
 ***** Set all characters in 'string' to 'ch', overwriting any partial bytes
-***** at the end with ' '.  Equivalent to strnset().
+***** at the end with ' '.  Equivalent to _strnset().
 ****/
 
 _WCRTLINK unsigned char _FFAR *_NEARFAR(_mbsnbset,_fmbsnbset)( unsigned char _FFAR *string, unsigned int ch, size_t n )
@@ -47,7 +48,7 @@ _WCRTLINK unsigned char _FFAR *_NEARFAR(_mbsnbset,_fmbsnbset)( unsigned char _FF
     unsigned char _FFAR *   string_start;
     unsigned char           mbc[MB_LEN_MAX+1];
 
-//    if( !__IsDBCS && !ch&0xFF00 )  return( strnset( string, ch, n ) );
+//    if( !__IsDBCS && !ch&0xFF00 )  return( _strnset( string, ch, n ) );
 
     /*** Set every character in the string to 'ch' ***/
     _NEARFAR(_mbvtop,_fmbvtop)( ch, mbc );  /* convert from unsigned int */

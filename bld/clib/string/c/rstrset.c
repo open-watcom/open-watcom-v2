@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of strset() for RISC architectures.
+* Description:  Implementation of _strset() for RISC architectures.
 *
 ****************************************************************************/
 
@@ -38,7 +39,7 @@
 #ifdef __WIDECHAR__
  wchar_t *_wcsset( wchar_t *s, wchar_t c )
 #else
- char *strset( char *s, int c )
+ char *_strset( char *s, int c )
 #endif
 /****************************************/
 {

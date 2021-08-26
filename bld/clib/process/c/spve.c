@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -302,9 +302,9 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
         _RWD_errno = ENOENT;
         if( ext[0] != NULLCHAR ) {
 #if defined( __OS2__ )
-            if( stricmp( ext, STRING( ".cmd" ) ) == 0 || stricmp( ext, STRING( ".bat" ) ) == 0 ) {
+            if( _stricmp( ext, STRING( ".cmd" ) ) == 0 || _stricmp( ext, STRING( ".bat" ) ) == 0 ) {
 #else
-            if( __F_NAME(stricmp,wcscmp)( ext, STRING( ".bat" ) ) == 0 ) {
+            if( __F_NAME(_stricmp,_wcsicmp)( ext, STRING( ".bat" ) ) == 0 ) {
 #endif
                 retval = -1; /* assume file doesn't exist */
                 if( file_exists( p ) ) {

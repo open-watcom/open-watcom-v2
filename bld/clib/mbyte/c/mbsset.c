@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +40,7 @@
 
 /****
 ***** Set all characters in 'string' to 'ch', overwriting any partial bytes
-***** at the end with ' '.  Equivalent to strset().
+***** at the end with ' '.  Equivalent to _strset().
 ****/
 
 _WCRTLINK unsigned char _FFAR *_NEARFAR(_mbsset,_fmbsset)( unsigned char _FFAR *string, unsigned int ch )

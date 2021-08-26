@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -90,7 +90,7 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
         /*
          * NT likes to refer to CON as CONIN$ or CONOUT$.
          */
-        if( !__F_NAME(stricmp,_wcsicmp)( fname, STRING( "con" ) ) ) {
+        if( !__F_NAME(_stricmp,_wcsicmp)( fname, STRING( "con" ) ) ) {
             tmp = STRING( "conin$" );
         } else {
             tmp = orig_path;  /* Need full name with path for CreateFile */
@@ -132,7 +132,7 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
         /* determine if file is executable, very PC specific */
         if( (ext = __F_NAME(strchr,wcschr)( fname, EXT_SEP )) != NULL ) {
             ++ext;
-            if( __F_NAME(stricmp,_wcsicmp)( ext, STRING( "exe" ) ) == 0 ) {
+            if( __F_NAME(_stricmp,_wcsicmp)( ext, STRING( "exe" ) ) == 0 ) {
                 mode |= S_IXUSR | S_IXGRP | S_IXOTH;
             }
         }

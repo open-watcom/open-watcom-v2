@@ -155,7 +155,6 @@
 !inject mbterm.obj      d16 d32     nt  nta ntp         o16 o32         w16 w32
 !inject mbtowc.obj      d16 d32     nt  nta ntp         o16 o32         w16 w32 l32 lpc lmp
 !inject setmbcp.obj     d16 d32     nt  nta ntp         o16 o32         w16 w32 l32 lpc lmp
-!inject sisinit.obj     d16 d32     nt  nta ntp         o16 o32         w16 w32
 #inject utfqnx.obj                                               q16 q32
 !inject wc2mbqnx.obj                                            q16 q32
 !inject wc2mbrdu.obj                                                                        rdu rdk

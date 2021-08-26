@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +41,7 @@
 #include "farfunc.h"
 
 /**
- * Convert a string to uppercase.  Equivalent to strupr().
+ * Convert a string to uppercase.  Equivalent to _strupr().
  */
 
 _WCRTLINK unsigned char _FFAR *_NEARFAR(_mbsupr,_fmbsupr)( unsigned char _FFAR *string )

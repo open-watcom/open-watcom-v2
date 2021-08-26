@@ -714,7 +714,7 @@ processNumericTypes:
             } else {
                 __F_NAME(ulltoa,_ulltow)( long_long_value, &buffer[specs->_n0], radix );
                 if( specs->_character == STRING( 'X' ) ) {
-                    __F_NAME(strupr,_wcsupr)( buffer );
+                    __F_NAME(_strupr,_wcsupr)( buffer );
                 }
                 length = far_strlen( arg, -1 );
             }
@@ -724,7 +724,7 @@ processNumericTypes:
         } else {
             __F_NAME(ultoa,_ultow)( long_value, &buffer[specs->_n0], radix );
             if( specs->_character == STRING( 'X' ) ) {
-                __F_NAME(strupr,_wcsupr)( buffer );
+                __F_NAME(_strupr,_wcsupr)( buffer );
             }
             length = far_strlen( arg, -1 );
         }
@@ -785,7 +785,7 @@ processNumericTypes:
         fmt4hex( int_value, buffer, sizeof( unsigned ) * 2 );
 #endif
         if( specs->_character == STRING( 'P' ) ) {
-            __F_NAME(strupr,_wcsupr)( buffer );
+            __F_NAME(_strupr,_wcsupr)( buffer );
         }
         specs->_n0 = far_strlen( arg, -1 );
         break;

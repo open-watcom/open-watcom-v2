@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -113,9 +113,9 @@ _WCRTLINK int stat( CHAR_TYPE const *path, struct stat *buf )
 
         ok = 0;
         i = 0;
-        strlwr( fullp );
+        _strlwr( fullp );
         while( RdosReadDir( handle, i, _MAX_PATH, name, &size, &RdosAttrib, &wr_msb, &wr_lsb ) ) {
-            strlwr( name );
+            _strlwr( name );
             if( !strcmp( name, fullp ) ) {
                 ok = 1;
                 break;

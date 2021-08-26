@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -81,7 +81,7 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, uns
     security.bInheritHandle = ( mode & O_NOINHERIT ) ? FALSE : TRUE;
 
 #ifdef DEFAULT_WINDOWING
-    if( _WindowsNewWindow != NULL && !__F_NAME(stricmp,_wcsicmp)( name, CHAR_CONST( "con" ) ) )
+    if( _WindowsNewWindow != NULL && !__F_NAME(_stricmp,_wcsicmp)( name, CHAR_CONST( "con" ) ) )
     {
         handle = __NTGetFakeHandle();
 

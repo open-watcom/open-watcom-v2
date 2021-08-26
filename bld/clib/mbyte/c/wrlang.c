@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -77,7 +77,7 @@ static res_language_enumeration check_code_page( void )
 #elif defined __WINDOWS__
     codepage = 0;
     if( GetProfileString( "Intl", "sLanguage", "ENU", lang, 4 ) ) {
-        if( !stricmp( lang, "JPN" ) ) {
+        if( _stricmp( lang, "JPN" ) == 0 ) {
             codepage = 932;
         }
     }
@@ -106,9 +106,9 @@ _WCRTLINK res_language_enumeration _WResLanguage( void )
         /* Look at the code page value to determine language */
         return( check_code_page() );
     }
-    if( stricmp( env, "english" ) == 0 )
+    if( _stricmp( env, "english" ) == 0 )
         return( RLE_ENGLISH );
-    if( stricmp( env, "japanese" ) == 0 )
+    if( _stricmp( env, "japanese" ) == 0 )
         return( RLE_JAPANESE );
     if( env[0] >= '0' && env[0] <= '9' ) {
         return( env[0] - '0' );

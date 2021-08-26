@@ -147,8 +147,8 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, uns
     __SetIOMode( handle, iomode_flags );
 #ifdef DEFAULT_WINDOWING
     if( _WindowsNewWindow != NULL ) {
-        if( ( __F_NAME(stricmp,_wcsicmp)( name, STRING( "con" ) ) == 0 ) ||
-            ( __F_NAME(stricmp,_wcsicmp)( name, STRING( "\\dev\\con" ) ) == 0 ) ) {
+        if( ( __F_NAME(_stricmp,_wcsicmp)( name, STRING( "con" ) ) == 0 ) ||
+            ( __F_NAME(_stricmp,_wcsicmp)( name, STRING( "\\dev\\con" ) ) == 0 ) ) {
             _WindowsNewWindow( NULL, handle, -1 );
         }
     }

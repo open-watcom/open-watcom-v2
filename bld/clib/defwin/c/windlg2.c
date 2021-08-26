@@ -81,17 +81,17 @@ static unsigned char getClassOrdinal( const char *classname )
 
     if( classname == NULL ) {
         class_ordinal = 0;
-    } else if( stricmp( classname, "combobox" ) == 0 ) {
+    } else if( _stricmp( classname, "combobox" ) == 0 ) {
         class_ordinal = 0x85;
-    } else if( stricmp( classname, "scrollbar" ) == 0 ) {
+    } else if( _stricmp( classname, "scrollbar" ) == 0 ) {
         class_ordinal = 0x84;
-    } else if( stricmp( classname, "listbox" ) == 0 ) {
+    } else if( _stricmp( classname, "listbox" ) == 0 ) {
         class_ordinal = 0x83;
-    } else if( stricmp( classname, "static" ) == 0 ) {
+    } else if( _stricmp( classname, "static" ) == 0 ) {
         class_ordinal = 0x82;
-    } else if( stricmp( classname, "edit" ) == 0 ) {
+    } else if( _stricmp( classname, "edit" ) == 0 ) {
         class_ordinal = 0x81;
-    } else if( stricmp( classname, "button" ) == 0 ) {
+    } else if( _stricmp( classname, "button" ) == 0 ) {
         class_ordinal = 0x80;
     } else {
         class_ordinal = 0;
