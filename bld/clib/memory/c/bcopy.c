@@ -32,6 +32,7 @@
 
 
 #include "variety.h"
+#include <string.h>
 #include <strings.h>
 
 

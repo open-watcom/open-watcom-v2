@@ -116,9 +116,9 @@ _WCRTLINK extern int        _strnicoll( const char *__s1, const char *__s2, __w_
 ::
 :segment WIDE
 :elsesegment
-_WCRTLINK extern int        _memicmp( const char *__s1, const char *__s2 );
+_WCRTLINK extern int        _memicmp( const void *__s1, const void *__s2, __w_size_t __n );
 :: MS deprecated alias
-_WCRTLINK extern int        memicmp( const char *__s1, const char *__s2 );
+_WCRTLINK extern int        memicmp( const void *__s1, const void *__s2, __w_size_t __n );
 :endsegment
 ::
 :segment WIDE
