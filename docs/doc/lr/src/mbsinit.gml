@@ -4,8 +4,11 @@
 .synop begin
 #include <wchar.h>
 int mbsinit( const mbstate_t *ps );
+.ixfunc2 '&Multibyte' mbsinit
+
+** deprecated **
 int sisinit( const mbstate_t *ps );
-.ixfunc2 '&Multibyte' &funcb
+.ixfunc2 '&Multibyte' sisinit
 .synop end
 .*
 .desc begin
