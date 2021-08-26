@@ -14,7 +14,7 @@ _WCRTLINK extern int        iswctype( wint_t __wc, wctype_t __desc );
 _WCRTLINK extern wint_t     towlower( wint_t __wc );
 _WCRTLINK extern wint_t     towupper( wint_t __wc );
 _WCRTLINK extern wctype_t   wctype( const char *__property );
-:segment !WCHAR
+:segment !WCHAR_MH
 _WCRTLINK extern wint_t     towctrans( wint_t __wc, wctrans_t __desc );
 _WCRTLINK extern wctrans_t  wctrans( const char *__property );
 

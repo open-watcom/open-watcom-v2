@@ -380,7 +380,7 @@ _WCRTLINK extern int        _getw( __w_FILE *__fp );
 _WCRTLINK extern int        _pclose( __w_FILE *__fp );
 _WCRTLINK extern __w_FILE   *_popen( const char *__command, const char *__mode );
 _WCRTLINK extern int        _putw( int __binint, __w_FILE *__fp );
-_WCRTLINK extern char       *_tempnam( const char *__dir, const char *__prefix );
+:include tempnam.sp
 
 :: Wide character version
 :include nsstd.sp
@@ -455,8 +455,10 @@ _WCRTLINK extern void       _wperror( const wchar_t * );
 _WCRTLINK extern __w_FILE   *_wpopen( const wchar_t *__command, const wchar_t *__mode );
 _WCRTLINK extern int        _wremove( const wchar_t * );
 _WCRTLINK extern int        _wrename( const wchar_t *, const wchar_t * );
-_WCRTLINK extern wchar_t    *_wtempnam( const wchar_t *__dir, const wchar_t *__prefix );
-_WCRTLINK extern wchar_t    *_wtmpnam( wchar_t * );
+:keep WIDE
+:include tempnam.sp
+:include tmpnam.sp
+:remove WIDE
 _WCRTLINK extern int        _vbwprintf( wchar_t *, __w_size_t, const wchar_t *, __va_list );
 _WCRTLINK extern int        _vsnwprintf( wchar_t *, __w_size_t, const wchar_t *, __va_list );
 _WCRTLINK extern int        vsnwprintf( wchar_t *, __w_size_t, const wchar_t *, __va_list );

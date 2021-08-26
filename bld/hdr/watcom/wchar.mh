@@ -7,6 +7,7 @@
  *              declares functions and types pertaining to the use of
  *              wide characters.
  ***************************************************************************/
+:keep WCHAR_MH
 :segment CNAME
 #ifndef _CWCHAR_INCLUDED
 #define _CWCHAR_INCLUDED
@@ -237,12 +238,13 @@ _WCRTLINK extern wchar_t    *_wcsnset( wchar_t *, int, __w_size_t );
 _WCRTLINK extern wchar_t    *_wcsupr( wchar_t * );
 _WCRTLINK extern wchar_t    *_wcsrev( wchar_t * );
 _WCRTLINK extern wchar_t    *_wcsset( wchar_t *, wchar_t );
-_WCRTLINK extern wchar_t    *_wmktemp( wchar_t *__template );
-_WCRTLINK extern wchar_t    *_wtempnam( const wchar_t *__dir, const wchar_t *__prefix );
+:keep WIDE
+:include mktemp.sp
+:include tempnam.sp
+:remove WIDE
 
 :include ext.sp
 
-:keep WCHAR
 :include wctype.sp
 
 :: C99 says this function is named mbsinit.
