@@ -35,9 +35,7 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
-#ifdef __WIDECHAR__
-    #include <wchar.h>
-#endif
+#include "libwchar.h"
 #include "strdup.h"
 #include "liballoc.h"
 

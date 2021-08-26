@@ -34,9 +34,7 @@
 #include "widechar.h"
 #include <ctype.h>
 #include <string.h>
-#if defined(__WIDECHAR__)
-    #include <wchar.h>
-#endif
+#include "libwchar.h"
 
 
 #if defined( _M_I86 ) && !defined(__WIDECHAR__)
