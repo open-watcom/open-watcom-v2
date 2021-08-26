@@ -1,4 +1,4 @@
-.func strerror_s wcserror_s
+.func strerror_s _wcserror_s
 .synop begin
 #define __STDC_WANT_LIB_EXT1__  1
 #include <string.h>
@@ -8,7 +8,7 @@ errno_t strerror_s( char * s,
 .ixfunc2 '&String' &funcb
 .ixfunc2 '&Errs' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
-errno_t wcserror_s( wchar_t * s,
+errno_t _wcserror_s( wchar_t * s,
                     rsize_t maxsize,
                     errno_t errnum );
 .ixfunc2 '&String' &wfunc

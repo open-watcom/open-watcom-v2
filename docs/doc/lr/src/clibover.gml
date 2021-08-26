@@ -639,7 +639,7 @@ regardless of which memory model your program has been compiled for.
 .fd *fun="wcscspn" get number of string characters not from a set of characters
 .fd *fun="_wcsdec" returns pointer to the previous character in string
 .fd *fun="_wcsdup" allocate and duplicate a string
-.fd *fun="wcserror" get error message as string
+.fd *fun="_wcserror" get error message as string
 .fd *fun="_wcsicmp" compare two strings with case insensitivity
 .fd *fun="_wcsinc" return pointer to next character in string
 .fd *fun="wcslcat" concatenate string into a bounded buffer

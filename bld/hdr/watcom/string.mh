@@ -238,7 +238,7 @@ _WCRTLINK extern size_t     wcsxfrm( wchar_t *__s1, const wchar_t *__s2, size_t 
 
 :: Wide character version
 _WCRTLINK extern int        wcscmpi( const wchar_t *, const wchar_t * );
-_WCRTLINK extern wchar_t    *wcserror( int );
+_WCRTLINK extern wchar_t    *_wcserror( int );
 :segment DOS | RDOS
 #ifdef __NT__
 _WCRTLINK extern wchar_t    *_wdoserror( int __errnum );
@@ -267,7 +267,7 @@ _WCRTLINK extern int        _wcsncoll( const wchar_t *__s1, const wchar_t *__s2,
 _WCRTLINK extern int        _wcsnicoll( const wchar_t *__s1, const wchar_t *__s2, __w_size_t __n );
 _WCRTLINK extern wchar_t    *_wcsrev( wchar_t * );
 _WCRTLINK extern wchar_t    *_wcsset( wchar_t *, wchar_t );
-_WCRTLINK extern wchar_t    *_wcserror( const wchar_t * );
+_WCRTLINK extern wchar_t    *__wcserror( const wchar_t * );
 
 /* BSD 'safe' wide character string copy functions */
 

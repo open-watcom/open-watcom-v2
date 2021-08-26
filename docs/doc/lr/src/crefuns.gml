@@ -127,8 +127,8 @@ utoa~b~b~b~b~b~b~b~b~b~b
 wcrtombs_s~b~b~b~b
 wcscat_s~b~b~b~b~b~b
 wcscpy_s~b~b~b~b~b~b
-wcserror_s~b~b~b~b
-wcserrorlen_s~b
+_wcserror_s~b~b~b~b
+_wcserrorlen_s~b
 wcsncat_s~b~b~b~b~b
 wcsncat_s~b~b~b~b~b
 wcsncpy_s~b~b~b~b~b

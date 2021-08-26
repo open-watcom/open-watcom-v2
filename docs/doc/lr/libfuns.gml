@@ -1381,11 +1381,11 @@
 .fnm _mbsdup                    strdup.gml      DOS       WIN32
 .fnn _fmbsdup                   strdup.gml      DOS       WIN32
 .fnc strerror                   strerror.gml    DOS QNX W WIN32
-.fnw wcserror                   strerror.gml    DOS       WIN32
+.fnw _wcserror                  strerror.gml    DOS       WIN32
 .fnc strerror_s                 strerr_s.gml    DOS       WIN32
-.fnw wcserror_s                 strerr_s.gml    DOS       WIN32
+.fnw _wcserror_s                strerr_s.gml    DOS       WIN32
 .fnc strerrorlen_s              streln_s.gml    DOS       WIN32
-.fnw wcserrorlen_s              streln_s.gml    DOS       WIN32
+.fnw _wcserrorlen_s             streln_s.gml    DOS       WIN32
 .fnc strftime                   strftime.gml    DOS QNX W WIN32
 .fnw wcsftime                   strftime.gml    DOS QNX W WIN32
 .fnw _wstrftime_ms              strftime.gml    DOS QNX W WIN32

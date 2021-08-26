@@ -386,7 +386,7 @@ void TestMove_s( void )
 #endif
 }
 
-/* Test wcserrorlen_s(), wcserror_s()                                      */
+/* Test _wcserrorlen_s(), _wcserror_s()                                      */
 /*                                                                         */
 
 void TestError_s( void )
@@ -396,25 +396,25 @@ void TestError_s( void )
 
     int     violations = NumViolations;
 
-    errlen = wcserrorlen_s( EBADF );
+    errlen = _wcserrorlen_s( EBADF );
     VERIFY( errlen != 0 );
 
-    VERIFY( wcserror_s( error, ARRAYCOUNT( error ), EBADF ) == 0 ); /* get an error string */
+    VERIFY( _wcserror_s( error, ARRAYCOUNT( error ), EBADF ) == 0 ); /* get an error string */
     VERIFY( wcslen( error ) != 0 );
 
-    VERIFY( wcserror_s( error, errlen - 1, EBADF ) != 0 ); /* truncated error string */
+    VERIFY( _wcserror_s( error, errlen - 1, EBADF ) != 0 ); /* truncated error string */
     VERIFY( wcscmp( error + errlen - 5, L"..." ) == 0 ); /* really truncated? */
     VERIFY( NumViolations == violations );
 
     //rt constraints
-    VERIFY( wcserror_s( NULL, errlen - 1, EBADF ) != 0 );
+    VERIFY( _wcserror_s( NULL, errlen - 1, EBADF ) != 0 );
     VERIFY( NumViolations == ++violations );
 
-    VERIFY( wcserror_s( error, 0, EBADF ) != 0 );
+    VERIFY( _wcserror_s( error, 0, EBADF ) != 0 );
     VERIFY( NumViolations == ++violations );
 
 #if RSIZE_MAX != SIZE_MAX
-    VERIFY( wcserror_s( error, ~0, EBADF ) != 0 );
+    VERIFY( _wcserror_s( error, ~0, EBADF ) != 0 );
     VERIFY( NumViolations == ++violations );
 #endif
 

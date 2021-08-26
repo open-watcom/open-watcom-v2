@@ -300,8 +300,8 @@ _WCRTLINK extern errno_t    wcsncat_s( wchar_t * __restrict __s1, rsize_t __s1ma
 _WCRTLINK extern wchar_t    *wcstok_s( wchar_t * __restrict __s1, rsize_t * __restrict __s1max, const wchar_t * __restrict __s2, wchar_t ** __restrict __ptr );
 _WCRTLINK extern size_t     wcsnlen_s( const wchar_t *__s, size_t __maxsize );
 
-_WCRTLINK extern size_t     wcserrorlen_s( errno_t __errnum );
-_WCRTLINK extern errno_t    wcserror_s( wchar_t * __restrict __s, rsize_t __maxsize, errno_t __errnum );
+_WCRTLINK extern size_t     _wcserrorlen_s( errno_t __errnum );
+_WCRTLINK extern errno_t    _wcserror_s( wchar_t * __restrict __s, rsize_t __maxsize, errno_t __errnum );
 
 _WCRTLINK extern errno_t    _wasctime_s( wchar_t * __restrict __s, rsize_t __maxsize, const struct tm * __timeptr );
 _WCRTLINK extern errno_t    _wctime_s( wchar_t * __restrict s, rsize_t __maxsize, const time_t * __timer );

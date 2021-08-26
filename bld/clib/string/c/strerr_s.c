@@ -47,7 +47,7 @@
 #include "thread.h"
 
 
-_WCRTLINK errno_t __F_NAME(strerror_s,wcserror_s)( CHAR_TYPE *s,
+_WCRTLINK errno_t __F_NAME(strerror_s,_wcserror_s)( CHAR_TYPE *s,
                                                    rsize_t maxsize,
                                                    errno_t errnum )
 /*****************************************************************/
