@@ -65,7 +65,7 @@ _zip_name_locate(struct zip *za, const char *fname, int flags,
 	return -1;
     }
     
-    cmp = (flags & ZIP_FL_NOCASE) ? strcasecmp : strcmp;
+    cmp = (flags & ZIP_FL_NOCASE) ? stricmp : strcmp;
 
     n = (flags & ZIP_FL_UNCHANGED) ? za->cdir->nentry : za->nentry;
     for (i=0; i<n; i++) {

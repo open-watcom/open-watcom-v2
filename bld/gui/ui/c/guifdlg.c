@@ -510,7 +510,7 @@ static int Compare( const void  *p1, const void *p2 )
         return( -1 );
     }
     /* use regular string comparison for the rest */
-    return( strcasecmp( s1, s2 ) );
+    return( stricmp( s1, s2 ) );
 
 } /* Compare */
 
