@@ -55,7 +55,10 @@ in earlier versions.
 .br
 .farfuncp &fmfunc. &mfunc.
 .np
-.tcfunc1 _tcsnbcnt &funcb. _tcsnccnt &mfunc. _strncnt &wfunc.
+.tcshdr _tcsnbcnt _tcsnccnt
+.tcsbody _tcsnbcnt &funcb. _strncnt &wfunc.
+.tcsbody _tcsnccnt &mfunc. _strncnt &wfunc.
+.tcsfoot _strncnt &wfunc.
 .desc end
 .return begin
 The
