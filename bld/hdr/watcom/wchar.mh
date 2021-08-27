@@ -229,17 +229,22 @@ _WCRTLINK extern wchar_t    *wmemset( wchar_t *__s, wchar_t __wc, size_t __n );
 _WCRTLINK extern int        wprintf( const wchar_t *__format, ... );
 _WCRTLINK extern int        wscanf( const wchar_t *__format, ... );
 :include nsstdepi.sp
-
+::
+:: Wide character functions
+::
 :keep WIDE
+
+/* MS extension functions */
+
 :include msstring.sp
 
 :include mktemp.sp
 :include tempnam.sp
+
+/* POSIX extension functions */
+
+:include pxstring.sp
 :remove WIDE
-:: POSIX prototypes
-/* POSIX */
-_WCRTLINK extern wchar_t    *wcsdup( const wchar_t * );
-::
 
 :include ext.sp
 

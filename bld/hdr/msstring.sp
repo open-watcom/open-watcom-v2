@@ -22,14 +22,9 @@ _WCRTLINK extern int        strnicmp( const char *__s1, const char *__s2, __w_si
 ::
 :segment WIDE
 _WCRTLINK extern wchar_t    *_wcsdup( const wchar_t * );
-:: MS deprecated alias - not implemented
-:: POSIX prototype
-:: _WCRTLINK extern wchar_t    *wcsdup( const wchar_t * );
 :elsesegment
 :: MS prototype
 _WCRTLINK extern char       *_strdup( const char *__string );
-:: POSIX prototype
-_WCRTLINK extern char       *strdup( const char *__string );
 :endsegment
 ::
 :segment WIDE
@@ -124,8 +119,5 @@ _WCRTLINK extern int        memicmp( const void *__s1, const void *__s2, __w_siz
 :segment WIDE
 :elsesegment
 _WCRTLINK extern void       *_memccpy( void *__s1, const void *__s2, int __c, __w_size_t __n );
-:: MS deprecated alias - not implemented
-:: POSIX prototype
-:: _WCRTLINK extern void       *memccpy( void *__s1, const void *__s2, int __c, __w_size_t __n );
 :endsegment
 :endsegment
