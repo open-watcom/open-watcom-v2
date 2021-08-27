@@ -1,5 +1,7 @@
 .func strcmpi wcscmpi
 .synop begin
+** deprecated **
+
 #include <string.h>
 int strcmpi( const char *s1, const char *s2 );
 .ixfunc2 '&String' &funcb

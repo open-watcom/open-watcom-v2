@@ -1,6 +1,8 @@
 .func bzero
 .synop begin
-#include <string.h>
+** deprecated **
+
+#include <strings.h>
 void bzero( void *dst, size_t n );
 .ixfunc2 '&String' &funcb
 .synop end
@@ -26,7 +28,7 @@ function has no return value.
 .seelist bcmp bcopy bzero memset strset
 .see end
 .exmp begin
-#include <string.h>
+#include <strings.h>
 
 void main()
   {

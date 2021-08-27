@@ -1,6 +1,8 @@
 .func bcopy
 .synop begin
-#include <string.h>
+** deprecated **
+
+#include <strings.h>
 void bcopy( const void *src, void *dst, size_t n );
 .ixfunc2 '&String' &funcb
 .ixfunc2 '&Copy' &funcb
@@ -33,7 +35,7 @@ function has no return value.
 .see end
 .exmp begin
 #include <stdio.h>
-#include <string.h>
+#include <strings.h>
 
 void main()
   {

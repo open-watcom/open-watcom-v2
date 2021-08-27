@@ -1,6 +1,8 @@
 .func bcmp
 .synop begin
-#include <string.h>
+** deprecated **
+
+#include <strings.h>
 int bcmp(const void *s1, const void *s2, size_t n);
 .ixfunc2 '&String' &funcb
 .ixfunc2 '&Compare' &funcb
@@ -34,7 +36,7 @@ otherwise it returns 1.
 .see end
 .exmp begin
 #include <stdio.h>
-#include <string.h>
+#include <strings.h>
 
 void main()
   {
