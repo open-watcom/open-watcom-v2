@@ -691,6 +691,17 @@
 .ga * pfx ANY
 .ga * * value '' default
 
+:cmt. **** :QREF1 ****
+.dm qref1 begin
+:hlink ctx='&'translate(&*tpfx.&*top.,`&trto.`,`&trfrom.`)'.&*pfx.&*str.:ehlink.&*.
+.dm qref1 end
+.gt qref1 add qref1 cont att
+.ga * top REQ ANY
+.ga * str REQ ANY
+.ga * pfx ANY
+.ga * tpfx ANY
+.ga * * value '' default
+
 :cmt. **** :POPREF ****
 .dm popref begin
 :hdfn ctx='&'translate(&*pfx.&*str.,`&trto.`,`&trfrom.`)'.&*pfx.&*str.:ehdfn.&*.
