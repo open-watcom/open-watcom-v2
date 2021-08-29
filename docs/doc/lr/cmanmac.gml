@@ -523,7 +523,7 @@ Prototype in
 .el .if '&*' eq 'end' .oldtext
 .dm see end
 .*
-.dm fnref begin
+.dm reffunc begin
 .funcref &*1.
 .if '&freffnd.' ne '0' .do begin
 .   .if &e'&dohelp eq 0 .do begin
@@ -533,11 +533,11 @@ Prototype in
 :QREF1 top='&frefid.' str='&*1'.
 .   .do end
 .do end
-.dm fnref end
+.dm reffunc end
 .*
 .dm seeref begin
 (see the
-.fnref &*1.
+.reffunc &*1.
 &routine)
 .dm seeref end
 .*
