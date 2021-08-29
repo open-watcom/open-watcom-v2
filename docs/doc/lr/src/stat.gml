@@ -85,7 +85,10 @@ is not a directory.
 .endterm
 .error end
 .see begin
-.seelist stat fstat fsys_stat fsys_fstat
+.seelist stat fstat
+.if '&machsys' eq 'QNX' .do begin
+.seelist fsys_stat fsys_fstat
+.do end
 .see end
 .exmp begin
 #include <stdio.h>

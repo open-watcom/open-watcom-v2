@@ -1,16 +1,15 @@
 .func strcmpi wcscmpi
 .synop begin
-** deprecated **
-
+.deprec
 #include <string.h>
 int strcmpi( const char *s1, const char *s2 );
-.ixfunc2 '&String' &funcb
-.ixfunc2 '&Compare' &funcb
+.ixfunc2 '&String' strcmpi
+.ixfunc2 '&Compare' strcmpi
 .if &'length(&wfunc.) ne 0 .do begin
 int wcscmpi( const wchar_t *s1, const wchar_t *s2 );
-.ixfunc2 '&String' &wfunc
-.ixfunc2 '&Compare' &wfunc
-.ixfunc2 '&Wide' &wfunc
+.ixfunc2 '&String' wcscmpi
+.ixfunc2 '&Compare' wcscmpi
+.ixfunc2 '&Wide' wcscmpi
 .do end
 .synop end
 .desc begin

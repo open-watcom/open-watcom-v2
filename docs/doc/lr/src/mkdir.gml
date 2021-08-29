@@ -44,9 +44,9 @@ The file permission bits of the new directory are initialized from
 .period
 The file permission bits of the
 .arg mode
-argument are modified by the process's file creation mask (see
-.kw umask
-.ct ).
+argument are modified by the process's file creation mask
+.seeref umask
+.period
 .im openperv
 .np
 The directory's owner ID is set to the process's effective user ID.

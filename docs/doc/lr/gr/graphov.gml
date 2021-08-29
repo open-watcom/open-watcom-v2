@@ -221,15 +221,17 @@ The x- and y-coordinates will never be negative values.
 The view coordinate system can be defined upon the physical coordinate
 system by moving the origin from the top left corner of the screen
 to any physical coordinate
-.gfuncref setvieworg .
+.seeref _setvieworg
+.period
 In the view coordinate system, negative x- and y-coordinates are allowed.
 The scale of the view and physical coordinate systems is identical (both are
-in terms of pixels).
+in terms of pixels)
 .np
 .ix 'window coordinates'
 The window coordinate system is defined in terms of a range of
 user-specified values
-.gfuncref setwindow .
+.seeref _setwindow
+.period
 These values are scaled to map onto the physical coordinates of the screen.
 This allows for consistent pictures regardless of the
 resolution (number of pixels) of the screen.
@@ -266,13 +268,14 @@ define the boundary of the window coordinate system
 These &routines control the display of graphical images such as
 lines and circles.
 Lines and figures are drawn using the current color
-.gfuncref setcolor ,
-the current line style
-.gfuncref setlinestyle ,
-the current fill mask
-.gfuncref setfillmask ,
-and the current plotting action
-.gfuncref setplotaction .
+.seeref _setcolor 
+.ct , the current line style
+.seeref _setlinestyle 
+.ct , the current fill mask
+.seeref _setfillmask 
+.ct , and the current plotting action
+.seeref _setplotaction 
+.period
 .keep begin
 .np
 .fdbeg
@@ -312,17 +315,18 @@ set the current plotting action
 .np
 These &routines display graphical images such as lines and ellipses.
 &rroutines exist to draw straight lines
-.gfuncsref lineto ,
-rectangles
-.gfuncsref rectangle ,
-polygons
-.gfuncsref polygon ,
-ellipses
-.gfuncsref ellipse ,
-elliptical arcs
-.gfuncsref arc
+.seeref _lineto 
+.ct , rectangles
+.seeref _rectangle 
+.ct , polygons
+.seeref _polygon 
+.ct , ellipses
+.seeref _ellipse 
+.ct , elliptical arcs
+.seeref _arc
 and pie-shaped wedges from ellipses
-.gfuncsref pie .
+.seeref _pie 
+.period
 .np
 These figures are drawn using the attributes described in the previous
 section.
@@ -407,12 +411,14 @@ and
 &routines..
 The output position for text follows the last text that was displayed
 or can be reset
-.gfuncref settextposition .
+.seeref _settextposition 
+.period
 Text windows can be created
-.gfuncref settextwindow
+.seeref _settextwindow
 in which the text will scroll.
 Text is displayed with the current text color
-.gfuncref settextcolor .
+.seeref _settextcolor 
+.period
 .keep begin
 .np
 .fdbeg
@@ -459,11 +465,12 @@ These &routines deal with displaying graphics text.
 Graphics text is displayed
 as a sequence of line segments, and
 can be drawn in different sizes
-.gfuncref setcharsize ,
-with different orientations
-.gfuncref settextorient
+.seeref _setcharsize 
+.ct , with different orientations
+.seeref _settextorient
 and alignments
-.gfuncref settextalign .
+.seeref _settextalign 
+.period
 The &routines ending with
 .id _w
 use the window coordinate system; the others use the view coordinate system.

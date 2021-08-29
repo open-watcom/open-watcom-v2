@@ -1,13 +1,12 @@
 .func btom _fbtom
 .synop begin
-** deprecated **
-
+.deprec
 #include <jstring.h>
 size_t btom( const unsigned char *s, size_t nb );
-.ixfunc2 '&Jstring' &funcb
+.ixfunc2 '&Jstring' btom
 .if &farfnc ne 0 .do begin
 size_t _fbtom( const unsigned char far *s, size_t nb );
-.ixfunc2 '&Jstring' &ffunc
+.ixfunc2 '&Jstring' _fbtom
 .do end
 .synop end
 .desc begin

@@ -86,8 +86,9 @@
 .fnc block_write              block_write              block_wr.gml      QXO
 .fnc _bprintf                 _bprintf                 _bprintf.gml  DOS QNX W WIN32
 .fnw _bwprintf                _bprintf                 _bprintf.gml  DOS QNX W WIN32
-.fnc break_off                break_off                breakoff.gml  DOS
-.fnc break_on                 break_off                breakoff.gml  DOS
+.fnc break&grpsfx             break                    breakoff.gml  DOS
+.fnc break_off                break                    breakoff.gml  DOS
+.fnc break_on                 break                    breakoff.gml  DOS
 .fnc bsearch                  bsearch                  bsearch.gml   DOS QNX W WIN32
 .fnc bsearch_s                bsearch_s                bsrch_s.gml   DOS QNX W WIN32
 .fnc btom                     btom                     btom.gml      NEC
@@ -452,6 +453,7 @@
 .fnc getgroups                getgroups                getgrps.gml       QXO
 .fnc _getgtextextent          _getgtextextent          gr_getge.gml  DOS QNX W       GRAPH
 .fnc _getgtextvector          _getgtextvector          gr_gettv.gml  DOS QNX W       GRAPH
+.fnc gethostbyaddr            gethostbyaddr            gthstadr.gml  DOS W     WIN32
 .fnc gethostbyname            gethostbyname            gthstnam.gml  DOS W     WIN32
 .fnc gethostent               gethostent               gthstent.gml  DOS W     WIN32
 .fnc _getimage                _getimage                gr_getim.gml  DOS QNX W       GRAPH

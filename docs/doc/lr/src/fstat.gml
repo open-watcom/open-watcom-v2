@@ -60,7 +60,10 @@ argument is not a valid file &handle..
 .endterm
 .error end
 .see begin
-.seelist fstat creat dup dup2 fcntl fsys_stat fsys_fstat
+.seelist fstat creat dup dup2 fcntl
+.if '&machsys' eq 'QNX' .do begin
+.seelist fsys_stat fsys_fstat
+.do end
 .seelist fstat open sopen stat pipe
 .see end
 .exmp begin

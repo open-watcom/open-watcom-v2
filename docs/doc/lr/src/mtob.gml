@@ -1,13 +1,12 @@
 .func mtob _fmtob
 .synop begin
-** deprecated **
-
+.deprec
 #include <jstring.h>
 size_t mtob( const unsigned char *s, size_t nm );
-.ixfunc2 '&Jstring' &funcb
+.ixfunc2 '&Jstring' mtob
 .if &farfnc ne 0 .do begin
 size_t _fmtob( const unsigned char far *s, size_t nm );
-.ixfunc2 '&Jstring' &ffunc
+.ixfunc2 '&Jstring' _fmtob
 .do end
 .synop end
 .desc begin

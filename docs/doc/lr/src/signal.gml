@@ -142,9 +142,9 @@ When a process stops, a
 signal is generated for its parent process, unless the parent process
 has set the
 .kw SA_NOCLDSTOP
-flag (see
-.kw sigaction
-.ct ).
+flag
+.seeref sigaction
+.period
 While a process is stopped, any additional signals that are sent to
 the process are not delivered until the process is continued, except
 .kw SIGKILL

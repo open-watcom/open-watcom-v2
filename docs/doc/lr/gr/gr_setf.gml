@@ -12,9 +12,8 @@ character*(*) opt
 The
 .id &funcb.
 &routine selects a font from the list of registered fonts
-(see the
-.kw _registerfonts
-&routine).
+.seeref _registerfonts
+.period
 The font selected becomes the current font and is used whenever text
 is displayed with the
 .kw _outgtext

@@ -553,6 +553,7 @@
 .sys geteuid QNX16 QNX32 LNX32
 .sys _getfillmask DOS16 DOS32 QNX16 QNX32
 .sys _getfontinfo DOS16 DOS32 QNX16 QNX32
+.sys gethostbyaddr LNX32
 .sys gethostbyname LNX32
 .sys gethostent LNX32
 .sys getgid QNX16 QNX32 LNX32

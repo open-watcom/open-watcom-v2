@@ -52,7 +52,7 @@ function returns the value of
 .period
 .return end
 .see begin
-.seelist _mbsnbcat _mbsnbcmp _mbsnbcpy _mbsnbicnp _mbsnbset
+.seelist _mbsnbcat _mbsnbcmp _mbsnbcpy _mbsnbicmp _mbsnbset
 .seelist _mbsnccnt strncat strcat
 .see end
 .exmp begin

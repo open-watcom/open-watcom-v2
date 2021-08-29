@@ -6,7 +6,7 @@
 int mbsinit( const mbstate_t *ps );
 .ixfunc2 '&Multibyte' mbsinit
 
-** deprecated **
+.deprec
 int sisinit( const mbstate_t *ps );
 .ixfunc2 '&Multibyte' sisinit
 .synop end

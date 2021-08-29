@@ -37,7 +37,7 @@ the appropriate state. Otherwise, it returns a nonzero value.
 .return end
 .*
 .see begin
-.seelist feclearexcept fegetexceptflag feraisexcept fetestexcept
+.seelist feclearexcept fegetexceptflag feraiseexcept fetestexcept
 .see end
 .*
 .exmp begin

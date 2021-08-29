@@ -122,20 +122,6 @@
 .el .if '&*' eq 'output' .outcode
 .dm grexam end
 .*
-.dm gfuncref begin
-.ix '&*1'
-(see the
-.kw _&*1
-&routine)&*2
-.dm gfuncref end
-.*
-.dm gfuncsref begin
-.ix '&*1'
-(see the
-.kw _&*1
-&routines)&*2
-.dm gfuncsref end
-.*
 .dm uterm begin
 .note _&*
 .ix '&*'

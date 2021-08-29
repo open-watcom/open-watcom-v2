@@ -1,11 +1,10 @@
 .func bcmp
 .synop begin
-** deprecated **
-
+.deprec
 #include <strings.h>
 int bcmp(const void *s1, const void *s2, size_t n);
-.ixfunc2 '&String' &funcb
-.ixfunc2 '&Compare' &funcb
+.ixfunc2 '&String' bcmp
+.ixfunc2 '&Compare' bcmp
 .synop end
 .desc begin
 The

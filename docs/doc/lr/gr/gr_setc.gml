@@ -18,9 +18,9 @@ argument.
 The current color is only used by the &routines that produce graphics
 output; text output with
 .kw _outtext
-uses the current text color (see the
-.kw _settextcolor
-&routine).
+uses the current text color
+.seeref _settextcolor
+.period
 The default color value is one less than the maximum number of colors
 in the current video mode.
 .* .pp

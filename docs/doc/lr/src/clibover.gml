@@ -596,16 +596,16 @@ set memory block to a character
 copy memory block, with segment information
 .fd swab
 swap bytes of a memory block
-.fd _wmemccpy
-copy memory block up to a certain character
+.* .fd _wmemccpy
+.* copy memory block up to a certain character
 .fd wmemchr
 search memory block for a wide character value
 .fd wmemcmp
 compare memory blocks
 .fd wmemcpy
 copy memory block, overlap not allowed
-.fd _wmemicmp
-compare memory, case insensitive
+.* .fd _wmemicmp
+.* compare memory, case insensitive
 .fd wmemmove
 copy memory block, overlap allowed
 .fd wmemset
@@ -1650,263 +1650,21 @@ make calendar time from local time
 .fd _strdate
 return date in buffer
 .fd strftime
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 format date and time
-.fd wcsftime" format date and time
-.fd _wstrftime_ms" format date and time
-.fd _strtime" return time in buffer
-.fd _wstrtime" return time in buffer
-.fd time" get current calendar time
-.fd tzset" set global variables to reflect the local time zone
-.fd _wstrdate" return date in buffer
+.fd wcsftime
+format date and time
+.fd _wstrftime_ms
+format date and time
+.fd _strtime
+return time in buffer
+.fd _wstrtime
+return time in buffer
+.fd time
+get current calendar time
+.fd tzset
+set global variables to reflect the local time zone
+.fd _wstrdate
+return date in buffer
 .fdend
 .*======================================================================
 .section Variable-length Argument Lists
@@ -1917,9 +1675,12 @@ Variable-length argument lists are used
 when a function does not have a fixed number of arguments.
 These macros provide the capability to access these arguments.
 .fdbeg
-.fd va_arg" get next variable argument
-.fd va_end" complete access of variable arguments
-.fd va_start" start access of variable arguments
+.fd va_arg
+get next variable argument
+.fd va_end
+complete access of variable arguments
+.fd va_start
+start access of variable arguments
 .fdend
 .*======================================================================
 .section Stream I/O Functions
@@ -2000,51 +1761,96 @@ Since the stream functions may buffer input and output, these
 functions should be used with caution to avoid unexpected results.
 .np
 .fdbeg
-.fd clearerr" clear end-of-file and error indicators for stream
-.fd fclose" close stream
-.fd fcloseall" close all open streams
-.fd fdopen" open stream, given &handle
-.fd feof" test for end of file
-.fd ferror" test for file error
-.fd fflush" flush output buffer
-.fd fgetc" get next character from file
-.fd _fgetchar" equivalent to "fgetc" with the argument "stdin"
-.fd fgetpos" get current file position
-.fd fgets" get a string
-.fd flushall" flush output buffers for all streams
-.fd fopen" open a stream
-.fd fprintf" format output
-.fd fputc" write a character
-.fd _fputchar" write a character to the "stdout" stream
-.fd fputs" write a string
-.fd fread" read a number of objects
-.fd freopen" re-opens a stream
-.fd fscanf" scan input according to format
-.fd fseek" set current file position, relative
-.fd fsetpos" set current file position, absolute
-.fd _fsopen" open a shared stream
-.fd ftell" get current file position
-.fd fwrite" write a number of objects
-.fd getc" read character
-.fd getchar" get next character from "stdin"
-.fd gets" get string from "stdin"
-.fd _getw" read int from stream file
-.fd perror" write error message to "stderr" stream
-.fd printf" format output to "stdout"
-.fd putc" write character to file
-.fd putchar" write character to "stdout"
-.fd puts" write string to "stdout"
-.fd _putw" write int to stream file
-.fd rewind" position to start of file
-.fd scanf" scan input from "stdin" under format control
-.fd setbuf" set buffer
-.fd setvbuf" set buffering
-.fd tmpfile" create temporary file
-.fd ungetc" push character back on input stream
-.fd vfprintf" same as "fprintf" but with variable arguments
-.fd vfscanf" same as "fscanf" but with variable arguments
-.fd vprintf" same as "printf" but with variable arguments
-.fd vscanf" same as "scanf" but with variable arguments
+.fd clearerr
+clear end-of-file and error indicators for stream
+.fd fclose
+close stream
+.fd fcloseall
+close all open streams
+.fd fdopen
+open stream, given &handle
+.fd feof
+test for end of file
+.fd ferror
+test for file error
+.fd fflush
+flush output buffer
+.fd fgetc
+get next character from file
+.fd _fgetchar
+equivalent to "fgetc" with the argument "stdin"
+.fd fgetpos
+get current file position
+.fd fgets
+get a string
+.fd flushall
+flush output buffers for all streams
+.fd fopen
+open a stream
+.fd fprintf
+format output
+.fd fputc
+write a character
+.fd _fputchar
+write a character to the "stdout" stream
+.fd fputs
+write a string
+.fd fread
+read a number of objects
+.fd freopen
+re-opens a stream
+.fd fscanf
+scan input according to format
+.fd fseek
+set current file position, relative
+.fd fsetpos
+set current file position, absolute
+.fd _fsopen
+open a shared stream
+.fd ftell
+get current file position
+.fd fwrite
+write a number of objects
+.fd getc
+read character
+.fd getchar
+get next character from "stdin"
+.fd gets
+get string from "stdin"
+.fd _getw
+read int from stream file
+.fd perror
+write error message to "stderr" stream
+.fd printf
+format output to "stdout"
+.fd putc
+write character to file
+.fd putchar
+write character to "stdout"
+.fd puts
+write string to "stdout"
+.fd _putw
+write int to stream file
+.fd rewind
+position to start of file
+.fd scanf
+scan input from "stdin" under format control
+.fd setbuf
+set buffer
+.fd setvbuf
+set buffering
+.fd tmpfile
+create temporary file
+.fd ungetc
+push character back on input stream
+.fd vfprintf
+same as "fprintf" but with variable arguments
+.fd vfscanf
+same as "fscanf" but with variable arguments
+.fd vprintf
+same as "printf" but with variable arguments
+.fd vscanf
+same as "scanf" but with variable arguments
 .fdend
 .np
 See the section
@@ -2139,12 +1945,13 @@ open a stream using wide character arguments
 .fd _wfreopen
 re-opens a stream using wide character arguments
 .fd _wfsopen
-
 open a shared stream using wide character arguments
 .fd _wperror
 write error message to "stderr" stream
-.fd wprintf" format wide character output to "stdout"
-.fd wscanf" scan wide character input from "stdin" under format control
+.fd wprintf
+format wide character output to "stdout"
+.fd wscanf
+scan wide character input from "stdin" under format control
 .fdend
 .np
 See the section
@@ -3098,75 +2905,144 @@ check to see if other processes at the same priority as that of the calling proc
 These functions provide the capability to invoke QNX functions
 directly from a program.
 .fdbeg
-.fd qnx_device_attach"
-.fd qnx_device_detach"
-.fd qnx_display_hex"
-.fd qnx_display_msg"
-.fd qnx_fd_attach"
-.fd qnx_fd_detach"
-.fd qnx_fd_query"
-.fd qnx_fullpath"
-.fd qnx_getclock"
-.fd qnx_getids"
-.fd qnx_hint_attach"
-.fd qnx_hint_detach"
-.fd qnx_hint_mask"
-.fd qnx_hint_query"
-.fd qnx_ioctl"
-.fd qnx_name_attach"
-.fd qnx_name_detach"
-.fd qnx_name_locate"
-.fd qnx_name_locators"
-.fd qnx_name_query"
-.fd qnx_nidtostr"
-.fd qnx_osinfo"
-.fd qnx_osstat"
-.fd qnx_pflags"
-.fd qnx_prefix_attach"
-.fd qnx_prefix_detach"
-.fd qnx_prefix_getroot"
-.fd qnx_prefix_query"
-.fd qnx_prefix_setroot"
-.fd qnx_proxy_attach"
-.fd qnx_proxy_detach"
-.fd qnx_proxy_rem_attach"
-.fd qnx_proxy_rem_detach"
-.fd qnx_psinfo"
-.fd qnx_scheduler"
-.fd qnx_segment_alloc"
-.fd qnx_segment_alloc_flags"
-.fd qnx_segment_arm"
-.fd qnx_segment_flags"
-.fd qnx_segment_free"
-.fd qnx_segment_get"
-.fd qnx_segment_huge"
-.fd qnx_segment_index"
-.fd qnx_segment_info"
-.fd qnx_segment_overlay_flags"
-.fd qnx_segment_overlay"
-.fd qnx_segment_put"
-.fd qnx_segment_raw_alloc"
-.fd qnx_segment_raw_free"
-.fd qnx_segment_realloc"
-.fd qnx_setclock"
-.fd qnx_setids"
-.fd qnx_sflags"
-.fd qnx_sid_query"
-.fd qnx_spawn"
-.fd qnx_spawn_options"
-.fd qnx_strtonid"
-.fd qnx_sync"
-.fd qnx_trace_close"
-.fd qnx_trace_info"
-.fd qnx_trace_open"
-.fd qnx_trace_read"
-.fd qnx_trace_severity"
-.fd qnx_trace_trigger"
-.fd qnx_umask"
-.fd qnx_vc_attach"
-.fd qnx_vc_detach"
-.fd qnx_vc_name_attach"
-.fd qnx_vc_poll_parm"
+.fd qnx_device_attach
+
+.fd qnx_device_detach
+
+.fd qnx_display_hex
+
+.fd qnx_display_msg
+
+.fd qnx_fd_attach
+
+.fd qnx_fd_detach
+
+.fd qnx_fd_query
+
+.fd qnx_fullpath
+
+.fd qnx_getclock
+
+.fd qnx_getids
+
+.fd qnx_hint_attach
+
+.fd qnx_hint_detach
+
+.fd qnx_hint_mask
+
+.fd qnx_hint_query
+
+.fd qnx_ioctl
+
+.fd qnx_name_attach
+
+.fd qnx_name_detach
+
+.fd qnx_name_locate
+
+.fd qnx_name_locators
+
+.fd qnx_name_query
+
+.fd qnx_nidtostr
+
+.fd qnx_osinfo
+
+.fd qnx_osstat
+
+.fd qnx_pflags
+
+.fd qnx_prefix_attach
+
+.fd qnx_prefix_detach
+
+.fd qnx_prefix_getroot
+
+.fd qnx_prefix_query
+
+.fd qnx_prefix_setroot
+
+.fd qnx_proxy_attach
+
+.fd qnx_proxy_detach
+
+.fd qnx_proxy_rem_attach
+
+.fd qnx_proxy_rem_detach
+
+.fd qnx_psinfo
+
+.fd qnx_scheduler
+
+.fd qnx_segment_alloc
+
+.fd qnx_segment_alloc_flags
+
+.fd qnx_segment_arm
+
+.fd qnx_segment_flags
+
+.fd qnx_segment_free
+
+.fd qnx_segment_get
+
+.fd qnx_segment_huge
+
+.fd qnx_segment_index
+
+.fd qnx_segment_info
+
+.fd qnx_segment_overlay_flags
+
+.fd qnx_segment_overlay
+
+.fd qnx_segment_put
+
+.fd qnx_segment_raw_alloc
+
+.fd qnx_segment_raw_free
+
+.fd qnx_segment_realloc
+
+.fd qnx_setclock
+
+.fd qnx_setids
+
+.fd qnx_sflags
+
+.fd qnx_sid_query
+
+.fd qnx_spawn
+
+.fd qnx_spawn_options
+
+.fd qnx_strtonid
+
+.fd qnx_sync
+
+.fd qnx_trace_close
+
+.fd qnx_trace_info
+
+.fd qnx_trace_open
+
+.fd qnx_trace_read
+
+.fd qnx_trace_severity
+
+.fd qnx_trace_trigger
+
+.fd qnx_umask
+
+.fd qnx_vc_attach
+
+.fd qnx_vc_detach
+
+.fd qnx_vc_name_attach
+
+.fd qnx_vc_poll_parm
+
 .fdend
 .do end
 .*======================================================================

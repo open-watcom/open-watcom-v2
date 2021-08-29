@@ -1,11 +1,10 @@
 .func bcopy
 .synop begin
-** deprecated **
-
+.deprec
 #include <strings.h>
 void bcopy( const void *src, void *dst, size_t n );
-.ixfunc2 '&String' &funcb
-.ixfunc2 '&Copy' &funcb
+.ixfunc2 '&String' bcopy
+.ixfunc2 '&Copy' bcopy
 .synop end
 .desc begin
 The

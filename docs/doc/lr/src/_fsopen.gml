@@ -3,12 +3,12 @@
 #include <stdio.h>
 FILE *_fsopen( const char *filename,
                const char *mode, int share );
-.ixfunc2 '&StrIo' &funcb
+.ixfunc2 '&StrIo' _fsopen
 .if &'length(&wfunc.) ne 0 .do begin
 FILE *_wfsopen( const wchar_t *filename,
                 const wchar_t *mode, int share );
-.ixfunc2 '&StrIo' &wfunc
-.ixfunc2 '&Wide' &wfunc
+.ixfunc2 '&StrIo' _wfsopen
+.ixfunc2 '&Wide' _wfsopen
 .do end
 .synop end
 .desc begin

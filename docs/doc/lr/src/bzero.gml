@@ -1,10 +1,9 @@
 .func bzero
 .synop begin
-** deprecated **
-
+.deprec
 #include <strings.h>
 void bzero( void *dst, size_t n );
-.ixfunc2 '&String' &funcb
+.ixfunc2 '&String' bzero
 .synop end
 .desc begin
 The

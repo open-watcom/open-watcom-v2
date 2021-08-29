@@ -20,7 +20,7 @@ handler for interrupt number
 .period
 .return end
 .see begin
-.seelist getvect _chain_intr _dos_keep _dos_setvect
+.seelist _dos_getvect _chain_intr _dos_keep _dos_setvect
 .see end
 .exmp begin
 #include <stdio.h>

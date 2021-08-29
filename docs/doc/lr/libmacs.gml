@@ -72,7 +72,7 @@
 .se freffnd=&'vecpos(&*.,fnclst)
 .* .ty funcref - &freffnd. - &*.
 .if '&freffnd.' eq '0' .do begin
-.   .ty *** &*. - referenced but not defined ***
+.* .   .ty *** &*. - referenced but not defined ***
 .   .se frefid=&*fn.
 .do end
 .el .do begin

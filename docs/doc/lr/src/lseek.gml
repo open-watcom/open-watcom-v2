@@ -103,10 +103,9 @@ not be supported in future versions of MS-DOS.
 .np
 The
 .id &funcb.
-function does not, in itself, extend the size of a file (see
-the description of the
-.kw chsize
-function).
+function does not, in itself, extend the size of a file
+.seeref chsize
+.period
 .im ansiconf
 .np
 The &func64 function is identical to

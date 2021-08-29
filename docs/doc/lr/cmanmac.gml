@@ -52,6 +52,10 @@
 .* .ty &*
 .dm debug end
 .*
+.dm deprec begin
+** deprecated **
+.dm deprec end
+.*
 .dm chkwfunc begin
 .sr *fx=&'strip(&*1,'L','_')
 .sr iswidefn=1
@@ -536,6 +540,7 @@ Prototype in
 .dm reffunc end
 .*
 .dm seeref begin
+.ix '&*1'
 (see the
 .reffunc &*1.
 &routine)

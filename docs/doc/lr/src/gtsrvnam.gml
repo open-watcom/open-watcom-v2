@@ -50,7 +50,7 @@ If no additional network is found or an error occurs, the return
 value will be NULL.
 .return end
 .see begin
-.seelist getservent setservent endservent getservbypoer
+.seelist getservent setservent endservent getservbyport
 .see end
 .class POSIX
 .system
