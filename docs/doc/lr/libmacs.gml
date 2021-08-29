@@ -1,12 +1,15 @@
 .se __idx=0
+.se freffnd=0
+.se frefid=''
 .if &e'&machsys eq 0 .ty ***ERROR*** machsys not defined
 .*
 .dm fnc begin
-.se $$fnd=&'wordpos(&machsys,&*,3)
+.se $$fnd=&'wordpos(&machsys,&*,4)
 .if &$$fnd. ne 0 .do begin
 .  .se __idx=&__idx.+1
 .  .se fnclst(&__idx.)=&*1
-.  .se imblst(&__idx.)=&*2
+.  .se freflst(&__idx.)=&*2
+.  .se imblst(&__idx.)=&*3
 .  .se __sysl(&__idx.)=0
 .do end
 .dm fnc end
@@ -64,6 +67,18 @@
 .  .fnc &*
 .do end
 .dm fnw end
+.*
+.dm funcref begin
+.se freffnd=&'vecpos(&*.,fnclst)
+.* .ty funcref - &freffnd. - &*.
+.if '&freffnd.' eq '0' .do begin
+.   .ty *** &*. - referenced but not defined ***
+.   .se frefid=&*fn.
+.do end
+.el .do begin
+.   .se frefid=&freflst(&freffnd.).
+.do end
+.dm funcref end
 .*
 .* DOS16 DOS32 WIN16 WIN386 WIN32 QNX16 QNX32 OS216 OS216MT OS216DL OS232 LNX32 RDOS
 .* 1     2     4     8      16    32    64    128   256     512     1024  2048  4096
