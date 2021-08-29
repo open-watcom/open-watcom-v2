@@ -43,7 +43,7 @@ function returns a pointer to the located character, or
 if the character does not occur in the object.
 .return end
 .see begin
-.seelist memchr memcmp memcpy memicmp memset
+.seelist memchr memcmp memcpy _memicmp memset
 .see end
 .exmp begin
 #include <stdio.h>

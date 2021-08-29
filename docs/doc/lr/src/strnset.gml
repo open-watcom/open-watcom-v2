@@ -1,39 +1,39 @@
-.func strnset _strnset _fstrnset _wcsnset _mbsnset _fmbsnset
+.func _strnset _fstrnset _wcsnset _mbsnset _fmbsnset strnset
 .synop begin
 #include <string.h>
-char *strnset( char *s, int fill, size_t count );
-.ixfunc2 '&String' &funcb
-.if &'length(&_func.) ne 0 .do begin
 char *_strnset( char *s, int fill, size_t count );
-.ixfunc2 '&String' &_func
-.do end
+.ixfunc2 '&String' _strnset
 .if &farfnc ne 0 .do begin
 char __far *_fstrnset( char __far *s,
                        int fill,
                        size_t count );
-.ixfunc2 '&String' &ffunc
+.ixfunc2 '&String' _fstrnset
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
 wchar_t *_wcsnset( wchar_t *s, int fill, size_t count );
-.ixfunc2 '&String' &wfunc
-.ixfunc2 '&Wide' &wfunc
+.ixfunc2 '&String' _wcsnset
+.ixfunc2 '&Wide' _wcsnset
 .do end
 .if &'length(&mfunc.) ne 0 .do begin
 #include <mbstring.h>
 unsigned char *_mbsnset( unsigned char *s,
                          unsigned int fill,
                          size_t count );
-.ixfunc2 '&String' &mfunc
-.ixfunc2 '&Multibyte' &mfunc
+.ixfunc2 '&String' _mbsnset
+.ixfunc2 '&Multibyte' _mbsnset
 .do end
 .if &'length(&fmfunc.) ne 0 .do begin
 unsigned char __far *_fmbsnset( unsigned char __far *s,
                                 unsigned int fill,
                                 size_t count );
-.ixfunc2 '&String' &fmfunc
-.ixfunc2 '&Multibyte' &fmfunc
+.ixfunc2 '&String' _fmbsnset
+.ixfunc2 '&Multibyte' _fmbsnset
 .do end
+
+.deprec
+char *strnset( char *s, int fill, size_t count );
+.ixfunc2 '&String' strnset
 .synop end
 .desc begin
 The
@@ -72,7 +72,7 @@ The address of the original string
 is returned.
 .return end
 .see begin
-.seelist strnset strset
+.seelist _strnset _strset
 .see end
 .exmp begin
 #include <stdio.h>
@@ -83,8 +83,8 @@ char source[] = { "A sample STRING" };
 void main()
   {
     printf( "%s\n", source );
-    printf( "%s\n", strnset( source, '=', 100 ) );
-    printf( "%s\n", strnset( source, '*', 7 ) );
+    printf( "%s\n", _strnset( source, '=', 100 ) );
+    printf( "%s\n", _strnset( source, '*', 7 ) );
   }
 .exmp output
 A sample STRING

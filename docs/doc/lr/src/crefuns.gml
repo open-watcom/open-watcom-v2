@@ -78,7 +78,7 @@ memchr~b~b~b~b~b~b~b~b
 memcmp~b~b~b~b~b~b~b~b
 memcpy~b~b~b~b~b~b~b~b
 memcpy_s~b~b~b~b~b~b
-memicmp~b~b~b~b~b~b~b
+_memicmp~b~b~b~b~b~b
 memmove~b~b~b~b~b~b~b
 memmove_s~b~b~b~b~b
 memset~b~b~b~b~b~b~b~b
@@ -110,11 +110,11 @@ strncpy~b~b~b~b~b~b~b
 strncpy_s~b~b~b~b~b
 _strnicmp~b~b~b~b~b
 strnlen_s~b~b~b~b~b
-strnset~b~b~b~b~b~b~b
+_strnset~b~b~b~b~b~b
 strpbrk~b~b~b~b~b~b~b
 strrchr~b~b~b~b~b~b~b
 strrev~b~b~b~b~b~b~b~b
-strset~b~b~b~b~b~b~b~b
+_strset~b~b~b~b~b~b~b
 strspn~b~b~b~b~b~b~b~b
 strstr~b~b~b~b~b~b~b~b
 strtok_s~b~b~b~b~b~b

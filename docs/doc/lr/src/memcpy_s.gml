@@ -84,7 +84,7 @@ are interpreted to mean the number of wide characters.
 .return end
 .*
 .see begin
-.seelist memcpy memchr memcmp memcpy memicmp memmove memset memmove_s
+.seelist memcpy memchr memcmp memcpy _memicmp memmove memset memmove_s
 .see end
 .*
 .exmp begin

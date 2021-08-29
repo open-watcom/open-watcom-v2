@@ -867,9 +867,9 @@
 .fnw wmemcpy                  memcpy                   memcpy.gml    DOS QNX W WIN32
 .fnc memcpy_s                 memcpy_s                 memcpy_s.gml  DOS       WIN32
 .fnw wmemcpy_s                memcpy_s                 memcpy_s.gml  DOS       WIN32
-.fnc memicmp                  memicmp                  memicmp.gml   DOS QNX W WIN32
 .fnc _memicmp                 memicmp                  memicmp.gml   DOS       WIN32
 .fnf _fmemicmp                memicmp                  memicmp.gml   DOS QNX W WIN32
+.fnc memicmp                  memicmp                  memicmp.gml   DOS QNX W WIN32
 .fnc _memmax                  _memmax                  _memmax.gml   DOS QNX W WIN32
 .fnc memmove                  memmove                  memmove.gml   DOS QNX W WIN32
 .fnf _fmemmove                memmove                  memmove.gml   DOS QNX W WIN32
@@ -1449,12 +1449,12 @@
 .fn7 _strnicoll               _strnicoll               strnicol.gml  DOS QNX W WIN32
 .fnw _wcsnicoll               _strnicoll               strnicol.gml  DOS QNX W WIN32
 .fnm _mbsnicoll               _strnicoll               strnicol.gml  DOS       WIN32
-.fnc strnset                  strnset                  strnset.gml   DOS QNX W WIN32
 .fn7 _strnset                 strnset                  strnset.gml   DOS QNX W WIN32
 .fnf _fstrnset                strnset                  strnset.gml   DOS QNX W WIN32
 .fnw _wcsnset                 strnset                  strnset.gml   DOS QNX W WIN32
 .fnm _mbsnset                 strnset                  strnset.gml   DOS       WIN32
 .fnn _fmbsnset                strnset                  strnset.gml   DOS       WIN32
+.fnc strnset                  strnset                  strnset.gml   DOS QNX W WIN32
 .fnc strpbrk                  strpbrk                  strpbrk.gml   DOS QNX W WIN32
 .fnf _fstrpbrk                strpbrk                  strpbrk.gml   DOS QNX W WIN32
 .fnw wcspbrk                  strpbrk                  strpbrk.gml   DOS QNX W WIN32
@@ -1471,12 +1471,12 @@
 .fnw _wcsrev                  strrev                   strrev.gml    DOS QNX W WIN32
 .fnm _mbsrev                  strrev                   strrev.gml    DOS       WIN32
 .fnn _fmbsrev                 strrev                   strrev.gml    DOS       WIN32
-.fnc strset                   strset                   strset.gml    DOS QNX W WIN32
 .fn7 _strset                  strset                   strset.gml    DOS QNX W WIN32
 .fnf _fstrset                 strset                   strset.gml    DOS QNX W WIN32
 .fnw _wcsset                  strset                   strset.gml    DOS QNX W WIN32
 .fnm _mbsset                  strset                   strset.gml    DOS       WIN32
 .fnn _fmbsset                 strset                   strset.gml    DOS       WIN32
+.fnc strset                   strset                   strset.gml    DOS QNX W WIN32
 .fnc strspn                   strspn                   strspn.gml    DOS QNX W WIN32
 .fnf _fstrspn                 strspn                   strspn.gml    DOS QNX W WIN32
 .fnw wcsspn                   strspn                   strspn.gml    DOS QNX W WIN32

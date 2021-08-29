@@ -57,7 +57,7 @@ The address of the original string
 is returned.
 .return end
 .see begin
-.seelist jstrnset jstrset strnset strset
+.seelist jstrnset jstrset _strnset _strset
 .see end
 .exmp begin
 #include <stdio.h>

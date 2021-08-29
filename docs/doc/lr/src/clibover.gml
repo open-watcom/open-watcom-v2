@@ -586,7 +586,7 @@ search memory block for a character value
 compare memory blocks
 .fd memcpy
 copy memory block, overlap not allowed
-.fd memicmp
+.fd _memicmp
 compare memory, case insensitive
 .fd memmove
 copy memory block, overlap allowed

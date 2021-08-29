@@ -46,7 +46,7 @@ The address of the original string
 is returned.
 .return end
 .see begin
-.seelist _mbsnbset strnset strset
+.seelist _mbsnbset _strnset _strset
 .see end
 .exmp begin
 #include <stdio.h>

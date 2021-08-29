@@ -43,7 +43,7 @@ function returns the pointer
 .period
 .return end
 .see begin
-.seelist memchr memcmp memcpy memicmp memmove memset
+.seelist memchr memcmp memcpy _memicmp memmove memset
 .see end
 .exmp begin
 #include <string.h>

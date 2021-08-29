@@ -129,7 +129,7 @@ memccpy~b~b~b~b~b~b~b~b~b~b~b~b
 memchr~b~b~b~b~b~b~b~b~b~b~b~b~b
 memcmp~b~b~b~b~b~b~b~b~b~b~b~b~b
 memcpy~b~b~b~b~b~b~b~b~b~b~b~b~b
-memicmp~b~b~b~b~b~b~b~b~b~b~b~b
+_memicmp~b~b~b~b~b~b~b~b~b~b~b
 memmove~b~b~b~b~b~b~b~b~b~b~b~b
 memset~b~b~b~b~b~b~b~b~b~b~b~b~b
 MK_FP~b~b~b~b~b~b~b~b~b~b~b~b~b~b
@@ -170,11 +170,11 @@ strncat~b~b~b~b~b~b~b~b~b~b~b~b
 strncmp~b~b~b~b~b~b~b~b~b~b~b~b
 strncpy~b~b~b~b~b~b~b~b~b~b~b~b
 _strnicmp~b~b~b~b~b~b~b~b~b~b
-strnset~b~b~b~b~b~b~b~b~b~b~b~b
+_strnset~b~b~b~b~b~b~b~b~b~b~b
 strpbrk~b~b~b~b~b~b~b~b~b~b~b~b
 strrchr~b~b~b~b~b~b~b~b~b~b~b~b
 strrev~b~b~b~b~b~b~b~b~b~b~b~b~b
-strset~b~b~b~b~b~b~b~b~b~b~b~b~b
+_strset~b~b~b~b~b~b~b~b~b~b~b~b
 strspn~b~b~b~b~b~b~b~b~b~b~b~b~b
 strstr~b~b~b~b~b~b~b~b~b~b~b~b~b
 strtod~b~b~b~b~b~b~b~b~b~b~b~b~b
