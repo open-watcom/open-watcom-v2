@@ -64,7 +64,7 @@ is less than, equal to, or greater than the string pointed to by
 :CMT. collating sequence of the current code page.
 .return end
 .see begin
-.seelist _setmbcp strcoll stricmp _stricoll strncmp _strncoll strnicmp _strnicoll
+.seelist _setmbcp strcoll _stricmp _stricoll strncmp _strncoll _strnicmp _strnicoll
 .see end
 .exmp begin
 #include <stdio.h>

@@ -1,38 +1,42 @@
-.func strdup _strdup _fstrdup _wcsdup _mbsdup _fmbsdup
+.func strdup _strdup _fstrdup wcsdup _wcsdup _mbsdup _fmbsdup
 .synop begin
 #include <string.h>
 char *strdup( const char *src );
-.ixfunc2 '&String' &funcb
-.ixfunc2 '&Copy' &funcb
+.ixfunc2 '&String' strdup
+.ixfunc2 '&Copy' strdup
 .if &'length(&_func.) ne 0 .do begin
 char *_strdup( const char *src );
-.ixfunc2 '&String' &_func
-.ixfunc2 '&Copy' &_func
+.ixfunc2 '&String' _strdup
+.ixfunc2 '&Copy' _strdup
 .do end
 .if &farfnc ne 0 .do begin
 char __far *_fstrdup( const char __far *src );
-.ixfunc2 '&String' &ffunc
-.ixfunc2 '&Copy' &ffunc
+.ixfunc2 '&String' _fstrdup
+.ixfunc2 '&Copy' _fstrdup
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
+wchar_t *wcsdup( const wchar_t *src );
+.ixfunc2 '&String' wcsdup
+.ixfunc2 '&Copy' wcsdup
+.ixfunc2 '&Wide' wcsdup
 wchar_t *_wcsdup( const wchar_t *src );
-.ixfunc2 '&String' &wfunc
-.ixfunc2 '&Copy' &wfunc
-.ixfunc2 '&Wide' &wfunc
+.ixfunc2 '&String' _wcsdup
+.ixfunc2 '&Copy' _wcsdup
+.ixfunc2 '&Wide' _wcsdup
 .do end
 .if &'length(&mfunc.) ne 0 .do begin
 #include <mbstring.h>
 unsigned char *_mbsdup( unsigned char *src );
-.ixfunc2 '&String' &mfunc
-.ixfunc2 '&Copy' &mfunc
-.ixfunc2 '&Multibyte' &mfunc
+.ixfunc2 '&String' _mbsdup
+.ixfunc2 '&Copy' _mbsdup
+.ixfunc2 '&Multibyte' _mbsdup
 .do end
 .if &'length(&fmfunc.) ne 0 .do begin
 unsigned char __far *_fmbsdup( unsigned char __far *src );
-.ixfunc2 '&String' &fmfunc
-.ixfunc2 '&Copy' &fmfunc
-.ixfunc2 '&Multibyte' &fmfunc
+.ixfunc2 '&String' _fmbsdup
+.ixfunc2 '&Copy' _fmbsdup
+.ixfunc2 '&Multibyte' _fmbsdup
 .do end
 .synop end
 .desc begin

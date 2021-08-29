@@ -32,7 +32,7 @@ The address of the original string
 is returned.
 .return end
 .see begin
-.seelist jstrlwr jstrupr jtolower jtoupper strlwr strupr
+.seelist jstrlwr jstrupr jtolower jtoupper _strlwr _strupr
 .see end
 .exmp begin
 #include <stdio.h>

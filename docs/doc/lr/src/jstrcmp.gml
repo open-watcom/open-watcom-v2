@@ -56,7 +56,7 @@ is less than, equal to, or greater than the Kanji string pointed to by
 .return end
 .see begin
 .seelist jstrcmp jstricmp jstrncmp jstrnicmp
-.seelist jstrcmp strcmp stricmp strncmp strnicmp
+.seelist strcmp _stricmp strncmp _strnicmp
 .see end
 .exmp begin
 #include <stdio.h>

@@ -855,6 +855,7 @@
 .fnc _memavl                  _memavl                  _memavl.gml   DOS QNX W WIN32
 .fnc memccpy                  memccpy                  memccpy.gml   DOS QNX W WIN32
 .fnf _fmemccpy                memccpy                  memccpy.gml   DOS QNX W WIN32
+.fnc _memccpy                 memccpy                  memccpy.gml   DOS QNX W WIN32
 .fnc memchr                   memchr                   memchr.gml    DOS QNX W WIN32
 .fnf _fmemchr                 memchr                   memchr.gml    DOS QNX W WIN32
 .fnw wmemchr                  memchr                   memchr.gml    DOS QNX W WIN32
@@ -1377,6 +1378,7 @@
 .fnc strdup                   strdup                   strdup.gml    DOS QNX W WIN32
 .fnc _strdup                  strdup                   strdup.gml    DOS QNX W WIN32
 .fnf _fstrdup                 strdup                   strdup.gml    DOS QNX W WIN32
+.fnw wcsdup                   strdup                   strdup.gml    DOS QNX W WIN32
 .fnw _wcsdup                  strdup                   strdup.gml    DOS QNX W WIN32
 .fnm _mbsdup                  strdup                   strdup.gml    DOS       WIN32
 .fnn _fmbsdup                 strdup                   strdup.gml    DOS       WIN32
@@ -1389,12 +1391,12 @@
 .fnc strftime                 strftime                 strftime.gml  DOS QNX W WIN32
 .fnw wcsftime                 strftime                 strftime.gml  DOS QNX W WIN32
 .fnw _wstrftime_ms            strftime                 strftime.gml  DOS QNX W WIN32
-.fnc stricmp                  stricmp                  stricmp.gml   DOS QNX W WIN32
 .fnc _stricmp                 stricmp                  stricmp.gml   DOS QNX W WIN32
 .fnf _fstricmp                stricmp                  stricmp.gml   DOS QNX W WIN32
 .fnw _wcsicmp                 stricmp                  stricmp.gml   DOS QNX W WIN32
 .fnm _mbsicmp                 stricmp                  stricmp.gml   DOS       WIN32
 .fnn _fmbsicmp                stricmp                  stricmp.gml   DOS       WIN32
+.fnc stricmp                  stricmp                  stricmp.gml   DOS QNX W WIN32
 .fn7 _stricoll                _stricoll                stricoll.gml  DOS QNX W WIN32
 .fnw _wcsicoll                _stricoll                stricoll.gml  DOS QNX W WIN32
 .fnm _mbsicoll                _stricoll                stricoll.gml  DOS       WIN32
@@ -1409,12 +1411,12 @@
 .fnn _fmbslen                 strlen                   strlen.gml    DOS       WIN32
 .fnc strnlen_s                strnlen_s                strnln_s.gml  DOS       WIN32
 .fnw wcsnlen_s                strnlen_s                strnln_s.gml  DOS       WIN32
-.fnc strlwr                   strlwr                   strlwr.gml    DOS QNX W WIN32
 .fnc _strlwr                  strlwr                   strlwr.gml    DOS QNX W WIN32
 .fnf _fstrlwr                 strlwr                   strlwr.gml    DOS QNX W WIN32
 .fnw _wcslwr                  strlwr                   strlwr.gml    DOS QNX W WIN32
 .fnm _mbslwr                  strlwr                   strlwr.gml    DOS       WIN32
 .fnn _fmbslwr                 strlwr                   strlwr.gml    DOS       WIN32
+.fnc strlwr                   strlwr                   strlwr.gml    DOS QNX W WIN32
 .fnc strncasecmp              strncasecmp              strncase.gml  DOS QNX W WIN32
 .fnc strncat                  strncat                  strncat.gml   DOS QNX W WIN32
 .fnf _fstrncat                strncat                  strncat.gml   DOS QNX W WIN32
@@ -1438,12 +1440,12 @@
 .fnn _fmbsncpy                strncpy                  strncpy.gml   DOS       WIN32
 .fnc strncpy_s                strncpy_s                stncpy_s.gml  DOS       WIN32
 .fnw wcsncpy_s                strncpy_s                stncpy_s.gml  DOS       WIN32
-.fnc strnicmp                 strnicmp                 strnicmp.gml  DOS QNX W WIN32
 .fnc _strnicmp                strnicmp                 strnicmp.gml  DOS QNX W WIN32
 .fnf _fstrnicmp               strnicmp                 strnicmp.gml  DOS QNX W WIN32
 .fnw _wcsnicmp                strnicmp                 strnicmp.gml  DOS QNX W WIN32
 .fnm _mbsnicmp                strnicmp                 strnicmp.gml  DOS       WIN32
 .fnn _fmbsnicmp               strnicmp                 strnicmp.gml  DOS       WIN32
+.fnc strnicmp                 strnicmp                 strnicmp.gml  DOS QNX W WIN32
 .fn7 _strnicoll               _strnicoll               strnicol.gml  DOS QNX W WIN32
 .fnw _wcsnicoll               _strnicoll               strnicol.gml  DOS QNX W WIN32
 .fnm _mbsnicoll               _strnicoll               strnicol.gml  DOS       WIN32
@@ -1514,12 +1516,12 @@
 .fnw wcstoull                 strtoull                 strtoull.gml  DOS QNX W WIN32
 .fnc strtoumax                strtoumax                strtoumx.gml  DOS QNX W WIN32
 .fnc wcstoumax                strtoumax                strtoumx.gml  DOS QNX W WIN32
-.fnc strupr                   strupr                   strupr.gml    DOS QNX W WIN32
 .fnc _strupr                  strupr                   strupr.gml    DOS QNX W WIN32
 .fnf _fstrupr                 strupr                   strupr.gml    DOS QNX W WIN32
 .fnw _wcsupr                  strupr                   strupr.gml    DOS QNX W WIN32
 .fnm _mbsupr                  strupr                   strupr.gml    DOS       WIN32
 .fnn _fmbsupr                 strupr                   strupr.gml    DOS       WIN32
+.fnc strupr                   strupr                   strupr.gml    DOS QNX W WIN32
 .fnc strxfrm                  strxfrm                  strxfrm.gml   DOS QNX W WIN32
 .fnw wcsxfrm                  strxfrm                  strxfrm.gml   DOS QNX W WIN32
 .fnc swab                     swab                     swab.gml      DOS QNX W WIN32

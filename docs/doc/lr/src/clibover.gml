@@ -706,7 +706,7 @@ copy a string
 get number of string characters not from a set of characters
 .fd _strdec
 returns pointer to the previous character in string
-.fd _strdup
+.fd strdup
 allocate and duplicate a string
 .fd strerror
 get error message as string
@@ -837,7 +837,7 @@ copy a string
 get number of string characters not from a set of characters
 .fd _wcsdec
 returns pointer to the previous character in string
-.fd _wcsdup
+.fd wcsdup
 allocate and duplicate a string
 .fd _wcserror
 get error message as string
@@ -1198,13 +1198,13 @@ See also
 .ct ,
 .kw _mbctoupper
 .ct ,
-.kw strlwr
+.kw _strlwr
 .ct ,
 .kw _wcslwr
 .ct ,
 .kw _mbslwr
 .ct ,
-.kw strupr
+.kw _strupr
 .ct ,
 .kw _wcsupr
 and

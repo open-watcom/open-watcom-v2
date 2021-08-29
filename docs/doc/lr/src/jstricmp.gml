@@ -37,7 +37,7 @@ is less than, equal to, or greater than the Kanji string pointed to by
 .period
 .return end
 .see begin
-.seelist jstricmp strcmp strcmpi strncmp strnicmp
+.seelist jstricmp strcmp _stricmp strncmp _strnicmp
 .see end
 .exmp begin
 #include <stdio.h>

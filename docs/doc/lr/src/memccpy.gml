@@ -1,15 +1,18 @@
-.func memccpy _fmemccpy
+.func memccpy _fmemccpy _memccpy
 .synop begin
 #include <string.h>
 void *memccpy( void *dest, const void *src,
                int c, size_t cnt );
-.ixfunc2 '&String' &funcb
+.ixfunc2 '&String' memccpy
 .if &farfnc ne 0 .do begin
 void __far *_fmemccpy( void __far *dest,
                        const void __far *src,
                        int c, size_t cnt );
-.ixfunc2 '&String' &ffunc
+.ixfunc2 '&String' _fmemccpy
 .do end
+void *_memccpy( void *dest, const void *src,
+               int c, size_t cnt );
+.ixfunc2 '&String' _memccpy
 .synop end
 .desc begin
 The

@@ -25,7 +25,7 @@ are mapped to lowercase for the purposes of doing the comparison.
 The
 .id &funcb.
 function is identical to the
-.kw strnicmp
+.kw _strnicmp
 function.
 .desc end
 .return begin
@@ -38,7 +38,7 @@ to by
 .period
 .return end
 .see begin
-.seelist strcmp stricmp strncmp strnicmp strcmpi strcasecmp strncasecmp
+.seelist strcmp _stricmp strncmp _strnicmp strcmpi strcasecmp strncasecmp
 .see end
 .exmp begin
 #include <stdio.h>

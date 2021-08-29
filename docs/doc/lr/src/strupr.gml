@@ -1,33 +1,33 @@
-.func strupr _strupr _fstrupr _wcsupr _mbsupr _fmbsupr
+.func _strupr _fstrupr _wcsupr _mbsupr _fmbsupr strupr
 .synop begin
 #include <string.h>
-char *strupr( char *s );
-.ixfunc2 '&String' &funcb
-.if &'length(&_func.) ne 0 .do begin
 char *_strupr( char *s );
-.ixfunc2 '&String' &_func
-.do end
+.ixfunc2 '&String' _strupr
 .if &farfnc ne 0 .do begin
 char __far *_fstrupr( char __far *s );
-.ixfunc2 '&String' &ffunc
+.ixfunc2 '&String' _fstrupr
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
 wchar_t *_wcsupr( wchar_t *s );
-.ixfunc2 '&String' &wfunc
-.ixfunc2 '&Wide' &wfunc
+.ixfunc2 '&String' _wcsupr
+.ixfunc2 '&Wide' _wcsupr
 .do end
 .if &'length(&mfunc.) ne 0 .do begin
 #include <mbstring.h>
 unsigned char *_mbsupr( unsigned char *s );
-.ixfunc2 '&String' &mfunc
-.ixfunc2 '&Multibyte' &mfunc
+.ixfunc2 '&String' _mbsupr
+.ixfunc2 '&Multibyte' _mbsupr
 .do end
 .if &'length(&fmfunc.) ne 0 .do begin
 unsigned char __far *_fmbsupr( unsigned char __far *s );
-.ixfunc2 '&String' &fmfunc
-.ixfunc2 '&Multibyte' &fmfunc
+.ixfunc2 '&String' _fmbsupr
+.ixfunc2 '&Multibyte' _fmbsupr
 .do end
+
+.deprec
+char *strupr( char *s );
+.ixfunc2 '&String' strupr
 .synop end
 .desc begin
 The
@@ -49,7 +49,7 @@ The address of the original string
 is returned.
 .return end
 .see begin
-.seelist strupr strlwr
+.seelist _strupr _strlwr
 .see end
 .exmp begin
 #include <stdio.h>
@@ -60,7 +60,7 @@ char source[] = { "A mixed-case STRING" };
 void main()
   {
     printf( "%s\n", source );
-    printf( "%s\n", strupr( source ) );
+    printf( "%s\n", _strupr( source ) );
     printf( "%s\n", source );
   }
 .exmp output

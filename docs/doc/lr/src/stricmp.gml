@@ -1,42 +1,42 @@
-.func stricmp _stricmp _fstricmp _wcsicmp _mbsicmp _fmbsicmp
+.func _stricmp _fstricmp _wcsicmp _mbsicmp _fmbsicmp stricmp
 .synop begin
 #include <string.h>
-int stricmp( const char *s1, const char *s2 );
-.ixfunc2 '&String' &funcb
-.ixfunc2 '&Compare' &funcb
-.if &'length(&_func.) ne 0 .do begin
 int _stricmp( const char *s1, const char *s2 );
-.ixfunc2 '&String' &_func
-.ixfunc2 '&Compare' &_func
-.do end
+.ixfunc2 '&String' _stricmp
+.ixfunc2 '&Compare' _stricmp
 .if &farfnc ne 0 .do begin
 int _fstricmp( const char __far *s1,
                const char __far *s2 );
-.ixfunc2 '&String' &ffunc
-.ixfunc2 '&Compare' &ffunc
+.ixfunc2 '&String' _fstricmp
+.ixfunc2 '&Compare' _fstricmp
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
 int _wcsicmp( const wchar_t *s1, const wchar_t *s2 );
-.ixfunc2 '&String' &wfunc
-.ixfunc2 '&Compare' &wfunc
-.ixfunc2 '&Wide' &wfunc
+.ixfunc2 '&String' _wcsicmp
+.ixfunc2 '&Compare' _wcsicmp
+.ixfunc2 '&Wide' _wcsicmp
 .do end
 .if &'length(&mfunc.) ne 0 .do begin
 #include <mbstring.h>
 int _mbsicmp( const unsigned char *s1,
               const unsigned char *s2 );
-.ixfunc2 '&String' &mfunc
-.ixfunc2 '&Compare' &mfunc
-.ixfunc2 '&Multibyte' &mfunc
+.ixfunc2 '&String' _mbsicmp
+.ixfunc2 '&Compare' _mbsicmp
+.ixfunc2 '&Multibyte' _mbsicmp
 .do end
 .if &'length(&fmfunc.) ne 0 .do begin
 int _fmbsicmp( const unsigned char __far *s1,
                const unsigned char __far *s2 );
-.ixfunc2 '&String' &fmfunc
-.ixfunc2 '&Compare' &fmfunc
-.ixfunc2 '&Multibyte' &fmfunc
+.ixfunc2 '&String' _fmbsicmp
+.ixfunc2 '&Compare' _fmbsicmp
+.ixfunc2 '&Multibyte' _fmbsicmp
 .do end
+
+.deprec
+int stricmp( const char *s1, const char *s2 );
+.ixfunc2 '&String' stricmp
+.ixfunc2 '&Compare' stricmp
 .synop end
 .desc begin
 The function compares, without case sensitivity,
@@ -65,7 +65,7 @@ is less than, equal to, or greater than the string pointed to by
 .period
 .return end
 .see begin
-.seelist strcmp stricmp strncmp strnicmp strcmpi strcasecmp strncasecmp
+.seelist strcmp _stricmp strncmp _strnicmp strcmpi strcasecmp strncasecmp
 .see end
 .exmp begin
 #include <stdio.h>
@@ -73,11 +73,11 @@ is less than, equal to, or greater than the string pointed to by
 
 void main()
   {
-    printf( "%d\n", stricmp( "AbCDEF", "abcdef" ) );
-    printf( "%d\n", stricmp( "abcdef", "ABC"    ) );
-    printf( "%d\n", stricmp( "abc",    "ABCdef" ) );
-    printf( "%d\n", stricmp( "Abcdef", "mnopqr" ) );
-    printf( "%d\n", stricmp( "Mnopqr", "abcdef" ) );
+    printf( "%d\n", _stricmp( "AbCDEF", "abcdef" ) );
+    printf( "%d\n", _stricmp( "abcdef", "ABC"    ) );
+    printf( "%d\n", _stricmp( "abc",    "ABCdef" ) );
+    printf( "%d\n", _stricmp( "Abcdef", "mnopqr" ) );
+    printf( "%d\n", _stricmp( "Mnopqr", "abcdef" ) );
   }
 .exmp output
 0

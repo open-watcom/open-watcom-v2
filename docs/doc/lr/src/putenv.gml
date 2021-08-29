@@ -112,7 +112,7 @@ to change it. To modify the return value of
 or
 .id &wfunc.
 without affecting the environment table, use
-.kw _strdup
+.kw strdup
 or
 .kw strcpy
 to make a copy of the string.
@@ -122,7 +122,7 @@ If the argument
 is not a literal string, you should duplicate the string, since &funcb
 does not copy the value; for example,
 .millust begin
-    putenv( _strdup( buffer ) );
+    putenv( strdup( buffer ) );
 .millust end
 .bull
 Never free a pointer to an environment entry, because the environment

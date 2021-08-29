@@ -163,13 +163,13 @@ strcpy~b~b~b~b~b~b~b~b~b~b~b~b~b
 strcspn~b~b~b~b~b~b~b~b~b~b~b~b
 strdup~b~b~b~b~b~b~b~b~b~b~b~b~b
 strerror~b~b~b~b~b~b~b~b~b~b~b
-stricmp~b~b~b~b~b~b~b~b~b~b~b~b
+_stricmp~b~b~b~b~b~b~b~b~b~b~b
 strlen~b~b~b~b~b~b~b~b~b~b~b~b~b
-strlwr~b~b~b~b~b~b~b~b~b~b~b~b~b
+_strlwr~b~b~b~b~b~b~b~b~b~b~b~b~b
 strncat~b~b~b~b~b~b~b~b~b~b~b~b
 strncmp~b~b~b~b~b~b~b~b~b~b~b~b
 strncpy~b~b~b~b~b~b~b~b~b~b~b~b
-strnicmp~b~b~b~b~b~b~b~b~b~b~b
+_strnicmp~b~b~b~b~b~b~b~b~b~b
 strnset~b~b~b~b~b~b~b~b~b~b~b~b
 strpbrk~b~b~b~b~b~b~b~b~b~b~b~b
 strrchr~b~b~b~b~b~b~b~b~b~b~b~b
@@ -181,7 +181,7 @@ strtod~b~b~b~b~b~b~b~b~b~b~b~b~b
 strtok~b~b~b~b~b~b~b~b~b~b~b~b~b
 strtol~b~b~b~b~b~b~b~b~b~b~b~b~b
 strtoul~b~b~b~b~b~b~b~b~b~b~b~b
-strupr~b~b~b~b~b~b~b~b~b~b~b~b~b
+_strupr~b~b~b~b~b~b~b~b~b~b~b~b~b
 strxfrm~b~b~b~b~b~b~b~b~b~b~b~b
 swab~b~b~b~b~b~b~b~b~b~b~b~b~b~b~b
 tan~b~b~b~b~b~b~b~b~b~b~b~b~b~b~b~b
