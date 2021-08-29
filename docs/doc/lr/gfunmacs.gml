@@ -12,23 +12,19 @@ The following &routines are defined:
 .dm fdbeg end
 .*
 .dm fd begin
-.se *fnd=&'vecpos(&*.,fnclst)
-.if &*fnd. ne 0 .do begin
-.   .se *lib=&'vecpos(&imblst(&*fnd.).,imblst)
-.   .se *ent=&fnclst(&*lib.)
-.   .if &e'&dohelp eq 0 .do begin
+.funcref &*1.
+.if &e'&dohelp eq 0 .do begin
 :DT.&*
 :DD.
+.do end
+.el .do begin
+.   .if '&freffnd.' eq '0' .do begin
+:ZDT.&*
 .   .do end
 .   .el .do begin
-.   .   .if &'compare(&*., &*ent.) eq 0 .do begin
-:ZDT.:QREF str='&*.'.
-.   .   .do end
-.   .   .el .do begin
-:ZDT.&*. (see :QREF str='&*ent.'.)
-.   .   .do end
-:ZDD.
+:ZDT.:QREF1 top='&frefid.' str='&*.'.
 .   .do end
+:ZDD.
 .do end
 .dm fd end
 .*

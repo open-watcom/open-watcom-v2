@@ -20,28 +20,19 @@ The following functions are defined:
 .*  case then the hotlink will not work.
 .*
 .dm fd begin
-.se *fnd=&'vecpos(&*fun.,fnclst)
-.if &*fnd. ne 0 .do begin
-.   .se *lib=&'vecpos(&imblst(&*fnd.).,imblst)
-.   .se *ent=&fnclst(&*lib.)
-.*  there are 8 characters in <*fun="" >
-.   .se *dsc=&'substr(&*,9+&'length(&*fun.))
-.   .if &e'&dohelp eq 0 .do begin
-:DT.&*fun.
-:DD.&*dsc.
+.funcref &*1.
+.if &e'&dohelp eq 0 .do begin
+:DT.&*
+:DD.
+.do end
+.el .do begin
+.   .if '&freffnd.' eq '0' .do begin
+:ZDT.&*
 .   .do end
 .   .el .do begin
-.   .   .if &'compare('_&*fun.', &*ent.) eq 0 .do begin
-.   .   .   .ty ***WARNING*** check order of &*fun., &*ent.
-.   .   .do end
-.   .   .if &'compare(&*fun., &*ent.) eq 0 .do begin
-:ZDT.:QREF str='&*fun.'.
-.   .   .do end
-.   .   .el .do begin
-:ZDT.&*fun. (see :QREF str='&*ent.'.)
-.   .   .do end
-:ZDD.&*dsc.
+:ZDT.:QREF1 top='&frefid.' str='&*.'.
 .   .do end
+:ZDD.
 .do end
 .dm fd end
 .*
