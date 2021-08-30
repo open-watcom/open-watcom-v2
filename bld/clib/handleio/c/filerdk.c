@@ -458,7 +458,7 @@ _WCRTLINK long filelength( int handle )
     }
 }
 
-_WCRTLINK int chsize( int handle, long size )
+_WCRTLINK int _chsize( int handle, long size )
 {
     int         rdos_handle;
 
@@ -527,7 +527,7 @@ _WCRTLINK int fstat( int handle, struct stat *buf )
         return( -1 );
 }
 
-_WCRTLINK int setmode( int handle, int mode )
+_WCRTLINK int _setmode( int handle, int mode )
 {
     return( mode );
 }

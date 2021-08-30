@@ -31,7 +31,7 @@ asct_r        _asctime          asctime_r                                       
 atoi64        atoll             _atoi64           d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 l32         rdu rdk
 chdir_        chdir             _chdir            d16 d32 nt  nta ntp         o16 o32         w16 w32             rdu rdk
 chmod_        chmod             _chmod            d16 d32 nt  nta ntp         o16 o32         w16 w32             rdu rdk
-chsize        chsize            _chsize           d16 d32 nt  nta ntp         o16 o32         w16 w32             rdu rdk
+chsize        _chsize           chsize            d16 d32 nt  nta ntp         o16 o32         w16 w32             rdu rdk
 close_        close             _close            d16 d32 nt  nta ntp         o16 o32         w16 w32             rdu rdk
 creat_        creat             _creat            d16 d32 nt  nta ntp         o16 o32         w16 w32             rdu rdk
 ctim_r        _ctime            ctime_r                                                               l32 lpc lmp
@@ -101,7 +101,7 @@ putws_        putws             _putws            d16 d32 nt  nta ntp         o1
 read__        read              _read             d16 d32 nt  nta ntp         o16 o32         w16 w32             rdu rdk
 rmdir_        rmdir             _rmdir            d16 d32 nt  nta ntp         o16 o32         w16 w32             rdu rdk
 setenv        setenv            _setenv           d16 d32 nt  nta ntp         o16 o32 q16     w16 w32 l32 lpc lmp rdu rdk
-setmod        setmode           _setmode          d16 d32 nt  nta ntp nvc nvl o16 o32         w16 w32             rdu rdk
+setmod        _setmode          setmode           d16 d32 nt  nta ntp nvc nvl o16 o32         w16 w32             rdu rdk
 sisini        mbsinit           sisinit           d16 d32 nt  nta ntp         o16 o32         w16 w32
 sopen_        sopen             _sopen            d16 d32 nt  nta ntp         o16 o32         w16 w32             rdu rdk
 spwl__        spawnl            _spawnl           d16     nt  nta ntp         o16 o32 q16 q32         l32 lpc lmp rdu
