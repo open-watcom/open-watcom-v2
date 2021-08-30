@@ -70,10 +70,12 @@
 .*
 .dm funcref begin
 .se freffnd=&'vecpos(&*.,fnclst)
-.* .ty funcref - &freffnd. - &*.
-.if '&freffnd.' eq '0' .do begin
+.if &e'&dohelp eq 0 .do begin
+.   .se frefid=&*.
+.do end
+.el .if '&freffnd.' eq '0' .do begin
 .* .   .ty *** &*. - referenced but not defined ***
-.   .se frefid=&*fn.
+.   .se frefid=&*.
 .do end
 .el .do begin
 .   .se frefid=&freflst(&freffnd.).

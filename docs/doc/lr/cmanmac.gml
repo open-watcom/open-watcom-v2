@@ -52,10 +52,6 @@
 .* .ty &*
 .dm debug end
 .*
-.dm deprec begin
-** deprecated **
-.dm deprec end
-.*
 .dm chkwfunc begin
 .sr *fx=&'strip(&*1,'L','_')
 .sr iswidefn=1
@@ -527,15 +523,19 @@ Prototype in
 .el .if '&*' eq 'end' .oldtext
 .dm see end
 .*
+.dm ofuncref begin
+.if &e'&dohelp eq 0 .do begin
+.   .mono &frefid.
+.do end
+.el .do begin
+:QREF top='&frefid.' str='&*'.
+.do end
+.dm ofuncref end
+.*
 .dm reffunc begin
 .funcref &*1.
 .if '&freffnd.' ne '0' .do begin
-.   .if &e'&dohelp eq 0 .do begin
-.   .   .mono &frefid.
-.   .do end
-.   .el .do begin
-:QREF1 top='&frefid.' str='&*1'.
-.   .do end
+.   .ofuncref &*1.
 .do end
 .dm reffunc end
 .*
@@ -554,12 +554,7 @@ Prototype in
 .   .   .   .if '&freffnd.' ne '0' .do begin
 .   .   .   .   .if &seecnt. ne 0 .ct ,
 .   .   .   .   .se seecnt=1
-.   .   .   .   .if &e'&dohelp eq 0 .do begin
-.   .   .   .   .   .mono &frefid.
-.   .   .   .   .do end
-.   .   .   .   .el .do begin
-:QREF1 top='&frefid.' str='&*2'.
-.   .   .   .   .do end
+.   .   .   .   .ofuncref &*2.
 .   .   .   .   .if '&*3' eq 'Functions' .do begin
 &*3
 .   .   .   .   .do end
@@ -797,4 +792,20 @@ string versions of
 .period
 .tcsfoot &*3. &*4.
 .dm tcsfunc end
+.*
+.dm deprec begin
+** deprecated **
+.dm deprec end
+.*
+.dm deprfunc begin
+.id &*2.
+function is identical to the
+.id &*1.
+function.
+Use 
+.reffunc &*2.
+instead of 
+.id &*1.
+.period
+.dm deprfunc end
 .*

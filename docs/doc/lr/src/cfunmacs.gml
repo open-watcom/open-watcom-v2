@@ -30,7 +30,7 @@ The following functions are defined:
 :ZDT.&*
 .   .do end
 .   .el .do begin
-:ZDT.:QREF1 top='&frefid.' str='&*.'.
+:ZDT.:QREF top='&frefid.' str='&*.'.
 .   .do end
 :ZDD.
 .do end
