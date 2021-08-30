@@ -257,7 +257,7 @@ _WCRTLINK off_t lseek( int handle, off_t offset, int origin )
     return( RdosGetHandlePos( handle ) );
 }
 
-_WCRTLINK off_t tell( int handle )
+_WCRTLINK off_t _tell( int handle )
 {
     return( RdosGetHandlePos( handle ) );
 }

@@ -170,7 +170,7 @@ tcsspn        _mbsspn           _tcsspn           d16 d32 nt  nta ntp         o1
 tcsstr        _mbsstr           _tcsstr           d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 l32         rdu rdk
 tcstok        _mbstok           _tcstok           d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 l32         rdu rdk
 tcsupr        _mbsupr           _tcsupr           d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 l32         rdu rdk
-tell__        tell              _tell             d16 d32 nt  nta ntp         o16 o32         w16 w32             rdu rdk
+tell__        _tell             tell              d16 d32 nt  nta ntp         o16 o32         w16 w32             rdu rdk
 tolowe        tolower           _tolower          d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 l32         rdu rdk
 touppe        toupper           _toupper          d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 l32         rdu rdk
 tzset_        tzset             _tzset            d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32 l32         rdu rdk

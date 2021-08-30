@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of tell(). 
+* Description:  Implementation of _tell().
 *
 ****************************************************************************/
 
@@ -44,7 +45,7 @@ _WCRTLINK __int64 _telli64( int handle )
 
 #else
 
-_WCRTLINK off_t tell( int handle )
+_WCRTLINK off_t _tell( int handle )
 {
     return( __lseek( handle, 0L, SEEK_CUR ) );
 }

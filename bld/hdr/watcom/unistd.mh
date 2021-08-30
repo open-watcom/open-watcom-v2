@@ -132,9 +132,6 @@ _WCRTLINK extern int    _os_handle( int __handle );
 _WCRTLINK extern int    isatty( int __fildes );
 _WCRTLINK extern off_t  lseek( int __fildes, off_t __offset, int __whence );
 _WCRTLINK extern ssize_t read( int __fildes, void *__buffer, size_t __len );
-#if !(defined(SYSV) || defined(BSD) || defined(XENIX) || defined(_UNIX_H_INCLUDED))
-_WCRTLINK extern int    setmode( int __handle, int __mode );
-#endif
 _WCRTLINK extern int    unlink( const char *__path );
 _WCRTLINK extern ssize_t write( int __fildes, const void *__buf, size_t __len );
 _WCRTLINK extern unsigned alarm( unsigned int __seconds );
@@ -201,15 +198,9 @@ _WCRTLINK extern int    ftruncate( int __fd, off_t __length );
 :endsegment
 
 :include ext.sp
-_WCRTLINK extern long long _filelengthi64( int __fildes );
 _WCRTLINK extern long long _lseeki64( int __fildes, long long __offset, int __whence );
-_WCRTLINK extern long long _telli64( int __fildes );
 
-_WCRTLINK extern int    chsize( int __fildes, long __size );
-_WCRTLINK extern int    eof( int __fildes );
-_WCRTLINK extern int    _eof( int __fildes );
-_WCRTLINK extern long   filelength( int __fildes );
-_WCRTLINK extern off_t  tell( int __fildes );
+:include msio.sp
 :segment QNX
 _WCRTLINK extern nid_t  getnid( void );
 _WCRTLINK extern int    lock( int __fildes, long __offset, long __nbytes );

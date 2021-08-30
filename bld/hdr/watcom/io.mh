@@ -110,8 +110,6 @@ _WCRTLINK extern int  access( const char *__path, int __mode );
 _WCRTLINK extern int  _access( const char *__path, int __mode );
 _WCRTLINK extern int  chmod( const char *__path, mode_t __pmode );
 _WCRTLINK extern int  _chmod( const char *__path, mode_t __pmode );
-_WCRTLINK extern int  chsize( int __handle, long __size );
-_WCRTLINK extern int  _chsize( int __handle, long __size );
 _WCRTLINK extern int  close( int __handle );
 _WCRTLINK extern int  _close( int __handle );
 _WCRTLINK extern int  _commit( int __handle );
@@ -121,10 +119,7 @@ _WCRTLINK extern int  dup( int __handle );
 _WCRTLINK extern int  _dup( int __handle );
 _WCRTLINK extern int  dup2( int __handle1, int __handle2 );
 _WCRTLINK extern int  _dup2( int __handle1, int __handle2 );
-_WCRTLINK extern int  eof( int __handle );
-_WCRTLINK extern int  _eof( int __handle );
-_WCRTLINK extern long filelength( int __handle );
-_WCRTLINK extern long _filelength( int __handle );
+:include msio.sp
 _WCRTLINK extern int  fsync( int __filedes );
 _WCRTLINK extern long _get_osfhandle( int __posixhandle );
 _WCRTLINK extern int  _hdopen( int __handle, int __mode );
@@ -140,12 +135,8 @@ _WCRTLINK extern int  _os_handle(int __handle );
 _WCRTLINK extern int  _pipe( int *__phandles, unsigned __psize, int __textmode );
 _WCRTLINK extern int  read( int __handle, void *__buf, unsigned int __len );
 _WCRTLINK extern int  _read( int __handle, void *__buf, unsigned int __len );
-_WCRTLINK extern int  setmode( int __handle, int __mode );
-_WCRTLINK extern int  _setmode( int __handle, int __mode );
 _WCRTLINK extern int  sopen( const char *__path, int __oflag, int __shflag, ... );
 _WCRTLINK extern int  _sopen( const char *__path, int __oflag, int __shflag, ... );
-_WCRTLINK extern off_t tell( int __handle );
-_WCRTLINK extern off_t _tell( int __handle );
 _WCRTLINK extern mode_t umask( mode_t __permission );
 _WCRTLINK extern mode_t _umask( mode_t __permission );
 _WCRTLINK extern int  unlink( const char *__path );
@@ -172,9 +163,7 @@ _WCRTLINK extern __w_intptr_t _findfirsti64( const char *__filespec, struct _fin
 _WCRTLINK extern __w_intptr_t _wfindfirsti64( const wchar_t *__filespec, struct _wfinddatai64_t *__fileinfo );
 _WCRTLINK extern int      _findnexti64( __w_intptr_t __handle, struct _finddatai64_t *__fileinfo );
 _WCRTLINK extern int      _wfindnexti64( __w_intptr_t __handle, struct _wfinddatai64_t *__fileinfo );
-_WCRTLINK extern __int64  _filelengthi64( int __handle );
 _WCRTLINK extern __int64  _lseeki64( int __handle, __int64 __offset, int __origin );
-_WCRTLINK extern __int64  _telli64( int __handle );
 
 :include poppack.sp
 
