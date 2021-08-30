@@ -65,7 +65,9 @@ void UtilsInit( void )
 /********************/
 // check to see if STDIN is the console. if not, don't write prompt.
 {
-    freopen( NULL, "rb", stdin );
+#if !defined( __UNIX__ )
+    _setmode( fileno( stdin ), O_BINARY );
+#endif
     WritePrompt = QIsConIn( stdin );
 }
 
