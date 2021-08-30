@@ -138,7 +138,7 @@ _WCRTLINK int _eof( int handle )
     return( RdosEofHandle( handle ) );
 }
 
-_WCRTLINK long filelength( int handle )
+_WCRTLINK long _filelength( int handle )
 {
     return( RdosGetHandleSize( handle ) );
 }
@@ -198,7 +198,7 @@ _WCRTLINK int fstat( int handle, struct stat *buf )
 
             buf->st_mtime = mktime( &tm );
             buf->st_atime = buf->st_ctime = buf->st_mtime;
-            buf->st_size = filelength( handle );
+            buf->st_size = _filelength( handle );
             buf->st_mode |= S_IFREG;
             buf->st_btime = buf->st_mtime;
         }

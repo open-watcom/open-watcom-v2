@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,8 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implements POSIX filelength() function and Watcom
-*               _filelength64().
+* Description:  Implements _filelength() and _filelength64() functions.
 *
 ****************************************************************************/
 
@@ -71,7 +70,7 @@ _WCRTLINK __int64 _filelengthi64( int handle )
 #else
     long            file_len;
 
-    file_len = filelength( handle );
+    file_len = _filelength( handle );
     if( file_len == -1L ) {
         return( -1LL );
     }
@@ -81,7 +80,7 @@ _WCRTLINK __int64 _filelengthi64( int handle )
 
 #else
 
-_WCRTLINK long filelength( int handle )
+_WCRTLINK long _filelength( int handle )
 {
     long            current_posn;
     long            file_len;

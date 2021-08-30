@@ -326,7 +326,7 @@ _WCRTLINK int fstat( int handle, struct stat *buf )
             return( -1 );
         }
         buf->st_atime = buf->st_ctime = buf->st_btime = buf->st_mtime = _d2ttime( rc >> 16, rc );
-        buf->st_size = filelength( handle );
+        buf->st_size = _filelength( handle );
         buf->st_mode |= S_IFREG;
         return( 0 );
     }

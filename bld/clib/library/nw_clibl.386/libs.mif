@@ -2,6 +2,7 @@ pfx__ =../../../
 __sfx =/library/$(system).$(processor)/$(libsubdir)/$(libname).lib
 
 libs = $+ &
+    $(pfx__)alias$(__sfx) &
     $(pfx__)fpu$(__sfx) &
     $(pfx__)cgsupp$(__sfx) &
     $(pfx__)convert$(__sfx) &
