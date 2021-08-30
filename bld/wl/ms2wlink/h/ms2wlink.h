@@ -114,7 +114,6 @@ extern bool     QIsConIn( FILE *fp );
 extern void     ErrorOut( const char *msg );
 extern void     ErrorExit( const char *msg );
 extern void     CommandOut( const char *command );
-extern void     QSetBinary( FILE *fp );
 
 // keyword.c
 extern bool     GetNumber( unsigned long *val );

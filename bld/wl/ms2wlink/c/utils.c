@@ -60,11 +60,12 @@ static unsigned char DefExtLen[] = {
 static bool     WritePrompt;
 
 
+
 void UtilsInit( void )
-/***************************/
+/********************/
 // check to see if STDIN is the console. if not, don't write prompt.
 {
-    QSetBinary( stdin );
+    freopen( NULL, "rb", stdin );
     WritePrompt = QIsConIn( stdin );
 }
 
