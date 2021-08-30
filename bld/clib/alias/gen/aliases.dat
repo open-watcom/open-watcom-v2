@@ -39,7 +39,7 @@ cwait_        cwait             _cwait                    nt  nta ntp         o1
 dopen_        _hdopen           _dopen            d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 l32         rdu rdk
 dup2__        dup2              _dup2             d16 d32 nt  nta ntp         o16 o32         w16 w32             rdu rdk
 dup___        dup               _dup              d16 d32 nt  nta ntp         o16 o32         w16 w32             rdu rdk
-eof___        eof               _eof              d16 d32 nt  nta ntp         o16 o32         w16 w32             rdu rdk
+eof___        _eof              eof               d16 d32 nt  nta ntp         o16 o32         w16 w32             rdu rdk
 excl__        execl             _execl            d16     nt  nta ntp         o16 o32 q16 q32         l32 lpc lmp rdu
 excle_        execle            _execle           d16     nt  nta ntp         o16 o32 q16 q32         l32 lpc lmp rdu
 exclp_        execlp            _execlp           d16     nt  nta ntp         o16 o32 q16 q32         l32 lpc lmp rdu

@@ -207,6 +207,7 @@ _WCRTLINK extern long long _telli64( int __fildes );
 
 _WCRTLINK extern int    chsize( int __fildes, long __size );
 _WCRTLINK extern int    eof( int __fildes );
+_WCRTLINK extern int    _eof( int __fildes );
 _WCRTLINK extern long   filelength( int __fildes );
 _WCRTLINK extern off_t  tell( int __fildes );
 :segment QNX
