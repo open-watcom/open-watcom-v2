@@ -684,22 +684,12 @@
 
 :cmt. **** :QREF ****
 .dm qref begin
-:hlink ctx='&'translate(&*pfx.&*str.,`&trto.`,`&trfrom.`)'.&*pfx.&*str.:ehlink.&*.
+:hlink ctx='&'translate(&*pfx.&*top.,`&trto.`,`&trfrom.`)'.&*pfx.&*str.:ehlink.&*.
 .dm qref end
 .gt qref add qref cont att
-.ga * str REQ ANY
-.ga * pfx ANY
-.ga * * value '' default
-
-:cmt. **** :QREF1 ****
-.dm qref1 begin
-:hlink ctx='&'translate(&*tpfx.&*top.,`&trto.`,`&trfrom.`)'.&*pfx.&*str.:ehlink.&*.
-.dm qref1 end
-.gt qref1 add qref1 cont att
 .ga * top REQ ANY
 .ga * str REQ ANY
 .ga * pfx ANY
-.ga * tpfx ANY
 .ga * * value '' default
 
 :cmt. **** :POPREF ****
@@ -716,31 +706,31 @@
 :H6.See Also
 :zsl.
 .if &*0 >= 1 .do begin
-.   :zli. :qref str='&*1'.
+.   :zli. :qref top='&*1' str='&*1'.
 .do end
 .if &*0 >= 2 .do begin
-.   :zli. :qref str='&*2'.
+.   :zli. :qref top='&*2' str='&*2'.
 .do end
 .if &*0 >= 3 .do begin
-.   :zli. :qref str='&*3'.
+.   :zli. :qref top='&*3' str='&*3'.
 .do end
 .if &*0 >= 4 .do begin
-.   :zli. :qref str='&*4'.
+.   :zli. :qref top='&*4' str='&*4'.
 .do end
 .if &*0 >= 5 .do begin
-.   :zli. :qref str='&*5'.
+.   :zli. :qref top='&*5' str='&*5'.
 .do end
 .if &*0 >= 6 .do begin
-.   :zli. :qref str='&*6'.
+.   :zli. :qref top='&*6' str='&*6'.
 .do end
 .if &*0 >= 7 .do begin
-.   :zli. :qref str='&*7'.
+.   :zli. :qref top='&*7' str='&*7'.
 .do end
 .if &*0 >= 8 .do begin
-.   :zli. :qref str='&*8'.
+.   :zli. :qref top='&*8' str='&*8'.
 .do end
 .if &*0 >= 9 .do begin
-.   :zli. :qref str='&*9'.
+.   :zli. :qref top='&*9' str='&*9'.
 .do end
 :zesl.
 .dm seealso end
