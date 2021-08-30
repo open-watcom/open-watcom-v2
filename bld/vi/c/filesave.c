@@ -275,8 +275,8 @@ vi_rc SaveFile( const char *name, linenum start, linenum end, bool dammit )
         }
     } else {
         fileHandle = 0;
-#ifdef __WATCOMC__
-        setmode( fileno( stdout ), O_BINARY );
+#if !defined( __UNIX__ )
+        _setmode( fileno( stdout ), O_BINARY );
 #endif
     }
 
