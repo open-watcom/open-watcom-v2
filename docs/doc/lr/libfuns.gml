@@ -1286,9 +1286,9 @@
 .fnc snwprintf                snprintf                 snprintf.gml  DOS QNX W WIN32
 .fnc snprintf_s               snprintf_s               snprtf_s.gml  DOS QNX W WIN32
 .fnc snwprintf_s              snprintf_s               snprtf_s.gml  DOS QNX W WIN32
-.fnc sopen                    sopen                    sopen.gml     DOS QNX W WIN32
 .fnc _sopen                   sopen                    sopen.gml     DOS       WIN32
 .fnw _wsopen                  sopen                    sopen.gml     DOS       WIN32
+.fnc sopen                    sopen                    sopen.gml     DOS QNX W WIN32
 .fnc sound                    sound                    sound.gml     DOS QNX W
 .fnc spawn&grpsfx             spawn                    spawn.gml     DOS QNX W WIN32
 .fnc spawnl                   spawn                    spawn.gml     DOS QNX W WIN32

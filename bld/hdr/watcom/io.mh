@@ -135,8 +135,7 @@ _WCRTLINK extern int  _os_handle(int __handle );
 _WCRTLINK extern int  _pipe( int *__phandles, unsigned __psize, int __textmode );
 _WCRTLINK extern int  read( int __handle, void *__buf, unsigned int __len );
 _WCRTLINK extern int  _read( int __handle, void *__buf, unsigned int __len );
-_WCRTLINK extern int  sopen( const char *__path, int __oflag, int __shflag, ... );
-_WCRTLINK extern int  _sopen( const char *__path, int __oflag, int __shflag, ... );
+:include sopen.sp
 _WCRTLINK extern mode_t umask( mode_t __permission );
 _WCRTLINK extern mode_t _umask( mode_t __permission );
 _WCRTLINK extern int  unlink( const char *__path );

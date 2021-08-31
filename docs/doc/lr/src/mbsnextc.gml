@@ -36,7 +36,7 @@ These functions return the integer value of the next character
 .period
 .return end
 .see begin
-.seelist _mbsnextc _strdec _strinc _strninc
+.seelist _mbsnextc _mbsdec _mbsinc _mbsninc
 .see end
 .exmp begin
 #include <stdio.h>

@@ -179,7 +179,7 @@ h/vector       : $(vector_deps)
 
 # The follow describe the dependences for the various *.h files.
 
-fcntl_deps     = $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packll) $(packlnxk) ../off_t.sp ../pid_t.sp ../mode_t.sp ../wchar_t.sp ../modedef.sp ../loff_t.sp ../incdir.sp $(extension) $(posixext)
+fcntl_deps     = $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packll) $(packlnxk) ../off_t.sp ../pid_t.sp ../mode_t.sp ../wchar_t.sp ../modedef.sp ../loff_t.sp ../incdir.sp ../sopen.sp $(extension) $(posixext)
 graph_deps     = $(owhdr) $(cplus) $(packll)
 pgchart_deps   = $(owhdr) $(cplus) $(packll)
 process_deps   = $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) ../pid_t.sp ../wchar_t.sp ../thrdhndl.sp ../process1.sp ../_exit.sp $(extension)
@@ -225,7 +225,7 @@ h/graph.h         : $(mh_dir)/graph.mh $(graph_deps)
 h/graph2.h        : $(mh_dir)/graph2.mh graph.mh $(graph_deps)
 h/i86.h           : $(mh_dir)/i86.mh $(owhdr) $(cplus) $(packll) ../delay.sp
 h/inttypes.h      : $(inttypes_deps)
-h/io.h            : $(mh_dir)/io.mh $(owhdr) ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../time_t.sp ../wchar_t.sp $(maxpath_sp) ../intptr_t.sp ../access.sp ../seekpos.sp ../mktemp.sp ../msio.sp $(extension)
+h/io.h            : $(mh_dir)/io.mh $(owhdr) ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../time_t.sp ../wchar_t.sp $(maxpath_sp) ../intptr_t.sp ../access.sp ../seekpos.sp ../mktemp.sp ../msio.sp ../sopen.sp $(extension)
 h/iomanip.h       : $(iomanip_deps)
 h/ios.h           : $(ios_deps)
 h/iosfwd.h        : $(iosfwd_deps)

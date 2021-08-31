@@ -105,7 +105,7 @@ Indicates that an invalid argument was given to the function.
 .endterm
 .error end
 .see begin
-.seelist locking creat _dos_creat _dos_open fcntl lock open sopen unlock
+.seelist locking creat _dos_creat _dos_open fcntl lock open _sopen unlock
 .see end
 .exmp begin
 #include <stdio.h>
@@ -123,7 +123,7 @@ void main()
 .exmp break
     nbytes = 512;
     offset = 1024;
-    &fd = sopen( "db.fil", O_RDWR, SH_DENYNO );
+    &fd = _sopen( "db.fil", O_RDWR, SH_DENYNO );
     if( &fd != -1 ) {
       lseek( &fd, offset, SEEK_SET );
       locking( &fd, LK_LOCK, nbytes );

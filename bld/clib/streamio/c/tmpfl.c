@@ -92,7 +92,7 @@ _WCRTLINK FILE *tmpfile( void )         /* create a temporary file */
             if( access( name1, F_OK ) != 0 ) {
 
                 // then let's try to create it
-                hdl = sopen( name1, OPEN_MODE, OPENMODE_DENY_COMPAT, PMODE );
+                hdl = _sopen( name1, OPEN_MODE, OPENMODE_DENY_COMPAT, PMODE );
 
                 // if we created it then continue with part II
                 if( hdl != -1 )

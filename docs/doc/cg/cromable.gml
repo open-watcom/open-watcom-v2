@@ -387,7 +387,7 @@ setmode~b~b~b~b~b~b~b~b~b~b~b~b
 setvbuf~b~b~b~b~b~b~b~b~b~b~b~b
 signal~b~b~b~b~b~b~b~b~b~b~b~b~b
 sleep~b~b~b~b~b~b~b~b~b~b~b~b~b~b
-sopen~b~b~b~b~b~b~b~b~b~b~b~b~b~b
+_sopen~b~b~b~b~b~b~b~b~b~b~b~b~b
 sound~b~b~b~b~b~b~b~b~b~b~b~b~b~b
 spawnl~b~b~b~b~b~b~b~b~b~b~b~b~b
 spawnle~b~b~b~b~b~b~b~b~b~b~b~b

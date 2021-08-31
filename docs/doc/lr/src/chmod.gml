@@ -109,7 +109,7 @@ The named file resides on a read-only file system.
 .seelist chmod chown mkdir mkfifo stat
 .do end
 .el .do begin
-.seelist chmod fstat open sopen stat
+.seelist chmod fstat open _sopen stat
 .do end
 .see end
 .exmp begin

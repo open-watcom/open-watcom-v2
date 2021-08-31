@@ -64,7 +64,7 @@ argument is not a valid file &handle..
 .if '&machsys' eq 'QNX' .do begin
 .seelist fsys_stat fsys_fstat
 .do end
-.seelist fstat open sopen stat pipe
+.seelist fstat open _sopen stat pipe
 .see end
 .exmp begin
 #include <stdio.h>

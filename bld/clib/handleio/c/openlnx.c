@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Linux implementation of open() and sopen()
+* Description:  Linux implementation of open() and _sopen()
 *
 ****************************************************************************/
 
@@ -40,8 +40,8 @@
 #include "linuxsys.h"
 
 
-/* open() and sopen() are identical under Linux, since the extra share
- * flags passed to sopen() are simply ignored. We implement sopen() because
+/* open() and _sopen() are identical under Linux, since the extra share
+ * flags passed to _sopen() are simply ignored. We implement _sopen() because
  * Watcom based programs may use it, along with the fact that the runtime
  * library internally always uses it.
  */
@@ -64,7 +64,7 @@ _WCRTLINK int __F_NAME(open,_wopen)( const CHAR_TYPE *name, int oflag, ... )
 }
 
 
-_WCRTLINK int __F_NAME(sopen,_wsopen)( const CHAR_TYPE *name, int oflag, int shflag, ... )
+_WCRTLINK int __F_NAME(_sopen,_wsopen)( const CHAR_TYPE *name, int oflag, int shflag, ... )
 {
     mode_t      mode;
     va_list     args;

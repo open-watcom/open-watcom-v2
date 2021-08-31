@@ -37,7 +37,7 @@ The &handle was returned by one of
 .ct ,
 .do end
 or
-.kw sopen
+.kw _sopen
 .period
 The open mode
 .arg mode
@@ -75,7 +75,7 @@ returns a NULL pointer.
 .see begin
 .seelist creat _dos_open dup dup2 fcntl fdopen fopen
 .seelist freopen _fsopen _grow_handles _hdopen open
-.seelist _open_osfhandle pipe _popen sopen
+.seelist _open_osfhandle pipe _popen _sopen
 .see end
 .exmp begin
 #include <stdio.h>

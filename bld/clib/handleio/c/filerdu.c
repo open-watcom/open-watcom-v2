@@ -108,7 +108,7 @@ _WCRTLINK int open( const CHAR_TYPE *name, int mode, ... )
 }
 
 
-_WCRTLINK int sopen( const CHAR_TYPE *name, int mode, int shflag, ... )
+_WCRTLINK int _sopen( const CHAR_TYPE *name, int mode, int shflag, ... )
 {
     va_list             args;
 

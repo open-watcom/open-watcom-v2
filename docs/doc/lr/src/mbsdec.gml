@@ -42,7 +42,7 @@ These functions return a pointer to the previous character
 (multi-byte, wide, or single-byte).
 .return end
 .see begin
-.seelist _strdec _strinc _strninc
+.seelist _mbsdec _mbsinc _mbsninc
 .see end
 .exmp begin
 #include <stdio.h>

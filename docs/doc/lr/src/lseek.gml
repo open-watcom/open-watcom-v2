@@ -36,7 +36,7 @@ returned by a successful execution of one of the
 .ct ,
 .kw open
 or
-.kw sopen
+.kw _sopen
 .do end
 .el .do begin
 .kw creat
@@ -47,7 +47,7 @@ or
 .ct ,
 .kw open
 or
-.kw sopen
+.kw _sopen
 .do end
 functions.
 The value of

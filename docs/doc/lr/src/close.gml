@@ -27,7 +27,7 @@ the
 .ct ,
 .kw open
 or
-.kw sopen
+.kw _sopen
 .do end
 .el .do begin
 .kw creat
@@ -38,7 +38,7 @@ or
 .ct ,
 .kw open
 or
-.kw sopen
+.kw _sopen
 .do end
 functions.
 .im ansiconf
@@ -73,10 +73,10 @@ A previous buffered write call has failed.
 .error end
 .see begin
 .if '&machsys' eq 'QNX' .do begin
-.seelist creat dup dup2 fcntl open sopen
+.seelist creat dup dup2 fcntl open _sopen
 .do end
 .el .do begin
-.seelist creat dup dup2 open sopen
+.seelist creat dup dup2 open _sopen
 .do end
 .see end
 .exmp begin

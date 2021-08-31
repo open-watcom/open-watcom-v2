@@ -207,18 +207,20 @@ typedef struct flock {
  *  POSIX 1003.1 Prototypes.
  */
 _WCRTLINK extern int open( const char *__path, int __oflag, ... );
-_WCRTLINK extern int sopen( const char *__path, int __oflag, int __share, ... );
 _WCRTLINK extern int creat( const char *__path, mode_t __mode );
 
 :include ext.sp
 _WCRTLINK extern int _open( const char *__path, int __oflag, ... );
-_WCRTLINK extern int _sopen( const char *__path, int __oflag, int __share, ... );
 _WCRTLINK extern int _creat( const char *__path, mode_t __mode );
+:include sopen.sp
 
 :: Wide character version
 _WCRTLINK extern int _wopen( const wchar_t *, int, ... );
-_WCRTLINK extern int _wsopen( const wchar_t *, int, int, ... );
 _WCRTLINK extern int _wcreat( const wchar_t *, mode_t );
+:keep WIDE
+:include sopen.sp
+:remove WIDE
+
 :include extepi.sp
 
 :segment LINUX | QNX

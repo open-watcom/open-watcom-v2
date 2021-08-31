@@ -33,7 +33,7 @@ accordingly.
 .see begin
 .seelist creat _dos_creat _dos_creatnew _dos_open _dos_close
 .seelist open fdopen fopen freopen _fsopen _grow_handles
-.seelist _hdopen open _open_osfhandle _popen sopen
+.seelist _hdopen open _open_osfhandle _popen _sopen
 .see end
 .exmp begin
 #include <stdio.h>

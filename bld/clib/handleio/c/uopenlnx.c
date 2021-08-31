@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Wide char version of open() and sopen() for Linux
+* Description:  Wide char version of open() and _sopen() for Linux
 *
 ****************************************************************************/
 

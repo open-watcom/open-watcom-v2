@@ -48,7 +48,7 @@ Otherwise, it returns -1.
 .see begin
 .seelist close _dos_open dup2 fdopen fopen freopen _fsopen
 .seelist _get_osfhandle _grow_handles _hdopen open
-.seelist _open_osfhandle _os_handle _popen sopen
+.seelist _open_osfhandle _os_handle _popen _sopen
 .see end
 .exmp begin
 #include <stdio.h>

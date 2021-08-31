@@ -91,7 +91,7 @@ returns a non-zero value.
 .see begin
 .seelist freopen_s _dos_open fclose fcloseall fdopen fopen fopen_s freopen
 .seelist freopen_s _fsopen _grow_handles _hdopen open _open_osfhandle
-.seelist freopen_s _popen sopen
+.seelist freopen_s _popen _sopen
 .see end
 .exmp begin
 #define __STDC_WANT_LIB_EXT1__ 1

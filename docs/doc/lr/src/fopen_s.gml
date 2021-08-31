@@ -222,7 +222,7 @@ returns a non-zero value.
 .see begin
 .seelist fopen_s _dos_open fclose fcloseall fdopen fopen freopen freopen_s
 .seelist fopen_s _fsopen _grow_handles _hdopen open _open_osfhandle
-.seelist fopen_s _popen sopen
+.seelist fopen_s _popen _sopen
 .see end
 .exmp begin
 #define __STDC_WANT_LIB_EXT1__ 1

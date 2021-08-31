@@ -502,7 +502,7 @@ using std::wcstoul;
 #define _topen          open
 #define _tremove        remove
 #define _trename        rename
-#define _tsopen         sopen
+#define _tsopen         _sopen
 #define _tunlink        unlink
 
 #define _tfinddata_t    _finddata_t

@@ -637,12 +637,15 @@ pointers as their arguments allowing manipulation of any memory location
 regardless of which memory model your program has been compiled for.
 .fdbeg
 .fd bcmp
+.deprec
 compare two byte strings
 .fd bcopy
+.deprec
 copy a byte string
 .fd _bprintf
 formatted transmission to fixed-length string
 .fd bzero
+.deprec
 zero a byte string
 .fd _fstrcat
 concatenate two far strings
@@ -697,6 +700,7 @@ locate character in string
 .fd strcmp
 compare two strings
 .fd strcmpi
+.deprec
 compare two strings with case insensitivity
 .fd strcoll
 compare two strings using "locale" collating sequence
@@ -828,6 +832,7 @@ locate character in string
 .fd wcscmp
 compare two strings
 .fd wcscmpi
+.deprec
 compare two strings with case insensitivity
 .fd wcscoll
 compare two strings using "locale" collating sequence
@@ -2403,7 +2408,7 @@ read several records placing them into a specified number of buffers
 synchronous I/O multiplexing
 .fd setmode
 set file mode
-.fd sopen
+.fd _sopen
 open a file for shared access
 .fd symlink
 create a symbolic link
@@ -3455,7 +3460,7 @@ delete a file
 rename a file
 .fd rmdir
 remove a directory
-.fd sopen
+.fd _sopen
 open a file for shared access
 .fd stat
 get file status

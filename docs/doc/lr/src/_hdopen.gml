@@ -23,7 +23,7 @@ Otherwise, it returns -1.
 .see begin
 .seelist close _dos_open fdopen fopen freopen _fsopen
 .seelist _grow_handles _hdopen open _open_osfhandle
-.seelist _os_handle _popen sopen
+.seelist _os_handle _popen _sopen
 .see end
 .exmp begin
 #include <stdio.h>

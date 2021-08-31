@@ -117,7 +117,7 @@ may be changed by a program to change the default behavior of the
 .ct ,
 .kw creat
 and
-.kw sopen
+.kw _sopen
 functions.
 The default setting of
 .kw _fmode

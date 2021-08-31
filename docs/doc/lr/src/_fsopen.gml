@@ -217,7 +217,7 @@ returns
 .see begin
 .seelist _dos_open fclose fcloseall fdopen fopen freopen
 .seelist _fsopen _grow_handles _hdopen open _open_osfhandle
-.seelist _popen sopen
+.seelist _popen _sopen
 .see end
 .exmp begin
 #include <stdio.h>

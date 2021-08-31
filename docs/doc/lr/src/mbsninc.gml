@@ -51,7 +51,7 @@ exceeds the number of characters remaining in the string, the result is
 undefined.
 .return end
 .see begin
-.seelist _strdec _strinc _strninc
+.seelist _mbsdec _mbsinc _mbsninc
 .see end
 .exmp begin
 #include <stdio.h>

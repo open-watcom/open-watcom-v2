@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Win32 implementation of open() and sopen().
+* Description:  Win32 implementation of open() and _sopen().
 *
 ****************************************************************************/
 
@@ -163,11 +163,11 @@ _WCRTLINK int __F_NAME(open,_wopen)( const CHAR_TYPE *name, int mode, ... )
     va_start( args, mode );
     permission = va_arg( args, int );
     va_end( args );
-    return( __F_NAME(sopen,_wsopen)( name, mode, SH_COMPAT, permission ) );
+    return( __F_NAME(_sopen,_wsopen)( name, mode, SH_COMPAT, permission ) );
 }
 
 
-_WCRTLINK int __F_NAME(sopen,_wsopen)( const CHAR_TYPE *name, int mode, int shflag, ... )
+_WCRTLINK int __F_NAME(_sopen,_wsopen)( const CHAR_TYPE *name, int mode, int shflag, ... )
 {
     va_list             args;
 

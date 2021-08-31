@@ -190,7 +190,7 @@ This POSIX header file defines the flags used by the
 .if '&machsys' ne 'QNX' .do begin
 .kw open
 and
-.kw sopen
+.kw _sopen
 functions. The function declarations for these functions are found in the
 .hdrfile &iohdr
 header file.
@@ -201,7 +201,7 @@ header file.
 .ct ,
 .kw open
 .ct , and
-.kw sopen
+.kw _sopen
 functions.
 .do end
 .*------------------------------
@@ -371,7 +371,7 @@ functions.
 .*------------------------------
 .df share.h
 This header file defines constants for shared access to files using the
-.kw sopen
+.kw _sopen
 function.
 .*------------------------------
 .df signal.h

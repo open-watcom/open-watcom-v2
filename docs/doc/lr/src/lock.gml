@@ -60,7 +60,7 @@ occurs.
 .im errnoref
 .return end
 .see begin
-.seelist lock fcntl locking open sopen unlock
+.seelist lock fcntl locking open _sopen unlock
 .see end
 .exmp begin
 #include <stdio.h>
