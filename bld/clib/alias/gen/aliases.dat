@@ -110,7 +110,7 @@ setenv        setenv            _setenv           d16 d32 nt  nta ntp           
 setmod        _setmode          setmode           d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 setmo0        setmode           _setmode                                  ncl     nll
 sisini        mbsinit           sisinit           d16 d32 nt  nta ntp                 o16 o32         w16 w32
-sopen_        _sopen            sopen             d16 d32 nt  nta ntp                 o16 o32         w16 w32             rdu rdk
+sopen_        _sopen            sopen             d16 d32 nt  nta ntp                 o16 o32         w16 w32 l32 lpc lmp rdu rdk
 sopen0        sopen             _sopen                                nvc ncl nvl nll
 spwl__        spawnl            _spawnl           d16     nt  nta ntp                 o16 o32 q16 q32         l32 lpc lmp rdu
 spwle_        spawnle           _spawnle          d16     nt  nta ntp                 o16 o32 q16 q32         l32 lpc lmp rdu
