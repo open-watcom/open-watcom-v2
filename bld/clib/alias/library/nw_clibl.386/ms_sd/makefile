@@ -1,4 +1,4 @@
-#pmake: nobuild debug small stack 32bit netware convert ix86 static os_nov cpu_386
+#pmake: nobuild debug small stack 32bit netware alias ix86 static os_nov cpu_386
 processor=386
 model=ms
 system=nw_clibl
