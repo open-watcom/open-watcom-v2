@@ -1,33 +1,33 @@
-.func strrev _strrev _fstrrev _wcsrev _mbsrev _fmbsrev
+.func _strrev _fstrrev _wcsrev _mbsrev _fmbsrev strrev
 .synop begin
 #include <string.h>
-char *strrev( char *s1 );
-.ixfunc2 '&String' &funcb
-.if &'length(&_func.) ne 0 .do begin
 char *_strrev( char *s1 );
-.ixfunc2 '&String' &_func
-.do end
+.ixfunc2 '&String' _strrev
 .if &farfnc ne 0 .do begin
 char __far *_fstrrev( char __far *s1 );
-.ixfunc2 '&String' &ffunc
+.ixfunc2 '&String' _fstrrev
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
 #include <wchar.h>
 wchar_t *_wcsrev( wchar_t *s1 );
-.ixfunc2 '&String' &wfunc
-.ixfunc2 '&Wide' &wfunc
+.ixfunc2 '&String' _wcsrev
+.ixfunc2 '&Wide' _wcsrev
 .do end
 .if &'length(&mfunc.) ne 0 .do begin
 #include <mbstring.h>
 unsigned char *_mbsrev( unsigned char *s1 );
-.ixfunc2 '&String' &mfunc
-.ixfunc2 '&Multibyte' &mfunc
+.ixfunc2 '&String' _mbsrev
+.ixfunc2 '&Multibyte' _mbsrev
 .do end
 .if &'length(&fmfunc.) ne 0 .do begin
 unsigned char __far *_fmbsrev( unsigned char __far *s1 );
-.ixfunc2 '&String' &fmfunc
-.ixfunc2 '&Multibyte' &fmfunc
+.ixfunc2 '&String' _fmbsrev
+.ixfunc2 '&Multibyte' _fmbsrev
 .do end
+
+.deprec
+char *strrev( char *s1 );
+.ixfunc2 '&String' strrev
 .synop end
 .desc begin
 The
@@ -40,6 +40,8 @@ with a string whose characters are in the reverse order.
 .widefunc &wfunc. &funcb.
 .mbcsfunc &mfunc. &funcb.
 .farfunc &fmfunc. &mfunc.
+.np
+.deprfunc strrev _strrev
 .desc end
 .return begin
 The address of the original string
@@ -55,8 +57,8 @@ char source[] = { "A sample STRING" };
 void main()
   {
     printf( "%s\n", source );
-    printf( "%s\n", strrev( source ) );
-    printf( "%s\n", strrev( source ) );
+    printf( "%s\n", _strrev( source ) );
+    printf( "%s\n", _strrev( source ) );
   }
 .exmp output
 A sample STRING

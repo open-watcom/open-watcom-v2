@@ -33,7 +33,7 @@ The address of the original string
 is returned.
 .return end
 .see begin
-.seelist jstrrev strrev
+.seelist jstrrev _strrev
 .see end
 .exmp begin
 #include <stdio.h>

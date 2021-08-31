@@ -173,7 +173,7 @@ _strnicmp~b~b~b~b~b~b~b~b~b~b
 _strnset~b~b~b~b~b~b~b~b~b~b~b
 strpbrk~b~b~b~b~b~b~b~b~b~b~b~b
 strrchr~b~b~b~b~b~b~b~b~b~b~b~b
-strrev~b~b~b~b~b~b~b~b~b~b~b~b~b
+_strrev~b~b~b~b~b~b~b~b~b~b~b~b
 _strset~b~b~b~b~b~b~b~b~b~b~b~b
 strspn~b~b~b~b~b~b~b~b~b~b~b~b~b
 strstr~b~b~b~b~b~b~b~b~b~b~b~b~b

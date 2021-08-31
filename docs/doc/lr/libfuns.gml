@@ -1465,12 +1465,12 @@
 .fnw wcsrchr                  strrchr                  strrchr.gml   DOS QNX W WIN32
 .fnm _mbsrchr                 strrchr                  strrchr.gml   DOS       WIN32
 .fnn _fmbsrchr                strrchr                  strrchr.gml   DOS       WIN32
-.fnc strrev                   strrev                   strrev.gml    DOS QNX W WIN32
 .fnc _strrev                  strrev                   strrev.gml    DOS QNX W WIN32
 .fnf _fstrrev                 strrev                   strrev.gml    DOS QNX W WIN32
 .fnw _wcsrev                  strrev                   strrev.gml    DOS QNX W WIN32
 .fnm _mbsrev                  strrev                   strrev.gml    DOS       WIN32
 .fnn _fmbsrev                 strrev                   strrev.gml    DOS       WIN32
+.fnc strrev                   strrev                   strrev.gml    DOS QNX W WIN32
 .fn7 _strset                  strset                   strset.gml    DOS QNX W WIN32
 .fnf _fstrset                 strset                   strset.gml    DOS QNX W WIN32
 .fnw _wcsset                  strset                   strset.gml    DOS QNX W WIN32
