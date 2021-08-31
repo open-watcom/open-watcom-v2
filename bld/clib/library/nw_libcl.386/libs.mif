@@ -8,6 +8,7 @@ libs = $+ &
     $(pfx__)convert$(__sfx) &
     $(pfx__)handleio$(__sfx) &
     $(pfx__)intel$(__sfx) &
+    $(pfx__)memory$(__sfx) &
     $(pfx__)misc$(__sfx) &
     $(pfx__)mthread$(__sfx) &
     $(pfx__)startup$(__sfx) &

@@ -266,7 +266,7 @@ entry_cmp(const void *p1, const void *p2)
     e1 = p1;
     e2 = p2;
 
-    if ((c=(ignore_case ? strcasecmp : strcmp)(e1->name, e2->name)) != 0)
+    if ((c=(ignore_case ? stricmp : strcmp)(e1->name, e2->name)) != 0)
 	return c;
     if (e1->size != e2->size)
 	return e1->size - e2->size;
