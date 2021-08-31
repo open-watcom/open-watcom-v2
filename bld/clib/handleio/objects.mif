@@ -63,11 +63,11 @@
 !inject qread.obj       d16 d32     nt  nta ntp                 o16 o32         w16 w32
 !inject qreadunx.obj                                                    q16 q32         l32 lpc lmp
 !inject qwrit.obj       d16 d32     nt  nta ntp                 o16 o32         w16 w32
-!inject qwritunx.obj                                                q16 q32             l32 lpc lmp
+!inject qwritunx.obj                                                    q16 q32         l32 lpc lmp
 !inject read.obj        d16 d32     nt  nta ntp                 o16 o32         w16 w32
 !inject setbinmo.obj    d16 d32     nt  nta ntp                 o16 o32         w16 w32             rdu rdk
 !inject setmd.obj       d16 d32     nt  nta ntp                 o16 o32         w16 w32
-!inject setmdunx.obj                                                q16 q32             l32 lpc lmp
+!inject setmdunx.obj                                                    q16 q32         l32 lpc lmp
 !inject stiomode.obj    d16 d32     nt  nta ntp                 o16 o32         w16 w32
 !inject tell.obj        d16 d32     nt  nta ntp                 o16 o32 q16 q32 w16 w32 l32 lpc lmp
 !inject textmode.obj    d16 d32     nt  nta ntp nvc     nvl     o16 o32         w16 w32             rdu rdk
