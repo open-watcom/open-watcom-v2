@@ -31,7 +31,11 @@
 ****************************************************************************/
 
 
-#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
+#if defined( __WATCOMC__ ) && ( __WATCOMC__ < 1300 )
+    #include <share.h>
+    #define _sopen3             sopen
+    #define _sopen4             sopen
+#elif defined( __WATCOMC__ ) || !defined( __UNIX__ )
     #include <share.h>
     #define _sopen3             _sopen
     #define _sopen4             _sopen
