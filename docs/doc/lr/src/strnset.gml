@@ -1,4 +1,5 @@
 .func _strnset _fstrnset _wcsnset _mbsnset _fmbsnset strnset
+.ansiname _strnset
 .synop begin
 #include <string.h>
 char *_strnset( char *s, int fill, size_t count );
@@ -48,7 +49,6 @@ When the value of
 is greater than the length of the string, the entire string is filled.
 Otherwise, that number of characters at the start of the string are set
 to the fill character.
-.im ansiconf
 .farfunc &ffunc. &funcb.
 .widefunc &wfunc. &funcb.
 For &wfunc, the value of
@@ -65,6 +65,8 @@ If the number of bytes to be filled is odd and
 .arg fill
 is a double-byte character, the partial byte at the end is filled with
 an ASCII space character.
+.np
+.deprfunc strnset _strnset
 .desc end
 .return begin
 The address of the original string

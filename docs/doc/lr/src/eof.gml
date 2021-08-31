@@ -1,12 +1,13 @@
-.func eof _eof
+.func _eof eof
+.ansiname _eof
 .synop begin
 #include <&iohdr>
-int eof( int &fd );
-.ixfunc2 '&OsIo' &funcb
-.if &'length(&_func.) ne 0 .do begin
 int _eof( int &fd );
-.ixfunc2 '&OsIo' &_func
-.do end
+.ixfunc2 '&OsIo' _eof
+
+.deprec
+int eof( int &fd );
+.ixfunc2 '&OsIo' eof
 .synop end
 .desc begin
 The
@@ -21,7 +22,8 @@ the
 .id &funcb.
 function may be called to detect the end of the file before
 an input operation beyond the end of the file is attempted.
-.im ansiconf
+.np
+.deprfunc eof _eof
 .desc end
 .return begin
 The
@@ -41,7 +43,7 @@ argument is not a valid file &handle..
 .endterm
 .error end
 .see begin
-.seelist eof read
+.seelist read
 .see end
 .exmp begin
 #include <stdio.h>
@@ -55,7 +57,7 @@ void main( void )
 .exmp break
     &fd = open( "file", O_RDONLY );
     if( &fd != -1 ) {
-        while( ! eof( &fd ) ) {
+        while( ! _eof( &fd ) ) {
             len = read( &fd, buffer, sizeof(buffer) - 1 );
             buffer[ len ] = '\0';
             printf( "%s", buffer );

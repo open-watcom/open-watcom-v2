@@ -1,13 +1,14 @@
-.func setmode _setmode
+.func _setmode setmode
+.ansiname _setmode
 .synop begin
 #include <&iohdr>
 #include <fcntl.h>
-int setmode( int &fd, int mode );
-.ixfunc2 '&OsIo' &funcb
-.if &'length(&_func.) ne 0 .do begin
 int _setmode( int &fd, int mode );
-.ixfunc2 '&OsIo' &_func
-.do end
+.ixfunc2 '&OsIo' _setmode
+
+.deprec
+int setmode( int &fd, int mode );
+.ixfunc2 '&OsIo' setmode
 .synop end
 .desc begin
 .if '&machsys' eq 'QNX' .do begin
@@ -42,6 +43,8 @@ linefeed character.
 Data is read or written unchanged.
 .endterm
 .do end
+.np
+.deprfunc setmode _setmode
 .desc end
 .return begin
 .if '&machsys' eq 'QNX' .do begin
@@ -76,7 +79,7 @@ void main( void )
 .exmp break
     fp = fopen( "file", "rb" );
     if( fp != NULL ) {
-        setmode( fileno( fp ), O_BINARY );
+        _setmode( fileno( fp ), O_BINARY );
         count = 0L;
         while( fgetc( fp ) != EOF ) ++count;
         printf( "File contains %lu characters\n",

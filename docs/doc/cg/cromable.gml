@@ -237,7 +237,7 @@ calloc~b~b~b~b~b~b~b~b~b~b~b~b~b
 cgets~b~b~b~b~b~b~b~b~b~b~b~b~b~b
 chdir~b~b~b~b~b~b~b~b~b~b~b~b~b~b
 chmod~b~b~b~b~b~b~b~b~b~b~b~b~b~b
-chsize~b~b~b~b~b~b~b~b~b~b~b~b~b
+_chsize~b~b~b~b~b~b~b~b~b~b~b~b
 clearerr~b~b~b~b~b~b~b~b~b~b~b
 clock~b~b~b~b~b~b~b~b~b~b~b~b~b~b
 close~b~b~b~b~b~b~b~b~b~b~b~b~b~b
@@ -305,7 +305,7 @@ _fheapwalk~b~b~b~b~b~b~b~b~b
 fgetc~b~b~b~b~b~b~b~b~b~b~b~b~b~b
 fgetpos~b~b~b~b~b~b~b~b~b~b~b~b
 fgets~b~b~b~b~b~b~b~b~b~b~b~b~b~b
-filelength~b~b~b~b~b~b~b~b~b
+_filelength~b~b~b~b~b~b~b~b
 fileno~b~b~b~b~b~b~b~b~b~b~b~b~b
 flushall~b~b~b~b~b~b~b~b~b~b~b
 _fmalloc~b~b~b~b~b~b~b~b~b~b~b
@@ -383,7 +383,7 @@ sbrk~b~b~b~b~b~b~b~b~b~b~b~b~b~b~b
 scanf~b~b~b~b~b~b~b~b~b~b~b~b~b~b
 _searchenv~b~b~b~b~b~b~b~b~b
 setbuf~b~b~b~b~b~b~b~b~b~b~b~b~b
-setmode~b~b~b~b~b~b~b~b~b~b~b~b
+_setmode~b~b~b~b~b~b~b~b~b~b~b
 setvbuf~b~b~b~b~b~b~b~b~b~b~b~b
 signal~b~b~b~b~b~b~b~b~b~b~b~b~b
 sleep~b~b~b~b~b~b~b~b~b~b~b~b~b~b

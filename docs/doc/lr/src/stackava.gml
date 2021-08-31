@@ -55,7 +55,7 @@ void main( void )
 
     fp = fopen( "file", "rb" );
     if( fp != NULL ) {
-        setmode( fileno( fp ), O_BINARY );
+        _setmode( fileno( fp ), O_BINARY );
         printf( "File contains %lu characters\n",
                 char_count( fp ) );
         fclose( fp );

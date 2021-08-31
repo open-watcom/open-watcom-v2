@@ -1,4 +1,5 @@
 .func _strset _fstrset _wcsset _mbsset _fmbsset strset
+.ansiname _strset
 .synop begin
 #include <string.h>
 char *_strset( char *s1, int fill );
@@ -41,11 +42,12 @@ with the character
 .period
 The terminating null character in the original string remains
 unchanged.
-.im ansiconf
 .farfunc &ffunc. &funcb.
 .widefunc &wfunc. &funcb.
 .mbcsfunc &mfunc. &funcb.
 .farfunc &fmfunc. &mfunc.
+.np
+.deprfunc strset _strset
 .desc end
 .return begin
 The address of the original string

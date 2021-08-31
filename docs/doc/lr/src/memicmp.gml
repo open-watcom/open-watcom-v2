@@ -1,4 +1,5 @@
 .func _memicmp _fmemicmp memicmp
+.ansiname _memicmp
 .synop begin
 #include <string.h>
 .if &'length(&_func.) ne 0 .do begin
@@ -35,7 +36,8 @@ and
 .arg s2
 are mapped to lowercase for the purposes of doing the comparison.
 .farfuncp &ffunc. &funcb.
-.im ansiconf
+.np
+.deprfunc memicmp _memicmp
 .desc end
 .return begin
 The function returns an integer less than, equal to, or greater

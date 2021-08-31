@@ -104,7 +104,7 @@ not be supported in future versions of MS-DOS.
 The
 .id &funcb.
 function does not, in itself, extend the size of a file
-.seeref chsize
+.seeref _chsize
 .period
 .im ansiconf
 .np
@@ -119,8 +119,8 @@ The
 .id &funcb.
 function can be used to obtain the current file position
 (the
-.kw tell
-function is implemented in terms of &func).
+.reffunc _tell
+function is implemented in terms of &funcb).
 This value can then be used with the
 .id &funcb.
 function to reset the file
@@ -132,7 +132,7 @@ int &fd;
 /* get current file position */
 file_posn = lseek( &fd, 0L, SEEK_CUR );
   /* or */
-file_posn = tell( &fd );
+file_posn = _tell( &fd );
 
 /* return to previous file position */
 file_posn = lseek( &fd, file_posn, SEEK_SET );

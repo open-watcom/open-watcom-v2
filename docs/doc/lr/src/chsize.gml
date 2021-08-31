@@ -1,12 +1,13 @@
-.func chsize _chsize
+.func _chsize chsize
+.ansiname _chsize
 .synop begin
 #include <&iohdr>
-int chsize( int &fd, long size );
-.ixfunc2 '&DosFunc' &funcb
-.if &'length(&_func.) ne 0 .do begin
 int _chsize( int &fd, long size );
-.ixfunc2 '&DosFunc' &_func
-.do end
+.ixfunc2 '&DosFunc' _chsize
+
+.deprec
+int chsize( int &fd, long size );
+.ixfunc2 '&DosFunc' chsize
 .synop end
 .desc begin
 The
@@ -18,7 +19,6 @@ by extending or truncating the file to the length specified by
 .period
 If the file needs to be extended, the file is padded with NULL ('\0')
 characters.
-.im ansiconf
 .if '&machsys' eq 'QNX' .do begin
 .np
 Note that the
@@ -32,6 +32,8 @@ have been set by the
 .kw locking
 functions.
 .do end
+.np
+.deprfunc chsize _chsize
 .desc end
 .return begin
 The
@@ -59,7 +61,7 @@ Not enough space left on the device to extend the file.
 .endterm
 .error end
 .see begin
-.seelist chsize close creat open
+.seelist close creat open
 .see end
 .exmp begin
 #include <stdio.h>
@@ -74,7 +76,7 @@ void main()
     &fd = open( "file", O_RDWR | O_CREAT,
                 S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP );
     if( &fd != -1 ) {
-      if( chsize( &fd, 32 * 1024L ) != 0 ) {
+      if( _chsize( &fd, 32 * 1024L ) != 0 ) {
           printf( "Error extending file\n" );
       }
       close( &fd );

@@ -37,7 +37,7 @@ The data is written to the file at the end when the file was opened with
 included as part of the access mode; otherwise, it is written at the
 current file position for the file in question.
 This file position can be determined with the
-.kw tell
+.kw _tell
 function and can be set with the
 .kw lseek
 function.
@@ -58,7 +58,7 @@ argument.
 however, that this doesn't work under OS/2 2.1, Windows NT/2000, and
 other operating systems.
 To truncate a file in a portable manner, use the
-.kw chsize
+.reffunc _chsize
 function.
 .desc end
 .return begin

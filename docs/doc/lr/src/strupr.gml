@@ -1,4 +1,5 @@
 .func _strupr _fstrupr _wcsupr _mbsupr _fmbsupr strupr
+.ansiname _strupr
 .synop begin
 #include <string.h>
 char *_strupr( char *s );
@@ -37,11 +38,12 @@ function replaces the string
 with uppercase characters by invoking the
 .kw toupper
 function for each character in the string.
-.im ansiconf
 .farfunc &ffunc. &funcb.
 .widefunc &wfunc. &funcb.
 .mbcsfunc &mfunc. &funcb.
 .farfunc &fmfunc. &mfunc.
+.np
+.deprfunc strupr _strupr
 .desc end
 .return begin
 The address of the original string

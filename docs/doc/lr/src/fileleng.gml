@@ -1,14 +1,15 @@
-.func filelength _filelength _filelengthi64
+.func _filelength _filelengthi64 filelength
+.ansiname _filelength
 .synop begin
 #include <&iohdr>
-long filelength( int &fd );
-.ixfunc2 '&OsIo' &funcb
-.if &'length(&_func.) ne 0 .do begin
 long _filelength( int &fd );
-.ixfunc2 '&OsIo' &_func
-.do end
+.ixfunc2 '&OsIo' _filelength
 __int64 _filelengthi64( int &fd );
-.ixfunc2 '&OsIo' &func64
+.ixfunc2 '&OsIo' _filelengthi64
+
+.deprec
+long filelength( int &fd );
+.ixfunc2 '&OsIo' filelength
 .synop end
 .desc begin
 The
@@ -22,7 +23,8 @@ The &func64 function returns, as a 64-bit integer, the number of
 bytes in the opened file indicated by the file &handle
 .arg &fd
 .period
-.im ansiconf
+.np
+.deprfunc filelength _filelength
 .desc end
 .return begin
 If an error occurs in
@@ -36,7 +38,7 @@ If an error occurs in &func64, (&minus.1I64) is returned.
 Otherwise, the number of bytes written to the file is returned.
 .return end
 .see begin
-.seelist filelength fstat lseek tell
+.seelist fstat lseek _tell
 .see end
 .exmp begin
 #include <sys/types.h>
@@ -57,7 +59,7 @@ void main( void )
 .do end
     if( &fd != -1 ) {
         printf( "Size of file is %ld bytes\n",
-              filelength( &fd ) );
+              _filelength( &fd ) );
         close( &fd );
     }
 }

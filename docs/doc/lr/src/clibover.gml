@@ -2340,7 +2340,7 @@ which is returned when the file is opened.
 The file &handle is passed to the other functions.
 .np
 .fdbeg
-.fd chsize
+.fd _chsize
 change the size of a file
 .fd close
 close file
@@ -2352,13 +2352,13 @@ create a file
 duplicate file &handle, get unused &handle number
 .fd dup2
 duplicate file &handle, supply new &handle number
-.fd eof
+.fd _eof
 test for end of file
 .fd fcntl
 control over an open file
 .fd fdatasync
 write queued file data to disk
-.fd filelength
+.fd _filelength
 get file size
 .fd fileno
 get file &handle for stream file
@@ -2406,7 +2406,7 @@ read a symbolic link
 read several records placing them into a specified number of buffers
 .fd select
 synchronous I/O multiplexing
-.fd setmode
+.fd _setmode
 set file mode
 .fd _sopen
 open a file for shared access
@@ -2414,7 +2414,7 @@ open a file for shared access
 create a symbolic link
 .fd sync
 sync the filesystem
-.fd tell
+.fd _tell
 get current file position
 .fd umask
 set file permission mask

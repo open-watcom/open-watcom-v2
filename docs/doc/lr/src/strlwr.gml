@@ -1,4 +1,5 @@
 .func _strlwr _fstrlwr _wcslwr _mbslwr _fmbslwr strlwr
+.ansiname _strlwr
 .synop begin
 #include <string.h>
 char *_strlwr( char *s1 );
@@ -37,11 +38,12 @@ function replaces the string
 with lowercase characters by invoking the
 .kw tolower
 function for each character in the string.
-.im ansiconf
 .farfunc &ffunc. &funcb.
 .widefunc &wfunc. &funcb.
 .mbcsfunc &mfunc. &funcb.
 .farfunc &fmfunc. &mfunc.
+.np
+.deprfunc strlwr _strlwr
 .desc end
 .return begin
 The address of the original string

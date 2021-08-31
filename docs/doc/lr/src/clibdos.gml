@@ -250,7 +250,7 @@ library will remove carriage returns on input and add them on output,
 provided the mode is set to be
 .us text.
 This mode is set upon opening the file or with the
-.kw setmode
+.reffunc _setmode
 function.
 .*
 .section DOS Commands

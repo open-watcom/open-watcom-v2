@@ -798,14 +798,10 @@ string versions of
 .dm deprec end
 .*
 .dm deprfunc begin
-.id &*2.
-function is identical to the
+The
 .id &*1.
-function.
-Use 
+function is deprecated, use
 .reffunc &*2.
-instead of 
-.id &*1.
-.period
+instead.
 .dm deprfunc end
 .*

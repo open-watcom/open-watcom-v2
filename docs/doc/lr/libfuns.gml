@@ -117,8 +117,8 @@
 .fnc _chmod                   chmod                    chmod.gml     DOS       WIN32
 .fnw _wchmod                  chmod                    chmod.gml     DOS       WIN32
 .fnc chown                    chown                    chown.gml         QXO
-.fnc chsize                   chsize                   chsize.gml    DOS QNX W WIN32
 .fnc _chsize                  chsize                   chsize.gml    DOS       WIN32
+.fnc chsize                   chsize                   chsize.gml    DOS QNX W WIN32
 .fnc _clear87                 _clear87                 _clear87.gml  DOS QNX W WIN32
 .fnc clearenv                 clearenv                 clearenv.gml  DOS QNX W WIN32
 .fnc clearerr                 clearerr                 clearerr.gml  DOS QNX W WIN32
@@ -249,8 +249,8 @@
 .fnc endservent               endservent               endsrven.gml  DOS W     WIN32
 .fnc _endthread               _endthread               _ethread.gml  DOS QXO   WIN32
 .fnc _endthreadex             _endthread               _ethread.gml  DOS       WIN32
-.fnc eof                      eof                      eof.gml       DOS QNX W WIN32
 .fnc _eof                     eof                      eof.gml       DOS       WIN32
+.fnc eof                      eof                      eof.gml       DOS QNX W WIN32
 .fnc erf                      erf                      erf.gml       DOS QNX W WIN32
 .fnc erfc                     erfc                     erfc.gml      DOS QNX W WIN32
 .fnc errno                    errno                    errno.gml         QXO
@@ -331,9 +331,9 @@
 .fnc fgets                    fgets                    fgets.gml     DOS QNX W WIN32
 .fnw fgetws                   fgets                    fgets.gml     DOS QNX W WIN32
 .fn8 _fieeetomsbin            _fieeetomsbin            fieee2ms.gml  DOS QNX W WIN32
-.fnc filelength               filelength               fileleng.gml  DOS QNX W WIN32
 .fnc _filelength              filelength               fileleng.gml  DOS       WIN32
 .fn8 _filelengthi64           filelength               fileleng.gml  DOS       WIN32
+.fnc filelength               filelength               fileleng.gml  DOS QNX W WIN32
 .fnc FILENAME_MAX             FILENAME_MAX             filenmax.gml  DOS QNX W WIN32
 .fnc fileno                   fileno                   fileno.gml    DOS QNX W WIN32
 .fn7 _findclose               _findclose               findclos.gml  DOS       WIN32
@@ -1231,8 +1231,8 @@
 .fnw _wsetlocale              setlocale                setlocal.gml  DOS QNX W WIN32
 .fnc _set_matherr             _set_matherr             _setmath.gml  DOS QXO   WIN32
 .fnm _setmbcp                 _setmbcp                 setmbcp.gml   DOS       WIN32
-.fnc setmode                  setmode                  setmode.gml   DOS QNX W WIN32
 .fnc _setmode                 setmode                  setmode.gml   DOS       WIN32
+.fnc setmode                  setmode                  setmode.gml   DOS QNX W WIN32
 .fnc _setmx                   _setmx                   setmx.gml         QXO
 .fnc setnetent                setnetent                stnetent.gml  DOS W     WIN32
 .fnc _set_new_handler         set_new_handler          setnew.gml    DOS QNX W WIN32
@@ -1544,9 +1544,9 @@
 .fnc tcsetattr                tcsetattr                tcsetatr.gml      QXO
 .fnc tcsetct                  tcsetct                  tcsetct.gml       QXO
 .fnc tcsetpgrp                tcsetpgrp                tcsetpgr.gml      QXO
-.fnc tell                     tell                     tell.gml      DOS QNX W WIN32
 .fnc _tell                    tell                     tell.gml      DOS       WIN32
 .fn8 _telli64                 tell                     tell.gml      DOS       WIN32
+.fnc tell                     tell                     tell.gml      DOS QNX W WIN32
 .fn7 _tempnam                 _tempnam                 tempnam.gml   DOS       WIN32
 .fnw _wtempnam                _tempnam                 tempnam.gml   DOS       WIN32
 .fnc term_attr_type           term_attr_type           att_type.trm      QX40

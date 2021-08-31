@@ -20,6 +20,8 @@ function determines whether
 the pointed-to
 .kw mbstate_t
 object describes an initial conversion state.
+.np
+.deprfunc sisinit mbsinit
 .desc end
 .*
 .return begin

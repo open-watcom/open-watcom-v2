@@ -33,7 +33,7 @@ function was invoked.
 The data is read starting at the
 current file position for the file in question.
 This file position can be determined with the
-.kw tell
+.reffunc _tell
 function and can be set with the
 .kw lseek
 function.
