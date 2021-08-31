@@ -42,7 +42,7 @@ cwait_        cwait             _cwait                    nt  nta ntp           
 dopen_        _hdopen           _dopen            d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
 dup2__        dup2              _dup2             d16 d32 nt  nta ntp                 o16 o32         w16 w32             rdu rdk
 dup___        dup               _dup              d16 d32 nt  nta ntp                 o16 o32         w16 w32             rdu rdk
-eof___        _eof              eof               d16 d32 nt  nta ntp nvc     nvl     o16 o32         w16 w32             rdu rdk
+eof___        _eof              eof               d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 eof__0        eof               _eof                                      ncl     nll
 excl__        execl             _execl            d16     nt  nta ntp                 o16 o32 q16 q32         l32 lpc lmp rdu
 excle_        execle            _execle           d16     nt  nta ntp                 o16 o32 q16 q32         l32 lpc lmp rdu
@@ -55,8 +55,8 @@ excvpe        execvpe           _execvpe          d16     nt  nta ntp           
 fdopen        fdopen            _fdopen           d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
 fgetch        fgetchar          _fgetchar         d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
 fgetwc        fgetwchar         _fgetwchar        d16 d32 nt  nta ntp                 o16 o32 q16 q32 w16 w32 l32
-fileno        fileno            _fileno           d16 d32 nt  nta ntp                 o16 o32         w16 w32             rdu rdk
-flelen        _filelength       filelength        d16 d32 nt  nta ntp nvc     nvl     o16 o32         w16 w32             rdu rdk
+fileno        fileno            _fileno           d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
+flelen        _filelength       filelength        d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 flele0        filelength        _filelength                               ncl     nll
 fputch        fputchar          _fputchar         d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
 fedisa        fedisableexcept   __fedisableexcept d16 d32 nt          nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
@@ -106,7 +106,7 @@ putws_        putws             _putws            d16 d32 nt  nta ntp           
 read__        read              _read             d16 d32 nt  nta ntp                 o16 o32         w16 w32             rdu rdk
 rmdir_        rmdir             _rmdir            d16 d32 nt  nta ntp                 o16 o32         w16 w32             rdu rdk
 setenv        setenv            _setenv           d16 d32 nt  nta ntp                 o16 o32 q16     w16 w32 l32 lpc lmp rdu rdk
-setmod        _setmode          setmode           d16 d32 nt  nta ntp nvc     nvl     o16 o32         w16 w32             rdu rdk
+setmod        _setmode          setmode           d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 setmo0        setmode           _setmode                                  ncl     nll
 sisini        mbsinit           sisinit           d16 d32 nt  nta ntp                 o16 o32         w16 w32
 sopen_        sopen             _sopen            d16 d32 nt  nta ntp                 o16 o32         w16 w32             rdu rdk
@@ -176,7 +176,7 @@ tcsspn        _mbsspn           _tcsspn           d16 d32 nt  nta ntp           
 tcsstr        _mbsstr           _tcsstr           d16 d32 nt  nta ntp                 o16 o32 q16 q32 w16 w32 l32         rdu rdk
 tcstok        _mbstok           _tcstok           d16 d32 nt  nta ntp                 o16 o32 q16 q32 w16 w32 l32         rdu rdk
 tcsupr        _mbsupr           _tcsupr           d16 d32 nt  nta ntp                 o16 o32 q16 q32 w16 w32 l32         rdu rdk
-tell__        _tell             tell              d16 d32 nt  nta ntp                 o16 o32         w16 w32             rdu rdk
+tell__        _tell             tell              d16 d32 nt  nta ntp                 o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 tell_0        tell              _tell                                 nvc ncl nvl nll
 tolowe        tolower           _tolower          d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
 touppe        toupper           _toupper          d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
