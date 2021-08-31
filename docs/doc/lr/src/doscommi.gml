@@ -22,7 +22,7 @@ Otherwise, it returns an OS error code and sets
 accordingly.
 .return end
 .see begin
-.seelist _dos_commit _dos_close _dos_creat _dos_open _dos_write flush
+.seelist _dos_commit _dos_close _dos_creat _dos_open _dos_write fflush
 .see end
 .exmp begin
 #include <stdio.h>
