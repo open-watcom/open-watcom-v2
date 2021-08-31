@@ -227,7 +227,7 @@ bool LostFileCheck( void )
     off = strlen( path ) - 5;
     for( ch = START_CHAR; ch <= END_CHAR; ch++ ) {
         path[off] = ch;
-        handle = sopen3( path, O_RDONLY | O_TEXT, SH_DENYRW );
+        handle = _sopen3( path, O_RDONLY | O_TEXT, SH_DENYRW );
         if( handle < 0 )
             continue;
         MakeTmpPath( path, checkFileName );
@@ -338,7 +338,7 @@ void AutoSaveInit( void )
         for( ch = START_CHAR; ch <= END_CHAR; ch++ ) {
             as_path[off] = (char)ch;
             asl_path[off] = (char)ch;
-            handle = sopen3( as_path, O_RDONLY | O_TEXT, SH_DENYRW );
+            handle = _sopen3( as_path, O_RDONLY | O_TEXT, SH_DENYRW );
             if( handle < 0 )
                 continue;
             fp = fdopen( handle, "r" );
@@ -378,7 +378,7 @@ void AutoSaveInit( void )
     off = len + CHAR_OFF;
     for( ch = START_CHAR; ch <= END_CHAR; ch++ ) {
         path[off] = (char)ch;
-        lockFileHandle = sopen4( path, O_CREAT | O_TRUNC | O_RDWR | O_TEXT, SH_DENYRW, PMODE_RW );
+        lockFileHandle = _sopen4( path, O_CREAT | O_TRUNC | O_RDWR | O_TEXT, SH_DENYRW, PMODE_RW );
         if( lockFileHandle >= 0 ) {
             break;
         }

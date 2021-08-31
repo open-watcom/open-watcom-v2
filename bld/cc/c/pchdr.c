@@ -184,7 +184,7 @@ static void InitPHVars( void )
 
 static void CreatePHeader( const char *filename )
 {
-    PH_handle = sopen4( filename, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, SH_DENYRW, PMODE_RW );
+    PH_handle = _sopen4( filename, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, SH_DENYRW, PMODE_RW );
     if( PH_handle == -1 ) {
         longjmp( PH_jmpbuf, 1 );
     }
@@ -1754,7 +1754,7 @@ bool UsePreCompiledHeader( const char *filename )
     char                *p;
     pheader             pch;
 
-    handle = sopen3( PCH_FileName, O_RDONLY | O_BINARY, SH_DENYWR );
+    handle = _sopen3( PCH_FileName, O_RDONLY | O_BINARY, SH_DENYWR );
     if( handle == -1 ) {
         CompFlags.make_precompiled_header = true;
         return( false );

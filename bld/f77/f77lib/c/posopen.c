@@ -158,14 +158,14 @@ b_file  *Openf( const char *f, f_attrs attrs )
     if( attrs & WRONLY ) {
         attrs |= WRITE_ONLY;
         if( attrs & APPEND ) {
-            retc = sopen4( f, O_WRONLY | O_BINARY | O_CREAT, share, PMODE_RW );
+            retc = _sopen4( f, O_WRONLY | O_BINARY | O_CREAT, share, PMODE_RW );
         } else {
-            retc = sopen4( f, O_WRONLY | O_BINARY | O_CREAT | O_TRUNC, share, PMODE_RW );
+            retc = _sopen4( f, O_WRONLY | O_BINARY | O_CREAT | O_TRUNC, share, PMODE_RW );
         }
     } else if( attrs & RDONLY ) {
-        retc = sopen3( f, O_RDONLY | O_BINARY, share );
+        retc = _sopen3( f, O_RDONLY | O_BINARY, share );
     } else { // if( attrs & RDWR ) {
-        retc = sopen4( f, O_RDWR | O_BINARY | O_CREAT, share, PMODE_RW );
+        retc = _sopen4( f, O_RDWR | O_BINARY | O_CREAT, share, PMODE_RW );
     }
     if( retc < 0 ) {
         FSetSysErr( NULL );

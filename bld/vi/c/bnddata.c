@@ -59,7 +59,7 @@ void BoundDataInit( void )
     /*
      * get trailer
      */
-    h = sopen3( EXEName, O_RDONLY | O_BINARY, SH_COMPAT );
+    h = _sopen3( EXEName, O_RDONLY | O_BINARY, SH_COMPAT );
     if( h == -1 ) {
         return;
     }
@@ -152,7 +152,7 @@ bool SpecialOpen( const char *fn, GENERIC_FILE *gf, bool bounddata )
             EditFlags.BndMemoryLocked = true;
 
             if( BndMemory == NULL ) {
-                h = sopen3( EXEName, O_RDONLY | O_BINARY, SH_COMPAT );
+                h = _sopen3( EXEName, O_RDONLY | O_BINARY, SH_COMPAT );
                 if( h == -1 ) {
                     return( false );
                 }
