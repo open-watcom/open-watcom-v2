@@ -127,15 +127,22 @@ strcc_        _stricmp          strcasecmp        d16 d32 nt  nta ntp nvc     nv
 strcmp        _stricmp          strcmpi           d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 strdup        strdup            _strdup           d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
 stricm        _stricmp          stricmp           d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
+stric0        stricmp           _stricmp                                  ncl     nll
 strico        _stricmp          _stricoll         d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
 strlwr        _strlwr           strlwr            d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
+strlw0        strlwr            _strlwr                                   ncl     nll
 strncc        _strnicmp         strncasecmp       d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 strnco        strncmp           _strncoll         d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
 strnic        _strnicmp         strnicmp          d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
+strni0        strnicmp          _strnicmp                                 ncl     nll
 strnse        _strnset          strnset           d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
+strns0        strnset           _strnset                                  ncl     nll
 strrev        _strrev           strrev            d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
+strre0        strrev            _strrev                                   ncl     nll
 strset        _strset           strset            d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
+strse0        strset            _strset                                   ncl     nll
 strupr        _strupr           strupr            d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
+strup0        strupr            _strupr                                   ncl     nll
 stti64        strtoll           _strtoi64         d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
 sttu64        strtoull          _strtoui64        d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
 tccmp_        _mbccmp           _tccmp            d16 d32 nt  nta ntp                 o16 o32 q16 q32 w16 w32 l32         rdu rdk
