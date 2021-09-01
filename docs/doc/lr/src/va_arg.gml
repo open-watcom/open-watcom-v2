@@ -9,9 +9,9 @@ type va_arg( va_list param, type );
 is a macro that can be used to obtain the next argument in a
 list of variable arguments.
 It must be used with the associated macros
-.kw va_start
+.reffunc va_start
 and
-.kw va_end
+.reffunc va_end
 .period
 A sequence such as
 .millust begin
@@ -38,11 +38,11 @@ in the example) is the type of the argument originally passed
 to the function.
 .np
 The macro
-.kw va_start
+.reffunc va_start
 must be executed first in order to properly initialize the variable
 .id curr_arg
 and the macro
-.kw va_end
+.reffunc va_end
 should be executed after all arguments have been obtained.
 .np
 The data item

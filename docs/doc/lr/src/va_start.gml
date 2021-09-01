@@ -11,7 +11,7 @@ from a list of variable arguments.
 The
 .arg param
 argument is used by the
-.kw va_arg
+.reffunc va_arg
 macro to locate the current acquired argument.
 The
 .arg previous
@@ -19,12 +19,12 @@ argument is the argument that immediately precedes the
 .id "..."
 notation in the original function definition.
 It must be used with the associated macros
-.kw va_arg
+.reffunc va_arg
 and
-.kw va_end
+.reffunc va_end
 .period
 See the description of
-.kw va_arg
+.reffunc va_arg
 for complete documentation on these macros.
 .desc end
 .return begin

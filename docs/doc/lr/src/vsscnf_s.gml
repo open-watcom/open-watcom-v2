@@ -43,13 +43,13 @@ function is equivalent to
 .ct , with the variable argument list replaced by
 .arg arg
 .ct , which shall have been initialized by the
-.kw va_start
+.reffunc va_start
 macro (and possibly subsequent
-.kw va_arg
+.reffunc va_arg
 calls). The
 .id &funcb.
 function does not invoke the
-.kw va_end
+.reffunc va_end
 macro.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
