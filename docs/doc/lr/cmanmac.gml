@@ -111,7 +111,7 @@ $$
 .el .do begin
 .   .funcref &'strip(&*1.,'T',',')
 .   .sr *top='&'translate(&frefid.,`&trto.`,`&trfrom.`)'
-:ZH2 &*attrs..&*
+:ZH2 ctx='&*top.'.&*
 .   .pu 1 .ixsect &*
 .   .pu 1 .ixsectid &*top.
 .   .sr *attrs='*ctx='&*top.''
