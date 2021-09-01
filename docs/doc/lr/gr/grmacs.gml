@@ -27,7 +27,7 @@
 .*
 .dm gfunc begin
 .gfuncinit
-.topsect &*
+.ftopsect &*
 :set symbol="functiong" value="&*".
 :set symbol="funcb" value="&*".
 :set symbol="headtxt0$" value="&*".
@@ -39,7 +39,7 @@
 .*
 .dm gfuncw begin
 .gfuncinit
-.topsect &*, &*._w
+.ftopsect &*, &*._w
 :set symbol="functiong" value="&*".
 :set symbol="funcb" value="&*".
 :set symbol="func2" value="&*._w".
@@ -54,7 +54,7 @@
 .*
 .dm gfuncwxy begin
 .gfuncinit
-.topsect &*, &*._w, &*._wxy
+.ftopsect &*, &*._w, &*._wxy
 :set symbol="functiong" value="&*".
 :set symbol="funcb" value="&*".
 :set symbol="func2" value="&*._w".
@@ -72,7 +72,7 @@
 .*
 .dm gfuncms begin
 .gfuncinit
-.topsect &*, &*.ms
+.ftopsect &*, &*.ms
 :set symbol="functiong" value="&*".
 :set symbol="funcb" value="&*".
 :set symbol="func1" value="&*.ms".
