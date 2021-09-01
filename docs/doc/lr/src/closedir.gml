@@ -20,9 +20,9 @@ and frees the memory allocated by
 .if '&machsys' eq 'QNX' .do begin
 .np
 The result of using a directory stream after one of the
-.kw exec&grpsfx
+.reffunc exec&grpsfx
 or
-.kw spawn&grpsfx
+.reffunc spawn&grpsfx
 family of functions is undefined.
 After a call to the
 .reffunc fork

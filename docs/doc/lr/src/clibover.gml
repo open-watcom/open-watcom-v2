@@ -1236,9 +1236,9 @@ It may be less in a machine with insufficient memory or when other
 programs in the computer already occupy some of the memory.
 .do end
 The
-.kw _nmalloc
+.reffunc _nmalloc
 function allocates space within this area while the
-.kw _fmalloc
+.reffunc _fmalloc
 function allocates space outside the area (if it is available).
 .np
 In a small data model, the
@@ -1248,13 +1248,13 @@ In a small data model, the
 and
 .reffunc realloc
 functions use the
-.kw _nmalloc
+.reffunc _nmalloc
 function to acquire memory; in a large data model, the
-.kw _fmalloc
+.reffunc _fmalloc
 function is used.
 .np
 It is also possible to allocate memory from a based heap using
-.kw _bmalloc
+.reffunc _bmalloc
 .period
 Based heaps are similar to far heaps in that they are located
 outside the normal data segment.
@@ -1267,45 +1267,45 @@ heap functions.
 It is important to use the appropriate memory-deallocation function to
 free memory blocks.
 The
-.kw _nfree
+.reffunc _nfree
 function should be used to free space acquired by the
-.kw _ncalloc
+.reffunc _ncalloc
 .ct ,
-.kw _nmalloc
+.reffunc _nmalloc
 .ct , or
-.kw _nrealloc
+.reffunc _nrealloc
 functions.
 The
-.kw _ffree
+.reffunc _ffree
 function should be used to free space acquired by the
-.kw _fcalloc
+.reffunc _fcalloc
 .ct ,
-.kw _fmalloc
+.reffunc _fmalloc
 .ct , or
-.kw _frealloc
+.reffunc _frealloc
 functions.
 The
-.kw _bfree
+.reffunc _bfree
 function should be used to free space acquired by the
-.kw _bcalloc
+.reffunc _bcalloc
 .ct ,
-.kw _bmalloc
+.reffunc _bmalloc
 .ct , or
-.kw _brealloc
+.reffunc _brealloc
 functions.
 .np
 The
 .reffunc free
 function will use the
-.kw _nfree
+.reffunc _nfree
 function when the small data memory model is used; it will use the
-.kw _ffree
+.reffunc _ffree
 function when the large data memory model is being used.
 .np
 It should be noted that the
-.kw _fmalloc
+.reffunc _fmalloc
 and
-.kw _nmalloc
+.reffunc _nmalloc
 functions can both be used in either data memory model.
 .fdbeg
 .fd alloca
@@ -1981,11 +1981,11 @@ When a new process is started, it may replace the existing process
 .bull
 .kw P_OVERLAY
 is specified with the
-.kw spawn&grpsfx
+.reffunc spawn&grpsfx
 functions
 .bull
 the
-.kw exec&grpsfx
+.reffunc exec&grpsfx
 routines are invoked
 .endbull
 .pc
@@ -1996,10 +1996,10 @@ new process was started)
 .bull
 .kw P_WAIT
 is specified with the
-.kw spawn&grpsfx
+.reffunc spawn&grpsfx
 functions
 .bull
-.kw system
+.reffunc system
 is used
 .endbull
 .np
@@ -2165,9 +2165,9 @@ execute system command
 .fdend
 .np
 There are eight
-.kw spawn&grpsfx
+.reffunc spawn&grpsfx
 and
-.kw exec&grpsfx
+.reffunc exec&grpsfx
 functions each.
 The
 .mono "&grpsfx"
@@ -3587,7 +3587,7 @@ function:
 .millust end
 .np
 The
-.kw tzset
+.reffunc tzset
 function processes the
 .kw TZ
 environment variable and sets the global variables
@@ -3736,7 +3736,7 @@ or
 is called, the time zone names contained in the external variable
 .kw tzname
 will be set as if the
-.kw tzset
+.reffunc tzset
 function had been called.
 The same is true if the
 .mono %Z

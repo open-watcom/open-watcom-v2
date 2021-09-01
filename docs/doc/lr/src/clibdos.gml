@@ -260,7 +260,7 @@ function.
 DOS commands are documented in the technical documentation for your
 DOS system.
 These may be invoked from a C or C++ program with the
-.kw system
+.reffunc system
 function.
 .*
 .section DOS Interrupts
@@ -296,16 +296,16 @@ functions.
 Currently, DOS has the capability to execute only one process at a
 time.
 Thus, when a process is initiated with the
-.kw spawn&grpsfx
+.reffunc spawn&grpsfx
 parameter
 .kw P_WAIT
 .ct , the new process will execute to completion before control returns to
 the initiating program.
 Otherwise, the new task replaces the initial task.
 Tasks can be started by using the
-.kw system
+.reffunc system
 .ct ,
-.kw exec&grpsfx
+.reffunc exec&grpsfx
 and
-.kw spawn&grpsfx
+.reffunc spawn&grpsfx
 functions.

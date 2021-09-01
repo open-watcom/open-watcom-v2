@@ -74,9 +74,9 @@ shell scripts.
 batch files.
 .do end
 The
-.kw exec&grpsfx
+.reffunc exec&grpsfx
 and
-.kw spawn&grpsfx
+.reffunc spawn&grpsfx
 functions can only cause programs to be executed.
 .widefunc &wfunc. &funcb.
 .desc end

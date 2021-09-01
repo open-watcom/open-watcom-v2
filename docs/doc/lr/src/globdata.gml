@@ -37,7 +37,7 @@ This
 has a value of one when daylight saving time is supported in this
 locale and zero otherwise.
 Whenever a time function is called, the
-.kw tzset
+.reffunc tzset
 function is called to set the value of the variable.
 The value will be determined from the value of the
 .mono TZ
@@ -409,7 +409,7 @@ contains the number of seconds of time that the local time zone is
 earlier than Coordinated Universal Time (UTC) (formerly known as
 Greenwich Mean Time (GMT)).
 Whenever a time function is called, the
-.kw tzset
+.reffunc tzset
 function is called to set the value of the variable.
 The value will be determined from the value of the
 .mono TZ
@@ -420,7 +420,7 @@ This array of two pointers to character strings indicates the name of
 the standard abbreviation for the time zone and the name of the
 abbreviation for the time zone when daylight saving time is in effect.
 Whenever a time function is called, the
-.kw tzset
+.reffunc tzset
 function is called to set the values in the array.
 These values will be determined from the value of the
 .mono TZ

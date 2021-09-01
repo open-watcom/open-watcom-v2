@@ -63,9 +63,9 @@ function and can be freed using the
 .reffunc free
 function.
 For &ffunc, the memory for the new string is obtained by using the
-.kw _fmalloc
+.reffunc _fmalloc
 function and can be freed using the
-.kw _ffree
+.reffunc _ffree
 function.
 .do end
 .im ansiconf

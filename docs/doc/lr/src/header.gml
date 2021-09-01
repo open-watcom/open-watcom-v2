@@ -328,11 +328,11 @@ in-line generation of code that operates on multimedia registers.
 .df process.h
 .ix '&Process'
 This header file declares the
-.kw spawn&grpsfx
+.reffunc spawn&grpsfx
 functions, the
-.kw exec&grpsfx
+.reffunc exec&grpsfx
 functions, and the
-.kw system
+.reffunc system
 function. The file also contains declarations for the constants
 .kw P_WAIT
 .ct ,

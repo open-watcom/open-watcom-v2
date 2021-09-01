@@ -13,7 +13,7 @@ structure pointed to by
 .arg timeptr
 into a calendar time (Coordinated Universal Time) with the same
 encoding used by the
-.kw time
+.reffunc time
 function.
 The original values of the fields
 .kw tm_sec
@@ -46,7 +46,7 @@ in effect".
 Whenever
 .id &funcb.
 is called, the
-.kw tzset
+.reffunc tzset
 function is also called.
 .desc end
 .return begin

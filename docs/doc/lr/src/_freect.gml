@@ -8,7 +8,7 @@ unsigned int _freect( size_t size );
 The
 .id &funcb.
 function returns the number of times that
-.kw _nmalloc
+.reffunc _nmalloc
 (or
 .reffunc malloc
 in small data models)

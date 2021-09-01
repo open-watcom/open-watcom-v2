@@ -116,12 +116,12 @@ Near heap (inside the default data segment)
 In a large data memory model, the
 .id &funcb.
 function is equivalent to the
-.kw _ffree
+.reffunc _ffree
 function; in a small data memory model, the
 .id &funcb.
 function is
 equivalent to the
-.kw _nfree
+.reffunc _nfree
 function.
 .desc end
 .return begin

@@ -97,12 +97,12 @@ Near heap (inside the default data segment)
 In a small data memory model, the
 .id &funcb.
 function is equivalent to the
-.kw _nmalloc
+.reffunc _nmalloc
 function; in a large data memory model, the
 .id &funcb.
 function is
 equivalent to the
-.kw _fmalloc
+.reffunc _fmalloc
 function.
 .desc end
 .return begin
@@ -112,15 +112,15 @@ functions return a pointer to the start of the allocated
 memory.
 The &funcb
 .ct ,
-.kw _fmalloc
+.reffunc _fmalloc
 and
-.kw _nmalloc
+.reffunc _nmalloc
 functions return
 .mono NULL
 if there is insufficient memory available or if the requested size is
 zero.
 The
-.kw _bmalloc
+.reffunc _bmalloc
 function returns
 .kw _NULLOFF
 if there is insufficient memory available or if the requested size is

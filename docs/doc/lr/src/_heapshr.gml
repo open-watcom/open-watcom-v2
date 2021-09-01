@@ -26,9 +26,9 @@ functions attempt to shrink the heap to its smallest
 possible size by returning all free entries at the end of the heap
 back to the system.
 This can be used to free up as much memory as possible before using the
-.kw system
+.reffunc system
 function or one of the
-.kw spawn&grpsfx
+.reffunc spawn&grpsfx
 functions.
 .np
 The various

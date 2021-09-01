@@ -566,12 +566,12 @@ Such modifications last only until the program terminates.
 .section The system Function
 .bigterm
 The contents and mode of execution of the string by the
-.kw system
+.reffunc system
 function (7.10.4.5).
 .bigdesc
 .np
 The
-.kw system
+.reffunc system
 function
 .if '&machsys' eq 'QNX' .do begin
 always executes an executable binary or a shell file, using
@@ -582,7 +582,7 @@ executes an internal DOS, Windows, or OS/2 command, or an EXE, COM,
 BAT or CMD file from within a C program rather than from the command
 line.
 The
-.kw system
+.reffunc system
 function
 examines the
 .kw COMSPEC

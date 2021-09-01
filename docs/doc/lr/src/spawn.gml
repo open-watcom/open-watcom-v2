@@ -150,7 +150,7 @@ This option is supported under DOS (16-bit only), OS/2, Win32, and
 QNX.
 .do end
 This is equivalent to calling the appropriate
-.kw exec&grpsfx
+.reffunc exec&grpsfx
 function.
 .term P_DETACH
 Launches the child process in the background without access to the keyboard or

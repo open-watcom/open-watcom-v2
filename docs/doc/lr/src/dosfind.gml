@@ -60,7 +60,7 @@ struct _wfind_t {
 .synop end
 .desc begin
 The
-.kw _dos_findfirst
+.reffunc _dos_findfirst
 function uses system call 0x4E to return information on the first file
 whose name and attributes match the
 .arg path
@@ -136,17 +136,17 @@ typedef struct {
 .blkcode end
 .np
 The
-.kw _dos_findnext
+.reffunc _dos_findnext
 function uses system call 0x4F to return information on the next file
 whose name and attributes match the pattern supplied to the
-.kw _dos_findfirst
+.reffunc _dos_findfirst
 function.
 .np
 On some systems (e.g. Win32, OS/2), you must call
-.kw _dos_findclose
+.reffunc _dos_findclose
 to indicate that you are done matching files.
 This function deallocates any resources that were allocated by the
-.kw _dos_findfirst
+.reffunc _dos_findfirst
 function.
 .*==========================================
 .im widefun5
@@ -154,12 +154,12 @@ function.
 .desc end
 .return begin
 The
-.kw _dos_find&grpsfx
+.reffunc _dos_find&grpsfx
 functions return zero if successful.
 Otherwise, the
-.kw _dos_findfirst
+.reffunc _dos_findfirst
 and
-.kw _dos_findnext
+.reffunc _dos_findnext
 functions return an OS error code and set
 .kw errno
 accordingly.

@@ -22,12 +22,12 @@ function attempts to grow the near heap to the maximum size of 64K.
 You will want to do this in the small data models if you are using both
 .reffunc malloc
 and
-.kw _fmalloc
+.reffunc _fmalloc
 or
 .kw halloc
 .period
 Once a call to
-.kw _fmalloc
+.reffunc _fmalloc
 or
 .kw halloc
 has been made, you may not be able to allocate any memory with

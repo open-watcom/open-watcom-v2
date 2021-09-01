@@ -60,13 +60,13 @@ maps to
 :cmt. The
 :cmt. .kw _nmsize
 :cmt. function returns the size of the memory block allocated by a call to
-:cmt. .kw _nmalloc
+:cmt. .reffunc _nmalloc
 :cmt. .period
 :cmt. .pp
 :cmt. The
 :cmt. .kw _fmsize
 :cmt. function returns the size of the memory block allocated by a call to
-:cmt. .kw _fmalloc
+:cmt. .reffunc _fmalloc
 :cmt. .period
 .desc end
 .return begin

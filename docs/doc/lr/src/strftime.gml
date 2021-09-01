@@ -145,7 +145,7 @@ When the
 or
 .mono %z
 directive is specified, the
-.kw tzset
+.reffunc tzset
 function is called.
 .np
 % g, %G, %V give values according to the ISO 8601 week-based year. In this

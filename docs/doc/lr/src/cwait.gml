@@ -24,7 +24,7 @@ Under Win32, any process can wait for any other process for which the
 process ID is known.
 Under OS/2, a process can wait for any of its child processes.
 For example, a process ID is returned by certain forms of the
-.kw spawn&grpsfx
+.reffunc spawn&grpsfx
 functions that is used to start a child process.
 .np
 The

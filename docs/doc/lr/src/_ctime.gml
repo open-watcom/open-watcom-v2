@@ -34,11 +34,11 @@ The string is placed in the buffer pointed to by
 Whenever
 .id &funcb.
 is called, the
-.kw tzset
+.reffunc tzset
 function is also called.
 .pp
 The calendar time is usually obtained by using the
-.kw time
+.reffunc time
 function.
 That time is Coordinated Universal Time (UTC) (formerly known as
 Greenwich Mean Time (GMT)).

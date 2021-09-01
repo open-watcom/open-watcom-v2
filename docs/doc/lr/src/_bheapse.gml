@@ -16,13 +16,13 @@ The argument
 indicates the initial size for the heap.
 The heap will automatically be enlarged as needed if there is not enough
 space available within the heap to satisfy an allocation request by
-.kw _bcalloc
+.reffunc _bcalloc
 .ct ,
 .kw _bexpand
 .ct ,
-.kw _bmalloc
+.reffunc _bmalloc
 .ct , or
-.kw _brealloc
+.reffunc _brealloc
 .period
 .np
 The value returned by
