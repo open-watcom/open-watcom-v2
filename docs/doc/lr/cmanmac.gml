@@ -110,7 +110,7 @@ $$
 .do end
 .el .do begin
 .   .funcref &'strip(&*1.,'T',',')
-.   .ser *top='&'translate(&frefid.,`&trto.`,`&trfrom.`)'
+.   .sr *top='&'translate(&frefid.,`&trto.`,`&trfrom.`)'
 :ZH2 &*attrs..&*
 .   .pu 1 .ixsect &*
 .   .pu 1 .ixsectid &*top.
