@@ -732,6 +732,14 @@ static char *skip_nonblanks( char *ptr )
     return( ptr );
 }
 
+static char *skip_underscores( char *ptr )
+/****************************************/
+{
+    while( *ptr == '_' )
+        ptr++;
+    return( ptr );
+}
+
 static void trim_blanks( char *ptr )
 /**********************************/
 {
@@ -1203,6 +1211,7 @@ static char *skip_prep( char *str )
     char                        *next;
 
     start = skip_blanks( str );
+    start = skip_underscores( start );
     end = skip_nonblanks( start );
     /* now 'end' points to the terminating char after the first word */
     if( start == end ) {
