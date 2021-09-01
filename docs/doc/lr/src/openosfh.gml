@@ -11,7 +11,7 @@ point to the operating system's internal file handle specified by
 .arg osfhandle
 .period
 The value returned by
-.kw _get_osfhandle
+.reffunc _get_osfhandle
 can be used as an argument to the
 .id &funcb.
 function.
@@ -22,7 +22,7 @@ When two or more manifest constants are used to form the
 argument, the constants are combined with the bitwise-OR operator (|).
 .np
 The example below demonstrates the use of the
-.kw _get_osfhandle
+.reffunc _get_osfhandle
 and
 .id &funcb.
 functions.

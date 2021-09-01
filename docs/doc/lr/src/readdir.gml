@@ -19,18 +19,18 @@ name from the argument
 The argument
 .arg dirp
 is the value returned from the
-.kw opendir
+.reffunc opendir
 function.
 The
 .id &funcb.
 function can be called repeatedly to obtain the list of file
 names contained in the directory specified by the pathname given to
-.kw opendir
+.reffunc opendir
 .period
 The function
-.kw closedir
+.reffunc closedir
 must be called to close the directory and free the memory allocated by
-.kw opendir
+.reffunc opendir
 .period
 .im dirent
 .if '&machsys' eq 'QNX' .do begin
@@ -44,14 +44,14 @@ After a call to the
 .reffunc fork
 function, either the parent or the child (but not both) may continue
 processing the directory stream using
-.kw readdir
+.reffunc readdir
 or
-.kw rewinddir
+.reffunc rewinddir
 or both.
 If both the parent and child processes use these functions, the result
 is undefined.
 Either or both processes may use
-.kw closedir
+.reffunc closedir
 .period
 .do end
 .if &'length(&wfunc.) ne 0 .do begin

@@ -19,7 +19,7 @@ To speed up applications which often want both the name and the stat
 data, a resource manager may return the
 .kw stat
 information at the same time the
-.kw readdir
+.reffunc readdir
 function is called.
 .np
 However, since the support of this feature is left to the discretion
@@ -32,7 +32,7 @@ d_stat.st_status & _FILE_USED
 .millust end
 .pc
 This test must be performed after every
-.kw readdir
+.reffunc readdir
 call.
 .np
 If the

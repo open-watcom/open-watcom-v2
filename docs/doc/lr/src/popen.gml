@@ -46,7 +46,7 @@ process using the stream pointer returned by
 A stream opened by
 .id &funcb.
 should be closed by the
-.kw pclose
+.reffunc pclose
 function.
 .desc end
 .return begin

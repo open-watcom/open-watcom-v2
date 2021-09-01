@@ -9,7 +9,7 @@ The
 function closes the pipe associated with
 .arg fp
 and waits for the subprocess created by
-.kw popen
+.reffunc popen
 to terminate.
 .desc end
 .return begin

@@ -19,7 +19,7 @@ which
 refers to the beginning of the directory.
 It also causes the directory stream to refer to the current state
 of the corresponding directory, as a call to
-.kw opendir
+.reffunc opendir
 would have done.
 .if '&machsys' eq 'QNX' .do begin
 .np
@@ -32,14 +32,14 @@ After a call to the
 .reffunc fork
 function, either the parent or the child (but not both) may continue
 processing the directory stream using
-.kw readdir
+.reffunc readdir
 or
-.kw rewinddir
+.reffunc rewinddir
 or both.
 If both the parent and child processes use these functions, the result
 is undefined.
 Either or both processes may use
-.kw closedir
+.reffunc closedir
 .period
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
@@ -50,7 +50,7 @@ function is identical to
 .id &funcb.
 except that it rewinds a
 directory of wide character filenames opened by
-.kw _wopendir
+.reffunc _wopendir
 .period
 .do end
 .desc end

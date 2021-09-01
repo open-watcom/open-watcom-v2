@@ -13,9 +13,9 @@ WDIR *_wopendir( const wchar_t *dirname );
 The
 .id &funcb.
 function is used in conjunction with the functions
-.kw readdir
+.reffunc readdir
 and
-.kw closedir
+.reffunc closedir
 to obtain the list of file names contained in the directory specified by
 .arg dirname
 .period
@@ -32,15 +32,15 @@ within a directory.
 .im dirent
 .np
 More than one directory can be read at the same time using the
-.kw opendir
+.reffunc opendir
 .ct ,
-.kw readdir
+.reffunc readdir
 .ct ,
 .if '&machsys' eq 'QNX' .do begin
-.kw rewinddir
+.reffunc rewinddir
 .do end
 and
-.kw closedir
+.reffunc closedir
 functions.
 .if '&machsys' eq 'QNX' .do begin
 .np
@@ -53,14 +53,14 @@ After a call to the
 .reffunc fork
 function, either the parent or the child (but not both) may continue
 processing the directory stream using
-.kw readdir
+.reffunc readdir
 or
-.kw rewinddir
+.reffunc rewinddir
 or both.
 If both the parent and child processes use these functions, the result
 is undefined.
 Either or both processes may use
-.kw closedir
+.reffunc closedir
 .period
 .do end
 .if &'length(&wfunc.) ne 0 .do begin
@@ -73,13 +73,13 @@ except that it accepts a
 wide character string argument and returns a pointer to a
 .kw _wdirent
 structure that can be used with the
-.kw _wreaddir
+.reffunc _wreaddir
 .if '&machsys' eq 'QNX' .do begin
 .ct ,
-.kw _wrewinddir
+.reffunc _wrewinddir
 .do end
 and
-.kw _wclosedir
+.reffunc _wclosedir
 functions.
 .im _wdirent
 .do end
@@ -89,7 +89,7 @@ The
 .id &funcb.
 function, if successful, returns a pointer to a structure
 required for subsequent calls to
-.kw readdir
+.reffunc readdir
 to retrieve the file names
 .if '&machsys' ne 'QNX' .do begin
 matching the pattern
