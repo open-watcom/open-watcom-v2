@@ -19,7 +19,7 @@ A block of memory allocated using the
 .id &funcb.
 function should be freed
 using the
-.kw free
+.reffunc free
 function.
 .desc end
 .return begin
@@ -110,7 +110,7 @@ function.
 .np
 A block of memory allocated should be freed
 using the appropriate
-.kw free
+.reffunc free
 function.
 .desc end
 .return begin

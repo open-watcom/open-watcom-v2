@@ -22,14 +22,14 @@ and the data to be transmitted is located at the address specified by
 The
 .arg &fd
 value is returned by the
-.kw open
+.reffunc open
 function.
 The access mode must have included either
 .kw O_WRONLY
 or
 .kw O_RDWR
 when the
-.kw open
+.reffunc open
 function was invoked.
 .np
 The data is written to the file at the end when the file was opened with

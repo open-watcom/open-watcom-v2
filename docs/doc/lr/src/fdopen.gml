@@ -20,24 +20,24 @@ function associates a stream with the file &handle
 .arg &fd
 which represents an opened file or device.
 The &handle was returned by one of
-.kw creat
+.reffunc creat
 .ct ,
-.kw dup
+.reffunc dup
 .ct ,
-.kw dup2
+.reffunc dup2
 .ct ,
 .if '&machsys' eq 'QNX' .do begin
-.kw fcntl
+.reffunc fcntl
 .ct ,
 .do end
-.kw open
+.reffunc open
 .ct ,
 .if '&machsys' eq 'QNX' .do begin
-.kw pipe
+.reffunc pipe
 .ct ,
 .do end
 or
-.kw _sopen
+.reffunc _sopen
 .period
 The open mode
 .arg mode

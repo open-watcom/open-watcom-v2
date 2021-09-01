@@ -27,7 +27,7 @@ and
 .id &funcb.
 functions.
 Note that the example shows how the
-.kw dup2
+.reffunc dup2
 function can be used to obtain almost identical functionality.
 .np
 When the POSIX-level file handles associated with one OS file handle
@@ -35,7 +35,7 @@ are closed, the first one closes successfully but the others return
 an error (since the first call close the file and released the OS file
 handle).
 So it is important to call
-.kw close
+.reffunc close
 at the right time, i.e., after all I/O operations are completed to the
 file.
 .desc end

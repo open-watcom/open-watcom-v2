@@ -1,8 +1,8 @@
 When the argument is outside the permissible range, the
-.kw matherr
+.reffunc matherr
 function is called.
 Unless the default
-.kw matherr
+.reffunc matherr
 function is replaced, it will set the global variable
 .kw errno
 to

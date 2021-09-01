@@ -88,7 +88,7 @@ Note that the
 .id &funcb.
 function call ignores advisory locks which may
 have been set by the
-.kw fcntl
+.reffunc fcntl
 .ct ,
 .kw lock
 .ct , or

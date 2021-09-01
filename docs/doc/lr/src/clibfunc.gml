@@ -495,11 +495,11 @@ function generates the following messages.
 .section Allocating Zero Memory
 .bigterm
 The behavior of the
-.kw calloc
+.reffunc calloc
 .ct ,
-.kw malloc
+.reffunc malloc
 .ct , or
-.kw realloc
+.reffunc realloc
 function if the size requested is zero (7.10.3).
 .bigdesc
 .np
@@ -523,7 +523,7 @@ does it flush any output buffers.
 .section The atexit Function
 .bigterm
 The status returned by the
-.kw exit
+.reffunc exit
 function if the value of the argument is other than zero,
 .kw EXIT_SUCCESS
 .ct , or
@@ -532,7 +532,7 @@ function if the value of the argument is other than zero,
 .bigdesc
 .np
 The
-.kw exit
+.reffunc exit
 function returns the value of its argument to the operating system
 regardless of its value.
 .*-------------------------

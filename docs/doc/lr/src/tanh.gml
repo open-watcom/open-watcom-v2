@@ -17,7 +17,7 @@ When the
 .arg x
 argument is large, partial or total loss of significance may occur.
 The
-.kw matherr
+.reffunc matherr
 function will be invoked in this case.
 .desc end
 .return begin

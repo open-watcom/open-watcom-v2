@@ -21,11 +21,11 @@ The
 functions return the size of the memory block pointed to by
 .arg buffer
 that was allocated by a call to the appropriate version of the
-.kw calloc
+.reffunc calloc
 .ct ,
-.kw malloc
+.reffunc malloc
 .ct , or
-.kw realloc
+.reffunc realloc
 functions.
 .np
 You must use the correct

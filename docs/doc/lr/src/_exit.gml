@@ -14,9 +14,9 @@ function causes normal program termination to occur.
 .autonote
 .note
 The functions registered by the
-.kw atexit
+.reffunc atexit
 or
-.kw onexit
+.reffunc onexit
 functions are not called.
 .if '&machsys' eq 'QNX' .do begin
 .note
@@ -24,25 +24,25 @@ All open file descriptors and directory streams in the calling process
 are closed.
 .note
 If the parent process of the calling process is executing a
-.kw wait
+.reffunc wait
 or
-.kw waitpid
+.reffunc waitpid
 .ct , it is notified of the calling process's termination and the low order
 8 bits of
 .arg status
 are made available to it.
 .note
 If the parent process of the calling process is not executing a
-.kw wait
+.reffunc wait
 or
-.kw waitpid
+.reffunc waitpid
 function, the exit
 .arg status
 code is saved for return to the parent process whenever the parent
 process executes an appropriate subsequent
-.kw wait
+.reffunc wait
 or
-.kw waitpid
+.reffunc waitpid
 .period
 .note
 Termination of a process does not directly terminate its children.

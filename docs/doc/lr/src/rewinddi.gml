@@ -29,7 +29,7 @@ or
 .kw spawn&grpsfx
 family of functions is undefined.
 After a call to the
-.kw fork
+.reffunc fork
 function, either the parent or the child (but not both) may continue
 processing the directory stream using
 .kw readdir

@@ -93,7 +93,7 @@ In this case, you will not be able to return an exit code from &funcb
 using a
 .kw return
 statement but must use the
-.kw exit
+.reffunc exit
 function to do so.
 .if &'length(&wfunc.) ne 0 .do begin
 .np

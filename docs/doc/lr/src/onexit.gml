@@ -24,7 +24,7 @@ NOTE: The
 .id &funcb.
 function is not an ISO C function.
 The ISO C standard function
-.kw atexit
+.reffunc atexit
 does the same thing that
 .id &funcb.
 does and should be used instead of &funcb

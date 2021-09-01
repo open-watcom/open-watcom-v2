@@ -43,10 +43,10 @@ When
 has a value of
 .mono NULL,
 a string is allocated using
-.kw malloc
+.reffunc malloc
 to contain the name of the current working directory.
 This string may be freed using the
-.kw free
+.reffunc free
 function.
 .widefunc &wfunc. &funcb.
 .if &'length(&wfunc.) ne 0 .do begin

@@ -43,10 +43,10 @@ is
 then a buffer of size
 .kw _MAX_PATH
 is allocated using
-.kw malloc
+.reffunc malloc
 .period
 This buffer may be freed using the
-.kw free
+.reffunc free
 function.
 .np
 If

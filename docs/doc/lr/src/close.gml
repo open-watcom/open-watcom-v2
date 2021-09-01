@@ -17,28 +17,28 @@ The
 value is the file &handle returned by a successful execution of one of
 the
 .if '&machsys' eq 'QNX' .do begin
-.kw creat
+.reffunc creat
 .ct ,
-.kw dup
+.reffunc dup
 .ct ,
-.kw dup2
+.reffunc dup2
 .ct ,
-.kw fcntl
+.reffunc fcntl
 .ct ,
-.kw open
+.reffunc open
 or
-.kw _sopen
+.reffunc _sopen
 .do end
 .el .do begin
-.kw creat
+.reffunc creat
 .ct ,
-.kw dup
+.reffunc dup
 .ct ,
-.kw dup2
+.reffunc dup2
 .ct ,
-.kw open
+.reffunc open
 or
-.kw _sopen
+.reffunc _sopen
 .do end
 functions.
 .im ansiconf

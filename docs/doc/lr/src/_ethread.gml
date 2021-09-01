@@ -13,7 +13,7 @@ void _endthreadex( unsigned retval );
 The
 .id &funcb.
 function is used to terminate a thread created by
-.kw _beginthread
+.reffunc _beginthread
 .period
 For each operating environment under which
 .id &funcb.
@@ -24,9 +24,9 @@ function uses the appropriate system call to end the current
 thread of execution.
 .np
 The
-.kw _endthreadex
+.reffunc _endthreadex
 function is used to terminate a thread created by
-.kw _beginthreadex
+.reffunc _beginthreadex
 .period
 The thread exit code
 .arg retval

@@ -131,12 +131,12 @@ This option is supported under OS/2, Win32 and QNX.
 .do end
 .if '&machsys' eq 'QNX' .do begin
 The
-.kw wait
+.reffunc wait
 function cannot be used to obtain the exit code.
 .do end
 .el .do begin
 The
-.kw wait
+.reffunc wait
 and
 .kw cwait
 functions cannot be used to obtain the exit code.
@@ -337,7 +337,7 @@ under Win32) of the child process.
 To obtain the exit code for a process spawned with
 .kw P_NOWAIT
 .ct , you must call the
-.kw wait
+.reffunc wait
 (under OS/2 or QNX)
 .if '&machsys' ne 'QNX' .do begin
 or

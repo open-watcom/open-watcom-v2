@@ -19,7 +19,7 @@ The
 .kw O_NONBLOCK
 flag is cleared for both file descriptors.
 (The
-.kw fcntl
+.reffunc fcntl
 call can be used to set the
 .kw O_NONBLOCK
 flag.)

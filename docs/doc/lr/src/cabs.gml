@@ -20,7 +20,7 @@ sqrt( (value.x*value.x) + (value.y*value.y) )
 .blkcode end
 .blktext begin
 In certain cases, overflow errors may occur which will cause the
-.kw matherr
+.reffunc matherr
 routine to be invoked.
 .blktext end
 .desc end

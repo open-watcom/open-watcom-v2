@@ -24,22 +24,22 @@ function sets the process's file mode creation mask to
 .period
 The process's file mode creation mask is used during
 .if '&machsys' eq 'QNX' .do begin
-.kw creat
+.reffunc creat
 .ct ,
 .kw mkdir
 .ct ,
 .kw mkfifo
 .ct ,
-.kw open
+.reffunc open
 or
-.kw _sopen
+.reffunc _sopen
 .do end
 .el .do begin
-.kw creat
+.reffunc creat
 .ct ,
-.kw open
+.reffunc open
 or
-.kw _sopen
+.reffunc _sopen
 .do end
 to turn off permission bits in the
 .arg permission

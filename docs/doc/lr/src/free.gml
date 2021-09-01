@@ -18,11 +18,11 @@ function
 deallocates the memory block located by the argument
 .arg ptr
 which points to a memory block previously allocated through a call to
-.kw calloc
+.reffunc calloc
 .ct ,
-.kw malloc
+.reffunc malloc
 or
-.kw realloc
+.reffunc realloc
 .period
 After the call, the freed block is available for allocation.
 .desc end
@@ -89,11 +89,11 @@ deallocates the memory block located by the argument
 .arg ptr
 which points to a memory block previously allocated through a call to
 the appropriate version of
-.kw calloc
+.reffunc calloc
 .ct ,
-.kw malloc
+.reffunc malloc
 or
-.kw realloc
+.reffunc realloc
 .period
 After the call, the freed block is available for allocation.
 .np

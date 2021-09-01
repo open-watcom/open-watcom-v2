@@ -84,7 +84,7 @@ If the stack is not in DGROUP (i.e., the stack pointer does not point
 to an area in DGROUP) then you must compile your application with the
 "zu" option.
 For example, the pointer returned by
-.kw malloc
+.reffunc malloc
 in a large data model may not be in DGROUP.
 The "zu" option relaxes the restriction that the SS register
 contains the base address of the default data segment, "DGROUP".
@@ -113,7 +113,7 @@ The size of the stack is determined by
 and must not be zero.
 .np
 The
-.kw _beginthreadex
+.reffunc _beginthreadex
 function can be used to create a new thread,
 in a running or suspended state specified by
 .arg initflag
@@ -150,15 +150,15 @@ The thread identifier is returned in the location identified by the
 argument.
 .np
 The thread ends when it exits from its main function or calls
-.kw exit
+.reffunc exit
 .ct ,
-.kw _Exit
+.reffunc _Exit
 .ct ,
-.kw _exit
+.reffunc _exit
 .ct ,
-.kw _endthread
+.reffunc _endthread
 or
-.kw _endthreadex
+.reffunc _endthreadex
 .period
 .np
 The variable/function
@@ -215,7 +215,7 @@ otherwise it returns &minus.1 to indicate that the thread could not be
 started.
 .np
 The
-.kw _beginthreadex
+.reffunc _beginthreadex
 function returns the thread handle for the new thread if successful;
 otherwise it returns 0 to indicate that the thread could not be
 started.

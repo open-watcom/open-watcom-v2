@@ -13,7 +13,7 @@ designated by
 .period
 This number can be used in POSIX input/output calls anywhere the
 value returned by
-.kw open
+.reffunc open
 can be used.
 The following symbolic values in
 .hdrfile &iohdr

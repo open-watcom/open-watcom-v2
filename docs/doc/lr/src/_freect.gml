@@ -10,7 +10,7 @@ The
 function returns the number of times that
 .kw _nmalloc
 (or
-.kw malloc
+.reffunc malloc
 in small data models)
 can be called to allocate a item of
 .arg size

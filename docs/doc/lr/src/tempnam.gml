@@ -18,7 +18,7 @@ The
 argument is the prefix to the filename.
 .id &funcb.
 uses
-.kw malloc
+.reffunc malloc
 to allocate space for the filename; the program is responsible for
 freeing this space when it is no longer needed.
 .id &funcb.

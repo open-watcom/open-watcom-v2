@@ -55,7 +55,7 @@ to
 .id -HUGE_VAL
 .period
 This error handling can be modified by using the
-.kw matherr
+.reffunc matherr
 routine.
 .desc end
 .return begin

@@ -9,7 +9,7 @@ The
 function causes normal program termination to occur.
 .pp
 First, all functions registered by the
-.kw atexit
+.reffunc atexit
 function are called in the reverse order of their registration.
 Next, all open files are flushed and closed, and all files created by the
 .kw tmpfile

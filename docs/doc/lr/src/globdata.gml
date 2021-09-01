@@ -111,13 +111,13 @@ header file.
 The value of
 .kw _fmode
 may be changed by a program to change the default behavior of the
-.kw open
+.reffunc open
 .ct ,
 .kw fopen
 .ct ,
-.kw creat
+.reffunc creat
 and
-.kw _sopen
+.reffunc _sopen
 functions.
 The default setting of
 .kw _fmode

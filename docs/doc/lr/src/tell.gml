@@ -20,7 +20,7 @@ system level.
 The
 .arg &fd
 value is the file &handle returned by a successful execution of the
-.kw open
+.reffunc open
 function.
 .np
 The returned value may be used in conjunction with the

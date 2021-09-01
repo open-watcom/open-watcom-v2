@@ -17,7 +17,7 @@ bytes is allocated.
 If the value of
 .arg size
 is zero, the
-.kw free
+.reffunc free
 function is called to release the memory pointed to by
 .arg old_blk
 .period
@@ -151,7 +151,7 @@ bytes is allocated.
 If the value of
 .arg size
 is zero, the corresponding
-.kw free
+.reffunc free
 function is called to release the memory pointed to by
 .arg old_blk
 .period

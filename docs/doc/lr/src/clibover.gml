@@ -1242,11 +1242,11 @@ function allocates space within this area while the
 function allocates space outside the area (if it is available).
 .np
 In a small data model, the
-.kw malloc
+.reffunc malloc
 .ct ,
-.kw calloc
+.reffunc calloc
 and
-.kw realloc
+.reffunc realloc
 functions use the
 .kw _nmalloc
 function to acquire memory; in a large data model, the
@@ -1295,7 +1295,7 @@ function should be used to free space acquired by the
 functions.
 .np
 The
-.kw free
+.reffunc free
 function will use the
 .kw _nfree
 function when the small data memory model is used; it will use the

@@ -81,7 +81,7 @@ following code sequence.
 The
 .arg func
 function may terminate the program by calling the
-.kw exit
+.reffunc exit
 or
 .kw abort
 functions or call the

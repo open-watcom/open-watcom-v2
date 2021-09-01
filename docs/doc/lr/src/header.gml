@@ -188,20 +188,20 @@ the error variable.
 .df fcntl.h
 This POSIX header file defines the flags used by the
 .if '&machsys' ne 'QNX' .do begin
-.kw open
+.reffunc open
 and
-.kw _sopen
+.reffunc _sopen
 functions. The function declarations for these functions are found in the
 .hdrfile &iohdr
 header file.
 .do end
 .if '&machsys' eq 'QNX' .do begin
-.kw creat
-.kw fcntl
+.reffunc creat
+.reffunc fcntl
 .ct ,
-.kw open
+.reffunc open
 .ct , and
-.kw _sopen
+.reffunc _sopen
 functions.
 .do end
 .*------------------------------
@@ -300,7 +300,7 @@ with floating-point numbers) and the structures:
 .sfbeg
 .sf exception
 describes the exception structure passed to the
-.kw matherr
+.reffunc matherr
 function; symbolic constants for the types of exceptions are included
 .sf complex
 declares a complex number
@@ -371,7 +371,7 @@ functions.
 .*------------------------------
 .df share.h
 This header file defines constants for shared access to files using the
-.kw _sopen
+.reffunc _sopen
 function.
 .*------------------------------
 .df signal.h
