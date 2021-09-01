@@ -64,7 +64,7 @@ The examples are often just fragments of code (not complete programs)
 for illustration purposes.
 :cmt. .pp
 :cmt. The examples often use the
-:cmt. .kw printf
+:cmt. .reffunc printf
 :cmt. function.
 :cmt. Normally, the header file
 :cmt. .hdrfile stdio.h

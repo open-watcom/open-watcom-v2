@@ -33,12 +33,12 @@ control string and writes the result to
 The
 .arg format
 string is described under the description of the
-.kw printf
+.reffunc printf
 function.
 The
 .id &funcb.
 function is equivalent to the
-.kw sprintf
+.reffunc sprintf
 function, with the variable argument list replaced with
 .arg arg
 .ct , which has been initialized by the

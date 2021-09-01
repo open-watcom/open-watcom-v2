@@ -37,7 +37,7 @@ All entries in the environment list can be displayed by using the
 with no arguments.
 A program can obtain the value for an environment variable by using
 the
-.kw getenv
+.reffunc getenv
 function.
 .np
 When the value of

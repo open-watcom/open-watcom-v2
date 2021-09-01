@@ -52,7 +52,7 @@ with no arguments.
 .do end
 A program can obtain the value for an environment variable by using
 the
-.kw getenv
+.reffunc getenv
 function.
 .np
 The
@@ -112,7 +112,7 @@ Entries can also be added to the environment list
 with the
 .qnxcmd export
 or with the
-.kw putenv
+.reffunc putenv
 or
 .id &funcb.
 functions.
@@ -121,14 +121,14 @@ functions.
 with the
 .doscmd set
 or with the
-.kw putenv
+.reffunc putenv
 or
 .id &funcb.
 functions.
 .do end
 .ix 'environment'
 All entries in the environment list can be obtained by using the
-.kw getenv
+.reffunc getenv
 function.
 .np
 To assign a string to a variable and place it in the environment list:

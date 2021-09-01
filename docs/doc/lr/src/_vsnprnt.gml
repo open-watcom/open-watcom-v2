@@ -36,7 +36,7 @@ characters were stored.
 The
 .arg format
 string is described under the description of the
-.kw printf
+.reffunc printf
 function.
 The
 .id &funcb.

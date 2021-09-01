@@ -28,12 +28,12 @@ into which the generated output is placed.
 The
 .arg format
 string is described under the description of the
-.kw printf
+.reffunc printf
 function.
 The
 .id &funcb.
 function is equivalent to the
-.kw _bprintf
+.reffunc _bprintf
 function, with the variable argument list replaced with
 .arg arg
 .ct , which has been initialized by the

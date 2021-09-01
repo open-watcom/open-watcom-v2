@@ -17,7 +17,7 @@ function is used to output characters to the console.
 The
 .arg format
 string is described under the description of the
-.kw printf
+.reffunc printf
 function.
 .desc end
 .return begin

@@ -31,7 +31,7 @@ string.
 The
 .arg format
 string is described under the description of the
-.kw printf
+.reffunc printf
 function.
 .im widefun4
 .if &'length(&wfunc.) ne 0 .do begin

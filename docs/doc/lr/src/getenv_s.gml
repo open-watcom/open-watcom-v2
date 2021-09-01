@@ -77,18 +77,18 @@ Entries can be added to the environment list
 with the
 .qnxcmd export
 or with the
-.kw putenv
+.reffunc putenv
 or
-.kw setenv
+.reffunc setenv
 functions.
 .do end
 .el .do begin
 with the
 .doscmd set
 or with the
-.kw putenv
+.reffunc putenv
 or
-.kw setenv
+.reffunc setenv
 functions.
 .do end
 .ix 'environment'

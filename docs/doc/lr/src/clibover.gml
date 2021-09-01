@@ -3568,9 +3568,9 @@ as follows:
 .do end
 .pc
 or (during the program execution) by using the
-.kw setenv
+.reffunc setenv
 or
-.kw putenv
+.reffunc putenv
 library functions:
 .millust begin
     setenv( "TZ", "PST8PDT", 1 );
@@ -3578,7 +3578,7 @@ library functions:
 .millust end
 .np
 The value of the variable can be obtained by using the
-.kw getenv
+.reffunc getenv
 function:
 .millust begin
     char *tzvalue;

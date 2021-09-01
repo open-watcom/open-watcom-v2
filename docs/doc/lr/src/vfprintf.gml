@@ -33,7 +33,7 @@ under control of the argument
 The
 .arg format
 string is described under the description of the
-.kw printf
+.reffunc printf
 function.
 The
 .id &funcb.

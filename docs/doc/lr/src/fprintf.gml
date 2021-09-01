@@ -27,7 +27,7 @@ under control of the argument
 The
 .arg format
 string is described under the description of the
-.kw printf
+.reffunc printf
 function.
 .im widefun4
 .desc end

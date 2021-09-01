@@ -85,7 +85,7 @@ a
 or
 .id double
 as an argument to the
-.kw printf
+.reffunc printf
 function).
 .if '&machsys' ne 'QNX' .do begin
 .df _fmode

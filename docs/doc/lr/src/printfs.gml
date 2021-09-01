@@ -169,7 +169,7 @@ converted length to an object of type
 character string composed of 8-bit characters.
 .np
 For
-.kw printf
+.reffunc printf
 and related byte input/output functions, this specifier is redundant.
 For
 .kw wprintf
@@ -199,7 +199,7 @@ wide character string (a string composed of characters of type
 .ct ).
 .np
 For
-.kw printf
+.reffunc printf
 and related byte input/output functions, this specifier is required if
 the argument string is to be treated as a wide character string;
 otherwise it will be treated as an 8-bit ASCII character string.

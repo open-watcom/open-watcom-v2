@@ -24,18 +24,18 @@ You will want to do this in the small data models if you are using both
 and
 .reffunc _fmalloc
 or
-.kw halloc
+.reffunc halloc
 .period
 Once a call to
 .reffunc _fmalloc
 or
-.kw halloc
+.reffunc halloc
 has been made, you may not be able to allocate any memory with
 .reffunc malloc
 unless space has been reserved for the near heap using either
 .reffunc malloc
 .ct ,
-.kw sbrk
+.reffunc sbrk
 or
 .kw _nheapgrow
 .period

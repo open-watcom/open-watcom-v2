@@ -254,19 +254,19 @@ values that have been defined with the
 .if '&machsys' eq 'QNX' .do begin
 .qnxcmd export
 or by the successful execution of the
-.kw putenv
+.reffunc putenv
 or
-.kw setenv
+.reffunc setenv
 functions.
 .do end
 .el .do begin
 .doscmd SET
 or by the successful execution of the
-.kw putenv
+.reffunc putenv
 function.
 .do end
 A program may read these values with the
-.kw getenv
+.reffunc getenv
 function.
 .np
 The following example invokes "myprog" as if

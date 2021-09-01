@@ -540,7 +540,7 @@ regardless of its value.
 .bigterm
 The set of environment names and the method for altering the environment
 list used by the
-.kw getenv
+.reffunc getenv
 function (7.10.4.4).
 .bigdesc
 .np
@@ -549,7 +549,7 @@ The set of environment names is unlimited.
 Environment variables can be set from the QNX command line using the
 EXPORT or SET commands.
 A program can modify its environment variables with the
-.kw putenv
+.reffunc putenv
 function.
 Such modifications last only until the program terminates.
 .do end
@@ -558,7 +558,7 @@ The set of environment names is unlimited.
 Environment variables can be set from the DOS command line using the
 SET command.
 A program can modify its environment variables with the
-.kw putenv
+.reffunc putenv
 function.
 Such modifications last only until the program terminates.
 .do end
