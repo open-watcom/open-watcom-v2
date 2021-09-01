@@ -94,15 +94,32 @@
 .*
 .dm ftopsect begin
 .cp 10
-.funcref &'strip(&*1.,'T',',')
-.se *top='&'translate(&frefid.,`&trto.`,`&trfrom.`)'
+.if &e'&dohelp eq 0 .do begin
+.   .sr *ban=&headtext$.
+.   .if &syslc. gt 3 .do begin
+.   .   .in
+.   .   .tb 1 _/&syscl.
+.   .   .tb set $
+$$
+.   .   .tb set
+.   .   .tb
+.   .do end
+.   .sr headtext$=&*ban.
+:H5.&*
+.   .se *attrs=''
+.do end
+.el .do begin
+.   .funcref &'strip(&*1.,'T',',')
+.   .se *top='&'translate(&frefid.,`&trto.`,`&trfrom.`)'
 :ZH2 ctx='&*top.'.&*
-.pu 1 .ixsect &*
-.pu 1 .ixsectid &*top.
+.   .pu 1 .ixsect &*
+.   .pu 1 .ixsectid &*top.
+.   .se *attrs='*ctx='&*top.''
+.do end
 .se headtxt0$=&*
 .se headtxt1$=&*
 .se SCTlvl=1
-.cntents *ctx='&*top.' &*
+.cntents &*attrs. &*
 .dm ftopsect end
 .*
 .dm funkw begin
