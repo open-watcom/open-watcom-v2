@@ -23,7 +23,7 @@ argument. This function does not raise
 floating-point exceptions, but only sets the state of the flags.
 .np
 For valid exception values see
-.seekw &functiong. fegetexceptflag
+.reffunc fegetexceptflag
 .period
 .desc end
 .*

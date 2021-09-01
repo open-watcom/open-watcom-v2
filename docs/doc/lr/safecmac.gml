@@ -48,7 +48,7 @@ See xxx for a list of available functions.
 .do end
 .newtext Safer C:
 The Safer C Library extension provides the
-.seekw &functiong. &funcsafe.
+.reffunc &funcsafe.
 function which is a safer alternative to
 .id &funcb.
 .period

@@ -106,19 +106,19 @@ $$
 .   .do end
 .   .sr headtext$=&*ban.
 :H5.&*
-.   .se *attrs=''
+.   .sr *attrs=''
 .do end
 .el .do begin
 .   .funcref &'strip(&*1.,'T',',')
-.   .se *top='&'translate(&frefid.,`&trto.`,`&trfrom.`)'
-:ZH2 ctx='&*top.'.&*
+.   .ser *top='&'translate(&frefid.,`&trto.`,`&trfrom.`)'
+:ZH2 &*attrs..&*
 .   .pu 1 .ixsect &*
 .   .pu 1 .ixsectid &*top.
-.   .se *attrs='*ctx='&*top.''
+.   .sr *attrs='*ctx='&*top.''
 .do end
-.se headtxt0$=&*
-.se headtxt1$=&*
-.se SCTlvl=1
+.sr headtxt0$=&*
+.sr headtxt1$=&*
+.sr SCTlvl=1
 .cntents &*attrs. &*
 .dm ftopsect end
 .*

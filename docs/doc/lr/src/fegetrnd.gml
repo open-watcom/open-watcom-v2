@@ -20,7 +20,7 @@ representing the current rounding direction or a negative value if there is no s
 rounding direction macro or the current rounding direction is not determinable.
 .np
 For valid rounding modes see
-.seekw &functiong. fesetround
+.reffunc fesetround
 .period
 .return end
 .*
