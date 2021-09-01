@@ -16,7 +16,7 @@ The
 argument.
 The text path specifies the writing direction of the text displayed
 by the
-.kw _grtext
+.reffunc _grtext
 &routine..
 The argument can have one of the following values:
 .begterm 15

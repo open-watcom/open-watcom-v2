@@ -10,6 +10,6 @@ A graphics page can be constructed without affecting the screen
 by setting the active page to be different than the visual page.
 .np
 The number of available video pages can be determined by using the
-.kw _getvideoconfig
+.reffunc _getvideoconfig
 &routine..
 The default video page is 0.

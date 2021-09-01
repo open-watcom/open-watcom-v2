@@ -27,7 +27,7 @@ wherever there is a pixel value of a changed color in the palette.
 .pp
 The representation of colors depends upon the hardware being used.
 The number of colors in the palette can be determined by using the
-.kw _getvideoconfig
+.reffunc _getvideoconfig
 &routine..
 .desc end
 .return begin

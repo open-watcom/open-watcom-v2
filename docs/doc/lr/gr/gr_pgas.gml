@@ -46,7 +46,7 @@ and
 .arg y
 arguments.
 The arguments are the same as for the
-.kw _pg_chartscatter
+.reffunc _pg_chartscatter
 &routine..
 .pp
 The
@@ -63,7 +63,7 @@ and
 .arg labels
 arguments.
 The arguments are the same as for the
-.kw _pg_chartscatterms
+.reffunc _pg_chartscatterms
 &routine..
 .desc end
 .return begin

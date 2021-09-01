@@ -23,13 +23,13 @@ These coordinates are in terms of characters not pixels.
 The initial text output position is
 .coord 1 1 .
 Subsequent text positions are reported (by the
-.kw _gettextposition
+.reffunc _gettextposition
 &routine) and set (by the
-.kw _outtext
+.reffunc _outtext
 .ct ,
-.kw _outmem
+.reffunc _outmem
 and
-.kw _settextposition
+.reffunc _settextposition
 &routines) relative to this rectangle.
 .pp
 Text is displayed from the current output position for text

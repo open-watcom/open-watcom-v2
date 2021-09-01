@@ -16,12 +16,12 @@ indicated by the pixel value of the
 .arg pixval
 argument.
 This is the color value used for displaying text with the
-.kw _outtext
+.reffunc _outtext
 and
-.kw _outmem
+.reffunc _outmem
 &routines..
 Use the
-.kw _setcolor
+.reffunc _setcolor
 &routine to change the color of graphics output.
 The default text color value is set to 7 whenever a new video mode is selected.
 .pp

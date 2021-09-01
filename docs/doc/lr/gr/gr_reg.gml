@@ -14,7 +14,7 @@ The
 &routine initializes the font graphics system.
 Fonts must be registered, and a font selected,
 before text can be displayed with the
-.kw _outgtext
+.reffunc _outgtext
 &routine..
 .pp
 The argument
@@ -28,7 +28,7 @@ The
 reads the font information.
 Memory is allocated to store the characteristics of the font.
 These font characteristics are used by the
-.kw _setfont
+.reffunc _setfont
 &routine when selecting a font.
 .desc end
 .return begin

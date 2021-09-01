@@ -15,9 +15,9 @@ The
 .id &funcb.
 &routine returns the location of the current clipping region.
 A clipping region is defined with the
-.kw _setcliprgn
+.reffunc _setcliprgn
 or
-.kw _setviewport
+.reffunc _setviewport
 &routines..
 By default, the clipping region is the entire screen.
 .np

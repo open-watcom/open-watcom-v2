@@ -14,7 +14,7 @@ The
 .id &funcb.
 &routine returns information about the current text settings
 used when text is displayed by the
-.kw _grtext
+.reffunc _grtext
 &routine..
 The information is stored in the
 .id textsettings

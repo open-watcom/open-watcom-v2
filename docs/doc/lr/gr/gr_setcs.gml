@@ -38,11 +38,11 @@ and
 represent lengths along the y-axis and x-axis in the window coordinate system.
 .np
 These sizes are used when displaying text with the
-.kw _grtext
+.reffunc _grtext
 &routine..
 The default character sizes are dependent on the graphics mode selected,
 and can be determined by the
-.kw _gettextsettings
+.reffunc _gettextsettings
 &routine..
 .desc end
 .if '&lang' eq 'C' .do begin

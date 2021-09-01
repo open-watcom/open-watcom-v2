@@ -19,7 +19,7 @@ The argument
 .arg length
 specifies the number of characters to be displayed.
 Unlike the
-.kw _outtext
+.reffunc _outtext
 &routine,
 .id &funcb.
 will display the graphical representation of characters

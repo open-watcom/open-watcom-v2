@@ -14,7 +14,7 @@ The
 &routine returns the length in pixels of the argument
 .arg text
 as it would be displayed in the current font by the &routine
-.kw _outgtext
+.reffunc _outgtext
 .period
 Note that the text is not displayed on the screen, only its length
 is determined.

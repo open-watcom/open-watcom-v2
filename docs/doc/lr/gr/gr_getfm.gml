@@ -17,15 +17,15 @@ located by the argument
 .arg mask
 .period
 The fill mask is used by the
-.kw _ellipse
+.reffunc _ellipse
 .ct ,
-.kw _floodfill
+.reffunc _floodfill
 .ct ,
-.kw _pie
+.reffunc _pie
 .ct ,
-.kw _polygon
+.reffunc _polygon
 and
-.kw _rectangle
+.reffunc _rectangle
 &routines that fill an area of the screen.
 .pp
 .im gr_fillm

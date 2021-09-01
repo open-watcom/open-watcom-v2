@@ -30,7 +30,7 @@ in the current color and in the currently selected font
 The current position is updated to follow the displayed text.
 .pp
 When no font has been previously selected with
-.kw _setfont
+.reffunc _setfont
 .ct , a default font will be used.
 The default font is an 8-by-8 bit-mapped font.
 .im gr_text

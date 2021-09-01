@@ -32,7 +32,7 @@ and
 .arg explode
 arguments.
 The arguments are the same as for the
-.kw _pg_chartpie
+.reffunc _pg_chartpie
 &routine..
 .desc end
 .return begin

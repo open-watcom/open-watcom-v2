@@ -33,7 +33,7 @@ represents a length along the x-axis in the window coordinate system.
 .np
 The character spacing specifies the additional space to
 leave between characters when a text string is displayed with the
-.kw _grtext
+.reffunc _grtext
 &routine..
 A negative value can be specified to cause the characters to be
 drawn closer together.

@@ -15,9 +15,9 @@ The
 of the position with view coordinates
 .coord x y .
 View coordinates are defined by the
-.kw _setvieworg
+.reffunc _setvieworg
 and
-.kw _setviewport
+.reffunc _setviewport
 &routines..
 .desc end
 .return begin

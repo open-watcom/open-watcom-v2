@@ -12,9 +12,9 @@ The
 .id &funcb.
 &routine returns the pixel value of the current text color.
 This is the color used for displaying text with the
-.kw _outtext
+.reffunc _outtext
 and
-.kw _outmem
+.reffunc _outmem
 &routines..
 The default text color value is set to 7 whenever a new video mode is selected.
 .* .pp

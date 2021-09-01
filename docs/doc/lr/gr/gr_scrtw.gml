@@ -13,7 +13,7 @@ The
 .id &funcb.
 &routine scrolls the lines in the current text window.
 A text window is defined with the
-.kw _settextwindow
+.reffunc _settextwindow
 &routine..
 By default, the text window is the entire screen.
 .np
@@ -26,7 +26,7 @@ A negative value means to scroll the text window down or towards the bottom
 of the screen.
 Specifying a number of rows greater than the height of the text window
 is equivalent to clearing the text window with the
-.kw _clearscreen
+.reffunc _clearscreen
 &routine..
 .np
 Two constants are defined that can be used with the

@@ -143,11 +143,11 @@ purpose.
 .np
 These &routines deal with the hardware environment.
 The
-.kw _getvideoconfig
+.reffunc _getvideoconfig
 &routine returns information about the current video mode and the
 hardware configuration.
 The
-.kw _setvideomode
+.reffunc _setvideomode
 &routine selects a new video mode.
 .np
 .ix 'graphic page'
@@ -405,9 +405,9 @@ This type of text output can be displayed
 in only one size.
 .np
 This text is displayed using the
-.kw _outtext
+.reffunc _outtext
 and
-.kw _outmem
+.reffunc _outmem
 &routines..
 The output position for text follows the last text that was displayed
 or can be reset
@@ -507,10 +507,10 @@ set the path used to display graphics text
 .np
 These &routines are used to transfer screen images.
 The
-.kw _getimage
+.reffunc _getimage
 &routine transfers a rectangular image from the screen into memory.
 The
-.kw _putimage
+.reffunc _putimage
 &routine transfers an image from memory back onto the screen.
 The &routines ending with
 .id _w
@@ -548,10 +548,10 @@ Fonts are contained in files with an extension of
 .mono .FON.
 Before font based text can be displayed, the fonts must be registered
 with the
-.kw _registerfonts
+.reffunc _registerfonts
 &routine,
 and a font must be selected with the
-.kw _setfont
+.reffunc _setfont
 &routine..
 .keep begin
 .np
@@ -609,7 +609,7 @@ purpose.
 These &routines are for the initialization of the presentation graphics
 system and the displaying of charts.
 The
-.kw _pg_initchart
+.reffunc _pg_initchart
 &routine initializes the system and should be the first
 presentation graphics &routine called.
 The single-series &routines display a

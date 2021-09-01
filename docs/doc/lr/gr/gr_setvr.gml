@@ -17,12 +17,12 @@ of text displayed on the screen.
 The video mode is specified by the argument
 .arg mode
 and is selected with the
-.kw _setvideomode
+.reffunc _setvideomode
 &routine..
 The number of rows is specified by the argument
 .arg rows
 and is selected with the
-.kw _settextrows
+.reffunc _settextrows
 &routine..
 .np
 Computers equipped with EGA, MCGA and VGA adapters can support

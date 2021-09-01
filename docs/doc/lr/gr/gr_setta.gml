@@ -18,7 +18,7 @@ and
 .arg vert
 .period
 When text is displayed with the
-.kw _grtext
+.reffunc _grtext
 &routine, it is aligned (justified) horizontally and vertically
 about the given point according to the
 current text alignment settings.

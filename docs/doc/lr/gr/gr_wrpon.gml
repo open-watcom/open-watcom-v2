@@ -14,9 +14,9 @@ The
 &routine is used to control the display of text when
 the text output reaches the right side of the text window.
 This is text displayed with the
-.kw _outtext
+.reffunc _outtext
 and
-.kw _outmem
+.reffunc _outmem
 &routines..
 The
 .arg wrap

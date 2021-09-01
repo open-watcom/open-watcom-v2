@@ -55,7 +55,7 @@ and
 .np
 The pie wedges are drawn by drawing an elliptical
 arc (in the way described for the
-.kw _arc
+.reffunc _arc
 &routines) and then joining the center of the rectangle that
 contains the ellipse to the two endpoints of the arc.
 .pp

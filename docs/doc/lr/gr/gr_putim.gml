@@ -36,11 +36,11 @@ The image is displayed upon the screen with its top left corner
 located at the point with coordinates
 .coord x y .
 The image was previously saved using the
-.kw _getimage
+.reffunc _getimage
 &routines..
 The image is displayed in a rectangle whose size
 is the size of the rectangular image saved by the
-.kw _getimage
+.reffunc _getimage
 &routines..
 .pp
 The image can be displayed in a number of ways, depending upon the

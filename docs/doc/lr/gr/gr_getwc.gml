@@ -15,7 +15,7 @@ The
 of the position with view coordinates
 .coord x y .
 Window coordinates are defined by the
-.kw _setwindow
+.reffunc _setwindow
 &routine..
 .desc end
 .return begin

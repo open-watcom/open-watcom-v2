@@ -13,7 +13,7 @@ The
 .id &funcb.
 &routine returns information about the currently selected font.
 Fonts are selected with the
-.kw _setfont
+.reffunc _setfont
 &routine..
 The font information is returned in the
 .id _fontinfo

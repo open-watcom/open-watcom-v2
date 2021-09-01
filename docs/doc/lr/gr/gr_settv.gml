@@ -12,7 +12,7 @@ integer*2 x, y
 The
 .id &funcb.
 &routine sets the orientation for text output used by the
-.kw _outgtext
+.reffunc _outgtext
 &routine to the vector specified by the arguments
 .coord x y .
 Each of the arguments can have a value of -1, 0 or 1, allowing for

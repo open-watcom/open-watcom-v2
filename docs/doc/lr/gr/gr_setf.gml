@@ -16,7 +16,7 @@ The
 .period
 The font selected becomes the current font and is used whenever text
 is displayed with the
-.kw _outgtext
+.reffunc _outgtext
 &routine..
 The &routine will fail if no fonts have been registered, or if a font
 cannot be found that matches the given characteristics.
@@ -45,7 +45,7 @@ choose a vector font
 choose the font that best matches the options
 .termnx nX
 choose font number X (the number of fonts is returned by the
-.kw _registerfonts
+.reffunc _registerfonts
 &routine)
 .termnx t'facename'
 choose a font with specified facename

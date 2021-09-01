@@ -12,7 +12,7 @@ The
 .id &funcb.
 &routine returns the current value of the text orientation vector.
 This is the direction used when text is displayed by the
-.kw _outgtext
+.reffunc _outgtext
 &routine..
 .desc end
 .return begin

@@ -18,9 +18,9 @@ The
 .id &funcb.
 &routine returns information about the arc most recently
 drawn by the
-.kw _arc
+.reffunc _arc
 or
-.kw _pie
+.reffunc _pie
 &routines..
 The arguments
 .arg start_pt
