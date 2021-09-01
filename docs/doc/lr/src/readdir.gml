@@ -36,9 +36,9 @@ must be called to close the directory and free the memory allocated by
 .if '&machsys' eq 'QNX' .do begin
 .np
 The result of using a directory stream after one of the
-.kw exec
+.kw exec&grpsfx
 or
-.kw spawn
+.kw spawn&grpsfx
 family of functions is undefined.
 After a call to the
 .kw fork
