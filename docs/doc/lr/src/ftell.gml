@@ -16,7 +16,7 @@ next I/O operation on the file.
 The value returned by
 .id &funcb.
 can be used in a subsequent call to
-.kw fseek
+.reffunc fseek
 to set the file to the same position.
 .desc end
 .return begin

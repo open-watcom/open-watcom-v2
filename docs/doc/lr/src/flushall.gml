@@ -15,7 +15,7 @@ to be read from the associated file or device.
 Calling the
 .id &funcb.
 function is equivalent to calling the
-.kw fflush
+.reffunc fflush
 for all open stream files.
 .desc end
 .return begin

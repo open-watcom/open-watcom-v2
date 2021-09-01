@@ -458,14 +458,14 @@ The value to which the macro
 is set by the
 .kw fgetpos
 or
-.kw ftell
+.reffunc ftell
 function on failure (7.9.9.1, 7.9.9.4).
 .bigdesc
 .np
 When the function
 .kw fgetpos
 or
-.kw ftell
+.reffunc ftell
 fails, they set
 .kw errno
 to

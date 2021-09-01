@@ -47,7 +47,7 @@ opened.
 The argument
 .arg mode
 is described in the description of the
-.kw fopen
+.reffunc fopen
 function.
 .im ansiconf
 .if &'length(&wfunc.) ne 0 .do begin

@@ -35,7 +35,7 @@ current file position for the file in question.
 This file position can be determined with the
 .reffunc _tell
 function and can be set with the
-.kw lseek
+.reffunc lseek
 function.
 .np
 When

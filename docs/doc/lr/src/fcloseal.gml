@@ -31,7 +31,7 @@ function closes all open stream files, except
 This includes streams created (and not yet closed) by
 .kw fdopen
 .ct ,
-.kw fopen
+.reffunc fopen
 and
 .kw freopen
 .period

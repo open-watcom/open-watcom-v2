@@ -113,7 +113,7 @@ The value of
 may be changed by a program to change the default behavior of the
 .reffunc open
 .ct ,
-.kw fopen
+.reffunc fopen
 .ct ,
 .reffunc creat
 and

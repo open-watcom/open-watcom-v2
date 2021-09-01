@@ -16,7 +16,7 @@ These indicators are cleared only when the file is opened or by an
 explicit call to the
 .id &funcb.
 or
-.kw rewind
+.reffunc rewind
 functions.
 .desc end
 .return begin

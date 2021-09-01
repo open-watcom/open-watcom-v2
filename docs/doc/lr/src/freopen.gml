@@ -33,7 +33,7 @@ pointer.
 The argument
 .arg mode
 is described in the description of the
-.kw fopen
+.reffunc fopen
 function.
 .widefunc &wfunc. &funcb.
 .desc end

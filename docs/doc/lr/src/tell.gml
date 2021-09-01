@@ -24,7 +24,7 @@ value is the file &handle returned by a successful execution of the
 function.
 .np
 The returned value may be used in conjunction with the
-.kw lseek
+.reffunc lseek
 function to reset the current file position.
 .np
 The &func64 function is similar to the

@@ -175,13 +175,13 @@ DOS systems.
 .do end
 .np
 The arguments may be passed as a list of arguments (
-.ct .kw spawnl
+.ct .reffunc spawnl
 .ct ,
 .kw spawnle
 .ct ,
-.kw spawnlp
+.reffunc spawnlp
 and
-.kw spawnlpe
+.reffunc spawnlpe
 .ct ) or as a vector of pointers (
 .ct .kw spawnv
 .ct ,
@@ -210,9 +210,9 @@ pointer.
 .np
 The environment for the invoked program is inherited from the parent
 process when you use the
-.kw spawnl
+.reffunc spawnl
 .ct ,
-.kw spawnlp
+.reffunc spawnlp
 .ct ,
 .kw spawnv
 and
@@ -221,7 +221,7 @@ functions.
 The
 .kw spawnle
 .ct ,
-.kw spawnlpe
+.reffunc spawnlpe
 .ct ,
 .kw spawnve
 and

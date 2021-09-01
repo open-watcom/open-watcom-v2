@@ -37,9 +37,9 @@ The data is written to the file at the end when the file was opened with
 included as part of the access mode; otherwise, it is written at the
 current file position for the file in question.
 This file position can be determined with the
-.kw _tell
+.reffunc _tell
 function and can be set with the
-.kw lseek
+.reffunc lseek
 function.
 .np
 When

@@ -21,13 +21,13 @@ back onto the input stream pointed to by
 .period
 This character will be returned by the next read on the stream.
 The pushed-back character will be discarded if a call is made to the
-.kw fflush
+.reffunc fflush
 function or to a file positioning function (
-.ct .kw fseek
+.ct .reffunc fseek
 .ct ,
 .kw fsetpos
 or
-.kw rewind
+.reffunc rewind
 .ct ) before the next read operation is performed.
 .np
 Only one character (the most recent one) of pushback is remembered.

@@ -118,7 +118,7 @@ may also set
 values as described by the
 .reffunc _pipe
 and
-.kw spawnl
+.reffunc spawnl
 functions.
 .error end
 .see begin

@@ -93,7 +93,7 @@ The letter "c" may be added to any of the above sequences in the
 second or later position to indicate that any output is committed by
 the operating system whenever a flush (
 .ct
-.kw fflush
+.reffunc fflush
 or
 .kw flushall
 .ct )
@@ -140,7 +140,7 @@ as the first character in the
 .arg mode
 argument) causes all subsequent writes to the file to be forced to the
 current end-of-file, regardless of previous calls to the
-.kw fseek
+.reffunc fseek
 function.
 .ix '&StrIo' 'fseek'
 When a file is opened with update mode (
@@ -154,13 +154,13 @@ When a stream is opened in update mode, both reading and writing
 may be performed.
 However, writing may not be followed by reading without an
 intervening call to the
-.kw fflush
+.reffunc fflush
 function or to a file positioning function (
-.ct .kw fseek
+.ct .reffunc fseek
 .ct ,
 .kw fsetpos
 .ct ,
-.kw rewind
+.reffunc rewind
 .ct ).
 Similarly, reading may not be followed by writing without an
 intervening call to a file positioning function, unless the read

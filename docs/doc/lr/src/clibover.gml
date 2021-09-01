@@ -175,13 +175,13 @@ These functions are described in the "IEEE Standard Portable Operating
 System Interface for Computer Environments" (POSIX 1003.1).
 The POSIX input/output functions provide the capability to perform I/O
 at a "lower level" than the C Language "stream I/O" functions (e.g.,
-.kw fopen
+.reffunc fopen
 .ct ,
-.kw fread
+.reffunc fread
 .ct ,
-.kw fwrite
+.reffunc fwrite
 .ct , and
-.kw fclose
+.reffunc fclose
 .ct ).
 .do end
 .el .do begin
