@@ -1,4 +1,4 @@
-.gfunc settextalign
+.gfunc _settextalign
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 void _FAR _settextalign( short horiz, short vert );
@@ -26,32 +26,32 @@ current text alignment settings.
 The horizontal component of the
 alignment can have one of the following values:
 .begterm 15
-.uterm NORMAL
+.uterm _NORMAL
 use the default horizontal alignment for the current setting of the
 text path
-.uterm LEFT
+.uterm _LEFT
 the text string is left justified at the given point
-.uterm CENTER
+.uterm _CENTER
 the text string is centred horizontally about the given point
-.uterm RIGHT
+.uterm _RIGHT
 the text string is right justified at the given point
 .endterm
 .pp
 The vertical component of the
 alignment can have one of the following values:
 .begterm 15
-.uterm NORMAL
+.uterm _NORMAL
 use the default vertical alignment for the current setting of the
 text path
-.uterm TOP
+.uterm _TOP
 the top of the text string is aligned at the given point
-.uterm CAP
+.uterm _CAP
 the cap line of the text string is aligned at the given point
-.uterm HALF
+.uterm _HALF
 the text string is centred vertically about the given point
-.uterm BASE
+.uterm _BASE
 the base line of the text string is aligned at the given point
-.uterm BOTTOM
+.uterm _BOTTOM
 the bottom of the text string is aligned at the given point
 .endterm
 .pp

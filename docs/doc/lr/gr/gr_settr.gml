@@ -1,4 +1,4 @@
-.gfunc settextrows
+.gfunc _settextrows
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _settextrows( short rows );

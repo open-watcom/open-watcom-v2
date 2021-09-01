@@ -1,4 +1,4 @@
-.gfunc pg_setchardef
+.gfunc _pg_setchardef
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _pg_setchardef( short ch,

@@ -1,4 +1,4 @@
-.gfunc setviewport
+.gfunc _setviewport
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 void _FAR _setviewport( short x1, short y1,

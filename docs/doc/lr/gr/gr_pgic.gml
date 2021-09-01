@@ -1,4 +1,4 @@
-.gfunc pg_initchart
+.gfunc _pg_initchart
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _pg_initchart( void );

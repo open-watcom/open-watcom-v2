@@ -1,4 +1,4 @@
-.gfunc setvieworg
+.gfunc _setvieworg
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 struct xycoord _FAR _setvieworg( short x, short y );

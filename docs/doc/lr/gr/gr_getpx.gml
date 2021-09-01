@@ -1,4 +1,4 @@
-.gfuncw getpixel
+.gfuncw _getpixel
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _getpixel( short x, short y );

@@ -1,4 +1,4 @@
-.gfuncwxy pie
+.gfuncwxy _pie
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _pie( short fill, short x1, short y1,

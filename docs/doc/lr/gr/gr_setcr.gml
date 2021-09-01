@@ -1,4 +1,4 @@
-.gfunc setcliprgn
+.gfunc _setcliprgn
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 void _FAR _setcliprgn( short x1, short y1,

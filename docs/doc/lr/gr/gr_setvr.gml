@@ -1,4 +1,4 @@
-.gfunc setvideomoderows
+.gfunc _setvideomoderows
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _setvideomoderows( short mode, short rows );

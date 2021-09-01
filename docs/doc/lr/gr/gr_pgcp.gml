@@ -1,4 +1,4 @@
-.gfunc pg_chartpie
+.gfunc _pg_chartpie
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _pg_chartpie( chartenv _FAR *env,

@@ -1,4 +1,4 @@
-.gfuncwxy ellipse
+.gfuncwxy _ellipse
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _ellipse( short fill, short x1, short y1,

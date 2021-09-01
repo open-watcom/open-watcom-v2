@@ -1,4 +1,4 @@
-.gfuncwxy imagesize
+.gfuncwxy _imagesize
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 long _FAR _imagesize( short x1, short y1,

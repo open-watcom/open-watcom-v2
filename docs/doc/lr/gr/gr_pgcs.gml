@@ -1,4 +1,4 @@
-.gfuncms pg_chartscatter
+.gfuncms _pg_chartscatter
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _pg_chartscatter( chartenv _FAR *env,

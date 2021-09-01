@@ -1,4 +1,4 @@
-.gfunc gettextextent
+.gfunc _gettextextent
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 void _FAR _gettextextent( short x, short y,

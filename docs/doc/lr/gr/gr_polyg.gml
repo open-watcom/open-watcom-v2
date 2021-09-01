@@ -1,4 +1,4 @@
-.gfuncwxy polygon
+.gfuncwxy _polygon
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _polygon( short fill, short numpts,

@@ -1,4 +1,4 @@
-.gfunc xxxx
+.gfunc _xxxx
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 long _FAR _xxxx

@@ -1,4 +1,4 @@
-.gfunc gettextsettings
+.gfunc _gettextsettings
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 struct textsettings _FAR * _FAR _gettextsettings

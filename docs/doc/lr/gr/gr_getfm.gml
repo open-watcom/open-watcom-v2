@@ -1,4 +1,4 @@
-.gfunc getfillmask
+.gfunc _getfillmask
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 unsigned char _FAR * _FAR

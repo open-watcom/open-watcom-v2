@@ -1,4 +1,4 @@
-.gfunc scrolltextwindow
+.gfunc _scrolltextwindow
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 void _FAR _scrolltextwindow( short rows );
@@ -33,10 +33,10 @@ Two constants are defined that can be used with the
 .id &funcb.
 &routine:
 .begterm 15
-.uterm GSCROLLUP
+.uterm _GSCROLLUP
 the contents of the text window are scrolled up (towards the top of the
 screen) by one row
-.uterm GSCROLLDOWN
+.uterm _GSCROLLDOWN
 the contents of the text window are scrolled down (towards the bottom of the
 screen) by one row
 .endterm

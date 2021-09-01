@@ -1,4 +1,4 @@
-.gfunc getphyscoord
+.gfunc _getphyscoord
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 struct xycoord _FAR _getphyscoord( short x, short y );

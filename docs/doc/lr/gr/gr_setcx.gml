@@ -1,4 +1,4 @@
-.gfuncw setcharspacing
+.gfuncw _setcharspacing
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 void _FAR _setcharspacing( short space );

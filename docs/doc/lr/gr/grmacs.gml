@@ -27,11 +27,11 @@
 .*
 .dm gfunc begin
 .gfuncinit
-.topsect _&*
-:set symbol="functiong" value="_&*".
-:set symbol="funcb" value="_&*".
-:set symbol="headtxt0$" value="_&*".
-:set symbol="headtxt1$" value="_&*".
+.topsect &*
+:set symbol="functiong" value="&*".
+:set symbol="funcb" value="&*".
+:set symbol="headtxt0$" value="&*".
+:set symbol="headtxt1$" value="&*".
 .ixm '&funcb.'
 .se __fnx=1
 .se $$fnc(1)=&funcb.
@@ -39,12 +39,12 @@
 .*
 .dm gfuncw begin
 .gfuncinit
-.topsect _&*, _&*._w
-:set symbol="functiong" value="_&*".
-:set symbol="funcb" value="_&*".
-:set symbol="func2" value="_&*._w".
-:set symbol="headtxt0$" value="_&* &rroutines".
-:set symbol="headtxt1$" value="_&* &rroutines".
+.topsect &*, &*._w
+:set symbol="functiong" value="&*".
+:set symbol="funcb" value="&*".
+:set symbol="func2" value="&*._w".
+:set symbol="headtxt0$" value="&* &rroutines".
+:set symbol="headtxt1$" value="&* &rroutines".
 .ixm '&funcb.'
 .ixm '&funcb._w'
 .se __fnx=2
@@ -54,13 +54,13 @@
 .*
 .dm gfuncwxy begin
 .gfuncinit
-.topsect _&*, _&*._w, _&*._wxy
-:set symbol="functiong" value="_&*".
-:set symbol="funcb" value="_&*".
-:set symbol="func2" value="_&*._w".
-:set symbol="func3" value="_&*._wxy".
-:set symbol="headtxt0$" value="_&* &rroutines".
-:set symbol="headtxt1$" value="_&* &rroutines".
+.topsect &*, &*._w, &*._wxy
+:set symbol="functiong" value="&*".
+:set symbol="funcb" value="&*".
+:set symbol="func2" value="&*._w".
+:set symbol="func3" value="&*._wxy".
+:set symbol="headtxt0$" value="&* &rroutines".
+:set symbol="headtxt1$" value="&* &rroutines".
 .ixm '&funcb.'
 .ixm '&funcb._w'
 .ixm '&funcb._wxy'
@@ -72,12 +72,12 @@
 .*
 .dm gfuncms begin
 .gfuncinit
-.topsect _&*, _&*.ms
-:set symbol="functiong" value="_&*".
-:set symbol="funcb" value="_&*".
-:set symbol="func1" value="_&*.ms".
-:set symbol="headtxt0$" value="_&* &rroutines".
-:set symbol="headtxt1$" value="_&* &rroutines".
+.topsect &*, &*.ms
+:set symbol="functiong" value="&*".
+:set symbol="funcb" value="&*".
+:set symbol="func1" value="&*.ms".
+:set symbol="headtxt0$" value="&* &rroutines".
+:set symbol="headtxt1$" value="&* &rroutines".
 .ixm '&funcb.'
 .ixm '&funcb.ms'
 .se __fnx=2
@@ -123,7 +123,7 @@
 .dm grexam end
 .*
 .dm uterm begin
-.note _&*
+.note &*
 .ix '&*'
 .dm uterm end
 .*

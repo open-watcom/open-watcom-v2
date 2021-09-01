@@ -1,4 +1,4 @@
-.gfunc outgtext
+.gfunc _outgtext
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 void _FAR _outgtext( char _FAR *text );

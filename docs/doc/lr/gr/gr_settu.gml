@@ -1,4 +1,4 @@
-.gfunc settextcursor
+.gfunc _settextcursor
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _settextcursor( short cursor );

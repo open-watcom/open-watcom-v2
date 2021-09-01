@@ -1,4 +1,4 @@
-.gfuncw floodfill
+.gfuncw _floodfill
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _floodfill( short x, short y,

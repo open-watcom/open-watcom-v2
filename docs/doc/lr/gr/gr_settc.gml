@@ -1,4 +1,4 @@
-.gfunc settextcolor
+.gfunc _settextcolor
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _settextcolor( short pixval );

@@ -1,4 +1,4 @@
-.gfuncms pg_analyzescatter
+.gfuncms _pg_analyzescatter
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _pg_analyzescatter( chartenv _FAR *env,

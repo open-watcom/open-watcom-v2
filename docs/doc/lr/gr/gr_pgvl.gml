@@ -1,4 +1,4 @@
-.gfunc pg_vlabelchart
+.gfunc _pg_vlabelchart
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _pg_vlabelchart( chartenv _FAR *env,

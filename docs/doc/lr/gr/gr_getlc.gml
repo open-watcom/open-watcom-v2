@@ -1,4 +1,4 @@
-.gfuncwxy getviewcoord
+.gfuncwxy _getviewcoord
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 struct xycoord _FAR _getviewcoord( short x, short y );

@@ -1,4 +1,4 @@
-.gfunc wrapon
+.gfunc _wrapon
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _wrapon( short wrap );
@@ -22,9 +22,9 @@ The
 .arg wrap
 argument can take one of the following values:
 .begterm 15
-.uterm GWRAPON
+.uterm _GWRAPON
 causes lines to wrap at the window border
-.uterm GWRAPOFF
+.uterm _GWRAPOFF
 causes lines to be truncated at the window border
 .endterm
 .desc end

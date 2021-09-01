@@ -1,4 +1,4 @@
-.gfunc selectpalette
+.gfunc _selectpalette
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _selectpalette( short palnum );

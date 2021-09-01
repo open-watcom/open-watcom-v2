@@ -1,4 +1,4 @@
-.gfunc settextpath
+.gfunc _settextpath
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 void _FAR _settextpath( short path );
@@ -20,13 +20,13 @@ by the
 &routine..
 The argument can have one of the following values:
 .begterm 15
-.uterm PATH_RIGHT
+.uterm _PATH_RIGHT
 subsequent characters are drawn to the right of the previous character
-.uterm PATH_LEFT
+.uterm _PATH_LEFT
 subsequent characters are drawn to the left of the previous character
-.uterm PATH_UP
+.uterm _PATH_UP
 subsequent characters are drawn above the previous character
-.uterm PATH_DOWN
+.uterm _PATH_DOWN
 subsequent characters are drawn below the previous character
 .endterm
 .pp

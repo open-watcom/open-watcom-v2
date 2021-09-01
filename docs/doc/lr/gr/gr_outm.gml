@@ -1,4 +1,4 @@
-.gfunc outmem
+.gfunc _outmem
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 void _FAR _outmem( char _FAR *text, short length );

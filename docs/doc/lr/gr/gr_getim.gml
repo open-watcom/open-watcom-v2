@@ -1,4 +1,4 @@
-.gfuncwxy getimage
+.gfuncwxy _getimage
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 void _FAR _getimage( short x1, short y1,

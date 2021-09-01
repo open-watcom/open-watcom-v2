@@ -1,4 +1,4 @@
-.gfuncwxy arc
+.gfuncwxy _arc
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _arc( short x1, short y1,

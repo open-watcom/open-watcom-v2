@@ -1,4 +1,4 @@
-.gfunc getgtextextent
+.gfunc _getgtextextent
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _getgtextextent( char _FAR *text );

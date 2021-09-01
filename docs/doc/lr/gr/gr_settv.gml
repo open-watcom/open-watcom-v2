@@ -1,4 +1,4 @@
-.gfunc setgtextvector
+.gfunc _setgtextvector
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 struct xycoord _FAR _setgtextvector( short x, short y );

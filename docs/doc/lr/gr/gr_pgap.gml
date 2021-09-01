@@ -1,4 +1,4 @@
-.gfunc pg_analyzepie
+.gfunc _pg_analyzepie
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _pg_analyzepie( chartenv _FAR *env,

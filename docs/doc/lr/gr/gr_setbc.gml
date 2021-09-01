@@ -1,4 +1,4 @@
-.gfunc setbkcolor
+.gfunc _setbkcolor
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 long _FAR _setbkcolor( long color );

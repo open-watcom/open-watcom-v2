@@ -1,4 +1,4 @@
-.gfunc pg_setpalette
+.gfunc _pg_setpalette
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _pg_setpalette( paletteentry _FAR *pal );

@@ -1,4 +1,4 @@
-.gfunc setvideomode
+.gfunc _setvideomode
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _setvideomode( short mode );

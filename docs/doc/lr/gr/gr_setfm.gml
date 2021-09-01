@@ -1,4 +1,4 @@
-.gfunc setfillmask
+.gfunc _setfillmask
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 void _FAR _setfillmask( char _FAR *mask );

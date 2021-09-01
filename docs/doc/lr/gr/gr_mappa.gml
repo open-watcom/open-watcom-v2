@@ -1,4 +1,4 @@
-.gfunc remapallpalette
+.gfunc _remapallpalette
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _remapallpalette( long _FAR *colors );

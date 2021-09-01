@@ -1,4 +1,4 @@
-.gfunc getgtextvector
+.gfunc _getgtextvector
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 struct xycoord _FAR _getgtextvector( void );

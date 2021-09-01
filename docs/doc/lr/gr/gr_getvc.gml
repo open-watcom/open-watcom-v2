@@ -1,4 +1,4 @@
-.gfunc getvideoconfig
+.gfunc _getvideoconfig
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 struct videoconfig _FAR * _FAR _getvideoconfig
@@ -52,23 +52,23 @@ The
 .mono adapter
 field will contain one of the following values:
 .begterm 15
-.uterm NODISPLAY
+.uterm _NODISPLAY
 no display adapter attached
-.uterm UNKNOWN
+.uterm _UNKNOWN
 unknown adapter/monitor type
-.uterm MDPA
+.uterm _MDPA
 Monochrome Display/Printer Adapter
-.uterm CGA
+.uterm _CGA
 Color Graphics Adapter
-.uterm HERCULES
+.uterm _HERCULES
 Hercules Monochrome Adapter
-.uterm MCGA
+.uterm _MCGA
 Multi-Color Graphics Array
-.uterm EGA
+.uterm _EGA
 Enhanced Graphics Adapter
-.uterm VGA
+.uterm _VGA
 Video Graphics Array
-.uterm SVGA
+.uterm _SVGA
 SuperVGA Adapter
 .endterm
 .keep end
@@ -78,15 +78,15 @@ The
 .mono monitor
 field will contain one of the following values:
 .begterm 15
-.uterm MONO
+.uterm _MONO
 regular monochrome
-.uterm COLOR
+.uterm _COLOR
 regular color
-.uterm ENHANCED
+.uterm _ENHANCED
 enhanced color
-.uterm ANALOGMONO
+.uterm _ANALOGMONO
 analog monochrome
-.uterm ANALOGCOLOR
+.uterm _ANALOGCOLOR
 analog color
 .endterm
 .keep end

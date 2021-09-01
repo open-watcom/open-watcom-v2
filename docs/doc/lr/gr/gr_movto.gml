@@ -1,4 +1,4 @@
-.gfuncw moveto
+.gfuncw _moveto
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 struct xycoord _FAR _moveto( short x, short y );

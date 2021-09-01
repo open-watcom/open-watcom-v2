@@ -1,4 +1,4 @@
-.gfunc pg_getstyleset
+.gfunc _pg_getstyleset
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 void _FAR _pg_getstyleset( unsigned short _FAR *style );

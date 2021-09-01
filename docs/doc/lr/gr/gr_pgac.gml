@@ -1,4 +1,4 @@
-.gfuncms pg_analyzechart
+.gfuncms _pg_analyzechart
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _pg_analyzechart( chartenv _FAR *env,

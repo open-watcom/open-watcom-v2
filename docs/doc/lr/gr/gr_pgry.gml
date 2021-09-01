@@ -1,4 +1,4 @@
-.gfunc pg_resetstyleset
+.gfunc _pg_resetstyleset
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 void _FAR _pg_resetstyleset( void );

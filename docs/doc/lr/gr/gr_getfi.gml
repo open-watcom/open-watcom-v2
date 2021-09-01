@@ -1,4 +1,4 @@
-.gfunc getfontinfo
+.gfunc _getfontinfo
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _getfontinfo( struct _fontinfo _FAR *info );

@@ -1,4 +1,4 @@
-.gfunc setvisualpage
+.gfunc _setvisualpage
 .gsynop begin
 .if '&lang' eq 'C' .do begin
 short _FAR _setvisualpage( short pagenum );
