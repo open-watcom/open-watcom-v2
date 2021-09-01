@@ -552,12 +552,12 @@ Prototype in
 .dm reffunc begin
 .funcref &*1.
 .if '&freffnd.' ne '0' .do begin
+.   .ix '&*1'
 .   .ofuncref &*1.
 .do end
 .dm reffunc end
 .*
 .dm seeref begin
-.ix '&*1'
 (see the
 .reffunc &*1.
 &routine)
