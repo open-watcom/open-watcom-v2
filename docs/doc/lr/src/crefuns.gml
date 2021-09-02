@@ -118,7 +118,7 @@ _strset~b~b~b~b~b~b~b
 strspn~b~b~b~b~b~b~b~b
 strstr~b~b~b~b~b~b~b~b
 strtok_s~b~b~b~b~b~b
-_strupr~b~b~b~b~b~b~bb
+_strupr~b~b~b~b~b~b~b
 swab~b~b~b~b~b~b~b~b~b~b
 tolower~b~b~b~b~b~b~b
 toupper~b~b~b~b~b~b~b

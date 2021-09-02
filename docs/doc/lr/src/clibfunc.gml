@@ -401,7 +401,7 @@ will fail if you attempt to rename a file using a name that exists.
 The output for
 .mono %p
 conversion in the
-.kw fprintf
+.reffunc fprintf
 function (7.9.6.1).
 .bigdesc
 .np
@@ -410,13 +410,13 @@ far pointers (%lp).
 The output for %p depends on the memory model being used.
 .np
 In 16-bit mode, the
-.kw fprintf
+.reffunc fprintf
 function produces hexadecimal values of the form XXXX for 16-bit near
 pointers, and XXXX:XXXX (segment and offset separated by a colon) for
 32-bit far pointers.
 .np
 In 32-bit mode, the
-.kw fprintf
+.reffunc fprintf
 function produces hexadecimal values of the form XXXXXXXX for 32-bit near
 pointers, and XXXX:XXXXXXXX (segment and offset separated by a colon) for
 48-bit far pointers.
@@ -426,12 +426,12 @@ pointers, and XXXX:XXXXXXXX (segment and offset separated by a colon) for
 The input for
 .mono %p
 conversion in the
-.kw fscanf
+.reffunc fscanf
 function (7.9.6.2).
 .bigdesc
 .np
 The
-.kw fscanf
+.reffunc fscanf
 function converts hexadecimal values into the correct address when the %p
 format specifier is used.
 .*-------------------------
@@ -443,7 +443,7 @@ character that is neither the first nor the last character in the
 scanlist for
 .mono %[
 conversion in the
-.kw fscanf
+.reffunc fscanf
 function (7.9.6.2).
 .bigdesc
 .np

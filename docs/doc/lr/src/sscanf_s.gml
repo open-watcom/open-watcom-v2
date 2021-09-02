@@ -35,12 +35,12 @@ performed input before discovering the runtime-constraint violation.
 The
 .id &funcb.
 function is equivalent to
-.kw fscanf_s
+.reffunc fscanf_s
 .ct , except that input is obtained from a string (specified by the argument
 .arg s
 .ct ) rather than from a stream. Reaching the end of the string is equivalent
 to encountering end-of-file for the
-.kw fscanf_s
+.reffunc fscanf_s
 function. If copying takes place between objects that overlap, the objects
 take on unspecified values.
 .if &'length(&wfunc.) ne 0 .do begin

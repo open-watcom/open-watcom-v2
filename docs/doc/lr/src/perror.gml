@@ -36,7 +36,7 @@ function returns no value.
 Because
 .id &funcb.
 uses the
-.kw fprintf
+.reffunc fprintf
 function,
 .kw errno
 can be set when an error is detected during the execution of

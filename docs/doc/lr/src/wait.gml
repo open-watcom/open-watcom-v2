@@ -18,7 +18,7 @@ function cannot and does not wait for child
 processes to terminate.
 To wait for any process, you must specify its process ID.
 For this reason, the
-.kw cwait
+.reffunc cwait
 function should be used (one of its arguments is a process ID).
 .im waitstat
 .desc end

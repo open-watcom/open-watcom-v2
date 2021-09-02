@@ -36,7 +36,7 @@ performed input before discovering the runtime-constraint violation.
 The
 .id &funcb.
 function is equivalent to
-.kw fscanf
+.reffunc fscanf
 except that the
 .mono c,
 .mono s,
@@ -47,7 +47,7 @@ suppression is indicated by a
 .mono *
 .ct ).
 The first of these arguments is the same as for
-.kw fscanf
+.reffunc fscanf
 .period
 That argument is immediately followed in the argument list by the second
 argument, which has type

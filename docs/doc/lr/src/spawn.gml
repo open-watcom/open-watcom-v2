@@ -138,7 +138,7 @@ function cannot be used to obtain the exit code.
 The
 .reffunc wait
 and
-.kw cwait
+.reffunc cwait
 functions cannot be used to obtain the exit code.
 .do end
 .term P_OVERLAY
@@ -341,7 +341,7 @@ To obtain the exit code for a process spawned with
 (under OS/2 or QNX)
 .if '&machsys' ne 'QNX' .do begin
 or
-.kw cwait
+.reffunc cwait
 (under OS/2 or Win32)
 .do end
 function specifying the process ID/handle.

@@ -39,7 +39,7 @@ performed input before discovering the runtime-constraint violation.
 The
 .id &funcb.
 function is equivalent to
-.kw sscanf_s
+.reffunc sscanf_s
 .ct , with the variable argument list replaced by
 .arg arg
 .ct , which shall have been initialized by the

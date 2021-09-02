@@ -60,7 +60,7 @@ to the null character.
 The
 .id &funcb.
 function is equivalent to the
-.kw vsnprintf
+.reffunc vsnprintf
 function except for the explicit runtime-constraints listed above.
 .np
 The

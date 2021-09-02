@@ -28,7 +28,7 @@ Following the format string is a list of addresses to receive values.
 The
 .arg format
 string is described under the description of the
-.kw scanf
+.reffunc scanf
 function.
 .if &'length(&wfunc.) ne 0 .do begin
 .np

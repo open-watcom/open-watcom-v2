@@ -119,13 +119,13 @@ and the same considerations will apply.
 .if '&machsys' ne 'QNX' .do begin
 .np
 The
-.kw WinMain
+.reffunc WinMain
 function is called by the system as the initial entry point for a
 Windows-based application.
 The
 .kw wWinMain
 function is a wide character version of
-.kw WinMain
+.reffunc WinMain
 .period
 .begterm 10
 .termhd1 Parameters
@@ -180,7 +180,7 @@ original size and position (same as
 .endterm
 .np
 The
-.kw WinMain
+.reffunc WinMain
 function initializes an application, and then performs a message
 retrieval-and-dispatch loop that is the top-level control structure for
 the remainder of the application's execution.
@@ -188,7 +188,7 @@ The loop terminates when a
 .kw WM_QUIT
 message is received.
 At that point,
-.kw WinMain
+.reffunc WinMain
 exits the application, returning the value passed in the
 .kw WM_QUIT
 message's
@@ -225,7 +225,7 @@ system).
 .if '&machsys' ne 'QNX' .do begin
 .np
 If the
-.kw WinMain
+.reffunc WinMain
 function terminates before entering the message loop, it should
 return 0.
 Otherwise, it should terminate when it receives a

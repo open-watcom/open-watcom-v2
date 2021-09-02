@@ -19,7 +19,7 @@ This value may be changed by a program at any time.
 This
 .id int
 item contains the number of arguments passed to
-.kw main
+.reffunc main
 .period
 .df __argv
 .proto stdlib.h
@@ -27,7 +27,7 @@ This
 .id char **
 item contains a pointer to a vector containing the actual arguments
 passed to
-.kw main
+.reffunc main
 .period
 .do end
 .df daylight

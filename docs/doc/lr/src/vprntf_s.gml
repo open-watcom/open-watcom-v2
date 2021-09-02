@@ -41,7 +41,7 @@ produced output before discovering the runtime-constraint violation.
 The
 .id &funcb.
 function is equivalent to the
-.kw vprintf
+.reffunc vprintf
 function except for the explicit runtime-constraints listed above.
 .im widefun4
 .desc end

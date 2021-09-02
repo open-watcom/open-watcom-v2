@@ -60,13 +60,13 @@ to the null character.
 The
 .id &funcb.
 function is equivalent to the
-.kw vsprintf
+.reffunc vsprintf
 function except for the explicit runtime-constraints listed above.
 .np
 The
 .id &funcb.
 function, unlike
-.kw vsnprintf_s
+.reffunc vsnprintf_s
 .ct , treats a result too big for the array pointed to by
 .arg s
 as a runtime-constraint violation.

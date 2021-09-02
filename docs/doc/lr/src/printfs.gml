@@ -172,7 +172,7 @@ For
 .reffunc printf
 and related byte input/output functions, this specifier is redundant.
 For
-.kw wprintf
+.reffunc wprintf
 and related wide character input/output functions, this specifier is
 required if the argument string is to be treated as an 8-bit ASCII
 character string; otherwise it will be treated as a wide character
@@ -204,7 +204,7 @@ and related byte input/output functions, this specifier is required if
 the argument string is to be treated as a wide character string;
 otherwise it will be treated as an 8-bit ASCII character string.
 For
-.kw wprintf
+.reffunc wprintf
 and related wide character input/output functions, this specifier is
 redundant.
 .millust begin

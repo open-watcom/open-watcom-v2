@@ -28,7 +28,7 @@ successfully read.
 This value may be less than the requested number of elements.
 .pp
 The
-.kw feof
+.reffunc feof
 and
 .kw ferror
 functions can be used to determine whether the end of the file was

@@ -18,7 +18,7 @@ int _snwprintf( wchar_t *buf,
 The
 .id &funcb.
 function is equivalent to the
-.kw fprintf
+.reffunc fprintf
 function, except that the argument
 .arg buf
 specifies a character array into which the generated output is placed,

@@ -20,7 +20,7 @@ The parameters
 and
 .arg argv
 are the argument count and argument array as passed to
-.kw main
+.reffunc main
 .period
 The argument
 .arg optstring

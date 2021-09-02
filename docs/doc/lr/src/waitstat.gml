@@ -14,7 +14,7 @@ function.
 The
 .kw DOSEXIT
 function is called whenever
-.kw main
+.reffunc main
 returns, or
 .reffunc exit
 .ct , or

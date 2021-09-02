@@ -31,7 +31,7 @@ performed input before discovering the runtime-constraint violation.
 The
 .id &funcb.
 function is equivalent to
-.kw fscanf_s
+.reffunc fscanf_s
 with the argument
 .arg stdin
 interposed before the arguments to &funcb.

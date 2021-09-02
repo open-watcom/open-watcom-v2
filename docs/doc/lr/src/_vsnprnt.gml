@@ -41,7 +41,7 @@ function.
 The
 .id &funcb.
 function is equivalent to the
-.kw _snprintf
+.reffunc _snprintf
 function, with the variable argument list replaced with
 .arg arg
 .ct , which has been initialized by the

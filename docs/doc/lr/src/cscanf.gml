@@ -20,7 +20,7 @@ to read characters from the console.
 The
 .arg format
 string is described under the description of the
-.kw scanf
+.reffunc scanf
 function.
 .desc end
 .return begin
