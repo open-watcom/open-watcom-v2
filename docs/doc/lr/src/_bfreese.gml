@@ -12,7 +12,7 @@ function frees a based-heap segment.
 The argument
 .arg seg
 indicates the segment returned by an earlier call to
-.kw _bheapseg
+.reffunc _bheapseg
 .period
 .desc end
 .return begin

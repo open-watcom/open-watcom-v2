@@ -649,7 +649,7 @@ format.
 .*------------------------------
 .df sys/locking.h
 This header file contains the manifest constants used by the
-.kw locking
+.reffunc locking
 function.
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin

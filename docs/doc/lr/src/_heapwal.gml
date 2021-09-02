@@ -76,7 +76,7 @@ function; in a large data memory model, the
 .id &funcb.
 function is
 equivalent to the
-.kw _fheapwalk
+.reffunc _fheapwalk
 function.
 .desc end
 .return begin

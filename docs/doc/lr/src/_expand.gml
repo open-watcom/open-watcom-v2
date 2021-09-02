@@ -75,7 +75,7 @@ if the memory block could not be expanded to the desired size.
 It will be expanded as much as possible in this case.
 .np
 The appropriate
-.kw _msize
+.reffunc _msize
 function can be used to determine the new size of the expanded block.
 .return end
 .see begin

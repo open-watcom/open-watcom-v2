@@ -90,9 +90,9 @@ function call ignores advisory locks which may
 have been set by the
 .reffunc fcntl
 .ct ,
-.kw lock
+.reffunc lock
 .ct , or
-.kw locking
+.reffunc locking
 functions.
 .do end
 .el .do begin

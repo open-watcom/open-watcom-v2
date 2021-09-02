@@ -15,7 +15,7 @@ bytes of the object pointed to by
 with zero (null) bytes.
 .np
 Note that this function is similar to the ISO C
-.kw memset
+.reffunc memset
 function (new code should use the ISO C function).
 .desc end
 .return begin

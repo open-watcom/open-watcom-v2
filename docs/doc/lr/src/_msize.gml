@@ -50,21 +50,21 @@ Near heap (inside the default data segment)
 In small data models (small and medium memory models),
 .id &funcb.
 maps to
-.kw _nmsize
+.reffunc _nmsize
 .period
 In large data models (compact, large and huge memory models), &funcb
 maps to
-.kw _fmsize
+.reffunc _fmsize
 .period
 :cmt. .pp
 :cmt. The
-:cmt. .kw _nmsize
+:cmt. .reffunc _nmsize
 :cmt. function returns the size of the memory block allocated by a call to
 :cmt. .reffunc _nmalloc
 :cmt. .period
 :cmt. .pp
 :cmt. The
-:cmt. .kw _fmsize
+:cmt. .reffunc _fmsize
 :cmt. function returns the size of the memory block allocated by a call to
 :cmt. .reffunc _fmalloc
 :cmt. .period
