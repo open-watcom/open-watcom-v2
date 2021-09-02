@@ -16,7 +16,7 @@ function causes normal program termination to occur.
 The functions registered by the
 .reffunc atexit
 or
-.reffunc onexit
+.reffunc _onexit
 functions are not called.
 .if '&machsys' eq 'QNX' .do begin
 .note

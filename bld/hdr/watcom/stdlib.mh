@@ -577,8 +577,7 @@ extern  wchar_t **__wargv;      /* vector of wide cmd line args */
 
 :include brk.sp
 
-typedef void (_WCCALLBACK *onexit_t)( void );
-_WCRTLINK extern onexit_t     onexit( onexit_t __func );
+:include onexit.sp
 
 :include extepi.sp
 

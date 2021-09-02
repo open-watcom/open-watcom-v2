@@ -2062,7 +2062,7 @@ exit process, set return code
 create a new process
 .fd kill
 send a signal to specified process
-.fd onexit
+.fd _onexit
 register exit routine
 .fd pause
 suspend calling process until signal

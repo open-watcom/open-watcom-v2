@@ -99,6 +99,8 @@ memccp        memccpy           _memccpy          d16 d32 nt  nta ntp nvc ncl nv
 memicm        _memicmp          memicmp           d16 d32 nt  nta ntp nvc     nvl     o16 o32         w16 w32 l32         rdu rdk
 memic0        memicmp           _memicmp                                  ncl     nll
 mkdir_        mkdir             _mkdir            d16 d32 nt  nta ntp                 o16 o32         w16 w32             rdu rdk
+onexit        _onexit           onexit            d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
+onexi0        onexit            _onexit                                   ncl     nll
 open__        open              _open             d16 d32 nt  nta ntp                 o16 o32         w16 w32             rdu rdk
 pclose        pclose            _pclose                                                                       l32 lpc lmp
 popen_        popen             _popen                                                                        l32 lpc lmp

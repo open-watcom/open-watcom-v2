@@ -980,6 +980,7 @@
 .fnc nthctype                 nthctype                 nthctype.gml  NEC
 .fnf _fnthctype               nthctype                 nthctype.gml  NEC
 .fnc offsetof                 offsetof                 offsetof.gml  DOS QNX W WIN32
+.fnc _onexit                  onexit                   onexit.gml    DOS QNX W WIN32
 .fnc onexit                   onexit                   onexit.gml    DOS QNX W WIN32
 .fnc open                     open                     open.gml      DOS QNX W WIN32
 .fn8 _open                    open                     open.gml      DOS       WIN32
