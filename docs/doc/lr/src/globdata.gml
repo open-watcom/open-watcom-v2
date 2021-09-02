@@ -193,17 +193,17 @@ to reserve when running a 32-bit DOS extended application.
 This
 .id char *
 variable contains a pointer to an option-argument parsed by the
-.kw getopt
+.reffunc getopt
 function.
 .df opterr
 .proto unistd.h
 This
 .id int
 variable controls whether the
-.kw getopt
+.reffunc getopt
 function will print error messages. The default value is non-zero and
 will cause the
-.kw getopt
+.reffunc getopt
 function to print error messages on the console.
 .df optind
 .proto unistd.h
@@ -211,14 +211,14 @@ This
 .id int
 variable holds the index of the argument array element currently
 processed by the
-.kw getopt
+.reffunc getopt
 function.
 .df optopt
 .proto unistd.h
 This
 .id int
 variable contains the unrecognized option character in case the
-.kw getopt
+.reffunc getopt
 function returns an error.
 .df _osmajor
 .proto stdlib.h

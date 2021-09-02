@@ -219,7 +219,7 @@ declaration of the floating-point exception codes.
 .*------------------------------
 .df fnmatch.h
 This header file declares the pattern matching function
-.kw fnmatch
+.reffunc fnmatch
 .*------------------------------
 .df graph.h
 This header file contains structure definitions and function
@@ -272,7 +272,7 @@ is defined.
 This header file declares functions that perform input/output
 operations at the operating system level. These functions use file
 &handle.s to reference files or devices. The function
-.kw fstat
+.reffunc fstat
 is declared in the
 .hdrfile sys/stat.h
 header file.
@@ -357,16 +357,16 @@ declarations for regular expression handling.
 .*------------------------------
 .df search.h
 This header file declares the functions
-.kw lfind
+.reffunc lfind
 and
-.kw lsearch
+.reffunc lsearch
 .*------------------------------
 .df setjmp.h
 .ix 'Non-local jumps'
 This ISO C90 header file declares the
-.kw setjmp
+.reffunc setjmp
 and
-.kw longjmp
+.reffunc longjmp
 functions.
 .*------------------------------
 .df share.h
@@ -378,7 +378,7 @@ function.
 This ISO C90 header file declares the
 .reffunc signal
 and
-.kw raise
+.reffunc raise
 functions.
 .*------------------------------
 .df stdarg.h
@@ -481,7 +481,7 @@ defines the structure
 This POSIX header file declares functions that perform input/output
 operations at the operating system level. These functions use file
 &handle.s to reference files or devices. The function
-.kw fstat
+.reffunc fstat
 is declared in the
 .hdrfile sys/stat.h
 header file.
@@ -496,7 +496,7 @@ UNIX code.
 .if '&machsys' eq 'QNX' .do begin
 .df utime.h
 This POSIX header file declares the
-.kw utime
+.reffunc utime
 function and defines the structure
 .kw utimbuf
 that is used by it.
@@ -773,7 +773,7 @@ This header file contains session information data structures.
 .df sys/stat.h
 This POSIX header file contains the declarations pertaining to file
 status, including definitions for the
-.kw fstat
+.reffunc fstat
 and
 .kw stat
 functions and for the structure:
@@ -792,7 +792,7 @@ This header file contains standard system message definitions.
 This header file describes the
 .kw timeb
 structure used in conjunction with the
-.kw ftime
+.reffunc ftime
 function.
 .*------------------------------
 .if '&machsys' eq 'QNX' .do begin
@@ -831,7 +831,7 @@ writev() functions.
 .if '&machsys' ne 'QNX' .do begin
 .df sys/utime.h
 This POSIX header file contains a declaration for the
-.kw utime
+.reffunc utime
 function and for the structured type
 .kw utimbuf
 used by it.
@@ -843,7 +843,7 @@ This POSIX header file contains a definition of the
 .kw utsname
 structure and
 a prototype for the
-.kw uname
+.reffunc uname
 function.
 .do end
 .*------------------------------

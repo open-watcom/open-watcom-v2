@@ -59,7 +59,7 @@ function places the result string in a static buffer that is
 re-used each time
 .id &funcb.
 or
-.kw jasctime
+.reffunc jasctime
 is called.
 .np
 Whenever the

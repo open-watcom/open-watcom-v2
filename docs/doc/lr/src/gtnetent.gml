@@ -8,7 +8,7 @@ The
 .id &funcb.
 function retrieves the next entry in the network database.  If
 not proceeded by an appropriate call to
-.kw setnetent
+.reffunc setnetent
 .ct , the function will always return the first network in the
 database.  The routine will query the local database only.
 .np

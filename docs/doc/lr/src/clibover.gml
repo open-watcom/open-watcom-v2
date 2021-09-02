@@ -3730,7 +3730,7 @@ Whenever
 .ct ,
 .kw localtime
 .ct ,
-.kw _localtime
+.reffunc _localtime
 or
 .kw mktime
 is called, the time zone names contained in the external variable

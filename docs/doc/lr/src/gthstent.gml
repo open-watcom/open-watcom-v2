@@ -13,7 +13,7 @@ pointer is returned if either an error is encountered or no
 further entries exist.
 .np
 If a call to
-.kw sethostent
+.reffunc sethostent
 was not first made, the
 .id &funcb.
 function will open the database if necessary initially.  By default,

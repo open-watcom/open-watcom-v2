@@ -8,14 +8,14 @@ The
 .id &funcb.
 function opens or rewinds the network database for subsequent
 access by the
-.kw getnetent
+.reffunc getnetent
 function.  If
 .arg stayopen
 is non-zero, the network database will remain open between calls
 to the
-.kw getnetent
+.reffunc getnetent
 function.  The database can be closed when
-.kw endnetent
+.reffunc endnetent
 is called.
 .np
 This function is not thread-safe.  Other calls to this function

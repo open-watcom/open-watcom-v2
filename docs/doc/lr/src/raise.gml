@@ -28,7 +28,7 @@ raised and a non-zero value otherwise.
 There may be no return of control following the function call if the
 action for that condition is to terminate the program or to transfer
 control using the
-.kw longjmp
+.reffunc longjmp
 function.
 .return end
 .see begin

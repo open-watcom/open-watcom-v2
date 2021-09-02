@@ -35,7 +35,7 @@ That time is Coordinated Universal Time (UTC) (formerly known as
 Greenwich Mean Time (GMT)).
 .np
 The
-.kw _localtime
+.reffunc _localtime
 function places the converted time in the
 .kw tm
 structure pointed to by

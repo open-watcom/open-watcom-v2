@@ -10,9 +10,9 @@ function opens or rewinds the service database.  If
 .arg stayopen
 is non-zero, the database will be kept open between calls
 to
-.kw getservent
+.reffunc getservent
 until
-.kw endservent
+.reffunc endservent
 is called to close the database.
 .np
 This function is not thread-safe.  Other calls to this function

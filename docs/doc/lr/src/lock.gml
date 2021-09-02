@@ -32,7 +32,7 @@ other applications.
 .el .do begin
 This prevents other processes from reading or writing into the locked
 region until an
-.kw unlock
+.reffunc unlock
 has been done for this locked region of the file.
 .do end
 .np

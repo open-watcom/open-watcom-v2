@@ -11,9 +11,9 @@ reading starting at the first entry.  If
 .arg stayopen
 is non-zero, the database will remain open between subsequent
 calls to
-.kw getprotoent
+.reffunc getprotoent
 until the
-.kw endprotoent
+.reffunc endprotoent
 function is called.
 .np
 This function is not thread-safe.  Other calls to this function
