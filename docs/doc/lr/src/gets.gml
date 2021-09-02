@@ -37,7 +37,7 @@ character is read.
 .do end
 .np
 It is recommended that
-.kw fgets
+.reffunc fgets
 be used instead of
 .id &funcb.
 because data beyond the array

@@ -20,7 +20,7 @@ The number of bytes to copy is specified by
 Copying of overlapping objects is guaranteed to work properly.
 .np
 Note that this function is similar to the ISO C
-.kw memmove
+.reffunc memmove
 function but the order of arguments is different
 (new code should use the ISO C function).
 .desc end

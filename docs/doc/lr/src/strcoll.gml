@@ -28,7 +28,7 @@ to the string pointed to by
 .arg s2
 .period
 The comparison uses the collating sequence selected by the
-.kw setlocale
+.reffunc setlocale
 function.
 The function will be equivalent to the
 .kw strcmp

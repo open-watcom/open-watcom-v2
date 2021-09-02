@@ -32,19 +32,19 @@ indicated by
 .im ansiconf
 .np
 The
-.kw _fstati64
+.reffunc _fstati64
 .ct ,
-.kw _wfstat
+.reffunc _wfstat
 .ct , and
-.kw _wfstati64
+.reffunc _wfstati64
 functions differ from
 .id &funcb.
 in the type of structure that they are
 asked to fill in.
 The
-.kw _wfstat
+.reffunc _wfstat
 and
-.kw _wfstati64
+.reffunc _wfstati64
 functions deal with wide character strings.
 The differences in the structures are described above.
 .desc end

@@ -64,7 +64,7 @@ into the buffer pointed to by
 .period
 Copying between overlapping objects is not allowed.
 See the
-.kw memmove_s
+.reffunc memmove_s
 function if you wish to copy objects that overlap.
 .if &'length(&_func.) ne 0 .do begin
 .farfuncp &ffunc. &funcb.

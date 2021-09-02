@@ -108,9 +108,9 @@ assignments:
 :CMT. is initially NULL because the environment is composed of
 :CMT. multi-byte character strings.
 :CMT. Then, on the first call to
-:CMT. .kw _wputenv
+:CMT. .reffunc _wputenv
 :CMT. .ct , or on the first call to
-:CMT. .kw _wgetenv
+:CMT. .reffunc _wgetenv
 :CMT. if an (MBCS) environment already exists, a corresponding
 :CMT. wide character string environment is created and is then
 :CMT. pointed to by

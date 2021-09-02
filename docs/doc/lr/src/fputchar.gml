@@ -22,7 +22,7 @@ to the output stream
 .kw stdout
 .period
 This function is identical to the
-.kw putchar
+.reffunc putchar
 function.
 .np
 The function is equivalent to:

@@ -13,7 +13,7 @@ directly to the console using the
 .reffunc putch
 function.
 Unlike the
-.kw puts
+.reffunc puts
 function, the carriage-return and line-feed characters are not appended
 to the string.
 The terminating null character is not written.

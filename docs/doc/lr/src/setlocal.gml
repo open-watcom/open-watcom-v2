@@ -26,7 +26,7 @@ with one another), the way in which certain character-handling functions
 operate, the decimal-point character that is used in formatted
 input/output and string conversion, and the format and names used in
 the time string produced by the
-.kw strftime
+.reffunc strftime
 function.
 .np
 Potentially, there may be many such environments.

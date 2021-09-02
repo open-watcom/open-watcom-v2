@@ -24,19 +24,19 @@ double yn( int n, double x );
 .desc begin
 .ix '&Math' 'bessel Functions'
 Functions
-.kw j0
+.reffunc j0
 .ct ,
-.kw j1
+.reffunc j1
 .ct , and
-.kw jn
+.reffunc jn
 return Bessel functions of the first kind.
 .pp
 Functions
-.kw y0
+.reffunc y0
 .ct ,
-.kw y1
+.reffunc y1
 .ct , and
-.kw yn
+.reffunc yn
 return Bessel functions of the second kind.
 The argument
 .arg x

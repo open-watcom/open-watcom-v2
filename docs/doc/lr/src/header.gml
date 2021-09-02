@@ -286,7 +286,7 @@ boundary values for ranges of integers and characters.
 This ISO C90 header file contains declarations for the categories
 .mono (LC...)
 of locales which can be selected using the
-.kw setlocale
+.reffunc setlocale
 function which is also declared.
 .*------------------------------
 .df malloc.h

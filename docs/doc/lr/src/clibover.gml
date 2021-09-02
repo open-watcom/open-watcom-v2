@@ -1760,7 +1760,7 @@ for other functions which operate upon files.
 The functions referenced in the section
 .us Operating System I/O Functions
 may also be invoked (use the
-.kw fileno
+.reffunc fileno
 function to obtain the file &handle).
 Since the stream functions may buffer input and output, these
 functions should be used with caution to avoid unexpected results.
@@ -3724,15 +3724,15 @@ is omitted, is
 .endnote
 .np
 Whenever
-.kw ctime
+.reffunc ctime
 .ct ,
-.kw _ctime
+.reffunc _ctime
 .ct ,
-.kw localtime
+.reffunc localtime
 .ct ,
 .reffunc _localtime
 or
-.kw mktime
+.reffunc mktime
 is called, the time zone names contained in the external variable
 .kw tzname
 will be set as if the
@@ -3741,7 +3741,7 @@ function had been called.
 The same is true if the
 .mono %Z
 directive of
-.kw strftime
+.reffunc strftime
 is used.
 .np
 Some examples are:

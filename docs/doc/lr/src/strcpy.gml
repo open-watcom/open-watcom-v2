@@ -46,7 +46,7 @@ function copies the string pointed to by
 .period
 Copying of overlapping objects is not guaranteed to work properly.
 See the description for the
-.kw memmove
+.reffunc memmove
 function to copy objects that overlap.
 .farfunc &ffunc. &funcb.
 .widefunc &wfunc. &funcb.

@@ -628,11 +628,11 @@ corresponding daylight saving time zone is "Eastern Daylight Saving Time"
 .section The clock Function
 .bigterm
 The era for the
-.kw clock
+.reffunc clock
 function (7.12.2.1).
 .bigdesc
 .np
 The
-.kw clock
+.reffunc clock
 function's era begins with a value of 0 when the program starts to execute.
 .endbigterms

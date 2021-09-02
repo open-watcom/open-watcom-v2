@@ -36,7 +36,7 @@ to the buffer pointed to by
 .period
 Copying of overlapping objects will take place properly.
 See the
-.kw memcpy
+.reffunc memcpy
 function to copy objects that do not overlap.
 .farfunc &ffunc. &funcb.
 .widefunc &wfunc. &funcb.

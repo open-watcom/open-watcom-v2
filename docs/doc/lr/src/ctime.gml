@@ -57,24 +57,24 @@ places the result string in a static buffer
 that is re-used each time
 .idbold &funcb.
 or
-.kw asctime
+.reffunc asctime
 is called.
 The non-ISO C function
-.kw _ctime
+.reffunc _ctime
 places the result string in the buffer pointed to by
 .arg buf
 .period
 .if &'length(&wfunc.) ne 0 .do begin
 .np
 The wide character function
-.kw _wctime
+.reffunc _wctime
 is identical to
 .idbold &funcb.
 except that it produces a wide character string.
 The wide character function
-.kw __wctime
+.reffunc __wctime
 is identical to
-.kw _ctime
+.reffunc _ctime
 except that it produces a wide character string.
 .do end
 .np

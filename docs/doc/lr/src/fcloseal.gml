@@ -29,7 +29,7 @@ function closes all open stream files, except
 .period
 .do end
 This includes streams created (and not yet closed) by
-.kw fdopen
+.reffunc fdopen
 .ct ,
 .reffunc fopen
 and

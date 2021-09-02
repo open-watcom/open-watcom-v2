@@ -27,7 +27,7 @@ to the buffer pointed to by
 .arg dst
 .period
 The transformation uses the collating sequence selected by the
-.kw setlocale
+.reffunc setlocale
 function so that two transformed strings will compare identically
 (using the
 .kw strncmp

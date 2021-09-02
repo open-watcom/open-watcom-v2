@@ -20,7 +20,7 @@ The number of bytes to compare is specified by
 Null characters may be included in the comparision.
 .np
 Note that this function is similar to the ISO C
-.kw memcmp
+.reffunc memcmp
 function but just tests for equality
 (new code should use the ISO C function).
 .desc end
