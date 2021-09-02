@@ -11,11 +11,11 @@ function obtains the next available keystroke from the console.
 The function will wait until a keystroke is available.
 That character is echoed on the screen at the position of the cursor
 (use
-.kw getch
+.reffunc getch
 when it is not desired to echo the keystroke).
 .pp
 The
-.kw kbhit
+.reffunc kbhit
 function can be used to determine if a keystroke is available.
 .desc end
 .return begin

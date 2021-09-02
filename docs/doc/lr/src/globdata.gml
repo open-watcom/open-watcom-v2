@@ -431,7 +431,7 @@ environment variable.
 This
 .id int
 item contains the number of arguments passed to
-.kw wmain
+.reffunc wmain
 .period
 .df __wargv
 .proto stdlib.h
@@ -439,7 +439,7 @@ This
 .id wchar_t **
 item contains a pointer to a vector containing the actual arguments
 passed to
-.kw wmain
+.reffunc wmain
 .period
 .df _wenviron
 .proto stdlib.h

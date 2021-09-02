@@ -15,7 +15,7 @@ under control of the argument
 The
 .id &funcb.
 function uses the function
-.kw getche
+.reffunc getche
 to read characters from the console.
 The
 .arg format

@@ -13,9 +13,9 @@ The
 function tests whether or not a keystroke is currently
 available.
 When one is available, the function
-.kw getch
+.reffunc getch
 or
-.kw getche
+.reffunc getche
 may be used to obtain the keystroke in question.
 .pp
 With a stand-alone program, the

@@ -14,7 +14,7 @@ wint_t getwchar( void );
 The
 .id &funcb.
 function is equivalent to
-.kw getc
+.reffunc getc
 with the argument
 .kw stdin
 .period
@@ -26,7 +26,7 @@ function is similar to
 .id &funcb.
 except that it is equivalent
 to
-.kw getwc
+.reffunc getwc
 with the argument
 .kw stdin
 .period

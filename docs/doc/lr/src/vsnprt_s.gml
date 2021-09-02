@@ -66,7 +66,7 @@ function except for the explicit runtime-constraints listed above.
 The
 .id &funcb.
 function, unlike
-.kw vsprintf_s
+.reffunc vsprintf_s
 .ct , will truncate the result to fit within the array pointed to by
 .arg s
 .period

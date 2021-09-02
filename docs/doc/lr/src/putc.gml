@@ -15,7 +15,7 @@ wint_t putwc( wint_t c, FILE *fp );
 The
 .id &funcb.
 function is equivalent to
-.kw fputc
+.reffunc fputc
 .ct , except it may be implemented as a macro.
 The
 .id &funcb.

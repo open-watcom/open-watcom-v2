@@ -15,7 +15,7 @@ Following the format string is a list of addresses to receive values.
 The
 .id &funcb.
 function uses the function
-.kw getche
+.reffunc getche
 to read characters from the console.
 The
 .arg format

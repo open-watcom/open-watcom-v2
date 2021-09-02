@@ -50,7 +50,7 @@ The
 .id &funcb.
 function clears the end-of-file indicator and undoes any
 effects of the
-.kw ungetc
+.reffunc ungetc
 function on the same file.
 .np
 The

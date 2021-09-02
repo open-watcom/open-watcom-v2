@@ -10,7 +10,7 @@ The
 function writes the character string pointed to by
 .arg buf
 directly to the console using the
-.kw putch
+.reffunc putch
 function.
 Unlike the
 .kw puts
