@@ -177,19 +177,19 @@ DOS systems.
 The arguments may be passed as a list of arguments (
 .ct .reffunc spawnl
 .ct ,
-.kw spawnle
+.reffunc spawnle
 .ct ,
 .reffunc spawnlp
 and
 .reffunc spawnlpe
 .ct ) or as a vector of pointers (
-.ct .kw spawnv
+.ct .reffunc spawnv
 .ct ,
-.kw spawnve
+.reffunc spawnve
 .ct ,
-.kw spawnvp
+.reffunc spawnvp
 .ct , and
-.kw spawnvpe
+.reffunc spawnvpe
 .ct ).
 At least one argument,
 .arg arg0
@@ -214,18 +214,18 @@ process when you use the
 .ct ,
 .reffunc spawnlp
 .ct ,
-.kw spawnv
+.reffunc spawnv
 and
-.kw spawnvp
+.reffunc spawnvp
 functions.
 The
-.kw spawnle
+.reffunc spawnle
 .ct ,
 .reffunc spawnlpe
 .ct ,
-.kw spawnve
+.reffunc spawnve
 and
-.kw spawnvpe
+.reffunc spawnvpe
 functions allow a different environment to be passed to the child
 process through the
 .arg envp
@@ -372,7 +372,7 @@ is set to indicate the error.
 .error begin
 .if '&machsys' eq 'QNX' .do begin
 See the
-.kw qnx_spawn
+.reffunc qnx_spawn
 function for a description of possible
 .kw errno
 values.

@@ -41,7 +41,7 @@ argument.
 .if &'length(&wfunc.) ne 0 .do begin
 .np
 The
-.kw _wstrftime_ms
+.reffunc _wstrftime_ms
 function is identical to
 .id &wfunc.
 except that the

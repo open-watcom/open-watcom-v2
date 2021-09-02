@@ -27,7 +27,7 @@ to the string pointed to by
 .arg s2
 .period
 The comparison uses the current code page which can be selected by the
-.kw _setmbcp
+.reffunc _setmbcp
 function.
 All uppercase characters from
 .arg s1
@@ -48,7 +48,7 @@ is less than, equal to, or greater than the string pointed to by
 :CMT. .kw _NLSCMPERR
 :CMT. .period
 :CMT. The
-:CMT. .kw _wcsicoll
+:CMT. .reffunc _wcsicoll
 :CMT. function may set
 :CMT. .kw errno
 :CMT. to

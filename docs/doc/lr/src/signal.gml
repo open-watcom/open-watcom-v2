@@ -98,9 +98,9 @@ If you use
 .reffunc longjmp
 to return from a signal handler, the signal will remain masked.
 You can use
-.kw siglongjmp
+.reffunc siglongjmp
 to restore the mask to the state saved in a previous call to
-.kw sigsetjmp
+.reffunc sigsetjmp
 .period
 .do end
 .np

@@ -17,7 +17,7 @@ using the mapping described by
 Valid values of
 .arg desc
 are defined by the use of the
-.kw wctrans
+.reffunc wctrans
 function.
 .np
 The two expressions listed below behave the same as a

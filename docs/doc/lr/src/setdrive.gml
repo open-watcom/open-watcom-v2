@@ -24,7 +24,7 @@ function has no return value.
 If an invalid drive number is specified, the function fails with no
 error indication.
 You must use the
-.kw _dos_getdrive
+.reffunc _dos_getdrive
 function to check that the desired drive has been set.
 .return end
 .see begin

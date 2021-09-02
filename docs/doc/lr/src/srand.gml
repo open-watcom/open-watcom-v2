@@ -11,7 +11,7 @@ function uses the argument
 .arg seed
 to start a new sequence of pseudo-random integers to be returned by
 subsequent calls to
-.kw rand
+.reffunc rand
 .period
 A particular sequence of pseudo-random integers can be repeated by
 calling

@@ -32,7 +32,7 @@ The &func64 function is similar to the
 function but returns a
 64-bit file position.
 This value may be used in conjunction with the
-.kw _lseeki64
+.reffunc _lseeki64
 function to reset the current file position.
 .np
 .deprfunc tell _tell

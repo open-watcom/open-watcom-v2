@@ -19,7 +19,7 @@ The
 .id &funcb.
 function calculates the length of the (untruncated) locale-specific
 message string that the
-.kw strerror_s
+.reffunc strerror_s
 function maps to
 .arg errnum
 .period

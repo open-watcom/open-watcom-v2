@@ -64,7 +64,7 @@ function except for the explicit runtime-constraints listed above.
 The
 .id &funcb.
 function, unlike
-.kw snprintf_s
+.reffunc snprintf_s
 .ct , treats a result too big for the array pointed to by
 .arg s
 as a runtime-constraint violation.

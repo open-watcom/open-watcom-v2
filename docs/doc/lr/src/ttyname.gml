@@ -19,7 +19,7 @@ pointed to by the original call to
 be freed.
 .np
 The
-.kw ttyname_r
+.reffunc ttyname_r
 function performs the same function as
 .id &funcb.
 .ct , but the name of the TTY is returned in the
@@ -29,7 +29,7 @@ argument.  The argument
 should specify the size of the
 .arg buf
 argument.  The
-.kw ttyname_r
+.reffunc ttyname_r
 function is an Open Watcom extension commonly implemented in other
 standard libraries.
 .desc end
@@ -44,11 +44,11 @@ and
 will be set appropriately.
 .np
 Upon success, the
-.kw ttyname_r
+.reffunc ttyname_r
 function will return zero, and the
 .arg buf
 argument will contain the name of the TTY.   Upon failure, the
-.kw ttyname_r
+.reffunc ttyname_r
 function will return the error code and set
 .kw errno
 as well.

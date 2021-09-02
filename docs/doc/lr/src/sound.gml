@@ -12,7 +12,7 @@ function turns on the PC's speaker at the specified
 .period
 The frequency is in Hertz (cycles per second).
 The speaker can be turned off by calling the
-.kw nosound
+.reffunc nosound
 function after an appropriate amount of time.
 .im privity
 .if '&machsys' eq 'QNX' .do begin

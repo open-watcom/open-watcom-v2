@@ -9,7 +9,7 @@ The
 .id &funcb.
 functions are used to transfer control to a user-defined
 error handler if the
-.kw new
+.reffunc new
 operator fails to allocate memory.
 The argument
 .arg pNewHandler

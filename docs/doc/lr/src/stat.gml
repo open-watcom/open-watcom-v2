@@ -39,17 +39,17 @@ indicated by
 The
 .reffunc _stati64
 .ct ,
-.kw _wstat
+.reffunc _wstat
 .ct , and
-.kw _wstati64
+.reffunc _wstati64
 functions differ from
 .id &funcb.
 in the type of structure that they are
 asked to fill in.
 The
-.kw _wstat
+.reffunc _wstat
 and
-.kw _wstati64
+.reffunc _wstati64
 functions deal with wide character strings.
 The differences in the structures are described above.
 The

@@ -2,7 +2,7 @@
 .synop begin
 #include <fenv.h>
 int fesetenv( const fenv_t *envp );
-.ixfunc2 'Floating Point Environment' &funcb
+.ixfunc2 'Floating Point Environment' fesetenv
 .synop end
 .*
 .desc begin
@@ -19,7 +19,9 @@ or
 .reffunc feholdexcept
 .ct , or equal the
 .kw FE_DFL_ENV
-macro. Note that fesetenv merely installs the state of the floating-point
+macro. Note that 
+.id &funcb.
+merely installs the state of the floating-point
 status flags represented through its argument, and does not raise these
 floating-point exceptions.
 .desc end

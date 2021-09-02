@@ -128,19 +128,19 @@ DOS systems.
 The arguments may be passed as a list of arguments (
 .ct .reffunc execl
 .ct ,
-.kw execle
+.reffunc execle
 .ct ,
-.kw execlp
+.reffunc execlp
 .ct , and
-.kw execlpe
+.reffunc execlpe
 .ct ) or as a vector of pointers (
-.ct .kw execv
+.ct .reffunc execv
 .ct ,
-.kw execve
+.reffunc execve
 .ct ,
-.kw execvp
+.reffunc execvp
 .ct , and
-.kw execvpe
+.reffunc execvpe
 .ct ).
 At least one argument,
 .arg arg0
@@ -163,20 +163,20 @@ The environment for the invoked program is inherited from the parent
 process when you use the
 .reffunc execl
 .ct ,
-.kw execlp
+.reffunc execlp
 .ct ,
-.kw execv
+.reffunc execv
 .ct , and
-.kw execvp
+.reffunc execvp
 functions.
 The
-.kw execle
+.reffunc execle
 .ct ,
-.kw execlpe
+.reffunc execlpe
 .ct ,
-.kw execve
+.reffunc execve
 .ct , and
-.kw execvpe
+.reffunc execvpe
 functions allow a different environment to be passed to the child process
 through the
 .arg envp
@@ -222,9 +222,9 @@ function.
 .*==========================================
 .np
 The
-.kw execvpe
+.reffunc execvpe
 and
-.kw execlpe
+.reffunc execlpe
 functions are extensions to POSIX 1003.1.
 .*==========================================
 .im widefun5
@@ -240,7 +240,7 @@ is set to indicate the error.
 .error begin
 .if '&machsys' eq 'QNX' .do begin
 See the
-.kw qnx_spawn
+.reffunc qnx_spawn
 function for a description of possible
 .kw errno
 values.

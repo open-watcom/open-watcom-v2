@@ -53,7 +53,7 @@ is not a null pointer and
 is greater than zero and not greater than
 .kw RSIZE_MAX
 .ct , then
-.kw strncpy_s
+.reffunc strncpy_s
 sets
 .arg s1[0]
 to the null character.
@@ -78,13 +78,13 @@ is set to
 a null character.
 .np
 All elements following the terminating null character (if any) written by
-.kw strncpy_s
+.reffunc strncpy_s
 in the array of
 .arg s1max
 characters pointed to by
 .arg s1
 take unspecified values when
-.kw strncpy_s
+.reffunc strncpy_s
 returns.
 .widefunc &wfunc. &funcb.
 .desc end

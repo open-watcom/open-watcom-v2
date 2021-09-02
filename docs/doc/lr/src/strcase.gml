@@ -21,7 +21,7 @@ are mapped to lowercase for the purposes of doing the comparison.
 The
 .id &funcb.
 function is identical to the
-.kw _stricmp
+.reffunc _stricmp
 function.
 .desc end
 .return begin

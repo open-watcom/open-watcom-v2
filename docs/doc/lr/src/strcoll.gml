@@ -31,7 +31,7 @@ The comparison uses the collating sequence selected by the
 .reffunc setlocale
 function.
 The function will be equivalent to the
-.kw strcmp
+.reffunc strcmp
 function when the collating sequence is selected from the
 .mono "C"
 locale.

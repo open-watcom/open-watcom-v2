@@ -24,7 +24,7 @@ Let
 denote the value
 .arg s1max - strnlen_s(s1, s1max)
 upon entry to
-.kw strcat_s
+.reffunc strcat_s
 .period
 Neither
 .arg s1
@@ -52,7 +52,7 @@ is not a null pointer and
 is greater than zero and not greater than
 .kw RSIZE_MAX
 .ct , then
-.kw strcat_s
+.reffunc strcat_s
 sets
 .arg s1[0]
 to the null character.
