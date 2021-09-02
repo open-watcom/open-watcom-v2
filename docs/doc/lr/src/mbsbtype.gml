@@ -20,7 +20,7 @@ in
 .np
 .us Note:
 A similar function was called
-.kw nthctype
+.reffunc nthctype
 in earlier versions.
 .farfuncp &ffunc. &funcb.
 .desc end

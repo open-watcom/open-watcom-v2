@@ -270,23 +270,23 @@ function.
 DOS interrupts and 8086 interrupts are documented in the technical
 documentation for your DOS system.
 These may be generated from a C or C++ program by calling the
-.kw bdos
+.reffunc bdos
 .ct ,
-.kw intdos
+.reffunc intdos
 .ct ,
-.kw intdosx
+.reffunc intdosx
 .ct ,
-.kw intr
+.reffunc intr
 .ct ,
-.kw intrf
+.reffunc intrf
 .ct ,
-.kw int386
+.reffunc int386
 .ct ,
-.kw int386x
+.reffunc int386x
 .ct ,
-.kw int86
+.reffunc int86
 and
-.kw int86x
+.reffunc int86x
 functions.
 .*
 .section DOS Processes

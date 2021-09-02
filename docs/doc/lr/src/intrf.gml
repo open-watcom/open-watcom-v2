@@ -30,7 +30,7 @@ is filled with the contents of the CPU registers.
 .np
 .id &funcb.
 function is similar to the
-.kw int86x
+.reffunc int86x
 function. Exception is that only one structure is used for the register
 values and that the BP (EBP in 386 library) register is included in
 the set of registers that are passed and saved and the CPU flags are

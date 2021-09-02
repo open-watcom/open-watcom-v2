@@ -51,7 +51,7 @@ is not the second byte of a double-byte Kanji character, it returns
 .kw CT_ILGL
 .period
 Note that the
-.kw nthctype
+.reffunc nthctype
 function identifies the type of the n'th byte of a Kanji string.
 .desc end
 .return begin
