@@ -23,9 +23,9 @@ int _nheapchk( void );
 The
 .id &funcb.
 functions along with
-.kw _heapset
+.reffunc _heapset
 and
-.kw _heapwalk
+.reffunc _heapwalk
 are provided for debugging heap related problems in programs.
 .np
 The
@@ -54,12 +54,12 @@ Near heap (inside the default data segment)
 In a small data memory model, the
 .id &funcb.
 function is equivalent to the
-.kw _nheapchk
+.reffunc _nheapchk
 function; in a large data memory model, the
 .id &funcb.
 function is
 equivalent to the
-.kw _fheapchk
+.reffunc _fheapchk
 function.
 .desc end
 .return begin

@@ -18,7 +18,7 @@ bytes.
 In the tiny, small and medium memory models, the default data segment
 is only extended as needed to satisfy requests for memory allocation.
 Therefore, you will need to call
-.kw _nheapgrow
+.reffunc _nheapgrow
 in these memory models before calling &funcb
 in order to get a meaningful result.
 .desc end

@@ -12,7 +12,7 @@ function causes interrupts to become enabled.
 The
 .id &funcb.
 function would be used in conjunction with the
-.kw _disable
+.reffunc _disable
 function to make sure that a sequence of instructions are executed
 without any intervening interrupts occurring.
 .im privity

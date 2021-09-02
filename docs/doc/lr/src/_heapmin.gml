@@ -54,15 +54,15 @@ Near heap (inside the default data segment)
 In a small data memory model, the
 .id &funcb.
 function is equivalent to the
-.kw _nheapmin
+.reffunc _nheapmin
 function; in a large data memory model, the
 .id &funcb.
 function is
 equivalent to the
-.kw _fheapmin
+.reffunc _fheapmin
 function.
 It is identical to the
-.kw _heapshrink
+.reffunc _heapshrink
 function.
 .desc end
 .return begin

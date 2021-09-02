@@ -115,7 +115,7 @@ Console I/O is allowed (e.g., cprintf, cputs).
 .np
 The handler must indicate what action to take by returning one of
 the following values or calling
-.kw _hardresume
+.reffunc _hardresume
 with one of the following values:
 .begnote $setptnt 22
 .notehd1 Value
@@ -132,19 +132,19 @@ Fail the system call that is in progress (DOS 3.0 or higher)
 .np
 Alternatively, the handler can return directly to the application
 program rather than returning to DOS by using the
-.kw _hardretn
+.reffunc _hardretn
 function.
 The application program resumes at the point just after the failing
 I/O function request.
 The
-.kw _hardretn
+.reffunc _hardretn
 function should be called only from within a user-defined hardware
 error-handler function.
 .np
 The
 .arg error
 argument of
-.kw _hardretn
+.reffunc _hardretn
 should be a DOS error code.
 See
 .us The MS-DOS Encyclopedia
@@ -155,10 +155,10 @@ by a given DOS function call.
 .np
 If the failing I/O function request is an INT 0x21 function greater
 than or equal to function 0x38,
-.kw _hardretn
+.reffunc _hardretn
 will return to the application with the carry flag set and the AX
 register set to the
-.kw _hardretn
+.reffunc _hardretn
 .arg error
 argument.
 If the failing INT 0x21 function request is less than function 0x38 abd
@@ -169,15 +169,15 @@ error condition (which is true of certain INT 0x21 functions below
 0x38), the
 .arg error
 argument of
-.kw _hardretn
+.reffunc _hardretn
 is not used, and no error code is returned to the application.
 .desc end
 .return begin
 These functions do not return a value.
 The
-.kw _hardresume
+.reffunc _hardresume
 and
-.kw _hardretn
+.reffunc _hardretn
 functions do not return to the caller.
 .return end
 .see begin

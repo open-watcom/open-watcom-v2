@@ -70,7 +70,7 @@ Symbolic names for these errors are found in the
 .hdrfile errno.h
 header file.
 See the descriptions for the
-.kw perror
+.reffunc perror
 and
 .kw strerror
 functions for information about the text which describes these errors.

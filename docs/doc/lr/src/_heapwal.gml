@@ -31,9 +31,9 @@ struct _heapinfo {
 The
 .id &funcb.
 functions along with
-.kw _heapchk
+.reffunc _heapchk
 and
-.kw _heapset
+.reffunc _heapset
 are provided for debugging heap related problems in programs.
 .np
 The

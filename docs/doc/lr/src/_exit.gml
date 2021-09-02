@@ -86,7 +86,7 @@ Any unopened files are not closed and any buffered output is not
 flushed to the associated files or devices.
 .note
 Any files created by
-.kw tmpfile
+.reffunc tmpfile
 are not removed.
 .note
 The return

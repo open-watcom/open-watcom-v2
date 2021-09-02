@@ -40,7 +40,7 @@ Since
 is a legitimate value to write to
 .arg fp
 .ct , use
-.kw ferror
+.reffunc ferror
 to verify that an error has occurred.
 .return end
 .see begin

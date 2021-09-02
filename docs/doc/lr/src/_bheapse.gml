@@ -18,7 +18,7 @@ The heap will automatically be enlarged as needed if there is not enough
 space available within the heap to satisfy an allocation request by
 .reffunc _bcalloc
 .ct ,
-.kw _bexpand
+.reffunc _bexpand
 .ct ,
 .reffunc _bmalloc
 .ct , or
