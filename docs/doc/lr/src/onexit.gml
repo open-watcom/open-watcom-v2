@@ -1,5 +1,6 @@
 .func onexit
 .synop begin
+.deprec
 #include <stdlib.h>
 onexit_t onexit( onexit_t func );
 .ixfunc2 '&Process' &funcb
@@ -7,7 +8,7 @@ onexit_t onexit( onexit_t func );
 .desc begin
 The
 .id &funcb.
- function is passed the address of function
+function is passed the address of function
 .arg func
 to be called when the program terminates normally.
 Successive calls to
@@ -25,10 +26,9 @@ NOTE: The
 function is not an ISO C function.
 The ISO C standard function
 .reffunc atexit
-does the same thing that
-.id &funcb.
-does and should be used instead of &funcb
-where ISO C portability is concerned.
+does the same thing.
+.np
+.deprfunc onexit atexit
 .desc end
 .return begin
 The
