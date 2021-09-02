@@ -11,7 +11,7 @@ function tests if the argument
 satisfies the condition that one of
 .kw isgraph
 or
-.kw _ismbbkprint
+.reffunc _ismbbkprint
 is true.
 .np
 For example, in code page 932,

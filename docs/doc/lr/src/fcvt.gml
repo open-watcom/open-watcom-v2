@@ -53,7 +53,7 @@ The
 function returns a pointer to a static buffer containing the
 converted string of digits.
 Note:
-.kw ecvt
+.reffunc ecvt
 and
 .id &funcb.
 both use the same static buffer.

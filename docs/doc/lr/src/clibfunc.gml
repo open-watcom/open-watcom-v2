@@ -75,17 +75,17 @@ Assertion failed: [expression], file [name], line [number]
 .section Character Testing
 .bigterm
 The sets of characters tested for by the
-.kw isalnum
+.reffunc isalnum
 .ct ,
-.kw isalpha
+.reffunc isalpha
 .ct ,
-.kw iscntrl
+.reffunc iscntrl
 .ct ,
-.kw islower
+.reffunc islower
 .ct ,
-.kw isprint
+.reffunc isprint
 .ct , and
-.kw isupper
+.reffunc isupper
 functions (7.3.1).
 .bigdesc
 .np
@@ -166,12 +166,12 @@ on underflow range errors in the mathematics functions.
 .section The fmod Function
 .bigterm
 Whether a domain error occurs or zero is returned when the
-.kw fmod
+.reffunc fmod
 function has a second argument of zero (7.5.6.4).
 .bigdesc
 .np
 Zero is returned when the second argument to
-.kw fmod
+.reffunc fmod
 is zero.
 .*-------------------------
 .section The signal Function

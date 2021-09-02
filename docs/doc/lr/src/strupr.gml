@@ -36,7 +36,7 @@ The
 function replaces the string
 .arg s
 with uppercase characters by invoking the
-.kw toupper
+.reffunc toupper
 function for each character in the string.
 .farfunc &ffunc. &funcb.
 .widefunc &wfunc. &funcb.

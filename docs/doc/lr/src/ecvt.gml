@@ -57,7 +57,7 @@ converted string of digits.
 Note:
 .id &funcb.
 and
-.kw fcvt
+.reffunc fcvt
 both use the same static buffer.
 .return end
 .see begin

@@ -18,7 +18,7 @@ The
 function tests for any printable character except space
 ('&sysrb').
 The
-.kw isprint
+.reffunc isprint
 function is similar, except that the space character is also included
 in the character set being tested.
 .im widefun2

@@ -19,7 +19,7 @@ function tests if the argument
 .arg c
 is an alphanumeric character ('a' to 'z', 'A' to 'Z', or '0' to '9').
 An alphanumeric character is any character for which
-.kw isalpha
+.reffunc isalpha
 or
 .kw isdigit
 is true.
@@ -37,7 +37,7 @@ The
 function returns a non-zero value if either
 .kw iswalpha
 or
-.kw iswdigit
+.reffunc iswdigit
 is true for
 .arg c
 .period

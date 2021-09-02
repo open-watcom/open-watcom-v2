@@ -37,7 +37,7 @@ indicated by
 .im ansiconf
 .np
 The
-.kw _stati64
+.reffunc _stati64
 .ct ,
 .kw _wstat
 .ct , and

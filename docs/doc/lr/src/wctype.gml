@@ -33,7 +33,7 @@ function.
 any wide character for which one of
 .kw iswalpha
 or
-.kw iswdigit
+.reffunc iswdigit
 is true
 .*
 .termnx alpha
@@ -43,13 +43,13 @@ any wide character for which
 .kw iswlower
 is true, that is, for any wide character that is one of an
 implementation-defined set for which none of
-.kw iswcntrl
+.reffunc iswcntrl
 .ct ,
-.kw iswdigit
+.reffunc iswdigit
 .ct ,
-.kw iswpunct
+.reffunc iswpunct
 .ct , or
-.kw iswspace
+.reffunc iswspace
 is true
 .*
 .termnx blank
@@ -71,13 +71,13 @@ any printable wide character except a space wide character
 .termnx lower
 any wide character corresponding to a lowercase letter, or one of an
 implementation-defined set of wide characters for which none of
-.kw iswcntrl
+.reffunc iswcntrl
 .ct ,
-.kw iswdigit
+.reffunc iswdigit
 .ct ,
-.kw iswpunct
+.reffunc iswpunct
 .ct , or
-.kw iswspace
+.reffunc iswspace
 is true
 .*
 .termnx print
@@ -86,26 +86,26 @@ any printable wide character including a space wide character
 .termnx punct
 any printable wide character that is not a space wide character or a
 wide character for which
-.kw iswalnum
+.reffunc iswalnum
 is true
 .*
 .termnx space
 any wide character corresponding to a standard white-space character
 or is one of an implementation-defined set of wide
 characters for which
-.kw iswalnum
+.reffunc iswalnum
 is false
 .*
 .termnx upper
 any wide character corresponding to a uppercase letter, or if c is one
 of an implementation-defined set of wide characters for which none of
-.kw iswcntrl
+.reffunc iswcntrl
 .ct ,
-.kw iswdigit
+.reffunc iswdigit
 .ct ,
-.kw iswpunct
+.reffunc iswpunct
 .ct , or
-.kw iswspace
+.reffunc iswspace
 is true
 .*
 .termnx xdigit

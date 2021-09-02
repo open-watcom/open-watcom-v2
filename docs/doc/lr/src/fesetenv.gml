@@ -14,7 +14,7 @@ represented by the object pointed by
 argument. The
 .arg envp
 argument shall point to an object set by a call to
-.kw fegetenv
+.reffunc fegetenv
 or
 .kw feholdexcept
 .ct , or equal the

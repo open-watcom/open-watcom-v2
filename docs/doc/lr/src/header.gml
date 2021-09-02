@@ -746,7 +746,7 @@ This header file contains segment information data structures.
 .if '&machsys' eq 'QNX' .do begin
 .df sys/select.h
 This header file contains the prototype for the
-.kw select
+.reffunc select
 function.
 .do end
 .*------------------------------
@@ -775,7 +775,7 @@ This POSIX header file contains the declarations pertaining to file
 status, including definitions for the
 .reffunc fstat
 and
-.kw stat
+.reffunc stat
 functions and for the structure:
 .sfbeg
 .sf stat

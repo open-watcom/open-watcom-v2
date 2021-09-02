@@ -9,9 +9,9 @@ The
 function tests if the argument
 .arg ch
 satisfies the condition that one of
-.kw isalnum
+.reffunc isalnum
 or
-.kw _ismbbkalnum
+.reffunc _ismbbkalnum
 is true.
 .np
 .us Note:

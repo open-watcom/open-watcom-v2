@@ -11,13 +11,13 @@ type.
 In QNX the
 .kw dirent
 structure contains a
-.kw stat
+.reffunc stat
 structure in the
 .kw d_stat
 member.
 To speed up applications which often want both the name and the stat
 data, a resource manager may return the
-.kw stat
+.reffunc stat
 information at the same time the
 .reffunc readdir
 function is called.
@@ -39,7 +39,7 @@ If the
 .kw d_stat
 member doesn't contain valid data and the data is needed then the
 application should construct the file's pathname and call
-.kw stat
+.reffunc stat
 or
 .kw lstat
 as appropriate.

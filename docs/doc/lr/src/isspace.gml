@@ -45,7 +45,7 @@ The
 function returns a non-zero value when the argument is a
 wide character that corresponds to a standard white-space character or
 is one of an implementation-defined set of wide characters for which
-.kw iswalnum
+.reffunc iswalnum
 is false.
 .do end
 Otherwise, zero is returned.

@@ -36,7 +36,7 @@ The
 function replaces the string
 .arg s1
 with lowercase characters by invoking the
-.kw tolower
+.reffunc tolower
 function for each character in the string.
 .farfunc &ffunc. &funcb.
 .widefunc &wfunc. &funcb.

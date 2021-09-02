@@ -1191,29 +1191,29 @@ wide character string to "long long int"
 .fdend
 .np
 See also
-.kw tolower
+.reffunc tolower
 .ct ,
-.kw towlower
+.reffunc towlower
 .ct ,
-.kw _mbctolower
+.reffunc _mbctolower
 .ct ,
-.kw toupper
+.reffunc toupper
 .ct ,
-.kw towupper
+.reffunc towupper
 .ct ,
-.kw _mbctoupper
+.reffunc _mbctoupper
 .ct ,
-.kw _strlwr
+.reffunc _strlwr
 .ct ,
-.kw _wcslwr
+.reffunc _wcslwr
 .ct ,
-.kw _mbslwr
+.reffunc _mbslwr
 .ct ,
-.kw _strupr
+.reffunc _strupr
 .ct ,
-.kw _wcsupr
+.reffunc _wcsupr
 and
-.kw _mbsupr
+.reffunc _mbsupr
 which convert the cases of characters and strings.
 .*======================================================================
 .section Memory Allocation Functions

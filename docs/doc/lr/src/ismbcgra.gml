@@ -9,7 +9,7 @@ The
 function tests for any printable multibyte character except
 space ('&sysrb').
 The
-.kw _ismbcprint
+.reffunc _ismbcprint
 function is similar, except that the space character is also included
 in the character set being tested.
 .desc end
