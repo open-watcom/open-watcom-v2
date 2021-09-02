@@ -53,7 +53,7 @@ and
 functions deal with wide character strings.
 The differences in the structures are described above.
 The
-.kw lstat
+.reffunc lstat
 function is identical to
 .id &funcb.
 on non-UNIX platforms.

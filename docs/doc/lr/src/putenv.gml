@@ -112,9 +112,9 @@ to change it. To modify the return value of
 or
 .id &wfunc.
 without affecting the environment table, use
-.kw strdup
+.reffunc strdup
 or
-.kw strcpy
+.reffunc strcpy
 to make a copy of the string.
 .bull
 If the argument

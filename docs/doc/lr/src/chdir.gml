@@ -55,7 +55,7 @@ Each drive under DOS, OS/2 or Windows has a current directory.
 The current working directory is the current directory of the current
 drive.
 If you wish to change the current drive, you must use the
-.kw _dos_setdrive
+.reffunc _dos_setdrive
 function.
 .do end
 .im ansiconf

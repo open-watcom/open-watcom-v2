@@ -30,13 +30,13 @@ The transformation uses the collating sequence selected by the
 .reffunc setlocale
 function so that two transformed strings will compare identically
 (using the
-.kw strncmp
+.reffunc strncmp
 function)
 to a comparison of the original two strings using the
-.kw strcoll
+.reffunc strcoll
 function.
 The function will be equivalent to the
-.kw strncpy
+.reffunc strncpy
 function (except there is no padding of the
 .arg dst
 argument with null characters when the argument

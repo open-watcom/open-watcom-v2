@@ -12,7 +12,7 @@ The
 function uses system call 0x4A to change the size of
 .arg segment
 .ct , which was previously allocated by
-.kw _dos_allocmem
+.reffunc _dos_allocmem
 .ct , to
 .arg size
 paragraphs.

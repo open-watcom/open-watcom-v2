@@ -41,7 +41,7 @@ member doesn't contain valid data and the data is needed then the
 application should construct the file's pathname and call
 .reffunc stat
 or
-.kw lstat
+.reffunc lstat
 as appropriate.
 .do end
 .*
