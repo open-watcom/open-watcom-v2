@@ -39,7 +39,7 @@ is less than, equal to, or greater than the string pointed to by
 .period
 .id &funcb.
 is similar to
-.kw _mbsnicmp
+.reffunc _mbsnicmp
 .ct , except that
 .id &funcb.
 compares strings by length in bytes rather than by length in characters.

@@ -31,16 +31,16 @@ function.
 .*
 .termnx alnum
 any wide character for which one of
-.kw iswalpha
+.reffunc iswalpha
 or
 .reffunc iswdigit
 is true
 .*
 .termnx alpha
 any wide character for which
-.kw iswupper
+.reffunc iswupper
  or
-.kw iswlower
+.reffunc iswlower
 is true, that is, for any wide character that is one of an
 implementation-defined set for which none of
 .reffunc iswcntrl

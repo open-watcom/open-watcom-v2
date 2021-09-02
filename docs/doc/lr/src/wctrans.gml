@@ -46,7 +46,7 @@ category of the current locale, the
 .id &funcb.
 function returns a non-zero
 value that is valid as the second argument to the
-.kw towctrans
+.reffunc towctrans
 function; otherwise, it returns zero.
 .return end
 .*

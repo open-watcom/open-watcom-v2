@@ -35,9 +35,9 @@ The
 .id &wfunc.
 function returns a non-zero value only for wide characters
 for which
-.kw iswupper
+.reffunc iswupper
 or
-.kw iswlower
+.reffunc iswlower
 is true, or any wide character that is one of an
 implementation-defined set for which none of
 .reffunc iswcntrl

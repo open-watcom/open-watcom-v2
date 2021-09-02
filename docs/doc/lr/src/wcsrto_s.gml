@@ -130,7 +130,7 @@ pointer, then a null character is stored into the array pointed to by
 immediately
 following any multibyte characters already stored. Each conversion takes place as if by a
 call to the
-.kw wcrtomb
+.reffunc wcrtomb
 function.
 .np
 If

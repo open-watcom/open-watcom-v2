@@ -45,7 +45,7 @@ total bytes to be stored into the array pointed to by
 .arg dst
 .period
 Each conversion takes place as if by a call to the
-.kw wcrtomb
+.reffunc wcrtomb
 function.
 .np
 If

@@ -21,7 +21,7 @@ is an alphanumeric character ('a' to 'z', 'A' to 'Z', or '0' to '9').
 An alphanumeric character is any character for which
 .reffunc isalpha
 or
-.kw isdigit
+.reffunc isdigit
 is true.
 .im widefun2
 .desc end
@@ -35,7 +35,7 @@ Otherwise, a non-zero value is returned.
 The
 .id &wfunc.
 function returns a non-zero value if either
-.kw iswalpha
+.reffunc iswalpha
 or
 .reffunc iswdigit
 is true for

@@ -17,7 +17,7 @@ has the property described by
 Valid values of
 .arg desc
 are defined by the use of the
-.kw wctype
+.reffunc wctype
 function.
 .np
 The twelve expressions listed below have a truth-value equivalent to a

@@ -28,7 +28,7 @@ to the fill character.
 .np
 .id &funcb.
 is similar to
-.kw _mbsnset
+.reffunc _mbsnset
 .ct , except that it fills in
 .arg count
 bytes rather than
