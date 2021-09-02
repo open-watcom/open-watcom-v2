@@ -21,7 +21,7 @@ pointed to by
 .arg path
 .period
 This function is equivalent to the
-.kw remove
+.reffunc remove
 function.
 .im ansiconf
 .widefunc &wfunc. &funcb.

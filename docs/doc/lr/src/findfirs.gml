@@ -108,9 +108,9 @@ returns a unique search handle identifying the
 file or group of files matching the
 .arg filespec
 specification, which can be used in a subsequent call to
-.kw _findnext
+.reffunc _findnext
 or to
-.kw _findclose
+.reffunc _findclose
 .period
 Otherwise,
 .id &_func.

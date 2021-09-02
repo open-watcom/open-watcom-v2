@@ -18,7 +18,7 @@ The argument
 is a file pointer returned by
 .reffunc fopen
 or
-.kw freopen
+.reffunc freopen
 .period
 The argument
 .arg offset

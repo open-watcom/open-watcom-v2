@@ -44,7 +44,7 @@ must be positive.
 If
 .arg x
 is negative,
-.kw _matherr
+.reffunc _matherr
 will be called to print a DOMAIN error message to
 .kw stderr
 .ct , set

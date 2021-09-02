@@ -25,7 +25,7 @@ The pushed-back character will be discarded if a call is made to the
 function or to a file positioning function (
 .ct .reffunc fseek
 .ct ,
-.kw fsetpos
+.reffunc fsetpos
 or
 .reffunc rewind
 .ct ) before the next read operation is performed.

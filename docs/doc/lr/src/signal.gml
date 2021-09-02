@@ -23,7 +23,7 @@ These conditions are defined to be:
 .termhd2 Meaning
 .term SIGABRT
 abnormal termination, such as caused by the
-.kw abort
+.reffunc abort
 function
 .term SIGBREAK
 an interactive attention (Ctrl+Break on keyboard) is signalled
@@ -83,7 +83,7 @@ The
 function may terminate the program by calling the
 .reffunc exit
 or
-.kw abort
+.reffunc abort
 functions or call the
 .kw longjmp
 function.

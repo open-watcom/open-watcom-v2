@@ -17,7 +17,7 @@ wint_t _fgetwchar( void );
 The
 .id &funcb.
 function is equivalent to
-.kw fgetc
+.reffunc fgetc
 with the argument
 .kw stdin
 .period

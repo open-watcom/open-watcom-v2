@@ -95,7 +95,7 @@ the operating system whenever a flush (
 .ct
 .reffunc fflush
 or
-.kw flushall
+.reffunc flushall
 .ct )
 is done.
 .np
@@ -117,7 +117,7 @@ This option is not supported under Netware.
 The "t", "c", and "n" mode options are extensions for
 .id &funcb.
 and
-.kw _fdopen
+.reffunc _fdopen
 and should not be used where ISO C portability is desired.
 .do end
 .el .do begin
@@ -125,7 +125,7 @@ and should not be used where ISO C portability is desired.
 The "t" mode option is an extension for
 .id &funcb.
 and
-.kw _fdopen
+.reffunc _fdopen
 and should not be used where ISO C portability is desired.
 .do end
 .np
@@ -158,7 +158,7 @@ intervening call to the
 function or to a file positioning function (
 .ct .reffunc fseek
 .ct ,
-.kw fsetpos
+.reffunc fsetpos
 .ct ,
 .reffunc rewind
 .ct ).

@@ -56,16 +56,16 @@ expands to
 .section Diagnostic Printed by the assert Function
 .bigterm
 The diagnostic printed by and the termination behavior of the
-.kw assert
+.reffunc assert
 function (7.2).
 .bigdesc
 .np
 The
-.kw assert
+.reffunc assert
 function prints a diagnostic message to
 .kw stderr
 and calls the
-.kw abort
+.reffunc abort
 routine if the expression is false.
 The diagnostic message has the following form:
 .millust begin
@@ -177,12 +177,12 @@ is zero.
 .section The signal Function
 .bigterm
 The set of signals for the
-.kw signal
+.reffunc signal
 function (7.7.1.1).
 .bigdesc
 .np
 See the description of the
-.kw signal
+.reffunc signal
 function presented earlier in this book.
 .if '&machsys' eq 'QNX' .do begin
 Also see the
@@ -192,12 +192,12 @@ manual.
 .*-------------------------
 .bigterm
 The semantics for each signal recognized by the
-.kw signal
+.reffunc signal
 function (7.7.1.1).
 .bigdesc
 .np
 See the description of the
-.kw signal
+.reffunc signal
 function presented earlier in this book.
 .if '&machsys' eq 'QNX' .do begin
 Also see the
@@ -208,12 +208,12 @@ manual.
 .bigterm
 The default handling and the handling at program startup for each
 signal recognized by the
-.kw signal
+.reffunc signal
 function (7.7.1.1).
 .bigdesc
 .np
 See the description of the
-.kw signal
+.reffunc signal
 function presented earlier in this book.
 .if '&machsys' eq 'QNX' .do begin
 Also see the
@@ -225,7 +225,7 @@ manual.
 .bigterm
 If the equivalent of
 .ix 'SIG_DFL'
-.kw signal
+.reffunc signal
 .ct ( sig, SIG_DFL );
 is not executed prior to the call of a signal handler,
 the blocking of the signal that is performed (7.7.1.1).
@@ -243,7 +243,7 @@ is executed prior to the call of a signal handler.
 Whether the default handling is reset if the
 .kw SIGILL
 signal is received by a handler specified to the
-.kw signal
+.reffunc signal
 function (7.7.1.1).
 .bigdesc
 .np
@@ -371,23 +371,23 @@ It is possible to open a file multiple times.
 .section Deleting Open Files
 .bigterm
 The effect of the
-.kw remove
+.reffunc remove
 function on an open file (7.9.4.1).
 .bigdesc
 .np
 The
-.kw remove
+.reffunc remove
 function deletes a file, even if the file is open.
 .*-------------------------
 .section Renaming with a Name that Exists
 .bigterm
 The effect if a file with the new name exists prior to a call to the
-.kw rename
+.reffunc rename
 function (7.9.4.2).
 .bigdesc
 .np
 The
-.kw rename
+.reffunc rename
 function
 .if '&machsys' eq 'QNX' .do begin
 will succeed if you attempt to rename a file using a name that exists.
@@ -456,14 +456,14 @@ The character following the "&minus" is the last character in the range.
 The value to which the macro
 .kw errno
 is set by the
-.kw fgetpos
+.reffunc fgetpos
 or
 .reffunc ftell
 function on failure (7.9.9.1, 7.9.9.4).
 .bigdesc
 .np
 When the function
-.kw fgetpos
+.reffunc fgetpos
 or
 .reffunc ftell
 fails, they set
@@ -511,12 +511,12 @@ No actual memory is allocated.
 .section The abort Function
 .bigterm
 The behavior of the
-.kw abort
+.reffunc abort
 function with regard to open and temporary files (7.10.4.1).
 .bigdesc
 .np
 The
-.kw abort
+.reffunc abort
 function does not close any files that are open or temporary, nor
 does it flush any output buffers.
 .*-------------------------
@@ -593,12 +593,12 @@ argument string to the command interpreter.
 .section The strerror Function
 .bigterm
 The contents of the error message strings returned by the
-.kw strerror
+.reffunc strerror
 function (7.11.6.2).
 .bigdesc
 .np
 The
-.kw strerror
+.reffunc strerror
 function generates the following messages.
 .if '&machsys' eq 'QNX' .do begin
 .im strerror.qnx

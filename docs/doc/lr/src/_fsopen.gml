@@ -155,7 +155,7 @@ intervening call to the
 function or to a file positioning function (
 .ct .reffunc fseek
 .ct ,
-.kw fsetpos
+.reffunc fsetpos
 .ct ,
 .reffunc rewind
 .ct ).

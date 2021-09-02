@@ -23,7 +23,7 @@ value.
 The
 .id &funcb.
 function is equivalent to
-.kw fgetc
+.reffunc fgetc
 .ct , except that it may be implemented as a macro.
 .if &'length(&wfunc.) ne 0 .do begin
 .np

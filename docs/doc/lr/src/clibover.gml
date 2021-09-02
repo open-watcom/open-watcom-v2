@@ -1750,7 +1750,7 @@ Standard Printer: available for use by a program
 .endnote
 .np
 These standard streams may be re-directed by use of the
-.kw freopen
+.reffunc freopen
 function.
 .np
 See also the section
@@ -1882,7 +1882,7 @@ Similarly, once a byte input/output function has been applied to a
 stream without orientation, the stream becomes
 .us byte-oriented.
 Only a successful call to
-.kw freopen
+.reffunc freopen
 can otherwise alter the orientation of a stream (it removes any
 orientation).
 You cannot mix byte input/output functions and wide character

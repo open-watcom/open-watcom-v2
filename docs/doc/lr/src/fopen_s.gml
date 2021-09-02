@@ -145,7 +145,7 @@ the operating system whenever a flush (
 .ct
 .reffunc fflush
 or
-.kw flushall
+.reffunc flushall
 .ct )
 is done.
 .np
@@ -202,7 +202,7 @@ intervening call to the
 function or to a file positioning function (
 .ct .reffunc fseek
 .ct ,
-.kw fsetpos
+.reffunc fsetpos
 .ct ,
 .reffunc rewind
 .ct ).

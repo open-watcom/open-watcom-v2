@@ -113,7 +113,7 @@ directory are described first.
 .*------------------------------
 .df assert.h
 This ISO C90 header file is required when an
-.kw assert
+.reffunc assert
 macro is used. These assertions will be ignored when the identifier
 .mono NDEBUG
 is defined.
@@ -376,7 +376,7 @@ function.
 .*------------------------------
 .df signal.h
 This ISO C90 header file declares the
-.kw signal
+.reffunc signal
 and
 .kw raise
 functions.

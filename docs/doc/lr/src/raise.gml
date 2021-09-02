@@ -13,10 +13,10 @@ argument.
 The possible conditions are defined in the
 .hdrfile signal.h
 header file and are documented with the
-.kw signal
+.reffunc signal
 function.
 The
-.kw signal
+.reffunc signal
 function can be used to specify the action which is to take
 place when such a condition occurs.
 .desc end

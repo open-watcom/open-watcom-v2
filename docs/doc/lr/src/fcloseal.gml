@@ -33,7 +33,7 @@ This includes streams created (and not yet closed) by
 .ct ,
 .reffunc fopen
 and
-.kw freopen
+.reffunc freopen
 .period
 .if '&machsys' eq 'DOS' .do begin
 The

@@ -14,7 +14,7 @@ that corresponds to the POSIX-level file handle specified by
 The value returned by
 .id &funcb.
 can be used as an argument to the
-.kw _open_osfhandle
+.reffunc _open_osfhandle
 function which can be used to connect a second POSIX-level handle to
 an open file.
 .np

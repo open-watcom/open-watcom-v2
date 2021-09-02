@@ -21,12 +21,12 @@ function returns information on the next file whose name
 matches the
 .arg filespec
 argument that was specified in a call to the
-.kw _findfirst
+.reffunc _findfirst
 function.
 The
 .arg handle
 argument was returned by the
-.kw _findfirst
+.reffunc _findfirst
 function.
 The information is returned in a
 .kw _finddata_t
@@ -50,7 +50,7 @@ function returns information on the next file whose name
 matches the
 .arg filespec
 argument that was specified in a call to the
-.kw _findfirsti64
+.reffunc _findfirsti64
 function.
 It differs from the
 .id &_func.
@@ -59,7 +59,7 @@ size.
 The
 .arg handle
 argument was returned by the
-.kw _findfirsti64
+.reffunc _findfirsti64
 function.
 The information is returned in a
 .kw _finddatai64_t

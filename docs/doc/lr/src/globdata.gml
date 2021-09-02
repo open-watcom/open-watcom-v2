@@ -72,7 +72,7 @@ header file.
 See the descriptions for the
 .reffunc perror
 and
-.kw strerror
+.reffunc strerror
 functions for information about the text which describes these errors.
 .df fltused_
 .ix 'undefined references' 'fltused_'

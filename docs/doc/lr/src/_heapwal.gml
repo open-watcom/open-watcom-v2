@@ -71,7 +71,7 @@ Near heap (inside the default data segment)
 In a small data memory model, the
 .id &funcb.
 function is equivalent to the
-.kw _nheapwalk
+.reffunc _nheapwalk
 function; in a large data memory model, the
 .id &funcb.
 function is

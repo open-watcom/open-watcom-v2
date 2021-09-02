@@ -57,7 +57,7 @@ Also, a new-line character may not appear as the last character in a
 file, just before end-of-file.
 .np
 The
-.kw gets
+.reffunc gets
 function is similar to
 .id &funcb.
 except that it operates with

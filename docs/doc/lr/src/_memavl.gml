@@ -23,7 +23,7 @@ The number returned by
 may not represent a single contiguous
 block of memory.
 Use the
-.kw _memmax
+.reffunc _memmax
 function to find the largest contiguous block of memory that can be
 allocated.
 .desc end
