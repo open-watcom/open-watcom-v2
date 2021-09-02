@@ -50,10 +50,10 @@ locale.
 .widefunc &wfunc. &funcb.
 .if &'length(&wfunc.) ne 0 .do begin
 For &wfunc, after the string transformation, a call to
-.kw wcscmp
+.reffunc wcscmp
 with the two transformed strings yields results identical to those of a
 call to
-.kw wcscoll
+.reffunc wcscoll
 applied to the original two strings.
 .id &wfunc.
 and

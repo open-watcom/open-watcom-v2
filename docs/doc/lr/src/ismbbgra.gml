@@ -9,7 +9,7 @@ The
 function tests if the argument
 .arg ch
 satisfies the condition that one of
-.kw isgraph
+.reffunc isgraph
 or
 .reffunc _ismbbkprint
 is true.

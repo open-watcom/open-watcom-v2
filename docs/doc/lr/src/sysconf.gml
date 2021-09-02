@@ -49,7 +49,7 @@ The available number of physical pages of memory for the system
 If real-time signals are supported, the value of 1 is returned
 .term _SC_SOMAXCONN
 For the socket
-.kw listen
+.reffunc listen
 function, retrieve the largest supported backlog of listen requests
 .endterm
 In this implementation, requesting either _SC_NPROCESSORS_CONF or

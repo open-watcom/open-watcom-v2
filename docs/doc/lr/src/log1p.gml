@@ -12,7 +12,7 @@ function computes the natural logarithm of one plus
 .period For small values of
 .arg x
 this function provides far better accuracy than using the
-.kw log
+.reffunc log
 function directly.
 .desc end
 .return begin

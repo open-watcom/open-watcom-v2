@@ -69,7 +69,7 @@ passes the single argument
 .np
 The command line arguments can also be obtained in its original
 format by using the
-.kw getcmd
+.reffunc getcmd
 function.
 .if '&machsys' eq 'QNX' .do begin
 .np

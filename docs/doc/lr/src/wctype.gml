@@ -56,7 +56,7 @@ is true
 any wide character corresponding to a standard blank character
 (space or horizontal tab) or is one of an implementation-defined set of wide
 characters for which
-.kw iswblank
+.reffunc iswblank
 is true
 .*
 .termnx cntrl

@@ -15,7 +15,7 @@ argument with the states stored in the object pointed by
 argument. The value pointed by the
 .arg flagp
 argument shall have been set by a previous call to
-.kw fegetexceptflag
+.reffunc fegetexceptflag
 whose second argument represented at least those floating-point exceptions
 represented by the
 .arg excepts

@@ -16,7 +16,7 @@ argument. The
 argument shall point to an object set by a call to
 .reffunc fegetenv
 or
-.kw feholdexcept
+.reffunc feholdexcept
 .ct , or equal the
 .kw FE_DFL_ENV
 macro. Note that fesetenv merely installs the state of the floating-point

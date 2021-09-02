@@ -13,7 +13,7 @@ absolute value of the Gamma function of
 .period The sign of the Gamma function after this function
 is called will be located in signgam.  This function is not
 thread-safe if the user is interested in the sign of Gamma, and
-.kw lgamma_r
+.reffunc lgamma_r
 should be used instead in multithreaded applications.
 .desc end
 .return begin

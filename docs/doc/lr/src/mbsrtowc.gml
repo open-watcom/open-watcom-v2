@@ -42,7 +42,7 @@ codes have been stored into the array pointed to by
 .arg dst
 .period
 Each conversion takes place as if by a call to the
-.kw mbrtowc
+.reffunc mbrtowc
 function.
 .np
 If

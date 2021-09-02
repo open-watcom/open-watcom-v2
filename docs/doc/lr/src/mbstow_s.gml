@@ -101,7 +101,7 @@ pointed to by
 .arg dst[len]
 is set to the null wide character. Each conversion
 takes place as if by a call to the
-.kw mbrtowc
+.reffunc mbrtowc
 function.
 .np
 Regardless of whether
