@@ -144,6 +144,7 @@ _WCRTLINK extern __int64    _lseeki64( int __handle, __int64 __offset, int __ori
 
 :keep MSEXT
 :include chmod.sp
+:include msioext.sp
 :include sopen.sp
 :include mktemp.sp
 :include umask.sp

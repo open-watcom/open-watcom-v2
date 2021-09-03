@@ -354,7 +354,7 @@ _WCRTLINK extern int        setvbuf( FILE *__fp, char *__buf, int __mode, size_t
 _WCRTLINK extern int        sprintf( char *__s, const char *__format, ... );
 _WCRTLINK extern int        sscanf( const char *__s, const char *__format, ... );
 _WCRTLINK extern FILE       *tmpfile( void );
-_WCRTLINK extern char       *tmpnam( char *__s );
+:include tmpnam.sp
 _WCRTLINK extern int        ungetc( int __c, FILE *__fp );
 _WCRTLINK extern int        vfprintf( FILE *__fp, const char *__format, __va_list __arg );
 _WCRTLINK extern int        vprintf( const char *__format, __va_list __arg );
@@ -381,6 +381,9 @@ _WCRTLINK extern int        _pclose( __w_FILE *__fp );
 _WCRTLINK extern __w_FILE   *_popen( const char *__command, const char *__mode );
 _WCRTLINK extern int        _putw( int __binint, __w_FILE *__fp );
 :include tempnam.sp
+:keep MSEXT
+:include tempnam.sp
+:remove MSEXT
 
 :: Wide character version
 :include nsstd.sp
