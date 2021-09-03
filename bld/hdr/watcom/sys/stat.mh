@@ -145,7 +145,7 @@ struct _stati64 {
 /*
  *  POSIX 1003.1 Prototypes.
  */
-_WCRTLINK extern int     chmod( const char *__path, mode_t __mode );
+:include chmod.sp
 _WCRTLINK extern int     stat( const char *__path, struct stat *__buf );
 _WCRTLINK extern int     lstat( const char *__path, struct stat *__buf );
 _WCRTLINK extern int     fstat( int __fildes, struct stat *__buf );
@@ -169,13 +169,13 @@ _WCRTLINK extern int     _fstat( int __fildes, struct stat *__buf );
 _WCRTLINK extern int     _stat( const char *__path, struct stat *__buf );
 :endsegment
 :segment DOS | RDOS
-
-_WCRTLINK extern int     _wstat( const wchar_t *__path, struct stat *__buf );
-_WCRTLINK extern int     _wfstat( int __fildes, struct stat *__buf );
-
 _WCRTLINK extern int     _fstati64( int __fildes, struct _stati64 *__buf );
-_WCRTLINK extern int     _wfstati64( int __fildes, struct _stati64 *__buf );
 _WCRTLINK extern int     _stati64( const char *__path, struct _stati64 *__buf );
+:endsegment
+:segment DOS
+_WCRTLINK extern int     _wfstat( int __fildes, struct stat *__buf );
+_WCRTLINK extern int     _wstat( const wchar_t *__path, struct stat *__buf );
+_WCRTLINK extern int     _wfstati64( int __fildes, struct _stati64 *__buf );
 _WCRTLINK extern int     _wstati64( const wchar_t *__path, struct _stati64 *__buf );
 :endsegment
 :include extepi.sp

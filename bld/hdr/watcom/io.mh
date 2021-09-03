@@ -108,8 +108,10 @@ struct _wfinddatai64_t {
 
 _WCRTLINK extern int  access( const char *__path, int __mode );
 _WCRTLINK extern int  _access( const char *__path, int __mode );
-_WCRTLINK extern int  chmod( const char *__path, mode_t __pmode );
-_WCRTLINK extern int  _chmod( const char *__path, mode_t __pmode );
+:include chmod.sp
+:keep MSEXT
+:include chmod.sp
+:remove MSEXT
 _WCRTLINK extern int  close( int __handle );
 _WCRTLINK extern int  _close( int __handle );
 _WCRTLINK extern int  _commit( int __handle );
@@ -145,7 +147,9 @@ _WCRTLINK extern int  _unlink( const char *__path );
 _WCRTLINK extern int  write( int __handle, const void *__buf, unsigned int __len );
 _WCRTLINK extern int  _write( int __handle, const void *__buf, unsigned int __len );
 _WCRTLINK extern int  _waccess( const wchar_t *__path, int __mode );
-_WCRTLINK extern int  _wchmod( const wchar_t *__path, mode_t __pmode );
+:keep WIDE
+:include chmod.sp
+:remove WIDE
 _WCRTLINK extern int  _wunlink( const wchar_t *__path );
 
 _WCRTLINK extern __w_intptr_t _findfirst( const char *__filespec, struct _finddata_t *__fileinfo );
