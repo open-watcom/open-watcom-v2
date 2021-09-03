@@ -119,7 +119,7 @@ _WCRTLINK extern int  dup( int __handle );
 _WCRTLINK extern int  _dup( int __handle );
 _WCRTLINK extern int  dup2( int __handle1, int __handle2 );
 _WCRTLINK extern int  _dup2( int __handle1, int __handle2 );
-:include msio.sp
+:include msioext.sp
 _WCRTLINK extern int  fsync( int __filedes );
 _WCRTLINK extern long _get_osfhandle( int __posixhandle );
 _WCRTLINK extern int  _hdopen( int __handle, int __mode );

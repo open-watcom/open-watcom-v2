@@ -200,7 +200,7 @@ _WCRTLINK extern int    ftruncate( int __fd, off_t __length );
 :include ext.sp
 _WCRTLINK extern long long _lseeki64( int __fildes, long long __offset, int __whence );
 
-:include msio.sp
+:include msioext.sp
 :segment QNX
 :include dosflock.sp
 _WCRTLINK extern nid_t  getnid( void );
