@@ -258,7 +258,7 @@ _WCRTLINK extern int    execvp( const char *__file, const char *const __argv[] )
 _WCRTLINK extern char   *getcwd( char *__buf, size_t __size );
 _WCRTLINK extern char   *_getcwd( char *__buf, size_t __size );
 _WCRTLINK extern int    getopt( int __argc, char * const __argv[], const char *__optstring );
-_WCRTLINK extern pid_t  getpid( void );
+:include getpid.sp
 _WCRTLINK extern int    rmdir( const char *__path );
 _WCRTLINK extern unsigned sleep( unsigned int __seconds );
 _WCRTLINK extern int    usleep( unsigned long __usec );

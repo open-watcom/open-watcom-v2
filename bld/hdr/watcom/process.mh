@@ -20,7 +20,7 @@
 :endsegment
 :include cpluspro.sp
 
-/* 
+/*
  *  ISO C types
  */
 :include wchar_t.sp
@@ -247,8 +247,10 @@ _WCRTLINK extern int    _wsystem( const wchar_t *__cmd );
 :endsegment
 
 :endsegment
-_WCRTLINK extern pid_t  getpid( void );
-_WCRTLINK extern pid_t  _getpid( void );
+:include getpid.sp
+:keep MSEXT
+:include getpid.sp
+:remove MSEXT
 _WCRTLINK extern pid_t  wait( int *__status );
 
 :segment LINUX
