@@ -125,6 +125,7 @@ _WCRTLINK extern long _get_osfhandle( int __posixhandle );
 _WCRTLINK extern int  _hdopen( int __handle, int __mode );
 _WCRTLINK extern int  isatty( int __handle );
 _WCRTLINK extern int  _isatty( int __handle );
+_WCRTLINK extern int  lock( int __handle, unsigned long __offset, unsigned long __nbytes );
 _WCRTLINK extern off_t lseek( int __handle, off_t __offset, int __origin );
 _WCRTLINK extern off_t _lseek( int __handle, off_t __offset, int __origin );
 _WCRTLINK extern int  open( const char *__path, int __oflag, ... );
@@ -139,13 +140,12 @@ _WCRTLINK extern mode_t umask( mode_t __permission );
 _WCRTLINK extern mode_t _umask( mode_t __permission );
 _WCRTLINK extern int  unlink( const char *__path );
 _WCRTLINK extern int  _unlink( const char *__path );
+_WCRTLINK extern int  unlock( int __handle, unsigned long __offset, unsigned long __nbytes );
 _WCRTLINK extern int  write( int __handle, const void *__buf, unsigned int __len );
 _WCRTLINK extern int  _write( int __handle, const void *__buf, unsigned int __len );
 _WCRTLINK extern int  _waccess( const wchar_t *__path, int __mode );
 _WCRTLINK extern int  _wchmod( const wchar_t *__path, mode_t __pmode );
 _WCRTLINK extern int  _wunlink( const wchar_t *__path );
-
-:include dosflock.sp
 
 _WCRTLINK extern __w_intptr_t _findfirst( const char *__filespec, struct _finddata_t *__fileinfo );
 _WCRTLINK extern __w_intptr_t _wfindfirst( const wchar_t *__filespec, struct _wfinddata_t *__fileinfo );

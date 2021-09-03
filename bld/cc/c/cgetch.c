@@ -36,7 +36,7 @@
 #include "scan.h"
 
 
-#define MAX_INC_DEPTH   ((unsigned)-1)
+#define MAX_INC_DEPTH   255
 
 /*
  * the following table is used to map three character sequences
@@ -67,7 +67,7 @@ static int      Blank1Count;
 static int      Blank2Count;
 static int      Tab1Count;
 
-static unsigned IncFileDepth;
+static int      IncFileDepth;
 
 
 void InitIncFile( void )
@@ -568,7 +568,7 @@ void CloseFCB( FCB *srcfcb )
     if( srcfcb->no_eol ) {
         source_loc  err_loc;
 
-        err_loc.line = srcfcb->src_loc.line;
+        err_loc.line = srcfcb->src_line_cnt;
         err_loc.column = srcfcb->src_loc.column;
         err_loc.fno = srcfcb->src_flist->index;
         SetErrLoc( &err_loc );
