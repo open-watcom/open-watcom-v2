@@ -149,9 +149,12 @@ struct _stati64 {
 :include umask.sp
 :segment LINUX
 _WCRTLINK extern int        fchmod( int __fildes, mode_t __mode );
+:include mkdir.sp
+:keep MSEXT
+:include mkdir.sp
+:remove MSEXT
 _WCRTLINK extern int        mkfifo( const char *__path, mode_t __mode );
 _WCRTLINK extern int        mknod( const char *__path, mode_t __mode, int __dev );
-:include mkdir.sp
 :endsegment
 :include stat.sp
 ::
@@ -161,9 +164,11 @@ _WCRTLINK extern int        mknod( const char *__path, mode_t __mode, int __dev 
 :keep MSEXT
 :include stat.sp
 :remove MSEXT
+:segment DOS
 :keep WIDE
 :include stat.sp
 :remove WIDE
+:endsegment
 :include extepi.sp
 :endsegment
 

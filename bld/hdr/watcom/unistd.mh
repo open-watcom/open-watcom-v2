@@ -121,8 +121,8 @@
 :include ssize_t.sp
 
 :include fileio.sp
-:keep MSEXT
 :include ext.sp
+:keep MSEXT
 :include fileio.sp
 :remove MSEXT
 :include extepi.sp
@@ -175,7 +175,10 @@ _WCRTLINK extern int        tcsetpgrp( int __fildes, pid_t __pgrp_id );
 _WCRTLINK extern char       *ttyname( int __fildes );
 _WCRTLINK extern int        ttyname_r( int __fildes, char *__buf, size_t __buflen );
 :segment QNX
-_WCRTLINK extern int        mkdir( const char *__path, mode_t __mode );
+:include mkdir.sp
+:keep MSEXT
+:include mkdir.sp
+:remove MSEXT
 _WCRTLINK extern int        mknod( const char *__path, mode_t __mode, int __dev );
 _WCRTLINK extern int        mount( const char *__special, const char *__dir, int __rwflag );
 _WCRTLINK extern int        tcsetct( int __fildes, pid_t __pid );
