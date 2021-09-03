@@ -136,8 +136,10 @@ _WCRTLINK extern int  read( int __handle, void *__buf, unsigned int __len );
 _WCRTLINK extern int  _read( int __handle, void *__buf, unsigned int __len );
 :include sopen.sp
 :include dosflock.sp
-_WCRTLINK extern mode_t umask( mode_t __permission );
-_WCRTLINK extern mode_t _umask( mode_t __permission );
+:include umask.sp
+:keep MSEXT
+:include umask.sp
+:remove MSEXT
 _WCRTLINK extern int  unlink( const char *__path );
 _WCRTLINK extern int  _unlink( const char *__path );
 _WCRTLINK extern int  write( int __handle, const void *__buf, unsigned int __len );

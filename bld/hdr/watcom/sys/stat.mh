@@ -25,7 +25,7 @@
 :include pshpackl.sp
 
 :endsegment
-/* 
+/*
  *  ISO C types
  */
 :include time_t.sp
@@ -33,7 +33,7 @@
 :include wchar_t.sp
 :remove EXTWCHART
 
-/* 
+/*
  *  POSIX 1003.1 types
  */
 :include off_t.sp
@@ -149,7 +149,7 @@ _WCRTLINK extern int     chmod( const char *__path, mode_t __mode );
 _WCRTLINK extern int     stat( const char *__path, struct stat *__buf );
 _WCRTLINK extern int     lstat( const char *__path, struct stat *__buf );
 _WCRTLINK extern int     fstat( int __fildes, struct stat *__buf );
-_WCRTLINK extern mode_t  umask( mode_t __cmask );
+:include umask.sp
 :segment LINUX
 _WCRTLINK extern int     fchmod( int __fildes, mode_t __mode );
 _WCRTLINK extern int     mkdir( const char *__path, mode_t __mode );
