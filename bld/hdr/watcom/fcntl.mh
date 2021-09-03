@@ -206,22 +206,22 @@ typedef struct flock {
 /*
  *  POSIX 1003.1 Prototypes.
  */
-_WCRTLINK extern int        open( const char *__path, int __oflag, ... );
-_WCRTLINK extern int        creat( const char *__path, mode_t __mode );
+:include open.sp
+:include creat.sp
 
 :include ext.sp
 :include sopen.sp
 
-_WCRTLINK extern int        _open( const char *__path, int __oflag, ... );
-_WCRTLINK extern int        _creat( const char *__path, mode_t __mode );
 :keep MSEXT
+:include open.sp
+:include creat.sp
 :include sopen.sp
 :remove MSEXT
 
 :: Wide character version
-_WCRTLINK extern int        _wopen( const wchar_t *, int, ... );
-_WCRTLINK extern int        _wcreat( const wchar_t *, mode_t );
 :keep WIDE
+:include open.sp
+:include creat.sp
 :include sopen.sp
 :remove WIDE
 
