@@ -104,7 +104,8 @@ static unsigned char InitClassTable[] = {
 void NewLineStartPos( FCB *srcfile )
 /**********************************/
 {
-    srcfile->src_line_cnt++;
+    if( srcfile->src_loc.line )
+        srcfile->src_line_cnt++;
     srcfile->src_loc.line++;
     srcfile->src_loc.column = 0;
 }
@@ -1112,7 +1113,7 @@ static void doScanComment( void )
         }
         CppComment( '\0' );
     } else {
-        // make '/' anf '\n' a special characters so that we only have
+        // make '/' and '\n' a special characters so that we only have
         // to do one test for each character inside the main loop
         CharSet['/'] |= C_EX;           // make '/' special character
         CharSet['\n'] |= C_EX;          // make '\n' special character

@@ -119,9 +119,9 @@ defwin=-bw
 link_x86  = DEBUG dwarf
 link_axp  = DEBUG codeview
 !ifeq release 0
-link_opts = OPTION quiet, map, symf
+link_opts = OPTION quiet, map, v, symf
 !else
-link_opts = OPTION quiet, map
+link_opts = OPTION quiet, map, v
 !endif
 
 !ifeq clibtest_name ntthrd

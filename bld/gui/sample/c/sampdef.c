@@ -474,11 +474,11 @@ static char * ComboBoxStrings[] = {
 #endif
 
 static gui_toolbar_struct ToolBar[] = {
-    { "&Min",           MINIMIZE,       MENU_MINIMIZE, "Minimize"       },
-    { "Ma&x",           MAXIMIZE,       MENU_MAXIMIZE, "Maximize"       },
-    { "&Restore",       RESTORE,        MENU_RESTORE,  "Restore"        },
-    { "Re&size",        RESIZE,         MENU_RESIZE,   "Resize"         },
-    { "&Change Menu",   CHANGEMENU,     MENU_CHANGE,   "Change Menu"    }
+    { "&Min",           MINIMIZE,       MENU_MINIMIZE, "Minimize",      "Tip Minimize"       },
+    { "Ma&x",           MAXIMIZE,       MENU_MAXIMIZE, "Maximize",      "Tip Maximize"       },
+    { "&Restore",       RESTORE,        MENU_RESTORE,  "Restore",       "Tip Restore"        },
+    { "Re&size",        RESIZE,         MENU_RESIZE,   "Resize",        "Tip Resize"         },
+    { "&Change Menu",   CHANGEMENU,     MENU_CHANGE,   "Change Menu",   "Tip Change Menu"    }
 };
 
 gui_toolbar_items   tb_ToolBar = GUI_TOOLBAR_ARRAY( ToolBar );

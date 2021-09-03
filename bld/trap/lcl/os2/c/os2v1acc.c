@@ -80,7 +80,7 @@ extern scrtype          Screen;
 
 static TRACEBUF         Buff;
 static USHORT           SessionType;
-__GINFOSEG              __far *GblInfo;
+GINFOSEG                __far *GblInfo;
 const char              OS2ExtList[] = OS2EXTLIST;
 
 
@@ -1271,7 +1271,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, unsigned_8 remote
     trap_version        ver;
     USHORT              os2ver;
     SEL                 li,gi;
-    __LINFOSEG          __far *linfo;
+    LINFOSEG            __far *linfo;
 
     parms = parms;
     Remote = remote;
