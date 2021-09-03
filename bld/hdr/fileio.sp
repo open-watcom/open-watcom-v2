@@ -12,10 +12,10 @@ _WCRTLINK extern ssize_t    read( int fildes, void *buf, size_t nbyte );
 :segment WIDE
 :elsesegment MSEXT
 :: MS extension
-_WCRTLINK extern int        _write( int fildes, void *buf, unsigned nbyte );
+_WCRTLINK extern int        _write( int fildes, const void *buf, unsigned nbyte );
 :elsesegment
 :: POSIX
-_WCRTLINK extern ssize_t    write( int fildes, void *buf, size_t nbyte );
+_WCRTLINK extern ssize_t    write( int fildes, const void *buf, size_t nbyte );
 :endsegment
 ::
 :segment WIDE
