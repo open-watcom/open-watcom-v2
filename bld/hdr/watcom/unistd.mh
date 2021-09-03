@@ -202,8 +202,8 @@ _WCRTLINK extern long long _lseeki64( int __fildes, long long __offset, int __wh
 
 :include msio.sp
 :segment QNX
+:include dosflock.sp
 _WCRTLINK extern nid_t  getnid( void );
-_WCRTLINK extern int    lock( int __fildes, long __offset, long __nbytes );
 _WCRTLINK extern void   qnx_display_msg( const char *__text );
 _WCRTLINK extern void   qnx_display_hex( unsigned __value );
 _WCRTLINK extern char   *qnx_fullpath( char *__fullpath, const char *__path );
@@ -213,7 +213,6 @@ struct _psinfo2; /* for C++ */
 _WCRTLINK extern int    qnx_getids( pid_t __pid, struct _psinfo2 *__info );
 _WCRTLINK extern int    qnx_setids( pid_t __pid, int __id, unsigned __subtype );
 _WCRTLINK extern int    qnx_sync( nid_t __nid );
-_WCRTLINK extern int    unlock( int __fildes, long __offset, long __nbytes );
 :endsegment
 :include extepi.sp
 
