@@ -10,4 +10,3 @@ _WCRTLINK extern char       *_getdcwd( int __drive, char *__buffer, size_t __max
 :: POSIX
 :endsegment
 ::
-
