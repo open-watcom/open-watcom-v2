@@ -83,7 +83,7 @@ _WCRTLINK extern int        _getdrive( void );
 _WCRTLINK extern unsigned   _getdiskfree( unsigned __drive, struct _diskfree_t *__diskspace );
 
 :include getdcwd.sp
-_WCRTLINK extern char       *getcwd( char *__buf, size_t __size );
+:include getcwd.sp
 _WCRTLINK extern int        chdir( const char *__path );
 _WCRTLINK extern int        mkdir( const char *__path );
 _WCRTLINK extern int        rmdir( const char *__path );
@@ -91,7 +91,7 @@ _WCRTLINK extern int        rmdir( const char *__path );
 
 :keep MSEXT
 :include getdcwd.sp
-_WCRTLINK extern char       *_getcwd( char *__buf, size_t __size );
+:include getcwd.sp
 _WCRTLINK extern int        _chdir( const char *__path );
 _WCRTLINK extern int        _mkdir( const char *__path );
 _WCRTLINK extern int        _rmdir( const char *__path );
@@ -101,7 +101,7 @@ _WCRTLINK extern int        _rmdir( const char *__path );
 :segment DOS
 :keep WIDE
 :include getdcwd.sp
-_WCRTLINK extern wchar_t    *_wgetcwd( wchar_t *__buf, size_t __size );
+:include getcwd.sp
 _WCRTLINK extern int        _wchdir( const wchar_t *__path );
 _WCRTLINK extern int        _wmkdir( const wchar_t *__path );
 _WCRTLINK extern int        _wrmdir( const wchar_t *__path );

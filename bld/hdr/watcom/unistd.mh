@@ -235,20 +235,26 @@ extern ssize_t              __far_write( int __fildes,void __far *__buffer,size_
 :endsegment
 :endsegment
 
-_WCRTLINK extern int        chdir( const char *__path );
 :: the following are also in process.h, but they are expected to be here
 :include _exit.sp
 
 :include pxexec.sp
 
-_WCRTLINK extern char       *getcwd( char *__buf, size_t __size );
-_WCRTLINK extern char       *_getcwd( char *__buf, size_t __size );
 _WCRTLINK extern int        getopt( int __argc, char * const __argv[], const char *__optstring );
-:include getpid.sp
-_WCRTLINK extern int        rmdir( const char *__path );
 _WCRTLINK extern unsigned   sleep( unsigned int __seconds );
 _WCRTLINK extern int        usleep( unsigned long __usec );
+:include getpid.sp
+:include getcwd.sp
+_WCRTLINK extern int        chdir( const char *__path );
+_WCRTLINK extern int        rmdir( const char *__path );
+
 :include ext.sp
+:keep MSEXT
+:include getpid.sp
+:include getcwd.sp
+_WCRTLINK extern int        _chdir( const char *__path );
+_WCRTLINK extern int        _rmdir( const char *__path );
+:remove MSEXT
 :include delay.sp
 :include extepi.sp
 :segment RDOS
