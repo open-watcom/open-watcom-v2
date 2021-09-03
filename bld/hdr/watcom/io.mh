@@ -109,9 +109,6 @@ struct _wfinddatai64_t {
 _WCRTLINK extern int        access( const char *__path, int __mode );
 _WCRTLINK extern int        _access( const char *__path, int __mode );
 :include chmod.sp
-:keep MSEXT
-:include chmod.sp
-:remove MSEXT
 _WCRTLINK extern int        close( int __handle );
 _WCRTLINK extern int        _close( int __handle );
 _WCRTLINK extern int        _commit( int __handle );
@@ -136,40 +133,31 @@ _WCRTLINK extern int        _os_handle(int __handle );
 _WCRTLINK extern int        _pipe( int *__phandles, unsigned __psize, int __textmode );
 _WCRTLINK extern int        read( int __handle, void *__buf, unsigned int __len );
 _WCRTLINK extern int        _read( int __handle, void *__buf, unsigned int __len );
-:include sopen.sp
-:include dosflock.sp
-:include umask.sp
-:keep MSEXT
-:include sopen.sp
-:include umask.sp
-:remove MSEXT
 _WCRTLINK extern int        unlink( const char *__path );
 _WCRTLINK extern int        _unlink( const char *__path );
 _WCRTLINK extern int        write( int __handle, const void *__buf, unsigned int __len );
 _WCRTLINK extern int        _write( int __handle, const void *__buf, unsigned int __len );
+:include sopen.sp
+:include dosflock.sp
+:include umask.sp
+_WCRTLINK extern __int64    _lseeki64( int __handle, __int64 __offset, int __origin );
+
+:keep MSEXT
+:include chmod.sp
+:include sopen.sp
+:include mktemp.sp
+:include umask.sp
+:include msffind.sp
+:remove MSEXT
+
 _WCRTLINK extern int        _waccess( const wchar_t *__path, int __mode );
+_WCRTLINK extern int        _wunlink( const wchar_t *__path );
 :keep WIDE
 :include chmod.sp
 :include sopen.sp
-:remove WIDE
-_WCRTLINK extern int        _wunlink( const wchar_t *__path );
-
-_WCRTLINK extern __w_intptr_t _findfirst( const char *__filespec, struct _finddata_t *__fileinfo );
-_WCRTLINK extern __w_intptr_t _wfindfirst( const wchar_t *__filespec, struct _wfinddata_t *__fileinfo );
-_WCRTLINK extern int        _findnext( __w_intptr_t __handle, struct _finddata_t *__fileinfo );
-_WCRTLINK extern int        _wfindnext( __w_intptr_t __handle, struct _wfinddata_t *__fileinfo );
-_WCRTLINK extern int        _findclose( __w_intptr_t __handle );
-
 :include mktemp.sp
-:keep WIDE
-:include mktemp.sp
+:include msffind.sp
 :remove WIDE
-
-_WCRTLINK extern __w_intptr_t _findfirsti64( const char *__filespec, struct _finddatai64_t *__fileinfo );
-_WCRTLINK extern __w_intptr_t _wfindfirsti64( const wchar_t *__filespec, struct _wfinddatai64_t *__fileinfo );
-_WCRTLINK extern int        _findnexti64( __w_intptr_t __handle, struct _finddatai64_t *__fileinfo );
-_WCRTLINK extern int        _wfindnexti64( __w_intptr_t __handle, struct _wfinddatai64_t *__fileinfo );
-_WCRTLINK extern __int64    _lseeki64( int __handle, __int64 __offset, int __origin );
 
 :include poppack.sp
 
