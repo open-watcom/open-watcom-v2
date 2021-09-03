@@ -151,7 +151,7 @@ struct _stati64 {
 _WCRTLINK extern int        fchmod( int __fildes, mode_t __mode );
 _WCRTLINK extern int        mkfifo( const char *__path, mode_t __mode );
 _WCRTLINK extern int        mknod( const char *__path, mode_t __mode, int __dev );
-_WCRTLINK extern int        mkdir( const char *__path, mode_t __mode );
+:include mkdir.sp
 :endsegment
 :include stat.sp
 ::

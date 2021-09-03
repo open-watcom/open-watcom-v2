@@ -204,14 +204,13 @@ struct _psinfo2; /* for C++ */
 _WCRTLINK extern int        qnx_getids( pid_t __pid, struct _psinfo2 *__info );
 _WCRTLINK extern int        qnx_setids( pid_t __pid, int __id, unsigned __subtype );
 _WCRTLINK extern int        qnx_sync( nid_t __nid );
+
+_WCRTLINK extern char       *basename( char *__fname );
+_WCRTLINK extern off_t      ltrunc( int __fildes, off_t __offset, int __origin );
 :endsegment
 :include extepi.sp
 
 _WCRTLINK extern size_t     confstr( int, char *, size_t );
-:include extposix.sp
-_WCRTLINK extern char       *basename( char *__fname );
-_WCRTLINK extern off_t      ltrunc( int __fildes, off_t __offset, int __origin );
-:include extepi.sp
 
 :segment LINUX
 _WCRTLINK extern int        nice( int __val );
@@ -250,15 +249,15 @@ _WCRTLINK extern pid_t      waitpid( pid_t __pid, int *__stat_loc, int __options
 
 :include getpid.sp
 :include getcwd.sp
-_WCRTLINK extern int        chdir( const char *__path );
-_WCRTLINK extern int        rmdir( const char *__path );
+:include chdir.sp
+:include rmdir.sp
 
 :include ext.sp
 :keep MSEXT
 :include getpid.sp
 :include getcwd.sp
-_WCRTLINK extern int        _chdir( const char *__path );
-_WCRTLINK extern int        _rmdir( const char *__path );
+:include chdir.sp
+:include rmdir.sp
 :remove MSEXT
 
 :include delay.sp

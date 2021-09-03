@@ -84,17 +84,17 @@ _WCRTLINK extern unsigned   _getdiskfree( unsigned __drive, struct _diskfree_t *
 
 :include getdcwd.sp
 :include getcwd.sp
-_WCRTLINK extern int        chdir( const char *__path );
-_WCRTLINK extern int        mkdir( const char *__path );
-_WCRTLINK extern int        rmdir( const char *__path );
+:include chdir.sp
+:include mkdir.sp
+:include rmdir.sp
 :include dirfind.sp
 
 :keep MSEXT
 :include getdcwd.sp
 :include getcwd.sp
-_WCRTLINK extern int        _chdir( const char *__path );
-_WCRTLINK extern int        _mkdir( const char *__path );
-_WCRTLINK extern int        _rmdir( const char *__path );
+:include chdir.sp
+:include mkdir.sp
+:include rmdir.sp
 :include dirfind.sp
 :remove MSEXT
 
@@ -102,9 +102,9 @@ _WCRTLINK extern int        _rmdir( const char *__path );
 :keep WIDE
 :include getdcwd.sp
 :include getcwd.sp
-_WCRTLINK extern int        _wchdir( const wchar_t *__path );
-_WCRTLINK extern int        _wmkdir( const wchar_t *__path );
-_WCRTLINK extern int        _wrmdir( const wchar_t *__path );
+:include chdir.sp
+:include mkdir.sp
+:include rmdir.sp
 :include dirfind.sp
 :remove WIDE
 

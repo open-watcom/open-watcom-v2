@@ -143,14 +143,14 @@ _WCRTDATA extern int __p_overlay;
                 unsigned (__stdcall *__start_address)(void *),
                 void *__arglist, unsigned __initflag, unsigned *__thrdaddr );
   #pragma intrinsic(_beginthread,_beginthreadex)
-  _WCRTLINK extern void _endthreadex( unsigned __retval );
+  _WCRTLINK extern void     _endthreadex( unsigned __retval );
 :include thrdhndl.sp
  #else
-  _WCRTLINK extern int  _beginthread( void (_WCCALLBACK *__start_address)(void *),
+  _WCRTLINK extern int      _beginthread( void (_WCCALLBACK *__start_address)(void *),
       void *__stack_bottom, unsigned __stack_size, void *__arglist );
   #pragma intrinsic(_beginthread)
  #endif
- _WCRTLINK extern void  _endthread( void );
+ _WCRTLINK extern void      _endthread( void );
 #endif
 :endsegment
 
@@ -160,8 +160,8 @@ _WCRTDATA extern int __p_overlay;
 #define WAIT_CHILD      0
 #define WAIT_GRANDCHILD 1
 
-_WCRTLINK extern int    cwait( int *__status, int __process_id, int __action_code );
-_WCRTLINK extern int    _cwait( int *__status, int __process_id, int __action_code );
+_WCRTLINK extern int        cwait( int *__status, int __process_id, int __action_code );
+_WCRTLINK extern int        _cwait( int *__status, int __process_id, int __action_code );
 
 :endsegment
 :: These functions from the standard library need to be in namspace std
@@ -174,13 +174,13 @@ _WCRTLINK extern int    _cwait( int *__status, int __process_id, int __action_co
 :segment LINUX | QNX
 #if !(defined(SYSV) || defined(BSD) || defined(XENIX) || defined(_UNIX_H_INCLUDED))
 :endsegment
-_WCRTLINK extern char   *getcmd( char *__buffer );
-_WCRTLINK extern int    _bgetcmd( char *__buffer, int __len );
-_WCRTLINK extern char   *_cmdname( char *__name );
+_WCRTLINK extern char       *getcmd( char *__buffer );
+_WCRTLINK extern int        _bgetcmd( char *__buffer, int __len );
+_WCRTLINK extern char       *_cmdname( char *__name );
 :segment LINUX | QNX
 #endif
 :endsegment
-_WCRTLINK extern int    putenv( const char *__string );
+_WCRTLINK extern int        putenv( const char *__string );
 
 :include msspawn.sp
 
@@ -188,18 +188,18 @@ _WCRTLINK extern int    putenv( const char *__string );
 :include msspawn.sp
 :remove MSEXT
 
-_WCRTLINK extern wchar_t *_wgetenv( const wchar_t *__name );
-_WCRTLINK extern int    _wsetenv( const wchar_t *__name, const wchar_t *__newvalue, int __overwrite );
-_WCRTLINK extern int    _wputenv( const wchar_t *__env_string );
-
 :keep WIDE
+_WCRTLINK extern wchar_t    *_wgetenv( const wchar_t *__name );
+_WCRTLINK extern int        _wsetenv( const wchar_t *__name, const wchar_t *__newvalue, int __overwrite );
+_WCRTLINK extern int        _wputenv( const wchar_t *__env_string );
+
 :include pxexec.sp
 :include msexec.sp
 
 :include msspawn.sp
-:remove WIDE
 
-_WCRTLINK extern int    _wsystem( const wchar_t *__cmd );
+_WCRTLINK extern int        _wsystem( const wchar_t *__cmd );
+:remove WIDE
 
 :segment DOS | RDOS
 :segment DOS
@@ -222,10 +222,10 @@ _WCRTLINK extern int    _wsystem( const wchar_t *__cmd );
 :keep MSEXT
 :include getpid.sp
 :remove MSEXT
-_WCRTLINK extern pid_t  wait( int *__status );
+_WCRTLINK extern pid_t      wait( int *__status );
 
 :segment LINUX
-_WCRTLINK extern pid_t  gettid( void );
+_WCRTLINK extern pid_t      gettid( void );
 
 :endsegment
 :segment LINUX | QNX
