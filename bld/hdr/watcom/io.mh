@@ -108,19 +108,27 @@ struct _wfinddatai64_t {
 
 :include fileio.sp
 :include chmod.sp
-:include creat.sp
+:include rename.sp
+:include remove.sp
+:include locking.sp
 :include msioext.sp
 :include open.sp
+:include creat.sp
 :include sopen.sp
-:include dosflock.sp
+:include mktemp.sp
 :include umask.sp
+:include msffind.sp
+:include dosflock.sp
 
 :keep MSEXT
 :include fileio.sp
 :include chmod.sp
-:include creat.sp
+:include rename.sp
+:include remove.sp
+:include locking.sp
 :include msioext.sp
 :include open.sp
+:include creat.sp
 :include sopen.sp
 :include mktemp.sp
 :include umask.sp
@@ -130,8 +138,15 @@ struct _wfinddatai64_t {
 :keep WIDE
 :include fileio.sp
 :include chmod.sp
+:include rename.sp
+:include remove.sp
+:include locking.sp
+:include msioext.sp
+:include open.sp
+:include creat.sp
 :include sopen.sp
 :include mktemp.sp
+:include umask.sp
 :include msffind.sp
 :remove WIDE
 

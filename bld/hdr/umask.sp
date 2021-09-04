@@ -1,5 +1,6 @@
 :: POSIX umask function
 ::
+::                          <sys/stat.h>,<sys/stat.h> (<io.h>)
 :segment WIDE
 :: MS wide extension
 :elsesegment MSEXT

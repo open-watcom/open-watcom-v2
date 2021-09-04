@@ -1,5 +1,6 @@
 :: POSIX open function
 ::
+::                          <fcntl.h>,<sys/stat.h> (<io.h>,<wchar.h>)
 :segment WIDE
 :: MS wide extension
 _WCRTLINK extern int        _wopen( const wchar_t *__path, int __oflag, ... );

@@ -1,5 +1,6 @@
 :: POSIX getcwd function
 ::
+::                          <unistd.h> (<direct.h>,<wchar.h>)
 :segment WIDE
 :: MS wide extension
 _WCRTLINK extern wchar_t    *_wgetcwd( wchar_t *__buf, size_t __size );

@@ -1,5 +1,6 @@
 :: POSIX tempnam function
 ::
+::                          <stdio.h> (<stdio.h>,<wchar.h>)
 :segment WIDE
 :: MS wide extension
 _WCRTLINK extern wchar_t    *_wtempnam( const wchar_t *__dir, const wchar_t *__prefix );

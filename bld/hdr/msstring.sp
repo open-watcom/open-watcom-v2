@@ -1,5 +1,6 @@
 :: MS single-byte and wide character string extension functions
 ::
+::                          ??? (<string.h>,<wchar.h>)
 :segment WIDE
 _WCRTLINK extern wchar_t    *_wcsnset( wchar_t *, int, __w_size_t );
 :: MS deprecated alias - not implemented
@@ -10,6 +11,7 @@ _WCRTLINK extern char       *_strnset( char *__string, int __c, __w_size_t __len
 _WCRTLINK extern char       *strnset( char *__string, int __c, __w_size_t __len );
 :endsegment
 ::
+::                          ??? (<string.h>,<wchar.h>)
 :segment WIDE
 _WCRTLINK extern int        _wcsnicmp( const wchar_t *, const wchar_t *, __w_size_t );
 :: MS deprecated alias - not implemented
@@ -20,6 +22,7 @@ _WCRTLINK extern int        _strnicmp( const char *__s1, const char *__s2, __w_s
 _WCRTLINK extern int        strnicmp( const char *__s1, const char *__s2, __w_size_t __n );
 :endsegment
 ::
+::                          <string.h> (<string.h>,<wchar.h>)
 :segment WIDE
 _WCRTLINK extern wchar_t    *_wcsdup( const wchar_t * );
 :elsesegment
@@ -27,6 +30,7 @@ _WCRTLINK extern wchar_t    *_wcsdup( const wchar_t * );
 _WCRTLINK extern char       *_strdup( const char *__string );
 :endsegment
 ::
+::                          ??? (<string.h>,<wchar.h>)
 :segment WIDE
 _WCRTLINK extern wchar_t    *_wcslwr( wchar_t * );
 :: MS deprecated alias - not implemented
@@ -37,6 +41,7 @@ _WCRTLINK extern char       *_strlwr( char *__string );
 _WCRTLINK extern char       *strlwr( char *__string );
 :endsegment
 ::
+::                          ??? (<string.h>,<wchar.h>)
 :segment WIDE
 _WCRTLINK extern wchar_t    *_wcsupr( wchar_t * );
 :: MS deprecated alias - not implemented
@@ -47,6 +52,7 @@ _WCRTLINK extern char       *_strupr( char *__string );
 _WCRTLINK extern char       *strupr( char *__string );
 :endsegment
 ::
+::                          ??? (<string.h>,<wchar.h>)
 :segment WIDE
 _WCRTLINK extern int        _wcsicmp( const wchar_t *, const wchar_t * );
 :: MS deprecated alias - not implemented
@@ -57,12 +63,14 @@ _WCRTLINK extern int        _stricmp( const char *__s1, const char *__s2 );
 _WCRTLINK extern int        stricmp( const char *__s1, const char *__s2 );
 :endsegment
 ::
+::                          ??? (<string.h>,<wchar.h>)
 :segment WIDE
 :elsesegment
 :: MS deprecated alias
 _WCRTLINK extern int        strcmpi( const char *__s1, const char *__s2 );
 :endsegment
 ::
+::                          ??? (<string.h>,<wchar.h>)
 :segment WIDE
 _WCRTLINK extern wchar_t    *_wcsrev( wchar_t * );
 :: MS deprecated alias - not implemented
@@ -73,6 +81,7 @@ _WCRTLINK extern char       *_strrev( char *__string );
 _WCRTLINK extern char       *strrev( char *__string );
 :endsegment
 ::
+::                          ??? (<string.h>,<wchar.h>)
 :segment WIDE
 _WCRTLINK extern wchar_t    *_wcsset( wchar_t *, wchar_t );
 :: MS deprecated alias - not implemented
@@ -83,6 +92,7 @@ _WCRTLINK extern char       *_strset( char *__string, int __c );
 _WCRTLINK extern char       *strset( char *__string, int __c );
 :endsegment
 ::
+::                          <string.h> (<string.h>,<wchar.h>)
 :segment STRING_MH
 :segment WIDE
 _WCRTLINK extern wchar_t    *_wcserror( int );
@@ -91,24 +101,28 @@ _WCRTLINK extern wchar_t    *__wcserror( const wchar_t * );
 _WCRTLINK extern char       *_strerror( const char *__s );
 :endsegment
 ::
+::                          ??? (<string.h>,<wchar.h>)
 :segment WIDE
 _WCRTLINK extern int        _wcsicoll( const wchar_t *__s1, const wchar_t *__s2 );
 :elsesegment
 _WCRTLINK extern int        _stricoll( const char *__s1, const char *__s2 );
 :endsegment
 ::
+::                          ??? (<string.h>,<wchar.h>)
 :segment WIDE
 _WCRTLINK extern int        _wcsncoll( const wchar_t *__s1, const wchar_t *__s2, __w_size_t __n );
 :elsesegment
 _WCRTLINK extern int        _strncoll( const char *__s1, const char *__s2, __w_size_t __n );
 :endsegment
 ::
+::                          ??? (<string.h>,<wchar.h>)
 :segment WIDE
 _WCRTLINK extern int        _wcsnicoll( const wchar_t *__s1, const wchar_t *__s2, __w_size_t __n );
 :elsesegment
 _WCRTLINK extern int        _strnicoll( const char *__s1, const char *__s2, __w_size_t __n );
 :endsegment
 ::
+::                          ??? (<memory.h>,<string.h>)
 :segment WIDE
 :elsesegment
 _WCRTLINK extern int        _memicmp( const void *__s1, const void *__s2, __w_size_t __n );
@@ -116,6 +130,7 @@ _WCRTLINK extern int        _memicmp( const void *__s1, const void *__s2, __w_si
 _WCRTLINK extern int        memicmp( const void *__s1, const void *__s2, __w_size_t __n );
 :endsegment
 ::
+::                          <string.h> (<memory.h>,<string.h>)
 :segment WIDE
 :elsesegment
 _WCRTLINK extern void       *_memccpy( void *__s1, const void *__s2, int __c, __w_size_t __n );

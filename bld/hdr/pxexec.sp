@@ -1,5 +1,6 @@
 :: POSIX exec function family
 ::
+::                          <unistd.h> (<process.h>,<wchar.h>)
 :segment WIDE
 :: MS wide extension
 _WCRTLINK extern int        _wexecl( const wchar_t *__path, const wchar_t *__arg0, ... );

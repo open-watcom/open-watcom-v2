@@ -1,5 +1,6 @@
 :: POSIX chmod function
 ::
+::                          <sys/stat.h> (<io.h>,<wchar.h>)
 :segment WIDE
 _WCRTLINK extern int        _wchmod( const wchar_t *__path, mode_t __pmode );
 :elsesegment MSEXT

@@ -1,5 +1,6 @@
 :: MS specific I/O extension functions
 ::
+::                          <io.h>
 :segment WIDE
 :: MS wide extension
 :elsesegment MSEXT
@@ -10,6 +11,7 @@ _WCRTLINK extern int        _eof( int __handle );
 _WCRTLINK extern int        eof( int __handle );
 :endsegment
 ::
+::                          <io.h>
 :segment WIDE
 :: MS wide extension
 :elsesegment MSEXT
@@ -21,6 +23,7 @@ _WCRTLINK extern long long  _filelengthi64( int __handle );
 _WCRTLINK extern long       filelength( int __handle );
 :endsegment
 ::
+::                          <io.h>
 :segment WIDE
 :: MS wide extension
 :elsesegment MSEXT
@@ -32,6 +35,7 @@ _WCRTLINK extern long long  _telli64( int __handle );
 _WCRTLINK extern off_t      tell( int __handle );
 :endsegment
 ::
+::                          <io.h>
 :segment WIDE
 :: MS wide extension
 :elsesegment MSEXT
@@ -42,6 +46,7 @@ _WCRTLINK extern int        _chsize( int __handle, long __size );
 _WCRTLINK extern int        chsize( int __handle, long __size );
 :endsegment
 ::
+::                          <io.h> (<fcntl.h>)
 :segment WIDE
 :: MS wide extension
 :elsesegment MSEXT

@@ -1,5 +1,6 @@
 :: POSIX getpid
 ::
+::                          <unistd.h> (<process.h>)
 :segment WIDE
 :: MS wide extension
 :elsesegment MSEXT

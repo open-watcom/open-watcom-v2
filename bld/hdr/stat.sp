@@ -1,5 +1,6 @@
 :: POSIX stat function family
 ::
+::                          <fcntl.h>,<sys/stat.h> (<sys/stat.h>,<wchar.h>)
 :segment WIDE
 :: MS wide extension
 _WCRTLINK extern int        _wstat( const wchar_t *__path, struct stat *__buf );
@@ -18,6 +19,7 @@ _WCRTLINK extern int        stat64( const char *__path, struct stat64 *__buf );
 _WCRTLINK extern int        stat( const char *__path, struct stat *__buf );
 :endsegment
 ::
+::                          <fcntl.h>,<sys/stat.h> (<sys/stat.h>,<wchar.h>)
 :segment WIDE
 :: MS wide extension
 _WCRTLINK extern int        _wfstat( int __fildes, struct stat *__buf );
@@ -36,6 +38,7 @@ _WCRTLINK extern int        fstat64( int __fildes, struct stat64 *__buf );
 _WCRTLINK extern int        fstat( int __fildes, struct stat *__buf );
 :endsegment
 ::
+::                          <fcntl.h>,<sys/stat.h> (<sys/stat.h>,<wchar.h>)
 :segment LINUX
 :segment WIDE
 :: MS wide extension

@@ -227,20 +227,26 @@ using std::wscanf;
 #define _BYTE_ORIENTED  1               /* byte-oriented stream */
 #define _WIDE_ORIENTED  2               /* wide-oriented stream */
 
+:: ISO C definition
+#define TMP_MAX         (26*26*26)      /*  Max times tmpnam can be called  */
 :segment LINUX | QNX
-:include extunix.sp
-#define L_cuserid   14                  /*  Max length of login names       */
-#define L_ctermid   16                  /*  Max length of terminal names    */
-#define P_tmpdir    "/usr/tmp"          /*  Temporary file directory        */
-:include extepi.sp
-
-#define L_tmpnam    255                 /*  Max length of tmp file names    */
+#define L_tmpnam        255             /*  Max length of tmp file names    */
 :elsesegment
-#define L_tmpnam    13
-#define _P_tmpdir   "\\"                /* used by _tempnam */
-#define _wP_tmpdir  L"\\"               /* used by _wtempnam */
+#define L_tmpnam        13              /*  Max length of tmp file names    */
 :endsegment
-#define TMP_MAX     (26*26*26)          /*  Max times tmpnam can be called  */
+:: POSIX definition
+:include extunix.sp
+#define L_cuserid       14              /*  Max length of login names       */
+#define L_ctermid       16              /*  Max length of terminal names    */
+:segment LINUX | QNX
+#define P_tmpdir        "/usr/tmp"      /*  Temporary file directory        */
+:elsesegment
+#define P_tmpdir        "\\"            /* used by _tempnam */
+#define wP_tmpdir       L"\\"           /* used by _wtempnam */
+#define _P_tmpdir       P_tmpdir
+#define _wP_tmpdir     wP_tmpdir
+:endsegment
+:include extepi.sp
 
 :include size_t.sp
 
@@ -345,8 +351,8 @@ _WCRTLINK extern int        printf( const char *__format, ... );
 _WCRTLINK extern int        putc( int __c, FILE *__fp );
 _WCRTLINK extern int        putchar( int __c );
 _WCRTLINK extern int        puts( const char *__s );
-_WCRTLINK extern int        remove( const char *__filename );
-_WCRTLINK extern int        rename( const char *__old, const char *__new );
+:include remove.sp
+:include rename.sp
 _WCRTLINK extern void       rewind( FILE *__fp );
 _WCRTLINK extern int        scanf( const char *__format, ... );
 _WCRTLINK extern void       setbuf( FILE *__fp, char *__buf );
@@ -456,9 +462,9 @@ _WCRTLINK extern __w_FILE   *_wfreopen( const wchar_t *, const wchar_t *, __w_FI
 _WCRTLINK extern __w_FILE   *_wfsopen( const wchar_t *__filename, const wchar_t *__mode, int __shflag );
 _WCRTLINK extern void       _wperror( const wchar_t * );
 _WCRTLINK extern __w_FILE   *_wpopen( const wchar_t *__command, const wchar_t *__mode );
-_WCRTLINK extern int        _wremove( const wchar_t * );
-_WCRTLINK extern int        _wrename( const wchar_t *, const wchar_t * );
 :keep WIDE
+:include remove.sp
+:include rename.sp
 :include tempnam.sp
 :include tmpnam.sp
 :remove WIDE

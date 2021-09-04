@@ -1,5 +1,6 @@
 :: POSIX rmdir function
 ::
+::                          <unistd.h> (<direct.h>,<wchar.h>)
 :segment WIDE
 :: MS wide extension
 _WCRTLINK extern int        _wrmdir( const wchar_t *__path );

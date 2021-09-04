@@ -1,5 +1,6 @@
 :: POSIX creat function
 ::
+::                          <fcntl.h>,<sys/stat.h> (<io.h>,<wchar.h>)
 :segment WIDE
 :: MS wide extension
 _WCRTLINK extern int        _wcreat( const wchar_t *, mode_t __mode );

@@ -457,14 +457,23 @@ using std::wcstoul;
 
 /* Directory functions */
 
+:: POSIX
 #define _tchdir         chdir
+:: POSIX
 #define _tclosedir      closedir
+:: POSIX
 #define _tgetcwd        getcwd
-#define _tgetdcwd       getdcwd
+:: MS
+#define _tgetdcwd       _getdcwd
+:: POSIX
 #define _tmkdir         mkdir
+:: POSIX
 #define _topendir       opendir
+:: POSIX
 #define _treaddir       readdir
+:: POSIX
 #define _trewinddir     rewinddir
+:: POSIX
 #define _trmdir         rmdir
 
 /* Directory struct */
@@ -486,23 +495,38 @@ using std::wcstoul;
 #define _tfsopen        _fsopen
 #define _tfopen         fopen
 #define _tfreopen       freopen
+:: ISO
 #define _tperror        perror
+:: ISO
 #define _ttmpnam        tmpnam
-#define _ttempnam       _tempnam
+:: POSIX
+#define _ttempnam       tempnam
 
 /* Io functions */
 
+:: ISO
 #define _taccess        access
+:: POSIX
 #define _tchmod         chmod
+:: POSIX
 #define _tcreat         creat
+:: MS
 #define _tfindfirst     _findfirst
+:: MS
 #define _tfindfirsti64  _findfirsti64
+:: MS
 #define _tfindnext      _findnext
+:: MS
 #define _tfindnexti64   _findnexti64
+:: POSIX
 #define _topen          open
+:: ISO
 #define _tremove        remove
+:: ISO
 #define _trename        rename
+:: MS
 #define _tsopen         _sopen
+:: POSIX
 #define _tunlink        unlink
 
 #define _tfinddata_t    _finddata_t

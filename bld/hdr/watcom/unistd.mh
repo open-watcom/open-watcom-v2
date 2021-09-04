@@ -121,6 +121,8 @@
 :include ssize_t.sp
 
 :include fileio.sp
+:include rename.sp
+:include remove.sp
 _WCRTLINK extern unsigned   alarm( unsigned int __seconds );
 _WCRTLINK extern int        chown( const char *__path, uid_t __owner, gid_t __group );
 _WCRTLINK extern int        fchown( int __fildes, uid_t __owner, gid_t __group );
@@ -185,9 +187,13 @@ _WCRTLINK extern int        ftruncate( int __fd, off_t __length );
 :include ext.sp
 
 :include msioext.sp
+:include msffind.sp
 :keep MSEXT
 :include fileio.sp
+:include rename.sp
+:include remove.sp
 :include msioext.sp
+:include msffind.sp
 :remove MSEXT
 :segment QNX
 :include mkdir.sp
@@ -237,6 +243,7 @@ _WCRTLINK extern pid_t      fork( void );
 _WCRTLINK extern pid_t      waitpid( pid_t __pid, int *__stat_loc, int __options );
 :endsegment
 
+:include msffind.sp
 :include getpid.sp
 :include getcwd.sp
 :include chdir.sp
@@ -244,6 +251,11 @@ _WCRTLINK extern pid_t      waitpid( pid_t __pid, int *__stat_loc, int __options
 
 :include ext.sp
 :keep MSEXT
+:include fileio.sp
+:include rename.sp
+:include remove.sp
+:include msioext.sp
+:include msffind.sp
 :include getpid.sp
 :include getcwd.sp
 :include chdir.sp
@@ -251,6 +263,17 @@ _WCRTLINK extern pid_t      waitpid( pid_t __pid, int *__stat_loc, int __options
 :remove MSEXT
 
 :include delay.sp
+
+:keep WIDE
+:include fileio.sp
+:include rename.sp
+:include remove.sp
+:include msioext.sp
+:include msffind.sp
+:include getcwd.sp
+:include chdir.sp
+:include rmdir.sp
+:remove WIDE
 :include extepi.sp
 
 :include brk.sp

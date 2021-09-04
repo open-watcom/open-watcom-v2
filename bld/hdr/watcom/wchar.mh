@@ -53,7 +53,7 @@
  using std::tm;
 #endif
 
-// C99 functions in wchar.h
+// C95 functions in wchar.h
 using std::fgetwc;
 using std::fgetws;
 using std::fputwc;
@@ -109,9 +109,9 @@ using std::wmemset;
 using std::wprintf;
 using std::wscanf;
 
-:include ext.sp
+:include extc95.sp
 
-// C99 functions not specified for wchar.h
+// C95 functions not specified for wchar.h
 using std::iswalnum;
 using std::iswalpha;
 using std::iswcntrl;
@@ -232,23 +232,45 @@ _WCRTLINK extern int        wscanf( const wchar_t *__format, ... );
 ::
 :: Wide character functions
 ::
+
+:include extc95.sp
+
+:include wctype.sp
+
+:include extepi.sp
+
 :keep WIDE
+:include ext.sp
 
 /* MS extension functions */
 
-:include msstring.sp
-
+:include getcwd.sp
+:include getdcwd.sp
+:include chdir.sp
+:include chmod.sp
+:include mkdir.sp
 :include mktemp.sp
+:include pxexec.sp
+:include msexec.sp
+:include msspawn.sp
+:include msffind.sp
+:include msstring.sp
+:include remove.sp
+:include rename.sp
+:include rmdir.sp
+:include open.sp
+:include creat.sp
+:include sopen.sp
+:include stat.sp
 :include tempnam.sp
+:include tmpnam.sp
 
 /* POSIX extension functions */
 
 :include pxstring.sp
 :remove WIDE
 
-:include ext.sp
-
-:include wctype.sp
+/* Open Watcom extension functions */
 
 :: C99 says this function is named mbsinit.
 _WCRTLINK extern int        sisinit( const __w_mbstate_t *__ps );

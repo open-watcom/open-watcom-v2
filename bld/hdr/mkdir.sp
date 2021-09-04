@@ -1,5 +1,6 @@
 :: POSIX mkdir function
 ::
+::                          <sys/stat.h> (<direct.h>,<wchar.h>)
 :segment LINUX | QNX
 :segment WIDE
 :: MS wide extension

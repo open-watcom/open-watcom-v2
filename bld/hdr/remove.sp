@@ -1,12 +1,13 @@
-:: POSIX/ISO tmpnam function
+:: ISO C remove function
 ::
 ::                          <stdio.h> (<stdio.h>,<wchar.h>)
 :segment WIDE
 :: MS wide extension
-_WCRTLINK extern wchar_t    *_wtmpnam( wchar_t * );
+_WCRTLINK extern int        _wremove( const wchar_t * );
 :elsesegment MSEXT
 :: MS extension
 :elsesegment
-:: POSIX/ISO
-_WCRTLINK extern char       *tmpnam( char *__s );
+:: ISO C
+_WCRTLINK extern int        remove( const char *__filename );
 :endsegment
+::

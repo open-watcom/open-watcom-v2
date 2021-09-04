@@ -1,5 +1,6 @@
 :: MS specific sopen function
 ::
+::                          ??? (<io.h>,<wchar.h>)
 :segment WIDE
 :: MS wide extension
 _WCRTLINK extern int        _wsopen( const wchar_t *, int, int, ... );

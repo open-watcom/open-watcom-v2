@@ -39,12 +39,12 @@ stdarg_deps   = $(mh_dir)/stdarg.mh $(owhdr) $(cplus) ../_valist.sp ../valist.sp
 stdbool_deps  = $(mh_dir)/stdbool.mh $(owhdr)
 stddef_deps   = $(mh_dir)/stddef.mh $(owhdr) $(cplus) ../size_t.sp ../wchar_t.sp ../null.sp ../ptrdifft.sp $(saferc) $(extension) ../thrdhndl.sp
 stdint_deps   = $(mh_dir)/stdint.mh $(owhdr) $(saferc) ../exactint.sp ../intptr_t.sp ../uintptrt.sp $(ns_std)
-stdio_deps    = $(mh_dir)/stdio.mh $(crwatqnx_sp) ../readonly.sp $(extension) $(c99ext) $(unixext) ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../size_t.sp ../null.sp ../_valist.sp ../seekpos.sp ../wchar_t.sp ../wint_t.sp $(saferc) $(maxpath_sp) $(ns_std) ../weof.sp ../file.sp ../tempnam.sp ../tmpnam.sp
+stdio_deps    = $(mh_dir)/stdio.mh $(crwatqnx_sp) ../readonly.sp $(extension) $(c99ext) $(unixext) ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../size_t.sp ../null.sp ../_valist.sp ../seekpos.sp ../wchar_t.sp ../wint_t.sp $(saferc) $(maxpath_sp) $(ns_std) ../weof.sp ../file.sp ../tempnam.sp ../tmpnam.sp ../remove.sp ../rename.sp
 stdlib_deps   = $(mh_dir)/stdlib.mh $(crwatqnx_sp) ../readonly.sp $(extension) $(unixext) ../owrtlink.sp ../lfndos.sp $(cplus) $(packll) ../wchar_t.sp ../size_t.sp $(saferc) ../null.sp ../mbcurmax.sp $(maxpath_sp) ../errno.sp ../alloca.sp ../brk.sp ../process1.sp ../_exit.sp $(ns_std) ../far2.sp ../farepi.sp ../onexit.sp
 stdnoret_deps = $(mh_dir)/stdnoret.mh $(owhdr)
 string_deps   = $(mh_dir)/string.mh $(owhdr) $(crwatcnt_sp)  $(extension) $(cplus) ../wchar_t.sp ../wint_t.sp ../size_t.sp $(saferc) ../null.sp ../nlserror.sp ../namwat.sp $(ns_std) ../windowsx.sp ../msstring.sp ../pxstring.sp
 time_deps     = $(mh_dir)/time.mh $(owhdr) ../systypes.sp $(cplus) $(packll) ../wchar_t.sp ../size_t.sp ../null.sp ../time_t.sp ../clock_t.sp $(saferc) $(unixext) $(extension) ../timer_t.sp ../clockidt.sp $(ns_std) ../timespec.sp ../tm.sp
-wchar_deps    = $(mh_dir)/wchar.mh $(owhdr) $(extension) $(cplus) ../wchar_t.sp ../wint_t.sp ../wctype_t.sp ../size_t.sp $(saferc) ../null.sp $(ns_std) ../weof.sp $(wctype_sp) ../tm.sp ../file.sp ../mbstatet.sp ../time_t.sp ../far2.sp ../farepi.sp ../mktemp.sp ../tempnam.sp ../msstring.sp ../pxstring.sp
+wchar_deps    = $(mh_dir)/wchar.mh $(owhdr) $(extension) $(cplus) ../wchar_t.sp ../wint_t.sp ../wctype_t.sp ../size_t.sp $(saferc) ../null.sp $(ns_std) ../weof.sp $(wctype_sp) ../tm.sp ../file.sp ../mbstatet.sp ../time_t.sp ../far2.sp ../farepi.sp ../mktemp.sp ../tempnam.sp ../msstring.sp ../pxstring.sp ../extc95.sp ../remove.sp ../rename.sp
 wctype_deps   = $(mh_dir)/wctype.mh $(owhdr) $(extension) $(c99ext)  $(cplus) ../wint_t.sp ../wctype_t.sp ../wctranst.sp $(ns_std) ../weof.sp $(wctype_sp)
 
 h/cassert      : $(mh_dir)/cassert.mh ../cpponly.sp $(assert_deps)
@@ -183,7 +183,7 @@ fcntl_deps     = $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../systypes.sp $(c
 graph_deps     = $(owhdr) $(cplus) $(packll)
 pgchart_deps   = $(owhdr) $(cplus) $(packll)
 process_deps   = $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) ../pid_t.sp ../wchar_t.sp ../thrdhndl.sp ../process1.sp ../_exit.sp ../getpid.sp ../msexec.sp ../pxexec.sp ../msspawn.sp $(extension)
-unistd_deps    = $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../null.sp ../access.sp ../seekpos.sp ../pid_t.sp ../uid_t.sp ../gid_t.sp ../off_t.sp ../size_t.sp ../ssize_t.sp ../_exit.sp ../brk.sp ../fileio.sp ../msioext.sp ../dosflock.sp ../getpid.sp ../msexec.sp ../pxexec.sp ../pxexec.sp ../getcwd.sp ../chdir.sp ../mkdir.sp ../rmdir.sp $(posixext) $(unixext) $(extension)
+unistd_deps    = $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../null.sp ../access.sp ../seekpos.sp ../pid_t.sp ../uid_t.sp ../gid_t.sp ../off_t.sp ../size_t.sp ../ssize_t.sp ../_exit.sp ../brk.sp ../fileio.sp ../msioext.sp ../dosflock.sp ../getpid.sp ../msexec.sp ../pxexec.sp ../pxexec.sp ../getcwd.sp ../chdir.sp ../mkdir.sp ../rmdir.sp ../remove.sp ../rename.sp $(posixext) $(unixext) $(extension)
 sys_stat_deps  = $(owhdr) ../lfndos.sp $(cplus) $(packll) $(packlnxk) ../incdir.sp ../time_t.sp ../off_t.sp ../dev_t.sp ../ino_t.sp ../mode_t.sp ../nlink_t.sp ../uid_t.sp ../gid_t.sp ../wchar_t.sp ../modedef.sp ../umask.sp ../chmod.sp ../stat.sp ../mkdir.sp $(extension) $(posixext)
 sys_time_deps  = $(owhdrcnt) ../owrtlink.sp $(cplus) $(packll) $(packlnxk) ../time_t.sp ../timeval.sp
 sys_types_deps = $(owhdr) $(cplus) $(packll) $(packlnxk) ../loff_t.sp ../incdir.sp ../time_t.sp ../size_t.sp ../exactint.sp ../ssize_t.sp ../pid_t.sp ../off_t.sp ../timer_t.sp ../clockidt.sp ../schedp.sp ../dev_t.sp ../ino_t.sp ../mode_t.sp ../nlink_t.sp ../uid_t.sp ../gid_t.sp ../id_t.sp ../schedp.sp ../sem_t.sp ../pthread1.sp ../pthread2.sp $(extension)
@@ -225,7 +225,7 @@ h/graph.h         : $(mh_dir)/graph.mh $(graph_deps)
 h/graph2.h        : $(mh_dir)/graph2.mh graph.mh $(graph_deps)
 h/i86.h           : $(mh_dir)/i86.mh $(owhdr) $(cplus) $(packll) ../delay.sp
 h/inttypes.h      : $(inttypes_deps)
-h/io.h            : $(mh_dir)/io.mh $(owhdr) ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../time_t.sp ../wchar_t.sp $(maxpath_sp) ../intptr_t.sp ../access.sp ../seekpos.sp ../mktemp.sp ../msioext.sp ../sopen.sp ../dosflock.sp ../umask.sp ../fileio.sp ../chmod.sp ../msffind.sp ../open.sp ../creat.sp $(extension)
+h/io.h            : $(mh_dir)/io.mh $(owhdr) ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../time_t.sp ../wchar_t.sp $(maxpath_sp) ../intptr_t.sp ../access.sp ../seekpos.sp ../mktemp.sp ../msioext.sp ../sopen.sp ../dosflock.sp ../umask.sp ../fileio.sp ../chmod.sp ../msffind.sp ../open.sp ../creat.sp ../locking.sp ../remove.sp ../rename.sp $(extension)
 h/iomanip.h       : $(iomanip_deps)
 h/ios.h           : $(ios_deps)
 h/iosfwd.h        : $(iosfwd_deps)
@@ -299,7 +299,7 @@ h/wcvector.h      : $(mh_dir)/wcvector.mh $(owhdr) ../cpponly.sp $(redefnew)
 h/wdefwin.h       : $(mh_dir)/wdefwin.mh $(owhdr) $(cplus)
 h/wsample.h       : $(mh_dir)/wsample.mh $(owhdr) $(cplus)
 
-h/sys/locking.h   : $(mh_dir)/sys/locking.mh $(owhdr) $(cplus)
+h/sys/locking.h   : $(mh_dir)/sys/locking.mh ../locking.sp $(owhdr) $(cplus)
 h/sys/timeb.h     : $(mh_dir)/sys/timeb.mh $(owhdr) $(cplus) ../time_t.sp $(packll)
 h/sys/types.h     : $(mh_dir)/sys/types.mh $(sys_types_deps)
 h/sys/utime.h     : $(mh_dir)/sys/utime.mh $(owhdr) $(cplus) $(packll) ../time_t.sp ../wchar_t.sp ../utime.sp
