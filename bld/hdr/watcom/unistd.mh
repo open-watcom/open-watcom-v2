@@ -121,29 +121,11 @@
 :include ssize_t.sp
 
 :include fileio.sp
-:include ext.sp
-:keep MSEXT
-:include fileio.sp
-:remove MSEXT
-:include extepi.sp
 _WCRTLINK extern unsigned   alarm( unsigned int __seconds );
 _WCRTLINK extern int        chown( const char *__path, uid_t __owner, gid_t __group );
-:segment LINUX
-_WCRTLINK extern int        lchown( const char *__path, uid_t __owner, gid_t __group );
-:endsegment
-_WCRTLINK extern int        chroot( const char *__path );
 _WCRTLINK extern int        fchown( int __fildes, uid_t __owner, gid_t __group );
 _WCRTLINK extern int        fdatasync( int __fildes );
 _WCRTLINK extern pid_t      fork( void );
-:segment LINUX
-#ifdef __386__
-_WCRTLINK extern pid_t      vfork( void );
-#pragma aux vfork \
-    __parm [] \
-    __value [__eax] \
-    __modify __exact [__eax __edx]
-#endif
-:endsegment
 _WCRTLINK extern long       fpathconf( int __fildes, int __name );
 _WCRTLINK extern gid_t      getegid( void );
 _WCRTLINK extern uid_t      geteuid( void );
@@ -175,16 +157,27 @@ _WCRTLINK extern int        tcsetpgrp( int __fildes, pid_t __pgrp_id );
 _WCRTLINK extern char       *ttyname( int __fildes );
 _WCRTLINK extern int        ttyname_r( int __fildes, char *__buf, size_t __buflen );
 :segment QNX
-:include mkdir.sp
-:keep MSEXT
-:include mkdir.sp
-:remove MSEXT
-_WCRTLINK extern int        mknod( const char *__path, mode_t __mode, int __dev );
-_WCRTLINK extern int        mount( const char *__special, const char *__dir, int __rwflag );
-_WCRTLINK extern int        tcsetct( int __fildes, pid_t __pid );
-_WCRTLINK extern int        umount( const char *__special );
+_WCRTLINK extern size_t     confstr( int, char *, size_t );
+#ifdef __386__
+#define __far_read          read
+#define __far_write         write
+#else
+extern ssize_t              __far_read( int __fildes,void __far *__buffer,size_t __len );
+extern ssize_t              __far_write( int __fildes,void __far *__buffer,size_t __len );
+#endif
 :endsegment
 :segment LINUX
+_WCRTLINK extern int        chroot( const char *__path );
+_WCRTLINK extern int        lchown( const char *__path, uid_t __owner, gid_t __group );
+_WCRTLINK extern int        nice( int __val );
+_WCRTLINK extern int        usleep( unsigned long __usec );
+#ifdef __386__
+_WCRTLINK extern pid_t      vfork( void );
+#pragma aux vfork \
+    __parm [] \
+    __value [__eax] \
+    __modify __exact [__eax __edx]
+#endif
 _WCRTLINK extern int        truncate( const char *__path, off_t __length );
 _WCRTLINK extern int        ftruncate( int __fd, off_t __length );
 :endsegment
@@ -193,9 +186,16 @@ _WCRTLINK extern int        ftruncate( int __fd, off_t __length );
 
 :include msioext.sp
 :keep MSEXT
+:include fileio.sp
 :include msioext.sp
 :remove MSEXT
 :segment QNX
+:include mkdir.sp
+_WCRTLINK extern int        mknod( const char *__path, mode_t __mode, int __dev );
+_WCRTLINK extern int        mount( const char *__special, const char *__dir, int __rwflag );
+_WCRTLINK extern int        tcsetct( int __fildes, pid_t __pid );
+_WCRTLINK extern int        umount( const char *__special );
+
 :include dosflock.sp
 _WCRTLINK extern nid_t      getnid( void );
 _WCRTLINK extern void       qnx_display_msg( const char *__text );
@@ -210,31 +210,19 @@ _WCRTLINK extern int        qnx_sync( nid_t __nid );
 
 _WCRTLINK extern char       *basename( char *__fname );
 _WCRTLINK extern off_t      ltrunc( int __fildes, off_t __offset, int __origin );
+
+:keep MSEXT
+:include mkdir.sp
+:remove MSEXT
 :endsegment
-:include extepi.sp
-
-_WCRTLINK extern size_t     confstr( int, char *, size_t );
-
 :segment LINUX
-_WCRTLINK extern int        nice( int __val );
 :: These are Linux specific
-:include ext.sp
 _WCRTLINK extern int        ioperm( unsigned long __from, unsigned long __num, int __turn_on );
 _WCRTLINK extern int        iopl( int __level );
 _WCRTLINK extern int        _llseek( unsigned int __fildes, unsigned long __hi, unsigned long __lo, loff_t *__res, unsigned int __whence );
+:endsegment
+
 :include extepi.sp
-
-:endsegment
-:segment QNX
-#ifdef __386__
-#define __far_read          read
-#define __far_write         write
-#else
-extern ssize_t              __far_read( int __fildes,void __far *__buffer,size_t __len );
-extern ssize_t              __far_write( int __fildes,void __far *__buffer,size_t __len );
-#endif
-
-:endsegment
 :endsegment
 
 :: the following are also in process.h, but they are expected to be here
@@ -244,7 +232,6 @@ extern ssize_t              __far_write( int __fildes,void __far *__buffer,size_
 
 _WCRTLINK extern int        getopt( int __argc, char * const __argv[], const char *__optstring );
 _WCRTLINK extern unsigned   sleep( unsigned int __seconds );
-_WCRTLINK extern int        usleep( unsigned long __usec );
 :segment RDOS
 _WCRTLINK extern pid_t      fork( void );
 _WCRTLINK extern pid_t      waitpid( pid_t __pid, int *__stat_loc, int __options );

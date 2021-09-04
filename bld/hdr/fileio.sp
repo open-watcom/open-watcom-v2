@@ -28,8 +28,6 @@ _WCRTLINK extern int        _access( const char *__path, int __mode );
 _WCRTLINK extern int        access( const char *__path, int __mode );
 :endsegment
 ::
-:include chmod.sp
-::
 :segment WIDE
 :elsesegment MSEXT
 :: MS extension
