@@ -1462,8 +1462,19 @@ arctangent of one argument
 arctangent of two arguments
 .fd atanh
 inverse hyperbolic tangent
-.fd bessel
-bessel functions j0, j1, jn, y0, y1, and yn
+.fd Bessel Functions
+bessel functions
+.reffunc j0
+.ct ,
+.reffunc j1
+.ct ,
+.reffunc jn
+.ct ,
+.reffunc y0
+.ct ,
+.reffunc y1
+.ct , and 
+.reffunc yn
 .fd cabs
 absolute value of complex number
 .fd cbrt
@@ -1521,11 +1532,17 @@ get quotient, remainder from division of object of maximum-size integer type
 .fd imaxdiv
 absolute value of an object of maximum-size integer type
 .fd j0
-return Bessel functions of the first kind (described under "bessel Functions")
+return Bessel functions of the first kind (described under 
+.reffunc Bessel Functions
+)
 .fd j1
-return Bessel functions of the first kind (described under "bessel Functions")
+return Bessel functions of the first kind (described under
+.reffunc Bessel Functions
+)
 .fd jn
-return Bessel functions of the first kind (described under "bessel Functions")
+return Bessel functions of the first kind (described under
+.reffunc Bessel Functions
+)
 .fd labs
 absolute value of an object of type "long int"
 .fd ldexp
@@ -1591,11 +1608,17 @@ compute the Gamma function
 .fd trunc
 truncate a floating point value
 .fd y0
-return Bessel functions of the second kind (described under "bessel")
+return Bessel functions of the second kind (described under
+.reffunc Bessel Functions
+)
 .fd y1
-return Bessel functions of the second kind (described under "bessel")
+return Bessel functions of the second kind (described under
+.reffunc Bessel Functions
+)
 .fd yn
-return Bessel functions of the second kind (described under "bessel")
+return Bessel functions of the second kind (described under
+.reffunc Bessel Functions
+)
 .fdend
 .*======================================================================
 .section Searching Functions

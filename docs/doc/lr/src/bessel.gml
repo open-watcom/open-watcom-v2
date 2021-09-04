@@ -1,4 +1,4 @@
-.func begin bessel Functions
+.func begin Bessel Functions
 .func2 j0
 .func2 j1
 .func2 jn
@@ -22,14 +22,14 @@ double yn( int n, double x );
 .ixfunc2 '&Math' yn
 .synop end
 .desc begin
-.ix '&Math' 'bessel Functions'
+.ix '&Math' 'Bessel Functions'
 Functions
 .reffunc j0
 .ct ,
 .reffunc j1
 .ct , and
 .reffunc jn
-return Bessel functions of the first kind.
+return Bessel Functions of the first kind.
 .pp
 Functions
 .reffunc y0
@@ -37,7 +37,7 @@ Functions
 .reffunc y1
 .ct , and
 .reffunc yn
-return Bessel functions of the second kind.
+return Bessel Functions of the second kind.
 The argument
 .arg x
 must be positive.
@@ -59,7 +59,7 @@ This error handling can be modified by using the
 routine.
 .desc end
 .return begin
-These functions return the result of the desired Bessel function of
+These functions return the result of the desired Bessel Function of
 .arg x
 .period
 .return end

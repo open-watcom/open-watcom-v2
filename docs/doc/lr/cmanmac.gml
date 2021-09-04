@@ -552,8 +552,8 @@ Prototype in
 .dm reffunc begin
 .funcref &*1.
 .if '&freffnd.' ne '0' .do begin
-.   .ix '&*1'
-.   .ofuncref &*1.
+.   .ix '&*'
+.   .ofuncref &*.
 .do end
 .dm reffunc end
 .*

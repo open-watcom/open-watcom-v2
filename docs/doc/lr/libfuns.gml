@@ -63,7 +63,7 @@
 .fnc bdos                     bdos                     bdos.gml      DOS
 .fnc _beginthread             _beginthread             _bthread.gml  DOS QXO   WIN32
 .fnc _beginthreadex           _beginthread             _bthread.gml  DOS       WIN32
-.fnc bessel                   bessel                   bessel.gml    DOS QNX W WIN32
+.fnc Bessel                   bessel                   bessel.gml    DOS QNX W WIN32
 .fnc j0                       bessel                   bessel.gml    DOS QNX W WIN32
 .fnc j1                       bessel                   bessel.gml    DOS QNX W WIN32
 .fnc jn                       bessel                   bessel.gml    DOS QNX W WIN32
