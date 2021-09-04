@@ -210,6 +210,7 @@ typedef struct flock {
 :include creat.sp
 
 :include ext.sp
+:: MS extension version
 :include sopen.sp
 
 :keep MSEXT
@@ -224,7 +225,6 @@ typedef struct flock {
 :include creat.sp
 :include sopen.sp
 :remove WIDE
-
 :include extepi.sp
 
 :segment LINUX | QNX

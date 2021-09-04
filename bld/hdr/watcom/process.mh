@@ -160,7 +160,9 @@ _WCRTDATA extern int __p_overlay;
 #define WAIT_CHILD      0
 #define WAIT_GRANDCHILD 1
 
+:: MS deprecated
 _WCRTLINK extern int        cwait( int *__status, int __process_id, int __action_code );
+::
 _WCRTLINK extern int        _cwait( int *__status, int __process_id, int __action_code );
 
 :endsegment

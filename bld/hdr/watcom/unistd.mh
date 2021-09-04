@@ -140,7 +140,7 @@ _WCRTLINK extern uid_t      getuid( void );
 _WCRTLINK extern int        link( const char *__path1, const char *__path2 );
 _WCRTLINK extern long       pathconf( const char *__path, int __name );
 _WCRTLINK extern int        pause( void );
-_WCRTLINK extern int        readlink( const char *__path, char *__buf, size_t __bufsiz );
+_WCRTLINK extern ssize_t    readlink( const char *__path, char *__buf, size_t __bufsiz );
 _WCRTLINK extern int        setegid( gid_t __newegroup );
 _WCRTLINK extern int        seteuid( uid_t __newuserid );
 _WCRTLINK extern int        setgid( gid_t __newgroup );
