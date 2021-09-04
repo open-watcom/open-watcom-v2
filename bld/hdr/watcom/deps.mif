@@ -183,8 +183,8 @@ fcntl_deps     = $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../systypes.sp $(c
 graph_deps     = $(owhdr) $(cplus) $(packll)
 pgchart_deps   = $(owhdr) $(cplus) $(packll)
 process_deps   = $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) ../pid_t.sp ../wchar_t.sp ../thrdhndl.sp ../process1.sp ../_exit.sp ../getpid.sp ../msexec.sp ../pxexec.sp ../msspawn.sp $(extension)
-unistd_deps    = $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../null.sp ../access.sp ../seekpos.sp ../pid_t.sp ../uid_t.sp ../gid_t.sp ../off_t.sp ../size_t.sp ../ssize_t.sp ../_exit.sp ../brk.sp ../fileio.sp ../msioext.sp ../dosflock.sp ../getpid.sp ../msexec.sp ../pxexec.sp ../pxexec.sp ../getcwd.sp $(posixext) $(unixext) $(extension)
-sys_stat_deps  = $(owhdr) ../lfndos.sp $(cplus) $(packll) $(packlnxk) ../incdir.sp ../time_t.sp ../off_t.sp ../dev_t.sp ../ino_t.sp ../mode_t.sp ../nlink_t.sp ../uid_t.sp ../gid_t.sp ../wchar_t.sp ../modedef.sp ../umask.sp ../chmod.sp ../stat.sp $(extension) $(posixext)
+unistd_deps    = $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../null.sp ../access.sp ../seekpos.sp ../pid_t.sp ../uid_t.sp ../gid_t.sp ../off_t.sp ../size_t.sp ../ssize_t.sp ../_exit.sp ../brk.sp ../fileio.sp ../msioext.sp ../dosflock.sp ../getpid.sp ../msexec.sp ../pxexec.sp ../pxexec.sp ../getcwd.sp ../chdir.sp ../mkdir.sp ../rmdir.sp $(posixext) $(unixext) $(extension)
+sys_stat_deps  = $(owhdr) ../lfndos.sp $(cplus) $(packll) $(packlnxk) ../incdir.sp ../time_t.sp ../off_t.sp ../dev_t.sp ../ino_t.sp ../mode_t.sp ../nlink_t.sp ../uid_t.sp ../gid_t.sp ../wchar_t.sp ../modedef.sp ../umask.sp ../chmod.sp ../stat.sp ../mkdir.sp $(extension) $(posixext)
 sys_time_deps  = $(owhdrcnt) ../owrtlink.sp $(cplus) $(packll) $(packlnxk) ../time_t.sp ../timeval.sp
 sys_types_deps = $(owhdr) $(cplus) $(packll) $(packlnxk) ../loff_t.sp ../incdir.sp ../time_t.sp ../size_t.sp ../exactint.sp ../ssize_t.sp ../pid_t.sp ../off_t.sp ../timer_t.sp ../clockidt.sp ../schedp.sp ../dev_t.sp ../ino_t.sp ../mode_t.sp ../nlink_t.sp ../uid_t.sp ../gid_t.sp ../id_t.sp ../schedp.sp ../sem_t.sp ../pthread1.sp ../pthread2.sp $(extension)
 
@@ -206,7 +206,7 @@ h/complex.h       : $(complex_deps)
 h/conio.h         : $(mh_dir)/conio.mh $(owhdr) $(cplus) ../_valist.sp
 h/crtdbg.h        : $(mh_dir)/crtdbg.mh $(owhdr) $(cplus)
 h/ctype.h         : $(ctype_deps)
-h/direct.h        : $(mh_dir)/direct.mh $(owhdr) ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../wchar_t.sp $(maxpath_sp) ../dskfreet.sp ../getdcwd.sp ../getcwd.sp ../dirfind.sp
+h/direct.h        : $(mh_dir)/direct.mh $(owhdr) ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../wchar_t.sp $(maxpath_sp) ../dskfreet.sp ../getdcwd.sp ../getcwd.sp ../dirfind.sp ../chdir.sp ../mkdir.sp ../rmdir.sp
 h/dos.h           : $(mh_dir)/dos.mh $(owhdr) ../lfndos.sp $(cplus) $(packll) ../wchar_t.sp $(maxpath_sp) ../dskfreet.sp ../delay.sp
 h/dosfunc.h       : $(mh_dir)/dosfunc.mh $(owhdr)
 h/eh.h            : $(mh_dir)/eh.mh $(owhdr) ../cpponly.sp
