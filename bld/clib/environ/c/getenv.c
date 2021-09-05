@@ -34,7 +34,7 @@
 #include "widechar.h"
 #include <stdlib.h>
 #include <string.h>
-#if !defined( __RDOS__ ) && !defined( __RDOSDEV__ )
+#if defined( CLIB_USE_MBCS_TRANSLATION )
     #include <mbstring.h>
 #endif
 #ifdef __WIDECHAR__
@@ -42,6 +42,7 @@
 #endif
 #include "rtdata.h"
 #include "_environ.h"
+#include "_tcsstr.h"
 
 
 _WCRTLINK CHAR_TYPE *__F_NAME(getenv,_wgetenv)( const CHAR_TYPE *name )

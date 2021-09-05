@@ -35,7 +35,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#if !defined( __RDOS__ ) && !defined( __RDOSDEV__ )
+#if defined( CLIB_USE_MBCS_TRANSLATION )
     #include <mbstring.h>
 #endif
 #ifdef __WIDECHAR__
@@ -47,6 +47,7 @@
 #include "rtdata.h"
 #include "liballoc.h"
 #include "_environ.h"
+#include "_tcsstr.h"
 
 
 #define _ISNAMEEND(p)   (_TCSNEXTC(p)==STRING('=')||_TCSTERM(p))

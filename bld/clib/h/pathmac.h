@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -36,11 +36,14 @@
 #define EXT_SEP         STRING( '.' )
 #ifdef __UNIX__
 #define DIR_SEP         STRING( '/' )
+#define DIR_SEP_STR     STRING( "/" )
 #define IS_DIR_SEP(c)   (c == DIR_SEP)
 #else
 #define DRV_SEP         STRING( ':' )
 #define DIR_SEP         STRING( '\\' )
+#define DIR_SEP_STR     STRING( "\\" )
 #define ALT_DIR_SEP     STRING( '/' )
+#define ALT_DIR_SEP_STR STRING( "/" )
 #define IS_DIR_SEP(c)   (c == ALT_DIR_SEP || c == DIR_SEP)
 #define HAS_DRIVE(p)    (__F_NAME(isalpha,iswalpha)((UCHAR_TYPE)p[0]) && p[1]==DRV_SEP)
 #define IS_ROOTDIR(p)   (HAS_DRIVE(p) && IS_DIR_SEP(p[2]) && p[3]==NULLCHAR)
@@ -52,11 +55,14 @@
 #define EXT_SEP         '.'
 #ifdef __UNIX__
 #define DIR_SEP         '/'
+#define DIR_SEP_STR     "/"
 #define IS_DIR_SEP(c)   (c == DIR_SEP)
 #else
 #define DRV_SEP         ':'
 #define DIR_SEP         '\\'
+#define DIR_SEP_STR     "\\"
 #define ALT_DIR_SEP     '/'
+#define ALT_DIR_SEP_STR "/"
 #define IS_DIR_SEP(c)   (c == ALT_DIR_SEP || c == DIR_SEP)
 #define HAS_DRIVE(p)    (isalpha((unsigned char)p[0]) && p[1]==DRV_SEP)
 #define IS_ROOTDIR(p)   (HAS_DRIVE(p) && IS_DIR_SEP(p[2]) && p[3]==NULLCHAR)

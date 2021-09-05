@@ -30,48 +30,26 @@
 ****************************************************************************/
 
 
-#ifndef __ENVIRON_H_INCLUDED
-#define __ENVIRON_H_INCLUDED
-
-#include <ctype.h>
-
-/* wide environment doesn't use alloc'd mask */
-#ifdef __WIDECHAR__
-#define ENVARR_SIZE(x)      ((x) * sizeof( wchar_t * ) + sizeof( wchar_t * ))
-#define CHECK_WIDE_ENV()    if( _RWD_wenviron == NULL ) __create_wide_environment()
-#define ARGS_TYPE           const wchar_t *
-#define ARGS_TYPE_ARR       const wchar_t * const *
+#if defined( __WIDECHAR__ ) || !defined( CLIB_USE_MBCS_TRANSLATION )
+// single-byte or wide-char
+#define _TCSDEC(__p)        (__p - 1)
+#define _TCSINC(__p)        (__p + 1)
+#define _TCSNINC(__p,__n)   (__p + __n)
+#define _TCSCMP(__p1,__p2)  ((*(__p1))-(*(__p2)))
+#define _TCSICMP(__p1,__p2) (__F_NAME(toupper,towupper)((UCHAR_TYPE)*(__p1))-__F_NAME(toupper,towupper)((UCHAR_TYPE)*(__p2)))
+#define _TCSTERM(__p)       (*(__p)==NULLCHAR)
+#define _TCSNEXTC(__p)      (*(__p))
+#define _TCSCHR(__p,__c)    __F_NAME(strchr,wcschr)(__p,__c)
+#define _TCSLEN(__p)        __F_NAME(strlen,wcslen)(__p)
 #else
-#define ENVARR_SIZE(x)      ((x) * (sizeof( char * ) + sizeof( char )) + sizeof( char * ))
-#define CHECK_WIDE_ENV()
-#define ARGS_TYPE           const char *
-#define ARGS_TYPE_ARR       const char * const *
-#endif
-
-/*
- * These routines are used internally only, so should not
- * have a _WCRTLINK modifier.
- */
-extern void     __create_wide_environment( void );
-extern int      __findenvadd( const char *name );
-extern int      __wfindenvadd( const wchar_t *name );
-extern int      __findenvdel( const char *name );
-extern int      __wfindenvdel( const wchar_t *name );
-extern int      __putenv( const char *env_string );
-extern int      __wputenv( const wchar_t *env_string );
-extern int      __setenv( const char *name, const char *newvalue, int overwrite );
-extern int      __wsetenv( const wchar_t *name, const wchar_t *newvalue, int overwrite );
-
-extern void     __setenvp( void );
-#if !defined(__NETWARE__)
-extern void     __freeenvp( void );
-#endif
-
-#ifdef CLIB_UPDATE_OS_ENV
-#if defined( __NT__ )
-extern int      __os_env_update_wide( const wchar_t *name, const wchar_t *value );
-#endif
-extern int      __os_env_update_narrow( const char *name, const char *value );
-#endif
-
+// multi-byte
+#define _TCSDEC(__p)        _mbsdec(__p)
+#define _TCSINC(__p)        (char *)_mbsinc((unsigned char *)__p)
+#define _TCSNINC(__p,__n)   (char *)_mbsninc((unsigned char *)__p,__n)
+#define _TCSCMP(__p1,__p2)  _mbccmp((unsigned char *)__p1,(unsigned char *)__p2)
+#define _TCSICMP(__p1,__p2) (_mbctoupper(_mbsnextc((unsigned char *)__p1))-_mbctoupper(_mbsnextc((unsigned char *)__p2)))
+#define _TCSTERM(__p)       _mbterm((unsigned char *)__p)
+#define _TCSNEXTC(__p)      _mbsnextc((unsigned char *)__p)
+#define _TCSCHR(__p,__c)    (char *)_mbschr((unsigned char *)__p,__c)
+#define _TCSLEN(__p)        _mbslen((unsigned char *)__p)
 #endif

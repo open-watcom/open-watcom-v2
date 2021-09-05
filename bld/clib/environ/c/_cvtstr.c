@@ -44,7 +44,7 @@
 #include "rtdata.h"
 #include "rterrno.h"
 #include "liballoc.h"
-#include "_environ.h"
+#include "_tcsstr.h"
 #include "_cvtstr.h"
 
 
