@@ -31,7 +31,7 @@
 access        access            _access           d16 d32 nt  nta ntp                 o16 o32         w16 w32             rdu rdk
 asct_r        _asctime          asctime_r                                                                     l32 lpc lmp
 atoi64        atoll             _atoi64           d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
-chdir_        chdir             _chdir            d16 d32 nt  nta ntp                 o16 o32         w16 w32             rdu rdk
+chdir_        chdir             _chdir            d16 d32 nt  nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 chmod_        chmod             _chmod            d16 d32 nt  nta ntp                 o16 o32         w16 w32             rdu rdk
 chsize        _chsize           chsize            d16 d32 nt  nta ntp nvc     nvl     o16 o32         w16 w32             rdu rdk
 chsiz0        chsize            _chsize                                   ncl     nll
@@ -98,7 +98,7 @@ mbsnic        _mbsnicmp         _mbsnicoll        d16 d32 nt  nta ntp           
 memccp        memccpy           _memccpy          d16 d32 nt  nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32         rdu rdk
 memicm        _memicmp          memicmp           d16 d32 nt  nta ntp nvc     nvl     o16 o32         w16 w32 l32         rdu rdk
 memic0        memicmp           _memicmp                                  ncl     nll
-mkdir_        mkdir             _mkdir            d16 d32 nt  nta ntp                 o16 o32         w16 w32             rdu rdk
+mkdir_        mkdir             _mkdir            d16 d32 nt  nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 onexit        _onexit           onexit            d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 onexi0        onexit            _onexit                                   ncl     nll
 open__        open              _open             d16 d32 nt  nta ntp                 o16 o32         w16 w32             rdu rdk
@@ -107,7 +107,7 @@ popen_        popen             _popen                                          
 putenv        putenv            _putenv           d16 d32 nt  nta ntp                 o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 putws_        putws             _putws            d16 d32 nt  nta ntp                 o16 o32 q16 q32 w16 w32 l32
 read__        read              _read             d16 d32 nt  nta ntp                 o16 o32         w16 w32             rdu rdk
-rmdir_        rmdir             _rmdir            d16 d32 nt  nta ntp                 o16 o32         w16 w32             rdu rdk
+rmdir_        rmdir             _rmdir            d16 d32 nt  nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 setenv        setenv            _setenv           d16 d32 nt  nta ntp                 o16 o32 q16     w16 w32 l32 lpc lmp rdu rdk
 setmod        _setmode          setmode           d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 setmo0        setmode           _setmode                                  ncl     nll
@@ -187,6 +187,7 @@ tcsspn        _mbsspn           _tcsspn           d16 d32 nt  nta ntp           
 tcsstr        _mbsstr           _tcsstr           d16 d32 nt  nta ntp                 o16 o32 q16 q32 w16 w32 l32         rdu rdk
 tcstok        _mbstok           _tcstok           d16 d32 nt  nta ntp                 o16 o32 q16 q32 w16 w32 l32         rdu rdk
 tcsupr        _mbsupr           _tcsupr           d16 d32 nt  nta ntp                 o16 o32 q16 q32 w16 w32 l32         rdu rdk
+tempna        tempnam           _tempnam          d16 d32 nt  nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 tell__        _tell             tell              d16 d32 nt  nta ntp                 o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 tell_0        tell              _tell                                 nvc ncl nvl nll
 tolowe        tolower           _tolower          d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
