@@ -105,6 +105,7 @@ struct _stat {
     unsigned short  st_inheritedRightsMask;
     unsigned char   st_originatingNameSpace;
 };
+:segment DOS
 
 struct _stati64 {
     dev_t           st_dev;         /* disk drive file resides on */
@@ -128,6 +129,7 @@ struct _stati64 {
     unsigned short  st_inheritedRightsMask;
     unsigned char   st_originatingNameSpace;
 };
+:endsegment
 :include extepi.sp
 
 :endsegment

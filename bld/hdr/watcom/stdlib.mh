@@ -314,7 +314,6 @@ _WCRTLINK extern void     _wsearchenv( const wchar_t *__name,
                                          wchar_t *__buf );
 :endsegment
 
-:include getenv.sp
 :include putenv.sp
 :include setenv.sp
 :include unsetenv.sp

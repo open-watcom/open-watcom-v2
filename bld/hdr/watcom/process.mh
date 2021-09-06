@@ -195,7 +195,6 @@ _WCRTLINK extern char       *_cmdname( char *__name );
 :segment LINUX | QNX
 #endif
 :endsegment
-:include getenv.sp
 :include setenv.sp
 :include putenv.sp
 
