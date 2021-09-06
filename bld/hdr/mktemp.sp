@@ -4,7 +4,7 @@
 :segment WIDE
 :: MS wide extension
 _WCRTLINK extern wchar_t    *_wmktemp( wchar_t *__template );
-:elsesegment MSEXT
+:elsesegment ANSINAME
 :: MS extension
 _WCRTLINK extern char       *_mktemp( char *__template );
 :elsesegment

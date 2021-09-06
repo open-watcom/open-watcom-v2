@@ -4,7 +4,7 @@
 :segment WIDE
 :: MS wide extension
 _WCRTLINK extern int        _wrename( const wchar_t *, const wchar_t * );
-:elsesegment MSEXT
+:elsesegment ANSINAME
 :: MS extension
 :elsesegment
 :: ISO C

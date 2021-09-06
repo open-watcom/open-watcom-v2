@@ -108,7 +108,7 @@ struct _wfinddatai64_t {
 :include msffind.sp
 :include dosflock.sp
 
-:keep MSEXT
+:keep ANSINAME
 :include fileio.sp
 :include chmod.sp
 :include locking.sp
@@ -119,7 +119,7 @@ struct _wfinddatai64_t {
 :include mktemp.sp
 :include umask.sp
 :include msffind.sp
-:remove MSEXT
+:remove ANSINAME
 
 :segment DOS
 :keep WIDE

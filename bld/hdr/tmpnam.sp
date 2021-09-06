@@ -4,7 +4,7 @@
 :segment WIDE
 :: MS wide extension
 _WCRTLINK extern wchar_t    *_wtmpnam( wchar_t * );
-:elsesegment MSEXT
+:elsesegment ANSINAME
 :: MS extension
 :elsesegment
 :: POSIX/ISO

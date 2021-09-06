@@ -3,7 +3,7 @@
 ::                          ??? (<io.h>,<sys/locking.h>)
 :segment WIDE
 :: MS wide extension
-:elsesegment MSEXT
+:elsesegment ANSINAME
 :: MS extension
 _WCRTLINK extern int        _locking(int __handle,int __mode,unsigned long __nbyte);
 :elsesegment

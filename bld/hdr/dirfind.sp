@@ -6,7 +6,7 @@ _WCRTLINK extern WDIR       *_wopendir( const wchar_t * );
 _WCRTLINK extern struct _wdirent *_wreaddir( WDIR * );
 _WCRTLINK extern void       _wrewinddir( WDIR * );
 _WCRTLINK extern int        _wclosedir( WDIR * );
-:elsesegment MSEXT
+:elsesegment ANSINAME
 :: MS extension
 :elsesegment
 :: POSIX

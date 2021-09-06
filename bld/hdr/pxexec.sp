@@ -9,7 +9,7 @@ _WCRTLINK extern int        _wexeclp( const wchar_t *__file, const wchar_t *__ar
 _WCRTLINK extern int        _wexecv( const wchar_t *__path, const wchar_t *const __argv[] );
 _WCRTLINK extern int        _wexecve( const wchar_t *__path, const wchar_t *const __argv[], const wchar_t *const __envp[] );
 _WCRTLINK extern int        _wexecvp( const wchar_t *__file, const wchar_t *const __argv[] );
-:elsesegment MSEXT
+:elsesegment ANSINAME
 :: MS extension
 _WCRTLINK extern int        _execl( const char *__path, const char *__arg0, ... );
 _WCRTLINK extern int        _execle( const char *__path, const char *__arg0, ... );

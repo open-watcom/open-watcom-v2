@@ -158,10 +158,10 @@ _WCRTLINK extern int        mknod( const char *__path, mode_t __mode, int __dev 
 :: Extensions MS/Open Watcom
 :segment DOS | LINUX | RDOS
 :include ext.sp
-:keep MSEXT
+:keep ANSINAME
 :include mkdir.sp
 :include stat.sp
-:remove MSEXT
+:remove ANSINAME
 :segment DOS
 :keep WIDE
 :include mkdir.sp

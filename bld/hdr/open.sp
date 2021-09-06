@@ -4,7 +4,7 @@
 :segment WIDE
 :: MS wide extension
 _WCRTLINK extern int        _wopen( const wchar_t *__path, int __oflag, ... );
-:elsesegment MSEXT
+:elsesegment ANSINAME
 :: MS extension
 _WCRTLINK extern int        _open( const char *__path, int __oflag, ... );
 :elsesegment

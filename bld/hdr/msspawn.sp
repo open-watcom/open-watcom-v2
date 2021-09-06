@@ -11,7 +11,7 @@ _WCRTLINK extern int        _wspawnv( int __mode, const wchar_t *__path, const w
 _WCRTLINK extern int        _wspawnve( int __mode, const wchar_t *__path, const wchar_t * const *__argv, const wchar_t * const *__envp );
 _WCRTLINK extern int        _wspawnvp( int __mode, const wchar_t *__path, const wchar_t * const *__argv );
 _WCRTLINK extern int        _wspawnvpe( int __mode, const wchar_t *__path, const wchar_t * const *__argv, const wchar_t * const *__envp );
-:elsesegment MSEXT
+:elsesegment ANSINAME
 :: MS extension
 _WCRTLINK extern int        _spawnl( int __mode, const char *__path, const char *__arg0, ... );
 _WCRTLINK extern int        _spawnle( int __mode, const char *__path, const char *__arg0, ... );

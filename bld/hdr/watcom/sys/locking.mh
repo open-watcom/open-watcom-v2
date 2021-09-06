@@ -24,9 +24,9 @@
 #define LK_NBRLCK   _LK_NBRLCK
 
 :include locking.sp
-:keep MSEXT
+:keep ANSINAME
 :include locking.sp
-:remove MSEXT
+:remove ANSINAME
 
 :include cplusepi.sp
 

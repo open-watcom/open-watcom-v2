@@ -172,10 +172,10 @@ _WCRTLINK extern int        ftruncate( int __fd, off_t __length );
 :include ext.sp
 
 :include msioext.sp
-:keep MSEXT
+:keep ANSINAME
 :include fileio.sp
 :include msioext.sp
-:remove MSEXT
+:remove ANSINAME
 :segment QNX
 :include mkdir.sp
 _WCRTLINK extern int        mknod( const char *__path, mode_t __mode, int __dev );
@@ -198,9 +198,9 @@ _WCRTLINK extern int        qnx_sync( nid_t __nid );
 _WCRTLINK extern char       *basename( char *__fname );
 _WCRTLINK extern off_t      ltrunc( int __fildes, off_t __offset, int __origin );
 
-:keep MSEXT
+:keep ANSINAME
 :include mkdir.sp
-:remove MSEXT
+:remove ANSINAME
 :endsegment
 :segment LINUX
 :: These are Linux specific
@@ -230,14 +230,14 @@ _WCRTLINK extern pid_t      waitpid( pid_t __pid, int *__stat_loc, int __options
 :include pxexec.sp
 
 :include ext.sp
-:keep MSEXT
+:keep ANSINAME
 :include getpid.sp
 :include getcwd.sp
 :include chdir.sp
 :include rmdir.sp
 
 :include pxexec.sp
-:remove MSEXT
+:remove ANSINAME
 
 :include delay.sp
 

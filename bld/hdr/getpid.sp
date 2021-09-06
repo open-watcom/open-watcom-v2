@@ -3,7 +3,7 @@
 ::                          <unistd.h> (<process.h>)
 :segment WIDE
 :: MS wide extension
-:elsesegment MSEXT
+:elsesegment ANSINAME
 :: MS extension
 _WCRTLINK extern pid_t      _getpid( void );
 :elsesegment

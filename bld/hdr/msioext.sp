@@ -3,7 +3,7 @@
 ::                          <io.h>
 :segment WIDE
 :: MS wide extension
-:elsesegment MSEXT
+:elsesegment ANSINAME
 :: MS extension
 _WCRTLINK extern int        _eof( int __handle );
 :elsesegment
@@ -14,7 +14,7 @@ _WCRTLINK extern int        eof( int __handle );
 ::                          <io.h>
 :segment WIDE
 :: MS wide extension
-:elsesegment MSEXT
+:elsesegment ANSINAME
 :: MS extension
 _WCRTLINK extern long       _filelength( int __handle );
 :segment DOS
@@ -28,7 +28,7 @@ _WCRTLINK extern long       filelength( int __handle );
 ::                          <io.h>
 :segment WIDE
 :: MS wide extension
-:elsesegment MSEXT
+:elsesegment ANSINAME
 :: MS extension
 _WCRTLINK extern off_t      _tell( int __handle );
 :segment DOS
@@ -42,7 +42,7 @@ _WCRTLINK extern off_t      tell( int __handle );
 ::                          <io.h>
 :segment WIDE
 :: MS wide extension
-:elsesegment MSEXT
+:elsesegment ANSINAME
 :: MS extension
 _WCRTLINK extern int        _chsize( int __handle, long __size );
 :elsesegment
@@ -53,7 +53,7 @@ _WCRTLINK extern int        chsize( int __handle, long __size );
 ::                          <io.h> (<fcntl.h>)
 :segment WIDE
 :: MS wide extension
-:elsesegment MSEXT
+:elsesegment ANSINAME
 :: MS extension
 _WCRTLINK extern int        _setmode( int __handle, int __mode );
 :elsesegment

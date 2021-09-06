@@ -3,7 +3,7 @@
 ::                          <sys/stat.h>,<sys/stat.h> (<io.h>)
 :segment WIDE
 :: MS wide extension
-:elsesegment MSEXT
+:elsesegment ANSINAME
 :: MS version
 _WCRTLINK extern mode_t     _umask( mode_t __cmask );
 :elsesegment

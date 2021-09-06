@@ -213,11 +213,11 @@ typedef struct flock {
 :: MS extension version
 :include sopen.sp
 
-:keep MSEXT
+:keep ANSINAME
 :include open.sp
 :include creat.sp
 :include sopen.sp
-:remove MSEXT
+:remove ANSINAME
 
 :: Wide character version
 :keep WIDE

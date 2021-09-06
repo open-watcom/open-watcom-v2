@@ -42,9 +42,9 @@
 :: Begin of extension section
 ::
 :endsegment
-:keep MSEXT
+:keep ANSINAME
 :include pxexec.sp
-:remove MSEXT
+:remove ANSINAME
 
 :segment QNX
 /*
@@ -104,9 +104,9 @@ _WCRTDATA extern int __p_overlay;
  */
 
 :include msexec.sp
-:keep MSEXT
+:keep ANSINAME
 :include msexec.sp
-:remove MSEXT
+:remove ANSINAME
 
 :segment RDOS
  _WCRTLINK extern int  _beginthread(
@@ -186,9 +186,9 @@ _WCRTLINK extern int        putenv( const char *__string );
 
 :include msspawn.sp
 
-:keep MSEXT
+:keep ANSINAME
 :include msspawn.sp
-:remove MSEXT
+:remove ANSINAME
 
 :keep WIDE
 _WCRTLINK extern wchar_t    *_wgetenv( const wchar_t *__name );
@@ -221,9 +221,9 @@ _WCRTLINK extern int        _wsystem( const wchar_t *__cmd );
 
 :endsegment
 :include getpid.sp
-:keep MSEXT
+:keep ANSINAME
 :include getpid.sp
-:remove MSEXT
+:remove ANSINAME
 _WCRTLINK extern pid_t      wait( int *__status );
 
 :segment LINUX
