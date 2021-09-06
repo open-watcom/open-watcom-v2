@@ -86,7 +86,7 @@ lctm_r        _localtime        localtime_r                                     
 lltoa_        lltoa             _lltoa            d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
 lockin        locking           _locking          d16 d32 nt  nta ntp                 o16 o32 q16 q32 w16 w32 l32         rdu rdk
 lseek_        lseek             _lseek            d16 d32 nt  nta ntp                 o16 o32         w16 w32             rdu rdk
-lstat_        stat              lstat             d16 d32 nt  nta ntp                 o16 o32         w16 w32             rdu rdk
+lstat_        stat              lstat             d16 d32 nt  nta ntp nvc ncl nvl nll o16 o32         w16 w32             rdu rdk
 ltoa__        ltoa              _ltoa             d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
 ltow__        _ltow             _wltoa            d16 d32 nt  nta ntp                 o16 o32 q16 q32 w16 w32 l32
 mbscol        _mbscmp           _mbscoll          d16 d32 nt  nta ntp                 o16 o32         w16 w32             rdu rdk
