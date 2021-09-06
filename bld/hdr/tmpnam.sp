@@ -2,10 +2,10 @@
 ::
 ::                          <stdio.h> (<stdio.h>,<wchar.h>)
 :segment WIDE
-:: MS wide extension
+:: Wide character version
 _WCRTLINK extern wchar_t    *_wtmpnam( wchar_t * );
 :elsesegment ANSINAME
-:: MS extension
+:: ANSI name version
 :elsesegment
 :: POSIX/ISO
 _WCRTLINK extern char       *tmpnam( char *__s );

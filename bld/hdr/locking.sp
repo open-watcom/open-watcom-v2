@@ -1,10 +1,10 @@
-:: MS extension locking function
+:: MS locking function
 ::
 ::                          ??? (<io.h>,<sys/locking.h>)
 :segment WIDE
-:: MS wide extension
+:: Wide character version
 :elsesegment ANSINAME
-:: MS extension
+:: ANSI name version
 _WCRTLINK extern int        _locking(int __handle,int __mode,unsigned long __nbyte);
 :elsesegment
 :: MS deprecated

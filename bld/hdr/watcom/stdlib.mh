@@ -586,6 +586,9 @@ extern  wchar_t **__wargv;      /* vector of wide cmd line args */
 :include brk.sp
 
 :include onexit.sp
+:keep ANSINAME
+:include onexit.sp
+:remove ANSINAME
 
 :include extepi.sp
 

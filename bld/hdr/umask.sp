@@ -2,9 +2,9 @@
 ::
 ::                          <sys/stat.h>,<sys/stat.h> (<io.h>)
 :segment WIDE
-:: MS wide extension
+:: Wide character version
 :elsesegment ANSINAME
-:: MS version
+:: ANSI name version
 _WCRTLINK extern mode_t     _umask( mode_t __cmask );
 :elsesegment
 :: POSIX

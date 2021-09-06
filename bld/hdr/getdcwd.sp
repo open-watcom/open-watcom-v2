@@ -1,11 +1,11 @@
-:: MS extension getdcwd function
+:: ANSI name version getdcwd function
 ::
 ::                          ??? (<direct.h>,<wchar.h>)
 :segment WIDE
-:: MS wide extension
+:: Wide character version
 _WCRTLINK extern wchar_t    *_wgetdcwd( int __drive, wchar_t *__buffer, __w_size_t __maxlen );
 :elsesegment ANSINAME
-:: MS extension
+:: ANSI name version
 _WCRTLINK extern char       *_getdcwd( int __drive, char *__buffer, __w_size_t __maxlen );
 :elsesegment
 :: POSIX

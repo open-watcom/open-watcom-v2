@@ -2,7 +2,7 @@
 ::
 ::                          <unistd.h> (<process.h>,<wchar.h>)
 :segment WIDE
-:: MS wide extension
+:: Wide character version
 _WCRTLINK extern int        _wexecl( const wchar_t *__path, const wchar_t *__arg0, ... );
 _WCRTLINK extern int        _wexecle( const wchar_t *__path, const wchar_t *__arg0, ... );
 _WCRTLINK extern int        _wexeclp( const wchar_t *__file, const wchar_t *__arg0, ... );
@@ -10,7 +10,7 @@ _WCRTLINK extern int        _wexecv( const wchar_t *__path, const wchar_t *const
 _WCRTLINK extern int        _wexecve( const wchar_t *__path, const wchar_t *const __argv[], const wchar_t *const __envp[] );
 _WCRTLINK extern int        _wexecvp( const wchar_t *__file, const wchar_t *const __argv[] );
 :elsesegment ANSINAME
-:: MS extension
+:: ANSI name version
 _WCRTLINK extern int        _execl( const char *__path, const char *__arg0, ... );
 _WCRTLINK extern int        _execle( const char *__path, const char *__arg0, ... );
 _WCRTLINK extern int        _execlp( const char *__file, const char *__arg0, ... );

@@ -2,10 +2,10 @@
 ::
 ::                          <fcntl.h>,<sys/stat.h> (<io.h>,<wchar.h>)
 :segment WIDE
-:: MS wide extension
+:: Wide character version
 _WCRTLINK extern int        _wopen( const wchar_t *__path, int __oflag, ... );
 :elsesegment ANSINAME
-:: MS extension
+:: ANSI name version
 _WCRTLINK extern int        _open( const char *__path, int __oflag, ... );
 :elsesegment
 :: POSIX

@@ -2,10 +2,10 @@
 ::
 ::                          <stdlib.h> (<stdlib.h>,<process.h>,<env.h>,<wchar.h>)
 :segment WIDE
-:: MS wide extension
+:: Wide character version
 _WCRTLINK extern wchar_t    *_wgetenv( const wchar_t *__name );
 :elsesegment ANSINAME
-:: MS extension
+:: ANSI name version
 :elsesegment
 :: ISO C
 _WCRTLINK extern char       *getenv( const char *__name );

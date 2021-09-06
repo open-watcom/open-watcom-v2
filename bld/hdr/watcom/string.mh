@@ -159,6 +159,9 @@ _WCRTLINK  extern size_t    strxfrm( char *__s1, const char *__s2, size_t __n );
 /* MS extension functions */
 
 :include msstring.sp
+:keep ANSINAME
+:include msstring.sp
+:remove ANSINAME
 
 /* POSIX extension functions */
 

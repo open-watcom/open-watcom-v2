@@ -2,9 +2,9 @@
 ::
 ::                          <unistd.h> (<process.h>)
 :segment WIDE
-:: MS wide extension
+:: Wide character version
 :elsesegment ANSINAME
-:: MS extension
+:: ANSI name version
 _WCRTLINK extern pid_t      _getpid( void );
 :elsesegment
 :: POSIX

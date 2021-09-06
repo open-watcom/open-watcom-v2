@@ -3,19 +3,19 @@
 ::                          <sys/stat.h> (<direct.h>,<wchar.h>)
 :segment LINUX | QNX
 :segment WIDE
-:: MS wide extension
+:: Wide character version
 :elsesegment ANSINAME
-:: MS extension
+:: ANSI name version
 :elsesegment
 :: POSIX
 _WCRTLINK extern int        mkdir( const char *__path, mode_t mode );
 :endsegment
 :elsesegment
 :segment WIDE
-:: MS wide extension
+:: Wide character version
 _WCRTLINK extern int        _wmkdir( const wchar_t *__path );
 :elsesegment ANSINAME
-:: MS extension
+:: ANSI name version
 _WCRTLINK extern int        _mkdir( const char *__path );
 :elsesegment
 :: POSIX

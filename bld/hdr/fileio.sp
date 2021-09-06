@@ -2,9 +2,9 @@
 ::
 ::                          <unistd.h>
 :segment WIDE
-:: MS wide extension
+:: Wide character version
 :elsesegment ANSINAME
-:: MS extension
+:: ANSI name version
 _WCRTLINK extern int        _read( int fildes, void *buf, unsigned nbyte );
 :elsesegment
 :: POSIX
@@ -13,9 +13,9 @@ _WCRTLINK extern ssize_t    read( int fildes, void *buf, __w_size_t nbyte );
 ::
 ::                          <unistd.h>
 :segment WIDE
-:: MS wide extension
+:: Wide character version
 :elsesegment ANSINAME
-:: MS extension
+:: ANSI name version
 _WCRTLINK extern int        _write( int fildes, const void *buf, unsigned nbyte );
 :elsesegment
 :: POSIX
@@ -24,10 +24,10 @@ _WCRTLINK extern ssize_t    write( int fildes, const void *buf, __w_size_t nbyte
 ::
 ::                          <unistd.h>
 :segment WIDE
-:: MS wide extension
+:: Wide character version
 _WCRTLINK extern int        _waccess( const wchar_t *__path, int __mode );
 :elsesegment ANSINAME
-:: MS extension
+:: ANSI name version
 _WCRTLINK extern int        _access( const char *__path, int __mode );
 :elsesegment
 :: POSIX
@@ -36,9 +36,9 @@ _WCRTLINK extern int        access( const char *__path, int __mode );
 ::
 ::                          <unistd.h>
 :segment WIDE
-:: MS wide extension
+:: Wide character version
 :elsesegment ANSINAME
-:: MS extension
+:: ANSI name version
 _WCRTLINK extern int        _dup( int __handle );
 :elsesegment
 :: POSIX
@@ -47,9 +47,9 @@ _WCRTLINK extern int        dup( int __handle );
 ::
 ::                          <unistd.h>
 :segment WIDE
-:: MS wide extension
+:: Wide character version
 :elsesegment ANSINAME
-:: MS extension
+:: ANSI name version
 _WCRTLINK extern int        _dup2( int __handle1, int __handle2 );
 :elsesegment
 :: POSIX
@@ -58,9 +58,9 @@ _WCRTLINK extern int        dup2( int __handle1, int __handle2 );
 ::
 ::                          <unistd.h>
 :segment WIDE
-:: MS wide extension
+:: Wide character version
 :elsesegment ANSINAME
-:: MS extension
+:: ANSI name version
 _WCRTLINK extern int        _close( int __handle );
 :elsesegment
 :: POSIX
@@ -69,9 +69,9 @@ _WCRTLINK extern int        close( int __fildes );
 ::
 ::                          <unistd.h>
 :segment WIDE
-:: MS wide extension
+:: Wide character version
 :elsesegment ANSINAME
-:: MS extension
+:: ANSI name version
 _WCRTLINK extern off_t      _lseek( int __handle, off_t __offset, int __origin );
 :segment DOS
 _WCRTLINK extern long long  _lseeki64( int __fildes, long long __offset, int __whence );
@@ -83,10 +83,10 @@ _WCRTLINK extern off_t      lseek( int __handle, off_t __offset, int __origin );
 ::
 ::                          <unistd.h>
 :segment WIDE
-:: MS wide extension
+:: Wide character version
 _WCRTLINK extern int        _wunlink( const wchar_t *__path );
 :elsesegment ANSINAME
-:: MS extension
+:: ANSI name version
 _WCRTLINK extern int        _unlink( const char *__path );
 :elsesegment
 :: POSIX
@@ -95,9 +95,9 @@ _WCRTLINK extern int        unlink( const char *__path );
 ::
 ::                          <unistd.h>
 :segment WIDE
-:: MS wide extension
+:: Wide character version
 :elsesegment ANSINAME
-:: MS extension
+:: ANSI name version
 _WCRTLINK extern int        _isatty( int __handle );
 :elsesegment
 :: POSIX
@@ -106,9 +106,9 @@ _WCRTLINK extern int        isatty( int __handle );
 ::
 ::                          <unistd.h>
 :segment WIDE
-:: MS wide extension
+:: Wide character version
 :elsesegment ANSINAME
-:: MS extension
+:: ANSI name version
 :elsesegment
 :: POSIX
 _WCRTLINK extern int        fsync( int __handle );
@@ -117,9 +117,9 @@ _WCRTLINK extern int        fsync( int __handle );
 ::                          <unistd.h>
 :segment LINUX | QNX
 :segment WIDE
-:: MS wide extension
+:: Wide character version
 :elsesegment ANSINAME
-:: MS extension
+:: ANSI name version
 :elsesegment
 :: POSIX
 _WCRTLINK extern int        pipe( int __fildes[2] );
@@ -129,9 +129,9 @@ _WCRTLINK extern int        pipe( int __fildes[2] );
 ::                          <io.h>
 :segment DOS | RDOS
 :segment WIDE
-:: MS wide extension
+:: Wide character version
 :elsesegment ANSINAME
-:: MS extension
+:: ANSI name version
 _WCRTLINK extern int        _commit( int __handle );
 _WCRTLINK extern int        _pipe( int *__phandles, unsigned __psize, int __textmode );
 :elsesegment
@@ -144,15 +144,15 @@ _WCRTLINK extern int        _pipe( int *__phandles, unsigned __psize, int __text
 ::
 ::                          <io.h>
 :segment WIDE
-:: MS wide extension
+:: Wide character version
 :elsesegment ANSINAME
-:: MS extension
+:: ANSI name version
 _WCRTLINK extern long       _get_osfhandle( int __posixhandle );
 _WCRTLINK extern int        _hdopen( int __handle,int __mode );
 _WCRTLINK extern int        _open_osfhandle( long __osfhandle, int __flags );
 _WCRTLINK extern int        _os_handle( int __handle );
 :elsesegment
-:: POSIX
+:: OW
 :endsegment
 ::
 ::

@@ -2,10 +2,10 @@
 ::
 ::                          <fcntl.h>,<sys/stat.h> (<io.h>,<wchar.h>)
 :segment WIDE
-:: MS wide extension
+:: Wide character version
 _WCRTLINK extern int        _wcreat( const wchar_t *, mode_t __mode );
 :elsesegment ANSINAME
-:: MS extension
+:: ANSI name version
 _WCRTLINK extern int        _creat( const char *__path, mode_t __mode );
 :elsesegment
 :: POSIX

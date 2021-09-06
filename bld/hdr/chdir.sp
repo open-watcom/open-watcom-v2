@@ -2,10 +2,10 @@
 ::
 ::                          <unistd.h> (<direct.h>,<wchar.h>)
 :segment WIDE
-:: MS wide extension
+:: Wide character version
 _WCRTLINK extern int        _wchdir( const wchar_t *__path );
 :elsesegment ANSINAME
-:: MS extension
+:: ANSI name version
 _WCRTLINK extern int        _chdir( const char *__path );
 :elsesegment
 :: POSIX

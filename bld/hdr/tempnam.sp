@@ -2,10 +2,10 @@
 ::
 ::                          <stdio.h> (<stdio.h>,<wchar.h>)
 :segment WIDE
-:: MS wide extension
+:: Wide character version
 _WCRTLINK extern wchar_t    *_wtempnam( const wchar_t *__dir, const wchar_t *__prefix );
 :elsesegment ANSINAME
-:: MS extension
+:: ANSI name version
 _WCRTLINK extern char       *_tempnam( const char *__dir, const char *__prefix );
 :elsesegment
 :: POSIX

@@ -2,10 +2,10 @@
 ::
 ::                          <unistd.h> (<direct.h>,<wchar.h>)
 :segment WIDE
-:: MS wide extension
+:: Wide character version
 _WCRTLINK extern wchar_t    *_wgetcwd( wchar_t *__buf, __w_size_t __size );
 :elsesegment ANSINAME
-:: MS extension
+:: ANSI name version
 _WCRTLINK extern char       *_getcwd( char *__buf, __w_size_t __size );
 :elsesegment
 :: POSIX

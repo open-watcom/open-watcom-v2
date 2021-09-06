@@ -1,12 +1,12 @@
-:: MS extensio _mktemp function
+:: MS _mktemp function
 ::
 ::                          ??? (<io.h>,<wchar.h>)
 :segment WIDE
-:: MS wide extension
+:: Wide character version
 _WCRTLINK extern wchar_t    *_wmktemp( wchar_t *__template );
 :elsesegment ANSINAME
-:: MS extension
+:: ANSI name version
 _WCRTLINK extern char       *_mktemp( char *__template );
 :elsesegment
-:: POSIX
+:: MS
 :endsegment
