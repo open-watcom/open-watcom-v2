@@ -42,5 +42,6 @@
 !inject usrchen.obj     d16 d32     nt  nta ntp         o16 o32         w16 w32
 !inject _usetenv.obj    d16 d32     nt  nta ntp         o16 o32         w16 w32
 !inject usetenv.obj     d16 d32     nt  nta ntp         o16 o32         w16 w32
+!inject uunseten.obj    d16 d32     nt  nta ntp         o16 o32         w16 w32
 
 !include ../../../../objlist.mif

@@ -7,3 +7,4 @@ uputenv.obj  : ../../../c/uputenv.c  ../../../c/putenv.c
 usrchen.obj  : ../../../c/usrchen.c  ../../../c/searchen.c
 _usetenv.obj : ../../../c/_usetenv.c ../../../c/_setenv.c
 usetenv.obj  : ../../../c/usetenv.c  ../../../c/setenv.c
+uunseten.obj : ../../../c/uunseten.c ../../../c/unsetenv.c
