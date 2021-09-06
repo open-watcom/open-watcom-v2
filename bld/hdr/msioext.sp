@@ -17,7 +17,7 @@ _WCRTLINK extern int        eof( int __handle );
 :elsesegment ANSINAME
 :: ANSI name version
 _WCRTLINK extern long       _filelength( int __handle );
-:segment DOS
+:segment DOS | QNX | LINUX
 _WCRTLINK extern long long  _filelengthi64( int __handle );
 :endsegment
 :elsesegment
@@ -31,7 +31,7 @@ _WCRTLINK extern long       filelength( int __handle );
 :elsesegment ANSINAME
 :: ANSI name version
 _WCRTLINK extern off_t      _tell( int __handle );
-:segment DOS
+:segment DOS | QNX | LINUX
 _WCRTLINK extern long long  _telli64( int __handle );
 :endsegment
 :elsesegment
