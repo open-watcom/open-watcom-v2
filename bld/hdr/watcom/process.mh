@@ -169,7 +169,20 @@ _WCRTLINK extern int        _cwait( int *__status, int __process_id, int __actio
 :: These functions from the standard library need to be in namspace std
 :: in C++ to avoid conflicts on using declarations if standard headers
 :: are also included.
-:include process1.sp
+#ifdef __cplusplus
+namespace std {
+#endif
+:include getenv.sp
+:include system.sp
+:include abort.sp
+:include exit.sp
+#ifdef __cplusplus
+} // namespace std
+using std::abort;
+using std::exit;
+using std::getenv;
+using std::system;
+#endif /* __cplusplus not defined */
 
 :include _exit.sp
 
@@ -182,7 +195,9 @@ _WCRTLINK extern char       *_cmdname( char *__name );
 :segment LINUX | QNX
 #endif
 :endsegment
-_WCRTLINK extern int        putenv( const char *__string );
+:include getenv.sp
+:include setenv.sp
+:include putenv.sp
 
 :include msspawn.sp
 
@@ -191,16 +206,16 @@ _WCRTLINK extern int        putenv( const char *__string );
 :remove ANSINAME
 
 :keep WIDE
-_WCRTLINK extern wchar_t    *_wgetenv( const wchar_t *__name );
-_WCRTLINK extern int        _wsetenv( const wchar_t *__name, const wchar_t *__newvalue, int __overwrite );
-_WCRTLINK extern int        _wputenv( const wchar_t *__env_string );
+:include getenv.sp
+:include setenv.sp
+:include putenv.sp
 
 :include pxexec.sp
 :include msexec.sp
 
 :include msspawn.sp
 
-_WCRTLINK extern int        _wsystem( const wchar_t *__cmd );
+:include system.sp
 :remove WIDE
 
 :segment DOS | RDOS
