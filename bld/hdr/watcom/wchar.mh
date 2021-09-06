@@ -160,6 +160,13 @@ using std::wctype;
 :include wchar_t.sp
 :include wint_t.sp
 
+:include ext.sp
+:segment DOS
+:include intptr_t.sp
+:include mode_t.sp
+:endsegment
+:include extepi.sp
+
 :include wctype_t.sp
 
 :include size_t.sp
@@ -242,6 +249,7 @@ _WCRTLINK extern int        wscanf( const wchar_t *__format, ... );
 :keep WIDE
 :include ext.sp
 
+:segment DOS
 /* MS extension functions */
 
 :include getcwd.sp
@@ -265,6 +273,7 @@ _WCRTLINK extern int        wscanf( const wchar_t *__format, ... );
 :include tempnam.sp
 :include tmpnam.sp
 
+:endsegment
 /* POSIX extension functions */
 
 :include pxstring.sp

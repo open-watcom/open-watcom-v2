@@ -17,7 +17,9 @@ _WCRTLINK extern int        eof( int __handle );
 :elsesegment MSEXT
 :: MS extension
 _WCRTLINK extern long       _filelength( int __handle );
+:segment DOS
 _WCRTLINK extern long long  _filelengthi64( int __handle );
+:endsegment
 :elsesegment
 :: MS deprecated alias
 _WCRTLINK extern long       filelength( int __handle );
@@ -29,7 +31,9 @@ _WCRTLINK extern long       filelength( int __handle );
 :elsesegment MSEXT
 :: MS extension
 _WCRTLINK extern off_t      _tell( int __handle );
+:segment DOS
 _WCRTLINK extern long long  _telli64( int __handle );
+:endsegment
 :elsesegment
 :: MS deprecated alias
 _WCRTLINK extern off_t      tell( int __handle );

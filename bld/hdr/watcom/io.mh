@@ -27,7 +27,9 @@
 /*
  *  ISO C types
  */
+:segment DOS
 :include wchar_t.sp
+:endsegment
 :include intptr_t.sp
 
 :keep MAXPATH
@@ -43,20 +45,8 @@
 
 :include seekpos.sp
 
-/* Symbolic constants for stream I/O */
+:include stdfilno.sp
 
-#define STDIN_FILENO    0
-#define STDOUT_FILENO   1
-#define STDERR_FILENO   2
-:segment DOS
-:include ext.sp
-#if !defined(__NT__)
-#define STDAUX_FILENO   3
-#define STDPRN_FILENO   4
-#endif
-:include extepi.sp
-
-:endsegment
 typedef unsigned long   _fsize_t;
 
 struct _finddata_t {
@@ -68,6 +58,7 @@ struct _finddata_t {
     char        name[_MAX_PATH];
 };
 
+:segment DOS
 struct _wfinddata_t {
     unsigned    attrib;
     time_t      time_create;
@@ -95,6 +86,7 @@ struct _wfinddatai64_t {
     wchar_t     name[_MAX_PATH];
 };
 
+:endsegment
 /* File attribute constants for attrib field */
 #define _A_NORMAL       0x00    /* Normal file - read/write permitted */
 #define _A_RDONLY       0x01    /* Read-only file */
@@ -106,8 +98,6 @@ struct _wfinddatai64_t {
 
 :include fileio.sp
 :include chmod.sp
-:include rename.sp
-:include remove.sp
 :include locking.sp
 :include msioext.sp
 :include open.sp
@@ -121,8 +111,6 @@ struct _wfinddatai64_t {
 :keep MSEXT
 :include fileio.sp
 :include chmod.sp
-:include rename.sp
-:include remove.sp
 :include locking.sp
 :include msioext.sp
 :include open.sp
@@ -133,11 +121,10 @@ struct _wfinddatai64_t {
 :include msffind.sp
 :remove MSEXT
 
+:segment DOS
 :keep WIDE
 :include fileio.sp
 :include chmod.sp
-:include rename.sp
-:include remove.sp
 :include locking.sp
 :include msioext.sp
 :include open.sp
@@ -148,6 +135,7 @@ struct _wfinddatai64_t {
 :include msffind.sp
 :remove WIDE
 
+:endsegment
 :include poppack.sp
 
 :include cplusepi.sp

@@ -8,7 +8,7 @@
 _WCRTLINK extern int        _read( int fildes, void *buf, unsigned nbyte );
 :elsesegment
 :: POSIX
-_WCRTLINK extern ssize_t    read( int fildes, void *buf, size_t nbyte );
+_WCRTLINK extern ssize_t    read( int fildes, void *buf, __w_size_t nbyte );
 :endsegment
 ::
 ::                          <unistd.h>
@@ -19,7 +19,7 @@ _WCRTLINK extern ssize_t    read( int fildes, void *buf, size_t nbyte );
 _WCRTLINK extern int        _write( int fildes, const void *buf, unsigned nbyte );
 :elsesegment
 :: POSIX
-_WCRTLINK extern ssize_t    write( int fildes, const void *buf, size_t nbyte );
+_WCRTLINK extern ssize_t    write( int fildes, const void *buf, __w_size_t nbyte );
 :endsegment
 ::
 ::                          <unistd.h>
@@ -73,7 +73,9 @@ _WCRTLINK extern int        close( int __fildes );
 :elsesegment MSEXT
 :: MS extension
 _WCRTLINK extern off_t      _lseek( int __handle, off_t __offset, int __origin );
+:segment DOS
 _WCRTLINK extern long long  _lseeki64( int __fildes, long long __offset, int __whence );
+:endsegment
 :elsesegment
 :: POSIX
 _WCRTLINK extern off_t      lseek( int __handle, off_t __offset, int __origin );
@@ -167,7 +169,7 @@ _WCRTLINK extern int        _os_handle( int __handle );
 ::
 ::- msioext+   MS
 ::- chsize ???
-::- eof ???, 
+::- eof ???,
 ::- filelength, filelengthi64 ???
 ::- tell, telli64
 ::- setmode
