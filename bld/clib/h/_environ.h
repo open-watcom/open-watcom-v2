@@ -52,15 +52,17 @@
  * These routines are used internally only, so should not
  * have a _WCRTLINK modifier.
  */
-extern void     __create_wide_environment( void );
 extern int      __findenvadd( const char *name );
-extern int      __wfindenvadd( const wchar_t *name );
 extern int      __findenvdel( const char *name );
-extern int      __wfindenvdel( const wchar_t *name );
-extern int      __putenv( const char *env_string );
-extern int      __wputenv( const wchar_t *env_string );
 extern int      __setenv( const char *name, const char *newvalue, int overwrite );
+extern int      __putenv( const char *env_string );
+#ifdef CLIB_USE_OTHER_ENV
+extern void     __create_wide_environment( void );
+extern int      __wfindenvadd( const wchar_t *name );
+extern int      __wfindenvdel( const wchar_t *name );
 extern int      __wsetenv( const wchar_t *name, const wchar_t *newvalue, int overwrite );
+extern int      __wputenv( const wchar_t *env_string );
+#endif
 
 extern void     __setenvp( void );
 #if !defined(__NETWARE__)
