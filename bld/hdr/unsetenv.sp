@@ -1,4 +1,4 @@
-:: POSIX setenv function
+:: POSIX unsetenv function
 ::
 ::                          <stdlib.h> (<stdlib.h>,<process.h>,<env.h>,<wchar.h>)
 :segment WIDE

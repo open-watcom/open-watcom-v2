@@ -194,8 +194,8 @@ extern pid_t tfork( char *__stk_addr, unsigned __stk_size, int (*__func)(void*),
   _WCRTLINK extern void     _endthreadex( unsigned __retval );
 :include thrdhndl.sp
  #else
-  _WCRTLINK extern int      _beginthread( void (_WCCALLBACK *__start_address)(void *),
-      void *__stack_bottom, unsigned __stack_size, void *__arglist );
+  _WCRTLINK extern int  _beginthread( void (_WCCALLBACK *__start_address)(void *),
+                        void *__stack_bottom, unsigned __stack_size, void *__arglist );
   #pragma intrinsic(_beginthread)
  #endif
  _WCRTLINK extern void      _endthread( void );

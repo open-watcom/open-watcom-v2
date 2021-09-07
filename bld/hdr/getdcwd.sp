@@ -1,4 +1,4 @@
-:: ANSI name version getdcwd function
+:: MS getdcwd function
 ::
 ::                          ??? (<direct.h>,<wchar.h>)
 :segment WIDE

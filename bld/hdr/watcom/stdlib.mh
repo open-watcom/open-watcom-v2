@@ -135,57 +135,57 @@ typedef struct  {
     long long   rem;
 } lldiv_t;
 
-_WCIRTLINK extern int    abs( int __j );
+_WCIRTLINK extern int       abs( int __j );
 #if defined(_M_IX86) && 0
 #pragma aux abs __parm __nomemory __modify __nomemory
 #endif
-_WRTLFCONV extern int    atexit( void (_WCCALLBACK *__func)( void ) );
-_WMRTLINK extern double  atof( const char *__nptr );
-_WCRTLINK extern int     atoi( const char *__nptr );
-_WCRTLINK extern long    atol( const char *__nptr );
-_WCRTLINK extern long long atoll( const char *__nptr );
-_WCRTLINK extern void    *bsearch( const void *__key, const void *__base,
+_WRTLFCONV extern int       atexit( void (_WCCALLBACK *__func)( void ) );
+_WMRTLINK extern double     atof( const char *__nptr );
+_WCRTLINK extern int        atoi( const char *__nptr );
+_WCRTLINK extern long       atol( const char *__nptr );
+_WCRTLINK extern long long  atoll( const char *__nptr );
+_WCRTLINK extern void       *bsearch( const void *__key, const void *__base,
                                   size_t __nmemb, size_t __size,
                                   int (_WCCALLBACK *__compare)(const void *__pkey, const void *__pbase) );
-_WCRTLINK extern void    *calloc( size_t __n, size_t __size );
-_WCIRTLINK extern div_t  div( int __numer, int __denom );
+_WCRTLINK extern void       *calloc( size_t __n, size_t __size );
+_WCIRTLINK extern div_t     div( int __numer, int __denom );
 _WCRTLINK _WCNORETURN extern void _Exit( int __status );
-_WCRTLINK extern void    free( void *__ptr );
+_WCRTLINK extern void       free( void *__ptr );
 
-_WCIRTLINK extern long   labs( long __j );
+_WCIRTLINK extern long      labs( long __j );
 #if defined(_M_IX86) && 0
 #pragma aux labs __parm __nomemory __modify __nomemory
 #endif
 
 :segment BITS16
 #ifdef _M_I86
-_WCRTLINK extern ldiv_t  ldiv( long __numer, long __denom );
+_WCRTLINK extern ldiv_t     ldiv( long __numer, long __denom );
 #else
 :endsegment
-_WCIRTLINK extern ldiv_t  ldiv( long __numer, long __denom );
+_WCIRTLINK extern ldiv_t    ldiv( long __numer, long __denom );
 :segment BITS16
 #endif
 :endsegment
-_WCRTLINK extern long long llabs( long long __j );
-_WCRTLINK extern lldiv_t lldiv( long long __numer, long long __denom );
-_WCRTLINK extern void    *malloc( size_t __size );
+_WCRTLINK extern long long  llabs( long long __j );
+_WCRTLINK extern lldiv_t    lldiv( long long __numer, long long __denom );
+_WCRTLINK extern void       *malloc( size_t __size );
 :: Multi-byte character version
-_WCRTLINK extern int     mblen( const char *__s, size_t __n );
-_WCRTLINK extern size_t  mbstowcs( wchar_t *__pwcs, const char *__s, size_t __n );
-_WCRTLINK extern int     mbtowc( wchar_t *__pwc, const char *__s, size_t __n );
-_WCRTLINK extern size_t  wcstombs( char *__s, const wchar_t *__pwcs, size_t __n );
-_WCRTLINK extern int     wctomb( char *__s, wchar_t __wchar );
+_WCRTLINK extern int        mblen( const char *__s, size_t __n );
+_WCRTLINK extern size_t     mbstowcs( wchar_t *__pwcs, const char *__s, size_t __n );
+_WCRTLINK extern int        mbtowc( wchar_t *__pwc, const char *__s, size_t __n );
+_WCRTLINK extern size_t     wcstombs( char *__s, const wchar_t *__pwcs, size_t __n );
+_WCRTLINK extern int        wctomb( char *__s, wchar_t __wchar );
 ::
-_WCRTLINK extern void    qsort( void *__base, size_t __nmemb, size_t __size,
+_WCRTLINK extern void       qsort( void *__base, size_t __nmemb, size_t __size,
                                 int (_WCCALLBACK *__compare)( const void *, const void * ) );
-_WCRTLINK extern int     rand( void );
-_WCRTLINK extern void    *realloc( void *__ptr, size_t __size );
-_WCRTLINK extern void    srand( unsigned int __seed );
-_WMRTLINK extern double  strtod( const char *__nptr, char **__endptr );
-_WMRTLINK extern float   strtof( const char *__nptr, char **__endptr );
+_WCRTLINK extern int        rand( void );
+_WCRTLINK extern void       *realloc( void *__ptr, size_t __size );
+_WCRTLINK extern void       srand( unsigned int __seed );
+_WMRTLINK extern double     strtod( const char *__nptr, char **__endptr );
+_WMRTLINK extern float      strtof( const char *__nptr, char **__endptr );
 _WMRTLINK extern long double strtold( const char *__nptr, char **__endptr );
-_WCRTLINK extern long    strtol( const char *__nptr, char **__endptr, int __base );
-_WCRTLINK extern long long strtoll( const char *__nptr, char **__endptr, int __base );
+_WCRTLINK extern long       strtol( const char *__nptr, char **__endptr, int __base );
+_WCRTLINK extern long long  strtoll( const char *__nptr, char **__endptr, int __base );
 _WCRTLINK extern unsigned long strtoul( const char *__nptr, char **__endptr, int __base );
 _WCRTLINK extern unsigned long long strtoull( const char *__nptr, char **__endptr, int __base );
 
@@ -220,24 +220,24 @@ _WCRTLINK extern unsigned long long strtoull( const char *__nptr, char **__endpt
 :endsegment
 :include ext.sp
 
-_WCRTLINK extern void    break_on( void );
-_WCRTLINK extern void    break_off( void );
+_WCRTLINK extern void       break_on( void );
+_WCRTLINK extern void       break_off( void );
 
 :segment QNX
-_WCRTLINK extern unsigned atoh( const char *__nptr );
+_WCRTLINK extern unsigned   atoh( const char *__nptr );
 :endsegment
 :segment DOS | RDOS
 :include _exit.sp
 :endsegment
-_WMRTLINK extern char    *ecvt( double __val, int __ndig, int *__dec, int *__sign );
-_WMRTLINK extern char    *_ecvt( double __val, int __ndig, int *__dec, int *__sign );
-_WMRTLINK extern char    *fcvt( double __val, int __ndig, int *__dec, int *__sign );
-_WMRTLINK extern char    *_fcvt( double __val, int __ndig, int *__dec, int *__sign );
-_WCRTLINK extern char    *_fullpath( char *__buf, const char *__path, __w_size_t __size );
-_WMRTLINK extern char    *gcvt( double __val, int __ndig, char *__buf );
-_WMRTLINK extern char    *_gcvt( double __val, int __ndig, char *__buf );
-_WCRTLINK extern char    *itoa( int __value, char *__buf, int __radix );
-_WCRTLINK extern char    *_itoa( int __value, char *__buf, int __radix );
+_WMRTLINK extern char       *ecvt( double __val, int __ndig, int *__dec, int *__sign );
+_WMRTLINK extern char       *_ecvt( double __val, int __ndig, int *__dec, int *__sign );
+_WMRTLINK extern char       *fcvt( double __val, int __ndig, int *__dec, int *__sign );
+_WMRTLINK extern char       *_fcvt( double __val, int __ndig, int *__dec, int *__sign );
+_WCRTLINK extern char       *_fullpath( char *__buf, const char *__path, __w_size_t __size );
+_WMRTLINK extern char       *gcvt( double __val, int __ndig, char *__buf );
+_WMRTLINK extern char       *_gcvt( double __val, int __ndig, char *__buf );
+_WCRTLINK extern char       *itoa( int __value, char *__buf, int __radix );
+_WCRTLINK extern char       *_itoa( int __value, char *__buf, int __radix );
 :segment BITS16
 #ifdef _M_I86
 _WCRTLINK extern unsigned long _lrotl( unsigned long __value, unsigned int __shift );
@@ -254,43 +254,43 @@ _WCIRTLINK extern unsigned long _lrotr( unsigned long __value, unsigned int __sh
 :segment BITS16
 #endif
 :endsegment
-_WCRTLINK extern char    *ltoa( long __value, char *__buf, int __radix );
-_WCRTLINK extern char    *lltoa( long long __value, char *__buf, int __radix );
-_WCRTLINK extern char    *_ltoa( long __value, char *__buf, int __radix );
-_WCRTLINK extern char    *_lltoa( long long __value, char *__buf, int __radix );
-_WCRTLINK extern void    _makepath( char *__path, const char *__drive,
+_WCRTLINK extern char       *ltoa( long __value, char *__buf, int __radix );
+_WCRTLINK extern char       *lltoa( long long __value, char *__buf, int __radix );
+_WCRTLINK extern char       *_ltoa( long __value, char *__buf, int __radix );
+_WCRTLINK extern char       *_lltoa( long long __value, char *__buf, int __radix );
+_WCRTLINK extern void       _makepath( char *__path, const char *__drive,
                                     const char *__dir, const char *__fname, const char *__ext );
-_WCRTLINK extern int     mkstemp( char *__template );
+_WCRTLINK extern int        mkstemp( char *__template );
 _WCIRTLINK extern unsigned int _rotl( unsigned int __value, unsigned int __shift );
 _WCIRTLINK extern unsigned int _rotr( unsigned int __value, unsigned int __shift );
 
 :: Wide character version
-_WMRTLINK extern wchar_t  *_wecvt( double __val, int __ndig, int *__dec, int *__sign );
-_WMRTLINK extern wchar_t  *_wfcvt( double __val, int __ndig, int *__dec, int *__sign );
-_WMRTLINK extern wchar_t  *_wgcvt( double __val, int __ndig, wchar_t *__buf );
-_WCRTLINK extern int      _wtoi( const wchar_t * );
-_WCRTLINK extern long _wtol( const wchar_t * );
-_WCRTLINK extern long long _wtoll( const wchar_t * );
-_WCRTLINK extern wchar_t  *_itow( int, wchar_t *, int );
-_WCRTLINK extern wchar_t  *_ltow( long, wchar_t *, int );
-_WCRTLINK extern wchar_t  *_lltow( long long, wchar_t *, int );
-_WCRTLINK extern wchar_t  *_utow( unsigned int, wchar_t *, int );
-_WCRTLINK extern wchar_t  *_ultow( unsigned long, wchar_t *, int );
-_WCRTLINK extern wchar_t  *_ulltow( unsigned long long, wchar_t *, int );
-_WMRTLINK extern double   _wtof( const wchar_t * );
-_WMRTLINK extern double   _watof( const wchar_t * );
+_WMRTLINK extern wchar_t    *_wecvt( double __val, int __ndig, int *__dec, int *__sign );
+_WMRTLINK extern wchar_t    *_wfcvt( double __val, int __ndig, int *__dec, int *__sign );
+_WMRTLINK extern wchar_t    *_wgcvt( double __val, int __ndig, wchar_t *__buf );
+_WCRTLINK extern int        _wtoi( const wchar_t * );
+_WCRTLINK extern long       _wtol( const wchar_t * );
+_WCRTLINK extern long long  _wtoll( const wchar_t * );
+_WCRTLINK extern wchar_t    *_itow( int, wchar_t *, int );
+_WCRTLINK extern wchar_t    *_ltow( long, wchar_t *, int );
+_WCRTLINK extern wchar_t    *_lltow( long long, wchar_t *, int );
+_WCRTLINK extern wchar_t    *_utow( unsigned int, wchar_t *, int );
+_WCRTLINK extern wchar_t    *_ultow( unsigned long, wchar_t *, int );
+_WCRTLINK extern wchar_t    *_ulltow( unsigned long long, wchar_t *, int );
+_WMRTLINK extern double     _wtof( const wchar_t * );
+_WMRTLINK extern double     _watof( const wchar_t * );
 
 :include nsstd.sp
-_WCRTLINK extern long wcstol( const wchar_t *, wchar_t **, int );
-_WCRTLINK extern long long wcstoll( const wchar_t *, wchar_t **, int );
-_WMRTLINK extern double  wcstod( const wchar_t *, wchar_t ** );
+_WCRTLINK extern long       wcstol( const wchar_t *, wchar_t **, int );
+_WCRTLINK extern long long  wcstoll( const wchar_t *, wchar_t **, int );
+_WMRTLINK extern double     wcstod( const wchar_t *, wchar_t ** );
 _WCRTLINK extern unsigned long wcstoul( const wchar_t *, wchar_t **, int );
 _WCRTLINK extern unsigned long long wcstoull( const wchar_t *, wchar_t **, int );
 :include nsstdepi.sp
 
-_WCRTLINK extern wchar_t  *_atouni( wchar_t *, const char * );
-_WCRTLINK extern wchar_t  *_wfullpath( wchar_t *, const wchar_t *, __w_size_t );
-_WCRTLINK extern void     _wmakepath( wchar_t *__path, const wchar_t *__drive,
+_WCRTLINK extern wchar_t    *_atouni( wchar_t *, const char * );
+_WCRTLINK extern wchar_t    *_wfullpath( wchar_t *, const wchar_t *, __w_size_t );
+_WCRTLINK extern void       _wmakepath( wchar_t *__path, const wchar_t *__drive,
                                       const wchar_t *__dir,
                                       const wchar_t *__fname,
                                       const wchar_t *__ext );
@@ -301,15 +301,15 @@ _WCRTLINK extern void     _wmakepath( wchar_t *__path, const wchar_t *__drive,
 :include unsetenv.sp
 :include system.sp
 :remove WIDE
-_WCRTLINK extern void     _wsplitpath2( const wchar_t *__inp,
+_WCRTLINK extern void       _wsplitpath2( const wchar_t *__inp,
                                           wchar_t *__outp, wchar_t **__drive,
                                           wchar_t **__dir, wchar_t **__fn,
                                           wchar_t **__ext );
-_WCRTLINK extern void     _wsplitpath( const wchar_t *__path,
+_WCRTLINK extern void       _wsplitpath( const wchar_t *__path,
                                          wchar_t *__drive, wchar_t *__dir,
                                          wchar_t *__fname, wchar_t *__ext );
 :segment DOS | RDOS
-_WCRTLINK extern void     _wsearchenv( const wchar_t *__name,
+_WCRTLINK extern void       _wsearchenv( const wchar_t *__name,
                                          const wchar_t *__env_var,
                                          wchar_t *__buf );
 :endsegment
@@ -320,29 +320,29 @@ _WCRTLINK extern void     _wsearchenv( const wchar_t *__name,
 :keep ANSINAME
 :include putenv.sp
 :remove ANSINAME
-_WCRTLINK extern void    _searchenv( const char *__name, const char *__env_var, char *__buf );
+_WCRTLINK extern void       _searchenv( const char *__name, const char *__env_var, char *__buf );
 :segment QNX
-_WCRTLINK extern int     need_usage( char **__argv );
-_WCRTLINK extern int     print_usage( char **__argv );
-_WCRTLINK extern void    searchenv( const char *__name, const char *__env_var, char *__buf );
+_WCRTLINK extern int        need_usage( char **__argv );
+_WCRTLINK extern int        print_usage( char **__argv );
+_WCRTLINK extern void       searchenv( const char *__name, const char *__env_var, char *__buf );
 :endsegment
-_WCRTLINK extern void    _splitpath2( const char *__inp, char *__outp,
+_WCRTLINK extern void       _splitpath2( const char *__inp, char *__outp,
                                       char **__drive, char **__dir,
                                       char **__fn, char **__ext );
-_WCRTLINK extern void    _splitpath( const char *__path, char *__drive,
+_WCRTLINK extern void       _splitpath( const char *__path, char *__drive,
                                      char *__dir, char *__fname, char *__ext );
-_WCRTLINK extern void    swab( char *__src, char *__dest, int __num );
-_WCRTLINK extern char    *ultoa( unsigned long __value, char *__buf, int __radix );
-_WCRTLINK extern char    *ulltoa( unsigned long long __value, char *__buf, int __radix );
-_WCRTLINK extern char    *_ultoa( unsigned long __value, char *__buf, int __radix );
-_WCRTLINK extern char    *_ulltoa( unsigned long long __value, char *__buf, int __radix );
-_WCRTLINK extern char    *utoa( unsigned int __value, char *__buf, int __radix );
-_WCRTLINK extern char    *_utoa( unsigned int __value, char *__buf, int __radix );
+_WCRTLINK extern void       swab( char *__src, char *__dest, int __num );
+_WCRTLINK extern char       *ultoa( unsigned long __value, char *__buf, int __radix );
+_WCRTLINK extern char       *ulltoa( unsigned long long __value, char *__buf, int __radix );
+_WCRTLINK extern char       *_ultoa( unsigned long __value, char *__buf, int __radix );
+_WCRTLINK extern char       *_ulltoa( unsigned long long __value, char *__buf, int __radix );
+_WCRTLINK extern char       *utoa( unsigned int __value, char *__buf, int __radix );
+_WCRTLINK extern char       *_utoa( unsigned int __value, char *__buf, int __radix );
 
-_WCRTLINK extern char    *_i64toa( __int64 __value, char *__buf, int __radix );
-_WCRTLINK extern char    *_ui64toa( unsigned __int64 __value, char *__buf, int __radix );
-_WCRTLINK extern __int64 _atoi64( const char *__nptr );
-_WCRTLINK extern __int64 _strtoi64( const char *__nptr, char **__endptr, int __base );
+_WCRTLINK extern char       *_i64toa( __int64 __value, char *__buf, int __radix );
+_WCRTLINK extern char       *_ui64toa( unsigned __int64 __value, char *__buf, int __radix );
+_WCRTLINK extern __int64    _atoi64( const char *__nptr );
+_WCRTLINK extern __int64    _strtoi64( const char *__nptr, char **__endptr, int __base );
 _WCRTLINK extern unsigned __int64 _strtoui64( const char *__nptr, char **__endptr, int __base );
 
 :segment !CNAME
@@ -359,11 +359,11 @@ _WCRTLINK extern unsigned __int64 _strtoui64( const char *__nptr, char **__endpt
 
 :segment BITS16
 :include far2.sp
- _WCRTLINK extern int     _fwctomb( char _WCFAR * __s, wchar_t __wchar );
- _WCRTLINK extern size_t  _fmbstowcs( wchar_t _WCFAR * __pwcs, const char _WCFAR * __s, size_t __n );
- _WCRTLINK extern size_t  _fwcstombs( char _WCFAR * __s, const wchar_t _WCFAR * __pwcs, size_t __n );
- _WCRTLINK extern int     _fmblen( const char _WCFAR * __s, size_t __n );
- _WCRTLINK extern int     _fmbtowc( wchar_t _WCFAR * __pwc, const char _WCFAR * __s, size_t __n );
+ _WCRTLINK extern int       _fwctomb( char _WCFAR * __s, wchar_t __wchar );
+ _WCRTLINK extern size_t    _fmbstowcs( wchar_t _WCFAR * __pwcs, const char _WCFAR * __s, size_t __n );
+ _WCRTLINK extern size_t    _fwcstombs( char _WCFAR * __s, const wchar_t _WCFAR * __pwcs, size_t __n );
+ _WCRTLINK extern int       _fmblen( const char _WCFAR * __s, size_t __n );
+ _WCRTLINK extern int       _fmbtowc( wchar_t _WCFAR * __pwc, const char _WCFAR * __s, size_t __n );
 :include farepi.sp
 
 :endsegment
@@ -456,9 +456,9 @@ _WCRTDATA extern wchar_t * _WCDATA _wpgmptr;     /* pointer to wide executable n
 :segment DOS
 #ifndef __NETWARE__
 :endsegment
- _WCRTDATA extern int    _doserrno;
- _WCRTLINK extern int    *__get_doserrno_ptr( void );
- #define _doserrno       (*__get_doserrno_ptr())     /* DOS system error code value */
+ _WCRTDATA extern int       _doserrno;
+ _WCRTLINK extern int       *__get_doserrno_ptr( void );
+ #define _doserrno          (*__get_doserrno_ptr())     /* DOS system error code value */
 :segment DOS
 #endif
 :endsegment
