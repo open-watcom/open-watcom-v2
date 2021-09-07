@@ -341,7 +341,7 @@ h/sys/times.h     : $(mh_dir)/linux/sys/times.mh $(owhdr) $(cplus) $(packlnxk)
 h/sys/uio.h       : $(mh_dir)/linux/sys/uio.mh $(owhdr) ../systypes.sp $(cplus) $(packlnxk)
 h/sys/un.h        : $(mh_dir)/linux/sys/un.mh $(owhdr) $(cplus) $(packlnxk)
 h/sys/utsname.h   : $(mh_dir)/linux/sys/utsname.mh $(owhdr) $(cplus) $(packlnxk)
-h/sys/wait.h      : $(mh_dir)/linux/sys/wait.mh $(owhdr) $(cplus) $(packlnxk)
+h/sys/wait.h      : $(mh_dir)/sys/wait.mh $(owhdr) $(cplus) $(packlnxk)
 
 h/arch/i386/err_no.h       : $(mh_dir)/linux/arch/i386/err_no.mh $(crwatcnt_sp)
 h/arch/i386/fcntl.h        : $(mh_dir)/linux/arch/i386/fcntl.mh $(crwatcnt_sp) ../mode_t.sp
