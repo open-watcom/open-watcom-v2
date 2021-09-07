@@ -277,6 +277,7 @@ usr="stat.h"
 usr="time.h"
 usr="timeb.h"
 usr="types.h"
+usr="wait.h"
 
 [ DEFAULT type="s" dir="rh" where="c jc f77 jf77 ac" cond="rdostarg cplusplus" ]
 #

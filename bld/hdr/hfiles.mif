@@ -311,7 +311,7 @@
 !inject h/sys/utime.h                    hdos
 !inject h/sys/utsname.h                       hlnx hqnx
 !inject h/sys/vc.h                                 hqnx
-!inject h/sys/wait.h                          hlnx hqnx
+!inject h/sys/wait.h                          hlnx hqnx hrdos
 
 dos_files   = $(hcpp) $(hdos)
 linux_files = $(hcpp) $(hlnx)

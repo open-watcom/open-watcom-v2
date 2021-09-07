@@ -1,5 +1,5 @@
 /*
- *  sys/wait.h  POSIX Standard: 3.2.1 Wait for Process Termination
+ *  sys/wait.h  POSIX Standard: Wait for Process Termination
  *
 :include crwat.sp
  */
@@ -16,8 +16,6 @@
 
 :include cpluspro.sp
 
-:include lnxkpack.sp
-
 :include pid_t.sp
 :include id_t.sp
 
@@ -27,12 +25,16 @@ typedef enum {
     P_PGID          /* Wait for members of process group. */
 } idtype_t;
 
-/* Bits in the third argument to `waitpid'.  */
-#define WNOHANG         1           /* Don't block waiting.  */
-#define WUNTRACED       2           /* Report status of stopped children.  */
+/*
+ * Defined system wait types
+ * Bits in the third argument to `waitpid'.
+ */
+#define WNOHANG             1           /* Don't block waiting.  */
+:segment LINUX
+#define WUNTRACED           2           /* Report status of stopped children.  */
 
-#define __WALL          0x40000000 /* Wait for any child.  */
-#define __WCLONE        0x80000000 /* Wait for cloned process.  */
+#define __WALL              0x40000000  /* Wait for any child.  */
+#define __WCLONE            0x80000000  /* Wait for cloned process.  */
 
 #define WEXITSTATUS(__s)    (((__s) & 0xff00) >> 8)
 #define WTERMSIG(__s)       ((__s) & 0x7f)
@@ -40,11 +42,19 @@ typedef enum {
 #define WIFEXITED(__s)      (((__s) & 0x7f) == 0)
 #define WIFSIGNALED(__s)    (((__s) & 0xff) != 0x7f && ((__s) & 0x7f) != 0)
 #define WIFSTOPPED(__s)     (((__s) & 0xff) == 0x7f)
+:elsesegment
+#define WUNTRACED           0
 
-_WCRTLINK extern pid_t  wait( int *__stat_loc );
-_WCRTLINK extern pid_t  waitpid( pid_t __pid, int *__stat_loc, int __options );
+#define WIFEXITED(__s)      (((__s) & 0x7f) == 0)
+#define WIFSIGNALED(__s)    (((__s) & 0x7f) != 0)
+#define WIFSTOPPED(__s)     (0)
+#define WEXITSTATUS(__s)    (((__s) >> 8) & 0xff)
+#define WTERMSIG(__s)       (((__s) & 0x7f))
+#define WSTOPSIG(__s)       (0)
+:endsegment
 
-:include poppack.sp
+:include wait.sp
+_WCRTLINK extern pid_t      waitpid( pid_t __pid, int *__stat_loc, int __options );
 
 :include cplusepi.sp
 

@@ -317,6 +317,10 @@ h/sys/socket.h    : $(mh_dir)/sys/socket.mh $(owhdr) $(cplus) $(packlnxk) ../inc
 h/sys/_lfndos.h   : $(mh_dir)/dos/sys/_lfndos.mh $(owhdrcnt)
 h/sys/stat.h      : $(mh_dir)/sys/stat.mh $(sys_stat_deps)
 
+!else ifeq system rdos
+
+h/sys/wait.h      : $(mh_dir)/sys/wait.mh $(owhdr) $(cplus) ../wait.sp
+
 !else ifeq system linux
 
 h/dirent.h        : $(mh_dir)/linux/dirent.mh $(owhdr) ../ino_t.sp ../off_t.sp ../dirfind.sp $(cplus) $(packll)
@@ -341,7 +345,7 @@ h/sys/times.h     : $(mh_dir)/linux/sys/times.mh $(owhdr) $(cplus) $(packlnxk)
 h/sys/uio.h       : $(mh_dir)/linux/sys/uio.mh $(owhdr) ../systypes.sp $(cplus) $(packlnxk)
 h/sys/un.h        : $(mh_dir)/linux/sys/un.mh $(owhdr) $(cplus) $(packlnxk)
 h/sys/utsname.h   : $(mh_dir)/linux/sys/utsname.mh $(owhdr) $(cplus) $(packlnxk)
-h/sys/wait.h      : $(mh_dir)/sys/wait.mh $(owhdr) $(cplus) $(packlnxk)
+h/sys/wait.h      : $(mh_dir)/sys/wait.mh $(owhdr) ../wait.sp $(cplus)
 
 h/arch/i386/err_no.h       : $(mh_dir)/linux/arch/i386/err_no.mh $(crwatcnt_sp)
 h/arch/i386/fcntl.h        : $(mh_dir)/linux/arch/i386/fcntl.mh $(crwatcnt_sp) ../mode_t.sp
@@ -421,5 +425,6 @@ h/term.h          : $(qnx_mh_dir)/term.mh $(packll)
 h/termios.h       : $(qnx_mh_dir)/termios.mh $(packll)
 h/unix.h          : $(qnx_mh_dir)/unix.mh $(packll)
 h/ustat.h         : $(qnx_mh_dir)/ustat.mh $(packll)
+h/sys/wait.h      : $(mh_dir)/sys/wait.mh $(owhdr) $(cplus) ../wait.sp
 
 !endif
