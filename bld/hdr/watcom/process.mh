@@ -20,10 +20,12 @@
 :endsegment
 :include cpluspro.sp
 
+:segment DOS
 /*
  *  ISO C types
  */
 :include wchar_t.sp
+:endsegment
 :segment DOS | LINUX | RDOS
 /*
  *  POSIX 1003.1 types
@@ -31,27 +33,16 @@
 :include pid_t.sp
 
 :endsegment
-/*
- *  POSIX 1003.1 Prototypes
- */
-:include pxexec.sp
-
-:segment LINUX | QNX
+::
+:: Start of extension section
+::
 :include ext.sp
-::
-:: Begin of extension section
-::
-:endsegment
-:keep ANSINAME
-:include pxexec.sp
-:remove ANSINAME
 
 :segment QNX
 /*
  *  Spawn flags passed to qnx_spawn()
  *  These are unique to QNX
  */
-
 #define _SPAWN_DEBUG        0x0001
 #define _SPAWN_HOLD         0x0002
 #define _SPAWN_BGROUND      0x0004
@@ -62,17 +53,6 @@
 #define _SPAWN_SIGCLR       0x0080
 #define _SPAWN_SETSID       0x0100
 #define _SPAWN_NOHUP        0x0200
-
-struct _proc_spawn;     /* for C++ */
-
-extern pid_t qnx_spawn( int __mode, struct _proc_spawn *__msgbuf, nid_t __node,
-                 int __prio, int __sched_algo, int __flags,
-                 const char *__path, char **__argv, char **__envp,
-                 char *__iov, int __ctfd );
-
-#ifdef __386__
-extern pid_t tfork( char *__stk_addr, unsigned __stk_size, int (*__func)(void*), void *__arg, int __flags );
-#endif
 
 :endsegment
 /* mode flags for spawnxxx routines */
@@ -99,15 +79,82 @@ _WCRTDATA extern int __p_overlay;
 #endif
 :endsegment
 
+:segment DOS | RDOS
+/* values for __action_code used with cwait() */
+
+#define WAIT_CHILD      0
+#define WAIT_GRANDCHILD 1
+
+:endsegment
+:include extepi.sp
+::
+:: End of extension section
+::
+
 /*
- *  Prototypes for non-POSIX functions
+ *  POSIX 1003.1 Prototypes
  */
+:include pxexec.sp
+
+:: These functions from the standard library need to be in namspace std
+:: in C++ to avoid conflicts on using declarations if standard headers
+:: are also included.
+#ifdef __cplusplus
+namespace std {
+#endif
+:include getenv.sp
+:include system.sp
+:include abort.sp
+:include exit.sp
+#ifdef __cplusplus
+} // namespace std
+using std::abort;
+using std::exit;
+using std::getenv;
+using std::system;
+#endif /* __cplusplus not defined */
+
+:include _exit.sp
+
+:include setenv.sp
+:include putenv.sp
+
+:include getpid.sp
+
+:include wait.sp
+
+::
+:: Start of extension section
+::
+:include ext.sp
 
 :include msexec.sp
+
 :keep ANSINAME
+:include pxexec.sp
 :include msexec.sp
 :remove ANSINAME
 
+:segment DOS
+:keep WIDE
+:include pxexec.sp
+:include msexec.sp
+
+:remove WIDE
+:endsegment
+:segment QNX
+struct _proc_spawn;     /* for C++ */
+
+extern pid_t qnx_spawn( int __mode, struct _proc_spawn *__msgbuf, nid_t __node,
+                 int __prio, int __sched_algo, int __flags,
+                 const char *__path, char **__argv, char **__envp,
+                 char *__iov, int __ctfd );
+
+#ifdef __386__
+extern pid_t tfork( char *__stk_addr, unsigned __stk_size, int (*__func)(void*), void *__arg, int __flags );
+#endif
+
+:endsegment
 :segment RDOS
  _WCRTLINK extern int  _beginthread(
                 void (_WCCALLBACK *__start_address)(void *), int __prio,
@@ -155,37 +202,12 @@ _WCRTDATA extern int __p_overlay;
 :endsegment
 
 :segment DOS | RDOS
-/* values for __action_code used with cwait() */
-
-#define WAIT_CHILD      0
-#define WAIT_GRANDCHILD 1
-
 :: MS deprecated
 _WCRTLINK extern int        cwait( int *__status, int __process_id, int __action_code );
 ::
 _WCRTLINK extern int        _cwait( int *__status, int __process_id, int __action_code );
 
 :endsegment
-:: These functions from the standard library need to be in namspace std
-:: in C++ to avoid conflicts on using declarations if standard headers
-:: are also included.
-#ifdef __cplusplus
-namespace std {
-#endif
-:include getenv.sp
-:include system.sp
-:include abort.sp
-:include exit.sp
-#ifdef __cplusplus
-} // namespace std
-using std::abort;
-using std::exit;
-using std::getenv;
-using std::system;
-#endif /* __cplusplus not defined */
-
-:include _exit.sp
-
 :segment LINUX | QNX
 #if !(defined(SYSV) || defined(BSD) || defined(XENIX) || defined(_UNIX_H_INCLUDED))
 :endsegment
@@ -195,28 +217,27 @@ _WCRTLINK extern char       *_cmdname( char *__name );
 :segment LINUX | QNX
 #endif
 :endsegment
-:include setenv.sp
-:include putenv.sp
 
 :include msspawn.sp
 
 :keep ANSINAME
 :include msspawn.sp
+
+:include getpid.sp
 :remove ANSINAME
 
+:segment DOS
 :keep WIDE
 :include getenv.sp
 :include setenv.sp
 :include putenv.sp
 
-:include pxexec.sp
-:include msexec.sp
-
 :include msspawn.sp
 
 :include system.sp
-:remove WIDE
 
+:remove WIDE
+:endsegment
 :segment DOS | RDOS
 :segment DOS
 #ifdef __NT__
@@ -234,23 +255,15 @@ _WCRTLINK extern char       *_cmdname( char *__name );
 :endsegment
 
 :endsegment
-:include getpid.sp
-:keep ANSINAME
-:include getpid.sp
-:remove ANSINAME
-_WCRTLINK extern pid_t      wait( int *__status );
-
 :segment LINUX
 _WCRTLINK extern pid_t      gettid( void );
 
 :endsegment
-:segment LINUX | QNX
+:include extepi.sp
 ::
 :: End of extension section
 ::
-:include extepi.sp
 
-:endsegment
 :include cplusepi.sp
 
 #endif
