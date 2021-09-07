@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +39,7 @@
 #include "rtcheck.h"
 #include "rterrno.h"
 
-_WCRTLINK int (unlock)( int handle, long offset, long nbytes )
+_WCRTLINK int (unlock)( int handle, unsigned long offset, unsigned long nbytes )
 {
     struct flock flock_buff;
 

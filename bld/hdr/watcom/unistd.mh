@@ -28,6 +28,10 @@
 :endsegment
 :include null.sp
 
+:segment QNX
+:include size_t.sp
+
+:endsegment
 :segment LINUX | QNX
 :include access.sp
 
