@@ -19,7 +19,6 @@
  */
 :include time_t.sp
 :include wchar_t.sp
-
 /* 
  *  POSIX 1003.1 types
  */

@@ -74,7 +74,6 @@ typedef int             key_t;
 :keep XLOCALE
 :include wchar_t.sp
 :remove XLOCALE
-
 :include ext.sp
 typedef short unsigned  msg_t;  /* Used for message passing         */
 typedef long            nid_t;  /* Used for network IDs             */

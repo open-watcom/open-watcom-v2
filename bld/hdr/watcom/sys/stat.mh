@@ -32,7 +32,6 @@
 :keep EXTWCHART
 :include wchar_t.sp
 :remove EXTWCHART
-
 /*
  *  POSIX 1003.1 types
  */
