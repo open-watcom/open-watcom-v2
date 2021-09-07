@@ -58,32 +58,33 @@
 /* mode flags for spawnxxx routines */
 _WCRTDATA extern int __p_overlay;
 
-#define _P_WAIT     0
-#define _P_NOWAIT   1
-#define _P_OVERLAY  __p_overlay
-#define _P_NOWAITO  3
-#define _OLD_P_OVERLAY  _P_OVERLAY
+#define _P_WAIT             0
+#define _P_NOWAIT           1
+#define _P_OVERLAY          __p_overlay
+#define _P_NOWAITO          3
 :segment DOS
 #ifdef __NT__
-#define _P_DETACH   4
+#define _P_DETACH           4
 #endif
 :endsegment
+#define _OLD_P_OVERLAY      2
 
-#define P_WAIT      _P_WAIT
-#define P_NOWAIT    _P_NOWAIT
-#define P_OVERLAY   _P_OVERLAY
-#define P_NOWAITO   _P_NOWAITO
+#define P_WAIT              _P_WAIT
+#define P_NOWAIT            _P_NOWAIT
+#define P_OVERLAY           _P_OVERLAY
+#define P_NOWAITO           _P_NOWAITO
 :segment DOS
 #ifdef __NT__
-#define P_DETACH    _P_DETACH
+#define P_DETACH            _P_DETACH
 #endif
 :endsegment
+#define OLD_P_OVERLAY       _OLD_P_OVERLAY
 
 :segment DOS | RDOS
 /* values for __action_code used with cwait() */
 
-#define WAIT_CHILD      0
-#define WAIT_GRANDCHILD 1
+#define WAIT_CHILD          0
+#define WAIT_GRANDCHILD     1
 
 :endsegment
 :include extepi.sp

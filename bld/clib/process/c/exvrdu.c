@@ -49,9 +49,6 @@
 #define LIB_ALLOC   lib_nmalloc
 #define LIB_FREE    lib_nfree
 
-/* P_OVERLAY macro expands to a variable, not a constant! */
-#define OLD_P_OVERLAY   2
-
 #define FALSE   0
 
 static int file_exists( const CHAR_TYPE *filename )                     /* 05-apr-91 */

@@ -48,9 +48,6 @@
 #define LIB_ALLOC   lib_nmalloc
 #define LIB_FREE    lib_nfree
 
-/* P_OVERLAY macro expands to a variable, not a constant! */
-#define OLD_P_OVERLAY   2
-
 #define FALSE   0
 
 static int file_exists( const CHAR_TYPE *filename )                     /* 05-apr-91 */
@@ -84,7 +81,7 @@ _WCRTLINK int spawnve( int mode, const CHAR_TYPE * path,
     CHAR_TYPE               *fname;
     CHAR_TYPE               *ext;
 
-    if( mode == OLD_P_OVERLAY ) {
+    if( mode == P_OVERLAY ) {
         rc = __F_NAME(execve,_wexecve)( path, argv, envp );
         return( rc );
     }

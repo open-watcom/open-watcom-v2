@@ -95,9 +95,6 @@ extern int  __dospawn( int mode, char_type_stk_ptr pgmname, char_type_stk_ptr cm
 #pragma aux __dospawn "_*" __parm __caller [];
 #endif
 
-/* P_OVERLAY macro expands to a variable, not a constant! */
-#define OLD_P_OVERLAY   2
-
 #define FALSE   0
 
 static int file_exists( const CHAR_TYPE *filename )
