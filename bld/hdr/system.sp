@@ -1,4 +1,4 @@
-:: ISO system function
+:: ISO C system function
 ::
 ::                          <stdlib.h> (<process.h>,<wchar.h>)
 :segment WIDE

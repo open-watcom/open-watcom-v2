@@ -1,4 +1,4 @@
-:: ISO getenv function
+:: ISO C getenv function
 ::
 ::                          <stdlib.h> (<stdlib.h>,<process.h>,<env.h>,<wchar.h>)
 :segment WIDE

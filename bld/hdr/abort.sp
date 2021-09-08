@@ -1,4 +1,4 @@
-:: ISO abort function
+:: ISO C abort function
 ::
 ::                          <stdlib.h> (<stdlib.h>)
 :segment WIDE

@@ -1,6 +1,6 @@
 :: ISO C _Exit function
 ::
-::                          <stdlib.h> (<stdlib.h>)
+::                          <stdlib.h> (<stdlib.h>,<process.h>)
 :segment WIDE
 :: Wide character version
 :elsesegment ANSINAME
