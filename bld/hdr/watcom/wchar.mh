@@ -280,9 +280,11 @@ _WCRTLINK extern int        wscanf( const wchar_t *__format, ... );
 /* POSIX extension functions */
 
 :include pxstring.sp
-:remove WIDE
 
 /* Open Watcom extension functions */
+
+:include msfnpath.sp
+:remove WIDE
 
 :: C99 says this function is named mbsinit.
 _WCRTLINK extern int        sisinit( const __w_mbstate_t *__ps );

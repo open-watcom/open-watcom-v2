@@ -1,4 +1,4 @@
-:: MS filename make/split function family
+:: MS fullpath function
 ::
 ::                          ??? (<stdlib.h>,<wchar.h>)
 :segment WIDE
