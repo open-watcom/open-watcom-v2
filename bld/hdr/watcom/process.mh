@@ -225,6 +225,8 @@ _WCRTLINK extern char       *_cmdname( char *__name );
 :keep ANSINAME
 :include msspawn.sp
 
+:include putenv.sp
+
 :include getpid.sp
 :remove ANSINAME
 

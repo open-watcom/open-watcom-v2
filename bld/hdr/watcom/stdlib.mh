@@ -184,12 +184,16 @@ _WCRTLINK extern void       qsort( void *__base, size_t __nmemb, size_t __size,
 _WCRTLINK extern int        rand( void );
 _WCRTLINK extern void       *realloc( void *__ptr, size_t __size );
 _WCRTLINK extern void       srand( unsigned int __seed );
-:include strtoc99.sp
 
 :include abort.sp
 :include exit.sp
 :include getenv.sp
 :include system.sp
+
+:include strtoc99.sp
+:keep WIDE
+:include strtoc99.sp
+:remove WIDE
 :include nsstdepi.sp
 
 :include nsstd.sp
@@ -271,12 +275,6 @@ _WCRTLINK extern wchar_t    *_ultow( unsigned long, wchar_t *, int );
 _WCRTLINK extern wchar_t    *_ulltow( unsigned long long, wchar_t *, int );
 _WMRTLINK extern double     _wtof( const wchar_t * );
 _WMRTLINK extern double     _watof( const wchar_t * );
-
-:keep WIDE
-:include nsstd.sp
-:include strtoc99.sp
-:include nsstdepi.sp
-:remove WIDE
 
 _WCRTLINK extern wchar_t    *_atouni( wchar_t *, const char * );
 _WCRTLINK extern void       _wmakepath( wchar_t *__path, const wchar_t *__drive,
