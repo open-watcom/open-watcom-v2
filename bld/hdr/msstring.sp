@@ -112,7 +112,6 @@ _WCRTLINK extern char       *strset( char *__string, int __c );
 :segment STRING_MH
 :segment WIDE
 :: Wide character version
-_WCRTLINK extern wchar_t    *_wcserror( int );
 _WCRTLINK extern wchar_t    *__wcserror( const wchar_t * );
 :elsesegment ANSINAME
 :: ANSI name version

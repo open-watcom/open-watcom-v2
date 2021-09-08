@@ -286,6 +286,7 @@ _WCRTLINK extern int        wscanf( const wchar_t *__format, ... );
 
 :segment DOS | LINUX | QNX
 :include msfnpath.sp
+:include strerror.sp
 
 :endsegment
 :remove WIDE

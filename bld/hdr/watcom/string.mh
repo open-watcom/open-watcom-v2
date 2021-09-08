@@ -141,7 +141,6 @@ _WCRTLINK  extern int       strcmp( const char *__s1, const char *__s2 );
 _WCRTLINK  extern int       strcoll( const char *__s1, const char *__s2 );
 _WCIRTLINK extern char      *strcpy( char *__s1, const char *__s2 );
 _WCRTLINK  extern size_t    strcspn( const char *__s1, const char *__s2 );
-_WCRTLINK  extern char      *strerror( int __errnum );
 _WCIRTLINK extern size_t    strlen( const char *__s );
 _WCRTLINK  extern char      *strncat( char *__s1, const char *__s2, size_t __n );
 _WCRTLINK  extern int       strncmp( const char *__s1, const char *__s2, size_t __n );
@@ -152,6 +151,8 @@ _WCRTLINK  extern size_t    strspn( const char *__s1, const char *__s2 );
 _WCRTLINK  extern char      *strstr( const char *__s1, const char *__s2 );
 _WCRTLINK  extern char      *strtok( char *__s1, const char *__s2 );
 _WCRTLINK  extern size_t    strxfrm( char *__s1, const char *__s2, size_t __n );
+
+:include strerror.sp
 :include nsstdepi.sp
 
 :include ext.sp
