@@ -62,6 +62,8 @@ using std::rand;
 using std::realloc;
 using std::srand;
 using std::strtod;
+using std::strtof;
+using std::strtold;
 using std::strtol;
 using std::strtoll;
 using std::strtoul;
@@ -74,9 +76,11 @@ using std::system;
 
 :: Wide character version
 :include ext.sp
+using std::wcstod;
+using std::wcstof;
+using std::wcstold;
 using std::wcstol;
 using std::wcstoll;
-using std::wcstod;
 using std::wcstoul;
 using std::wcstoull;
 :include extepi.sp
@@ -181,13 +185,7 @@ _WCRTLINK extern void       qsort( void *__base, size_t __nmemb, size_t __size,
 _WCRTLINK extern int        rand( void );
 _WCRTLINK extern void       *realloc( void *__ptr, size_t __size );
 _WCRTLINK extern void       srand( unsigned int __seed );
-_WMRTLINK extern double     strtod( const char *__nptr, char **__endptr );
-_WMRTLINK extern float      strtof( const char *__nptr, char **__endptr );
-_WMRTLINK extern long double strtold( const char *__nptr, char **__endptr );
-_WCRTLINK extern long       strtol( const char *__nptr, char **__endptr, int __base );
-_WCRTLINK extern long long  strtoll( const char *__nptr, char **__endptr, int __base );
-_WCRTLINK extern unsigned long strtoul( const char *__nptr, char **__endptr, int __base );
-_WCRTLINK extern unsigned long long strtoull( const char *__nptr, char **__endptr, int __base );
+:include strtoc99.sp
 
 :include getenv.sp
 :include system.sp
@@ -280,13 +278,11 @@ _WCRTLINK extern wchar_t    *_ulltow( unsigned long long, wchar_t *, int );
 _WMRTLINK extern double     _wtof( const wchar_t * );
 _WMRTLINK extern double     _watof( const wchar_t * );
 
+:keep WIDE
 :include nsstd.sp
-_WCRTLINK extern long       wcstol( const wchar_t *, wchar_t **, int );
-_WCRTLINK extern long long  wcstoll( const wchar_t *, wchar_t **, int );
-_WMRTLINK extern double     wcstod( const wchar_t *, wchar_t ** );
-_WCRTLINK extern unsigned long wcstoul( const wchar_t *, wchar_t **, int );
-_WCRTLINK extern unsigned long long wcstoull( const wchar_t *, wchar_t **, int );
+:include strtoc99.sp
 :include nsstdepi.sp
+:remove WIDE
 
 _WCRTLINK extern wchar_t    *_atouni( wchar_t *, const char * );
 _WCRTLINK extern wchar_t    *_wfullpath( wchar_t *, const wchar_t *, __w_size_t );

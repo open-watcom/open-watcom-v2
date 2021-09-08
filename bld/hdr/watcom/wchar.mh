@@ -93,12 +93,7 @@ using std::wcsrchr;
 using std::wcsrtombs;
 using std::wcsspn;
 using std::wcsstr;
-using std::wcstod;
 using std::wcstok;
-using std::wcstol;
-using std::wcstoll;
-using std::wcstoul;
-using std::wcstoull;
 using std::wcsxfrm;
 using std::wctob;
 using std::wmemchr;
@@ -108,6 +103,14 @@ using std::wmemmove;
 using std::wmemset;
 using std::wprintf;
 using std::wscanf;
+
+using std::wcstod;
+using std::wcstof;
+using std::wcstold;
+using std::wcstol;
+using std::wcstoll;
+using std::wcstoul;
+using std::wcstoull;
 
 :include extc95.sp
 
@@ -220,12 +223,7 @@ _WCRTLINK extern wchar_t    *wcsrchr( const wchar_t *__s, wint_t __wc );
 _WCRTLINK extern size_t     wcsrtombs( char *__dst, const wchar_t **__src, size_t __n, mbstate_t *__ps );
 _WCRTLINK extern size_t     wcsspn( const wchar_t *__s1, const wchar_t *__s2 );
 _WCRTLINK extern wchar_t    *wcsstr( const wchar_t *__s1, const wchar_t *__s2 );
-_WMRTLINK extern double     wcstod( const wchar_t *__nptr, wchar_t **__endptr );
 _WCRTLINK extern wchar_t    *wcstok( wchar_t *__s1, const wchar_t *__s2, wchar_t **__ptr );
-_WCRTLINK extern long       wcstol( const wchar_t *, wchar_t **, int );
-_WCRTLINK extern long long  wcstoll( const wchar_t *, wchar_t **, int );
-_WCRTLINK extern unsigned long wcstoul( const wchar_t *, wchar_t **, int );
-_WCRTLINK extern unsigned long long wcstoull( const wchar_t *, wchar_t **, int );
 _WCRTLINK extern size_t     wcsxfrm( wchar_t *__s1, const wchar_t *__s2, size_t __n );
 _WCRTLINK extern int        wctob( wint_t __wc );
 _WCRTLINK extern wchar_t    *wmemchr( const wchar_t *__s, wchar_t __wc, size_t __n );
@@ -235,6 +233,10 @@ _WCRTLINK extern wchar_t    *wmemmove( wchar_t *__s1, const wchar_t *__s2, size_
 _WCRTLINK extern wchar_t    *wmemset( wchar_t *__s, wchar_t __wc, size_t __n );
 _WCRTLINK extern int        wprintf( const wchar_t *__format, ... );
 _WCRTLINK extern int        wscanf( const wchar_t *__format, ... );
+
+:keep WIDE
+:include strtoc99.sp
+:remove WIDE
 :include nsstdepi.sp
 ::
 :: Wide character functions

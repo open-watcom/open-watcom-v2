@@ -2,3 +2,5 @@ _uatof.obj   : ../../../c/_uatof.c     ../../../c/atof.c
 _uefcvt.obj  : ../../../c/_uefcvt.c    ../../../c/efcvt.c
 _ugcvt.obj   : ../../../c/_ugcvt.c     ../../../c/gcvt.c
 _ustrtod.obj : ../../../c/_ustrtod.c   ../../../c/strtod.c
+_ustrtof.obj : ../../../c/_ustrtof.c   ../../../c/strtof.c
+_ustrtld.obj : ../../../c/_ustrtld.c   ../../../c/strtold.c
