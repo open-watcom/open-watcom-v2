@@ -70,7 +70,7 @@ function does not return a value.
 .cp 12
 .exmp begin
 #include <stdio.h>
-#include <env.h>
+#include <stdlib.h>
 #include <time.h>
 
 void print_zone()

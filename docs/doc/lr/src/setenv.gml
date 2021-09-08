@@ -1,6 +1,6 @@
 .func setenv _setenv _wsetenv
 .synop begin
-#include <env.h>
+#include <stdlib.h>
 int setenv( const char *name,
             const char *newvalue,
             int overwrite );
@@ -197,7 +197,6 @@ and then display the new string.
 .blkcode begin
 #include <stdio.h>
 #include <stdlib.h>
-#include <env.h>
 
 void main()
   {

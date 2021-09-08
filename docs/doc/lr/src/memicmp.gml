@@ -2,10 +2,12 @@
 .ansiname _memicmp
 .synop begin
 #include <string.h>
+.if &'length(&_func.) ne 0 .do begin
 int _memicmp( const void *s1,
               const void *s2,
               size_t length );
 .ixfunc2 '&Compare' _memicmp
+.do end
 .if &farfnc ne 0 .do begin
 int _fmemicmp( const void __far *s1,
                const void __far *s2,

@@ -84,21 +84,21 @@ The &fn_or_macs in this section are all classified as "WIN386"
 .fnc FreeAlias16                    FreeAlias16                    falias.gml   DOS
 .fnc FreeHugeAlias16                FreeHugeAlias16                fhalias.gml  DOS
 .fnc FreeIndirectFunctionHandle     FreeIndirectFunctionHandle     freeindr.gml DOS
-.* .fnc GetCallbackRoutine             GetCallbackRoutine
+.* .fnc GetCallbackRoutine
 .fnc GetIndirectFunctionHandle      GetIndirectFunctionHandle      getindr.gml  DOS
 .fnc GetProc16                      GetProc16                      getp16.gml   DOS
-.* .fnc Invoke16BitFunction            Invoke16BitFunction
+.* .fnc Invoke16BitFunction
 .fnc InvokeIndirectFunction         InvokeIndirectFunction         invindr.gml  DOS
 .fnc MapAliasToFlat                 MapAliasToFlat                 mapa2f.gml   DOS
 .fnc MK_FP16                        MK_FP16                        mkfp16.gml   DOS
 .fnc MK_FP32                        MK_FP32                        mkfp32.gml   DOS
 .fnc MK_LOCAL32                     MK_LOCAL32                     mklcl32.gml  DOS
 .fnc PASS_WORD_AS_POINTER           PASS_WORD_AS_POINTER           pwap.gml     DOS
-.* .fnc ReleaseCallbackRoutine         ReleaseCallbackRoutine
+.* .fnc ReleaseCallbackRoutine
 .fnc ReleaseProc16                  ReleaseProc16                  relp16.gml   DOS
-.* .fnc SetProc                        SetProc
-.* .fnc TryAlias                       TryAlias
-.* .fnc vGetCallbackRoutine            vGetCallbackRoutine
+.* .fnc SetProc
+.* .fnc TryAlias
+.* .fnc vGetCallbackRoutine
 .*
 .sys AllocAlias16 WIN386
 .sys AllocHugeAlias16 WIN386

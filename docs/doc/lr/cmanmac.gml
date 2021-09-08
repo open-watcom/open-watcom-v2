@@ -153,13 +153,13 @@ $$
 .   .   .sr wfunc=&*1
 .   .do end
 .do end
-.el .if &'compare(&*1.,'_&funcn') eq 0 .do begin
+.el .if '&*1' eq '_&funcn' .do begin
 .   .sr _func=&*1
 .do end
-.el .if &'compare(&*1.,'__&funcn') eq 0 .do begin
+.el .if '&*1' eq '__&funcn' .do begin
 .   .sr __func=&*1
 .do end
-.el .if &'compare(&*1.,'_f&funcn') eq 0 .do begin
+.el .if '&*1' eq '_f&funcn' .do begin
 .   .sr ffunc=&*1
 .do end
 .el .if '&*1(1:3).' eq '_mb' .do begin
@@ -203,7 +203,7 @@ $$
 .   .   .if &'compare(&*second.,'Functions') eq 0 .do begin
 .   .   .   .sr fncttl=&*first. &*second.
 .   .   .   .sr funcgrp=&'strip(&*first.,'T',',')
-.   .   .   .if &'compare(&'right(&funcgrp.,&'length(&grpsfx.)).,&grpsfx.) eq 0 .do begin
+.   .   .   .if &'compare(&'right(&funcgrp,&'length(&grpsfx.)).,&grpsfx.) eq 0 .do begin
 .   .   .   .   .sr groupfun=1
 .   .   .   .   .addclinf &funcgrp
 .   .   .   .do end
@@ -481,7 +481,7 @@ Prototype in
 .   .   .sr *all=&*
 .   .do end
 .   .listnew Classification:
-.   .if &__clx. gt 1 and &'compare(&all.,'&grfun') ne 0 .do begin
+.   .if &__clx. gt 1 and '&all' ne '&grfun' .do begin
 .   .   .sr *i=1
 .   .   .pe &__clx.-1;.sr *i=&*i.+1;.if &'length(&__cltxt(&*i.).) ne 0 or &__clatr(&*i.). ge 2 .sr *extr=1
 .   .   .if &'compare(&__class.,'ISO') eq 0 or &'compare(&__class.,'POSIX') eq 0 .do begin

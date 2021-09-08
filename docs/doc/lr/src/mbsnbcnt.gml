@@ -43,7 +43,7 @@ If the character preceding the null character was a lead byte, the lead
 byte is not included in the count.
 .return end
 .see begin
-.seelist _mbsnbcat _mbsnbcnt
+.seelist _mbsnbcat _mbsnbcnt _mbsnccnt
 .see end
 .exmp begin
 #include <stdio.h>
