@@ -274,6 +274,7 @@ _WCRTLINK extern int        wscanf( const wchar_t *__format, ... );
 :include stat.sp
 :include tempnam.sp
 :include tmpnam.sp
+:include fullpath.sp
 
 :endsegment
 /* POSIX extension functions */

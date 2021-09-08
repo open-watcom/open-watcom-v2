@@ -226,7 +226,6 @@ _WMRTLINK extern char       *ecvt( double __val, int __ndig, int *__dec, int *__
 _WMRTLINK extern char       *_ecvt( double __val, int __ndig, int *__dec, int *__sign );
 _WMRTLINK extern char       *fcvt( double __val, int __ndig, int *__dec, int *__sign );
 _WMRTLINK extern char       *_fcvt( double __val, int __ndig, int *__dec, int *__sign );
-_WCRTLINK extern char       *_fullpath( char *__buf, const char *__path, __w_size_t __size );
 _WMRTLINK extern char       *gcvt( double __val, int __ndig, char *__buf );
 _WMRTLINK extern char       *_gcvt( double __val, int __ndig, char *__buf );
 _WCRTLINK extern char       *itoa( int __value, char *__buf, int __radix );
@@ -280,7 +279,6 @@ _WMRTLINK extern double     _watof( const wchar_t * );
 :remove WIDE
 
 _WCRTLINK extern wchar_t    *_atouni( wchar_t *, const char * );
-_WCRTLINK extern wchar_t    *_wfullpath( wchar_t *, const wchar_t *, __w_size_t );
 _WCRTLINK extern void       _wmakepath( wchar_t *__path, const wchar_t *__drive,
                                       const wchar_t *__dir,
                                       const wchar_t *__fname,
@@ -291,6 +289,7 @@ _WCRTLINK extern void       _wmakepath( wchar_t *__path, const wchar_t *__drive,
 :include setenv.sp
 :include unsetenv.sp
 :include system.sp
+:include fullpath.sp
 :remove WIDE
 _WCRTLINK extern void       _wsplitpath2( const wchar_t *__inp,
                                           wchar_t *__outp, wchar_t **__drive,
@@ -310,7 +309,9 @@ _WCRTLINK extern void       _wsearchenv( const wchar_t *__name,
 :include unsetenv.sp
 :keep ANSINAME
 :include putenv.sp
+:include fullpath.sp
 :remove ANSINAME
+
 _WCRTLINK extern void       _searchenv( const char *__name, const char *__env_var, char *__buf );
 :segment QNX
 _WCRTLINK extern int        need_usage( char **__argv );
