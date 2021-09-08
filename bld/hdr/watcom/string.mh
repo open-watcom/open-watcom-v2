@@ -230,6 +230,7 @@ _WCRTLINK extern size_t     wcsxfrm( wchar_t *__s1, const wchar_t *__s2, size_t 
 
 :keep WIDE
 :segment DOS | LINUX | QNX
+:include strerror.sp
 :segment DOS
 :include msstring.sp
 :include msstrdup.sp
