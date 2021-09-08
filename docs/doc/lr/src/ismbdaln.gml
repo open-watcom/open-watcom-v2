@@ -4,6 +4,7 @@
 int _ismbdalnum( unsigned int ch );
 .synop end
 .desc begin
+Determines whether an integer represents an multi-byte alphanumeric character.
 .desc end
 .return begin
 .return end

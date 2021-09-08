@@ -43,7 +43,8 @@ A parsed  host database entry, or NULL if no further entries
 exist or an error occurred.
 .return end
 .see begin
-.seelist sethostent endhostent inet_addr
+.seelist sethostent endhostent
+.* .seelist inet_addr
 .see end
 .exmp begin
 .blktext begin

@@ -497,17 +497,28 @@ test for valid multibyte symbol (punctuation and other special graphics)
 test for valid uppercase multibyte character
 .fd _ismbcxdigit
 test for any multibyte hexadecimal-digit character
-:cmt. .fd _ismbdalnum" test for
-:cmt. .fd _ismbdalpha" test for
-:cmt. .fd _ismbdcntrl" test for
-:cmt. .fd _ismbddigit" test for
-:cmt. .fd _ismbdgraph" test for
-:cmt. .fd _ismbdlower" test for
-:cmt. .fd _ismbdprint" test for
-:cmt. .fd _ismbdpunct" test for
-:cmt. .fd _ismbdspace" test for
-:cmt. .fd _ismbdupper" test for
-:cmt. .fd _ismbdxdigit" test for
+.fd _ismbdalnum
+test for letter or digit
+.fd _ismbdalpha
+test for letter
+.fd _ismbdcntrl
+test for control character
+.fd _ismbddigit
+test for digit
+.fd _ismbdgraph
+test for printable character, except space
+.fd _ismbdlower
+test for letter in lowercase
+.fd _ismbdprint
+test for printable character, including space
+.fd _ismbdpunct
+test for punctuation characters
+.fd _ismbdspace
+test for "white space" characters
+.fd _ismbdupper
+test for letter in uppercase
+.fd _ismbdxdigit
+test for hexadecimal digit
 .fd _mbbtombc
 return double-byte equivalent to single-byte character
 .fd _mbbtype
@@ -2268,8 +2279,10 @@ determine if file descriptor associated with a terminal
 add, change or delete environment variable
 .fd _searchenv
 search for a file in list of directories
+.if '&machsys' eq 'QNX' .do begin
 .fd searchenv
 search for a file in list of directories
+.do end
 .fd setegid
 set the effective group ID
 .fd setenv

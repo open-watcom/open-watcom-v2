@@ -339,21 +339,6 @@ inline wchar_t *_wcsspnp( const wchar_t *__p1, const wchar_t *__p2 ) {
                                   ((__p1)+wcsspn(__p1,__p2)) : NULL)
 #endif
 
-#ifdef __cplusplus
-namespace std {
-#endif
-
-_WMRTLINK extern double wcstod( const wchar_t *__nptr, wchar_t **__endptr );
-_WCRTLINK extern long   wcstol( const wchar_t *, wchar_t **, int );
-_WCRTLINK extern unsigned long wcstoul( const wchar_t *, wchar_t **, int );
-
-#ifdef __cplusplus
-} // namespace std
-using std::wcstod;
-using std::wcstol;
-using std::wcstoul;
-#endif
-
 #else
 // **************************** SBCS and MBCS ********************************
 
