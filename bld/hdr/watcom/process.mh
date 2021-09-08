@@ -103,10 +103,10 @@ _WCRTDATA extern int __p_overlay;
 #ifdef __cplusplus
 namespace std {
 #endif
-:include getenv.sp
-:include system.sp
 :include abort.sp
 :include exit.sp
+:include getenv.sp
+:include system.sp
 #ifdef __cplusplus
 } // namespace std
 using std::abort;
@@ -116,6 +116,7 @@ using std::system;
 #endif /* __cplusplus not defined */
 
 :include _exit.sp
+:include _pxexit.sp
 
 :include setenv.sp
 :include putenv.sp

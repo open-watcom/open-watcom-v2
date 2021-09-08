@@ -1,4 +1,4 @@
-:: POSIX _exit function
+:: ISO C _Exit function
 ::
 ::                          <stdlib.h> (<stdlib.h>)
 :segment WIDE
@@ -6,6 +6,6 @@
 :elsesegment ANSINAME
 :: ANSI name version
 :elsesegment
-:: POSIX
-_WCRTLINK _WCNORETURN extern void  _exit( int __status );
+:: ISO C
+_WCRTLINK _WCNORETURN extern void _Exit( int __status );
 :endsegment

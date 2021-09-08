@@ -1,4 +1,4 @@
-:: ISO exit function
+:: ISO C exit function
 ::
 ::                          <stdlib.h> (<stdlib.h>)
 :segment WIDE

@@ -216,8 +216,7 @@ _WCRTLINK extern int        _llseek( unsigned int __fildes, unsigned long __hi, 
 :include extepi.sp
 :endsegment
 
-:: the following are also in process.h, but they are expected to be here
-:include _exit.sp
+:include _pxexit.sp
 
 _WCRTLINK extern int        getopt( int __argc, char * const __argv[], const char *__optstring );
 _WCRTLINK extern unsigned   sleep( unsigned int __seconds );
