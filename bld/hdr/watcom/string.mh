@@ -7,7 +7,6 @@
 ::
 :: Note that string is not directly related to string.h or cstring.
 ::
-:keep STRING_MH
 :segment !CPPONLY
 /***************************************************************************
  * FILE: string.h/cstring (String functions)
@@ -159,11 +158,14 @@ _WCRTLINK  extern size_t    strxfrm( char *__s1, const char *__s2, size_t __n );
 
 /* MS extension functions */
 
-:include msstring.sp
+:include msstr1.sp
+:include msstr2.sp
 :include msstrdup.sp
 :include memicmp.sp
 :keep ANSINAME
-:include msstring.sp
+:include msstr1.sp
+:include msstr2.sp
+:include strerror.sp
 :include msstrdup.sp
 :include memicmp.sp
 :include memccpy.sp
@@ -176,15 +178,10 @@ _WCRTLINK  extern size_t    strxfrm( char *__s1, const char *__s2, size_t __n );
 
 /* WATCOM's Additional Functions (non-ISO, non-POSIX) */
 
-:segment DOS | RDOS
 :segment DOS
 #ifdef __NT__
-:endsegment
 _WCRTLINK extern char       *_doserror( int __oserrnum );
-:segment DOS
 #endif
-:endsegment
-
 :endsegment
 _WCRTLINK  extern char      *strspnp( const char *__s1, const char *__s2 );
 _WCRTLINK  extern char      *strtok_r( char *__s1, const char *__s2, char **__p1 );
@@ -231,8 +228,9 @@ _WCRTLINK extern size_t     wcsxfrm( wchar_t *__s1, const wchar_t *__s2, size_t 
 :keep WIDE
 :segment DOS | LINUX | QNX
 :include strerror.sp
+:include msstr2.sp
 :segment DOS
-:include msstring.sp
+:include msstr1.sp
 :include msstrdup.sp
 
 :endsegment
@@ -244,7 +242,7 @@ _WCRTLINK extern size_t     wcsxfrm( wchar_t *__s1, const wchar_t *__s2, size_t 
 
 /* WATCOM's Additional Functions (non-ISO, non-POSIX) */
 
-:segment DOS | RDOS
+:segment DOS
 #ifdef __NT__
 _WCRTLINK extern wchar_t    *_wdoserror( int __errnum );
 #endif

@@ -264,7 +264,7 @@ _WCRTLINK extern int        wscanf( const wchar_t *__format, ... );
 :include msexec.sp
 :include msspawn.sp
 :include msffind.sp
-:include msstring.sp
+:include msstr1.sp
 :include msstrdup.sp
 :include remove.sp
 :include rename.sp
@@ -285,6 +285,7 @@ _WCRTLINK extern int        wscanf( const wchar_t *__format, ... );
 /* Open Watcom extension functions */
 
 :segment DOS | LINUX | QNX
+:include msstr2.sp
 :include msfnpath.sp
 :include strerror.sp
 
