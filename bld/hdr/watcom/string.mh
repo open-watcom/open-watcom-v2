@@ -159,13 +159,19 @@ _WCRTLINK  extern size_t    strxfrm( char *__s1, const char *__s2, size_t __n );
 /* MS extension functions */
 
 :include msstring.sp
+:include msstrdup.sp
+:include memicmp.sp
 :keep ANSINAME
 :include msstring.sp
+:include msstrdup.sp
+:include memicmp.sp
+:include memccpy.sp
 :remove ANSINAME
 
 /* POSIX extension functions */
 
-:include pxstring.sp
+:include pxstrdup.sp
+:include memccpy.sp
 
 /* WATCOM's Additional Functions (non-ISO, non-POSIX) */
 
@@ -223,10 +229,11 @@ _WCRTLINK extern size_t     wcsxfrm( wchar_t *__s1, const wchar_t *__s2, size_t 
 
 :keep WIDE
 :include msstring.sp
+:include msstrdup.sp
 
 /* POSIX extension functions */
 
-:include pxstring.sp
+:include pxstrdup.sp
 :remove WIDE
 
 /* WATCOM's Additional Functions (non-ISO, non-POSIX) */

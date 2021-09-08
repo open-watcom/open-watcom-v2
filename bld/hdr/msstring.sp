@@ -28,17 +28,6 @@ _WCRTLINK extern int        _strnicmp( const char *__s1, const char *__s2, __w_s
 _WCRTLINK extern int        strnicmp( const char *__s1, const char *__s2, __w_size_t __n );
 :endsegment
 ::
-::                          <string.h> (<string.h>,<wchar.h>)
-:segment WIDE
-:: Wide character version
-_WCRTLINK extern wchar_t    *_wcsdup( const wchar_t * );
-:elsesegment ANSINAME
-:: ANSI name version
-_WCRTLINK extern char       *_strdup( const char *__string );
-:elsesegment
-:: MS
-:endsegment
-::
 ::                          ??? (<string.h>,<wchar.h>)
 :segment WIDE
 :: Wide character version
@@ -165,24 +154,4 @@ _WCRTLINK extern int        _strnicoll( const char *__s1, const char *__s2, __w_
 :: MS
 :endsegment
 ::
-::                          ??? (<memory.h>,<string.h>)
-:segment WIDE
-:: Wide character version
-:elsesegment ANSINAME
-:: ANSI name version
-_WCRTLINK extern int        _memicmp( const void *__s1, const void *__s2, __w_size_t __n );
-:elsesegment
-:: MS deprecated
-_WCRTLINK extern int        memicmp( const void *__s1, const void *__s2, __w_size_t __n );
-:endsegment
-::
-::                          <string.h> (<memory.h>,<string.h>)
-:segment WIDE
-:: Wide character version
-:elsesegment ANSINAME
-:: ANSI name version
-_WCRTLINK extern void       *_memccpy( void *__s1, const void *__s2, int __c, __w_size_t __n );
-:elsesegment
-:: MS
-:endsegment
 :endsegment
