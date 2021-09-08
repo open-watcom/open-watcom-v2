@@ -221,9 +221,11 @@ typedef struct flock {
 
 :: Wide character version
 :keep WIDE
+:segment DOS | LINUX | QNX
 :include open.sp
 :include creat.sp
 :include sopen.sp
+:endsegment
 :remove WIDE
 :include extepi.sp
 

@@ -163,12 +163,12 @@ _WCRTLINK extern int        mknod( const char *__path, mode_t __mode, int __dev 
 :include mkdir.sp
 :include stat.sp
 :remove ANSINAME
-:segment DOS
 :keep WIDE
+:segment DOS
 :include mkdir.sp
 :include stat.sp
-:remove WIDE
 :endsegment
+:remove WIDE
 :include extepi.sp
 :endsegment
 

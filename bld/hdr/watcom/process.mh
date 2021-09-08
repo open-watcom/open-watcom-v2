@@ -143,13 +143,13 @@ using std::system;
 :include msexec.sp
 :remove ANSINAME
 
-:segment DOS
 :keep WIDE
+:segment DOS
 :include pxexec.sp
 :include msexec.sp
 
-:remove WIDE
 :endsegment
+:remove WIDE
 :segment QNX
 struct _proc_spawn;     /* for C++ */
 
@@ -236,8 +236,8 @@ _WCRTLINK extern char       *_cmdname( char *__name );
 :include getpid.sp
 :remove ANSINAME
 
-:segment DOS
 :keep WIDE
+:segment DOS
 :include getenv.sp
 :include setenv.sp
 :include putenv.sp
@@ -246,8 +246,8 @@ _WCRTLINK extern char       *_cmdname( char *__name );
 
 :include system.sp
 
-:remove WIDE
 :endsegment
+:remove WIDE
 :segment DOS | RDOS
 :segment DOS
 #ifdef __NT__

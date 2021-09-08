@@ -284,9 +284,11 @@ _WCRTLINK extern int        wscanf( const wchar_t *__format, ... );
 
 /* Open Watcom extension functions */
 
+:segment DOS | LINUX | QNX
 :include msfnpath.sp
-:remove WIDE
 
+:endsegment
+:remove WIDE
 :: C99 says this function is named mbsinit.
 _WCRTLINK extern int        sisinit( const __w_mbstate_t *__ps );
 

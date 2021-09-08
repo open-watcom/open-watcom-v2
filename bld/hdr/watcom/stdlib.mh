@@ -277,6 +277,8 @@ _WMRTLINK extern double     _watof( const wchar_t * );
 
 _WCRTLINK extern wchar_t    *_atouni( wchar_t *, const char * );
 :keep WIDE
+:segment DOS | LINUX | QNX
+:segment DOS
 :include getenv.sp
 :include putenv.sp
 :include setenv.sp
@@ -284,7 +286,9 @@ _WCRTLINK extern wchar_t    *_atouni( wchar_t *, const char * );
 :include system.sp
 :include fullpath.sp
 :include srchenv.sp
+:endsegment
 :include msfnpath.sp
+:endsegment
 :remove WIDE
 :include putenv.sp
 :include setenv.sp

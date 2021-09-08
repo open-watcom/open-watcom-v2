@@ -464,12 +464,6 @@ _WCRTLINK extern __w_FILE   *_wfreopen( const wchar_t *, const wchar_t *, __w_FI
 _WCRTLINK extern __w_FILE   *_wfsopen( const wchar_t *__filename, const wchar_t *__mode, int __shflag );
 _WCRTLINK extern void       _wperror( const wchar_t * );
 _WCRTLINK extern __w_FILE   *_wpopen( const wchar_t *__command, const wchar_t *__mode );
-:keep WIDE
-:include remove.sp
-:include rename.sp
-:include tempnam.sp
-:include tmpnam.sp
-:remove WIDE
 _WCRTLINK extern int        _vbwprintf( wchar_t *, __w_size_t, const wchar_t *, __va_list );
 _WCRTLINK extern int        _vsnwprintf( wchar_t *, __w_size_t, const wchar_t *, __va_list );
 _WCRTLINK extern int        vsnwprintf( wchar_t *, __w_size_t, const wchar_t *, __va_list );
@@ -478,6 +472,14 @@ _WCRTLINK extern __w_wint_t fgetwchar( void );
 _WCRTLINK extern __w_wint_t fputwchar( __w_wint_t );
 _WCRTLINK extern wchar_t    *getws( wchar_t * );
 _WCRTLINK extern int        putws( const wchar_t * );
+:keep WIDE
+:segment DOS
+:include remove.sp
+:include rename.sp
+:include tempnam.sp
+:include tmpnam.sp
+:endsegment
+:remove WIDE
 
 :segment QNX
 #ifdef _this_belongs_in_a_private_qnx_header

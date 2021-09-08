@@ -243,15 +243,15 @@ _WCRTLINK extern pid_t      fork( void );
 
 :include delay.sp
 
-:segment DOS
 :keep WIDE
+:segment DOS
 :include getcwd.sp
 :include chdir.sp
 :include rmdir.sp
 
 :include pxexec.sp
-:remove WIDE
 :endsegment
+:remove WIDE
 :include extepi.sp
 
 :include brk.sp

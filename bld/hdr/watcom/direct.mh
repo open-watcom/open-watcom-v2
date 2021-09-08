@@ -98,17 +98,17 @@ _WCRTLINK extern unsigned   _getdiskfree( unsigned __drive, struct _diskfree_t *
 :include dirfind.sp
 :remove ANSINAME
 
-:segment DOS
 :keep WIDE
+:segment DOS
 :include getdcwd.sp
 :include getcwd.sp
 :include chdir.sp
 :include mkdir.sp
 :include rmdir.sp
 :include dirfind.sp
-:remove WIDE
 
 :endsegment
+:remove WIDE
 :include poppack.sp
 
 :include cplusepi.sp

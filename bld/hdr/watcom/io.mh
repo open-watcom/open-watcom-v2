@@ -121,21 +121,23 @@ struct _wfinddatai64_t {
 :include msffind.sp
 :remove ANSINAME
 
-:segment DOS
 :keep WIDE
+:segment DOS | LINUX | QNX
+:segment DOS
 :include fileio.sp
 :include chmod.sp
 :include locking.sp
 :include msioext.sp
-:include open.sp
-:include creat.sp
-:include sopen.sp
 :include mktemp.sp
 :include umask.sp
 :include msffind.sp
-:remove WIDE
+:endsegment
+:include open.sp
+:include creat.sp
+:include sopen.sp
 
 :endsegment
+:remove WIDE
 :include poppack.sp
 
 :include cplusepi.sp

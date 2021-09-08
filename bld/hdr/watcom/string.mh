@@ -228,12 +228,16 @@ _WCRTLINK extern size_t     wcsxfrm( wchar_t *__s1, const wchar_t *__s2, size_t 
 /* MS extension functions */
 
 :keep WIDE
+:segment DOS | LINUX | QNX
+:segment DOS
 :include msstring.sp
 :include msstrdup.sp
 
+:endsegment
 /* POSIX extension functions */
 
 :include pxstrdup.sp
+:endsegment
 :remove WIDE
 
 /* WATCOM's Additional Functions (non-ISO, non-POSIX) */
