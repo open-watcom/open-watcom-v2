@@ -8,6 +8,6 @@ _WCRTLINK extern wchar_t    *_wcsdup( const wchar_t * );
 :: ANSI name version
 _WCRTLINK extern char       *_strdup( const char *__string );
 :elsesegment
-:: MS
+:: POSIX
 :endsegment
 ::

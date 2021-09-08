@@ -1,4 +1,4 @@
-:: POSIX single-byte and wide character string extension functions
+:: POSIX memccpy function
 ::
 ::                          <string.h> (<memory.h>,<string.h>)
 :segment WIDE
@@ -10,3 +10,4 @@ _WCRTLINK extern void       *_memccpy( void *__s1, const void *__s2, int __c, __
 :: POSIX
 _WCRTLINK extern void       *memccpy( void *__s1, const void *__s2, int __c, __w_size_t __n );
 :endsegment
+::
