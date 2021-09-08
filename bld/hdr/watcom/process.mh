@@ -56,11 +56,17 @@
 
 :endsegment
 /* mode flags for spawnxxx routines */
+:segment DOS
 _WCRTDATA extern int __p_overlay;
 
+:endsegment
 #define _P_WAIT             0
 #define _P_NOWAIT           1
+:segment DOS
 #define _P_OVERLAY          __p_overlay
+:elsesegment
+#define _P_OVERLAY          2
+:endsegment
 #define _P_NOWAITO          3
 :segment DOS
 #ifdef __NT__
