@@ -104,6 +104,7 @@ using std::wmemset;
 using std::wprintf;
 using std::wscanf;
 
+// C99 functions in wchar.h
 using std::wcstod;
 using std::wcstof;
 using std::wcstold;
@@ -113,7 +114,6 @@ using std::wcstoul;
 using std::wcstoull;
 
 :include extc95.sp
-
 // C95 functions not specified for wchar.h
 using std::iswalnum;
 using std::iswalpha;
@@ -130,7 +130,11 @@ using std::iswctype;
 using std::towlower;
 using std::towupper;
 using std::wctype;
+:include extepi.sp
 
+:include extc99.sp
+// C99 functions not specified for wchar.h
+using std::iswblank;
 :include extepi.sp
 
 #else /* __cplusplus not defined */
@@ -147,6 +151,9 @@ using std::wctype;
 #ifndef _STDARG_H_INCLUDED
  #include <stdarg.h>
 #endif
+:segment QNX
+:include systypes.sp
+:endsegment
 :endsegment
 :segment QNX
 :include systypes.sp
@@ -240,7 +247,9 @@ _WCRTLINK extern int        wprintf( const wchar_t *__format, ... );
 _WCRTLINK extern int        wscanf( const wchar_t *__format, ... );
 
 :keep WIDE
+:include extc99.sp
 :include strtoc99.sp
+:include extepi.sp
 :remove WIDE
 :include nsstdepi.sp
 ::
@@ -248,9 +257,7 @@ _WCRTLINK extern int        wscanf( const wchar_t *__format, ... );
 ::
 
 :include extc95.sp
-
 :include wctype.sp
-
 :include extepi.sp
 
 :keep WIDE

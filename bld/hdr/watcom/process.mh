@@ -239,12 +239,11 @@ _WCRTLINK extern char       *_cmdname( char *__name );
 :keep WIDE
 :segment DOS
 :include getenv.sp
-:include setenv.sp
 :include putenv.sp
+:include setenv.sp
+:include system.sp
 
 :include msspawn.sp
-
-:include system.sp
 
 :endsegment
 :remove WIDE

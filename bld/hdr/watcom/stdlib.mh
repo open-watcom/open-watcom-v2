@@ -74,7 +74,7 @@ using std::exit;
 using std::getenv;
 using std::system;
 
-:: Wide character version
+:: Wide character version C99
 :include ext.sp
 using std::wcstod;
 using std::wcstof;
