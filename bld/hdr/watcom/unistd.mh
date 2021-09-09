@@ -27,12 +27,12 @@
 
 :endsegment
 :include null.sp
-
 :segment QNX
-:include size_t.sp
 
+:include size_t.sp
 :endsegment
 :segment LINUX | QNX
+
 :include access.sp
 
 /* Symbolic constants for the lseek() function */
@@ -214,15 +214,14 @@ _WCRTLINK extern int        _llseek( unsigned int __fildes, unsigned long __hi, 
 :endsegment
 
 :include extepi.sp
+:elsesegment RDOS
+
+_WCRTLINK extern pid_t      fork( void );
 :endsegment
 
 :include _pxexit.sp
 
-_WCRTLINK extern int        getopt( int __argc, char * const __argv[], const char *__optstring );
 _WCRTLINK extern unsigned   sleep( unsigned int __seconds );
-:segment RDOS
-_WCRTLINK extern pid_t      fork( void );
-:endsegment
 
 :include getpid.sp
 :include getcwd.sp
@@ -230,6 +229,16 @@ _WCRTLINK extern pid_t      fork( void );
 :include rmdir.sp
 
 :include pxexec.sp
+
+:include brk.sp
+
+/* Globals used and set by getopt() */
+_WCRTDATA extern char       *optarg;
+_WCRTDATA extern int        optind;
+_WCRTDATA extern int        opterr;
+_WCRTDATA extern int        optopt;
+
+_WCRTLINK extern int        getopt( int __argc, char * const __argv[], const char *__optstring );
 
 :include ext.sp
 :keep ANSINAME
@@ -253,14 +262,6 @@ _WCRTLINK extern pid_t      fork( void );
 :endsegment
 :remove WIDE
 :include extepi.sp
-
-:include brk.sp
-
-/* Globals used and set by getopt() */
-_WCRTDATA extern char       *optarg;
-_WCRTDATA extern int        optind;
-_WCRTDATA extern int        opterr;
-_WCRTDATA extern int        optopt;
 
 :include cplusepi.sp
 
