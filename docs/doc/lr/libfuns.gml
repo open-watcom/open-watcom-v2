@@ -1128,10 +1128,10 @@
 .fnc rand                     rand                     rand.gml      DOS QNX W WIN32
 .fnc read                     read                     read.gml      DOS QNX W WIN32
 .fnc _read                    read                     read.gml      DOS       WIN32
-.fnc readv                    read                     read.gml          QXO
+.fnc readv                    read                     read.gml      DOS QXO
 .fnc readdir                  readdir                  readdir.gml   DOS QNX W WIN32
 .fnw _wreaddir                readdir                  readdir.gml   DOS       WIN32
-.fnc readlink                 readlink                 readlink.gml      QXO
+.fnc readlink                 readlink                 readlink.gml  DOS QXO
 .fnc Readmsg                  Readmsg                  readmsg.gml       QXO
 .fnc Readmsgmx                Readmsgmx                readmsgm.gml      QXO
 .fnc realloc                  realloc                  realloc.gml   DOS QNX W WIN32
@@ -1160,7 +1160,7 @@
 .fnc Replymx                  Replymx                  replymx.gml       QXO
 .fnc rewind                   rewind                   rewind.gml    DOS QNX W WIN32
 .fnc rewinddir                rewinddir                rewinddi.gml  DOS QNX W WIN32
-.fnw _wrewinddir              _wrewinddir              rewinddi.gml  DOS       WIN32
+.fnw _wrewinddir              rewinddir                rewinddi.gml  DOS       WIN32
 .fnc rint                     rint                     rint.gml      DOS QNX W WIN32
 .fnc rmdir                    rmdir                    rmdir.gml     DOS QNX W WIN32
 .fn8 _rmdir                   rmdir                    rmdir.gml     DOS       WIN32
@@ -1236,8 +1236,8 @@
 .fnc setmode                  setmode                  setmode.gml   DOS QNX W WIN32
 .fnc _setmx                   _setmx                   setmx.gml         QXO
 .fnc setnetent                setnetent                stnetent.gml  DOS       WIN32
-.fnc _set_new_handler         set_new_handler          setnew.gml    DOS QNX W WIN32
 .fnc set_new_handler          set_new_handler          setnew.gml    DOS QNX W WIN32
+.fnc _set_new_handler         set_new_handler          setnew.gml    DOS QNX W WIN32
 .fnc setpgid                  setpgid                  setpgid.gml       QXO
 .fnc _setpixel                _setpixel                gr_setpx.gml  DOS QNX W       GRAPH
 .fnc _setpixel_w              _setpixel                gr_setpx.gml  DOS QNX W       GRAPH
@@ -1724,7 +1724,7 @@
 .fnc _wrapon                  _wrapon                  gr_wrpon.gml  DOS QNX W       GRAPH
 .fnc write                    write                    write.gml     DOS QNX W WIN32
 .fnc _write                   write                    write.gml     DOS       WIN32
-.fnc writev                   write                    write.gml         QXO
+.fnc writev                   write                    write.gml     DOS QXO
 .fnc Writemsg                 Writemsg                 writemsg.gml      QXO
 .fnc Writemsgmx               Writemsgmx               writemsx.gml      QXO
 .fnc Yield                    Yield                    yield.gml         QXO

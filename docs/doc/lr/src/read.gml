@@ -1,12 +1,16 @@
-.func read _read
+.func read _read readv
 .synop begin
 #include <&iohdr>
 int read( int &fd, void *buffer, unsigned len );
-.ixfunc2 '&OsIo' &funcb
+.ixfunc2 '&OsIo' read
 .if &'length(&_func.) ne 0 .do begin
 int _read( int &fd, void *buffer, unsigned len );
-.ixfunc2 '&OsIo' &_func
+.ixfunc2 '&OsIo' _read
 .do end
+int readv( int &fd,
+           const struct iovec *iov,
+           int iovcnt );
+.ixfunc2 '&OsIo' readv
 .synop end
 .desc begin
 The
@@ -17,6 +21,13 @@ The number of bytes transmitted is given by
 and the data is transmitted starting at the address specified by
 .arg buffer
 .period
+.np
+The 
+.id readv
+function performs the same action as 
+.id read
+.ct , but places the data into the iovcnt buffers specified by 
+the members of the iov array: iov[0], iov[1], ..., iov[iovcnt-1].
 .np
 The
 .arg &fd

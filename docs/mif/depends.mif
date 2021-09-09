@@ -1783,6 +1783,7 @@ objs_lr2 = &
 ../doc/lr/src/rand.gml &
 ../doc/lr/src/read.gml &
 ../doc/lr/src/readdir.gml &
+../doc/lr/src/readlink.gml &
 ../doc/lr/src/realloc.gml &
 ../doc/lr/src/remove.gml &
 ../doc/lr/src/rename.gml &
