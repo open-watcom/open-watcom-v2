@@ -71,6 +71,7 @@ function.
 .im ansiconf
 .farfunc &ffunc. &funcb.
 .widefunc &wfunc. &funcb.
+.widefunc _&wfunc. &funcb.
 .mbcsfunc &mfunc. &funcb.
 .farfunc &fmfunc. &mfunc.
 .desc end

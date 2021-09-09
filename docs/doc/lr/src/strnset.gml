@@ -1,4 +1,4 @@
-.func _strnset _fstrnset _wcsnset _mbsnset _fmbsnset strnset
+.func _strnset _fstrnset _wcsnset _mbsnset _fmbsnset strnset wcsnset
 .ansiname _strnset
 .synop begin
 #include <string.h>
@@ -35,6 +35,9 @@ unsigned char __far *_fmbsnset( unsigned char __far *s,
 .deprec
 char *strnset( char *s, int fill, size_t count );
 .ixfunc2 '&String' strnset
+wchar_t *wcsnset( wchar_t *s, int fill, size_t count );
+.ixfunc2 '&String' wcsnset
+.ixfunc2 '&Wide' wcsnset
 .synop end
 .desc begin
 The
@@ -74,7 +77,7 @@ The address of the original string
 is returned.
 .return end
 .see begin
-.seelist _strnset _strset
+.seelist _strset
 .see end
 .exmp begin
 #include <stdio.h>

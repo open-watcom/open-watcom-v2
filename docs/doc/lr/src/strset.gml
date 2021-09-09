@@ -55,7 +55,7 @@ The address of the original string
 is returned.
 .return end
 .see begin
-.seelist _strset _strnset
+.seelist _strnset
 .see end
 .exmp begin
 #include <stdio.h>

@@ -1473,7 +1473,7 @@ bessel functions
 .reffunc y0
 .ct ,
 .reffunc y1
-.ct , and 
+.ct , and
 .reffunc yn
 .fd cabs
 absolute value of complex number

@@ -47,11 +47,11 @@ is less than, equal to, or greater than the string pointed to by
 
 void main()
   {
-    printf( "%d\n", strcmpi( "AbCDEF", "abcdef" ) );
-    printf( "%d\n", strcmpi( "abcdef", "ABC"    ) );
-    printf( "%d\n", strcmpi( "abc",    "ABCdef" ) );
-    printf( "%d\n", strcmpi( "Abcdef", "mnopqr" ) );
-    printf( "%d\n", strcmpi( "Mnopqr", "abcdef" ) );
+    printf( "%d\n", _strcmpi( "AbCDEF", "abcdef" ) );
+    printf( "%d\n", _strcmpi( "abcdef", "ABC"    ) );
+    printf( "%d\n", _strcmpi( "abc",    "ABCdef" ) );
+    printf( "%d\n", _strcmpi( "Abcdef", "mnopqr" ) );
+    printf( "%d\n", _strcmpi( "Mnopqr", "abcdef" ) );
   }
 .exmp output
 0
