@@ -148,6 +148,9 @@ using std::wctype;
  #include <stdarg.h>
 #endif
 :endsegment
+:segment QNX
+:include systypes.sp
+:endsegment
 
 :: Only need extern "C" in cwchar
 :segment CNAME
@@ -166,6 +169,8 @@ using std::wctype;
 :include ext.sp
 :segment DOS
 :include intptr_t.sp
+:endsegment
+:segment DOS | LINUX
 :include mode_t.sp
 :endsegment
 :include extepi.sp
@@ -251,6 +256,7 @@ _WCRTLINK extern int        wscanf( const wchar_t *__format, ... );
 :keep WIDE
 :include ext.sp
 
+:segment DOS | LINUX | QNX
 :segment DOS
 /* MS extension functions */
 
@@ -269,28 +275,27 @@ _WCRTLINK extern int        wscanf( const wchar_t *__format, ... );
 :include remove.sp
 :include rename.sp
 :include rmdir.sp
-:include open.sp
-:include creat.sp
-:include sopen.sp
 :include stat.sp
 :include tempnam.sp
 :include tmpnam.sp
 :include fullpath.sp
+:endsegment
+
+:include msstr2.sp
+:include msfnpath.sp
+:include strerror.sp
+:include open.sp
+:include creat.sp
+:include sopen.sp
 
 :endsegment
 /* POSIX extension functions */
 
 :include pxstrdup.sp
+:remove WIDE
 
 /* Open Watcom extension functions */
 
-:segment DOS | LINUX | QNX
-:include msstr2.sp
-:include msfnpath.sp
-:include strerror.sp
-
-:endsegment
-:remove WIDE
 :: C99 says this function is named mbsinit.
 _WCRTLINK extern int        sisinit( const __w_mbstate_t *__ps );
 

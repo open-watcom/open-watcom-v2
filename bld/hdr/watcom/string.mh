@@ -201,6 +201,7 @@ _WCRTLINK extern __w_size_t strlcpy( char *__s1, const char *__s2, __w_size_t __
 
 /* Wide character handling functions */
 
+// C99 functions not officially in string.h
 :: Wide character version
 :include nsstd.sp
 _WCRTLINK extern wchar_t    *wcscat( wchar_t *, const wchar_t * );
@@ -221,28 +222,29 @@ _WCRTLINK extern wchar_t    *wcstok( wchar_t *, const wchar_t *, wchar_t ** );
 _WCRTLINK extern size_t     wcsxfrm( wchar_t *__s1, const wchar_t *__s2, size_t __n );
 :include nsstdepi.sp
 
-:: Wide character version
+:: Wide character extension functions
 ::
-/* MS extension functions */
-
 :keep WIDE
 :segment DOS | LINUX | QNX
+/* MS extension functions */
+
 :include strerror.sp
 :include msstr2.sp
 :segment DOS
+
 :include msstr1.sp
 :include msstrdup.sp
-
+:endsegment
 :endsegment
 /* POSIX extension functions */
 
 :include pxstrdup.sp
-:endsegment
+:include memccpy.sp
 :remove WIDE
 
+:segment DOS
 /* WATCOM's Additional Functions (non-ISO, non-POSIX) */
 
-:segment DOS
 #ifdef __NT__
 _WCRTLINK extern wchar_t    *_wdoserror( int __errnum );
 #endif

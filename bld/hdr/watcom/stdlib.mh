@@ -254,10 +254,20 @@ _WCRTLINK extern char       *ltoa( long __value, char *__buf, int __radix );
 _WCRTLINK extern char       *lltoa( long long __value, char *__buf, int __radix );
 _WCRTLINK extern char       *_ltoa( long __value, char *__buf, int __radix );
 _WCRTLINK extern char       *_lltoa( long long __value, char *__buf, int __radix );
-:include msfnpath.sp
 _WCRTLINK extern int        mkstemp( char *__template );
 _WCIRTLINK extern unsigned int _rotl( unsigned int __value, unsigned int __shift );
 _WCIRTLINK extern unsigned int _rotr( unsigned int __value, unsigned int __shift );
+
+:include putenv.sp
+:include setenv.sp
+:include unsetenv.sp
+:include msfnpath.sp
+:keep ANSINAME
+:include putenv.sp
+:include fullpath.sp
+:include srchenv.sp
+:include msfnpath.sp
+:remove ANSINAME
 
 :: Wide character version
 _WMRTLINK extern wchar_t    *_wecvt( double __val, int __ndig, int *__dec, int *__sign );
@@ -290,15 +300,6 @@ _WCRTLINK extern wchar_t    *_atouni( wchar_t *, const char * );
 :include msfnpath.sp
 :endsegment
 :remove WIDE
-:include putenv.sp
-:include setenv.sp
-:include unsetenv.sp
-:keep ANSINAME
-:include putenv.sp
-:include fullpath.sp
-:include srchenv.sp
-:include msfnpath.sp
-:remove ANSINAME
 
 :segment QNX
 _WCRTLINK extern int        need_usage( char **__argv );
