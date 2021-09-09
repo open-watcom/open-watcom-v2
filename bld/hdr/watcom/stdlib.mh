@@ -210,7 +210,7 @@ _WCRTLINK extern void       srand( unsigned int __seed );
 :include nsstdepi.sp
 
 :segment !CNAME
-#define atof(__p)   strtod(__p,(char **)NULL)
+#define atof(__p)           strtod(__p,(char **)NULL)
 
 :endsegment
 :include _exit.sp
@@ -367,7 +367,7 @@ _WCRTLINK extern unsigned __int64 _strtoui64( const char *__nptr, char **__endpt
 
 #define _MAX_PATH2 (_MAX_PATH+3) /* maximum size of output buffer for _splitpath2() */
 
-_WCRTLINK extern char ***__get_environ_ptr( void );
+_WCRTLINK extern char       ***__get_environ_ptr( void );
 #ifdef __FUNCTION_DATA_ACCESS
  #define environ   (*__get_environ_ptr())
 :segment DOS | RDOS
@@ -379,7 +379,7 @@ _WCRTDATA extern char ** _WCDATA environ; /* pointer to environment table */
 
 :: Wide character version
 :segment DOS | LINUX
-_WCRTLINK extern wchar_t ***__get_wenviron_ptr( void );
+_WCRTLINK extern wchar_t    ***__get_wenviron_ptr( void );
 #ifdef __FUNCTION_DATA_ACCESS
  #define _wenviron (*__get_wenviron_ptr())
 :segment DOS
@@ -390,7 +390,7 @@ _WCRTLINK extern wchar_t ***__get_wenviron_ptr( void );
 _WCRTDATA extern wchar_t ** _WCDATA _wenviron;   /* pointer to wide environment */
 
 :endsegment
-_WCRTLINK extern char **__get_pgmptr_ptr( void );
+_WCRTLINK extern char       **__get_pgmptr_ptr( void );
 #ifdef __FUNCTION_DATA_ACCESS
  #define _pgmptr   (*__get_pgmptr_ptr())
 :segment DOS | RDOS
@@ -403,7 +403,7 @@ _WCRTDATA extern char * _WCDATA _pgmptr;  /* pointer to executable name */
 :: Wide character version
 :segment DOS
 #if defined(__NT__) || ( defined(__OS2__) && !defined(_M_I86) )
-_WCRTLINK extern wchar_t **__get_wpgmptr_ptr( void );
+_WCRTLINK extern wchar_t    **__get_wpgmptr_ptr( void );
 #ifdef __FUNCTION_DATA_ACCESS
  #define _wpgmptr  (*__get_wpgmptr_ptr())
 #elif defined(__SW_BR) || defined(_RTDLL)
@@ -415,7 +415,7 @@ _WCRTDATA extern wchar_t * _WCDATA _wpgmptr;     /* pointer to wide executable n
 :endsegment
 :segment DOS
 #ifdef __NT__
- _WCRTLINK extern int *__get_fileinfo_ptr( void );
+ _WCRTLINK extern int       *__get_fileinfo_ptr( void );
  #ifdef __FUNCTION_DATA_ACCESS
   #define _fileinfo (*__get_fileinfo_ptr())
  #elif defined(__SW_BR) || defined(_RTDLL)
@@ -438,37 +438,37 @@ _WCRTDATA extern wchar_t * _WCDATA _wpgmptr;     /* pointer to wide executable n
 #endif
 :endsegment
 
-_WCRTLINK extern unsigned       *__get_psp_ptr( void );
-_WCRTLINK extern unsigned char  *__get_osmode_ptr( void );
-_WCRTLINK extern int            *__get_fmode_ptr( void );
-_WCRTLINK extern unsigned       *__get_minreal_ptr( void );
+_WCRTLINK extern unsigned   *__get_psp_ptr( void );
+_WCRTLINK extern unsigned char *__get_osmode_ptr( void );
+_WCRTLINK extern int        *__get_fmode_ptr( void );
+_WCRTLINK extern unsigned   *__get_minreal_ptr( void );
 :segment DOS
-_WCRTLINK extern unsigned long  *__get_win_alloc_flags_ptr( void );
-_WCRTLINK extern unsigned long  *__get_win_realloc_flags_ptr( void );
+_WCRTLINK extern unsigned long *__get_win_alloc_flags_ptr( void );
+_WCRTLINK extern unsigned long *__get_win_realloc_flags_ptr( void );
 :endsegment
 #ifdef __FUNCTION_DATA_ACCESS
- #define _psp                (*__get_psp_ptr())
- #define _osmode             (*__get_osmode_ptr())
- #define _fmode              (*__get_fmode_ptr())
- #define __minreal           (*__get_minreal_ptr())
+ #define _psp               (*__get_psp_ptr())
+ #define _osmode            (*__get_osmode_ptr())
+ #define _fmode             (*__get_fmode_ptr())
+ #define __minreal          (*__get_minreal_ptr())
 :segment DOS
- #define __win_alloc_flags   (*__get_win_alloc_flags_ptr())
+ #define __win_alloc_flags  (*__get_win_alloc_flags_ptr())
  #define __win_realloc_flags (*__get_win_realloc_flags_ptr())
 :endsegment
 #elif defined(__SW_BR) || defined(_RTDLL)
- #define _psp                _psp_br
- #define _osmode             _osmode_br
- #define _fmode              _fmode_br
- #define __minreal           __minreal_br
+ #define _psp               _psp_br
+ #define _osmode            _osmode_br
+ #define _fmode             _fmode_br
+ #define __minreal          __minreal_br
 :segment DOS
- #define __win_alloc_flags   __win_alloc_flags_br
+ #define __win_alloc_flags  __win_alloc_flags_br
  #define __win_realloc_flags __win_realloc_flags_br
 :endsegment
 #endif
-_WCRTDATA extern unsigned      _WCDATA _psp;                /* Program Segment Prefix */
+_WCRTDATA extern unsigned   _WCDATA _psp;                /* Program Segment Prefix */
 _WCRTDATA extern unsigned char _WCDATA _osmode;             /* DOS_MODE or OS2_MODE */
-_WCRTDATA extern int           _WCDATA _fmode;              /* default file translation mode */
-_WCRTDATA extern unsigned      _WCDATA __minreal;           /* DOS4GW var for WLINK MINREAL option*/
+_WCRTDATA extern int        _WCDATA _fmode;              /* default file translation mode */
+_WCRTDATA extern unsigned   _WCDATA __minreal;           /* DOS4GW var for WLINK MINREAL option*/
 :segment DOS
 _WCRTDATA extern unsigned long _WCDATA __win_alloc_flags;   /* Windows allocation flags */
 _WCRTDATA extern unsigned long _WCDATA __win_realloc_flags; /* Windows reallocation flags */
@@ -487,15 +487,15 @@ _WCRTDATA extern unsigned long _WCDATA __win_realloc_flags; /* Windows reallocat
 :segment DOS
 #endif
 :endsegment
-_WCRTLINK extern char        **__get_sys_errlist_ptr( void );
-_WCRTLINK extern int         *__get_sys_nerr_ptr( void );
+_WCRTLINK extern char       **__get_sys_errlist_ptr( void );
+_WCRTLINK extern int        *__get_sys_nerr_ptr( void );
 #ifdef __FUNCTION_DATA_ACCESS
- #define _sys_errlist        (*__get_sys_errlist_ptr())
- #define _sys_nerr           (*__get_sys_nerr_ptr())
+ #define _sys_errlist       (*__get_sys_errlist_ptr())
+ #define _sys_nerr          (*__get_sys_nerr_ptr())
 :segment DOS | RDOS
 #elif defined(__SW_BR) || defined(_RTDLL)
- #define _sys_errlist        _sys_errlist_br
- #define _sys_nerr           _sys_nerr_br
+ #define _sys_errlist       _sys_errlist_br
+ #define _sys_nerr          _sys_nerr_br
 :endsegment
 #endif
 _WCRTDATA extern char * _WCDATA _sys_errlist[]; /* strerror error message table */
@@ -506,13 +506,13 @@ _WCRTLINK extern unsigned      *__get_amblksiz_ptr( void );
 _WCRTLINK extern unsigned char *__get_osmajor_ptr( void );
 _WCRTLINK extern unsigned char *__get_osminor_ptr( void );
 #ifdef __FUNCTION_DATA_ACCESS
- #define _amblksiz      (*__get_amblksiz_ptr())
- #define _osmajor       (*__get_osmajor_ptr())
- #define _osminor       (*__get_osminor_ptr())
+ #define _amblksiz          (*__get_amblksiz_ptr())
+ #define _osmajor           (*__get_osmajor_ptr())
+ #define _osminor           (*__get_osminor_ptr())
 #elif defined(__SW_BR) || defined(_RTDLL)
- #define _amblksiz      _amblksiz_br
- #define _osmajor       _osmajor_br
- #define _osminor       _osminor_br
+ #define _amblksiz          _amblksiz_br
+ #define _osmajor           _osmajor_br
+ #define _osminor           _osminor_br
 #endif
 _WCRTDATA extern unsigned      _WCDATA _amblksiz;   /*  mallocs done in multiples of    */
 _WCRTDATA extern unsigned char _WCDATA _osmajor;    /*  O/S major version # */
@@ -545,13 +545,13 @@ _WCRTDATA extern unsigned char _WCDATA _osminor;    /*  O/S minor version # */
  _WCRTDATA extern unsigned int   _WCDATA _winver;   /*  O/S version #       */
 #endif
 :endsegment
-extern  int       __argc;       /* number of cmd line args */
-extern  char    **__argv;       /* vector of cmd line args */
+extern  int                 __argc;     /* number of cmd line args */
+extern  char                **__argv;   /* vector of cmd line args */
 :: Wide character version
 :segment DOS
 #if defined(__NT__) || ( defined(__OS2__) && !defined(_M_I86) )
-extern  int       __wargc;      /* number of wide cmd line args */
-extern  wchar_t **__wargv;      /* vector of wide cmd line args */
+extern  int                 __wargc;    /* number of wide cmd line args */
+extern  wchar_t             **__wargv;  /* vector of wide cmd line args */
 #endif
 :endsegment
 

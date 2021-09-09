@@ -235,6 +235,7 @@ _WCRTLINK extern size_t     wcsxfrm( wchar_t *__s1, const wchar_t *__s2, size_t 
 :include msstr1.sp
 :include msstrdup.sp
 :endsegment
+
 :endsegment
 /* POSIX extension functions */
 
