@@ -16,7 +16,7 @@ int iswupper( wint_t c );
 The
 .id &funcb.
 function tests for any uppercase letter 'A' through 'Z'.
-.im widefun2
+.widefunc &wfunc. &funcb. <char>
 .desc end
 .return begin
 The

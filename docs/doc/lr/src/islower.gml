@@ -16,7 +16,7 @@ int iswlower( wint_t c );
 The
 .id &funcb.
 function tests for any lowercase letter 'a' through 'z'.
-.im widefun2
+.widefunc &wfunc. &funcb. <char>
 .desc end
 .return begin
 The

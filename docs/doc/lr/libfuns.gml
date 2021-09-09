@@ -1456,6 +1456,7 @@
 .fnm _mbsnset                 strnset                  strnset.gml   DOS       WIN32
 .fnn _fmbsnset                strnset                  strnset.gml   DOS       WIN32
 .fnc strnset                  strnset                  strnset.gml   DOS QNX W WIN32
+.fnc wcsnset                  strnset                  strnset.gml   DOS QNX W WIN32
 .fnc strpbrk                  strpbrk                  strpbrk.gml   DOS QNX W WIN32
 .fnf _fstrpbrk                strpbrk                  strpbrk.gml   DOS QNX W WIN32
 .fnw wcspbrk                  strpbrk                  strpbrk.gml   DOS QNX W WIN32

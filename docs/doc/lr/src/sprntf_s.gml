@@ -68,7 +68,7 @@ function, unlike
 .ct , treats a result too big for the array pointed to by
 .arg s
 as a runtime-constraint violation.
-.im widefun4
+.widefunc &wfunc. &funcb. <form>
 .desc end
 .*
 .return begin

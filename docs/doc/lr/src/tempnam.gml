@@ -63,7 +63,7 @@ does not exist.
 automatically handles multi-byte character string arguments as
 appropriate, recognizing multi-byte character sequences according to
 the OEM code page obtained from the operating system.
-.im widefun4
+.widefunc &wfunc. &funcb. <form>
 .if &'length(&wfunc.) ne 0 .do begin
 The
 .id &wfunc.

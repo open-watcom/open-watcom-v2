@@ -20,7 +20,7 @@ The
 function maps the error number contained in
 .arg errnum
 to an error message.
-.im widefun3
+.widefunc &wfunc. &funcb. <ret>
 .desc end
 .return begin
 The

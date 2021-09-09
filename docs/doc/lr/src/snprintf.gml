@@ -39,7 +39,7 @@ The
 string is described under the description of the
 .reffunc printf
 function.
-.im widefun4
+.widefunc &wfunc. &funcb. <form>
 .if &'length(&wfunc.) ne 0 .do begin
 The argument
 .arg buf

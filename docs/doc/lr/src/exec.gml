@@ -227,7 +227,7 @@ and
 .reffunc execlpe
 functions are extensions to POSIX 1003.1.
 .*==========================================
-.im widefun5
+.widegrp &wfunc.
 .*==========================================
 .desc end
 .return begin

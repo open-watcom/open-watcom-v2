@@ -32,7 +32,7 @@ horizontal tab
 .point '\v'
 vertical tab
 .endpoint
-.im widefun2
+.widefunc &wfunc. &funcb. <char>
 .desc end
 .return begin
 The

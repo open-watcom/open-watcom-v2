@@ -29,7 +29,7 @@ The
 string is described under the description of the
 .reffunc printf
 function.
-.im widefun4
+.widefunc &wfunc. &funcb. <form>
 .desc end
 .*
 .return begin

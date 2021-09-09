@@ -39,7 +39,7 @@ function, with the variable argument list replaced with
 .ct , which has been initialized by the
 .reffunc va_start
 macro.
-.im widefun4
+.widefunc &wfunc. &funcb. <form>
 .desc end
 .*
 .return begin

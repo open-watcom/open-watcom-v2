@@ -40,7 +40,7 @@ The
 .id &funcb.
 function generates a different string each time it is called.
 .np
-.im widefun4
+.widefunc &wfunc. &funcb. <form>
 .desc end
 .*
 .return begin

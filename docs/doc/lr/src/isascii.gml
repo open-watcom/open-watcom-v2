@@ -20,7 +20,7 @@ The
 function tests for a character in the range from 0 to 127.
 .sr _func=&__func.
 .im ansiconf
-.im widefun2
+.widefunc &wfunc. &funcb. <char>
 .desc end
 .return begin
 The

@@ -17,7 +17,7 @@ The
 .id &funcb.
 function generates a unique string for use as a valid file
 name.
-.im widefun4
+.widefunc &wfunc. &funcb. <form>
 .if '&machsys' eq 'QNX' .do begin
 .np
 If the

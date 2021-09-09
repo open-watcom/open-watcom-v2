@@ -149,7 +149,7 @@ This function deallocates any resources that were allocated by the
 .reffunc _dos_findfirst
 function.
 .*==========================================
-.im widefun5
+.widegrp &wfunc.
 .*==========================================
 .desc end
 .return begin

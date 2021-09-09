@@ -17,7 +17,7 @@ The
 .id &funcb.
 function tests for any punctuation character such as a comma
 (,) or a period (.).
-.im widefun2
+.widefunc &wfunc. &funcb. <char>
 .desc end
 .return begin
 The

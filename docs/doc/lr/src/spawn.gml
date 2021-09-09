@@ -315,7 +315,7 @@ char *arg_list[] = { "myprog", "ARG1", "ARG2", NULL };
 spawnv( P_WAIT, "myprog", arg_list );
 .millust end
 .*==========================================
-.im widefun5
+.widegrp &wfunc.
 .*==========================================
 .desc end
 .return begin

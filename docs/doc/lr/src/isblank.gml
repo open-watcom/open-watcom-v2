@@ -24,7 +24,7 @@ space
 .point '\t'
 horizontal tab
 .endpoint
-.im widefun2
+.widefunc &wfunc. &funcb. <char>
 .desc end
 .return begin
 The

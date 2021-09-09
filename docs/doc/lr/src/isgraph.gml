@@ -21,7 +21,7 @@ The
 .reffunc isprint
 function is similar, except that the space character is also included
 in the character set being tested.
-.im widefun2
+.widefunc &wfunc. &funcb. <char>
 .desc end
 .return begin
 The

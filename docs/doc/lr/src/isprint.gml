@@ -21,7 +21,7 @@ The
 .reffunc isgraph
 function is similar, except that the space character is excluded
 from the character set being tested.
-.im widefun2
+.widefunc &wfunc. &funcb. <char>
 .desc end
 .return begin
 The

@@ -68,7 +68,7 @@ function, unlike
 .ct , will truncate the result to fit within the array pointed to by
 .arg s
 .period
-.im widefun4
+.widefunc &wfunc. &funcb. <form>
 .desc end
 .*
 .return begin

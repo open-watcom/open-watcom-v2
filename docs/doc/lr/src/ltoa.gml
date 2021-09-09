@@ -45,7 +45,7 @@ is 10 and
 .arg value
 is negative, then a minus sign is prepended to the result.
 .im ansiconf
-.im widefun3
+.widefunc &wfunc. &funcb. <ret>
 .desc end
 .return begin
 The

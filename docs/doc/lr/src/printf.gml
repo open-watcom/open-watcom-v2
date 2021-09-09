@@ -26,7 +26,7 @@ under control of the argument
 The
 .arg format
 string is described below.
-.im widefun4
+.widefunc &wfunc. &funcb. <form>
 .desc end
 .*
 .return begin

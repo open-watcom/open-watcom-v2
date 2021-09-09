@@ -43,7 +43,7 @@ must satisfy the condition:
 2 <= radix <= 36
 .millust end
 .im ansiconf
-.im widefun3
+.widefunc &wfunc. &funcb. <ret>
 .desc end
 .return begin
 The

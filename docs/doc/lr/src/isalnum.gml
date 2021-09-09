@@ -23,7 +23,7 @@ An alphanumeric character is any character for which
 or
 .reffunc isdigit
 is true.
-.im widefun2
+.widefunc &wfunc. &funcb. <char>
 .desc end
 .return begin
 The

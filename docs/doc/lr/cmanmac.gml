@@ -748,8 +748,34 @@ The
 .id &*1.
 function is a wide character version of
 .id &*2.
+.if &'length(&*3.) eq 0 .do begin
 that operates with wide character strings.
+.do end
+.el .if &'compare(&*3.,'<char>') eq 0 .do begin
+that operates with wide character argument.
+.do end
+.el .if &'compare(&*3.,'<form>') eq 0 .do begin
+.period
+It accepts a wide character string argument for
+.arg format
+and produces wide character output.
+.do end
+.el .if &'compare(&*3.,'<ret>') eq 0 .do begin
+.period
+It produces a wide character string.
+.do end
+.el .do begin
+&*3..
+.do end
 .dm widefunc end
+.*
+.dm widegrp begin
+.pc
+The
+.id &*1.&grpsfx.
+functions are similar to their counterparts but operate on
+wide character strings.
+.dm widegrp end
 .*
 .dm tcshdr begin
 The header file
