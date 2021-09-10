@@ -27,5 +27,5 @@ Either one or both of the arguments was invalid.
 .see begin
 .seelist mmap
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

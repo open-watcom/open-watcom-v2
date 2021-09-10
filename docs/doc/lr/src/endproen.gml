@@ -15,5 +15,5 @@ the return value from this function.
 .see begin
 .seelist getprotoent setprotoent getprotobyname getprotobynumber
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

@@ -12,5 +12,5 @@ network host database is not open, this call results in no actions.
 .see begin
 .seelist gethostent sethostent
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

@@ -23,5 +23,5 @@ the function will return -1, and errno will be set appropriately.
 .see begin
 .seelist mlock mlockall munlock
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

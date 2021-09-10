@@ -47,5 +47,5 @@ The user does not have sufficient privileges to modify the specified clock.
 .see begin
 .seelist clock_gettime clock_getres clock_nanosleep
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

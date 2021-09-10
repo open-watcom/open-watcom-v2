@@ -33,5 +33,5 @@ The semaphore is currently locked.
 .see begin
 .seelist sem_destroy sem_getvalue sem_init sem_post sem_wait
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

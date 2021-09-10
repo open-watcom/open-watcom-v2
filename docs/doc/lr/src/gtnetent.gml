@@ -44,5 +44,5 @@ value will be NULL.
 .see begin
 .seelist setnetent endnetent getnetbyname getnetbyaddr
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

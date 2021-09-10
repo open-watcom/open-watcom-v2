@@ -66,5 +66,5 @@ The specified clock does not support this function.
 .see begin
 .seelist clock_gettime clock_getres clock_settime
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

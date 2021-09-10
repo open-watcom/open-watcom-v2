@@ -49,5 +49,5 @@ could not be read
 .see begin
 .seelist sched_getparam
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

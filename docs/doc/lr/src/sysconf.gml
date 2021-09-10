@@ -78,5 +78,5 @@ The value of
 is unsupported on this implementation
 .endterm
 .error end
-.class POSIX
+.class POSIX 1003.1
 .system

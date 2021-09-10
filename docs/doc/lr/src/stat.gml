@@ -103,5 +103,5 @@ void main()
     }
 }
 .exmp end
-.class POSIX
+.class POSIX 1003.1
 .system

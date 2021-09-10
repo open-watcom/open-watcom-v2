@@ -32,5 +32,5 @@ is
 .see begin
 .seelist sem_destroy sem_init sem_post sem_trywait sem_wait
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

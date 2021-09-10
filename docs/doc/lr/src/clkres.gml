@@ -35,5 +35,5 @@ is invalid.
 .see begin
 .seelist clock_settime clock_gettime clock_nanosleep
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

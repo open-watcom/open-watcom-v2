@@ -44,5 +44,5 @@ value will be NULL.
 .see begin
 .seelist setservent endservent getservbyname getservbyport
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

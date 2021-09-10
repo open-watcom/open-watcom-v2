@@ -45,5 +45,5 @@ will be NULL.
 .see begin
 .seelist getprotoent setprotoent endprotoent getprotobyname
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

@@ -39,5 +39,5 @@ was non-zero or semaphores are not supported on this CPU.
 .see begin
 .seelist sem_destroy sem_getvalue sem_post sem_trywait sem_wait
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

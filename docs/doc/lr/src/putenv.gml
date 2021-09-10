@@ -203,7 +203,7 @@ Not enough memory to allocate a new environment string.
 .endterm
 .error end
 .see begin
-.seelist putenv clearenv getenv setenv
+.im seeenv
 .see end
 .exmp begin
 .blktext begin

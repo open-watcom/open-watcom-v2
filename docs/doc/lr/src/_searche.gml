@@ -51,7 +51,7 @@ The
 function returns no value.
 .return end
 .see begin
-.seelist getenv setenv _splitpath putenv
+.im seeenv
 .see end
 .exmp begin
 #include <stdio.h>

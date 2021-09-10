@@ -58,5 +58,5 @@ int main( void )
 0
 0
 .exmp end
-.class POSIX
+.class POSIX 1003.1
 .system

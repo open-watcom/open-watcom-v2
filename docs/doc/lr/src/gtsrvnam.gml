@@ -52,5 +52,5 @@ value will be NULL.
 .see begin
 .seelist getservent setservent endservent getservbyport
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

@@ -53,5 +53,5 @@ could not be read
 .see begin
 .seelist sched_getscheduler sched_setparam sched_getparam
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

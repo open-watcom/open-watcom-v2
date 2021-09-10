@@ -1658,6 +1658,8 @@
 .fnw _wunlink                 unlink                   unlink.gml    DOS       WIN32
 .fnc unlock                   unlock                   unlock.gml    DOS QNX W WIN32
 .fnc _unregisterfonts         _unregisterfonts         gr_unreg.gml  DOS QNX W       GRAPH
+.fnc unsetenv                 unsetenv                 unsetenv.gml  DOS QNX W WIN32
+.fnc _wunsetenv               unsetenv                 unsetenv.gml  DOS       WIN32
 .fnc utime                    utime                    utime.gml     DOS QNX W WIN32
 .fn7 _utime                   utime                    utime.gml     DOS       WIN32
 .fnw _wutime                  utime                    utime.gml     DOS       WIN32

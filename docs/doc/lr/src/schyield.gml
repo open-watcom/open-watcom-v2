@@ -14,5 +14,5 @@ again.
 If successful, the function will return zero. If the call fails, the
 return value is -1.
 .return end
-.class POSIX
+.class POSIX 1003.1
 .system

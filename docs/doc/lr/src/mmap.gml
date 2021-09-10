@@ -104,5 +104,5 @@ Memory mapping is unavailable for the requested device
 .see begin
 .seelist munmap
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

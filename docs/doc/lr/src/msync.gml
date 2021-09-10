@@ -57,5 +57,5 @@ currently locked
 .see begin
 .seelist mlock mlockall mmap munlock munlockall munmap
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

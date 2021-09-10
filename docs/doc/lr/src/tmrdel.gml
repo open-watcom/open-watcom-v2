@@ -29,5 +29,5 @@ is NULL or invalid
 .see begin
 .seelist timer_create timer_settime timer_gettime timer_delete
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

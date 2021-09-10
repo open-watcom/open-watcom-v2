@@ -31,5 +31,5 @@ is NULL or invalid
 .see begin
 .seelist timer_create timer_settime timer_delete timer_overrun
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

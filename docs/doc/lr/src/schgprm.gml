@@ -48,5 +48,5 @@ could not be written successfully
 .see begin
 .seelist sched_setparam
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

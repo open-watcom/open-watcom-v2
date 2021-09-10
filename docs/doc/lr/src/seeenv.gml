@@ -1,6 +1,5 @@
 .* Environment FAMILY
-.seelist clearenv
 .seelist exec&grpsfx
-.seelist getenv getenv_s putenv _searchenv setenv
+.seelist clearenv getenv getenv_s putenv _searchenv setenv unsetenv
 .seelist spawn&grpsfx
 .seelist system

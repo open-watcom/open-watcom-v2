@@ -122,5 +122,5 @@ not be freed.  If
 .arg item
 is either unsupported or unknown, an empty string will be returned.
 .return end
-.class POSIX
+.class POSIX 1003.1
 .system

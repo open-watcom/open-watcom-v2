@@ -19,5 +19,5 @@ function.
 .see begin
 .seelist gethostent endhostent
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

@@ -31,5 +31,5 @@ does not represent a valid scheduling policy
 .see begin
 .seelist sched_get_priority_min
 .see end
-.class POSIX
+.class POSIX 1003.1
 .system

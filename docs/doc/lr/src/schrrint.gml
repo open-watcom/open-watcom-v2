@@ -45,5 +45,5 @@ The memory at
 could not be written successfully
 .endterm
 .error end
-.class POSIX
+.class POSIX 1003.1
 .system
