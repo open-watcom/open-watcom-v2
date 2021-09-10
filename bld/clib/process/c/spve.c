@@ -197,7 +197,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
         _POSIX_HANDLE_CLEANUP;
         return( rc );
     }
- #else
+ #else      /* __DOS_086__ */
     prot_mode286 = FALSE;
     if( mode == OLD_P_OVERLAY ) {
         execveaddr_type    execve;
