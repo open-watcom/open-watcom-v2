@@ -761,8 +761,7 @@ It accepts a wide character string argument for
 and produces wide character output.
 .do end
 .el .if &'compare(&*3.,'<ret>') eq 0 .do begin
-.period
-It produces a wide character string.
+except that it produces a wide character string.
 .do end
 .el .do begin
 &*3..

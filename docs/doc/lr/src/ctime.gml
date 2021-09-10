@@ -66,16 +66,8 @@ places the result string in the buffer pointed to by
 .period
 .if &'length(&wfunc.) ne 0 .do begin
 .np
-The wide character function
-.reffunc _wctime
-is identical to
-.idbold &funcb.
-except that it produces a wide character string.
-The wide character function
-.reffunc __wctime
-is identical to
-.reffunc _ctime
-except that it produces a wide character string.
+.widefunc _wctime &funcb. <ret>
+.widefunc __wctime _ctime <ret>
 .do end
 .np
 Whenever the
