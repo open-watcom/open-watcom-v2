@@ -91,8 +91,8 @@
 #endif
 
 #if defined( __DOS__ )
-extern int  __dospawn( int mode, char_type_stk_ptr pgmname, char_type_stk_ptr cmdline, ENV_ARG env );
-#pragma aux __dospawn "_*" __parm __caller [];
+extern int  __cdecl __dospawn( int mode, char_type_stk_ptr pgmname, char_type_stk_ptr cmdline, ENV_ARG env );
+#pragma aux __dospawn "_*"
 #endif
 
 #define FALSE   0

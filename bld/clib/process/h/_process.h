@@ -35,6 +35,9 @@
 typedef int (*execveaddr_type)( const char *__path, const char *const __argv[], const char *const __envp[] );
 
 extern execveaddr_type __execaddr( void );
+#ifdef __DOS__
+extern execveaddr_type  __Exec_addr;
+#endif
 #ifdef __WIDECHAR__
 extern int  __wcenvarg( const wchar_t* const *, const wchar_t* const *, wchar_t**, wchar_t**, unsigned*, size_t*, int );
 extern void __wccmdline( wchar_t *, const wchar_t * const *, wchar_t *, int );
@@ -44,15 +47,13 @@ extern int  __cenvarg( const char* const *, const char* const *, char**, char**,
 extern void __ccmdline( char *, const char * const *, char *, int );
 extern char *__Slash_C( char *switch_c, unsigned char use_slash );
 #endif
-#ifdef __DOS__
-extern execveaddr_type  __Exec_addr;
-#else
-# ifdef __WIDECHAR__
+#if defined( __OS2__ ) || defined( __NT__ )
+#ifdef __WIDECHAR__
 extern int  _wdospawn( int, wchar_t *, wchar_t *, wchar_t *, const wchar_t * const * );
-# else
+#else
 extern int  _dospawn( int, char *, char *, char *, const char * const * );
-# endif
 #endif
-#ifdef __RDOS__
-extern int  _doexec(char *,char *, char *, const char * const *);
+#elif defined( __RDOS__ )
+extern int  _dospawn( int, char *, char *, char *, const char * const * );
+extern int  _doexec( char *, char *, char *, const char * const * );
 #endif
