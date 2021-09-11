@@ -1532,7 +1532,7 @@ get quotient, remainder from division of object of maximum-size integer type
 .fd imaxdiv
 absolute value of an object of maximum-size integer type
 .fd j0
-return Bessel functions of the first kind (described under 
+return Bessel functions of the first kind (described under
 .reffunc Bessel Functions
 )
 .fd j1
@@ -2292,6 +2292,8 @@ return time-accounting information
 return pointer to string containing pathname of terminal associated with file descriptor argument
 .fd uname
 return operating system identification
+.fd unsetenv
+delete environment variable
 .fd _wgetenv
 get environment variable value
 .fd _wputenv
@@ -2300,6 +2302,8 @@ add, change or delete environment variable
 search for a file in list of directories
 .fd _wsetenv
 add, change or delete environment variable
+.fd _wunsetenv
+delete environment variable
 .fdend
 .*======================================================================
 .section Directory Functions

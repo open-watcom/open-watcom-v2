@@ -255,6 +255,7 @@
 .fnc erfc                     erfc                     erfc.gml      DOS QNX W WIN32
 .fnc errno                    errno                    errno.gml         QXO
 .fnc exec&grpsfx              exec                     exec.gml      DOS QNX W WIN32
+.fnc _wexec&grpsfx            exec                     exec.gml      DOS QNX W WIN32
 .fnc execl                    exec                     exec.gml      DOS QNX W WIN32
 .fnc _execl                   exec                     exec.gml      DOS QNX W WIN32
 .fnw _wexecl                  exec                     exec.gml      DOS       WIN32
@@ -1292,6 +1293,7 @@
 .fnc sopen                    sopen                    sopen.gml     DOS QNX W WIN32
 .fnc sound                    sound                    sound.gml     DOS QNX W
 .fnc spawn&grpsfx             spawn                    spawn.gml     DOS QNX W WIN32
+.fnc _wspawn&grpsfx           spawn                    spawn.gml     DOS QNX W WIN32
 .fnc spawnl                   spawn                    spawn.gml     DOS QNX W WIN32
 .fnc _spawnl                  spawn                    spawn.gml     DOS QNX W WIN32
 .fnw _wspawnl                 spawn                    spawn.gml     DOS       WIN32
