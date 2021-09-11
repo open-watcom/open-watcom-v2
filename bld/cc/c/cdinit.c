@@ -1281,37 +1281,44 @@ static void AggregateVarDeclEquals( SYMPTR sym, SYM_HANDLE sym_handle )
                      VarLeaf( &sym2, sym2_handle ), sym->sym_type );
 }
 
-static void InitStructVar( target_size base, SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ)
+static void InitStructField( SYMPTR sym, SYM_HANDLE sym_handle, target_size base, FIELDPTR field, TREEPTR value )
 {
-    TYPEPTR     typ2;
     TREEPTR     opnd;
+    TYPEPTR     typ;
+    FIELDPTR    ufield;
+
+    typ = field->field_type;
+    SKIP_TYPEDEFS( typ );
+    if( typ->decl_type == TYP_UNION ) {
+        ufield = typ->u.tag->u.field_list;
+        typ = ufield->field_type;
+        SKIP_TYPEDEFS( typ );
+    }
+    opnd = VarLeaf( sym, sym_handle );
+    opnd = ExprNode( opnd, OPR_DOT, UIntLeaf( base + field->offset ) );
+    opnd->u.expr_type = typ;
+    opnd->op.u2.result_type = typ;
+    AddStmt( AsgnOp( opnd, T_ASSIGN_LAST, value ) );
+}
+
+static void InitArrayStructVar( SYMPTR sym, SYM_HANDLE sym_handle, int index, TYPEPTR typ )
+{
     TREEPTR     value;
     FIELDPTR    field;
     TOKEN       token;
+    target_size base;
 
+    base = index * SizeOfArg( typ );
     for( field = typ->u.tag->u.field_list; field != NULL; ) {
         token = CurToken;
         if( token == T_LEFT_BRACE ) // allow {}, and extra {expr}..}
             NextToken();
-        typ2 = field->field_type;
-        SKIP_TYPEDEFS( typ2 );
         if( CurToken == T_RIGHT_BRACE ) {
             value = IntLeaf( 0 );
         } else {
             value = CommaExpr();
         }
-        opnd = VarLeaf( sym, sym_handle );
-        if( typ2->decl_type == TYP_UNION ) {
-            FIELDPTR    ufield;
-
-            ufield = typ2->u.tag->u.field_list;
-            typ2 = ufield->field_type;
-            SKIP_TYPEDEFS( typ2 );
-        }
-        opnd = ExprNode( opnd, OPR_DOT, UIntLeaf( base + field->offset ) );
-        opnd->u.expr_type = typ2;
-        opnd->op.u2.result_type = typ2;
-        AddStmt( AsgnOp( opnd, T_ASSIGN_LAST, value ) );
+        InitStructField( sym, sym_handle, base, field, value );
         if( token == T_LEFT_BRACE )
             MustRecog( T_RIGHT_BRACE );
         if( CurToken == T_EOF )
@@ -1373,6 +1380,16 @@ static bool SimpleStruct( TYPEPTR typ )
     return( true );
 }
 
+static void InitArraySimpleVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ, int index, TREEPTR value )
+{
+    TREEPTR     opnd;
+
+    opnd = VarLeaf( sym, sym_handle );
+    opnd = ExprNode( opnd, OPR_INDEX, IntLeaf( index ) );
+    opnd->u.expr_type = typ;
+    opnd->op.u2.result_type = typ;
+    AddStmt( AsgnOp( opnd, T_ASSIGN_LAST, value ) );
+}
 
 static void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
 {
@@ -1381,8 +1398,6 @@ static void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
     TYPEPTR     typ2;
     SYM_HANDLE  sym2_handle;
     SYM_ENTRY   sym2;
-    TREEPTR     opnd;
-    TREEPTR     value;
     TOKEN       token;
 
     typ2 = typ->object;
@@ -1440,12 +1455,7 @@ static void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
                 token = CurToken;
                 if( token == T_LEFT_BRACE )
                     NextToken();
-                opnd = VarLeaf( sym, sym_handle );
-                value = CommaExpr();
-                opnd = ExprNode( opnd, OPR_INDEX, IntLeaf( i ) );
-                opnd->u.expr_type = typ2;
-                opnd->op.u2.result_type = typ2;
-                AddStmt( AsgnOp( opnd, T_ASSIGN_LAST, value ) );
+                InitArraySimpleVar( sym, sym_handle, typ2, i, CommaExpr() );
                 if( token == T_LEFT_BRACE )
                     MustRecog( T_RIGHT_BRACE );
                 ++i;
@@ -1463,14 +1473,8 @@ static void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
             if( typ->u.array->unspecified_dim ) {
                 typ->u.array->dimension = i;
             } else {
-                while( i < n ) {
-                    value = IntLeaf( 0 );
-                    opnd = VarLeaf( sym, sym_handle );
-                    opnd = ExprNode( opnd, OPR_INDEX, IntLeaf( i ) );
-                    opnd->u.expr_type = typ2;
-                    opnd->op.u2.result_type = typ2;
-                    AddStmt( AsgnOp( opnd, T_ASSIGN_LAST, value ) );
-                    ++i;
+                for( ; i < n; i++ ) {
+                    InitArraySimpleVar( sym, sym_handle, typ2, i, IntLeaf( 0 ) );
                 }
             }
         }
@@ -1482,20 +1486,15 @@ static void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
     case TYP_STRUCT:
     case TYP_UNION:
         if( SimpleStruct( typ2 ) ) {
-            target_size base;
-            target_size size;
-
             NextToken();                    // skip over T_LEFT_BRACE
             n = typ->u.array->dimension;
             i = 0;
-            base = 0;
-            size = SizeOfArg( typ2 );
             for( ;; ) {
                 token = CurToken;
                 if( token == T_LEFT_BRACE ) {
                     NextToken();
                 }
-                InitStructVar( base, sym, sym_handle, typ2 );
+                InitArrayStructVar( sym, sym_handle, i, typ2 );
                 if( token == T_LEFT_BRACE ) {
                     MustRecog( T_RIGHT_BRACE );
                 }
@@ -1510,15 +1509,12 @@ static void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
                 if( i == n ) {
                     CErr1( ERR_TOO_MANY_INITS );
                 }
-                base += size;
             }
             if( typ->u.array->unspecified_dim ) {
                 typ->u.array->dimension = i;
             } else {
-                while( i < n ) { // mop up
-                    base += size;
-                    InitStructVar( base, sym, sym_handle, typ2 );
-                    ++i;
+                for( ; i < n; i++ ) { // mop up
+                    InitArrayStructVar( sym, sym_handle, i, typ2 );
                 }
             }
             NextToken();                    // skip over T_RIGHT_BRACE
@@ -1560,7 +1556,7 @@ void VarDeclEquals( SYMPTR sym, SYM_HANDLE sym_handle )
         } else if( typ->decl_type == TYP_STRUCT || typ->decl_type == TYP_UNION ) {
             if( CurToken == T_LEFT_BRACE && CompFlags.auto_agg_inits && SimpleStruct( typ ) ) {
                 NextToken();  //T_LEFT_BRACE
-                InitStructVar( 0, sym, sym_handle, typ );
+                InitArrayStructVar( sym, sym_handle, 0, typ );
                 NextToken(); //T_RIGHT_BRACE
             } else {
                 AggregateVarDeclEquals( sym, sym_handle );
