@@ -1301,6 +1301,17 @@ static void InitStructField( SYMPTR sym, SYM_HANDLE sym_handle, target_size base
     AddStmt( AsgnOp( opnd, T_ASSIGN_LAST, value ) );
 }
 
+static void InitArrayStructVarZero( SYMPTR sym, SYM_HANDLE sym_handle, int index, TYPEPTR typ )
+{
+    FIELDPTR    field;
+    target_size base;
+
+    base = index * SizeOfArg( typ );
+    for( field = typ->u.tag->u.field_list; field != NULL; field = field->next_field ) {
+        InitStructField( sym, sym_handle, base, field, IntLeaf( 0 ) );
+    }
+}
+
 static void InitArrayStructVar( SYMPTR sym, SYM_HANDLE sym_handle, int index, TYPEPTR typ )
 {
     TREEPTR     value;
@@ -1514,7 +1525,7 @@ static void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
                 typ->u.array->dimension = i;
             } else {
                 for( ; i < n; i++ ) { // mop up
-                    InitArrayStructVar( sym, sym_handle, i, typ2 );
+                    InitArrayStructVarZero( sym, sym_handle, i, typ2 );
                 }
             }
             NextToken();                    // skip over T_RIGHT_BRACE
