@@ -1316,11 +1316,23 @@ static void InitArrayStructVar( SYMPTR sym, SYM_HANDLE sym_handle, int index, TY
 {
     TREEPTR     value;
     FIELDPTR    field;
+    FIELDPTR    new_field;
+    FIELDPTR    last_field;
     TOKEN       token;
     target_size base;
 
     base = index * SizeOfArg( typ );
-    for( field = typ->u.tag->u.field_list; field != NULL; ) {
+    last_field = typ->u.tag->u.field_list;
+    for( field = typ->u.tag->u.field_list; field != NULL; field = field->next_field ) {
+        new_field = DesignatedInit( typ, typ, field );
+        if( new_field != NULL ) {
+            for( field = last_field->next_field; field != NULL; field = field->next_field ) {
+                 if( field->offset >= new_field->offset  )
+                     break;
+                 InitStructField( sym, sym_handle, base, field, IntLeaf( 0 ) );
+            }
+            field = new_field;
+        }
         token = CurToken;
         if( token == T_LEFT_BRACE ) // allow {}, and extra {expr}..}
             NextToken();
@@ -1330,12 +1342,13 @@ static void InitArrayStructVar( SYMPTR sym, SYM_HANDLE sym_handle, int index, TY
             value = CommaExpr();
         }
         InitStructField( sym, sym_handle, base, field, value );
+        if( last_field->offset < field->offset )
+            last_field = field;
         if( token == T_LEFT_BRACE )
             MustRecog( T_RIGHT_BRACE );
         if( CurToken == T_EOF )
             break;
-        field = field->next_field;
-        if( field == NULL )
+        if( field->next_field == NULL )
             break;
         if( CurToken != T_RIGHT_BRACE ) {
             MustRecog( T_COMMA );
@@ -1410,6 +1423,8 @@ static void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
     SYM_HANDLE  sym2_handle;
     SYM_ENTRY   sym2;
     TOKEN       token;
+    target_size j;
+    target_size dim;
 
     typ2 = typ->object;
     SKIP_TYPEDEFS( typ2 );
@@ -1461,8 +1476,14 @@ static void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
                              VarLeaf( &sym2, sym2_handle ), typ );
         } else {
             n = typ->u.array->dimension;
+            dim = 0;
             i = 0;
             for( ;; ) {     // accept some C++ { {1},.. }
+                if( DesignatedInit( typ, sym->sym_type, &i ) != NULL ) {
+                    for( j = dim; j < i; j++ ) {
+                        InitArraySimpleVar( sym, sym_handle, typ2, j, IntLeaf( 0 ) );
+                    }
+                }
                 token = CurToken;
                 if( token == T_LEFT_BRACE )
                     NextToken();
@@ -1470,6 +1491,8 @@ static void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
                 if( token == T_LEFT_BRACE )
                     MustRecog( T_RIGHT_BRACE );
                 ++i;
+                if( dim < i )
+                    dim = i;
                 if( CurToken == T_EOF )
                     break;
                 if( CurToken == T_RIGHT_BRACE )
@@ -1477,14 +1500,14 @@ static void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
                 MustRecog( T_COMMA );
                 if( CurToken == T_RIGHT_BRACE )
                     break;
-                if( i == n ) {
+                if( n && i >= n ) {
                     CErr1( ERR_TOO_MANY_INITS );
                 }
             }
             if( typ->u.array->unspecified_dim ) {
-                typ->u.array->dimension = i;
+                typ->u.array->dimension = dim;
             } else {
-                for( ; i < n; i++ ) {
+                for( i = dim; i < n; i++ ) {
                     InitArraySimpleVar( sym, sym_handle, typ2, i, IntLeaf( 0 ) );
                 }
             }
@@ -1499,8 +1522,14 @@ static void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
         if( SimpleStruct( typ2 ) ) {
             NextToken();                    // skip over T_LEFT_BRACE
             n = typ->u.array->dimension;
+            dim = 0;
             i = 0;
             for( ;; ) {
+                if( DesignatedInit( typ, typ, &i ) != NULL ) {
+                    for( j = dim; j < i; j++ ) {
+                        InitArrayStructVarZero( sym, sym_handle, j, typ2 );
+                    }
+                }
                 token = CurToken;
                 if( token == T_LEFT_BRACE ) {
                     NextToken();
@@ -1510,6 +1539,8 @@ static void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
                     MustRecog( T_RIGHT_BRACE );
                 }
                 ++i;
+                if( dim < i )
+                    dim = i;
                 if( CurToken == T_EOF )
                     break;
                 if( CurToken == T_RIGHT_BRACE )
@@ -1517,14 +1548,14 @@ static void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
                 MustRecog( T_COMMA );
                 if( CurToken == T_RIGHT_BRACE )
                     break;
-                if( i == n ) {
+                if( n && i >= n ) {
                     CErr1( ERR_TOO_MANY_INITS );
                 }
             }
             if( typ->u.array->unspecified_dim ) {
-                typ->u.array->dimension = i;
+                typ->u.array->dimension = dim;
             } else {
-                for( ; i < n; i++ ) { // mop up
+                for( i = dim; i < n; i++ ) { // mop up
                     InitArrayStructVarZero( sym, sym_handle, i, typ2 );
                 }
             }
