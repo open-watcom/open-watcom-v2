@@ -2801,6 +2801,16 @@ output files that the compiler processes and/or creates.
 .*
 :OPTLIST.
 .*
+.if &e'&$SWaa ne 0 .do begin
+:OPT refid='SWaa' name='aa'.
+.ix 'options' 'aa'
+(C only)
+This option allow non-constant initializers for local aggregates or unions
+.exam begin 1
+&prompt.:SF font=1.compiler_name:eSF. &sw.aa
+.exam end
+.do end
+.*
 .if &e'&$SWad ne 0 .do begin
 :OPT refid='SWad' name='ad[=<file_name>]'.
 .ix 'options' 'ad'

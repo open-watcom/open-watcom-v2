@@ -71,6 +71,11 @@
 :CMT. :hotlink refid='SW6RS'.
 :CMT. .br
 .*
+:CMT. .note aa
+:hotlink refid='SWaa'.
+~b~b~b~b~b~b
+.br
+.*
 :CMT. .note ad
 :hotlink refid='SWad'.
 ~b~b~b~b~b~b
