@@ -111,6 +111,11 @@ generate 386 instructions based on Intel Pentium Pro instruction
 timings and use stack-based argument passing conventions
 :optref refid='SW6RS'.
 .*
+.note aa
+(C only)
+allow non-constant initializers for local aggregates or unions
+:optref refid='SWaa'.
+.*
 .note ad[=<file_name>]
 generate make style automatic dependency file
 :optref refid='SWad'.
