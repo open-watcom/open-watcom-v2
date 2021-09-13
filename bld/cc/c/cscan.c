@@ -1030,6 +1030,7 @@ static bool checkDelim2( TOKEN *token, TOKEN last )
             break;
         }
 #endif
+        return( false );
 #if _CPU == 370
     case T_LEFT_PAREN:
         if( last == T_COLON ) {         /* (: */
