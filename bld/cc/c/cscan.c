@@ -962,6 +962,10 @@ static bool checkDelim2( TOKEN *token, TOKEN last )
             *token = T_LE;
             break;
         }
+        if( last == T_COLON ) {        /* <: */
+            *token = T_LEFT_BRACKET;
+            break;
+        }
         return( false );
     case T_GT:
         if( last == T_GT ) {            /* >> */
