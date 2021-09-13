@@ -224,32 +224,28 @@ type_modifiers TypeQualifier( void )
     flags = 0;
     bit = 0;
     for( ;; ) {
-        if( flags & bit )
+        switch( CurToken ) {
+        case T_CONST:
+            bit = FLAG_CONST;
+            break;
+        case T_VOLATILE:
+            bit = FLAG_VOLATILE;
+            break;
+        case T_RESTRICT:
+        case T___RESTRICT:
+            bit = FLAG_RESTRICT;
+            break;
+        case T___UNALIGNED:
+            bit = FLAG_UNALIGNED;
+            break;
+        default:
+            return( flags );
+        }
+        if( (flags & bit) && !CompFlags.c99_extensions )
             CErr1( ERR_REPEATED_MODIFIER );
         flags |= bit;
-        if( CurToken == T_CONST ) {
-            bit = FLAG_CONST;
-            NextToken();
-            continue;
-        }
-        if( CurToken == T_VOLATILE ) {
-            bit = FLAG_VOLATILE;
-            NextToken();
-            continue;
-        }
-        if( CurToken == T_RESTRICT || CurToken == T___RESTRICT ) {
-            bit = FLAG_RESTRICT;
-            NextToken();
-            continue;
-        }
-        if( CurToken == T___UNALIGNED ) {
-            bit = FLAG_UNALIGNED;
-            NextToken();
-            continue;
-        }
-        break;
+        NextToken();
     }
-    return( flags );
 }
 
 static TYPEPTR GetScalarType( bool *plain_int, type_mask bmask, type_modifiers flags )
@@ -449,27 +445,6 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
             break;
         case T__BOOL:
             bit = M_BOOL;
-            break;
-        case T_CONST:
-            if( flags & FLAG_CONST )
-                CErr1( ERR_REPEATED_MODIFIER );
-            flags |= FLAG_CONST;
-            break;
-        case T_VOLATILE:
-            if( flags & FLAG_VOLATILE )
-                CErr1( ERR_REPEATED_MODIFIER );
-            flags |= FLAG_VOLATILE;
-            break;
-        case T_RESTRICT:
-        case T___RESTRICT:
-            if( flags & FLAG_RESTRICT )
-                CErr1( ERR_REPEATED_MODIFIER );
-            flags |= FLAG_RESTRICT;
-            break;
-        case T___UNALIGNED:
-            if( flags & FLAG_UNALIGNED )
-                CErr1( ERR_REPEATED_MODIFIER );
-            flags |= FLAG_UNALIGNED;
             break;
         case T_INLINE:
         case T___INLINE:
@@ -676,6 +651,11 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
             AdvanceToken();
             continue;
         default:
+            modifier = TypeQualifier();
+            if( modifier ) {
+                flags |= modifier;
+                continue;
+            }
             goto got_specifier;
         }
         if( stg_class != SC_NONE ) {
