@@ -66,11 +66,7 @@ static unsigned char InitClassTable[] = {
     '\v',       SCAN_WHITESPACE,
     '\'',       SCAN_CHARCONST,
     '"',        SCAN_STRING,
-#if _CPU == 370
-    '(',        SCAN_DELIM2,        // (, (:
-#else
     '(',        SCAN_DELIM1,
-#endif
     ')',        SCAN_DELIM1,
     ',',        SCAN_DELIM1,
     ';',        SCAN_DELIM1,
@@ -78,7 +74,7 @@ static unsigned char InitClassTable[] = {
     '/',        SCAN_SLASH,
     '-',        SCAN_DELIM2,        // -, -=, --, ->
     '=',        SCAN_DELIM2,        // =, ==
-    ':',        SCAN_DELIM2,        // :, :>, :)
+    ':',        SCAN_DELIM2,        // :, :>
     '*',        SCAN_DELIM2,        // *, *=
     '[',        SCAN_DELIM1,
     ']',        SCAN_DELIM1,
@@ -1021,24 +1017,13 @@ static bool checkDelim2( TOKEN *token, TOKEN last )
         return( false );
     case T_COLON:
         if( last == T_GT ) {            /* :> */
+            // TODO: according to the standard, ":>" should be an
+            // alternative token (digraph) for "]"
+            // *token = T_RIGHT_BRACKET;   /* -> ] */
             *token = T_SEG_OP;
             break;
         }
-#if _CPU == 370
-        if( last == T_RIGHT_PAREN ) {   /* :) */
-            *token = T_RIGHT_BRACKET;
-            break;
-        }
-#endif
         return( false );
-#if _CPU == 370
-    case T_LEFT_PAREN:
-        if( last == T_COLON ) {         /* (: */
-            *token = T_LEFT_BRACKET;
-            break;
-        }
-        return( false );
-#endif
     case T_LSHIFT:
         if( last == T_EQUAL ) {         /* <<= */
             *token = T_LSHIFT_EQUAL;

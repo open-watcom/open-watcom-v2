@@ -86,11 +86,7 @@ static uint_8 InitClassTable[] = {
     '\v',       SCAN_WHITESPACE,
     '\'',       SCAN_CHARCONST,
     '"',        SCAN_STRING,
-#if _CPU == 370
-    '(',        SCAN_DELIM2,            // ( (:
-#else
     '(',        SCAN_DELIM1,
-#endif
     ')',        SCAN_DELIM1,
     ',',        SCAN_DELIM1,
     ';',        SCAN_DELIM1,
@@ -114,7 +110,7 @@ static uint_8 InitClassTable[] = {
     '>',        SCAN_DELIM2,            // > >= >> >>=
     '-',        SCAN_DELIM2,            // - -= -- -> ->*
     '/',        SCAN_SLASH,             // / /=    // /**/
-    ':',        SCAN_DELIM2,            // :    :: :> :)
+    ':',        SCAN_DELIM2,            // :    :: :>
     '_',        SCAN_NAME,
     'L',        SCAN_WIDE,
     '\0',       0
@@ -1234,21 +1230,7 @@ static bool checkDelim2( TOKEN *token, TOKEN last )
             *token = T_SEG_OP;
             break;
         }
-#if _CPU == 370
-        if( last == T_RIGHT_PAREN ) {   /* :) */
-            *token = T_RIGHT_BRACKET;   /* -> ] */
-            break;
-        }
-#endif
         return( false );
-#if _CPU == 370
-    case T_LEFT_PAREN:
-        if( last == T_COLON ) {         /* (: */
-            *token = T_LEFT_BRACKET;    /* -> [ */
-            break;
-        }
-        return( false );
-#endif
     case T_ARROW:
         if( last == T_TIMES ) {         /* ->* */
             *token = T_ARROW_STAR;
