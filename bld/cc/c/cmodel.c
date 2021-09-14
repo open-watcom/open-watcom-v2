@@ -288,6 +288,7 @@ void MiscMacroDefs( void )
         Define_Macro( "__RENT__" );
     }
     PreDefine_Macro( "_PUSHPOP_SUPPORTED" );
+    PreDefine_Macro( "__STDC_NO_VLA__" );
     PreDefine_Macro( CompilerID );
     FreeUndefNames();
 }
