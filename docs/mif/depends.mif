@@ -1458,7 +1458,6 @@ objs_lr2 = &
 ../doc/lr/src/gmtime_s.gml &
 ../doc/lr/src/halloc.gml &
 ../doc/lr/src/hantozen.gml &
-../doc/lr/src/hcfunmac.gml &
 ../doc/lr/src/header.gml &
 ../doc/lr/src/hfree.gml &
 ../doc/lr/src/hypot.gml &
