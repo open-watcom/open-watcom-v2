@@ -32,13 +32,13 @@
 unsigned_16 TargetShort( unsigned_16 value )
 {
     union {
-        char        b(:2:);
+        char        b[2];
         unsigned_16 val;
     } in, out;
 
     in.val = value;
-    out.b(:0:) = in.b(:1:);
-    out.b(:1:) = in.b(:0:);
+    out.b[0] = in.b[1];
+    out.b[1] = in.b[0];
     return( out.val );
 }
 
@@ -50,15 +50,15 @@ int TargetOffset( int value )
 unsigned_32 TargetBigInt( unsigned_32 value )
 {
     union {
-        char        b(:4:);
+        char        b[4];
         unsigned_32 val;
     } in, out;
 
     in.val = value;
-    out.b(:0:) = in.b(:3:);
-    out.b(:1:) = in.b(:2:);
-    out.b(:2:) = in.b(:1:);
-    out.b(:3:) = in.b(:0:);
+    out.b[0] = in.b[3];
+    out.b[1] = in.b[2];
+    out.b[2] = in.b[1];
+    out.b[3] = in.b[0];
     return( out.val );
 }
 
