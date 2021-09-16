@@ -24,10 +24,6 @@ _WCRTLINK extern int        stat64( const char *__path, struct stat64 *__buf );
 ::                          <fcntl.h>,<sys/stat.h> (<sys/stat.h>,<wchar.h>)
 :segment WIDE
 :: Wide character version
-:segment DOS
-_WCRTLINK extern int        _wfstat( int __fildes, struct stat *__buf );
-_WCRTLINK extern int        _wfstati64( int __fildes, struct _stati64 *__buf );
-:endsegment
 :elsesegment ANSINAME
 :: extension
 _WCRTLINK extern int        _fstat( int __fildes, struct stat *__buf );

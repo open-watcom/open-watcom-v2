@@ -400,8 +400,6 @@
 .fnc fstat                    fstat                    fstat.gml     DOS QNX W WIN32
 .fnc _fstat                   fstat                    fstat.gml     DOS       WIN32
 .fn8 _fstati64                fstat                    fstat.gml     DOS       WIN32
-.fnw _wfstat                  fstat                    fstat.gml     DOS       WIN32
-.fnw _wfstati64               fstat                    fstat.gml     DOS       WIN32
 .fn8 fsync                    fsync                    fsync.gml     DOS QNX W WIN32
 .fnc fsys_fdinfo              fsys_fdinfo              fs_fdin.gml       QXO
 .fnc fsys_fstat               fsys_fstat               fs_fstat.gml      QXO

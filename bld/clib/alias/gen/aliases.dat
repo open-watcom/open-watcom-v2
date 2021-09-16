@@ -194,8 +194,6 @@ tolowe        tolower           _tolower          d16 d32 nt  nta ntp nvc     nv
 touppe        toupper           _toupper          d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
 tzset_        tzset             _tzset            d16 d32 nt  nta ntp                 o16 o32 q16 q32 w16 w32 l32         rdu rdk
 u64toa        ulltoa            _ui64toa          d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
-ufst64        _fstati64         _wfstati64        d16 d32 nt  nta ntp                 o16 o32         w16 w32
-ufstat        fstat             _wfstat           d16 d32 nt  nta ntp                 o16 o32         w16 w32
 ulltoa        ulltoa            _ulltoa           d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
 ultoa_        ultoa             _ultoa            d16 d32 nt  nta ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32         rdu rdk
 ultow_        _ultow            _wultoa           d16 d32 nt  nta ntp                 o16 o32 q16 q32 w16 w32 l32         rdu rdk

@@ -1,4 +1,4 @@
-.func fstat _fstat _fstati64 _wfstat _wfstati64
+.func fstat _fstat _fstati64
 .synop begin
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -10,12 +10,6 @@ int _fstat( int &fd, struct stat *buf );
 .do end
 int _fstati64( int handle, struct _stati64 *buf );
 .ixfunc2 '&OsIo' &func64
-int _wfstat( int handle, struct _stat *buf );
-.ixfunc2 '&OsIo' &wfunc
-.ixfunc2 '&Wide' &wfunc
-int _wfstati64( int handle, struct _stati64 *buf );
-.ixfunc2 '&OsIo' &wfunc64
-.ixfunc2 '&Wide' &wfunc64
 .synop end
 .desc begin
 The
@@ -33,19 +27,10 @@ indicated by
 .np
 The
 .reffunc _fstati64
-.ct ,
-.reffunc _wfstat
-.ct , and
-.reffunc _wfstati64
-functions differ from
+function differ from
 .id &funcb.
 in the type of structure that they are
 asked to fill in.
-The
-.reffunc _wfstat
-and
-.reffunc _wfstati64
-functions deal with wide character strings.
 The differences in the structures are described above.
 .desc end
 .im statrtn

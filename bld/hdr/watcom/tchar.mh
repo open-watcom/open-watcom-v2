@@ -244,8 +244,8 @@ inline wchar_t *_tcstok( wchar_t *__p1, const wchar_t *__p2 ) {
 
 #define _tstat          _wstat
 #define _tstati64       _wstati64
-#define _tfstat         _wfstat
-#define _tfstati64      _wfstati64
+#define _tfstat         fstat
+#define _tfstati64      _fstati64
 
 /* Setlocale functions */
 

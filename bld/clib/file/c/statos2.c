@@ -167,9 +167,9 @@ static unsigned short at2mode( OS_UINT attr, char *fname ) {
                 _RWD_errno = ENOENT;
                 return( -1 );
 #ifdef __INT64__
-            } else if( __F_NAME(_fstati64,_wfstati64)( handle, buf ) == -1 ) {
+            } else if( _fstati64( handle, buf ) == -1 ) {
 #else
-            } else if( __F_NAME(fstat,_wfstat)( handle, buf ) == -1 ) {
+            } else if( fstat( handle, buf ) == -1 ) {
 #endif
                 rc = _RWD_errno;
             }
