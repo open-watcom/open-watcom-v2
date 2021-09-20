@@ -65,7 +65,7 @@ static GetClassMap Map[] =
 ,   { GUI_CHECK_BOX,        WC_SYS_BUTTON,           BS_CHECKBOX,        0xf             }
 ,   { GUI_DEFPUSH_BUTTON,   WC_SYS_BUTTON,           BS_DEFAULT,         BS_DEFAULT      }
 ,   { GUI_PUSH_BUTTON,      WC_SYS_BUTTON,           0xffff,             0xffff          }
-,   { GUI_GROUPBOX,         WC_SYS_GROUPBOX,         SS_GROUPBOX,        SS_GROUPBOX     }
+,   { GUI_GROUPBOX,         WC_SYS_STATIC,           SS_GROUPBOX,        SS_GROUPBOX     }
 ,   { GUI_STATIC,           WC_SYS_STATIC,           0xffff,             0xffff          }
 ,   { GUI_EDIT_COMBOBOX,    WC_SYS_COMBOBOX,         CBS_DROPDOWN,       CBS_DROPDOWN    }
 ,   { GUI_EDIT_COMBOBOX,    WC_SYS_COMBOBOX,         CBS_SIMPLE,         CBS_SIMPLE      }

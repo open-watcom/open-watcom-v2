@@ -24,8 +24,6 @@
 #define WC_SYS_TITLEBAR         "#9"
 #define WC_SYS_MLE              "#10"
 
-#define WC_SYS_GROUPBOX         WC_SYS_STATIC
-
 #elif defined( __WINDOWS__ ) || defined( __NT__ )
 
 #define WC_SYS_MENU             "#32768"
