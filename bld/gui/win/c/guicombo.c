@@ -39,6 +39,7 @@
 #include "ctl3dcvr.h"
 #include "wclbproc.h"
 #include "guixwind.h"
+#include "os2syscl.h"
 
 
 typedef struct {
@@ -67,7 +68,7 @@ BOOL CALLBACK GUISubClassEditComboboxEnumFunc( HWND hwnd, WPI_PARAM2 lparam )
     len = GetClassName( hwnd, buff, sizeof( buff ) );
     buff[len] = '\0';
 #ifndef __OS2_PM__
-    //if( strcmp( buff, "#6" ) == 0 ) {
+    //if( strcmp( buff, WC_ENTRYFIELD_CLSNAM ) == 0 ) {
     if( stricmp( buff, GUIControls[GUI_EDIT].classname ) == 0 ) {
         info->success = true;
         info->old = GUIDoSubClass( hwnd, GUI_EDIT );

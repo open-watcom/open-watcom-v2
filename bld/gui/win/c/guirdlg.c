@@ -41,6 +41,8 @@
     #undef _WIN32_IE
     #define _WIN32_IE   0x0400
     #include <commctrl.h>
+#elif defined( __OS2__ )
+    #include "os2syscl.h"
 #endif
 
 
@@ -60,19 +62,19 @@ typedef struct GetClassMap {
 // note: the order of entries this table is important
 static GetClassMap Map[] =
 {
-    { GUI_RADIO_BUTTON,     "#3",           BS_RADIOBUTTON,     0xf             }
-,   { GUI_CHECK_BOX,        "#3",           BS_CHECKBOX,        0xf             }
-,   { GUI_DEFPUSH_BUTTON,   "#3",           BS_DEFAULT,         BS_DEFAULT      }
-,   { GUI_PUSH_BUTTON,      "#3",           0xffff,             0xffff          }
-,   { GUI_GROUPBOX,         "#5",           SS_GROUPBOX,        SS_GROUPBOX     }
-,   { GUI_STATIC,           "#5",           0xffff,             0xffff          }
-,   { GUI_EDIT_COMBOBOX,    "#2",           CBS_DROPDOWN,       CBS_DROPDOWN    }
-,   { GUI_EDIT_COMBOBOX,    "#2",           CBS_SIMPLE,         CBS_SIMPLE      }
-,   { GUI_COMBOBOX,         "#2",           0xffff,             0xffff          }
-,   { GUI_EDIT,             "#6",           0xffff,             0xffff          }
-,   { GUI_EDIT_MLE,         "#10",          0xffff,             0xffff          }
-,   { GUI_LISTBOX,          "#7",           0xffff,             0xffff          }
-,   { GUI_SCROLLBAR,        "#8",           0xffff,             0xffff          }
+    { GUI_RADIO_BUTTON,     WC_BUTTON_CLSNAM,           BS_RADIOBUTTON,     0xf             }
+,   { GUI_CHECK_BOX,        WC_BUTTON_CLSNAM,           BS_CHECKBOX,        0xf             }
+,   { GUI_DEFPUSH_BUTTON,   WC_BUTTON_CLSNAM,           BS_DEFAULT,         BS_DEFAULT      }
+,   { GUI_PUSH_BUTTON,      WC_BUTTON_CLSNAM,           0xffff,             0xffff          }
+,   { GUI_GROUPBOX,         WC_GROUPBOX_CLSNAM,         SS_GROUPBOX,        SS_GROUPBOX     }
+,   { GUI_STATIC,           WC_STATIC_CLSNAM,           0xffff,             0xffff          }
+,   { GUI_EDIT_COMBOBOX,    WC_COMBOBOX_CLSNAM,         CBS_DROPDOWN,       CBS_DROPDOWN    }
+,   { GUI_EDIT_COMBOBOX,    WC_COMBOBOX_CLSNAM,         CBS_SIMPLE,         CBS_SIMPLE      }
+,   { GUI_COMBOBOX,         WC_COMBOBOX_CLSNAM,         0xffff,             0xffff          }
+,   { GUI_EDIT,             WC_ENTRYFIELD_CLSNAM,       0xffff,             0xffff          }
+,   { GUI_EDIT_MLE,         WC_MLE_CLSNAM,              0xffff,             0xffff          }
+,   { GUI_LISTBOX,          WC_LISTBOX_CLSNAM,          0xffff,             0xffff          }
+,   { GUI_SCROLLBAR,        WC_SCROLLBAR_CLSNAM,        0xffff,             0xffff          }
 };
 #else
 // note: the order of entries this table is important
@@ -101,19 +103,14 @@ gui_control_class GUIGetControlClassFromHWND( HWND cntl )
     DWORD               style;
     int                 index;
 
-    if( !_wpi_getclassname( cntl, classname, sizeof( classname ) ) ) {
-        return( GUI_BAD_CLASS );
-    }
-
-    style = _wpi_getwindowlong( cntl, GWL_STYLE );
     control_class = GUI_BAD_CLASS;
-
-    for( index = 0; ( index < GUI_ARRAY_SIZE( Map ) ) && ( control_class == GUI_BAD_CLASS ); index++ ) {
-        if( ( Map[index].classname != NULL ) && stricmp( Map[index].classname, classname ) == 0 ) {
-            if( Map[index].mask == 0xffff ) {
-                control_class = Map[index].control_class;
-            } else {
-                if( (style & Map[index].mask) == Map[index].style ) {
+    if( _wpi_getclassname( cntl, classname, sizeof( classname ) ) ) {
+        style = _wpi_getwindowlong( cntl, GWL_STYLE );
+        for( index = 0; ( index < GUI_ARRAY_SIZE( Map ) ) && ( control_class == GUI_BAD_CLASS ); index++ ) {
+            if( stricmp( Map[index].classname, classname ) == 0 ) {
+                if( Map[index].mask == 0xffff ) {
+                    control_class = Map[index].control_class;
+                } else if( (style & Map[index].mask) == Map[index].style ) {
                     control_class = Map[index].control_class;
                 }
             }

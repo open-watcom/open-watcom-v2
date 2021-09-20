@@ -168,19 +168,18 @@ control_item *GUIControlInsert( gui_window *parent_wnd, gui_control_class contro
     control_item        *item;
 
     item = (control_item *)GUIMemAlloc( sizeof( control_item ) );
-    if( item == NULL ) {
-        return( NULL );
+    if( item != NULL ) {
+        item->control_class = control_class;
+        item->text = ctl_info->text;
+        item->style = ctl_info->style;
+        item->checked = ctl_info->style & GUI_STYLE_CONTROL_CHECKED;
+        item->id = ctl_info->id;
+        item->next = NULL;
+        item->hwnd = hwnd;
+        item->win_call_back = win_call_back;
+        item->next = parent_wnd->controls;
+        parent_wnd->controls = item;
     }
-    item->control_class = control_class;
-    item->text = ctl_info->text;
-    item->style = ctl_info->style;
-    item->checked = ctl_info->style & GUI_STYLE_CONTROL_CHECKED;
-    item->id = ctl_info->id;
-    item->next = NULL;
-    item->hwnd = hwnd;
-    item->win_call_back = win_call_back;
-    item->next = parent_wnd->controls;
-    parent_wnd->controls = item;
     return( item );
 }
 
@@ -188,30 +187,28 @@ control_item *GUIControlInsertByHWND( HWND hwnd, gui_window *parent_wnd )
 {
     control_item        *item;
     HWND                phwnd;
+    gui_control_class   control_class;
 
     phwnd = _wpi_getparent( hwnd );
     if( ( parent_wnd == NULL ) || ( phwnd != parent_wnd->hwnd ) ) {
         return( NULL );
     }
     item = (control_item *)GUIMemAlloc( sizeof( control_item ) );
-    if( item == NULL ) {
-        return( NULL );
+    if( item != NULL ) {
+        memset( item, 0, sizeof( control_item ) );
+        control_class = GUIGetControlClassFromHWND( hwnd );
+        if( control_class == GUI_BAD_CLASS ) {
+            GUIMemFree( item );
+            return( NULL );
+        }
+        item->control_class = control_class;
+        item->style = GUIGetControlStylesFromHWND( hwnd, control_class );
+        item->id = _wpi_getdlgctrlid( hwnd );
+        item->next = NULL;
+        item->hwnd = hwnd;
+        item->next = parent_wnd->controls;
+        parent_wnd->controls = item;
     }
-    memset( item, 0, sizeof( control_item ) );
-    item->control_class = GUIGetControlClassFromHWND( hwnd );
-    if( item->control_class == GUI_BAD_CLASS ) {
-        GUIMemFree( item );
-        return( NULL );
-    }
-
-    item->style = GUIGetControlStylesFromHWND( hwnd, item->control_class );
-
-    item->id = _wpi_getdlgctrlid( hwnd );
-    item->next = NULL;
-    item->hwnd = hwnd;
-    item->next = parent_wnd->controls;
-    parent_wnd->controls = item;
-
     return( item );
 }
 
