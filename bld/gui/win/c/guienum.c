@@ -55,14 +55,14 @@ BOOL CALLBACK GUIEnumChildWindowsEnumFunc( HWND hwnd, WPI_PARAM2 lparam )
     bool        is_gui;
     int         len;
 
-    len = GetClassName( hwnd, buff, sizeof( buff ) );
+    len = _wpi_getclassname( hwnd, buff, sizeof( buff ) );
     buff[len] = '\0';
     is_gui = ( strcmp( buff, GUIClass ) == 0 );
 #ifdef __OS2_PM__
     if( !is_gui ) {
         hwnd = WinWindowFromID( hwnd, FID_CLIENT );
         if( hwnd != NULLHANDLE ) {
-            GetClassName( hwnd, buff, sizeof( buff ) );
+            _wpi_getclassname( hwnd, buff, sizeof( buff ) );
             buff[len] = '\0';
             is_gui = ( strcmp( buff, GUIClass ) == 0 );
         }
@@ -84,7 +84,7 @@ void GUIAPI GUIEnumChildWindows( gui_window *wnd, ENUMCALLBACK *func, void *para
 #ifdef __OS2_PM__
     WPI_ENUMPROC    wndenumproc;
 #else
-    WNDENUMPROC    	wndenumproc;
+    WNDENUMPROC         wndenumproc;
 #endif
 
     info.parent = wnd;

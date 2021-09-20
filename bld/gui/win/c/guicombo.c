@@ -65,7 +65,7 @@ BOOL CALLBACK GUISubClassEditComboboxEnumFunc( HWND hwnd, WPI_PARAM2 lparam )
     if( info->success == true ) {
         return( TRUE );
     }
-    len = GetClassName( hwnd, buff, sizeof( buff ) );
+    len = _wpi_getclassname( hwnd, buff, sizeof( buff ) );
     buff[len] = '\0';
 #ifndef __OS2_PM__
     //if( strcmp( buff, WC_SYS_ENTRYFIELD ) == 0 ) {
