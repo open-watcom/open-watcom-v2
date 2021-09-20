@@ -36,6 +36,7 @@
 #ifdef __WIN__
 #include "wclbproc.h"
 #endif
+#include "oswincls.h"
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -73,7 +74,7 @@ WINEXPORT LRESULT CALLBACK MyMessageBoxWndFunc( int ncode, WPARAM wparam, LPARAM
         wid = (window_id)wparam;
         len = GetClassName( wid, className, sizeof( className ) );
         className[len] = '\0';
-        if( strcmp( className, "#32770" ) == 0 ) {
+        if( strcmp( className, WC_SYS_DIALOGBOX ) == 0 ) {
             if( ncode == HCBT_MOVESIZE ) {
                 LPRECT  pos = (LPRECT)lparam;
 

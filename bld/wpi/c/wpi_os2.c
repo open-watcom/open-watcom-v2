@@ -45,7 +45,7 @@
 #define INCL_DOSDEVICES
 #include <wos2.h>
 #include "wpi.h"
-#include "os2syscl.h"
+#include "oswincls.h"
 
 #define PATBRUSHID 200   /* This is the constant id for pattern brushes */
 static char sys_font_facename[] = "System Proportional";
@@ -2137,7 +2137,7 @@ BOOL _wpi_trackpopupmenu( HMENU hmenu, ULONG flags, LONG x, LONG y,
             } else {
                 // lets make sure this child of the desktop is a menu!!
                 WinQueryClassName( msg.hwnd, 9, class_name );
-                if( strcmp( class_name, WC_MENU_CLSNAM ) ) {
+                if( strcmp( class_name, WC_SYS_MENU ) ) {
                     discard_msg = TRUE;
                 }
             }
@@ -2163,7 +2163,7 @@ BOOL _wpi_trackpopupmenu( HMENU hmenu, ULONG flags, LONG x, LONG y,
             } else {
                 // lets make sure this child of the desktop is a menu!!
                 WinQueryClassName( msg.hwnd, 9, class_name );
-                if( strcmp( class_name, WC_MENU_CLSNAM ) ) {
+                if( strcmp( class_name, WC_SYS_MENU ) ) {
                     // the window is not a menu
                     quit_loop = TRUE;
                 } else {

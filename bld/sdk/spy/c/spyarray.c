@@ -47,6 +47,7 @@
 #ifdef __NT__
     #include <commctrl.h>
 #endif
+#include "oswincls.h"
 
 
 /**********************************************************
@@ -1535,9 +1536,9 @@ class_styles _NEAR ClassStyles[] = {
     { WC_BUTTON,            ButtonStyleArray,       BUTTONSTYLEARRAYSIZE      },
     { WC_EDIT,              EditStyleArray,         EDITSTYLEARRAYSIZE        },
     { WC_STATIC,            StaticStyleArray,       STATICSTYLEARRAYSIZE      },
-    { WC_LISTBOX,            ListBoxStyleArray,      LISTBOXSTYLEARRAYSIZE     },
+    { WC_LISTBOX,           ListBoxStyleArray,      LISTBOXSTYLEARRAYSIZE     },
     { WC_COMBOBOX,          ComboBoxStyleArray,     COMBOBOXSTYLEARRAYSIZE    },
-    { "#32770",             DialogStyleArray,       DIALOGSTYLEARRAYSIZE      },
+    { WC_SYS_DIALOGBOX,     DialogStyleArray,       DIALOGSTYLEARRAYSIZE      },
 #ifdef __NT__
     { ANIMATE_CLASS,        AnimateStyleArray,      ANIMATESTYLEARRAYSIZE     },
     { DATETIMEPICK_CLASS,   DateTimeStyleArray,     DATETIMESTYLEARRAYSIZE    },

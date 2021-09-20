@@ -41,9 +41,8 @@
     #undef _WIN32_IE
     #define _WIN32_IE   0x0400
     #include <commctrl.h>
-#elif defined( __OS2__ )
-    #include "os2syscl.h"
 #endif
+#include "oswincls.h"
 
 
 /* Local Window callback functions prototypes */
@@ -62,19 +61,19 @@ typedef struct GetClassMap {
 // note: the order of entries this table is important
 static GetClassMap Map[] =
 {
-    { GUI_RADIO_BUTTON,     WC_BUTTON_CLSNAM,           BS_RADIOBUTTON,     0xf             }
-,   { GUI_CHECK_BOX,        WC_BUTTON_CLSNAM,           BS_CHECKBOX,        0xf             }
-,   { GUI_DEFPUSH_BUTTON,   WC_BUTTON_CLSNAM,           BS_DEFAULT,         BS_DEFAULT      }
-,   { GUI_PUSH_BUTTON,      WC_BUTTON_CLSNAM,           0xffff,             0xffff          }
-,   { GUI_GROUPBOX,         WC_GROUPBOX_CLSNAM,         SS_GROUPBOX,        SS_GROUPBOX     }
-,   { GUI_STATIC,           WC_STATIC_CLSNAM,           0xffff,             0xffff          }
-,   { GUI_EDIT_COMBOBOX,    WC_COMBOBOX_CLSNAM,         CBS_DROPDOWN,       CBS_DROPDOWN    }
-,   { GUI_EDIT_COMBOBOX,    WC_COMBOBOX_CLSNAM,         CBS_SIMPLE,         CBS_SIMPLE      }
-,   { GUI_COMBOBOX,         WC_COMBOBOX_CLSNAM,         0xffff,             0xffff          }
-,   { GUI_EDIT,             WC_ENTRYFIELD_CLSNAM,       0xffff,             0xffff          }
-,   { GUI_EDIT_MLE,         WC_MLE_CLSNAM,              0xffff,             0xffff          }
-,   { GUI_LISTBOX,          WC_LISTBOX_CLSNAM,          0xffff,             0xffff          }
-,   { GUI_SCROLLBAR,        WC_SCROLLBAR_CLSNAM,        0xffff,             0xffff          }
+    { GUI_RADIO_BUTTON,     WC_SYS_BUTTON,           BS_RADIOBUTTON,     0xf             }
+,   { GUI_CHECK_BOX,        WC_SYS_BUTTON,           BS_CHECKBOX,        0xf             }
+,   { GUI_DEFPUSH_BUTTON,   WC_SYS_BUTTON,           BS_DEFAULT,         BS_DEFAULT      }
+,   { GUI_PUSH_BUTTON,      WC_SYS_BUTTON,           0xffff,             0xffff          }
+,   { GUI_GROUPBOX,         WC_SYS_GROUPBOX,         SS_GROUPBOX,        SS_GROUPBOX     }
+,   { GUI_STATIC,           WC_SYS_STATIC,           0xffff,             0xffff          }
+,   { GUI_EDIT_COMBOBOX,    WC_SYS_COMBOBOX,         CBS_DROPDOWN,       CBS_DROPDOWN    }
+,   { GUI_EDIT_COMBOBOX,    WC_SYS_COMBOBOX,         CBS_SIMPLE,         CBS_SIMPLE      }
+,   { GUI_COMBOBOX,         WC_SYS_COMBOBOX,         0xffff,             0xffff          }
+,   { GUI_EDIT,             WC_SYS_ENTRYFIELD,       0xffff,             0xffff          }
+,   { GUI_EDIT_MLE,         WC_SYS_MLE,              0xffff,             0xffff          }
+,   { GUI_LISTBOX,          WC_SYS_LISTBOX,          0xffff,             0xffff          }
+,   { GUI_SCROLLBAR,        WC_SYS_SCROLLBAR,        0xffff,             0xffff          }
 };
 #else
 // note: the order of entries this table is important
