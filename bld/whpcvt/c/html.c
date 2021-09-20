@@ -512,17 +512,11 @@ void html_trans_line( char *line_buf, section_def *section )
             }
             if( line_len > 120 && ch == ' ' && !Tab_xmp ) {
                 /* break onto the next line */
-                line_len = 0;
                 trans_add_char( '\n', section );
-                if( *ptr == ' ' ) {
-                    line_len += trans_add_str( HTML_SPACE, section );
-                    ch_len++;
-                    ptr++;
-                }
-            } else {
-                line_len += trans_add_char_html( ch, *ptr, section );
-                ch_len++;
+                line_len = 0;
             }
+            line_len += trans_add_char_html( ch, *ptr, section );
+            ch_len++;
             break;
         }
     }
