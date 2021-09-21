@@ -303,23 +303,6 @@ WPI_MRESULT CALLBACK GUIEditFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam,
     case WM_MOUSEACTIVATE:
         return( true );
         break;
-    case WM_CHAR:
-        if( EditControlHasFocus ) {
-            if( GUIWindowsMapKey( wparam, lparam, &key_control.key_state.key ) ) {
-                GUIGetKeyState( &key_control.key_state.state );
-                if( key_control.key_state.key == GUI_KEY_ENTER ) {
-                    key_control.id = info->id;
-                    if( GUIEVENT( wnd, GUI_KEY_CONTROL, &key_control ) ) {
-                        return( 0L );
-                    }
-                }
-            }
-        //} else {
-            //if( GUICurrWnd != NULL ) {
-                //GUISendMessage( GUICurrWnd->hwnd, message, wparam, lparam );
-            //}
-        }
-        break;
     case WM_KEYDOWN:
         if( EditControlHasFocus ) {
             if( GUIWindowsMapKey( wparam, lparam, &key_control.key_state.key ) ) {
@@ -337,9 +320,10 @@ WPI_MRESULT CALLBACK GUIEditFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam,
             //}
         }
         break;
-#else
+#endif
     case WM_CHAR:
         if( EditControlHasFocus ) {
+#ifdef __OS2_PM__
             if( !IS_KEY_UP( wparam ) && GUIWindowsMapKey( wparam, lparam, &key_control.key_state.key ) ) {
                 switch( key_control.key_state.key ) {
                 //case GUI_KEY_ENTER:
@@ -352,13 +336,23 @@ WPI_MRESULT CALLBACK GUIEditFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam,
                     }
                 }
             }
+#else
+            if( GUIWindowsMapKey( wparam, lparam, &key_control.key_state.key ) ) {
+                GUIGetKeyState( &key_control.key_state.state );
+                if( key_control.key_state.key == GUI_KEY_ENTER ) {
+                    key_control.id = info->id;
+                    if( GUIEVENT( wnd, GUI_KEY_CONTROL, &key_control ) ) {
+                        return( 0L );
+                    }
+                }
+            }
+#endif
         //} else {
             //if( GUICurrWnd != NULL ) {
                 //GUISendMessage( GUICurrWnd->hwnd, message, wparam, lparam );
             //}
         }
         break;
-#endif
     case WM_RBUTTONUP:
         break;
     case WM_NCDESTROY:

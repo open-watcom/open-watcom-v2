@@ -64,7 +64,6 @@ BOOL CALLBACK GUISubClassEditComboboxEnumFunc( HWND hwnd, WPI_PARAM2 lparam )
     if( info->success == true ) {
         return( TRUE );
     }
-#ifndef __OS2_PM__
     if( _wpi_getclassname( hwnd, osclassname, sizeof( osclassname ) ) ) {
         if( stricmp( osclassname, GUIControls[GUI_EDIT].osclassname ) == 0 ) {
             info->success = true;
@@ -72,7 +71,6 @@ BOOL CALLBACK GUISubClassEditComboboxEnumFunc( HWND hwnd, WPI_PARAM2 lparam )
             //CvrCtl3dSubclassCtl( hwnd );
         }
     }
-#endif
     return( TRUE );
 }
 
