@@ -52,7 +52,7 @@ WPI_INST                        GUIResHInst;
 
 typedef struct GetClassMap {
     gui_control_class   control_class;
-    const char          *classname;
+    const char          *osclassname;
     DWORD               style;
     DWORD               mask;
 } GetClassMap;
@@ -98,15 +98,15 @@ static GetClassMap Map[] =
 gui_control_class GUIGetControlClassFromHWND( HWND cntl )
 {
     gui_control_class   control_class;
-    char                classname[15];
+    char                osclassname[GUI_CLASSNAME_MAX + 1];
     DWORD               style;
     int                 index;
 
     control_class = GUI_BAD_CLASS;
-    if( _wpi_getclassname( cntl, classname, sizeof( classname ) ) ) {
+    if( _wpi_getclassname( cntl, osclassname, sizeof( osclassname ) ) ) {
         style = _wpi_getwindowlong( cntl, GWL_STYLE );
         for( index = 0; ( index < GUI_ARRAY_SIZE( Map ) ) && ( control_class == GUI_BAD_CLASS ); index++ ) {
-            if( stricmp( Map[index].classname, classname ) == 0 ) {
+            if( stricmp( Map[index].osclassname, osclassname ) == 0 ) {
                 if( Map[index].mask == 0xffff ) {
                     control_class = Map[index].control_class;
                 } else if( (style & Map[index].mask) == Map[index].style ) {

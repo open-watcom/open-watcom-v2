@@ -61,9 +61,11 @@ extern  bool            EditControlHasFocus;
 
 controls_struct GUIControls[GUI_NUM_CONTROL_CLASSES] = {
 #if defined( __NT__ ) && !defined( _WIN64 )
-    #define pick(enumcls,uitype,classn,classn_os2,style,xstyle_nt) {classn,style,xstyle_nt},
+    #define pick(enumcls,uitype,classn,classn_os2,style,xstyle_nt) {classn,classn,style,xstyle_nt},
+#elif defined( __OS2__ )
+    #define pick(enumcls,uitype,classn,classn_os2,style,xstyle_nt) {classn,classn_os2,style},
 #else
-    #define pick(enumcls,uitype,classn,classn_os2,style,xstyle_nt) {classn,style},
+    #define pick(enumcls,uitype,classn,classn_os2,style,xstyle_nt) {classn,classn,style},
 #endif
     #include "_guicont.h"
     #undef pick

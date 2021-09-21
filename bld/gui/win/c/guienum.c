@@ -51,20 +51,20 @@ BOOL CALLBACK GUIEnumChildWindowsEnumFunc( HWND hwnd, WPI_PARAM2 lparam )
 {
     gui_window  *wnd;
     enum_info   *info;
-    char        buff[GUI_CLASSNAME_MAX + 1];
+    char        osclassname[GUI_CLASSNAME_MAX + 1];
     bool        is_gui;
     int         len;
 
-    len = _wpi_getclassname( hwnd, buff, sizeof( buff ) );
-    buff[len] = '\0';
-    is_gui = ( strcmp( buff, GUIClass ) == 0 );
+    len = _wpi_getclassname( hwnd, osclassname, sizeof( osclassname ) );
+    osclassname[len] = '\0';
+    is_gui = ( strcmp( osclassname, GUIClass ) == 0 );
 #ifdef __OS2_PM__
     if( !is_gui ) {
         hwnd = WinWindowFromID( hwnd, FID_CLIENT );
         if( hwnd != NULLHANDLE ) {
-            _wpi_getclassname( hwnd, buff, sizeof( buff ) );
-            buff[len] = '\0';
-            is_gui = ( strcmp( buff, GUIClass ) == 0 );
+            len = _wpi_getclassname( hwnd, osclassname, sizeof( osclassname ) );
+            osclassname[len] = '\0';
+            is_gui = ( strcmp( osclassname, GUIClass ) == 0 );
         }
     }
 #endif
