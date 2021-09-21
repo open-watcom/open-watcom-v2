@@ -50,6 +50,7 @@
     #define _WIN32_IE   0x0400
     #include <commctrl.h>
 #endif
+#include "oswincls.h"
 
 
 typedef struct dialog_wnd_node {
