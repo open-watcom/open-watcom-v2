@@ -33,6 +33,7 @@
 #include "widechar.h"
 #include <stdlib.h>
 #include <string.h>
+#include <stddef.h>
 #include <mbstring.h>
 #include <direct.h>
 #include <dos.h>
@@ -89,19 +90,47 @@ static int is_directory( const CHAR_TYPE *name )
     return( -1 );
 }
 
-
-#ifdef __WIDECHAR__
-static void filenameToWide( DIR_TYPE *dir )
-/*****************************************/
+static void copy_find_data( DIR_TYPE *dirp, struct find_t *findp )
+/****************************************************************/
 {
-    wchar_t             wcs[ _MAX_PATH ];
-
-    /* convert string */
-    mbstowcs( wcs, (char*)dir->d_name, sizeof( wcs ) / sizeof( wcs[0] ) );
-    /* copy string */
-    wcscpy( dir->d_name, wcs );
-}
+    memcpy( dirp->d_dta, findp, sizeof( dirp->d_dta ) );
+    dirp->d_attr = findp->attrib;
+    dirp->d_time = findp->wr_time;
+    dirp->d_date = findp->wr_date;
+    dirp->d_size = findp->size;
+#ifdef __WIDECHAR__
+    mbstowcs( dirp->d_name, findp->name, sizeof( findp->name ) );
+#else
+    strcpy( dirp->d_name, findp->name );
 #endif
+}
+
+static unsigned dir_findfirst( const char *name, unsigned attr, DIR_TYPE *dirp )
+/******************************************************************************/
+{
+    unsigned        rc;
+    struct find_t   fdta;
+
+    rc = _dos_findfirst( name, attr, &fdta );
+    if( rc == 0 ) {
+        copy_find_data( dirp, &fdta );
+    }
+    return( rc );
+}
+
+static unsigned dir_findnext( DIR_TYPE *dirp )
+/********************************************/
+{
+    unsigned        rc;
+    struct find_t   fdta;
+
+    memcpy( &fdta, dirp->d_dta, sizeof( fdta.reserved ) );
+    rc = _dos_findnext( &fdta );
+    if( rc == 0 ) {
+        copy_find_data( dirp, &fdta );
+    }
+    return( rc );
+}
 
 static DIR_TYPE *__F_NAME(___opendir,___wopendir)( const CHAR_TYPE *dirname, DIR_TYPE *dirp )
 /*******************************************************************************************/
@@ -120,7 +149,7 @@ static DIR_TYPE *__F_NAME(___opendir,___wopendir)( const CHAR_TYPE *dirname, DIR
         return( NULL );
     }
 #endif
-    if( _dos_findfirst( __F_NAME(dirname,mbcsName), SEEK_ATTRIB, (struct _find_t *)dirp->d_dta ) ) {
+    if( dir_findfirst( __F_NAME(dirname,mbcsName), SEEK_ATTRIB, dirp ) ) {
         return( NULL );
     }
     dirp->d_first = _DIR_ISFIRST;
@@ -184,13 +213,10 @@ _WCRTLINK DIRENT_TYPE *__F_NAME(readdir,_wreaddir)( DIR_TYPE *dirp )
     if( dirp->d_first == _DIR_ISFIRST ) {
         dirp->d_first = _DIR_NOTFIRST;
     } else {
-        if( _dos_findnext( (struct _find_t *)dirp->d_dta ) ) {
+        if( dir_findnext( dirp ) ) {
             return( NULL );
         }
     }
-#ifdef __WIDECHAR__
-    filenameToWide( dirp );
-#endif
     return( dirp );
 }
 
