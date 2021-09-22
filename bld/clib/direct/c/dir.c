@@ -105,36 +105,10 @@ static void copy_find_data( DIR_TYPE *dirp, struct find_t *findp )
 #endif
 }
 
-static unsigned dir_findfirst( const char *name, unsigned attr, DIR_TYPE *dirp )
-/******************************************************************************/
-{
-    unsigned        rc;
-    struct find_t   fdta;
-
-    rc = _dos_findfirst( name, attr, &fdta );
-    if( rc == 0 ) {
-        copy_find_data( dirp, &fdta );
-    }
-    return( rc );
-}
-
-static unsigned dir_findnext( DIR_TYPE *dirp )
-/********************************************/
-{
-    unsigned        rc;
-    struct find_t   fdta;
-
-    memcpy( &fdta, dirp->d_dta, sizeof( fdta.reserved ) );
-    rc = _dos_findnext( &fdta );
-    if( rc == 0 ) {
-        copy_find_data( dirp, &fdta );
-    }
-    return( rc );
-}
-
 static DIR_TYPE *__F_NAME(___opendir,___wopendir)( const CHAR_TYPE *dirname, DIR_TYPE *dirp )
 /*******************************************************************************************/
 {
+    struct find_t   fdta;
 #ifdef __WIDECHAR__
     char            mbcsName[MB_CUR_MAX * _MAX_PATH];
 #endif
@@ -149,9 +123,10 @@ static DIR_TYPE *__F_NAME(___opendir,___wopendir)( const CHAR_TYPE *dirname, DIR
         return( NULL );
     }
 #endif
-    if( dir_findfirst( __F_NAME(dirname,mbcsName), SEEK_ATTRIB, dirp ) ) {
+    if( _dos_findfirst( __F_NAME(dirname,mbcsName), SEEK_ATTRIB, &fdta ) ) {
         return( NULL );
     }
+    copy_find_data( dirp, &fdta );
     dirp->d_first = _DIR_ISFIRST;
     return( dirp );
 }
@@ -208,14 +183,18 @@ _WCRTLINK DIR_TYPE *__F_NAME(opendir,_wopendir)( const CHAR_TYPE *dirname )
 
 _WCRTLINK DIRENT_TYPE *__F_NAME(readdir,_wreaddir)( DIR_TYPE *dirp )
 {
+    struct find_t   fdta;
+
     if( dirp == NULL || dirp->d_first == _DIR_CLOSED )
         return( NULL );
     if( dirp->d_first == _DIR_ISFIRST ) {
         dirp->d_first = _DIR_NOTFIRST;
     } else {
-        if( dir_findnext( dirp ) ) {
+        memcpy( &fdta, dirp->d_dta, sizeof( fdta.reserved ) );
+        if( _dos_findnext( &fdta ) ) {
             return( NULL );
         }
+        copy_find_data( dirp, &fdta );
     }
     return( dirp );
 }
