@@ -2,4 +2,4 @@
 
 compiler = msvc
 
-!include ../dhrystone.mif
+!include ../dhryston.mif

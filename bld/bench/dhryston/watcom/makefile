@@ -2,4 +2,4 @@
 
 compiler = watcom
 
-!include ../dhrystone.mif
+!include ../dhryston.mif
