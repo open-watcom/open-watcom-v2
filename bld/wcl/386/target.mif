@@ -1,10 +1,12 @@
+!ifdef bootstrap
+proj_name = bwcl386
+bwcl386_autodepends = .AUTODEPEND
+!else
 proj_name = wcl386
-
-target_cpu = 386
-
-!ifndef wcl386_autodepends
 wcl386_autodepends = .AUTODEPEND
 !endif
+
+target_cpu = 386
 
 wcl386_trmem = 1
 

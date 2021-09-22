@@ -1,7 +1,3 @@
-!ifdef bootstrap
-proj_name = b$(proj_name)
-!endif
-
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -20,6 +16,11 @@ extra_c_flags_owcc     = -I"$(posix_dir)/h"
 extra_c_flags_getopt   = -I"$(posix_dir)/h"
 extra_c_flags_quit     = -I"$(posix_dir)/h"
 extra_c_flags_clcommon = $(trmem_cover_cflags)
+
+#
+# lflags
+#
+extra_l_flags_dos_i86 = option stack=4k
 
 # explicit rules
 #################

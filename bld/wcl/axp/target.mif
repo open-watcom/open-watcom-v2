@@ -1,10 +1,12 @@
+!ifdef bootstrap
+proj_name = bwclaxp
+bwclaxp_autodepends = .AUTODEPEND
+!else
 proj_name = wclaxp
-
-target_cpu = axp
-
-!ifndef wclaxp_autodepends
 wclaxp_autodepends = .AUTODEPEND
 !endif
+
+target_cpu = axp
 
 wclaxp_trmem = 1
 

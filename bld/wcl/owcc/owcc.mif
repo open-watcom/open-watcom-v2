@@ -1,6 +1,8 @@
+!ifdef bootstrap
+proj_name = bowcc
+bowcc_autodepends = .AUTODEPEND
+!else
 proj_name = owcc
-
-!ifndef owcc_autodepends
 owcc_autodepends = .AUTODEPEND
 !endif
 
