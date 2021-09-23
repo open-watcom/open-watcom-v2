@@ -11,11 +11,11 @@ set OWBLDVERSTR=2.0
 set OWBLDVERTOOL=1300
 
 REM Set up default path information variables
-if not "%OWDEFPATH%" == "" goto defpath_set
+if not "%OWDEFPATH%" == "" goto skip1
 set OWDEFPATH=%PATH%;
 set OWDEFINCLUDE=%INCLUDE%
 set OWDEFWATCOM=%WATCOM%
-:defpath_set
+:skip1
 
 REM Subdirectory to be used for building OW build tools
 if "%OWOBJDIR%" == "" set OWOBJDIR=binbuild
@@ -39,38 +39,34 @@ set WATCOM=%OWDEFWATCOM%
 
 REM Set the toolchain version to OWTOOLSVER variable
 set OWTOOLSVER=0
-if not '%OWTOOLS%' == 'WATCOM' goto no_watcom
+if not '%OWTOOLS%' == 'WATCOM' goto nowatcom
 echo set OWTOOLSVER=__WATCOMC__>getversi.gc
 echo set OWCYEAR=__DATE__>>getversi.gc
 wcc386 -p getversi.gc >getversi.bat
-goto toolsver
-:no_watcom
-if not '%OWTOOLS%' == 'VISUALC' goto no_visualc
+:nowatcom
+if not '%OWTOOLS%' == 'VISUALC' goto novisualc
 echo set OWTOOLSVER=_MSC_VER>getversi.gc
 echo set OWCYEAR=__DATE__>>getversi.gc
 cl -nologo -EP getversi.gc>getversi.bat
-goto toolsver
-:no_visualc
-if not '%OWTOOLS%' == 'INTEL' goto no_intel
+:novisualc
+if not '%OWTOOLS%' == 'INTEL' goto nointel
 echo set OWTOOLSVER=__INTEL_COMPILER>getversi.gc
 echo set OWCYEAR=__DATE__>>getversi.gc
 icl -nologo -EP getversi.gc>getversi.bat
-goto toolsver
-:no_intel
-:toolsver
-if not exist getversi.bat goto no_toolsver
+:nointel
+if not exist getversi.bat goto notoolsver
 call getversi.bat
 del getversi.*
-:no_toolsver
+:notoolsver
 
 REM OS specifics
 
 REM setup right COMSPEC for non-standard COMSPEC setting on NT based systems
-if not '%OS%' == 'Windows_NT' goto no_windows_nt
-if '%NTDOS%' == '1' goto no_windows_nt
+if not '%OS%' == 'Windows_NT' goto nowinnt
+if '%NTDOS%' == '1' goto nowinnt
 set COMSPEC=%WINDIR%\system32\cmd.exe
 set COPYCMD=/y
 set OWCYEAR=%OWCYEAR:~8,4%
-:no_windows_nt
+:nowinnt
 
 echo Open Watcom build environment (%OWTOOLS% version=%OWTOOLSVER%, CYEAR=%OWCYEAR%)

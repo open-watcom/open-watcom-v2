@@ -34,18 +34,18 @@ REM ###############################
 
 REM Change this to the PATH required by GhostScript for PDF creation on used host OS (optional)
 REM For Windows host we use Windows CI copy of appropriate tools
-if not '%OS%' == 'Windows_NT' goto common_setup1
+if not '%OS%' == 'Windows_NT' goto csetup1
 set OWGHOSTSCRIPTPATH=%OWROOT%\ci\ntx64
-:common_setup1
+:csetup1
 
 REM Change these variables to point Windows help compilers which you have installed
 REM For Windows host we use Windows CI copy of appropriate tools
-if not '%OS%' == 'Windows_NT' goto common_setup2
+if not '%OS%' == 'Windows_NT' goto csetup2
 set OWWIN95HC=%OWROOT%\ci\nt386\hcrtf
 set OWHHC=%OWROOT%\ci\nt386\hhc
-:common_setup2
+:csetup2
 
-if not '%OS%' == 'Windows_NT' goto common_setup
+if not '%OS%' == 'Windows_NT' goto csetup3
 REM build process requires WGML utility which is available only as DOS executable
 REM on Windows platforms which don't have NTVDM or if WGML doesn't work under NTVDM
 REM DOSBOX emulator must be installed and OWDOSBOX variable must be set
@@ -55,7 +55,7 @@ REM path must not include any spaces
 
 REM For Windows host we use Windows CI copy of appropriate tools
 set OWDOSBOX=%OWROOT%\ci\nt386\dosbox.exe
-:common_setup
+:csetup3
 
 REM ###############################
 
