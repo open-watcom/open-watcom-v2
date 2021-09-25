@@ -560,14 +560,14 @@ static void dosub( char const *rhsbuf ) /* where to put the result */
     for( rp = rhsbuf; ( c = *rp++ ) != 0; ) {
         if( c == '&' ) {
             sp = place( sp, loc1, loc2 );
-        } else if( (c & 0x80) && ( c &= 0x7F ) >= '1' && c < MAXTAGS + '1' ) {
-            sp = place( sp, brastart[c - '0'], bracend[c - '0'] );
+        } else if( c >= ('1' | 0x80) && c <= ('9' | 0x80) ) {
+            sp = place( sp, brastart[(c & 0x7F) - '0'], bracend[(c & 0x7F) - '0'] );
         } else {
             if( sp >= genbuf + GENSIZ ) { /* Not exercised by sedtest.mak */
                 fprintf( stderr, NOROOM, GENSIZ, lnum );
                 break;
             }
-            *sp++ = c & 0x7F;
+            *sp++ = c;
         }
     }
     lp = loc2;
