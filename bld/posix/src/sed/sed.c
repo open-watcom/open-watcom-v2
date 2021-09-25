@@ -153,7 +153,7 @@ static bool selected( sedcmd *ipc )
         if( *p2 == CEND )
             p1 = NULL;
         else if( *p2 == CLNUM ) {
-            c = p2[1];
+            c = *(unsigned char *)(p2 + 1);
             if( lnum > linenum[c] ) {
                 ipc->flags.inrange = false;
                 return( allbut );
@@ -169,7 +169,7 @@ static bool selected( sedcmd *ipc )
             return( allbut );
         }
     } else if( *p1 == CLNUM ) {
-        c = p1[1];
+        c = *(unsigned char *)(p1 + 1);
         if( lnum != linenum[c] )
             return( allbut );
         if( p2 ) {
@@ -256,6 +256,7 @@ static bool advance(
     size_t          ct;
     int             i1;
     int             i2;
+    int             tagindex;
 
     for( ;; ) {
         switch( *ep++ ) {
@@ -287,24 +288,28 @@ static bool advance(
             break;                      /*   and keep going */
 
         case CBRA:                      /* start of tagged pattern */
-            brastart[(int)*ep++] = lp;  /* mark it */
+            tagindex = *ep++;           /* pattern tag index */
+            brastart[tagindex] = lp;    /* mark it */
             break;                      /* and go */
 
         case CKET:                      /* end of tagged pattern */
-            bracend[(int)*ep++] = lp;   /* mark it */
+            tagindex = *ep++;           /* pattern tag index */
+            bracend[tagindex] = lp;     /* mark it */
             break;                      /* and go */
 
         case CBACK:
-            bbeg = brastart[(int)*ep];
-            ct = bracend[(int)*ep++] - bbeg;
+            tagindex = *ep++;           /* pattern tag index */
+            bbeg = brastart[tagindex];
+            ct = bracend[tagindex] - bbeg;
             if( !memeql( bbeg, lp, ct ) )
                 return( false );        /* return false */
             lp += ct;
             break;                      /* matched */
 
         case CBACK | STAR:
-            bbeg = brastart[(int)*ep];
-            ct = bracend[(int)*ep++] - bbeg;
+            tagindex = *ep++;           /* pattern tag index */
+            bbeg = brastart[tagindex];
+            ct = bracend[tagindex] - bbeg;
             if( ct == 0 )
                 break;                  /* zero length match */
             curlp = lp;
@@ -340,20 +345,21 @@ static bool advance(
                 break;
 
             switch( *ep ) {
-                case CCHR:
-                    c = ep[1];
-                    break;
-                case CBACK:
-                    c = *brastart[(int)ep[1]];
-                    break;
-                default:
-                    do {
-                        if( lp == locs )
-                            break;
-                        if( advance( lp, ep ) )
-                            return( true );
-                    } while( lp-- > curlp );
-                    return( false );
+            case CCHR:
+                c = ep[1];
+                break;
+            case CBACK:
+                tagindex = ep[1];       /* pattern tag index */
+                c = *brastart[tagindex];
+                break;
+            default:
+                do {
+                    if( lp == locs )
+                        break;
+                    if( advance( lp, ep ) )
+                        return( true );
+                } while( lp-- > curlp );
+                return( false );
             }
 
             do {
@@ -371,14 +377,12 @@ static bool advance(
 
         case CBRA | STAR:               /* start of starred tagged pattern */
             {
-                int const       tagindex = *ep;
-                bool            matched = false;
+                bool    matched = false;
 
-                curlp = lp;                 /* save closure start loc */
-                ct = ep[1];
-                bracend[tagindex] = bbeg = tep = lp;
-                ep++;
-                while( advance( brastart[tagindex] = bracend[tagindex], ep+1 ) && bracend[tagindex] > brastart[tagindex] )
+                tagindex = *ep++;       /* pattern tag index */
+                curlp = bracend[tagindex] = bbeg = tep = lp;    /* save closure start loc */
+                ct = *(unsigned char *)ep;
+                while( advance( brastart[tagindex] = bracend[tagindex], ep + 1 ) && bracend[tagindex] > brastart[tagindex] )
                     if( advance( bracend[tagindex], ep + ct ) ) { /* Try to match RE after \(...\) */
                         matched = true;          /* Remember greediest match */
                         bbeg = brastart[tagindex];
@@ -396,15 +400,15 @@ static bool advance(
 
         case CBRA | MTYPE:              /* \(...\)\{m,n\} WFB */
             {
-                int const       tagindex = *ep;
-                int             matched = false;
+                int     matched = false;
 
-                curlp = lp;             /* save closure start loc */
-                ct = ep[1];
-                i1 = (unsigned char)ep[ct - 1], i2 = (unsigned char)ep[ct];
-                bracend[tagindex] = bbeg = tep = lp;
+                tagindex = *ep;         /* pattern tag index */
+                curlp = bracend[tagindex] = bbeg = tep = lp;    /* save closure start loc */
+                ct = *(unsigned char *)(ep + 1);
+                i1 = *(unsigned char *)(ep + ct - 1);
+                i2 = *(unsigned char *)(ep + ct);
 
-                while( i1 && advance( lp, ep+2 ) && bracend[tagindex] > lp )
+                while( i1 && advance( lp, ep + 2 ) && bracend[tagindex] > lp )
                     brastart[tagindex] = lp, lp = bracend[tagindex], i1--;
                 if( i1 )
                     return( false );
@@ -413,13 +417,13 @@ static bool advance(
                 if( i2 == 0xFF )
                     i2 = MAXBUF;
 
-                while( advance( brastart[tagindex] = bracend[tagindex], ep+2 ) && bracend[tagindex] > brastart[tagindex] && i2 )
+                while( advance( brastart[tagindex] = bracend[tagindex], ep+2 ) && bracend[tagindex] > brastart[tagindex] && i2 ) {
                     if( i2--, advance( bracend[tagindex], ep + ct + 1 ) ) { /* Try to match RE after \(...\) */
                         matched = true; /* Remember greediest match */
                         bbeg = brastart[tagindex];
                         tep = bracend[tagindex];
                     }
-
+                }
                 if( matched ) {         /* Did we match RE after \(...\) */
                     brastart[tagindex] = bbeg; /* Set details of match */
                     bracend[tagindex] = tep;
@@ -433,7 +437,8 @@ static bool advance(
 
         case CCHR | MTYPE:              /* Match <literal char>\{...\} */
             c = *ep++;                  /* Get byte and skip to next element */
-            i1 = *(unsigned char *)ep++, i2 = *(unsigned char *)ep++;
+            i1 = *(unsigned char *)ep++;
+            i2 = *(unsigned char *)ep++;
             while( c == *lp && i1 )
                 lp++, i1--;
             if( i1 )
@@ -449,11 +454,13 @@ static bool advance(
 
         case CKET | STAR:               /* match \(..\)* */
         case CKET | MTYPE:              /* match \(..\)\{...\} */
-            bracend[(int)*ep] = lp;     /* mark it */
+            tagindex = *ep;             /* pattern tag index */
+            bracend[tagindex] = lp;     /* mark it */
             return( true );
 
         case CDOT | MTYPE:              /* match .\{...\} */
-            i1 = *(unsigned char *)ep++, i2 = *(unsigned char *)ep++;
+            i1 = *(unsigned char *)ep++;
+            i2 = *(unsigned char *)ep++;
             while( *lp && i1 )
                 lp++, i1--;
             if( i1 )
@@ -470,7 +477,8 @@ static bool advance(
         case CCL | MTYPE:               /* match [...]\{...\} */
             tep = ep;
             ep += CHARSETSIZE;
-            i1 = *(unsigned char *)ep++, i2 = *(unsigned char *)ep++;
+            i1 = *(unsigned char *)ep++;
+            i2 = *(unsigned char *)ep++;
             /* WFB 1 CCL|MTYPE handler must be like CCHR|MTYPE or off by 1 */
             while( c = *lp, TESTCHARSET( tep, c ) && i1 )
                 lp++, i1--;
@@ -486,9 +494,11 @@ static bool advance(
             goto star;
 
         case CBACK | MTYPE:             /* e.g. \(.\)\1\{5\} */
-            bbeg = brastart[(int)*ep];
-            ct = bracend[(int)*ep++] - bbeg;
-            i1 = *(unsigned char *)ep++, i2 = *(unsigned char *)ep++;
+            tagindex = *ep++;           /* pattern tag index */
+            bbeg = brastart[tagindex];
+            ct = bracend[tagindex] - bbeg;
+            i1 = *(unsigned char *)ep++;
+            i2 = *(unsigned char *)ep++;
             while( memeql( bbeg, lp, ct ) && i1 )
                 lp += ct, i1--;
             if( i1 )
@@ -499,7 +509,7 @@ static bool advance(
                 i2 = MAXBUF;
             curlp = lp;
             while( memeql( bbeg, lp, ct ) && i2 )
-                lp+= ct, i2--;
+                lp += ct, i2--;
             while( lp >= curlp ) {
                 if( advance( lp, ep ) )
                     return( true );
@@ -557,7 +567,7 @@ static void dosub( char const *rhsbuf ) /* where to put the result */
         *sp++ = *lp++;
     }
 
-    for( rp = rhsbuf; ( c = *(unsigned char *)rp++ ) != 0; ) {
+    for( rp = rhsbuf; (c = *(unsigned char *)rp++) != 0; ) {
         if( c == '&' ) {
             sp = place( sp, loc1, loc2 );
         } else if( c >= ('1' | 0x80) && c <= ('9' | 0x80) ) {
@@ -921,8 +931,8 @@ static void readout( void )
             printf( "%s\n", lhs );
         else {                          /* process "r" cmd */
             if( ( fi = fopen( lhs, "r" ) ) != NULL ) {
-                while( ( t = getc( fi ) ) != EOF )
-                    putc( ( char ) t, stdout );
+                while( (t = getc( fi )) != EOF )
+                    putc( (char)t, stdout );
                 fclose( fi );
             }
         }

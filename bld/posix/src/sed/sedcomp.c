@@ -596,6 +596,7 @@ static char *recomp(
     char            *obr[MAXTAGS+1] = {0}; /* ep values when \( seen */
     int             opentags = 0;       /* Used to index obr */
     int             i;
+    char            tagindex;
 
     if( *cp == redelim ) {              /* if first char is RE endmarker */
         cp++;
@@ -637,20 +638,21 @@ static char *recomp(
                     *brnestp++ = (char)bcount; /* update tag stack */
                     obr[opentags] = ep; /* Remember for /(.../)* */
                 }
+                tagindex = bcount;
                 opentags++;
                 *ep++ = CBRA;           /* enter tag-start */
-                *ep++ = (char)bcount;
+                *ep++ = tagindex;
                 break;
             case ')':                   /* end tagged section */
                 if( --opentags < 0 ) {  /* extra \) */
                     cp = sp;
                     return( BAD );
                 }
-                *ep++ = CKET;           /* enter end-of-tag */
+                tagindex = 0;
                 if( ++tags <= MAXTAGS ) /* count closed tags */
-                    *ep++ = *--brnestp; /* pop tag stack */
-                else
-                    *ep++ = 0;          /* Placeholder - should not be used */
+                    tagindex = *--brnestp; /* pop tag stack */
+                *ep++ = CKET;           /* enter end-of-tag */
+                *ep++ = tagindex;
                 break;
             case '\n':                  /* escaped newline no good */
                 cp = sp;
@@ -663,14 +665,22 @@ static char *recomp(
                 goto defchar;
             case '\\':                  /* match a literal backslash */
                 goto defchar;
+            case '1':                   /* tag use */
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+                tagindex = c - '0';
+                if( tagindex > tags ) /* too few */
+                    return( BAD );
+                *ep++ = CBACK;      /* enter tag mark */
+                *ep++ = tagindex;   /* and the number */
+                break;
             default:
-                if( c >= '1' && c <= '9' ) { /* tag use */
-                    if( ( c -= '0' ) > tags ) /* too few */
-                        return( BAD );
-                    *ep++ = CBACK;      /* enter tag mark */
-                    *ep++ = c;          /* and the number */
-                    break;
-                }
 #if 1
                 /* This allows \ to stop "special" even if it is not. */
                 goto defchar;           /* else match \c */
