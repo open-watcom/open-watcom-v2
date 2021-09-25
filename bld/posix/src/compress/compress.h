@@ -151,8 +151,6 @@ char *malloc();
                         /* memory model restrictions.  There is no */
                         /* such thing as a FAR pointer in MINIX-PC */
 #ifdef MINIX            /* Unix V7 clone for Atari ST */
-#define strchr  index
-#define strrchr rindex
 #define DFLTBITS 13     /* compatible with original MINIX compress, max=16 */
 #ifndef KEEPFLAG
 #define KEEPFLAG true   /* compatible with original MINIX compress */
@@ -314,7 +312,7 @@ char *malloc();
 
 #ifdef MINIX
 #define assert(x)
-extern char *index(), *rindex(), *strcat(), *strcpy(), *strncat(), *strncpy();
+extern char *strcat(), *strcpy(), *strncat(), *strncpy();
 #else
 #include <assert.h>
 #include <string.h>

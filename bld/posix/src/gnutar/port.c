@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -132,15 +133,6 @@ int lstat(const char * path, struct stat * buf)
         return (stat(path, buf));
 }
 
-/*
- * valloc() does a malloc() on a page boundary.  On some systems,
- * this can make large block I/O more efficient.
- */
-char *valloc(unsigned size)
-{
-        return (malloc(size));
-}
-
 #ifndef MSDOS
 /*
 **                              NMKDIR.C
@@ -204,58 +196,3 @@ int mkdir( char *dpath, mode_t dmode )
 
 #endif                                                  /* MSDOS */
 #endif
-
-#ifdef USG
-/*
- * Translate V7 style into Sys V style.
- */
-#include <string.h>
-#ifndef __WATCOMC__
-#include <memory.h>
-#endif
-
-char * index(char *s, int c)
-{
-        return (strchr(s, c));
-}
-
-char * rindex(char *s, int c)
-{
-        return (strrchr(s, c));
-}
-
-/*
- * bcopy is defined in string.h
- */
-void bcopy( const void *__s1, void *__s2, size_t __n )
-{
-        memcpy(__s2, __s1, __n);
-}
-
-#if 0
-char           *
-bcopy(s1, s2, n)
-char           *s1, *s2;
-int             n;
-{
-        (void) memcpy(s2, s1, n);
-        return (s1);
-}
-
-void bzero(char * s1, int n)
-{
-        memset(s1, 0, n);
-}
-#endif
-
-#endif
-
-#ifdef V7
-
-void bzero(char * s1, int n)
-{
-        while (n-- > 0)
-                *s1++ = 0;
-}
-
-#endif /* V7 */

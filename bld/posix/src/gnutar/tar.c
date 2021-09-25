@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -446,7 +446,7 @@ char* fixname( char *s )
          */
         --q;
         if( *q != '/' ) {
-            lsl = rindex(buf, '/');
+            lsl = strrchr(buf, '/');
             if (lsl == NULL) {
                 lsl = buf;
             } else {
@@ -466,12 +466,12 @@ char* fixname( char *s )
             }
             *q = '\0';
 
-            q = index(lsl, '.');
+            q = strchr(lsl, '.');
             if( q - lsl > 8 ) {
                 uprintf( ftty, "tar: the file name of %s is too long\n", buf );
                 strcpy( lsl+8, q );
                 uprintf( ftty, "tar: truncating to %s\n", buf );
-                q = index(lsl, '.');
+                q = strchr(lsl, '.');
             }
             if( strlen(q) > 4 ) {
                 uprintf( ftty, "tar: the file extension of %s is too long\n", buf );
