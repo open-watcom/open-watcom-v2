@@ -568,7 +568,9 @@ static char *rhscomp(
                                         /* check validity of pattern tag */
             if( *rhsp > bcount + '0' && *rhsp <= '9' )
                 return( BAD );
-            *rhsp++ |= 0x80;            /* mark the good ones */
+            if( *rhsp >= '1' && *rhsp <= '9' ) {
+                *rhsp++ |= 0x80;            /* mark the good ones */
+            }
         } else if( *rhsp == delim ) {   /* found RE end, hooray... */
             *rhsp++ = '\0';             /* cap the expression string */
             cp = p;
