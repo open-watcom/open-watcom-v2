@@ -557,7 +557,7 @@ static void dosub( char const *rhsbuf ) /* where to put the result */
         *sp++ = *lp++;
     }
 
-    for( rp = rhsbuf; ( c = *rp++ ) != 0; ) {
+    for( rp = rhsbuf; ( c = *(unsigned char *)rp++ ) != 0; ) {
         if( c == '&' ) {
             sp = place( sp, loc1, loc2 );
         } else if( c >= ('1' | 0x80) && c <= ('9' | 0x80) ) {
