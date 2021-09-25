@@ -1,12 +1,10 @@
 @echo off
 REM Script to build the Open Watcom tools
+set NUL=NUL
+if '%OS%' == 'Windows_NT' set NUL=
 if not exist %OWBINDIR%\%OWOBJDIR%\%NUL% mkdir %OWBINDIR%\%OWOBJDIR%
 set OWBUILDER_BOOTX_OUTPUT=%OWBINDIR%\%OWOBJDIR%\bootx.log
-set NUL=NUL
-if not '%OS%' == 'Windows_NT' goto skip1
-set OWBUILDER_REDIR_ERROUT=2^>^&1
-set NUL=
-:skip1
+if '%OS%' == 'Windows_NT' set OWBUILDER_REDIR_ERROUT=2^>^&1
 if exist %OWBUILDER_BOOTX_OUTPUT% del %OWBUILDER_BOOTX_OUTPUT%
 cd %OWSRCDIR%\wmake
 if not exist %OWOBJDIR%\%NUL% mkdir %OWOBJDIR%

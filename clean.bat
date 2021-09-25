@@ -1,8 +1,6 @@
 @echo off
 set NUL=NUL
-if not '%OS%' == 'Windows_NT' goto skipnt
-set NUL=
-:skipnt
+if '%OS%' == 'Windows_NT' set NUL=
 if not exist %OWBINDIR%\%OWOBJDIR%\builder.exe goto nobuilder
 REM delete the builder and wmake build directories
 if exist %OWSRCDIR%\builder\%OWOBJDIR%\*.exe del %OWSRCDIR%\builder\%OWOBJDIR%\*.exe
