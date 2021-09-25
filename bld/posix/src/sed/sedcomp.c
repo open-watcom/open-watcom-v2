@@ -31,7 +31,6 @@ resolves references at the end.
 
 #define SKIPWS(pc)      while( isspace( *pc ) ) pc++
 #define ABORT(msg)      fprintf( stderr, msg, linebuf ), myexit( 2 )
-#define IFEQ(x, v)      if( *x == v ) x++ , /* do expression */
 
 typedef struct                          /* represent a command label */
 {
@@ -269,11 +268,10 @@ int main( int argc, char *argv[] )
 /* precompile sed commands out of a file */
 static void compile( void )
 {
-    #define H       0x80        /* 128 bit, on if there's code for command */
-    #define LOWCMD  56          /* = '8', lowest char indexed in cmdmask */
+    #define LOWCMD      '8'     /* lowest char indexed in cmdmask */
 
     /* indirect through this to get command internal code, if it exists */
-    static unsigned char const   cmdmask[] = {
+    static const cmdcode        cmdmask[] = {
         0,     0,      H,      0,      0,       H+EQCMD, 0,           0, /* 89:;<=>? */
         0,     0,      0,      0,      H+CDCMD, 0,       0,       CGCMD, /* @ABCDEFG */
         CHCMD, 0,      0,      0,      0,       0,       CNCMD,       0, /* HIJKLMNO */
@@ -285,21 +283,23 @@ static void compile( void )
         XCMD,  H+YCMD, 0,      H+BCMD, 0,       H,       0,           0, /* xyz{|}~  */
     };
 
-    unsigned char   ccode = 0;
+    cmdcode     ccode = 0;
 
     for( ;; ) {                         /* main compilation loop */
-        if( !cp ) {
+        if( cp == NULL ) {
             cp = linebuf;
             if( !cmdline( cp ) )
                 break;
-            if( *cp == '#' ) {          /* if the first two characters in the script are "#n" , */
+            if( cp[0] == '#' ) {          /* if the first two characters in the script are "#n" , */
                 if( cp[1] == 'n' )
                     nflag = true;       /* the default output shall be suppressed */
                 continue;
             }
-        } else if( *cp != ';' )         /* get a new command line */
-            if( !cmdline( cp = linebuf ) )
+        } else if( *cp != ';' ) {       /* get a new command line */
+            if( !cmdline( cp = linebuf ) ) {
                 break;
+            }
+        }
         SKIPWS( cp );
         if( *cp == '\0' || *cp == '#' ) /* a comment */
             continue;
@@ -336,15 +336,17 @@ static void compile( void )
             ABORT( TMTXT );             /* Not exercised by sedtest.mak */
 
         SKIPWS( cp );                   /* discard whitespace after address */
-        IFEQ( cp, '!' )
+        if( *cp == '!' ) {
+            cp++;
             cmdp->flags.allbut = 1;
+        }
 
         SKIPWS( cp );                   /* get cmd char, range-check it */
-        if( ( *cp < LOWCMD ) || ( *cp > '~' ) || ( ( ccode = cmdmask[*cp - LOWCMD] ) == 0 ) )
+        if( ( *cp < LOWCMD ) || ( *cp > '~' ) || ( (ccode = cmdmask[*cp - LOWCMD]) == 0 ) )
             ABORT( NSCAX );
 
         cmdp->command = ccode & ~H;     /* fill in command value */
-        if( ( ccode & H ) == 0 )        /* if no compile-time code */
+        if( (ccode & H) == 0 )          /* if no compile-time code */
             cp++;                       /* discard command char */
         else if( cmdcomp( *cp++ ) )     /* execute it; if ret = 1 */
             continue;                   /* skip next line read */
@@ -487,20 +489,25 @@ static int cmdcomp( char cchar )        /* character name of command */
             ABORT( CGMSG );
         if( gflag )
             cmdp->flags.global++;
-        while( *cp == 'g' || *cp == 'p' || *cp == 'P' || isdigit( *cp ) ) {
-            IFEQ( cp, 'g' )
+        for( ;; ) {
+            if( *cp == 'g' ) {
+                cp++;
                 cmdp->flags.global++;
-            IFEQ( cp, 'p' )
+            } else if( *cp == 'p' ) {
+                cp++;
                 cmdp->flags.print = 1;
-            IFEQ( cp, 'P' )
+            } else if( *cp == 'P' ) {
+                cp++;
                 cmdp->flags.print = 2;
-            if( isdigit( *cp ) ) {
+            } else if( isdigit( *cp ) ) {
                 i = 0;
-                while (isdigit(*cp))
-                    i = i*10 + *cp++ - '0';
-                if (i == 0 || i >= 2048)
-                    ABORT(SMCNT);
-                cmdp->flags.nthone = (unsigned)i;
+                while( isdigit( *cp ) )
+                    i = i * 10 + *cp++ - '0';
+                if( i == 0 || i >= 2048 )
+                    ABORT( SMCNT );
+                cmdp->flags.nthone = i;
+            } else {
+                break;
             }
         }
         /* fall through */
@@ -560,23 +567,25 @@ static char *rhscomp(
     char       delim )                  /* RE end-mark to find */
                                         /* uses bcount */
 {
-    char       *p = cp;                 /* strictly for speed */
+    char       c;
 
-    for( ;; )
-        if( ( *rhsp = *p++ ) == '\\' ) { /* copy; if it's a \, */
-            *rhsp = *p++;               /* copy escaped char */
-                                        /* check validity of pattern tag */
-            if( *rhsp > bcount + '0' && *rhsp <= '9' )
+    for( ;; ) {
+        c = *cp++;
+        if( c == '\\' ) {           /* copy; if it's a \, */
+            c = *cp++;
+            if( c > bcount + '0' && c <= '9' ) /* check validity of pattern tag */
                 return( BAD );
-            if( *rhsp >= '1' && *rhsp <= '9' ) {
-                *rhsp++ |= 0x80;            /* mark the good ones */
+            if( c >= '1' && c <= '9' ) {
+                c |= 0x80;          /* mark the good ones */
             }
-        } else if( *rhsp == delim ) {   /* found RE end, hooray... */
-            *rhsp++ = '\0';             /* cap the expression string */
-            cp = p;
-            return( rhsp );             /* pt at 1 past the RE */
-        } else if( *rhsp++ == '\0' )    /* last ch not RE end, help! */
+        } else if( c == delim ) {   /* found RE end, hooray... */
+            *rhsp++ = '\0';         /* cap the expression string */
+            return( rhsp );         /* pt at 1 past the RE */
+        } else if( c == '\0' ) {    /* last ch not RE end, help! */
             return( BAD );
+        }
+        *rhsp++ = c;
+    }
 }
 
 /* compile a regular expression to internal form */
@@ -696,7 +705,7 @@ static char *recomp(
                     int i1 = 0;
                     int i2 = 0;
 
-                    if( !lastep ) {
+                    if( lastep == NULL ) {
                         cp = sp;
                         return( BAD ); /* rep error */
                     }
@@ -712,21 +721,21 @@ static char *recomp(
                         return( BAD );
                     }
                     *ep++ = (char)i1;
-                    if( *sp == '\\' && sp[1] == /* '{' vi brace balancing */ '}' ) {
+                    if( sp[0] == '\\' && sp[1] == /* '{' vi brace balancing */ '}' ) {
                         sp += 2;
                         *ep++ = 0;
-                    } else if( *sp == ',' && sp[1] == '\\' && sp[2] == /* '{' vi brace balancing */ '}' ) {
+                    } else if( sp[0] == ',' && sp[1] == '\\' && sp[2] == /* '{' vi brace balancing */ '}' ) {
                         sp += 3;
                         *ep++ = '\xFF';
-                    } else if( *sp++ ==',') {
-                        if ( !isdigit( *sp ) ) {
+                    } else if( *sp++ == ',' ) {
+                        if( !isdigit( *sp ) ) {
                             *ep++ = '\xFF';
                         } else {
-                            while (isdigit( *sp ) )
+                            while( isdigit( *sp ) )
                                 i2 = i2 * 10 + *sp++ - '0';
                             *ep++ = (char)( i2 - i1 );
                         }
-                        if( *sp != '\\' || sp[1] != /* '{' vi brace balancing */ '}' || i2 < i1 || i2 > 255 ) {
+                        if( sp[0] != '\\' || sp[1] != /* '{' vi brace balancing */ '}' || i2 < i1 || i2 > 255 ) {
                             cp = sp;
                             return( BAD );
                         }

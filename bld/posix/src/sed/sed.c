@@ -218,12 +218,12 @@ static bool match(
     p2 = expbuf;
     if( *p2++ ) {
         loc1 = p1;
-        if( *p2 == CCHR && p2[1] != *p1 ) /* 1st char is wrong */
+        if( p2[0] == CCHR && p2[1] != *p1 ) /* 1st char is wrong */
             return( false );            /*   so fail */
         return( advance( p1, p2 ) );    /* else try to match rest */
     }
                                         /* literal 1st character quick check */
-    if( *p2 == CCHR ) {
+    if( p2[0] == CCHR ) {
         c = p2[1];                      /* pull out character to search for */
         do {
             if( *p1 == c ) {            /* scan the source string */
@@ -344,7 +344,7 @@ static bool advance(
             if( --lp == curlp )         /* 0 matches */
                 break;
 
-            switch( *ep ) {
+            switch( ep[0] ) {
             case CCHR:
                 c = ep[1];
                 break;
@@ -556,6 +556,7 @@ static void dosub( char const *rhsbuf ) /* where to put the result */
     char            *sp;
     char const      *rp;
     int             c;
+    int             tagindex;
                                         /* linebuf upto location 1 -> genbuf */
     lp = linebuf;
     sp = genbuf;
@@ -571,7 +572,8 @@ static void dosub( char const *rhsbuf ) /* where to put the result */
         if( c == '&' ) {
             sp = place( sp, loc1, loc2 );
         } else if( c >= ('1' | 0x80) && c <= ('9' | 0x80) ) {
-            sp = place( sp, brastart[(c & 0x7F) - '0'], bracend[(c & 0x7F) - '0'] );
+            tagindex = (c & 0x7F) - '0';
+            sp = place( sp, brastart[tagindex], bracend[tagindex] );
         } else {
             if( sp >= genbuf + GENSIZ ) { /* Not exercised by sedtest.mak */
                 fprintf( stderr, NOROOM, GENSIZ, lnum );
