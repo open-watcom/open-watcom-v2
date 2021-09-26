@@ -43,6 +43,7 @@ typedef enum cmdcode {
 
 #define SETCHARSET(a,c)     (a[(unsigned char)c >> 3] |= bits[c & 7])
 #define TESTCHARSET(a,c)    (a[(unsigned char)c >> 3] & bits[c & 7])
+#define TESTCHARSETINC(a,p) (a[*(unsigned char *)(p) >> 3] & bits[*(unsigned char *)(p++) & 7])
 
 typedef struct cmd_t    sedcmd;         /* use this name for declarations */
 struct cmd_t {                          /* compiled-command representation */

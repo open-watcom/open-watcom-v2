@@ -113,8 +113,7 @@ static bool advance(
             return( true );             /* return true */
 
         case CCL:                       /* a closure */
-            c = *lp++;
-            if( !TESTCHARSET( ep, c ) ) /* is char in set? */
+            if( !TESTCHARSETINC( ep, lp ) ) /* is char in set? */
                 return( false );        /* return false */
             ep += CHARSETSIZE;          /* skip rest of bitmask */
             break;                      /*   and keep going */
@@ -168,7 +167,8 @@ static bool advance(
 
         case CCL | STAR:                /* match [...]* */
             curlp = lp;                 /* save closure start loc */
-            while( c = *lp++, TESTCHARSET( ep, c ) );
+            while( TESTCHARSET( ep, lp ) )
+                ;
             ep += CHARSETSIZE;          /* skip past the set */
             goto star;                  /* match followers */
 
@@ -312,8 +312,10 @@ static bool advance(
             i1 = *(unsigned char *)ep++;
             i2 = *(unsigned char *)ep++;
             /* WFB 1 CCL|MTYPE handler must be like CCHR|MTYPE or off by 1 */
-            while( c = *lp, TESTCHARSET( tep, c ) && i1 )
-                lp++, i1--;
+            while( c = *lp, TESTCHARSET( tep, c ) && i1 ) {
+                lp++;
+                i1--;
+            }
             if( i1 )
                 return( false );
             if( !i2 )
@@ -321,7 +323,7 @@ static bool advance(
             if( i2 == 0xFF )
                 i2 = MAXBUF;
             curlp = lp;
-            while( c = *lp++, TESTCHARSET( tep, c ) && i2 )
+            while( TESTCHARSET( tep, lp ) && i2 )
                 i2--;
             goto star;
 
