@@ -167,7 +167,7 @@ static bool advance(
 
         case CCL | STAR:                /* match [...]* */
             curlp = lp;                 /* save closure start loc */
-            while( TESTCHARSET( ep, lp ) )
+            while( TESTCHARSETINC( ep, lp ) )
                 ;
             ep += CHARSETSIZE;          /* skip past the set */
             goto star;                  /* match followers */
@@ -323,7 +323,7 @@ static bool advance(
             if( i2 == 0xFF )
                 i2 = MAXBUF;
             curlp = lp;
-            while( TESTCHARSET( tep, lp ) && i2 )
+            while( TESTCHARSETINC( tep, lp ) && i2 )
                 i2--;
             goto star;
 
