@@ -89,6 +89,7 @@ static bool advance(
     int             i1;
     int             i2;
     int             tagindex;
+    bool            matched;
 
     for( ;; ) {
         switch( *ep++ ) {
@@ -98,13 +99,13 @@ static bool advance(
             break;                      /* matched */
 
         case CDOT:                      /* anything but NUL */
-            if( *lp++ == 0 )            /* first NUL is at EOL */
+            if( *lp++ == '\0' )         /* first NUL is at EOL */
                 return( false );        /* return false */
             break;                      /* matched */
 
         case CNL:                       /* start-of-line */
         case CDOL:                      /* end-of-line */
-            if( *lp != 0 )              /* found that first NUL? */
+            if( *lp != '\0' )           /* found that first NUL? */
                 return( false );        /* return false */
             break;                      /* matched */
 
@@ -146,7 +147,6 @@ static bool advance(
             curlp = lp;
             while( memeql( bbeg, lp, ct ) )
                 lp += ct;
-
             while( lp >= curlp ) {
                 if( advance( lp, ep ) )
                     return( true );
@@ -156,12 +156,14 @@ static bool advance(
 
         case CDOT | STAR:               /* match .* */
             curlp = lp;                 /* save closure start loc */
-            while( *lp++ != '\0' ) ;    /* match anything */
+            while( *lp++ != '\0' )      /* match anything */
+                ;
             goto star;                  /* now look for followers */
 
         case CCHR | STAR:               /* match <literal char>* */
             curlp = lp;                 /* save closure start loc */
-            while( (*lp++ == *ep) != '\0' ) ;     /* match many of that char */
+            while( (*lp++ == *ep) != '\0' ) /* match many of that char */
+                ;
             ep++;                       /* to start of next element */
             goto star;                  /* match it and followers */
 
@@ -208,71 +210,66 @@ static bool advance(
             exit( 2 );
 
         case CBRA | STAR:               /* start of starred tagged pattern */
-            {
-                bool    matched = false;
-
-                tagindex = *ep++;       /* pattern tag index */
-                curlp = bracend[tagindex] = bbeg = tep = lp;    /* save closure start loc */
-                ct = *(unsigned char *)ep;
-                while( advance( brastart[tagindex] = bracend[tagindex], ep + 1 ) && bracend[tagindex] > brastart[tagindex] )
-                    if( advance( bracend[tagindex], ep + ct ) ) { /* Try to match RE after \(...\) */
-                        matched = true;          /* Remember greediest match */
-                        bbeg = brastart[tagindex];
-                        tep = bracend[tagindex];
-                    }
-
-                if( matched ) {                  /* Did we match RE after \(...\) */
-                    brastart[tagindex] = bbeg;    /* Set details of match */
-                    bracend[tagindex] = tep;
-                    return( true );
+            tagindex = *ep++;       /* pattern tag index */
+            curlp = bracend[tagindex] = bbeg = tep = lp;    /* save closure start loc */
+            ct = *(unsigned char *)ep;
+            matched = false;
+            while( advance( brastart[tagindex] = bracend[tagindex], ep + 1 ) && bracend[tagindex] > brastart[tagindex] ) {
+                if( advance( bracend[tagindex], ep + ct ) ) { /* Try to match RE after \(...\) */
+                    matched = true;          /* Remember greediest match */
+                    bbeg = brastart[tagindex];
+                    tep = bracend[tagindex];
                 }
-
-                return( advance( bracend[tagindex], ep + ct ) ); /* Zero matches */
             }
+            if( matched ) {                  /* Did we match RE after \(...\) */
+                brastart[tagindex] = bbeg;    /* Set details of match */
+                bracend[tagindex] = tep;
+                return( true );
+            }
+            return( advance( bracend[tagindex], ep + ct ) ); /* Zero matches */
 
         case CBRA | MTYPE:              /* \(...\)\{m,n\} WFB */
-            {
-                int     matched = false;
+            tagindex = *ep;         /* pattern tag index */
+            curlp = bracend[tagindex] = bbeg = tep = lp;    /* save closure start loc */
+            ct = *(unsigned char *)(ep + 1);
+            i1 = *(unsigned char *)(ep + ct - 1);
+            i2 = *(unsigned char *)(ep + ct);
 
-                tagindex = *ep;         /* pattern tag index */
-                curlp = bracend[tagindex] = bbeg = tep = lp;    /* save closure start loc */
-                ct = *(unsigned char *)(ep + 1);
-                i1 = *(unsigned char *)(ep + ct - 1);
-                i2 = *(unsigned char *)(ep + ct);
-
-                while( i1 && advance( lp, ep + 2 ) && bracend[tagindex] > lp )
-                    brastart[tagindex] = lp, lp = bracend[tagindex], i1--;
-                if( i1 )
-                    return( false );
-                if( !i2 )
-                    return( advance( bracend[tagindex], ep + ct + 1 ) ); /* Zero matches */
-                if( i2 == 0xFF )
-                    i2 = MAXBUF;
-
-                while( advance( brastart[tagindex] = bracend[tagindex], ep+2 ) && bracend[tagindex] > brastart[tagindex] && i2 ) {
-                    if( i2--, advance( bracend[tagindex], ep + ct + 1 ) ) { /* Try to match RE after \(...\) */
-                        matched = true; /* Remember greediest match */
-                        bbeg = brastart[tagindex];
-                        tep = bracend[tagindex];
-                    }
-                }
-                if( matched ) {         /* Did we match RE after \(...\) */
-                    brastart[tagindex] = bbeg; /* Set details of match */
-                    bracend[tagindex] = tep;
-                    return( true );
-                }
-
-                if( i1 )
-                    return( false );
-                return( advance( bracend[tagindex], ep + ct + 1 ) ); /* Zero matches */
+            while( i1 && advance( lp, ep + 2 ) && bracend[tagindex] > lp ) {
+                brastart[tagindex] = lp;
+                lp = bracend[tagindex];
+                i1--;
             }
+            if( i1 )
+                return( false );
+            if( !i2 )
+                return( advance( bracend[tagindex], ep + ct + 1 ) ); /* Zero matches */
+            if( i2 == 0xFF )
+                i2 = MAXBUF;
+
+            matched = false;
+            while( advance( brastart[tagindex] = bracend[tagindex], ep+2 ) && bracend[tagindex] > brastart[tagindex] && i2 ) {
+                if( i2--, advance( bracend[tagindex], ep + ct + 1 ) ) { /* Try to match RE after \(...\) */
+                    matched = true; /* Remember greediest match */
+                    bbeg = brastart[tagindex];
+                    tep = bracend[tagindex];
+                }
+            }
+            if( matched ) {         /* Did we match RE after \(...\) */
+                brastart[tagindex] = bbeg; /* Set details of match */
+                bracend[tagindex] = tep;
+                return( true );
+            }
+            return( advance( bracend[tagindex], ep + ct + 1 ) ); /* Zero matches */
 
         case CCHR | MTYPE:              /* Match <literal char>\{...\} */
             c = *ep++;                  /* Get byte and skip to next element */
             i1 = *(unsigned char *)ep++;
             i2 = *(unsigned char *)ep++;
-            while( c == *lp && i1 )
-                lp++, i1--;
+            while( c == *lp && i1 ) {
+                lp++;
+                i1--;
+            }
             if( i1 )
                 return( false );
             if( !i2 )
@@ -293,8 +290,10 @@ static bool advance(
         case CDOT | MTYPE:              /* match .\{...\} */
             i1 = *(unsigned char *)ep++;
             i2 = *(unsigned char *)ep++;
-            while( *lp && i1 )
-                lp++, i1--;
+            while( *lp != '\0' && i1 ) {
+                lp++;
+                i1--;
+            }
             if( i1 )
                 return( false );
             if( !i2 )
@@ -302,7 +301,7 @@ static bool advance(
             if( i2 == 0xFF )
                 i2 = MAXBUF;
             curlp = lp;
-            while( *lp++ && i2 )
+            while( *lp++ != '\0' && i2 )
                 i2--;
             goto star;
 
@@ -333,8 +332,10 @@ static bool advance(
             ct = bracend[tagindex] - bbeg;
             i1 = *(unsigned char *)ep++;
             i2 = *(unsigned char *)ep++;
-            while( memeql( bbeg, lp, ct ) && i1 )
-                lp += ct, i1--;
+            while( memeql( bbeg, lp, ct ) && i1 ) {
+                lp += ct;
+                i1--;
+            }
             if( i1 )
                 return( false );
             if( !i2 )
@@ -342,8 +343,10 @@ static bool advance(
             if( i2 == 0xFF )
                 i2 = MAXBUF;
             curlp = lp;
-            while( memeql( bbeg, lp, ct ) && i2 )
-                lp += ct, i2--;
+            while( memeql( bbeg, lp, ct ) && i2 ) {
+                lp += ct;
+                i2--;
+            }
             while( lp >= curlp ) {
                 if( advance( lp, ep ) )
                     return( true );
@@ -379,7 +382,8 @@ static bool match(
             return( false );
         p1 = linebuf;
         p2 = genbuf;
-        while( (*p1++ = *p2++) != '\0' ) ;
+        while( (*p1++ = *p2++) != '\0' )
+            ;
         locs = p1 = loc2;
     } else {
         p1 = ( is_cnt ) ? loc2 : linebuf;
@@ -402,7 +406,7 @@ static bool match(
                     return( loc1 = p1, 1 );
                 }
             }
-        } while( *p1++ );
+        } while( *p1++ != '\0' );
         return( false );                /* didn't find that first char */
     }
                                         /* else try unanchored pattern match */
@@ -410,7 +414,7 @@ static bool match(
         if( advance( p1, p2 ) ) {
             return( loc1 = p1, 1 );
         }
-    } while( *p1++ );
+    } while( *p1++ != '\0' );
                                         /* didn't match either way */
     return( false );
 }
@@ -451,7 +455,7 @@ static void dosub( char const *rhsbuf ) /* where to put the result */
         *sp++ = *lp++;
     }
 
-    for( rp = rhsbuf; (c = *rp++) != 0; ) {
+    for( rp = rhsbuf; (c = *rp++) != '\0'; ) {
         if( c == '&' ) {
             sp = place( sp, loc1, loc2 );
         } else if( c >= ('1' | '\x80') && c <= ('9' | '\x80') ) {
@@ -472,10 +476,11 @@ static void dosub( char const *rhsbuf ) /* where to put the result */
             fprintf( stderr, NOROOM, GENSIZ, lnum );
             break;
         }
-    } while( ( *sp++ = *lp++ ) != 0 );
+    } while( (*sp++ = *lp++) != '\0' );
     lp = linebuf;
     sp = genbuf;
-    while( ( *lp++ = *sp++ ) != 0 ) ;
+    while( (*lp++ = *sp++) != '\0' )
+        ;
     spend = lp - 1;
 }
 
@@ -488,7 +493,7 @@ static bool substitute( sedcmd const *ipc ) /* ptr to s command struct */
         return( false );                /* command fails */
 
     if( fcnt ) {
-        while( --fcnt > 0 && *loc2 && match( ipc->u.lhs, false, true ) )
+        while( --fcnt > 0 && *loc2 != '\0' && match( ipc->u.lhs, false, true ) )
             ;
         if( fcnt != 0 ) {
             return( false );            /* command fails */
@@ -499,7 +504,7 @@ static bool substitute( sedcmd const *ipc ) /* ptr to s command struct */
 
     if( ipc->flags.global ) {           /* if global flag enabled */
         /* cycle through possibles */
-        while( *loc2 && match( ipc->u.lhs, true, false ) ) {
+        while( *loc2 != '\0' && match( ipc->u.lhs, true, false ) ) {
             dosub( ipc->rhs );          /* so substitute */
         }
     }
@@ -516,13 +521,17 @@ static void listto(
     int         written = 0;
 
     while( p1 < p2 ) {
-        if( ++written >= linesize )
-            fprintf( fp, "%c\n", '\\' ), written = 1;
-        if( *p1 == '\\' )
-            putc( *p1, fp ), putc( *p1, fp ), written++; /* Double literal backslash */
-        else if( *p1 == '\n' || isprint( *p1 ) )
+        if( ++written >= linesize ) {
+            fprintf( fp, "%c\n", '\\' );
+            written = 1;
+        }
+        if( *p1 == '\\' ) {
+            putc( *p1, fp );            /* Double literal backslash */
+            putc( *p1, fp );
+            written++;
+        } else if( *p1 == '\n' || isprint( *p1 ) ) {
             putc( *p1, fp );            /* pass it through */
-        else {
+        } else {
             written++;
             putc( '\\', fp );           /* emit a backslash */
             switch( *p1 ) {
@@ -573,7 +582,7 @@ static char *getinpline( char *buf )  /* where to send the input */
      */
     memset( buf, 0xFF, room + 1 );
     *buf = '\0';
-    if (fgets(buf, room, stdin) != NULL) { /* gets() can smash program - WFB */
+    if( fgets(buf, room, stdin) != NULL ) { /* gets() can smash program - WFB */
         lnum++;                         /* note that we got another line */
         /* find the end of the input */
         while( buf[0] != '\0' || buf[1] != '\xFF' ) {
@@ -651,10 +660,12 @@ static void command( sedcmd *ipc )
 
     case CDCMD:                         /* delete a line in pattern space */
         p1 = p2 = linebuf;
-        while( *p1 && *p1 != '\n' ) p1++;
-        if( !*p1++ )
+        while( *p1 != '\0' && *p1 != '\n' )
+            p1++;
+        if( *p1++ == '\0' )
             return;
-        while( ( *p2++ = *p1++ ) != 0 ) ;
+        while( (*p2++ = *p1++) != '\0' )
+            ;
         spend = p2 - 1;
         delete = true;
         jump = true;
@@ -667,7 +678,8 @@ static void command( sedcmd *ipc )
     case GCMD:                          /* copy hold space to pattern space */
         p1 = linebuf;
         p2 = holdsp;
-        while( ( *p1++ = *p2++ ) != 0 ) ;
+        while( (*p1++ = *p2++) != '\0' )
+            ;
         spend = p1 - 1;
         break;
 
@@ -675,18 +687,20 @@ static void command( sedcmd *ipc )
         *spend++ = '\n';
         p1 = spend;
         p2 = holdsp;
-        while( ( *p1++ = *p2++ ) != 0 )
+        while( (*p1++ = *p2++) != '\0' ) {
             if( p1 >= linebuf + MAXBUF ) {
                 fprintf( stderr, NOROOM, MAXBUF, lnum );
                 break;
             }
+        }
         spend = p1 - 1;
         break;
 
     case HCMD:                          /* copy pattern space to hold space */
         p1 = holdsp;
         p2 = linebuf;
-        while( ( *p1++ = *p2++ ) != 0 ) ;
+        while( (*p1++ = *p2++) != '\0' )
+            ;
         hspend = p1 - 1;
         break;
 
@@ -694,7 +708,7 @@ static void command( sedcmd *ipc )
         *hspend++ = '\n';
         p1 = hspend;
         p2 = linebuf;
-        while( ( *p1++ = *p2++ ) != 0 ) {
+        while( (*p1++ = *p2++) != '\0' ) {
             if( p1 >= holdsp + MAXBUF ) {
                 fprintf( stderr, NOROOM, MAXBUF, lnum );
                 break;
@@ -719,7 +733,7 @@ static void command( sedcmd *ipc )
         if( !nflag )
             puts( linebuf );            /* flush out the current line */
         readout();                      /* do any pending a, r commands */
-        if( ( execp = getinpline( linebuf ) ) == NULL ) {
+        if( (execp = getinpline( linebuf )) == NULL ) {
             pending = ipc;
             delete = true;
             break;
@@ -730,7 +744,7 @@ static void command( sedcmd *ipc )
     case CNCMD:                         /* append next line to pattern space */
         readout();                      /* do any pending a, r commands */
         *spend++ = '\n';                /* seperate lines with '\n' */
-        if( ( execp = getinpline( spend ) ) == NULL ) {
+        if( (execp = getinpline( spend )) == NULL ) {
             *--spend = '\0';            /* Remove '\n' added for new line */
             pending = ipc;
             delete = true;
@@ -788,8 +802,8 @@ static void command( sedcmd *ipc )
         break;
 
     case CWCMD:                         /* write one line from pattern space */
-        for( p1 = linebuf; *p1 != '\n' && *p1 != '\0'; )
-            putc( *p1, ipc->fout ), p1++;
+        for( p1 = linebuf; *p1 != '\n' && *p1 != '\0'; p1++ )
+            putc( *p1, ipc->fout );
         putc( '\n', ipc->fout );
         break;
 
@@ -800,21 +814,24 @@ static void command( sedcmd *ipc )
     case XCMD:                          /* exchange pattern and hold spaces */
         p1 = linebuf;
         p2 = genbuf;
-        while( ( *p2++ = *p1++ ) != 0 ) ;
+        while( (*p2++ = *p1++) != '\0' )
+            ;
         p1 = holdsp;
         p2 = linebuf;
-        while( ( *p2++ = *p1++ ) != 0 ) ;
+        while( (*p2++ = *p1++) != '\0' )
+            ;
         spend = p2 - 1;
         p1 = genbuf;
         p2 = holdsp;
-        while( ( *p2++ = *p1++ ) != 0 ) ;
+        while( (*p2++ = *p1++) != '\0' )
+            ;
         hspend = p2 - 1;
         break;
 
     case YCMD:
         p1 = linebuf;
         p2 = ipc->u.lhs;
-        while( ( *p1 = p2[*(unsigned char *)p1] ) != 0 )
+        while( (*p1 = p2[*(unsigned char *)p1]) != '\0' )
             p1++;
         break;
 
@@ -828,7 +845,7 @@ static bool selected( sedcmd *ipc )
 {
     char            *p1 = ipc->addr1;       /* first address */
     char * const    p2 = ipc->addr2;        /*   and second */
-    int             c;
+    int             index;
     bool const      allbut = (bool)ipc->flags.allbut;
 
     if( p1 == NULL )
@@ -838,12 +855,12 @@ static bool selected( sedcmd *ipc )
         if( *p2 == CEND )
             p1 = NULL;
         else if( *p2 == CLNUM ) {
-            c = *(unsigned char *)(p2 + 1);
-            if( lnum > linenum[c] ) {
+            index = *(unsigned char *)(p2 + 1);
+            if( lnum > linenum[index] ) {
                 ipc->flags.inrange = false;
                 return( allbut );
             }
-            if( lnum == linenum[c] ) {
+            if( lnum == linenum[index] ) {
                 ipc->flags.inrange = false;
             }
         } else if( match( p2, false, false ) ) {
@@ -854,8 +871,8 @@ static bool selected( sedcmd *ipc )
             return( allbut );
         }
     } else if( *p1 == CLNUM ) {
-        c = *(unsigned char *)(p1 + 1);
-        if( lnum != linenum[c] )
+        index = *(unsigned char *)(p1 + 1);
+        if( lnum != linenum[index] )
             return( allbut );
         if( p2 != NULL ) {
             ipc->flags.inrange = true;
@@ -893,7 +910,7 @@ void execute( const char *file )        /* name of text source file to filter */
     for( ; pending == NULL; ) {
                                         /* get next line to filter */
                                         /* jump is set but not cleared by D */
-        if( ( execp = getinpline( jump ? spend : linebuf ) ) == NULL ) {
+        if( (execp = getinpline( jump ? spend : linebuf )) == NULL ) {
             if( jump ) {
                 for( p1 = linebuf; p1 < spend; p1++ )
                     putc( *p1, stdout );
@@ -905,8 +922,9 @@ void execute( const char *file )        /* name of text source file to filter */
         spend = execp;
                                         /* compiled commands execute loop */
         for( ipc = cmds; ipc->command != 0; ipc++ ) {
-            if( !selected( ipc ) )
+            if( !selected( ipc ) ) {
                 continue;
+            }
         doit:
             command( ipc );             /* execute the command pointed at */
 
