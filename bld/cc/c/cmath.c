@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1340,24 +1340,7 @@ TREEPTR BinOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
     case T_XOR_EQUAL:
     case T_OR_EQUAL:
         /* if op2 is a constant, check to see if constant truncated */
-        if( op2->op.opr == OPR_PUSHINT ) {
-            unsigned    max_value;
-
-            switch( TypeSize( typ ) ) {
-            case 1:
-                max_value = 0x000000FF;
-                break;
-            case 2:
-                max_value = 0x0000FFFF;
-                break;
-            default:
-                max_value = ~0U;
-                break;
-            }
-            if( op2->op.u2.ulong_value > max_value ) {
-                CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
-            }
-        }
+        AssRangeChk( typ, op2 );
         /* fall through */
     case T_AND_EQUAL:
     case T_RSHIFT_EQUAL:

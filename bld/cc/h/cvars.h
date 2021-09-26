@@ -355,6 +355,7 @@ extern void         CompatiblePtrType(TYPEPTR,TYPEPTR,TOKEN);
 extern bool         IdenticalType(TYPEPTR,TYPEPTR);
 extern bool         VerifyType(TYPEPTR,TYPEPTR,SYMPTR);
 extern TYPEPTR      SkipTypeFluff( TYPEPTR typ );
+extern bool         AssRangeChk( TYPEPTR typ1, TREEPTR opnd2 );
 extern void         ParmAsgnCheck( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check );
 
 /* ccmain.c */
