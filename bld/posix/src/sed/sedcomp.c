@@ -522,7 +522,7 @@ static int cmdcomp( char cchar )        /* character name of command */
             ABORT( TMWFI );
         fout[0] = stdout;               /* Not initialized to humor lint */
         fname[0] = "";                  /* Set so strcmp( x, fname[0] ) OK */
-        fname[nwfiles] = (const char*)fp; /* filename is in pool */
+        fname[nwfiles] = (const char *)fp; /* filename is in pool */
         gettext( 0 );
         /* match it in table */
         for( i = nwfiles - 1; i >= 0; i-- ) {
@@ -994,9 +994,9 @@ static int cmdline( char *cbuf )        /* uses eflag, eargc, cmdf */
 /* expand an address at *cp... into expbuf, return ptr at following char */
 static char *getaddress( char *expbuf ) /* uses cp, linenum */
 {
-    static int          numl = 0;       /* current ind in addr-number table */
-    char       *rcp;                    /* temp compile ptr for forwd look */
-    long                lno;            /* computed value of numeric address */
+    static int      numl = 0;           /* current ind in addr-number table */
+    char            *rcp;               /* temp compile ptr for forwd look */
+    long            lno;                /* computed value of numeric address */
 
     switch( *cp ) {
     case '$':                           /* end-of-source address */
@@ -1006,6 +1006,7 @@ static char *getaddress( char *expbuf ) /* uses cp, linenum */
         return( expbuf );               /* we're done */
     case '\\':                          /* posix \cBREc address */
         cp++;                           /* Point to delimiter */
+        /* fall through */
     case '/':                           /* start of regular-expression match */
         return( recomp( expbuf, *cp++ ) ); /* compile the RE */
     }
@@ -1039,15 +1040,16 @@ static void gettext( int accept_whitespace )
 
     if( !accept_whitespace )
         SKIPWS( cp );                   /* discard whitespace */
-    while( fp < poolend && ( c = *fp++ = *cp++ ) != 0 ) {
+    while( fp < poolend && (c = *cp++) != 0 ) {
         switch( c ) {
         case '\\':                      /* handle escapes */
-            fp[-1] = *cp++;
+            c = *cp++;
             break;
         case '\n':                      /* SKIPWS after newline */
             SKIPWS( cp );
             break;
         }
+        *fp++ = c;
     }
     if( fp >= poolend )
         ABORT( TMTXT );                 /* Not exercised by sedtest.mak */

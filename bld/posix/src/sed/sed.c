@@ -172,12 +172,13 @@ static bool selected( sedcmd *ipc )
         c = *(unsigned char *)(p1 + 1);
         if( lnum != linenum[c] )
             return( allbut );
-        if( p2 ) {
+        if( p2 != NULL ) {
             ipc->flags.inrange = true;
         }
     } else if( match( p1, false, false ) ) {
-        if( p2 )
+        if( p2 != NULL ) {
             ipc->flags.inrange = true;
+        }
     } else {
         return( allbut );
     }
@@ -204,11 +205,11 @@ static bool match(
     }
 
     if( gf ) {
-        if( *expbuf )
+        if( *expbuf != '\0'  )
             return( false );
         p1 = linebuf;
         p2 = genbuf;
-        while( ( *p1++ = *p2++ ) != 0 ) ;
+        while( (*p1++ = *p2++) != '\0' ) ;
         locs = p1 = loc2;
     } else {
         p1 = ( is_cnt ) ? loc2 : linebuf;
@@ -216,7 +217,7 @@ static bool match(
     }
 
     p2 = expbuf;
-    if( *p2++ ) {
+    if( *p2++ != '\0' ) {
         loc1 = p1;
         if( p2[0] == CCHR && p2[1] != *p1 ) /* 1st char is wrong */
             return( false );            /*   so fail */
