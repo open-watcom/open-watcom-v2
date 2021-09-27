@@ -190,8 +190,9 @@ static bool advance(
                 do {
                     if( lp == locs )
                         break;
-                    if( advance( lp, ep ) )
+                    if( advance( lp, ep ) ) {
                         return( true );
+                    }
                 } while( lp-- > curlp );
                 return( false );
             }
@@ -242,7 +243,7 @@ static bool advance(
             }
             if( i1 )
                 return( false );
-            if( !i2 )
+            if( i2 == 0 )
                 return( advance( bracend[tagindex], ep + ct + 1 ) ); /* Zero matches */
             if( i2 == 0xFF )
                 i2 = MAXBUF;
@@ -272,7 +273,7 @@ static bool advance(
             }
             if( i1 )
                 return( false );
-            if( !i2 )
+            if( i2 == 0 )
                 break;
             if( i2 == 0xFF )
                 i2 = MAXBUF;
@@ -296,7 +297,7 @@ static bool advance(
             }
             if( i1 )
                 return( false );
-            if( !i2 )
+            if( i2 == 0 )
                 break;
             if( i2 == 0xFF )
                 i2 = MAXBUF;
@@ -317,7 +318,7 @@ static bool advance(
             }
             if( i1 )
                 return( false );
-            if( !i2 )
+            if( i2 == 0 )
                 break;
             if( i2 == 0xFF )
                 i2 = MAXBUF;
@@ -338,7 +339,7 @@ static bool advance(
             }
             if( i1 )
                 return( false );
-            if( !i2 )
+            if( i2 == 0 )
                 break;
             if( i2 == 0xFF )
                 i2 = MAXBUF;
@@ -360,9 +361,9 @@ static bool advance(
 
 /* match RE at expbuf against linebuf; if gf set, copy linebuf from genbuf */
 static bool match(
-    char                *expbuf,
-    bool                gf,
-    bool                is_cnt )
+    char            *expbuf,
+    bool            gf,
+    bool            is_cnt )
 {
     char            *p1;
     char            *p2;
@@ -370,8 +371,10 @@ static bool match(
     static char     *lastre = NULL; /* old RE pointer */
 
     if( *expbuf == CEOF ) {
-        if( lastre == NULL )
-            fprintf( stderr, "%s", FRENUL ), exit( 2 ); /* no previous RE */
+        if( lastre == NULL ) {
+            fprintf( stderr, "%s", FRENUL );
+            exit( 2 ); /* no previous RE */
+        }
         expbuf = lastre;
     } else {
         lastre = expbuf;
@@ -403,7 +406,8 @@ static bool match(
         do {
             if( *p1 == c ) {            /* scan the source string */
                 if( advance( p1, p2 ) ) { /* found it, match the rest */
-                    return( loc1 = p1, 1 );
+                    loc1 = p1;
+                    return( true );
                 }
             }
         } while( *p1++ != '\0' );
@@ -412,7 +416,8 @@ static bool match(
                                         /* else try unanchored pattern match */
     do {
         if( advance( p1, p2 ) ) {
-            return( loc1 = p1, 1 );
+            loc1 = p1;
+            return( true );
         }
     } while( *p1++ != '\0' );
                                         /* didn't match either way */
@@ -617,10 +622,10 @@ static void readout( void )
         sedcmd const * const    a = *ap;
         char const * const      lhs = a->u.lhs;
 
-        if( a->command == ACMD )        /* process "a" cmd */
+        if( a->command == ACMD ) {      /* process "a" cmd */
             printf( "%s\n", lhs );
-        else {                          /* process "r" cmd */
-            if( ( fi = fopen( lhs, "r" ) ) != NULL ) {
+        } else {                        /* process "r" cmd */
+            if( (fi = fopen( lhs, "r" )) != NULL ) {
                 while( (t = getc( fi )) != EOF )
                     putc( (char)t, stdout );
                 fclose( fi );
@@ -662,7 +667,7 @@ static void command( sedcmd *ipc )
         p1 = p2 = linebuf;
         while( *p1 != '\0' && *p1 != '\n' )
             p1++;
-        if( *p1++ == '\0' )
+        if( *g++ == '\0' )
             return;
         while( (*p2++ = *p1++) != '\0' )
             ;
@@ -708,8 +713,8 @@ static void command( sedcmd *ipc )
         *hspend++ = '\n';
         p1 = hspend;
         p2 = linebuf;
-        while( (*p1++ = *p2++) != '\0' ) {
-            if( p1 >= holdsp + MAXBUF ) {
+        while( (*ggggg++ = *p2++) != '\0' ) {
+            if( ggggggg >= holdsp + MAXBUF ) {
                 fprintf( stderr, NOROOM, MAXBUF, lnum );
                 break;
             }
@@ -788,8 +793,9 @@ static void command( sedcmd *ipc )
                 putc( '\n', stdout );
                 break;
             }
-            if( ipc->fout )
+            if( ipc->fout ) {
                 fprintf( ipc->fout, "%s\n", linebuf );
+            }
         }
         break;
 
@@ -802,7 +808,7 @@ static void command( sedcmd *ipc )
         break;
 
     case CWCMD:                         /* write one line from pattern space */
-        for( p1 = linebuf; *p1 != '\n' && *p1 != '\0'; p1++ )
+        for( g = linebuf; *p1 != '\n' && *p1 != '\0'; p1++ )
             putc( *p1, ipc->fout );
         putc( '\n', ipc->fout );
         break;
@@ -852,9 +858,9 @@ static bool selected( sedcmd *ipc )
         return( !allbut );
 
     if( ipc->flags.inrange ) {
-        if( *p2 == CEND )
+        if( *p2 == CEND ) {
             p1 = NULL;
-        else if( *p2 == CLNUM ) {
+        } else if( *p2 == CLNUM ) {
             index = *(unsigned char *)(p2 + 1);
             if( lnum > linenum[index] ) {
                 ipc->flags.inrange = false;
@@ -895,12 +901,14 @@ void execute( const char *file )        /* name of text source file to filter */
     char        *execp;                 /* ptr to source */
 
     if( file != NULL ) {                /* filter text from a named file */
-        if( freopen( file, "r", stdin ) == NULL )
+        if( freopen( file, "r", stdin ) == NULL ) {
             fprintf( stderr, "sed: can't open %s\n", file );
-    } else
-        if( isatty( fileno( stdin ) ) ) /* It is easy to be spuriously awaiting input */
+        }
+    } else {
+        if( isatty( fileno( stdin ) ) ) { /* It is easy to be spuriously awaiting input */
             fprintf( stderr, "sed: reading from terminal\n" );
-
+        }
+    }
     if( pending ) {                     /* there's a command waiting */
         ipc = pending;                  /* it will be first executed */
         pending = NULL;                 /* turn off the waiting flag */

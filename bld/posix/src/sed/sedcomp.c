@@ -30,7 +30,7 @@ resolves references at the end.
 #define MAXLABS         50              /* max number of labels */
 
 #define SKIPWS(pc)      while( isspace( *pc ) ) pc++
-#define ABORT(msg)      fprintf( stderr, msg, linebuf ), myexit( 2 )
+#define ABORT(msg)      fprintf( stderr, msg, linebuf ); myexit( 2 )
 
 typedef struct                          /* represent a command label */
 {
@@ -252,10 +252,10 @@ static char *recomp(
             case '8':
             case '9':
                 tagindex = c - '0';
-                if( tagindex > tags ) /* too few */
+                if( tagindex > tags )   /* too few */
                     return( BAD );
-                *ep++ = CBACK;      /* enter tag mark */
-                *ep++ = tagindex;   /* and the number */
+                *ep++ = CBACK;          /* enter tag mark */
+                *ep++ = tagindex;       /* and the number */
                 break;
             default:
 #if 1
@@ -273,7 +273,7 @@ static char *recomp(
 
                     if( lastep == NULL ) {
                         cp = sp;
-                        return( BAD ); /* rep error */
+                        return( BAD );  /* rep error */
                     }
                     *lastep |= MTYPE;
                     if( !isdigit( *sp ) ) {
@@ -328,8 +328,10 @@ static char *recomp(
             if( lastep == NULL )        /* if + not first on line */
                 goto defchar;           /*   match a literal + */
 #if 0                                   /* Removed constraint WFB 20040804 */
-            if( *lastep == CKET )       /* can't iterate a tag */
-                return( cp = sp, BAD );
+            if( *lastep == CKET ) {     /* can't iterate a tag */
+                cp = sp;
+                return( BAD );
+            }
 #endif
             pp = ep;                    /* else save old ep */
             while( lastep < pp )        /* so we can blt the pattern */
@@ -341,8 +343,10 @@ static char *recomp(
             if( lastep == NULL )        /* if * isn't first on line */
                 goto defchar;           /*   match a literal * */
 #if 0                                   /* Removed constraint WFB 20040804 */
-            if( *lastep == CKET )       /* can't iterate a tag */
-                return( cp = sp, BAD );
+            if( *lastep == CKET ) {     /* can't iterate a tag */
+                cp = sp;
+                return( BAD );
+            }
 #endif
             *lastep |= STAR;            /* flag previous pattern */
             goto handle_cket;
@@ -482,7 +486,8 @@ static char *recomp(
             case CLNUM:/* Can't happen - * after line number is nonsense */
             case CEND: /* Can't happen - CEND is always followed by CEOF */
             default:
-                fprintf( stderr, INERR, "Unexpected symbol in RE" ), myexit( 2 );
+                fprintf( stderr, INERR, "Unexpected symbol in RE" );
+                myexit( 2 );
             }
             break;
         } /* switch( c ) */
@@ -659,7 +664,7 @@ static void resolve( void )             /* uses global lablst */
         if( rp->link == NULL ) {        /* barf if not defined */
             fprintf( stderr, ULABL, rp->name );
             myexit( 2 );
-        } else if( rp->last ) {         /* if last is non-null */
+        } else if( rp->last != NULL ) { /* if last is non-null */
             for( rptr = rp->last; (trptr = rptr->u.link) != NULL; rptr = trptr )
                 rptr->u.link = rp->link;
             rptr->u.link = rp->link - 1;
@@ -795,7 +800,7 @@ static int cmdcomp( char cchar )        /* character name of command */
         return( 1 );
 
     case '}':                           /* end command group */
-        if( cmdp->addr1 )
+        if( cmdp->addr1 != NULL )
             ABORT( AD1NG );             /* no addresses allowed */
         if( --bdepth < 0 )
             ABORT( TMRBR );             /* too many right braces */
@@ -806,12 +811,12 @@ static int cmdcomp( char cchar )        /* character name of command */
         break;
 
     case 'q':                           /* exit the stream editor */
-        if( cmdp->addr2 )
+        if( cmdp->addr2 != NULL )
             ABORT( AD2NG );
         break;
 
     case ':':                           /* label declaration */
-        if( cmdp->addr1 )
+        if( cmdp->addr1 != NULL )
             ABORT( AD1NG );             /* no addresses allowed */
         curlab->name = fp;
         gettext( 0 );                   /* get the label name */
@@ -867,7 +872,7 @@ static int cmdcomp( char cchar )        /* character name of command */
     case 'a':                           /* append text */
     case 'i':                           /* insert text */
     case 'r':                           /* read file into stream */
-        if( cmdp->addr2 )
+        if( cmdp->addr2 != NULL )
             ABORT( AD2NG );
         /* fall through */
     case 'c':                           /* change text */
@@ -962,7 +967,8 @@ static int cmdcomp( char cchar )        /* character name of command */
         break;
 
     default:
-        fprintf( stderr, INERR, "Unmatched command" ), myexit( 2 );
+        fprintf( stderr, INERR, "Unmatched command" );
+        myexit( 2 );
     }
     return( 0 );                        /* interpreted one command */
 }
@@ -1179,7 +1185,7 @@ int main( int argc, char *argv[] )
 #ifndef _MSC_VER
     (void)setvbuf( stdout, NULL, _IOLBF, 0 ); /* Improve reactivity in a pipe */
 #endif
-    if( eargc <= 0 ) {           /* if there are no files specified */
+    if( eargc <= 0 ) {          /* if there are no files specified */
 #ifndef _MSC_VER
         (void)setvbuf( stdin, NULL, _IOLBF, 0 ); /* Improve reactivity in a pipe */
 #endif
