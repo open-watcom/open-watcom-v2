@@ -111,27 +111,31 @@ static char const       *USAGE[] = {
 };
 
                                         /* label handling */
-static label    labels[MAXLABS];        /* here's the label table */
-                                        /* first label is end of script */
-static label    *curlab = labels + 1;   /* pointer to current label */
-static label    *lablst = labels;       /* header for search list */
+static label        labels[MAXLABS];        /* here's the label table */
+                                            /* first label is end of script */
+static label        *curlab = labels + 1;   /* pointer to current label */
+static label        *lablst = labels;       /* header for search list */
 
                                         /* string pool for REs, etc. */
-static char     pool[POOLSIZE];         /* the pool */
-static char     *fp     = pool;         /* current pool pointer */
-static char     *poolend  = pool + POOLSIZE;    /* pointer past pool end */
+static char         pool[POOLSIZE];         /* the pool */
+static char         *fp     = pool;         /* current pool pointer */
+static char         *poolend = pool + POOLSIZE; /* pointer past pool end */
 
                                         /* compilation state */
-static FILE     *cmdf   = NULL;         /* current command source */
-static char     *cp     = NULL;         /* compile pointer */
-static sedcmd   *cmdp   = cmds;         /* current compiled-cmd ptr */
-static int      bdepth  = 0;            /* current {}-nesting level */
-static int      bcount  = 0;            /* # tagged patterns in current RE */
-static char     **eargv;                /* scratch copy of argument list */
+static FILE         *cmdf   = NULL;         /* current command source */
+static char         *cp     = NULL;         /* compile pointer */
+static sedcmd       *cmdp   = cmds;         /* current compiled-cmd ptr */
+static int          bdepth  = 0;            /* current {}-nesting level */
+static int          bcount  = 0;            /* # tagged patterns in current RE */
+static char         **eargv;                /* scratch copy of argument list */
 
-/* compilation flags */
-static int      eflag = 0;              /* -e option flag */
-static bool     gflag = false;          /* -g option flag */
+                                        /* compilation flags */
+static int          eflag = 0;              /* -e option flag */
+static bool         gflag = false;          /* -g option flag */
+
+static char const   *fname[WFILES];         /* w file name pointers */
+static FILE         *fout[WFILES];          /* w file file ptrs */
+static int          nwfiles = 0;            /* count of open w files */
 
 #if defined( __WATCOMC__ ) || defined( __STDC_VERSION__ ) && ( __STDC_VERSION__ >= 199901L )
 #define my_isblank  isblank
@@ -152,6 +156,83 @@ static void myexit( int status )
         }
     }
     exit( status );
+}
+
+/*
+ * accept multiline input from *cp... to *fp... ,
+ * optionally skipping leading whitespace
+ */
+static void gettext( int accept_whitespace )
+{
+    char        c;
+
+    if( !accept_whitespace )
+        SKIPWS( cp );                   /* discard whitespace */
+    while( fp < poolend && (c = *cp++) != '\0' ) {
+        switch( c ) {
+        case '\\':                      /* handle escapes */
+            c = *cp++;
+            break;
+        case '\n':                      /* SKIPWS after newline */
+            SKIPWS( cp );
+            break;
+        }
+        *fp++ = c;
+    }
+    if( fp >= poolend )
+        ABORT( TMTXT );                 /* Not exercised by sedtest.mak */
+    --cp;
+    return;
+}
+
+static void outfiles_init( void )
+{
+    fout[0] = stdout;
+    fname[0] = "";
+    nwfiles = 1;
+}
+
+static bool outfiles_open( void )
+{
+    int     i;
+
+    if( nwfiles >= WFILES )
+        ABORT( TMWFI );
+    fname[nwfiles] = (const char *)fp; /* filename is in pool */
+    gettext( 0 );
+    /* match it in table */
+    for( i = nwfiles - 1; i >= 0; i-- ) {
+        if( strcmp( fname[nwfiles], fname[i] ) == 0 ) {
+            cmdp->fout = fout[i];
+            return( true );
+        }
+    }
+    /* if didn't find one, open new file */
+    cmdp->fout = fopen( fname[nwfiles], "w" );
+    if( cmdp->fout == NULL ) {
+        fprintf( stderr, CCOFI, fname[nwfiles] );
+        myexit( 2 );
+    }
+#ifndef _MSC_VER
+    if( setvbuf( cmdp->fout, NULL, _IOLBF, 0 ) ) {
+        fprintf( stderr, CCOFI, fname[nwfiles] );
+        myexit( 2 );
+    }
+#endif
+    fout[nwfiles++] = cmdp->fout;
+    return( false );
+}
+
+static void outfiles_fini( void )
+{
+    int     i;
+
+    for( i = 1; i < nwfiles; i++ ) {
+        if( fout[i] != NULL ) {
+            fclose( fout[i] );
+            fout[i] = NULL;
+        }
+    }
 }
 
 /* compile a regular expression to internal form */
@@ -613,33 +694,6 @@ static char *getaddress( char *expbuf ) /* uses cp, linenum */
     return( NULL );                     /* no legal address was found */
 }
 
-/*
- * accept multiline input from *cp... to *fp... ,
- * optionally skipping leading whitespace
- */
-static void gettext( int accept_whitespace )
-{
-    char        c;
-
-    if( !accept_whitespace )
-        SKIPWS( cp );                   /* discard whitespace */
-    while( fp < poolend && (c = *cp++) != '\0' ) {
-        switch( c ) {
-        case '\\':                      /* handle escapes */
-            c = *cp++;
-            break;
-        case '\n':                      /* SKIPWS after newline */
-            SKIPWS( cp );
-            break;
-        }
-        *fp++ = c;
-    }
-    if( fp >= poolend )
-        ABORT( TMTXT );                 /* Not exercised by sedtest.mak */
-    --cp;
-    return;
-}
-
 /* find the label matching *ptr, return NULL if none */
 static label *search( void )            /* uses globals lablst and curlab */
 {
@@ -780,9 +834,6 @@ static char *rhscomp(
 static int cmdcomp( char cchar )        /* character name of command */
 {
     static sedcmd       **cmpstk[MAXDEPTH]; /* current cmd stack for {} */
-    static char const   *fname[WFILES]; /* w file name pointers */
-    static FILE         *fout[WFILES];  /* w file file ptrs */
-    static int          nwfiles = 1;    /* count of open w files */
     int                 i;              /* indexing dummy used in w */
     sedcmd              *sp1;           /* temps for label searches */
     sedcmd              *sp2;           /* temps for label searches */
@@ -929,32 +980,9 @@ static int cmdcomp( char cchar )        /* character name of command */
         /* fall through */
     case 'w':                           /* write-pattern-space command */
     case 'W':                           /* write-first-line command */
-        if( nwfiles >= WFILES )
-            ABORT( TMWFI );
-        fout[0] = stdout;               /* Not initialized to humor lint */
-        fname[0] = "";                  /* Set so strcmp( x, fname[0] ) OK */
-        fname[nwfiles] = (const char *)fp; /* filename is in pool */
-        gettext( 0 );
-        /* match it in table */
-        for( i = nwfiles - 1; i >= 0; i-- ) {
-            if( strcmp( fname[nwfiles], fname[i] ) == 0 ) {
-                cmdp->fout = fout[i];
-                return( 0 );
-            }
+        if( outfiles_open() ) {
+            return( 0 );
         }
-        /* if didn't find one, open new file */
-        cmdp->fout = fopen( fname[nwfiles], "w" );
-        if( cmdp->fout == NULL ) {
-            fprintf( stderr, CCOFI, fname[nwfiles] );
-            myexit( 2 );
-        }
-#ifndef _MSC_VER
-        if( setvbuf( cmdp->fout, NULL, _IOLBF, 0 ) ) {
-            fprintf( stderr, CCOFI, fname[nwfiles] );
-            myexit( 2 );
-        }
-#endif
-        fout[nwfiles++] = cmdp->fout;
         break;
 
     case 'y':                           /* transliterate text */
@@ -1101,6 +1129,9 @@ int main( int argc, char *argv[] )
         fprintf( stderr, NOMEM );
         myexit( 2 );
     }
+
+    outfiles_init();
+
     /* scan through the arguments, interpreting each one */
     /* We dont use the OW GetOpt() or the POSIX getopt() as we want to do
     * -e i\ hello -e "s/$/ world" */
@@ -1195,6 +1226,7 @@ int main( int argc, char *argv[] )
             execute( *eargv++ );
         }
     }
+    outfiles_fini();
     free( linebuf );
     return( 0 );                /* everything was O.K. if we got here */
 }
