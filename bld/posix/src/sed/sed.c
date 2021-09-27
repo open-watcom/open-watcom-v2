@@ -667,7 +667,7 @@ static void command( sedcmd *ipc )
         p1 = p2 = linebuf;
         while( *p1 != '\0' && *p1 != '\n' )
             p1++;
-        if( *g++ == '\0' )
+        if( *p1++ == '\0' )
             return;
         while( (*p2++ = *p1++) != '\0' )
             ;
@@ -713,8 +713,8 @@ static void command( sedcmd *ipc )
         *hspend++ = '\n';
         p1 = hspend;
         p2 = linebuf;
-        while( (*ggggg++ = *p2++) != '\0' ) {
-            if( ggggggg >= holdsp + MAXBUF ) {
+        while( (*p1++ = *p2++) != '\0' ) {
+            if( p1 >= holdsp + MAXBUF ) {
                 fprintf( stderr, NOROOM, MAXBUF, lnum );
                 break;
             }
@@ -808,7 +808,7 @@ static void command( sedcmd *ipc )
         break;
 
     case CWCMD:                         /* write one line from pattern space */
-        for( g = linebuf; *p1 != '\n' && *p1 != '\0'; p1++ )
+        for( p1 = linebuf; *p1 != '\n' && *p1 != '\0'; p1++ )
             putc( *p1, ipc->fout );
         putc( '\n', ipc->fout );
         break;
