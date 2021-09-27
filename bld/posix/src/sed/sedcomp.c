@@ -30,7 +30,7 @@ resolves references at the end.
 #define MAXLABS         50              /* max number of labels */
 
 #define SKIPWS(pc)      while( isspace( *pc ) ) pc++
-#define ABORT(msg)      fprintf( stderr, msg, linebuf ); myexit( 2 )
+#define ABORT(msg)      fprintf( stderr, msg, linebuf ), myexit( 2 )
 
 typedef struct                          /* represent a command label */
 {
