@@ -907,8 +907,9 @@ static int cmdcomp( char cchar )        /* character name of command */
                 while( (sp2 = sp1->u.link) != NULL )
                     sp1 = sp2;
                 sp1->u.link = cmdp;
-            } else                      /* lablst->last == NULL */
+            } else {                    /* lablst->last == NULL */
                 lablst->last = cmdp;
+            }
             break;
         }
         curlab->name = fp;
