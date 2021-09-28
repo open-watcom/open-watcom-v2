@@ -45,13 +45,12 @@ typedef enum cmdcode {
 #define TESTCHARSET(a,c)    (a[(unsigned char)c >> 3] & bits[c & 7])
 #define TESTCHARSETINC(a,p) (a[*(unsigned char *)(p) >> 3] & bits[*(unsigned char *)(p++) & 7])
 
-typedef struct cmd_t    sedcmd;         /* use this name for declarations */
-struct cmd_t {                          /* compiled-command representation */
+typedef struct sedcmd {                          /* compiled-command representation */
     char                *addr1;         /* first address for command */
     char                *addr2;         /* second address for command */
     union {
         char            *lhs;           /* s command lhs */
-        sedcmd          *link;          /* label link */
+        struct sedcmd   *link;          /* label link */
     } u;
     cmdcode             command;        /* command code */
     char                *rhs;           /* s command replacement string */
@@ -63,7 +62,7 @@ struct cmd_t {                          /* compiled-command representation */
         unsigned        print   : 2;    /* was p postfix specified? */
         unsigned        inrange : 1;    /* in an address range? */
     } flags;
-};
+} sedcmd;
 
 #define BAD     ((char *)-1LL)          /* guaranteed not a string ptr */
 
