@@ -255,6 +255,8 @@ static char *recomp(
     int             opentags = 0;       /* Used to index obr */
     int             i;
     char            tagindex;
+    int             ilow;
+    int             ihigh;
 
     if( *cp == redelim ) {              /* if first char is RE endmarker */
         cp++;
@@ -290,7 +292,8 @@ static char *recomp(
         }
         switch( c ) {
         case '\\':
-            switch( c = *sp++ ) {
+            c = *sp++;
+            switch( c ) {
             case '(':                   /* start tagged section */
                 if( ++bcount <= MAXTAGS ) { /* bump tag count */
                     *brnestp++ = (char)bcount; /* update tag stack */
@@ -312,17 +315,24 @@ static char *recomp(
                 *ep++ = CKET;           /* enter end-of-tag */
                 *ep++ = tagindex;
                 break;
+            case '\0':
             case '\n':                  /* escaped newline no good */
                 cp = sp;
                 return( BAD );
             case 'n':                   /* match a newline */
-                c = '\n';
-                goto defchar;
             case 't':                   /* match a tab */
-                c = '\t';
-                goto defchar;
             case '\\':                  /* match a literal backslash */
-                goto defchar;
+                switch( c ) {
+                case 'n':               /* match a newline */
+                    c = '\n';
+                    break;
+                case 't':               /* match a tab */
+                    c = '\t';
+                    break;
+                }
+                *ep++ = CCHR;           /* insert character mark */
+                *ep++ = c;
+                break;
             case '1':                   /* tag use */
             case '2':
             case '3':
@@ -338,61 +348,60 @@ static char *recomp(
                 *ep++ = CBACK;          /* enter tag mark */
                 *ep++ = tagindex;       /* and the number */
                 break;
+            case '{':
+                ilow = 0;
+                ihigh = 0;
+                if( lastep == NULL ) {
+                    cp = sp;
+                    return( BAD );  /* rep error */
+                }
+                *lastep |= MTYPE;
+                if( !isdigit( *sp ) ) {
+                    cp = sp;
+                    return( BAD );
+                }
+                while( isdigit( *sp ) )
+                    ilow = ilow * 10 + *sp++ - '0';
+                if( ilow > 255 ) {
+                    cp = sp;
+                    return( BAD );
+                }
+                *ep++ = (char)ilow;
+                if( sp[0] == '\\' && sp[1] == '}' ) {
+                    sp += 2;
+                    *ep++ = 0;
+                } else if( sp[0] == ',' && sp[1] == '\\' && sp[2] == '}' ) {
+                    sp += 3;
+                    *ep++ = '\xFF';
+                } else if( *sp++ == ',' ) {
+                    if( !isdigit( *sp ) ) {
+                        *ep++ = '\xFF';
+                    } else {
+                        while( isdigit( *sp ) )
+                            ihigh = ihigh * 10 + *sp++ - '0';
+                        *ep++ = (char)( ihigh - ilow );
+                    }
+                    if( sp[0] != '\\' || sp[1] != '}' || ihigh < ilow || ihigh > 255 ) {
+                        cp = sp;
+                        return( BAD );
+                    }
+                    sp += 2;
+                } else {
+                    cp = sp;
+                    return( BAD );
+                }
+                break;
             default:
 #if 1
                 /* This allows \ to stop "special" even if it is not. */
-                goto defchar;           /* else match \c */
+                *ep++ = CCHR;           /* insert character mark */
+                *ep++ = c;
+                break;
 #else
                 /* This is IEEE 2001 behavior */
                 cp = sp;
                 return( BAD ); /* Otherwise /\?/ && /\\?/ synonymous */
 #endif
-            case '{':                   /* '}' should balance for vi */
-                {
-                    int i1 = 0;
-                    int i2 = 0;
-
-                    if( lastep == NULL ) {
-                        cp = sp;
-                        return( BAD );  /* rep error */
-                    }
-                    *lastep |= MTYPE;
-                    if( !isdigit( *sp ) ) {
-                        cp = sp;
-                        return( BAD );
-                    }
-                    while( isdigit( *sp ) )
-                        i1 = i1 * 10 + *sp++ - '0';
-                    if( i1 > 255 ) {
-                        cp = sp;
-                        return( BAD );
-                    }
-                    *ep++ = (char)i1;
-                    if( sp[0] == '\\' && sp[1] == /* '{' vi brace balancing */ '}' ) {
-                        sp += 2;
-                        *ep++ = 0;
-                    } else if( sp[0] == ',' && sp[1] == '\\' && sp[2] == /* '{' vi brace balancing */ '}' ) {
-                        sp += 3;
-                        *ep++ = '\xFF';
-                    } else if( *sp++ == ',' ) {
-                        if( !isdigit( *sp ) ) {
-                            *ep++ = '\xFF';
-                        } else {
-                            while( isdigit( *sp ) )
-                                i2 = i2 * 10 + *sp++ - '0';
-                            *ep++ = (char)( i2 - i1 );
-                        }
-                        if( sp[0] != '\\' || sp[1] != /* '{' vi brace balancing */ '}' || i2 < i1 || i2 > 255 ) {
-                            cp = sp;
-                            return( BAD );
-                        }
-                        sp += 2;
-                    } else {
-                        cp = sp;
-                        return( BAD );
-                    }
-                }
-                goto handle_cket;
             }
             break;
 
@@ -405,36 +414,38 @@ static char *recomp(
             *ep++ = CDOT;
             break;
 
-        case '+':                       /* 1 to n repeats of previous pattern */
-            if( lastep == NULL )        /* if + not first on line */
-                goto defchar;           /*   match a literal + */
+        case '+':
+        case '*':
+            /* '*' is 0 to any repeats of previous pattern
+             * '+' is 1 to any repeats of previous pattern and is converted
+             * to single pattern and '*' pattern
+             */
+            if( lastep == NULL ) {      /* if '+' or '*' first on line match a literal '+' or '*' */
+                *ep++ = CCHR;           /* insert character mark */
+                *ep++ = c;
+                break;
+            }
 #if 0                                   /* Removed constraint WFB 20040804 */
             if( *lastep == CKET ) {     /* can't iterate a tag */
                 cp = sp;
                 return( BAD );
             }
 #endif
-            pp = ep;                    /* else save old ep */
-            while( lastep < pp )        /* so we can blt the pattern */
-                *ep++ = *lastep++;
-            *lastep |= STAR;            /* flag the copy */
+            if( c == '+' ) {            /* if '+' then convert to single and '*' patterns */
+                pp = ep;            /* duplicate previous pattern */
+                while( lastep < pp ) {
+                    *ep++ = *lastep++;
+                }
+            }
+            *lastep |= STAR;            /* flag the pattern with '*' */
             break;
 
-        case '*':                       /* 0..n repeats of previous pattern */
-            if( lastep == NULL )        /* if * isn't first on line */
-                goto defchar;           /*   match a literal * */
-#if 0                                   /* Removed constraint WFB 20040804 */
-            if( *lastep == CKET ) {     /* can't iterate a tag */
-                cp = sp;
-                return( BAD );
-            }
-#endif
-            *lastep |= STAR;            /* flag previous pattern */
-            goto handle_cket;
-
         case '$':                       /* match only end-of-line */
-            if( *sp != redelim )        /* if we're not at end of RE */
-                goto defchar;           /*   match a literal $ */
+            if( *sp != redelim ) {      /* if we're not at end of RE match a literal $ */
+                *ep++ = CCHR;           /* insert character mark */
+                *ep++ = c;
+                break;
+            }
             *ep++ = CDOL;               /* insert end-symbol mark */
             break;
 
@@ -528,14 +539,16 @@ static char *recomp(
             ep += CHARSETSIZE;          /* advance ep past set mask */
             break;
 
-        defchar:                        /* match literal character */
         default:                        /* which is what we'd do by default */
             *ep++ = CCHR;               /* insert character mark */
             *ep++ = c;
             break;
 
-        handle_cket:
-            switch( *lastep & ~STAR & ~MTYPE ) {
+        } /* switch( c ) */
+
+        /* post processing for '*' or \{m,n\} */
+        if( *lastep & (STAR | MTYPE) ) {
+            switch( *lastep & ~(STAR | MTYPE) ) {
             case CCHR:
             case CDOT:
             case CCL:
@@ -570,8 +583,7 @@ static char *recomp(
                 fprintf( stderr, INERR, "Unexpected symbol in RE" );
                 myexit( 2 );
             }
-            break;
-        } /* switch( c ) */
+        }
     } /* for( ;; ) */
 }
 
