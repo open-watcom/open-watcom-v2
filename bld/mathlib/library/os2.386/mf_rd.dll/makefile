@@ -6,6 +6,6 @@ system          = os2
 convention      = register
 linkage         = dynamic
 
-debug = 1
+lib_debug = 1
 
 !include $(mathlib_dir)/mrglib.mif

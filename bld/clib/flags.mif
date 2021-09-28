@@ -4,7 +4,7 @@ default_windowing = 1
 !ifeq default_windowing 1
 def_windowing = -DDEFWIN
 !endif
-!ifdef debug
+!ifdef lib_debug
 release = 0
 !endif
 
@@ -65,7 +65,7 @@ sw_c_common += -bm-bd
 !else ifdef mthreaded
 sw_c_common += -bm
 !endif
-!ifdef debug
+!ifdef lib_debug
 sw_c_common += -en
 !endif
 

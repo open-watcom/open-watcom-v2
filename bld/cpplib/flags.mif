@@ -1,4 +1,4 @@
-!ifdef debug
+!ifdef lib_debug
 release = 0
 !endif
 

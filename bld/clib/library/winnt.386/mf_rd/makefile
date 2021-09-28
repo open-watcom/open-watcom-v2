@@ -5,6 +5,6 @@ model      = mf
 system     = winnt
 linkage    = dynamic
 
-debug = 1
+lib_debug = 1
 
 !include $(clib_dir)/mrglib.mif

@@ -6,6 +6,6 @@ system     = nw_libc
 linkage    = static
 mthreaded=1
 
-debug = 1
+lib_debug = 1
 
 !include $(clib_dir)/mklib.mif

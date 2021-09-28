@@ -5,6 +5,6 @@ system=nw_clib
 linkage=static
 convention=stack
 
-debug = 1
+lib_debug = 1
 
 !include $(clib_dir)/mklib.mif
