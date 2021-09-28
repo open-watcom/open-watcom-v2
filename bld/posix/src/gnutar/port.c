@@ -124,14 +124,6 @@ char *  ugets(char *buf, int siz, int f)
 #endif
 
 #ifndef BSD42
-/*
- * lstat() is a stat() which does not follow symbolic links.
- * If there are no symbolic links, just use stat().
- */
-int lstat(const char * path, struct stat * buf)
-{
-        return (stat(path, buf));
-}
 
 #ifndef MSDOS
 /*

@@ -98,11 +98,6 @@
 void outdec( char *p, FILE *f, int n );
 void decode( FILE *in, FILE *out );
 
-/*
- * Return the ptr in sp at which the character c appears;
- * NULL if not found
- */
-
 int main(int argc, char **argv)
 {
     FILE *in, *out;
