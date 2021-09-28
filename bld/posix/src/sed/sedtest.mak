@@ -605,7 +605,7 @@ match: .symbolic advance
     > xpect echo hellO
     $(sed) s/./O/5   $(axdiff)
 
-advance: .symbolic mtype memeql
+advance: .symbolic mtype
     > afore echo hello
     > xpect echo Hello
     $(sed) s/h/H/                $(axdiff) # CCHR
@@ -877,9 +877,6 @@ command: .symbolic substitute listto readout getline
     $(sed) y/l/L/                $(axdiff)
 
 getline: .symbolic # already deemed tested WFB 20040802
-    @%null
-
-memeql: .symbolic # already deemed tested WFB 20040802
     @%null
 
 readout: .symbolic

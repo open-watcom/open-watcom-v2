@@ -8,7 +8,7 @@ the compiled commands in cmds[] on each line in turn.
    The function command() does most of the work. Match() and advance()
 are used for matching text against precompiled regular expressions and
 dosub() does right-hand-side substitution.  getinpline() does text input;
-readout() and memeql() are output and string-comparison utilities.
+readout() is output utility.
 
 ==== Written for the GNU operating system by Eric S. Raymond ====
 
@@ -62,19 +62,6 @@ static char     *bracend[MAXTAGS+1];    /* tagged pattern start pointers */
 static char     *brastart[MAXTAGS+1];   /* tagged pattern end pointers */
 static sedcmd   *pending = NULL;        /* next command to be executed */
 
-/* return true if *a... == *b... for count chars, false otherwise */
-static bool memeql(
-    char const *a,
-    char const *b,
-    size_t     count )
-{
-    while( count-- ) {                  /* look at count characters */
-        if( *a++ != *b++ ) {            /* if any are nonequal   */
-            return( false );            /*    return false for false */
-        }
-    }
-    return( true );                     /* compare succeeded */
-}
 
 /* attempt to advance match pointer by one pattern element */
 static bool advance(
@@ -133,7 +120,7 @@ static bool advance(
             tagindex = *ep++;           /* pattern tag index */
             bbeg = brastart[tagindex];
             ct = bracend[tagindex] - bbeg;
-            if( !memeql( bbeg, lp, ct ) )
+            if( memcmp( bbeg, lp, ct ) != 0 )
                 return( false );        /* return false */
             lp += ct;
             break;                      /* matched */
@@ -145,7 +132,7 @@ static bool advance(
             if( ct == 0 )
                 break;                  /* zero length match */
             curlp = lp;
-            while( memeql( bbeg, lp, ct ) )
+            while( memcmp( bbeg, lp, ct ) == 0 )
                 lp += ct;
             while( lp >= curlp ) {
                 if( advance( lp, ep ) )
@@ -333,7 +320,7 @@ static bool advance(
             ct = bracend[tagindex] - bbeg;
             i1 = *(unsigned char *)ep++;
             i2 = *(unsigned char *)ep++;
-            while( memeql( bbeg, lp, ct ) && i1 ) {
+            while( memcmp( bbeg, lp, ct ) == 0 && i1 ) {
                 lp += ct;
                 i1--;
             }
@@ -344,7 +331,7 @@ static bool advance(
             if( i2 == 0xFF )
                 i2 = MAXBUF;
             curlp = lp;
-            while( memeql( bbeg, lp, ct ) && i2 ) {
+            while( memcmp( bbeg, lp, ct ) == 0 && i2 ) {
                 lp += ct;
                 i2--;
             }
