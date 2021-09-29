@@ -170,18 +170,20 @@ static bool advance(
 
         case CBRA | STAR:               /* start of \(...\)* */
             tagindex = *ep++;           /* pattern tag index */
-            curlp = bracend[tagindex] = bbeg = tep = lp;    /* save closure start loc */
+            bracend[tagindex] = lp;     /* save closure start loc */
             ct = *(unsigned char *)ep;
+
+            bbeg = tep = NULL;
             matched = false;
             while( advance( brastart[tagindex] = bracend[tagindex], ep + 1 ) && bracend[tagindex] > brastart[tagindex] ) {
                 if( advance( bracend[tagindex], ep + ct ) ) { /* Try to match RE after \(...\) */
-                    matched = true;          /* Remember greediest match */
+                    matched = true;         /* Remember greediest match */
                     bbeg = brastart[tagindex];
                     tep = bracend[tagindex];
                 }
             }
-            if( matched ) {                  /* Did we match RE after \(...\) */
-                brastart[tagindex] = bbeg;    /* Set details of match */
+            if( matched ) {                 /* Did we match RE after \(...\) */
+                brastart[tagindex] = bbeg;  /* Set details of match */
                 bracend[tagindex] = tep;
                 return( true );
             }
@@ -189,11 +191,10 @@ static bool advance(
 
         case CBRA | MTYPE:              /* start of \(...\)\{m,n\} */
             tagindex = *ep;             /* pattern tag index */
-            curlp = bracend[tagindex] = bbeg = tep = lp;    /* save closure start loc */
+            bracend[tagindex] = lp;     /* save closure start loc */
             ct = *(unsigned char *)(ep + 1);
             i1 = *(unsigned char *)(ep + ct - 1);
             i2 = *(unsigned char *)(ep + ct);
-
             while( i1 && advance( lp, ep + 2 ) && bracend[tagindex] > lp ) {
                 brastart[tagindex] = lp;
                 lp = bracend[tagindex];
@@ -201,23 +202,23 @@ static bool advance(
             }
             if( i1 )
                 return( false );
-            if( i2 == 0 )
-                return( advance( bracend[tagindex], ep + ct + 1 ) ); /* Zero matches */
-            if( i2 == 0xFF )
-                i2 = MAXBUF;
-
-            matched = false;
-            while( advance( brastart[tagindex] = bracend[tagindex], ep+2 ) && bracend[tagindex] > brastart[tagindex] && i2 ) {
-                if( i2--, advance( bracend[tagindex], ep + ct + 1 ) ) { /* Try to match RE after \(...\) */
-                    matched = true; /* Remember greediest match */
-                    bbeg = brastart[tagindex];
-                    tep = bracend[tagindex];
+            if( i2 ) {
+                if( i2 == 0xFF )
+                    i2 = MAXBUF;
+                bbeg = tep = NULL;
+                matched = false;
+                while( advance( brastart[tagindex] = bracend[tagindex], ep + 2 ) && bracend[tagindex] > brastart[tagindex] && i2 ) {
+                    if( i2--, advance( bracend[tagindex], ep + ct + 1 ) ) { /* Try to match RE after \(...\) */
+                        matched = true;         /* Remember greediest match */
+                        bbeg = brastart[tagindex];
+                        tep = bracend[tagindex];
+                    }
                 }
-            }
-            if( matched ) {         /* Did we match RE after \(...\) */
-                brastart[tagindex] = bbeg; /* Set details of match */
-                bracend[tagindex] = tep;
-                return( true );
+                if( matched ) {                 /* Did we match RE after \(...\) */
+                    brastart[tagindex] = bbeg;  /* Set details of match */
+                    bracend[tagindex] = tep;
+                    return( true );
+                }
             }
             return( advance( bracend[tagindex], ep + ct + 1 ) ); /* Zero matches */
 
@@ -586,7 +587,7 @@ static char *getinpline( char *buf )  /* where to send the input */
      */
     memset( buf, 0xFF, room + 1 );
     *buf = '\0';
-    if( fgets(buf, room, stdin) != NULL ) { /* gets() can smash program */
+    if( fgets( buf, room, stdin ) != NULL ) { /* gets() can smash program */
         lnum++;                         /* note that we got another line */
         /* find the end of the input */
         while( buf[0] != '\0' || buf[1] != '\xFF' ) {
@@ -792,7 +793,7 @@ static void command( sedcmd *ipc )
                 putc( '\n', stdout );
                 break;
             }
-            if( ipc->fout ) {
+            if( ipc->fout != NULL ) {
                 fprintf( ipc->fout, "%s\n", linebuf );
             }
         }

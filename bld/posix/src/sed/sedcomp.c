@@ -241,9 +241,9 @@ static char *recomp(
     char            redelim )           /* RE end-marker to look for */
                                         /* uses cp, bcount */
 {
-    char   *ep = expbuf;                /* current-compiled-char pointer */
-    char   *sp = cp;                    /* source-character ptr */
-    char   c;                           /* current-character */
+    char            *ep = expbuf;       /* current-compiled-char pointer */
+    char            *sp = cp;           /* source-character ptr */
+    char            c;                  /* current-character */
     char            negclass;           /* all-but flag */
     char            *lastep;            /* ptr to last expr compiled */
     char const      *svclass;           /* start of current char class */
@@ -528,7 +528,7 @@ static char *recomp(
                 }
                 /* add (maybe translated) char to set */
                 SETCHARSET( ep, c );
-            } while ( (c = *sp++) != ']' );
+            } while( (c = *sp++) != ']' );
             /* invert bitmask if all-but needed */
             if( negclass ) {
                 for( i = 0; i < CHARSETSIZE; i++ ) {
@@ -740,8 +740,8 @@ static void resolve( void )             /* uses global lablst */
 
 /* compile a y (transliterate) command */
 static char *ycomp(
-    char       *ep,                     /* where to compile to */
-    char                delim )         /* end delimiter to look for */
+    char        *ep,            /* where to compile to */
+    char        delim )         /* end delimiter to look for */
 {
     char       c;
     char       *tp;
@@ -750,16 +750,16 @@ static char *ycomp(
 
     if( delim == '\0' || delim == '\\' || delim == '\n' )
         return( BAD );
-                                        /* scan 'from' for invalid chars */
-    for( sp = tp = cp; *tp != delim; tp++ ) {
-        if( *tp == '\\' )
-            tp++;
-        if( ( *tp == '\n' ) || ( *tp == '\0' ) ) {
+    /* scan 'from' for invalid chars */
+    for( sp = tp = cp; (c = *tp++) != delim; ) {
+        if( c == '\\' ) {
+            c = *tp++;
+        }
+        if( ( c == '\n' ) || ( c == '\0' ) ) {
             return( BAD );
         }
     }
-    /* tp points at first char of 'to' */
-    tp++;
+    /* tp points at first char of 'to' after delim */
     /* now rescan the 'from' section */
     while( (c = *sp++) != delim ) {
         if( c == '\\' ) {
@@ -958,7 +958,7 @@ static int cmdcomp( char cchar )        /* character name of command */
             ABORT( CGMSG );
         cmdp->rhs = fp;
         if( fp >= poolend )
-            ABORT( TMTXT );            /* Not exercised by sedtest.mak */
+            ABORT( TMTXT );             /* Not exercised by sedtest.mak */
         fp = rhscomp( cmdp->rhs, redelim );
         if( fp == BAD )
             ABORT( CGMSG );
