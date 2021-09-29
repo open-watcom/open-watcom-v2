@@ -153,7 +153,7 @@ static bool advance(
             break;                      /* now look for followers */
 
         case CCHR | STAR:               /* match <literal char>* */
-            c = *ep++;
+            c = *ep++;                  /* get <literal char> */
             curlp = lp;                 /* save closure start loc */
             while( *lp == c ) {         /* match many of that char */
                 lp++;
