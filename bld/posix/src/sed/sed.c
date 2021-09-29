@@ -82,18 +82,18 @@ static bool advance(
         switch( *ep++ ) {
         case CCHR:                      /* match <literal character> */
             if( *ep++ == *lp++ )        /* if char equal */
-                continue;               /* go to next element */
+                continue;               /* match and go to next element */
             return( false );            /* return false */
 
         case CDOT:                      /* match anything but NUL */
             if( *lp++ != '\0' )         /* first NUL is at EOL */
-                continue;               /* go to next element */
+                continue;               /* match and go to next element */
             return( false );            /* return false */
 
         case CNL:                       /* start-of-line */
         case CDOL:                      /* end-of-line */
             if( *lp == '\0' )           /* found that first NUL? */
-                continue;               /* go to next element */
+                continue;               /* match and go to next element */
             return( false );            /* return false */
 
         case CEOF:                      /* end-of-address mark */
@@ -104,7 +104,7 @@ static bool advance(
             if( TESTCHARSET( ep, *lp ) ) { /* is char in set? */
                 lp++;                   /* matched */
                 ep += CHARSETSIZE;      /* skip bitmask */
-                continue;               /* and go to next element */
+                continue;               /* match and go to next element */
             }
             return( false );            /* return false */
 
@@ -118,24 +118,24 @@ static bool advance(
             bracend[tagindex] = lp;     /* mark it */
             continue;                   /* and go to next element */
 
-        case CBACK:                     /* match \1-9 */
+        case CBACK:                     /* match back reference \1-9 */
             tagindex = *ep++;           /* pattern tag index */
             bbeg = brastart[tagindex];
             ct = bracend[tagindex] - bbeg;
-            if( memcmp( bbeg, lp, ct ) == 0 ) {
-                lp += ct;               /* matched */
-                continue;               /* and go to next element */
+            if( memcmp( bbeg, lp, ct ) == 0 ) { /* match pattern tag value ? */
+                lp += ct;               /* skip over */
+                continue;               /* match and go to next element */
             }
             return( false );            /* return false */
 
-        case CBACK | STAR:              /* match \1-9* */
+        case CBACK | STAR:              /* match back reference \1-9* */
             tagindex = *ep++;           /* pattern tag index */
             bbeg = brastart[tagindex];
             ct = bracend[tagindex] - bbeg;
             curlp = lp;
             if( ct == 0 )
                 break;                  /* zero length match */
-            while( memcmp( bbeg, lp, ct ) == 0 ) {
+            while( memcmp( bbeg, lp, ct ) == 0 ) { /* match pattern tag value ? */
                 lp += ct;
             }
             while( lp >= curlp ) {
@@ -291,13 +291,13 @@ static bool advance(
             }
             break;
 
-        case CBACK | MTYPE:             /* e.g. \1-9\{m,n\} */
+        case CBACK | MTYPE:             /* match back reference \1-9\{m,n\} */
             tagindex = *ep++;           /* pattern tag index */
             bbeg = brastart[tagindex];
             ct = bracend[tagindex] - bbeg;
             i1 = *(unsigned char *)ep++;
             i2 = *(unsigned char *)ep++;
-            while( memcmp( bbeg, lp, ct ) == 0 && i1 ) {
+            while( memcmp( bbeg, lp, ct ) == 0 && i1 ) { /* match pattern tag value ? */
                 lp += ct;
                 i1--;
             }
@@ -308,7 +308,7 @@ static bool advance(
                 break;
             if( i2 == 0xFF )
                 i2 = MAXBUF;
-            while( memcmp( bbeg, lp, ct ) == 0 && i2 ) {
+            while( memcmp( bbeg, lp, ct ) == 0 && i2 ) { /* match pattern tag value ? */
                 lp += ct;
                 i2--;
             }
