@@ -161,42 +161,6 @@ static bool advance(
             ep += CHARSETSIZE;          /* skip past the set */
             goto star;                  /* match followers */
 
-        star:                           /* the repeat part of a * or + match */
-            if( --lp == curlp )         /* 0 matches */
-                break;
-
-            switch( ep[0] ) {
-            case CCHR:
-                c = ep[1];
-                break;
-            case CBACK:
-                tagindex = ep[1];       /* pattern tag index */
-                c = *brastart[tagindex];
-                break;
-            default:
-                do {
-                    if( lp == locs )
-                        break;
-                    if( advance( lp, ep ) ) {
-                        return( true );
-                    }
-                } while( lp-- > curlp );
-                return( false );
-            }
-
-            do {
-                if( *lp == c ) {
-                    if( advance( lp, ep ) ) {
-                        return( true );
-                    }
-                }
-            } while( lp-- > curlp );
-            return( false );
-
-        default:
-            fprintf( stderr, "sed: RE error, %o\n", *--ep );
-            exit( 2 );
-
         case CBRA | STAR:               /* start of starred tagged pattern */
             tagindex = *ep++;       /* pattern tag index */
             curlp = bracend[tagindex] = bbeg = tep = lp;    /* save closure start loc */
@@ -341,6 +305,42 @@ static bool advance(
                 lp -= ct;
             }
             return( false );
+
+        star:                           /* the repeat part of a * or + match */
+            if( --lp == curlp )         /* 0 matches */
+                break;
+
+            switch( ep[0] ) {
+            case CCHR:
+                c = ep[1];
+                break;
+            case CBACK:
+                tagindex = ep[1];       /* pattern tag index */
+                c = *brastart[tagindex];
+                break;
+            default:
+                do {
+                    if( lp == locs )
+                        break;
+                    if( advance( lp, ep ) ) {
+                        return( true );
+                    }
+                } while( lp-- > curlp );
+                return( false );
+            }
+
+            do {
+                if( *lp == c ) {
+                    if( advance( lp, ep ) ) {
+                        return( true );
+                    }
+                }
+            } while( lp-- > curlp );
+            return( false );
+
+        default:
+            fprintf( stderr, "sed: RE error, %o\n", *--ep );
+            exit( 2 );
 
         } /* switch( *ep++ ) */
     }
