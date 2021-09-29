@@ -10,33 +10,33 @@
 
 /* constants for compiled-command representation */
 typedef enum cmdcode {
-    EQCMD   = 0x01,     /* = -- print current line number               */
-    ACMD    = 0x02,     /* a -- append text after current line          */
-    BCMD    = 0x03,     /* b -- branch to label                         */
-    CCMD    = 0x04,     /* c -- change current line                     */
-    DCMD    = 0x05,     /* d -- delete all of pattern space             */
-    CDCMD   = 0x06,     /* D -- delete first line of pattern space      */
-    GCMD    = 0x07,     /* g -- copy hold space to pattern space        */
-    CGCMD   = 0x08,     /* G -- append hold space to pattern space      */
-    HCMD    = 0x09,     /* h -- copy pattern space to hold space        */
-    CHCMD   = 0x0A,     /* H -- append hold space to pattern space      */
-    ICMD    = 0x0B,     /* i -- insert text before current line         */
-    LCMD    = 0x0C,     /* l -- print pattern space in escaped form     */
-    NCMD    = 0x0D,     /* n -- get next line into pattern space        */
-    CNCMD   = 0x0E,     /* N -- append next line to pattern space       */
-    PCMD    = 0x0F,     /* p -- print pattern space to output           */
-    CPCMD   = 0x10,     /* P -- print first line of pattern space       */
-    QCMD    = 0x11,     /* q -- exit the stream editor                  */
-    RCMD    = 0x12,     /* r -- read in a file after current line       */
-    SCMD    = 0x13,     /* s -- regular-expression substitute           */
-    TCMD    = 0x14,     /* t -- branch on last substitute successful    */
-    CTCMD   = 0x15,     /* T -- branch on last substitute failed        */
-    WCMD    = 0x16,     /* w -- write pattern space to file             */
-    CWCMD   = 0x17,     /* W -- write first line of pattern space       */
-    XCMD    = 0x18,     /* x -- exhange pattern and hold spaces         */
-    YCMD    = 0x19,     /* y -- transliterate text                      */
+    EQCMD = 1,  /* = -- print current line number               */
+    ACMD,       /* a -- append text after current line          */
+    BCMD,       /* b -- branch to label                         */
+    CCMD,       /* c -- change current line                     */
+    DCMD,       /* d -- delete all of pattern space             */
+    CDCMD,      /* D -- delete first line of pattern space      */
+    GCMD,       /* g -- copy hold space to pattern space        */
+    CGCMD,      /* G -- append hold space to pattern space      */
+    HCMD,       /* h -- copy pattern space to hold space        */
+    CHCMD,      /* H -- append hold space to pattern space      */
+    ICMD,       /* i -- insert text before current line         */
+    LCMD,       /* l -- print pattern space in escaped form     */
+    NCMD,       /* n -- get next line into pattern space        */
+    CNCMD,      /* N -- append next line to pattern space       */
+    PCMD,       /* p -- print pattern space to output           */
+    CPCMD,      /* P -- print first line of pattern space       */
+    QCMD,       /* q -- exit the stream editor                  */
+    RCMD,       /* r -- read in a file after current line       */
+    SCMD,       /* s -- regular-expression substitute           */
+    TCMD,       /* t -- branch on last substitute successful    */
+    CTCMD,      /* T -- branch on last substitute failed        */
+    WCMD,       /* w -- write pattern space to file             */
+    CWCMD,      /* W -- write first line of pattern space       */
+    XCMD,       /* x -- exhange pattern and hold spaces         */
+    YCMD,       /* y -- transliterate text                      */
 
-    H       = 0x20,     /* command code attribute                       */
+    H   = 0x20, /* command code attribute                       */
 } cmdcode;
 
 #define CHARSETSIZE     (256 / 8)
@@ -68,23 +68,21 @@ typedef struct sedcmd {                          /* compiled-command representat
 
 /* address and regular expression compiled-form markers */
 typedef enum recode {
-    CCHR    = 0x01,    /* non-newline character to be matched follows */
-    CDOT    = 0x02,    /* dot wild-card marker */
-    CCL     = 0x03,    /* character class follows */
-    CNL     = 0x04,    /* match line start */
-    CDOL    = 0x05,    /* match line end */
-    CBRA    = 0x06,    /* tagged pattern start marker */
-    CKET    = 0x07,    /* tagged pattern end marker */
-    CBACK   = 0x08,    /* backslash-digit pair marker */
-    CLNUM   = 0x09,    /* numeric-address index follows */
-    CEND    = 0x0A,    /* symbol for end-of-source */
-    CEOF    = 0x0B,    /* end-of-field mark */
+    CCHR = 1,   /* non-newline character to be matched follows */
+    CDOT,       /* dot wild-card marker */
+    CCL,        /* character class follows */
+    CNL,        /* match line start */
+    CDOL,       /* match line end */
+    CBRA,       /* tagged pattern start marker */
+    CKET,       /* tagged pattern end marker */
+    CBACK,      /* backslash-digit pair marker */
+    CLNUM,      /* numeric-address index follows */
+    CEND,       /* symbol for end-of-source */
+    CEOF,       /* end-of-field mark */
 
     STAR    = 0x10,    /* attr - marker for Kleene star */
     MTYPE   = 0x20,    /* attr - multiple counts |'d into RE    \{...\} */
 } recode;
-
-extern void     execute( const char *file ); /* In sed.c */
 
 /* The following are in sedcomp.c */
                                                 /* main data areas */
@@ -97,5 +95,7 @@ extern bool                 nflag;              /* -n option flag */
 extern int                  eargc;              /* scratch copy of argument count */
 extern unsigned char const  bits[];             /* the bits table */
 
-/* sed.h ends here */
 
+extern void             execute( const char *file ); /* In sed.c */
+
+/* sed.h ends here */
