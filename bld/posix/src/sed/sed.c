@@ -326,8 +326,9 @@ static bool advance(
 
         } /* switch( *ep++ ) */
 
+        /* post processing for '*' or '\{m,n\}' variable count matches */
         if( lp != curlp ) {
-            /* the repeat part of a * or + matches */
+            /* matched part can be shortened by next RE element */
             switch( ep[0] ) {
             case CCHR:
                 c = ep[1];
