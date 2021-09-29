@@ -80,60 +80,64 @@ static bool advance(
 
     for( ;; ) {
         switch( *ep++ ) {
-        case CCHR:                      /* literal character */
-            if( *ep++ != *lp++ )        /* if chars unequal */
-                return( false );        /* return false */
-            break;                      /* matched */
+        case CCHR:                      /* match <literal character> */
+            if( *ep++ == *lp++ )        /* if char equal */
+                continue;               /* go to next element */
+            return( false );            /* return false */
 
-        case CDOT:                      /* anything but NUL */
-            if( *lp++ == '\0' )         /* first NUL is at EOL */
-                return( false );        /* return false */
-            break;                      /* matched */
+        case CDOT:                      /* match anything but NUL */
+            if( *lp++ != '\0' )         /* first NUL is at EOL */
+                continue;               /* go to next element */
+            return( false );            /* return false */
 
         case CNL:                       /* start-of-line */
         case CDOL:                      /* end-of-line */
-            if( *lp != '\0' )           /* found that first NUL? */
-                return( false );        /* return false */
-            break;                      /* matched */
+            if( *lp == '\0' )           /* found that first NUL? */
+                continue;               /* go to next element */
+            return( false );            /* return false */
 
         case CEOF:                      /* end-of-address mark */
             loc2 = lp;                  /* set second loc */
             return( true );             /* return true */
 
-        case CCL:                       /* a closure */
-            if( !TESTCHARSETINC( ep, lp ) ) /* is char in set? */
-                return( false );        /* return false */
-            ep += CHARSETSIZE;          /* skip rest of bitmask */
-            break;                      /*   and keep going */
+        case CCL:                       /* match [...] */
+            if( TESTCHARSET( ep, *lp ) ) { /* is char in set? */
+                lp++;                   /* matched */
+                ep += CHARSETSIZE;      /* skip bitmask */
+                continue;               /* and go to next element */
+            }
+            return( false );            /* return false */
 
-        case CBRA:                      /* start of tagged pattern */
+        case CBRA:                      /* match \( start of tagged pattern */
             tagindex = *ep++;           /* pattern tag index */
             brastart[tagindex] = lp;    /* mark it */
-            break;                      /* and go */
+            continue;                   /* and go to next element */
 
-        case CKET:                      /* end of tagged pattern */
+        case CKET:                      /* match \) end of tagged pattern */
             tagindex = *ep++;           /* pattern tag index */
             bracend[tagindex] = lp;     /* mark it */
-            break;                      /* and go */
+            continue;                   /* and go to next element */
 
-        case CBACK:
+        case CBACK:                     /* match \1-9 */
             tagindex = *ep++;           /* pattern tag index */
             bbeg = brastart[tagindex];
             ct = bracend[tagindex] - bbeg;
-            if( memcmp( bbeg, lp, ct ) != 0 )
-                return( false );        /* return false */
-            lp += ct;
-            break;                      /* matched */
+            if( memcmp( bbeg, lp, ct ) == 0 ) {
+                lp += ct;               /* matched */
+                continue;               /* and go to next element */
+            }
+            return( false );            /* return false */
 
-        case CBACK | STAR:
+        case CBACK | STAR:              /* match \1-9* */
             tagindex = *ep++;           /* pattern tag index */
             bbeg = brastart[tagindex];
             ct = bracend[tagindex] - bbeg;
+            curlp = lp;
             if( ct == 0 )
                 break;                  /* zero length match */
-            curlp = lp;
-            while( memcmp( bbeg, lp, ct ) == 0 )
+            while( memcmp( bbeg, lp, ct ) == 0 ) {
                 lp += ct;
+            }
             while( lp >= curlp ) {
                 if( advance( lp, ep ) )
                     return( true );
@@ -143,26 +147,29 @@ static bool advance(
 
         case CDOT | STAR:               /* match .* */
             curlp = lp;                 /* save closure start loc */
-            while( *lp++ != '\0' )      /* match anything */
-                ;
-            goto star;                  /* now look for followers */
+            while( *lp != '\0' ) {      /* match anything */
+                lp++;
+            }
+            break;                      /* now look for followers */
 
         case CCHR | STAR:               /* match <literal char>* */
+            c = *ep++;
             curlp = lp;                 /* save closure start loc */
-            while( (*lp++ == *ep) != '\0' ) /* match many of that char */
-                ;
-            ep++;                       /* to start of next element */
-            goto star;                  /* match it and followers */
+            while( *lp == c ) {         /* match many of that char */
+                lp++;
+            }
+            break;                      /* match it and followers */
 
         case CCL | STAR:                /* match [...]* */
             curlp = lp;                 /* save closure start loc */
-            while( TESTCHARSETINC( ep, lp ) )
-                ;
+            while( TESTCHARSET( ep, *lp ) ) {
+                lp++;
+            }
             ep += CHARSETSIZE;          /* skip past the set */
-            goto star;                  /* match followers */
+            break;                      /* match followers */
 
-        case CBRA | STAR:               /* start of starred tagged pattern */
-            tagindex = *ep++;       /* pattern tag index */
+        case CBRA | STAR:               /* start of \(...\)* */
+            tagindex = *ep++;           /* pattern tag index */
             curlp = bracend[tagindex] = bbeg = tep = lp;    /* save closure start loc */
             ct = *(unsigned char *)ep;
             matched = false;
@@ -180,8 +187,8 @@ static bool advance(
             }
             return( advance( bracend[tagindex], ep + ct ) ); /* Zero matches */
 
-        case CBRA | MTYPE:              /* \(...\)\{m,n\} WFB */
-            tagindex = *ep;         /* pattern tag index */
+        case CBRA | MTYPE:              /* start of \(...\)\{m,n\} */
+            tagindex = *ep;             /* pattern tag index */
             curlp = bracend[tagindex] = bbeg = tep = lp;    /* save closure start loc */
             ct = *(unsigned char *)(ep + 1);
             i1 = *(unsigned char *)(ep + ct - 1);
@@ -214,7 +221,7 @@ static bool advance(
             }
             return( advance( bracend[tagindex], ep + ct + 1 ) ); /* Zero matches */
 
-        case CCHR | MTYPE:              /* Match <literal char>\{...\} */
+        case CCHR | MTYPE:              /* Match <literal char>\{m,n\} */
             c = *ep++;                  /* Get byte and skip to next element */
             i1 = *(unsigned char *)ep++;
             i2 = *(unsigned char *)ep++;
@@ -224,22 +231,24 @@ static bool advance(
             }
             if( i1 )
                 return( false );
+            curlp = lp;
             if( i2 == 0 )
                 break;
             if( i2 == 0xFF )
                 i2 = MAXBUF;
-            curlp = lp;
-            while( c == *lp++ && i2 )
+            while( c == *lp && i2 ) {
+                lp++;
                 i2--;
-            goto star;
+            }
+            break;
 
-        case CKET | STAR:               /* match \(..\)* */
-        case CKET | MTYPE:              /* match \(..\)\{...\} */
+        case CKET | STAR:               /* match end of \(..\)* */
+        case CKET | MTYPE:              /* match end of \(..\)\{m,n\} */
             tagindex = *ep;             /* pattern tag index */
             bracend[tagindex] = lp;     /* mark it */
             return( true );
 
-        case CDOT | MTYPE:              /* match .\{...\} */
+        case CDOT | MTYPE:              /* match .\{m,n\} */
             i1 = *(unsigned char *)ep++;
             i2 = *(unsigned char *)ep++;
             while( *lp != '\0' && i1 ) {
@@ -248,37 +257,41 @@ static bool advance(
             }
             if( i1 )
                 return( false );
+            curlp = lp;
             if( i2 == 0 )
                 break;
             if( i2 == 0xFF )
                 i2 = MAXBUF;
-            curlp = lp;
-            while( *lp++ != '\0' && i2 )
+            while( *lp != '\0' && i2 ) {
+                lp++;
                 i2--;
-            goto star;
+            }
+            break;
 
-        case CCL | MTYPE:               /* match [...]\{...\} */
+        case CCL | MTYPE:               /* match [...]\{m,n\} */
             tep = ep;
             ep += CHARSETSIZE;
             i1 = *(unsigned char *)ep++;
             i2 = *(unsigned char *)ep++;
-            /* WFB 1 CCL|MTYPE handler must be like CCHR|MTYPE or off by 1 */
-            while( c = *lp, TESTCHARSET( tep, c ) && i1 ) {
+            /* CCL|MTYPE handler must be like CCHR|MTYPE or off by 1 */
+            while( TESTCHARSET( tep, *lp ) && i1 ) {
                 lp++;
                 i1--;
             }
             if( i1 )
                 return( false );
+            curlp = lp;
             if( i2 == 0 )
                 break;
             if( i2 == 0xFF )
                 i2 = MAXBUF;
-            curlp = lp;
-            while( TESTCHARSETINC( tep, lp ) && i2 )
+            while( TESTCHARSET( tep, *lp ) && i2 ) {
+                lp++;
                 i2--;
-            goto star;
+            }
+            break;
 
-        case CBACK | MTYPE:             /* e.g. \(.\)\1\{5\} */
+        case CBACK | MTYPE:             /* e.g. \1-9\{m,n\} */
             tagindex = *ep++;           /* pattern tag index */
             bbeg = brastart[tagindex];
             ct = bracend[tagindex] - bbeg;
@@ -290,11 +303,11 @@ static bool advance(
             }
             if( i1 )
                 return( false );
+            curlp = lp;
             if( i2 == 0 )
                 break;
             if( i2 == 0xFF )
                 i2 = MAXBUF;
-            curlp = lp;
             while( memcmp( bbeg, lp, ct ) == 0 && i2 ) {
                 lp += ct;
                 i2--;
@@ -306,10 +319,14 @@ static bool advance(
             }
             return( false );
 
-        star:                           /* the repeat part of a * or + match */
-            if( --lp == curlp )         /* 0 matches */
-                break;
+        default:
+            fprintf( stderr, "sed: RE error, %o\n", *--ep );
+            exit( 2 );
 
+        } /* switch( *ep++ ) */
+
+        if( lp != curlp ) {
+            /* the repeat part of a * or + matches */
             switch( ep[0] ) {
             case CCHR:
                 c = ep[1];
@@ -337,12 +354,7 @@ static bool advance(
                 }
             } while( lp-- > curlp );
             return( false );
-
-        default:
-            fprintf( stderr, "sed: RE error, %o\n", *--ep );
-            exit( 2 );
-
-        } /* switch( *ep++ ) */
+        }
     }
 }
 
@@ -574,7 +586,7 @@ static char *getinpline( char *buf )  /* where to send the input */
      */
     memset( buf, 0xFF, room + 1 );
     *buf = '\0';
-    if( fgets(buf, room, stdin) != NULL ) { /* gets() can smash program - WFB */
+    if( fgets(buf, room, stdin) != NULL ) { /* gets() can smash program */
         lnum++;                         /* note that we got another line */
         /* find the end of the input */
         while( buf[0] != '\0' || buf[1] != '\xFF' ) {
