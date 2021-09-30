@@ -476,9 +476,9 @@ static void dosub( char const *rhsbuf ) /* where to put the result */
         }
     }
     lp = loc2;
-    loc2 = sp - ( genbuf - linebuf );   /* Last character to remove */
+    loc2 = linebuf + ( sp - genbuf );   /* Last character to remove */
     do{
-        if( sp >= genbuf + GENSIZ ) { /* Not exercised by sedtest.mak */
+        if( sp >= genbuf + GENSIZ ) {   /* Not exercised by sedtest.mak */
             fprintf( stderr, NOROOM, GENSIZ, lnum );
             break;
         }
