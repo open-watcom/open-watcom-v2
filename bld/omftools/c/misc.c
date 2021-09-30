@@ -81,8 +81,8 @@ static char *FixName( char *name )
     for( ptr = name; (hold = *ptr) != '\0'; ++ptr ) {
         if( hold == '/' ) {
             *ptr = '\\';
-        } else if( ( hold -= 'A' ) < 26 ) {     /* SIDE EFFECT!!! */
-            *ptr = hold + 'a';
+        } else if( hold >= 'A' && hold <= 'Z' ) {
+            *ptr = hold + 'a' - 'A';
         }
     }
 #elif defined( __OS2__ ) || defined( __NT__ )
