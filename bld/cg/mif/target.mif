@@ -1,5 +1,7 @@
 !ifeq host_os linux
 hostcglibname=cg$(target_name)lnx
+!else ifeq host_os rdos
+hostcglibname=cg$(target_name)rdu
 !else
 hostcglibname=cg$(target_name)$(host_os)
 !endif
