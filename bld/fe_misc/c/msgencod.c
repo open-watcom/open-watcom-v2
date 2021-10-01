@@ -1775,6 +1775,7 @@ int main( int argc, char **argv )
     bool    langs_ok;
     int     i;
 
+    flags.max_len = 127;
     langs_ok = _LANG_DEFS_OK();
     if( !langs_ok )
         fatal( "language index mismatch\n" );
