@@ -2,7 +2,7 @@
 
 # target_cpu = 386 | i86 | ppc | axp | mps
 # host_cpu = 386 | ppc | axp
-# host_os  = nt | os2 | qnx | dos | linux | osx | bsd | haiku
+# host_os  = nt | os2 | qnx | dos | rdos | linux | osx | bsd | haiku
 
 !include $(cg_dir)/mif/cghost.mif
 
@@ -61,14 +61,14 @@ cg_objs = $(owl_debug_objs)
 ! endif
 cg_libs = &
     $(o_dir)/cg$(target_cpu).lib &
-    $(o_dir)/cg$(target_cpu)$(cg_host).lib &
+    $(o_dir)/$(cg_target_host_name).lib &
     $(owl_lib) &
     $(cfloat_lib) &
     $(dwarfw_lib)
 !else
 cg_libs = &
     $(o_dir)/cg$(target_cpu).lib &
-    $(o_dir)/cg$(target_cpu)$(cg_host).lib &
+    $(o_dir)/$(cg_target_host_name).lib &
     $(cfloat_lib) &
     $(dwarfw_lib)
 !endif

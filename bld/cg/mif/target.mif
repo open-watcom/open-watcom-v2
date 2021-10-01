@@ -1,6 +1,6 @@
 !ifeq dll_cg 1
 
-libs = cg$(target_cpu).lib cg$(target_cpu)$(cg_host).lib $(dwarfw_lib) $(owl_lib) $(cfloat_lib)
+libs = cg$(target_cpu).lib $(cg_target_host_name).lib $(dwarfw_lib) $(owl_lib) $(cfloat_lib)
 
 target : $(pre_obj_deps) cg$(target_cpu).dll cgdllcli.lib .SYMBOLIC
     @%null
@@ -16,7 +16,7 @@ libtarg_name = cgdllcli
 
 !else
 
-target : $(pre_obj_deps) cg$(target_cpu).lib cg$(target_cpu)$(cg_host).lib .SYMBOLIC
+target : $(pre_obj_deps) cg$(target_cpu).lib $(cg_target_host_name).lib .SYMBOLIC
     @%null
 
 !endif
@@ -32,5 +32,5 @@ libtarg_name = cg$(target_cpu)
 !include libtarg.mif
 
 libtarg_objs = $($(host_os)_objs)
-libtarg_name = cg$(target_cpu)$(cg_host)
+libtarg_name = $(cg_target_host_name)
 !include libtarg.mif

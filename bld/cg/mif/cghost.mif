@@ -1,9 +1,13 @@
+# possible host_os  = nt | os2 | qnx | dos | rdos | linux | osx | bsd | haiku
+
 !ifeq host_os linux
-cg_host = lnx
+cg_target_host_name = cg$(target_cpu)lnx
 !else ifeq host_os rdos
-cg_host = rdu
+cg_target_host_name = cg$(target_cpu)rdu
+!else ifeq host_os haiku
+cg_target_host_name = cg$(target_cpu)hai
 !else
-cg_host = $(host_os)
+cg_target_host_name = cg$(target_cpu)$(host_os)
 !endif
 
 !include $(owl_dir)/client.mif
