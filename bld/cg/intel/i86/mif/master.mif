@@ -3,6 +3,6 @@
 !include $(cg_dir)/mif/master.mif
 
 target_objs     = $(i86_objs) $(intel_objs) $(cg_objs) encode.obj
-target_name     = i86
+target_cpu      = i86
 
 !include $(cg_dir)/mif/target.mif

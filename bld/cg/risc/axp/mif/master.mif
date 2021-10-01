@@ -3,6 +3,6 @@
 !include $(cg_dir)/mif/master.mif
 
 target_objs     = $(axp_objs) $(risc_objs) $(cg_objs) encode.obj
-target_name     = axp
+target_cpu      = axp
 
 !include $(cg_dir)/mif/target.mif

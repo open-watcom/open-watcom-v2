@@ -3,6 +3,6 @@
 !include $(cg_dir)/mif/master.mif
 
 target_objs     = $(mips_objs) $(risc_objs) $(cg_objs) encode.obj
-target_name     = mps
+target_cpu      = mps
 
 !include $(cg_dir)/mif/target.mif

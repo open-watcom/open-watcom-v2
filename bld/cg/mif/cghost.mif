@@ -1,0 +1,11 @@
+!ifeq host_os linux
+cg_host = lnx
+!else ifeq host_os rdos
+cg_host = rdu
+!else
+cg_host = $(host_os)
+!endif
+
+!include $(owl_dir)/client.mif
+!include $(cfloat_dir)/client.mif
+!include $(dwarfw_dir)/client.mif

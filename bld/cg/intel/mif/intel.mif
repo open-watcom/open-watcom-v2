@@ -41,5 +41,5 @@ intel_objs = &
     wvsyms.obj &
     wvtypes.obj
 
-inc_dirs_targ   = -I"$(cg_dir)/intel/h" -I"$(cg_dir)/intel/$(target_name)/h"
+inc_dirs_targ   = -I"$(cg_dir)/intel/h" -I"$(cg_dir)/intel/$(target_cpu)/h"
 src_path        = $+$(src_path)$-;$(cg_dir)/intel/c
