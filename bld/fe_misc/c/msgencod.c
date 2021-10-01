@@ -215,11 +215,10 @@ static struct {
     boolbit     gen_gpick               : 1;    // - generate generalized pick macros and tables
     boolbit     rc                      : 1;    // - generate files for resource compiler
     boolbit     ignore_prefix           : 1;    // - ignore matching XXX_ prefix with message type
-    boolbit     warnings_always_rebuild : 1;    // - warnings gen files with old dates to constantly force rebuilds
     boolbit     no_warn                 : 1;    // - don't print warning messages
     boolbit     out_utf8                : 1;    // - output texts uses UTF-8 encoding
     unsigned    max_len;                        //...max length of message
-    char        *rc_macro;                      //...macro used for resource compiler files
+    char        rc_macro[80];                   //...macro used for resource compiler files
 } flags;
 
 static struct {
@@ -228,7 +227,7 @@ static struct {
     boolbit     active : 1;
 } examples;
 
-static char *ifname;
+static char ifname[PATH_MAX] = {0};
 static FILE *i_gml;
 static FILE *o_msgc;
 static FILE *o_msgh;
@@ -251,9 +250,8 @@ static unsigned messageCounter;
 static unsigned line;
 static unsigned errors;
 static unsigned warnings;
-static unsigned nextOutputFName;
 
-static const char *outputFNames[10];
+static int  fno = 0;
 
 static char *entireGML;
 static char *currGML;
@@ -364,85 +362,8 @@ static FILE *initFILE( const char *fnam, const char *fmod )
             printf( "fatal: cannot open '%s' for %s\n", fnam, ( open_read ) ? "input" : "output" );
             exit( EXIT_FAILURE );
         }
-        if( !open_read ) {
-            outputFNames[nextOutputFName++] = fnam;
-        }
     }
     return( fp );
-}
-
-#define NUM_FILES   5
-
-static bool processOptions( int argc1, char **argv1 )
-{
-    if( argc1 < NUM_FILES ) {
-        return( true );
-    }
-    if( strcmp( *argv1, "-w" ) == 0 ) {
-        flags.warnings_always_rebuild = true;
-        NEXT_ARG_CHECK();
-    }
-    if( strcmp( *argv1, "-s" ) == 0 ) {
-        flags.no_warn = true;
-        NEXT_ARG_CHECK();
-    }
-    if( strcmp( *argv1, "-i" ) == 0 ) {
-        flags.international = true;
-        NEXT_ARG_CHECK();
-    }
-    if( strcmp( *argv1, "-ip" ) == 0 ) {
-        flags.ignore_prefix = true;
-        NEXT_ARG_CHECK();
-    }
-    if( strcmp( *argv1, "-q" ) == 0 ) {
-        flags.quiet = true;
-        NEXT_ARG_CHECK();
-    }
-    if( strcmp( *argv1, "-p" ) == 0 ) {
-        flags.gen_pick = true;
-        NEXT_ARG_CHECK();
-    }
-    if( strcmp( *argv1, "-g" ) == 0 ) {
-        flags.gen_gpick = true;
-        NEXT_ARG_CHECK();
-    }
-    if( strcmp( *argv1, "-rc" ) == 0 ) {
-        flags.rc = true;
-        NEXT_ARG_CHECK();
-        flags.rc_macro = *argv1;
-        NEXT_ARG_CHECK();
-    }
-    if( strcmp( *argv1, "-utf8" ) == 0 ) {
-        flags.out_utf8 = true;
-        NEXT_ARG_CHECK();
-    }
-    flags.max_len = 127;
-    if( strcmp( *argv1, "-len" ) == 0 ) {
-        long    val;
-
-        NEXT_ARG_CHECK();
-        val = atol( *argv1 );
-        if( val > 0 ) {
-            flags.max_len = (unsigned)val;
-        }
-        NEXT_ARG_CHECK();
-    }
-    if( argc1 != NUM_FILES )
-        return( true );
-    ifname = *argv1;
-    i_gml = initFILE( *argv1, "rb" );
-    NEXT_ARG();
-    o_msgc = initFILE( *argv1, "w" );
-    NEXT_ARG();
-    o_msgh = initFILE( *argv1, "w" );
-    NEXT_ARG();
-    o_levh = initFILE( *argv1, "w" );
-    NEXT_ARG();
-    o_attrh = initFILE( *argv1, "w" );
-    if( !flags.out_utf8 ) {
-        qsort( cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
-    }
-    return( false );
 }
 
 static const char *nextWord( char *t, const char *s )
@@ -1659,47 +1580,225 @@ static void dumpInternational( void )
     }
 }
 
-void forceRebuild( void )
+#define ISSEP(c)    (isspace( c ) || c == '\0')
+
+static char *ProcessOption( char *p, char *option_start )
+/*******************************************************/
 {
-    unsigned i;
+    switch( *p++ ) {
+    case 's':
+        if( !ISSEP( p[0] ) )
+            break;
+        flags.no_warn = true;
+        return( p );
+    case 'i':
+        if( ISSEP( p[0] ) ) { // 'i'
+            flags.international = true;
+            return( p );
+        }
+        if( *p++ == 'p' && ISSEP( p[0] ) ) { // 'ip'
+            flags.ignore_prefix = true;
+            return( p );
+        }
+        break;
+    case 'q':
+        if( !ISSEP( p[0] ) )
+            break;
+        flags.quiet = true;
+        return( p );
+    case 'p':
+        if( !ISSEP( p[0] ) )
+            break;
+        flags.gen_pick = true;
+        return( p );
+    case 'g':
+        if( !ISSEP( p[0] ) )
+            break;
+        flags.gen_gpick = true;
+        return( p );
+    case 'u':   // 'utf8'
+        if( *p++ == 't' && *p++ == 'f' && *p++ == '8' && ISSEP( p[0] ) ) {
+            flags.out_utf8 = true;
+            return( p );
+        }
+        break;
+    case 'r':   // 'rc='
+        if( *p++ == 'c' && *p++ == '=' ) {
+            int i;
 
-    for( i = 0; i < nextOutputFName; ++i ) {
-        struct stat info;
-        struct utimbuf uinfo;
+            i = 0;
+            while( *p != '\0' && !isspace( *p ) ) {
+                if( i < sizeof( flags.rc_macro ) - 1 ) {
+                    flags.rc_macro[i++] = *p;
+                }
+                p++;
+            }
+            flags.rc_macro[i] = '\0';
+            flags.rc = true;
+            return( p );
+        }
+        break;
+    case 'l':   // 'len='
+        if( *p++ == 'e' && *p++ == 'n' && *p++ == '=' ) {
+            long    val;
+            char    *end;
 
-        if( stat( outputFNames[i], &info ) != -1 ) {
-            unsigned three_years_ago = 60 * 60 * 24 * 366 * 3;
-            memset( &uinfo, 0, sizeof(uinfo) );
-            uinfo.actime = info.st_mtime - three_years_ago;
-            uinfo.modtime = info.st_mtime - three_years_ago;
-            utime( outputFNames[i], &uinfo );
+            val = strtol( p, &end, 10 );
+            if( val > 0 ) {
+                flags.max_len = (unsigned)val;
+            }
+            return( end );
+        }
+        break;
+    }
+    printf( "Unknown option: %s\n", option_start );
+    return( NULL );
+}
+
+static char *getFileName( char *str, char *name )
+/***********************************************/
+{
+    char        ch;
+
+    while( isspace( *str ) )
+        ++str;
+    if( *str == '\"' ) {
+        str++;
+        while( (ch = *str) != '\0' ) {
+            str++;
+            if( ch == '"' ) {
+                break;
+            }
+            if( ch == '\\' && *str == '"' ) {
+                ch = *str++;
+            }
+            *name++ = ch;
+        }
+    } else {
+        while( *str != '\0' && !isspace( *str ) ) {
+            *name++ = *str++;
         }
     }
+    *name = '\0';
+    return( str );
+}
+
+static char *ReadIndirectFile( char *name )
+/*****************************************/
+{
+    char        *str;
+    FILE        *fp;
+    int         len;
+    char        ch;
+
+    str = NULL;
+    fp = fopen( name, "rb" );
+    if( fp != NULL ) {
+        fseek( fp, 0, SEEK_END );
+        len = ftell( fp );
+        fseek( fp, 0, SEEK_SET );
+        str = malloc( len + 1 );
+        fread( str, 1, len, fp );
+        str[len] = '\0';
+        fclose( fp );
+        // go through characters changing \r, \n etc into ' '
+        for( ; (ch = *str) != '\0'; str++ ) {
+            if( ch == 0x1A ) {      // if end of file
+                *str = '\0';        // - mark end of str
+                break;
+            }
+            if( ch != ' ' && isspace( ch ) ) {
+                *str = ' ';
+            }
+        }
+    }
+    return( str );
+}
+
+static bool ProcessOptions( char *str )
+/*************************************/
+{
+    char        name[PATH_MAX];
+    char        *fstr;
+    bool        rc;
+
+    rc = 0;
+    fstr = NULL;
+    name[0] = '\0';
+    while( *str != '\0' ) {
+        while( isspace( *str ) )
+            ++str;
+        if( *str == '@' ) {
+            str = getFileName( str + 1, name );
+            str = getenv( name );
+            if( str == NULL ) {
+                str = fstr = ReadIndirectFile( name );
+            }
+        }
+        if( *str == '\0' ) {
+            continue;
+        }
+        if( *str == '-' ) {
+            str = ProcessOption( str + 1, str );
+            if( str == NULL ) {
+                rc = true;
+                break;
+            }
+        } else {  /* collect file name */
+            str = getFileName( str, name );
+            switch( fno++ ) {
+            case 0:
+                strcpy( ifname, name );
+                i_gml = initFILE( name, "rb" );
+                break;
+            case 1:
+                o_msgc = initFILE( name, "w" );
+                break;
+            case 2:
+                o_msgh = initFILE( name, "w" );
+                break;
+            case 3:
+                o_levh = initFILE( name, "w" );
+                break;
+            case 4:
+                o_attrh = initFILE( name, "w" );
+                break;
+            }
+        }
+    }
+    free( fstr );
+    return( rc );
 }
 
 int main( int argc, char **argv )
 {
     bool    langs_ok;
+    int     i;
 
     langs_ok = _LANG_DEFS_OK();
     if( !langs_ok )
         fatal( "language index mismatch\n" );
 
-    if( processOptions( argc - 1, argv + 1 ) ) {
-        error( "fatal: invalid argument\n\n" );
-        fatal( "usage: msgencod [options] <gml> <msgc> <msgh> <levh>\n"
-               "\n"
-               "Options: (must appear in following order)\n"
-               "  -w warnings generate files with old dates to constantly force rebuilds\n"
-               "  -s no warnings\n"
-               "  -i create international file with non-english data\n"
-               "  -ip ignore matching XXX_ prefix with message type\n"
-               "  -q quiet operation\n"
-               "  -rc <macro_name> generate files for resource compiler\n"
-               "  -p generate pick macros instead of #defines\n"
-               "  -g generate generalized pick macros and tables\n"
-               "  -utf8 output texts use UTF-8 encoding"
-             );
+    for( i = 1; i < argc; i++ ) {
+        if( ProcessOptions( argv[i] ) ) {
+            closeFiles();
+            error( "fatal: invalid argument\n\n" );
+            fatal( "usage: msgencod [options] <gml> <msgc> <msgh> <levh>\n"
+                   "\n"
+                   "Options: (must appear in following order)\n"
+                   "  -s no warnings\n"
+                   "  -i create international file with non-english data\n"
+                   "  -ip ignore matching XXX_ prefix with message type\n"
+                   "  -q quiet operation\n"
+                   "  -rc <macro_name> generate files for resource compiler\n"
+                   "  -p generate pick macros instead of #defines\n"
+                   "  -g generate generalized pick macros and tables\n"
+                   "  -utf8 output texts use UTF-8 encoding"
+                 );
+        }
+    }
+    if( !flags.out_utf8 ) {
+        qsort( cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
     }
     readGML();
     if( !flags.rc && !flags.gen_gpick ) {
@@ -1715,9 +1814,6 @@ int main( int argc, char **argv )
     }
     if( !flags.quiet ) {
         dumpStats();
-    }
-    if( warnings > 0 && flags.warnings_always_rebuild ) {
-        forceRebuild();
     }
     return( ( errors > 0 ) ? EXIT_FAILURE : EXIT_SUCCESS );
 }
