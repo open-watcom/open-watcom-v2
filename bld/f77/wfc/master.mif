@@ -121,7 +121,7 @@ xcode$(target_cpu).tmp: ../../a/code$(target_cpu).asm
 
 wfcmsgs.gh wfcmsgs.grh wfcgrps.gh wfcattrs.gh : ../../gml/wfcmsgs.gml
     @%make echo_msgencod
-    $(noecho)msgencod -s -ip -q -rc MSG_LANG_BASE $(msgencod_enc_$(host_os)) $[@ wfcmsgs.gh wfcmsgs.grh wfcgrps.gh wfcattrs.gh
+    $(noecho)msgencod -s -ip -q -rc=MSG_LANG_BASE $(msgencod_enc_$(host_os)) $[@ wfcmsgs.gh wfcmsgs.grh wfcgrps.gh wfcattrs.gh
 
 # optencod options and targets for various hosts
 !ifdef exetarg_qnx_res
