@@ -42,9 +42,9 @@ additional_clean = *.rex *.gdh *.gch $(bind_compiled) $(error_dat)
 vi.exe: $(error_dat) $(bind_files) $(name).exe $(__MAKEFILES__)
     @set edpath=../dat
     @%make edbind_data
-    cp $(name).exe vi.exe
+    copy $(name).exe vi.exe
 !ifdef __WATCOM_TOOLS__
-    cp $(name).sym vi.sym
+    copy $(name).sym vi.sym
 !endif
 
 #

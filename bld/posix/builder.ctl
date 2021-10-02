@@ -15,7 +15,6 @@ set PROJDIR=<CWD>
 #========================
     cdsay <PROJDIR>
     <CPCMD> <OWOBJDIR>/cat.exe   <OWBINDIR>/<OWOBJDIR>/cat<CMDEXT>
-    <CPCMD> <OWOBJDIR>/cp.exe    <OWBINDIR>/<OWOBJDIR>/cp<CMDEXT>
     <CPCMD> <OWOBJDIR>/egrep.exe <OWBINDIR>/<OWOBJDIR>/egrep<CMDEXT>
     <CPCMD> <OWOBJDIR>/head.exe  <OWBINDIR>/<OWOBJDIR>/head<CMDEXT>
     <CPCMD> <OWOBJDIR>/chmod.exe <OWBINDIR>/<OWOBJDIR>/chmod<CMDEXT>
@@ -32,8 +31,6 @@ set PROJDIR=<CWD>
 #========================
     echo rm -f <OWBINDIR>/<OWOBJDIR>/cat<CMDEXT>
     rm -f <OWBINDIR>/<OWOBJDIR>/cat<CMDEXT>
-    echo rm -f <OWBINDIR>/<OWOBJDIR>/cp<CMDEXT>
-    rm -f <OWBINDIR>/<OWOBJDIR>/cp<CMDEXT>
     echo rm -f <OWBINDIR>/<OWOBJDIR>/egrep<CMDEXT>
     rm -f <OWBINDIR>/<OWOBJDIR>/egrep<CMDEXT>
     echo rm -f <OWBINDIR>/<OWOBJDIR>/head<CMDEXT>

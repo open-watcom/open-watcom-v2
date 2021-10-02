@@ -56,7 +56,7 @@ else
     cd $OWOBJDIR
     rm -f $OWBINDIR/$OWOBJDIR/builder
     output_redirect $OWBINDIR/$OWOBJDIR/wmake -f ../binmake clean
-    output_redirect $OWBINDIR/$OWOBJDIR/wmake -f ../binmake bootstrap=1 builder.exe
+    output_redirect $OWBINDIR/$OWOBJDIR/wmake -f ../binmake bootstrap=1
     if [ "$1" != "preboot" ]; then
         cd $OWSRCDIR
         builder boot
