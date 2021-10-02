@@ -4439,9 +4439,9 @@ internal shell command from the following list:
 check for Ctrl+Break
 .point call
 nest batch files
-.point chdir
-change current directory
 .point cd
+change current directory
+.point chdir
 change current directory
 .point cls
 clear the screen
@@ -4450,7 +4450,7 @@ start NT or OS/2 command processor
 .point command
 start DOS command processor
 .point copy
-copy or combine files
+copy or combine files, intercepted by &makcmdup
 .point ctty
 DOS redirect input/output to COM port
 .point d:
@@ -4773,6 +4773,21 @@ rmdir <directory>
 The "rmdir" command may be used to delete a directory.
 &maksname "rmdir" command is is simplified implementation of the POSIX "rmdir" command.
 It handles directory names consistently with other &maksname commands.
+.*
+.section copy command
+.*
+.np
+.ix 'copy' 'using &makname'
+The commands "copy" is intercepted by &maksname..
+It uses following syntax:
+.millust begin
+
+copy <source file> <destination file>
+
+.millust end
+The "copy" command may be used to copy a file.
+&maksname "copy" command is simplified implementation of DOS "copy" command.
+It handles file names consistently with other &maksname commands.
 .*
 .section &maksname internal commands
 .*
