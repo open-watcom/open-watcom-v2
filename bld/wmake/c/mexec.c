@@ -30,6 +30,14 @@
 ****************************************************************************/
 
 
+#include <ctype.h>
+#include <time.h>
+#if defined( __UNIX__ ) || defined( __WATCOMC__ )
+    #include <utime.h>
+    #include <fnmatch.h>
+#else
+    #include <sys/utime.h>
+#endif
 #include <sys/types.h>
 #include <sys/stat.h>
 #ifdef __UNIX__
@@ -38,14 +46,9 @@
 #else
     #include <direct.h>
 #endif
-#if defined( __UNIX__ ) || defined( __WATCOMC__ )
-    #include <fnmatch.h>
-#endif
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     #include <process.h>
 #endif
-#include <ctype.h>
-#include <time.h>
 #ifdef __RDOS__
     #include "rdos.h"
 #endif
@@ -1794,12 +1797,14 @@ static size_t write_block( const void *buf, size_t len, FILE *fp, const char *na
 STATIC bool processCopy( const char *src, const char *dst )
 /*********************************************************/
 {
-    FILE    *fps;
-    FILE    *fpd;
-    bool    ok;
-    char    buf[FILE_BUFFER_SIZE];
-    size_t  len;
-    pgroup2 pg;
+    FILE            *fps;
+    FILE            *fpd;
+    bool            ok;
+    char            buf[FILE_BUFFER_SIZE];
+    size_t          len;
+    pgroup2         pg;
+    struct stat     st;
+    struct utimbuf  dsttimes; 
 
     if( chk_is_dir( dst ) ) {
         _splitpath2( src, pg.buffer, NULL, NULL, &pg.fname, &pg.ext );
@@ -1820,6 +1825,16 @@ STATIC bool processCopy( const char *src, const char *dst )
                 ok = ( len == write_block( buf, len, fpd, dst ) );
             }
             ok &= close_file( fpd, dst );
+
+            stat( src, &st );
+            dsttimes.actime = st.st_atime;
+            dsttimes.modtime = st.st_mtime;
+            utime( dst, &dsttimes );
+            /*
+             * copy permissions: mostly necessary for the "x" bit
+             * some files is copied with the read-only permission
+             */
+            chmod( dst, st.st_mode );
         }
         ok &= close_file( fps, src );
     }
