@@ -9,7 +9,7 @@ cd %OWSRCDIR%\wmake\%OWOBJDIR%
 nmake -f ..\nmake
 mkdir %OWSRCDIR%\builder\%OWOBJDIR%
 cd %OWSRCDIR%\builder\%OWOBJDIR%
-%OWBINDIR%\%OWOBJDIR%\wmake -f ..\binmake bootstrap=1 builder.exe
+%OWBINDIR%\%OWOBJDIR%\wmake -f ..\binmake bootstrap=1
 cd %OWSRCDIR%
 builder boot
 builder build os_nt cpu_x64

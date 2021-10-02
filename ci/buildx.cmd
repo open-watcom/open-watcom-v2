@@ -52,7 +52,7 @@ if "%OWBUILD_STAGE%" == "boot" (
     if not %RC% == 1 (
         mkdir %OWSRCDIR%\builder\%OWOBJDIR%
         cd %OWSRCDIR%\builder\%OWOBJDIR%
-        %OWBINDIR%\%OWOBJDIR%\wmake -f ..\binmake bootstrap=1 builder.exe
+        %OWBINDIR%\%OWOBJDIR%\wmake -f ..\binmake bootstrap=1
         set RC=!ERRORLEVEL!
         if not %RC% == 1 (
             cd %OWSRCDIR%

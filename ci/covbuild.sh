@@ -35,7 +35,7 @@ else
     export OWVERBOSE=1
     mkdir $OWSRCDIR/builder/$OWOBJDIR
     cd $OWSRCDIR/builder/$OWOBJDIR
-    $OWBINDIR/$OWOBJDIR/wmake -f ../binmake bootstrap=1 builder.exe
+    $OWBINDIR/$OWOBJDIR/wmake -f ../binmake bootstrap=1
     cd $OWSRCDIR
     builder boot
     RC=$?
