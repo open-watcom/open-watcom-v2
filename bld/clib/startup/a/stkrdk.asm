@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -33,8 +34,6 @@ include langenv.inc
 include mdef.inc
 include struct.inc
 
-include exitwmsg.inc
-
         modstart        stk
 
         assume  ds:DGROUP
@@ -53,9 +52,9 @@ include exitwmsg.inc
         sub     ebp,[ebp+8]
         jnc     chk_passed
 ;
-        int     3                       ; hit breakpoint if stack is out        
+        int     3                       ; hit breakpoint if stack is out
 
-chk_passed:        
+chk_passed:
         pop     ebp
         ret     4
         endproc __CHK
