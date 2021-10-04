@@ -27,7 +27,10 @@ wildargv.c : $(clib_dir)/startup/c/wildargv.c
     $(sed) -f ../srcfix1.sed $< >$@
 
 cstrt086.asm : $(clib_dir)/startup/a/cstrt086.asm
-    $(sed) -f ../srcfix2.sed -e "s/include exitwmsg.inc/extrn   \"C\",__fatal_runtime_error : proc/" $< >$@
+    @%null <<sed1.tmp
+s/include exitwmsg.inc/extrn   \"C\",__fatal_runtime_error : proc/
+<<KEEP
+    $(sed) -f ../srcfix2.sed -f sed1.tmp $< >$@
 
 cstrto16.asm : $(clib_dir)/startup/a/cstrto16.asm
     $(sed) -f ../srcfix2.sed $< >$@
@@ -40,7 +43,10 @@ dos16m.asm : $(clib_dir)/startup/a/dos16m.asm
 #    $(sed) -f ../srcfix2.sed -e "s/include exitwmsg.inc/extrn   \"C\",__fatal_runtime_error : proc/" $< >$@
 
 maino16.c : $(clib_dir)/startup/c/maino16.c
-    $(sed) -e "s/$#include \"exitwmsg.h\"/extern _WCRTLINK _WCNORETURN void __fatal_runtime_error( char __far *, unsigned );/" $< >$@
+    @%null <<sed2.tmp
+s/$#include \"exitwmsg.h\"/extern _WCRTLINK _WCNORETURN void __fatal_runtime_error( char __far *, unsigned );/
+<<KEEP
+    $(sed) -f sed2.tmp $< >$@
 
 cstrt386.asm : $(clib_dir)/startup/a/cstrt386.asm
     $(sed) -f ../srcfix2.sed $< >$@
