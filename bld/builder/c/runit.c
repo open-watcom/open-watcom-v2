@@ -289,6 +289,8 @@ static int BuildList( char *src, char *dst, bool test_abit, bool cond_copy, copy
         dirp = opendir( src );
     }
 #else
+    if( pg.fname[0] == '*' && pg.fname[1] == '\0' && pg.ext[0] == '\0' )
+        strcat( src, ".*" );
     dirp = opendir( src );
 #endif
     rc = 1;
