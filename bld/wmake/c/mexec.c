@@ -1804,7 +1804,7 @@ STATIC bool processCopy( const char *src, const char *dst )
     size_t          len;
     pgroup2         pg;
     struct stat     st;
-    struct utimbuf  dsttimes; 
+    struct utimbuf  dsttimes;
 
     if( chk_is_dir( dst ) ) {
         _splitpath2( src, pg.buffer, NULL, NULL, &pg.fname, &pg.ext );
