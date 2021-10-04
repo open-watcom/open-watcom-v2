@@ -385,19 +385,8 @@ __MAKEOPTS__ = <options passed to &makcmdup>
 __MAKEFILES__ = <list of makefiles>
 __VERSION__ = <version number>
 __LOADDLL__= defined if DLL loading supported
-__MSDOS__ =  defined if MS/DOS version
-__NT__ = defined if Windows NT version
-__NT386__ = defined if x86 Windows NT version
-.*__NTAXP__ = defined if Alpha AXP Windows NT version
-__OS2__ = defined if OS/2 version
-__QNX__ = defined if QNX version
-__LINUX__ = defined if Linux version
-__LINUX386__ = defined if x86 Linux version
-.*__LINUXPPC__ = defined if PowerPC Linux version
-.*__LINUXMIPS__ = defined if MIPS Linux version
-__UNIX__ = defined if QNX or Linux version
 MAKE = <name of file containing &makcmdup>
-#endif
+
 # clear &sysper.EXTENSIONS list
 &sysper.EXTENSIONS:
 
@@ -408,6 +397,24 @@ MAKE = <name of file containing &makcmdup>
             .i &
             .asm .c .cpp .cxx .cc .for .pas .cob &
             .h .hpp .hxx .hh .fi .mif .inc
+.millust end
+The conditional definitions are:
+.millust begin
+__DOS__=       for DOS host version
+__MSDOS__=     ...
+__OS2__=       for OS/2 host version
+__RDOS__=      for RDOS host version
+__NT__=        for any Windows NT host version
+__NT386__=     for x86 Windows NT host version
+__NTX64__=     for x64 Windows NT host version
+__NTAXP__=     for Alpha AXP Windows NT host version
+__QNX__=       for QNX host version
+__LINUX__=     for any Linux host version
+__LINUX386__=  for x86 Linux host version
+__LINUXX64__=  for x64 Linux host version
+__LINUXPPC__=  for PowerPC Linux host version
+__LINUXMIPS__= for MIPS Linux host version
+__UNIX__=      for any QNX or Linux host version
 .millust end
 .np
 For Microsoft NMAKE compatibility (when you use the "ms" option), the
@@ -471,16 +478,6 @@ RC=rc
     $(RC) $(RFLAGS) /r $*
 .millust end
 .pc
-For OS/2, the
-.id __MSDOS__
-macro will be replaced by
-.id __OS2__
-and for Windows NT, the
-.id __MSDOS__
-macro will be replaced by
-.id __NT__
-.period
-.np
 For UNIX make compatibility (when you use the "u" option), the
 following default definition is established.
 .millust begin
@@ -523,6 +520,62 @@ FC=fl
     move lex.yy.c $@
 
 .millust end
+For POSIX make compatibility (when you use the "ux" option), the
+following default definition is established.
+.millust begin
+&sysper.EXTENSIONS: .o .obj .c .y .l .a .sh .f
+
+AR=ar
+ARFLAGS=-rv
+YACC=yacc
+YFLAGS=
+LEX=lex
+LFLAGS=
+LDFLAGS=
+.* SUSv3 says 'CC=c99'
+CC=owcc
+CFLAGS=-O
+FC=fort77
+FFLAGS=-O 1
+.* Single suffix rules
+.*&sysper.c:
+.*    "    $(CC) $(CFLAGS) $(LDFLAGS) -o $@ $<
+.*&sysper.f:
+.*    "    $(FC) $(FFLAGS) $(LDFLAGS) -o $@ $<
+.*&sysper.sh:
+.*    cp $< $@
+.*    chmod a+x $@
+.* Double suffix rules
+&sysper.c.o:
+    $(CC) $(CFLAGS) -c $<
+&sysper.f.o:
+    $(FC) $(FFLAGS) -c $<
+&sysper.y.o:
+    $(YACC) $(YFLAGS) $<
+    $(CC) $(CFLAGS) -c y.tab.c
+    rm -f y.tab.c
+    mv y.tab.o $@
+&sysper.l.o:
+    $(LEX) $(LFLAGS) $<
+    $(CC) $(CFLAGS) -c lex.yy.c
+    rm -f lex.yy.c
+    mv lex.yy.o $@
+&sysper.y.c:
+    $(YACC) $(YFLAGS) $<
+    mv y.tab.c $@
+&sysper.l.c:
+    $(LEX) $(LFLAGS) $<
+    mv lex.yy.c $@
+&sysper.c.a:
+    $(CC) -c $(CFLAGS) $<
+    $(AR) $(ARFLAGS) $@ $*.o
+    rm -f $*.o
+&sysper.f.a:
+    $(FC) -c $(FFLAGS) $<
+    $(AR) $(ARFLAGS) $@ $*.o
+    rm -f $*.o
+.millust end
+.np
 The "r" option will disable these definitions before processing any
 makefiles.
 :OPT name='s'
@@ -616,8 +669,12 @@ The following macros are for more sophisticated makefiles.
 .begpoint $break $setptnt 14
 .notehd1 Macro
 .notehd2 Expansion
+.point __DOS__
+This macro is defined in the DOS environment.
 .point __MSDOS__
-This macro is defined in the MS/DOS environment.
+This macro is defined in the DOS environment.
+.point __RDOS__
+This macro is defined in the RDOS environment.
 .point __NT__
 This macro is defined in the Windows NT environment.
 .point __OS2__
