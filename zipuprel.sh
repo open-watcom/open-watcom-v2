@@ -1,7 +1,7 @@
 #! /bin/sh
 # Check for command line option
 if [ "$1" = "" ]; then
-echo Usage: zipup-rel.sh [RELEASE]
+echo Usage: zipuprel.sh [RELEASE]
 echo
 echo Where RELEASE is the public release number \(ie: 1.5.0\).
 exit

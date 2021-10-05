@@ -21,7 +21,7 @@ popd
 goto end
 
 :usage
-echo Usage: zipup-rel [RELEASE]
+echo Usage: zipuprel [RELEASE]
 echo.
 echo Where 'RELEASE' is the public release number (ie: 1.5.0 etc).
 :end
