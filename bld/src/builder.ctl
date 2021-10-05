@@ -15,46 +15,6 @@ set PROJDIR=<CWD>
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================
-    <CCCMD> <OWSRCDIR>/clib/startup/a/cstrtwnt.asm      <OWRELROOT>/src/startup/386/cstrtwnt.asm
-#    <CCCMD> <OWSRCDIR>/clib/startup/a/cstrtwwt.asm      <OWRELROOT>/src/startup/386/cstrtwwt.asm
-    <CCCMD> <OWSRCDIR>/clib/startup/c/cmain386.c        <OWRELROOT>/src/startup/386/cmain386.c
-    <CCCMD> <OWSRCDIR>/clib/h/initarg.h                 <OWRELROOT>/src/startup/initarg.h
-    <CCCMD> <OWSRCDIR>/clib/startup/a/dstrt386.asm      <OWRELROOT>/src/startup/386/dstrt386.asm
-    <CCCMD> <OWSRCDIR>/clib/startup/c/cmain086.c        <OWRELROOT>/src/startup/dos/cmain086.c
-    <CCCMD> <OWSRCDIR>/clib/startup/c/cmain086.c        <OWRELROOT>/src/startup/os2/cmain086.c
-    <CCCMD> <OWSRCDIR>/clib/startup/c/libmno16.c        <OWRELROOT>/src/startup/os2/libmno16.c
-    <CCCMD> <OWSRCDIR>/clib/startup/c/dmaino16.c        <OWRELROOT>/src/startup/os2/dmaino16.c
-    <CCCMD> <OWSRCDIR>/clib/startup/c/main2o32.c        <OWRELROOT>/src/startup/386/main2o32.c
-    <CCCMD> <OWSRCDIR>/clib/startup/c/libmno32.c        <OWRELROOT>/src/startup/386/libmno32.c
-    <CCCMD> <OWSRCDIR>/clib/startup/c/dmaino32.c        <OWRELROOT>/src/startup/386/dmaino32.c
-    <CCCMD> <OWSRCDIR>/clib/startup/c/main2wnt.c        <OWRELROOT>/src/startup/386/main2wnt.c
-    <CCCMD> <OWSRCDIR>/clib/startup/c/wmainwnt.c        <OWRELROOT>/src/startup/386/wmainwnt.c
-    <CCCMD> <OWSRCDIR>/clib/startup/c/lmainwnt.c        <OWRELROOT>/src/startup/386/lmainwnt.c
-    <CCCMD> <OWSRCDIR>/clib/startup/c/dmainwnt.c        <OWRELROOT>/src/startup/386/dmainwnt.c
-    <CCCMD> <OWSRCDIR>/clib/startup/c/lmn2wnt.c         <OWRELROOT>/src/startup/386/lmn2wnt.c
-    <CCCMD> <OWSRCDIR>/clib/startup/a/cstrto32.asm      <OWRELROOT>/src/startup/386/cstrto32.asm
-    <CCCMD> <OWSRCDIR>/clib/startup/c/8087cw.c          <OWRELROOT>/src/startup/8087cw.c
-    <CCCMD> <OWSRCDIR>/clib/startup/h/initfini.h        <OWRELROOT>/src/startup/386/initfini.h
-    <CCCMD> <OWSRCDIR>/clib/startup/h/initfini.h        <OWRELROOT>/src/startup/os2/initfini.h
-    <CCCMD> <OWSRCDIR>/watcom/h/mdef.inc                <OWRELROOT>/src/startup/
-    <CCCMD> <OWSRCDIR>/watcom/h/extender.inc            <OWRELROOT>/src/startup/
-    <CCCMD> <OWSRCDIR>/watcom/h/tinit.inc               <OWRELROOT>/src/startup/
-    <CCCMD> <OWSRCDIR>/watcom/h/xinit.inc               <OWRELROOT>/src/startup/
-
-    <CCCMD> startup/msgcpyrt.inc                        <OWRELROOT>/src/startup/
-    <CCCMD> startup/wildargv.c                          <OWRELROOT>/src/startup/
-    <CCCMD> startup/cstrt086.asm                        <OWRELROOT>/src/startup/dos/
-    <CCCMD> startup/dos16m.asm                          <OWRELROOT>/src/startup/dos/
-    <CCCMD> startup/maino16.c                           <OWRELROOT>/src/startup/os2/
-    <CCCMD> startup/cstrto16.asm                        <OWRELROOT>/src/startup/os2/
-    <CCCMD> startup/cstrtw16.asm                        <OWRELROOT>/src/startup/win/
-    <CCCMD> startup/libentry.asm                        <OWRELROOT>/src/startup/win/
-    <CCCMD> startup/cstrt386.asm                        <OWRELROOT>/src/startup/386/
-    <CCCMD> startup/cstrtw32.asm                        <OWRELROOT>/src/startup/386/
-    <CCCMD> startup/dllstart.asm                        <OWRELROOT>/src/startup/386/
-    <CCCMD> startup/cstrtx32.asm                        <OWRELROOT>/src/startup/386/
-
-    <CCCMD> <OWSRCDIR>/cpplib/contain/cpp/*             <OWRELROOT>/src/cpplib/contain/
 
     <CCCMD> clibexam/*                                  <OWRELROOT>/samples/clibexam/
     <CCCMD> clibexam/kanji/*                            <OWRELROOT>/samples/clibexam/kanji/
@@ -97,11 +57,6 @@ set PROJDIR=<CWD>
 
     <CCCMD> dll/*                                       <OWRELROOT>/samples/dll/
 
-    <CCCMD> fortran/*                                   <OWRELROOT>/src/fortran/
-    <CCCMD> fortran/win/*                               <OWRELROOT>/src/fortran/win/
-    <CCCMD> fortran/dos/*                               <OWRELROOT>/src/fortran/dos/
-    <CCCMD> fortran/os2/*                               <OWRELROOT>/src/fortran/os2/
-
     <CCCMD> ftnexamp/os2/*                              <OWRELROOT>/samples/fortran/os2/
     <CCCMD> ftnexamp/os2/rexx/*                         <OWRELROOT>/samples/fortran/os2/rexx/
     <CCCMD> ftnexamp/mtdll/*                            <OWRELROOT>/samples/fortran/mtdll/
@@ -118,7 +73,7 @@ set PROJDIR=<CWD>
 
     <CCCMD> goodies/*                                   <OWRELROOT>/samples/goodies/
 
-    <CCCMD> misc/*                                      <OWRELROOT>/src/
+    <CCCMD> misc/*                                      <OWRELROOT>/samples/misc/
 
     <CCCMD> os2/*                                       <OWRELROOT>/samples/os2/
     <CCCMD> os2/dll/*                                   <OWRELROOT>/samples/os2/dll/
@@ -176,6 +131,11 @@ set PROJDIR=<CWD>
     <CCCMD> win/watzee/win32/*                          <OWRELROOT>/samples/win/watzee/win32/
     <CCCMD> win/watzee/win386/*                         <OWRELROOT>/samples/win/watzee/win386/
     <CCCMD> win/watzee/winaxp/*                         <OWRELROOT>/samples/win/watzee/winaxp/
+
+    <CCCMD> fortran/*                                   <OWRELROOT>/src/fortran/
+    <CCCMD> fortran/win/*                               <OWRELROOT>/src/fortran/win/
+    <CCCMD> fortran/dos/*                               <OWRELROOT>/src/fortran/dos/
+    <CCCMD> fortran/os2/*                               <OWRELROOT>/src/fortran/os2/
 
 [ BLOCK . . ]
 
