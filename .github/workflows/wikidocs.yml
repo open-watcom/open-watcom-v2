@@ -46,7 +46,7 @@ jobs:
           REM build OW builder
           mkdir %OWSRCDIR%\builder\%OWOBJDIR%
           cd %OWSRCDIR%\builder\%OWOBJDIR%
-          %OWBINDIR%\%OWOBJDIR%\wmake -f ..\binmake bootstrap=1 builder.exe
+          %OWBINDIR%\%OWOBJDIR%\wmake -f ..\binmake bootstrap=1
           REM build OW tools
           cd %OWSRCDIR%\watcom
           builder boot
