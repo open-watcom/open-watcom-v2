@@ -210,7 +210,7 @@ bool WRAPI WRBackupFile( const char *name, bool use_rename )
     char        ext[_MAX_EXT + 1];
     pgroup2     pg;
     size_t      len;
-    bool        ret;
+    bool        ok;
 
     if( name == NULL ) {
         return( false );
@@ -230,16 +230,16 @@ bool WRAPI WRBackupFile( const char *name, bool use_rename )
     _makepath( fn_path, pg.drive, pg.dir, pg.fname, ext );
 
     if( use_rename ) {
-        ret = WRRenameFile( fn_path, name );
+        ok = WRRenameFile( fn_path, name );
     } else {
-        ret = WRCopyFile( fn_path, name );
+        ok = WRCopyFile( fn_path, name );
     }
 
-    if( !ret ) {
+    if( !ok ) {
         WRPrintErrorMsg( WR_BACKUPFAILED, name, fn_path, strerror( WRGetLastError() ) );
     }
 
-    return( ret );
+    return( ok );
 }
 
 void WRAPI WRFreeTempFileName( char *name )

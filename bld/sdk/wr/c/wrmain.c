@@ -73,9 +73,9 @@ static bool WREDoSaveObjectInto( WRInfo *, WRSaveIntoData *, bool * );
 static bool WREDoSaveObjectAs( WRInfo *info, WRSaveIntoData *idata );
 static bool WREDoSaveImageAs( WRInfo *info, WRSaveIntoData *idata, bool is_icon );
 static bool WREDoSaveImageInto( WRInfo *info, WRSaveIntoData *idata, bool *dup, bool is_icon );
-static int  WRTestReplace( WRInfo *, WRSaveIntoData * );
-static int  WQueryMergeStrings( WResID * );
-static int  WQueryReplaceObject( void );
+static bool WRTestReplace( WRInfo *, WRSaveIntoData * );
+static bool WQueryMergeStrings( WResID * );
+static bool WQueryReplaceObject( void );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -227,7 +227,7 @@ void WRAPI WRFini( void )
 WRInfo * WRAPI WRLoadResource( const char *name, WRFileType type )
 {
     WRInfo  *info;
-    bool    ret;
+    bool    ok;
 
     info = WRAllocWRInfo();
 
@@ -255,32 +255,32 @@ WRInfo * WRAPI WRLoadResource( const char *name, WRFileType type )
 
     switch( type ) {
     case WR_WIN_BITMAP:
-        ret = WRLoadBitmapFile( info );
+        ok = WRLoadBitmapFile( info );
         break;
 
     case WR_WIN_ICON:
-        ret = WRLoadIconFile( info );
+        ok = WRLoadIconFile( info );
         break;
 
     case WR_WIN_CURSOR:
-        ret = WRLoadCursorFile( info );
+        ok = WRLoadCursorFile( info );
         break;
 
     case WR_WINNTM_RES:
     case WR_WIN16M_RES:
     case WR_WINNTW_RES:
     case WR_WIN16W_RES:
-        ret = WRLoadResourceFromRES( info );
+        ok = WRLoadResourceFromRES( info );
         break;
 
     case WR_WIN16_EXE:
     case WR_WIN16_DLL:
-        ret = WRLoadResourceFromWin16EXE( info );
+        ok = WRLoadResourceFromWin16EXE( info );
         break;
 
     case WR_WINNT_EXE:
     case WR_WINNT_DLL:
-        ret = WRLoadResourceFromWinNTEXE( info );
+        ok = WRLoadResourceFromWinNTEXE( info );
         break;
 
     case WR_WIN_RC:
@@ -288,29 +288,29 @@ WRInfo * WRAPI WRLoadResource( const char *name, WRFileType type )
     case WR_WIN_RC_MENU:
     case WR_WIN_RC_ACCEL:
     case WR_WIN_RC_DLG:
-        ret = WRLoadResourceFrom_RC( info );
+        ok = WRLoadResourceFrom_RC( info );
         break;
 
     case WR_INVALID_FILE:
-        ret = FALSE;
+        ok = false;
         break;
 
     case WR_DONT_KNOW:
     default:
-        ret = FALSE;
+        ok = false;
         WRDisplayErrorMsg( WR_BADFILETYPE );
         break;
     }
 
-    if( ret ) {
+    if( ok ) {
         if( info->internal_filename != NULL ) {
-            ret = WRCopyFileToTemp( info, info->internal_filename );
+            ok = WRCopyFileToTemp( info, info->internal_filename );
         } else {
-            ret = WRCopyFileToTemp( info, info->file_name );
+            ok = WRCopyFileToTemp( info, info->file_name );
         }
     }
 
-    if( !ret ) {
+    if( !ok ) {
         WRFreeWRInfo( info );
         return( NULL );
     }
@@ -320,7 +320,7 @@ WRInfo * WRAPI WRLoadResource( const char *name, WRFileType type )
 
 bool WRAPI WRSaveResource( WRInfo *info, bool backup )
 {
-    bool        ret;
+    bool        ok;
     char        *tmp;
     char        *name;
     pgroup2     pg;
@@ -357,15 +357,15 @@ bool WRAPI WRSaveResource( WRInfo *info, bool backup )
 
     switch( info->save_type ) {
     case WR_WIN_BITMAP:
-        ret = WRSaveBitmapResource( info, backup );
+        ok = WRSaveBitmapResource( info, backup );
         break;
 
     case WR_WIN_ICON:
-        ret = WRSaveIconResource( info, backup );
+        ok = WRSaveIconResource( info, backup );
         break;
 
     case WR_WIN_CURSOR:
-        ret = WRSaveCursorResource( info, backup );
+        ok = WRSaveCursorResource( info, backup );
         break;
 
     case WR_WIN_RC:
@@ -373,50 +373,50 @@ bool WRAPI WRSaveResource( WRInfo *info, bool backup )
     case WR_WIN_RC_MENU:
     case WR_WIN_RC_ACCEL:
     case WR_WIN_RC_DLG:
-        ret = WRSaveResourceTo_RC( info, backup );
+        ok = WRSaveResourceTo_RC( info, backup );
         break;
 
     case WR_WIN16M_RES:
     case WR_WIN16W_RES:
     case WR_WINNTM_RES:
     case WR_WINNTW_RES:
-        ret = WRSaveResourceToRES( info, backup );
+        ok = WRSaveResourceToRES( info, backup );
         break;
 
     case WR_WIN16_EXE:
     case WR_WIN16_DLL:
-        ret = WRSaveResourceToWin16EXE( info, backup );
+        ok = WRSaveResourceToWin16EXE( info, backup );
         break;
 
     case WR_WINNT_EXE:
     case WR_WINNT_DLL:
-        ret = WRSaveResourceToWinNTEXE( info, backup );
+        ok = WRSaveResourceToWinNTEXE( info, backup );
         break;
 
     case WR_DONT_KNOW:
     case WR_INVALID_FILE:
     default:
         WRDisplayErrorMsg( WR_BADSAVETYPE );
-        ret = false;
+        ok = false;
         break;
     }
 
-    if( ret && info->dir != NULL ) {
-        ret = WRRelinkInfo( info );
+    if( ok && info->dir != NULL ) {
+        ok = WRRelinkInfo( info );
     }
 
     if( tmp != NULL ) {
-        ret = ( ret && WRRenameFile( tmp, info->save_name ) );
+        ok = ( ok && WRRenameFile( tmp, info->save_name ) );
         MemFree( info->save_name );
         info->save_name = tmp;
     }
 
-    return( ret );
+    return( ok );
 }
 
 bool WRAPI WRUpdateTmp( WRInfo *info )
 {
-    bool        ret;
+    bool        ok;
     char        *tsave;
     WRFileType  ttype;
     pgroup2     pg;
@@ -454,32 +454,32 @@ bool WRAPI WRUpdateTmp( WRInfo *info )
 
     switch( info->save_type ) {
     case WR_WIN_BITMAP:
-        ret = WRSaveBitmapResource( info, false );
+        ok = WRSaveBitmapResource( info, false );
         break;
 
     case WR_WIN_ICON:
-        ret = WRSaveIconResource( info, FALSE );
+        ok = WRSaveIconResource( info, FALSE );
         break;
 
     case WR_WIN_CURSOR:
-        ret = WRSaveCursorResource( info, FALSE );
+        ok = WRSaveCursorResource( info, FALSE );
         break;
 
     case WR_WIN16M_RES:
     case WR_WIN16W_RES:
     case WR_WINNTM_RES:
     case WR_WINNTW_RES:
-        ret = WRSaveResourceToRES( info, false );
+        ok = WRSaveResourceToRES( info, false );
         break;
 
     case WR_WIN16_EXE:
     case WR_WIN16_DLL:
-        ret = WRSaveResourceToWin16EXE( info, false );
+        ok = WRSaveResourceToWin16EXE( info, false );
         break;
 
     case WR_WINNT_EXE:
     case WR_WINNT_DLL:
-        ret = WRSaveResourceToWinNTEXE( info, false );
+        ok = WRSaveResourceToWinNTEXE( info, false );
         break;
 
     case WR_WIN_RC:
@@ -487,25 +487,25 @@ bool WRAPI WRUpdateTmp( WRInfo *info )
     case WR_WIN_RC_MENU:
     case WR_WIN_RC_ACCEL:
     case WR_WIN_RC_DLG:
-        ret = FALSE;
+        ok = false;
         break;
 
     case WR_DONT_KNOW:
     case WR_INVALID_FILE:
     default:
         WRDisplayErrorMsg( WR_BADSAVETYPE );
-        ret = FALSE;
+        ok = false;
         break;
     }
 
-    if( ret ) {
-        ret = WRRelinkInfo( info );
+    if( ok ) {
+        ok = WRRelinkInfo( info );
     }
 
-    if( ret ) {
-        ret = WRRenameFile( info->tmp_file, info->save_name );
-        if( !ret ) {
-            ret = WRDeleteFile( info->save_name );
+    if( ok ) {
+        ok = WRRenameFile( info->tmp_file, info->save_name );
+        if( !ok ) {
+            ok = WRDeleteFile( info->save_name );
         }
     }
 
@@ -513,7 +513,7 @@ bool WRAPI WRUpdateTmp( WRInfo *info )
     info->save_name = tsave;
     info->save_type = ttype;
 
-    return( ret );
+    return( ok );
 }
 
 bool WRAPI WRSaveObjectAs( const char *file, WRFileType file_type, WRSaveIntoData *idata )
@@ -760,9 +760,9 @@ bool WREDoSaveImageAs( WRInfo *info, WRSaveIntoData *idata, bool is_icon )
 bool WREDoSaveObjectInto( WRInfo *info, WRSaveIntoData *idata, bool *dup )
 {
     bool ok;
-    int replace_nixed;
+    bool replace_nixed;
 
-    replace_nixed = FALSE;
+    replace_nixed = false;
 
     ok = (info != NULL && idata != NULL && idata->type != NULL && idata->name != NULL &&
           idata->data != NULL && dup != NULL);
@@ -853,7 +853,7 @@ bool WREDoSaveImageInto( WRInfo *info, WRSaveIntoData *idata, bool *dup, bool is
     return( ok );
 }
 
-int WQueryReplaceObject( void )
+bool WQueryReplaceObject( void )
 {
     int         ret;
     UINT        style;
@@ -876,13 +876,13 @@ int WQueryReplaceObject( void )
     }
 
     if( ret == IDNO ) {
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-int WQueryMergeStrings( WResID *rname )
+bool WQueryMergeStrings( WResID *rname )
 {
     int         ret;
     UINT        style;
@@ -911,14 +911,14 @@ int WQueryMergeStrings( WResID *rname )
     }
 
     if( ret == IDNO ) {
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 // this function returns TRUE if the save into may continue
-int WRTestReplace( WRInfo *info, WRSaveIntoData *idata )
+bool WRTestReplace( WRInfo *info, WRSaveIntoData *idata )
 {
     WResTypeNode    *tnode;
     WResResNode     *rnode;
@@ -930,7 +930,7 @@ int WRTestReplace( WRInfo *info, WRSaveIntoData *idata )
 
     if( info == NULL || info->dir == NULL || idata == NULL || idata->type == NULL ||
         idata->name == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     type = WResIDToNum( idata->type );
@@ -939,22 +939,22 @@ int WRTestReplace( WRInfo *info, WRSaveIntoData *idata )
 
     tnode = WRFindTypeNodeFromWResID( info->dir, idata->type );
     if( tnode == NULL ) {
-        return( TRUE );
+        return( true );
     }
 
     rnode = WRFindResNodeFromWResID( tnode, idata->name );
     if( rnode == NULL ) {
-        return( TRUE );
+        return( true );
     }
 
     lnode = WRFindLangNodeFromLangType( rnode, &idata->lang );
     if( lnode == NULL ) {
-        return( TRUE );
+        return( true );
     }
 
     if( strings ) {
         if( !WQueryMergeStrings( idata->name ) ) {
-            return( FALSE );
+            return( false );
         }
         data = WRLoadResData( info->file_name, lnode->Info.Offset, lnode->Info.Length );
         size = lnode->Info.Length;
@@ -963,7 +963,7 @@ int WRTestReplace( WRInfo *info, WRSaveIntoData *idata )
             if( data != NULL ) {
                 MemFree( data );
             }
-            return( FALSE );
+            return( false );
         }
         if( idata->data != NULL ) {
             MemFree( idata->data );
@@ -972,19 +972,19 @@ int WRTestReplace( WRInfo *info, WRSaveIntoData *idata )
         idata->size = size;
     } else {
         if( !WQueryReplaceObject() ) {
-            return( FALSE );
+            return( false );
         }
     }
 
     if( type == RESOURCE2INT( RT_GROUP_ICON ) || type == RESOURCE2INT( RT_GROUP_CURSOR ) ) {
         if( !WRDeleteGroupImages( info, lnode, type ) ) {
-            return( FALSE );
+            return( false );
         }
     }
 
     if( !WRRemoveLangNodeFromDir( info->dir, &tnode, &rnode, &lnode ) ) {
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
