@@ -27,7 +27,8 @@ $(name).lib: ..\owindll\$(name).dll
         wtouch $@
         rm $@
         wlib $@ +$[@
-        cp $[@
+        copy $[@
+
 
 driver.res : driver.rc driver.dlg
         $(rc) $(rc_flags) driver.rc -fo=$@
