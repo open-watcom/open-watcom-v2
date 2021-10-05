@@ -251,7 +251,7 @@ dos_redirect_d4g386 = 1
 dos_redirect_pls386 = 1
 dos_redirect_tnt386 = 1
 
-!ifdef __MSDOS__
+!ifdef __DOS__
 dos_redirect = 1
 !else ifdef dos_redirect_$(targ_env_$(arch))
 dos_redirect = $(dos_redirect_$(targ_env_$(arch)))

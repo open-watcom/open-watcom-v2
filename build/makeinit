@@ -13,6 +13,11 @@ contrib_dir   = $+$(%OWROOT)$-/contrib
 build_dir     = $+$(%OWROOT)$-/build
 src_dir       = $+$(%OWSRCDIR)$-
 docs_dir      = $+$(%OWDOCSDIR)$-
+!if $(__VERSION__) < 1300
+!ifdef __MSDOS__
+__DOS__=
+!endif
+!endif
 
 bin_subdir    = $+$(%OWOBJDIR)$-
 !ifdef %OWDLLOBJDIR
@@ -66,7 +71,7 @@ __WATCOM_TOOLS__ = $(bld_watcom_ver)
 !ifdef %BOOTSTRAP_CPU
 bld_cpu = $+$(%BOOTSTRAP_CPU)$-
 bld_os = $+$(%BOOTSTRAP_OS)$-
-!else ifdef __MSDOS__
+!else ifdef __DOS__
 bld_cpu = 386
 bld_os = dos
 !else ifdef __OS2__

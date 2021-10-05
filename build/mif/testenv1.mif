@@ -241,7 +241,7 @@ bld_extra_defines = -DINLINETEST
 !  endif
 !endif
 !ifndef targ_env_386
-!  ifdef __MSDOS__
+!  ifdef __DOS__
 !    define targ_env_386 d4g386
 #!    define targ_env_386 cw386
 !  else ifdef __OS2__
@@ -281,7 +281,7 @@ bld_extra_defines = -DINLINETEST
 !  endif
 !endif
 !ifndef targ_env_i86
-!  ifdef __MSDOS__
+!  ifdef __DOS__
 !    define targ_env_i86 dosi86
 !  else ifdef __OS2__
 !    define targ_env_i86 os2i86
@@ -314,7 +314,7 @@ bld_extra_defines = -DINLINETEST
 !  endif
 !endif
 !ifndef targ_env_axp
-!  ifdef __MSDOS__
+!  ifdef __DOS__
 !    define targ_env_axp dosaxp
 !  else ifdef __OS2__
 !    define targ_env_axp os2axp
@@ -385,7 +385,7 @@ bld_extra_defines = -DINLINETEST
 !ifndef comp_wasm_386
 !  ifdef buildtest
 #    build version of assembler for 386
-!    ifdef __MSDOS__
+!    ifdef __DOS__
 !      define comp_wasm_386 $(src_dir)\wasm\dos386\wasm
 !    else ifdef __OS2__
 !      define comp_wasm_386 $(src_dir)\wasm\os2386\wasm
@@ -408,7 +408,7 @@ bld_extra_defines = -DINLINETEST
 !ifndef comp_wasm_i86
 !  ifdef buildtest
 #    build version of assembler for i86
-!    ifdef __MSDOS__
+!    ifdef __DOS__
 !      define comp_wasm_i86 $(src_dir)\wasm\dos386\wasm
 !    else ifdef __OS2__
 !      define comp_wasm_i86 $(src_dir)\wasm\os2386\wasm
@@ -464,7 +464,7 @@ bld_extra_defines = -DINLINETEST
 !ifndef comp_wcc_386
 !  ifdef buildtest
 #    build version of C compiler for 386
-!    ifdef __MSDOS__
+!    ifdef __DOS__
 !      define comp_wcc_386 $(src_dir)\cc\386\dos386\$(%OWOBJDIR)\wcc386
 !    else ifdef __OS2__
 !      define comp_wcc_386 $(src_dir)\cc\386\os2386.dll\$(%OWOBJDIR)\wcc386
@@ -487,7 +487,7 @@ bld_extra_defines = -DINLINETEST
 !ifndef comp_wcc_i86
 !  ifdef buildtest
 #    build version of C compiler for i86
-!    ifdef __MSDOS__
+!    ifdef __DOS__
 !      define comp_wcc_i86 $(src_dir)\cc\i86\dos386\$(%OWOBJDIR)\wcc
 !    else ifdef __OS2__
 !      define comp_wcc_i86 $(src_dir)\cc\i86\os2386.dll\$(%OWOBJDIR)\wcc
@@ -589,7 +589,7 @@ bld_extra_defines = -DINLINETEST
 !ifndef comp_wpp_386
 !  ifdef buildtest
 #    build version of C++ compiler for 386
-!    ifdef __MSDOS__
+!    ifdef __DOS__
 !      define comp_wpp_386 $(src_dir)\plusplus\386\dos386\wpp386
 !    else ifdef __OS2__
 !      define comp_wpp_386 $(src_dir)\plusplus\386\os2386.dll\wpp386
@@ -612,7 +612,7 @@ bld_extra_defines = -DINLINETEST
 !ifndef comp_wpp_i86
 !  ifdef buildtest
 #    build version of C++ compiler for i86
-!    ifdef __MSDOS__
+!    ifdef __DOS__
 !      define comp_wpp_i86 $(src_dir)\plusplus\i86\dos386\wpp
 !    else ifdef __OS2__
 !      define comp_wpp_i86 $(src_dir)\plusplus\i86\os2386.dll\wpp
@@ -714,7 +714,7 @@ bld_extra_defines = -DINLINETEST
 !ifndef comp_wfc_386
 !  ifdef buildtest
 #    build version of F77 compiler for 386
-!    ifdef __MSDOS__
+!    ifdef __DOS__
 !      define comp_wfc_386 $(src_dir)\f77\wfc\386\dos386\wfc386
 !    else ifdef __OS2__
 !      define comp_wfc_386 $(src_dir)\f77\wfc\386\os2386\wfc386
@@ -737,7 +737,7 @@ bld_extra_defines = -DINLINETEST
 !ifndef comp_wfc_i86
 !  ifdef buildtest
 #    build version of F77 compiler for i86
-!    ifdef __MSDOS__
+!    ifdef __DOS__
 !      define comp_wfc_i86 $(src_dir)\f77\wfc\i86\dos386\wfc
 !    else ifdef __OS2__
 !      define comp_wfc_i86 $(src_dir)\f77\wfc\i86\os2386\wfc
@@ -832,7 +832,7 @@ bld_extra_defines = -DINLINETEST
 !  ifdef buildtest
 !    ifdef __OS2__
 !      define linker $(src_dir)\wl\os2386.dll\wlink
-!    else ifdef __MSDOS__
+!    else ifdef __DOS__
 !      define linker $(src_dir)\wl\dos386\wlink
 !    else ifdef __NTAXP__
 !      define linker $(src_dir)\wl\ntaxp.dll\wlink
@@ -892,7 +892,7 @@ bld_extra_defines = -DINLINETEST
 !ifdef buildtest
 !  ifdef __OS2__
 !    define wlib_any $(src_dir)\nwlib\os2386.dll\wlib
-!  else ifdef __MSDOS__
+!  else ifdef __DOS__
 !    define wlib_any $(src_dir)\nwlib\dos386\wlib
 !  else ifdef __NTAXP__
 !    define wlib_any $(src_dir)\nwlib\ntaxp.dll\wlib
@@ -1190,7 +1190,7 @@ librarian = $(wlib_any) $(lib_any) -n -b
 !ifdef buildtest
 !ifdef __OS2__
 bld_incl    = -I"$(hdr_dir)/dos/h" -I"$(os2api_dir)/os2386/h"
-!else ifdef __MSDOS__
+!else ifdef __DOS__
 bld_incl    = -I"$(hdr_dir)/dos/h"
 !else ifdef __NT__
 bld_incl    = -I"$(hdr_dir)/dos/h" -I"$(w32api_dir)/nt/h"
@@ -1203,7 +1203,7 @@ bld_incl    = -I"$(hdr_dir)/linux/h"
 bld_sys     = os2v2
 bld_cl      = $(buildtest_prefix)wcl386 $(wcl_any) -bt=os2
 bld_cl_opts = -fpc -ox -w8 -fe=$@ $(bld_incl) -I"$(watcom_dir)/h"
-!else ifdef __MSDOS__
+!else ifdef __DOS__
 bld_sys     = dos4g
 bld_cl      = $(buildtest_prefix)wcl386 $(wcl_any) -bt=dos
 bld_cl_opts = -fpc -ox -w8 -fe=$@ $(bld_incl) -I"$(watcom_dir)/h"
