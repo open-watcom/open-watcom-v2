@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,7 +85,7 @@ bool WRENewResource( WRECurrentResInfo *curr, WResID *tname, WResID *rname,
             curr->info->current_type = 0;
             ok = WREInitResourceWindow( curr->info, type );
         } else {
-            WRESetResNamesFromType( curr->info, type, TRUE, rname, 0 );
+            WRESetResNamesFromType( curr->info, type, true, rname, 0 );
         }
     }
 

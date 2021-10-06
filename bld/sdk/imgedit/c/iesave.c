@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -870,7 +870,7 @@ static bool saveResourceFile( img_node *node )
         was32bit = WRIs32Bit( node->wrinfo->file_type );
         for( ;; ) {
             hcb = MakeProcInstance_HELP( IEHelpCallBack, Instance );
-            save_type = WRSelectFileType( HMainWindow, node->fname, was32bit, TRUE, hcb );
+            save_type = WRSelectFileType( HMainWindow, node->fname, was32bit, true, hcb );
             FreeProcInstance_HELP( hcb );
             is32bit = WRIs32Bit( save_type );
             if( was32bit ) {

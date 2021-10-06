@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -205,14 +205,14 @@ void WRSetWinInfo( HWND hDlg, WRSFT *sft )
         return;
     }
 
-    no_exe = FALSE;
+    no_exe = false;
 
     if( sft->file_name != NULL ) {
         SendDlgItemMessage( hDlg, IDM_FILENAME, WM_SETTEXT, 0, (LPARAM)(LPCSTR)sft->file_name );
         _splitpath2( sft->file_name, pg.buffer, NULL, NULL, NULL, &pg.ext );
         if( CMPFEXT( pg.ext, "res" ) ) {
             CheckDlgButton( hDlg, IDM_FTRES, BST_CHECKED );
-            no_exe = TRUE;
+            no_exe = true;
         } else if( CMPFEXT( pg.ext, "exe" ) ) {
             CheckDlgButton( hDlg, IDM_FTEXE, BST_CHECKED );
         } else if( CMPFEXT( pg.ext, "dll" ) ) {

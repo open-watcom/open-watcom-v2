@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -109,7 +110,7 @@ bool WCreateStringEditWindow( WStringEditInfo *einfo, HINSTANCE inst )
                                           WStringEditWinProc, (LPARAM)einfo );
 
     if( einfo->edit_dlg == (HWND)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     tabstop = 105;
@@ -127,7 +128,7 @@ bool WResizeStringEditWindow( WStringEditInfo *einfo, RECT *prect )
     int width, height, ribbon_depth;
 
     if( einfo == NULL || einfo->edit_dlg == NULL || prect == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( einfo->show_ribbon ) {
@@ -148,7 +149,7 @@ bool WResizeStringEditWindow( WStringEditInfo *einfo, RECT *prect )
     SetWindowPos( einfo->edit_dlg, (HWND)NULL, 0, ribbon_depth,
                   width, height, SWP_NOZORDER );
 
-    return( TRUE );
+    return( true );
 }
 
 static void WExpandEditWindowItem( HWND hDlg, int id, RECT *prect, int height )

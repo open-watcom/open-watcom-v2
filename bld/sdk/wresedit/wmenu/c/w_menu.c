@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -262,14 +262,14 @@ bool WMakeMenuEntryFromData( void **data, size_t *size, WMenuEntry *parent,
     WMenuEntry  *prev;
 
     if( entry == NULL || data == NULL || size == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     *entry = NULL;
     ok = true;
 
     if( *data == NULL || *size == 0 ) {
-        return( TRUE );
+        return( true );
     }
 
     current = entry;
@@ -516,7 +516,7 @@ void WFreeMenuEntry( WMenuEntry *entry )
 bool WRemoveMenuEntry( WMenu *menu, WMenuEntry *entry )
 {
     if( menu == NULL || entry == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( menu->first_entry == entry ) {
@@ -533,7 +533,7 @@ bool WRemoveMenuEntry( WMenu *menu, WMenuEntry *entry )
         entry->prev->next = entry->next;
     }
 
-    return( TRUE );
+    return( true );
 }
 
 bool WInsertEntryIntoMenu( WMenuEditInfo *einfo, WMenuEntry *after,
@@ -613,7 +613,7 @@ static bool WResetPreviewID( WMenuEditInfo *einfo, WMenuEntry *entry )
         entry->preview_id = einfo->first_preview_id;
         einfo->first_preview_id++;
         if( einfo->first_preview_id == LAST_PREVIEW_ID ) {
-            return( FALSE );
+            return( false );
         }
         if( entry->child != NULL ) {
             ok = WResetPreviewID( einfo, entry->child );
@@ -629,7 +629,7 @@ static bool WResetPreviewID( WMenuEditInfo *einfo, WMenuEntry *entry )
 bool WResetPreviewIDs( WMenuEditInfo *einfo )
 {
     if( einfo == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     einfo->first_preview_id = FIRST_PREVIEW_ID;
@@ -650,7 +650,7 @@ static bool WAddItemAtPos( HMENU hparent, int pos, WMenuEntry *entry )
         if( flags & MENU_POPUP ) {
             entry->preview_popup = CreatePopupMenu();
             if( entry->preview_popup == (HMENU)NULL ) {
-                return( FALSE );
+                return( false );
             }
             ok = InsertMenu( hparent, pos, MF_BYPOSITION | flags,
                              (UINT)(pointer_uint)entry->preview_popup,
@@ -720,12 +720,12 @@ HMENU WCreatePreviewMenu( WMenuEditInfo *einfo )
     HMENU       hmenu;
 
     if( einfo == NULL ) {
-        return( FALSE );
+        return( (HMENU)NULL );
     }
 
     hmenu = CreateMenu();
     if( hmenu == (HMENU)NULL ) {
-        return( FALSE );
+        return( hmenu );
     }
 
     WAddToPreviewMenu( hmenu, einfo->menu->first_entry );
@@ -795,7 +795,7 @@ bool WInsertEntryIntoPreview( WMenuEditInfo *einfo, WMenuEntry *entry )
     WMenuEntry  *start;
 
     if( einfo == NULL || entry == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( entry->parent != NULL ) {
@@ -807,7 +807,7 @@ bool WInsertEntryIntoPreview( WMenuEditInfo *einfo, WMenuEntry *entry )
     }
 
     if( hmenu == (HMENU)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     pos = -1;
@@ -819,24 +819,24 @@ bool WInsertEntryIntoPreview( WMenuEditInfo *einfo, WMenuEntry *entry )
     }
 
     if( pos == -1 ) {
-        return( FALSE );
+        return( false );
     }
 
     entry->preview_id = einfo->first_preview_id;
     einfo->first_preview_id++;
     if( einfo->first_preview_id == LAST_PREVIEW_ID ) {
-        return( FALSE );
+        return( false );
     }
 
     if( !WAddItemAtPos( hmenu, pos, entry ) ) {
-        return( FALSE );
+        return( false );
     }
 
     if( entry->parent == NULL ) {
         DrawMenuBar( einfo->preview_window );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 bool WModifyEntryInPreview( WMenuEditInfo *einfo, WMenuEntry *entry )
@@ -846,7 +846,7 @@ bool WModifyEntryInPreview( WMenuEditInfo *einfo, WMenuEntry *entry )
     WMenuEntry  *start;
 
     if( einfo == NULL || entry == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( entry->parent != NULL ) {
@@ -858,7 +858,7 @@ bool WModifyEntryInPreview( WMenuEditInfo *einfo, WMenuEntry *entry )
     }
 
     if( hmenu == (HMENU)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     pos = -1;
@@ -870,18 +870,18 @@ bool WModifyEntryInPreview( WMenuEditInfo *einfo, WMenuEntry *entry )
     }
 
     if( pos == -1 ) {
-        return( FALSE );
+        return( false );
     }
 
     if( !WModifyItemAtPos( hmenu, pos, entry ) ) {
-        return( FALSE );
+        return( false );
     }
 
     if( entry->parent == NULL ) {
         DrawMenuBar( einfo->preview_window );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 bool WMakeClipDataFromMenuEntry( WMenuEntry *entry, void **data, uint_32 *dsize )
@@ -944,11 +944,11 @@ WMenuEntry *WMakeMenuEntryFromClipData( void *data, uint_32 dsize )
 bool WResolveMenuEntries( WMenuEditInfo *einfo )
 {
     if( einfo->menu == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( einfo->menu->first_entry == NULL ) {
-        return( TRUE );
+        return( true );
     }
 
     return( WResolveEntries( einfo->menu->first_entry, einfo->info->symbol_table ) );
@@ -957,7 +957,7 @@ bool WResolveMenuEntries( WMenuEditInfo *einfo )
 bool WResolveEntries( WMenuEntry *entry, WRHashTable *symbol_table )
 {
     if( entry == NULL || symbol_table == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     for( ; entry != NULL; entry = entry->next ) {
@@ -967,7 +967,7 @@ bool WResolveEntries( WMenuEntry *entry, WRHashTable *symbol_table )
         WResolveEntrySymbol( entry, symbol_table );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 bool WResolveEntrySymbol( WMenuEntry *entry, WRHashTable *symbol_table )
@@ -983,11 +983,11 @@ bool WResolveEntrySymbol( WMenuEntry *entry, WRHashTable *symbol_table )
 
     if( ok ) {
         if( entry->item->IsPopup ) {
-            return( TRUE );
+            return( true );
         }
         flags = entry->item->Item.Normal.ItemFlags;
         if( flags & MENU_SEPARATOR ) {
-            return( TRUE );
+            return( true );
         }
         id = entry->item->Item.Normal.ItemID;
         vlist = WRLookupValue( symbol_table, id );
@@ -1012,11 +1012,11 @@ bool WResolveEntrySymbol( WMenuEntry *entry, WRHashTable *symbol_table )
 bool WResolveMenuSymIDs( WMenuEditInfo *einfo )
 {
     if( einfo->menu == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( einfo->menu->first_entry == NULL ) {
-        return( TRUE );
+        return( true );
     }
 
     return( WResolveSymIDs( einfo->menu->first_entry, einfo->info->symbol_table ) );
@@ -1025,7 +1025,7 @@ bool WResolveMenuSymIDs( WMenuEditInfo *einfo )
 bool WResolveSymIDs( WMenuEntry *entry, WRHashTable *symbol_table )
 {
     if( entry == NULL || symbol_table == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     for( ; entry != NULL; entry = entry->next ) {
@@ -1035,7 +1035,7 @@ bool WResolveSymIDs( WMenuEntry *entry, WRHashTable *symbol_table )
         WResolveEntrySymIDs( entry, symbol_table );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 bool WResolveEntrySymIDs( WMenuEntry *entry, WRHashTable *symbol_table )
@@ -1048,11 +1048,11 @@ bool WResolveEntrySymIDs( WMenuEntry *entry, WRHashTable *symbol_table )
 
     if( ok ) {
         if( entry->item->IsPopup ) {
-            return( TRUE );
+            return( true );
         }
         flags = entry->item->Item.Normal.ItemFlags;
         if( flags & MENU_SEPARATOR ) {
-            return( TRUE );
+            return( true );
         }
         ok = WRLookupName( symbol_table, entry->symbol, &hv );
     }

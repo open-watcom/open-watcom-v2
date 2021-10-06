@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,7 +80,7 @@ void WRUnregisterDialog( HWND hdlg )
     WRRemoveObject( &WRDialogList, hdlg );
 }
 
-int WRAPI WRIsWRDialogMsg( MSG *msg )
+bool WRAPI WRIsWRDialogMsg( MSG *msg )
 {
     HWND        hdlg;
     LIST        *item;
@@ -87,9 +88,9 @@ int WRAPI WRIsWRDialogMsg( MSG *msg )
     for( item = WRDialogList; item != NULL ; item = ListNext( item ) ) {
         hdlg = ListElement( item );
         if( hdlg != (HWND)NULL && IsDialogMessage( hdlg, msg ) ) {
-            return( TRUE );
+            return( true );
         }
     }
 
-    return( FALSE );
+    return( false );
 }

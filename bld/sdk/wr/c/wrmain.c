@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -458,11 +458,11 @@ bool WRAPI WRUpdateTmp( WRInfo *info )
         break;
 
     case WR_WIN_ICON:
-        ok = WRSaveIconResource( info, FALSE );
+        ok = WRSaveIconResource( info, false );
         break;
 
     case WR_WIN_CURSOR:
-        ok = WRSaveCursorResource( info, FALSE );
+        ok = WRSaveCursorResource( info, false );
         break;
 
     case WR_WIN16M_RES:
@@ -917,7 +917,7 @@ bool WQueryMergeStrings( WResID *rname )
     return( true );
 }
 
-// this function returns TRUE if the save into may continue
+// this function returns true if the save into may continue
 bool WRTestReplace( WRInfo *info, WRSaveIntoData *idata )
 {
     WResTypeNode    *tnode;

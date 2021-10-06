@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -624,22 +625,22 @@ bool WRAPI WRCreateIconData( WRInfo *info, WResLangNode *lnode, BYTE **data, siz
 uint_16 WRAPI WRFindUnusedImageId( WRInfo *info, uint_16 start )
 {
     WResLangNode        *lnode;
-    int                 found;
-    int                 rollover;
+    bool                found;
+    bool                rollover;
 
-    found = FALSE;
-    rollover = FALSE;
+    found = false;
+    rollover = false;
     if( start == 0 ) {
         start = 1;
     }
     if( start == 1 ) {
-        rollover = TRUE;
+        rollover = true;
     }
 
     for( ;; ) {
         if( start > 0x7fff ) {
             if( !rollover ) {
-                rollover = TRUE;
+                rollover = true;
                 start = 1;
             } else {
                 break;
@@ -647,7 +648,7 @@ uint_16 WRAPI WRFindUnusedImageId( WRInfo *info, uint_16 start )
         }
         if( !WRFindImageId( info, NULL, NULL, &lnode, RESOURCE2INT( RT_ICON ), start, NULL ) ) {
             if( !WRFindImageId( info, NULL, NULL, &lnode, RESOURCE2INT( RT_CURSOR ), start, NULL ) ) {
-                found = TRUE;
+                found = true;
                 break;
             }
         }

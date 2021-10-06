@@ -322,7 +322,7 @@ static bool WRSetRGBValues( RGBQUAD *argbvals, int upperlimit )
     HDC                 hdc;
 
     if( argbvals == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     pe = (PALETTEENTRY *)MemAlloc( upperlimit * sizeof( PALETTEENTRY ) );
@@ -351,7 +351,7 @@ static bool WRSetRGBValues( RGBQUAD *argbvals, int upperlimit )
 static bool WRGetBitmapInfo( BITMAPINFO *bmi, BITMAP *bm )
 {
     RGBQUAD     *rgb_quad;
-    bool        ret;
+    bool        ok;
 
     if( bmi == NULL || bm == NULL ) {
         return( false );
@@ -363,14 +363,14 @@ static bool WRGetBitmapInfo( BITMAPINFO *bmi, BITMAP *bm )
     }
 
     WRGetBitmapInfoHeader( &bmi->bmiHeader, bm );
-    ret = WRSetRGBValues( rgb_quad, 1 << bm->bmPlanes );
-    if( ret ) {
+    ok = WRSetRGBValues( rgb_quad, 1 << bm->bmPlanes );
+    if( ok ) {
         memcpy( bmi->bmiColors, rgb_quad, RGBQ_SIZE( bm->bmPlanes ) );
     }
 
     MemFree( rgb_quad );
 
-    return( ret );
+    return( ok );
 }
 
 static BITMAPINFO *WRGetDIBitmapInfo( HBITMAP hbitmap )

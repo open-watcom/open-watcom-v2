@@ -108,7 +108,7 @@ WRDLLENTRY extern void                 WRAPI WRStripSymbol( char *symbol );
 WRDLLENTRY extern bool                 WRAPI WRIsValidSymbol( const char *symbol );
 WRDLLENTRY extern void                 WRAPI WRValueListFree( WRHashValueList *list );
 WRDLLENTRY extern WRHashValueList *    WRAPI WRLookupValue( WRHashTable *table, WRHashValue value );
-WRDLLENTRY extern int                  WRAPI WRValueExists( WRHashTable *table, WRHashValue value );
+WRDLLENTRY extern bool                 WRAPI WRValueExists( WRHashTable *table, WRHashValue value );
 WRDLLENTRY extern char *               WRAPI WRResolveValue( WRHashTable *, WRHashValue );
 WRDLLENTRY extern bool                 WRAPI WREditSym( HWND parent, WRHashTable **table, WRHashEntryFlags *flags, HELPFUNC help_callback );
 WRDLLENTRY extern bool                 WRAPI WRDeleteDLGInclude( WResDir dir );

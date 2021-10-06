@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -268,7 +268,7 @@ WMenuHandle WRESEAPI WRMenuStartEdit( WMenuInfo *info )
     return( einfo->hndl );
 }
 
-int WRESEAPI WMenuIsModified( WMenuHandle hndl )
+bool WRESEAPI WMenuIsModified( WMenuHandle hndl )
 {
     WMenuEditInfo *einfo;
 
@@ -304,7 +304,7 @@ void WRESEAPI WMenuBringToFront( WMenuHandle hndl )
     }
 }
 
-int WRESEAPI WMenuIsDlgMsg( MSG *msg )
+bool WRESEAPI WMenuIsDlgMsg( MSG *msg )
 {
     return( WIsMenuDialogMessage( msg, AccelTable ) );
 }
@@ -517,11 +517,11 @@ void WSetEditTitle( WMenuEditInfo *einfo )
     bool        is_rc;
 
     title = WCreateEditTitle( einfo );
-    is_rc = FALSE;
+    is_rc = false;
 
     if( title == NULL ) {
         title = AllocRCString( W_MENUAPPTITLE );
-        is_rc = TRUE;
+        is_rc = true;
     }
 
     if( title != NULL ) {
@@ -544,7 +544,7 @@ bool WCreateEditWindow( HINSTANCE inst, WMenuEditInfo *einfo )
     RECT        rect;
 
     if( einfo == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     x = CW_USEDEFAULT;
@@ -567,11 +567,11 @@ bool WCreateEditWindow( HINSTANCE inst, WMenuEditInfo *einfo )
         }
     }
 
-    is_rc = FALSE;
+    is_rc = false;
     title = WCreateEditTitle( einfo );
     if( title == NULL ) {
         title = AllocRCString( W_MENUAPPTITLE );
-        is_rc = TRUE;
+        is_rc = true;
     }
 
     hmenu1 = (HMENU)NULL;
@@ -592,16 +592,16 @@ bool WCreateEditWindow( HINSTANCE inst, WMenuEditInfo *einfo )
     }
 
     if( einfo->win == (HWND)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( !WCreateRibbon( einfo ) ) {
-        return( FALSE );
+        return( false );
     }
 
     einfo->wsb = WCreateStatusLine( einfo->win, inst );
     if( einfo->wsb == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     einfo->insert_subitems = FALSE;
@@ -618,7 +618,7 @@ bool WCreateEditWindow( HINSTANCE inst, WMenuEditInfo *einfo )
     CheckMenuItem( hmenu2, IDM_MENU_INSERTAFTER, MF_CHECKED );
 
     if( !WCreateMenuEditWindow( einfo, inst ) ) {
-        return( FALSE );
+        return( false );
     }
 
     if( WGetOption( WOptScreenMax ) ) {
@@ -722,7 +722,7 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
     MINMAXINFO          *minmax;
     about_info          ai;
 
-    pass_to_def = TRUE;
+    pass_to_def = true;
     ret = FALSE;
     einfo = (WMenuEditInfo *)GET_WNDLONGPTR( hWnd, 0 );
     WSetCurrentEditInfo( einfo );
@@ -733,7 +733,7 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
             !GET_WM_ACTIVATE_FMINIMIZED( wParam, lParam ) &&
             einfo != NULL && einfo->edit_dlg != (HWND)NULL ) {
             SetFocus( einfo->edit_dlg );
-            pass_to_def = FALSE;
+            pass_to_def = false;
         }
         break;
 
@@ -842,17 +842,17 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
         switch( wp ) {
         case IDM_MENU_CLEAR:
             WHandleClear( einfo );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_MENU_UPDATE:
             SendMessage( einfo->info->parent, MENU_PLEASE_SAVEME, 0,
                          (LPARAM)einfo->hndl );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_MENU_OPEN:
-            pass_to_def = FALSE;
+            pass_to_def = false;
             if( einfo->info->modified ) {
                 ret = WQuerySave( einfo, FALSE );
                 if( !ret ) {
@@ -866,17 +866,17 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
 
         case IDM_MENU_SAVE:
             WSaveObject( einfo, FALSE, FALSE );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_MENU_SAVEAS:
             WSaveObject( einfo, TRUE, FALSE );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_MENU_SAVEINTO:
             WSaveObject( einfo, TRUE, TRUE );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_MENU_EXIT:
@@ -886,18 +886,18 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
 
         case IDM_MENU_PASTE:
             WPasteMenuItem( einfo );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_MENU_CUT:
         case IDM_MENU_COPY:
             WClipMenuItem( einfo, wp == IDM_MENU_CUT );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_MENU_DELETE:
             WDeleteMenuEntry( einfo );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_MENU_INSERTSUBITEMS:
@@ -923,39 +923,39 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
 #if 0
         case IDM_MENU_NEWITEM:
             WInsertNewMenuEntry( einfo, FALSE, FALSE );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_MENU_NEWPOPUP:
             WInsertNewMenuEntry( einfo, TRUE, FALSE );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_MENU_NEWSEPARATOR:
             WInsertNewMenuEntry( einfo, FALSE, TRUE );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 #else
         case IDM_MENU_NEWITEM:
             WInsertNew( einfo );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 #endif
 
         case IDM_MENU_SYMBOLS:
             handleSymbols( einfo );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_MENU_LOAD_SYMBOLS:
             handleLoadSymbols( einfo );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_MENU_SHOWRIBBON:
             hmenu = WGetMenuHandle( einfo );
             WShowRibbon( einfo, hmenu );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_MENU_MEM_FLAGS:
@@ -965,27 +965,27 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
                                                       WGetEditInstance(),
                                                       WMenuHelpRoutine );
             WSetStatusReadyText( einfo->wsb );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_MENU_RENAME:
             WHandleRename( einfo );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_HELP:
             WMenuHelpRoutine();
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_HELP_SEARCH:
             WMenuHelpSearchRoutine();
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_HELP_ON_HELP:
             WMenuHelpOnHelpRoutine();
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_MENU_ABOUT:
@@ -998,7 +998,7 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
             FreeRCString( ai.name );
             FreeRCString( ai.version );
             FreeRCString( ai.title );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
         }
         break;

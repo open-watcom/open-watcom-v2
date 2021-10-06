@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +40,7 @@ static bool WRIsCorrectNode( WResID *node, uint_16 id, const char *name );
 /* static function prototypes                                               */
 /****************************************************************************/
 
-int WRAPI WRDoesNameExist( WResDir dir, WResID *type, WResID *res )
+bool WRAPI WRDoesNameExist( WResDir dir, WResID *type, WResID *res )
 {
     WResTypeNode        *type_node;
     WResResNode         *res_node;
@@ -48,11 +49,11 @@ int WRAPI WRDoesNameExist( WResDir dir, WResID *type, WResID *res )
     if( type_node != NULL ) {
         res_node = WRFindResNodeFromWResID( type_node, res );
         if( res_node != NULL ) {
-            return( TRUE );
+            return( true );
         }
     }
 
-    return( FALSE );
+    return( false );
 }
 
 WResTypeNode * WRAPI WRFindTypeNodeFromWResID( WResDir dir, WResID *type )

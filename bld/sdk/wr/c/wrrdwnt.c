@@ -260,7 +260,7 @@ bool WRLoadWResDirFromWinNTEXE( FILE *fp, WResDir *dir )
         ok = WRWinNTHeaderHasResourceTable( &nt_header );
         if( !ok ) {
             WRDisplayErrorMsg( WR_EXENORES );
-            return( TRUE );
+            return( true );
         }
     }
 
@@ -341,7 +341,7 @@ bool WRHandleWinNTTypeEntry( FILE *fp, WResDir *dir, resource_dir_entry *rd_entr
     /* verify the id_name */
     if( ( (rd_entry->id_name & PE_RESOURCE_MASK_ON) != 0 ) ^ is_name ) {
         WRDisplayErrorMsg( WR_BADIDDISCARDTYPE );
-        return( FALSE );
+        return( false );
     }
 
     if( is_name ) {
@@ -412,7 +412,7 @@ bool WRHandleWinNTNameEntry( FILE *fp, WResDir *dir, WResID *type,
     /* verify the id_name */
     if( ( (rd_entry->id_name & PE_RESOURCE_MASK_ON) != 0 ) ^ is_name ) {
         WRDisplayErrorMsg( WR_BADIDDISCARDNAME );
-        return( FALSE );
+        return( false );
     }
 
     if( is_name ) {

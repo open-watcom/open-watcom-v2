@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -127,36 +128,36 @@ int WIsValidHandle( WStringHandle hndl )
     return( hndl != 0 && WFindHndlInfo( hndl ) );
 }
 
-int WIsStringDialogMessage( MSG *msg, HACCEL accel_table )
+bool WIsStringDialogMessage( MSG *msg, HACCEL accel_table )
 {
     WHndlInfo   *hinfo;
     LIST        *l;
-    int         ret;
+    bool        ok;
     HWND        active;
 
-    ret = FALSE;
+    ok = false;
     active = GetActiveWindow();
 
-    for( l = WHndlList; l != NULL && !ret; l = ListNext( l ) ) {
+    for( l = WHndlList; l != NULL && !ok; l = ListNext( l ) ) {
         hinfo = ListElement( l );
         if( hinfo != NULL && hinfo->info->win == active ) {
             if( WDoesEditHaveFocus() ) {
                 if( hinfo->info->edit_dlg != (HWND)NULL ) {
-                    ret = IsDialogMessage( hinfo->info->edit_dlg, msg );
+                    ok = ( IsDialogMessage( hinfo->info->edit_dlg, msg ) != 0 );
                 }
-                if( !ret ) {
-                    ret = ( TranslateAccelerator( hinfo->info->win, accel_table, msg ) != 0 );
+                if( !ok ) {
+                    ok = ( TranslateAccelerator( hinfo->info->win, accel_table, msg ) != 0 );
                 }
             } else {
-                ret = ( TranslateAccelerator( hinfo->info->win, accel_table, msg ) != 0 );
-                if( !ret && hinfo->info->edit_dlg != (HWND)NULL ) {
-                    ret = IsDialogMessage( hinfo->info->edit_dlg, msg );
+                ok = ( TranslateAccelerator( hinfo->info->win, accel_table, msg ) != 0 );
+                if( !ok && hinfo->info->edit_dlg != (HWND)NULL ) {
+                    ok = ( IsDialogMessage( hinfo->info->edit_dlg, msg ) != 0 );
                 }
             }
         }
     }
 
-    return( ret );
+    return( ok );
 }
 
 WHndlInfo *WFindHndlInfo( WStringHandle hndl )

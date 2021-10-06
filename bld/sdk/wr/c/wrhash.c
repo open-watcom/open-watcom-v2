@@ -698,7 +698,7 @@ WRHashEntry * WRAPI WRAddHashEntry( WRHashTable *table, const char *name, WRHash
         if( !*dup && query_force ) {
             *dup = WRForceAddQuery();
         }
-        // If dup is TRUE force the add
+        // If dup is true force the add
         if( *dup ) {
             if( !WRRemoveName( table, symbol ) ) {
                 return( NULL );
@@ -912,14 +912,14 @@ WRHashValueList * WRAPI WRLookupValue( WRHashTable *table, WRHashValue value )
     return( list );
 }
 
-int WRAPI WRValueExists( WRHashTable *table, WRHashValue value )
+bool WRAPI WRValueExists( WRHashTable *table, WRHashValue value )
 {
     WRHashEntry         *entry;
     unsigned int        hash;
     int                 count;
 
     if( table == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     count = 0;
@@ -930,7 +930,7 @@ int WRAPI WRValueExists( WRHashTable *table, WRHashValue value )
         }
     }
 
-    return( count );
+    return( count != 0 );
 }
 
 void WRAPI WRStripSymbol( char *symbol )
@@ -1021,7 +1021,7 @@ static bool WRShowSelectedSymbol( HWND hDlg, WRHashTable *table )
 
     /* unused parameters */ (void)table;
 
-    standard_entry = FALSE;
+    standard_entry = false;
     lbox = GetDlgItem( hDlg, IDB_SYM_LISTBOX );
     index = SendMessage( lbox, LB_GETCOUNT, 0, 0 );
     ok = (index != LB_ERR);
@@ -1309,7 +1309,7 @@ static void WRDrawHashListBoxItem( HWND hDlg, DRAWITEMSTRUCT *dis )
 
     if( !TextWidthInit ) {
         InitTextWidth( hDlg );
-        TextWidthInit = TRUE;
+        TextWidthInit = true;
     }
 
     entry = NULL;
@@ -1378,7 +1378,7 @@ WINEXPORT INT_PTR CALLBACK WREditSymbolsDlgProc( HWND hDlg, UINT message, WPARAM
             EndDialog( hDlg, FALSE );
             break;
         }
-        WRSetupEditSymDialog( hDlg, info, TRUE );
+        WRSetupEditSymDialog( hDlg, info, true );
         ret = true;
         break;
 
@@ -1405,7 +1405,7 @@ WINEXPORT INT_PTR CALLBACK WREditSymbolsDlgProc( HWND hDlg, UINT message, WPARAM
 //      case IDB_SYM_SHOW_UNUSED:
             if( cmd == BN_CLICKED ) {
                 info->flags = WRGetEditSymEntryFlags( hDlg );
-                WRSetupEditSymDialog( hDlg, info, FALSE );
+                WRSetupEditSymDialog( hDlg, info, false );
             }
             break;
 

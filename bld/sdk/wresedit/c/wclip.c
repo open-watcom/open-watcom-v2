@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,7 +68,7 @@ bool WGetClipData( HWND main, UINT fmt, void *_data, uint_32 *dsize )
     bool        ok;
 
     hclipdata = (HANDLE)NULL;
-    clipbd_open = FALSE;
+    clipbd_open = false;
     mem = NULL;
     ok = (fmt != 0 && data != NULL && dsize != NULL);
 
@@ -76,7 +77,7 @@ bool WGetClipData( HWND main, UINT fmt, void *_data, uint_32 *dsize )
     }
 
     if( ok ) {
-        clipbd_open = TRUE;
+        clipbd_open = true;
         hclipdata = GetClipboardData( fmt );
         ok = (hclipdata != NULL);
     }
@@ -135,7 +136,7 @@ bool WCopyClipData( HWND main, UINT fmt, void *data, uint_32 dsize )
     bool        clipbd_open;
     bool        ok;
 
-    clipbd_open = FALSE;
+    clipbd_open = false;
     hdsp_bitmap = (HBITMAP)NULL;
     hmem = (HGLOBAL)NULL;
     mem = NULL;
@@ -153,7 +154,7 @@ bool WCopyClipData( HWND main, UINT fmt, void *data, uint_32 dsize )
     }
 
     if( ok ) {
-        clipbd_open = TRUE;
+        clipbd_open = true;
         hmem = GlobalAlloc( GMEM_MOVEABLE, dsize );
         ok = (hmem != (HGLOBAL)NULL);
     }

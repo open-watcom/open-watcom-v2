@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -363,7 +364,7 @@ bool WREGetMenuSessionData( WREMenuSession *session, bool close )
     if( ok && session->info->modified ) {
         ok = WRERenameWResResNode( session->tnode, &session->rnode,
                                    session->info->res_name );
-        WRESetResNamesFromType( session->rinfo, RESOURCE2INT( RT_MENU ), TRUE,
+        WRESetResNamesFromType( session->rinfo, RESOURCE2INT( RT_MENU ), true,
                                 session->info->res_name, 0 );
     }
 

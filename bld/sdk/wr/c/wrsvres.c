@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -168,7 +169,7 @@ static bool WRWriteResourceToMRES( WResTypeNode *tnode, WResResNode *rnode,
         mheader.Name = WRCreateMRESResName( rnode, lnode );
         ok = (mheader.Type != NULL && mheader.Name != NULL);
         if( ok ) {
-            ok = !MResWriteResourceHeader( &mheader, dst_fp, FALSE );
+            ok = !MResWriteResourceHeader( &mheader, dst_fp, false );
         }
         if( ok ) {
             if( lnode->data != NULL ) {
@@ -386,11 +387,11 @@ bool WRSaveResourceTo_RC( WRInfo *info, bool backup )
         if( info->internal_type == WR_DONT_KNOW ) {
             info->internal_type = WRSelectFileType( (HWND)NULL, fn_path,
 #ifdef __NT__
-                                                    TRUE,
+                                                    true,
 #else
-                                                    FALSE,
+                                                    false,
 #endif
-                                                    FALSE, NULL );
+                                                    false, NULL );
         }
         ok = saveResourceToRES( info, backup, fn_path,
             info->internal_filename != NULL ? info->internal_filename : info->file_name );

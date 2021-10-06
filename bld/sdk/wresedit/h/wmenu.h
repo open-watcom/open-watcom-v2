@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,8 +80,8 @@ WRESEDLLENTRY extern int          WRESEAPI WMenuCloseSession( WMenuHandle, int )
 WRESEDLLENTRY extern WMenuHandle  WRESEAPI WRMenuStartEdit( WMenuInfo * );
 WRESEDLLENTRY extern WMenuInfo *  WRESEAPI WMenuEndEdit( WMenuHandle );
 WRESEDLLENTRY extern WMenuInfo *  WRESEAPI WMenuGetEditInfo( WMenuHandle );
-WRESEDLLENTRY extern int          WRESEAPI WMenuIsModified( WMenuHandle );
-WRESEDLLENTRY extern int          WRESEAPI WMenuIsDlgMsg( MSG *msg );
+WRESEDLLENTRY extern bool         WRESEAPI WMenuIsModified( WMenuHandle );
+WRESEDLLENTRY extern bool         WRESEAPI WMenuIsDlgMsg( MSG *msg );
 WRESEDLLENTRY extern void         WRESEAPI WMenuShowWindow( WMenuHandle hndl, int show );
 WRESEDLLENTRY extern void         WRESEAPI WMenuBringToFront( WMenuHandle hndl );
 
