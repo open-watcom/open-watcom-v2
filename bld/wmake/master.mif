@@ -75,7 +75,7 @@ extra_l_flags_dos_i86 = opt stack=8k
 !ifdef wmake_causeway
 extra_l_flags_dos_386 = opt stack=96k lib cwdll.lib
 !else
-extra_l_flags_dos_386 = opt stack=4k
+extra_l_flags_dos_386 = opt stack=8k
 !endif
 extra_l_flags_dos = $(extra_l_flags_dos_$(host_cpu))
 
