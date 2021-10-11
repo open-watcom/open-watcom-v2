@@ -62,13 +62,10 @@ extern HWND     _GetWinMenuHandle();
 struct xycoord  _BitBlt_Coord;
 
 // Static functions
-static double CalScrollAmt( double, double, double, double, double );
-static double CalScrollPos( double, double, double, double, double );
+static int CalScrollAmt( int, int, int, int, int );
+static int CalScrollPos( int, int, int, int, int );
 static struct ScrollStruct getscrolldata( HWND Wnd, int dir );
-static void CalPos( struct ScrollStruct *info, WPI_PARAM1 wParam,
-/*================*/WPI_PARAM2 lParam, int *newpos, int *newcoord );
-
-
+static void CalPos( struct ScrollStruct *info, WPI_PARAM1 wParam, WPI_PARAM2 lParam, int *newpos, int *newcoord );
 
 
 WPI_MRESULT CALLBACK GraphWndProc( HWND         Wnd,
@@ -175,7 +172,7 @@ WPI_MRESULT CALLBACK GraphWndProc( HWND         Wnd,
             WinSendMsg( _GetWinMenuHandle(), ( ULONG )MM_DELETEITEM,
                 MPFROM2SHORT( ( w->handles[0] + DID_WIND_STDIO ), FALSE ), 0 );
 #endif
-            _DestroyAWindow( w );
+            _FreeWindowData( w );
         }
         break;
 
@@ -304,19 +301,17 @@ WPI_MRESULT CALLBACK GraphWndProc( HWND         Wnd,
 }
 
 
-static double CalScrollAmt( double max, double min, double pixel,
-/*==================*/double pix_scr, double pix_win )
+static int CalScrollAmt( int max, int min, int pixel, int pix_scr, int pix_win )
 //===============================================================
 {
-    return( ( ( max - min + 1 ) * pixel ) / ( pix_scr - pix_win + 1 ) );
+    return( ( (long)( max - min + 1 ) * (long)pixel ) / (long)( pix_scr - pix_win + 1 ) );
 }
 
-static double CalScrollPos( double maxpos, double minpos,
-/*========================*/double currpos, double num_pix, double win_pix)
+static int CalScrollPos( int maxpos, int minpos, int currpos, int num_pix, int win_pix )
 //=========================================================================
 {
-    return( ( num_pix - win_pix + 1 ) * ( currpos - minpos + 1) /
-            ( maxpos - minpos + 1) );
+    return( ( (long)( num_pix - win_pix + 1 ) * (long)( currpos - minpos + 1 ) ) /
+            (long)( maxpos - minpos + 1 ) );
 }
 
 

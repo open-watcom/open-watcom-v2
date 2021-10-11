@@ -456,7 +456,7 @@ static float GetAngle( short x, short y, short xc, short yc, short a, short b )
     return angle * 180.0 / pie;
 }
 #endif
-static int round( float num )
+static int gr_round( float num )
 //==================================================
 // This function round off a float in to an interger.
 {
@@ -471,7 +471,7 @@ static int round( float num )
     }
 
     floor = (int)num;
-    if( num - floor < 0.5 ) {
+    if( num - floor < 0.5f ) {
         return sign * floor;
     } else {
         return sign * ( floor + 1 );
@@ -664,8 +664,8 @@ static void OS2_Arc( HPS pres, short fill, short a, short b )
             GpiBeginArea( pres, BA_BOUNDARY | BA_ALTERNATE );
         }
         GpiPartialArc( pres, &ptc, MAKEFIXED( 1, 0 ),
-                       MAKEFIXED( round( start ), 0 ),
-                       MAKEFIXED( round( sweep ), 0 ) );
+                       MAKEFIXED( gr_round( start ), 0 ),
+                       MAKEFIXED( gr_round( sweep ), 0 ) );
         GpiLine( pres, &ptc );
         if( fill == _GFILLINTERIOR ) {
             GpiEndArea( pres );
@@ -673,8 +673,8 @@ static void OS2_Arc( HPS pres, short fill, short a, short b )
     } else {
         GpiSetCurrentPosition( pres, &pts );
         GpiPartialArc( pres, &ptc, MAKEFIXED( 1, 0 ),
-                       MAKEFIXED( round( start ), 0 ),
-                       MAKEFIXED( round( sweep ), 0 ) );
+                       MAKEFIXED( gr_round( start ), 0 ),
+                       MAKEFIXED( gr_round( sweep ), 0 ) );
     }
 }
 
@@ -699,8 +699,8 @@ static struct xycoord Cal_Coord( float x, float y, float a, float b )
         gamma = delta;
         delta = sin( delta );
         gamma = cos( gamma );
-        point.xcoord = round( a * delta ) + _ArcInfo.centre.xcoord;
-        point.ycoord = round( b * gamma ) + _ArcInfo.centre.ycoord;
+        point.xcoord = gr_round( a * delta ) + _ArcInfo.centre.xcoord;
+        point.ycoord = gr_round( b * gamma ) + _ArcInfo.centre.ycoord;
     } else {
         point.xcoord = _ArcInfo.centre.xcoord;
         if( y > 0 ) {
