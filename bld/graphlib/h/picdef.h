@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,12 +35,12 @@ struct picture {
     short           picwidth;               /* # of pixels across   */
     short           picheight;              /* # of pixels down     */
 #if defined( _DEFAULT_WINDOWS )
-    WPI_PRES        buffer;                  /* Handle for image     */
+    WPI_PRES        pres;                   /* Handle for image     */
     HBITMAP         bmp;
     HDC             pdc;
 #else
     short           bpp;                    /* # of bits per pixel  */
-    char            buffer;                 /* buffer for image     */
+    char            buffer[];               /* buffer for image     */
 #endif
 };
 #pragma pack (__pop);

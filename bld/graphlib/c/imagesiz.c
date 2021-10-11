@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,23 +61,15 @@ long _WCI86FAR _L2imagesize( short x1, short y1, short x2, short y2 )
    in the rectangle defined by ( x1, y1 ) and ( x2, y2 ), in physical
    coordinates. */
 {
-#if defined( _DEFAULT_WINDOWS )
-// For Windows and OS/2, the size is only the size of the record
-    x1 = x1;
-    x2 = x2;
-    y1 = y1;
-    y2 = y2;
-    return( sizeof( struct picture ) );
-#else
-    short               xwid;
-    short               ywid;
     long                size;           /* size of image */
 
-    xwid = abs( x2 - x1 ) + 1;
-    ywid = abs( y2 - y1 ) + 1;
-    size = (long)ywid * _RowLen( xwid );
-    return( size + 6L );
+    size = sizeof( struct picture );
+#if defined( _DEFAULT_WINDOWS )
+    // For Windows and OS/2, the size is only the size of the record
+#else
+    size += (long)( abs( y2 - y1 ) + 1 ) * _RowLen( abs( x2 - x1 ) + 1 );
 #endif
+    return( size );
 }
 
 

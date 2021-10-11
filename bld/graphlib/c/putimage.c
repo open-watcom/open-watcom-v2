@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -120,7 +120,7 @@ void _WCI86FAR _L2putimage( short x, short y, char _WCI86HUGE *image, short disp
 
 // Move the image from the memory DC to the screen
     _wpi_bitblt( dc, x, desty, picture->picwidth,
-                 picture->picheight, picture->buffer,
+                 picture->picheight, picture->pres,
                  0, 0, Rop );
 
 // Cleanup

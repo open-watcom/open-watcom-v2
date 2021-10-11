@@ -819,8 +819,14 @@ _WCRTLINK extern long
 :segment INTERNAL
   _CGRAPH
 :endsegment
-    _WCI86FAR _imagesize_wxy( struct _wxycoord _WCI86FAR *,
-                                         struct _wxycoord _WCI86FAR * );
+    _WCI86FAR _imagesize_wxy( struct _wxycoord _WCI86FAR *, struct _wxycoord _WCI86FAR * );
+
+_WCRTLINK extern void
+:segment INTERNAL
+  _CGRAPH
+:endsegment
+    _WCI86FAR _freeimage( char _WCI86HUGE * );
+
 /* Font Manipulation Functions */
 
 _WCRTLINK extern short
@@ -886,19 +892,7 @@ _WCRTLINK extern short
 :endsegment
     _WCI86FAR _setclip( short );
 
-:: Internal functions
-::  shared by pgchart and graphlib
-char _WCI86FAR *_getbitmap( short, short _WCI86FAR * );
-
-#ifdef _DEFAULT_WINDOWS
-_WCRTLINK extern void
-:segment INTERNAL
-  _CGRAPH
 :endsegment
-    _WCI86FAR _freeimage( char _WCI86HUGE * );
-#endif
-:endsegment
-
 :include poppack.sp
 
 :segment !INTERNAL

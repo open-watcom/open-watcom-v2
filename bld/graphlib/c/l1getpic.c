@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -93,13 +93,13 @@ void _L1GetPic( short x1, short y1, short x2, short y2,
     dc = _Mem_dc;
 
 // Create a memory DC to put the image in
-    image->buffer = _wpi_createcompatiblepres( dc, _GetInst(), &( image->pdc ) );
+    image->pres = _wpi_createcompatiblepres( dc, _GetInst(), &( image->pdc ) );
     image->bmp = _wpi_createcompatiblebitmap( dc, dx, dy );
-    if( ( image->buffer == NULL ) || ( image->bmp == NULL ) ) {
+    if( ( image->pres == NULL ) || ( image->bmp == NULL ) ) {
          _ErrorStatus = _GRINSUFFICIENTMEMORY;
          return;
     }
-    _wpi_selectbitmap( image->buffer, image->bmp );
+    _wpi_selectbitmap( image->pres, image->bmp );
 
 // Transfer the image to a memory DC
   #if defined( __OS2__ )
@@ -107,7 +107,7 @@ void _L1GetPic( short x1, short y1, short x2, short y2,
   #else
     srcy = y1;
   #endif
-    _wpi_bitblt( image->buffer, 0, 0, dx, dy, dc, x1, srcy, SRCCOPY );
+    _wpi_bitblt( image->pres, 0, 0, dx, dy, dc, x1, srcy, SRCCOPY );
 
 #else
     image->bpp = _CurrState->vc.bitsperpixel;   /* save bpp - never used ?  */
