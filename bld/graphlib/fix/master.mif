@@ -14,9 +14,20 @@ clibdir = $(clib_dir)/library/msdos.386/ms_r/clib3r.lib
 graph_path = ../../$(objs_subdir)
 pgchart_path = ../../pgchart/$(objs_subdir)
 
-!ifeq host_os dos
+!ifeq host_cpu i86
 
 all: graph.lib graph2.lib
+
+!else ifeq host_os dos
+
+all: graph.lib graph2.lib
+
+!else ifeq host_os qnx
+
+all: graph3r.lib graph3s.lib graph23r.lib graph23s.lib
+
+!else
+!endif
 
 !ifeq host_cpu i86
 
@@ -82,32 +93,6 @@ tmp2.lib : $(graph_path)s/graphi2.lib $(graph_path)r/graphi2.lib $(pgchart_path)
 
 !endif
 
-!else ifeq host_os qnx
-
-!ifeq host_cpu i86
-
-all: graph.lib graph2.lib
-
-tmp.lib : $(graph_path)/graphi.lib $(pgchart_path)/chart.lib $(graph_path)/dummy.obj $(graph_path)/fsmath.obj $(__MAKEFILES__)
-    @%write  tmp.lbc  +$(graph_path)/graphi.lib
-    @%append tmp.lbc  +$(graph_path)/dummy.obj
-    @%append tmp.lbc  +$(graph_path)/fsmath.obj
-    @%append tmp.lbc  +$(pgchart_path)/chart.lib
-    @%make echo_lib
-    $(librarian) $(libflags) @tmp.lbc
-
-tmp2.lib : $(graph_path)/graphi2.lib $(pgchart_path)/chart2.lib $(graph_path)/dummy.obj $(graph_path)/fsmath.obj $(__MAKEFILES__)
-    @%write  tmp2.lbc  +$(graph_path)/graphi2.lib
-    @%append tmp2.lbc  +$(graph_path)/dummy.obj
-    @%append tmp2.lbc  +$(graph_path)/fsmath.obj
-    @%append tmp2.lbc  +$(pgchart_path)/chart2.lib
-    @%make echo_lib
-    $(librarian) $(libflags) @tmp2.lbc
-
-!else
-
-all: graph3r.lib graph3s.lib graph23r.lib graph23s.lib
-
 graph3r.lib : $(graph_path)r/graphi.lib $(pgchart_path)r/chart.lib $(__MAKEFILES__)
     @%make echo_lib
     $(librarian) $(libflags) +$(graph_path)r/graphi.lib +$(pgchart_path)r/chart.lib
@@ -123,10 +108,6 @@ graph23r.lib : $(graph_path)r/graphi2.lib $(pgchart_path)r/chart2.lib $(__MAKEFI
 graph23s.lib : $(graph_path)r/graphi2.lib $(pgchart_path)s/chart2.lib $(__MAKEFILES__)
     @%make echo_lib
     $(librarian) $(libflags) +$(graph_path)s/graphi2.lib +$(pgchart_path)s/chart2.lib
-
-!endif
-
-!endif
 
 graph.lib : $(clibdir) tmp.lib $(__MAKEFILES__)
     @rm -f *.obj
