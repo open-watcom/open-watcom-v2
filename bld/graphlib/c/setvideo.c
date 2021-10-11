@@ -76,9 +76,8 @@ static void HScrollRestore( void )
 
 
 #if defined( _DEFAULT_WINDOWS )
-    #undef HANDLE               // already defined by WPI
-    #undef GLOBALHANDLE
     #include "win.h"
+    #include "winmenu.rh"
     #include <stdarg.h>
   #if defined( __OS2__ )
     #include "pmmenu.h"
@@ -88,13 +87,6 @@ static void HScrollRestore( void )
     HDC                 _Hdc;
     HBITMAP             _Mem_bmp = NULL;
     HWND                _CurrWin = NULL;
-    extern HWND         _MainWindow;
-  #if !defined( __OS2__ )
-    extern HMENU        _SubMenuWindows;
-  #else
-    extern HWND         _GetWinMenuHandle();
-  #endif
-    extern void         _GetWindowNameAndCoords( char*, char*, int*, int*, int*, int*   );
     static LPWDATA      _NewGphWindow( HWND hwnd, ... );
     static short        _registergphclass( WPI_INST );
 
@@ -290,7 +282,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
     Inst.hab = WinQueryAnchorBlock( _MainWindow );
     Inst.mod_handle = NULL;
   #else
-    Inst = GetWindowWord( _MainWindow, GWW_HINSTANCE );
+    Inst = (HINSTANCE)GetWindowWord( _MainWindow, GWW_HINSTANCE );
   #endif
     _SetInst( &Inst );
     if( !_registergphclass( Inst ) ) {

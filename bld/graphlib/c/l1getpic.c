@@ -117,7 +117,7 @@ void _L1GetPic( short x1, short y1, short x2, short y2,
 
     dev_ptr = _CurrState->deviceptr;
     copy = dev_ptr->readrow;
-    pic = &image->buffer;
+    pic = image->buffer;
     tmp = NULL;
     setup = dev_ptr->setup;
     for( ; y1 <= y2; ++y1 ) {               /* copy screen image to buffer  */

@@ -161,11 +161,11 @@ void _WCI86FAR _L2putimage( short x, short y, char _WCI86HUGE * image, short dis
     prev_mode = _setplotaction( dispmode );
     if( dispmode == _GPRESET ) {
         size = (long) ( picture->picheight ) * line_len;
-        NegImage( &picture->buffer, size );
+        NegImage( picture->buffer, size );
     }
     _L1PutPic( x, y, line_len, (struct picture _WCI86HUGE *)image );
     if( dispmode == _GPRESET ) {
-        NegImage( &picture->buffer, size );
+        NegImage( picture->buffer, size );
     }
     _setplotaction( prev_mode );
 }

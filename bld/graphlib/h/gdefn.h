@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -121,7 +122,7 @@ typedef struct {
 #if( defined( __WINDOWS__ ) || defined( __OS2__ ) )
     #define _DEFAULT_WINDOWS
     #if defined( __WINDOWS__ )
-        #include <win16.h>
+        #include <windows.h>
     #else
         #define __OS2_PM__
         #define INCL_WIN
