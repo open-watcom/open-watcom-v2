@@ -2223,14 +2223,16 @@ WPI_HANDLE _wpi_getclipboarddata( WPI_INST inst, UINT format )
 /* Added capability for personally defined stuff            */
 {
     WPI_OBJECT  *obj;
+    ULONG       data;
 
+    obj = _wpi_malloc( sizeof( WPI_OBJECT ) );
+    data = WinQueryClipbrdData( inst.hab, (ULONG)format );
     if( format == CF_BITMAP ) {
-        obj = _wpi_malloc( sizeof( WPI_OBJECT ) );
         obj->type = WPI_BITMAP_OBJ;
-        obj->bitmap = WinQueryClipbrdData( inst.hab, (ULONG)format );
+        obj->bitmap = data;
     } else {
-        /* Your own defined format */
-        return( WinQueryClipbrdData( inst.hab, (ULONG)format ) );
+        obj->type = WPI_DATA_OBJ;
+        obj->data = data;
     }
     return( (WPI_HANDLE)obj );
 

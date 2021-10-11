@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -245,7 +245,7 @@ bool            IsOneViewWindow( void );
 
 /* ieutil.c */
 HBITMAP         CreateViewBitmap( img_node *node );
-HBITMAP         DuplicateBitmap( HBITMAP hbitmap);
+WPI_HANDLE      DuplicateBitmap( WPI_HANDLE hbitmap );
 HBITMAP         EnlargeImage( HWND hwnd );
 //void            ConvertToDIBitmap( HBITMAP hbitmap );
 void            SetIsSaved( HWND hwnd, bool issaved );

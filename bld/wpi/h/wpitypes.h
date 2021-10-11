@@ -692,6 +692,7 @@ typedef enum {
     WPI_BITMAP_OBJ      = 5,
     WPI_PATBRUSH_OBJ    = 6,
     WPI_HLWBRUSH_OBJ    = 7,
+    WPI_DATA_OBJ        = 8,
 } WPI_OBJECTTYPE;
 
 typedef struct {
@@ -705,6 +706,7 @@ typedef struct {
         LINEBUNDLE      pen;
         WPI_BRUSHTYPE   brush;
         HBITMAP         bitmap;
+        ULONG           data;
     };
 } WPI_OBJECT;
 /*

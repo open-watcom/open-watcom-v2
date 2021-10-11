@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -132,7 +132,7 @@ HBITMAP CreateViewBitmap( img_node *mdi_node )
 /*
  * DuplicateBitmap - produces a duplicate of the bitmap
  */
-HBITMAP DuplicateBitmap( HBITMAP hbitmap )
+WPI_HANDLE DuplicateBitmap( WPI_HANDLE hbitmap )
 {
     HDC         srcdc;
     WPI_PRES    srcpres;
@@ -143,9 +143,9 @@ HBITMAP DuplicateBitmap( HBITMAP hbitmap )
     int         height;
     int         planes;
     int         bitspixel;
-    HBITMAP     newbitmap;
-    HBITMAP     oldbitmap;
-    HBITMAP     oldnewbitmap;
+    WPI_HANDLE  newbitmap;
+    WPI_HANDLE  oldbitmap;
+    WPI_HANDLE  oldnewbitmap;
 
     _wpi_getbitmapparms( hbitmap, &width, &height, &planes, NULL, &bitspixel );
     pres = _wpi_getpres( HWND_DESKTOP );
