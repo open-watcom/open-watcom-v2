@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,18 +31,60 @@
 
 
 #include "gdefn.h"
-
 #if !defined( _DEFAULT_WINDOWS )
 #include "gbios.h"
 #endif
 
 
-static void             GraphCursor( void );
 #if !defined( _DEFAULT_WINDOWS )
-static void             TextCursor( short );
+static void TextCursor( short turning_on )
+//========================================
+
+{
+    short               cursor;
+
+    cursor = _CursorShape;
+    if( !turning_on ) {
+        cursor |= 0x2000;       // set blank cursor bit
+    }
+    VideoInt( _BIOS_CURSOR_SIZE, 0, cursor, 0 );
+}
 #endif
 
+static void GraphCursor( void )
+//=============================
+{
+    short               prev_pltact;
+    grcolor             prev_color;
+    short               font_width;
+    short               font_height;
+    int                 x1, x2;
+    int                 y;
 
+    // set up the plotaction and color
+    prev_pltact = _setplotaction( _GXOR );
+    prev_color = _CurrColor;
+#if defined( VERSION2 )
+    _CurrColor = _CurrState->pixel_mask;
+    if( _CurrState->vc.numcolors <= 256 ) {
+        _CurrColor &= 15;
+    }
+#else
+    _CurrColor = ( _CurrState->vc.numcolors - 1 ) & 15;
+#endif
+    font_width = _CurrState->vc.numxpixels / _CurrState->vc.numtextcols;
+    font_height = _CurrState->vc.numypixels / _CurrState->vc.numtextrows;
+
+    // draw a line at the bottom of the next character cell
+    x1 = font_width * _TextPos.col;
+    x2 = x1 + font_width - 1;
+    y = font_height * ( _TextPos.row + 1 ) - 1;
+    _L1SLine( x1, y, x2, y );
+
+    // reset the original state
+    _setplotaction( prev_pltact );
+    _setcolor( prev_color );
+}
 
 void _CursorOn( void )
 //====================
@@ -85,58 +128,4 @@ void _CursorOff( void )
 #endif
         _GrCursor = 0;      // cursor is off
     }
-}
-
-
-#if !defined( _DEFAULT_WINDOWS )
-
-static void TextCursor( short turning_on )
-//========================================
-
-{
-    short               cursor;
-
-    cursor = _CursorShape;
-    if( !turning_on ) {
-        cursor |= 0x2000;       // set blank cursor bit
-    }
-    VideoInt( _BIOS_CURSOR_SIZE, 0, cursor, 0 );
-}
-
-#endif
-
-
-static void GraphCursor( void )
-//=============================
-{
-    short               prev_pltact;
-    grcolor             prev_color;
-    short               font_width;
-    short               font_height;
-    int                 x1, x2;
-    int                 y;
-
-    // set up the plotaction and color
-    prev_pltact = _setplotaction( _GXOR );
-    prev_color = _CurrColor;
-#if defined( VERSION2 )
-    _CurrColor = _CurrState->pixel_mask;
-    if( _CurrState->vc.numcolors <= 256 ) {
-        _CurrColor &= 15;
-    }
-#else
-    _CurrColor = ( _CurrState->vc.numcolors - 1 ) & 15;
-#endif
-    font_width = _CurrState->vc.numxpixels / _CurrState->vc.numtextcols;
-    font_height = _CurrState->vc.numypixels / _CurrState->vc.numtextrows;
-
-    // draw a line at the bottom of the next character cell
-    x1 = font_width * _TextPos.col;
-    x2 = x1 + font_width - 1;
-    y = font_height * ( _TextPos.row + 1 ) - 1;
-    _L1SLine( x1, y, x2, y );
-
-    // reset the original state
-    _setplotaction( prev_pltact );
-    _setcolor( prev_color );
 }

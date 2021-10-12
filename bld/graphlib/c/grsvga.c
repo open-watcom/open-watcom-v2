@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -221,7 +221,7 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
             }
         }
         // different paging mechanism for 16/256 - use VGAGran to distinguish
-        if( mode == 0x104 ) {    // 16 colours
+        if( mode == _XRES16COLOR ) {    // 16 colours
             _VGAGran = 16;
         } else {
             _VGAGran = 256 - 1;
@@ -537,27 +537,27 @@ static short _SuperVGAInit( short mode )
 
     //              x,   y, strd, col, bpp, pag, seg,     off,    siz, mis
     switch( mode ) {
-    case 0x100:
+    case _URES256COLOR:
         _GrInit(  640, 400,  640, 256,   8,   1, _EgaSeg, _EgaOff,   0, NO_BIOS );
         _CurrState->vc.numtextcols = 80;
         _CurrState->vc.numtextrows = 25;
         break;
-    case 0x101:
+    case _VRES256COLOR:
         _GrInit(  640, 480,  640, 256,   8,   1, _EgaSeg, _EgaOff,   0, NO_BIOS );
         _CurrState->vc.numtextcols = 80;
         _CurrState->vc.numtextrows = 30;
         break;
-    case 0x102:
+    case _SVRES16COLOR:
         _GrInit(  800, 600,  100,  16,   4,   1, _EgaSeg, _EgaOff,   0, PLANAR + NO_BIOS );
         _CurrState->vc.numtextcols = 100;
         _CurrState->vc.numtextrows = 40;
         break;
-    case 0x103:
+    case _SVRES256COLOR:
         _GrInit(  800, 600,  800, 256,   8,   1, _EgaSeg, _EgaOff,   0, NO_BIOS );
         _CurrState->vc.numtextcols = 100;
         _CurrState->vc.numtextrows = 40;
         break;
-    case 0x104:
+    case _XRES16COLOR:
         _GrInit( 1024, 768,  128,  16,   4,   1, _EgaSeg, _EgaOff,   0, PLANAR + NO_BIOS );
         _CurrState->vc.numtextcols = 128;
 #if defined( VERSION2 )
@@ -567,7 +567,7 @@ static short _SuperVGAInit( short mode )
         _CurrState->vc.numtextrows = 50;
 #endif
         break;
-    case 0x105:
+    case _XRES256COLOR:
         _GrInit( 1024, 768, 1024, 256, 8, 1, _EgaSeg, _EgaOff, 0, NO_BIOS );
         _CurrState->vc.numtextcols = 128;
 #if defined( VERSION2 )
@@ -578,7 +578,7 @@ static short _SuperVGAInit( short mode )
         break;
 #if 0
 // This mode is untested.
-    case 0x110:
+    case _VRES32KCOLOR:
         _GrInit( 640, 480, 1280, 32768, 16, 1, _EgaSeg, _EgaOff, 0, NO_BIOS );
         _CurrState->vc.numtextcols = 80;
         _CurrState->vc.numtextrows = 30;

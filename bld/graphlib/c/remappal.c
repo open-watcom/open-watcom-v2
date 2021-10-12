@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,86 +34,6 @@
 #include <conio.h>
 #include "gdefn.h"
 #include "gbios.h"
-
-
-#if defined( _DEFAULT_WINDOWS )
-static WPI_COLOUR       GetPalette( short );
-static void             PutPalette( short, WPI_COLOUR );
-#else
-static long             GetPalette( short );
-static void             PutPalette( short, long );
-#endif
-
-
-_WCRTLINK long _WCI86FAR _CGRAPH _remappalette( short pixval, long colour )
-/*==========================================================
-
-   This routine sets the colour indexed by pixval to the new colour.  It
-   returns the previous colour at pixval or -1 if unsuccessful. */
-
-{
-    long                prev;
-
-    if( pixval < 0 || pixval >= _CurrState->vc.numcolors ) {
-        _ErrorStatus = _GRINVALIDPARAMETER;
-        return( -1 );
-    }
-    if( _CurrState->vc.adapter < _MCGA ) {
-        _ErrorStatus = _GRERROR;
-        return( -1 );
-    }
-    prev = GetPalette( pixval );
-    PutPalette( pixval, colour );
-
-    return( prev );
-}
-
-Entry1( _REMAPPALETTE, _remappalette ) // alternate entry-point
-
-
-void _RemapNum( long _WCI86FAR *colours, short num )
-//=============================================
-
-{
-    short               i;
-
-#if !defined( _DEFAULT_WINDOWS )
-    if( _CurrState->vc.adapter != _EGA ) {
-        if( _FastMap( colours, num ) ) {
-            return;
-        }
-    }
-#endif
-    for( i = 0; i < num; ++i ) {
-        PutPalette( i, colours[ i ] );
-    }
-}
-
-
-_WCRTLINK short _WCI86FAR _CGRAPH _remapallpalette( long _WCI86FAR *colours )
-/*=======================================================
-
-   This routine remaps the entire palette to the colours specified by
-   the parameter.  It returns a success flag. */
-
-{
-    short               num;
-
-    if( _CurrState->vc.adapter < _MCGA ||
-        ( _CurrState->vc.mode == 7 || _CurrState->vc.mode == 15 ) ) {
-        _ErrorStatus = _GRERROR;
-        return( 0 );
-    }
-    if( _GrMode ) {
-        num = _CurrState->vc.numcolors;
-    } else {
-        num = 16;       // vc.numcolors is 32
-    }
-    _RemapNum( colours, num );
-    return( -1 );
-}
-
-Entry1( _REMAPALLPALETTE, _remapallpalette ) // alternate entry-point
 
 
 #if defined( _DEFAULT_WINDOWS )
@@ -257,3 +178,74 @@ static long GetPalette( short pixval )
 }
 
 #endif
+
+
+void _RemapNum( long _WCI86FAR *colours, short num )
+//=============================================
+
+{
+    short               i;
+
+#if !defined( _DEFAULT_WINDOWS )
+    if( _CurrState->vc.adapter != _EGA ) {
+        if( _FastMap( colours, num ) ) {
+            return;
+        }
+    }
+#endif
+    for( i = 0; i < num; ++i ) {
+        PutPalette( i, colours[ i ] );
+    }
+}
+
+
+_WCRTLINK long _WCI86FAR _CGRAPH _remappalette( short pixval, long colour )
+/*==========================================================
+
+   This routine sets the colour indexed by pixval to the new colour.  It
+   returns the previous colour at pixval or -1 if unsuccessful. */
+
+{
+    long                prev;
+
+    if( pixval < 0 || pixval >= _CurrState->vc.numcolors ) {
+        _ErrorStatus = _GRINVALIDPARAMETER;
+        return( -1 );
+    }
+    if( _CurrState->vc.adapter < _MCGA ) {
+        _ErrorStatus = _GRERROR;
+        return( -1 );
+    }
+    prev = GetPalette( pixval );
+    PutPalette( pixval, colour );
+
+    return( prev );
+}
+
+Entry1( _REMAPPALETTE, _remappalette ) // alternate entry-point
+
+
+_WCRTLINK short _WCI86FAR _CGRAPH _remapallpalette( long _WCI86FAR *colours )
+/*=======================================================
+
+   This routine remaps the entire palette to the colours specified by
+   the parameter.  It returns a success flag. */
+
+{
+    short               num;
+
+    if( _CurrState->vc.adapter < _MCGA ||
+        ( _CurrState->vc.mode == 7 || _CurrState->vc.mode == 15 ) ) {
+        _ErrorStatus = _GRERROR;
+        return( 0 );
+    }
+    if( _GrMode ) {
+        num = _CurrState->vc.numcolors;
+    } else {
+        num = 16;       // vc.numcolors is 32
+    }
+    _RemapNum( colours, num );
+    return( -1 );
+}
+
+Entry1( _REMAPALLPALETTE, _remapallpalette ) // alternate entry-point
