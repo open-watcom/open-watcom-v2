@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,11 +66,11 @@ extern PFNWP            _OldFrameProc;
 
 // Function headers
 /* Mapping utitlity functions */
-int             _MapPlotAct();
-HBITMAP         _Mask2Bitmap( HDC, char* );
-int             _MapLineStyle( unsigned short );
-WPI_COLOUR      _Col2RGB( short );
-short           _RGB2Col( WPI_COLOUR );
+extern int              _MapPlotAct( void );
+extern HBITMAP          _Mask2Bitmap( HDC, char* );
+extern int              _MapLineStyle( unsigned short );
+extern WPI_COLOUR       _Col2RGB( short );
+extern short            _RGB2Col( WPI_COLOUR );
 
 /* Other Utilities */
 WPI_MRESULT CALLBACK            GraphWndProc( HWND, WPI_MSG,
@@ -80,12 +81,12 @@ void                            _MyInvalidate( WPI_RECTDIM x1, WPI_RECTDIM y1,
                                                WPI_RECTDIM x2, WPI_RECTDIM y2 );
 HPEN                            _MyCreatePen( WPI_COLOUR );
 short                           _CreateSysMonoFnt( WPI_PRES );
-HFONT                           _GetSysMonoFnt();
-short                           _IsStockFont();
-long                            _GetPresHeight();
+HFONT                           _GetSysMonoFnt( void );
+extern short                    _IsStockFont( void );
+long                            _GetPresHeight( void );
 void                            _SetPresHeight( long );
 void                            _SetInst( WPI_INST* );
-WPI_INST                        _GetInst();
+WPI_INST                        _GetInst( void );
 HFONT                           _MySelectFont( WPI_PRES, HFONT );
 void                            _MyGetOldFont( WPI_PRES, HFONT );
 void                            _Set_RGB_COLOR( short, WPI_COLOUR );

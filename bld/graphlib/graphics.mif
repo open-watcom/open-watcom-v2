@@ -166,6 +166,7 @@ eng_nonwin_objs = &
     $(_subdir_)8x8font.obj &
     $(_subdir_)bit.obj &
     $(_subdir_)gstklow.obj &
+    $(_subdir_)hercfont.obj &
     $(_subdir_)l0drwlin.obj &
     $(_subdir_)l0ellips.obj &
     $(_subdir_)l1fill.obj &
@@ -180,7 +181,6 @@ english_objs = &
     $(_subdir_)cnvcolor.obj &
     $(_subdir_)egautils.obj &
     $(_subdir_)fast256.obj &
-    $(_subdir_)hercfont.obj &
     $(_subdir_)hgcutils.obj &
     $(_subdir_)vgautils.obj &
     $(_subdir_)grcga.obj &

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,8 +42,8 @@ static long             _Pres_h;
 static WPI_INST         _Inst;
 
 
-int _MapPlotAct()
-//===============
+int _MapPlotAct( void )
+//=====================
 
 /*  This function maps the WATCOM plot action modes to Windows' drawing
     modes.  Returns the drawing mode for Windows */
@@ -310,8 +311,8 @@ short _CreateSysMonoFnt( WPI_PRES dc )
 }
 
 
-HFONT _GetSysMonoFnt()
-/*====================
+HFONT _GetSysMonoFnt( void )
+/*==========================
   This function returns the system monospaced font handle. */
 {
 #if defined( __WINDOWS__ )
@@ -330,8 +331,8 @@ void _SetPresHeight( long h )
 }
 
 
-long _GetPresHeight()
-/*===================
+long _GetPresHeight( void )
+/*=========================
   This function get the height of the memory presentation space. */
 {
     return( _Pres_h );
@@ -346,8 +347,8 @@ void _SetInst( WPI_INST *inst )
 }
 
 
-WPI_INST _GetInst()
-/*=================
+WPI_INST _GetInst( void )
+/*=======================
   This function return the current instant. */
 {
     return _Inst;

@@ -43,6 +43,9 @@
 #else
   #include "tinyio.h"
 #endif
+#if !defined( _DEFAULT_WINDOWS )
+  #include "8x8font.h"
+#endif
 
 
 #define _UNDEFINED      (-1)
@@ -96,28 +99,6 @@
 
 #if !defined( _DEFAULT_WINDOWS )
 
-typedef _Packed struct font_entry {
-    short                   type;       // 0 == bitmap, 1 == vector
-    short                   ascent;     // distance from top to baseline (in pixels)
-    short                   width;      // character width in pixels, 0 == proportional
-    short                   height;     // character height in pixels
-    short                   avgwidth;   // average character width
-    short                   firstchar;
-    short                   lastchar;
-    char                    filename[ 81 ];
-    char                    facename[ 32 ];
-    char                    filler;
-    short                   version;
-    char _WCI86FAR          *glyph_table;
-    char _WCI86FAR          *bitmap_table;
-    long                    start_offset;
-    long                    glyph_offset;
-    long                    bitmap_offset;
-    unsigned short          bitmap_size;
-    struct font_entry _WCI86FAR  *link;
-} FONT_ENTRY;
-
-
 typedef _Packed struct windows_font {
     short               dfVersion;
     long                dfSize;
@@ -161,8 +142,7 @@ static short            _YVecDir = 0;
     static short            StockFont = TRUE;
   #endif
 #else
-    extern FONT_ENTRY _WCI86FAR  _8x8Font;
-    static FONT_ENTRY _WCI86FAR  *_CurFont = &_8x8Font;
+    static FONT_ENTRY _WCI86FAR  *_CurFont = &_8x8FontDef;
     static FONT_ENTRY _WCI86FAR  *_FontList = NULL;
     static float            _XVecScale = 1;    // magnification factor for
     static float            _YVecScale = 1;    // stroke fonts
@@ -395,101 +375,6 @@ static short GlyphWidth( FONT_ENTRY _WCI86FAR *curr )
 }
 
 
-_WCRTLINK short _WCI86FAR _CGRAPH _registerfonts( char _WCI86FAR *font_path )
-//=======================================================
-{
-#if defined( __QNX__ )
-    DIR _WCI86FAR           *dirp;
-    struct dirent _WCI86FAR *dire;
-#else
-    tiny_ret_t              rc;
-    tiny_find_t             fileinfo;
-    char _WCI86FAR          *p;
-#endif
-    short                   count;
-    FONT_ENTRY _WCI86FAR    *curr;
-    short                   len;
-    char                    curr_file[ _MAX_PATH ];
-
-    _ErrorStatus = _GROK;
-    _unregisterfonts();         // free previous fonts, if any
-    StrCpy( curr_file, font_path );     // copy into near buffer
-#if defined( __QNX__ )
-    dirp = opendir( curr_file );
-    if( dirp == NULL ) {
-        _ErrorStatus = _GRFONTFILENOTFOUND;
-        return( -1 );   // No such file
-    }
-    for( ; (dire = readdir( dirp )) != NULL; ) {
-        len = StrLen( dire->d_name );
-        if( len > 4 && StrCmp( dire->d_name + len - 4, ".fon" ) == 0 ) {
-            StrCpy( curr_file, font_path );
-            len = strlen( curr_file );
-            curr_file[ len ] = '/';
-            StrCpy( curr_file + len + 1, dire->d_name );
-            if( !readfontfile( curr_file ) ) {
-                return( -2 );   // bad font file or out of memory
-            }
-        }
-    }
-    closedir( dirp );
-#else
-    TinySetDTA( &fileinfo );
-    rc = TinyFindFirst( curr_file, TIO_NORMAL );
-    if( TINY_ERROR( rc ) ) {
-        _ErrorStatus = _GRFONTFILENOTFOUND;
-        return( -1 );   // No such file
-    }
-    p = font_path + StrLen( font_path ) - 1;
-    while( p != font_path ) {
-        if( *p == '\\' || *p == '/' ) {
-            ++p;
-            break;
-        }
-        --p;
-    }
-    len = p - font_path;    // length of path specified
-    do {
-        MemCpy( curr_file, font_path, len );
-        strcpy( curr_file + len, fileinfo.name );
-        if( !readfontfile( curr_file ) ) {
-            return( -2 );   // bad font file or out of memory
-        }
-        rc = TinyFindNext();
-    } while( TINY_OK( rc ) );
-#endif
-    count = 0;
-    for( curr = _FontList; curr != NULL; curr = curr->link ) {
-        ++count;
-    }
-    return( count );
-}
-
-Entry1( _REGISTERFONTS, _registerfonts ) // alternate entry-point
-
-
-_WCRTLINK void _WCI86FAR _CGRAPH _unregisterfonts( void )
-//========================================
-{
-    FONT_ENTRY _WCI86FAR     *curr;
-    FONT_ENTRY _WCI86FAR     *next;
-
-    _ErrorStatus = _GROK;
-    if( _CurFont != &_8x8Font ) {
-        Free( _CurFont->glyph_table );
-        Free( _CurFont->bitmap_table );
-        _CurFont = &_8x8Font;
-    }
-    for( curr = _FontList; curr != NULL; curr = next ) {
-        next = curr->link;
-        Free( curr );
-    }
-    _FontList = NULL;
-}
-
-Entry1( _UNREGISTERFONTS, _unregisterfonts ) // alternate entry-point
-
-
 static short loadfont( FONT_ENTRY _WCI86FAR *curr, short height, short width )
 //=======================================================================
 {
@@ -619,10 +504,104 @@ static short error_func( short font_type, short height, char *facename,
 }
 
 
+_WCRTLINK short _WCI86FAR _CGRAPH _registerfonts( char _WCI86FAR *font_path )
+//=======================================================
+{
+#if defined( __QNX__ )
+    DIR _WCI86FAR           *dirp;
+    struct dirent _WCI86FAR *dire;
+#else
+    tiny_ret_t              rc;
+    tiny_find_t             fileinfo;
+    char _WCI86FAR          *p;
+#endif
+    short                   count;
+    FONT_ENTRY _WCI86FAR    *curr;
+    short                   len;
+    char                    curr_file[ _MAX_PATH ];
+
+    _ErrorStatus = _GROK;
+    _unregisterfonts();         // free previous fonts, if any
+    StrCpy( curr_file, font_path );     // copy into near buffer
+#if defined( __QNX__ )
+    dirp = opendir( curr_file );
+    if( dirp == NULL ) {
+        _ErrorStatus = _GRFONTFILENOTFOUND;
+        return( -1 );   // No such file
+    }
+    for( ; (dire = readdir( dirp )) != NULL; ) {
+        len = StrLen( dire->d_name );
+        if( len > 4 && StrCmp( dire->d_name + len - 4, ".fon" ) == 0 ) {
+            StrCpy( curr_file, font_path );
+            len = strlen( curr_file );
+            curr_file[ len ] = '/';
+            StrCpy( curr_file + len + 1, dire->d_name );
+            if( !readfontfile( curr_file ) ) {
+                return( -2 );   // bad font file or out of memory
+            }
+        }
+    }
+    closedir( dirp );
+#else
+    TinySetDTA( &fileinfo );
+    rc = TinyFindFirst( curr_file, TIO_NORMAL );
+    if( TINY_ERROR( rc ) ) {
+        _ErrorStatus = _GRFONTFILENOTFOUND;
+        return( -1 );   // No such file
+    }
+    p = font_path + StrLen( font_path ) - 1;
+    while( p != font_path ) {
+        if( *p == '\\' || *p == '/' ) {
+            ++p;
+            break;
+        }
+        --p;
+    }
+    len = p - font_path;    // length of path specified
+    do {
+        MemCpy( curr_file, font_path, len );
+        strcpy( curr_file + len, fileinfo.name );
+        if( !readfontfile( curr_file ) ) {
+            return( -2 );   // bad font file or out of memory
+        }
+        rc = TinyFindNext();
+    } while( TINY_OK( rc ) );
+#endif
+    count = 0;
+    for( curr = _FontList; curr != NULL; curr = curr->link ) {
+        ++count;
+    }
+    return( count );
+}
+
+Entry1( _REGISTERFONTS, _registerfonts ) // alternate entry-point
+
+
+_WCRTLINK void _WCI86FAR _CGRAPH _unregisterfonts( void )
+//========================================
+{
+    FONT_ENTRY _WCI86FAR     *curr;
+    FONT_ENTRY _WCI86FAR     *next;
+
+    _ErrorStatus = _GROK;
+    if( _CurFont != &_8x8FontDef ) {
+        Free( _CurFont->glyph_table );
+        Free( _CurFont->bitmap_table );
+        _CurFont = &_8x8FontDef;
+    }
+    for( curr = _FontList; curr != NULL; curr = next ) {
+        next = curr->link;
+        Free( curr );
+    }
+    _FontList = NULL;
+}
+
+Entry1( _UNREGISTERFONTS, _unregisterfonts ) // alternate entry-point
+
 #else
 
-short _IsStockFont()
-/*==================
+short _IsStockFont( void )
+/*========================
 This function tells if the current font is a stock font.*/
 {
 #if defined( __OS2__ )
@@ -718,10 +697,10 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setfont( char _WCI86FAR *opt )
 
     _ErrorStatus = _GROK;
 #if !defined( _DEFAULT_WINDOWS )
-    if( _CurFont != &_8x8Font ) {   // free old defn
+    if( _CurFont != &_8x8FontDef ) {   // free old defn
         Free( _CurFont->glyph_table );
         Free( _CurFont->bitmap_table );
-        _CurFont = &_8x8Font;
+        _CurFont = &_8x8FontDef;
     }
 #endif
     if( opt == NULL ) {     // use default font
