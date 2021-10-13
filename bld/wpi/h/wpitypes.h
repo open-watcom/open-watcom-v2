@@ -58,6 +58,8 @@
 
 #define WPI_EXPORT                      WINEXPORT
 
+#define WPI_NULL                        ((WPI_HANDLE)NULL)
+
 /*************************/
 /* new types - both ways */
 /*************************/

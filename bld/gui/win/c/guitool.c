@@ -255,7 +255,7 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord in_height,
     memset( tbar, 0, sizeof( toolbarinfo ) );
     parent = wnd->root;
     tbar->fixed_wpi_rect = wnd->hwnd_client_rect;
-    tbar->bitmaps = (HBITMAP *)GUIMemAlloc( num_items * sizeof( HBITMAP ) );
+    tbar->bitmaps = (WPI_HBITMAP *)GUIMemAlloc( num_items * sizeof( WPI_HBITMAP ) );
     if( tbar->bitmaps == NULL ) {
         GUIMemFree( tbar );
         wnd->tbar = NULL;

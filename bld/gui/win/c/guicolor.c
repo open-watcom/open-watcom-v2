@@ -303,9 +303,9 @@ void GUIXGetWindowColours( gui_window *wnd, gui_colour_set *colours )
 
 HBRUSH GUIFreeBKBrush( gui_window * wnd )
 {
-    HBRUSH brush = NULLHANDLE;
+    HBRUSH brush = WPI_NULL;
 
-    if( wnd->bk_brush != NULLHANDLE ) {
+    if( wnd->bk_brush != WPI_NULL ) {
         /* make sure bk_brush is not the currently the background brush
          * and, therefore, a system resource */
 #ifndef __OS2_PM__
@@ -314,7 +314,7 @@ HBRUSH GUIFreeBKBrush( gui_window * wnd )
         }
 #endif
         _wpi_deletebrush( wnd->bk_brush );
-        wnd->bk_brush = NULLHANDLE;
+        wnd->bk_brush = WPI_NULL;
     }
     return( brush );
 }

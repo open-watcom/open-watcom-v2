@@ -275,10 +275,10 @@ void GUIFreePaintHandles( gui_paint_info *pinfo, int force )
 #ifdef __OS2_PM__
     //bmp = _wpi_selectbitmap( pinfo->compatible_pres, pinfo->old_bmp );
     _wpi_getoldbitmap( pinfo->compatible_pres, pinfo->old_bmp );
-    pinfo->old_bmp = NULLHANDLE;
-    if( pinfo->draw_bmp != NULLHANDLE ) {
+    pinfo->old_bmp = WPI_NULL;
+    if( pinfo->draw_bmp != WPI_NULL ) {
         _wpi_deletebitmap( pinfo->draw_bmp );
-        pinfo->draw_bmp = NULLHANDLE;
+        pinfo->draw_bmp = WPI_NULL;
     }
     if( pinfo->compatible_pres != NULLHANDLE ) {
         _wpi_deletecompatiblepres( pinfo->compatible_pres,

@@ -186,7 +186,7 @@ static bool DrawLine( gui_window *wnd, const gui_point *start, const gui_point *
     wpi_point.y = _wpi_cvth_y_plus1( scr_end_y, win_height );
     _wpi_lineto( wnd->hdc, &wpi_point );
 
-    if( old_pen != NULLHANDLE ) {
+    if( old_pen != WPI_NULL ) {
         _wpi_getoldpen( wnd->hdc, old_pen );
     }
 

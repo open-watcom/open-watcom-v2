@@ -89,10 +89,10 @@ static void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
         return;
     }
     old_rop = 0;
-    old_brush = NULLHANDLE;
-    brush = NULLHANDLE;
-    old_pen = NULLHANDLE;
-    pen = NULLHANDLE;
+    old_brush = WPI_NULL;
+    brush = WPI_NULL;
+    old_pen = WPI_NULL;
+    pen = WPI_NULL;
     GUIGetMetrics( wnd );
     if( hotspot_no == 0 ) {
         height = AVGYCHAR( GUItm );
@@ -141,7 +141,7 @@ static void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
         colour = _wpi_getnearestcolor( wnd->hdc, back );
         brush = _wpi_createsolidbrush( colour );
         pen = _wpi_createpen( PS_SOLID, 1, colour );
-        if( pen == NULLHANDLE ) {
+        if( pen == WPI_NULL ) {
             GUIError(LIT( Pen_Failed ));
         }
         old_brush = _wpi_selectbrush( wnd->hdc, brush );
@@ -169,16 +169,16 @@ static void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
         if( old_rop != 0 ) {
             _wpi_setrop2( wnd->hdc, old_rop );
         }
-        if( old_brush != NULLHANDLE ) {
+        if( old_brush != WPI_NULL ) {
             _wpi_getoldbrush( wnd->hdc, old_brush );
         }
-        if( brush != NULLHANDLE ) {
+        if( brush != WPI_NULL ) {
             _wpi_deletebrush( brush );
         }
-        if( old_pen != NULLHANDLE ) {
+        if( old_pen != WPI_NULL ) {
             _wpi_getoldpen( wnd->hdc, old_pen );
         }
-        if( pen != NULLHANDLE ) {
+        if( pen != WPI_NULL ) {
             _wpi_deletepen( pen );
         }
     }

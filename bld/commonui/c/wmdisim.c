@@ -62,22 +62,22 @@ typedef int (WINAPI *TILECHILDPROC)( HWND parent, WORD action );
 typedef int (WINAPI *CASCADECHILDPROC)( HWND parent, WORD action );
 #endif
 #elif defined( __NT__ )
-extern int WINAPI TileChildWindows( HWND parent, WORD action );
-extern int WINAPI CascadeChildWindows( HWND parent, WORD action );
+extern int WINAPI   TileChildWindows( HWND parent, WORD action );
+extern int WINAPI   CascadeChildWindows( HWND parent, WORD action );
 #endif
 
-static mdi_info mdiInfo;
-static bool     childrenMaximized;
-static bool     updatedMenu;
-static bool     insertedItems;
-static HBITMAP  closeBitmap;
-static HBITMAP  restoreBitmap;
-static HBITMAP  restoredBitmap;
-static mdi_data *mdiHead;
-static mdi_data *mdiTail;
-static HWND     currentWindow;
-//static WPI_RECT       minChildRect;
-//static char   haveMinChildRect;
+static mdi_info     mdiInfo;
+static bool         childrenMaximized;
+static bool         updatedMenu;
+static bool         insertedItems;
+static WPI_HBITMAP  closeBitmap = WPI_NULL;
+static WPI_HBITMAP  restoreBitmap = WPI_NULL;
+static WPI_HBITMAP  restoredBitmap = WPI_NULL;
+static mdi_data     *mdiHead;
+static mdi_data     *mdiTail;
+static HWND         currentWindow;
+//static WPI_RECT     minChildRect;
+//static char         haveMinChildRect;
 
 #define GET_WND_MDI_DATA( hwnd ) ((mdi_data *)_wpi_getwindowlongptr( hwnd, mdiInfo.data_off ))
 #define SET_WND_MDI_DATA( hwnd, data ) ((mdi_data *)_wpi_setwindowlongptr( hwnd, mdiInfo.data_off, data ))
@@ -294,26 +294,30 @@ static void doMaximizeAll( HWND first )
  */
 static void getMenuBitmaps( void )
 {
-    if( restoreBitmap == NULLHANDLE ) {
 #ifdef __OS2_PM__
-        restoreBitmap = WinGetSysBitmap( HWND_DESKTOP, SBMP_RESTOREBUTTON );
+    WPI_INST    null_inst = { 0, 0 };
+#endif
+
+    if( restoreBitmap == WPI_NULL ) {
+#ifdef __OS2_PM__
+        restoreBitmap = _wpi_loadsysbitmap( null_inst, SBMP_RESTOREBUTTON );
 #else
-        restoreBitmap = LoadBitmap( (HANDLE)NULL, MAKEINTRESOURCE( OBM_RESTORE ) );
+        restoreBitmap = _wpi_loadsysbitmap( NULLHANDLE, MAKEINTRESOURCE( OBM_RESTORE ) );
 #endif
     }
-    if( restoredBitmap == NULLHANDLE ) {
+    if( restoredBitmap == WPI_NULL ) {
 #ifdef __OS2_PM__
-        restoredBitmap = WinGetSysBitmap( HWND_DESKTOP, SBMP_RESTOREBUTTONDEP );
+        restoredBitmap = _wpi_loadsysbitmap( null_inst, SBMP_RESTOREBUTTONDEP );
 #else
-        restoredBitmap = LoadBitmap( (HANDLE)NULL, MAKEINTRESOURCE( OBM_RESTORED ) );
+        restoredBitmap = _wpi_loadsysbitmap( NULLHANDLE, MAKEINTRESOURCE( OBM_RESTORED ) );
 #endif
     }
 
-    if( closeBitmap == NULLHANDLE ) {
+    if( closeBitmap == WPI_NULL ) {
 #ifdef __OS2_PM__
-        closeBitmap = WinGetSysBitmap( HWND_DESKTOP, SBMP_SYSMENU );
+        closeBitmap = _wpi_loadsysbitmap( null_inst, SBMP_SYSMENU );
 #else
-        closeBitmap = LoadBitmap( mdiInfo.hinstance, "CLOSEBMP" );
+        closeBitmap = _wpi_loadsysbitmap( mdiInfo.hinstance, "CLOSEBMP" );
 #endif
     }
     updatedMenu = true;
@@ -544,17 +548,17 @@ static void setMaximizedMenuConfig( HWND hwnd )
 void MDIClearMaximizedMenuConfig( void )
 {
     updatedMenu = false;
-    if( closeBitmap != NULLHANDLE ) {
+    if( closeBitmap != WPI_NULL ) {
         _wpi_deletebitmap( closeBitmap );
-        closeBitmap = NULLHANDLE;
+        closeBitmap = WPI_NULL;
     }
-    if( restoreBitmap != NULLHANDLE ) {
+    if( restoreBitmap != WPI_NULL ) {
         _wpi_deletebitmap( restoreBitmap );
-        restoreBitmap = NULLHANDLE;
+        restoreBitmap = WPI_NULL;
     }
-    if( restoredBitmap != NULLHANDLE ) {
+    if( restoredBitmap != WPI_NULL ) {
         _wpi_deletebitmap( restoredBitmap );
-        restoredBitmap = NULLHANDLE;
+        restoredBitmap = WPI_NULL;
     }
 
 } /* MDIClearMaximizedMenuConfig */

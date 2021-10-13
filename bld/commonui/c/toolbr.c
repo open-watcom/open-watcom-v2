@@ -338,7 +338,7 @@ toolbar *ToolBarInit( HWND parent )
             wc.hInstance = instance;
             wc.hIcon = HNULL;
             wc.hCursor = LoadCursor( (HANDLE) HNULL, IDC_ARROW );
-            wc.hbrBackground = (HBRUSH)0;
+            wc.hbrBackground = WPI_NULL;
             wc.lpszMenuName = NULL;
             wc.lpszClassName = className;
             RegisterClass( &wc );
@@ -459,7 +459,7 @@ void ToolBarDestroy ( toolbar *bar )
             next = curr->next;
             MemFree( curr );
         }
-        if( bar->bgbrush != NULLHANDLE ) {
+        if( bar->bgbrush != WPI_NULL ) {
             _wpi_deletebrush( bar->bgbrush );
         }
         MemFree( bar );
@@ -696,12 +696,12 @@ void ToolBarDisplay( toolbar *bar, TOOLDISPLAYINFO *disp )
     lastID = NO_ID;
     mouse_captured = false;
 
-    if( bar->bgbrush != NULLHANDLE ) {
+    if( bar->bgbrush != WPI_NULL ) {
         _wpi_deletebrush( bar->bgbrush );
-        bar->bgbrush = NULLHANDLE;
+        bar->bgbrush = WPI_NULL;
     }
 
-    if( disp->background != NULLHANDLE ) {
+    if( disp->background != WPI_NULL ) {
         bar->bgbrush = _wpi_createpatternbrush( disp->background );
     }
 
@@ -1030,7 +1030,7 @@ static void drawBorder( WPI_PRES pres, WPI_POINT size, int border )
 /*
  * toolBarDrawBitmap - draw the bitmap on a button
  */
-static void toolBarDrawBitmap( WPI_PRES pres, WPI_POINT dst_size, WPI_POINT dst_org, HBITMAP bitmap )
+static void toolBarDrawBitmap( WPI_PRES pres, WPI_POINT dst_size, WPI_POINT dst_org, WPI_HBITMAP bitmap )
 {
     WPI_BITMAP  bm;
     WPI_PRES    mempres;
@@ -1038,7 +1038,7 @@ static void toolBarDrawBitmap( WPI_PRES pres, WPI_POINT dst_size, WPI_POINT dst_
     WPI_POINT   src_org;
     WPI_POINT   src_size;
     HBRUSH      old_brush;
-    HBITMAP     old_bmp;
+    WPI_HBITMAP old_bmp;
 
     DPtoLP( pres, &dst_size, 1 );
     DPtoLP( pres, &dst_org, 1 );
@@ -1092,13 +1092,13 @@ static void drawButton( HWND hwnd, tool *tool, bool down, WPI_PRES pres,
 {
     toolbar     *bar;
     HBRUSH      brush;
-    HBITMAP     bitmap;
-    HBITMAP     oldbmp;
+    WPI_HBITMAP bitmap;
+    WPI_HBITMAP oldbmp;
     int         shift;
     bool        selected;
     WPI_POINT   dst_size;
     WPI_POINT   dst_org;
-    HBITMAP     used_bmp;
+    WPI_HBITMAP used_bmp;
     WPI_RECTDIM left;
     WPI_RECTDIM right;
     WPI_RECTDIM top;
@@ -1152,7 +1152,7 @@ static void drawButton( HWND hwnd, tool *tool, bool down, WPI_PRES pres,
 #endif
 
     brush = btnFaceBrush;
-    if( selected && bar->bgbrush != HNULL ) {
+    if( selected && bar->bgbrush != WPI_NULL ) {
         brush = bar->bgbrush;
     }
     _wpi_fillrect( mempres, &tool->area, btnColor, brush );
@@ -1633,7 +1633,7 @@ LRESULT CALLBACK ToolContainerWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
 /*
  * ChangeToolButtonBitmap - change a bitmap for a toolbar item
  */
-void ChangeToolButtonBitmap( toolbar *bar, ctl_id id, HBITMAP newbmp )
+void ChangeToolButtonBitmap( toolbar *bar, ctl_id id, WPI_HBITMAP newbmp )
 {
     tool        *t;
 #ifdef __NT__

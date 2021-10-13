@@ -96,7 +96,7 @@ typedef struct toolbarinfo {
     WPI_RECT            float_wpi_rect;
     WPI_RECT            fixed_wpi_rect;
     int                 num_items;
-    HBITMAP             *bitmaps;
+    WPI_HBITMAP         *bitmaps;
 } toolbarinfo;
 
 #define NUMBER_OF_FORCED_REPAINTS 3

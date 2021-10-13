@@ -453,6 +453,7 @@ extern void _wpi_deletebitmap( WPI_HBITMAP bmp );
     #define _wpi_releasescreenpres( hps ) // nothing
 
 extern WPI_HBITMAP _wpi_loadbitmap( WPI_INST inst, int id );
+extern WPI_HBITMAP _wpi_loadsysbitmap( WPI_INST inst, int id );
 extern void _wpi_getbitmapdim( WPI_HBITMAP hbmp, int *pwidth, int *pheight );
 extern WPI_PRES _wpi_getpres( HWND hwnd );
 extern WPI_HBITMAP _wpi_createcompatiblebitmap( WPI_PRES pres, int width, int height );

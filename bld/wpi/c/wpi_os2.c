@@ -472,9 +472,9 @@ void _wpi_getpaintrect( PAINTSTRUCT *ps, WPI_RECT *rect )
 /**********************************************************************/
 {
     rect->xLeft = ps->xLeft;
-    rect->xRight =  ps->xRight;
-    rect->yBottom =  ps->yTop;
-    rect->yTop =  ps->yBottom;
+    rect->xRight = ps->xRight;
+    rect->yBottom = ps->yTop;
+    rect->yTop = ps->yBottom;
 } /* _wpi_getpaintrect */
 
 WPI_COLOUR _wpi_getpixel( WPI_PRES hps, int x, int y )
@@ -641,7 +641,8 @@ BOOL _wpi_rectangle( WPI_PRES pres, int left, int top, int right, int bottom )
 void _wpi_releasepres( HWND hwnd, WPI_PRES pres )
 /**********************************************************************/
 {
-    hwnd = hwnd;
+    /* unused parameters */ (void)hwnd;
+
     GpiAssociate( pres, NULLHANDLE );
     WinReleasePS( pres );
 } /* _wpi_releasepres */
@@ -660,7 +661,7 @@ WPI_HBITMAP _wpi_selectbitmap( WPI_PRES pres, WPI_HBITMAP bitmap )
         old_obj->bitmap = GpiSetBitmap( pres, obj->bitmap );
         return( (WPI_HBITMAP)old_obj );
     }
-    return( NULLHANDLE );
+    return( WPI_NULL );
 } /* _wpi_selectbitmap */
 
 void _wpi_getoldbitmap( WPI_PRES pres, WPI_HBITMAP oldobj )
@@ -1941,6 +1942,19 @@ WPI_HBITMAP _wpi_loadbitmap( WPI_INST inst, int id )
     return( (WPI_HBITMAP)obj );
 } /* _wpi_loadbitmap */
 
+WPI_HBITMAP _wpi_loadsysbitmap( WPI_INST inst, int id )
+/*****************************************************/
+{
+    WPI_OBJECT  *obj;
+
+    /* unused parameters */ (void)inst;
+
+    obj = _wpi_malloc( sizeof( WPI_OBJECT ) );
+    obj->type = WPI_BITMAP_OBJ;
+    obj->bitmap = WinGetSysBitmap( HWND_DESKTOP, (OS_UINT)id );
+    return( (WPI_HBITMAP)obj );
+} /* _wpi_loadsysbitmap */
+
 WPI_HBITMAP _wpi_createbitmap( int width, int height, int planes, int bitcount, BYTE *bits )
 /******************************************************************************************/
 {
@@ -1995,7 +2009,7 @@ WPI_HBITMAP _wpi_createdibitmap( WPI_PRES pres, WPI_BITMAP *info, ULONG opt,
 
     obj = _wpi_malloc( sizeof( WPI_OBJECT ) );
     if( !obj )
-        return( NULLHANDLE );
+        return( WPI_NULL );
 
     obj->type = WPI_BITMAP_OBJ;
     obj->bitmap = GpiCreateBitmap( pres, info, opt, data, table );
@@ -2037,9 +2051,7 @@ static BOOL WinPopupMenu( HWND hwndParent, HWND hwndOwner, HWND hwndMenu,
     int         pos, item_count;
     unsigned    id;
 
-    hwndParent = hwndParent;
-    fs = fs;
-    idItem = idItem;
+    /* unused parameters */ (void)hwndParent; (void)fs; (void)idItem;
 
     WinSetWindowULong( hwndMenu, QWL_STYLE, WS_SYNCPAINT | WS_SAVEBITS | 0x00000008 );
     WinSetParent( hwndMenu, HWND_DESKTOP, FALSE );
@@ -2616,7 +2628,7 @@ int _wpi_getdibits( WPI_PRES pres, WPI_HBITMAP bitmap, UINT start, UINT count,
                                 0L, 0L, 0L, 0L, 0L };
     ERRORID             err;
 
-    notused = notused;
+    /* unused parameters */ (void)notused;
 
     obj = (WPI_OBJECT *)bitmap;
     if( obj->type != WPI_BITMAP_OBJ ) {
@@ -2648,7 +2660,7 @@ HWND _wpi_createwindow( LPSTR class, LPSTR name, ULONG frame_style,
 {
     HWND    hwnd = 0;
 
-    param = param;
+    /* unused parameters */ (void)param;
 
     /* Old _wpi_createwindow used HWND_DESKTOP instead of parent_hwnd */
     if( parent == NULLHANDLE ) {
@@ -2675,8 +2687,7 @@ HWND _wpi_createobjwindow( LPSTR class, LPSTR name, ULONG style, int x, int y,
     ULONG   flags = FCF_TITLEBAR | FCF_SIZEBORDER | FCF_SYSMENU |
                      FCF_SHELLPOSITION | FCF_MINMAX | FCF_MENU;
 
-    parent = parent;
-    param = param;
+    /* unused parameters */ (void)parent; (void)param;
 
 #ifdef __FLAT__
     *frame = WinCreateStdWindow( HWND_OBJECT, 0L, &flags, class, name,
@@ -2800,12 +2811,7 @@ void _wpi_setbmphdrvalues( WPI_BITMAPINFOHEADER *bmih, ULONG size,
     bmih->cclrUsed = used;
     bmih->cclrImportant = important;
 #else
-    comp = comp;
-    size_image = size_image;
-    xpels = xpels;
-    ypels = ypels;
-    used = used;
-    important = important;
+    /* unused parameters */ (void)comp; (void)size_image; (void)xpels; (void)ypels; (void)used; (void)important;
 #endif
 } /* _wpi_setbmphdrvalues */
 
@@ -2870,8 +2876,7 @@ void _wpi_deletesysmenupos( HMENU hmenu, SHORT pos )
     MENUITEM            mi;
     HWND                newmenu;
 
-    WinSendMsg(hmenu, MM_QUERYITEM, MPFROM2SHORT(SC_SYSMENU, FALSE),
-                                                            MPFROMP((PSZ)&mi));
+    WinSendMsg(hmenu, MM_QUERYITEM, MPFROM2SHORT(SC_SYSMENU, FALSE), MPFROMP((PSZ)&mi));
     newmenu = mi.hwndSubMenu;
 
     id = SHORT1FROMMR( WinSendMsg(newmenu, MM_ITEMIDFROMPOSITION,
@@ -3056,7 +3061,7 @@ LONG _wpi_getclipbox( WPI_PRES pres, WPI_PRECT rcl )
 int _wpi_dlg_command( HWND dlg_hld, WPI_MSG *msg, WPI_PARAM1 *parm1, WPI_PARAM2 *parm2 )
 /**************************************************************************************/
 {
-    dlg_hld = dlg_hld;
+    /* unused parameters */ (void)dlg_hld;
 
     if( *msg == WM_CLOSE ) {
         /*
@@ -3072,8 +3077,7 @@ int _wpi_dlg_command( HWND dlg_hld, WPI_MSG *msg, WPI_PARAM1 *parm1, WPI_PARAM2 
             *parm1 = MPFROM2SHORT( _wpi_getid( *parm1 ), BN_CLICKED );
         }
         return( TRUE );
-    } else if( *msg == WM_DLGCOMMAND &&
-                                SHORT2FROMMP( *parm1 ) != BN_PAINT ) {
+    } else if( *msg == WM_DLGCOMMAND && SHORT2FROMMP( *parm1 ) != BN_PAINT ) {
         return( TRUE );
     }
 
@@ -3086,7 +3090,8 @@ int _wpi_getmetricpointsize( WPI_PRES pres, WPI_TEXTMETRIC *textmetric,
 {
     int     pointsize;
 
-    pres = pres;
+    /* unused parameters */ (void)pres;
+
     pointsize = (int)textmetric->sNominalPointSize / 10;
     *match_num = (int)textmetric->lMatch;
     *pix_size = 0;

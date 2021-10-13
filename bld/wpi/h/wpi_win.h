@@ -220,6 +220,8 @@ extern WPI_PRES _wpi_createcompatiblepres( WPI_PRES pres, WPI_INST inst, HDC *hd
 
     #define _wpi_loadbitmap( inst, id ) LoadBitmap( inst, id )
 
+    #define _wpi_loadsysbitmap( inst, id ) LoadBitmap( inst, id )
+
 extern void _wpi_getbitmapdim( WPI_HBITMAP bmp, int *pwidth, int *pheight );
 
     #define _wpi_getpres( hdl ) GetDC( hdl )

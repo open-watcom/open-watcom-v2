@@ -114,8 +114,8 @@ void GUIDrawBitmap( int hotspot_no, WPI_PRES hdc, int nDrawX, int nDrawY, WPI_CO
     WPI_POINT   dst_wpi_point;
     WPI_POINT   size_wpi_point;
     WPI_PRES    memDC;
-    HBITMAP     old_bmp;
-    HBITMAP     bitmap;
+    WPI_HBITMAP old_bmp;
+    WPI_HBITMAP bitmap;
     HDC         new_hdc;
 #ifdef __NT__
     HDC         new_hdc2;
@@ -180,7 +180,7 @@ void GUIDrawBitmap( int hotspot_no, WPI_PRES hdc, int nDrawX, int nDrawY, WPI_CO
 
 #endif
 
-    if( old_bmp != NULLHANDLE ) {
+    if( old_bmp != WPI_NULL ) {
         _wpi_getoldbitmap( memDC, old_bmp );
     }
     _wpi_deletecompatiblepres( memDC, new_hdc );
