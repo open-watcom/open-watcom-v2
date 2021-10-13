@@ -55,7 +55,6 @@ static struct ScrollStruct {
 #if defined( __OS2__ )
 //Original Frame processing procedure
 PFNWP _OldFrameProc;
-extern HWND     _GetWinMenuHandle();
 #endif
 // Variable that contains the position of where to start the repaint
 struct xycoord  _BitBlt_Coord;

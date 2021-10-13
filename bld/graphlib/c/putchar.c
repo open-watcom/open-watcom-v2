@@ -198,7 +198,7 @@ void _PutChar( short row, short col, short ch )
         }
         if( space == 2 ) {      // duplicate bottom row also
             ( *setup )( x, y, colour );
-            ( *fill )( _Screen.mem, colour, *(mask-1), _FONT_WIDTH, 0 );
+            ( *fill )( _Screen.mem, colour, *( mask - 1 ), _FONT_WIDTH, 0 );
         }
         _ResetDevice();
 #if defined( VERSION2 )

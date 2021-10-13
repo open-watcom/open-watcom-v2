@@ -48,15 +48,15 @@
 #endif
 
 
-#define _UNDEFINED      (-1)
+#define _UNDEFINED          (-1)
 
-#define _BITMAP         0
-#define _STROKE         1
+#define _BITMAP             0
+#define _STROKE             1
 
 #if defined( _DEFAULT_WINDOWS )
   #if defined( __OS2__ )
     // Font ID for OS2
-    #define _STDFONTID  250
+    #define _STDFONTID      250
   #endif
 #else
     #define _PROPORTIONAL   0
@@ -64,17 +64,17 @@
 #endif
 
 #if defined( _M_I86 )
-    #define MemCpy( dst, src, len )     _fmemcpy( dst, src, len )
-    #define MemSet( s, c, len )         _fmemset( s, c, len )
-    #define StrCpy( dst, src )          _fstrcpy( dst, src )
-    #define StrCmp( dst, src )          _fstrcmp( dst, src )
-    #define StrLen( s )                 _fstrlen( s )
+    #define MemCpy          _fmemcpy
+    #define MemSet          _fmemset
+    #define StrCpy          _fstrcpy
+    #define StrCmp          _fstrcmp
+    #define StrLen          _fstrlen
 #else
-    #define MemCpy( dst, src, len )     memcpy( dst, src, len )
-    #define MemSet( s, c, len )         memset( s, c, len )
-    #define StrCpy( dst, src )          strcpy( dst, src )
-    #define StrCmp( dst, src )          strcmp( dst, src )
-    #define StrLen( s )                 strlen( s )
+    #define MemCpy          memcpy
+    #define MemSet          memset
+    #define StrCpy          strcpy
+    #define StrCmp          strcmp
+    #define StrLen          strlen
 #endif
 
 #if defined( __QNX__ )
