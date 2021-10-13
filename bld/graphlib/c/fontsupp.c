@@ -33,8 +33,68 @@
 #include <string.h>
 #include "gdefn.h"
 #include "fontsupp.h"
-#if !defined( _DEFAULT_WINDOWS )
+#if defined( __QNX__ )
+  #include <dirent.h>
+  #include <unistd.h>
+  #include <fcntl.h>
+  #if defined( _M_I86 )
+    #include <sys/slib16.h>
+  #endif
+#else
+  #include "tinyio.h"
+#endif
 
+
+#define _UNDEFINED      (-1)
+
+#define _BITMAP         0
+#define _STROKE         1
+
+#if defined( _DEFAULT_WINDOWS )
+  #if defined( __OS2__ )
+    // Font ID for OS2
+    #define _STDFONTID  250
+  #endif
+#else
+    #define _PROPORTIONAL   0
+    #define _FIXED          1
+#endif
+
+#if defined( _M_I86 )
+    #define MemCpy( dst, src, len )     _fmemcpy( dst, src, len )
+    #define MemSet( s, c, len )         _fmemset( s, c, len )
+    #define StrCpy( dst, src )          _fstrcpy( dst, src )
+    #define StrCmp( dst, src )          _fstrcmp( dst, src )
+    #define StrLen( s )                 _fstrlen( s )
+#else
+    #define MemCpy( dst, src, len )     memcpy( dst, src, len )
+    #define MemSet( s, c, len )         memset( s, c, len )
+    #define StrCpy( dst, src )          strcpy( dst, src )
+    #define StrCmp( dst, src )          strcmp( dst, src )
+    #define StrLen( s )                 strlen( s )
+#endif
+
+#if defined( __QNX__ )
+  #define tiny_ret_t                    int
+  #define tiny_handle_t                 int
+  #define TINY_ERROR( rc )              ( rc < 0 )
+  #define TINY_OK( rc )                 ( rc >= 0 )
+  #define TINY_INFO( rc )               ( rc )
+  #define TinyOpen( f, m )              __open_slib( f, O_RDONLY, 0 )
+  #define FontSeekSet( f, o )           ( ( lseek( f, o, SEEK_SET ) == -1L ) ? -1 : 0 )
+  #define TinyRead( f, b, l )           read( f, b, l )
+  #define MyTinyFarRead( f, b, l )      read( f, b, l )
+  #define TinyClose( f )                close( f )
+#else
+  #if defined( _M_I86 )
+    #define MyTinyFarRead( h, b, l )    TinyFarRead( h, b, l )
+  #else
+    #define MyTinyFarRead( h, b, l )    TinyRead( h, b, l )
+  #endif
+  #define FontSeekSet( f, o )           TinySeek( f, o, TIO_SEEK_START )
+#endif
+
+#if !defined( _DEFAULT_WINDOWS )
 
 typedef _Packed struct font_entry {
     short                   type;       // 0 == bitmap, 1 == vector
@@ -90,76 +150,22 @@ typedef _Packed struct windows_font {
     long                dfBitsOffset;
     // additional fields have been omitted
 } WINDOWS_FONT;
+
 #endif
-
-
-#define _UNDEFINED      (-1)
-
-#define _BITMAP         0
-#define _STROKE         1
 
 static short            _XVecDir = 1;      // text vector direction
 static short            _YVecDir = 0;
 
 #if defined( _DEFAULT_WINDOWS )
   #if defined( __WINDOWS__ )
-    static short        StockFont = TRUE;
-  #else
-    // Font ID for OS2
-    #include< limits.h >
-    #define _STDFONTID  250
+    static short            StockFont = TRUE;
   #endif
-    static int YVec2Degs( short YDir );
 #else
-    #define _PROPORTIONAL   0
-    #define _FIXED          1
-
     extern FONT_ENTRY _WCI86FAR  _8x8Font;
     static FONT_ENTRY _WCI86FAR  *_CurFont = &_8x8Font;
     static FONT_ENTRY _WCI86FAR  *_FontList = NULL;
     static float            _XVecScale = 1;    // magnification factor for
     static float            _YVecScale = 1;    // stroke fonts
-#endif
-
-#if defined( _M_I86 )
-    #define MemCpy( dst, src, len )     _fmemcpy( dst, src, len )
-    #define MemSet( s, c, len )         _fmemset( s, c, len )
-    #define StrCpy( dst, src )          _fstrcpy( dst, src )
-    #define StrCmp( dst, src )          _fstrcmp( dst, src )
-    #define StrLen( s )                 _fstrlen( s )
-#else
-    #define MemCpy( dst, src, len )     memcpy( dst, src, len )
-    #define MemSet( s, c, len )         memset( s, c, len )
-    #define StrCpy( dst, src )          strcpy( dst, src )
-    #define StrCmp( dst, src )          strcmp( dst, src )
-    #define StrLen( s )                 strlen( s )
-#endif
-
-#if defined( __QNX__ )
-  #include <dirent.h>
-  #include <unistd.h>
-  #include <fcntl.h>
-  #if defined( _M_I86 )
-    #include <sys/slib16.h>
-  #endif
-  #define tiny_ret_t                    int
-  #define tiny_handle_t                 int
-  #define TINY_ERROR( rc )              ( rc < 0 )
-  #define TINY_OK( rc )                 ( rc >= 0 )
-  #define TINY_INFO( rc )               ( rc )
-  #define TinyOpen( f, m )              __open_slib( f, O_RDONLY, 0 )
-  #define FontSeekSet( f, o )           ( ( lseek( f, o, SEEK_SET ) == -1L ) ? -1 : 0 )
-  #define TinyRead( f, b, l )           read( f, b, l )
-  #define MyTinyFarRead( f, b, l )      read( f, b, l )
-  #define TinyClose( f )                close( f )
-#else
-  #include "tinyio.h"
-  #if defined( _M_I86 )
-    #define MyTinyFarRead( h, b, l )    TinyFarRead( h, b, l )
-  #else
-    #define MyTinyFarRead( h, b, l )    TinyRead( h, b, l )
-  #endif
-  #define FontSeekSet( f, o )           TinySeek( f, o, TIO_SEEK_START )
 #endif
 
 
