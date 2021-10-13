@@ -220,7 +220,7 @@ extern WPI_PRES _wpi_createcompatiblepres( WPI_PRES pres, WPI_INST inst, HDC *hd
 
     #define _wpi_loadbitmap( inst, id ) LoadBitmap( inst, id )
 
-extern void _wpi_getbitmapdim( HBITMAP bmp, int *pwidth, int *pheight );
+extern void _wpi_getbitmapdim( WPI_HBITMAP bmp, int *pwidth, int *pheight );
 
     #define _wpi_getpres( hdl ) GetDC( hdl )
 
@@ -1060,7 +1060,7 @@ extern void _wpi_gettextextent( WPI_PRES pres, LPCSTR string, int len_string,
     #define _wpi_writeprivateprofilestring( hini, app, key, data, name ) \
         WritePrivateProfileString( app, key, data, name );
 
-extern void _wpi_getbitmapparms( HBITMAP bitmap, int *width, int *height,
+extern void _wpi_getbitmapparms( WPI_HBITMAP bitmap, int *width, int *height,
                             int *planes, int *widthbytes, int *bitspixel );
     #define _wpi_getbitmapstruct( hbitmap, pinfo ) \
                 GetObject( hbitmap, sizeof(WPI_BITMAP), (pinfo) )

@@ -312,7 +312,7 @@ extern int _wpi_devicecapableinch( WPI_PRES pres, int what );
 
     #define _wpi_getcurrpos( pres, pt ) GpiQueryCurrentPosition( pres, pt )
 
-extern HBRUSH _wpi_createpatternbrush( WPI_HANDLE bitmap );
+extern HBRUSH _wpi_createpatternbrush( WPI_HBITMAP bitmap );
 extern HBRUSH _wpi_createsolidbrush( WPI_COLOUR colour );
 extern HBRUSH _wpi_createnullbrush( void );
 extern HPEN _wpi_createnullpen( void );
@@ -438,9 +438,9 @@ extern void _wpi_deleteos2normpres( WPI_PRES pres );
 extern WPI_PRES _wpi_createcompatiblepres( WPI_PRES pres, WPI_INST inst, HDC *hdc );
 extern void _wpi_deletepres( WPI_PRES pres, HDC hdc );
 extern void _wpi_deletecompatiblepres( WPI_PRES pres, HDC hdc );
-extern WPI_HANDLE _wpi_selectbitmap( WPI_PRES pres, WPI_HANDLE bitmap );
-extern void _wpi_getoldbitmap( WPI_PRES pres, WPI_HANDLE oldobj );
-extern void _wpi_deletebitmap( WPI_HANDLE bmp );
+extern WPI_HBITMAP _wpi_selectbitmap( WPI_PRES pres, WPI_HBITMAP bitmap );
+extern void _wpi_getoldbitmap( WPI_PRES pres, WPI_HBITMAP oldobj );
+extern void _wpi_deletebitmap( WPI_HBITMAP bmp );
 
     #define _wpi_translateaccelerator( inst, hwnd, accel, msg ) \
                             WinTranslateAccel( (inst).hab, hwnd, accel, msg )
@@ -452,10 +452,10 @@ extern void _wpi_deletebitmap( WPI_HANDLE bmp );
 
     #define _wpi_releasescreenpres( hps ) // nothing
 
-extern WPI_HANDLE _wpi_loadbitmap( WPI_INST inst, int id );
-extern void _wpi_getbitmapdim( WPI_HANDLE hbmp, int *pwidth, int *pheight );
+extern WPI_HBITMAP _wpi_loadbitmap( WPI_INST inst, int id );
+extern void _wpi_getbitmapdim( WPI_HBITMAP hbmp, int *pwidth, int *pheight );
 extern WPI_PRES _wpi_getpres( HWND hwnd );
-extern WPI_HANDLE _wpi_createcompatiblebitmap( WPI_PRES pres, int width, int height );
+extern WPI_HBITMAP _wpi_createcompatiblebitmap( WPI_PRES pres, int width, int height );
 
     #define _wpi_preparesyscolour() WinSetSysColors( HWND_DESKTOP, LCOL_RESET, \
                                     LCOLF_INDRGB, 0L, (ULONG) 0, (PLONG) NULL )
@@ -992,8 +992,8 @@ extern WPI_PROC _wpi_loadprocedure( WPI_INST inst, HMODULE mod, LPSTR proc );
 
     #define _wpi_getwindowtextlength( hwnd ) WinQueryWindowTextLength( hwnd )
 
-extern LONG _wpi_getbitmapbits( WPI_HANDLE hbitmap, int size, BYTE *bits );
-extern LONG _wpi_setbitmapbits( WPI_HANDLE hbitmap, int size, BYTE *bits );
+extern LONG _wpi_getbitmapbits( WPI_HBITMAP hbitmap, int size, BYTE *bits );
+extern LONG _wpi_setbitmapbits( WPI_HBITMAP hbitmap, int size, BYTE *bits );
 
     #define _wpi_getobject( obj, len, info ) len
 
@@ -1147,11 +1147,11 @@ extern BOOL _wpi_iswindow( WPI_INST inst, HWND hwnd );
 
     #define _wpi_selectpalette(hps, hpal) GpiSelectPalette(hps, hpal)
 
-extern int _wpi_getdibits( WPI_PRES pres, WPI_HANDLE bitmap, UINT start,
+extern int _wpi_getdibits( WPI_PRES pres, WPI_HBITMAP bitmap, UINT start,
             UINT slcount, BYTE *buffer, WPI_BITMAPINFO *info, UINT notused );
-extern WPI_HANDLE _wpi_createdibitmap( WPI_PRES pres, WPI_BITMAP *info,
+extern WPI_HBITMAP _wpi_createdibitmap( WPI_PRES pres, WPI_BITMAP *info,
                     ULONG opt, BYTE *data, WPI_BITMAPINFO *table, int opt2 );
-extern HBITMAP _wpi_createbitmap( int width, int height, int planes,
+extern WPI_HBITMAP _wpi_createbitmap( int width, int height, int planes,
                                                     int bitcount, BYTE *bits );
 
     #define _wpi_fatalappexit( inst, num, string ) WinTerminate( (inst).hab )
@@ -1201,8 +1201,7 @@ extern void _wpi_wpirecttorect( WPI_RECT *src_rc, RECT *dest_rc );
     #define _wpi_destroycursor( hptr ) WinDestroyPointer( hptr )
 
 extern HCURSOR _wpi_setcursor( HCURSOR newcursor );
-extern void _wpi_setclipboarddata( WPI_INST inst, UINT format, WPI_HANDLE data,
-                                                                BOOL is_bitmap);
+extern void _wpi_setclipboarddata( WPI_INST inst, UINT format, WPI_HANDLE data, BOOL is_bitmap );
 extern WPI_HANDLE _wpi_getclipboarddata( WPI_INST inst, UINT format );
 
     #define _wpi_emptyclipboard( inst ) WinEmptyClipbrd( (inst).hab )
@@ -1238,9 +1237,9 @@ extern int _wpi_getprivateprofilestring( HINI hini, LPSTR app,
     #define _wpi_writeprivateprofilestring( hini, app, key, data, name ) \
             PrfWriteProfileString( hini, app, key, data )
 
-extern void _wpi_getbitmapparms( WPI_HANDLE hbitmap, int *width, int *height,
+extern void _wpi_getbitmapparms( WPI_HBITMAP hbitmap, int *width, int *height,
                         int *planes, int *notused1, int *bitcount );
-extern LONG _wpi_getbitmapstruct( WPI_HANDLE bitmap, WPI_BITMAP *info );
+extern LONG _wpi_getbitmapstruct( WPI_HBITMAP bitmap, WPI_BITMAP *info );
 #define _wpi_bitmapwidth( pinfo ) (pinfo)->cx
 #define _wpi_bitmapheight( pinfo ) (pinfo)->cy
 #define _wpi_bitmapbitcount( pinfo ) (pinfo)->cBitCount

@@ -35,8 +35,8 @@
 #include <windows.h>
 #include "wpi.h"
 
-void _wpi_getbitmapdim( HBITMAP bmp, int *pwidth, int *pheight )
-/**********************************************************************/
+void _wpi_getbitmapdim( WPI_HBITMAP bmp, int *pwidth, int *pheight )
+/******************************************************************/
 {
     BITMAP              bmp_info;
 
@@ -184,10 +184,11 @@ WPI_PRES _wpi_createcompatiblepres( WPI_PRES pres, WPI_INST inst, HDC *hdc )
     return( memdc );
 } /* _wpi_createcompatiblepres */
 
-void _wpi_getbitmapparms( HBITMAP bitmap, int *width, int *height, int *planes,
-                                            int *widthbytes, int *bitspixel )
-/******************************************************************/
-/* Note that the 'bitcount' is the same as widthbytes.            */
+void _wpi_getbitmapparms( WPI_HBITMAP bitmap, int *width, int *height,
+                        int *planes, int *widthbytes, int *bitspixel )
+/*********************************************************************
+ * Note that the 'bitcount' is the same as widthbytes.
+ */
 {
     BITMAP                      bm;
 

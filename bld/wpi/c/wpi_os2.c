@@ -255,8 +255,8 @@ void _wpi_bitblt( WPI_PRES dest, int x_dest, int y_dest, int cx, int cy,
     GpiBitBlt( dest, source, 3, pts, format, BBO_IGNORE );
 } /* _wpi_bitblt */
 
-WPI_HANDLE _wpi_createcompatiblebitmap( WPI_PRES pres, int width, int height )
-/*****************************************************************************
+WPI_HBITMAP _wpi_createcompatiblebitmap( WPI_PRES pres, int width, int height )
+/******************************************************************************
  * Note that the bitmap returned is of type WPI_OBJECT.  So we declare
  * the routine to be void*.
  */
@@ -277,7 +277,7 @@ WPI_HANDLE _wpi_createcompatiblebitmap( WPI_PRES pres, int width, int height )
     obj->type = WPI_BITMAP_OBJ;
     obj->bitmap = GpiCreateBitmap( pres, &bmih, 0L, NULL, NULL );
 
-    return( (WPI_HANDLE)obj );
+    return( (WPI_HBITMAP)obj );
 }
 
 WPI_PRES _wpi_createcompatiblepres( WPI_PRES pres, WPI_INST inst, HDC *hdc )
@@ -402,7 +402,7 @@ void _wpi_fillrect( WPI_PRES pres, WPI_RECT *rect, WPI_COLOUR colour, HBRUSH bru
     WinFillRect( pres, (PRECTL)&newrect, colour );
 } /* _wpi_fillrect */
 
-void _wpi_getbitmapdim( WPI_HANDLE hbmp, int *pwidth, int *pheight )
+void _wpi_getbitmapdim( WPI_HBITMAP hbmp, int *pwidth, int *pheight )
 /*******************************************************************/
 {
     BITMAPINFOHEADER    bih;
@@ -646,8 +646,8 @@ void _wpi_releasepres( HWND hwnd, WPI_PRES pres )
     WinReleasePS( pres );
 } /* _wpi_releasepres */
 
-WPI_HANDLE _wpi_selectbitmap( WPI_PRES pres, WPI_HANDLE bitmap )
-/**********************************************************************/
+WPI_HBITMAP _wpi_selectbitmap( WPI_PRES pres, WPI_HBITMAP bitmap )
+/****************************************************************/
 {
     WPI_OBJECT  *obj;
     WPI_OBJECT  *old_obj;
@@ -658,13 +658,13 @@ WPI_HANDLE _wpi_selectbitmap( WPI_PRES pres, WPI_HANDLE bitmap )
         old_obj = _wpi_malloc( sizeof( WPI_OBJECT ) );
         old_obj->type = WPI_BITMAP_OBJ;
         old_obj->bitmap = GpiSetBitmap( pres, obj->bitmap );
-        return( (WPI_HANDLE)old_obj );
+        return( (WPI_HBITMAP)old_obj );
     }
     return( NULLHANDLE );
 } /* _wpi_selectbitmap */
 
-void _wpi_getoldbitmap( WPI_PRES pres, WPI_HANDLE oldobj )
-/********************************************************/
+void _wpi_getoldbitmap( WPI_PRES pres, WPI_HBITMAP oldobj )
+/*********************************************************/
 {
     WPI_OBJECT  *old_bitmap;
 
@@ -677,8 +677,8 @@ void _wpi_getoldbitmap( WPI_PRES pres, WPI_HANDLE oldobj )
 } /* _wpi_getoldbitmap */
 
 
-void _wpi_deletebitmap( WPI_HANDLE bmp )
-/**********************************************************************/
+void _wpi_deletebitmap( WPI_HBITMAP bmp )
+/***************************************/
 {
     WPI_OBJECT  *obj;
 
@@ -1351,8 +1351,8 @@ HBRUSH _wpi_createnullbrush( void )
     return( (HBRUSH)null_brush );
 } /* _wpi_createnullbrush */
 
-HBRUSH _wpi_createpatternbrush( WPI_HANDLE bitmap )
-/**********************************************************************/
+HBRUSH _wpi_createpatternbrush( WPI_HBITMAP bitmap )
+/**************************************************/
 {
     WPI_OBJECT          *obj;
     WPI_OBJECT          *brush;
@@ -1787,8 +1787,8 @@ char *_wpi_menutext2pm( const char *text )
     return( (char *)text );
 }
 
-LONG _wpi_getbitmapbits( WPI_HANDLE hbitmap, int size, BYTE *bits )
-/******************************************************************
+LONG _wpi_getbitmapbits( WPI_HBITMAP hbitmap, int size, BYTE *bits )
+/*******************************************************************
  * The bitmap may NOT be selected into an HPS when calling
  * this function.
  */
@@ -1837,7 +1837,7 @@ LONG _wpi_getbitmapbits( WPI_HANDLE hbitmap, int size, BYTE *bits )
     return( ret );
 } /* _wpi_getbitmapbits */
 
-LONG _wpi_setbitmapbits( WPI_HANDLE hbitmap, int size, BYTE *bits )
+LONG _wpi_setbitmapbits( WPI_HBITMAP hbitmap, int size, BYTE *bits )
 {
     BITMAPINFO          *bmi;
     BITMAPINFOHEADER    ih;
@@ -1917,7 +1917,7 @@ void _wpi_wpirecttorect( WPI_RECT *src_rc, RECT *dest_rc )
 } /* _wpi_wpirecttorect */
 
 int _wpi_setrop2( WPI_PRES pres, int mode )
-/****************************************************************/
+/*****************************************/
 {
     int         prevmode;
 
@@ -1926,8 +1926,8 @@ int _wpi_setrop2( WPI_PRES pres, int mode )
     return( prevmode );
 } /* _wpi_setrop2 */
 
-WPI_HANDLE _wpi_loadbitmap( WPI_INST inst, int id )
-/***********************************************************/
+WPI_HBITMAP _wpi_loadbitmap( WPI_INST inst, int id )
+/**************************************************/
 {
     WPI_OBJECT  *obj;
     WPI_PRES    pres;
@@ -1938,10 +1938,10 @@ WPI_HANDLE _wpi_loadbitmap( WPI_INST inst, int id )
     obj->bitmap = GpiLoadBitmap( pres, inst.mod_handle, (ULONG)id, 0, 0 );
     _wpi_releasepres( HWND_DESKTOP, pres );
 
-    return( (WPI_HANDLE)obj );
+    return( (WPI_HBITMAP)obj );
 } /* _wpi_loadbitmap */
 
-WPI_HANDLE _wpi_createbitmap( int width, int height, int planes, int bitcount, BYTE *bits )
+WPI_HBITMAP _wpi_createbitmap( int width, int height, int planes, int bitcount, BYTE *bits )
 /******************************************************************************************/
 {
     WPI_BITMAPINFOHEADER        bmih;
@@ -1982,10 +1982,10 @@ WPI_HANDLE _wpi_createbitmap( int width, int height, int planes, int bitcount, B
         obj->bitmap = GpiCreateBitmap( hps, &bmih, 0L, NULL, NULL );
     }
     WinReleasePS( hps );
-    return( (WPI_HANDLE)obj );
+    return( (WPI_HBITMAP)obj );
 } /* _wpi_createbitmap */
 
-WPI_HANDLE _wpi_createdibitmap( WPI_PRES pres, WPI_BITMAP *info, ULONG opt,
+WPI_HBITMAP _wpi_createdibitmap( WPI_PRES pres, WPI_BITMAP *info, ULONG opt,
                                 BYTE *data, WPI_BITMAPINFO *table, int opt2 )
 /***************************************************************************/
 {
@@ -1999,7 +1999,7 @@ WPI_HANDLE _wpi_createdibitmap( WPI_PRES pres, WPI_BITMAP *info, ULONG opt,
 
     obj->type = WPI_BITMAP_OBJ;
     obj->bitmap = GpiCreateBitmap( pres, info, opt, data, table );
-    return( (WPI_HANDLE)obj );
+    return( (WPI_HBITMAP)obj );
 } /* _wpi_createdibitmap */
 
 #ifdef __FLAT__
@@ -2314,7 +2314,7 @@ BOOL _wpi_extfloodfill( WPI_PRES hps, int x, int y, WPI_COLOUR clr, UINT mode )
 } /* _wpi_extfloodfill */
 #endif
 
-void _wpi_getbitmapparms( WPI_HANDLE hbitmap, int *width, int *height,
+void _wpi_getbitmapparms( WPI_HBITMAP hbitmap, int *width, int *height,
                                     int *planes, int *notused1, int *bitcount )
 /******************************************************************************
  * This routine is used when particular fields are wanted.
@@ -2344,7 +2344,7 @@ void _wpi_getbitmapparms( WPI_HANDLE hbitmap, int *width, int *height,
     }
 } /* _wpi_getbitmapparms */
 
-LONG _wpi_getbitmapstruct( WPI_HANDLE bitmap, WPI_BITMAP *info )
+LONG _wpi_getbitmapstruct( WPI_HBITMAP bitmap, WPI_BITMAP *info )
 {
     WPI_OBJECT  *obj;
 
@@ -2597,7 +2597,7 @@ WPI_COLOUR _wpi_palettergb( WPI_PRES pres, short red,
     return( GpiQueryNearestColor( pres, 0, colour ) );
 }
 
-int _wpi_getdibits( WPI_PRES pres, WPI_HANDLE bitmap, UINT start, UINT count,
+int _wpi_getdibits( WPI_PRES pres, WPI_HBITMAP bitmap, UINT start, UINT count,
                             BYTE *buffer, WPI_BITMAPINFO *info, UINT notused )
 /*****************************************************************************
  * According to windows, the bitmap should not be selected into the pres.

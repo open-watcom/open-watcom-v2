@@ -133,6 +133,7 @@
     #define WPI_BITMAPINFOHEADER        BITMAPINFOHEADER
     #define WPI_BITMAPFILEHEADER        BITMAPFILEHEADER
     #define WPI_BMPBITS                 LPSTR
+    #define WPI_HBITMAP                 HBITMAP
     #define WPI_HLIB                    HANDLE
     #define WPI_TEXTMETRIC              TEXTMETRIC
     #define WPI_LPTEXTMETRIC            LPTEXTMETRIC
@@ -714,7 +715,7 @@ typedef struct {
  * someone using WPI, this should all be invisible.
  */
 
-typedef LHANDLE         WPI_HANDLE;
+typedef WPI_OBJECT      *WPI_HANDLE;
 typedef AREABUNDLE      LOGBRUSH;
 typedef WPI_HANDLE      HBRUSH;
 typedef WPI_HANDLE      HPEN;

@@ -750,7 +750,16 @@ is an address to a structure describing the bitmap (this address is defined
 as a WPI_HANDLE).  This return value (the WPI_HANDLE) can be passed to WPI
 functions expecting a bitmap handle, but the return value should not be used
 in PM specific code (because the return value is a WPI_HANDLE and not an
-HBITMAP).  Like HPEN and HBRUSH, bitmaps can be selected into memory
+HBITMAP).
+The bitmap data types declared in WPI are as follows:
+.np
+:XMP.
+WPI Data Type   Windows Data Type   PM Data Type
+-------------   -----------------   ------------
+WPI_HBITMAP     HBITMAP             WPI_HANDLE
+:eXMP.
+.np
+Like HPEN and HBRUSH, bitmaps can be selected into memory
 presentation spaces with the _wpi_selectobject routine and the old bitmap
 will be allocated and returned from the routine.  For example:
 .np
@@ -842,11 +851,14 @@ A few new types have been declared in wpitypes.h that relate to bitmaps.
 They are as follows and can be used to pass to some of the macros that
 require different types for Windows and PM:
 .np
+:XMP.
 WPI Data Type           Windows Data Type   PM Data Type
-WPI_BITMAP              BITMAP              PM1632_BITMAPINFO2
+-------------           -----------------   ------------
+WPI_BITMAP              BITMAP              PM1632_BITMAPINFOHEADER2
 WPI_BITMAPINFO          BITMAPINFO          PM1632_BITMAPINFO2
 WPI_BITMAPINFOHEADER    BITMAPINFOHEADER    PM1632_BITMAPINFOHEADER2
 WPI_BMPBITS             LPSTR               PBYTE
+:eXMP.
 .np
 Since the bitmap structures for 16 bit PM are different than that for 32 bit
 PM, a file called pm1632.h handles the differences (pm1632.h will be
@@ -971,11 +983,14 @@ Fonts can be complicated objects to deal with in PM.  PM does not have
 an HFONT data type nor a LOGFONT data type.  The font data types declared
 in WPI are as follows:
 .np
+:XMP.
 WPI Data Type   Windows Data Type   PM Data Type
+-------------   -----------------   ------------
 HFONT           HFONT               LONG
 WPI_FONT        HFONTF              ATTRS*
 WPI_LOGFONT     LOGFONT             FONTMETRICS
 WPI_TEXTMETRIC  TEXTMETRIC          FONTMETRICS
+:eXMP.
 .np
 In Windows, one can create a font and once a font handle is acquired, use
 that font handle as a parameter (or any other kind of variable) to be
@@ -1064,13 +1079,34 @@ two platforms, WPI allows the user to use the Windows name when calling the
 API.  The following is a list of some of the window related macros and the
 names available to the user:
 .np
-DefWindowProc(hwnd, msg, wp, lp)    _wpi_defwindowproc(hwnd, msg, wp, lp)   Takes default window procedure action.
-ShowWindow(hwnd, state)             _wpi_showwindow(hwnd, state)            Shows the window according the given state.  Windows predefined states are used.
-GetClientRect(hwnd, &wrect)         _wpi_getclientrect(hwnd, &wrect)        Gets the rectangle dimensions of the given window.  The function fills the WPI_RECT variable.
-DestroyWindow(hwnd)                 _wpi_destroywindow(hwnd)                Destroys the given window.
-SetWindowText(hwnd, str)            _wpi_setwindowtext(hwnd, str)           Sets the caption of the given window.
-MessageBox(hpar, txt, title, style) _wpi_messagebox(hpar, txt, title, style)Displays a message box as it does in Windows.  Most of the MB_* styles have been converted, using the Windows naming convention.
-GetMenu(hwnd)                       _wpi_getmenu(hwnd)                      Gets the menu of the window.  For PM this window handle must be a frame window.
+:XMP.
+DefWindowProc(hwnd, msg, wp, lp)    _wpi_defwindowproc(hwnd, msg, wp, lp)
+:eXMP.
+Takes default window procedure action.
+:XMP.
+ShowWindow(hwnd, state)             _wpi_showwindow(hwnd, state)
+:eXMP.
+Shows the window according the given state.  Windows predefined states are used.
+:XMP.
+GetClientRect(hwnd, &wrect)         _wpi_getclientrect(hwnd, &wrect)
+:eXMP.
+Gets the rectangle dimensions of the given window.  The function fills the WPI_RECT variable.
+:XMP.
+DestroyWindow(hwnd)                 _wpi_destroywindow(hwnd)
+:eXMP.
+Destroys the given window.
+:XMP.
+SetWindowText(hwnd, str)            _wpi_setwindowtext(hwnd, str)
+:eXMP.
+Sets the caption of the given window.
+:XMP.
+MessageBox(hpar, txt, title, style) _wpi_messagebox(hpar, txt, title, style)
+:eXMP.
+Displays a message box as it does in Windows.  Most of the MB_* styles have been converted, using the Windows naming convention.
+:XMP.
+GetMenu(hwnd)                       _wpi_getmenu(hwnd)
+:eXMP.
+Gets the menu of the window.  For PM this window handle must be a frame window.
 .np
 The user may decide whether or not to keep the Windows names or use the
 available WPI names.
