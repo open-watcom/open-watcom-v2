@@ -1952,6 +1952,7 @@ WPI_HBITMAP _wpi_loadsysbitmap( WPI_INST inst, int id )
     obj = _wpi_malloc( sizeof( WPI_OBJECT ) );
     obj->type = WPI_BITMAP_OBJ;
     obj->bitmap = WinGetSysBitmap( HWND_DESKTOP, (OS_UINT)id );
+
     return( (WPI_HBITMAP)obj );
 } /* _wpi_loadsysbitmap */
 
