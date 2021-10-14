@@ -31,6 +31,7 @@
 
 
 #include <string.h>
+#include <limits.h>
 #include "gdefn.h"
 #include "fontsupp.h"
 #if defined( __QNX__ )
@@ -670,29 +671,29 @@ static PFONTMETRICS getfonts( WPI_PRES dc, PLONG fnts, char* facename )
 _WCRTLINK short _WCI86FAR _CGRAPH _setfont( char _WCI86FAR *opt )
 //===========================================
 {
-    short               height;
-    short               width;
-    short               spacing;
-    short               font_type;
-    short               best_fit;
-    char                option;
-    char                *face;
-    char                facename[ 32 ];
+    short                   height;
+    short                   width;
+    short                   spacing;
+    short                   font_type;
+    short                   best_fit;
+    char                    option;
+    char                    *face;
+    char                    facename[32];
 #if defined( __OS2__ )
-    FATTRS              fat;
-    PFONTMETRICS        afm;
-    long                rc;
-    long                i;
-    long                numfnts;
-    long                fntindex = -1;
-    long                mindiff = LONG_MAX;
-    long                diff;
+    FATTRS                  fat;
+    PFONTMETRICS            afm;
+    long                    rc;
+    long                    i;
+    long                    numfnts;
+    long                    fntindex = -1;
+    long                    mindiff = LONG_MAX;
+    long                    diff;
 #elif !defined( __WINDOWS__ )
-    FONT_ENTRY _WCI86FAR     *curr;
-    unsigned short      best_so_far = 65535;
-    unsigned short      value;
-    FONT_ENTRY _WCI86FAR     *best = NULL;
-    short               font_num;
+    FONT_ENTRY _WCI86FAR    *curr;
+    unsigned short          best_so_far = 65535;
+    unsigned short          value;
+    FONT_ENTRY _WCI86FAR    *best = NULL;
+    short                   font_num;
 #endif
 
     _ErrorStatus = _GROK;
@@ -843,6 +844,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setfont( char _WCI86FAR *opt )
             fat.lMaxBaselineExt = afm[i].lMaxBaselineExt;
             fat.lAveCharWidth = afm[i].lAveCharWidth;
         }
+        _MyFree( afm );
     }
     if( GpiQueryCharSet( _Mem_dc ) == _STDFONTID ) {
         GpiSetCharSet( _Mem_dc, LCID_DEFAULT );
