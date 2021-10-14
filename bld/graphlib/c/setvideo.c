@@ -85,7 +85,7 @@ static void HScrollRestore( void )
 
     WPI_PRES            _Mem_dc = NULL;
     HDC                 _Hdc;
-    HBITMAP             _Mem_bmp = NULL;
+    WPI_HBITMAP         _Mem_bmp = NULL;
     HWND                _CurrWin = NULL;
 
 #else
@@ -535,7 +535,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
 
     // Create the bitmap to draw on
     _Mem_bmp = _wpi_createcompatiblebitmap( Win_DC, x, y );
-    if( !_Mem_bmp ){
+    if( _Mem_bmp == WPI_NULL ){
         _ErrorStatus = _GRMODENOTSUPPORTED;
         _wpi_destroywindow( _CurrWin );
         return( 0 );

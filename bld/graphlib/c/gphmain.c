@@ -109,7 +109,7 @@ WPI_MRESULT CALLBACK GraphWndProc( HWND         Wnd,
         return( _wpi_defwindowproc( Wnd, message, wParam, lParam ) );
 
     case WM_KILLFOCUS:
-        if( ( wParam != 0) && ( (HWND)wParam != _MainWindow ) ) {
+        if( ( wParam != 0 ) && ( (HWND)wParam != _MainWindow ) ) {
             _ShowWindowActive( NULL, w );
         }
         return( _wpi_defwindowproc( Wnd, message, wParam, lParam ) );
@@ -237,7 +237,7 @@ WPI_MRESULT CALLBACK GraphWndProc( HWND         Wnd,
             if( _BitBlt_Coord.xcoord == t ) {
                 h_currpos = h_maxpos;
             } else {
-            h_currpos = CalScrollAmt( h_maxpos, h_minpos,
+                h_currpos = CalScrollAmt( h_maxpos, h_minpos,
                                       _BitBlt_Coord.xcoord,
                                       x, width );
             }
@@ -295,18 +295,18 @@ WPI_MRESULT CALLBACK GraphWndProc( HWND         Wnd,
     default:
         return( _wpi_defwindowproc( Wnd, message, wParam, lParam ) );
     }
-   return( 0 );
+    return( 0 );
 }
 
 
 static int CalScrollAmt( int max, int min, int pixel, int pix_scr, int pix_win )
-//===============================================================
+//==============================================================================
 {
     return( ( (long)( max - min + 1 ) * (long)pixel ) / (long)( pix_scr - pix_win + 1 ) );
 }
 
 static int CalScrollPos( int maxpos, int minpos, int currpos, int num_pix, int win_pix )
-//=========================================================================
+//======================================================================================
 {
     return( ( (long)( num_pix - win_pix + 1 ) * (long)( currpos - minpos + 1 ) ) /
             (long)( maxpos - minpos + 1 ) );

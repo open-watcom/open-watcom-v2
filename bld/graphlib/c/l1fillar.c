@@ -50,7 +50,7 @@ static short            *MinList;
 static struct seg_entry *LineList;
 static struct seg_entry *FreeList;
 static int              StackSize;
-static char *           Stack;
+static char             *Stack;
 
 
 static short NextPoint( short i, short dir, short n,
@@ -400,7 +400,7 @@ short _L1FillArea( short n, struct xycoord _WCI86FAR *points )
   #if defined( __WINDOWS__ )
     HRGN                Refresh;
   #else
-    WPI_POINT*          stack;
+    WPI_POINT           *stack;
     short               i;
     WPI_RECTDIM         minx, miny;
     WPI_RECTDIM         maxx, maxy;

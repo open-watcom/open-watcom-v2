@@ -36,7 +36,7 @@ struct picture {
     short           picheight;              /* # of pixels down     */
 #if defined( _DEFAULT_WINDOWS )
     WPI_PRES        pres;                   /* Handle for image     */
-    HBITMAP         bmp;
+    WPI_HBITMAP     bmp;
     HDC             pdc;
 #else
     short           bpp;                    /* # of bits per pixel  */
