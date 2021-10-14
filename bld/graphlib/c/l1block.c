@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +43,7 @@ void _L1Block( short x1, short y1, short x2, short y2 )
 #if defined( _DEFAULT_WINDOWS )
     WPI_COLOUR          color;
     WPI_PRES            dc;
-    HBITMAP             bm;
+    WPI_HBITMAP         bm;
     HBRUSH              brush;
     HBRUSH              old_brush;
     HPEN                pen;
@@ -73,7 +74,7 @@ void _L1Block( short x1, short y1, short x2, short y2 )
         brush = _wpi_createsolidbrush( color );
     } else {
         /* if a mask is defined, convert it to bitmap */
-        bm = _Mask2Bitmap( dc, &_FillMask );
+        bm = _Mask2Bitmap( dc, _FillMask );
         brush = _wpi_createpatternbrush( bm );
     }
     old_brush = _wpi_selectbrush( dc, brush );

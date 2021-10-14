@@ -140,7 +140,7 @@ static void PutPalette( short pixval, long colour )
     case _SVGA :
         VideoInt( _BIOS_SET_PALETTE + 0x10, pixval, ( green << 8 ) + blue, red << 8 );
         break;
-   case _EGA :
+    case _EGA :
         mode = _CurrState->vc.mode;
         if( mode == 13 || mode == 14 ) {
             cnvcol = _CnvColour( colour );

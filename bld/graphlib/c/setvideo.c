@@ -307,7 +307,7 @@ static short _registergphclass( WPI_INST inst )
     if( _Startup ){
         _Startup = 0;
 
-        _wpi_setclassstyle( &wc, NULL );
+        _wpi_setclassstyle( &wc, 0 );
         _wpi_setclassproc( &wc, GraphWndProc );
         _wpi_setclassextra( &wc, 0 );
         _wpi_setclassinst( &wc, inst );
@@ -534,7 +534,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
     }
 
     // Create the bitmap to draw on
-    _Mem_bmp = _wpi_createcompatiblebitmap( Win_DC, x,y );
+    _Mem_bmp = _wpi_createcompatiblebitmap( Win_DC, x, y );
     if( !_Mem_bmp ){
         _ErrorStatus = _GRMODENOTSUPPORTED;
         _wpi_destroywindow( _CurrWin );
@@ -547,7 +547,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
     _wpi_selectbitmap( _Mem_dc, _Mem_bmp );
     _wpi_releasepres( Win, Win_DC );
 
-    _CurrState->vc.mode = Win;
+//    _CurrState->vc.mode = Win;  ????
 
     w = _NewGphWindow( Win, 9999, -1 );
 

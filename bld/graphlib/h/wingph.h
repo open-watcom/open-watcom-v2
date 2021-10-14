@@ -35,16 +35,20 @@
 /*  Windows graphics' functions */
 /********************************/
 
+#include <malloc.h>
+
 // Macros
 
-#if defined( __OS2__ )
-#define _MyAlloc( size )        malloc( size )
-#define _MyFree( ptr )          free( ptr )
-
-#define _GPIEBORDER             15
-#else
+#if defined( _M_I86 )
 #define _MyAlloc( size )        _fmalloc( size )
 #define _MyFree( ptr )          _ffree( ptr )
+#else
+#define _MyAlloc( size )        malloc( size )
+#define _MyFree( ptr )          free( ptr )
+#endif
+
+#if defined( __OS2__ )
+#define _GPIEBORDER             15
 #endif
 
 // Global Variables
@@ -67,7 +71,7 @@ extern PFNWP            _OldFrameProc;
 // Function headers
 /* Mapping utitlity functions */
 extern int              _MapPlotAct( void );
-extern HBITMAP          _Mask2Bitmap( HDC, char* );
+extern WPI_HBITMAP      _Mask2Bitmap( HDC, unsigned char * );
 extern int              _MapLineStyle( unsigned short );
 extern WPI_COLOUR       _Col2RGB( short );
 extern short            _RGB2Col( WPI_COLOUR );

@@ -66,6 +66,7 @@ long _WCI86FAR _L2imagesize( short x1, short y1, short x2, short y2 )
     size = sizeof( struct picture );
 #if defined( _DEFAULT_WINDOWS )
     // For Windows and OS/2, the size is only the size of the record
+    /* unused parameters */ (void)x1; (void)x2; (void)y1; (void)y2;
 #else
     size += (long)( abs( y2 - y1 ) + 1 ) * _RowLen( abs( x2 - x1 ) + 1 );
 #endif

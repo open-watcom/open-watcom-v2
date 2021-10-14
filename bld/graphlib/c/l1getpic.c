@@ -57,6 +57,7 @@ void _L1GetPic( short x1, short y1, short x2, short y2,
 #if defined( _DEFAULT_WINDOWS )
     WPI_PRES            dc;
     short               srcy;
+    HDC                 tmp_hdc;
 #else
     short               line_len;       /* length of each line in bytes     */
   #if defined( _M_I86 )
@@ -93,7 +94,8 @@ void _L1GetPic( short x1, short y1, short x2, short y2,
     dc = _Mem_dc;
 
 // Create a memory DC to put the image in
-    image->pres = _wpi_createcompatiblepres( dc, _GetInst(), &( image->pdc ) );
+    image->pres = _wpi_createcompatiblepres( dc, _GetInst(), &tmp_hdc );
+    image->pdc = tmp_hdc;
     image->bmp = _wpi_createcompatiblebitmap( dc, dx, dy );
     if( ( image->pres == NULL ) || ( image->bmp == NULL ) ) {
          _ErrorStatus = _GRINSUFFICIENTMEMORY;

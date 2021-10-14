@@ -109,7 +109,7 @@ WPI_MRESULT CALLBACK GraphWndProc( HWND         Wnd,
         return( _wpi_defwindowproc( Wnd, message, wParam, lParam ) );
 
     case WM_KILLFOCUS:
-        if( ( wParam != NULL) && ( wParam != _MainWindow ) ) {
+        if( ( wParam != 0) && ( (HWND)wParam != _MainWindow ) ) {
             _ShowWindowActive( NULL, w );
         }
         return( _wpi_defwindowproc( Wnd, message, wParam, lParam ) );
@@ -295,7 +295,7 @@ WPI_MRESULT CALLBACK GraphWndProc( HWND         Wnd,
     default:
         return( _wpi_defwindowproc( Wnd, message, wParam, lParam ) );
     }
-   return( NULL );
+   return( 0 );
 }
 
 

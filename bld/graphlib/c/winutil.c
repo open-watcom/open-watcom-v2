@@ -64,8 +64,8 @@ int _MapPlotAct( void )
 
 #if defined( __WINDOWS__ )
 
-HBITMAP _Mask2Bitmap( HDC dc, char *mask )
-/****************************************/
+HBITMAP _Mask2Bitmap( HDC dc, unsigned char *mask )
+/*************************************************/
 
 /* This function maps the WATCOM fillmask to a Windows' bitmap */
 {
@@ -114,15 +114,15 @@ HBITMAP _Mask2Bitmap( HDC dc, char *mask )
 
 #else
 
-HBITMAP _Mask2Bitmap( HDC dc, char *mask )
-/****************************************/
+WPI_HBITMAP _Mask2Bitmap( HDC dc, unsigned char *mask )
+/*****************************************************/
 
 /* This function maps the WATCOM fillmask to a Windows' bitmap */
 {
     unsigned            bmsize;
     BITMAPINFO2*        bminfo;
     BYTE                pad_mask[ 4 * MASK_LEN ];
-    HBITMAP             bmp;
+    WPI_HBITMAP         bmp;
     int                 i;      /* counters */
 
     bmsize = sizeof( BITMAPINFO2 ) + sizeof( WPI_RGBQUAD ) * 2;
@@ -359,7 +359,7 @@ void _wpi_free( void * ptr )
 /*==========================
   What we use to free memory. */
 {
-    _MyFree( ptr );
+    free( ptr );
 }
 
 
@@ -367,7 +367,7 @@ void * _wpi_malloc( size_t size )
 /*===============================
   What we use to allocate memory. */
 {
-    return _MyAlloc( size );
+    return malloc( size );
 }
 
 HFONT _MySelectFont( WPI_PRES pres, HFONT f)
