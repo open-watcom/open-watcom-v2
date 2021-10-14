@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +35,25 @@
 #include "gbios.h"
 
 
+#if !defined( _DEFAULT_WINDOWS )
+
+#define TX_CURS_8x8     0x0607
+#define TX_CURS_8x14    0x0B0C
+#define TX_CURS_EMU     0x0600
+
+#define TX_FONT_8x8     0x1112
+#define TX_FONT_8x14    0x1111
+
+#define GR_FONT_8x8     0x1123
+#define GR_FONT_8x14    0x1122
+#define GR_FONT_8x16    0x1124
+
+#define SCAN_200        0x1200
+#define SCAN_350        0x1201
+#define SCAN_400        0x1202
+
+#endif
+
 #if defined( _DEFAULT_WINDOWS )
 
 short _SetRows( short rows )
@@ -56,29 +75,134 @@ short _SetRows( short rows )
     return( 0 );
 }
 
-
 #else
 
-#define TX_CURS_8x8     0x0607
-#define TX_CURS_8x14    0x0B0C
-#define TX_CURS_EMU     0x0600
+static void GrModeRows( short rows )
+//==================================
 
-#define TX_FONT_8x8     0x1112
-#define TX_FONT_8x14    0x1111
+{
+    short           font;
 
-#define GR_FONT_8x8     0x1123
-#define GR_FONT_8x14    0x1122
-#define GR_FONT_8x16    0x1124
+    switch( _CurrState->vc.mode ) {
+    case _ERESNOCOLOR:
+    case _ERESCOLOR:
+        switch( rows ) {
+        case 25:
+            font = GR_FONT_8x14;  // 8x14
+            break;
+        case _MAXTEXTROWS:
+            rows = 43;
+        case 43:
+            font = GR_FONT_8x8;   // 8x8
+            break;
+        default:
+            _ErrorStatus = _GRINVALIDPARAMETER;
+            return;
+        }
+        break;
+    case _VRES2COLOR:
+    case _VRES16COLOR:
+        switch( rows ) {
+        case 30:
+            font = GR_FONT_8x16;  // 8x16
+            break;
+        case 34:
+            font = GR_FONT_8x14;  // 8x14
+            break;
+        case _MAXTEXTROWS:
+            rows = 60;
+        case 60:
+            font = GR_FONT_8x8;   // 8x8
+            break;
+        default:
+            _ErrorStatus = _GRINVALIDPARAMETER;
+            return;
+        }
+        break;
+    // 25 rows for all other graphics modes
+    default:
+        if (rows != 25) {
+            _ErrorStatus = _GRERROR;
+        }
+        return;
+    }
+    VideoInt( _BIOS_SET_MODE + GetVideoMode(), 0, 0, 0 );
+    // Load pointer to character set
+    if( _CurrState->vc.adapter == _EGA ) {
+        VideoInt( font, 0, 0, rows - 1 );   // do this only for the EGA
+    } else {
+        VideoInt( font, 0, 0, rows );
+    }
+    _GrCursor = 0;                          // cursor is off
+}
 
-#define SCAN_200        0x1200
-#define SCAN_350        0x1201
-#define SCAN_400        0x1202
+
+static void Load_25( void )
+/*===================
+
+   When we want to go back to a 25-row display, just do a set mode
+   and update a few variables. */
+
+{
+    VideoInt( _BIOS_SET_MODE + GetVideoMode(), 0, 0, 0 );
+    _BIOS_data( INFO, char ) &= ~0x01;              // 43 line mode cursor emulation off
+    VideoInt( _BIOS_CURSOR_SIZE, 0, 0x0607, 0 );    // reset the cursor
+    _GrCursor = 1;                                  // cursor is on
+}
 
 
-static void             Load_25( void );
-static void             Load_VGA( short, short, short );
-static void             Load_EGA( short, short, short );
-static void             Load_MCGA( short, short, short );
+static void Load_VGA( short scan, short font, short cursor )
+/*==========================================================
+
+   This routines loads an alphanumeric font for the VGA.    */
+
+{
+    VideoInt( scan, 0x0030, 0, 0 );   // becomes effective at next set mode
+    VideoInt( _BIOS_SET_MODE + GetVideoMode(), 0, 0, 0 );
+    VideoInt( _BIOS_VIDEO_PAGE, 0, 0, 0 );          // set active page to 0
+    VideoInt( font, 0, 0, 0 );                      // load character set
+    VideoInt( _BIOS_CURSOR_SIZE, 0, cursor, 0 );    // reset the cursor
+    _GrCursor = 1;                                  // cursor is on
+}
+
+
+static void Load_EGA( short rows, short font, short cursor )
+/*==========================================================
+
+   This routines loads an alphanumeric font for the EGA.    */
+
+{
+    VideoInt( _BIOS_VIDEO_PAGE, 0, 0, 0 );          // set active page to 0
+    VideoInt( _BIOS_SET_MODE + GetVideoMode(), 0, 0, 0 );
+    VideoInt( font, 0, 0, 0 );                      // load pointer to character set in block 0
+    if( rows == 43 ) {                              // cursor emulation
+        _BIOS_data( INFO, char ) |= 1;              // 43 line mode cursor emulation on
+    } else {
+        outpw( 0x03D4, 0x1414 );                    // reset underline location to none
+    }
+    VideoInt( _BIOS_CURSOR_SIZE, 0, cursor, 0 );    // reset the cursor
+    _GrCursor = 1;                                  // cursor is on
+}
+
+
+static void Load_MCGA( short rows, short font, short cursor )
+/*===========================================================
+
+   This routines loads an alphanumeric font for the MCGA.   */
+
+{
+    VideoInt( _BIOS_VIDEO_PAGE, 0, 0, 0 );          // set active page to 0
+    VideoInt( _BIOS_SET_MODE + GetVideoMode(), 0, 0, 0 );
+    _fmemset( _MK_FP( _EgaSeg, _EgaOff ), 0, 0x2000 ); // must do for MCGA 40 rows
+    VideoInt( font & 0xFF0F, 0, 0, 0 );             // load character set
+    VideoInt( 0x1103, 0, 0, 0 );
+    VideoInt( _BIOS_CURSOR_SIZE, 0, cursor, 0 );    // reset the cursor
+    outpw( 0x03D4, ( cursor & 0xFF00 ) + 0x09 );    // # double scan lines
+    _BIOS_data( ROWS, char ) = rows - 1;            // # of rows
+    // # of vertical points per character
+    _BIOS_data( POINTS, short ) = 2 * ( cursor & 0xFF + 1 );
+    _GrCursor = 1;                                  // cursor is on
+}
 
 
 static void TextModeRows( short rows )
@@ -160,67 +284,6 @@ static void TextModeRows( short rows )
     }
 }
 
-
-static void GrModeRows( short rows )
-//==================================
-
-{
-    short           font;
-
-    switch( _CurrState->vc.mode ) {
-    case _ERESNOCOLOR:
-    case _ERESCOLOR:
-        switch( rows ) {
-        case 25:
-            font = GR_FONT_8x14;  // 8x14
-            break;
-        case _MAXTEXTROWS:
-            rows = 43;
-        case 43:
-            font = GR_FONT_8x8;   // 8x8
-            break;
-        default:
-            _ErrorStatus = _GRINVALIDPARAMETER;
-            return;
-        }
-        break;
-    case _VRES2COLOR:
-    case _VRES16COLOR:
-        switch( rows ) {
-        case 30:
-            font = GR_FONT_8x16;  // 8x16
-            break;
-        case 34:
-            font = GR_FONT_8x14;  // 8x14
-            break;
-        case _MAXTEXTROWS:
-            rows = 60;
-        case 60:
-            font = GR_FONT_8x8;   // 8x8
-            break;
-        default:
-            _ErrorStatus = _GRINVALIDPARAMETER;
-            return;
-        }
-        break;
-    // 25 rows for all other graphics modes
-    default:
-        if (rows != 25) {
-            _ErrorStatus = _GRERROR;
-        }
-        return;
-    }
-    VideoInt( _BIOS_SET_MODE + GetVideoMode(), 0, 0, 0 );
-    // Load pointer to character set
-    if( _CurrState->vc.adapter == _EGA ) {
-        VideoInt( font, 0, 0, rows - 1 );   // do this only for the EGA
-    } else {
-        VideoInt( font, 0, 0, rows );
-    }
-    _GrCursor = 0;                          // cursor is off
-}
-
-
 short _SetRows( short rows )
 /*==========================
 
@@ -257,75 +320,7 @@ short _SetRows( short rows )
     }
 }
 
-
-static void Load_25( void )
-/*===================
-
-   When we want to go back to a 25-row display, just do a set mode
-   and update a few variables. */
-
-{
-    VideoInt( _BIOS_SET_MODE + GetVideoMode(), 0, 0, 0 );
-    _BIOS_data( INFO, char ) &= ~0x01;              // 43 line mode cursor emulation off
-    VideoInt( _BIOS_CURSOR_SIZE, 0, 0x0607, 0 );    // reset the cursor
-    _GrCursor = 1;                                  // cursor is on
-}
-
-
-static void Load_VGA( short scan, short font, short cursor )
-/*==========================================================
-
-   This routines loads an alphanumeric font for the VGA.    */
-
-{
-    VideoInt( scan, 0x0030, 0, 0 );   // becomes effective at next set mode
-    VideoInt( _BIOS_SET_MODE + GetVideoMode(), 0, 0, 0 );
-    VideoInt( _BIOS_VIDEO_PAGE, 0, 0, 0 );          // set active page to 0
-    VideoInt( font, 0, 0, 0 );                      // load character set
-    VideoInt( _BIOS_CURSOR_SIZE, 0, cursor, 0 );    // reset the cursor
-    _GrCursor = 1;                                  // cursor is on
-}
-
-
-static void Load_EGA( short rows, short font, short cursor )
-/*==========================================================
-
-   This routines loads an alphanumeric font for the EGA.    */
-
-{
-    VideoInt( _BIOS_VIDEO_PAGE, 0, 0, 0 );          // set active page to 0
-    VideoInt( _BIOS_SET_MODE + GetVideoMode(), 0, 0, 0 );
-    VideoInt( font, 0, 0, 0 );                      // load pointer to character set in block 0
-    if( rows == 43 ) {                              // cursor emulation
-        _BIOS_data( INFO, char ) |= 1;              // 43 line mode cursor emulation on
-    } else {
-        outpw( 0x03D4, 0x1414 );                    // reset underline location to none
-    }
-    VideoInt( _BIOS_CURSOR_SIZE, 0, cursor, 0 );    // reset the cursor
-    _GrCursor = 1;                                  // cursor is on
-}
-
-
-static void Load_MCGA( short rows, short font, short cursor )
-/*===========================================================
-
-   This routines loads an alphanumeric font for the MCGA.   */
-
-{
-    VideoInt( _BIOS_VIDEO_PAGE, 0, 0, 0 );          // set active page to 0
-    VideoInt( _BIOS_SET_MODE + GetVideoMode(), 0, 0, 0 );
-    _fmemset( _MK_FP( _EgaSeg, _EgaOff ), 0, 0x2000 ); // must do for MCGA 40 rows
-    VideoInt( font & 0xFF0F, 0, 0, 0 );             // load character set
-    VideoInt( 0x1103, 0, 0, 0 );
-    VideoInt( _BIOS_CURSOR_SIZE, 0, cursor, 0 );    // reset the cursor
-    outpw( 0x03D4, ( cursor & 0xFF00 ) + 0x09 );    // # double scan lines
-    _BIOS_data( ROWS, char ) = rows - 1;            // # of rows
-    // # of vertical points per character
-    _BIOS_data( POINTS, short ) = 2 * ( cursor & 0xFF + 1 );
-    _GrCursor = 1;                                  // cursor is on
-}
 #endif
-
 
 _WCRTLINK short _WCI86FAR _CGRAPH _settextrows( short rows )
 /*===========================================

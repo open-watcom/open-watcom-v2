@@ -43,151 +43,13 @@
 extern float            sqrtf( float );
 #pragma aux             sqrtf "*_";
 
-static struct xycoord   Cal_Coord( float, float, float, float );
-
 #else
 
 static struct line_entry    VectA;
 static struct line_entry    VectB;
 static struct ellipse_info  EllInfo;
 
-static void             FastPlot( short x, short y, short q );
-static void             SlowPlot( short x, short y, short q );
-static void             ArcPlot( short x, short y, short q );
-static void             EllFill( short x, short y, short q );
-static void             ArcFill( short x, short y, short q );
-static void             InitLineMasks( short x1, short y1, short x2, short y2 );
-static void             HollowArc( short x1, short y1, short x2, short y2, short a, short b );
-static void             FilledArc( short x1, short y1, short x2, short y2, short a, short b );
-
 #endif
-
-void _L1Ellipse( short fill, short x1, short y1, short x2, short y2 )
-//===================================================================
-
-{
-    short               clip1;
-    short               clip2;
-#if defined( _DEFAULT_WINDOWS )
-    WPI_PRES            dc;
-    WPI_HBITMAP         bm;
-    HBRUSH              brush;
-    HBRUSH              old_brush;
-    HPEN                pen;
-    HPEN                old_pen;
-    HRGN                temprgn;
-    WPI_COLOUR          color;
-    WPI_RECT            clip_rect;
-    short               t;
-    short               clipy1, clipy2;
-#endif
-
-    clip1 = _L1OutCode( x1, y1 );       // check for clipping
-    clip2 = _L1OutCode( x2, y2 );
-    if( clip1 & clip2 ) {
-        _ErrorStatus = _GRNOOUTPUT;
-        return;                         // trivially outside so quit
-    }
-#if defined( _DEFAULT_WINDOWS )
-    dc = _Mem_dc;
-
-// Do the clippings
-    temprgn = _ClipRgn;
-    clipy1 = _wpi_cvth_y( _CurrState->clip_def.ymin, _GetPresHeight() );
-    clipy2 = _wpi_cvth_y( _CurrState->clip_def.ymax + 1, _GetPresHeight() );
-
-    _wpi_setintwrectvalues( &clip_rect,
-                           _CurrState->clip_def.xmin,
-                           clipy1,
-                           _CurrState->clip_def.xmax + 1,
-                           clipy2 );
-    _ClipRgn = _wpi_createrectrgn( dc, &clip_rect );
-    _wpi_getclipbox( dc, &clip_rect);
-    _wpi_selectcliprgn( dc, _ClipRgn );
-    _wpi_deletecliprgn( dc, temprgn );
-
-// Set up before drawing
-    color = _Col2RGB( _CurrColor );
-
-    if( fill == _GFILLINTERIOR ) {
-        // there is not border for filled objects, so set the pen to null
-        pen = _wpi_createpen( PS_NULL, 0, color );
-
-        // Check if there is a fill mask
-        if( _HaveMask == 0 ) {
-            brush = _wpi_createsolidbrush( color );
-        } else {
-            // if a mask is defined, convert it to bitmap
-            bm = _Mask2Bitmap( dc, _FillMask );
-            brush = _wpi_createpatternbrush( bm );
-        }
-
-    } else {
-        // Just draw the frame
-        pen = _MyCreatePen( color );
-
-        // make sure the background can still be seen
-        brush = _wpi_createnullbrush();
-    }
-
-    old_pen = _wpi_selectpen( dc, pen );
-    old_brush = _wpi_selectbrush( dc, brush );
-    if( y1 > y2 ){
-        t = y1;
-        y1 = y2;
-        y2 = t;
-    }
-    y1 = _wpi_cvth_y( y1, _GetPresHeight() );
-    y2 = _wpi_cvth_y( y2, _GetPresHeight() );
-#if defined( __OS2__ )
-    _wpi_ellipse( dc, x1, y1-1, x2, y2 );
-#else
-    _wpi_ellipse( dc, x1, y1, x2, y2 );
-#endif
-
-// Clean up afterwards
-    _wpi_getoldbrush( dc, old_brush );
-    if( fill == _GFILLINTERIOR ){
-        _wpi_deletebrush( brush );
-    } else {
-        _wpi_deletenullbrush( brush );
-    }
-
-    if( _HaveMask != 0 ) {
-        _wpi_deletebitmap( bm );
-    }
-
-    _wpi_getoldpen( dc, old_pen );
-    _wpi_deletepen( pen );
-
-
-    temprgn = _ClipRgn;
-    _ClipRgn = _wpi_createrectrgn( dc, &clip_rect );
-    _wpi_selectcliprgn( dc, _ClipRgn );
-    _wpi_deletecliprgn( dc, temprgn );
-
-// Make sure we update the window
-    _MyInvalidate( x1, y1, x2, y2 );
-    _RefreshWindow();
-#else
-    _StartDevice();
-    EllInfo.x_reflect = x1 + x2;        // need to reflect to use symmetry
-    EllInfo.y_reflect = y1 + y2;
-    if( fill == _GFILLINTERIOR ) {
-        EllInfo.prev_y = -1;            // no previous line
-        _L0Ellipse( x1, y1, x2, y2, EllFill );
-    } else {
-        if( clip1 == clip2 && _LineStyle == SOLID_LINE ) {
-            // no clipping and solid line
-            _L0Ellipse( x1, y1, x2, y2, FastPlot );
-        } else {
-            InitLineMasks( x1, y1, x2, y2 );
-            _L0Ellipse( x1, y1, x2, y2, SlowPlot );
-        }
-    }
-    _ResetDevice();
-#endif
-}
 
 
 #if !defined( _DEFAULT_WINDOWS )
@@ -406,6 +268,7 @@ static short Quadrant( short x, short y, short x_width, short y_width )
 #endif
 
 #if defined( _DEFAULT_WINDOWS )
+
 #if defined( __OS2__ )
 static float GetAngle( short x, short y, short xc, short yc, short a, short b )
 //===========================================================
@@ -457,6 +320,7 @@ static float GetAngle( short x, short y, short xc, short yc, short a, short b )
     return angle * 180.0 / pie;
 }
 #endif
+
 static int gr_round( float num )
 //==================================================
 // This function round off a float in to an interger.
@@ -478,148 +342,6 @@ static int gr_round( float num )
         return sign * ( floor + 1 );
     }
 }
-
-#endif
-
-void _L1Arc( short fill, short x1, short y1, short x2, short y2,
-/*====================*/ short x3, short y3, short x4, short y4 )
-
-/* This function draws an elliptical arc.  The virtual ellipse is defined by
-   the rectangle whose opposite corners are ( x1, y1 ) and ( x2, y2 ). The
-   intersections of the vectors from the center of the ellipse to the points
-   ( x3, y3 ) and ( x4, y4 ) define the start and end points respectively
-   where the arc is drawn in a counter clockwise direction. All values
-   are in physical coordinates. */
-
-{
-    short               clip1;
-    short               clip2;
-    short               a, b;
-    short               t;
-#if defined( _DEFAULT_WINDOWS )
-    WPI_PRES            dc;
-    HPEN                pen;
-    HPEN                old_pen;
-    HRGN                temprgn;
-    WPI_COLOUR          color;
-    WPI_RECT            clip_rect;
-    short               clipy1, clipy2;
-#endif
-
-    clip1 = _L1OutCode( x1, y1 );       // check for clipping
-    clip2 = _L1OutCode( x2, y2 );
-    if( clip1 & clip2 ) {
-        _ErrorStatus = _GRNOOUTPUT;
-        return;                         // trivially outside so quit
-    }
-    if( x1 > x2 ) {         // ensure x1 < x2
-        t = x1;
-        x1 = x2;
-        x2 = t;
-    }
-    if( y1 > y2 ) {         // ensure y1 < y2
-        t = y1;
-        y1 = y2;
-        y2 = t;
-    }
-    a = ( x2 - x1 + 1 ) / 2 - 1;
-    b = ( y2 - y1 + 1 ) / 2 - 1;
-    _ArcInfo.centre.xcoord = x1 + a + 1;       // centre of ellipse
-    _ArcInfo.centre.ycoord = y1 + b + 1;
-    _ArcInfo.vecta.xcoord = x3 - _ArcInfo.centre.xcoord;
-    _ArcInfo.vecta.ycoord = _ArcInfo.centre.ycoord - y3;        // invert y
-    _ArcInfo.vectb.xcoord = x4 - _ArcInfo.centre.xcoord;
-    _ArcInfo.vectb.ycoord = _ArcInfo.centre.ycoord - y4;        // invert y
-    if( _ArcInfo.vecta.xcoord == 0 && _ArcInfo.vecta.ycoord == 0 ||
-                _ArcInfo.vectb.xcoord == 0 && _ArcInfo.vectb.ycoord == 0 ) {
-        _ErrorStatus = _GRINVALIDPARAMETER;     // zero vector
-        return;
-    }
-
-#if defined( _DEFAULT_WINDOWS )
-    // Calculate end points
-    _ArcInfo.start = Cal_Coord( x3, y3, a, b );
-    _ArcInfo.end = Cal_Coord( x4, y4, a, b );
-
-    fill = fill;        // used to get rid of warnings in windows
-    dc = _Mem_dc;
-
-// do the clipping
-
-    temprgn = _ClipRgn;
-    clipy1 = _wpi_cvth_y( _CurrState->clip_def.ymin, _GetPresHeight() );
-    clipy2 = _wpi_cvth_y( _CurrState->clip_def.ymax + 1, _GetPresHeight() );
-    _wpi_setintwrectvalues( &clip_rect, _CurrState->clip_def.xmin, clipy1,
-                           _CurrState->clip_def.xmax + 1, clipy2 );
-    _ClipRgn = _wpi_createrectrgn( dc, &clip_rect );
-    _wpi_getclipbox( dc, &clip_rect);
-    _wpi_selectcliprgn( dc, _ClipRgn );
-    _wpi_deletecliprgn( dc, temprgn );
-
-// setup
-// Convert our color to RGB values
-    color = _Col2RGB( _CurrColor );
-
-// Map the line styles
-#if defined( __OS2__ )
-    if( fill != _GFILLINTERIOR ) {
-#endif
-        pen = _MyCreatePen( color );
-        old_pen = _wpi_selectpen( dc, pen );
-#if defined( __OS2__ )
-    }
-
-    OS2_Arc( dc, fill, a, b );
-#else
-    _wpi_arc( dc, x1, y1, x2, y2, x3, y3, x4, y4 );
-#endif
-
-//  Clean up
-#if defined( __OS2__ )
-    if( fill != _GFILLINTERIOR ) {
-#endif
-        _wpi_getoldpen( dc, old_pen );
-        _wpi_deletepen( pen );
-#if defined( __OS2__ )
-    }
-#endif
-
-    temprgn = _ClipRgn;
-    _ClipRgn = _wpi_createrectrgn( dc, &clip_rect );
-    _wpi_selectcliprgn( dc, _ClipRgn );
-    _wpi_deletecliprgn( dc, temprgn );
-
-    y1 = _wpi_cvth_y( y1, _GetPresHeight() );
-    y2 = _wpi_cvth_y( y2, _GetPresHeight() );
-
-//  Update the window
-    _MyInvalidate( x1, y1, x2, y2 );
-    _RefreshWindow();
-#else
-
-    _StartDevice();
-    EllInfo.x_reflect = x1 + x2;        // need to reflect to use symmetry
-    EllInfo.y_reflect = y1 + y2;
-    if( fill == _GFILLINTERIOR ) {
-        FilledArc( x1, y1, x2, y2, a, b );
-    } else {
-        if( _LineStyle == SOLID_LINE ) {
-            EllInfo.line_mask[ 0 ] = _LineStyle;
-            EllInfo.line_mask[ 1 ] = _LineStyle;
-            EllInfo.line_mask[ 2 ] = _LineStyle;
-            EllInfo.line_mask[ 3 ] = _LineStyle;
-        } else {
-            InitLineMasks( x1, y1, x2, y2 );
-        }
-        _ArcInfo.plot = PutDot;
-        HollowArc( x1, y1, x2, y2, a, b );
-    }
-    _ResetDevice();
-#endif
-}
-
-
-#if defined( _DEFAULT_WINDOWS )
 
 #if defined( __OS2__ )
 
@@ -714,63 +436,6 @@ static struct xycoord Cal_Coord( float x, float y, float a, float b )
 }
 
 #else
-static void HollowArc( short x1, short y1, short x2, short y2,
-                                           short a, short b )
-//============================================================
-
-// set up to draw a hollow arc
-
-{
-    short               q;
-    short               q1;
-    short               q2;
-    short               x_axis_width;
-    short               y_axis_width;
-    long                xprod;
-
-    for( q = 0; q <= 3; ++q ) {     // assume no drawing
-        _ArcInfo.qinf[ q ] = ARC_EMPTY;
-    }
-    x_axis_width = y2 - y1 - 2*b - 1;   // either 0 or 1
-    y_axis_width = x2 - x1 - 2*a - 1;
-    q1 = Quadrant( _ArcInfo.vecta.xcoord, _ArcInfo.vecta.ycoord,
-                    x_axis_width, y_axis_width );
-    q2 = Quadrant( _ArcInfo.vectb.xcoord, _ArcInfo.vectb.ycoord,
-                    x_axis_width, y_axis_width );
-    if( q1 == q2 ) {    // check cross product
-        xprod = (long) _ArcInfo.vecta.xcoord * _ArcInfo.vectb.ycoord -
-                (long) _ArcInfo.vectb.xcoord * _ArcInfo.vecta.ycoord;
-        if( xprod == 0 ) {
-            _ArcInfo.qinf[ q1 ] = ARC_LINE;     // single point
-        } else if( xprod > 0 ) {
-            _ArcInfo.qinf[ q1 ] = ARC_BOTH_IN;
-        } else {
-            _ArcInfo.qinf[ q1 ] = ARC_BOTH_OUT;
-            for( q = 0; q <= 3; ++q ) {     // fully draw rest of quadrants
-                if( q != q1 ) {
-                    _ArcInfo.qinf[ q ] = ARC_FULL;
-                }
-            }
-        }
-    } else {
-        _ArcInfo.qinf[ q1 ] = ARC_VECT_A;
-        _ArcInfo.qinf[ q2 ] = ARC_VECT_B;
-        for( q = ( q1 + 1 ) % 4; q != q2; q = ( q + 1 ) % 4 ) {
-            _ArcInfo.qinf[ q ] = ARC_FULL;
-        }
-    }
-
-    _ArcInfo.start.xcoord = -1;           // indicate not started drawing yet
-    _ArcInfo.end.xcoord = -1;           // indicate not started drawing yet
-    _L0Ellipse( x1, y1, x2, y2, ArcPlot );
-    for( q = 0; q <= 3; ++q ) {
-        if( _ArcInfo.qinf[ q ] == ARC_LINE ) {  // plot was delayed
-            _ArcInfo.end.xcoord = _ArcInfo.start.xcoord;
-            _ArcInfo.end.ycoord = _ArcInfo.start.ycoord;
-            (*_ArcInfo.plot)( _ArcInfo.start.xcoord, _ArcInfo.start.ycoord, q );
-        }
-    }
-}
 
 
 static void ArcPlot( short x, short y, short q )
@@ -887,6 +552,143 @@ static void ArcPlot( short x, short y, short q )
                 if( _ArcInfo.end.xcoord == -1 || _is_even( q ) ) {
                     _ArcInfo.end.xcoord = x1;       // remember last point
                     _ArcInfo.end.ycoord = y1;
+                }
+            }
+        }
+    }
+}
+
+static void HollowArc( short x1, short y1, short x2, short y2,
+                                           short a, short b )
+//============================================================
+
+// set up to draw a hollow arc
+
+{
+    short               q;
+    short               q1;
+    short               q2;
+    short               x_axis_width;
+    short               y_axis_width;
+    long                xprod;
+
+    for( q = 0; q <= 3; ++q ) {     // assume no drawing
+        _ArcInfo.qinf[ q ] = ARC_EMPTY;
+    }
+    x_axis_width = y2 - y1 - 2*b - 1;   // either 0 or 1
+    y_axis_width = x2 - x1 - 2*a - 1;
+    q1 = Quadrant( _ArcInfo.vecta.xcoord, _ArcInfo.vecta.ycoord,
+                    x_axis_width, y_axis_width );
+    q2 = Quadrant( _ArcInfo.vectb.xcoord, _ArcInfo.vectb.ycoord,
+                    x_axis_width, y_axis_width );
+    if( q1 == q2 ) {    // check cross product
+        xprod = (long) _ArcInfo.vecta.xcoord * _ArcInfo.vectb.ycoord -
+                (long) _ArcInfo.vectb.xcoord * _ArcInfo.vecta.ycoord;
+        if( xprod == 0 ) {
+            _ArcInfo.qinf[ q1 ] = ARC_LINE;     // single point
+        } else if( xprod > 0 ) {
+            _ArcInfo.qinf[ q1 ] = ARC_BOTH_IN;
+        } else {
+            _ArcInfo.qinf[ q1 ] = ARC_BOTH_OUT;
+            for( q = 0; q <= 3; ++q ) {     // fully draw rest of quadrants
+                if( q != q1 ) {
+                    _ArcInfo.qinf[ q ] = ARC_FULL;
+                }
+            }
+        }
+    } else {
+        _ArcInfo.qinf[ q1 ] = ARC_VECT_A;
+        _ArcInfo.qinf[ q2 ] = ARC_VECT_B;
+        for( q = ( q1 + 1 ) % 4; q != q2; q = ( q + 1 ) % 4 ) {
+            _ArcInfo.qinf[ q ] = ARC_FULL;
+        }
+    }
+
+    _ArcInfo.start.xcoord = -1;           // indicate not started drawing yet
+    _ArcInfo.end.xcoord = -1;           // indicate not started drawing yet
+    _L0Ellipse( x1, y1, x2, y2, ArcPlot );
+    for( q = 0; q <= 3; ++q ) {
+        if( _ArcInfo.qinf[ q ] == ARC_LINE ) {  // plot was delayed
+            _ArcInfo.end.xcoord = _ArcInfo.start.xcoord;
+            _ArcInfo.end.ycoord = _ArcInfo.start.ycoord;
+            (*_ArcInfo.plot)( _ArcInfo.start.xcoord, _ArcInfo.start.ycoord, q );
+        }
+    }
+}
+
+
+static void ArcFill( short x, short y, short q )
+//==============================================
+
+// given the arc point (x,y), fill the arc
+
+{
+    short               xl;
+    short               xr;
+    short               x1;
+    short               x2;
+
+    if( q == 4 ) {    // only care about points in all 4 quadrants
+        if( y != EllInfo.prev_y ) {
+            EllInfo.prev_y = y;
+            for( q = 0; q <= 2; q += 2 ) {
+                xl = EllInfo.x_reflect - x;  // reflected point is x1 + ( x2 - x )
+                xr = x;
+                if( q == 2 ) {  // bottom half
+                    y = EllInfo.y_reflect - y;
+                }
+                switch( _ArcInfo.qinf[ q ] ) {
+                case ARC_EMPTY:
+                    break;
+                case ARC_FULL:
+                    _L1ClipFill( xl, xr, y );
+                    break;
+                case ARC_VECT_A:
+                    _LineMove( &VectA );
+                    if( q == 0 ) {
+                        xr = min( xr, VectA.right_x );
+                    } else {
+                        xl = max( xl, VectA.left_x );
+                    }
+                    _L1ClipFill( xl, xr, y );
+                    break;
+                case ARC_VECT_B:
+                    _LineMove( &VectB );
+                    if( q == 0 ) {
+                        xl = max( xl, VectB.left_x );
+                    } else {
+                        xr = min( xr, VectB.right_x );
+                    }
+                    _L1ClipFill( xl, xr, y );
+                    break;
+                case ARC_BOTH_IN:
+                    _LineMove( &VectA );
+                    _LineMove( &VectB );
+                    if( q == 0 ) {
+                        xr = min( xr, VectA.right_x );
+                        xl = max( xl, VectB.left_x );
+                    } else {
+                        xr = min( xr, VectB.right_x );
+                        xl = max( xl, VectA.left_x );
+                    }
+                    _L1ClipFill( xl, xr, y );
+                    break;
+                case ARC_BOTH_OUT:
+                    _LineMove( &VectA );
+                    _LineMove( &VectB );
+                    if( q == 0 ) {
+                        x1 = min( xr, VectA.right_x );
+                        x2 = max( xl, VectB.left_x );
+                    } else {
+                        x1 = min( xr, VectB.right_x );
+                        x2 = max( xl, VectA.left_x );
+                    }
+                    if( x1 > x2 ) { // segments overlap
+                        _L1ClipFill( xl, xr, y );
+                    } else {
+                        _L1ClipFill( xl, x1, y );
+                        _L1ClipFill( x2, xr, y );
+                    }
                 }
             }
         }
@@ -1033,83 +835,268 @@ static void FilledArc( short x1, short y1, short x2, short y2,
     _L0Ellipse( x1, y1, x2, y2, ArcFill );
 }
 
+#endif
 
-static void ArcFill( short x, short y, short q )
-//==============================================
-
-// given the arc point (x,y), fill the arc
+void _L1Ellipse( short fill, short x1, short y1, short x2, short y2 )
+//===================================================================
 
 {
-    short               xl;
-    short               xr;
-    short               x1;
-    short               x2;
+    short               clip1;
+    short               clip2;
+#if defined( _DEFAULT_WINDOWS )
+    WPI_PRES            dc;
+    WPI_HBITMAP         bm;
+    HBRUSH              brush;
+    HBRUSH              old_brush;
+    HPEN                pen;
+    HPEN                old_pen;
+    HRGN                temprgn;
+    WPI_COLOUR          color;
+    WPI_RECT            clip_rect;
+    short               t;
+    short               clipy1, clipy2;
+#endif
 
-    if( q == 4 ) {    // only care about points in all 4 quadrants
-        if( y != EllInfo.prev_y ) {
-            EllInfo.prev_y = y;
-            for( q = 0; q <= 2; q += 2 ) {
-                xl = EllInfo.x_reflect - x;  // reflected point is x1 + ( x2 - x )
-                xr = x;
-                if( q == 2 ) {  // bottom half
-                    y = EllInfo.y_reflect - y;
-                }
-                switch( _ArcInfo.qinf[ q ] ) {
-                case ARC_EMPTY:
-                    break;
-                case ARC_FULL:
-                    _L1ClipFill( xl, xr, y );
-                    break;
-                case ARC_VECT_A:
-                    _LineMove( &VectA );
-                    if( q == 0 ) {
-                        xr = min( xr, VectA.right_x );
-                    } else {
-                        xl = max( xl, VectA.left_x );
-                    }
-                    _L1ClipFill( xl, xr, y );
-                    break;
-                case ARC_VECT_B:
-                    _LineMove( &VectB );
-                    if( q == 0 ) {
-                        xl = max( xl, VectB.left_x );
-                    } else {
-                        xr = min( xr, VectB.right_x );
-                    }
-                    _L1ClipFill( xl, xr, y );
-                    break;
-                case ARC_BOTH_IN:
-                    _LineMove( &VectA );
-                    _LineMove( &VectB );
-                    if( q == 0 ) {
-                        xr = min( xr, VectA.right_x );
-                        xl = max( xl, VectB.left_x );
-                    } else {
-                        xr = min( xr, VectB.right_x );
-                        xl = max( xl, VectA.left_x );
-                    }
-                    _L1ClipFill( xl, xr, y );
-                    break;
-                case ARC_BOTH_OUT:
-                    _LineMove( &VectA );
-                    _LineMove( &VectB );
-                    if( q == 0 ) {
-                        x1 = min( xr, VectA.right_x );
-                        x2 = max( xl, VectB.left_x );
-                    } else {
-                        x1 = min( xr, VectB.right_x );
-                        x2 = max( xl, VectA.left_x );
-                    }
-                    if( x1 > x2 ) { // segments overlap
-                        _L1ClipFill( xl, xr, y );
-                    } else {
-                        _L1ClipFill( xl, x1, y );
-                        _L1ClipFill( x2, xr, y );
-                    }
-                }
-            }
+    clip1 = _L1OutCode( x1, y1 );       // check for clipping
+    clip2 = _L1OutCode( x2, y2 );
+    if( clip1 & clip2 ) {
+        _ErrorStatus = _GRNOOUTPUT;
+        return;                         // trivially outside so quit
+    }
+#if defined( _DEFAULT_WINDOWS )
+    dc = _Mem_dc;
+
+// Do the clippings
+    temprgn = _ClipRgn;
+    clipy1 = _wpi_cvth_y( _CurrState->clip_def.ymin, _GetPresHeight() );
+    clipy2 = _wpi_cvth_y( _CurrState->clip_def.ymax + 1, _GetPresHeight() );
+
+    _wpi_setintwrectvalues( &clip_rect,
+                           _CurrState->clip_def.xmin,
+                           clipy1,
+                           _CurrState->clip_def.xmax + 1,
+                           clipy2 );
+    _ClipRgn = _wpi_createrectrgn( dc, &clip_rect );
+    _wpi_getclipbox( dc, &clip_rect);
+    _wpi_selectcliprgn( dc, _ClipRgn );
+    _wpi_deletecliprgn( dc, temprgn );
+
+// Set up before drawing
+    color = _Col2RGB( _CurrColor );
+
+    if( fill == _GFILLINTERIOR ) {
+        // there is not border for filled objects, so set the pen to null
+        pen = _wpi_createpen( PS_NULL, 0, color );
+
+        // Check if there is a fill mask
+        if( _HaveMask == 0 ) {
+            brush = _wpi_createsolidbrush( color );
+        } else {
+            // if a mask is defined, convert it to bitmap
+            bm = _Mask2Bitmap( dc, _FillMask );
+            brush = _wpi_createpatternbrush( bm );
+        }
+
+    } else {
+        // Just draw the frame
+        pen = _MyCreatePen( color );
+
+        // make sure the background can still be seen
+        brush = _wpi_createnullbrush();
+    }
+
+    old_pen = _wpi_selectpen( dc, pen );
+    old_brush = _wpi_selectbrush( dc, brush );
+    if( y1 > y2 ){
+        t = y1;
+        y1 = y2;
+        y2 = t;
+    }
+    y1 = _wpi_cvth_y( y1, _GetPresHeight() );
+    y2 = _wpi_cvth_y( y2, _GetPresHeight() );
+#if defined( __OS2__ )
+    _wpi_ellipse( dc, x1, y1-1, x2, y2 );
+#else
+    _wpi_ellipse( dc, x1, y1, x2, y2 );
+#endif
+
+// Clean up afterwards
+    _wpi_getoldbrush( dc, old_brush );
+    if( fill == _GFILLINTERIOR ){
+        _wpi_deletebrush( brush );
+    } else {
+        _wpi_deletenullbrush( brush );
+    }
+
+    if( _HaveMask != 0 ) {
+        _wpi_deletebitmap( bm );
+    }
+
+    _wpi_getoldpen( dc, old_pen );
+    _wpi_deletepen( pen );
+
+
+    temprgn = _ClipRgn;
+    _ClipRgn = _wpi_createrectrgn( dc, &clip_rect );
+    _wpi_selectcliprgn( dc, _ClipRgn );
+    _wpi_deletecliprgn( dc, temprgn );
+
+// Make sure we update the window
+    _MyInvalidate( x1, y1, x2, y2 );
+    _RefreshWindow();
+#else
+    _StartDevice();
+    EllInfo.x_reflect = x1 + x2;        // need to reflect to use symmetry
+    EllInfo.y_reflect = y1 + y2;
+    if( fill == _GFILLINTERIOR ) {
+        EllInfo.prev_y = -1;            // no previous line
+        _L0Ellipse( x1, y1, x2, y2, EllFill );
+    } else {
+        if( clip1 == clip2 && _LineStyle == SOLID_LINE ) {
+            // no clipping and solid line
+            _L0Ellipse( x1, y1, x2, y2, FastPlot );
+        } else {
+            InitLineMasks( x1, y1, x2, y2 );
+            _L0Ellipse( x1, y1, x2, y2, SlowPlot );
         }
     }
+    _ResetDevice();
+#endif
 }
 
+void _L1Arc( short fill, short x1, short y1, short x2, short y2,
+/*====================*/ short x3, short y3, short x4, short y4 )
+
+/* This function draws an elliptical arc.  The virtual ellipse is defined by
+   the rectangle whose opposite corners are ( x1, y1 ) and ( x2, y2 ). The
+   intersections of the vectors from the center of the ellipse to the points
+   ( x3, y3 ) and ( x4, y4 ) define the start and end points respectively
+   where the arc is drawn in a counter clockwise direction. All values
+   are in physical coordinates. */
+
+{
+    short               clip1;
+    short               clip2;
+    short               a, b;
+    short               t;
+#if defined( _DEFAULT_WINDOWS )
+    WPI_PRES            dc;
+    HPEN                pen;
+    HPEN                old_pen;
+    HRGN                temprgn;
+    WPI_COLOUR          color;
+    WPI_RECT            clip_rect;
+    short               clipy1, clipy2;
 #endif
+
+    clip1 = _L1OutCode( x1, y1 );       // check for clipping
+    clip2 = _L1OutCode( x2, y2 );
+    if( clip1 & clip2 ) {
+        _ErrorStatus = _GRNOOUTPUT;
+        return;                         // trivially outside so quit
+    }
+    if( x1 > x2 ) {         // ensure x1 < x2
+        t = x1;
+        x1 = x2;
+        x2 = t;
+    }
+    if( y1 > y2 ) {         // ensure y1 < y2
+        t = y1;
+        y1 = y2;
+        y2 = t;
+    }
+    a = ( x2 - x1 + 1 ) / 2 - 1;
+    b = ( y2 - y1 + 1 ) / 2 - 1;
+    _ArcInfo.centre.xcoord = x1 + a + 1;       // centre of ellipse
+    _ArcInfo.centre.ycoord = y1 + b + 1;
+    _ArcInfo.vecta.xcoord = x3 - _ArcInfo.centre.xcoord;
+    _ArcInfo.vecta.ycoord = _ArcInfo.centre.ycoord - y3;        // invert y
+    _ArcInfo.vectb.xcoord = x4 - _ArcInfo.centre.xcoord;
+    _ArcInfo.vectb.ycoord = _ArcInfo.centre.ycoord - y4;        // invert y
+    if( _ArcInfo.vecta.xcoord == 0 && _ArcInfo.vecta.ycoord == 0 ||
+                _ArcInfo.vectb.xcoord == 0 && _ArcInfo.vectb.ycoord == 0 ) {
+        _ErrorStatus = _GRINVALIDPARAMETER;     // zero vector
+        return;
+    }
+
+#if defined( _DEFAULT_WINDOWS )
+    // Calculate end points
+    _ArcInfo.start = Cal_Coord( x3, y3, a, b );
+    _ArcInfo.end = Cal_Coord( x4, y4, a, b );
+
+    fill = fill;        // used to get rid of warnings in windows
+    dc = _Mem_dc;
+
+// do the clipping
+
+    temprgn = _ClipRgn;
+    clipy1 = _wpi_cvth_y( _CurrState->clip_def.ymin, _GetPresHeight() );
+    clipy2 = _wpi_cvth_y( _CurrState->clip_def.ymax + 1, _GetPresHeight() );
+    _wpi_setintwrectvalues( &clip_rect, _CurrState->clip_def.xmin, clipy1,
+                           _CurrState->clip_def.xmax + 1, clipy2 );
+    _ClipRgn = _wpi_createrectrgn( dc, &clip_rect );
+    _wpi_getclipbox( dc, &clip_rect);
+    _wpi_selectcliprgn( dc, _ClipRgn );
+    _wpi_deletecliprgn( dc, temprgn );
+
+// setup
+// Convert our color to RGB values
+    color = _Col2RGB( _CurrColor );
+
+// Map the line styles
+#if defined( __OS2__ )
+    if( fill != _GFILLINTERIOR ) {
+#endif
+        pen = _MyCreatePen( color );
+        old_pen = _wpi_selectpen( dc, pen );
+#if defined( __OS2__ )
+    }
+
+    OS2_Arc( dc, fill, a, b );
+#else
+    _wpi_arc( dc, x1, y1, x2, y2, x3, y3, x4, y4 );
+#endif
+
+//  Clean up
+#if defined( __OS2__ )
+    if( fill != _GFILLINTERIOR ) {
+#endif
+        _wpi_getoldpen( dc, old_pen );
+        _wpi_deletepen( pen );
+#if defined( __OS2__ )
+    }
+#endif
+
+    temprgn = _ClipRgn;
+    _ClipRgn = _wpi_createrectrgn( dc, &clip_rect );
+    _wpi_selectcliprgn( dc, _ClipRgn );
+    _wpi_deletecliprgn( dc, temprgn );
+
+    y1 = _wpi_cvth_y( y1, _GetPresHeight() );
+    y2 = _wpi_cvth_y( y2, _GetPresHeight() );
+
+//  Update the window
+    _MyInvalidate( x1, y1, x2, y2 );
+    _RefreshWindow();
+#else
+
+    _StartDevice();
+    EllInfo.x_reflect = x1 + x2;        // need to reflect to use symmetry
+    EllInfo.y_reflect = y1 + y2;
+    if( fill == _GFILLINTERIOR ) {
+        FilledArc( x1, y1, x2, y2, a, b );
+    } else {
+        if( _LineStyle == SOLID_LINE ) {
+            EllInfo.line_mask[ 0 ] = _LineStyle;
+            EllInfo.line_mask[ 1 ] = _LineStyle;
+            EllInfo.line_mask[ 2 ] = _LineStyle;
+            EllInfo.line_mask[ 3 ] = _LineStyle;
+        } else {
+            InitLineMasks( x1, y1, x2, y2 );
+        }
+        _ArcInfo.plot = PutDot;
+        HollowArc( x1, y1, x2, y2, a, b );
+    }
+    _ResetDevice();
+#endif
+}

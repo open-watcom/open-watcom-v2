@@ -140,7 +140,46 @@ void _WCI86FAR _L2putimage( short x, short y, char _WCI86HUGE *image, short disp
 
 #else
 
-static void             NegImage( char _WCI86HUGE *, long );
+
+static void NegSome( char _WCI86FAR *pic, long size )
+//==============================================
+
+{
+    while( size != 0 ) {
+        *pic = ~(*pic);
+        ++pic;
+        --size;
+    }
+}
+
+#define _64_K           0x10000L
+
+static void NegImage( char _WCI86HUGE *pic, long size )
+/*================================================
+ * This routine negates every byte of the image buffer so that
+ * the image can be displayed in _GPRESET mode.
+ * Note: Huge pointers are no longer guaranteed to be normalized
+ *        and may not be contiguous. Therefore we must negate only
+ *        up to 64K boundaries at a time.
+ */
+{
+#if defined( _M_I86 )
+    long                max;
+
+    max = _64_K - _FP_OFF( pic );       // max before pointer overflows
+    if( size > max ) {
+        NegSome( (char _WCI86FAR *) pic, max );      // bring to 64K boundary
+        pic += max;
+        size -= max;
+        while( size >= _64_K ) {
+            NegSome( (char _WCI86FAR *) pic, _64_K );
+            pic += _64_K;
+            size -= _64_K;
+        }
+    }
+#endif
+    NegSome( (char _WCI86FAR *) pic, size );         // do remaining part
+}
 
 
 void _WCI86FAR _L2putimage( short x, short y, char _WCI86HUGE * image, short dispmode )
@@ -168,48 +207,6 @@ void _WCI86FAR _L2putimage( short x, short y, char _WCI86HUGE * image, short dis
         NegImage( picture->buffer, size );
     }
     _setplotaction( prev_mode );
-}
-
-
-static void NegSome( char _WCI86FAR *pic, long size )
-//==============================================
-
-{
-    while( size != 0 ) {
-        *pic = ~(*pic);
-        ++pic;
-        --size;
-    }
-}
-
-#define _64_K           0x10000L
-
-static void NegImage( char _WCI86HUGE *pic, long size )
-/*================================================
-
-    This routine negates every byte of the image buffer so that
-    the image can be displayed in _GPRESET mode.
-    Note: Huge pointers are no longer guaranteed to be normalized
-          and may not be contiguous. Therefore we must negate only
-          up to 64K boundaries at a time. */
-
-{
-#if defined( _M_I86 )
-    long                max;
-
-    max = _64_K - _FP_OFF( pic );       // max before pointer overflows
-    if( size > max ) {
-        NegSome( (char _WCI86FAR *) pic, max );      // bring to 64K boundary
-        pic += max;
-        size -= max;
-        while( size >= _64_K ) {
-            NegSome( (char _WCI86FAR *) pic, _64_K );
-            pic += _64_K;
-            size -= _64_K;
-        }
-    }
-#endif
-    NegSome( (char _WCI86FAR *) pic, size );         // do remaining part
 }
 
 #endif

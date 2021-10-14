@@ -59,13 +59,204 @@ PFNWP _OldFrameProc;
 // Variable that contains the position of where to start the repaint
 struct xycoord  _BitBlt_Coord;
 
-// Static functions
-static int CalScrollAmt( int, int, int, int, int );
-static int CalScrollPos( int, int, int, int, int );
-static struct ScrollStruct getscrolldata( HWND Wnd, int dir );
-static void CalPos( struct ScrollStruct *info, WPI_PARAM1 wParam, WPI_PARAM2 lParam, int *newpos, int *newcoord );
+
+static int CalScrollAmt( int max, int min, int pixel, int pix_scr, int pix_win )
+//==============================================================================
+{
+    return( ( (long)( max - min + 1 ) * (long)pixel ) / (long)( pix_scr - pix_win + 1 ) );
+}
+
+static int CalScrollPos( int maxpos, int minpos, int currpos, int num_pix, int win_pix )
+//======================================================================================
+{
+    return( ( (long)( num_pix - win_pix + 1 ) * (long)( currpos - minpos + 1 ) ) /
+            (long)( maxpos - minpos + 1 ) );
+}
+
+static struct ScrollStruct getscrolldata( HWND Wnd, int dir )
+/*===========================================================
+
+   This function gets the information needed to scroll a window properly
+*/
+{
+    WPI_RECT            rect;
+    struct ScrollStruct info;
+    WPI_RECTDIM         left, right, top, bottom;
+
+    //Get the necessary data
+   _wpi_getscrollrange( Wnd, dir, &info.minpos, &info.maxpos );
+   info.currpos = _wpi_getscrollpos( Wnd, dir );
+   _wpi_getclientrect( Wnd, &rect );
+   _wpi_getrectvalues( rect, &left, &top, &right, &bottom );
+
+   if( dir == SB_VERT ){
+       info.max = _wpi_getsystemmetrics( SM_CYSCREEN );
+       info.pixls = bottom - top;
+       info.currcoord = _BitBlt_Coord.ycoord;
+   } else {
+       info.max = _wpi_getsystemmetrics( SM_CXSCREEN );
+       info.pixls = right - left;
+       info.currcoord = _BitBlt_Coord.xcoord;
+   }
+
+   // Amount to move the thumb by for every line scrolled
+   if( info.pixls > LINEAMT ) {
+       info.line = CalScrollAmt( info.maxpos, info.minpos,
+                                  LINEAMT, info.max,
+                                  info.pixls + 1);
+   } else {
+       info.line = info.pixls;
+   }
+
+   // Amount to move the thumb by for every page scrolled
+   info.page = CalScrollAmt( info.maxpos, info.minpos,
+                              info.pixls, info.max,
+                              info.pixls + 1);
+   return( info );
+}
 
 
+
+static void CalPos( struct ScrollStruct *info, WPI_PARAM1 wParam,
+/*================*/WPI_PARAM2 lParam, int *newpos, int *newcoord )
+/*===========================================================
+
+   This function calculates the new scroll bar position
+   and the new BitBlt coordinates */
+{
+    int         t;
+
+#if defined( __OS2__ )
+
+    wParam = wParam;
+    switch( SHORT2FROMMP( lParam ) ) {
+#else
+    switch( wParam ) {
+
+        case SB_BOTTOM:
+            // Goto the bottom
+            *newcoord = info->max - info->pixls;
+            if( *newcoord < 0 ){
+                newcoord = 0;
+            }
+            *newpos = info->maxpos;
+            break;
+
+        case SB_TOP:
+            // Goto the top
+            *newcoord = 0;
+            *newpos = info->minpos;
+            break;
+#endif
+
+        case SB_LINEDOWN:
+            // Scroll down one line
+            *newcoord = info->max - info->pixls;
+            t = info->currcoord + LINEAMT;
+
+            // Make sure we don't go past the limit
+            if( t < *newcoord ) {
+                *newcoord = t;
+                if( info->currpos < ( info->maxpos - info->line ) ) {
+                    *newpos = info->currpos + info->line;
+                }
+            } else {
+                *newpos = info->maxpos;
+            }
+            break;
+
+        case SB_LINEUP:
+            // Scroll up one line
+            *newcoord = 0;
+            t = info->currcoord - LINEAMT;
+
+            // Make sure we don't go past the limit
+            if( t > *newcoord ) {
+                *newcoord = t;
+                if( info->currpos > ( info->minpos + info->line ) ) {
+                    *newpos = info->currpos - info->line;
+                }
+            } else {
+                *newpos = info->minpos;
+            }
+            break;
+
+        case SB_PAGEUP:
+            // Scroll one page up
+            *newcoord = 0;
+            t = info->currcoord - info->pixls;
+
+            // Make sure we don't go past the limit
+            if( t > *newcoord ) {
+                *newcoord = t;
+                if( info->currpos > ( info->minpos + info->page ) ) {
+                    *newpos = info->currpos - info->page;
+                }
+            } else {
+                *newpos = info->minpos;
+            }
+            break;
+
+        case SB_PAGEDOWN:
+            // Scroll down one page
+            *newcoord = info->max - info->pixls;
+            t = info->currcoord + info->pixls;
+
+            // Make sure we don't go pass the limit
+            if( t < *newcoord ) {
+                *newcoord = t;
+                if( info->currpos < ( info->maxpos - info->page ) ) {
+                    *newpos = info->currpos + info->page;
+                }
+            } else {
+                *newpos = info->maxpos;
+            }
+            break;
+
+        case SB_THUMBTRACK:
+        case SB_THUMBPOSITION:
+            // go to a specific location
+            *newpos = LOWORD( lParam );
+            *newcoord = CalScrollPos( info->maxpos, info->minpos,
+                                      *newpos, info->max, info->pixls);
+            break;
+
+        default:
+            *newcoord = info->currcoord;
+            *newpos   = info->currpos;
+    }
+}
+
+#if defined( __OS2__ )
+WPI_MRESULT CALLBACK GraphFrameProc( HWND       Wnd,
+                                     WPI_MSG    message,
+                                     WPI_PARAM1 wParam,
+                                     WPI_PARAM2 lParam )
+/*======================================================
+  This function is used to control the frame of the window in OS/2. */
+{
+    MRESULT     rc;
+    TRACKINFO*  Track;
+
+    switch( message ) {
+    case WM_QUERYTRACKINFO:
+        rc = _OldFrameProc( Wnd, message, wParam, lParam );
+        Track = lParam;
+        // Set the maximum size
+        Track->ptlMaxTrackSize.x =
+                WinQuerySysValue( HWND_DESKTOP, SV_CXSCREEN ) +
+                WinQuerySysValue( _MainWindow, SV_CXBORDER ) * 2;
+        Track->ptlMaxTrackSize.y =
+                WinQuerySysValue( HWND_DESKTOP, SV_CYSCREEN ) +
+                ( WinQuerySysValue( _MainWindow, SV_CYBORDER ) * 2 ) +
+                WinQuerySysValue( _MainWindow, SV_CYTITLEBAR );
+        return( rc );
+    default:
+        return( _OldFrameProc( Wnd, message, wParam, lParam ) );
+    }
+}
+
+#endif
 WPI_MRESULT CALLBACK GraphWndProc( HWND         Wnd,
                                    WPI_MSG      message,
                                    WPI_PARAM1   wParam,
@@ -297,203 +488,3 @@ WPI_MRESULT CALLBACK GraphWndProc( HWND         Wnd,
     }
     return( 0 );
 }
-
-
-static int CalScrollAmt( int max, int min, int pixel, int pix_scr, int pix_win )
-//==============================================================================
-{
-    return( ( (long)( max - min + 1 ) * (long)pixel ) / (long)( pix_scr - pix_win + 1 ) );
-}
-
-static int CalScrollPos( int maxpos, int minpos, int currpos, int num_pix, int win_pix )
-//======================================================================================
-{
-    return( ( (long)( num_pix - win_pix + 1 ) * (long)( currpos - minpos + 1 ) ) /
-            (long)( maxpos - minpos + 1 ) );
-}
-
-
-static struct ScrollStruct getscrolldata( HWND Wnd, int dir )
-/*===========================================================
-
-   This function gets the information needed to scroll a window properly
-*/
-{
-    WPI_RECT            rect;
-    struct ScrollStruct info;
-    WPI_RECTDIM         left, right, top, bottom;
-
-    //Get the necessary data
-   _wpi_getscrollrange( Wnd, dir, &info.minpos, &info.maxpos );
-   info.currpos = _wpi_getscrollpos( Wnd, dir );
-   _wpi_getclientrect( Wnd, &rect );
-   _wpi_getrectvalues( rect, &left, &top, &right, &bottom );
-
-   if( dir == SB_VERT ){
-       info.max = _wpi_getsystemmetrics( SM_CYSCREEN );
-       info.pixls = bottom - top;
-       info.currcoord = _BitBlt_Coord.ycoord;
-   } else {
-       info.max = _wpi_getsystemmetrics( SM_CXSCREEN );
-       info.pixls = right - left;
-       info.currcoord = _BitBlt_Coord.xcoord;
-   }
-
-   // Amount to move the thumb by for every line scrolled
-   if( info.pixls > LINEAMT ) {
-       info.line = CalScrollAmt( info.maxpos, info.minpos,
-                                  LINEAMT, info.max,
-                                  info.pixls + 1);
-   } else {
-       info.line = info.pixls;
-   }
-
-   // Amount to move the thumb by for every page scrolled
-   info.page = CalScrollAmt( info.maxpos, info.minpos,
-                              info.pixls, info.max,
-                              info.pixls + 1);
-   return( info );
-}
-
-
-
-static void CalPos( struct ScrollStruct *info, WPI_PARAM1 wParam,
-/*================*/WPI_PARAM2 lParam, int *newpos, int *newcoord )
-/*===========================================================
-
-   This function calculates the new scroll bar position
-   and the new BitBlt coordinates */
-{
-    int         t;
-
-#if defined( __OS2__ )
-
-    wParam = wParam;
-    switch( SHORT2FROMMP( lParam ) ) {
-#else
-    switch( wParam ) {
-
-        case SB_BOTTOM:
-            // Goto the bottom
-            *newcoord = info->max - info->pixls;
-            if( *newcoord < 0 ){
-                newcoord = 0;
-            }
-            *newpos = info->maxpos;
-            break;
-
-        case SB_TOP:
-            // Goto the top
-            *newcoord = 0;
-            *newpos = info->minpos;
-            break;
-#endif
-
-        case SB_LINEDOWN:
-            // Scroll down one line
-            *newcoord = info->max - info->pixls;
-            t = info->currcoord + LINEAMT;
-
-            // Make sure we don't go past the limit
-            if( t < *newcoord ) {
-                *newcoord = t;
-                if( info->currpos < ( info->maxpos - info->line ) ) {
-                    *newpos = info->currpos + info->line;
-                }
-            } else {
-                *newpos = info->maxpos;
-            }
-            break;
-
-        case SB_LINEUP:
-            // Scroll up one line
-            *newcoord = 0;
-            t = info->currcoord - LINEAMT;
-
-            // Make sure we don't go past the limit
-            if( t > *newcoord ) {
-                *newcoord = t;
-                if( info->currpos > ( info->minpos + info->line ) ) {
-                    *newpos = info->currpos - info->line;
-                }
-            } else {
-                *newpos = info->minpos;
-            }
-            break;
-
-        case SB_PAGEUP:
-            // Scroll one page up
-            *newcoord = 0;
-            t = info->currcoord - info->pixls;
-
-            // Make sure we don't go past the limit
-            if( t > *newcoord ) {
-                *newcoord = t;
-                if( info->currpos > ( info->minpos + info->page ) ) {
-                    *newpos = info->currpos - info->page;
-                }
-            } else {
-                *newpos = info->minpos;
-            }
-            break;
-
-        case SB_PAGEDOWN:
-            // Scroll down one page
-            *newcoord = info->max - info->pixls;
-            t = info->currcoord + info->pixls;
-
-            // Make sure we don't go pass the limit
-            if( t < *newcoord ) {
-                *newcoord = t;
-                if( info->currpos < ( info->maxpos - info->page ) ) {
-                    *newpos = info->currpos + info->page;
-                }
-            } else {
-                *newpos = info->maxpos;
-            }
-            break;
-
-        case SB_THUMBTRACK:
-        case SB_THUMBPOSITION:
-            // go to a specific location
-            *newpos = LOWORD( lParam );
-            *newcoord = CalScrollPos( info->maxpos, info->minpos,
-                                      *newpos, info->max, info->pixls);
-            break;
-
-        default:
-            *newcoord = info->currcoord;
-            *newpos   = info->currpos;
-    }
-}
-
-#if defined( __OS2__ )
-WPI_MRESULT CALLBACK GraphFrameProc( HWND       Wnd,
-                                     WPI_MSG    message,
-                                     WPI_PARAM1 wParam,
-                                     WPI_PARAM2 lParam )
-/*======================================================
-  This function is used to control the frame of the window in OS/2. */
-{
-    MRESULT     rc;
-    TRACKINFO*  Track;
-
-    switch( message ) {
-    case WM_QUERYTRACKINFO:
-        rc = _OldFrameProc( Wnd, message, wParam, lParam );
-        Track = lParam;
-        // Set the maximum size
-        Track->ptlMaxTrackSize.x =
-                WinQuerySysValue( HWND_DESKTOP, SV_CXSCREEN ) +
-                WinQuerySysValue( _MainWindow, SV_CXBORDER ) * 2;
-        Track->ptlMaxTrackSize.y =
-                WinQuerySysValue( HWND_DESKTOP, SV_CYSCREEN ) +
-                ( WinQuerySysValue( _MainWindow, SV_CYBORDER ) * 2 ) +
-                WinQuerySysValue( _MainWindow, SV_CYTITLEBAR );
-        return( rc );
-    default:
-        return( _OldFrameProc( Wnd, message, wParam, lParam ) );
-    }
-}
-
-#endif

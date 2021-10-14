@@ -35,10 +35,6 @@
 #include "gdefn.h"
 
 
-static short            Map( short, short, short, short );
-static void             DrawChar( char, short, short, short, short, short, short );
-
-
 #if defined( _FRENCH )
 #include "french.h"
 
@@ -156,39 +152,28 @@ static unsigned char MultiLingIndex[ NUM_LANG_CHARS ][ 2 ] = {
 #endif
 
 
-void _HershDraw( char pc, short cx, short cy, short bx, short by,
-/*=========================================*/ short px, short py )
+static short Map( short a, short b, short v1, short v2 )
+/*======================================================
+
+    Map the point (a,b) inside the character definition grid to the
+    character drawing parallelogram. Return one component at a time.
+
+    Calculate: (x', y') = ( a * vx1 + b * vx2 , a * vy1 + b * vy2 ) / MAX
+ */
 
 {
-    unsigned char   ch = pc;
+    long         p1;
+    long         p2;
 
-    if( ch >= '!' && ch <= 0x7e ) {
-        DrawChar( ch, cx, cy, bx, by, px, py );
-#if defined( _FRENCH )
-    } else if( ch >= 0x80 ) {
-        short           codepage;
-        unsigned char   *cp_array;
-
-        codepage = GetCodePage();
-        if( codepage == 850 ) {
-            cp_array = CodePage850;
-        } else if( codepage == 863 ) {
-            cp_array = CodePage863;
-        } else {        // assume that we use 437 for all others
-            cp_array = CodePage437;
-        }
-        ch -= 0x80;
-        if( ch > cp_array[ 0 ] ) {
-            return;
-        }
-        ch = cp_array[ ch + 1 ];     // skip over size
-        if( ch == 0xff ) {
-            return;
-        }
-        DrawChar( MultiLingIndex[ ch ][ 0 ], cx, cy, bx, by, px, py );
-        DrawChar( MultiLingIndex[ ch ][ 1 ], cx, cy, bx, by, px, py );
-#endif
+    p1 = (long)a * v1;
+    p2 = (long)b * v2;
+    p1 += p2;
+    if( p1 < 0 ) {
+        p1 -= MAX/2;                    /* round point to nearest pixel */
+    } else {
+        p1 += MAX/2;                    /* round point to nearest pixel */
     }
+    return( (long)p1 / MAX );
 }
 
 
@@ -236,26 +221,37 @@ static void DrawChar( char ch, short cx, short cy, short bx, short by,
 }
 
 
-static short Map( short a, short b, short v1, short v2 )
-/*======================================================
-
-    Map the point (a,b) inside the character definition grid to the
-    character drawing parallelogram. Return one component at a time.
-
-    Calculate: (x', y') = ( a * vx1 + b * vx2 , a * vy1 + b * vy2 ) / MAX
- */
+void _HershDraw( char pc, short cx, short cy, short bx, short by,
+/*=========================================*/ short px, short py )
 
 {
-    long         p1;
-    long         p2;
+    unsigned char   ch = pc;
 
-    p1 = (long)a * v1;
-    p2 = (long)b * v2;
-    p1 += p2;
-    if( p1 < 0 ) {
-        p1 -= MAX/2;                    /* round point to nearest pixel */
-    } else {
-        p1 += MAX/2;                    /* round point to nearest pixel */
+    if( ch >= '!' && ch <= 0x7e ) {
+        DrawChar( ch, cx, cy, bx, by, px, py );
+#if defined( _FRENCH )
+    } else if( ch >= 0x80 ) {
+        short           codepage;
+        unsigned char   *cp_array;
+
+        codepage = GetCodePage();
+        if( codepage == 850 ) {
+            cp_array = CodePage850;
+        } else if( codepage == 863 ) {
+            cp_array = CodePage863;
+        } else {        // assume that we use 437 for all others
+            cp_array = CodePage437;
+        }
+        ch -= 0x80;
+        if( ch > cp_array[ 0 ] ) {
+            return;
+        }
+        ch = cp_array[ ch + 1 ];     // skip over size
+        if( ch == 0xff ) {
+            return;
+        }
+        DrawChar( MultiLingIndex[ ch ][ 0 ], cx, cy, bx, by, px, py );
+        DrawChar( MultiLingIndex[ ch ][ 1 ], cx, cy, bx, by, px, py );
+#endif
     }
-    return( (long)p1 / MAX );
 }
