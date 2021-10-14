@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,10 +68,10 @@ long                    _CurrBkColor = 0;           // current background colour
 grcolor                 _CurrColor = 0;             // current colour number
 short                   _Palette = 3;               // current palette number
 
-unsigned char           _FillMask[ MASK_LEN ] =     // current fill mask
+unsigned char           _FillMask[MASK_LEN] =       // current fill mask
                             { 0xff, 0xff, 0xff, 0xff,
                               0xff, 0xff, 0xff, 0xff };
-unsigned char           _DefMask[ MASK_LEN ] =      // default fill mask
+unsigned char           _DefMask[MASK_LEN] =        // default fill mask
                             { 0xff, 0xff, 0xff, 0xff,
                               0xff, 0xff, 0xff, 0xff };
 char                    _HaveMask = 0;              // is there a fill mask?
@@ -84,8 +85,8 @@ short                   _PlotAct = 0;               // plotting action
 struct textsettings     _TextSettings =             // default text settings
                             { 1, 0, _PATH_RIGHT, 0,
                               0, 0, _NORMAL, _NORMAL };
-extern font_def _WCI86FAR    _StdFont;                   // standard font
-font_def _WCI86FAR           *_CurrFont = &_StdFont;     // current font
+extern font_def _WCI86FAR    _StdFont;              // standard font
+font_def _WCI86FAR           *_CurrFont = &_StdFont; // current font
 
 struct arcinfo          _ArcInfo =                  // arc information
                             { { 0, 0 }, { 0, 0 }, { 0, 0 } };
@@ -97,7 +98,7 @@ struct window_def       _Window =                   // default window def'n
 SCREEN_DESC             _Screen;                    // screen description
 
 unsigned char           _IsDBCS;                    // is this a DBCS system
-dbcs_pair               _DBCSPairs[ 5 ];            // range of DBCS chars
+dbcs_pair               _DBCSPairs[5];              // range of DBCS chars
 
 #if defined( VERSION2 )
 long                    _coltbl[16];                // EGA colors for TrueColor modes

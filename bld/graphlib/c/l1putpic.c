@@ -115,7 +115,7 @@ void _L1PutPic( short px, short py, short line_len,
             }
             if( tmp != NULL ) {
                 for( t = 0; t < line_len; ++t ) {
-                    tmp[ t ] = *pic;
+                    tmp[t] = *pic;
                     ++pic;      // the PIA function will handle this properly
                 }
                 ( *copy )( _Screen.mem, tmp, dx, ( _Screen.bit_pos << 8 ) + bit_offset, plane_len );

@@ -34,7 +34,7 @@
 #include "gdefn.h"
 
 
-WPI_COLOUR              _RGB_COLOR[ 256 ];
+WPI_COLOUR              _RGB_COLOR[256];
 HRGN                    _ClipRgn;
 HFONT                   _CurFnt;
 static HFONT            _SysMonoFnt;
@@ -73,7 +73,7 @@ HBITMAP _Mask2Bitmap( HDC dc, unsigned char *mask )
         BITMAPINFOHEADER        Head;
         RGBQUAD                 Colors[2];
     } bminfo;
-    BYTE                pad_mask[ 4 * MASK_LEN ];
+    BYTE                pad_mask[4 * MASK_LEN];
     int                 i;      /* counters */
     long                color, bkcolor;
 
@@ -121,7 +121,7 @@ WPI_HBITMAP _Mask2Bitmap( HDC dc, unsigned char *mask )
 {
     unsigned            bmsize;
     BITMAPINFO2*        bminfo;
-    BYTE                pad_mask[ 4 * MASK_LEN ];
+    BYTE                pad_mask[4 * MASK_LEN];
     WPI_HBITMAP         bmp;
     int                 i;      /* counters */
 
@@ -204,9 +204,9 @@ WPI_COLOUR _Col2RGB( short color )
 
     color %= _CurrState->vc.numcolors;
     rgb = _wpi_palettergb( _Mem_dc,
-                           _wpi_getrvalue ( _RGB_COLOR[ color ] ),
-                           _wpi_getgvalue ( _RGB_COLOR[ color ] ),
-                           _wpi_getbvalue ( _RGB_COLOR[ color ] ) );
+                           _wpi_getrvalue ( _RGB_COLOR[color] ),
+                           _wpi_getgvalue ( _RGB_COLOR[color] ),
+                           _wpi_getbvalue ( _RGB_COLOR[color] ) );
     return( rgb );
 }
 
@@ -217,11 +217,11 @@ short _RGB2Col( WPI_COLOUR color )
     int         i;
     WPI_COLOUR  rgb;
 
-    for( i = 0; i < _CurrState->vc.numcolors; ++i ){
+    for( i = 0; i < _CurrState->vc.numcolors; ++i ) {
         rgb = _wpi_palettergb( _Mem_dc,
-                               _wpi_getrvalue ( _RGB_COLOR[ i ] ),
-                               _wpi_getgvalue ( _RGB_COLOR[ i ] ),
-                               _wpi_getbvalue ( _RGB_COLOR[ i ] ) );
+                               _wpi_getrvalue ( _RGB_COLOR[i] ),
+                               _wpi_getgvalue ( _RGB_COLOR[i] ),
+                               _wpi_getbvalue ( _RGB_COLOR[i] ) );
         if( ( rgb & 0x00ffffff ) == color ) {
             return i;
         }
@@ -400,12 +400,12 @@ void _Set_RGB_COLOR( short i, WPI_COLOUR color )
 /*===========================================
 */
 {
-    _RGB_COLOR[ i ] = color;
+    _RGB_COLOR[i] = color;
 }
 
 WPI_COLOUR _Get_RGB_COLOR( short i )
 /*===========================================
 */
 {
-    return _RGB_COLOR[ i ];
+    return _RGB_COLOR[i];
 }

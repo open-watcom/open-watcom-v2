@@ -46,7 +46,7 @@ extern unsigned short   cs( void );
 gr_device _FARD         _GrVESA;
 #endif
 
-static short            _SuperVGAModes[ _SV_MAX-2 ][ 6 ] = {
+static short            _SuperVGAModes[_SV_MAX-2][6] = {
 //                      100h    101h    102h    103h    104h    105h
 //                      ====    ====    ====    ====    ====    ====
 /* _SV_VIDEO7 */        0x66,   0x67,   0x62,   0x69,   0x65,   0x6a,
@@ -99,7 +99,7 @@ static short SuperVGASetMode( short adapter, short mode, short *stride )
     short               val;
 //#if !defined( __QNX__ )
     short               granule;
-    char                buf[ 256 ];
+    char                buf[256];
 #if defined( _M_I86 ) || defined(__QNX__)
 #else
 //    short               i;
@@ -695,7 +695,7 @@ static short _SuperVGAInit( short mode )
         bios_mode = 0x72;
 #endif
     } else {
-        bios_mode = _SuperVGAModes[ adapter - 2 ][ mode - 0x100 ];
+        bios_mode = _SuperVGAModes[adapter - 2][mode - 0x100];
     }
 
     if( bios_mode == 0 ) {
@@ -715,9 +715,9 @@ static short _SuperVGAInit( short mode )
 // to avoid segment relocations in the executable.
 // The assignment to _SetVGAPage provides the CS value at runtime.
 #if defined( _M_I86 ) || !defined(__QNX__)
-    _SetVGAPage = _VGAPageFunc[ adapter - 1 ];
+    _SetVGAPage = _VGAPageFunc[adapter - 1];
 #else
-    _SetVGAPage = _MK_FP( cs(), _VGAPageFunc[ adapter - 1 ] );
+    _SetVGAPage = _MK_FP( cs(), _VGAPageFunc[adapter - 1] );
 #endif
 
     //              x,   y, strd, col, bpp, pag, seg,     off,    siz, mis

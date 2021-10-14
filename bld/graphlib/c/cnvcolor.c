@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,7 +75,7 @@
 
 #endif
 
-long _VGA_Colours[ 16 ] = {     /* Maps VGA colours to EGA equivalents */
+long _VGA_Colours[16] = {     /* Maps VGA colours to EGA equivalents */
     __BLACK, __BLUE, __GREEN, __CYAN,
     __RED, __MAGENTA, __BROWN, __WHITE,
     __GRAY, __LIGHTBLUE, __LIGHTGREEN, __LIGHTCYAN,
@@ -84,16 +85,15 @@ long _VGA_Colours[ 16 ] = {     /* Maps VGA colours to EGA equivalents */
 
 short _CnvColour( long colr )
 /*===========================
-
-   This routine converts a VGA colour to an equivalent EGA colour. */
-
+ * This routine converts a VGA colour to an equivalent EGA colour.
+ */
 {
-    short                 i;                      /* loop counter */
+    short                 i;            /* loop counter */
 
     for( i = 0; i < 16; i++ ) {
-        if( colr == _VGA_Colours[ i ] ) {       /* if its a standard one */
-            return( i );                        /* use the index */
+        if( colr == _VGA_Colours[i] ) { /* if its a standard one */
+            return( i );                /* use the index */
         }
     }
-    return( colr & 0x000f );                    /* otherwise, just use */
-}                                               /* colour mod 16 */
+    return( colr & 0x000f );            /* otherwise, just use */
+}                                       /* colour mod 16 */

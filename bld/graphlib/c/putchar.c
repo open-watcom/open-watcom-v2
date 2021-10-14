@@ -83,8 +83,8 @@ void _PutChar( short row, short col, short ch )
     old_text = _wpi_settextcolor( dc, _Col2RGB( colour ) );
     old_bk   = _wpi_setbackcolour( dc, _CurrBkColor );
 
-    temp[ 0 ] = ch;
-    temp[ 1 ] = '\0';
+    temp[0] = ch;
+    temp[1] = '\0';
 
     y2 = y + char_height;
     x2 = x + _wpi_metricmaxcharwidth( font_info );

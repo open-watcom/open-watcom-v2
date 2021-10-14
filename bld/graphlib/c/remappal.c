@@ -151,8 +151,8 @@ static void PutPalette( short pixval, long colour )
             red >>= 4;      /* map from range 0..63 to range 0..3 */
             green >>= 4;
             blue >>= 4;
-            cnvcol = EGA_Intensity[ blue ] + ( EGA_Intensity[ green ] << 1 )
-                                           + ( EGA_Intensity[ red ] << 2 );
+            cnvcol = EGA_Intensity[blue] + ( EGA_Intensity[green] << 1 )
+                                           + ( EGA_Intensity[red] << 2 );
         }
         VideoInt( _BIOS_SET_PALETTE, ( cnvcol << 8 ) + pixval, 0, 0 );
     }
@@ -194,7 +194,7 @@ void _RemapNum( long _WCI86FAR *colours, short num )
     }
 #endif
     for( i = 0; i < num; ++i ) {
-        PutPalette( i, colours[ i ] );
+        PutPalette( i, colours[i] );
     }
 }
 

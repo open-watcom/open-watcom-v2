@@ -42,7 +42,7 @@
 /* The three CodePage arrays contain indices into the
    MultiLingIndex array to avoid repetition of font data. */
 
-static unsigned char CodePage437[ 99 ] = {
+static unsigned char CodePage437[99] = {
             98,                                         // number of entries
         C_CEDL, u_UMLT, e_AIGU, a_CIRC, a_UMLT, a_GRAV,   0xff, c_CEDL,
         e_CIRC, e_UMLT, e_GRAV, i_UMLT, i_CIRC, i_GRAV, A_UMLT,   0xff,
@@ -59,7 +59,7 @@ static unsigned char CodePage437[ 99 ] = {
           0xff, b_BETA
 };
 
-static unsigned char CodePage863[ 99 ] = {
+static unsigned char CodePage863[99] = {
             98,                                         // number of entries
         C_CEDL, u_UMLT, e_AIGU, a_CIRC, A_CIRC, a_GRAV,   0xff, c_CEDL,
         e_CIRC, e_UMLT, e_GRAV, i_UMLT, i_CIRC,   0xff, A_GRAV,   0xff,
@@ -76,7 +76,7 @@ static unsigned char CodePage863[ 99 ] = {
           0xff, b_BETA
 };
 
-static unsigned char CodePage850[ 111 ] = {
+static unsigned char CodePage850[111] = {
            110,                                         // number of entries
         C_CEDL, u_UMLT, e_AIGU, a_CIRC, a_UMLT, a_GRAV,   0xff, c_CEDL,
         e_CIRC, e_UMLT, e_GRAV, i_UMLT, i_CIRC, i_GRAV, A_UMLT,   0xff,
@@ -98,7 +98,7 @@ static unsigned char CodePage850[ 111 ] = {
 // Multi-lingual characters are made up by drawing two characters,
 // the regular character, followed by the accent.
 
-static unsigned char MultiLingIndex[ NUM_LANG_CHARS ][ 2 ] = {
+static unsigned char MultiLingIndex[NUM_LANG_CHARS][2] = {
         { 'a',             LC_AIGU },       // a_AIGU
         { 'A',             UC_AIGU },       // A_AIGU
         { 'e',             LC_AIGU },       // e_AIGU
@@ -192,8 +192,8 @@ static void DrawChar( char ch, short cx, short cy, short bx, short by,
     short               y1;
     char                join_points;
 
-    offset = _CurrFont->key[ ch - '!' ];
-    len = _CurrFont->key[ ch - '!' + 1 ] - offset;
+    offset = _CurrFont->key[ch - '!'];
+    len = _CurrFont->key[ch - '!' + 1] - offset;
     data_ptr = (signed char _WCI86FAR *)&_CurrFont->data + offset;
 
     join_points = FALSE;
@@ -243,15 +243,15 @@ void _HershDraw( char pc, short cx, short cy, short bx, short by,
             cp_array = CodePage437;
         }
         ch -= 0x80;
-        if( ch > cp_array[ 0 ] ) {
+        if( ch > cp_array[0] ) {
             return;
         }
-        ch = cp_array[ ch + 1 ];     // skip over size
+        ch = cp_array[ch + 1];     // skip over size
         if( ch == 0xff ) {
             return;
         }
-        DrawChar( MultiLingIndex[ ch ][ 0 ], cx, cy, bx, by, px, py );
-        DrawChar( MultiLingIndex[ ch ][ 1 ], cx, cy, bx, by, px, py );
+        DrawChar( MultiLingIndex[ch][0], cx, cy, bx, by, px, py );
+        DrawChar( MultiLingIndex[ch][1], cx, cy, bx, by, px, py );
 #endif
     }
 }

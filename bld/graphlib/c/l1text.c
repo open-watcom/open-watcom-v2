@@ -137,9 +137,9 @@ static short _CharWidth( char ch )
 //  if( ch >= ' ' && ch <= 0x7e ) {
 //      if( _FontType == _STROKE ) {
 //          if( _PropFont ) {
-//              return( _CurrFont->font.stroke.width[ ch ] );
+//              return( _CurrFont->font.stroke.width[ch] );
 //          } else {
-//              return( _CurrFont->font.stroke.width[ 'A' ] );
+//              return( _CurrFont->font.stroke.width['A'] );
 //          }
 //      } else {
 //          return( _CurrFont->font.bit.width );
@@ -396,11 +396,11 @@ void _L1Text( short xpos, short ypos, char _WCI86FAR * str )
     CalcTranslation( &trans, &length, &height, &up, hor, vert );
     CalcCorners( &corner, &length, &height, &trans, xpos, ypos );
     if( _TextSettings.txpath == _PATH_UP ) {    /* select proper corner for */
-        xpos = corner[ 0 ].xcoord;              /* text starting position   */
-        ypos = corner[ 0 ].ycoord;
+        xpos = corner[0].xcoord;              /* text starting position   */
+        ypos = corner[0].ycoord;
     } else {
-        xpos = corner[ _TextSettings.txpath ].xcoord;
-        ypos = corner[ _TextSettings.txpath ].ycoord;
+        xpos = corner[_TextSettings.txpath].xcoord;
+        ypos = corner[_TextSettings.txpath].ycoord;
     }
     if( _TextSettings.txpath == _PATH_RIGHT ||
         _TextSettings.txpath == _PATH_LEFT ) {

@@ -136,7 +136,7 @@ void _L1GetPic( short x1, short y1, short x2, short y2,
             if( tmp != NULL ) {
                 ( *copy )( tmp, _Screen.mem, dx, _Screen.bit_pos, 0 );
                 for( t = 0; t < line_len; ++t ) {
-                    *pic = tmp[ t ];
+                    *pic = tmp[t];
                     ++pic;      // the PIA function will handle this properly
                 }
             } else {

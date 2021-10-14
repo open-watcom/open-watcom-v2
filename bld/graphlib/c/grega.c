@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -131,7 +131,7 @@ void _EGASet( void )
 
 {
     outpw( GRADDR, ( ( READ_MODE_0 + WRITE_MODE_2 ) << 8 ) + MODEREG );
-    outpw( GRADDR, ( ActnTab[ _PlotAct ] << 8 ) + ACTN );
+    outpw( GRADDR, ( ActnTab[_PlotAct] << 8 ) + ACTN );
 //  outpw( GRADDR, 0x0F00 + DONTCARE );
 }
 
@@ -143,7 +143,7 @@ void _EGASetEO( void )
 
 {
     outpw( GRADDR, ( ( EVEN_ODD_MODE + READ_MODE_0 + WRITE_MODE_2 ) << 8 ) + MODEREG );
-    outpw( GRADDR, ( ActnTab[ _PlotAct ] << 8 ) + ACTN );
+    outpw( GRADDR, ( ActnTab[_PlotAct] << 8 ) + ACTN );
 //  outpw( GRADDR, 0x0F00 + DONTCARE );
 }
 
@@ -224,7 +224,7 @@ static void _EGASetupMono( short x, short y, grcolor colour )
                          _CurrState->screen_off + pixel_offset );
     _Screen.bit_pos = x & 7;            // position of pixel in byte
     _Screen.mask = ( 0x80 >> _Screen.bit_pos ) << 8;
-    _Screen.colour = MonoTab[ colour ];
+    _Screen.colour = MonoTab[colour];
 }
 
 

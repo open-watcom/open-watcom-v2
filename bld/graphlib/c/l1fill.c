@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +53,7 @@ void _L1Fill( short x, short y, short length )
        x = abs( x - _PaRf_x ) & 7;
        y = abs( y - _PaRf_y ) & 7;
         fill = dev_ptr->fill;
-        ( *fill )( _Screen.mem, _CurrColor, ( x << 8 ) + _FillMask[ y ],
+        ( *fill )( _Screen.mem, _CurrColor, ( x << 8 ) + _FillMask[y],
                    length, _Screen.bit_pos << 8 );
     }
 }

@@ -89,7 +89,7 @@ static struct ScrollStruct getscrolldata( HWND Wnd, int dir )
    _wpi_getclientrect( Wnd, &rect );
    _wpi_getrectvalues( rect, &left, &top, &right, &bottom );
 
-   if( dir == SB_VERT ){
+   if( dir == SB_VERT ) {
        info.max = _wpi_getsystemmetrics( SM_CYSCREEN );
        info.pixls = bottom - top;
        info.currcoord = _BitBlt_Coord.ycoord;
@@ -136,7 +136,7 @@ static void CalPos( struct ScrollStruct *info, WPI_PARAM1 wParam,
         case SB_BOTTOM:
             // Goto the bottom
             *newcoord = info->max - info->pixls;
-            if( *newcoord < 0 ){
+            if( *newcoord < 0 ) {
                 newcoord = 0;
             }
             *newpos = info->maxpos;
@@ -348,12 +348,12 @@ WPI_MRESULT CALLBACK GraphWndProc( HWND         Wnd,
     case WM_DESTROY:
         // free the system resources allocated
 
-        if( _Mem_dc ){
+        if( _Mem_dc ) {
             _wpi_deletecliprgn( _Mem_dc, _ClipRgn );
             _wpi_deletecompatiblepres( _Mem_dc, _Hdc );
-            if( _Mem_bmp ){
+            if( _Mem_bmp ) {
                 _wpi_deletebitmap( _Mem_bmp );
-                if( !_IsStockFont() ){
+                if( !_IsStockFont() ) {
                     _wpi_f_deletefont( _CurFnt );
                 }
             }

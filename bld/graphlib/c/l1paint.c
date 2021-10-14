@@ -231,7 +231,7 @@ static short PaintRight( short x, short y, grcolor stop_color, short border_flag
     ( *dev_ptr->setup )( x, y, stop_color );
     scan = dev_ptr->scanright;
 
-    if( x <= _CurrState->clip.xmax ){
+    if( x <= _CurrState->clip.xmax ) {
         xright = ( *scan )( _Screen.mem, _Screen.colour, x, _Screen.mask,
                        border_flag, _CurrState->clip.xmax );
     } else {
@@ -272,10 +272,10 @@ static short AddEntry( short ypos, short right, short left, short direction,
         return( TRUE );
     }
     *stack_count += 1;                          /* append to stack  */
-    stack[ *stack_count ].left = left;
-    stack[ *stack_count ].right = right;
-    stack[ *stack_count ].ypos = ypos;
-    stack[ *stack_count ].direction = direction;
+    stack[*stack_count].left = left;
+    stack[*stack_count].right = right;
+    stack[*stack_count].ypos = ypos;
+    stack[*stack_count].direction = direction;
     return( FALSE );
 }
 
@@ -286,8 +286,8 @@ static char NotValidFrame( unsigned curr, unsigned *stack_count,
 /*  If the current frame is no longer valid then replace it by the last one.*/
 
 {
-    if( stack[ curr ].left > stack[ curr ].right ) {
-        memcpy( &stack[ curr ], &stack[ *stack_count ], sizeof( struct frame ) );
+    if( stack[curr].left > stack[curr].right ) {
+        memcpy( &stack[curr], &stack[*stack_count], sizeof( struct frame ) );
         *stack_count -= 1;
     }
     return( FALSE );                /* signal no direction  */
@@ -321,8 +321,8 @@ static char StackCompare( struct frame * stack, unsigned *stack_count )
         }
         smallest = 0;           /* assume smallest frame is the active one  */
         for( curr = 1; curr <= count; curr++ ) {
-            if( stack[ curr ].right - stack[ curr ].left <
-                stack[ smallest ].right - stack[ smallest ].left ) {
+            if( stack[curr].right - stack[curr].left <
+                stack[smallest].right - stack[smallest].left ) {
                 smallest = curr;
             }
         }
@@ -336,28 +336,28 @@ static char StackCompare( struct frame * stack, unsigned *stack_count )
         stack[0].ypos += stack[0].direction;        /* go to new line   */
         count = *stack_count;
         for( curr = 1; curr <= count; curr++ ) {
-            if( stack[0].ypos == stack[ curr ].ypos &&
-                stack[0].direction != stack[ curr ].direction ) {
-                if( stack[0].left - 1 <= stack[ curr ].right    /* overlap? */
-                    && stack[0].right + 1 >= stack[ curr ].left ) {
-                    if( stack[0].right + 1 >= stack[ curr ].right ) {
+            if( stack[0].ypos == stack[curr].ypos &&
+                stack[0].direction != stack[curr].direction ) {
+                if( stack[0].left - 1 <= stack[curr].right    /* overlap? */
+                    && stack[0].right + 1 >= stack[curr].left ) {
+                    if( stack[0].right + 1 >= stack[curr].right ) {
                         temp = stack[0].left;
-                        stack[0].left = stack[ curr ].right + 2;
-                        if( temp + 1 < stack[ curr ].left ) {
-                            stack[ curr ].right = stack[ curr ].left - 2;
-                            stack[ curr ].left = temp - 1;
-                            stack[ curr ].direction = stack[0].direction;
-                            stack[ curr ].ypos -= stack[0].direction;
+                        stack[0].left = stack[curr].right + 2;
+                        if( temp + 1 < stack[curr].left ) {
+                            stack[curr].right = stack[curr].left - 2;
+                            stack[curr].left = temp - 1;
+                            stack[curr].direction = stack[0].direction;
+                            stack[curr].ypos -= stack[0].direction;
                         } else {
-                            stack[ curr ].right = temp - 2;
+                            stack[curr].right = temp - 2;
                         }
                     } else {
-                        temp = stack[ curr ].left;
-                        stack[ curr ].left = stack[0].right + 2;
+                        temp = stack[curr].left;
+                        stack[curr].left = stack[0].right + 2;
                         if( temp + 1 < stack[0].left ) {
                             stack[0].right = stack[0].left - 2;
                             stack[0].left = temp;
-                            stack[0].direction = stack[ curr ].direction;
+                            stack[0].direction = stack[curr].direction;
                             startover = TRUE;
                             break;
                         }
@@ -374,15 +374,15 @@ static char StackCompare( struct frame * stack, unsigned *stack_count )
     /* Check entries with same direction and same y */
     count = *stack_count;
     for( curr = 1; curr <= count; curr++ ) {
-        if( stack[0].ypos == stack[ curr ].ypos &&
-            stack[0].direction == stack[ curr ].direction ) {
-            if( stack[0].left - 1 <= stack[ curr ].right &&     /* overlap? */
-                stack[0].right + 1 >= stack[ curr ].left ) {
-                if( stack[0].right - 1 <= stack[ curr ].right ) {
-                    stack[0].right = stack[ curr ].left - 2;
+        if( stack[0].ypos == stack[curr].ypos &&
+            stack[0].direction == stack[curr].direction ) {
+            if( stack[0].left - 1 <= stack[curr].right &&     /* overlap? */
+                stack[0].right + 1 >= stack[curr].left ) {
+                if( stack[0].right - 1 <= stack[curr].right ) {
+                    stack[0].right = stack[curr].left - 2;
                 }
-                if( stack[0].left + 1 >= stack[ curr ].left ) {
-                    stack[0].left = stack[ curr ].right + 2;
+                if( stack[0].left + 1 >= stack[curr].left ) {
+                    stack[0].left = stack[curr].right + 2;
                 }
                 if( stack[0].left > stack[0].right ) {
                     return( NotValidFrame( curr, stack_count, stack ) );
@@ -542,7 +542,7 @@ short _L1Paint( grcolor stop_color, short x, short y )
                 return( !success );             /* flip flag - 0 was true   */
             }
             /* Make the last frame the active frame.    */
-            memcpy( &stack[0], &stack[ stack_count ], sizeof( struct frame ) );
+            memcpy( &stack[0], &stack[stack_count], sizeof( struct frame ) );
             stack_count -= 1;
         } while( !StackCompare( stack, &stack_count ) );
     }

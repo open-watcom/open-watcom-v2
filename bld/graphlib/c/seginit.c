@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -144,7 +144,7 @@ struct seg_table {
     PSEL                desc;
 };
 
-static struct seg_table _SegTable[ NUM_SELECTORS ] = {
+static struct seg_table _SegTable[NUM_SELECTORS] = {
     0xB000,     0x8000,     &_MonoSeg,
     0xB800,     0x8000,     &_CgaSeg,
     0xA000,     0x10000,    &_EgaSeg,

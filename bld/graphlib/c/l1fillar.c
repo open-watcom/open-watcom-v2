@@ -63,7 +63,7 @@ static short NextPoint( short i, short dir, short n,
     short               p;
     short               y;
 
-    y = points[ i ].ycoord;
+    y = points[i].ycoord;
     for( p = i + dir;; p += dir  ) {
         if( p == n ) {  // p %= n
             p = 0;
@@ -73,7 +73,7 @@ static short NextPoint( short i, short dir, short n,
         if( p == i ) {      // back to the start
             break;
         }
-        if( points[ p ].ycoord != y ) {
+        if( points[p].ycoord != y ) {
             break;
         }
     }
@@ -102,8 +102,8 @@ static void CalcMinima( short n, struct xycoord _WCI86FAR *points )
     do {
         next = NextPoint( i, 1, n, points );
         prev = NextPoint( i, -1, n, points );
-        curr_y = points[ i ].ycoord;
-        if( points[ prev ].ycoord > curr_y && points[ next ].ycoord > curr_y ) {
+        curr_y = points[i].ycoord;
+        if( points[prev].ycoord > curr_y && points[next].ycoord > curr_y ) {
             // found a minima, add to min list, sort by y value
             if( ( NumMinima + 1 ) * sizeof( short ) > StackSize ) {
                 _ErrorStatus = _GRINSUFFICIENTMEMORY;   // need room for 1 more
@@ -111,15 +111,15 @@ static void CalcMinima( short n, struct xycoord _WCI86FAR *points )
                 return;
             }
             for( min = 0; min < NumMinima; ++min ) {
-                if( curr_y < points[ MinList[ min ] ].ycoord ) {
+                if( curr_y < points[MinList[min]].ycoord ) {
                     // shift rest of list up
                     for( j = NumMinima; j > min; --j ) {
-                        MinList[ j ] = MinList[ j - 1 ];
+                        MinList[j] = MinList[j - 1];
                     }
                     break;
                 }
             }
-            MinList[ min ] = i;
+            MinList[min] = i;
             ++NumMinima;
         }
         i = next;
@@ -180,8 +180,8 @@ static short AddLine( short p1, short p2, struct xycoord _WCI86FAR *points )
         return( FALSE );
     }
     FreeList = FreeList->link;
-    _LineInit( points[ p1 ].xcoord, points[ p1 ].ycoord,
-               points[ p2 ].xcoord, points[ p2 ].ycoord, &segment->line );
+    _LineInit( points[p1].xcoord, points[p1].ycoord,
+               points[p2].xcoord, points[p2].ycoord, &segment->line );
     segment->end_pt = p2;
     segment->delete = FALSE;
     segment->link = LineList;
@@ -199,7 +199,7 @@ static short AddMinima( short y, short n, struct xycoord _WCI86FAR *points )
     short               next;
     short               p2;
 
-    p = MinList[ 0 ];
+    p = MinList[0];
     for( ;; ) {
         prev = NextPoint( p, -1, n, points );
         p2 = prev + 1;
@@ -222,8 +222,8 @@ static short AddMinima( short y, short n, struct xycoord _WCI86FAR *points )
             break;
         }
         ++MinList;              // advance list
-        p = MinList[ 0 ];
-        if( points[ p ].ycoord != y ) {     // check for more on this line
+        p = MinList[0];
+        if( points[p].ycoord != y ) {     // check for more on this line
             break;
         }
     }
@@ -249,24 +249,24 @@ static void ExtendLines( short y, short n, struct xycoord _WCI86FAR *points )
 
     for( line = LineList; line != NULL; line = line->link ) {
         p = line->end_pt;
-        if( points[ p ].ycoord == y ) {
+        if( points[p].ycoord == y ) {
             // current line ends at this point, so make sure the
             // line doesn't extend past the ending x value
-            end_x = points[ p ].xcoord;
+            end_x = points[p].xcoord;
             if( line->line.sdx > 0 ) {
                 line->line.right_x = end_x;
             } else {
                 line->line.left_x = end_x;
             }
             p2 = NextPoint( p, -1, n, points );
-            if( points[ p2 ].ycoord > y ) {
+            if( points[p2].ycoord > y ) {
                 p1 = p2 + 1;
                 if( p1 == n ) {
                     p1 = 0;
                 }
             } else {
                 p2 = NextPoint( p, 1, n, points );
-                if( points[ p2 ].ycoord > y ) {
+                if( points[p2].ycoord > y ) {
                     p1 = p2 - 1;
                     if( p1 < 0 ) {
                         p1 = n - 1;
@@ -280,8 +280,8 @@ static void ExtendLines( short y, short n, struct xycoord _WCI86FAR *points )
             // from p1 to p2. Preserve the current left and right extensions.
             old_left = line->line.left_x;
             old_right = line->line.right_x;
-            _LineInit( points[ p1 ].xcoord, points[ p1 ].ycoord,
-                       points[ p2 ].xcoord, points[ p2 ].ycoord, &line->line );
+            _LineInit( points[p1].xcoord, points[p1].ycoord,
+                       points[p2].xcoord, points[p2].ycoord, &line->line );
             line->end_pt = p2;
             if( old_left < line->line.left_x ) {
                 line->line.left_x = old_left;
@@ -371,9 +371,9 @@ static short InitLineList( void )
     LineList = NULL;
     FreeList = (struct seg_entry *) Stack;  // initialize free list
     for( i = 0; i < max_lines - 1; ++i ) {
-        FreeList[ i ].link = &FreeList[ i + 1 ];
+        FreeList[i].link = &FreeList[i + 1];
     }
-    FreeList[ max_lines - 1 ].link = NULL;
+    FreeList[max_lines - 1].link = NULL;
     return( TRUE );
 }
 
@@ -514,7 +514,7 @@ short _L1FillArea( short n, struct xycoord _WCI86FAR *points )
     if( !InitLineList() ) {
         return( FALSE );
     }
-    y = points[ MinList[ 0 ] ].ycoord;
+    y = points[MinList[0]].ycoord;
     next_min = y;
     _StartDevice();
     for( ; ; ++y ) {
@@ -526,7 +526,7 @@ short _L1FillArea( short n, struct xycoord _WCI86FAR *points )
             if( NumMinima == 0 ) {
                 next_min = y - 1;
             } else {
-                next_min = points[ MinList[ 0 ] ].ycoord;
+                next_min = points[MinList[0]].ycoord;
             }
         }
         if( LineList == NULL ) {

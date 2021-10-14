@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,7 +63,7 @@ static int TestForVESA( void )
 {
     short               val;
 #if defined( _M_I86 ) || defined( __QNX__ )
-    char                buf[ 256 ];
+    char                buf[256];
 #else
     char __far          *buf;
     RM_ALLOC            mem;
@@ -72,16 +72,16 @@ static int TestForVESA( void )
 
 #if defined( _M_I86 ) || defined( __QNX__ )
     val = GetVESAInfo( 0x4f00, 0, &buf );
-    if( val == 0x004f && buf[ 0 ] == 'V' && buf[ 1 ] == 'E' &&
-                         buf[ 2 ] == 'S' && buf[ 3 ] == 'A' ) {
+    if( val == 0x004f && buf[0] == 'V' && buf[1] == 'E' &&
+                         buf[2] == 'S' && buf[3] == 'A' ) {
         return( TRUE );
     }
 #else
     if( _RMAlloc( 256, &mem ) ) {
         buf = mem.pm_ptr;
         val = _RMInterrupt( 0x10, 0x4f00, 0, 0, 0, mem.rm_seg, 0 );
-        if( val == 0x004f && buf[ 0 ] == 'V' && buf[ 1 ] == 'E' &&
-                             buf[ 2 ] == 'S' && buf[ 3 ] == 'A' ) {
+        if( val == 0x004f && buf[0] == 'V' && buf[1] == 'E' &&
+                             buf[2] == 'S' && buf[3] == 'A' ) {
             is_vesa = TRUE;
         } else {
             is_vesa = FALSE;
@@ -188,7 +188,7 @@ short _SuperVGAType( void )
     if( _RomOff + val <= seg_len - 3 ) {
 #endif
     p = _MK_FP( _RomSeg, _RomOff + val );
-    if( p[ 0 ] == 0x77 && p[ 1 ] == 0x11 && p[ 2 ] == 0x99 && p[ 3 ] == 0x66 ) {
+    if( p[0] == 0x77 && p[1] == 0x11 && p[2] == 0x99 && p[3] == 0x66 ) {
         return( _SV_GENOA );
     }
 #if defined( __QNX__ )

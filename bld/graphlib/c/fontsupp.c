@@ -103,7 +103,7 @@
 typedef _Packed struct windows_font {
     short               dfVersion;
     long                dfSize;
-    char                dfCopyright[ 60 ];
+    char                dfCopyright[60];
     short               dfType;     // 0 == bitmap, 1 == vector
     short               dfPoints;
     short               dfVertRes;
@@ -226,7 +226,7 @@ static short addfont( long offset, tiny_handle_t handle, char *font_file )
     tiny_ret_t              rc;
     WINDOWS_FONT            w_font;
     FONT_ENTRY _WCI86FAR    *curr;
-    char                    facename[ 32 ];
+    char                    facename[32];
 
 //  printf( "found font at %lx\n", offset );
     if( seek_and_read( handle, offset, &w_font, sizeof( WINDOWS_FONT ) ) == 0 ) {
@@ -244,7 +244,7 @@ static short addfont( long offset, tiny_handle_t handle, char *font_file )
         TinyClose( handle );
         return( 0 );
     }
-    facename[ 31 ] = '\0';
+    facename[31] = '\0';
     curr = Alloc( sizeof( FONT_ENTRY ) );
     if( curr == NULL ) {
         _ErrorStatus = _GRINSUFFICIENTMEMORY;
@@ -291,7 +291,7 @@ static short readfontfile( char *font_file )
     short               i;
     tiny_ret_t          rc;
     tiny_handle_t       handle;
-    short               table[ RS_DESC ];
+    short               table[RS_DESC];
 
 //  printf( "Found file '%s'\n", font_file );
     rc = TinyOpen( font_file, TIO_READ );
@@ -328,8 +328,8 @@ static short readfontfile( char *font_file )
         if( seek_and_read( handle, ne_offset, &table, RS_HEADER ) == 0 ) {
             return( 0 );
         }
-        type = table[ 0 ];
-        count = table[ 1 ];
+        type = table[0];
+        count = table[1];
         if( type == 0 ) {
             break;
         } else if( type == 0x8008 ) {   // font
@@ -337,7 +337,7 @@ static short readfontfile( char *font_file )
                 if( seek_and_read( handle, ne_offset + RS_HEADER + i * RS_DESC, &table, RS_DESC ) == 0 ) {
                     return( 0 );
                 }
-                if( addfont( (long) table[ 0 ] << shift_count, handle, font_file ) == 0 ) {
+                if( addfont( (long) table[0] << shift_count, handle, font_file ) == 0 ) {
                     return( 0 );
                 }
             }
@@ -383,7 +383,7 @@ static short loadfont( FONT_ENTRY _WCI86FAR *curr, short height, short width )
     tiny_handle_t       handle;
     short               num;
     short               glyph_width;
-    char                file_name[ _MAX_PATH ];
+    char                file_name[_MAX_PATH];
 
     StrCpy( file_name, curr->filename );        // copy into near memory
     rc = TinyOpen( file_name, TIO_READ );
@@ -459,7 +459,7 @@ static short error_func( short font_type, short height, char *facename,
 {
     short               error = 0;
     short               len;
-//char buff[ 80 ];
+//char buff[80];
 
     if( curr->type == _BITMAP ) {
         if( font_type == _STROKE ) {
@@ -519,7 +519,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _registerfonts( char _WCI86FAR *font_path )
     short                   count;
     FONT_ENTRY _WCI86FAR    *curr;
     short                   len;
-    char                    curr_file[ _MAX_PATH ];
+    char                    curr_file[_MAX_PATH];
 
     _ErrorStatus = _GROK;
     _unregisterfonts();         // free previous fonts, if any
@@ -535,7 +535,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _registerfonts( char _WCI86FAR *font_path )
         if( len > 4 && StrCmp( dire->d_name + len - 4, ".fon" ) == 0 ) {
             StrCpy( curr_file, font_path );
             len = strlen( curr_file );
-            curr_file[ len ] = '/';
+            curr_file[len] = '/';
             StrCpy( curr_file + len + 1, dire->d_name );
             if( !readfontfile( curr_file ) ) {
                 return( -2 );   // bad font file or out of memory
@@ -660,7 +660,7 @@ static PFONTMETRICS getfonts( WPI_PRES dc, PLONG fnts, char* facename )
 
     *fnts = GpiQueryFonts( dc, QF_PUBLIC, facename, &num, sizeof( *afm ), NULL );
     afm = _MyAlloc( sizeof( *afm ) * ( *fnts ) );
-    if( afm == NULL ){
+    if( afm == NULL ) {
         GpiQueryFonts( dc, QF_PUBLIC, facename, &num, sizeof( *afm ), afm );
     }
     return( afm );
@@ -712,7 +712,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setfont( char _WCI86FAR *opt )
         return( -1 );       // no fonts have been registered
     }
 #endif
-    facename[ 0 ] = '\0';
+    facename[0] = '\0';
     height = 0;
     width = 0;
     spacing = _UNDEFINED;
@@ -824,7 +824,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setfont( char _WCI86FAR *opt )
         }
         for( i = 0; i < numfnts; i++ ) {
             if( ( afm[i].fsType & FM_TYPE_FIXED ) &&
-                ( afm[i].fsDefn & FM_DEFN_OUTLINE ) ){
+                ( afm[i].fsDefn & FM_DEFN_OUTLINE ) ) {
                 if( ( afm[i].lMaxBaselineExt == height ) &&
                     ( afm[i].lAveCharWidth == width ) ) {
                     fntindex = i;
@@ -904,7 +904,7 @@ static short _charwidth( short ch )
             return( *glyph );
         }
         if( _CurFont->width == 0 ) {    // proportional
-            width = glyph[ 1 ];         // 2nd entry is the width
+            width = glyph[1];         // 2nd entry is the width
         } else {
             width = _CurFont->width;
         }
@@ -1058,7 +1058,7 @@ static void _outdot( short x, short y )
     if( _L1OutCode( x, y ) == 0 ) {             /* check if inside viewport */
         dev_ptr = _CurrState->deviceptr;
         ( *dev_ptr->setup )( x, y, _CurrColor );
-        putdot = dev_ptr->plot[ _PlotAct ];
+        putdot = dev_ptr->plot[_PlotAct];
         ( *putdot )( _Screen.mem, _Screen.colour, _Screen.mask );
     } else {
         _ErrorStatus = _GRNOOUTPUT;
@@ -1141,13 +1141,13 @@ static struct xycoord _outstrokechar( float x0, float y0, short ch )
 
     ch -= _CurFont->firstchar;
     glyph = (short _WCI86FAR *) ( _CurFont->glyph_table + ch * GlyphWidth( _CurFont ) );
-    offset = glyph[ 0 ];
+    offset = glyph[0];
     if( _CurFont->width == 0 ) {    // proportional
-        width = glyph[ 1 ];
-        length = glyph[ 2 ] - offset;
+        width = glyph[1];
+        length = glyph[2] - offset;
     } else {
         width = _CurFont->width;
-        length = glyph[ 1 ] - offset;
+        length = glyph[1] - offset;
     }
     strokes = (signed char _WCI86FAR *)_CurFont->bitmap_table + offset;
     x1 = x0 + _XVecDir * width * _XVecScale;

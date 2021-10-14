@@ -304,7 +304,7 @@ static short _registergphclass( WPI_INST inst )
     short               rc;
     static short        _Startup = 1;
 
-    if( _Startup ){
+    if( _Startup ) {
         _Startup = 0;
 
         _wpi_setclassstyle( &wc, 0 );
@@ -474,7 +474,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
     if( req_mode == 0 ) {
         _ErrorStatus = _GRMODENOTSUPPORTED;
         return( 0 );
-    } else if( _CurrWin ){
+    } else if( _CurrWin ) {
     // Make sure we don't create more than 1 window, and know when to close it
         if( req_mode == _DEFAULTMODE ) {
   #if defined( __OS2__ )
@@ -527,7 +527,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
 
     // Create the memory dc
     _Mem_dc = _wpi_createcompatiblepres( Win_DC, Inst, &_Hdc );
-    if( !_Mem_dc ){
+    if( !_Mem_dc ) {
         _ErrorStatus = _GRMODENOTSUPPORTED;
         _wpi_destroywindow( _CurrWin );
         return( 0 );
@@ -535,7 +535,7 @@ _WCRTLINK short _WCI86FAR _CGRAPH _setvideomode( short req_mode )
 
     // Create the bitmap to draw on
     _Mem_bmp = _wpi_createcompatiblebitmap( Win_DC, x, y );
-    if( _Mem_bmp == WPI_NULL ){
+    if( _Mem_bmp == WPI_NULL ) {
         _ErrorStatus = _GRMODENOTSUPPORTED;
         _wpi_destroywindow( _CurrWin );
         return( 0 );
@@ -715,7 +715,7 @@ Entry1( _SETVIDEOMODE, _setvideomode ) // alternate entry-point
 
 #if defined( _DEFAULT_WINDOWS )
 
-WPI_COLOUR              Color[ 256 ] = {
+WPI_COLOUR              Color[256] = {
     0x00000000, 0x00800000, 0x00008000, 0x00808000, 0x00000080,
     0x00800080, 0x00008080, 0x00bfbfbf, 0x00808080, 0x00ff0000,
     0x0000ff00, 0x00ffff00, 0x000000ff, 0x00ff00ff, 0x0000ffff,
@@ -861,7 +861,7 @@ void _PaletteInit( void )
 #endif
             _RemapNum( _VGA_Colours, 16 );
 //          for( i = 0; i < 16; ++i ) {
-//              _remappalette( i, _VGA_Colours[ i ] );
+//              _remappalette( i, _VGA_Colours[i] );
 //          }
         }
     }

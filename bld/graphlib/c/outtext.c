@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -88,12 +89,12 @@ static void OutputString( char _WCI86FAR *text, short length, short newline )
                 _PutChar( _TextPos.row, _TextPos.col, *text );
                 ++_TextPos.col;
             } else {        // double-byte character
-                if( text[ 1 ] == 0 ) {      // special 1-byte char
+                if( text[1] == 0 ) {      // special 1-byte char
                     _PutChar( _TextPos.row, _TextPos.col, *text );
                     ++_TextPos.col;
                 } else if( _TextPos.col <= _Tx_Col_Max - 1 ) { // room for both halves
-                    _PutChar( _TextPos.row, _TextPos.col, text[ 0 ] );
-                    _PutChar( _TextPos.row, _TextPos.col+1, text[ 1 ] );
+                    _PutChar( _TextPos.row, _TextPos.col, text[0] );
+                    _PutChar( _TextPos.row, _TextPos.col+1, text[1] );
                     _TextPos.col += 2;
                 } else {         // these three lines control double byte
                     text -= 2;   // characters at the end of the text window
