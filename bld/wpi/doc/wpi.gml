@@ -1,10 +1,10 @@
-.chap WATCOM Windows Programming Interface (WPI)
+.chap &company. Windows Programming Interface (WPI)
 .*
 .np
 Paul Fast, December 23, 1993
 .np
-WATCOM Windows Programming Interface (WPI) is a developers tool to aid in porting
-applications from Microsoft Windows to IBM Presentation Manager (PM).
+&company. Windows Programming Interface (WPI) is a developers tool to aid in
+porting applications from Microsoft Windows to IBM Presentation Manager (PM).
 The goal in the creation of WPI (pronounced wippee) is to supply programmers
 with a set of macros and library routines which allow them to quickly convert
 an application which already exists in Windows code to PM.  It should be
@@ -43,7 +43,7 @@ exist, it is the job of that developer to add it to both wpi_win.h and
 wpi_os2.h.  The source code for the library routines are in wpi_win.c and
 wpi_os2.c.
 .np
-To distinguish between the Windows and PM platforms, the WATCOM C compiler
+To distinguish between the Windows and PM platforms, the &company. C compiler
 provides a __OS2_PM__ macro which indicates that the program is being
 compiled for OS2 Presentation Manager.  To separate Windows and PM code
 something like the following is needed:
@@ -1163,10 +1163,11 @@ case WM_PAINT:
 .section Resources
 .*
 .np
-WATCOM does not currently have a resource compiler for PM hence requiring
-the use of the OS2 toolkit resource compiler.  RC files in PM look similar
-to those of Windows.  The user should look at the PM help files or an
-available example in order to convert their RC files.
+&company. has its own resource compiler, so &company. does not require
+the use of the OS2 toolkit resource compiler.
+RC files in PM look similar to those of Windows.
+The user should look at the PM help files or an available example in order
+to convert their RC files.
 .*
 .section Dialogs
 .*
