@@ -266,9 +266,9 @@ $(hbook).ib $(hbook).gh : $(cop_files) $(book_objs) $(proj_objs)
 $(hbook).chm : $(hbook).htm $(hbook).gh
     @if not exist $(hbook) mkdir $(hbook)
 !ifdef book_bmroot
-    $(noecho)cp -f $(book_bmroot)/*.bmp $(hbook)/ > $(nulldevice)
+    @for %f in ($(book_bmroot)/*.bmp) do $(noecho)copy %f $(hbook)
 !endif
-    cp -f $(hbook).gh $(hbook)/$(hbook).gh > $(nulldevice)
+    copy $(hbook).gh $(hbook)/$(hbook).gh
     awk -f ../splithtm.awk -v dir=$(hbook) $(hbook).htm
     awk -f ../makehha.awk $(hbook).htm >$(hbook)/$(hbook).hha
     awk -f ../makehhc.awk $(hbook).htm >$(hbook)/$(hbook).hhc
@@ -281,7 +281,7 @@ $(hbook).chm : $(hbook).htm $(hbook).gh
     -chmod +rw $(hbook).chm
 !endif
     cd ..
-    cp -f $(hbook)/$(hbook).chm $(hbook).chm > $(nulldevice)
+    copy $(hbook)/$(hbook).chm $(hbook).chm
 !else ifeq bld_os linux
     @%create $(wine_hc_batch)
     @%append $(wine_hc_batch) $(hc_hh) $(hbook)/$(hbook).hhp
@@ -289,7 +289,7 @@ $(hbook).chm : $(hbook).htm $(hbook).gh
     -wine cmd /c $(wine_hc_batch)
 !else
     -$(hc_hh) $(hbook)/$(hbook).hhp
-    cp -f $(hbook)/$(hbook).chm $(hbook).chm > $(nulldevice)
+    copy $(hbook)/$(hbook).chm $(hbook).chm
 !endif
 
 ####################################################
