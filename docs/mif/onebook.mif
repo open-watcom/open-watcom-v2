@@ -379,7 +379,7 @@ $(hbook).ps : $(cop_files) $(book_objs) $(book_objs_ps) $(proj_objs)
 $(hbook).gh $(hbook).htm : $(cop_files) $(book_objs) $(proj_objs)
 !ifneq dotarget htmlhelp
 !ifdef book_bmroot
-    $(noecho)cp -f $(book_bmroot)/*.bmp . > $(nulldevice)
+    @for %f in ($(book_bmroot)/*.bmp) do $(noecho)copy %f .
 !endif
 !endif
     @%make compile_gml_to_xxx
