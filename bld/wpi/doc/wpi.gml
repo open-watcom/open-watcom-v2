@@ -745,7 +745,7 @@ The use of bitmaps is quite similar between Windows and PM.  Although both
 platforms have an HBITMAP data type, WPI stores bitmaps as object structures
 similar to HPENs and HBRUSHes.  Hence when a bitmap is created and a handle
 returned, the returned value should not be used for pure PM code, but only
-in WPI code.  For example, the return value from _wpi_createcompatiblepres
+in WPI code.  For example, the return value from _wpi_createcompatiblebitmap
 is an address to a structure describing the bitmap (this address is defined
 as a WPI_HANDLE).  This return value (the WPI_HANDLE) can be passed to WPI
 functions expecting a bitmap handle, but the return value should not be used
