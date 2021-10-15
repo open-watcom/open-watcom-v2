@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -213,7 +213,7 @@ void InitTools( HWND hparent )
     tii.flags = ITEM_DOWNBMP | ITEM_STICKY;
 
     for( i = 0; i < NUMBER_OF_TOOLS - 1; i++ ) {
-        tii.u.bmp = bitmaps[i].hToolBmp;
+        tii.u.hbitmap = bitmaps[i].hToolBmp;
         tii.id = i + IMGED_CLIP;
         tii.depressed = bitmaps[i].hToolDep;
         ToolBarAddItem( toolBar, &tii );
@@ -273,7 +273,7 @@ void AddHotSpotTool( bool faddhotspot )
         if( hotspotPresent ) {
             return;
         }
-        tii.u.bmp = bitmaps[9].hToolBmp;
+        tii.u.hbitmap = bitmaps[9].hToolBmp;
         tii.id = IMGED_HOTSPOT;
         tii.flags = ITEM_DOWNBMP | ITEM_STICKY;
         tii.depressed = bitmaps[9].hToolDep;

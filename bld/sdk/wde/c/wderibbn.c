@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -151,11 +151,11 @@ void WdeShutdownRibbon( void )
 
     for( i = 0; i < WdeNumRibbonTools; i++ ) {
         if( WdeRibbonInfo->items[i].flags != ITEM_BLANK ) {
-            if( WdeRibbonInfo->items[i].u.bmp == WdeRibbonInfo->items[i].depressed ) {
+            if( WdeRibbonInfo->items[i].u.hbitmap == WdeRibbonInfo->items[i].depressed ) {
                 WdeRibbonInfo->items[i].depressed = (HBITMAP)NULL;
             }
-            if( WdeRibbonInfo->items[i].u.bmp != NULL ) {
-                DeleteObject( WdeRibbonInfo->items[i].u.bmp );
+            if( WdeRibbonInfo->items[i].u.hbitmap != NULL ) {
+                DeleteObject( WdeRibbonInfo->items[i].u.hbitmap );
             }
             if( WdeRibbonInfo->items[i].depressed != NULL ) {
                 DeleteObject( WdeRibbonInfo->items[i].depressed );
@@ -298,14 +298,14 @@ bool WdeDoInitRibbon( HINSTANCE inst, WdeRibbonName *tools, int num_tools )
 
     for( i = 0; i < num_tools; i++ ) {
         if( tools[i].up ) {
-            WdeRibbonInfo->items[i].u.bmp = LoadBitmap( inst, tools[i].up );
+            WdeRibbonInfo->items[i].u.hbitmap = LoadBitmap( inst, tools[i].up );
             WdeRibbonInfo->items[i].id = tools[i].menu_id;
             WdeRibbonInfo->items[i].flags = tools[i].flags;
             WdeRibbonInfo->items[i].flags |= ITEM_DOWNBMP;
             if( tools[i].down ) {
                 WdeRibbonInfo->items[i].depressed = LoadBitmap( inst, tools[i].down );
             } else {
-                WdeRibbonInfo->items[i].depressed = WdeRibbonInfo->items[i].u.bmp;
+                WdeRibbonInfo->items[i].depressed = WdeRibbonInfo->items[i].u.hbitmap;
             }
             if( !( tools[i].tip_id > 0 && LoadString( inst, tools[i].tip_id, WdeRibbonInfo->items[i].tip, MAX_TIP ) > 0 ) ) {
                 WdeRibbonInfo->items[i].tip[0] = '\0';

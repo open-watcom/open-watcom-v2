@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -103,24 +103,24 @@ static void addFunctionButton( button *tb )
     TOOLITEMINFO        info;
 
     if( tb->id > 0 ) {
-        tb->hbmp = _wpi_loadbitmap( Instance, tb->name );
-        info.u.bmp = tb->hbmp;
+        tb->hbitmap = _wpi_loadbitmap( Instance, tb->name );
+        info.u.hbitmap = tb->hbitmap;
         info.id = tb->id;
         info.flags = ITEM_DOWNBMP;
 
         if( tb->sticky ) {
             info.flags |= ITEM_STICKY;
         }
-        if( tb->downbmp != NONE ) {
-            tb->downbmp = _wpi_loadbitmap( Instance, tb->downname );
+        if( tb->down_hbitmap != NONE ) {
+            tb->down_hbitmap = _wpi_loadbitmap( Instance, tb->downname );
         } else {
-            tb->downbmp = tb->hbmp;
+            tb->down_hbitmap = tb->hbitmap;
         }
         if( !( tb->tip_id > 0 && _wpi_loadstring( Instance, tb->tip_id, info.tip, MAX_TIP ) > 0 ) ) {
             info.tip[0] = '\0';
         }
 
-        info.depressed = tb->downbmp;
+        info.depressed = tb->down_hbitmap;
     } else {
         info.flags = ITEM_BLANK;
         info.u.blank_space = 5;
@@ -212,19 +212,19 @@ static bool functionBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARA
         if( ImgedIsDDE ) {
             for( i = 0; i < NUM_TOOLS_DDE; i++ ) {
                 if( toolListDDE[i].name != NONE ) {
-                    _wpi_deletebitmap( toolListDDE[i].hbmp );
+                    _wpi_deletebitmap( toolListDDE[i].hbitmap );
                 }
-                if( toolListDDE[i].downbmp != NONE ) {
-                    _wpi_deletebitmap( toolListDDE[i].downbmp );
+                if( toolListDDE[i].down_hbitmap != NONE ) {
+                    _wpi_deletebitmap( toolListDDE[i].down_hbitmap );
                 }
             }
         } else {
             for( i = 0; i < NUM_TOOLS; i++ ) {
                 if( toolList[i].name != NONE ) {
-                    _wpi_deletebitmap( toolList[i].hbmp );
+                    _wpi_deletebitmap( toolList[i].hbitmap );
                 }
-                if( toolList[i].downbmp != NONE ) {
-                    _wpi_deletebitmap( toolList[i].downbmp );
+                if( toolList[i].down_hbitmap != NONE ) {
+                    _wpi_deletebitmap( toolList[i].down_hbitmap );
                 }
             }
         }

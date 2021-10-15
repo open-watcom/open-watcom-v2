@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,7 @@
 typedef struct {
     char        *name;
     int         id;
-    HBITMAP     hbmp;
+    HBITMAP     hbitmap;
     msg_id      tip_id;
 } button;
 
@@ -64,8 +64,8 @@ static void addToolButton( button *tb )
 {
     TOOLITEMINFO        info;
 
-    tb->hbmp = LoadBitmap( Instance, tb->name );
-    info.u.bmp = tb->hbmp;
+    tb->hbitmap = LoadBitmap( Instance, tb->name );
+    info.u.hbitmap = tb->hbitmap;
     info.id = tb->id;
     info.flags = 0;
     info.depressed = 0;
@@ -177,7 +177,7 @@ void DestroySpyTool( void )
         toolBar = NULL;
     }
     for( i = 0; i < sizeof( toolList ) / sizeof( button ); i++ ) {
-        DeleteObject( toolList[i].hbmp );
+        DeleteObject( toolList[i].hbitmap );
     }
 
 } /* DestroySpyTool */
@@ -203,9 +203,9 @@ void SetOnOffTool( spystate ss )
         str = "";
         break;
     }
-    DeleteObject( toolList[OFFON_ITEM].hbmp );
-    toolList[OFFON_ITEM].hbmp = LoadBitmap( Instance, str );
-    ChangeToolButtonBitmap( toolBar, SPY_OFFON, toolList[OFFON_ITEM].hbmp );
+    DeleteObject( toolList[OFFON_ITEM].hbitmap );
+    toolList[OFFON_ITEM].hbitmap = LoadBitmap( Instance, str );
+    ChangeToolButtonBitmap( toolBar, SPY_OFFON, toolList[OFFON_ITEM].hbitmap );
 
 } /* SetOnOffTool */
 

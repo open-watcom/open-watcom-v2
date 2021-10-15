@@ -246,10 +246,10 @@ static void reinsertButtons( toolbar *bar )
     if( IsCommCtrlLoaded() ) {
         for( t = bar->tool_list; t != NULL; t = t->next ) {
             if( !(t->flags & ITEM_BLANK) ) {
-                GetObject( t->u.bitmap, sizeof( BITMAP ), &bm );
+                GetObject( t->u.hbitmap, sizeof( BITMAP ), &bm );
                 SendMessage( bar->hwnd, TB_SETBITMAPSIZE, 0, MAKELONG( bm.bmWidth, bm.bmHeight ) );
                 tbab.hInst = NULL;
-                tbab.nID = (UINT_PTR)TB_CreateTransparentBitmap( t->u.bitmap, bm.bmWidth, bm.bmHeight );
+                tbab.nID = (UINT_PTR)TB_CreateTransparentBitmap( t->u.hbitmap, bm.bmWidth, bm.bmHeight );
                 tbb.iBitmap = (int)SendMessage( bar->hwnd, TB_ADDBITMAP, 1, (LPARAM)&tbab );
                 tbb.idCommand = t->id;
                 tbb.fsState = TBSTATE_ENABLED;
@@ -504,7 +504,7 @@ void ToolBarAddItem( toolbar *bar, TOOLITEMINFO *info )
     if( info->flags & ITEM_BLANK ) {
         t->u.blank_space = info->u.blank_space;
     } else {
-        t->u.bitmap = info->u.bmp;
+        t->u.hbitmap = info->u.hbitmap;
     }
     t->id = info->id;
     t->next = NULL;
@@ -515,17 +515,17 @@ void ToolBarAddItem( toolbar *bar, TOOLITEMINFO *info )
     strcpy( t->tip, info->tip );
 #endif
     addTool( &bar->tool_list, t );
-    if( !(info->flags & ITEM_BLANK) && info->u.bmp != HNULL ) {
+    if( !(info->flags & ITEM_BLANK) && info->u.hbitmap != HNULL ) {
         createButtonList( bar->hwnd, bar, t );
     }
 
 #ifdef __NT__
     if( IsCommCtrlLoaded() ) {
         if( !(info->flags & ITEM_BLANK) ) {
-            GetObject( info->u.bmp, sizeof( BITMAP ), &bm );
+            GetObject( info->u.hbitmap, sizeof( BITMAP ), &bm );
             SendMessage( bar->hwnd, TB_SETBITMAPSIZE, 0, MAKELONG( bm.bmWidth, bm.bmHeight ) );
             tbab.hInst = NULL;
-            tbab.nID = (UINT_PTR)TB_CreateTransparentBitmap( info->u.bmp, bm.bmWidth, bm.bmHeight );
+            tbab.nID = (UINT_PTR)TB_CreateTransparentBitmap( info->u.hbitmap, bm.bmWidth, bm.bmHeight );
             tbb.iBitmap = (int)SendMessage( bar->hwnd, TB_ADDBITMAP, 1, (LPARAM)&tbab );
             tbb.idCommand = info->id;
             tbb.fsState = TBSTATE_ENABLED;
@@ -1030,7 +1030,7 @@ static void drawBorder( WPI_PRES pres, WPI_POINT size, int border )
 /*
  * toolBarDrawBitmap - draw the bitmap on a button
  */
-static void toolBarDrawBitmap( WPI_PRES pres, WPI_POINT dst_size, WPI_POINT dst_org, WPI_HBITMAP bitmap )
+static void toolBarDrawBitmap( WPI_PRES pres, WPI_POINT dst_size, WPI_POINT dst_org, WPI_HBITMAP hbitmap )
 {
     WPI_BITMAP  bm;
     WPI_PRES    mempres;
@@ -1038,15 +1038,15 @@ static void toolBarDrawBitmap( WPI_PRES pres, WPI_POINT dst_size, WPI_POINT dst_
     WPI_POINT   src_org;
     WPI_POINT   src_size;
     HBRUSH      old_brush;
-    WPI_HBITMAP old_bmp;
+    WPI_HBITMAP old_hbitmap;
 
     DPtoLP( pres, &dst_size, 1 );
     DPtoLP( pres, &dst_org, 1 );
 
     mempres = _wpi_createcompatiblepres( pres, appInst, &memdc );
-    old_bmp = _wpi_selectbitmap( mempres, bitmap );
+    old_hbitmap = _wpi_selectbitmap( mempres, hbitmap );
 
-    _wpi_getbitmapstruct( bitmap, &bm );
+    _wpi_getbitmapstruct( hbitmap, &bm );
 
     src_size.x = _wpi_bitmapwidth( &bm );
     src_size.y = _wpi_bitmapheight( &bm );
@@ -1072,13 +1072,13 @@ static void toolBarDrawBitmap( WPI_PRES pres, WPI_POINT dst_size, WPI_POINT dst_
         _wpi_stretchblt( pres, dst_org.x, dst_org.y, dst_size.x, dst_size.y, mempres,
                          src_org.x, src_org.y, src_size.x, src_size.y, 0xB8074A );
 
-        _wpi_getoldbitmap( mempres, old_bmp );
+        _wpi_getoldbitmap( mempres, old_hbitmap );
         _wpi_getoldbrush( pres, old_brush );
     } else {
         _wpi_stretchblt( pres, dst_org.x, dst_org.y, dst_size.x, dst_size.y, mempres,
                          src_org.x, src_org.y, src_size.x, src_size.y, SRCCOPY );
 
-        _wpi_getoldbitmap( mempres, old_bmp );
+        _wpi_getoldbitmap( mempres, old_hbitmap );
     }
     _wpi_deletecompatiblepres( mempres, memdc );
 
@@ -1092,13 +1092,13 @@ static void drawButton( HWND hwnd, tool *tool, bool down, WPI_PRES pres,
 {
     toolbar     *bar;
     HBRUSH      brush;
-    WPI_HBITMAP bitmap;
-    WPI_HBITMAP oldbmp;
+    WPI_HBITMAP hbitmap;
+    WPI_HBITMAP old_hbitmap;
     int         shift;
     bool        selected;
     WPI_POINT   dst_size;
     WPI_POINT   dst_org;
-    WPI_HBITMAP used_bmp;
+    WPI_HBITMAP used_hbitmap;
     WPI_RECTDIM left;
     WPI_RECTDIM right;
     WPI_RECTDIM top;
@@ -1106,9 +1106,9 @@ static void drawButton( HWND hwnd, tool *tool, bool down, WPI_PRES pres,
     bool        delete_pres;
     bool        delete_mempres;
 #if defined( __NT__ ) || defined( __WINDOWS__ )
-    HBITMAP     bitmap2;
-    HBITMAP     oldbmp2;
-    HBITMAP     bmptmp;
+    HBITMAP     hbitmap2;
+    HBITMAP     old_hbitmap2;
+    HBITMAP     tmp_hbitmap;
     HDC         mem2;
     RECT        fill;
     COLORREF    cr;
@@ -1143,12 +1143,12 @@ static void drawButton( HWND hwnd, tool *tool, bool down, WPI_PRES pres,
         mempres = _wpi_createcompatiblepres( pres, appInst, &mem );
         delete_mempres = true;
     }
-    bitmap = _wpi_createcompatiblebitmap( pres, bar->button_size.x, bar->button_size.y );
-    oldbmp = _wpi_selectbitmap( mempres, bitmap );
+    hbitmap = _wpi_createcompatiblebitmap( pres, bar->button_size.x, bar->button_size.y );
+    old_hbitmap = _wpi_selectbitmap( mempres, hbitmap );
 #if defined( __NT__ ) || defined( __WINDOWS__ )
     mem2 = CreateCompatibleDC( pres );
-    bitmap2 = CreateCompatibleBitmap( pres, bar->button_size.x, bar->button_size.y );
-    oldbmp2 = SelectObject( mem2, bitmap2 );
+    hbitmap2 = CreateCompatibleBitmap( pres, bar->button_size.x, bar->button_size.y );
+    old_hbitmap2 = SelectObject( mem2, hbitmap2 );
 #endif
 
     brush = btnFaceBrush;
@@ -1166,25 +1166,25 @@ static void drawButton( HWND hwnd, tool *tool, bool down, WPI_PRES pres,
     dst_org.y = _wpi_cvth_y( dst_org.y, bar->button_size.y );
     dst_org.y = dst_org.y - dst_size.y + 1;
 #endif
-    used_bmp = tool->u.bitmap;
+    used_hbitmap = tool->u.hbitmap;
     if( selected ) {
         /*
          * If the button is selected and it has the ITEM_DOWNBMP flag
          * then we draw the alternate bitmap instead.
          */
         if( tool->flags & ITEM_DOWNBMP ) {
-            used_bmp = tool->depressed;
+            used_hbitmap = tool->depressed;
         }
     }
-    toolBarDrawBitmap( mempres, dst_size, dst_org, used_bmp );
+    toolBarDrawBitmap( mempres, dst_size, dst_org, used_hbitmap );
 
 #if defined( __NT__ ) || defined( __WINDOWS__ )
     /* New, on Win32 platforms, use TB_TransparentBlt(). */
     /* Get background color of button bitmap. */
-    bmptmp = SelectObject( mem2, used_bmp );
+    tmp_hbitmap = SelectObject( mem2, used_hbitmap );
     /* The pixel (0, 0) must be in the background color. */
     cr = GetPixel( mem2, 0, 0 );
-    bmptmp = SelectObject( mem2, bmptmp );
+    tmp_hbitmap = SelectObject( mem2, tmp_hbitmap );
     /* IMPORTANT: must set required new background color for destination bitmap. */
     SetBkColor( mem2, GetSysColor( COLOR_BTNFACE ) );
     fill.top = 0;
@@ -1193,9 +1193,9 @@ static void drawButton( HWND hwnd, tool *tool, bool down, WPI_PRES pres,
     fill.bottom = bar->button_size.y;
     FillRect( mem2, &fill, brush );
     TB_TransparentBlt( mem2, dst_org.x, dst_org.y, dst_size.x, dst_size.y, mempres, cr );
-    if( oldbmp != HNULL ) {
-        SelectObject( mempres, oldbmp );
-        DeleteObject( bitmap );
+    if( old_hbitmap != HNULL ) {
+        SelectObject( mempres, old_hbitmap );
+        DeleteObject( hbitmap );
     }
     if( delete_mempres ) {
         DeleteDC( mempres );
@@ -1203,8 +1203,8 @@ static void drawButton( HWND hwnd, tool *tool, bool down, WPI_PRES pres,
     /* Switch new bitmap into variables expected by code below. */
     mempres = mem2;
     delete_mempres = true;
-    bitmap = bitmap2;
-    oldbmp = oldbmp2;
+    hbitmap = hbitmap2;
+    old_hbitmap = old_hbitmap2;
 #endif
 
     drawBorder( mempres, bar->button_size, BORDER_WIDTH( bar ) );
@@ -1219,11 +1219,11 @@ static void drawButton( HWND hwnd, tool *tool, bool down, WPI_PRES pres,
     _wpi_getrectvalues( tool->area, &left, &top, &right, &bottom );
     _wpi_bitblt( pres, left, top, bar->button_size.x, bar->button_size.y, mempres, 0, 0,
                  SRCCOPY ); /* Copy it to the screen. */
-    _wpi_getoldbitmap( mempres, oldbmp );
+    _wpi_getoldbitmap( mempres, old_hbitmap );
     if( delete_pres ) {
         _wpi_releasepres( hwnd, pres );
     }
-    _wpi_deletebitmap( bitmap );
+    _wpi_deletebitmap( hbitmap );
     if( delete_mempres ) {
         _wpi_deletecompatiblepres( mempres, mem );
     }
@@ -1633,7 +1633,7 @@ LRESULT CALLBACK ToolContainerWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
 /*
  * ChangeToolButtonBitmap - change a bitmap for a toolbar item
  */
-void ChangeToolButtonBitmap( toolbar *bar, ctl_id id, WPI_HBITMAP newbmp )
+void ChangeToolButtonBitmap( toolbar *bar, ctl_id id, WPI_HBITMAP hbitmap )
 {
     tool        *t;
 #ifdef __NT__
@@ -1645,7 +1645,7 @@ void ChangeToolButtonBitmap( toolbar *bar, ctl_id id, WPI_HBITMAP newbmp )
 #endif
         t = findTool( bar->tool_list, id );
         if( t != NULL ) {
-            t->u.bitmap = newbmp;
+            t->u.hbitmap = hbitmap;
             _wpi_invalidaterect( bar->hwnd, &t->area, TRUE );
             _wpi_updatewindow( bar->hwnd );
         }
@@ -1655,7 +1655,7 @@ void ChangeToolButtonBitmap( toolbar *bar, ctl_id id, WPI_HBITMAP newbmp )
         if( n >= 0 ) {
             SendMessage( bar->hwnd, TB_GETBUTTON, n, (LPARAM)&tbb );
             tbab.hInst = NULL;
-            tbab.nID = (UINT_PTR)TB_CreateTransparentBitmap( newbmp,
+            tbab.nID = (UINT_PTR)TB_CreateTransparentBitmap( hbitmap,
                 bar->button_size.x - bar->border.x,
                 bar->button_size.y - bar->border.y - 2 );
             tbb.iBitmap = (int)SendMessage( bar->hwnd, TB_ADDBITMAP, 1, (LPARAM)&tbab );

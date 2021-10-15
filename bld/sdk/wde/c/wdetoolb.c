@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -96,7 +96,7 @@ WdeToolBar *WdeCreateToolBar( WdeToolBarInfo *info, HWND parent )
     ToolBarDisplay( tbar->tbar, &info->dinfo );
 
     for( i = 0; i < info->num_items; i++ ) {
-        if( info->items[i].u.bmp != (HBITMAP)NULL ) {
+        if( info->items[i].u.hbitmap != (HBITMAP)NULL ) {
             ToolBarAddItem( tbar->tbar, &info->items[i] );
         }
     }

@@ -119,7 +119,6 @@ typedef unsigned WScrollNotification;
 #define WScrollHorizontal       14
 
 #include "wstates.hpp"
-#include "wres.hpp"
 #include "wobject.hpp"
 #include "wobjmap.hpp"
 #include "wvlist.hpp"
@@ -280,7 +279,7 @@ public:
     static WObjectMap WEXPORT _popupIdMap;
     static WControlId WEXPORT _idMaster;
 
-    void WEXPORT setIcon( WResource, char *ch_mode=NULL );
+    void WEXPORT setIcon( WResourceId, char *ch_mode=NULL );
     virtual bool WEXPORT setFocus( void );
     gui_window * WEXPORT handle() { return( _handle ); }
     void setHandle( gui_window *handle ) { _handle = handle; }

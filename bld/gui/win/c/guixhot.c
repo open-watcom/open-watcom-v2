@@ -65,12 +65,12 @@ bool GUIXInitHotSpots( int num_hot_spots, gui_resource *hot )
         }
         if( pfnLoadImage != NULL ) {
             GUIHotSpots[i].bitmap = pfnLoadImage( GUIResHInst,
-                                                  MAKEINTRESOURCE( hot[i].res ),
+                                                  MAKEINTRESOURCE( hot[i].res_id ),
                                                   IMAGE_BITMAP, 0, 0,
                                                   LR_LOADMAP3DCOLORS );
         } else {
 #endif
-            GUIHotSpots[i].bitmap = _wpi_loadbitmap( GUIResHInst, MAKEINTRESOURCE( hot[i].res ) );
+            GUIHotSpots[i].bitmap = _wpi_loadbitmap( GUIResHInst, MAKEINTRESOURCE( hot[i].res_id ) );
 #ifdef __NT__
         }
 #endif

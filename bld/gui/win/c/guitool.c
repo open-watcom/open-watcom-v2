@@ -262,7 +262,7 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord in_height,
         return( false );
     }
     for( i = 0; i < num_items; i++ ) {
-        tbar->bitmaps[i] = _wpi_loadbitmap( GUIResHInst, MAKEINTRESOURCE( toolinfo->toolbar[i].bitmap ) );
+        tbar->bitmaps[i] = _wpi_loadbitmap( GUIResHInst, MAKEINTRESOURCE( toolinfo->toolbar[i].bitmap_id ) );
         if( in_height == 0 ) {
             _wpi_getbitmapdim( tbar->bitmaps[i], &bm_w, &bm_h );
             if( fixed_height < bm_h ) {
@@ -341,7 +341,7 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord in_height,
     GUIResizeBackground( wnd, true );
 
     for( i = 0; i < num_items; i++ ) {
-        info.u.bmp = tbar->bitmaps[i];
+        info.u.hbitmap = tbar->bitmaps[i];
         info.id = toolinfo->toolbar[i].id;
         info.flags = 0;
         if( use_tips && toolinfo->toolbar[i].tip != NULL ) {

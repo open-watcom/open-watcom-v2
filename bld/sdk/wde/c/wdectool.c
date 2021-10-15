@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -169,11 +169,11 @@ void WdeShutdownControls( void )
     }
 
     for( i = 0; i < NUM_TOOLS; i++ ) {
-        if( WdeControlsInfo->items[i].u.bmp == WdeControlsInfo->items[i].depressed ) {
+        if( WdeControlsInfo->items[i].u.hbitmap == WdeControlsInfo->items[i].depressed ) {
             WdeControlsInfo->items[i].depressed = (HBITMAP)NULL;
         }
-        if( WdeControlsInfo->items[i].u.bmp != NULL ) {
-            DeleteObject( WdeControlsInfo->items[i].u.bmp );
+        if( WdeControlsInfo->items[i].u.hbitmap != NULL ) {
+            DeleteObject( WdeControlsInfo->items[i].u.hbitmap );
         }
         if( WdeControlsInfo->items[i].depressed != NULL ) {
             DeleteObject( WdeControlsInfo->items[i].depressed );
@@ -543,7 +543,7 @@ bool WdeInitControls( HINSTANCE inst )
                 continue;
             }
         }
-        WdeControlsInfo->items[i].u.bmp = LoadBitmap( inst, WdeControlBits[i].up );
+        WdeControlsInfo->items[i].u.hbitmap = LoadBitmap( inst, WdeControlBits[i].up );
         WdeControlsInfo->items[i].id = WdeControlBits[i].id;
         WdeControlsInfo->items[i].flags = ITEM_DOWNBMP | ITEM_STICKY;
         WdeControlsInfo->items[i].depressed = LoadBitmap( inst, WdeControlBits[i].down );

@@ -67,7 +67,7 @@ typedef struct TOOLDISPLAYINFO {
 
 typedef struct TOOLITEMINFO {
     union {
-        WPI_HBITMAP bmp;            /* handle to bitmap to display */
+        WPI_HBITMAP hbitmap;        /* handle to bitmap to display */
         WORD        blank_space;    /* space if item is blank */
     } u;
     WPI_HBITMAP depressed;          /* bitmap to show when button is depressed */
@@ -79,7 +79,7 @@ typedef struct TOOLITEMINFO {
 typedef struct tool {
     struct tool *next;
     union {
-        WPI_HBITMAP bitmap;
+        WPI_HBITMAP hbitmap;
         WORD        blank_space;
     } u;
     WPI_RECT    area;
@@ -122,9 +122,9 @@ void    ToolBarSetState( toolbar *, ctl_id id, WORD state );
 WORD    ToolBarGetState( toolbar *bar, ctl_id id );
 void    ToolBarDestroy ( toolbar *bar );
 void    ToolBarFini( toolbar * );
-void    ToolBarDrawBitmap( WPI_PRES pres, WPI_POINT size, WPI_POINT org, WPI_HBITMAP bitmap );
+void    ToolBarDrawBitmap( WPI_PRES pres, WPI_POINT size, WPI_POINT org, WPI_HBITMAP hbitmap );
 void    UpdateToolBar( toolbar *bar );
-void    ChangeToolButtonBitmap( toolbar *bar, ctl_id id, WPI_HBITMAP newbmp );
+void    ChangeToolButtonBitmap( toolbar *bar, ctl_id id, WPI_HBITMAP hbitmap );
 bool    HasToolAtPoint( toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 bool    FindToolIDAtPoint( toolbar *bar, WPI_PARAM1 wparam, WPI_PARAM2 lparam, ctl_id *id );
 #ifndef __OS2_PM__

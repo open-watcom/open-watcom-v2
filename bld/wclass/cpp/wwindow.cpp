@@ -1268,12 +1268,12 @@ void WEXPORT WWindow::setUpdates( bool start_update )
 }
 
 
-void WEXPORT WWindow::setIcon( WResource bitmap, char *ch_mode )
-/**************************************************************/
+void WEXPORT WWindow::setIcon( WResourceId bitmap_id, char *ch_mode )
+/*******************************************************************/
 {
     gui_resource        resource;
 
-    resource.res = bitmap;
+    resource.res_id = bitmap_id;
     resource.chars = ch_mode;
     GUISetIcon( _handle, &resource );
 }

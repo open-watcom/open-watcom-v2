@@ -47,7 +47,7 @@ bool GUIAPI GUISetIcon( gui_window *wnd, gui_resource *res )
     icon = (WPI_HICON)0;
 
     if( res != NULL ) {
-        icon = _wpi_loadicon( GUIResHInst, MAKEINTRESOURCE(res->res) );
+        icon = _wpi_loadicon( GUIResHInst, MAKEINTRESOURCE( res->res_id ) );
     } else {
         icon = _wpi_loadicon( GUIResHInst, LIT( ApplIcon ) );
         if( icon == NULL ) {

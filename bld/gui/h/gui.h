@@ -406,11 +406,9 @@ typedef struct gui_menu_struct  gui_menu_struct;
 
 typedef void                *gui_help_instance;
 
-typedef long                gui_bitmap;
-
 typedef struct gui_toolbar_struct {
     const char              *label;
-    gui_bitmap              bitmap;
+    gui_res_id              bitmap_id;
     gui_ctl_id              id;
     const char              *hinttext;
     const char              *tip;
@@ -463,7 +461,7 @@ typedef struct gui_rect {
 } gui_rect;
 
 typedef struct gui_resource {
-    gui_bitmap              res;
+    gui_res_id              res_id;
     char                    *chars; /* Character based */
 } gui_resource;
 

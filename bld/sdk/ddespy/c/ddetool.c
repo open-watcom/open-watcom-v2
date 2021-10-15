@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -241,7 +241,7 @@ void MakeDDEToolBar( HWND hwnd )
             item.depressed = NULL;
         } else {
             ToolBar.bitmaps[i] = LoadBitmap( Instance, ButInfo[i].name );
-            item.u.bmp = ToolBar.bitmaps[i];
+            item.u.hbitmap = ToolBar.bitmaps[i];
             item.id = ButInfo[i].id;
             item.depressed = ToolBar.bitmaps[i];
         }

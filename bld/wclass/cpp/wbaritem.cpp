@@ -36,7 +36,7 @@
 #include "wwindow.hpp"
 
 
-WEXPORT WToolBarItem::WToolBarItem( const char *text, WResource tool,
+WEXPORT WToolBarItem::WToolBarItem( const char *text, WResourceId tool_id,
                                     WObject *client, cbtbi pick,
                                     const char *htext, const char *tip )
     : _parent( NULL )
@@ -45,7 +45,7 @@ WEXPORT WToolBarItem::WToolBarItem( const char *text, WResource tool,
 /*******************/
 
     _toolbar.label = text;
-    _toolbar.bitmap = tool;
+    _toolbar.bitmap_id = tool_id;
     _toolbar.hinttext = htext;
     _toolbar.tip = tip;
     _toolbar.id = WWindow::_idMaster++;
