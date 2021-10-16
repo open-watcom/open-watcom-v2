@@ -721,8 +721,6 @@ typedef WPI_OBJECT      *WPI_HANDLE;
 typedef AREABUNDLE      LOGBRUSH;
 typedef WPI_HANDLE      HBRUSH;
 typedef WPI_HANDLE      HPEN;
-typedef WPI_HANDLE      WPI_HBRUSH;
-typedef WPI_HANDLE      WPI_HPEN;
 typedef WPI_HANDLE      WPI_HBITMAP;
 
 /* This is used in OS/2 much like a Windows LOGFONT. Use it only
