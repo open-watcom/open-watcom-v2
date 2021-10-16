@@ -99,9 +99,9 @@ $(distrib_bindir)/$(installer_c) : ../files.dat $(distrib_bindir) $(setup_c) .AL
     @rm -f *.__c
     @%make clean_inf
     langdat -l filelist $(langdat_keys) -r $(bld_ver) -c $[@ c
-    @cp $]@ setup.exe >$(nulldevice)
+    @copy $]@ setup.exe
     mkinf -i.. -i../../include -dBldVer=$(bld_ver_str) -dDstDir=$(dstdir) $(mkinf_opt_$(host_os)) c filelist $(%OWRELROOT)
-    @cp setup.inf $(%OWRELROOT)/setup.inf >$(nulldevice)
+    @copy setup.inf $(%OWRELROOT)/setup.inf
     uzip setup.zip instarch.lst $(%OWRELROOT)
     @rm $(%OWRELROOT)/setup.inf
     @rm setup.exe
@@ -119,9 +119,9 @@ $(distrib_bindir)/$(installer_f77) : ../files.dat $(distrib_bindir) $(setup_f77)
     @rm -f *.__f
     @%make clean_inf
     langdat -l filelist $(langdat_keys) -r $(bld_ver) -c $[@ f77
-    @cp $]@ setup.exe >$(nulldevice)
+    @copy $]@ setup.exe
     mkinf -i.. -i../../include -dBldVer=$(bld_ver_str) -dDstDir=$(dstdir) $(mkinf_opt_$(host_os)) f77 filelist $(%OWRELROOT)
-    @cp setup.inf $(%OWRELROOT)/setup.inf >$(nulldevice)
+    @copy setup.inf $(%OWRELROOT)/setup.inf
     uzip setup.zip instarch.lst $(%OWRELROOT)
     @rm $(%OWRELROOT)/setup.inf
     @rm setup.exe
