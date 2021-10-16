@@ -53,7 +53,6 @@
     #define INCL_WINERRORS
     #define INCL_GPIBITMAPS
     #define INCL_GPIPRIMITIVES
-    #define INCL_GPIBITMAPS
     #define INCL_WINTRACKRECT
     #define INCL_DOSPROCESS
     #define INCL_ERRORS
