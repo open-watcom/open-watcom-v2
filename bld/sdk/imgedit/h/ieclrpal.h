@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +41,7 @@ typedef struct {
     wie_clrtype type;           /* NORMAL_CLR, INVERSE_CLR, or SCREEN_CLR */
     COLORREF    color;
     COLORREF    solid;          /* for the solid color */
-    HBITMAP     bitmap;
+    HBITMAP     hbitmap;
 } selected_colour;
 
 /* Definitions for Current Selection */

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -104,8 +104,8 @@ static bool readIconFromData( BYTE *data, const char *fname  )
         }
         node[i].hotspot.x = 0;
         node[i].hotspot.y = 0;
-        node[i].handbitmap = ImgToAndBitmap( hdc, icon );
-        node[i].hxorbitmap = ImgToXorBitmap( hdc, icon );
+        node[i].and_hbitmap = ImgToAndBitmap( hdc, icon );
+        node[i].xor_hbitmap = ImgToXorBitmap( hdc, icon );
         node[i].num_of_images = num_of_images;
         node[i].viewhwnd = NULL;
         if( i > 0 ) {

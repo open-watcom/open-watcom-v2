@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -835,12 +835,12 @@ void RestoreColorPalette( void )
 /*
  * InitPaletteBitmaps - initialize the available color bitmaps
  */
-void InitPaletteBitmaps( HWND hwnd, HBITMAP *colorbitmap, HBITMAP *monobitmap )
+void InitPaletteBitmaps( HWND hwnd, WPI_HBITMAP *color_hbitmap, WPI_HBITMAP *mono_hbitmap )
 {
     WPI_PRES    pres;
     WPI_PRES    mempres;
     HDC         hdc;
-    HBITMAP     oldbitmap;
+    WPI_HBITMAP old_hbitmap;
     COLORREF    color;
     int         i;
     int         left_sqr;
@@ -854,8 +854,8 @@ void InitPaletteBitmaps( HWND hwnd, HBITMAP *colorbitmap, HBITMAP *monobitmap )
 
     pres = _wpi_getpres( hwnd );
 
-    *colorbitmap = _wpi_createcompatiblebitmap( pres, CUR_BMP_WIDTH, CUR_BMP_HEIGHT );
-    *monobitmap = _wpi_createbitmap( CUR_BMP_WIDTH, CUR_BMP_HEIGHT, 1, 1, NULL );
+    *color_hbitmap = _wpi_createcompatiblebitmap( pres, CUR_BMP_WIDTH, CUR_BMP_HEIGHT );
+    *mono_hbitmap = _wpi_createbitmap( CUR_BMP_WIDTH, CUR_BMP_HEIGHT, 1, 1, NULL );
     mempres = _wpi_createcompatiblepres( pres, Instance, &hdc );
 
     _wpi_releasepres( hwnd, pres );
@@ -863,7 +863,7 @@ void InitPaletteBitmaps( HWND hwnd, HBITMAP *colorbitmap, HBITMAP *monobitmap )
 
     blackpen = _wpi_createpen( PS_SOLID, 0, BLACK );
     oldpen = _wpi_selectpen( mempres, blackpen );
-    oldbitmap = _wpi_selectbitmap( mempres, *colorbitmap );
+    old_hbitmap = _wpi_selectbitmap( mempres, *color_hbitmap );
 
     /*
      * PM NOTE: All box coordinates are relative to the window's origin
@@ -898,8 +898,8 @@ void InitPaletteBitmaps( HWND hwnd, HBITMAP *colorbitmap, HBITMAP *monobitmap )
         left_sqr += SQR_SIZE;
     }
 
-    _wpi_getoldbitmap( mempres, oldbitmap );
-    oldbitmap = _wpi_selectbitmap( mempres, *monobitmap );
+    _wpi_getoldbitmap( mempres, old_hbitmap );
+    old_hbitmap = _wpi_selectbitmap( mempres, *mono_hbitmap );
 
     left_sqr = 0;
     for( i = 0; i < PALETTE_SIZE; i += 2 ) {
@@ -929,7 +929,7 @@ void InitPaletteBitmaps( HWND hwnd, HBITMAP *colorbitmap, HBITMAP *monobitmap )
 
         left_sqr += SQR_SIZE;
     }
-    _wpi_getoldbitmap( mempres, oldbitmap );
+    _wpi_getoldbitmap( mempres, old_hbitmap );
     _wpi_getoldpen( mempres, oldpen );
     _wpi_deletecompatiblepres( mempres, hdc );
     _wpi_deletepen( blackpen );

@@ -101,13 +101,13 @@ static bool writeDataInPieces( BITMAPINFO *bmi, FILE *fp, img_node *node )
 
     buffer = MemAlloc( chunk_size );
     while( scanline_count > num_lines ) {
-        GetDIBits( memdc, node->hxorbitmap, start, num_lines, buffer, bmi, DIB_RGB_COLORS );
+        GetDIBits( memdc, node->xor_hbitmap, start, num_lines, buffer, bmi, DIB_RGB_COLORS );
         fwrite( buffer, sizeof( BYTE ), chunk_size, fp );
         scanline_count -= num_lines;
         start += num_lines;
         byte_count -= chunk_size;
     }
-    GetDIBits( memdc, node->hxorbitmap, start, scanline_count, buffer, bmi, DIB_RGB_COLORS );
+    GetDIBits( memdc, node->xor_hbitmap, start, scanline_count, buffer, bmi, DIB_RGB_COLORS );
     fwrite( buffer, sizeof( BYTE ), one_scanline_size * scanline_count, fp );
     MemFree( buffer );
     DeleteDC( memdc );
@@ -157,13 +157,13 @@ static bool writeDataInPiecesData( BITMAPINFO *bmi, BYTE **data, size_t *size, i
     }
 
     while( scanline_count > num_lines ) {
-        GetDIBits( memdc, node->hxorbitmap, start, num_lines, *data + *size, bmi, DIB_RGB_COLORS );
+        GetDIBits( memdc, node->xor_hbitmap, start, num_lines, *data + *size, bmi, DIB_RGB_COLORS );
         *size += chunk_size;
         scanline_count -= num_lines;
         start += num_lines;
         byte_count -= chunk_size;
     }
-    GetDIBits( memdc, node->hxorbitmap, start, scanline_count, *data + *size, bmi, DIB_RGB_COLORS );
+    GetDIBits( memdc, node->xor_hbitmap, start, scanline_count, *data + *size, bmi, DIB_RGB_COLORS );
     *size += scanline_count * one_scanline_size;
     DeleteDC( memdc );
     return( true );
@@ -299,7 +299,7 @@ static bool saveBitmapFile( img_node *node )
     bitmap_size = DIB_INFO_SIZE( bmi->bmiHeader.biBitCount );
 
     hdc = GetDC( NULL );
-    GetDIBits( hdc, node->hxorbitmap, 0, node->height, NULL, bmi, DIB_RGB_COLORS );
+    GetDIBits( hdc, node->xor_hbitmap, 0, node->height, NULL, bmi, DIB_RGB_COLORS );
     ReleaseDC( NULL, hdc );
     if( bmi->bmiHeader.biSizeImage == 0 ) {
         bmi->bmiHeader.biSizeImage = number_of_bytes;
@@ -374,7 +374,7 @@ bool SaveBitmapToData( img_node *node, BYTE **data, size_t *size )
     bitmap_size = DIB_INFO_SIZE( bmi->bmiHeader.biBitCount );
 
     hdc = GetDC( NULL );
-    GetDIBits( hdc, node->hxorbitmap, 0, node->height, NULL, bmi, DIB_RGB_COLORS );
+    GetDIBits( hdc, node->xor_hbitmap, 0, node->height, NULL, bmi, DIB_RGB_COLORS );
     ReleaseDC( NULL, hdc );
     if( bmi->bmiHeader.biSizeImage == 0 ) {
         bmi->bmiHeader.biSizeImage = number_of_bytes;

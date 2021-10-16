@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,12 +57,12 @@ static bool writeDataInPieces( BITMAPINFO2 *bmi, FILE *fp, img_node *node )
     int         num_lines;
     long        byte_count;
     BYTE        *buffer;
-    HBITMAP     oldbitmap;
+    HBITMAP     old_hbitmap;
 
     pres = _wpi_getpres( HWND_DESKTOP );
     mempres = _wpi_createcompatiblepres( pres, Instance, &memdc );
     _wpi_releasepres( HWND_DESKTOP, pres );
-    oldbitmap = _wpi_selectbitmap( mempres, node->hxorbitmap );
+    old_hbitmap = _wpi_selectbitmap( mempres, node->xor_hbitmap );
 
     byte_count = BITS_TO_BYTES( node->bitcount * node->width, node->height );
     start = 0;
@@ -86,7 +86,7 @@ static bool writeDataInPieces( BITMAPINFO2 *bmi, FILE *fp, img_node *node )
     GpiQueryBitmapBits( mempres, start, scanline_count, buffer, bmi );
     fwrite( buffer, sizeof( BYTE ), one_scanline_size * scanline_count, fp );
     free( buffer );
-    _wpi_selectbitmap( mempres, oldbitmap );
+    _wpi_selectbitmap( mempres, old_hbitmap );
     _wpi_deletecompatiblepres( mempres, memdc );
     return( true );
 } /* writeDataInPieces */
@@ -102,9 +102,9 @@ static bool writeImageBits( FILE *fp, img_node *node )
     ULONG                       byte_count;
     img_node                    *new_image;
     BITMAPINFO2                 *bmi;
-    HBITMAP                     oldbitmap;
-    HBITMAP                     inverse_bitmap;
-    HBITMAP                     clr_bitmap;
+    HBITMAP                     old_hbitmap;
+    HBITMAP                     inverse_hbitmap;
+    HBITMAP                     clr_hbitmap;
     BYTE                        *buffer;
     bool                        ok;
 
@@ -113,7 +113,7 @@ static bool writeImageBits( FILE *fp, img_node *node )
     mempres = _wpi_createcompatiblepres( pres, Instance, &memdc );
     _wpi_releasepres( HWND_DESKTOP, pres );
     for( new_image = node; new_image != NULL; new_image = new_image->nexticon ) {
-        bmi = GetAndBitmapInfo(new_image);
+        bmi = GetAndBitmapInfo( new_image );
         if( bmi == NULL ) {
             ok = false;
             break;
@@ -125,17 +125,17 @@ static bool writeImageBits( FILE *fp, img_node *node )
         byte_count = BITS_TO_BYTES( new_image->width, new_image->height );
         buffer = MemAlloc( byte_count );
 
-        inverse_bitmap = CreateInverseBitmap( new_image->handbitmap, new_image->hxorbitmap );
-        oldbitmap = _wpi_selectbitmap( mempres, inverse_bitmap );
+        inverse_hbitmap = CreateInverseBitmap( new_image->and_hbitmap, new_image->xor_hbitmap );
+        old_hbitmap = _wpi_selectbitmap( mempres, inverse_hbitmap );
         GpiQueryBitmapBits( mempres, 0, new_image->height, buffer, bmi );
         fwrite( buffer, sizeof( BYTE ), byte_count, fp );
-        _wpi_selectbitmap( mempres, oldbitmap );
-        _wpi_deletebitmap( inverse_bitmap );
+        _wpi_selectbitmap( mempres, old_hbitmap );
+        _wpi_deletebitmap( inverse_hbitmap );
 
-        oldbitmap = _wpi_selectbitmap( mempres, new_image->handbitmap );
+        old_hbitmap = _wpi_selectbitmap( mempres, new_image->and_hbitmap );
         GpiQueryBitmapBits( mempres, 0, new_image->height, buffer, bmi );
         fwrite( buffer, sizeof( BYTE ), byte_count, fp );
-        _wpi_selectbitmap( mempres, oldbitmap );
+        _wpi_selectbitmap( mempres, old_hbitmap );
 
         MemFree( buffer );
         FreeDIBitmapInfo( bmi );
@@ -145,16 +145,16 @@ static bool writeImageBits( FILE *fp, img_node *node )
             ok = false;
             break;
         }
-        clr_bitmap = CreateColourBitmap( new_image->handbitmap, new_image->hxorbitmap );
-        oldbitmap = _wpi_selectbitmap( mempres, clr_bitmap );
+        clr_hbitmap = CreateColourBitmap( new_image->and_hbitmap, new_image->xor_hbitmap );
+        old_hbitmap = _wpi_selectbitmap( mempres, clr_hbitmap );
         byte_count = BITS_TO_BYTES( new_image->width * new_image->bitcount, new_image->height );
         buffer = MemAlloc( byte_count );
         GpiQueryBitmapBits( mempres, 0, node->height, buffer, bmi );
         fwrite( buffer, sizeof( BYTE ), byte_count, fp );
         MemFree( buffer );
         FreeDIBitmapInfo( bmi );
-        _wpi_selectbitmap( mempres, oldbitmap );
-        _wpi_deletebitmap( clr_bitmap );
+        _wpi_selectbitmap( mempres, old_hbitmap );
+        _wpi_deletebitmap( clr_hbitmap );
     }
     _wpi_deletecompatiblepres( mempres, memdc );
     return( ok );

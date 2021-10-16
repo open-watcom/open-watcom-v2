@@ -125,8 +125,8 @@ void BlowupImage( HWND hmdiwnd, WPI_PRES pres )
     HDC         memdc;
     WPI_PRES    mempres;
     WPI_RECT    client;
-    HBITMAP     oldbitmap;
-    HBITMAP     newbitmap;
+    HBITMAP     old_hbitmap;
+    HBITMAP     new_hbitmap;
     HWND        hwnd;
     img_node    *node;
     bool        new_pres;
@@ -141,8 +141,8 @@ void BlowupImage( HWND hmdiwnd, WPI_PRES pres )
         hwnd = node->hwnd;
     }
 
-    newbitmap = EnlargeImage( hwnd );
-    if( newbitmap == NULL ) {
+    new_hbitmap = EnlargeImage( hwnd );
+    if( new_hbitmap == NULL ) {
         return;
     }
 
@@ -152,7 +152,7 @@ void BlowupImage( HWND hmdiwnd, WPI_PRES pres )
         new_pres = true;
     }
     mempres = _wpi_createcompatiblepres( pres, Instance, &memdc );
-    oldbitmap = _wpi_selectbitmap( mempres, newbitmap );
+    old_hbitmap = _wpi_selectbitmap( mempres, new_hbitmap );
 
     if( ImgedConfigInfo.grid_on ) {
         showGrid( hwnd, mempres );
@@ -163,8 +163,8 @@ void BlowupImage( HWND hmdiwnd, WPI_PRES pres )
         RedrawPrevClip( hwnd );   // Redraw if there was a clip region specified.
     }
 
-    _wpi_getoldbitmap( mempres, oldbitmap );
-    _wpi_deletebitmap( newbitmap );
+    _wpi_getoldbitmap( mempres, old_hbitmap );
+    _wpi_deletebitmap( new_hbitmap );
     _wpi_deletecompatiblepres( mempres, memdc );
 
     if( new_pres ) {

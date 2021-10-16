@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -102,14 +102,14 @@ void SetupMenuAfterOpen( void )
 static bool doReadInBitmapFile( HBITMAP hbitmap, bitmap_info *bmi, const char *fullname,
                                 WRInfo *info, WResLangNode *lnode )
 {
-    HBITMAP             oldbmp1;
-    HBITMAP             oldbmp2;
+    HBITMAP             old_hbitmap1;
+    HBITMAP             old_hbitmap2;
     img_node            node;
     char                filename[_MAX_FNAME + _MAX_EXT];
     BITMAPINFOHEADER    *h;
     HDC                 hdc;
     HDC                 srcdc;
-    HDC                 destdc;
+    HDC                 dstdc;
 
     GetFnameFromPath( fullname, filename );
 
@@ -144,20 +144,20 @@ static bool doReadInBitmapFile( HBITMAP hbitmap, bitmap_info *bmi, const char *f
         if( node.bitcount == 1 ) {
             hdc = GetDC( NULL );
             srcdc = CreateCompatibleDC( hdc );
-            destdc = CreateCompatibleDC( hdc );
+            dstdc = CreateCompatibleDC( hdc );
             ReleaseDC( NULL, hdc );
 
-            node.hxorbitmap = CreateCompatibleBitmap( destdc, node.width, node.height );
-            oldbmp1 = SelectObject( srcdc, hbitmap );
-            oldbmp2 = SelectObject( destdc, node.hxorbitmap );
-            BitBlt( destdc, 0, 0, node.width, node.height, srcdc, 0, 0, SRCCOPY );
-            SelectObject( srcdc, oldbmp1 );
-            SelectObject( destdc, oldbmp2 );
+            node.xor_hbitmap = CreateCompatibleBitmap( dstdc, node.width, node.height );
+            old_hbitmap1 = SelectObject( srcdc, hbitmap );
+            old_hbitmap2 = SelectObject( dstdc, node.xor_hbitmap );
+            BitBlt( dstdc, 0, 0, node.width, node.height, srcdc, 0, 0, SRCCOPY );
+            SelectObject( srcdc, old_hbitmap1 );
+            SelectObject( dstdc, old_hbitmap2 );
             DeleteDC( srcdc );
-            DeleteDC( destdc );
+            DeleteDC( dstdc );
             DeleteObject( hbitmap );
         } else {
-            node.hxorbitmap = hbitmap;
+            node.xor_hbitmap = hbitmap;
         }
 
         strcpy( node.fname, fullname );
@@ -327,8 +327,8 @@ static bool readInIconFile( const char *fname )
         node[i].height = icon->bm->bmiHeader.biHeight;
         node[i].hotspot.x = 0;
         node[i].hotspot.y = 0;
-        node[i].handbitmap = ImgToAndBitmap( hdc, icon );
-        node[i].hxorbitmap = ImgToXorBitmap( hdc, icon );
+        node[i].and_hbitmap = ImgToAndBitmap( hdc, icon );
+        node[i].xor_hbitmap = ImgToXorBitmap( hdc, icon );
         node[i].num_of_images = num_of_images;
         node[i].viewhwnd = NULL;
         node[i].wrinfo = NULL;
@@ -414,8 +414,8 @@ bool ReadIconFromData( void *data, const char *fname, WRInfo *info, WResLangNode
         node[i].height = icon->bm->bmiHeader.biHeight;
         node[i].hotspot.x = 0;
         node[i].hotspot.y = 0;
-        node[i].handbitmap = ImgToAndBitmap( hdc, icon );
-        node[i].hxorbitmap = ImgToXorBitmap( hdc, icon );
+        node[i].and_hbitmap = ImgToAndBitmap( hdc, icon );
+        node[i].xor_hbitmap = ImgToXorBitmap( hdc, icon );
         node[i].num_of_images = num_of_images;
         node[i].viewhwnd = NULL;
         if( i > 0 ) {
@@ -481,8 +481,8 @@ static bool doReadCursor( const char *fname, an_img_file *cursorfile, an_img *cu
     node.lnode = lnode;
 
     hdc = GetDC( NULL );
-    node.handbitmap = ImgToAndBitmap( hdc, cursor );
-    node.hxorbitmap = ImgToXorBitmap( hdc, cursor );
+    node.and_hbitmap = ImgToAndBitmap( hdc, cursor );
+    node.xor_hbitmap = ImgToXorBitmap( hdc, cursor );
     ReleaseDC( NULL, hdc );
 
     strupr( strcpy( node.fname, fname ) );

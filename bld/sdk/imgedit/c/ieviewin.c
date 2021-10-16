@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -245,8 +245,8 @@ static void redrawViewWnd( HWND hwnd )
     WPI_PRES    hps;
     WPI_PRES    mempres;
     HDC         memdc;
-    HBITMAP     bitmap;
-    HBITMAP     oldbitmap;
+    WPI_HBITMAP hbitmap;
+    WPI_HBITMAP old_hbitmap;
     img_node    *node;
     PAINTSTRUCT ps;
 
@@ -260,14 +260,14 @@ static void redrawViewWnd( HWND hwnd )
     drawBorder( node );
     pres = _wpi_getpres( hwnd );
 
-    bitmap = CreateViewBitmap( node );
+    hbitmap = CreateViewBitmap( node );
     mempres = _wpi_createcompatiblepres( pres, Instance, &memdc );
-    oldbitmap = _wpi_selectbitmap( mempres, bitmap );
+    old_hbitmap = _wpi_selectbitmap( mempres, hbitmap );
 
     _wpi_bitblt( pres, BORDER_WIDTH, BORDER_WIDTH, node->width, node->height,
                  mempres, 0, 0, SRCCOPY );
-    _wpi_getoldbitmap( mempres, oldbitmap );
-    _wpi_deletebitmap( bitmap );
+    _wpi_getoldbitmap( mempres, old_hbitmap );
+    _wpi_deletebitmap( hbitmap );
     _wpi_deletecompatiblepres( mempres, memdc );
 
     _wpi_releasepres( hwnd, pres );

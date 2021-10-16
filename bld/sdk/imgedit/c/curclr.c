@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +51,7 @@ static void paintCurrent( HWND hwnd )
     HDC                 hdc;
     PAINTSTRUCT         ps;
     WPI_RECT            rect;
-    HBITMAP             oldbitmap;
+    WPI_HBITMAP         old_hbitmap;
     int                 top;
     int                 bottom;
 
@@ -62,15 +63,15 @@ static void paintCurrent( HWND hwnd )
     mempres = _wpi_createcompatiblepres( pres, Instance, &hdc );
     _wpi_torgbmode( pres );
     _wpi_torgbmode( mempres );
-    oldbitmap = _wpi_selectbitmap( mempres, lButton.bitmap );
+    old_hbitmap = _wpi_selectbitmap( mempres, lButton.hbitmap );
 
     _wpi_bitblt( pres, 0, 0, CUR_SQR_SIZE + 1, 2 * CUR_SQR_SIZE + 1, mempres, 0, 0, SRCCOPY );
-    _wpi_getoldbitmap( mempres, oldbitmap );
-    oldbitmap = _wpi_selectbitmap( mempres, rButton.bitmap );
+    _wpi_getoldbitmap( mempres, old_hbitmap );
+    old_hbitmap = _wpi_selectbitmap( mempres, rButton.hbitmap );
 
     _wpi_bitblt( pres, CUR_RCOL_X - 1, 0, CUR_SQR_SIZE + 1, 2 * CUR_SQR_SIZE + 1, mempres, 0, 0, SRCCOPY );
 
-    _wpi_getoldbitmap( mempres, oldbitmap );
+    _wpi_getoldbitmap( mempres, old_hbitmap );
     _wpi_deletecompatiblepres( mempres, hdc );
 
     _wpi_setbackmode( pres, TRANSPARENT );
@@ -102,11 +103,11 @@ WPI_MRESULT CALLBACK CurrentWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, 
         break;
 
     case WM_DESTROY:
-        if( lButton.bitmap != NULL ) {
-            _wpi_deletebitmap( lButton.bitmap );
+        if( lButton.hbitmap != NULL ) {
+            _wpi_deletebitmap( lButton.hbitmap );
         }
-        if( rButton.bitmap != NULL ) {
-            _wpi_deletebitmap( rButton.bitmap );
+        if( rButton.hbitmap != NULL ) {
+            _wpi_deletebitmap( rButton.hbitmap );
         }
         break;
 
@@ -150,7 +151,7 @@ void SetColor( int mousebutton, COLORREF color, COLORREF solid, wie_clrtype type
     HDC         hdc;
     WPI_PRES    pres;
     WPI_PRES    mempres;
-    HBITMAP     oldbitmap;
+    WPI_HBITMAP old_hbitmap;
     HPEN        blackpen;
     HPEN        oldpen;
     HBRUSH      brush;
@@ -163,19 +164,17 @@ void SetColor( int mousebutton, COLORREF color, COLORREF solid, wie_clrtype type
         lButton.color = color;
         lButton.solid = solid;
         lButton.type = type;
-        if( lButton.bitmap != NULL ) {
-            _wpi_deletebitmap( lButton.bitmap );
+        if( lButton.hbitmap != NULL ) {
+            _wpi_deletebitmap( lButton.hbitmap );
             pres = _wpi_getpres( HWND_DESKTOP );
             if( numberOfColors == 2 && type == NORMAL_CLR ) {
-                lButton.bitmap = _wpi_createbitmap( CUR_SQR_SIZE + 1, 2 * CUR_SQR_SIZE + 1,
-                                                    1, 1, NULL );
+                lButton.hbitmap = _wpi_createbitmap( CUR_SQR_SIZE + 1, 2 * CUR_SQR_SIZE + 1, 1, 1, NULL );
             } else {
-                lButton.bitmap = _wpi_createcompatiblebitmap( pres, CUR_SQR_SIZE + 1,
-                                                              2 * CUR_SQR_SIZE + 1 );
+                lButton.hbitmap = _wpi_createcompatiblebitmap( pres, CUR_SQR_SIZE + 1, 2 * CUR_SQR_SIZE + 1 );
             }
             mempres = _wpi_createcompatiblepres( pres, Instance, &hdc );
             _wpi_torgbmode( mempres );
-            oldbitmap = _wpi_selectbitmap( mempres, lButton.bitmap );
+            old_hbitmap = _wpi_selectbitmap( mempres, lButton.hbitmap );
             _wpi_releasepres( HWND_DESKTOP, pres );
 
             oldpen = _wpi_selectpen( mempres, blackpen );
@@ -198,7 +197,7 @@ void SetColor( int mousebutton, COLORREF color, COLORREF solid, wie_clrtype type
             _wpi_rectangle( mempres, 0, top, CUR_SQR_SIZE + 1, bottom );
             _wpi_getoldbrush( mempres, oldbrush );
             _wpi_deletebrush( brush );
-            _wpi_getoldbitmap( mempres, oldbitmap );
+            _wpi_getoldbitmap( mempres, old_hbitmap );
             _wpi_getoldpen( mempres, oldpen );
             _wpi_deletecompatiblepres( mempres, hdc );
         }
@@ -206,20 +205,18 @@ void SetColor( int mousebutton, COLORREF color, COLORREF solid, wie_clrtype type
         rButton.color = color;
         rButton.solid = solid;
         rButton.type = type;
-        if( rButton.bitmap != NULL ) {
-            _wpi_deletebitmap( rButton.bitmap );
+        if( rButton.hbitmap != NULL ) {
+            _wpi_deletebitmap( rButton.hbitmap );
             pres = _wpi_getpres( HWND_DESKTOP );
             if( numberOfColors == 2 && type == NORMAL_CLR ) {
-                rButton.bitmap = _wpi_createbitmap( CUR_SQR_SIZE + 1, 2 * CUR_SQR_SIZE + 1,
-                                                    1, 1, NULL );
+                rButton.hbitmap = _wpi_createbitmap( CUR_SQR_SIZE + 1, 2 * CUR_SQR_SIZE + 1, 1, 1, NULL );
             } else {
-                rButton.bitmap = _wpi_createcompatiblebitmap( pres, CUR_SQR_SIZE + 1,
-                                                              2 * CUR_SQR_SIZE + 1 );
+                rButton.hbitmap = _wpi_createcompatiblebitmap( pres, CUR_SQR_SIZE + 1, 2 * CUR_SQR_SIZE + 1 );
             }
             mempres = _wpi_createcompatiblepres( pres, Instance, &hdc );
             _wpi_torgbmode( mempres );
 
-            oldbitmap = _wpi_selectbitmap( mempres, rButton.bitmap );
+            old_hbitmap = _wpi_selectbitmap( mempres, rButton.hbitmap );
             _wpi_releasepres( HWND_DESKTOP, pres );
             oldpen = _wpi_selectpen( mempres, blackpen );
             brush = _wpi_createsolidbrush( solid );
@@ -240,7 +237,7 @@ void SetColor( int mousebutton, COLORREF color, COLORREF solid, wie_clrtype type
             _wpi_rectangle( mempres, 0, top, CUR_SQR_SIZE + 1, bottom );
             _wpi_getoldbrush( mempres, oldbrush );
             _wpi_deletebrush( brush );
-            _wpi_getoldbitmap( mempres, oldbitmap );
+            _wpi_getoldbitmap( mempres, old_hbitmap );
             _wpi_getoldpen( mempres, oldpen );
             _wpi_deletecompatiblepres( mempres, hdc );
         }
@@ -283,13 +280,13 @@ void VerifyCurrentClr( COLORREF screen_color, COLORREF inverse_color )
         if( lButton.type == SCREEN_CLR ) {
             lButton.color = screen_color;
             lButton.solid = screen_color;
-            if( lButton.bitmap != NULL ) {
+            if( lButton.hbitmap != NULL ) {
                 SetColor( LMOUSEBUTTON, screen_color, screen_color, SCREEN_CLR );
             }
         } else if( lButton.type == INVERSE_CLR ) {
             lButton.color = inverse_color;
             lButton.solid = inverse_color;
-            if( lButton.bitmap != NULL ) {
+            if( lButton.hbitmap != NULL ) {
                 SetColor( LMOUSEBUTTON, inverse_color, inverse_color, INVERSE_CLR );
             }
         }
@@ -299,13 +296,13 @@ void VerifyCurrentClr( COLORREF screen_color, COLORREF inverse_color )
         if( rButton.type == SCREEN_CLR ) {
             rButton.color = screen_color;
             rButton.solid = screen_color;
-            if( rButton.bitmap != NULL ) {
+            if( rButton.hbitmap != NULL ) {
                 SetColor( RMOUSEBUTTON, screen_color, screen_color, SCREEN_CLR );
             }
         } else if( rButton.type == INVERSE_CLR ) {
             rButton.color = inverse_color;
             rButton.solid = inverse_color;
-            if( rButton.bitmap != NULL ) {
+            if( rButton.hbitmap != NULL ) {
                 SetColor( RMOUSEBUTTON, inverse_color, inverse_color, INVERSE_CLR );
             }
         }
@@ -321,43 +318,39 @@ void SetCurrentNumColors( int color_count )
     WPI_PRES    pres;
     WPI_PRES    mempres;
     HDC         memdc;
-    HBITMAP     oldbitmap;
+    WPI_HBITMAP old_hbitmap;
 
     numberOfColors = color_count;
     pres = _wpi_getpres( HWND_DESKTOP );
     _wpi_torgbmode( pres );
 
-    if( lButton.bitmap != NULL ) {
-        _wpi_deletebitmap( lButton.bitmap );
+    if( lButton.hbitmap != NULL ) {
+        _wpi_deletebitmap( lButton.hbitmap );
     }
 
-    if( rButton.bitmap != NULL ) {
-        _wpi_deletebitmap( rButton.bitmap );
+    if( rButton.hbitmap != NULL ) {
+        _wpi_deletebitmap( rButton.hbitmap );
     }
 
     if( color_count == 2 ) {
-        lButton.bitmap = _wpi_createbitmap( CUR_SQR_SIZE + 1, 2 * CUR_SQR_SIZE + 1,
-                                            1, 1, NULL );
-        rButton.bitmap = _wpi_createbitmap( CUR_SQR_SIZE + 1, 2 * CUR_SQR_SIZE + 1,
-                                            1, 1, NULL );
+        lButton.hbitmap = _wpi_createbitmap( CUR_SQR_SIZE + 1, 2 * CUR_SQR_SIZE + 1, 1, 1, NULL );
+        rButton.hbitmap = _wpi_createbitmap( CUR_SQR_SIZE + 1, 2 * CUR_SQR_SIZE + 1, 1, 1, NULL );
     //} else if( color_count == 16 ) {
     } else {
-        lButton.bitmap = _wpi_createcompatiblebitmap( pres, CUR_SQR_SIZE + 1,
-                                                      2 * CUR_SQR_SIZE + 1 );
-        rButton.bitmap = _wpi_createcompatiblebitmap( pres, CUR_SQR_SIZE + 1,
-                                                      2 * CUR_SQR_SIZE + 1 );
+        lButton.hbitmap = _wpi_createcompatiblebitmap( pres, CUR_SQR_SIZE + 1, 2 * CUR_SQR_SIZE + 1 );
+        rButton.hbitmap = _wpi_createcompatiblebitmap( pres, CUR_SQR_SIZE + 1, 2 * CUR_SQR_SIZE + 1 );
 
         if( firstTime ) {
             mempres = _wpi_createcompatiblepres( pres, Instance, &memdc );
             _wpi_torgbmode( mempres );
 
-            oldbitmap = _wpi_selectbitmap( mempres, lButton.bitmap );
+            old_hbitmap = _wpi_selectbitmap( mempres, lButton.hbitmap );
             _wpi_patblt( mempres, 0, 0, CUR_SQR_SIZE + 1, 2 * CUR_SQR_SIZE + 1, BLACKNESS );
-            _wpi_getoldbitmap( mempres, oldbitmap );
+            _wpi_getoldbitmap( mempres, old_hbitmap );
 
-            oldbitmap = _wpi_selectbitmap( mempres, rButton.bitmap );
+            old_hbitmap = _wpi_selectbitmap( mempres, rButton.hbitmap );
             _wpi_patblt( mempres, 0, 0, CUR_SQR_SIZE + 1, 2 * CUR_SQR_SIZE + 1, WHITENESS );
-            _wpi_getoldbitmap( mempres, oldbitmap );
+            _wpi_getoldbitmap( mempres, old_hbitmap );
             _wpi_deletecompatiblepres( mempres, memdc );
             firstTime = false;
         }

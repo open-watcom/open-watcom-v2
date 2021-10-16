@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,8 +59,8 @@ static void deleteNodeData( img_node *node )
     next_icon = node->nexticon;
 
     while( node != NULL ) {
-        _wpi_deletebitmap( node->hxorbitmap );
-        _wpi_deletebitmap( node->handbitmap );
+        _wpi_deletebitmap( node->xor_hbitmap );
+        _wpi_deletebitmap( node->and_hbitmap );
         node->nexticon = NULL;
         node->hwnd = NULL;
         node->viewhwnd = NULL;
