@@ -1149,8 +1149,8 @@ WPI_FONT _wpi_selectfont( WPI_PRES hps, WPI_FONT wfont )
     _wpi_free( tmp_wfont );
 
     GpiSetCharSet( hps, 1L );
-
-    /* Critical for printing
+    /*
+     * Critical for printing
      * get minimum of pixel density
      */
     pix_per_inch = _wpi_devicecapableinch( hps, LOGPIXELSX );
@@ -1158,8 +1158,9 @@ WPI_FONT _wpi_selectfont( WPI_PRES hps, WPI_FONT wfont )
     if( i < pix_per_inch )
         pix_per_inch = i;
     pix_per_point = ( pix_per_inch + 71 ) / 72;
-
-    /* Set the font size ( for outline/sizeable fonts ) */
+    /*
+     * Set the font size ( for outline/sizeable fonts )
+     */
     point_size_x = ( wfont->lAveCharWidth ) * pix_per_point;
     point_size_y = ( wfont->lMaxBaselineExt ) * pix_per_point;
     box.cx = MAKEFIXED( point_size_x, 0 );
@@ -1458,10 +1459,12 @@ HBRUSH _wpi_createbrush( LOGBRUSH *log_brush )
         switch( log_brush->usSymbol ) {
 
         case PATSYM_NOSHADE:
-            /* OS/2 has no concept of a hollow brush like Windows. The best
-               equivalent is to use a pattern brush, drawn in the background
-               colour. I tried a solid brush, and it didn't work. See
-               'selectbrush/object' for the other changes nesc. djp */
+            /*
+             * OS/2 has no concept of a hollow brush like Windows. The best
+             * equivalent is to use a pattern brush, drawn in the background
+             * colour. I tried a solid brush, and it didn't work. See
+             * 'selectbrush/object' for the other changes nesc. djp
+             */
             brush->type = WPI_HLWBRUSH_OBJ;
             brush->brush.info.usSymbol = BS_HATCHED;
             break;
@@ -1471,11 +1474,11 @@ HBRUSH _wpi_createbrush( LOGBRUSH *log_brush )
             break;
 
         default:
-            /*
-            case PATSYM_HATCH:
-            case PATSYM_SOLID:
-            case PATSYM_DEFAULT:
-            */
+        /*
+        case PATSYM_HATCH:
+        case PATSYM_SOLID:
+        case PATSYM_DEFAULT:
+        */
             brush->type = WPI_BRUSH_OBJ;
             break;
         }
@@ -1507,10 +1510,14 @@ HBRUSH _wpi_selectbrush( WPI_PRES pres, HBRUSH obj )
 
     case WPI_PATBRUSH_OBJ:      /* Pattern brushes */
         GpiSetPatternSet( pres, 0 ); /* Reset the selected pattern to default */
-        /* set background and foreground colors */
+        /*
+         * set background and foreground colors
+         */
         brush->brush.info.lColor = GpiQueryColor( pres );
         brush->brush.info.lBackColor = GpiQueryBackColor( pres );
-        /* give the bitmap an id */
+        /*
+         * give the bitmap an id
+         */
         GpiSetBitmapId( pres, brush->brush.bitmap, brush->brush.info.usSet );
         GpiSetAttrs( pres, PRIM_AREA, ABB_COLOR | ABB_BACK_COLOR |
                            ABB_MIX_MODE | ABB_BACK_MIX_MODE | ABB_SET,
@@ -1565,10 +1572,14 @@ WPI_HANDLE _wpi_selectobject( WPI_PRES pres, WPI_HANDLE v_obj )
     case WPI_PATBRUSH_OBJ:
         _OldBrush( pres, old_obj );
         GpiSetPatternSet( pres, 0 ); /* Reset the selected pattern to default */
-        /* Set background and foreground colors */
+        /*
+         * Set background and foreground colors
+         */
         obj->brush.info.lColor = GpiQueryColor( pres );
         obj->brush.info.lBackColor = GpiQueryBackColor( pres );
-        /* give the bitmap an id */
+        /*
+         * give the bitmap an id
+         */
         GpiSetBitmapId( pres, obj->brush.bitmap, obj->brush.info.usSet );
         GpiSetAttrs( pres, PRIM_AREA, ABB_COLOR | ABB_BACK_COLOR | ABB_MIX_MODE | ABB_BACK_MIX_MODE | ABB_SET,
                                                   0L, &(obj->brush.info) );
@@ -2044,7 +2055,9 @@ void _wpi_setclipboarddata( WPI_INST inst, UINT format, WPI_HANDLE data, BOOL is
     } else if( format == CF_TEXT ) {
         PCHAR           tmp;
 
-        /* has to be allocated with DosAllocSharedMem */
+        /*
+         * has to be allocated with DosAllocSharedMem
+         */
         if( DosAllocSharedMem( (PPVOID)&tmp, NULL, strlen( (char *)data ) + 100,
                             PAG_WRITE | PAG_READ | OBJ_GIVEABLE
                             | OBJ_GETTABLE | PAG_COMMIT ) == 0 ) {
@@ -2085,7 +2098,9 @@ static BOOL WinPopupMenu( HWND hwndParent, HWND hwndOwner, HWND hwndMenu,
      *                         Wes "Paint problems be damned" Nelson
      */
 
-    /* move the y position down by the height of the menu */
+    /*
+     * move the y position down by the height of the menu
+     */
     WinQueryWindowRect( hwndMenu, &mrect );
     y -= ( mrect.yTop - mrect.yBottom );
     WinSetWindowPos( hwndMenu, NULL, x, y, 0, 0, SWP_MOVE );
@@ -2113,8 +2128,9 @@ static BOOL WinPopupMenu( HWND hwndParent, HWND hwndOwner, HWND hwndMenu,
         y += y_adjust;
     }
     WinSetWindowPos( hwndMenu, NULL, x, y, 0, 0, SWP_MOVE | SWP_SHOW );
-
-    /* set the initially selected item to be the first selectable one */
+    /*
+     * set the initially selected item to be the first selectable one
+     */
     item_count = _wpi_getmenuitemcount( hwndMenu );
     for( pos = 0; pos <= item_count; ++pos ) {
         id = _wpi_getmenuitemidfrompos( hwndMenu, pos );
@@ -2223,13 +2239,19 @@ BOOL _wpi_trackpopupmenu( HMENU hmenu, ULONG flags, LONG x, LONG y,
             if( _wpi_getparent( msg.hwnd ) != HWND_DESKTOP ) {
                 quit_loop = TRUE;
             } else {
-                /* lets make sure this child of the desktop is a menu!! */
+                /*
+                 * lets make sure this child of the desktop is a menu!!
+                 */
                 WinQueryClassName( msg.hwnd, 9, class_name );
                 if( strcmp( class_name, WC_SYS_MENU ) ) {
-                    /* the window is not a menu */
+                    /*
+                     * the window is not a menu
+                     */
                     quit_loop = TRUE;
                 } else {
-                    /* the window is a menu */
+                    /*
+                     * the window is a menu
+                     */
                     pt.x = (LONG) SHORT1FROMMP( msg.mp1 );
                     pt.y = (LONG) SHORT2FROMMP( msg.mp1 );
                     WinQueryWindowRect( msg.hwnd, &rect );
@@ -2677,7 +2699,9 @@ HWND _wpi_createwindow( LPSTR class, LPSTR name, ULONG frame_style,
 
     /* unused parameters */ (void)param;
 
-    /* Old _wpi_createwindow used HWND_DESKTOP instead of parent_hwnd */
+    /*
+     * Old _wpi_createwindow used HWND_DESKTOP instead of parent_hwnd
+     */
     if( parent == NULLHANDLE ) {
         parent = HWND_DESKTOP;
     }
@@ -2959,7 +2983,9 @@ void _wpi_getrestoredrect( HWND hwnd, WPI_RECT *prect )
          * way to do this change this code - Wes
          */
 
-        /* if the window is minimized lets restore it then minimize it */
+        /*
+         * if the window is minimized lets restore it then minimize it
+         */
         _wpi_setredraw( hwnd, FALSE );
         _wpi_restorewindow( hwnd );
         WinQueryWindowPos( hwnd, &swp );
