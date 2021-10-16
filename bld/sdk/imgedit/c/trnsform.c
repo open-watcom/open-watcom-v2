@@ -489,7 +489,7 @@ static void rotateTheImage( img_node *node, int whichway, WPI_RECT *rect,
         _wpi_deletecompatiblepres( rotandpres, rotanddc );
 
         _imged_getthebits( xorbits, xorpres, node->xor_hbitmap, oldxor_hbitmap );
-        _imged_getthebits( rotxorbits, rotxorpres, rotxorbmp, oldxorrot_hbitmap );
+        _imged_getthebits( rotxorbits, rotxorpres, rotxor_hbitmap, oldxorrot_hbitmap );
         if( whichway == ROTATE_COUNTERCLOCKWISE ) {
             for( y = 0; y < new_height; y++ ) {
                 for( x = 0; x < new_width; x++ ) {
@@ -521,7 +521,7 @@ static void rotateTheImage( img_node *node, int whichway, WPI_RECT *rect,
             }
         }
         _imged_freethebits( xorbits, xorpres, node->xor_hbitmap, false, oldxor_hbitmap );
-        _imged_freethebits( rotxorbits, rotxorpres, rotxorbmp, true, oldxorrot_hbitmap );
+        _imged_freethebits( rotxorbits, rotxorpres, rotxor_hbitmap, true, oldxorrot_hbitmap );
         _wpi_deletecompatiblepres( xorpres, xordc );
         _wpi_deletecompatiblepres( rotxorpres, rotxordc );
 
@@ -529,8 +529,8 @@ static void rotateTheImage( img_node *node, int whichway, WPI_RECT *rect,
         // We can use the bits.c routines for icons and cursors.
         xorbits = GetTheBits( node->xor_hbitmap );
         andbits = GetTheBits( node->and_hbitmap );
-        rotxorbits = GetTheBits( rotxorbmp );
-        rotandbits = GetTheBits( rotandbmp );
+        rotxorbits = GetTheBits( rotxor_hbitmap );
+        rotandbits = GetTheBits( rotand_hbitmap );
 
         if( whichway != IMGED_ROTATECC ) {
             for( y = 0; y < new_height; y++ ) {
@@ -569,8 +569,8 @@ static void rotateTheImage( img_node *node, int whichway, WPI_RECT *rect,
         }
         FreeTheBits( xorbits, node->xor_hbitmap, false );
         FreeTheBits( andbits, node->and_hbitmap, false );
-        FreeTheBits( rotxorbits, rotxorbmp, true );
-        FreeTheBits( rotandbits, rotandbmp, true );
+        FreeTheBits( rotxorbits, rotxor_hbitmap, true );
+        FreeTheBits( rotandbits, rotand_hbitmap, true );
     }
 
 } /* rotateTheImage */
@@ -629,11 +629,11 @@ void RotateImage( WORD whichway )
 
     rotate_type = GetRotateType();
     if( rotate_type == SIMPLE_ROTATE ) {
-        simpleRotate( node, &rotate_rect, rotxorbmp, rotandbmp, rectexists );
+        simpleRotate( node, &rotate_rect, rotxor_hbitmap, rotand_hbitmap, rectexists );
     } else if( rotate_type == CLIP_ROTATE ) {
-        clipIntoArea( node, &rotate_rect, rotxorbmp, rotandbmp );
+        clipIntoArea( node, &rotate_rect, rotxor_hbitmap, rotand_hbitmap );
     } else {
-        stretchIntoArea( node, &rotate_rect, rotxorbmp, rotandbmp );
+        stretchIntoArea( node, &rotate_rect, rotxor_hbitmap, rotand_hbitmap );
     }
 
     _wpi_deletebitmap( rotxor_hbitmap );

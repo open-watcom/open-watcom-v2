@@ -46,8 +46,8 @@ typedef struct a_stack {
     int                         opcount;
     int                         redocount;
     int                         current_icon;           // for icons only
-    HBITMAP                     original_xor_hbitmap;
-    HBITMAP                     original_and_hbitmap;
+    HBITMAP                     originalxor_hbitmap;
+    HBITMAP                     originaland_hbitmap;
     HBITMAP                     firstxor_hbitmap;
     HBITMAP                     firstand_hbitmap;
     bool                        modified;

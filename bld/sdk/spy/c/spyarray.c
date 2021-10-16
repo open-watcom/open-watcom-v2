@@ -41,7 +41,6 @@
     #undef  NTDDI_VERSION
     #define NTDDI_VERSION 0x0A000000
 #endif
-
 #include "spy.h"
 #include <dde.h>
 #ifdef __NT__

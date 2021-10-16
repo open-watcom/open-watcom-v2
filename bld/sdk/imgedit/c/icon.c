@@ -313,7 +313,7 @@ an_img *ImgResourceToImg( FILE *fp, an_img_file *img_file, unsigned i )
     BITMAPINFOHEADER    *h;
     an_img              *img;
     LONG                height;
-    WORD                original_and_size, original_xor_size;
+    WORD                originaland_size, originalxor_size;
 
     if( i >= img_file->count ) {
         return( NULL );
@@ -336,8 +336,8 @@ an_img *ImgResourceToImg( FILE *fp, an_img_file *img_file, unsigned i )
         h->biSizeImage = BITS_INTO_BYTES( h->biWidth * h->biBitCount, h->biHeight );
         img->xor_size = h->biSizeImage;
         img->and_size = BITS_INTO_BYTES( h->biWidth, h->biHeight );
-        original_and_size = img->and_size;   /* save the sizes for later */
-        original_xor_size = img->xor_size;
+        originaland_size = img->and_size;   /* save the sizes for later */
+        originalxor_size = img->xor_size;
 
         /*
          * JPK - for 16x16, 24x24 & 48x48 icons, need to adjust sizes so
@@ -365,7 +365,7 @@ an_img *ImgResourceToImg( FILE *fp, an_img_file *img_file, unsigned i )
         fseek( fp, res->DIB_offset + BITMAP_SIZE( h ), SEEK_SET );
         fread( img->xor_mask, img->xor_size + img->and_size, 1, fp );
         if( img_file->type == ICON_FILE_TYPE )
-            dropBitmapPadding( img, h, original_and_size, original_xor_size );
+            dropBitmapPadding( img, h, originaland_size, originalxor_size );
         reverseAndBits( h->biWidth, h->biHeight, img->and_mask );
         return( img );
     }
@@ -379,7 +379,7 @@ an_img *ImgResourceToImgData( BYTE *data, unsigned *pos, an_img_file *img_file, 
     BITMAPINFO          *bm;
     BITMAPINFOHEADER    *h;
     an_img              *img;
-    WORD                original_and_size, original_xor_size;
+    WORD                originaland_size, originalxor_size;
 
     if( data == NULL || pos == NULL ) {
         return( NULL );
@@ -401,8 +401,8 @@ an_img *ImgResourceToImgData( BYTE *data, unsigned *pos, an_img_file *img_file, 
         h->biSizeImage = BITS_INTO_BYTES( h->biWidth * h->biBitCount, h->biHeight );
         img->xor_size = h->biSizeImage;
         img->and_size = BITS_INTO_BYTES( h->biWidth, h->biHeight );
-        original_and_size = img->and_size;   /* save the sizes for later */
-        original_xor_size = img->xor_size;
+        originaland_size = img->and_size;   /* save the sizes for later */
+        originalxor_size = img->xor_size;
 
         /*
          * See the same code in preceding function.
@@ -429,7 +429,7 @@ an_img *ImgResourceToImgData( BYTE *data, unsigned *pos, an_img_file *img_file, 
         *pos = res->DIB_offset + BITMAP_SIZE( h );
         memcpy( img->xor_mask, data + *pos, img->xor_size + img->and_size );
         if( img_file->type == ICON_FILE_TYPE )
-            dropBitmapPadding( img, h, original_and_size, original_xor_size );
+            dropBitmapPadding( img, h, originaland_size, originalxor_size );
         reverseAndBits( h->biWidth, h->biHeight, img->and_mask );
         return( img );
     }
