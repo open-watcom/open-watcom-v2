@@ -319,10 +319,10 @@ void FiniPMImage( a_pm_image *image )
  * PMImageToAndBitmap - converts the given image data to the AND bitmap.  Note
  *                      that the routine actually returns a wpi_handle.
  */
-HBITMAP PMImageToAndBitmap( a_pm_image *image, a_pm_image_file *img_file, int index )
+WPI_HBITMAP PMImageToAndBitmap( a_pm_image *image, a_pm_image_file *img_file, int index )
 {
     WPI_PRES            pres;
-    HBITMAP             hbitmap;
+    WPI_HBITMAP         hbitmap;
     BITMAPINFOHEADER2   bmh;
 
     memcpy(&bmh, img_file->resources[index].andinfo, sizeof(BITMAPINFOHEADER2));
@@ -338,10 +338,10 @@ HBITMAP PMImageToAndBitmap( a_pm_image *image, a_pm_image_file *img_file, int in
  * PMImageToXorBitmap - converts the given image data to the XOR bitmap.
  *                      Note that it returns a bitmap handle created by wpi
  */
-HBITMAP PMImageToXorBitmap( a_pm_image *image, a_pm_image_file *img_file, int index )
+WPI_HBITMAP PMImageToXorBitmap( a_pm_image *image, a_pm_image_file *img_file, int index )
 {
     WPI_PRES            pres;
-    HBITMAP             hbitmap;
+    WPI_HBITMAP         hbitmap;
     BITMAPINFOHEADER2   bmh;
 
     memcpy(&bmh, img_file->resources[index].andinfo, sizeof(BITMAPINFOHEADER2));
@@ -356,10 +356,10 @@ HBITMAP PMImageToXorBitmap( a_pm_image *image, a_pm_image_file *img_file, int in
 /*
  * PMImageToClrBitmap - creates the colour part of the bitmap.
  */
-HBITMAP PMImageToClrBitmap( a_pm_image *image, a_pm_image_file *img_file, int index )
+WPI_HBITMAP PMImageToClrBitmap( a_pm_image *image, a_pm_image_file *img_file, int index )
 {
     WPI_PRES            pres;
-    HBITMAP             hbitmap;
+    WPI_HBITMAP         hbitmap;
     BITMAPINFOHEADER2   bmh;
 
     memcpy(&bmh, img_file->resources[index].xorinfo, sizeof(BITMAPINFOHEADER2));
@@ -376,21 +376,21 @@ HBITMAP PMImageToClrBitmap( a_pm_image *image, a_pm_image_file *img_file, int in
  *                      than the xor mask that i store since it has 0's
  *                      anywhere where the AND bitmap has 1's.
  */
-static HBITMAP createColourMask( HBITMAP xor_hbitmap, HBITMAP clr_hbitmap, WPI_INST hab )
+static WPI_HBITMAP createColourMask( WPI_HBITMAP xor_hbitmap, WPI_HBITMAP clr_hbitmap, WPI_INST hab )
 {
     WPI_PRES    pres;
     WPI_PRES    srcpres;
     HDC         srcdc;
     WPI_PRES    dstpres;
     HDC         dstdc;
-    HBITMAP     new_hbitmap;
+    WPI_HBITMAP new_hbitmap;
     IMAGEBUNDLE p;
     int         width;
     int         height;
     int         planes;
     int         bitspixel;
-    HBITMAP     oldsrc_hbitmap;
-    HBITMAP     olddst_hbitmap;
+    WPI_HBITMAP oldsrc_hbitmap;
+    WPI_HBITMAP olddst_hbitmap;
 
     pres = _wpi_getpres( HWND_DESKTOP );
     srcpres = _wpi_createcompatiblepres( pres, hab, &srcdc );
@@ -425,12 +425,12 @@ static HBITMAP createColourMask( HBITMAP xor_hbitmap, HBITMAP clr_hbitmap, WPI_I
 /*
  * PMImageToWinXorBitmap - combines previous 2 routines.
  */
-HBITMAP PMImageToWinXorBitmap( a_pm_image *image, a_pm_image_file *img_file,
+WPI_HBITMAP PMImageToWinXorBitmap( a_pm_image *image, a_pm_image_file *img_file,
                                                 int index, WPI_INST hab )
 {
-    HBITMAP     xor_hbitmap;
-    HBITMAP     clr_hbitmap;
-    HBITMAP     hbitmap;
+    WPI_HBITMAP     xor_hbitmap;
+    WPI_HBITMAP     clr_hbitmap;
+    WPI_HBITMAP     hbitmap;
 
     clr_hbitmap = PMImageToClrBitmap( image, img_file, index );
     xor_hbitmap = PMImageToXorBitmap( image, img_file, index );

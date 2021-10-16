@@ -125,8 +125,8 @@ void BlowupImage( HWND hmdiwnd, WPI_PRES pres )
     HDC         memdc;
     WPI_PRES    mempres;
     WPI_RECT    client;
-    HBITMAP     old_hbitmap;
-    HBITMAP     new_hbitmap;
+    WPI_HBITMAP old_hbitmap;
+    WPI_HBITMAP new_hbitmap;
     HWND        hwnd;
     img_node    *node;
     bool        new_pres;

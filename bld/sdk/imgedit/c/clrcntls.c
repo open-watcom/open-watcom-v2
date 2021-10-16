@@ -45,8 +45,8 @@ static bool             fShowScreenClr = false;
 static HWND             hScreenTxt;
 static HWND             hInverseTxt;
 static short            numberOfColors;
-static WPI_HBITMAP      hColorBitmap;
-static WPI_HBITMAP      hMonoBitmap;
+static WPI_HBITMAP      Color_hbitmap;
+static WPI_HBITMAP      Mono_hbitmap;
 static bool             prevRestoreState = false;
 
 /*
@@ -68,9 +68,9 @@ static void paintColors( HWND hwnd )
 
     _wpi_torgbmode( pres );
     if( numberOfColors == 2 ) {
-        hbitmap = hMonoBitmap;
+        hbitmap = Mono_hbitmap;
     } else {
-        hbitmap = hColorBitmap;
+        hbitmap = Color_hbitmap;
     }
 
     mempres = _wpi_createcompatiblepres( pres, Instance, &hdc );
@@ -255,7 +255,7 @@ WPI_MRESULT CALLBACK ColorsWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
     case WM_CREATE:
         numberOfColors = 16;
         initPaletteBoxes( TRUE );
-        InitPaletteBitmaps( hwnd, &hColorBitmap, &hMonoBitmap );
+        InitPaletteBitmaps( hwnd, &Color_hbitmap, &Mono_hbitmap );
         break;
 
     case WM_PAINT:
@@ -278,8 +278,8 @@ WPI_MRESULT CALLBACK ColorsWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
         break;
 
     case WM_DESTROY:
-        _wpi_deletebitmap( hColorBitmap );
-        _wpi_deletebitmap( hMonoBitmap );
+        _wpi_deletebitmap( Color_hbitmap );
+        _wpi_deletebitmap( Mono_hbitmap );
         break;
 
     default:
@@ -508,7 +508,7 @@ void ShowNewColor( int index, COLORREF newcolor, bool repaint )
         oldbrush = _wpi_selectbrush( mempres, brush );
         blackpen = _wpi_createpen( PS_SOLID, 0, BLACK );
         oldpen = _wpi_selectpen( mempres, blackpen );
-        old_hbitmap = _wpi_selectbitmap( mempres, hColorBitmap );
+        old_hbitmap = _wpi_selectbitmap( mempres, Color_hbitmap );
 
         _wpi_cvth_pt( &topleft, colorsHeight );
         _wpi_cvth_pt( &bottomright, colorsHeight );

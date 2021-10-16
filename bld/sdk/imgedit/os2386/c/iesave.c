@@ -57,7 +57,7 @@ static bool writeDataInPieces( BITMAPINFO2 *bmi, FILE *fp, img_node *node )
     int         num_lines;
     long        byte_count;
     BYTE        *buffer;
-    HBITMAP     old_hbitmap;
+    WPI_HBITMAP old_hbitmap;
 
     pres = _wpi_getpres( HWND_DESKTOP );
     mempres = _wpi_createcompatiblepres( pres, Instance, &memdc );
@@ -102,9 +102,9 @@ static bool writeImageBits( FILE *fp, img_node *node )
     ULONG                       byte_count;
     img_node                    *new_image;
     BITMAPINFO2                 *bmi;
-    HBITMAP                     old_hbitmap;
-    HBITMAP                     inverse_hbitmap;
-    HBITMAP                     clr_hbitmap;
+    WPI_HBITMAP                 old_hbitmap;
+    WPI_HBITMAP                 inverse_hbitmap;
+    WPI_HBITMAP                 clr_hbitmap;
     BYTE                        *buffer;
     bool                        ok;
 

@@ -46,8 +46,8 @@ typedef struct {
          * _wpi_getrectvalues is used, top > bottom.
          */
 static a_clip_rect      clipRect;
-static WPI_HBITMAP      hAndClipped = NULL;
-static WPI_HBITMAP      hXorClipped = NULL;
+static WPI_HBITMAP      clipand_hbitmap = NULL;
+static WPI_HBITMAP      clipxor_hbitmap = NULL;
 static short            dragWidth;
 static short            dragHeight;
 static bool             fEnableCutCopy = false;
@@ -108,19 +108,19 @@ static void copyImageToClipboard( short width, short height, img_node *node )
     _wpi_deletecompatiblepres( clippres, clipdc );
 
     clippres = _wpi_createcompatiblepres( pres, Instance, &clipdc );
-    hXorClipped = _wpi_createcompatiblebitmap( pres, width, height );
+    clipxor_hbitmap = _wpi_createcompatiblebitmap( pres, width, height );
 
     _wpi_getoldbitmap( mempres, old_hbitmap );
     old_hbitmap = _wpi_selectbitmap( mempres, node->xor_hbitmap );
-    oldclip_hbitmap = _wpi_selectbitmap( clippres, hXorClipped );
+    oldclip_hbitmap = _wpi_selectbitmap( clippres, clipxor_hbitmap );
 
     _wpi_bitblt( clippres, 0, 0, width, height, mempres, left, top, SRCCOPY );
     _wpi_getoldbitmap( mempres, old_hbitmap );
     _wpi_getoldbitmap( clippres, oldclip_hbitmap );
 
-    hAndClipped = _wpi_createcompatiblebitmap( pres, width, height );
+    clipand_hbitmap = _wpi_createcompatiblebitmap( pres, width, height );
     old_hbitmap = _wpi_selectbitmap( mempres, node->and_hbitmap );
-    oldclip_hbitmap = _wpi_selectbitmap( clippres, hAndClipped );
+    oldclip_hbitmap = _wpi_selectbitmap( clippres, clipand_hbitmap );
 
     _wpi_bitblt( clippres, 0, 0, width, height, mempres, left, top, SRCCOPY );
     _wpi_getoldbitmap( mempres, old_hbitmap );
@@ -343,7 +343,7 @@ void PlaceAndPaste( void )
 /*
  * PasteImage - paste the image in the clipboard at the current point
  *            - first check to see if the image was cut/copied from our program
- *            - if it was, then we use the hXorClipped and hAndClipped bitmaps
+ *            - if it was, then we use the clipxor_hbitmap and clipand_hbitmap bitmaps
  *              we created in order to preserve the screen colors if ther were used
  *            - otherwise, just copy from the clipboard
  */
@@ -395,7 +395,7 @@ void PasteImage( WPI_POINT *pt, WPI_POINT pointsize, HWND hwnd )
     pres = _wpi_getpres( node->viewhwnd );
 
     if( _wpi_getclipboardowner( Instance ) == HMainWindow && node->imgtype != BITMAP_IMG ) {
-        _wpi_getbitmapdim( hAndClipped, &bm_width, &bm_height );
+        _wpi_getbitmapdim( clipand_hbitmap, &bm_width, &bm_height );
         GetClientRect( node->hwnd, &client );
         if( fEnableCutCopy ) {
             width = (short)_wpi_getwidthrect( clipRect.rect );
@@ -416,7 +416,7 @@ void PasteImage( WPI_POINT *pt, WPI_POINT pointsize, HWND hwnd )
         clippres = _wpi_createcompatiblepres( pres, Instance, &clipdc );
 
         old_hbitmap = _wpi_selectbitmap( mempres, node->and_hbitmap );
-        old_hbitmap2 = _wpi_selectbitmap( clippres, hAndClipped );
+        old_hbitmap2 = _wpi_selectbitmap( clippres, clipand_hbitmap );
 
         if( fstretchbmp == 0 ) {
             clipwidth = (short)bm_width;
@@ -439,7 +439,7 @@ void PasteImage( WPI_POINT *pt, WPI_POINT pointsize, HWND hwnd )
         _wpi_getoldbitmap( mempres, old_hbitmap );
         old_hbitmap = _wpi_selectbitmap( mempres, node->xor_hbitmap );
 
-        dup_hbitmap = DuplicateBitmap( hXorClipped );
+        dup_hbitmap = DuplicateBitmap( clipxor_hbitmap );
         _wpi_getoldbitmap( clippres, old_hbitmap2 );
         old_hbitmap2 = _wpi_selectbitmap( clippres, dup_hbitmap );
 
@@ -703,16 +703,16 @@ void SetRectExists( bool does_rect_exist )
 } /* SetRectExists */
 
 /*
- * CleanupClipboard - clean up the hAndClipped and hXorClipped bitmaps if
+ * CleanupClipboard - clean up the clipand_hbitmap and clipxor_hbitmap bitmaps if
  *                    they were created by a cut or copy
  */
 void CleanupClipboard( void )
 {
-    if( hXorClipped ) {
-        _wpi_deletebitmap( hXorClipped );
-        _wpi_deletebitmap( hAndClipped );
-        hXorClipped = NULL;
-        hAndClipped = NULL;
+    if( clipxor_hbitmap != NULL ) {
+        _wpi_deletebitmap( clipxor_hbitmap );
+        _wpi_deletebitmap( clipand_hbitmap );
+        clipxor_hbitmap = NULL;
+        clipand_hbitmap = NULL;
     }
 
 } /* CleanupClipboard */

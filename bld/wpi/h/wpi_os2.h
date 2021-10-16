@@ -441,6 +441,7 @@ extern void _wpi_deletecompatiblepres( WPI_PRES pres, HDC hdc );
 extern WPI_HBITMAP _wpi_selectbitmap( WPI_PRES pres, WPI_HBITMAP bitmap );
 extern void _wpi_getoldbitmap( WPI_PRES pres, WPI_HBITMAP oldobj );
 extern void _wpi_deletebitmap( WPI_HBITMAP bmp );
+extern WPI_HBITMAP _wpi_makewpibitmap( HBITMAP hbitmap );
 
     #define _wpi_translateaccelerator( inst, hwnd, accel, msg ) \
                             WinTranslateAccel( (inst).hab, hwnd, accel, msg )

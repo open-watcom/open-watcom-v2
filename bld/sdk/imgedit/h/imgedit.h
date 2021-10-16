@@ -551,7 +551,6 @@ HWND    PMCreateViewWin( HWND hviewwnd, bool foneview, int *showstate, int width
 void        InitXorAndBitmaps( img_node *node );
 WPI_HBITMAP CreateInverseBitmap( WPI_HBITMAP and_hbitmap, WPI_HBITMAP xor_hbitmap );
 WPI_HBITMAP CreateColorBitmap( WPI_HBITMAP and_hbitmap, WPI_HBITMAP xor_hbitmap );
-WPI_HBITMAP MakeWPIBitmap( HBITMAP hbitmap );
 
 /* getdata.c */
 void        GetBitmapInfoHeader( WPI_BITMAPINFOHEADER *bmih, img_node *node );

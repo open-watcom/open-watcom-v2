@@ -37,7 +37,7 @@
  * makeBiggerBitmap - make a bitmap 1 pixel wider and 1 higher than that
  *                    of the given bitmap
  */
-static HBITMAP makeBiggerBitmap( WPI_HBITMAP hbitmap, WPI_POINT *pt )
+static WPI_HBITMAP makeBiggerBitmap( WPI_HBITMAP hbitmap, WPI_POINT *pt )
 {
     WPI_PRES    pres;
     WPI_PRES    srcpres;

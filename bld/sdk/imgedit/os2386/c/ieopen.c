@@ -167,7 +167,7 @@ static bool readInBitmapFile( const char *fullname )
 
     // NOTE that ReadPMBitmapFile returns an actual hbitmap!!
     real_hbitmap = ReadPMBitmapFile( HMainWindow, fullname, &info );
-    hbitmap = MakeWPIBitmap( real_hbitmap );
+    hbitmap = _wpi_makewpibitmap( real_hbitmap );
     GetFnameFromPath( fullname, filename );
 
     if( hbitmap ) {

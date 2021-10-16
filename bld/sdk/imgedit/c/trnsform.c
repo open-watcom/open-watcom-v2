@@ -259,7 +259,7 @@ static void clipIntoArea( img_node *node, WPI_RECT *rect,
  * stretchIntoArea - stretch the rotated image into the area specified
  */
 static void stretchIntoArea( img_node *node, WPI_RECT *rect,
-                             HBITMAP rotxor_hbitmap, HBITMAP rotand_hbitmap )
+                             WPI_HBITMAP rotxor_hbitmap, WPI_HBITMAP rotand_hbitmap )
 {
     WPI_PRES    pres;
     WPI_PRES    xorpres;
@@ -270,10 +270,10 @@ static void stretchIntoArea( img_node *node, WPI_RECT *rect,
     HDC         rotxordc;
     WPI_PRES    rotandpres;
     HDC         rotanddc;
-    HBITMAP     oldxor_hbitmap;
-    HBITMAP     oldand_hbitmap;
-    HBITMAP     oldxorrot_hbitmap;
-    HBITMAP     oldandrot_hbitmap;
+    WPI_HBITMAP oldxor_hbitmap;
+    WPI_HBITMAP oldand_hbitmap;
+    WPI_HBITMAP oldxorrot_hbitmap;
+    WPI_HBITMAP oldandrot_hbitmap;
     short       width;
     short       height;
     WPI_RECTDIM left;
@@ -328,8 +328,8 @@ static void stretchIntoArea( img_node *node, WPI_RECT *rect,
 /*
  * simpleRotate - simply rotate the image around the center of the given rectangle
  */
-static void simpleRotate( img_node *node, WPI_RECT *rect, HBITMAP rotxor_hbitmap,
-                          HBITMAP rotand_hbitmap, bool rectexists )
+static void simpleRotate( img_node *node, WPI_RECT *rect, WPI_HBITMAP rotxor_hbitmap,
+                          WPI_HBITMAP rotand_hbitmap, bool rectexists )
 {
     WPI_POINT   topleft;
     WPI_POINT   centre_pt;
@@ -430,7 +430,7 @@ static void IEPrintRotateAmt( int amt )
  * rotateTheImage - create the rotated bitmaps
  */
 static void rotateTheImage( img_node *node, int whichway, WPI_RECT *rect,
-                            HBITMAP rotxor_hbitmap, HBITMAP rotand_hbitmap )
+                            WPI_HBITMAP rotxor_hbitmap, WPI_HBITMAP rotand_hbitmap )
 {
     WPI_PRES    pres;
     WPI_PRES    rotxorpres;

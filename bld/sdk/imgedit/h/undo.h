@@ -35,8 +35,8 @@
 #define SPACE_MIN               1500000
 
 typedef struct stack_element {
-    HBITMAP                     xor_hbitmap;
-    HBITMAP                     and_hbitmap;
+    WPI_HBITMAP                 xor_hbitmap;
+    WPI_HBITMAP                 and_hbitmap;
     struct stack_element        *next;
     struct stack_element        *previous;
 } an_undo_node;
@@ -46,10 +46,10 @@ typedef struct a_stack {
     int                         opcount;
     int                         redocount;
     int                         current_icon;           // for icons only
-    HBITMAP                     originalxor_hbitmap;
-    HBITMAP                     originaland_hbitmap;
-    HBITMAP                     firstxor_hbitmap;
-    HBITMAP                     firstand_hbitmap;
+    WPI_HBITMAP                 originalxor_hbitmap;
+    WPI_HBITMAP                 originaland_hbitmap;
+    WPI_HBITMAP                 firstxor_hbitmap;
+    WPI_HBITMAP                 firstand_hbitmap;
     bool                        modified;
     an_undo_node                *top_undo;
     an_undo_node                *bottom_undo;

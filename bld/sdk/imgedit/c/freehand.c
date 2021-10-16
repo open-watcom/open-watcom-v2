@@ -38,8 +38,8 @@ static WPI_PRES     xorMempres = NULL;
 static HDC          xorMemdc;
 static WPI_PRES     andMempres = NULL;
 static HDC          andMemdc;
-static WPI_HBITMAP  oldXor_hbitmap;
-static WPI_HBITMAP  oldAnd_hbitmap;
+static WPI_HBITMAP  oldxor_hbitmap;
+static WPI_HBITMAP  oldand_hbitmap;
 
 /*
  * BeginFreeHand - creates the device contexts for drawing
@@ -63,8 +63,8 @@ void BeginFreeHand( HWND hwnd )
     _wpi_torgbmode( xorMempres );
     _wpi_torgbmode( andMempres );
     _wpi_torgbmode( presWindow );
-    oldXor_hbitmap = _wpi_selectbitmap( xorMempres, node->xor_hbitmap );
-    oldAnd_hbitmap = _wpi_selectbitmap( andMempres, node->and_hbitmap );
+    oldxor_hbitmap = _wpi_selectbitmap( xorMempres, node->xor_hbitmap );
+    oldand_hbitmap = _wpi_selectbitmap( andMempres, node->and_hbitmap );
 
 } /* BeginFreeHand */
 
@@ -120,8 +120,8 @@ void EndFreeHand( HWND hwnd )
     node = SelectImage( hwnd );
 
     _wpi_releasepres( node->viewhwnd, presWindow );
-    _wpi_getoldbitmap( xorMempres, oldXor_hbitmap );
-    _wpi_getoldbitmap( andMempres, oldAnd_hbitmap );
+    _wpi_getoldbitmap( xorMempres, oldxor_hbitmap );
+    _wpi_getoldbitmap( andMempres, oldand_hbitmap );
     _wpi_deletecompatiblepres( xorMempres, xorMemdc );
     _wpi_deletecompatiblepres( andMempres, andMemdc );
     presWindow = (WPI_PRES)NULL;

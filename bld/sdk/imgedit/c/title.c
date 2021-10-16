@@ -68,10 +68,10 @@ WPI_DLGRESULT CALLBACK wTitleDlgProc( HWND hwnd, UINT message, WPARAM wparam, LP
 #endif
     bool        ret;
 
-    static BITMAP    bm;
-    static HBITMAP   logo_hbitmap;
-    static HBRUSH    brush;
-    static COLORREF  color;
+    static BITMAP   bm;
+    static HBITMAP  logo_hbitmap;
+    static HBRUSH   brush;
+    static COLORREF color;
 
     ret = false;
 

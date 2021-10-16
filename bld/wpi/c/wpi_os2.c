@@ -693,9 +693,24 @@ void _wpi_deletebitmap( WPI_HBITMAP bmp )
     }
 } /* _wpi_deletebitmap */
 
+/*
+ * _wpi_makewpibitmap - Converts an HBITMAP to a WPI_HANDLE
+ */
+WPI_HBITMAP _wpi_makewpibitmap( HBITMAP hbitmap )
+/***********************************************/
+{
+    WPI_OBJECT      *obj;
+
+    obj = _wpi_malloc( sizeof( WPI_OBJECT ) );
+    obj->type = WPI_BITMAP_OBJ;
+    obj->bitmap = hbitmap;
+
+    return( (WPI_HBITMAP)obj );
+} /* _wpi_makewpibitmap */
+
 #ifdef __FLAT__
 void _wpi_setmodhandle( char *name, WPI_INST *inst )
-/**********************************************************************/
+/**************************************************/
 {
     if( DosQueryModuleHandle( name, &(inst->mod_handle) ) != 0 ) {
         inst->mod_handle = NULLHANDLE;
@@ -704,7 +719,7 @@ void _wpi_setmodhandle( char *name, WPI_INST *inst )
 #endif
 
 WPI_COLOUR _wpi_setpixel( WPI_PRES hps, int x, int y, WPI_COLOUR clr )
-/**********************************************************************/
+/********************************************************************/
 {
     LONG        oldclr;
     WPI_COLOUR  setclr;

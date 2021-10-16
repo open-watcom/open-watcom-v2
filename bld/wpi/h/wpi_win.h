@@ -209,6 +209,8 @@ extern WPI_PRES _wpi_createcompatiblepres( WPI_PRES pres, WPI_INST inst, HDC *hd
 
     #define _wpi_deletebitmap( bmp ) DeleteObject( bmp )
 
+    #define _wpi_makewpibitmap( hbitmap ) ( hbitmap )
+
     #define _wpi_translateaccelerator( inst, hwnd, accel, msg ) \
                                     TranslateAccelerator( hwnd, accel, msg )
 

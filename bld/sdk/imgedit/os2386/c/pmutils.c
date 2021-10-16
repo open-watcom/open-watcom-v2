@@ -182,17 +182,3 @@ void InitXorAndBitmaps( img_node *node )
 
     _wpi_deletecompatiblepres( mempres, hdc );
 } /* InitXorAndBitmaps */
-
-/*
- * MakeWPIBitmap - Converts an HBITMAP to a WPI_HANDLE
- */
-WPI_HBITMAP MakeWPIBitmap( HBITMAP hbitmap )
-{
-    WPI_OBJECT      *obj;
-
-    obj = MemAlloc( sizeof(WPI_OBJECT) );
-    obj->type = WPI_BITMAP_OBJ;
-    obj->bitmap = hbitmap;
-
-    return( (WPI_HBITMAP)obj );
-} /* MakeWPIBitmap */
