@@ -312,7 +312,7 @@ extern int _wpi_devicecapableinch( WPI_PRES pres, int what );
 
     #define _wpi_getcurrpos( pres, pt ) GpiQueryCurrentPosition( pres, pt )
 
-extern HBRUSH _wpi_createpatternbrush( WPI_HBITMAP bitmap );
+extern HBRUSH _wpi_createpatternbrush( WPI_HBITMAP hbitmap );
 extern HBRUSH _wpi_createsolidbrush( WPI_COLOUR colour );
 extern HBRUSH _wpi_createnullbrush( void );
 extern HPEN _wpi_createnullpen( void );
@@ -438,9 +438,9 @@ extern void _wpi_deleteos2normpres( WPI_PRES pres );
 extern WPI_PRES _wpi_createcompatiblepres( WPI_PRES pres, WPI_INST inst, HDC *hdc );
 extern void _wpi_deletepres( WPI_PRES pres, HDC hdc );
 extern void _wpi_deletecompatiblepres( WPI_PRES pres, HDC hdc );
-extern WPI_HBITMAP _wpi_selectbitmap( WPI_PRES pres, WPI_HBITMAP bitmap );
-extern void _wpi_getoldbitmap( WPI_PRES pres, WPI_HBITMAP oldobj );
-extern void _wpi_deletebitmap( WPI_HBITMAP bmp );
+extern WPI_HBITMAP _wpi_selectbitmap( WPI_PRES pres, WPI_HBITMAP hbitmap );
+extern void _wpi_getoldbitmap( WPI_PRES pres, WPI_HBITMAP old_hbitmap );
+extern void _wpi_deletebitmap( WPI_HBITMAP hbitmap );
 extern WPI_HBITMAP _wpi_makewpibitmap( HBITMAP hbitmap );
 
     #define _wpi_translateaccelerator( inst, hwnd, accel, msg ) \
@@ -455,7 +455,7 @@ extern WPI_HBITMAP _wpi_makewpibitmap( HBITMAP hbitmap );
 
 extern WPI_HBITMAP _wpi_loadbitmap( WPI_INST inst, int id );
 extern WPI_HBITMAP _wpi_loadsysbitmap( WPI_INST inst, int id );
-extern void _wpi_getbitmapdim( WPI_HBITMAP hbmp, int *pwidth, int *pheight );
+extern void _wpi_getbitmapdim( WPI_HBITMAP hbitmap, int *pwidth, int *pheight );
 extern WPI_PRES _wpi_getpres( HWND hwnd );
 extern WPI_HBITMAP _wpi_createcompatiblebitmap( WPI_PRES pres, int width, int height );
 
@@ -1149,7 +1149,7 @@ extern BOOL _wpi_iswindow( WPI_INST inst, HWND hwnd );
 
     #define _wpi_selectpalette(hps, hpal) GpiSelectPalette(hps, hpal)
 
-extern int _wpi_getdibits( WPI_PRES pres, WPI_HBITMAP bitmap, UINT start,
+extern int _wpi_getdibits( WPI_PRES pres, WPI_HBITMAP hbitmap, UINT start,
             UINT slcount, BYTE *buffer, WPI_BITMAPINFO *info, UINT notused );
 extern WPI_HBITMAP _wpi_createdibitmap( WPI_PRES pres, WPI_BITMAP *info,
                     ULONG opt, BYTE *data, WPI_BITMAPINFO *table, int opt2 );
@@ -1241,7 +1241,7 @@ extern int _wpi_getprivateprofilestring( HINI hini, LPSTR app,
 
 extern void _wpi_getbitmapparms( WPI_HBITMAP hbitmap, int *width, int *height,
                         int *planes, int *notused1, int *bitcount );
-extern LONG _wpi_getbitmapstruct( WPI_HBITMAP bitmap, WPI_BITMAP *info );
+extern LONG _wpi_getbitmapstruct( WPI_HBITMAP hbitmap, WPI_BITMAP *info );
 #define _wpi_bitmapwidth( pinfo ) (pinfo)->cx
 #define _wpi_bitmapheight( pinfo ) (pinfo)->cy
 #define _wpi_bitmapbitcount( pinfo ) (pinfo)->cBitCount

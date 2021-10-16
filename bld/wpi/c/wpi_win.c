@@ -35,12 +35,12 @@
 #include <windows.h>
 #include "wpi.h"
 
-void _wpi_getbitmapdim( WPI_HBITMAP bmp, int *pwidth, int *pheight )
-/******************************************************************/
+void _wpi_getbitmapdim( WPI_HBITMAP hbitmap, int *pwidth, int *pheight )
+/**********************************************************************/
 {
     BITMAP              bmp_info;
 
-    GetObject( bmp, sizeof( BITMAP ), (LPSTR)&bmp_info );
+    GetObject( hbitmap, sizeof( BITMAP ), (LPSTR)&bmp_info );
     *pwidth = bmp_info.bmWidth;
     *pheight = bmp_info.bmHeight;
 } /* _wpi_getbitmapdim */
@@ -184,7 +184,7 @@ WPI_PRES _wpi_createcompatiblepres( WPI_PRES pres, WPI_INST inst, HDC *hdc )
     return( memdc );
 } /* _wpi_createcompatiblepres */
 
-void _wpi_getbitmapparms( WPI_HBITMAP bitmap, int *width, int *height,
+void _wpi_getbitmapparms( WPI_HBITMAP hbitmap, int *width, int *height,
                         int *planes, int *widthbytes, int *bitspixel )
 /*********************************************************************
  * Note that the 'bitcount' is the same as widthbytes.
@@ -192,7 +192,7 @@ void _wpi_getbitmapparms( WPI_HBITMAP bitmap, int *width, int *height,
 {
     BITMAP                      bm;
 
-    GetObject( bitmap, sizeof(BITMAP), &bm );
+    GetObject( hbitmap, sizeof(BITMAP), &bm );
 
     if( width ) *width = bm.bmWidth;
     if( height ) *height = bm.bmHeight;

@@ -185,13 +185,13 @@ static HBITMAP readBitmap( HWND hwnd, FILE *fp, long offset, bool core, bitmap_i
     HPALETTE            old_palette;
     BITMAPINFO          *bm_info;
     BITMAPCOREINFO      *bm_core;
-    HBITMAP             bitmap_handle;
+    HBITMAP             hbitmap;
 
-    bitmap_handle = (HBITMAP)0;
+    hbitmap = (HBITMAP)0;
     if( core ) {
         bm_core = readCoreInfo( fp );
         if( bm_core == NULL ) {
-            return( bitmap_handle );
+            return( hbitmap );
         }
         bm_info = NULL;
         size = BITS_TO_BYTES( bm_core->bmciHeader.bcWidth * bm_core->bmciHeader.bcBitCount,
@@ -199,7 +199,7 @@ static HBITMAP readBitmap( HWND hwnd, FILE *fp, long offset, bool core, bitmap_i
     } else {
         bm_info = readDIBInfo( fp );
         if( bm_info == NULL ) {
-            return( bitmap_handle );
+            return( hbitmap );
         }
         bm_core = NULL;
         size = BITS_TO_BYTES( bm_info->bmiHeader.biWidth * bm_info->bmiHeader.biBitCount,
@@ -217,7 +217,7 @@ static HBITMAP readBitmap( HWND hwnd, FILE *fp, long offset, bool core, bitmap_i
             /*
              * This will cause a GP Fault!
              */
-            bitmap_handle = CreateBitmap( h->bcWidth, h->bcHeight, h->bcPlanes,
+            hbitmap = CreateBitmap( h->bcWidth, h->bcHeight, h->bcPlanes,
                                           h->bcBitCount, mask_ptr );
         } else {
             if( bm_info->bmiHeader.biBitCount < 9 ) {
@@ -227,7 +227,7 @@ static HBITMAP readBitmap( HWND hwnd, FILE *fp, long offset, bool core, bitmap_i
                     hdc = GetDC( hwnd );
                     old_palette = SelectPalette( hdc, new_palette, FALSE );
                     RealizePalette( hdc );
-                    bitmap_handle = CreateDIBitmap( hdc, &bm_info->bmiHeader, CBM_INIT,
+                    hbitmap = CreateDIBitmap( hdc, &bm_info->bmiHeader, CBM_INIT,
                                                     mask_ptr, bm_info, DIB_RGB_COLORS );
                     SelectPalette( hdc, old_palette, FALSE );
                     DeleteObject( new_palette );
@@ -236,7 +236,7 @@ static HBITMAP readBitmap( HWND hwnd, FILE *fp, long offset, bool core, bitmap_i
             } else {
                 /* Bitmap with no palette */
                 hdc = GetDC( hwnd );
-                bitmap_handle = CreateDIBitmap( hdc, &bm_info->bmiHeader, CBM_INIT,
+                hbitmap = CreateDIBitmap( hdc, &bm_info->bmiHeader, CBM_INIT,
                                                 mask_ptr, bm_info, DIB_RGB_COLORS );
                 ReleaseDC( hwnd, hdc );
             }
@@ -256,7 +256,7 @@ static HBITMAP readBitmap( HWND hwnd, FILE *fp, long offset, bool core, bitmap_i
             MemFree( bm_info );
         }
     }
-    return( bitmap_handle );
+    return( hbitmap );
 
 } /* readBitmap */
 
@@ -268,31 +268,31 @@ static HBITMAP readBitmap( HWND hwnd, FILE *fp, long offset, bool core, bitmap_i
 HBITMAP ReadBitmapFile( HWND hwnd, const char *file_name, bitmap_info *info )
 {
     FILE                *fp;
-    HBITMAP             bitmap_handle;
+    HBITMAP             hbitmap;
     BITMAPFILEHEADER    file_header;
     bool                core;
     DWORD               size;
 
-    bitmap_handle = (HBITMAP)0;
+    hbitmap = (HBITMAP)0;
     fp = fopen( file_name, "rb" );
     if( fp == NULL ) {
-        return( bitmap_handle );
+        return( hbitmap );
     }
     fread( &file_header, sizeof( BITMAPFILEHEADER ), 1, fp );
     if( file_header.bfType != BITMAP_TYPE ) {
         fclose( fp );
-        return( bitmap_handle );
+        return( hbitmap );
     }
     fread( &size, sizeof( size ), 1, fp );
     core = (size == sizeof( BITMAPCOREHEADER ));
     if( !core ) {
-        bitmap_handle = readBitmap( hwnd, fp, file_header.bfOffBits, core, info );
+        hbitmap = readBitmap( hwnd, fp, file_header.bfOffBits, core, info );
     }
     if( info != NULL ) {
         info->is_core = core;
     }
 
     fclose( fp );
-    return( bitmap_handle );
+    return( hbitmap );
 
 } /* ReadBitmapFile */

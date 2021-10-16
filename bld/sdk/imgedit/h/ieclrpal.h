@@ -38,10 +38,10 @@
 #define CP_HEIGHT       60      /* Initial window vertical size */
 
 typedef struct {
-    wie_clrtype type;           /* NORMAL_CLR, INVERSE_CLR, or SCREEN_CLR */
-    COLORREF    color;
-    COLORREF    solid;          /* for the solid color */
-    HBITMAP     hbitmap;
+    wie_clrtype     type;       /* NORMAL_CLR, INVERSE_CLR, or SCREEN_CLR */
+    COLORREF        color;
+    COLORREF        solid;      /* for the solid color */
+    WPI_HBITMAP     hbitmap;
 } selected_colour;
 
 /* Definitions for Current Selection */

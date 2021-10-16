@@ -203,11 +203,11 @@ extern WPI_PRES _wpi_createcompatiblepres( WPI_PRES pres, WPI_INST inst, HDC *hd
 
     #define _wpi_deletecompatiblepres( pres, hdc ) DeleteDC( pres )
 
-    #define _wpi_selectbitmap( pres, new_bmp ) SelectObject( pres, new_bmp )
+    #define _wpi_selectbitmap( pres, new_hbitmap ) SelectObject( pres, new_hbitmap )
 
-    #define _wpi_getoldbitmap( pres, bmp ) SelectObject( pres, bmp )
+    #define _wpi_getoldbitmap( pres, hbitmap ) SelectObject( pres, hbitmap )
 
-    #define _wpi_deletebitmap( bmp ) DeleteObject( bmp )
+    #define _wpi_deletebitmap( hbitmap ) DeleteObject( hbitmap )
 
     #define _wpi_makewpibitmap( hbitmap ) ( hbitmap )
 
@@ -224,7 +224,7 @@ extern WPI_PRES _wpi_createcompatiblepres( WPI_PRES pres, WPI_INST inst, HDC *hd
 
     #define _wpi_loadsysbitmap( inst, id ) LoadBitmap( inst, id )
 
-extern void _wpi_getbitmapdim( WPI_HBITMAP bmp, int *pwidth, int *pheight );
+extern void _wpi_getbitmapdim( WPI_HBITMAP hbitmap, int *pwidth, int *pheight );
 
     #define _wpi_getpres( hdl ) GetDC( hdl )
 
@@ -783,9 +783,9 @@ extern int _wpi_getmetricpointsize( WPI_PRES pres, WPI_TEXTMETRIC *tm,
 
     #define _wpi_getwindowtextlength( hwnd ) GetWindowTextLength( hwnd )
 
-    #define _wpi_getbitmapbits(bmp, size, bits) GetBitmapBits( bmp, size, bits )
+    #define _wpi_getbitmapbits(hbitmap, size, bits) GetBitmapBits( hbitmap, size, bits )
 
-    #define _wpi_setbitmapbits(bmp, size, bits) SetBitmapBits( bmp, size, bits )
+    #define _wpi_setbitmapbits(hbitmap, size, bits) SetBitmapBits( hbitmap, size, bits )
 
     #define _wpi_getobject( obj, len, into ) GetObject( obj, len, into )
 
@@ -1064,7 +1064,7 @@ extern void _wpi_gettextextent( WPI_PRES pres, LPCSTR string, int len_string,
     #define _wpi_writeprivateprofilestring( hini, app, key, data, name ) \
         WritePrivateProfileString( app, key, data, name );
 
-extern void _wpi_getbitmapparms( WPI_HBITMAP bitmap, int *width, int *height,
+extern void _wpi_getbitmapparms( WPI_HBITMAP hbitmap, int *width, int *height,
                             int *planes, int *widthbytes, int *bitspixel );
     #define _wpi_getbitmapstruct( hbitmap, pinfo ) \
                 GetObject( hbitmap, sizeof(WPI_BITMAP), (pinfo) )

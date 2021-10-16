@@ -402,13 +402,13 @@ void _wpi_fillrect( WPI_PRES pres, WPI_RECT *rect, WPI_COLOUR colour, HBRUSH bru
     WinFillRect( pres, (PRECTL)&newrect, colour );
 } /* _wpi_fillrect */
 
-void _wpi_getbitmapdim( WPI_HBITMAP hbmp, int *pwidth, int *pheight )
+void _wpi_getbitmapdim( WPI_HBITMAP hbitmap, int *pwidth, int *pheight )
 /*******************************************************************/
 {
     BITMAPINFOHEADER    bih;
     WPI_OBJECT          *obj;
 
-    obj = (WPI_OBJECT *)hbmp;
+    obj = (WPI_OBJECT *)hbitmap;
     bih.cbFix = sizeof( BITMAPINFOHEADER );
     GpiQueryBitmapParameters( obj->bitmap, &bih );
     *pwidth = bih.cx;
@@ -647,14 +647,13 @@ void _wpi_releasepres( HWND hwnd, WPI_PRES pres )
     WinReleasePS( pres );
 } /* _wpi_releasepres */
 
-WPI_HBITMAP _wpi_selectbitmap( WPI_PRES pres, WPI_HBITMAP bitmap )
-/****************************************************************/
+WPI_HBITMAP _wpi_selectbitmap( WPI_PRES pres, WPI_HBITMAP hbitmap )
+/*****************************************************************/
 {
     WPI_OBJECT  *obj;
     WPI_OBJECT  *old_obj;
 
-    obj = (WPI_OBJECT *)bitmap;
-
+    obj = (WPI_OBJECT *)hbitmap;
     if( obj != NULL ) {
         old_obj = _wpi_malloc( sizeof( WPI_OBJECT ) );
         old_obj->type = WPI_BITMAP_OBJ;
@@ -664,26 +663,26 @@ WPI_HBITMAP _wpi_selectbitmap( WPI_PRES pres, WPI_HBITMAP bitmap )
     return( WPI_NULL );
 } /* _wpi_selectbitmap */
 
-void _wpi_getoldbitmap( WPI_PRES pres, WPI_HBITMAP oldobj )
-/*********************************************************/
+void _wpi_getoldbitmap( WPI_PRES pres, WPI_HBITMAP old_hbitmap )
+/**************************************************************/
 {
-    WPI_OBJECT  *old_bitmap;
+    WPI_OBJECT  *old_obj;
 
-    old_bitmap = (WPI_OBJECT *)oldobj;
+    old_obj = (WPI_OBJECT *)old_hbitmap;
 
-    if( old_bitmap != NULL && old_bitmap->type == WPI_BITMAP_OBJ ) {
-        GpiSetBitmap( pres, old_bitmap->bitmap );
-        _wpi_free( old_bitmap );
+    if( old_obj != NULL && old_obj->type == WPI_BITMAP_OBJ ) {
+        GpiSetBitmap( pres, old_obj->bitmap );
+        _wpi_free( old_obj );
     }
 } /* _wpi_getoldbitmap */
 
 
-void _wpi_deletebitmap( WPI_HBITMAP bmp )
-/***************************************/
+void _wpi_deletebitmap( WPI_HBITMAP hbitmap )
+/*******************************************/
 {
     WPI_OBJECT  *obj;
 
-    obj = (WPI_OBJECT *)bmp;
+    obj = (WPI_OBJECT *)hbitmap;
 
     if( obj != NULL ) {
         if( obj->bitmap != NULLHANDLE ) {
@@ -1367,13 +1366,13 @@ HBRUSH _wpi_createnullbrush( void )
     return( (HBRUSH)null_brush );
 } /* _wpi_createnullbrush */
 
-HBRUSH _wpi_createpatternbrush( WPI_HBITMAP bitmap )
-/**************************************************/
+HBRUSH _wpi_createpatternbrush( WPI_HBITMAP hbitmap )
+/***************************************************/
 {
     WPI_OBJECT          *obj;
     WPI_OBJECT          *brush;
 
-    obj = (WPI_OBJECT *)bitmap;
+    obj = (WPI_OBJECT *)hbitmap;
     brush = _wpi_malloc( sizeof( WPI_OBJECT ) );
     brush->type = WPI_PATBRUSH_OBJ;
     brush->brush.info.usMixMode = FM_OVERPAINT;
@@ -1817,7 +1816,7 @@ LONG _wpi_getbitmapbits( WPI_HBITMAP hbitmap, int size, BYTE *bits )
     HDC                 hdc;
     HAB                 hab;
     WPI_OBJECT          *obj;
-    HBITMAP             old_bitmap;
+    HBITMAP             old_hbitmap;
     int                 bitsize;
     SIZEL               sizl = { 0, 0 };
     DEVOPENSTRUC        dop = { 0L, "DISPLAY", NULL, 0L,
@@ -1839,13 +1838,13 @@ LONG _wpi_getbitmapbits( WPI_HBITMAP hbitmap, int size, BYTE *bits )
     hdc = DevOpenDC( hab, OD_MEMORY, "*", 5L, (PDEVOPENDATA)&dop, NULLHANDLE );
     memhps = GpiCreatePS( hab, hdc, &sizl, PU_PELS | GPIA_ASSOC );
 
-    old_bitmap = GpiSetBitmap( memhps, obj->bitmap );
+    old_hbitmap = GpiSetBitmap( memhps, obj->bitmap );
     slcount = ( 32 * size ) / ( 4 * ih.cx * ih.cBitCount );
     if( ih.cy < slcount )
         slcount = ih.cy;
     ret = GpiQueryBitmapBits( memhps, 0L, slcount, bits, (WPI_BITMAPINFO *)bmi );
 
-    GpiSetBitmap( memhps, old_bitmap );
+    GpiSetBitmap( memhps, old_hbitmap );
     GpiDestroyPS( memhps );
     DevCloseDC( hdc );
 
@@ -1858,7 +1857,7 @@ LONG _wpi_setbitmapbits( WPI_HBITMAP hbitmap, int size, BYTE *bits )
     BITMAPINFO          *bmi;
     BITMAPINFOHEADER    ih;
     WPI_OBJECT          *obj;
-    HBITMAP             old_bitmap;
+    HBITMAP             old_hbitmap;
     LONG                ret;
     HPS                 memhps;
     HDC                 hdc;
@@ -1878,14 +1877,14 @@ LONG _wpi_setbitmapbits( WPI_HBITMAP hbitmap, int size, BYTE *bits )
     hdc = DevOpenDC( hab, OD_MEMORY, "*", 5L, (PDEVOPENDATA)&dop, NULLHANDLE );
     memhps = GpiCreatePS( hab, hdc, &sizl, PU_PELS | GPIA_ASSOC );
 
-    old_bitmap = GpiSetBitmap( memhps, obj->bitmap );
+    old_hbitmap = GpiSetBitmap( memhps, obj->bitmap );
     slcount = ( 32 * size ) / ( 4 * ih.cx * ih.cBitCount );
     if( ih.cy < slcount )
         slcount = ih.cy;
     GpiQueryBitmapBits( memhps, 0L, (LONG)slcount, NULL, (WPI_BITMAPINFO *)bmi);
     ret = GpiSetBitmapBits( memhps, 0L, (LONG)slcount, bits, (WPI_BITMAPINFO *)bmi );
 
-    GpiSetBitmap( memhps, old_bitmap );
+    GpiSetBitmap( memhps, old_hbitmap );
     GpiDestroyPS( memhps );
     DevCloseDC( hdc );
 
@@ -2372,11 +2371,11 @@ void _wpi_getbitmapparms( WPI_HBITMAP hbitmap, int *width, int *height,
     }
 } /* _wpi_getbitmapparms */
 
-LONG _wpi_getbitmapstruct( WPI_HBITMAP bitmap, WPI_BITMAP *info )
+LONG _wpi_getbitmapstruct( WPI_HBITMAP hbitmap, WPI_BITMAP *info )
 {
     WPI_OBJECT  *obj;
 
-    obj = (WPI_OBJECT *)bitmap;
+    obj = (WPI_OBJECT *)hbitmap;
     info->cbFix = sizeof( WPI_BITMAP );
 #ifdef __FLAT__
     GpiQueryBitmapInfoHeader( obj->bitmap, info );
@@ -2625,15 +2624,15 @@ WPI_COLOUR _wpi_palettergb( WPI_PRES pres, short red,
     return( GpiQueryNearestColor( pres, 0, colour ) );
 }
 
-int _wpi_getdibits( WPI_PRES pres, WPI_HBITMAP bitmap, UINT start, UINT count,
+int _wpi_getdibits( WPI_PRES pres, WPI_HBITMAP hbitmap, UINT start, UINT count,
                             BYTE *buffer, WPI_BITMAPINFO *info, UINT notused )
 /*****************************************************************************
  * According to windows, the bitmap should not be selected into the pres.
  * so I assume it isn't here either.
  */
 {
-    HBITMAP             old_bitmap;
-    HBITMAP             old_bitmap2;
+    HBITMAP             old_hbitmap;
+    HBITMAP             old_hbitmap2;
     WPI_OBJECT          *obj;
     HDC                 hdc;
     HPS                 memhps;
@@ -2646,24 +2645,24 @@ int _wpi_getdibits( WPI_PRES pres, WPI_HBITMAP bitmap, UINT start, UINT count,
 
     /* unused parameters */ (void)notused;
 
-    obj = (WPI_OBJECT *)bitmap;
+    obj = (WPI_OBJECT *)hbitmap;
     if( obj->type != WPI_BITMAP_OBJ ) {
         return( 0 );
     }
-    old_bitmap = GpiSetBitmap( pres, obj->bitmap );
+    old_hbitmap = GpiSetBitmap( pres, obj->bitmap );
     hab = WinQueryAnchorBlock( HWND_DESKTOP );
     ret = (int)GpiQueryBitmapBits( pres, (LONG)start, (LONG)count, buffer, info );
     err = WinGetLastError( hab );
     if( ret == -1 ) {
         hdc = DevOpenDC( hab, OD_MEMORY, "*", 5L, (PDEVOPENDATA)&dop, NULLHANDLE );
         memhps = GpiCreatePS( hab, hdc, &sizl, PU_PELS | GPIA_ASSOC );
-        old_bitmap2 = GpiSetBitmap( memhps, obj->bitmap );
+        old_hbitmap2 = GpiSetBitmap( memhps, obj->bitmap );
         ret = (int)GpiQueryBitmapBits( memhps, (LONG)start, (LONG)count, buffer, info );
-        GpiSetBitmap( memhps, old_bitmap2 );
+        GpiSetBitmap( memhps, old_hbitmap2 );
         GpiDestroyPS( memhps );
         DevCloseDC( hdc );
     }
-    GpiSetBitmap( pres, old_bitmap );
+    GpiSetBitmap( pres, old_hbitmap );
 
     return( ret );
 } /* _wpi_getdibits */

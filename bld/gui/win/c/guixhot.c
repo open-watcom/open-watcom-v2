@@ -46,7 +46,7 @@ typedef HANDLE (WINAPI *PFNLI)( HINSTANCE, LPCSTR, UINT, int, int, UINT );
 // For TransparentBlt function
 // #include "wptoolbr.h"
 // #include <windows.h>
-static HBITMAP      bitmap2 = NULL;
+static HBITMAP      hbitmap2 = WPI_NULL;
 static HINSTANCE    hInstUser = NULL;
 static PFNLI        pfnLoadImage;
 #endif
@@ -64,17 +64,17 @@ bool GUIXInitHotSpots( int num_hot_spots, gui_resource *hot )
             pfnLoadImage = (PFNLI)GetProcAddress( hInstUser, "LoadImageA" );
         }
         if( pfnLoadImage != NULL ) {
-            GUIHotSpots[i].bitmap = pfnLoadImage( GUIResHInst,
+            GUIHotSpots[i].hbitmap = pfnLoadImage( GUIResHInst,
                                                   MAKEINTRESOURCE( hot[i].res_id ),
                                                   IMAGE_BITMAP, 0, 0,
                                                   LR_LOADMAP3DCOLORS );
         } else {
 #endif
-            GUIHotSpots[i].bitmap = _wpi_loadbitmap( GUIResHInst, MAKEINTRESOURCE( hot[i].res_id ) );
+            GUIHotSpots[i].hbitmap = _wpi_loadbitmap( GUIResHInst, MAKEINTRESOURCE( hot[i].res_id ) );
 #ifdef __NT__
         }
 #endif
-        _wpi_getbitmapdim( GUIHotSpots[i].bitmap, &bm_w, &bm_h );
+        _wpi_getbitmapdim( GUIHotSpots[i].hbitmap, &bm_w, &bm_h );
         GUIHotSpots[i].size.x = bm_w;
         GUIHotSpots[i].size.y = bm_h;
     }
@@ -86,11 +86,11 @@ void GUIXCleanupHotSpots( void )
     int i;
 
     for( i = 0; i < GUINumHotSpots; i++ ) {
-        _wpi_deletebitmap( GUIHotSpots[i].bitmap );
+        _wpi_deletebitmap( GUIHotSpots[i].hbitmap );
     }
 #ifdef __NT__
-    if( bitmap2 != NULL ) {
-        _wpi_deletebitmap( GUIHotSpots[i].bitmap );
+    if( hbitmap2 != WPI_NULL ) {
+        _wpi_deletebitmap( GUIHotSpots[i].hbitmap );
     }
 #endif
 }
@@ -114,12 +114,12 @@ void GUIDrawBitmap( int hotspot_no, WPI_PRES hdc, int nDrawX, int nDrawY, WPI_CO
     WPI_POINT   dst_wpi_point;
     WPI_POINT   size_wpi_point;
     WPI_PRES    memDC;
-    WPI_HBITMAP old_bmp;
-    WPI_HBITMAP bitmap;
+    WPI_HBITMAP old_hbitmap;
+    WPI_HBITMAP hbitmap;
     HDC         new_hdc;
 #ifdef __NT__
     HDC         new_hdc2;
-    HBITMAP     oldbmp2;
+    HBITMAP     old_hbitmap2;
     HDC         mem2;
     COLORREF    cr;
 #endif
@@ -128,7 +128,7 @@ void GUIDrawBitmap( int hotspot_no, WPI_PRES hdc, int nDrawX, int nDrawY, WPI_CO
     /* unused parameters */ (void)bkcolour;
 #endif
 
-    bitmap = GUIHotSpots[hotspot_no - 1].bitmap;
+    hbitmap = GUIHotSpots[hotspot_no - 1].hbitmap;
     size_wpi_point.x = GUIHotSpots[hotspot_no - 1].size.x;
     size_wpi_point.y = GUIHotSpots[hotspot_no - 1].size.y;
 
@@ -142,16 +142,16 @@ void GUIDrawBitmap( int hotspot_no, WPI_PRES hdc, int nDrawX, int nDrawY, WPI_CO
     _wpi_dptolp( hdc, &src_wpi_point, 1 );
 
     memDC = _wpi_createcompatiblepres( hdc, GUIMainHInst, &new_hdc );
-    old_bmp = _wpi_selectbitmap( memDC, bitmap );
+    old_hbitmap = _wpi_selectbitmap( memDC, hbitmap );
 
 #ifdef __NT__
     /* Skip transparency for huge bitmaps, only splashes and such... */
     if( size_wpi_point.x < 50 && size_wpi_point.y < 50) {
         /* New, on WIN32 platforms, use TB_TransparentBlt() */
         mem2 = _wpi_createcompatiblepres( hdc, GUIMainHInst, &new_hdc2 );
-        if( bitmap2 == NULL)
-           bitmap2 = CreateCompatibleBitmap( hdc, 50, 50 );
-        oldbmp2 = _wpi_selectbitmap( mem2, bitmap2 );
+        if( hbitmap2 == WPI_NULL)
+           hbitmap2 = CreateCompatibleBitmap( hdc, 50, 50 );
+        old_hbitmap2 = _wpi_selectbitmap( mem2, hbitmap2 );
         /* Get background color of bitmap */
         /* Expects 0,0 pos in original to be in background/transp. color */
         cr = GetPixel(memDC, 0, 0);
@@ -165,7 +165,7 @@ void GUIDrawBitmap( int hotspot_no, WPI_PRES hdc, int nDrawX, int nDrawY, WPI_CO
                      src_wpi_point.x, src_wpi_point.y, SRCCOPY );
 
         /* Clean up */
-        _wpi_selectbitmap( mem2, oldbmp2 );
+        _wpi_selectbitmap( mem2, old_hbitmap2 );
         _wpi_deletecompatiblepres( mem2, hdc );
     } else {
         // Normal for large bitmaps...
@@ -180,9 +180,8 @@ void GUIDrawBitmap( int hotspot_no, WPI_PRES hdc, int nDrawX, int nDrawY, WPI_CO
 
 #endif
 
-    if( old_bmp != WPI_NULL ) {
-        _wpi_getoldbitmap( memDC, old_bmp );
+    if( old_hbitmap != WPI_NULL ) {
+        _wpi_getoldbitmap( memDC, old_hbitmap );
     }
     _wpi_deletecompatiblepres( memDC, new_hdc );
 }
-

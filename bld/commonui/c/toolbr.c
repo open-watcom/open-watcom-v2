@@ -1696,7 +1696,8 @@ void TB_TransparentBlt( HDC hDC, UINT x, UINT y, UINT width, UINT height,
                         HDC hDCIn, COLORREF cr )
 {
    HDC      hDCMid, hMemDC;
-   HBITMAP  hBmpMono, hBmpT;
+   HBITMAP  mono_hbitmap;
+   HBITMAP  mid_hbitmap;
    HBRUSH   hBr, hBrT;
    COLORREF crBack, crText;
 
@@ -1709,12 +1710,12 @@ void TB_TransparentBlt( HDC hDC, UINT x, UINT y, UINT width, UINT height,
    hMemDC = CreateCompatibleDC( hDC );
 
    /* Create a monochrome bitmap for masking */
-   hBmpMono = CreateCompatibleBitmap( hDCMid, x + width, y + height );
-   SelectObject( hDCMid, hBmpMono );
+   mono_hbitmap = CreateCompatibleBitmap( hDCMid, x + width, y + height );
+   SelectObject( hDCMid, mono_hbitmap );
 
    /* Create a mid-stage bitmap */
-   hBmpT = CreateCompatibleBitmap( hDC, x + width, y + height );
-   SelectObject( hMemDC, hBmpT );
+   mid_hbitmap = CreateCompatibleBitmap( hDC, x + width, y + height );
+   SelectObject( hMemDC, mid_hbitmap );
 
    /* Create a monochrome mask where we have 0's in the image, 1's elsewhere. */
    crBack = SetBkColor( hDCIn, cr );
@@ -1750,8 +1751,8 @@ void TB_TransparentBlt( HDC hDC, UINT x, UINT y, UINT width, UINT height,
 
    DeleteDC( hMemDC );
    DeleteDC( hDCMid );
-   DeleteObject( hBmpT );
-   DeleteObject( hBmpMono );
+   DeleteObject( mid_hbitmap );
+   DeleteObject( mono_hbitmap );
 
 }  /* TransparentBlt */
 
@@ -1771,26 +1772,26 @@ void TB_TransparentBlt( HDC hDC, UINT x, UINT y, UINT width, UINT height,
  * Return Value: Handle to the new transparent bitmap.
  */
 
-HBITMAP TB_CreateTransparentBitmap( HBITMAP hBitmap, int width, int height )
+HBITMAP TB_CreateTransparentBitmap( HBITMAP hbitmap, int width, int height )
 {
     HDC     hDC1;
     HDC     hDC2;
-    HBITMAP hOldBitmap1;
-    HBITMAP hOldBitmap2;
-    HBITMAP hNewBitmap;
+    HBITMAP old_hbitmap1;
+    HBITMAP old_hbitmap2;
+    HBITMAP new_hbitmap;
 
     hDC1 = CreateCompatibleDC( NULL );
-    hOldBitmap1 = SelectObject( hDC1, hBitmap );
+    old_hbitmap1 = SelectObject( hDC1, hbitmap );
     hDC2 = CreateCompatibleDC( hDC1 );
-    hNewBitmap = CreateCompatibleBitmap( hDC1, width, height );
-    hOldBitmap2 = SelectObject( hDC2, hNewBitmap );
+    new_hbitmap = CreateCompatibleBitmap( hDC1, width, height );
+    old_hbitmap2 = SelectObject( hDC2, new_hbitmap );
     SetBkColor( hDC2, GetSysColor( COLOR_3DFACE ) );
     TB_TransparentBlt( hDC2, 0, 0, width, height, hDC1, GetPixel( hDC1, 0, 0 ) );
-    SelectObject( hDC1, hOldBitmap1 );
-    SelectObject( hDC2, hOldBitmap2 );
+    SelectObject( hDC1, old_hbitmap1 );
+    SelectObject( hDC2, old_hbitmap2 );
     DeleteDC( hDC1 );
     DeleteDC( hDC2 );
-    return( hNewBitmap );
+    return( new_hbitmap );
 
 } /* TB_CreateTransparentBitmap */
 

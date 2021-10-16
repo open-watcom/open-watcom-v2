@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -266,7 +266,7 @@ static WORD             fontType;
 static rm_call_struct   rmRegs;
 static int              screenX;
 static int              screenY;
-static HBITMAP          screenBitmap;
+static HBITMAP          screen_hbitmap;
 static HDC              screenDC;
 static HDC              screenMemDC;
 
@@ -285,15 +285,15 @@ static void doAnInt10( void )
  */
 static void toGraphicalW( void )
 {
-    HBITMAP     old;
+    HBITMAP     old_hbitmap;
 
     Resurrection( screenDC, 0, 0, 0, 0, 0, 0 );
 
-    old = SelectObject( screenMemDC, screenBitmap );
+    old_hbitmap = SelectObject( screenMemDC, screen_hbitmap );
     BitBlt( screenDC, 0, 0, screenX, screenY, screenMemDC, 0, 0, SRCCOPY );
-    SelectObject( screenMemDC, old );
+    SelectObject( screenMemDC, old_hbitmap );
 
-    DeleteObject( screenBitmap );
+    DeleteObject( screen_hbitmap );
     DeleteDC( screenMemDC );
     ReleaseDC( NULL, screenDC );
 
@@ -304,16 +304,16 @@ static void toGraphicalW( void )
  */
 static void toCharacterW( void )
 {
-    HBITMAP     old;
+    HBITMAP     old_hbitmap;
 
 
     screenDC = GetDC( NULL );
     screenMemDC = CreateCompatibleDC( NULL );
-    screenBitmap = CreateCompatibleBitmap( screenDC, screenX, screenY );
+    screen_hbitmap = CreateCompatibleBitmap( screenDC, screenX, screenY );
 
-    old = SelectObject( screenMemDC, screenBitmap );
+    old_hbitmap = SelectObject( screenMemDC, screen_hbitmap );
     BitBlt( screenMemDC, 0, 0, screenX, screenY, screenDC, 0, 0, SRCCOPY );
-    SelectObject( screenMemDC, old );
+    SelectObject( screenMemDC, old_hbitmap );
 
     Death( screenDC );
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -319,8 +319,8 @@ static HPALETTE CreateDIBPalette( BITMAPINFO *info )
 static void PaintBitMap( BITMAPINFOHEADER *hdr, HDC dc )
 {
     HDC                 mdc;
-    HANDLE              oldhdl;
-    HBITMAP             map;
+    HBITMAP             old_hbitmap;
+    HBITMAP             hbitmap;
     unsigned            color_count;
     char                *bytes;
     HPALETTE            palette;
@@ -332,14 +332,14 @@ static void PaintBitMap( BITMAPINFOHEADER *hdr, HDC dc )
     palette = CreateDIBPalette( (BITMAPINFO *)hdr );
     oldpalette = SelectPalette( dc, palette, FALSE );
     RealizePalette( dc );
-    map = CreateDIBitmap( dc, (LPBITMAPINFOHEADER)hdr, CBM_INIT, bytes, (LPBITMAPINFO)hdr, DIB_RGB_COLORS );
+    hbitmap = CreateDIBitmap( dc, (LPBITMAPINFOHEADER)hdr, CBM_INIT, bytes, (LPBITMAPINFO)hdr, DIB_RGB_COLORS );
     mdc = CreateCompatibleDC( dc );
-    oldhdl = SelectObject( mdc, map );
+    old_hbitmap = SelectObject( mdc, hbitmap );
     BitBlt( dc, 0, 0, hdr->biWidth, hdr->biHeight, mdc, 0, 0, SRCCOPY );
     SelectPalette( dc, oldpalette, FALSE );
     DeleteObject( palette );
-    SelectObject( mdc, oldhdl );
-    DeleteObject( map );
+    SelectObject( mdc, old_hbitmap );
+    DeleteObject( hbitmap );
     DeleteDC( mdc );
 } /* PaintBitMap */
 
