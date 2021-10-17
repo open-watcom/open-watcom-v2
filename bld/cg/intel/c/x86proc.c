@@ -404,14 +404,12 @@ static  void    EpilogHook( void )
 static  void    DoLoadDS( void )
 {
 #if _TARGET & _TARG_8086
-    if( _RoutineIsInterrupt( CurrProc->state.attr ) && _IsntTargetModel( BIG_CODE ) ) {
-        DoRTCall( RT_GETDS, false );
-    } else {
+    if( _IsntTargetModel( BIG_CODE ) && _RoutineIsInterrupt( CurrProc->state.attr ) ) {
 #else
     if( _IsntTargetModel( LOAD_DS_DIRECTLY ) ) {
+#endif
         DoRTCall( RT_GETDS, false );
     } else {
-#endif
         if( HW_COvlap( CurrProc->state.parm.used, HW_LOAD_DS ) ) {
             QuickSave( HW_LOAD_DS, OP_PUSH );
         }
