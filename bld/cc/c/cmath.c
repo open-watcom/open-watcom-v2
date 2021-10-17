@@ -467,11 +467,14 @@ DATA_TYPE DataTypeOf( TYPEPTR typ )
 // 2 - far data
 // 3 - far16 data
 // 4 - huge data
-// 5 - near func
-// 6 - based func
-// 7 - far func
-// 8 - far16 func
-// 9 - interrupt func
+// 5 - interrupt
+// 6 - near func
+// 7 - based func
+// 8 - far func
+// 9 - far16 func
+// 10 - huge func
+// 11 - interrupt func
+// 12 - NOT
 
 static pointer_class PointerClass( TYPEPTR typ )
 {
