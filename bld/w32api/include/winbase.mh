@@ -2132,8 +2132,8 @@ WINBASEAPI BOOL WINAPI              FlsSetValue( DWORD, PVOID );
 WINBASEAPI BOOL WINAPI              FlushFileBuffers( HANDLE );
 WINBASEAPI BOOL WINAPI              FlushInstructionCache( HANDLE, LPCVOID, SIZE_T );
 WINBASEAPI BOOL WINAPI              FlushViewOfFile( LPCVOID, SIZE_T );
-WINBASEAPI DWORD WINAPI             FormatMessageA( DWORD, LPCVOID, DWORD, DWORD, LPSTR, DWORD, va_list * );
-WINBASEAPI DWORD WINAPI             FormatMessageW( DWORD, LPCVOID, DWORD, DWORD, LPWSTR, DWORD, va_list * );
+WINBASEAPI DWORD WINAPI             FormatMessageA( DWORD, LPCVOID, DWORD, DWORD, LPSTR, DWORD, void ** );
+WINBASEAPI DWORD WINAPI             FormatMessageW( DWORD, LPCVOID, DWORD, DWORD, LPWSTR, DWORD, void ** );
 WINBASEAPI BOOL WINAPI              FreeEnvironmentStringsA( LPCH );
 WINBASEAPI BOOL WINAPI              FreeEnvironmentStringsW( LPWCH );
 WINBASEAPI BOOL WINAPI              FreeLibrary( HMODULE );
@@ -3124,6 +3124,12 @@ WINADVAPI BOOL WINAPI               AddConditionalAce( PACL, DWORD, DWORD, UCHAR
     #define PROC_THREAD_ATTRIBUTE_MITIGATION_POLICY \
         ProcThreadAttributeValue( ProcThreadAttributeMitigationPolicy, FALSE, TRUE, FALSE )
 #endif
+
+/* Microsoft defines va_list differently from Open Watcom, so it must be indexed
+ * before being passed to any Win32 API functions.
+ */
+#define FormatMessageA( p1, p2, p3, p4, p5, p6, p7 )    FormatMessageA( p1, p2, p3, p4, p5, p6, p7 ? (void **)((*(va_list *)p7)[0]) : NULL )
+#define FormatMessageW( p1, p2, p3, p4, p5, p6, p7 )    FormatMessageW( p1, p2, p3, p4, p5, p6, p7 ? (void **)((*(va_list *)p7)[0]) : NULL )
 
 /* Aliases for macros defined in winnt.h */
 #define MoveMemory                          RtlMoveMemory
