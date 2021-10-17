@@ -714,9 +714,9 @@ static cg_name DoIndirection( OPNODE *node, cg_name name )
 static cg_name ConvertPointer( OPNODE *node, cg_name name )
 {
 #if _CPU == 386
-    if( FAR16_PTRCLASS( node->u2.sp.oldptr_class ) ) {
+    if( FAR16_PTRCLASS( node->u2.sp.old_ptrclass ) ) {
         name = CGUnary( O_PTR_TO_NATIVE, name, TY_POINTER );
-    } else if( FAR16_PTRCLASS( node->u2.sp.newptr_class ) ) {
+    } else if( FAR16_PTRCLASS( node->u2.sp.new_ptrclass ) ) {
         name = CGUnary( O_PTR_TO_FOREIGN, name, TY_POINTER );
     }
 #else

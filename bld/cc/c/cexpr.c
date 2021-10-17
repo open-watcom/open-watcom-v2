@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -136,18 +136,18 @@ static TYPEPTR Far16Type( TYPEPTR typ )
 static TREEPTR FarPtr16Cvt( TREEPTR newparm  )
 {
     TYPEPTR         parmtyp;
-    pointer_class   op1_class;
-    pointer_class   op2_class;
+    pointer_class   op1_ptrclass;
+    pointer_class   op2_ptrclass;
 
     parmtyp = newparm->u.expr_type;
     SKIP_TYPEDEFS( parmtyp );
     if( parmtyp->decl_type == TYP_POINTER ) {
-        op1_class = PTRCLS_FAR16;
-        op2_class = ExprTypeClass( newparm->u.expr_type );
+        op1_ptrclass = PTRCLS_FAR16;
+        op2_ptrclass = ExprTypeClass( newparm->u.expr_type );
         newparm = ExprNode( NULL, OPR_CONVERT_PTR, newparm );
         newparm->u.expr_type = parmtyp;
-        newparm->op.u2.sp.oldptr_class = op2_class;
-        newparm->op.u2.sp.newptr_class = op1_class;
+        newparm->op.u2.sp.old_ptrclass = op2_ptrclass;
+        newparm->op.u2.sp.new_ptrclass = op1_ptrclass;
     }
     return( newparm );
 }

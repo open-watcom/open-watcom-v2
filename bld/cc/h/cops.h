@@ -172,8 +172,8 @@ typedef struct  opnode {
             tryindex_t  parent_scope;
         } st;
         struct { /* ptr_conv_info */    // OPR_CONVERT_PTR
-            char        oldptr_class;
-            char        newptr_class;
+            pointer_class   old_ptrclass;
+            pointer_class   new_ptrclass;
         } sp;
     } u2;
 } OPNODE;
