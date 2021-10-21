@@ -110,11 +110,11 @@ using std::va_list;
 
 :segment !INTEL_ONLY
 :: define __va_copy even if -za is used
-#if defined(__PPC__) || defined(__AXP__)
+#if defined(__PPC__) || defined(__AXP__) || defined(__MIPS__)
  #define __va_copy(__dest,__src)    ((__dest)=(__src),(void)0)
 #else
 :endsegment
-:: _M_IX86 and __MIPS__
+:: _M_IX86
  #define __va_copy(__dest,__src)    ((__dest)[0]=(__src)[0],(void)0)
 :segment !INTEL_ONLY
 #endif
