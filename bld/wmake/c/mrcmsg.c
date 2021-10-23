@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,21 +61,6 @@
     }
 
 #endif
-
-/* this is a table storing msg id's which need two parameters for PrtMsg.
- * keep it in order.
- */
-static  TABLE_TYPE  PARA_TABLE[] = {
-/*    msgid                         msgtype */
-    { TARGET_ALREADY_M,             "EM" },
-    { SKIPPING_AFTER_ELSE,          "12" },
-    { NOT_ALLOWED_AFTER_ELSE,       "12" },
-    { DELETING_ITEM,                "12" },
-    { NO_DEF_CMDS_FOR_MAKE,         "sE" },
-    { PTARG_IS_TYPE_M,              "EM" },
-    { IMP_ENV_M,                    "EM" },
-    { GETDATE_MSG,                  "sE" }
-};
 
 #ifndef BOOTSTRAP
 
@@ -150,46 +135,4 @@ void MsgFini( void )
 #ifndef BOOTSTRAP
     CloseResFile( &hInstance );
 #endif
-}
-
-
-static char *msgInTable( int resourceid )
-/***************************************/
-{
-    int i;
-
-    for( i = 0; i < ARRAY_SIZE( PARA_TABLE ); i++ ) {
-        if( resourceid == PARA_TABLE[i].msgid ) {
-            return( PARA_TABLE[i].msgtype );
-        }
-        if( resourceid < PARA_TABLE[i].msgid ) {
-            break;
-        }
-    }
-    return( NULL );
-}
-
-
-bool MsgReOrder( int resourceid, char *buff, char **paratype )
-/************************************************************/
-{
-    bool    rvalue = false;
-
-    MsgGet( resourceid, buff );
-    *paratype = msgInTable( resourceid );
-    if( *paratype != NULL ) {
-        buff = strchr( buff, '%' );
-        while( buff != NULL ) {
-            if( *(buff + 1) == '%' ) {
-                buff++;
-            } else if( *(buff + 1) == **paratype ) {
-                break;
-            } else if( *(buff + 1) == *(*paratype + 1) ) {
-                rvalue = true;
-                break;
-            }
-            buff = strchr( (buff + 1), '%' );
-        }
-    }
-    return( rvalue );
 }

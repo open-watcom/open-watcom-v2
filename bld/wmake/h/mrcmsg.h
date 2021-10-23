@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,13 +35,7 @@
 
 #define MAX_RESOURCE_SIZE               128
 
-typedef struct table_type {
-    int     msgid;
-    char    *msgtype;
-} TABLE_TYPE;
-
 extern bool     MsgInit( void );
 extern bool     MsgGet( int resourceid, char *buffer );
 extern void     MsgGetTail( int resourceid, char *buffer );
 extern void     MsgFini( void );
-extern bool     MsgReOrder( int resourceid, char *buff, char **paratype );
