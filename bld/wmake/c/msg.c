@@ -369,7 +369,7 @@ STATIC size_t doFmtStr( char *buff, const char FAR *src, va_list args )
 }
 
 
-size_t FmtStr( char *buff, const char *fmt, ... )
+size_t FmtStr( char *buff, const char FAR *fmt, ... )
 /*******************************************************
  * quick sprintf routine... see doFmtStr
  */
@@ -396,6 +396,26 @@ static void writeOutput( unsigned class, FILE *fp, const char *buff, size_t len 
     fwrite( buff, 1, len, fp );
 }
 
+static void printBanner( char *buff )
+/***********************************/
+{
+    size_t  len;
+
+    Glob.headerout = true;      /* so we don't print more than once */
+    len = FmtStr( buff, msgText[BANNER - MSG_SPECIAL_BASE] );
+    buff[len++] = '\n';
+    fwrite( buff, 1, len, stdout );
+    fflush( stdout );
+}
+
+void PrintBanner( void )
+/**********************/
+{
+    char        buff[1024];
+
+    printBanner( buff );
+}
+
 #ifdef __WATCOMC__
 #pragma on (check_stack);
 #endif
@@ -419,6 +439,10 @@ void PrtMsg( enum MsgClass num, ... )
 
     if( !Glob.debug && (num & DBG) ) {
         return;
+    }
+
+    if( !Glob.noheader && !Glob.headerout ) {
+        printBanner( buff );
     }
 
     len = 0;
@@ -460,8 +484,6 @@ void PrtMsg( enum MsgClass num, ... )
             len += FmtStr( &buff[len], "%M(%c%D): ", pref, wefchar, num & NUM_MSK );
         }
     }
-
-    Header();
 
     /*
      * print the leader to our message, if any... do this now because it

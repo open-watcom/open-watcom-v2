@@ -137,19 +137,6 @@ static void setFirstTarget( TLIST *potential_first )
     firstTargFound = potential_first;
 }
 
-void Header( void )
-/*****************/
-{
-    if( Glob.noheader ) {
-        return;
-    }
-    if( !Glob.headerout ) {
-        Glob.headerout = true;  /* so we don't print more than once */
-        PrtMsg( INF | BANNER );
-    }
-}
-
-
 STATIC void handleMacroDefn( const char *buf )
 /*********************************************
  * Can't use Parse() at this point because we need readonly macros, so we
@@ -675,7 +662,9 @@ int main( int argc, char **argv )
     InitSignals();
     InitHardErr();
     init( (const char **)argv );        /* initialize, process cmdline */
-    Header();
+    if( !Glob.noheader && !Glob.headerout ) {
+        PrintBanner();
+    }
     parseFiles();
     if( Glob.print ) {
         print();
