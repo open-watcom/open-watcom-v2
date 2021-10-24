@@ -148,14 +148,14 @@ static char *leadingMessage( msg_type type, char *buffer )
     return( buffer );
 }
 
-static void outMsg( FILE *fp, msg_type mtype, int resource_id, va_list *args )
-//****************************************************************************
+static void outMsg( FILE *fp, msg_type mtype, int resource_id, va_list *pargs )
+//*****************************************************************************
 {
     fprintf( fp, "%s(%d): ", CurrFilename, CurrLineno );
     fputs( leadingMessage( mtype, AsResBuffer ), fp );
     AsMsgGet( resource_id, AsResBuffer );
-    if( args != NULL ) {
-        vfprintf( fp, AsResBuffer, *args );
+    if( pargs != NULL ) {
+        vfprintf( fp, AsResBuffer, *pargs );
         fputc( '\n', fp );
     } else {
         fprintf( fp, "%s\n", AsResBuffer );

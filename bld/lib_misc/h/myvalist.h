@@ -47,6 +47,6 @@ typedef struct my_va_list {
 #else
   #define MY_VA_LIST_DATA(a)    (*(MY_VA_LIST *)(a))
 #endif
-#define VA_LIST_DATA(p)         ((p)->v)
+#define VA_LIST_DATA(my)        ((my)->v)
 
 #endif
