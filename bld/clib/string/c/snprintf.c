@@ -90,7 +90,10 @@ _WCRTLINK int __F_NAME(snprintf,snwprintf)( CHAR_TYPE *dest, size_t bufsize,
                                             const CHAR_TYPE *format, ... )
 {
     va_list         args;
+    int             ret;
 
     va_start( args, format );
-    return( __F_NAME(vsnprintf,vsnwprintf)( dest, bufsize, format, args ) );
+    ret = __F_NAME(vsnprintf,vsnwprintf)( dest, bufsize, format, args );
+    va_end( args );
+    return( ret );
 }
