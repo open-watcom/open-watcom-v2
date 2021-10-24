@@ -45,6 +45,7 @@
 #endif
 #include "rterrno.h"
 #include "thread.h"
+#include "_process.h"
 #include "_environ.h"
 
 
@@ -81,7 +82,7 @@ _WCRTLINK int __F_NAME(spawnlpe,_wspawnlpe)( int mode, const CHAR_TYPE *path, co
     while( num-- > 0 )
         *tmp++ = va_arg( ap, ARGS_TYPE );
 #else
-    args = (ARGS_TYPE_ARR)ap[0];
+    args = ARGS_ARRAY_VA( ap );
     while( va_arg( ap, ARGS_TYPE ) != NULL ) {
         ;
     }

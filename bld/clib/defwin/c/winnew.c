@@ -78,6 +78,7 @@ unsigned _NewWindow( const char *name, ... )
      */
     va_start( al, name );
     w = _AnotherWindowData( hwnd, al );
+    va_end( al );
 
     /*
      * set up data

@@ -68,6 +68,7 @@ unsigned _NewWindow( const char *name, ... )
 
     va_start( al, name );
     w = _AnotherWindowData( hwnd, al );
+    va_end( al );
     w->frame = frame;
     w->text_color = CLR_WHITE;
     w->background_color = CLR_BLACK;

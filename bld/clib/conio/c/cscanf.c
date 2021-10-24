@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,7 +71,10 @@ _WCRTLINK int vcscanf( const char *format, va_list args )
 _WCRTLINK int cscanf( const char *format,... )
 {
     va_list args;
+    int     ret;
 
     va_start( args, format );
-    return( vcscanf( format, args ) );
+    ret = vcscanf( format, args );
+    va_end( args );
+    return( ret );
 }

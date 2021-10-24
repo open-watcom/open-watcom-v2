@@ -32,6 +32,12 @@
 #include <malloc.h>
 
 
+#if defined(__AXP__) || defined(__MIPS__)
+#define ARGS_ARRAY_VA(ap) (ARGS_TYPE_ARR)((ap).__base)
+#else
+#define ARGS_ARRAY_VA(ap) (ARGS_TYPE_ARR)(ap)[0]
+#endif
+
 typedef int (*execveaddr_type)( const char *__path, const char *const __argv[], const char *const __envp[] );
 
 extern execveaddr_type __execaddr( void );

@@ -41,6 +41,7 @@
 #elif defined( __OS2__ )
     #include <wos2.h>
 #endif
+#include "_process.h"
 #include "_environ.h"
 #include "rtdata.h"
 #include "rterrno.h"
@@ -75,7 +76,7 @@ _WCRTLINK int __F_NAME(spawnl,_wspawnl)( int mode, const CHAR_TYPE *path, const 
     while( num-- > 0 )
         *tmp++ = va_arg( ap, ARGS_TYPE );
 #else
-    args = (ARGS_TYPE_ARR)ap[0];
+    args = ARGS_ARRAY_VA( ap );
 #endif
     va_end( ap );
 

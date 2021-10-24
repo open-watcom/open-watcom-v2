@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,7 +61,7 @@ static void __SLIB_CALLBACK buf_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 }
 
 _WCRTLINK int __F_NAME(_vbprintf,_vbwprintf) ( CHAR_TYPE *s, size_t bufsize,
-        const CHAR_TYPE *format, va_list args)
+        const CHAR_TYPE *format, va_list args )
 {
     int                     len;
     struct buf_limit        bufinfo;
@@ -78,7 +78,10 @@ _WCRTLINK int __F_NAME(_bprintf,_bwprintf) ( CHAR_TYPE *dest, size_t bufsize,
             const CHAR_TYPE *format, ... )
 {
     va_list     args;
+    int         ret;
 
     va_start( args, format );
-    return( __F_NAME(_vbprintf,_vbwprintf)( dest, bufsize, format, args ) );
+    ret = __F_NAME(_vbprintf,_vbwprintf)( dest, bufsize, format, args );
+    va_end( args );
+    return( ret );
 }

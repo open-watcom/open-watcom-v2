@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,7 +80,10 @@ _WCRTLINK int __F_NAME(vfscanf,vfwscanf)( FILE *io, const CHAR_TYPE *format, va_
 _WCRTLINK int __F_NAME(fscanf,fwscanf)( FILE *io, const CHAR_TYPE *format, ... )
 {
     va_list     args;
+    int         ret;
 
     va_start( args, format );
-    return( __F_NAME(vfscanf,vfwscanf)( io, format, args ) );
+    ret = __F_NAME(vfscanf,vfwscanf)( io, format, args );
+    va_end( args );
+    return( ret );
 }

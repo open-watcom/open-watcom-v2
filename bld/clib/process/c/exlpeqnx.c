@@ -46,14 +46,14 @@ _WCRTLINK int (execlpe)( const char *file, const char *arg, ... )
 _WCRTLINK int (execlpe)( const char *file, const char *arg )
 #endif
 {
-    va_list         ap;
+    va_list         args;
     ARGS_TYPE_ARR   env;
 
-    va_start( ap, file );
-    while( va_arg( ap, ARGS_TYPE ) != NULL )
+    va_start( args, file );
+    while( va_arg( args, ARGS_TYPE ) != NULL )
         ;
-    env = va_arg( ap, ARGS_TYPE_ARR );
-    va_end( ap );
+    env = va_arg( args, ARGS_TYPE_ARR );
+    va_end( args );
 
     return( spawnvpe( P_OVERLAY, file, &arg, env ) );
 }

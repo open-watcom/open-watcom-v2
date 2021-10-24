@@ -224,7 +224,10 @@ _WCRTLINK int __F_NAME(open,_wopen)( const CHAR_TYPE *name, int mode, ... )
 _WCRTLINK int __F_NAME(_sopen,_wsopen)( const CHAR_TYPE *name, int mode, int shflag, ... )
 {
     va_list     args;
+    int         ret;
 
     va_start( args, shflag );
-    return( __F_NAME(__sopen,__wsopen)( name, mode, shflag, args ) );
+    ret = __F_NAME(__sopen,__wsopen)( name, mode, shflag, args );
+    va_end( args );
+    return( ret );
 }

@@ -37,29 +37,26 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <process.h>
+#include "_process.h"
 #include "_environ.h"
 
 
 _WCRTLINK int __F_NAME(execlpe,_wexeclpe)( const CHAR_TYPE *path, const CHAR_TYPE *arg0, ... )
 {
-    va_list         ap;
+    va_list         args1;
     ARGS_TYPE_ARR   args;
     ARGS_TYPE_ARR   env;
 
     /* unused parameters */ (void)arg0;
 
-    va_start( ap, path );
-#if defined(__AXP__) || defined(__MIPS__)
-    args = (ARGS_TYPE_ARR)ap.__base;
-#else
-    args = (ARGS_TYPE_ARR)ap[0];
-#endif
+    va_start( args1, path );
+    args = ARGS_ARRAY_VA( args1 );
     /* scan until NULL in parm list */
-    while( va_arg( ap, ARGS_TYPE ) != NULL )
+    while( va_arg( args1, ARGS_TYPE ) != NULL )
         ;
     /* point to environ parm */
-    env = va_arg( ap, ARGS_TYPE_ARR );
-    va_end( ap );
+    env = va_arg( args1, ARGS_TYPE_ARR );
+    va_end( args1 );
 
     return( __F_NAME(execvpe,_wexecvpe)( path, args, env ) );
 }

@@ -46,14 +46,14 @@ _WCRTLINK int (execle)( const char *path, const char *arg, ... )
 _WCRTLINK int (execle)( const char *path, const char *arg )
 #endif
 {
-    va_list         ap;
+    va_list         args;
     ARGS_TYPE_ARR   env;
 
-    va_start( ap, path );
-    while( va_arg( ap, ARGS_TYPE ) != NULL )
+    va_start( args, path );
+    while( va_arg( args, ARGS_TYPE ) != NULL )
         ;
-    env = va_arg( ap, ARGS_TYPE_ARR );
-    va_end( ap );
+    env = va_arg( args, ARGS_TYPE_ARR );
+    va_end( args );
 
     return( spawnve( P_OVERLAY, path, &arg, env ) );
 }
