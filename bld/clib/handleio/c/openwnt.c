@@ -94,8 +94,7 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, uns
 #endif
         if( mode & O_CREAT ) {
             perm = va_arg( args, int );
-                va_end( args );
-                perm &= ~_RWD_umaskval;             /* 05-jan-95 */
+            perm &= ~_RWD_umaskval;             /* 05-jan-95 */
             if( ( perm & S_IREAD ) && !( perm & S_IWRITE ) ) {
                 fileattr = FILE_ATTRIBUTE_READONLY;
             }
