@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,6 +42,12 @@
     #define __SLIB          _WCI86FAR
 #else
     #define __SLIB
+#endif
+
+#if defined(__QNX__)
+    #define GET_SPEC_DEST(t,s)  (SLIB2CLIB(t,(s)->_dest))
+#else
+    #define GET_SPEC_DEST(t,s)  ((t *)(s)->_dest)
 #endif
 
 /*

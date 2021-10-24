@@ -51,7 +51,7 @@ static void __SLIB_CALLBACK buf_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 {
     struct buf_limit    *bufinfo;
 
-    bufinfo = SLIB2CLIB( struct buf_limit, specs->_dest );
+    bufinfo = GET_SPEC_DEST( struct buf_limit, specs );
     if( specs->_output_count < bufinfo->bufsize ) {
         *( bufinfo->bufptr++ ) = op_char;
         specs->_output_count++;
