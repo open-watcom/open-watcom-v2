@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -78,15 +78,15 @@ void MClose( void )
 
 void Fatal( const char *str, ... )
 {
-    va_list     arg;
+    va_list     args;
 
-    va_start( arg, str );
-    vfprintf( stderr, str, arg );
-    va_end( arg );
+    va_start( args, str );
+    vfprintf( stderr, str, args );
+    va_end( args );
     if( LogFile != NULL ) {
-        va_start( arg, str );
-        vfprintf( LogFile, str, arg );
-        va_end( arg );
+        va_start( args, str );
+        vfprintf( LogFile, str, args );
+        va_end( args );
     }
     CloseLog();
     MClose();
@@ -95,17 +95,17 @@ void Fatal( const char *str, ... )
 
 void Log( bool quiet, const char *str, ... )
 {
-    va_list     arg;
+    va_list     args;
 
     if( !quiet ) {
-        va_start( arg, str );
-        vfprintf( stderr, str, arg );
-        va_end( arg );
+        va_start( args, str );
+        vfprintf( stderr, str, args );
+        va_end( args );
     }
     if( LogFile != NULL ) {
-        va_start( arg, str );
-        vfprintf( LogFile, str, arg );
-        va_end( arg );
+        va_start( args, str );
+        vfprintf( LogFile, str, args );
+        va_end( args );
     }
 }
 

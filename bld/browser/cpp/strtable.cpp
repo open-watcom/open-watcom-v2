@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,24 +49,22 @@ StringTable::StringTable( int numCols, ... )
 /******************************************/
 {
     int i;
-    va_list colParms;
+    va_list args;
 
     _colWidths = new int [numCols];
 
-    va_start( colParms, numCols );
-
+    va_start( args, numCols );
     for( i = 0; i < numCols; i += 1 ) {
-        _colWidths[ i ] = va_arg( colParms, int );
+        _colWidths[ i ] = va_arg( args, int );
         _totalWidth += _colWidths[ i ];
     }
+    va_end( args );
 
     _buffer = new char [_totalWidth + 1];
 
     // position is an array of ptrs to keep track of where we are in each
     // string; it is only used in printRow
     _position = new (const char *[_columns]);
-
-    va_end( colParms );
 }
 
 StringTable::~StringTable()
@@ -104,11 +103,9 @@ void StringTable::add( const char * firstString, ... )
     row[ 0 ] = firstString;
 
     va_start( args, firstString );
-
     for( i = 1; i < _columns; i += 1 ) {
         row[ i ] = va_arg( args, char * );
     }
-
     va_end( args );
 
     _table.add( row );
@@ -128,11 +125,9 @@ void StringTable::replaceAt( int rowNum, const char * firstString, ... )
         row[ 0 ] = firstString;
 
         va_start( args, firstString );
-
         for( i = 1; i < _columns; i += 1 ) {
             row[ i ] = va_arg( args, char * );
         }
-
         va_end( args );
     }
 }
@@ -150,11 +145,9 @@ void StringTable::outputRow( const char * firstString, ... )
     row[ 0 ] = firstString;
 
     va_start( args, firstString );
-
     for( i = 1; i < _columns; i += 1 ) {
         row[ i ] = va_arg( args, char * );
     }
-
     va_end( args );
     printRow( row );
 

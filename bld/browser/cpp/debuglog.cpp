@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -82,12 +83,12 @@ int DebuggingLog::printf( const char * format, ... )
 //--------------------------------------------------
 // normal printf to the file
 {
-    va_list arglist;
+    va_list args;
     int     rc;
 
-    va_start( arglist, format );
-    rc = vfprintf( _fp, format, arglist );
-    va_end( arglist );
+    va_start( args, format );
+    rc = vfprintf( _fp, format, args );
+    va_end( args );
     fflush( _fp );
 
     if( rc < 0 ) {

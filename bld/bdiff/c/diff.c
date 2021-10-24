@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -132,13 +132,13 @@ static exe_info     new;
 
 static void stats( const char *format, ... )
 {
-    va_list     arg;
+    va_list     args;
 
     if( Verbose ) {
-        va_start( arg, format );
-        vprintf( format, arg );
+        va_start( args, format );
+        vprintf( format, args );
         fflush( stdout );
-        va_end( arg );
+        va_end( args );
     }
 }
 

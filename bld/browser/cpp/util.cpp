@@ -103,20 +103,18 @@ void cantOpenFile( const char * fname )
 void errMessage( const char * format, ... )
 //-----------------------------------------
 {
-    va_list arglist;
-
-    va_start( arglist, format );
-
+    va_list args;
     char buffer[ 500 ];
-    vsprintf( buffer, format, arglist );
+
+    va_start( args, format );
+    vsprintf( buffer, format, args );
+    va_end( args );
 
 #ifndef STANDALONE_MERGER
     WMessageDialog::message( topWindow, MsgError, MsgOk, buffer, "Source Browser" );
 #else
     fprintf( stderr, "%s\n", buffer );
 #endif
-
-    va_end( arglist );
 }
 
 void IdentifyAssassin( CauseOfDeath cause )

@@ -1470,7 +1470,6 @@ static TYPE buildFnType( TYPE ret_type, va_list count_args, va_list use_args )
             break;
         ++num_args;
     }
-    va_end( count_args );
     args = AllocArgListPerm( num_args );
     curr_arg = args->type_list;
     for(;;) {
@@ -1480,7 +1479,6 @@ static TYPE buildFnType( TYPE ret_type, va_list count_args, va_list use_args )
         *curr_arg = arg_type;
         ++curr_arg;
     }
-    va_end( use_args );
     fn_type = MakeType( TYP_FUNCTION );
     fn_type->of = ret_type;
     fn_type->flag |= TF1_PLUSPLUS;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -134,7 +134,7 @@ char    *DoIToS( char * buff, int buff_len, signed_32 i )
     return( p );
 }
 
-void    PutFmt( int out, const char *str, va_list list )
+void    PutFmt( int out, const char *str, va_list args )
 {
     char        *str2;
     char        buff[80];
@@ -148,30 +148,30 @@ void    PutFmt( int out, const char *str, va_list list )
                 FPut( out, str, 1 );
                 break;
             case 'd':
-                str2 = DoIToS( buff, 79, va_arg( list, int ) );
+                str2 = DoIToS( buff, 79, va_arg( args, int ) );
                 while( *str2 ) {
                     FPut( out, str2++, 1 );
                 }
                 break;
             case 'l':
-                str2 = DoIToS( buff, 79, va_arg( list, signed_32 ) );
+                str2 = DoIToS( buff, 79, va_arg( args, signed_32 ) );
                 while( *str2 ) {
                     FPut( out, str2++, 1 );
                 }
                 break;
             case 'p':
             case 'h':
-                str2 = DoIToHS( buff, 79, va_arg( list, int ) );
+                str2 = DoIToHS( buff, 79, va_arg( args, int ) );
                 while( *str2 ) {
                     FPut( out, str2++, 1 );
                 }
                 break;
             case 'c':
-                c = va_arg( list, char );
+                c = va_arg( args, char );
                 FPut( out, &c, 1 );
                 break;
             case 's':
-                str2 = va_arg( list, char * );
+                str2 = va_arg( args, char * );
                 while( *str2 ) {
                     FPut( out, str2++, 1 );
                 }
@@ -183,7 +183,7 @@ void    PutFmt( int out, const char *str, va_list list )
                 {
                     n   *nd;
 
-                    nd = va_arg( list, n * );
+                    nd = va_arg( args, n * );
                     if( nd != NULL ) {
                         VerNode( nd );
                     }
@@ -210,75 +210,75 @@ void    PutFmt( int out, const char *str, va_list list )
 
 void    Code(char * str, ... )
 {
-    va_list     list;
+    va_list     args;
     int         old;
 
-    va_start( list, str );
+    va_start( args, str );
     old = SetFile( CodeSeg );
-    PutFmt( Out, str, list );
+    PutFmt( Out, str, args );
     SetFile( old );
-    va_end( list );
+    va_end( args );
 }
 
 void    Put(char * str, ... )
 {
-    va_list     list;
+    va_list     args;
 
-    va_start( list, str );
-    PutFmt( Out, str, list );
-    va_end( list );
+    va_start( args, str );
+    PutFmt( Out, str, args );
+    va_end( args );
 }
 
 void    Action(char * str, ... )
 {
-    va_list     list;
+    va_list     args;
 
-    va_start( list, str );
-    PutFmt( Actions, str, list );
-    va_end( list );
+    va_start( args, str );
+    PutFmt( Actions, str, args );
+    va_end( args );
 }
 
 void    TypDbg(char * str, ... )
 {
-    va_list     list;
+    va_list     args;
 
-    va_start( list, str );
-    PutFmt( TypDebug, str, list );
-    va_end( list );
+    va_start( args, str );
+    PutFmt( TypDebug, str, args );
+    va_end( args );
 }
 
 void    SymDbg(char * str, ... )
 {
-    va_list     list;
+    va_list     args;
 
-    va_start( list, str );
-    PutFmt( SymDebug, str, list );
-    va_end( list );
+    va_start( args, str );
+    PutFmt( SymDebug, str, args );
+    va_end( args );
 }
 
-void    PutError( int out, const char *str, va_list list )
+void    PutError( int out, const char *str, va_list args )
 {
     FPut( out, "\nError! ", 8 );
-    PutFmt( out, str, list );
+    PutFmt( out, str, args );
     FPut( out, "\n", 1 );
 }
 
 void    CGError(const char *str, ... )
 {
-    va_list     list;
+    va_list     args;
     int         old;
 
     old = SetFile( CodeSeg );
 
-    va_start( list, str );
-    PutError( 2,       str, list );
-    va_end( list );
-    va_start( list, str );
-    PutError( Actions, str, list );
-    va_end( list );
-    va_start( list, str );
-    PutError( Out,     str, list );
-    va_end( list );
+    va_start( args, str );
+    PutError( 2,       str, args );
+    va_end( args );
+    va_start( args, str );
+    PutError( Actions, str, args );
+    va_end( args );
+    va_start( args, str );
+    PutError( Out,     str, args );
+    va_end( args );
 
     BECloseFiles();
     SetFile( old );

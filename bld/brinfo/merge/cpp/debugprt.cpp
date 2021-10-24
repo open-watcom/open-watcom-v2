@@ -50,12 +50,12 @@ DebugPrint::~DebugPrint()
 void DebugPrint::DebugMsg( char const *format, ... )
 {
     static char         message[256];
-    va_list             argList;
+    va_list             args;
     WString             *messageStr;
 
-    va_start( argList, format );
-    vsprintf( message, format, argList );
-    va_end( argList );
+    va_start( args, format );
+    vsprintf( message, format, args );
+    va_end( args );
     messageStr = _array.Lock( _count+1 );
     messageStr[_count].SetAnsiText( message );
     _array.Unlock();

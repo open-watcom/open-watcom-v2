@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -86,7 +86,7 @@ static void OrderMsg( int order[], int num_arg, char *msg_ptr )
     }
 }
 
-void MsgPrintf( int resourceid, va_list arglist )
+void MsgPrintf( int resourceid, va_list args )
 {
     char        msgbuf[MAX_RESOURCE_SIZE];
     int         order[3] = { 0, 0, 0 };
@@ -94,7 +94,7 @@ void MsgPrintf( int resourceid, va_list arglist )
     int         i;
 
     for( i = 0; i < 3; i++ ) {
-        argbuf[i] = va_arg( arglist, char * );
+        argbuf[i] = va_arg( args, char * );
     }
     GetMsg( msgbuf, resourceid );
     OrderMsg( order, 3, msgbuf );

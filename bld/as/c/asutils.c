@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -123,16 +123,17 @@ void AsOutMessage( FILE *fp, int resource_id, ... )
 //*************************************************
 // Simply stuffs out the message. No header added.
 {
-    va_list     arglist;
+    va_list     args;
 
-    va_start( arglist, resource_id );
+    va_start( args, resource_id );
     AsMsgGet( resource_id, AsResBuffer );
-    vfprintf( fp, AsResBuffer, arglist );
+    vfprintf( fp, AsResBuffer, args );
+    va_end( args );
 }
 
-static char *leadingMessage( msg_type type, char *buffer ) {
-//**********************************************************
-
+static char *leadingMessage( msg_type type, char *buffer )
+//********************************************************
+{
     switch( type ) {
     case MSG_ERROR:
         AsMsgGet( AS_MSG_ERROR, buffer );
@@ -147,14 +148,14 @@ static char *leadingMessage( msg_type type, char *buffer ) {
     return( buffer );
 }
 
-static void outMsg( FILE *fp, msg_type mtype, int resource_id, va_list *arglist ) {
-//*********************************************************************************
-
+static void outMsg( FILE *fp, msg_type mtype, int resource_id, va_list *args )
+//****************************************************************************
+{
     fprintf( fp, "%s(%d): ", CurrFilename, CurrLineno );
     fputs( leadingMessage( mtype, AsResBuffer ), fp );
     AsMsgGet( resource_id, AsResBuffer );
-    if( arglist ) {
-        vfprintf( fp, AsResBuffer, *arglist );
+    if( args != NULL ) {
+        vfprintf( fp, AsResBuffer, *args );
         fputc( '\n', fp );
     } else {
         fprintf( fp, "%s\n", AsResBuffer );
@@ -173,15 +174,15 @@ static void abortMsg( void )
 void AsError( int resource_id, ... )
 //**********************************
 {
-    va_list     arglist;
+    va_list     args;
 
-    va_start( arglist, resource_id );
-    outMsg( stderr, MSG_ERROR, resource_id, &arglist );
-    va_end( arglist );
+    va_start( args, resource_id );
+    outMsg( stderr, MSG_ERROR, resource_id, &args );
+    va_end( args );
     if( ErrorFile ) {
-        va_start( arglist, resource_id );
-        outMsg( ErrorFile, MSG_ERROR, resource_id, &arglist );
-        va_end( arglist );
+        va_start( args, resource_id );
+        outMsg( ErrorFile, MSG_ERROR, resource_id, &args );
+        va_end( args );
     }
     numErrors++;
     if( numErrors >= ErrorLimit ) {
@@ -193,15 +194,15 @@ void AsError( int resource_id, ... )
 void AsWarning( int resource_id, ... )
 //************************************
 {
-    va_list     arglist;
+    va_list     args;
 
-    va_start( arglist, resource_id );
-    outMsg( stderr, MSG_WARNING, resource_id, &arglist );
-    va_end( arglist );
+    va_start( args, resource_id );
+    outMsg( stderr, MSG_WARNING, resource_id, &args );
+    va_end( args );
     if( ErrorFile ) {
-        va_start( arglist, resource_id );
-        outMsg( ErrorFile, MSG_WARNING, resource_id, &arglist );
-        va_end( arglist );
+        va_start( args, resource_id );
+        outMsg( ErrorFile, MSG_WARNING, resource_id, &args );
+        va_end( args );
     }
     numWarnings++;
 }
@@ -277,26 +278,26 @@ char        AsResBuffer[ MAX_RESOURCE_SIZE ];
 void AsError( int resource_id, ... )
 //**********************************
 {
-    va_list     arglist;
+    va_list     args;
     char        msg[ MAX_RESOURCE_SIZE ];
 
-    va_start( arglist, resource_id );
+    va_start( args, resource_id );
     AsMsgGet( resource_id, AsResBuffer );
-    vsprintf( msg, AsResBuffer, arglist );
-    va_end( arglist );
+    vsprintf( msg, AsResBuffer, args );
+    va_end( args );
     AsmError( msg );    // CC provides this
 }
 
 void AsWarning( int resource_id, ... )
 //************************************
 {
-    va_list     arglist;
+    va_list     args;
     char        msg[ MAX_RESOURCE_SIZE ];
 
-    va_start( arglist, resource_id );
+    va_start( args, resource_id );
     AsMsgGet( resource_id, AsResBuffer );
-    vsprintf( msg, AsResBuffer, arglist );
-    va_end( arglist );
+    vsprintf( msg, AsResBuffer, args );
+    va_end( args );
     AsmWarning( msg );  // CC provides this
 }
 

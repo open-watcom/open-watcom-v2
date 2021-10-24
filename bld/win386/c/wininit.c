@@ -548,7 +548,7 @@ int Fini( int strcnt, ... )
 {
 #ifndef DLL32
     char        tmp[128];
-    va_list     arg;
+    va_list     args;
     char        _FAR *n;
 #endif
 
@@ -558,14 +558,14 @@ int Fini( int strcnt, ... )
     doneFini = true;
 
 #ifndef DLL32
-    va_start( arg, strcnt );
+    va_start( args, strcnt );
     tmp[0] = 0;
     while( strcnt > 0 ) {
-        n = va_arg( arg, char _FAR * );
+        n = va_arg( args, char _FAR * );
         strcat( tmp, n );
         strcnt--;
     }
-    va_end( arg );
+    va_end( args );
     if( tmp[0] != 0 ) {
         MessageBox( NULL, tmp, MsgTitle, MB_OK | MB_ICONHAND | MB_TASKMODAL );
     }

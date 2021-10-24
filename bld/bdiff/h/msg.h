@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,7 @@
 extern bool MsgInit( void );
 extern void MsgFini( void );
 extern bool GetMsg( char *, int );
-extern void MsgPrintf( int resourceid, va_list arglist );
+extern void MsgPrintf( int resourceid, va_list args );
 extern void Message( int format, ... );
 extern void PatchError( int format, ... );
 extern void FilePatchError( int format, ... );

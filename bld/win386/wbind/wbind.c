@@ -150,23 +150,23 @@ static bool updateNHStuff( FILE *fp, const char *basename, const char *desc )
 
 static void myPrintf( const char *str, ... )
 {
-    va_list     al;
+    va_list     args;
 
     if( !quietFlag ) {
-        va_start( al, str );
-        vprintf( str, al );
-        va_end( al );
+        va_start( args, str );
+        vprintf( str, args );
+        va_end( args );
     }
 
 } /* myPrintf */
 
 static void doError( const char *str, ... )
 {
-    va_list     al;
+    va_list     args;
 
-    va_start( al, str );
-    vfprintf( stderr, str, al );
-    va_end( al );
+    va_start( args, str );
+    vfprintf( stderr, str, args );
+    va_end( args );
     fputs( "\n", stderr );
     exit( 1 );
 
@@ -219,11 +219,11 @@ static void *myAlloc( size_t amount )
 
 static void errPrintf( const char *str, ... )
 {
-    va_list     al;
+    va_list     args;
 
-    va_start( al, str );
-    vfprintf( stderr, str, al );
-    va_end( al );
+    va_start( args, str );
+    vfprintf( stderr, str, args );
+    va_end( args );
 
 } /* errPrintf */
 
