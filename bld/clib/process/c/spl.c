@@ -50,7 +50,7 @@
 
 _WCRTLINK int __F_NAME(spawnl,_wspawnl)( int mode, const CHAR_TYPE *path, const CHAR_TYPE *arg0, ... )
 {
-    va_list             ap;
+    va_list             args1;
     ARGS_TYPE_ARR       args;
 #if defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
     ARGS_TYPE           *tmp;
@@ -59,12 +59,12 @@ _WCRTLINK int __F_NAME(spawnl,_wspawnl)( int mode, const CHAR_TYPE *path, const 
 
     /* unused parameters */ (void)arg0;
 
-    va_start( ap, path );
+    va_start( args1, path );
 #if defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
     num = 1;
-    while( va_arg( ap, ARGS_TYPE ) != NULL )
+    while( ARGS_NEXT_VA( args1 ) != NULL )
         num++;
-    va_end( ap );
+    va_end( args1 );
 
     args = tmp = alloca( num * sizeof( ARGS_TYPE ) );
     if( args == NULL ) {
@@ -72,14 +72,14 @@ _WCRTLINK int __F_NAME(spawnl,_wspawnl)( int mode, const CHAR_TYPE *path, const 
         return( -1 );
     }
 
-    va_start( ap, path );
+    va_start( args1, path );
     while( num-- > 0 )
-        *tmp++ = va_arg( ap, ARGS_TYPE );
+        *tmp++ = ARGS_NEXT_VA( args1 );
 #else
-    args = ARGS_ARRAY_VA( ap );
+    args = ARGS_ARRAY_VA( args1 );
 #endif
-    va_end( ap );
+    va_end( args1 );
 
     CHECK_WIDE_ENV();
-    return( __F_NAME(spawnve,_wspawnve)( mode, path, args, (ARGS_TYPE_ARR)__F_NAME(_RWD_environ,_RWD_wenviron) ) );
+    return( __F_NAME(spawnve,_wspawnve)( mode, path, args, (ENVP_TYPE_ARR)__F_NAME(_RWD_environ,_RWD_wenviron) ) );
 }

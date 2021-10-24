@@ -41,5 +41,5 @@
 
 _WCRTLINK int (spawnv)( int mode, const char *path, const char *const argv[] )
 {
-    return( spawnve( mode, path, argv, (ARGS_TYPE_ARR)_RWD_environ ) );
+    return( spawnve( mode, path, argv, (ENVP_TYPE_ARR)_RWD_environ ) );
 }

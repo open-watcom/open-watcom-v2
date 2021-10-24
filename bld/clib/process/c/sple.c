@@ -51,9 +51,9 @@
 
 _WCRTLINK int __F_NAME(spawnle,_wspawnle)( int mode, const CHAR_TYPE *path, const CHAR_TYPE *arg0, ... )
 {
-    va_list             ap;
+    va_list             args1;
     ARGS_TYPE_ARR       args;
-    ARGS_TYPE_ARR       env;
+    ENVP_TYPE_ARR       env;
 #if defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
     ARGS_TYPE           *tmp;
     int                 num;
@@ -64,13 +64,13 @@ _WCRTLINK int __F_NAME(spawnle,_wspawnle)( int mode, const CHAR_TYPE *path, cons
     /*
      * Scan until NULL in parm list
      */
-    va_start( ap, path );
+    va_start( args1, path );
 #if defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
     num = 1;
-    while( va_arg( ap, ARGS_TYPE ) != NULL ) {
+    while( ARGS_NEXT_VA( args1 ) != NULL ) {
         num++;
     }
-    va_end( ap );
+    va_end( args1 );
 
     args = tmp = alloca( num * sizeof( ARGS_TYPE ) );
     if( args == NULL ) {
@@ -78,19 +78,19 @@ _WCRTLINK int __F_NAME(spawnle,_wspawnle)( int mode, const CHAR_TYPE *path, cons
         return( -1 );
     }
 
-    va_start( ap, path );
+    va_start( args1, path );
     while( num-- > 0 )
-        *tmp++ =va_arg( ap, ARGS_TYPE );
+        *tmp++ = ARGS_NEXT_VA( args1 );
 #else
-    args = ARGS_ARRAY_VA( ap );
-    while( va_arg( ap, ARGS_TYPE ) != NULL ) {
+    args = ARGS_ARRAY_VA( args1 );
+    while( ARGS_NEXT_VA( args1 ) != NULL ) {
         ;
     }
 #endif
     /*
      * Point to environment parameter.
      */
-    env = va_arg( ap, ARGS_TYPE_ARR );
-    va_end( ap );
+    env = ENVP_ARRAY_VA( args1 );
+    va_end( args1 );
     return( __F_NAME(spawnve,_wspawnve)( mode, path, args, env ) );
 }

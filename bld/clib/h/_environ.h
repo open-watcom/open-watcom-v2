@@ -39,14 +39,14 @@
 #ifdef __WIDECHAR__
 #define ENVARR_SIZE(x)      ((x) * sizeof( wchar_t * ) + sizeof( wchar_t * ))
 #define CHECK_WIDE_ENV()    if( _RWD_wenviron == NULL ) __create_wide_environment()
-#define ARGS_TYPE           const wchar_t *
-#define ARGS_TYPE_ARR       const wchar_t * const *
+#define ENVP_TYPE_ARR       const wchar_t * const *
 #else
 #define ENVARR_SIZE(x)      ((x) * (sizeof( char * ) + sizeof( char )) + sizeof( char * ))
 #define CHECK_WIDE_ENV()
-#define ARGS_TYPE           const char *
-#define ARGS_TYPE_ARR       const char * const *
+#define ENVP_TYPE_ARR       const char * const *
 #endif
+
+#define ENVP_ARRAY_VA(ap)   (ENVP_TYPE_ARR)va_arg( ap, ENVP_TYPE_ARR )
 
 /*
  * These routines are used internally only, so should not

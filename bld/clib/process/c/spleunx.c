@@ -36,19 +36,20 @@
 #include <stddef.h>
 #include <stdarg.h>
 #include <process.h>
+#include "_process.h"
 #include "_environ.h"
 
 
 _WCRTLINK int (spawnle)( int mode, const char *path, const char *arg, ... )
 {
-    va_list         ap;
-    ARGS_TYPE_ARR   env;
+    va_list         args1;
+    ENVP_TYPE_ARR   env;
 
-    va_start( ap, path );
-    while( va_arg( ap, ARGS_TYPE ) != NULL )
+    va_start( args1, path );
+    while( ARGS_NEXT_VA( args1 ) != NULL )
         ;
-    env = va_arg( ap, ARGS_TYPE_ARR );
-    va_end( ap );
+    env = ENVP_ARRAY_VA( args1 );
+    va_end( args1 );
 
     return( spawnve( mode, path, &arg, env ) );
 }

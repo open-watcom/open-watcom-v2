@@ -41,5 +41,5 @@
 _WCRTLINK int __F_NAME(spawnv,_wspawnv)( int mode, const CHAR_TYPE *path, const CHAR_TYPE *const argv[] )
 {
     CHECK_WIDE_ENV();
-    return( __F_NAME(spawnve,_wspawnve)( mode, path, argv, (ARGS_TYPE_ARR)__F_NAME(_RWD_environ,_RWD_wenviron) ) );
+    return( __F_NAME(spawnve,_wspawnve)( mode, path, argv, (ENVP_TYPE_ARR)__F_NAME(_RWD_environ,_RWD_wenviron) ) );
 }

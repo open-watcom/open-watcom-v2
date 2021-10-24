@@ -47,5 +47,5 @@ _WCRTLINK int (execlp)( const char *file, const char *arg, ... )
 _WCRTLINK int (execlp)( const char *file, const char *arg )
 #endif
 {
-    return( spawnvpe( P_OVERLAY, file, &arg, (ARGS_TYPE_ARR)_RWD_environ ) );
+    return( spawnvpe( P_OVERLAY, file, &arg, (ENVP_TYPE_ARR)_RWD_environ ) );
 }

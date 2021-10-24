@@ -37,6 +37,7 @@
 #include <process.h>
 #include <stddef.h>
 #include <stdarg.h>
+#include "_process.h"
 #include "_environ.h"
 
 
@@ -47,12 +48,12 @@ _WCRTLINK int (execle)( const char *path, const char *arg )
 #endif
 {
     va_list         args;
-    ARGS_TYPE_ARR   env;
+    ENVP_TYPE_ARR   env;
 
     va_start( args, path );
-    while( va_arg( args, ARGS_TYPE ) != NULL )
+    while( ARGS_NEXT_VA( args ) != NULL )
         ;
-    env = va_arg( args, ARGS_TYPE_ARR );
+    env = ENVP_ARRAY_VA( args );
     va_end( args );
 
     return( spawnve( P_OVERLAY, path, &arg, env ) );

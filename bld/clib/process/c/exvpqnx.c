@@ -41,6 +41,6 @@
 
 _WCRTLINK int (execvp)( const char *file, const char *const argv[] )
 {
-    return( spawnvpe( P_OVERLAY, file, argv, (ARGS_TYPE_ARR)_RWD_environ ) );
+    return( spawnvpe( P_OVERLAY, file, argv, (ENVP_TYPE_ARR)_RWD_environ ) );
     /* EXEC's shouldn't return unless there was an error */
 }

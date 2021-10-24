@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,11 +33,21 @@
 #include <malloc.h>
 
 
-#if defined(__AXP__) || defined(__MIPS__)
-#define ARGS_ARRAY_VA(ap) (ARGS_TYPE_ARR)((ap).__base)
+#ifdef __WIDECHAR__
+#define ARGS_TYPE           const wchar_t *
+#define ARGS_TYPE_ARR       const wchar_t * const *
 #else
-#define ARGS_ARRAY_VA(ap) (ARGS_TYPE_ARR)(ap)[0]
+#define ARGS_TYPE           const char *
+#define ARGS_TYPE_ARR       const char * const *
 #endif
+
+#if defined(__AXP__) || defined(__MIPS__)
+#define ARGS_ARRAY_VA(ap)   (ARGS_TYPE_ARR)((ap).__base)
+#else
+#define ARGS_ARRAY_VA(ap)   (ARGS_TYPE_ARR)(ap)[0]
+#endif
+
+#define ARGS_NEXT_VA(ap)    va_arg((ap), ARGS_TYPE)
 
 typedef int (*execveaddr_type)( const char *__path, const char *const __argv[], const char *const __envp[] );
 

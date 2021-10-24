@@ -52,5 +52,5 @@ _WCRTLINK int __F_NAME((execl),_wexecl)( const CHAR_TYPE *path, const CHAR_TYPE 
     args = ARGS_ARRAY_VA( args1 );
     va_end( args1 );
 
-    return( __F_NAME(execve,_wexecve)( path, args, (ARGS_TYPE_ARR)__F_NAME(_RWD_environ,_RWD_wenviron) ) );
+    return( __F_NAME(execve,_wexecve)( path, args, (ENVP_TYPE_ARR)__F_NAME(_RWD_environ,_RWD_wenviron) ) );
 }

@@ -35,19 +35,20 @@
 #include <sys/types.h>
 #include <process.h>
 #include <stdarg.h>
+#include "_process.h"
 #include "_environ.h"
 
 
 _WCRTLINK int (spawnlpe)( int mode, const char *file, const char *arg, ... )
 {
-    va_list         ap;
-    ARGS_TYPE_ARR   env;
+    va_list         args1;
+    ENVP_TYPE_ARR   env;
 
-    va_start( ap, file );
-    while( va_arg( ap, ARGS_TYPE ) != NULL )
+    va_start( args1, file );
+    while( ARGS_NEXT_VA( args1 ) != NULL )
         ;
-    env = va_arg( ap, ARGS_TYPE_ARR );
-    va_end( ap );
+    env = ENVP_ARRAY_VA( args1 );
+    va_end( args1 );
 
     return( spawnvpe( mode, file, &arg, env ) );
 }

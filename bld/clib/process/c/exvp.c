@@ -42,5 +42,5 @@
 _WCRTLINK int __F_NAME(execvp,_wexecvp)( const CHAR_TYPE *file, const CHAR_TYPE * const *argv )
 {
     CHECK_WIDE_ENV();
-    return( __F_NAME(execvpe,_wexecvpe)( file, argv, (ARGS_TYPE_ARR)__F_NAME(_RWD_environ,_RWD_wenviron) ) );
+    return( __F_NAME(execvpe,_wexecvpe)( file, argv, (ENVP_TYPE_ARR)__F_NAME(_RWD_environ,_RWD_wenviron) ) );
 }
