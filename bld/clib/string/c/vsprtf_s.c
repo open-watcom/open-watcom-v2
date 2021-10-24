@@ -43,18 +43,18 @@
  * mem_putc -- append a character to a string in memory, with overflow check
  */
 
-struct vsprtf_s_buf {
+typedef struct vsprtf_s_buf {
     CHAR_TYPE   *bufptr;
     int         chars_output;
     int         max_chars;
-};
+} vsprtf_s_buf;
 
 static slib_callback_t mem_putc; // set up calling convention
 static void __SLIB_CALLBACK mem_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 {
-    struct vsprtf_s_buf     *info;
+    vsprtf_s_buf    *info;
 
-    info = GET_SPEC_DEST( struct vsprtf_s_buf, specs );
+    info = GET_SPEC_DEST( vsprtf_s_buf, specs );
     if( info->chars_output <= info->max_chars ) {
         *( info->bufptr++ ) = op_char;
         specs->_output_count++;
@@ -66,9 +66,9 @@ static void __SLIB_CALLBACK mem_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 _WCRTLINK int __F_NAME(vsprintf_s,vswprintf_s)( CHAR_TYPE * __restrict s, rsize_t n,
                                           const CHAR_TYPE * __restrict format, va_list args )
 {
-    struct vsprtf_s_buf     info;
-    const char              *msg;
-    int                     rc = 0;
+    vsprtf_s_buf    info;
+    const char      *msg;
+    int             rc = 0;
 
     /* First check the critical conditions; if any of those
      * is violated, return immediately and don't touch anything.

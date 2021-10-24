@@ -37,11 +37,11 @@
 #include "printf.h"
 
 
-struct  buf_limit {
+typedef struct buf_limit {
     CHAR_TYPE   *bufptr;
     size_t      bufsize;
     int         bufover;
-};
+} buf_limit;
 
 /*
  * buf_putc -- append a character to a string in memory
@@ -49,9 +49,9 @@ struct  buf_limit {
 static slib_callback_t buf_putc; // setup calling convention
 static void __SLIB_CALLBACK buf_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 {
-    struct buf_limit    *bufinfo;
+    buf_limit       *bufinfo;
 
-    bufinfo = GET_SPEC_DEST( struct buf_limit, specs );
+    bufinfo = GET_SPEC_DEST( buf_limit, specs );
     if( specs->_output_count < bufinfo->bufsize ) {
         *( bufinfo->bufptr++ ) = op_char;
         specs->_output_count++;
@@ -67,8 +67,8 @@ static void __SLIB_CALLBACK buf_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 _WCRTLINK int __F_NAME(_vsnprintf,_vsnwprintf)( CHAR_TYPE *s, size_t bufsize,
         const CHAR_TYPE *format, va_list args )
 {
-    int                     len;
-    struct buf_limit        bufinfo;
+    int             len;
+    buf_limit       bufinfo;
 
     bufinfo.bufptr  = s;
     bufinfo.bufsize = bufsize;

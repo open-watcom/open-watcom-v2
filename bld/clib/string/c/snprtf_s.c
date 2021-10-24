@@ -39,11 +39,11 @@
 #include "printf.h"
 
 
-struct buf_limit {
+typedef struct buf_limit {
     CHAR_TYPE   *bufptr;
     rsize_t     chars_output;
     rsize_t     max_chars;
-};
+} buf_limit;
 
 /*
  * buf_putc -- append a character to a string in memory
@@ -51,9 +51,9 @@ struct buf_limit {
 static slib_callback_t buf_putc; // setup calling convention
 static void __SLIB_CALLBACK buf_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 {
-    struct buf_limit    *info;
+    buf_limit   *info;
 
-    info = GET_SPEC_DEST( struct buf_limit, specs );
+    info = GET_SPEC_DEST( buf_limit, specs );
     if( specs->_output_count < info->max_chars ) {
         *( info->bufptr++ ) = op_char;
         info->chars_output++;
@@ -65,9 +65,9 @@ static void __SLIB_CALLBACK buf_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 _WCRTLINK int __F_NAME(snprintf_s,snwprintf_s)( CHAR_TYPE * __restrict s, rsize_t n,
                                           const CHAR_TYPE * __restrict format, ... )
 {
-    va_list             args;
-    struct buf_limit    info;
-    const char          *msg;
+    va_list         args;
+    buf_limit       info;
+    const char      *msg;
 
     /* First check the critical conditions; if any of those
      * is violated, return immediately and don't touch anything.

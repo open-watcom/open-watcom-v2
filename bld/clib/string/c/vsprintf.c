@@ -43,18 +43,18 @@
  */
 #ifdef __WIDECHAR__
 
-struct vswprtf_buf {
+typedef struct vswprtf_buf {
     CHAR_TYPE   *bufptr;
     int         chars_output;
     int         max_chars;
-};
+} vswprtf_buf;
 
 static slib_callback_t mem_putc; // setup calling convention
 static void __SLIB_CALLBACK mem_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 {
-    struct vswprtf_buf  *info;
+    vswprtf_buf     *info;
 
-    info = GET_SPEC_DEST( struct vswprtf_buf, specs );
+    info = GET_SPEC_DEST( vswprtf_buf, specs );
     if( info->chars_output + 1 <= info->max_chars ) {
         *( info->bufptr++ ) = op_char;
         specs->_output_count++;
@@ -77,7 +77,7 @@ static void __SLIB_CALLBACK mem_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 #ifdef __WIDECHAR__
 _WCRTLINK int vswprintf( CHAR_TYPE *dest, size_t n, const CHAR_TYPE *format, va_list args )
 {
-    struct vswprtf_buf info;
+    vswprtf_buf     info;
 
     if( n != 0 ) {
         info.bufptr = dest;
@@ -93,9 +93,9 @@ _WCRTLINK int vswprintf( CHAR_TYPE *dest, size_t n, const CHAR_TYPE *format, va_
 _WCRTLINK int __F_NAME(vsprintf,_vswprintf) ( CHAR_TYPE *dest, const CHAR_TYPE *format, va_list args )
 {
 #ifndef __WIDECHAR__
-    register int            len;
+    register int    len;
 #else
-    struct vswprtf_buf info;
+    vswprtf_buf     info;
 #endif
 
 #ifdef __WIDECHAR__
