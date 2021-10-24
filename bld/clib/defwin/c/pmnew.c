@@ -54,7 +54,7 @@ unsigned _NewWindow( const char *name, ... )
     int         x1,x2,y1,y2;
     ULONG       style;
     RECTL       rcl;
-    va_list     al;
+    va_list     args;
 
     _GetWindowNameAndCoords( name, str, &x1, &x2, &y1, &y2 );
 
@@ -66,9 +66,9 @@ unsigned _NewWindow( const char *name, ... )
         return( FALSE );
     WinSetOwner( hwnd, _MainWindow );
 
-    va_start( al, name );
-    w = _AnotherWindowData( hwnd, al );
-    va_end( al );
+    va_start( args, name );
+    w = _AnotherWindowData( hwnd, args );
+    va_end( args );
     w->frame = frame;
     w->text_color = CLR_WHITE;
     w->background_color = CLR_BLACK;

@@ -538,7 +538,7 @@ static FAR_STRING formstring( CHAR_TYPE *buffer, MY_VA_LIST *pargs,
         } else {
             long_value = va_arg( VA_LIST_DATA( pargs ), int );
             if( specs->_flags & SPF_SHORT ) {
-                long_value = (short) long_value;
+                long_value = (short)long_value;
             } else if( specs->_flags & SPF_CHAR ) {
                 long_value = (signed char)long_value;
             }

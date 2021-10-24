@@ -284,7 +284,7 @@ extern LPWDATA  _IsWindowedHandle( int handle );
 extern void     _InitFunctionPointers( void );
 extern void     _InitMainWindowData( HANDLE );
 extern void     _FiniMainWindowData( void );
-extern LPWDATA  _AnotherWindowData( HWND hwnd, va_list al );
+extern LPWDATA  _AnotherWindowData( HWND hwnd, va_list args );
 extern void     _FreeWindowData( LPWDATA );
 extern void     _GetWindowNameAndCoords( const char *name, char *dest, int *x1, int *x2, int *y1, int *y2 );
 extern void     _WindowsExit( void );

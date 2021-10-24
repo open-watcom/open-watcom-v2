@@ -51,7 +51,7 @@ unsigned _NewWindow( const char *name, ... )
     TEXTMETRIC  tm;
     char        str[80];
     int         x1,x2,y1,y2;
-    va_list     al;
+    va_list     args;
 
     _GetWindowNameAndCoords( name, str, &x1, &x2, &y1, &y2 );
 
@@ -76,9 +76,9 @@ unsigned _NewWindow( const char *name, ... )
     /*
      * allocate window data area
      */
-    va_start( al, name );
-    w = _AnotherWindowData( hwnd, al );
-    va_end( al );
+    va_start( args, name );
+    w = _AnotherWindowData( hwnd, args );
+    va_end( args );
 
     /*
      * set up data

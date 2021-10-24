@@ -280,7 +280,7 @@ void _FiniMainWindowData( void )
 /*
  * _AnotherWindowData - create yet another window data item
  */
-LPWDATA _AnotherWindowData( HWND hwnd, va_list al )
+LPWDATA _AnotherWindowData( HWND hwnd, va_list args )
 {
     LPWDATA     w;
     int         h,hcnt;
@@ -308,7 +308,7 @@ LPWDATA _AnotherWindowData( HWND hwnd, va_list al )
 
     hcnt = 0;
     hlist = NULL;
-    while( (h = va_arg( al, int )) != -1 ) {
+    while( (h = va_arg( args, int )) != -1 ) {
         hlist = FARrealloc( hlist, ( hcnt + 1 ) * sizeof( h ) );
         hlist[hcnt] = h;
         hcnt++;
