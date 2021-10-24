@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,10 +40,11 @@ typedef struct my_va_list {
 } my_va_list;
 
 #if defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
-  #define MY_VA_LIST( a ) (*(my_va_list *)&(a))
+  #define MY_VA_LIST( a )   (*(my_va_list *)&(a))
 #else
-  #define MY_VA_LIST( a ) (*(my_va_list *)(a))
+  #define MY_VA_LIST( a )   (*(my_va_list *)(a))
 #endif
+#define VA_LIST( p )        ((p)->v)
 
 #define _MYVALIST_H_INCLUDED
 #endif
