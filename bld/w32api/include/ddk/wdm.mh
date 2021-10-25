@@ -7888,10 +7888,8 @@ NTSYSAPI VOID NTAPI         RtlClearBit( PRTL_BITMAP, ULONG );
 NTSYSAPI WCHAR NTAPI        RtlDowncaseUnicodeChar( WCHAR );
 NTSYSAPI VOID NTAPI         RtlSetBit( PRTL_BITMAP, ULONG );
 NTSYSAPI BOOLEAN NTAPI      RtlTestBit( PRTL_BITMAP, ULONG );
-#ifdef _VA_LIST_DEFINED
-NTSYSAPI ULONG NTAPI        vDbgPrintEx( ULONG, ULONG, PCCH, va_list );
-NTSYSAPI ULONG NTAPI        vDbgPrintExWithPrefix( PCCH, ULONG, ULONG, PCCH, va_list );
-#endif
+NTSYSAPI ULONG NTAPI        vDbgPrintEx( ULONG, ULONG, PCCH, __va_list );
+NTSYSAPI ULONG NTAPI        vDbgPrintExWithPrefix( PCCH, ULONG, ULONG, PCCH, __va_list );
 #endif
 #if (NTDDI_VERSION >= 0x05020000)
 NTSYSAPI NTSTATUS NTAPI     ZwOpenEvent( PHANDLE, ACCESS_MASK, POBJECT_ATTRIBUTES );
@@ -8350,7 +8348,7 @@ NTKERNELAPI VOID NTAPI              MmUnmapReservedMapping( PVOID, ULONG, PMDLX 
 NTKERNELAPI NTSTATUS NTAPI          WmiQueryTraceInformation( TRACE_INFORMATION_CLASS, PVOID, ULONG, PULONG, PVOID );
 #ifdef RUN_WPP
 NTKERNELAPI NTSTATUS __cdecl        WmiTraceMessage( TRACEHANDLE, ULONG, LPGUID, USHORT, ... );
-NTKERNELAPI NTSTATUS NTAPI          WmiTraceMessageVa( TRACEHANDLE, ULONG, LPGUID, USHORT, va_list );
+NTKERNELAPI NTSTATUS NTAPI          WmiTraceMessageVa( TRACEHANDLE, ULONG, LPGUID, USHORT, __va_list );
 #endif
 #endif
 #if (NTDDI_VERSION >= 0x05010100)
@@ -9193,7 +9191,7 @@ __inline VOID ExFreeToNPagedLookasideList( PNPAGED_LOOKASIDE_LIST x, PVOID p )
         (x->L.Free)( p );
     } else {
 #ifdef _X86_
-        ExInterlockedPushEntrySList( &x->L.ListHead, (PSLIST_ENTRY)p, 
+        ExInterlockedPushEntrySList( &x->L.ListHead, (PSLIST_ENTRY)p,
                                      &x->Lock__ObsoleteButDoNotDelete );
 #else
         InterlockedPushEntrySList( &x->L.ListHead, (PSLIST_ENTRY)p );
@@ -9201,7 +9199,7 @@ __inline VOID ExFreeToNPagedLookasideList( PNPAGED_LOOKASIDE_LIST x, PVOID p )
     }
 }
 
-__inline VOID IoSetCompletionRoutine( PIRP x, PIO_COMPLETION_ROUTINE p1, PVOID p2, 
+__inline VOID IoSetCompletionRoutine( PIRP x, PIO_COMPLETION_ROUTINE p1, PVOID p2,
                                       BOOLEAN p3, BOOLEAN p4, BOOLEAN p5 )
 {
     PIO_STACK_LOCATION  v;

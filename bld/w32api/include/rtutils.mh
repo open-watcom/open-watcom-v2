@@ -58,8 +58,8 @@ VOID __cdecl    RouterLogEventExA( HANDLE, DWORD, DWORD, DWORD, LPCSTR, ... );
 VOID __cdecl    RouterLogEventExW( HANDLE, DWORD, DWORD, DWORD, LPCWSTR, ... );
 VOID APIENTRY   RouterLogEventStringA( HANDLE, DWORD, DWORD, DWORD, LPSTR *, DWORD, DWORD );
 VOID APIENTRY   RouterLogEventStringW( HANDLE, DWORD, DWORD, DWORD, LPWSTR *, DWORD, DWORD );
-VOID APIENTRY   RouterLogEventValistExA( HANDLE, DWORD, DWORD, DWORD, LPCSTR, void * );
-VOID APIENTRY   RouterLogEventValistExW( HANDLE, DWORD, DWORD, DWORD, LPCWSTR, void * );
+VOID APIENTRY   RouterLogEventValistExA( HANDLE, DWORD, DWORD, DWORD, LPCSTR, __va_list );
+VOID APIENTRY   RouterLogEventValistExW( HANDLE, DWORD, DWORD, DWORD, LPCWSTR, __va_list );
 VOID APIENTRY   RouterLogEventW( HANDLE, DWORD, DWORD, DWORD, LPWSTR *, DWORD );
 HANDLE APIENTRY RouterLogRegisterA( LPCSTR );
 HANDLE APIENTRY RouterLogRegisterW( LPCWSTR );
@@ -79,8 +79,8 @@ DWORD APIENTRY  TracePutsExA( DWORD, DWORD, LPCSTR );
 DWORD APIENTRY  TracePutsExW( DWORD, DWORD, LPCWSTR );
 DWORD APIENTRY  TraceRegisterExA( LPCSTR, DWORD );
 DWORD APIENTRY  TraceRegisterExW( LPCWSTR, DWORD );
-DWORD APIENTRY  TraceVprintfExA( DWORD, DWORD, LPCSTR, void * );
-DWORD APIENTRY  TraceVprintfExW( DWORD, DWORD, LPCWSTR, void * );
+DWORD APIENTRY  TraceVprintfExA( DWORD, DWORD, LPCSTR, __va_list );
+DWORD APIENTRY  TraceVprintfExW( DWORD, DWORD, LPCWSTR, __va_list );
 
 /* Functions implemented as macros */
 #define RouterLogErrorA( p1, p2, p3, p4, p5 ) \
@@ -127,18 +127,6 @@ DWORD APIENTRY  TraceVprintfExW( DWORD, DWORD, LPCWSTR, void * );
 #define TraceRegisterW( x )                 TraceRegisterExW( x, 0 )
 #define TraceVprintfA( p1, p2, p3 )         TraceVprintfExA( p1, 0, p2, p3 )
 #define TraceVprintfW( p1, p2, p3 )         TraceVprintfExW( p1, 0, p2, p3 )
-
-/* Microsoft defines va_list differently from Open Watcom, so it must be indexed
- * before being passed to any Win32 API functions.
- */
-#define RouterLogEventValistExA( p1, p2, p3, p4, p5, p6 ) \
-    RouterLogEventValistExA( p1, p2, p3, p4, p5, (p6)[0] )
-#define RouterLogEventValistExW( p1, p2, p3, p4, p5, p6 ) \
-    RouterLogEventValistExW( p1, p2, p3, p4, p5, (p6)[0] )
-#define TraceVprintfExA( p1, p2, p3, p4 ) \
-    TraceVprintfExA( p1, p2, p3, (p4)[0] )
-#define TraceVprintfExW( p1, p2, p3, p4 ) \
-    TraceVprintfExW( p1, p2, p3, (p4)[0] )
 
 /* Map generic function names to the appropriate ANSI or Unicode version. */
 #ifdef UNICODE

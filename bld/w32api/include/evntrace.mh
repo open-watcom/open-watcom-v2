@@ -730,7 +730,7 @@ EXTERN_C ULONG WMIAPI   StopTraceW( TRACEHANDLE, LPCWSTR, PEVENT_TRACE_PROPERTIE
 EXTERN_C ULONG WMIAPI   TraceEvent( TRACEHANDLE, PEVENT_TRACE_HEADER );
 EXTERN_C ULONG WMIAPI   TraceEventInstance( TRACEHANDLE, PEVENT_INSTANCE_HEADER, PEVENT_INSTANCE_INFO, PEVENT_INSTANCE_INFO );
 EXTERN_C ULONG __cdecl  TraceMessage( TRACEHANDLE, ULONG, LPCGUID, USHORT, ... );
-EXTERN_C ULONG WMIAPI   TraceMessageVa( TRACEHANDLE, ULONG, LPCGUID, USHORT, void * );
+EXTERN_C ULONG WMIAPI   TraceMessageVa( TRACEHANDLE, ULONG, LPCGUID, USHORT, __va_list );
 EXTERN_C ULONG WMIAPI   UnregisterTraceGuids( TRACEHANDLE );
 EXTERN_C ULONG WMIAPI   UpdateTraceA( TRACEHANDLE, LPCSTR, PEVENT_TRACE_PROPERTIES );
 EXTERN_C ULONG WMIAPI   UpdateTraceW( TRACEHANDLE, LPCWSTR, PEVENT_TRACE_PROPERTIES );
@@ -748,11 +748,6 @@ EXTERN_C ULONG WMIAPI   EnableTraceEx2( TRACEHANDLE, LPCGUID, ULONG, UCHAR, ULON
 EXTERN_C ULONG WMIAPI   TraceSetInformation( TRACEHANDLE, TRACE_INFO_CLASS, PVOID, ULONG );
 #endif
 #endif
-
-/* Microsoft defines va_list differently from Open Watcom, so it must be indexed
- * before being passed to any Win32 API functions.
- */
-#define TraceMessageVa( p1, p2, p3, p4, p5 )    TraceMessageVa( p1, p2, p3, p4, (p5)[0] )
 
 /* Map generic function names to the appropriate ANSI or Unicode version. */
 #ifndef _WDMDDK_

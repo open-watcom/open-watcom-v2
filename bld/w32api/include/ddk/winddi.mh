@@ -1519,7 +1519,7 @@ ENGAPI PATHOBJ * APIENTRY       EngCreatePath();
 ENGAPI HSEMAPHORE APIENTRY      EngCreateSemaphore( VOID );
 ENGAPI WNDOBJ * APIENTRY        EngCreateWnd( SURFOBJ *, HWND, WNDOBJCHANGEPROC, FLONG, int );
 ENGAPI VOID APIENTRY            EngDebugBreak( VOID );
-ENGAPI VOID APIENTRY            EngDebugPrint( PCHAR, PCHAR, va_list );
+ENGAPI VOID APIENTRY            EngDebugPrint( PCHAR, PCHAR, __va_list );
 ENGAPI VOID APIENTRY            EngDeleteClip( CLIPOBJ * );
 ENGAPI BOOL APIENTRY            EngDeleteDriverObj( HDRVOBJ, BOOL, BOOL );
 ENGAPI BOOL APIENTRY            EngDeleteEvent( PEVENT );

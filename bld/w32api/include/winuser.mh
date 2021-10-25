@@ -1860,7 +1860,7 @@ DECLARE_HANDLE( HGESTUREINFO );
 #define SM_CXICONSPACING                    38
 #define SM_CYICONSPACING                    39
 #define SM_MENUDROPALIGNMENT                40
-#define SM_PENWINDOWS                       41  
+#define SM_PENWINDOWS                       41
 #define SM_DBCSENABLED                      42
 #define SM_CMOUSEBUTTONS                    43
 #if (WINVER >= 0x0400)
@@ -6159,8 +6159,8 @@ WINUSERAPI VOID WINAPI          keybd_event( BYTE, BYTE, DWORD, ULONG_PTR );
 WINUSERAPI VOID WINAPI          mouse_event( DWORD, DWORD, DWORD, DWORD, ULONG_PTR );
 WINUSERAPI int WINAPIV          wsprintfA( LPSTR, LPCSTR, ... );
 WINUSERAPI int WINAPIV          wsprintfW( LPWSTR, LPCWSTR, ... );
-WINUSERAPI int WINAPI           wvsprintfA( LPSTR, LPCSTR, void * );
-WINUSERAPI int WINAPI           wvsprintfW( LPWSTR, LPCWSTR, void * );
+WINUSERAPI int WINAPI           wvsprintfA( LPSTR, LPCSTR, __va_list );
+WINUSERAPI int WINAPI           wvsprintfW( LPWSTR, LPCWSTR, __va_list );
 #ifdef _WINGDI_
 WINUSERAPI LONG WINAPI          ChangeDisplaySettingsA( DEVMODEA *, DWORD );
 WINUSERAPI LONG WINAPI          ChangeDisplaySettingsExA( LPCSTR, DEVMODEA *, HWND, DWORD, LPVOID );
@@ -6362,7 +6362,7 @@ WINUSERAPI BOOL WINAPI          UpdateLayeredWindowIndirect( HWND, const UPDATEL
 #if (_WIN32_WINNT >= 0x0600)
 WINUSERAPI BOOL WINAPI          GetIconInfoExA( HICON, PICONINFOEXA );
 WINUSERAPI BOOL WINAPI          GetIconInfoExW( HICON, PICONINFOEXW );
-WINUSERAPI BOOL WINAPI          IsProcessDPIAware( VOID );  
+WINUSERAPI BOOL WINAPI          IsProcessDPIAware( VOID );
 WINUSERAPI BOOL WINAPI          SetProcessDPIAware( VOID );
 WINUSERAPI BOOL WINAPI          SoundSentry( VOID );
 #endif
@@ -6426,12 +6426,6 @@ WINUSERAPI BOOL WINAPI  ActivateKeyboardLayout( HKL, UINT );
 #define SetSysModalWindow( x )              NULL
 #define SetWindowLongPtrA( p1, p2, p3 )     SetWindowLongA( p1, p2, p3 )
 #define SetWindowLongPtrW( p1, p2, p3 )     SetWindowLongW( p1, p2, p3 )
-
-/* Microsoft defines va_list differently from Open Watcom, so it must be indexed
- * before being passed to any Win32 API functions.
- */
-#define wvsprintfA( p1, p2, p3 )    wvsprintfA( p1, p2, (p3)[0] )
-#define wvsprintfW( p1, p2, p3 )    wvsprintfW( p1, p2, (p3)[0] )
 
 /* Aliases for compatibility with Win16 */
 #define AnsiLower       CharLowerA
