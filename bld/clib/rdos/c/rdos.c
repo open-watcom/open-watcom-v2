@@ -38,11 +38,11 @@
 
 #define FALSE 0
 
-struct TRdosPrintfCallback
+typedef struct TRdosPrintfCallback
 {
     TRdosCallback *outproc;
     void          *param;
-};
+} TRdosPrintfCallback;
 
 typedef struct RdosPtr48
 {
@@ -562,7 +562,7 @@ int RdosAttachDebugger( int pid )
 static slib_callback_t mem_putc;
 static void __SLIB_CALLBACK mem_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 {
-    struct TRdosPrintfCallback  *callback = GET_SPEC_DEST( struct TRdosPrintfCallback, specs );
+    TRdosPrintfCallback  *callback = GET_SPEC_DEST( TRdosPrintfCallback, specs );
 
     specs->_output_count++;
     callback->outproc( callback->param, op_char );
@@ -570,11 +570,11 @@ static void __SLIB_CALLBACK mem_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
 
 _WCRTLINK int RdosPrintf( TRdosCallback *outproc, void *param, const char *format, va_list args )
 {
-    struct TRdosPrintfCallback callback;
+    TRdosPrintfCallback callback;
 
     callback.outproc = outproc;
     callback.param = param;
 
 
-    return( __prtf( (void *)&callback, format, args, mem_putc ) );
+    return( __prtf( &callback, format, args, mem_putc ) );
 }
