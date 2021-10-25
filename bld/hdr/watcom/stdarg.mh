@@ -90,38 +90,29 @@ using std::va_list;
 :elsesegment
  #ifdef __SW_ZU
 :endsegment
-  #define va_start(__ap,__pn)   ((__ap)[0]=(char _WCFAR*)&__pn+\
+  #define va_start(__ap,__pn)   (__ap=(char _WCFAR*)&__pn+\
       ((sizeof(__pn)+sizeof(int)-1)&~(sizeof(int)-1)),(void)0)
-  #define va_arg(__ap,__type)   ((__ap)[0]+=\
+  #define va_arg(__ap,__type)   (__ap+=\
       ((sizeof(__type)+sizeof(int)-1)&~(sizeof(int)-1)),\
-      (*(__type _WCFAR*)((__ap)[0]-((sizeof(__type)+sizeof(int)-1)&~(sizeof(int)-1)))))
-  #define va_end(__ap)          ((__ap)[0]=0,(void)0)
+      (*(__type _WCFAR*)(__ap-((sizeof(__type)+sizeof(int)-1)&~(sizeof(int)-1)))))
+  #define va_end(__ap)          (__ap=0,(void)0)
  #else
-  #define va_start(__ap,__pn)   ((__ap)[0]=(char *)&__pn+\
+  #define va_start(__ap,__pn)   (__ap=(char *)&__pn+\
       ((sizeof(__pn)+sizeof(int)-1)&~(sizeof(int)-1)),(void)0)
-  #define va_arg(__ap,__type)   ((__ap)[0]+=\
+  #define va_arg(__ap,__type)   (__ap+=\
       ((sizeof(__type)+sizeof(int)-1)&~(sizeof(int)-1)),\
-      (*(__type *)((__ap)[0]-((sizeof(__type)+sizeof(int)-1)&~(sizeof(int)-1)))))
-  #define va_end(__ap)          ((__ap)[0]=0,(void)0)
+      (*(__type *)(__ap-((sizeof(__type)+sizeof(int)-1)&~(sizeof(int)-1)))))
+  #define va_end(__ap)          (__ap=0,(void)0)
  #endif
 :segment !INTEL_ONLY
 #endif
 :endsegment
 
-:segment !INTEL_ONLY
 :: define __va_copy even if -za is used
-#if defined(__PPC__) || defined(__AXP__) || defined(__MIPS__)
- #define __va_copy(__dest,__src)    ((__dest)=(__src),(void)0)
-#else
-:endsegment
-:: _M_IX86
- #define __va_copy(__dest,__src)    ((__dest)[0]=(__src)[0],(void)0)
-:segment !INTEL_ONLY
-#endif
-:endsegment
+#define __va_copy(__dest,__src)    ((__dest)=(__src),(void)0)
 
 :: Extensions section (C99 va_copy definition)
-:include ext.sp
+:include extc99.sp
 #define va_copy(__dest,__src)   __va_copy(__dest,__src)
 :include extepi.sp
 

@@ -44,7 +44,7 @@
 #if defined(__AXP__) || defined(__MIPS__)
 #define ARGS_ARRAY_VA(ap)   (ARGS_TYPE_ARR)((ap).__base)
 #else
-#define ARGS_ARRAY_VA(ap)   (ARGS_TYPE_ARR)(ap)[0]
+#define ARGS_ARRAY_VA(ap)   (ARGS_TYPE_ARR)(ap)
 #endif
 
 #define ARGS_NEXT_VA(ap)    va_arg((ap), ARGS_TYPE)

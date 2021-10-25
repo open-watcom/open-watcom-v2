@@ -34,9 +34,9 @@
 :elsesegment
   #if defined(__SW_ZU)
 :endsegment
-   typedef char _WCFAR *__va_list[1];
+   typedef char _WCFAR *__va_list;
   #else
-   typedef char    *__va_list[1];
+   typedef char    *__va_list;
   #endif
 :segment !INTEL_ONLY
  #endif

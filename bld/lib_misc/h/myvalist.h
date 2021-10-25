@@ -42,11 +42,9 @@ typedef struct my_va_list {
 
 #define MY_VA_LIST              my_va_list
 
-#if defined(__AXP__) || defined(__PPC__) || defined(__MIPS__)
-  #define MY_VA_LIST_DATA(a)    (*(MY_VA_LIST *)&(a))
-#else
-  #define MY_VA_LIST_DATA(a)    (*(MY_VA_LIST *)(a))
-#endif
-#define VA_LIST_DATA(my)        ((my)->v)
+#define MY_VA_LIST_DATA(a)      (*(MY_VA_LIST *)&(a))
+
+#define VA_LIST_DATA(my)   	    ((my)->v)
+
 
 #endif
