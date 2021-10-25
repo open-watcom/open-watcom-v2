@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -190,15 +190,16 @@ void intern physupdate( SAREA *area )
 void QNXDebugPrintf( const char *f, ... )
 {
     static FILE *file = NULL;
-    va_list vargs;
+    va_list args;
 
     if( file == NULL ) {
         if( (file = fopen( "QNX.Debug", "w" )) == NULL ) {
             return;
         }
     }
-    va_start( vargs, f );
-    vfprintf( file, f, vargs );
+    va_start( args, f );
+    vfprintf( file, f, args );
+    va_end( args );
     putc( '\n', file );
     fflush( file );
 }

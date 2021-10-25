@@ -167,12 +167,13 @@ void RawOut( char *str )
 
 void MyOut( char *str, ... )
 {
-    va_list     al;
+    va_list     args;
     char        tmpbuff[128];
 
     sprintf( tmpbuff,"%03d) ",++_cnt );
-    va_start( al, str );
-    vsprintf( &tmpbuff[5],str, al );
+    va_start( args, str );
+    vsprintf( &tmpbuff[5],str, args );
+    va_end( args );
 
     RawOut( tmpbuff );
 }

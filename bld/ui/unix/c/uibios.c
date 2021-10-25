@@ -168,15 +168,16 @@ void intern physupdate( SAREA *area )
 void UIDebugPrintf( const char *f, ... )
 {
     static FILE     *file = NULL;
-    va_list         vargs;
+    va_list         args;
 
     if( file == NULL ) {
         if( (file = fopen( "UI.Debug", "w" )) == NULL ) {
             return;
         }
     }
-    va_start( vargs, f );
-    vfprintf( file, f, vargs );
+    va_start( args, f );
+    vfprintf( file, f, args );
+    va_end( args );
     putc( '\n', file );
     fflush( file );
 }
