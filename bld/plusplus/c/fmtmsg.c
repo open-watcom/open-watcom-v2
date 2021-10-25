@@ -72,9 +72,10 @@ static bool formatClassForSym( SYMBOL sym, VBUF *buf )
 }
 
 SYMBOL FormatMsg( VBUF *pbuf, char *fmt, va_list args )
-/****************************************************/
-// this function assumes that pbuf is initialized
-// all information is concatenated to the end of pbuf
+/******************************************************
+ * this function assumes that pbuf is initialized
+ * all information is concatenated to the end of pbuf
+ */
 {
     VBUF    prefix, suffix;
     char    cfmt;
