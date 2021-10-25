@@ -37,16 +37,7 @@
 #include <signal.h>
 #include <io.h>
 #include <fcntl.h>
-#ifndef DLL32
 #include <stdarg.h>
-#else
-typedef char __far *va_list[1];
-#define va_start(ap,pn) ((ap)[0]=(char __far*)&pn+((sizeof(pn)+1)&~1),(void)0)
-#define va_arg(ap,type) ((ap)[0]+=((sizeof(type)+1)&~1),\
-                        (*(type __far *)((ap)[0]-((sizeof(type)+1)&~1))))
-#define va_end(ap)      ((ap)[0]=0,(void)0)
-#endif
-
 #include <dos.h>
 #include <share.h>
 #include <sys/stat.h>
@@ -546,7 +537,9 @@ static bool doneFini = false;
  */
 int Fini( int strcnt, ... )
 {
-#ifndef DLL32
+#ifdef DLL32
+    /* unused parameters */ (void)strcnt;
+#else
     char        tmp[128];
     va_list     args;
     char        _FAR *n;
@@ -556,7 +549,6 @@ int Fini( int strcnt, ... )
         return( 0 );
     }
     doneFini = true;
-
 #ifndef DLL32
     va_start( args, strcnt );
     tmp[0] = 0;
@@ -569,8 +561,6 @@ int Fini( int strcnt, ... )
     if( tmp[0] != 0 ) {
         MessageBox( NULL, tmp, MsgTitle, MB_OK | MB_ICONHAND | MB_TASKMODAL );
     }
-#else
-    strcnt = strcnt;
 #endif
     Cleanup();
     return( false );
