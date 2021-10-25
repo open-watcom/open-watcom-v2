@@ -104,47 +104,25 @@ void Msg_Do_Put_Args( char rc_buff[], MSG_ARG_LIST *arg_info, const char *types,
     va_list     args;
 
     va_start( args, types );
-    Msg_Put_Args( rc_buff, arg_info, types, &args );
+    Msg_Put_Args( rc_buff, arg_info, types, args );
     va_end( args );
-}
-
-static void Msg_Add_Arg( MSG_ARG *arginfo, char typech, va_list *args )
-{
-    switch( typech ) {
-    case 's':
-        arginfo->string = va_arg( *args, char * );
-        break;
-    case 'x':
-    case 'd':
-        arginfo->int_16 = (signed_16)va_arg( *args, unsigned int );
-        break;
-    case 'l':
-        arginfo->int_32 = (signed_32)va_arg( *args, unsigned long );
-        break;
-    case 'A':
-    case 'a':
-        arginfo->address = va_arg( *args, targ_addr * );
-        break;
-    case 'S':
-        arginfo->symb = va_arg( *args, symbol * );
-        break;
-    }
 }
 
 // Write arguments to put into a message and make it printf-like
 void Msg_Put_Args(
-    char                message[],      // Contains %s, etc. or %digit specifiers
-    MSG_ARG_LIST        *arg_info,      // Arguments found
-    const char          *types,         // message conversion specifier types
-                                        // NULL or strlen <= 3 ( arg_info->arg elements)
-    va_list             *args )         // Initialized va_list
+    char            message[],      // Contains %s, etc. or %digit specifiers
+    MSG_ARG_LIST    *arg_info,      // Arguments found
+    const char      *types,         // message conversion specifier types
+                                    // NULL or strlen <= 3 (arg_info->arg elements)
+    va_list         args )          // Initialized va_list
 {
-    int         argnum = 0;             // Index of argument found
-    int         j;                      // General purpose loop index
-    int         order[3];               // Mapping of args to arg_info->arg
-    char        *percent;               // Position of '%' in message
-    char        types_buff[1 + 3];      // readwrite copy of types
-    char        specifier;              // Character following '%'
+    int         argnum = 0;         // Index of argument found
+    int         j;                  // General purpose loop index
+    int         order[3];           // Mapping of args to arg_info->arg
+    char        *percent;           // Position of '%' in message
+    char        types_buff[1 + 3];  // readwrite copy of types
+    char        specifier;          // Character following '%'
+    MSG_ARG     *arginfo;
 
     if( types != NULL ) {
         strcpy( types_buff, types );
@@ -162,9 +140,28 @@ void Msg_Put_Args(
                 }
             }
         }
-                                        // Re-order sequential arguments
+        // Re-order sequential arguments
         for( j = 0; j < argnum; j++ ) {
-            Msg_Add_Arg( arg_info->arg + order[j], types_buff[j], args );
+            arginfo = arg_info->arg + order[j];
+            switch( types_buff[j] ) {
+            case 's':
+                arginfo->string = va_arg( args, char * );
+                break;
+            case 'x':
+            case 'd':
+                arginfo->int_16 = (signed_16)va_arg( args, unsigned int );
+                break;
+            case 'l':
+                arginfo->int_32 = (signed_32)va_arg( args, unsigned long );
+                break;
+            case 'A':
+            case 'a':
+                arginfo->address = va_arg( args, targ_addr * );
+                break;
+            case 'S':
+                arginfo->symb = va_arg( args, symbol * );
+                break;
+            }
         }
     }
     arg_info->index = 0;
@@ -173,12 +170,12 @@ void Msg_Put_Args(
 void Msg_Write_Map( int resourceid, ... )
 {
     char        msg_buff[RESOURCE_MAX_SIZE];
-    va_list     arglist;
+    va_list     args;
 
     Msg_Get( resourceid, msg_buff );
-    va_start( arglist, resourceid );
-    DoWriteMap( msg_buff, &arglist );
-    va_end( arglist );
+    va_start( args, resourceid );
+    DoWriteMap( msg_buff, args );
+    va_end( args );
 }
 
 bool FiniMsg( void )

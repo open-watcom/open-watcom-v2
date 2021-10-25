@@ -969,8 +969,8 @@ void WriteMapNL( unsigned count )
     }
 }
 
-static size_t MapPrint( const char *str, va_list *args )
-/******************************************************/
+static size_t MapPrint( const char *str, va_list args )
+/*****************************************************/
 {
     char        buff[MAX_MSG_SIZE];
     size_t      len;
@@ -980,11 +980,11 @@ static size_t MapPrint( const char *str, va_list *args )
     return( len );
 }
 
-void DoWriteMap( const char *format, va_list *arglist )
-/*****************************************************/
+void DoWriteMap( const char *format, va_list args )
+/*************************************************/
 {
     if( MapFlags & MAP_FLAG ) {
-        MapPrint( format, arglist );
+        MapPrint( format, args );
         WriteMapNL( 1 );
     }
 }
@@ -992,17 +992,17 @@ void DoWriteMap( const char *format, va_list *arglist )
 void WriteMap( const char *format, ... )
 /**************************************/
 {
-    va_list arglist;
+    va_list args;
 
-    va_start( arglist, format );
-    DoWriteMap( format, &arglist );
-    va_end( arglist );
+    va_start( args, format );
+    DoWriteMap( format, args );
+    va_end( args );
 }
 
 void WriteFormat( size_t col, const char *str, ... )
 /****************************************************/
 {
-    va_list         arglist;
+    va_list         args;
     size_t          num;
     static  char    Blanks[]={"                                      "};
 
@@ -1015,9 +1015,9 @@ void WriteFormat( size_t col, const char *str, ... )
         }
         MapCol += num;
         BufWrite( Blanks, num );
-        va_start( arglist, str );
-        MapCol += MapPrint( str, &arglist );
-        va_end( arglist );
+        va_start( args, str );
+        MapCol += MapPrint( str, args );
+        va_end( args );
     }
 }
 

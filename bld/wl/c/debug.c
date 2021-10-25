@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -85,13 +85,13 @@ bool CanReadWord( void *p )
 
 void LPrint( const char *str, ... )
 {
-    va_list     arglist;
+    va_list     args;
     char        buff[200];
     size_t      len;
 
-    va_start( arglist, str );
-    len = DoFmtStr( buff, 200, str, &arglist );
-    va_end( arglist );
+    va_start( args, str );
+    len = DoFmtStr( buff, 200, str, args );
+    va_end( args );
     WriteStdOutWithNL( buff );
 }
 
@@ -99,14 +99,14 @@ void LPrint( const char *str, ... )
 
 void _Debug( unsigned int mask, const char *str, ... )
 {
-    va_list     arglist;
+    va_list     args;
     char        buff[128];
     size_t      len;
 
     if( (Debug & mask) || (mask & DBG_INFO_MASK) == DBG_ALWAYS ) {
-        va_start( arglist, str );
-        len = DoFmtStr( buff, 128, str, &arglist );
-        va_end( arglist );
+        va_start( args, str );
+        len = DoFmtStr( buff, 128, str, args );
+        va_end( args );
         WriteStdOut( buff );
         if( (mask & DBG_NOCRLF) == 0 ) {
             WriteStdOutNL();
@@ -130,12 +130,12 @@ void Trec( const char *str, ... )
     enum { max=10 };
     static int  currBuff;
     static char buff[max][128];
-    va_list     arglist;
+    va_list     args;
 
     TrecCount++;
-    va_start( arglist, str );
-    DoFmtStr( buff[currBuff], 128, str, &arglist );
-    va_end( arglist );
+    va_start( args, str );
+    DoFmtStr( buff[currBuff], 128, str, args );
+    va_end( args );
     currBuff = ( currBuff + 1 ) % max;
 
     TrecFailCondition();
