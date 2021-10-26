@@ -40,6 +40,10 @@ inc_path += -I"../$(host_os)" -I"../h"
 
 wsplice_opts = -i"$(hdr_dir)" $[@ $@
 
+resources =             &
+        afxprint.rc     &
+        afxres.rc
+
 headers =               &
         afx.h           &
         afx.inl         &
@@ -66,9 +70,7 @@ headers =               &
         afxmsg_.h       &
         afxmt.h         &
         afxmt.inl       &
-        afxprint.rc     &
         afxpriv.h       &
-        afxres.rc       &
         afxstat_.h      &
         afxtempl.h      &
         afxtls_.h       &
@@ -79,7 +81,8 @@ headers =               &
         afxwin2.inl     &
         afxwin3.inl     &
         afxwin4.inl     &
-        afxwin5.inl
+        afxwin5.inl     &
+	$(resources)
 
 dlls =                  &
         $(dllname).dll  &
@@ -301,7 +304,7 @@ extra_cpp_flags += -D_AFXDLL
 
 extra_c_flags += -fhwe -xs
 
-additional_clean = *.h *.inl *.gdf $(crwatpro_gsp)
+additional_clean = *.h *.inl *.rc *.gdf $(crwatpro_gsp)
 
 
 all : $($(what_to_build)) .SYMBOLIC

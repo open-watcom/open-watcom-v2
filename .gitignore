@@ -124,6 +124,10 @@
 /docs/win/*
 
 ###
+/bld/afxapi/nt/*.h
+/bld/afxapi/nt/*.inl
+/bld/afxapi/nt/*.rc
+#
 /bld/as/*/*/*_in.y
 /bld/as/*/*/*_in.re
 /bld/as/*/*/*lexyy.c
