@@ -1,11 +1,15 @@
-.EXTENSIONS : .mh .inl .mnl .rc .mrc
+.EXTENSIONS : .gsp .sp .mh .inl .mnl .rc .mrc
 
 proj_name = afxapi
 
 afxapi_autodepends  = .autodepend
 
+!ifeq lib_debug 1
+release = 0
+!endif
+
 !ifeq unicode 1
-!ifeq debug 1
+!ifeq lib_debug 1
 dllname = owf$(bld_ver)ud
 intname = owfi$(bld_ver)ud
 statname = owfs$(bld_ver)ud
@@ -15,7 +19,7 @@ intname = owfi$(bld_ver)u
 statname = owfs$(bld_ver)u
 !endif
 !else
-!ifeq debug 1
+!ifeq lib_debug 1
 dllname = owf$(bld_ver)d
 intname = owfi$(bld_ver)d
 statname = owfs$(bld_ver)d
@@ -29,6 +33,8 @@ statname = owfs$(bld_ver)
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+
+crwatpro_gsp = crwatpro.gsp
 
 inc_path += -I"../$(host_os)" -I"../h"
 
@@ -85,7 +91,7 @@ libprefix=u
 !else
 libprefix=n
 !endif
-!ifeq debug 1
+!ifeq lib_debug 1
 libsufix=d
 !else
 libsufix=
@@ -155,12 +161,12 @@ objs =  animate.obj     &
         header.obj      &
         hook.obj        &
         hotkey.obj      &
-!ifeq debug 1
+!ifeq lib_debug 1
         ie3.obj         &
         ie4.obj         &
 !endif
         imagelst.obj    &
-!ifeq debug 1
+!ifeq lib_debug 1
         inline1.obj     &
         inline2.obj     &
         inline3.obj     &
@@ -269,7 +275,7 @@ objs =  animate.obj     &
         windowdc.obj    &
         wininit.obj     &
         winthred.obj    &
-!ifeq debug 1
+!ifeq lib_debug 1
         winxp.obj       &
 !endif
         wnd.obj         &
@@ -279,11 +285,14 @@ objs =  animate.obj     &
 static_objs =           &
         winmain.obj
 
+dynamic_objs =          &
+        dlldummy.obj
+
 extra_cpp_flags = -D_ENABLE_AUTODEPEND
 !ifeq unicode 1
 extra_cpp_flags += -D_UNICODE
 !endif
-!ifeq debug 1
+!ifeq lib_debug 1
 extra_cpp_flags += -D_DEBUG
 !endif
 !ifeq what_to_build dlls
@@ -292,7 +301,8 @@ extra_cpp_flags += -D_AFXDLL
 
 extra_c_flags += -fhwe -xs
 
-additional_clean = *.h *.inl *.gdf
+additional_clean = *.h *.inl *.gdf $(crwatpro_gsp)
+
 
 all : $($(what_to_build)) .SYMBOLIC
     @%null
@@ -300,6 +310,7 @@ all : $($(what_to_build)) .SYMBOLIC
 .mh: ../include
 .mnl: ../include
 .mrc: ../include
+.sp: $(hdr_dir)
 
 .cpp: ../cpp
 
@@ -315,7 +326,7 @@ all : $($(what_to_build)) .SYMBOLIC
     @%make echo_wsplice
     $(wsplice) $(wsplice_opts)
 
-afx.h: afx.mh
+afx.h: afx.mh $(crwatpro_gsp)
     @%make echo_wsplice
     $(wsplice) -i"$(hdr_dir)" $[@ tmp.h
     @%make echo_awk
@@ -345,7 +356,7 @@ dlltarg_libs = $(intname).lib
 dlltarg_res = $(dllname).res
 dlltarg_res_version_nt_386 = version.res
 dlltarg_res_version_nt_x64 = version.res
-
+dlltarg_objs = $(dynamic_objs)
 dlltarg_name = $(dllname)
 !include dlltarg.mif
 
@@ -360,3 +371,6 @@ $(statname).lib: $(static_objs) $(__MAKEFILES__)
 $(dllname).res: ../h/owf.rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
     $(rc) $(rc_flags) -ad -zk0 $(inc_path) -I"../include" $[@ -fo=$@
+
+.sp.gsp:
+    $(awk) -f $(hdr_dir)/cpyyear.awk -v CPYYEAR=$(curr_year) -v OUTFILE=$@ $[@

@@ -4,7 +4,7 @@ host_os  = nt
 host_cpu = 386
 
 what_to_build   = libs
-debug           = 1
+lib_debug       = 1
 
 !include ../master.mif
 

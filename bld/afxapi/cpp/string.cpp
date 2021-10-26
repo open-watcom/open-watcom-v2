@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2021 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -44,7 +44,7 @@ void CString::Grow()
         m_psz = pszNew;
     }
 }
- 
+
 CString::CString()
 /****************/
 {
@@ -265,12 +265,11 @@ int CString::Find( TCHAR ch, int iStart ) const
     }
 }
 
-void CString::FormatMessageV( PCTSTR pszFormat, va_list *pArgList )
-/*****************************************************************/
+void CString::FormatMessageV( PCTSTR pszFormat, va_list *pargs )
+/**************************************************************/
 {
     TCHAR   szBuff[1024];
-    ::FormatMessage( FORMAT_MESSAGE_FROM_STRING, pszFormat, 0L, 0L, szBuff, 1024,
-                     pArgList );
+    ::FormatMessage( FORMAT_MESSAGE_FROM_STRING, pszFormat, 0L, 0L, szBuff, 1024, pargs );
     SetString( szBuff );
 }
 
@@ -343,7 +342,7 @@ BOOL CString::LoadString( UINT nID )
     HINSTANCE hInstance = AfxFindResourceHandle( MAKEINTRESOURCE( nID ), RT_STRING );
     return( LoadString( hInstance, nID ) );
 }
-    
+
 CString CString::Mid( int iStart, int iCount ) const
 /**************************************************/
 {
