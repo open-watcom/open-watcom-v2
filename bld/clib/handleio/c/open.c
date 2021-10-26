@@ -129,7 +129,6 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode,
         }
         /* creating the file */
         permission = va_arg( args, int );
-        va_end( args );
         if( permission == 0 )
             permission = S_IWRITE | S_IREAD;
         permission &= ~_RWD_umaskval;               /* 05-jan-95 */
