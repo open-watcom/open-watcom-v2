@@ -203,12 +203,12 @@ sub batch_output_build_wmake_builder
     batch_output_make_change_objdir();
     if ($OStype eq 'UNIX') {
         print BATCH 'rm -f $OWBINDIR/$OWOBJDIR/builder >>$OWBINDIR/$OWOBJDIR/bootx.log 2>&1';
-        print BATCH '$OWBINDIR/$OWOBJDIR/wmake -h -f ../binmake bootstrap=1 clean >>$OWBINDIR/$OWOBJDIR/bootx.log 2>&1';
-        print BATCH '$OWBINDIR/$OWOBJDIR/wmake -h -f ../binmake bootstrap=1 builder.exe >>$OWBINDIR/$OWOBJDIR/bootx.log 2>&1';
+        print BATCH '$OWBINDIR/$OWOBJDIR/wmake -h -f ../binmake clean >>$OWBINDIR/$OWOBJDIR/bootx.log 2>&1';
+        print BATCH '$OWBINDIR/$OWOBJDIR/wmake -h -f ../binmake bootstrap=1 >>$OWBINDIR/$OWOBJDIR/bootx.log 2>&1';
     } else {
         print BATCH 'if exist %OWBINDIR%\\%OWOBJDIR%\\builder.exe del %OWBINDIR%\\%OWOBJDIR%\\builder.exe >>%OWBINDIR%\\%OWOBJDIR%\\bootx.log 2>&1';
-        print BATCH '%OWBINDIR%\\%OWOBJDIR%\\wmake -h -f ..\\binmake bootstrap=1 clean >>%OWBINDIR%\\%OWOBJDIR%\\bootx.log 2>&1';
-        print BATCH '%OWBINDIR%\\%OWOBJDIR%\\wmake -h -f ..\\binmake bootstrap=1 builder.exe >>%OWBINDIR%\\%OWOBJDIR%\\bootx.log 2>&1';
+        print BATCH '%OWBINDIR%\\%OWOBJDIR%\\wmake -h -f ..\\binmake clean >>%OWBINDIR%\\%OWOBJDIR%\\bootx.log 2>&1';
+        print BATCH '%OWBINDIR%\\%OWOBJDIR%\\wmake -h -f ..\\binmake bootstrap=1 >>%OWBINDIR%\\%OWOBJDIR%\\bootx.log 2>&1';
     }
 }
 
