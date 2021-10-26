@@ -9,8 +9,8 @@ variables:
   owobjdir:         binbuild
 
   owimage_lnx:      'ubuntu-20.04'
-  owimage_nt:       'vs2017-win2016'
-  owimage_osx:      'macOS-latest'
+  owimage_nt:       'windows-2022'
+  owimage_osx:      'macOS-11'
   owtools_lnx:      GCC
   owtools_nt:       VISUALC
   owtools_osx:      CLANG
