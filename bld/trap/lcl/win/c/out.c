@@ -90,7 +90,7 @@ void MyClearScreen()
 
 void MyOut( unsigned f, char *str, ... )
 {
-    va_list     al;
+    va_list     args;
     char        res[128];
     int         len,i;
     char        *scr;
@@ -98,8 +98,9 @@ void MyOut( unsigned f, char *str, ... )
 
     if( ( f & DbgFlags ) == 0 ) return;
     sprintf( res,"%03d) ",++_cnt );
-    va_start( al, str );
-    vsprintf( &res[5],str, al );
+    va_start( args, str );
+    vsprintf( &res[5],str, args );
+    va_end( args );
 #ifndef MONO
     MessageBox( NULL, res, "FOO", MB_SYSTEMMODAL | MB_OK );
 #else

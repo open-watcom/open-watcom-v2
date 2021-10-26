@@ -201,7 +201,7 @@ extern bool             SimCalcTargetSpaceNeeded( void );
 extern void             CheckDLLCount( const char * );
 extern void             SimCalcAddRemove( void );
 extern void             SimSetNeedGetDiskSizes( void );
-extern void             MsgPut( int resourceid, va_list arglist );
+extern void             MsgPut( int resourceid, va_list args );
 extern void             FreeAllStructs( void );
 extern bool             EvalCondition( const char *str );
 extern bool             SimTargetNeedsUpdate( int parm );

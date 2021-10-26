@@ -63,15 +63,15 @@ static DWORD readCacheLevel;
 
 static void Trace(const char* fmt, ...)
 {
-    va_list         va;
+    va_list         args;
     static char     traceBuffer[1000];
 
-    va_start( va, fmt );
+    va_start( args, fmt );
 
-    vsprintf( traceBuffer, fmt, va );
+    vsprintf( traceBuffer, fmt, args );
     OutputDebugString( traceBuffer );
 
-    va_end( va );
+    va_end( args );
 }
 
 void ResetTimerTicks( void )

@@ -62,6 +62,7 @@ void DoDebugMsg( const char *format, ... )
 /****************************************/
 {
     va_list args;
+
     if( !Options.int_debug )
         return;
 
@@ -94,7 +95,6 @@ void _AsmNote( int level, unsigned msgnum, ... )
     if( level <= WngLevel ) {
         va_start( args1, msgnum );
         va_start( args2, msgnum );
-
         PrtMsg1( "Note!", msgnum, args1, args2 );
         va_end( args1 );
         va_end( args2 );
@@ -109,7 +109,6 @@ void AsmNote( int level, unsigned msgnum, ... )
     if( level <= WngLevel ) {
         va_start( args1, msgnum );
         va_start( args2, msgnum );
-
         PrtMsg1( "Note!", msgnum, args1, args2 );
         va_end( args1 );
         va_end( args2 );

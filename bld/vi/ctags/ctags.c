@@ -136,13 +136,13 @@ static void displayBanner( void )
 
 void ErrorMsgExit( const char *str, ... )
 {
-    va_list     al;
+    va_list     args;
 //    int         len;
 
-    va_start( al, str );
-//    len = vfprintf( stderr, str, al );
-    vfprintf( stderr, str, al );
-    va_end( al );
+    va_start( args, str );
+//    len = vfprintf( stderr, str, args );
+    vfprintf( stderr, str, args );
+    va_end( args );
     exit( 1 );
 }
 
@@ -151,16 +151,16 @@ void ErrorMsgExit( const char *str, ... )
  */
 static void Quit( const char **usage_msg, const char *str, ... )
 {
-    va_list     al;
+    va_list     args;
     int         i;
     int         cnt;
 
     /* unused parameters */ (void)usage_msg;
 
     if( str != NULL ) {
-        va_start( al, str );
-        vfprintf( stderr, str, al );
-        va_end( al );
+        va_start( args, str );
+        vfprintf( stderr, str, args );
+        va_end( args );
         cnt = 1;
     } else {
         cnt = sizeof( usageMsg ) / sizeof( char * );

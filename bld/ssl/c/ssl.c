@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -113,28 +113,28 @@ void OutEndSect( void )
 void Dump( char *fmt, ... )
 /*************************/
 {
-    va_list     arglist;
+    va_list     args;
 
     if( TblFile == NULL )
         return;
-    va_start( arglist, fmt );
-    vfprintf( TblFile, fmt, arglist );
-    va_end( arglist );
+    va_start( args, fmt );
+    vfprintf( TblFile, fmt, args );
+    va_end( args );
 }
 
 
 void Error( char *fmt, ... )
 /**************************/
 {
-    va_list     arglist;
+    va_list     args;
 
     if( CurrFile[0] != '\0' ) {
         fprintf( stderr, "%s(%u) Error! ", CurrFile, LineNum );
     }
-    va_start( arglist, fmt );
-    vfprintf( stderr, fmt, arglist );
+    va_start( args, fmt );
+    vfprintf( stderr, fmt, args );
     putc( '\n', stderr );
-    va_end( arglist );
+    va_end( args );
     exit( 1 );
 }
 

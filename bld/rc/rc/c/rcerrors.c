@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +50,7 @@
 static char             rcStrBuf[1024];
 static char             errBuffer[1024];
 
-static int checkForTmpFiles( unsigned errornum, va_list arglist )
+static int checkForTmpFiles( unsigned errornum, va_list args )
 {
     char        *fname;
 
@@ -60,7 +60,7 @@ static int checkForTmpFiles( unsigned errornum, va_list arglist )
     case ERR_READING_FILE:
     case ERR_WRITTING_FILE:
     case ERR_WRITTING_RES_FILE:
-        fname = va_arg( arglist, char * );
+        fname = va_arg( args, char * );
         if( IsTmpFile( fname ) ) {
             switch( errornum ) {
             case ERR_CANT_OPEN_FILE:
@@ -78,7 +78,7 @@ static int checkForTmpFiles( unsigned errornum, va_list arglist )
     }
 }
 
-static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list arglist )
+static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list args )
 /***************************************************************************/
 {
     OutPutInfo          errinfo;
@@ -127,7 +127,7 @@ static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list arglist )
     case ERR_DELETING_FILE:
         /* don't print the filename & line number before these errors */
         GetRcMsg( errornum, errBuffer, sizeof( errBuffer ) );
-        vsprintf( rcStrBuf, errBuffer, arglist );
+        vsprintf( rcStrBuf, errBuffer, args );
         sprintf( errBuffer, "%s", rcStrBuf );
         break;
     case ERR_RCSTR_NOT_FOUND:
@@ -140,7 +140,7 @@ static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list arglist )
         return;
     default:
         GetRcMsg( errornum, errBuffer, sizeof( errBuffer ) );
-        vsprintf( rcStrBuf, errBuffer, arglist );
+        vsprintf( rcStrBuf, errBuffer, args );
         errinfo.file = RcIoGetCurrentFileName();
         if( errinfo.file != NULL )
             errinfo.flags |= OUTFLAG_FILE;
@@ -156,43 +156,43 @@ static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list arglist )
 void RcWarning( unsigned errornum, ... )
 /**************************************/
 {
-    va_list             arglist;
+    va_list             args;
 
-    va_start( arglist, errornum );
-    errornum = checkForTmpFiles( errornum, arglist );
-    va_end( arglist );
+    va_start( args, errornum );
+    errornum = checkForTmpFiles( errornum, args );
+    va_end( args );
 
-    va_start( arglist, errornum );
-    RcMsgV( errornum, SEV_WARNING, arglist );
-    va_end( arglist );
+    va_start( args, errornum );
+    RcMsgV( errornum, SEV_WARNING, args );
+    va_end( args );
 }
 
 void RcError( unsigned errornum, ... )
 /************************************/
 {
-    va_list             arglist;
+    va_list             args;
 
-    va_start( arglist, errornum );
-    errornum = checkForTmpFiles( errornum, arglist );
-    va_end( arglist );
+    va_start( args, errornum );
+    errornum = checkForTmpFiles( errornum, args );
+    va_end( args );
 
-    va_start( arglist, errornum );
-    RcMsgV( errornum, SEV_ERROR, arglist );
-    va_end( arglist );
+    va_start( args, errornum );
+    RcMsgV( errornum, SEV_ERROR, args );
+    va_end( args );
 }
 
 void RcFatalError( unsigned int errornum, ... )
 /*********************************************/
 {
-    va_list             arglist;
+    va_list             args;
 
-    va_start( arglist, errornum );
-    errornum = checkForTmpFiles( errornum, arglist );
-    va_end( arglist );
+    va_start( args, errornum );
+    errornum = checkForTmpFiles( errornum, args );
+    va_end( args );
 
-    va_start( arglist, errornum );
-    RcMsgV( errornum, SEV_FATAL_ERR, arglist );
-    va_end( arglist );
+    va_start( args, errornum );
+    RcMsgV( errornum, SEV_FATAL_ERR, args );
+    va_end( args );
 
     if( CurrResFile.fp != NULL ) {
         ResCloseFile( CurrResFile.fp );

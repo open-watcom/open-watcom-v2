@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -232,6 +233,7 @@ bool WEXPORT WFile::printf( const char* parms... )
 {
     char* buffer = new char [MAX_FORMATTED + 1];
     va_list args;
+
     va_start( args, parms );
     vsprintf( buffer, parms, args );
     va_end( args );

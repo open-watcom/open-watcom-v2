@@ -172,12 +172,12 @@ static char *_buff;
 
 static void AddToBuff( char *str, ... )
 {
-    va_list     al;
+    va_list     args;
     char        tmp[256];
 
-    va_start( al, str );
-    vsprintf( tmp, str, al );
-    va_end( al );
+    va_start( args, str );
+    vsprintf( tmp, str, args );
+    va_end( args );
     strcat( _buff, tmp );
 
 } /* AddToBuff */
@@ -416,9 +416,12 @@ static BOOL AddAllSelectors( WORD sel )
             hl.info.mem.sel = sel;
             GetADescriptor( sel, &hl.info.mem.desc );
             ret = AddToHeapList( &hl );
-            if( !ret ) return( FALSE );
+            if( !ret ) {
+                return( FALSE );
+            }
         }
-        if( sel + 0x08 < sel ) break;
+        if( sel + 0x08 < sel )
+            break;
         sel += 0x08;
     }
     return( TRUE );

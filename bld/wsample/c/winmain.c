@@ -80,12 +80,12 @@ static BOOL FAR PASCAL About( HWND hwnd, UINT message, WPARAM wparam, LPARAM lpa
 static void WinMessage( char *str, ... )
 {
     char        st[256];
-    va_list     al;
+    va_list     args;
 
-    va_start( al, str );
-    vsprintf( st, str, al );
+    va_start( args, str );
+    vsprintf( st, str, args );
+    va_end( args );
     MessageBox( NULL, st, "Open Watcom Sampler", MB_OK | MB_ICONHAND | MB_TASKMODAL );
-    va_end( al );
 
 } /* WinMessage */
 
@@ -241,11 +241,11 @@ static void MyOutput( const char *str, ... )
     static int  tmpOff=0;
     char        buff[256];
     char        c;
-    va_list     al;
+    va_list     args;
 
-    va_start( al, str );
-    vsprintf( buff, str, al );
-    va_end( al );
+    va_start( args, str );
+    vsprintf( buff, str, args );
+    va_end( args );
 
     str = buff;
     while( (c = *str) != '\0' ) {

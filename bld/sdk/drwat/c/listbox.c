@@ -142,7 +142,7 @@ LBoxHdl *CreateListBox( HWND parent ) {
 /*
  * doLBPrintf - printf to a list box
  */
-static int doLBPrintf( LBoxHdl *lb, const char *str, va_list al )
+static int doLBPrintf( LBoxHdl *lb, const char *str, va_list args )
 {
     char        tmp[256];
     HDC         dc;
@@ -150,7 +150,7 @@ static int doLBPrintf( LBoxHdl *lb, const char *str, va_list al )
     int         item;
     HFONT       oldfont, newfont;
 
-    vsprintf( tmp, str, al );
+    vsprintf( tmp, str, args );
     item = (int)SendMessage( lb->hwnd, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)tmp );
     lb->line_cnt++;
     SendMessage( lb->hwnd, LB_SETCURSEL, item, 0L );
@@ -180,24 +180,24 @@ int LBPrintf( LBoxHdl *lb, msg_id msgid, ... )
 {
     char        *str;
     int         ret;
-    va_list     al;
+    va_list     args;
 
-    va_start( al, msgid );
+    va_start( args, msgid );
     str = AllocRCString( msgid );
-    ret = doLBPrintf( lb, str, al );
+    ret = doLBPrintf( lb, str, args );
     FreeRCString( str );
-    va_end( al );
+    va_end( args );
     return( ret );
 }
 
 int LBStrPrintf( LBoxHdl *lb, const char *str, ... )
 {
     int         ret;
-    va_list     al;
+    va_list     args;
 
-    va_start( al, str );
-    ret = doLBPrintf( lb, str, al );
-    va_end( al );
+    va_start( args, str );
+    ret = doLBPrintf( lb, str, args );
+    va_end( args );
     return( ret );
 }
 

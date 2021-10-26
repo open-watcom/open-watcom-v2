@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -170,16 +170,19 @@ STATIC size_t doFmt( const char *fmt, va_list args ) {
         ++fmt;
     }
     printed += write( STDOUT, buf, dest - buf );
-    va_end( args );
     return( printed );
 }
 
-size_t PrtFmt( const char *fmt, ... ) {
+size_t PrtFmt( const char *fmt, ... )
 /***********************************/
+{
     va_list args;
+    size_t  ret;
 
     va_start( args, fmt );
-    return( doFmt( fmt, args ) );
+    ret = doFmt( fmt, args );
+    va_end( args );
+    return( ret );
 }
 
 STATIC void doPrtMsg( unsigned msg, va_list args ) {
@@ -205,6 +208,7 @@ void PrtMsg( unsigned msg, ... ) {
 
     va_start( args, msg );
     doPrtMsg( msg, args );
+    va_end( args );
 }
 
 void Fatal( unsigned msg, ... ) {
@@ -214,6 +218,7 @@ void Fatal( unsigned msg, ... ) {
 
     va_start( args, msg );
     doPrtMsg( msg, args );
+    va_end( args );
     exit( EXIT_FAILURE );
 }
 

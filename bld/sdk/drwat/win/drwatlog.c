@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -256,12 +256,12 @@ static void finishLogFile( void )
 /*
  * dologPrint - print to the log file
  */
-static void doLogPrint( char *str, va_list al )
+static void doLogPrint( char *str, va_list args )
 {
     char        tmp[256];
     int         len,i;
 
-    vsprintf( tmp, str, al );
+    vsprintf( tmp, str, args );
     len = strlen( tmp );
 
     for( i=0;i<len;i++ ) {
@@ -281,11 +281,11 @@ static void doLogPrint( char *str, va_list al )
  */
 static void logPrint( char *str, ... )
 {
-    va_list     al;
+    va_list     args;
 
-    va_start( al, str );
-    doLogPrint( str, al );
-    va_end( al );
+    va_start( args, str );
+    doLogPrint( str, args );
+    va_end( args );
 }
 
 /*
@@ -293,13 +293,13 @@ static void logPrint( char *str, ... )
  */
 static void rcLogPrint( msg_id msgid, ... )
 {
-    va_list     al;
+    va_list     args;
     char        *str;
 
     str = AllocRCString( msgid );
-    va_start( al, msgid );
-    doLogPrint( str, al );
-    va_end( al );
+    va_start( args, msgid );
+    doLogPrint( str, args );
+    va_end( args );
     FreeRCString( str );
 }
 

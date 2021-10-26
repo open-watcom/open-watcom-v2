@@ -192,7 +192,7 @@ int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int c
 void Death( msg_id msgid, ... )
 {
     char        tmp[128];
-    va_list     al;
+    va_list     args;
     const char  *str;
 
 
@@ -207,10 +207,10 @@ void Death( msg_id msgid, ... )
     Done386Debug();
 
     if( msgid != STR_DEATH_NO_MSG ) {
-        va_start( al, msgid );
+        va_start( args, msgid );
         str = GetRCString( msgid );
-        vsprintf( tmp, str, al );
-        va_end( al );
+        vsprintf( tmp, str, args );
+        va_end( args );
         if( AppName == NULL ) {
             AppName = AllocRCString( STR_APP_NAME );
         }

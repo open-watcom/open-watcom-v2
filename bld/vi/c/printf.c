@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,7 +66,7 @@ static void barfChar( char ch )
     }
 }
 
-static void basePrintf( const char *in, va_list al )
+static void basePrintf( const char *in, va_list args )
 // With format "in" and argument list "al", use barfChar() to write an output
 // Flags, minimum field width, precision, and length modifiers are unsupported.
 // conversion specifiers are a superset of a subset of those printf supports.
@@ -85,64 +85,64 @@ static void basePrintf( const char *in, va_list al )
                 barfChar( '%' );
                 break;
             case 'c':
-                barfChar( (char)va_arg( al, int ) );
+                barfChar( (char)va_arg( args, int ) );
                 break;
             case 'u':
-                i = va_arg( al, int );
+                i = va_arg( args, int );
                 sprintf( buff, "%u", (unsigned)i );
                 goto copyloop1;
             case 'd':
-                i = va_arg( al, int );
+                i = va_arg( args, int );
                 sprintf( buff, "%d", (unsigned)i );
                 goto copyloop1;
             case 'U':
-                l = va_arg( al, long );
+                l = va_arg( args, long );
                 sprintf( buff, "%lu", (unsigned long)l );
                 goto copyloop1;
             case 'l':
-                l = va_arg( al, long );
+                l = va_arg( args, long );
                 sprintf( buff, "%ld", (long)l );
                 goto copyloop1;
             case 's':
-                tmp = va_arg( al, char * );
+                tmp = va_arg( args, char * );
                 goto copyloop2;
 #ifndef NDEBUG
             case 'W':
 #ifdef _M_I86
-                i = va_arg( al, int );
-                j = va_arg( al, int );
+                i = va_arg( args, int );
+                j = va_arg( args, int );
                 sprintf( buff, "%04x:%04x", j, i );
 #else
-                i = va_arg( al, int );
+                i = va_arg( args, int );
                 sprintf( buff, "%08x", i );
 #endif
                 goto copyloop1;
 #endif
             case 'Z':   /* %02x */
-                i = va_arg( al, int );
+                i = va_arg( args, int );
                 sprintf( buff, "%02x", i );
                 goto copyloop1;
             case 'D':   /* %02d */
-                i = va_arg( al, int );
+                i = va_arg( args, int );
                 sprintf( buff, "%02d", i );
                 goto copyloop1;
             case 'L':   /* %8ld */
-                l = va_arg( al, long );
+                l = va_arg( args, long );
                 sprintf( buff, "%8ld", l );
                 j = 8;
                 goto copyloop;
             case 'M':   /* %5ld */
-                l = va_arg( al, long );
+                l = va_arg( args, long );
                 sprintf( buff, "%5ld", l );
                 j = 5;
                 goto copyloop;
             case 'N':   /* %6ld */
-                l = va_arg( al, long );
+                l = va_arg( args, long );
                 sprintf( buff, "%6ld", l );
                 j = 6;
                 goto copyloop;
             case 'O':   /* %6d */
-                i = va_arg( al, int );
+                i = va_arg( args, int );
                 sprintf( buff, "%6d", i );
                 j = 6;
                 goto copyloop;
@@ -155,7 +155,7 @@ static void basePrintf( const char *in, va_list al )
             case 'Y':   /* %-32s */
                 j = 32;
 copyloopa:
-                tmp = va_arg( al, char * );
+                tmp = va_arg( args, char * );
                 strcpy( buff, tmp );
                 {
                     int k;
@@ -193,59 +193,59 @@ copyloop2:
 
 void MyPrintf( const char *str, ... )
 {
-    va_list     al;
+    va_list     args;
 
 #ifdef __WIN__
     char        tmp[MAX_STR];
 
-    va_start( al, str );
+    va_start( args, str );
     cFile = NULL;
     cStr = tmp;
-    basePrintf( str, al );
+    basePrintf( str, args );
     MessageBox( NO_WINDOW, tmp, EditorName, MB_OK | MB_TASKMODAL );
 #else
-    va_start( al, str );
+    va_start( args, str );
     cFile = stdout;
     cStr = NULL;
-    basePrintf( str, al );
+    basePrintf( str, args );
 #endif
-    va_end( al );
+    va_end( args );
 }
 
 void MySprintf( char *out, const char *str, ... )
 // sprintf++ functionality
 {
-    va_list     al;
+    va_list     args;
 
-    va_start( al, str );
+    va_start( args, str );
     cFile = NULL;
     cStr = out;
-    basePrintf( str, al );
-    va_end( al );
+    basePrintf( str, args );
+    va_end( args );
 }
 
-void MyVSprintf( char *out, const char *str, va_list al )
+void MyVSprintf( char *out, const char *str, va_list args )
 // vsprintf++ functionality
 {
     cFile = NULL;
     cStr = out;
-    basePrintf( str, al );
+    basePrintf( str, args );
 }
 
-void MyVPrintf( const char *str, va_list al )
+void MyVPrintf( const char *str, va_list args )
 // vprintf++ functionality
 {
     cFile = stdout;
-    basePrintf( str, al );
+    basePrintf( str, args );
 }
 
 void MyFprintf( FILE *fp, const char *str, ... )
 // vfprintf++ functionality
 {
-    va_list al;
+    va_list args;
 
-    va_start( al, str );
+    va_start( args, str );
     cFile = fp;
-    basePrintf( str, al );
-    va_end( al );
+    basePrintf( str, args );
+    va_end( args );
 }

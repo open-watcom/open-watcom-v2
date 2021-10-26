@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,13 +76,13 @@ void FatalError( vi_rc err )
  */
 void Die( const char *str, ... )
 {
-    va_list     al;
+    va_list     args;
 
     SetPosToMessageLine();
     MyPrintf( "Failure: " );
-    va_start( al, str );
-    MyVPrintf( str, al );
-    va_end( al );
+    va_start( args, str );
+    MyVPrintf( str, args );
+    va_end( args );
     MyPrintf( "\n" );
     ExitEditor( -1 );
 
@@ -112,7 +112,7 @@ const char *GetErrorMsg( vi_rc err )
  */
 void Error( const char *str, ... )
 {
-    va_list     al;
+    va_list     args;
     char        tmp[MAX_STR];
 
     if( !BAD_ID( message_window_id ) ) {
@@ -120,9 +120,9 @@ void Error( const char *str, ... )
                             messagew_info.hilight_style.foreground );
         WindowAuxUpdate( message_window_id, WIND_INFO_BACKGROUND_COLOR,
                             messagew_info.hilight_style.background );
-        va_start( al, str );
-        MyVSprintf( tmp, str, al );
-        va_end( al );
+        va_start( args, str );
+        MyVSprintf( tmp, str, args );
+        va_end( args );
 
         SourceError( tmp );
         Message1( "%s", tmp );
@@ -133,12 +133,12 @@ void Error( const char *str, ... )
                             messagew_info.text_style.background );
         MyBeep();
     } else {
-        va_start( al, str );
+        va_start( args, str );
 #ifndef __WIN__
-        MyVPrintf( str, al );
+        MyVPrintf( str, args );
         MyPrintf( "\n" );
 #endif
-        va_end( al );
+        va_end( args );
     }
 
 } /* Error */
@@ -148,7 +148,7 @@ void Error( const char *str, ... )
  */
 void ErrorBox( const char *str, ... )
 {
-    va_list     al;
+    va_list     args;
     char        tmp[MAX_STR];
 
     if( !BAD_ID( message_window_id ) ) {
@@ -156,9 +156,9 @@ void ErrorBox( const char *str, ... )
                             messagew_info.hilight_style.foreground );
         WindowAuxUpdate( message_window_id, WIND_INFO_BACKGROUND_COLOR,
                             messagew_info.hilight_style.background );
-        va_start( al, str );
-        MyVSprintf( tmp, str, al );
-        va_end( al );
+        va_start( args, str );
+        MyVSprintf( tmp, str, args );
+        va_end( args );
 
         SourceError( tmp );
         Message1Box( "%s", tmp );
@@ -169,12 +169,12 @@ void ErrorBox( const char *str, ... )
                             messagew_info.text_style.background );
         MyBeep();
     } else {
-        va_start( al, str );
+        va_start( args, str );
 #ifndef __WIN__
-        MyVPrintf( str, al );
+        MyVPrintf( str, args );
         MyPrintf( "\n" );
 #endif
-        va_end( al );
+        va_end( args );
     }
 
 } /* Error */

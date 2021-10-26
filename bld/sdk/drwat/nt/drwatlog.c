@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -141,20 +141,20 @@ static void finishLogFile( void )
 
 static void logPrintf( msg_id id, ... ) {
 
-    va_list     al;
+    va_list     args;
 
-    va_start( al, id );
-    RCvfprintf( logFileHdl, id, al );
-    va_end( al );
+    va_start( args, id );
+    RCvfprintf( logFileHdl, id, args );
+    va_end( args );
 }
 
 static void logStrPrintf( char *str, ... ) {
 
-    va_list     al;
+    va_list     args;
 
-    va_start( al, str );
-    vfprintf( logFileHdl, str, al );
-    va_end( al );
+    va_start( args, str );
+    vfprintf( logFileHdl, str, args );
+    va_end( args );
 }
 
 

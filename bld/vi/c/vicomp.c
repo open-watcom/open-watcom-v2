@@ -101,17 +101,17 @@ void *MemRealloc( void *ptr, size_t size )
  */
 char *StrMerge( int cnt, char *str, ... )
 {
-    va_list     arg;
+    va_list     args;
     char        *n;
 
-    va_start( arg, str );
+    va_start( args, str );
     for( ; cnt-- > 0; ) {
-        n = va_arg( arg, char * );
+        n = va_arg( args, char * );
         if( n != NULL ) {
             strcat( str, n );
         }
     }
-    va_end( arg );
+    va_end( args );
     return( str );
 
 } /* StrMerge */

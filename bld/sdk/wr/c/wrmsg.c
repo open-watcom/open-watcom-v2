@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -87,13 +88,13 @@ void WRDisplayErrorMsg( msg_id msg )
 
 void WRPrintErrorMsg( msg_id msg, ... )
 {
-    va_list     al;
+    va_list     args;
     char        *str;
     char        buf[512];
 
     str = WRAllocRCString( msg );
-    va_start( al, msg );
-    vsprintf( buf, str, al );
+    va_start( args, msg );
+    vsprintf( buf, str, args );
     WRDisplayMsg( buf );
-    va_end( al );
+    va_end( args );
 }

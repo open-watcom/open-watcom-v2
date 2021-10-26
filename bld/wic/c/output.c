@@ -225,12 +225,14 @@ pOUnit createOUnitDclrName(char *name, pTokPos typePos, char *postfix) {
 }
 /*--------------------------------------------------------------------------*/
 
-static void fprintfCheckNULL(FILE *fp, const char *format, ...) {
-    if (fp != NULL) {
-        va_list arglist;
-        va_start(arglist, format);
-        vfprintf(fp, format, arglist);
-        va_end(arglist);
+static void fprintfCheckNULL( FILE *fp, const char *format, ... )
+{
+    if( fp != NULL ) {
+        va_list args;
+
+        va_start( args, format );
+        vfprintf( fp, format, args );
+        va_end( args );
     }
 }
 

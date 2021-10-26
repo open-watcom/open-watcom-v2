@@ -2303,7 +2303,7 @@ gui_message_return MsgBox( gui_window *gui, const char *msg_id,
     gui_message_return  result;
     char                msg_buf[1024];
     const char          *errormessage;
-    va_list             arglist;
+    va_list             args;
     VBUF                msg_text;
     VBUF                inst_name;
 
@@ -2320,9 +2320,9 @@ gui_message_return MsgBox( gui_window *gui, const char *msg_id,
         if( errormessage == NULL ) {
             VbufConcStr( &msg_text, GetVariableStrVal( "IDS_UNKNOWNERROR" ) );
         } else {
-            va_start( arglist, wType );
-            vsprintf( msg_buf, errormessage, arglist );
-            va_end( arglist );
+            va_start( args, wType );
+            vsprintf( msg_buf, errormessage, args );
+            va_end( args );
             VbufConcStr( &msg_text, msg_buf );
         }
     }

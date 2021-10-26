@@ -443,18 +443,18 @@ tab_size Tabs_get( int pos )
 void whp_fprintf( FILE *fp, const char *fmt, ... )
 /************************************************/
 {
-    va_list             arglist;
+    va_list         args;
 
     if( Chk_buf == NULL ) {
         _new( Chk_buf, 10000 );
     }
 
     if( Chk_buf != NULL ) {
-        va_start( arglist, fmt );
-        vsprintf( Chk_buf, fmt, arglist );
+        va_start( args, fmt );
+        vsprintf( Chk_buf, fmt, args );
+        va_end( args );
         check_brace( Chk_buf, strlen( Chk_buf ) );
         fputs( Chk_buf, fp );
-        va_end( arglist );
     }
 }
 

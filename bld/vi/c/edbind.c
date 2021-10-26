@@ -79,11 +79,11 @@ static void Banner( void )
  */
 static void Abort( char *str, ... )
 {
-    va_list     al;
+    va_list     args;
 
-    va_start( al, str );
-    vprintf( str, al );
-    va_end( al );
+    va_start( args, str );
+    vprintf( str, args );
+    va_end( args );
     printf( "\n" );
     exit( 1 );
 
@@ -94,12 +94,12 @@ static void Abort( char *str, ... )
  */
 static void MyPrintf( char *str, ... )
 {
-    va_list     al;
+    va_list     args;
 
     if( !qflag ) {
-        va_start( al, str );
-        vprintf( str, al );
-        va_end( al );
+        va_start( args, str );
+        vprintf( str, args );
+        va_end( args );
     }
 
 } /* MyPrintf */
