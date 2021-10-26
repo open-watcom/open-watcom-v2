@@ -25,7 +25,10 @@ jobs:
         vmImage: $(owimage_osx)
     steps:
     - ${{ if eq(parameters.arch, 'nt') }}:
-      - script: set
+      - script: |
+          set
+          dir "C:\Program Files"
+        displayName: "Test get host info"
     - script: $(owscript)
       displayName: "Bootstrap"
     - template: artfsave.yml
