@@ -18,6 +18,9 @@ variables:
   owtools_lnx:      GCC
   owtools_nt:       VISUALC
   owtools_osx:      CLANG
+  owtoolsv_lnx:     U20
+  owtoolsv_nt:      VS2022
+  owtoolsv_osx:     OSX11
   owscript_lnx:     ci/buildx.sh
   owscript_nt:      ci\buildx.cmd
   owscript_osx:     ci/buildx.sh

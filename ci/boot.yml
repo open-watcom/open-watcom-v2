@@ -8,12 +8,15 @@ jobs:
     variables:
       ${{ if eq(parameters.arch, 'lnx') }}:
         owtools:      $(owtools_lnx)
+        owtoolsv:     $(owtoolsv_lnx)
         owscript:     $(owscript_lnx)
       ${{ if eq(parameters.arch, 'nt') }}:
         owtools:      $(owtools_nt)
+        owtoolsv:     $(owtoolsv_nt)
         owscript:     $(owscript_nt)
       ${{ if eq(parameters.arch, 'osx') }}:
         owtools:      $(owtools_osx)
+        owtoolsv:     $(owtoolsv_osx)
         owscript:     $(owscript_osx)
       owbuild.stage:    boot
     pool:
@@ -24,13 +27,6 @@ jobs:
       ${{ if eq(parameters.arch, 'osx') }}:
         vmImage: $(owimage_osx)
     steps:
-    - ${{ if eq(parameters.arch, 'nt') }}:
-      - script: |
-          set
-          dir "C:\Program Files\Microsoft Visual Studio\2022\Preview\VC\"
-          dir "C:\Program Files\Microsoft Visual Studio\2022\Preview\VC\Auxiliary\"
-          dir "C:\Program Files\Microsoft Visual Studio\2022\Preview\VC\Auxiliary\Build\"
-        displayName: "Test get host info"
     - script: $(owscript)
       displayName: "Bootstrap"
     - template: artfsave.yml

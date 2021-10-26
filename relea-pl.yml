@@ -19,6 +19,9 @@ variables:
   owtools_osx:      CLANG
   owtools_lnxow:    WATCOM
   owtools_ntow:     WATCOM
+  owtoolsv_lnx:     U18
+  owtoolsv_nt:      VS2017
+  owtoolsv_osx:     OSX1014
   owscript_lnx:     ci/buildx.sh
   owscript_nt:      ci\buildx.cmd
   owscript_osx:     ci/buildx.sh

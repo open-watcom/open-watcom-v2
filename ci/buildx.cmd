@@ -8,7 +8,8 @@ if "%OWTOOLS%" == "WATCOM" (
     set PATH=%WATCOM_PATH%
 )
 if "%OWTOOLS%" == "VISUALC" (
-    call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
+    if "%OWTOOLSV%" == "VS2017" call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
+    if "%OWTOOLSV%" == "VS2022" call "C:\Program Files\Microsoft Visual Studio\2022\Preview\VC\Auxiliary\Build\vcvarsall.bat" amd64
 )
 REM ...
 @echo %OWECHO%

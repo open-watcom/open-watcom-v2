@@ -6,6 +6,7 @@ jobs:
     displayName: "${{ parameters.title }}"
     variables:
       owtools:          $(owtools_lnx)
+      owtoolsv:         $(owtoolsv_lnx)
       owscript:         $(owscript_lnx)
       owbuild.stage:    inst
       owtag:            Last-CI-build

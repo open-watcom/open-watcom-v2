@@ -8,9 +8,11 @@ jobs:
     variables:
       ${{ if eq(parameters.arch, 'lnx') }}:
         owtools:        $(owtools_lnx)
+        owtoolsv:       $(owtoolsv_lnx)
         owscript:       $(owscript_lnx)
       ${{ if eq(parameters.arch, 'nt') }}:
         owtools:        $(owtools_nt)
+        owtoolsv:       $(owtoolsv_nt)
         owscript:       $(owscript_nt)
     pool:
       ${{ if eq(parameters.arch, 'lnx') }}:

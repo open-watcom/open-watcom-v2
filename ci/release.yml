@@ -8,8 +8,10 @@ jobs:
     variables:
       ${{ if eq(parameters.arch, 'lnx') }}:
         owtools:        $(owtools_lnx)
+        owtoolsv:       $(owtoolsv_lnx)
       ${{ if eq(parameters.arch, 'nt') }}:
         owtools:        $(owtools_nt)
+        owtoolsv:       $(owtoolsv_nt)
       owtag:            Current-build
       owsubtag:         Build
     pool:

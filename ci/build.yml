@@ -8,12 +8,15 @@ jobs:
     variables:
       ${{ if eq(parameters.arch, 'lnx') }}:
         owtools:      $(owtools_lnx)
+        owtoolsv:     $(owtoolsv_lnx)
         owscript:     $(owscript_lnx)
       ${{ if eq(parameters.arch, 'nt') }}:
         owtools:      $(owtools_nt)
+        owtoolsv:     $(owtoolsv_nt)
         owscript:     $(owscript_nt)
       ${{ if eq(parameters.arch, 'osx') }}:
         owtools:      $(owtools_osx)
+        owtoolsv:     $(owtoolsv_osx)
         owscript:     $(owscript_osx)
       owbuild.stage:  build
     pool:
