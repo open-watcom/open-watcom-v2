@@ -24,6 +24,8 @@ jobs:
       ${{ if eq(parameters.arch, 'osx') }}:
         vmImage: $(owimage_osx)
     steps:
+    - ${{ if eq(parameters.arch, 'nt') }}:
+      - script: set
     - script: $(owscript)
       displayName: "Bootstrap"
     - template: artfsave.yml
