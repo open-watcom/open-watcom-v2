@@ -501,7 +501,7 @@ static orl_return   writeAndFixupLIData( omf_file_handle ofh, omf_sec_handle sh,
 
     repeat = OmfGetUWord( ptr, wordsize );
     ptr += wordsize;
-    block = OmfGetUWord( ptr, 2 );
+    block = OmfGetU16( ptr );
     ptr += 2;
 
     lo = used;
@@ -763,7 +763,7 @@ static omf_sec_offset   calcLIDataLength( bool is32, omf_bytes *input, omf_rec_s
         return( 0 );
     repeat = OmfGetUWord( buffer, wordsize );
     buffer += wordsize;
-    block = OmfGetUWord( buffer, 2 );
+    block = OmfGetU16( buffer );
     buffer += 2;
     size -= tmp;
 

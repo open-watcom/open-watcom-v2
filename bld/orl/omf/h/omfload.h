@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,5 +43,6 @@ extern orl_return       OmfLoadFileStructure( omf_file_handle ofh );
 
 extern omf_sec_offset   OmfGetUWord( omf_bytes buffer, int wordsize );
 extern omf_sec_addend   OmfGetSWord( omf_bytes buffer, int wordsize );
+extern unsigned_16      OmfGetU16( omf_bytes buffer );
 
 #endif

@@ -93,6 +93,14 @@ omf_sec_offset  OmfGetUWord( omf_bytes buffer, int wordsize )
 }
 
 
+unsigned_16 OmfGetU16( omf_bytes buffer )
+{
+    assert( buffer );
+
+    return( ( buffer[1] << 8 ) | buffer[0] );
+}
+
+
 omf_sec_addend    OmfGetSWord( omf_bytes buffer, int wordsize )
 {
     omf_sec_offset  result;
@@ -159,7 +167,7 @@ static orl_return       loadRecord( omf_file_handle ofh )
     buff = _ClientRead( ofh, 2 );
     if( buff == NULL )
         return( ORL_ERROR );
-    len = (unsigned short)OmfGetUWord( buff, 2 );
+    len = OmfGetU16( buff );
     if( len == 0 )
         return( ORL_ERROR );
     ofh->parsebuf = _ClientRead( ofh, len );
@@ -213,7 +221,7 @@ static omf_frame loadFrameNumber( omf_bytes *buffer, omf_rec_size *len )
 {
     omf_frame       frame_num;
 
-    frame_num = OmfGetUWord( *buffer, 2 );
+    frame_num = OmfGetU16( *buffer );
     *buffer += 2;
     *len -= 2;
     return( frame_num );
@@ -681,7 +689,7 @@ static orl_return       doLINNUM( omf_file_handle ofh, omf_rectyp typ )
     while( len ) {
         if( len < ( wordsize + 2 ) )
             return( ORL_ERROR );
-        line = (unsigned_16)OmfGetUWord( buffer, 2 );
+        line = OmfGetU16( buffer );
         buffer += 2;
         len -= 2;
         offset = OmfGetUWord( buffer, wordsize );
