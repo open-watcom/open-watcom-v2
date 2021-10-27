@@ -57,7 +57,6 @@
 #include <errno.h>
 #include <stdarg.h>
 #include "wio.h"
-
 #include "port.h"
 
 /*
@@ -68,48 +67,45 @@
  * plain Unix-type file descriptors instead of FILE pointers. -- JER
  */
 
-int ugetc(int f)
+int ugetc( int f )
 {
-        char c;
+    char c;
 
-        if (read(f, &c, 1) != 1)
-                return(EOF);
+    if( read( f, &c, 1 ) != 1 )
+        return( EOF );
 
-        return(c);
+    return( c );
 }
 
 #define UPRBUFSIZ 256
 
-void uprintf(int z, char * fmt, ... )
+void uprintf( int z, char * fmt, ... )
 {
-        char        *buf;
-        va_list     arg_list;
-        int         buflen;
+    char        *buf;
+    va_list     args;
+    int         buflen;
 
-        buf = malloc(UPRBUFSIZ);
-        if (buf==NULL)
-        {
-                fprintf(stderr, "uprintf: out of memory\n");
-                exit(-1);
-        }
+    buf = malloc( UPRBUFSIZ );
+    if( buf == NULL ) {
+        fprintf( stderr, "uprintf: out of memory\n" );
+        exit( -1 );
+    }
 
-        va_start( arg_list, fmt );
-        vsprintf( buf,fmt, arg_list );
-        va_end( arg_list );
-        if (strlen(buf)+1 > UPRBUFSIZ)
-        {
-                fprintf(stderr,"uprintf: overflowed buffer.\n");
-                exit(-1);
-        }
+    va_start( args, fmt );
+    vsprintf( buf, fmt, args );
+    va_end( args );
+    if( strlen( buf ) + 1 > UPRBUFSIZ ) {
+        fprintf( stderr, "uprintf: overflowed buffer.\n" );
+        exit( -1 );
+    }
 
-        buflen = (int)strlen(buf);
-        if (write(z, buf, buflen) != buflen)
-        {
-                sprintf(buf, "uprintf: fd %d", z);
-                perror(buf);
-        }
+    buflen = (int)strlen( buf );
+    if( write( z, buf, buflen ) != buflen ) {
+        sprintf( buf, "uprintf: fd %d", z );
+        perror( buf );
+    }
 
-        free(buf);
+    free( buf );
 }
 
 #if 0

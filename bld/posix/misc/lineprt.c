@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,14 +55,14 @@ char            *buffer;
 /* PrintALine - printf text on the current line */
 void PrintALine( const char *str, ... )
 {
-    va_list     al;
+    va_list     args;
     char        bob[256];
     size_t      len;
     size_t      i = 0;
 
-    va_start( al, str );
-    vsprintf( bob, str, al );
-    va_end( al );
+    va_start( args, str );
+    vsprintf( bob, str, args );
+    va_end( args );
     len = strlen( bob );
     if( _lastlinelen > len ) {
         i = _lastlinelen - len;
@@ -76,14 +77,14 @@ void PrintALine( const char *str, ... )
 /* PrintALineThenDrop - printf text on the current line, then drop */
 void PrintALineThenDrop( const char *str, ... )
 {
-    va_list     al;
+    va_list     args;
     char        bob[256];
     size_t      len;
     size_t      i = 0;
 
-    va_start( al, str );
-    vsprintf( bob, str, al );
-    va_end( al );
+    va_start( args, str );
+    vsprintf( bob, str, args );
+    va_end( args );
     len = strlen( bob );
     if( _lastlinelen > len ) {
         i = _lastlinelen - len;
@@ -98,12 +99,12 @@ void PrintALineThenDrop( const char *str, ... )
 /* DropPrintALine - printf text on the next line */
 void DropPrintALine( const char *str, ... )
 {
-    va_list     al;
+    va_list     args;
     char        bob[256];
 
-    va_start( al, str );
-    vsprintf( bob, str, al );
-    va_end( al );
+    va_start( args, str );
+    vsprintf( bob, str, args );
+    va_end( args );
     _lastlinelen = strlen( bob );
     if( !_dropped )
         printf( "\n" );
