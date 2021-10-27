@@ -27,13 +27,6 @@ jobs:
       ${{ if eq(parameters.arch, 'osx') }}:
         vmImage: $(owimage_osx)
     steps:
-    - ${{ if eq(parameters.arch, 'nt') }}:
-      - script: |
-          dir "C:\Program Files (x86)\Microsoft Visual Studio\"
-          dir "C:\Program Files (x86)\Microsoft Visual Studio\2019\"
-          dir "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\"
-          dir "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\"
-          dir "C:\Program Files\Microsoft Visual Studio\2019\"
     - script: $(owscript)
       displayName: "Bootstrap"
     - template: artfsave.yml
