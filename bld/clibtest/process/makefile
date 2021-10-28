@@ -1,4 +1,6 @@
 clibtest_name = process
 
-srcfile = $(clib_dir)/process/c/proctest.c
+additional_cleanup = test.fil
+
+srcfile = c/proctest.c
 !include ../master.mif

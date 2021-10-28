@@ -657,7 +657,7 @@ $+$(t_rund4g)$- : .symbolic
 !else
     @set PATH=$(%WATCOM)\binw
 !endif
-#    -$@.exe $(extra_run)
+    -$@.exe $(extra_run)
 #    @if errorlevel 1 %append $(%ERROR_FILE) $(%ERROR_MSG)
     @set PATH=$(%OPATH)
     @set OPATH=
@@ -706,4 +706,4 @@ $+$(t_runlnx)$- : .symbolic
 clean global : .procedure
     @%make echo_clean
     @%make common_clean
-    $(noecho)rm -f *.rex tmp.log tmpfile _tmpfile.*
+    $(noecho)rm -f *.rex tmp.log tmpfile _tmpfile.* $(additional_cleanup)

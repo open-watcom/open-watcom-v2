@@ -1,4 +1,4 @@
 clibtest_name = safembyt
 
-srcfile = $(clib_dir)/mbyte/c/safembyt.c
+srcfile = c/safembyt.c
 !include ../master.mif

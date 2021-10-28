@@ -1,4 +1,4 @@
 clibtest_name = handleio
 
-srcfile = $(clib_dir)/handleio/c/iotest.c
+srcfile = c/iotest.c
 !include ../master.mif

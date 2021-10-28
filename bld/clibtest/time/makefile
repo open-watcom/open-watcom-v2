@@ -1,4 +1,4 @@
 clibtest_name = time
 
-srcfile = $(clib_dir)/time/c/timetest.c
+srcfile = c/timetest.c
 !include ../master.mif

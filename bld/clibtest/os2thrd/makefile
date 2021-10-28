@@ -5,7 +5,7 @@ clibtest_name = os2thrd
 
 !ifdef __OS2__
 
-srcfile = ../c/os2tst01.c
+srcfile = c/os2tst01.c
 !include ../master.mif
 
 !else

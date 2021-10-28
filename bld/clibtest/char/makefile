@@ -1,4 +1,4 @@
 clibtest_name = char
 
-srcfile = $(clib_dir)/char/c/chartest.c
+srcfile = c/chartest.c
 !include ../master.mif

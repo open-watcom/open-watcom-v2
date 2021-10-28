@@ -1,4 +1,4 @@
 clibtest_name = startup
 
-srcfile = $(clib_dir)/startup/c/startest.c
+srcfile = c/startest.c
 !include ../master.mif
