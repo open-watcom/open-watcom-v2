@@ -783,7 +783,7 @@ void TestToken( void )
 
 
 /****
-***** Test mbtob(), sisinit(), mbrlen(), mbrtowc(), wcrtomb(), mbsrtowcs(),
+***** Test mbtob(), mbsinit(), mbrlen(), mbrtowc(), wcrtomb(), mbsrtowcs(),
 ***** wcsrtombs(), ie. all Normative Addendum functions.
 ****/
 
@@ -812,15 +812,15 @@ void TestAddendum( void )
         VERIFY( status == 0x90 );
     #endif
 
-    status = sisinit( NULL );
+    status = mbsinit( NULL );
     VERIFY( status != 0 );
 
     state = 0;
-    status = sisinit( &state );
+    status = mbsinit( &state );
     VERIFY( status == 0 );
 
     state = 123;
-    status = sisinit( &state );
+    status = mbsinit( &state );
     VERIFY( status == 0 );
 
     status = mbrlen( "\0""!", 2, &state );
