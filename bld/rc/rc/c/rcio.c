@@ -487,7 +487,7 @@ static bool Pass1InitRes( void )
 int RcFindSourceFile( const char *name, char *fullpath )
 /******************************************************/
 {
-    return( PP_IncludePathFind( name, strlen( name ), fullpath, PPINCLUDE_SRC ) );
+    return( PP_IncludePathFind( name, strlen( name ), fullpath, PPINCLUDE_USR ) );
 }
 
 int PP_MBCharLen( const char *p )
