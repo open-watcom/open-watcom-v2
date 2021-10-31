@@ -33,9 +33,11 @@
 
 #define PPENTRY
 
-#define PPINCLUDE_USR       0
-#define PPINCLUDE_SYS       1
-#define PPINCLUDE_SRC       2
+typedef enum {
+    PPINCLUDE_USR,
+    PPINCLUDE_SYS,
+    PPINCLUDE_SRC,
+} incl_type;
 
 typedef enum {
     PPFLAG_NONE             = 0,
@@ -81,7 +83,7 @@ extern  void        PPENTRY PP_FileFini( void );
 extern  void        PPENTRY PP_IncludePathInit( void );
 extern  void        PPENTRY PP_IncludePathFini( void );
 extern  void        PPENTRY PP_IncludePathAdd( const char *path_list );
-extern  int         PPENTRY PP_IncludePathFind( const char *filename, size_t len, char *fullfilename, int incl_type );
+extern  int         PPENTRY PP_IncludePathFind( const char *filename, size_t len, char *fullfilename, incl_type incltype );
 extern  int         PPENTRY PP_Char( void );
 extern  void        PPENTRY PP_Define( const char *p );
 extern  void        PPENTRY PP_MacrosWalk( walk_func fn, void *cookie );

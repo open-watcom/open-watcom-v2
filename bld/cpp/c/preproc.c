@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -140,6 +140,19 @@ static FILE *PP_Open( const char *filename )
     return( handle );
 }
 
+static FILELIST *PP_Close( void )
+{
+    FILELIST    *this_file;
+
+    this_file = PP_File;
+    fclose( this_file->handle );
+    PP_File = this_file->prev_file;
+    PPBufPtr = this_file->prev_bufptr;
+    PP_Free( this_file->filename );
+    PP_Free( this_file );
+    return( PP_File );
+}
+
 static char *AddIncludePath( char *old_list, const char *path_list )
 {
     size_t  len;
@@ -232,7 +245,7 @@ static int findInclude( const char *path, const char *filename, size_t len, char
  * Note that some of these steps will be skipped if PPFLAG_IGNORE_CWD and/or
  * PPFLAG_IGNORE_INCLUDE is set.
  */
-int PPENTRY PP_IncludePathFind( const char *filename, size_t len, char *fullfilename, int incl_type )
+int PPENTRY PP_IncludePathFind( const char *filename, size_t len, char *fullfilename, incl_type incltype )
 {
     int         rc = -1;
 
@@ -241,10 +254,10 @@ int PPENTRY PP_IncludePathFind( const char *filename, size_t len, char *fullfile
     if( HAS_PATH( fullfilename ) ) {
         rc = access( fullfilename, R_OK );
     } else {
-        if( rc == -1 && incl_type != PPINCLUDE_SYS && (PPFlags & PPFLAG_IGNORE_CWD) == 0 ) {
+        if( rc == -1 && incltype != PPINCLUDE_SYS && (PPFlags & PPFLAG_IGNORE_CWD) == 0 ) {
             rc = access( fullfilename, R_OK );
         }
-        if( rc == -1 && incl_type == PPINCLUDE_USR && PP_File != NULL ) {
+        if( rc == -1 && incltype == PPINCLUDE_USR && PP_File != NULL ) {
             pgroup2     pg;
             size_t      len1;
 
@@ -267,7 +280,7 @@ int PPENTRY PP_IncludePathFind( const char *filename, size_t len, char *fullfile
         if( rc == -1 && IncludePath2 != NULL ) {
             rc = findInclude( IncludePath2, filename, len, fullfilename );
         }
-        if( rc == -1 && incl_type == PPINCLUDE_USR && (PPFlags & PPFLAG_IGNORE_DEFDIRS) == 0 ) {
+        if( rc == -1 && incltype == PPINCLUDE_USR && (PPFlags & PPFLAG_IGNORE_DEFDIRS) == 0 ) {
             memcpy( fullfilename, H_DIR, sizeof( H_DIR ) - 1 );
             memcpy( fullfilename + sizeof( H_DIR ) - 1, filename, len );
             fullfilename[sizeof( H_DIR ) - 1 + len] = '\0';
@@ -278,14 +291,14 @@ int PPENTRY PP_IncludePathFind( const char *filename, size_t len, char *fullfile
 }
 
 
-static FILE *PP_OpenInclude( const char *filename, size_t len, int incl_type )
+static FILE *PP_OpenInclude( const char *filename, size_t len, incl_type incltype )
 {
     char        fullfilename[_MAX_PATH];
     int         rc;
 
-    rc = PP_IncludePathFind( filename, len, fullfilename, incl_type );
+    rc = PP_IncludePathFind( filename, len, fullfilename, incltype );
     if( PPFlags & PPFLAG_DEPENDENCIES ) {
-        (*PP_CallBack)( filename, len, fullfilename, incl_type );
+        (*PP_CallBack)( filename, len, fullfilename, incltype );
     } else if( rc == 0 ) {
         return( PP_Open( fullfilename ) );
     }
@@ -383,15 +396,8 @@ void PP_Dependency_List( pp_callback *callback )
 
 static void PP_CloseAllFiles( void )
 {
-    FILELIST    *tmp;
-
-    while( PP_File != NULL ) {
-        tmp = PP_File;
-        PP_File = PP_File->prev_file;
-        fclose( tmp->handle );
-        PP_Free( tmp->filename );
-        PP_Free( tmp );
-    }
+    while( PP_Close() != NULL )
+        ;
 }
 
 static char *resize_macro_buf( char *buf, size_t new_size )
@@ -455,7 +461,6 @@ static size_t PP_ReadBuf( size_t line_len )
 
 static size_t PP_ReadLine( bool *line_generated )
 {
-    FILELIST            *this_file;
     size_t              line_len;
     unsigned char       c;
 
@@ -489,13 +494,7 @@ static size_t PP_ReadLine( bool *line_generated )
                         c = '\n';
                         break;
                     }
-                    this_file = PP_File;
-                    fclose( this_file->handle );
-                    PP_File = this_file->prev_file;
-                    PPBufPtr = this_file->prev_bufptr;
-                    PP_Free( this_file->filename );
-                    PP_Free( this_file );
-                    if( PP_File == NULL ) {     // if end of main file
+                    if( PP_Close() == NULL ) {  // if end of main file
                         return( 0 );            // - indicate EOF
                     }
                     PP_GenLine();
@@ -561,13 +560,13 @@ const char *PP_ScanName( const char *ptr )
     return( ptr );
 }
 
-static void open_include_file( const char *filename, const char *end, int incl_type )
+static void open_include_file( const char *filename, const char *end, incl_type incltype )
 {
     size_t      len;
     char        *buffer;
 
     len = end - filename;
-    if( PP_OpenInclude( filename, len, incl_type ) == NULL ) {
+    if( PP_OpenInclude( filename, len, incltype ) == NULL ) {
         /* filename is located in preprocessor buffer
          * temporary copy is necessary, because buffer is
          * overwriten by sprintf function
@@ -589,17 +588,17 @@ static void PP_Include( const char *ptr )
 {
     const char  *filename;
     char        delim;
-    int         incl_type;
+    incl_type   incltype;
 
     while( *ptr == ' ' || *ptr == '\t' )
         ++ptr;
     filename = ptr + 1;
     if( *ptr == '<' ) {
         delim = '>';
-        incl_type = PPINCLUDE_SYS;
+        incltype = PPINCLUDE_SYS;
     } else if( *ptr == '"' ) {
         delim = '"';
-        incl_type = PPINCLUDE_USR;
+        incltype = PPINCLUDE_USR;
     } else {
         if( PPErrorCallback != NULL ) {
             PPErrorCallback( "Unrecognized INCLUDE directive" );
@@ -611,7 +610,7 @@ static void PP_Include( const char *ptr )
     ++ptr;
     while( *ptr != delim && *ptr != '\0' )
         ++ptr;
-    open_include_file( filename, ptr, incl_type );
+    open_include_file( filename, ptr, incltype );
 }
 
 static void PP_RCInclude( const char *ptr )
