@@ -64,12 +64,14 @@
 
 #define MAX_INCLUDE_DEPTH   16
 
+typedef struct file_loc {
+    struct file_loc     *prev;
+    char                *Filename;
+    unsigned            LineNo;
+    bool                IsCOrHFile;
+} file_loc;
+
 typedef struct FileStackEntry {
-    struct {
-        char                *Filename;
-        unsigned            LineNo;
-        bool                IsCOrHFile;
-    }                   loc;
     char                *Filename;
     bool                IsOpen;
     FILE                *fp;
@@ -85,6 +87,7 @@ typedef struct FileStack {
     /* + 1 for the before first entry */
     FileStackEntry      Stack[MAX_INCLUDE_DEPTH + 1];
     FileStackEntry      *Current;
+    file_loc            *Location;
 } FileStack;
 
 /* EofChar points to the memory location after the last character currently */
@@ -107,9 +110,7 @@ static FileStack    InStack;
 static void freeCurrentFileName( void )
 /*************************************/
 {
-    RESFREE( InStack.Current->loc.Filename );
     RESFREE( InStack.Current->Filename );
-    InStack.Current->loc.Filename = NULL;
     InStack.Current->Filename = NULL;
 }
 
@@ -135,6 +136,38 @@ static bool checkCurrentFileType( const char *filename )
     return( isCOrH );
 
 } /* checkCurrentFileType */
+
+static file_loc *addLocation( file_loc *prev, const char *filename )
+/******************************************************************/
+{
+    file_loc    *loc;
+
+    if( prev == NULL || strcmp( prev->Filename, filename ) != 0 ) {
+        loc = RESALLOC( sizeof( file_loc ) );
+        if( loc != NULL ) {
+            loc->prev = prev;
+            loc->IsCOrHFile = checkCurrentFileType( filename );
+            loc->Filename = RESALLOC( strlen( filename ) + 1 );
+            strcpy( loc->Filename, filename );
+            return( loc );
+        }
+    }
+    return( prev );
+}
+
+static file_loc *removeLocation( file_loc *loc )
+/**********************************************/
+{
+    file_loc    *prev;
+
+    prev = NULL;
+    if( loc != NULL ) {
+        prev = loc->prev;
+        RESFREE( loc->Filename );
+        RESFREE( loc );
+    }
+    return( prev );
+}
 
 static void saveCurrentFileOffset( void )
 /***************************************/
@@ -239,11 +272,15 @@ static void RcIoTextInputInit( void )
     InStack.Buffer = RESALLOC( IO_BUFFER_SIZE );
     InStack.BufferSize = IO_BUFFER_SIZE;
     InStack.Current = InStack.Stack;
+    InStack.Location = NULL;
 } /* RcIoTextInputInit */
 
 static bool RcIoTextInputShutdown( void )
 /***************************************/
 {
+    while( InStack.Location != NULL ) {
+        InStack.Location = removeLocation( InStack.Location );
+    }
     if( InStack.Buffer != NULL ) {
         RESFREE( InStack.Buffer );
         InStack.Buffer = NULL;
@@ -288,51 +325,46 @@ static bool RcIoPushTextInputFile( const char *filename )
 const char *RcIoGetCurrentFileName( void )
 /****************************************/
 {
-    if( IsEmptyFileStack( InStack ) ) {
+    if( InStack.Location == NULL ) {
         return( NULL );
     } else {
-        return( InStack.Current->loc.Filename );
+        return( InStack.Location->Filename );
     }
 } /* RcIoGetCurrentFileName */
 
 unsigned RcIoGetCurrentFileLineNo( void )
 /***************************************/
 {
-    if( IsEmptyFileStack( InStack ) ) {
+    if( InStack.Location == NULL ) {
         return( 0 );
     } else {
-        return( InStack.Current->loc.LineNo );
+        return( InStack.Location->LineNo );
     }
 } /* RcIoGetCurrentFileLineNo */
 
 void RcIoSetCurrentFileInfo( unsigned lineno, const char *filename )
 /******************************************************************/
 {
-    if( !IsEmptyFileStack( InStack ) ) {
-        InStack.Current->loc.LineNo = lineno;
-        if( filename != NULL ) {
-            if( InStack.Current->loc.Filename == NULL ) {
-                InStack.Current->loc.Filename = RESALLOC( strlen( filename ) + 1 );
-                strcpy( InStack.Current->loc.Filename, filename );
-                InStack.Current->loc.IsCOrHFile = checkCurrentFileType( filename );
-            } else if( strcmp( InStack.Current->loc.Filename, filename ) != 0 ) {
-                RESFREE( InStack.Current->loc.Filename );
-                InStack.Current->loc.Filename = RESALLOC( strlen( filename ) + 1 );
-                strcpy( InStack.Current->loc.Filename, filename );
-                InStack.Current->loc.IsCOrHFile = checkCurrentFileType( filename );
-            }
-        }
+    file_loc    *loc;
+
+    loc = InStack.Location;
+    if( loc == NULL || lineno == 1 ) {
+        loc = addLocation( loc, filename );
+    } else if( strcmp( loc->Filename, filename ) != 0 ) {
+        loc = removeLocation( loc );
     }
+    loc->LineNo = lineno;
+    InStack.Location = loc;
 } /* RcIoSetCurrentFileInfo */
 
 bool RcIoIsCOrHFile( void )
 /*************************/
 /* returns true if the current file is a .c or .h file, false otherwise */
 {
-    if( IsEmptyFileStack( InStack ) ) {
+    if( InStack.Location == NULL ) {
         return( false );
     } else {
-        return( InStack.Current->loc.IsCOrHFile );
+        return( InStack.Location->IsCOrHFile );
     }
 } /* RcIoIsCOrHFile */
 
@@ -344,7 +376,7 @@ static int GetLogChar( void )
     newchar = *(unsigned char *)InStack.NextChar;
     assert( newchar > 0 );
     if( newchar == '\n' ) {
-        InStack.Current->loc.LineNo++;
+        InStack.Location->LineNo++;
     }
 
     InStack.NextChar++;
@@ -485,9 +517,21 @@ static bool Pass1InitRes( void )
 } /* Pass1InitRes */
 
 static const char *get_parent_filename( void **cookie )
+/*****************************************************/
 {
-    (void)cookie;
+    file_loc  **last;
 
+    if( cookie != NULL ) {
+        last = (file_loc **)cookie;
+        if( *last == NULL ) {
+            *last = InStack.Location;
+        } else {
+            *last = (*last)->prev;
+        }
+        if( *last != NULL ) {
+            return( (*last)->Filename );
+        }
+    }
     return( NULL );
 }
 
