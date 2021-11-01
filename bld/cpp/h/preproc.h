@@ -74,7 +74,8 @@ typedef struct preproc_value {
     } val;
 } PREPROC_VALUE;
 
-typedef void        (* walk_func)( const MACRO_ENTRY *me, const PREPROC_VALUE *val, void *cookie );
+typedef void        (* pp_walk_func)( const MACRO_ENTRY *me, const PREPROC_VALUE *val, void *cookie );
+typedef const char  *(* pp_parent_func)( void **cookie );
 
 extern  void        PPENTRY PP_Init( char c );
 extern  int         PPENTRY PP_Fini( void );
@@ -83,10 +84,10 @@ extern  void        PPENTRY PP_FileFini( void );
 extern  void        PPENTRY PP_IncludePathInit( void );
 extern  void        PPENTRY PP_IncludePathFini( void );
 extern  void        PPENTRY PP_IncludePathAdd( const char *path_list );
-extern  int         PPENTRY PP_IncludePathFind( const char *filename, size_t len, char *fullfilename, incl_type incltype );
+extern  int         PPENTRY PP_IncludePathFind( const char *filename, size_t len, char *fullfilename, incl_type incltype, pp_parent_func fn );
 extern  int         PPENTRY PP_Char( void );
 extern  void        PPENTRY PP_Define( const char *p );
-extern  void        PPENTRY PP_MacrosWalk( walk_func fn, void *cookie );
+extern  void        PPENTRY PP_MacrosWalk( pp_walk_func fn, void *cookie );
 
 // Application defined functions
 

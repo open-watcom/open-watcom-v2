@@ -123,10 +123,10 @@ static FILE *PP_Open( const char *filename )
         prev_file = PP_File;
         PP_File = (FILELIST *)PP_Malloc( sizeof( FILELIST ) );
         if( PP_File == NULL ) {
-            PP_OutOfMemory();
             fclose( handle );
             handle = NULL;
             PP_File = prev_file;
+            PP_OutOfMemory();
         } else {
             PP_File->prev_file = prev_file;
             PP_File->handle    = handle;
@@ -204,6 +204,24 @@ static int checkfullpath( const char *filename, char *fullfilename )
     return( access( fullfilename, R_OK ) );
 }
 
+static const char *get_parent_filename( void **cookie )
+{
+    FILELIST    **last;
+
+    if( cookie != NULL ) {
+        last = (FILELIST **)cookie;
+        if( *last != NULL ) {
+            *last = (*last)->prev_file;
+        } else {
+            *last = PP_File;
+        }
+        if( *last != NULL ) {
+            return( (*last)->filename );
+        }
+    }
+    return( NULL );
+}
+
 static int findInclude( const char *path, const char *filename, size_t len, char *fullfilename )
 {
     char        *p;
@@ -251,7 +269,7 @@ static int findInclude( const char *path, const char *filename, size_t len, char
  * Note that some of these steps will be skipped if PPFLAG_IGNORE_CWD and/or
  * PPFLAG_IGNORE_INCLUDE is set.
  */
-int PPENTRY PP_IncludePathFind( const char *filename, size_t len, char *fullfilename, incl_type incltype )
+int PPENTRY PP_IncludePathFind( const char *filename, size_t len, char *fullfilename, incl_type incltype, pp_parent_func fn )
 {
     int         rc = -1;
     char        fname[_MAX_PATH];
@@ -267,22 +285,26 @@ int PPENTRY PP_IncludePathFind( const char *filename, size_t len, char *fullfile
             rc = checkfullpath( fname, fullfilename );
         }
         /* rule 3 */
-        if( rc == -1 && incltype == PPINCLUDE_USR && PP_File != NULL ) {
+        if( rc == -1 && incltype == PPINCLUDE_USR && fn != NULL ) {
             pgroup2     pg;
             size_t      len1;
+            void        *cookie = NULL;
+            const char  *p;
 
-            _splitpath2( PP_File->filename, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
-            _makepath( fname, pg.drive, pg.dir, NULL, NULL );
-            len1 = strlen( fname );
-            if( len1 > 0 ) {
-                char c = fname[len1 - 1];
-                if( !IS_PATH_SEP( c ) ) {
-                    fname[len1++] = DIR_SEP;
+            while( rc == -1 && (p = fn( &cookie )) != NULL ) {
+                _splitpath2( p, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
+                _makepath( fname, pg.drive, pg.dir, NULL, NULL );
+                len1 = strlen( fname );
+                if( len1 > 0 ) {
+                    char c = fname[len1 - 1];
+                    if( !IS_PATH_SEP( c ) ) {
+                        fname[len1++] = DIR_SEP;
+                    }
                 }
+                memcpy( fname + len1, filename, len );
+                fname[len1 + len] = '\0';
+                rc = checkfullpath( fname, fullfilename );
             }
-            memcpy( fname + len1, filename, len );
-            fname[len1 + len] = '\0';
-            rc = checkfullpath( fname, fullfilename );
         }
         /* rule 4 */
         if( rc == -1 && IncludePath1 != NULL ) {
@@ -309,7 +331,7 @@ static FILE *PP_OpenInclude( const char *filename, size_t len, incl_type incltyp
     char        fullfilename[_MAX_PATH];
     int         rc;
 
-    rc = PP_IncludePathFind( filename, len, fullfilename, incltype );
+    rc = PP_IncludePathFind( filename, len, fullfilename, incltype, get_parent_filename );
     if( PPFlags & PPFLAG_DEPENDENCIES ) {
         (*PP_CallBack)( filename, len, fullfilename, incltype );
     } else if( rc == 0 ) {
@@ -855,7 +877,7 @@ MACRO_ENTRY *PP_ScanMacroLookup( const char *ptr )
     return( me );
 }
 
-void PPENTRY PP_MacrosWalk( walk_func fn, void *cookies )
+void PPENTRY PP_MacrosWalk( pp_walk_func fn, void *cookies )
 {
     int             hash;
     const char      *endptr;
