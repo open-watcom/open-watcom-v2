@@ -250,8 +250,9 @@ static int findInclude( const char *path, const char *filename, size_t len, char
     return( -1 );
 }
 
-/* Include search order is intended to be compatible with C/C++ compilers
- * and is as follows:
+int PPENTRY PP_IncludePathFind( const char *filename, size_t len, char *fullfilename, incl_type incltype, pp_parent_func fn )
+/****************************************************************************************************************************
+ * Include search order is intended to be compatible with C/C++ compilers and is as follows:
  *
  * 1) For absolute pathnames, try only that pathname and nothing else
  *
@@ -259,17 +260,14 @@ static int findInclude( const char *path, const char *filename, size_t len, char
  *
  * 3) For includes in double quotes only, search the directory of including file
  *
- * 4) Search include directories specified by IncludePath1 (usually command
- *    line -I argument(s))
+ * 4) Search include directories specified by IncludePath1 (usually command line -I argument(s))
  *
  * 5) Search include directories specified by IncludePath2 (usualy INCLUDE path)
  *
  * 6) Directory 'h' adjacent to current directory (../h)
  *
- * Note that some of these steps will be skipped if PPFLAG_IGNORE_CWD and/or
- * PPFLAG_IGNORE_INCLUDE is set.
+ * Note that some of these steps will be skipped if PPFLAG_IGNORE_CWD and/or PPFLAG_IGNORE_INCLUDE is set.
  */
-int PPENTRY PP_IncludePathFind( const char *filename, size_t len, char *fullfilename, incl_type incltype, pp_parent_func fn )
 {
     int         rc = -1;
     char        fname[_MAX_PATH];

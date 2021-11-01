@@ -113,6 +113,29 @@ static void freeCurrentFileNames( void )
     InStack.Current->Filename = NULL;
 }
 
+static bool checkCurrentFileType( const char *filename )
+/******************************************************/
+{
+    pgroup2     pg;
+    bool        isCOrH;
+
+    isCOrH = false;
+    _splitpath2( filename, pg.buffer, NULL, NULL, NULL, &pg.ext );
+    /* if this is a c or h file ext will be '.', '[ch]', '\0' */
+    if( pg.ext[0] == '.' && pg.ext[1] != '\0' && pg.ext[2] == '\0' ) {
+        switch( pg.ext[1] ) {
+        case 'c':
+        case 'C':
+        case 'h':
+        case 'H':
+            isCOrH = true;
+            break;
+        }
+    }
+    return( isCOrH );
+
+} /* checkCurrentFileType */
+
 static void saveCurrentFileOffset( void )
 /***************************************/
 {
@@ -282,29 +305,6 @@ unsigned RcIoGetCurrentFileLineNo( void )
     }
 } /* RcIoGetCurrentFileLineNo */
 
-static bool checkCurrentFileType( void )
-/**************************************/
-{
-    pgroup2     pg;
-    bool        isCOrH;
-
-    isCOrH = false;
-    _splitpath2( InStack.Current->loc.Filename, pg.buffer, NULL, NULL, NULL, &pg.ext );
-    /* if this is a c or h file ext will be '.', '[ch]', '\0' */
-    if( pg.ext[0] == '.' && pg.ext[1] != '\0' && pg.ext[2] == '\0' ) {
-        switch( pg.ext[1] ) {
-        case 'c':
-        case 'C':
-        case 'h':
-        case 'H':
-            isCOrH = true;
-            break;
-        }
-    }
-    return( isCOrH );
-
-} /* checkCurrentFileType */
-
 void RcIoSetCurrentFileInfo( unsigned lineno, const char *filename )
 /******************************************************************/
 {
@@ -314,12 +314,12 @@ void RcIoSetCurrentFileInfo( unsigned lineno, const char *filename )
             if( InStack.Current->loc.Filename == NULL ) {
                 InStack.Current->loc.Filename = RESALLOC( strlen( filename ) + 1 );
                 strcpy( InStack.Current->loc.Filename, filename );
-                InStack.Current->loc.IsCOrHFile = checkCurrentFileType();
+                InStack.Current->loc.IsCOrHFile = checkCurrentFileType( filename );
             } else if( strcmp( InStack.Current->loc.Filename, filename ) != 0 ) {
                 RESFREE( InStack.Current->loc.Filename );
                 InStack.Current->loc.Filename = RESALLOC( strlen( filename ) + 1 );
                 strcpy( InStack.Current->loc.Filename, filename );
-                InStack.Current->loc.IsCOrHFile = checkCurrentFileType();
+                InStack.Current->loc.IsCOrHFile = checkCurrentFileType( filename );
             }
         }
     }
