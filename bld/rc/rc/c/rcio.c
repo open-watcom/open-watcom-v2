@@ -104,8 +104,8 @@ static FileStack    InStack;
 /* All other routines (except TextInputInit and TextInputShutdown) operate */
 /* on the current file which is the one at the top of the stack */
 
-static void freeCurrentFileNames( void )
-/**************************************/
+static void freeCurrentFileName( void )
+/*************************************/
 {
     RESFREE( InStack.Current->loc.Filename );
     RESFREE( InStack.Current->Filename );
@@ -223,7 +223,7 @@ static bool RcIoPopTextInputFile( void )
 /**************************************/
 {
     closeFile( InStack.Current );
-    freeCurrentFileNames();
+    freeCurrentFileName();
     InStack.Current--;
     if( IsEmptyFileStack( InStack ) ) {
         return( true );
@@ -276,7 +276,7 @@ static bool RcIoPushTextInputFile( const char *filename )
     /* open file and set up the file info */
     error = openNewFile( filename );
     if( error ) {
-        freeCurrentFileNames();
+        freeCurrentFileName();
         InStack.Current--;
     } else {
         error = readCurrentFileBuffer();
