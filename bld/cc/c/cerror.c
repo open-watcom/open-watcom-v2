@@ -269,17 +269,18 @@ static void CErr( int parmno, msg_codes msgnum, ... )
     cmsg_info   info;
 
     info.class = CMSG_ERRO;
-    va_start( args1, msgnum );
     if( ErrLimit == ERRLIMIT_NOMAX || ErrCount < ErrLimit ) {
+        va_start( args1, msgnum );
         CMsgInfo( &info, parmno, msgnum, args1 );
+        va_end( args1 );
         OutMsg( &info );
         ++ErrCount;
         PrintPostNotes();
-        va_end( args1 );
     } else {
+        va_start( args1, msgnum );
         CMsgInfo( &info, 0, ERR_TOO_MANY_ERRORS, args1 );
-        OutMsg( &info );
         va_end( args1 );
+        OutMsg( &info );
         CSuicide();
     }
 }
