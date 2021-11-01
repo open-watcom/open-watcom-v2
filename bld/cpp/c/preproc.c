@@ -239,11 +239,10 @@ static int findInclude( const char *path, const char *filename, size_t len, char
  *
  * 2) For includes in double quotes only, search current directory
  *
- * 3) For includes in double quotes only, search the directory
- *    of including file
+ * 3) For includes in double quotes only, search the directory of including file
  *
  * 4) Search include directories specified by IncludePath1 (usually command
- *    line -I argument(s)
+ *    line -I argument(s))
  *
  * 5) Search include directories specified by IncludePath2 (usualy INCLUDE path)
  *
@@ -260,11 +259,14 @@ int PPENTRY PP_IncludePathFind( const char *filename, size_t len, char *fullfile
     memcpy( fname, filename, len );
     fname[len] = '\0';
     if( HAS_PATH( fname ) ) {
+        /* rule 1 */
         rc = checkfullpath( fname, fullfilename );
     } else {
+        /* rule 2 */
         if( rc == -1 && incltype != PPINCLUDE_SYS && (PPFlags & PPFLAG_IGNORE_CWD) == 0 ) {
             rc = checkfullpath( fname, fullfilename );
         }
+        /* rule 3 */
         if( rc == -1 && incltype == PPINCLUDE_USR && PP_File != NULL ) {
             pgroup2     pg;
             size_t      len1;
@@ -282,12 +284,15 @@ int PPENTRY PP_IncludePathFind( const char *filename, size_t len, char *fullfile
             fname[len1 + len] = '\0';
             rc = checkfullpath( fname, fullfilename );
         }
+        /* rule 4 */
         if( rc == -1 && IncludePath1 != NULL ) {
             rc = findInclude( IncludePath1, filename, len, fullfilename );
         }
+        /* rule 5 */
         if( rc == -1 && IncludePath2 != NULL ) {
             rc = findInclude( IncludePath2, filename, len, fullfilename );
         }
+        /* rule 6 */
         if( rc == -1 && incltype == PPINCLUDE_USR && (PPFlags & PPFLAG_IGNORE_DEFDIRS) == 0 ) {
             memcpy( fname, H_DIR, sizeof( H_DIR ) - 1 );
             memcpy( fname + sizeof( H_DIR ) - 1, filename, len );
