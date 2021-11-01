@@ -198,13 +198,20 @@ void PPENTRY PP_IncludePathFini( void )
     PP_Free( IncludePath1 );
 }
 
+static int checkfullpath( const char *filename, char *fullfilename )
+{
+    _fullpath( fullfilename, filename, _MAX_PATH );
+    return( access( fullfilename, R_OK ) );
+}
+
 static int findInclude( const char *path, const char *filename, size_t len, char *fullfilename )
 {
     char        *p;
     char        c;
+    char        fname[_MAX_PATH];
 
     while( (c = *path) != '\0' ) {
-        p = fullfilename;
+        p = fname;
         do {
             ++path;
             if( IS_PATH_LIST_SEP( c ) ) {
@@ -218,7 +225,7 @@ static int findInclude( const char *path, const char *filename, size_t len, char
         }
         memcpy( p, filename, len );
         p[len] = '\0';
-        if( access( fullfilename, R_OK ) == 0 ) {
+        if( checkfullpath( fname, fullfilename ) == 0 ) {
             return( 0 );
         }
     }
@@ -248,31 +255,32 @@ static int findInclude( const char *path, const char *filename, size_t len, char
 int PPENTRY PP_IncludePathFind( const char *filename, size_t len, char *fullfilename, incl_type incltype )
 {
     int         rc = -1;
+    char        fname[_MAX_PATH];
 
-    memcpy( fullfilename, filename, len );
-    fullfilename[len] = '\0';
-    if( HAS_PATH( fullfilename ) ) {
-        rc = access( fullfilename, R_OK );
+    memcpy( fname, filename, len );
+    fname[len] = '\0';
+    if( HAS_PATH( fname ) ) {
+        rc = checkfullpath( fname, fullfilename );
     } else {
         if( rc == -1 && incltype != PPINCLUDE_SYS && (PPFlags & PPFLAG_IGNORE_CWD) == 0 ) {
-            rc = access( fullfilename, R_OK );
+            rc = checkfullpath( fname, fullfilename );
         }
         if( rc == -1 && incltype == PPINCLUDE_USR && PP_File != NULL ) {
             pgroup2     pg;
             size_t      len1;
 
             _splitpath2( PP_File->filename, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
-            _makepath( fullfilename, pg.drive, pg.dir, NULL, NULL );
-            len1 = strlen( fullfilename );
+            _makepath( fname, pg.drive, pg.dir, NULL, NULL );
+            len1 = strlen( fname );
             if( len1 > 0 ) {
-                char c = fullfilename[len1 - 1];
+                char c = fname[len1 - 1];
                 if( !IS_PATH_SEP( c ) ) {
-                    fullfilename[len1++] = DIR_SEP;
+                    fname[len1++] = DIR_SEP;
                 }
             }
-            memcpy( fullfilename + len1, filename, len );
-            fullfilename[len1 + len] = '\0';
-            rc = access( fullfilename, R_OK );
+            memcpy( fname + len1, filename, len );
+            fname[len1 + len] = '\0';
+            rc = checkfullpath( fname, fullfilename );
         }
         if( rc == -1 && IncludePath1 != NULL ) {
             rc = findInclude( IncludePath1, filename, len, fullfilename );
@@ -281,10 +289,10 @@ int PPENTRY PP_IncludePathFind( const char *filename, size_t len, char *fullfile
             rc = findInclude( IncludePath2, filename, len, fullfilename );
         }
         if( rc == -1 && incltype == PPINCLUDE_USR && (PPFlags & PPFLAG_IGNORE_DEFDIRS) == 0 ) {
-            memcpy( fullfilename, H_DIR, sizeof( H_DIR ) - 1 );
-            memcpy( fullfilename + sizeof( H_DIR ) - 1, filename, len );
-            fullfilename[sizeof( H_DIR ) - 1 + len] = '\0';
-            rc = access( fullfilename, R_OK );
+            memcpy( fname, H_DIR, sizeof( H_DIR ) - 1 );
+            memcpy( fname + sizeof( H_DIR ) - 1, filename, len );
+            fname[sizeof( H_DIR ) - 1 + len] = '\0';
+            rc = checkfullpath( fname, fullfilename );
         }
     }
     return( rc );
@@ -396,8 +404,9 @@ void PP_Dependency_List( pp_callback *callback )
 
 static void PP_CloseAllFiles( void )
 {
-    while( PP_Close() != NULL )
-        ;
+    while( PP_File != NULL ) {
+        PP_Close();
+    }
 }
 
 static char *resize_macro_buf( char *buf, size_t new_size )
