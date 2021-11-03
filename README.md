@@ -15,7 +15,7 @@ Welcome to the Open Watcom v2 Project!
 
 For more information about the project and build instructions see the GitHub wiki.
 
-Discuss the Project on Discord, Reddit, GitHub or News Groups.
+Discuss the Project on Discord, Reddit or GitHub.
 ----------------------------------------------------------------------------
 
 We now have an Official Discord server!
@@ -25,7 +25,7 @@ Reddit Server, join the discussion [`Open Watcom on Reddit`](https://www.reddit.
 
 GitHub, join the discussion [`Open Watcom on GitHub`](https://github.com/open-watcom/open-watcom-v2/issues)
 
-Open Watcom News Groups, join the discussion [`Open Watcom News Groups`](news.openwatcom.org) It looks like this site is dead.
+[`Oficial OpenWatcom site`](https://openwatcom.org) is down for long time, it looks like it is dead.
 
 Source Tree Layout
 ------------------
